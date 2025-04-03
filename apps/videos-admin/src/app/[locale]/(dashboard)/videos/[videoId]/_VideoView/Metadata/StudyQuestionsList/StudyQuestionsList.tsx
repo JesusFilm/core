@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/client'
+import { useApolloClient, useMutation } from '@apollo/client'
 import { DragEndEvent } from '@dnd-kit/core'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -10,11 +10,13 @@ import DialogTitle from '@mui/material/DialogTitle'
 import { ResultOf, VariablesOf, graphql } from 'gql.tada'
 import { useTranslations } from 'next-intl'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useCallback, useState } from 'react'
 
 import { OrderedList } from '../../../../../../../../components/OrderedList'
 import { OrderedItem } from '../../../../../../../../components/OrderedList/OrderedItem'
+import { GET_ADMIN_VIDEO } from '../../../../../../../../libs/useAdminVideo'
 import { GetAdminVideo_AdminVideo_StudyQuestions as StudyQuestions } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { useVideo } from '../../../../../../../../libs/VideoProvider'
 import { Section } from '../../Section'
 
 import { StudyQuestionCreate } from './StudyQuestionCreate'
@@ -57,28 +59,69 @@ export function StudyQuestionsList({
   studyQuestions
 }: StudyQuestionsListProps): ReactElement | null {
   const t = useTranslations()
+  const video = useVideo()
+  const apolloClient = useApolloClient()
+  const { enqueueSnackbar } = useSnackbar()
 
+  const [studyQuestionItems, setStudyQuestionItems] = useState(studyQuestions)
   const [selectedQuestion, setSelectedQuestion] = useState<{
     id: string
     value: string
   } | null>(null)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [questionToDelete, setQuestionToDelete] = useState<string | null>(null)
+
+  // Function to refetch the video data
+  const refetchVideoData = useCallback(async () => {
+    try {
+      const result = await apolloClient.refetchQueries({
+        include: [GET_ADMIN_VIDEO],
+        updateCache(cache) {
+          // Force clear any cached video data to ensure we get fresh data
+          cache.evict({ fieldName: 'adminVideo', args: { id: video.id } })
+          cache.gc()
+        }
+      })
+      return result
+    } catch (error) {
+      console.error('Error refetching video data:', error)
+      throw error
+    }
+  }, [apolloClient, video.id])
 
   const [updateStudyQuestionOrder] = useMutation<
     UpdateStudyQuestionOrder,
     UpdateStudyQuestionOrderVariables
   >(UPDATE_STUDY_QUESTION_ORDER, {
-    update: (cache, { data }) => {
-      if (!data?.videoStudyQuestionUpdate) return
+    onCompleted: async () => {
+      try {
+        await refetchVideoData()
+      } catch (error) {
+        console.error('Error refetching after order update:', error)
+      }
+    },
+    onError: (error) => {
+      enqueueSnackbar(error.message, { variant: 'error' })
     }
   })
 
-  const { enqueueSnackbar } = useSnackbar()
-  const [studyQuestionItems, setStudyQuestionItems] = useState(studyQuestions)
   const [deleteStudyQuestion, { loading: deleteLoading }] = useMutation(
-    DELETE_STUDY_QUESTION
+    DELETE_STUDY_QUESTION,
+    {
+      onCompleted: async () => {
+        enqueueSnackbar(t('Study question deleted'), { variant: 'success' })
+        try {
+          await refetchVideoData()
+        } catch (error) {
+          console.error('Error refetching after delete:', error)
+        }
+        handleCloseDeleteDialog()
+      },
+      onError: (error) => {
+        enqueueSnackbar(error.message, { variant: 'error' })
+      }
+    }
   )
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [questionToDelete, setQuestionToDelete] = useState<string | null>(null)
 
   async function updateOrderOnDrag(e: DragEndEvent): Promise<void> {
     const { active, over } = e
@@ -89,11 +132,15 @@ export function StudyQuestionsList({
       const questionToMove = studyQuestions.find((q) => q.id === active.id)
       if (!questionToMove) return
 
-      await updateStudyQuestionOrder({
-        variables: {
-          input: { id: active.id.toString(), order: newIndex + 1 }
-        }
-      })
+      try {
+        await updateStudyQuestionOrder({
+          variables: {
+            input: { id: active.id.toString(), order: newIndex + 1 }
+          }
+        })
+      } catch (error) {
+        console.error('Error updating study question order:', error)
+      }
     }
   }
 
@@ -128,18 +175,8 @@ export function StudyQuestionsList({
       setStudyQuestionItems((items) =>
         items.filter((item) => item.id !== questionToDelete)
       )
-
-      enqueueSnackbar(t('Study question deleted'), {
-        variant: 'success'
-      })
-
-      handleCloseDeleteDialog()
     } catch (error) {
-      if (error instanceof Error) {
-        enqueueSnackbar(error.message, {
-          variant: 'error'
-        })
-      }
+      console.error('Error deleting study question:', error)
     }
   }
 
@@ -172,13 +209,17 @@ export function StudyQuestionsList({
         ) : (
           <Section.Fallback>{t('No study questions')}</Section.Fallback>
         )}
-        <StudyQuestionCreate studyQuestions={studyQuestions} />
+        <StudyQuestionCreate
+          studyQuestions={studyQuestions}
+          onQuestionAdded={refetchVideoData}
+        />
       </Section>
       {selectedQuestion != null && (
         <StudyQuestionDialog
           open={true}
           onClose={handleCloseDialog}
           studyQuestion={selectedQuestion}
+          onQuestionUpdated={refetchVideoData}
         />
       )}
       <Dialog

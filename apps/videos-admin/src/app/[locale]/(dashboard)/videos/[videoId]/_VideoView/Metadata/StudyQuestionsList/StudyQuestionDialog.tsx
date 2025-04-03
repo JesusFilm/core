@@ -7,6 +7,9 @@ import { useTranslations } from 'next-intl'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
+import { GET_ADMIN_VIDEO } from '../../../../../../../../libs/useAdminVideo'
+import { useVideo } from '../../../../../../../../libs/VideoProvider'
+
 import { StudyQuestionForm } from './StudyQuestionForm'
 
 export const UPDATE_STUDY_QUESTION = graphql(`
@@ -30,15 +33,18 @@ interface StudyQuestionDialogProps {
     id: string
     value: string
   }
+  onQuestionUpdated?: () => void
 }
 
 export function StudyQuestionDialog({
   open,
   onClose,
-  studyQuestion
+  studyQuestion,
+  onQuestionUpdated
 }: StudyQuestionDialogProps): ReactElement {
   const t = useTranslations()
   const { enqueueSnackbar } = useSnackbar()
+  const video = useVideo()
 
   const [updateStudyQuestion, { loading }] = useMutation<
     UpdateStudyQuestion,
@@ -46,36 +52,35 @@ export function StudyQuestionDialog({
   >(UPDATE_STUDY_QUESTION, {
     onCompleted: () => {
       enqueueSnackbar(t('Study question updated'), { variant: 'success' })
+      if (onQuestionUpdated) {
+        onQuestionUpdated()
+      }
       onClose()
     },
     onError: (error) => {
       enqueueSnackbar(error.message, { variant: 'error' })
-    },
-    update: (cache, { data }) => {
-      if (!data?.videoStudyQuestionUpdate) return
-
-      // This updates any queries that include this specific study question
-      cache.modify({
-        id: cache.identify({
-          __typename: 'VideoStudyQuestion',
-          id: data.videoStudyQuestionUpdate.id
-        }),
-        fields: {
-          value: () => data.videoStudyQuestionUpdate.value
-        }
-      })
     }
   })
 
   const handleSubmit = async (values: { value: string }): Promise<void> => {
-    await updateStudyQuestion({
-      variables: {
-        input: {
-          id: studyQuestion.id,
-          value: values.value
-        }
-      }
-    })
+    try {
+      const result = await updateStudyQuestion({
+        variables: {
+          input: {
+            id: studyQuestion.id,
+            value: values.value
+          }
+        },
+        refetchQueries: [
+          {
+            query: GET_ADMIN_VIDEO,
+            variables: { videoId: video.id }
+          }
+        ]
+      })
+    } catch (error) {
+      console.error('Error updating study question:', error)
+    }
   }
 
   return (

@@ -31,7 +31,9 @@ export function VideoView(): ReactElement {
   const [tabValue, setTabValue] = useState(0)
 
   const { data, loading } = useAdminVideo({
-    variables: { videoId: params?.videoId as string }
+    variables: { videoId: params?.videoId as string },
+    fetchPolicy: 'network-only',
+    nextFetchPolicy: 'cache-first'
   })
 
   if (loading) {

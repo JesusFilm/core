@@ -3,6 +3,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextIntlClientProvider } from 'next-intl'
 import { SnackbarProvider } from 'notistack'
 
+import { GET_ADMIN_VIDEO } from '../../../../../../../../libs/useAdminVideo'
 import { VideoProvider } from '../../../../../../../../libs/VideoProvider'
 
 import {
@@ -77,8 +78,9 @@ describe('StudyQuestionDialog', () => {
     )
   })
 
-  it('should update study question and update the cache', async () => {
+  it('should update study question and trigger callback', async () => {
     const onClose = jest.fn()
+    const onQuestionUpdated = jest.fn()
 
     // Create the proper mocked response
     const mocks = [
@@ -101,6 +103,26 @@ describe('StudyQuestionDialog', () => {
             }
           }
         }
+      },
+      {
+        request: {
+          query: GET_ADMIN_VIDEO,
+          variables: { videoId: 'video-1' }
+        },
+        result: {
+          data: {
+            adminVideo: {
+              ...video,
+              studyQuestions: [
+                {
+                  id: '1',
+                  value: 'Updated question',
+                  __typename: 'VideoStudyQuestion'
+                }
+              ]
+            }
+          }
+        }
       }
     ]
 
@@ -113,6 +135,7 @@ describe('StudyQuestionDialog', () => {
                 open={true}
                 onClose={onClose}
                 studyQuestion={{ id: '1', value: 'Test question' }}
+                onQuestionUpdated={onQuestionUpdated}
               />
             </VideoProvider>
           </SnackbarProvider>
@@ -131,6 +154,7 @@ describe('StudyQuestionDialog', () => {
       expect(screen.getByText('Study question updated')).toBeInTheDocument()
     })
     expect(onClose).toHaveBeenCalled()
+    expect(onQuestionUpdated).toHaveBeenCalled()
   })
 
   it('should handle error', async () => {

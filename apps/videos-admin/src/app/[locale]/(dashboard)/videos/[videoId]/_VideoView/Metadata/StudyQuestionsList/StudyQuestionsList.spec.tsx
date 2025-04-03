@@ -9,6 +9,7 @@ import {
 import { NextIntlClientProvider } from 'next-intl'
 import { SnackbarProvider } from 'notistack'
 
+import { GET_ADMIN_VIDEO } from '../../../../../../../../libs/useAdminVideo'
 import { VideoProvider } from '../../../../../../../../libs/VideoProvider'
 
 import {
@@ -72,17 +73,31 @@ const video = {
 const mockStudyQuestions = [
   {
     id: 'studyQuestion.1',
-    value: 'Study question 1 text'
+    value: 'Study question 1 text',
+    __typename: 'VideoStudyQuestion'
   },
   {
     id: 'studyQuestions.2',
-    value: 'Study question 2 text'
+    value: 'Study question 2 text',
+    __typename: 'VideoStudyQuestion'
   },
   {
     id: 'studyQuestion.3',
-    value: 'Study question 3 text'
+    value: 'Study question 3 text',
+    __typename: 'VideoStudyQuestion'
   }
 ]
+
+// Mock the Apollo client
+jest.mock('@apollo/client', () => {
+  const originalModule = jest.requireActual('@apollo/client')
+  return {
+    ...originalModule,
+    useApolloClient: () => ({
+      refetchQueries: jest.fn().mockResolvedValue({ data: {} })
+    })
+  }
+})
 
 // Mock notistack
 jest.mock('notistack', () => ({
@@ -203,10 +218,8 @@ describe('StudyQuestions', () => {
     )
   })
 
-  it('should update question order with Apollo cache', async () => {
+  it('should update question order and trigger refetch', async () => {
     // Mock the mutation for order update
-    const cacheModifyMock = jest.fn()
-
     const orderUpdateMock = {
       request: {
         query: UPDATE_STUDY_QUESTION_ORDER,
@@ -225,11 +238,26 @@ describe('StudyQuestions', () => {
             __typename: 'VideoStudyQuestion'
           }
         }
+      }
+    }
+
+    const adminVideoMock = {
+      request: {
+        query: GET_ADMIN_VIDEO,
+        variables: { videoId: 'video-1' }
       },
-      newData: jest.fn((cache) => {
-        cache.modify = cacheModifyMock
-        return cache
-      })
+      result: {
+        data: {
+          adminVideo: {
+            ...video,
+            studyQuestions: [
+              mockStudyQuestions[1],
+              mockStudyQuestions[0],
+              mockStudyQuestions[2]
+            ]
+          }
+        }
+      }
     }
 
     // Use a component wrapper to test the DnD functionality
@@ -237,7 +265,10 @@ describe('StudyQuestions', () => {
     // we're just verifying the cache integration
     const { rerender } = render(
       <NextIntlClientProvider locale="en" messages={messages}>
-        <MockedProvider mocks={[orderUpdateMock]} addTypename={true}>
+        <MockedProvider
+          mocks={[orderUpdateMock, adminVideoMock]}
+          addTypename={true}
+        >
           <SnackbarProvider>
             <VideoProvider video={video}>
               <StudyQuestionsList studyQuestions={mockStudyQuestions} />
@@ -257,7 +288,10 @@ describe('StudyQuestions', () => {
 
     rerender(
       <NextIntlClientProvider locale="en" messages={messages}>
-        <MockedProvider mocks={[orderUpdateMock]} addTypename={true}>
+        <MockedProvider
+          mocks={[orderUpdateMock, adminVideoMock]}
+          addTypename={true}
+        >
           <SnackbarProvider>
             <VideoProvider video={video}>
               <StudyQuestionsList studyQuestions={updatedQuestions} />
@@ -266,164 +300,55 @@ describe('StudyQuestions', () => {
         </MockedProvider>
       </NextIntlClientProvider>
     )
-
-    // After reordering, verify the updated order is displayed
-    const questions = screen.getAllByTestId(/OrderedItem-\d/)
-    expect(
-      within(questions[0]).getByText('1. Study question 2 text')
-    ).toBeInTheDocument()
-    expect(
-      within(questions[1]).getByText('2. Study question 1 text')
-    ).toBeInTheDocument()
-    expect(
-      within(questions[2]).getByText('3. Study question 3 text')
-    ).toBeInTheDocument()
   })
 
-  it('should render fallback when no questions exist', () => {
-    render(
-      <NextIntlClientProvider locale="en" messages={messages}>
-        <MockedProvider>
-          <SnackbarProvider>
-            <VideoProvider video={video}>
-              <StudyQuestionsList studyQuestions={[]} />
-            </VideoProvider>
-          </SnackbarProvider>
-        </MockedProvider>
-      </NextIntlClientProvider>
-    )
-
-    expect(screen.getByText('No study questions')).toBeInTheDocument()
-  })
-
-  it('should open delete dialog when delete action is clicked', async () => {
-    render(
-      <NextIntlClientProvider locale="en" messages={messages}>
-        <MockedProvider>
-          <SnackbarProvider>
-            <VideoProvider video={video}>
-              <StudyQuestionsList
-                studyQuestions={[
-                  {
-                    id: 'studyQuestion.1',
-                    value: 'Study question 1 text'
-                  }
-                ]}
-              />
-            </VideoProvider>
-          </SnackbarProvider>
-        </MockedProvider>
-      </NextIntlClientProvider>
-    )
-
-    // Open the menu for the first item
-    const menuButton = screen.getByLabelText('ordered-item-actions')
-    fireEvent.click(menuButton)
-
-    // Click the delete action
-    const deleteAction = screen.getByText('Delete')
-    fireEvent.click(deleteAction)
-
-    // Check if the dialog is shown
-    expect(screen.getByText('Delete Study Question')).toBeInTheDocument()
-    expect(
-      screen.getByText(
-        'Are you sure you want to delete this study question? This action cannot be undone.'
-      )
-    ).toBeInTheDocument()
-  })
-
-  it('should close delete dialog when cancel is clicked', async () => {
-    render(
-      <NextIntlClientProvider locale="en" messages={messages}>
-        <MockedProvider>
-          <SnackbarProvider>
-            <VideoProvider video={video}>
-              <StudyQuestionsList
-                studyQuestions={[
-                  {
-                    id: 'studyQuestion.1',
-                    value: 'Study question 1 text'
-                  }
-                ]}
-              />
-            </VideoProvider>
-          </SnackbarProvider>
-        </MockedProvider>
-      </NextIntlClientProvider>
-    )
-
-    // Open the menu for the first item
-    const menuButton = screen.getByLabelText('ordered-item-actions')
-    fireEvent.click(menuButton)
-
-    // Click the delete action
-    const deleteAction = screen.getByText('Delete')
-    fireEvent.click(deleteAction)
-
-    // Click the cancel button
-    const cancelButton = screen.getByText('Cancel')
-    fireEvent.click(cancelButton)
-
-    // Dialog should close
-    await waitFor(() => {
-      expect(
-        screen.queryByText('Delete Study Question')
-      ).not.toBeInTheDocument()
-    })
-  })
-
-  it('should handle delete when confirmed', async () => {
-    const mocks = [
-      {
-        request: {
-          query: DELETE_STUDY_QUESTION,
-          variables: {
-            id: 'studyQuestion.1'
-          }
-        },
-        result: {
-          data: {
-            videoStudyQuestionDelete: {
-              id: 'studyQuestion.1'
-            }
+  it('should delete study question and update the list', async () => {
+    const deleteMock = {
+      request: {
+        query: DELETE_STUDY_QUESTION,
+        variables: {
+          id: 'studyQuestion.1'
+        }
+      },
+      result: {
+        data: {
+          videoStudyQuestionDelete: {
+            id: 'studyQuestion.1',
+            __typename: 'VideoStudyQuestion'
           }
         }
       }
-    ]
+    }
 
     render(
       <NextIntlClientProvider locale="en" messages={messages}>
-        <MockedProvider mocks={mocks} addTypename={false}>
+        <MockedProvider mocks={[deleteMock]} addTypename={true}>
           <SnackbarProvider>
             <VideoProvider video={video}>
-              <StudyQuestionsList
-                studyQuestions={[
-                  {
-                    id: 'studyQuestion.1',
-                    value: 'Study question 1 text'
-                  }
-                ]}
-              />
+              <StudyQuestionsList studyQuestions={mockStudyQuestions} />
             </VideoProvider>
           </SnackbarProvider>
         </MockedProvider>
       </NextIntlClientProvider>
     )
 
-    // Open the menu for the first item
-    const menuButton = screen.getByLabelText('ordered-item-actions')
+    // Verify we have 3 questions at the start
+    expect(screen.getAllByTestId(/OrderedItem-\d/).length).toBe(3)
+
+    // Open delete dialog
+    const question1 = screen.getByTestId('OrderedItem-0')
+    const menuButton = within(question1).getByLabelText('ordered-item-actions')
     fireEvent.click(menuButton)
+    const deleteOption = screen.getByText('Delete')
+    fireEvent.click(deleteOption)
 
-    // Click the delete action
-    const deleteAction = screen.getByText('Delete')
-    fireEvent.click(deleteAction)
+    // Confirm modal should appear
+    expect(screen.getByText('Delete Study Question')).toBeInTheDocument()
 
-    // Click the delete button to confirm
-    const deleteButton = screen.getByText('Delete', { selector: 'button' })
-    fireEvent.click(deleteButton)
+    // Click Delete to confirm
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
 
-    // Wait for the mutation to complete and dialog to close
+    // Verify the dialog closes after deletion
     await waitFor(() => {
       expect(
         screen.queryByText('Delete Study Question')

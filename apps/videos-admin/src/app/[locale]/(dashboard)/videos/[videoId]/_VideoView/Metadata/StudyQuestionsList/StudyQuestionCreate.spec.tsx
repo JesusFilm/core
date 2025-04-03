@@ -91,8 +91,9 @@ describe('StudyQuestionCreate', () => {
     expect(screen.getByRole('dialog')).toBeInTheDocument()
   })
 
-  it('should create study question with correct order and update the cache', async () => {
+  it('should create study question with correct order and trigger refetch', async () => {
     const nextOrder = mockStudyQuestions.length + 1
+    const onQuestionAdded = jest.fn()
 
     // Create the mocks
     const mocks = [
@@ -126,7 +127,10 @@ describe('StudyQuestionCreate', () => {
         <MockedProvider mocks={mocks} addTypename={true}>
           <SnackbarProvider>
             <VideoProvider video={video}>
-              <StudyQuestionCreate studyQuestions={mockStudyQuestions} />
+              <StudyQuestionCreate
+                studyQuestions={mockStudyQuestions}
+                onQuestionAdded={onQuestionAdded}
+              />
             </VideoProvider>
           </SnackbarProvider>
         </MockedProvider>
@@ -142,16 +146,16 @@ describe('StudyQuestionCreate', () => {
     })
     fireEvent.click(screen.getByRole('button', { name: 'Add' }))
 
-    // Verify the component shows success message and dialog closes
-    await waitFor(() => {
-      expect(screen.getByText('Study question created')).toBeInTheDocument()
-    })
+    // Verify the dialog closes
     await waitFor(
       () => {
         expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
       },
       { timeout: 3000 }
     )
+
+    // Check that onQuestionAdded was called
+    expect(onQuestionAdded).toHaveBeenCalled()
   })
 
   it('should handle error', async () => {

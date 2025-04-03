@@ -9,6 +9,7 @@ import { useTranslations } from 'next-intl'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
+import { GET_ADMIN_VIDEO } from '../../../../../../../../libs/useAdminVideo'
 import { GetAdminVideo_AdminVideo_StudyQuestions as StudyQuestions } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useVideo } from '../../../../../../../../libs/VideoProvider'
 
@@ -30,10 +31,12 @@ export type CreateStudyQuestionVariables = VariablesOf<
 
 interface StudyQuestionCreateProps {
   studyQuestions: StudyQuestions
+  onQuestionAdded?: () => void
 }
 
 export function StudyQuestionCreate({
-  studyQuestions
+  studyQuestions,
+  onQuestionAdded
 }: StudyQuestionCreateProps): ReactElement {
   const t = useTranslations()
   const { enqueueSnackbar } = useSnackbar()
@@ -46,61 +49,42 @@ export function StudyQuestionCreate({
   >(CREATE_STUDY_QUESTION, {
     onCompleted: () => {
       enqueueSnackbar(t('Study question created'), { variant: 'success' })
+      // Force refetch the query to get fresh data
+      if (onQuestionAdded) {
+        onQuestionAdded()
+      }
       handleClose()
     },
     onError: (error) => {
       enqueueSnackbar(error.message, { variant: 'error' })
-    },
-    update: (cache, { data }) => {
-      if (!data?.videoStudyQuestionCreate) return
-
-      try {
-        // Find the cached video object
-        const videoId = cache.identify({
-          __typename: 'AdminVideo',
-          id: video.id
-        })
-
-        if (videoId) {
-          // Modify the studyQuestions field to include the new question
-          cache.modify({
-            id: videoId,
-            fields: {
-              studyQuestions: (existingStudyQuestions = []) => {
-                // Create a new study question reference
-                const newQuestionRef = cache.writeFragment({
-                  data: data.videoStudyQuestionCreate,
-                  fragment: graphql(`
-                    fragment NewStudyQuestion on VideoStudyQuestion {
-                      id
-                      value
-                    }
-                  `)
-                })
-                return [...existingStudyQuestions, newQuestionRef]
-              }
-            }
-          })
-        }
-      } catch (e) {
-        console.error('Error updating cache:', e)
-      }
     }
   })
 
   const handleSubmit = async (values: { value: string }): Promise<void> => {
     const nextOrder = studyQuestions.length + 1
-    await createStudyQuestion({
-      variables: {
-        input: {
-          videoId: video.id,
-          value: values.value,
-          languageId: '529',
-          primary: true,
-          order: nextOrder
-        }
-      }
-    })
+
+    try {
+      const result = await createStudyQuestion({
+        variables: {
+          input: {
+            videoId: video.id,
+            value: values.value,
+            languageId: '529',
+            primary: true,
+            order: nextOrder
+          }
+        },
+        // Add the refetchQueries directly to the mutation call
+        refetchQueries: [
+          {
+            query: GET_ADMIN_VIDEO,
+            variables: { videoId: video.id }
+          }
+        ]
+      })
+    } catch (error) {
+      console.error('Error creating study question:', error)
+    }
   }
 
   const handleOpen = () => {
