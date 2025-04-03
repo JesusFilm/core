@@ -220,8 +220,6 @@ export function Card({
       })
     })
 
-    console.log('submissionPromises', submissionPromises)
-
     await Promise.all(submissionPromises)
       .then(() => {
         const areAllPromisesNull = submissionPromises.every(
