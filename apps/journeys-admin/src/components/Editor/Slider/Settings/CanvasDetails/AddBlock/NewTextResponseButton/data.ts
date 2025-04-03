@@ -15,7 +15,7 @@ export const submitButton: TreeBlock<ButtonBlock> = {
   __typename: 'ButtonBlock',
   parentBlockId: 'card.id',
   parentOrder: 0,
-  label: 'Submit',
+  label: '',
   buttonVariant: ButtonVariant.contained,
   buttonColor: ButtonColor.primary,
   size: ButtonSize.medium,
