@@ -1,14 +1,12 @@
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Checkbox from '@mui/material/Checkbox'
 import Collapse from '@mui/material/Collapse'
-import FormControlLabel from '@mui/material/FormControlLabel'
 import FormGroup from '@mui/material/FormGroup'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
-import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3'
 import { DateField } from '@mui/x-date-pickers/DateField'
@@ -20,38 +18,61 @@ import { Dialog } from '@core/shared/ui/Dialog'
 
 import { EventType } from '../../../../../__generated__/globalTypes'
 
+import { CheckboxOption } from './CheckboxOption'
+
 interface DateRangePickerProps {
   startDate: Date | null
   endDate: Date | null
   onStartDateChange: (date: Date | null) => void
   onEndDateChange: (date: Date | null) => void
+  startDateError: string | null
+  endDateError: string | null
 }
 
 function DateRangePicker({
   startDate,
   endDate,
   onStartDateChange,
-  onEndDateChange
+  onEndDateChange,
+  startDateError,
+  endDateError
 }: DateRangePickerProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <Stack direction="row" spacing={2}>
-        <DateField
-          size="small"
-          label={t('Start Date')}
-          value={startDate}
-          onChange={onStartDateChange}
-          format="dd-MM-yyyy"
-        />
-        <DateField
-          size="small"
-          label={t('End Date')}
-          value={endDate}
-          onChange={onEndDateChange}
-          format="dd-MM-yyyy"
-        />
+      <Stack direction="row" spacing={2} alignItems="center">
+        <CalendarTodayIcon sx={{ color: 'text.secondary' }} />
+        <Stack direction="row" spacing={2} sx={{ '& > *': { flex: 1 } }}>
+          <DateField
+            size="small"
+            label={t('Start Date')}
+            value={startDate}
+            onChange={onStartDateChange}
+            format="dd-MM-yyyy"
+            clearable
+            slotProps={{
+              textField: {
+                error: startDateError != null,
+                helperText: startDateError
+              }
+            }}
+          />
+          <DateField
+            size="small"
+            label={t('End Date')}
+            value={endDate}
+            onChange={onEndDateChange}
+            format="dd-MM-yyyy"
+            clearable
+            slotProps={{
+              textField: {
+                error: endDateError != null,
+                helperText: endDateError
+              }
+            }}
+          />
+        </Stack>
       </Stack>
     </LocalizationProvider>
   )
@@ -226,6 +247,8 @@ export function ExportDialog({
           endDate={endDate}
           onStartDateChange={setStartDate}
           onEndDateChange={setEndDate}
+          startDateError={null}
+          endDateError={null}
         />
       </Box>
       <Box sx={{ p: 4 }}>
@@ -234,68 +257,40 @@ export function ExportDialog({
         </Typography>
         <Stack spacing={2}>
           <FormGroup>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={selectAll}
-                  onChange={(e) => handleSelectAll(e.target.checked)}
-                />
-              }
-              label={t('All')}
+            <CheckboxOption
+              checked={selectAll}
+              onChange={handleSelectAll}
+              label="All"
             />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={journeyView}
-                  onChange={(e) => setJourneyView(e.target.checked)}
-                />
-              }
-              label={t('Journey Start')}
+            <CheckboxOption
+              checked={journeyView}
+              onChange={setJourneyView}
+              label="Journey Start"
             />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={chatOpened}
-                  onChange={(e) => setChatOpened(e.target.checked)}
-                />
-              }
-              label={t('Chat Open')}
+            <CheckboxOption
+              checked={chatOpened}
+              onChange={setChatOpened}
+              label="Chat Open"
             />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={textSubmission}
-                  onChange={(e) => setTextSubmission(e.target.checked)}
-                />
-              }
-              label={t('Text Submission')}
+            <CheckboxOption
+              checked={textSubmission}
+              onChange={setTextSubmission}
+              label="Text Submission"
             />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={pollOptions}
-                  onChange={(e) => setPollOptions(e.target.checked)}
-                />
-              }
-              label={t('Poll Selection')}
+            <CheckboxOption
+              checked={pollOptions}
+              onChange={setPollOptions}
+              label="Poll Selection"
             />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={buttonClicks}
-                  onChange={(e) => setButtonClicks(e.target.checked)}
-                />
-              }
-              label={t('Button Click')}
+            <CheckboxOption
+              checked={buttonClicks}
+              onChange={setButtonClicks}
+              label="Button Click"
             />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={subscription}
-                  onChange={(e) => setSubscription(e.target.checked)}
-                />
-              }
-              label={t('Subscription')}
+            <CheckboxOption
+              checked={subscription}
+              onChange={setSubscription}
+              label="Subscription"
             />
             <Box>
               <Box
@@ -315,21 +310,16 @@ export function ExportDialog({
                   justifyContent="space-between"
                   sx={{ pr: 2 }}
                 >
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={videoEventsParent}
-                        indeterminate={
-                          !allVideoEventsSelected && someVideoEventsSelected
-                        }
-                        onChange={(e) => {
-                          e.stopPropagation()
-                          handleVideoEventsParentChange(e.target.checked)
-                        }}
-                      />
-                    }
-                    label={t('Video Interaction')}
+                  <CheckboxOption
+                    checked={videoEventsParent}
+                    onChange={(checked) => {
+                      handleVideoEventsParentChange(checked)
+                    }}
+                    label="Video Interaction"
                     onClick={(e) => e.stopPropagation()}
+                    indeterminate={
+                      !allVideoEventsSelected && someVideoEventsSelected
+                    }
                   />
                   <IconButton size="small" sx={{ pointerEvents: 'none' }}>
                     {videoEventsExpanded ? (
@@ -343,60 +333,40 @@ export function ExportDialog({
               <Collapse in={videoEventsExpanded}>
                 <Box sx={{ ml: 3 }}>
                   <FormGroup>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={videoEvents.start}
-                          onChange={(e) =>
-                            handleVideoEventChange('start', e.target.checked)
-                          }
-                        />
+                    <CheckboxOption
+                      checked={videoEvents.start}
+                      onChange={(checked) =>
+                        handleVideoEventChange('start', checked)
                       }
-                      label={t('Start')}
+                      label="Start"
                     />
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={videoEvents.play}
-                          onChange={(e) =>
-                            handleVideoEventChange('play', e.target.checked)
-                          }
-                        />
+                    <CheckboxOption
+                      checked={videoEvents.play}
+                      onChange={(checked) =>
+                        handleVideoEventChange('play', checked)
                       }
-                      label={t('Play')}
+                      label="Play"
                     />
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={videoEvents.pause}
-                          onChange={(e) =>
-                            handleVideoEventChange('pause', e.target.checked)
-                          }
-                        />
+                    <CheckboxOption
+                      checked={videoEvents.pause}
+                      onChange={(checked) =>
+                        handleVideoEventChange('pause', checked)
                       }
-                      label={t('Pause')}
+                      label="Pause"
                     />
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={videoEvents.complete}
-                          onChange={(e) =>
-                            handleVideoEventChange('complete', e.target.checked)
-                          }
-                        />
+                    <CheckboxOption
+                      checked={videoEvents.complete}
+                      onChange={(checked) =>
+                        handleVideoEventChange('complete', checked)
                       }
-                      label={t('Complete')}
+                      label="Complete"
                     />
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={videoEvents.progress}
-                          onChange={(e) =>
-                            handleVideoEventChange('progress', e.target.checked)
-                          }
-                        />
+                    <CheckboxOption
+                      checked={videoEvents.progress}
+                      onChange={(checked) =>
+                        handleVideoEventChange('progress', checked)
                       }
-                      label={t('Progress')}
+                      label="Progress"
                     />
                   </FormGroup>
                 </Box>
