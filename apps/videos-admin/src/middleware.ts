@@ -50,9 +50,9 @@ export default async function middleware(
       sameSite: 'lax' as const,
       maxAge: 12 * 60 * 60 * 24 // Twelve days
     },
-    handleValidToken: async (token) => {
+    handleValidToken: async ({ token }, headers) => {
       const { data } = await makeClient({
-        headers: { Authorization: `JWT ${token.token}` }
+        headers: { Authorization: `JWT ${token}` }
       }).query({
         query: GET_AUTH
       })
@@ -61,7 +61,7 @@ export default async function middleware(
         return NextResponse.redirect(req.nextUrl)
       }
 
-      return NextResponse.next()
+      return NextResponse.next({ request: { headers } })
     },
     handleInvalidToken: async (reason) => {
       if (!testPathnameRegex(publicPaths, req.nextUrl.pathname)) {

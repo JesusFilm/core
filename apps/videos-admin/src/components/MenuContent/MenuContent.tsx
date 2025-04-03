@@ -26,12 +26,12 @@ export function MenuContent(): ReactElement {
     {
       text: 'Home',
       icon: <HomeRoundedIcon />,
-      href: `/${params?.locale?.toString() ?? 'en'}`
+      href: '/'
     },
     {
       text: 'Video Library',
       icon: <VideoLibraryRoundedIcon />,
-      href: `/${params?.locale?.toString() ?? 'en'}/videos`,
+      href: '/videos',
       startsWith: true
     }
   ]
@@ -40,7 +40,7 @@ export function MenuContent(): ReactElement {
     {
       text: 'Settings',
       icon: <SettingsRoundedIcon />,
-      href: `/${params?.locale?.toString() ?? 'en'}/settings`,
+      href: '/settings',
       startsWith: true
     }
   ]

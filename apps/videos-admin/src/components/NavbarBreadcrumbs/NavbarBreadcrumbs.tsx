@@ -29,10 +29,9 @@ interface Label {
 export function NavbarBreadcrumbs(): ReactElement {
   const paths = usePathname()
   const pathNames = paths?.split('/').filter((path) => path) ?? []
-  const params = useParams()
 
   const labels: { [key: string]: Label } = {
-    [params?.locale?.toString() ?? 'en']: {
+    '': {
       icon: <HomeRoundedIcon fontSize="inherit" />,
       value: 'Dashboard'
     },

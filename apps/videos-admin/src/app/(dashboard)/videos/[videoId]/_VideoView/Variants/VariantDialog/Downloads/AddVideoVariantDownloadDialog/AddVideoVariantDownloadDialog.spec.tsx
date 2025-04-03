@@ -58,40 +58,36 @@ describe('AddVideoVariantDownloadDialog', () => {
 
   it('should render the dialog', () => {
     render(
-      
-        <SnackbarProvider>
-          <MockedProvider mocks={[]}>
-            <AddVideoVariantDownloadDialog
-              open={true}
-              videoVariantId="variant-123"
-              existingQualities={[]}
-              languageId="529"
-            />
-          </MockedProvider>
-        </SnackbarProvider>
-      
+      <SnackbarProvider>
+        <MockedProvider mocks={[]}>
+          <AddVideoVariantDownloadDialog
+            open={true}
+            videoVariantId="variant-123"
+            existingQualities={[]}
+            languageId="529"
+          />
+        </MockedProvider>
+      </SnackbarProvider>
     )
 
     expect(screen.getByText('Add Download')).toBeInTheDocument()
     expect(screen.getByLabelText('Quality')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Add' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
   })
 
   it('should not allow selecting a quality that already exists', async () => {
     render(
-      
-        <SnackbarProvider>
-          <MockedProvider mocks={[]}>
-            <AddVideoVariantDownloadDialog
-              open={true}
-              videoVariantId="variant-123"
-              existingQualities={['high']}
-              languageId="529"
-            />
-          </MockedProvider>
-        </SnackbarProvider>
-      
+      <SnackbarProvider>
+        <MockedProvider mocks={[]}>
+          <AddVideoVariantDownloadDialog
+            open={true}
+            videoVariantId="variant-123"
+            existingQualities={['high']}
+            languageId="529"
+          />
+        </MockedProvider>
+      </SnackbarProvider>
     )
 
     const user = userEvent.setup()
@@ -102,7 +98,7 @@ describe('AddVideoVariantDownloadDialog', () => {
     await user.click(screen.getByRole('option', { name: 'high' }))
 
     // Try to submit the form
-    await user.click(screen.getByRole('button', { name: 'Save' }))
+    await user.click(screen.getByRole('button', { name: 'Add' }))
 
     // Should show validation error
     await waitFor(() => {
@@ -114,18 +110,16 @@ describe('AddVideoVariantDownloadDialog', () => {
 
   it('should handle file upload and set video dimensions', async () => {
     render(
-      
-        <SnackbarProvider>
-          <MockedProvider mocks={[]}>
-            <AddVideoVariantDownloadDialog
-              open={true}
-              videoVariantId="variant-123"
-              existingQualities={[]}
-              languageId="529"
-            />
-          </MockedProvider>
-        </SnackbarProvider>
-      
+      <SnackbarProvider>
+        <MockedProvider mocks={[]}>
+          <AddVideoVariantDownloadDialog
+            open={true}
+            videoVariantId="variant-123"
+            existingQualities={[]}
+            languageId="529"
+          />
+        </MockedProvider>
+      </SnackbarProvider>
     )
 
     const user = userEvent.setup()
@@ -154,18 +148,16 @@ describe('AddVideoVariantDownloadDialog', () => {
 
   it('should handle video loading error', async () => {
     render(
-      
-        <SnackbarProvider>
-          <MockedProvider mocks={[]}>
-            <AddVideoVariantDownloadDialog
-              open={true}
-              videoVariantId="variant-123"
-              existingQualities={[]}
-              languageId="529"
-            />
-          </MockedProvider>
-        </SnackbarProvider>
-      
+      <SnackbarProvider>
+        <MockedProvider mocks={[]}>
+          <AddVideoVariantDownloadDialog
+            open={true}
+            videoVariantId="variant-123"
+            existingQualities={[]}
+            languageId="529"
+          />
+        </MockedProvider>
+      </SnackbarProvider>
     )
 
     const user = userEvent.setup()
@@ -214,20 +206,18 @@ describe('AddVideoVariantDownloadDialog', () => {
     const onSuccess = jest.fn()
 
     render(
-      
-        <SnackbarProvider>
-          <MockedProvider mocks={[createR2AssetMock, createDownloadMock]}>
-            <AddVideoVariantDownloadDialog
-              open={true}
-              videoVariantId={videoVariantId}
-              existingQualities={[]}
-              handleClose={handleClose}
-              onSuccess={onSuccess}
-              languageId="529"
-            />
-          </MockedProvider>
-        </SnackbarProvider>
-      
+      <SnackbarProvider>
+        <MockedProvider mocks={[createR2AssetMock, createDownloadMock]}>
+          <AddVideoVariantDownloadDialog
+            open={true}
+            videoVariantId={videoVariantId}
+            existingQualities={[]}
+            handleClose={handleClose}
+            onSuccess={onSuccess}
+            languageId="529"
+          />
+        </MockedProvider>
+      </SnackbarProvider>
     )
 
     const user = userEvent.setup()
@@ -243,7 +233,7 @@ describe('AddVideoVariantDownloadDialog', () => {
       mockVideoElement.onloadedmetadata()
     }
 
-    await user.click(screen.getByRole('button', { name: 'Save' }))
+    await user.click(screen.getByRole('button', { name: 'Add' }))
 
     await waitFor(() => {
       expect(createR2AssetMock.result).toHaveBeenCalled()
@@ -262,19 +252,17 @@ describe('AddVideoVariantDownloadDialog', () => {
     const handleClose = jest.fn()
 
     render(
-      
-        <SnackbarProvider>
-          <MockedProvider mocks={[]}>
-            <AddVideoVariantDownloadDialog
-              open={true}
-              videoVariantId="variant-123"
-              existingQualities={[]}
-              handleClose={handleClose}
-              languageId="529"
-            />
-          </MockedProvider>
-        </SnackbarProvider>
-      
+      <SnackbarProvider>
+        <MockedProvider mocks={[]}>
+          <AddVideoVariantDownloadDialog
+            open={true}
+            videoVariantId="variant-123"
+            existingQualities={[]}
+            handleClose={handleClose}
+            languageId="529"
+          />
+        </MockedProvider>
+      </SnackbarProvider>
     )
 
     const user = userEvent.setup()

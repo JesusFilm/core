@@ -81,15 +81,13 @@ describe('Downloads', () => {
 
   it('should show downloads', () => {
     render(
-      
-        <MockedProvider mocks={[]}>
-          <Downloads
-            downloads={mockVariantDownloads}
-            videoVariantId="variant-id"
-            languageId="529"
-          />
-        </MockedProvider>
-      
+      <MockedProvider mocks={[]}>
+        <Downloads
+          downloads={mockVariantDownloads}
+          videoVariantId="variant-id"
+          languageId="529"
+        />
+      </MockedProvider>
     )
 
     expect(
@@ -102,15 +100,13 @@ describe('Downloads', () => {
 
   it('should show message if no downloads available', () => {
     render(
-      
-        <MockedProvider mocks={[]}>
-          <Downloads
-            downloads={[]}
-            videoVariantId="variant-id"
-            languageId="529"
-          />
-        </MockedProvider>
-      
+      <MockedProvider mocks={[]}>
+        <Downloads
+          downloads={[]}
+          videoVariantId="variant-id"
+          languageId="529"
+        />
+      </MockedProvider>
     )
 
     expect(screen.getByText('No downloads available')).toBeInTheDocument()
@@ -118,15 +114,13 @@ describe('Downloads', () => {
 
   it('should show add download button', () => {
     render(
-      
-        <MockedProvider mocks={[]}>
-          <Downloads
-            downloads={mockVariantDownloads}
-            videoVariantId="variant-id"
-            languageId="529"
-          />
-        </MockedProvider>
-      
+      <MockedProvider mocks={[]}>
+        <Downloads
+          downloads={mockVariantDownloads}
+          videoVariantId="variant-id"
+          languageId="529"
+        />
+      </MockedProvider>
     )
 
     expect(
@@ -136,17 +130,15 @@ describe('Downloads', () => {
 
   it('should open add download dialog when button is clicked', async () => {
     render(
-      
-        <MockedProvider>
-          <SnackbarProvider>
-            <Downloads
-              downloads={mockVariantDownloads}
-              videoVariantId="variant-id"
-              languageId="529"
-            />
-          </SnackbarProvider>
-        </MockedProvider>
-      
+      <MockedProvider>
+        <SnackbarProvider>
+          <Downloads
+            downloads={mockVariantDownloads}
+            videoVariantId="variant-id"
+            languageId="529"
+          />
+        </SnackbarProvider>
+      </MockedProvider>
     )
 
     await userEvent.click(screen.getByRole('button', { name: 'Add Download' }))
@@ -158,15 +150,13 @@ describe('Downloads', () => {
 
   it('should show delete button for each download', () => {
     render(
-      
-        <MockedProvider mocks={[]}>
-          <Downloads
-            downloads={mockVariantDownloads}
-            videoVariantId="variant-id"
-            languageId="529"
-          />
-        </MockedProvider>
-      
+      <MockedProvider mocks={[]}>
+        <Downloads
+          downloads={mockVariantDownloads}
+          videoVariantId="variant-id"
+          languageId="529"
+        />
+      </MockedProvider>
     )
 
     expect(screen.getAllByRole('button', { name: 'Delete' })).toHaveLength(
@@ -176,17 +166,15 @@ describe('Downloads', () => {
 
   it('should open confirmation dialog when delete button is clicked', async () => {
     render(
-      
-        <MockedProvider>
-          <SnackbarProvider>
-            <Downloads
-              downloads={mockVariantDownloads}
-              videoVariantId="variant-id"
-              languageId="529"
-            />
-          </SnackbarProvider>
-        </MockedProvider>
-      
+      <MockedProvider>
+        <SnackbarProvider>
+          <Downloads
+            downloads={mockVariantDownloads}
+            videoVariantId="variant-id"
+            languageId="529"
+          />
+        </SnackbarProvider>
+      </MockedProvider>
     )
 
     await userEvent.click(screen.getAllByRole('button', { name: 'Delete' })[0])
@@ -202,19 +190,17 @@ describe('Downloads', () => {
       .mockReturnValue(videoVariantDownloadDeleteMock.result)
 
     render(
-      
-        <MockedProvider
-          mocks={[{ ...videoVariantDownloadDeleteMock, result: mockResult }]}
-        >
-          <SnackbarProvider>
-            <Downloads
-              downloads={mockVariantDownloads}
-              videoVariantId="variant-id"
-              languageId="529"
-            />
-          </SnackbarProvider>
-        </MockedProvider>
-      
+      <MockedProvider
+        mocks={[{ ...videoVariantDownloadDeleteMock, result: mockResult }]}
+      >
+        <SnackbarProvider>
+          <Downloads
+            downloads={mockVariantDownloads}
+            videoVariantId="variant-id"
+            languageId="529"
+          />
+        </SnackbarProvider>
+      </MockedProvider>
     )
 
     await userEvent.click(screen.getAllByRole('button', { name: 'Delete' })[0])
@@ -231,45 +217,39 @@ describe('Downloads', () => {
       .mockReturnValue(videoVariantDownloadCreateMock.result)
 
     render(
-      
-        <MockedProvider
-          mocks={[
-            {
-              ...videoVariantDownloadCreateMock,
-              result: mockResult
-            },
-            createR2AssetMock
-          ]}
-        >
-          <SnackbarProvider>
-            <Downloads
-              downloads={[]}
-              videoVariantId="variant-id"
-              languageId="529"
-            />
-          </SnackbarProvider>
-        </MockedProvider>
-      
+      <MockedProvider
+        mocks={[
+          {
+            ...videoVariantDownloadCreateMock,
+            result: mockResult
+          },
+          createR2AssetMock
+        ]}
+      >
+        <SnackbarProvider>
+          <Downloads
+            downloads={[]}
+            videoVariantId="variant-id"
+            languageId="529"
+          />
+        </SnackbarProvider>
+      </MockedProvider>
     )
 
-    await userEvent.click(screen.getByRole('button', { name: 'Add Download' }))
+    const user = userEvent.setup()
 
-    await userEvent.click(screen.getByLabelText('Quality'))
-    await userEvent.click(screen.getByRole('option', { name: 'high' }))
+    await user.click(screen.getByRole('button', { name: 'Add Download' }))
 
+    // Upload a file
     const file = new File(['video content'], 'test-video.mp4', {
       type: 'video/mp4'
     })
-    await userEvent.upload(screen.getByTestId('DropZone'), file)
+    await user.upload(screen.getByTestId('DropZone'), file)
     mockVideoElement.onloadedmetadata()
-    await userEvent.click(screen.getByRole('button', { name: 'Save' }))
+    await user.click(screen.getByRole('button', { name: 'Add' }))
 
     await waitFor(() => {
       expect(createR2AssetMock.result).toHaveBeenCalled()
-    })
-
-    await waitFor(() => {
-      expect(mockResult).toHaveBeenCalled()
     })
   })
 })

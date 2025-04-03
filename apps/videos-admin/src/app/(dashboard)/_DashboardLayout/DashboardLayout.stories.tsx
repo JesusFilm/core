@@ -23,9 +23,7 @@ const meta: Meta<typeof DashboardLayout> = {
 }
 
 export default meta
-type Story = StoryObj<
-  ComponentProps<typeof DashboardLayout> & { locale: string }
->
+type Story = StoryObj<ComponentProps<typeof DashboardLayout>>
 
 export const Default: Story = {
   render: () => (
@@ -37,12 +35,9 @@ export const Default: Story = {
         photoURL: 'url-of-nameinghams-photo'
       }}
     >
-      
-        <DashboardLayout>
-          <div>Hello World</div>
-        </DashboardLayout>
-      
+      <DashboardLayout>
+        <div>Hello World</div>
+      </DashboardLayout>
     </AuthProvider>
-  ),
-  
+  )
 }
