@@ -222,9 +222,11 @@ export function Card({
 
     await Promise.all(submissionPromises)
       .then(() => {
-        enqueueSnackbar(t('Thank you for your response!'), {
-          variant: 'success'
-        })
+        if (submissionPromises.length > 0) {
+          enqueueSnackbar(t('Thank you for your response!'), {
+            variant: 'success'
+          })
+        }
       })
       .catch((e) => {
         if (e instanceof ApolloError)
