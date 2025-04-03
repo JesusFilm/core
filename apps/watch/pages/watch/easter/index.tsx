@@ -13,11 +13,11 @@ export default function EasterPage(): ReactElement {
   return (
     <>
       <NextSeo
+        nofollow
+        noindex
         titleTemplate="%s | Jesus Film Project"
         defaultTitle="Easter 2025 videos & resources about Lent, Holy Week, Resurrection | Jesus Film Project"
         description="Explore the other side of Easter — one filled with betrayal, hope, and a claim that changed the world."
-        nofollow
-        noindex
         openGraph={{
           title:
             'What If Everything You Thought About Easter Is Only Half the Story?',
@@ -31,6 +31,17 @@ export default function EasterPage(): ReactElement {
               alt: 'Easter - Jesus Film Project'
             }
           ]
+        }}
+        facebook={
+          process.env.NEXT_PUBLIC_FACEBOOK_APP_ID != null
+            ? {
+                appId: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID
+              }
+            : undefined
+        }
+        twitter={{
+          site: '@JesusFilm',
+          cardType: 'summary_large_image'
         }}
       />
       <SnackbarProvider>
