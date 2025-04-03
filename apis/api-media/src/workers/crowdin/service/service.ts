@@ -1,4 +1,3 @@
-import crowdin from '@crowdin/crowdin-api-client'
 import { Logger } from 'pino'
 
 import {
@@ -16,30 +15,13 @@ export async function service(logger?: Logger): Promise<void> {
   }
 
   try {
-    const credentials = {
-      token: process.env.CROWDIN_API_KEY
-    }
+    // Run all imports
+    await importVideoTitles()
+    await importVideoDescriptions()
+    await importStudyQuestions()
+    await importBibleBooks()
 
-    const { stringTranslationsApi, sourceStringsApi } = new crowdin(credentials)
-
-    const cleanup = [
-      await importVideoTitles(sourceStringsApi, stringTranslationsApi, logger),
-      await importVideoDescriptions(
-        sourceStringsApi,
-        stringTranslationsApi,
-        logger
-      ),
-      await importStudyQuestions(
-        sourceStringsApi,
-        stringTranslationsApi,
-        logger
-      ),
-      await importBibleBooks(sourceStringsApi, stringTranslationsApi, logger)
-    ]
-
-    // Run all cleanup functions
-    logger?.info('Running cleanup functions...')
-    cleanup.forEach((fn) => fn?.())
+    logger?.info('✅ Crowdin translation import completed')
   } catch (error: unknown) {
     if (error instanceof Error) {
       if (error.name === 'CrowdinValidationError') {

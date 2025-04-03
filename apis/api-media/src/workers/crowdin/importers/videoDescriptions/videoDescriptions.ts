@@ -1,41 +1,66 @@
-import { SourceStrings, StringTranslations } from '@crowdin/crowdin-api-client'
-import { Logger } from 'pino'
+import { z } from 'zod'
 
 import { prisma } from '../../../../lib/prisma'
 import { CROWDIN_CONFIG } from '../../config'
-import { getTranslationText, processFile } from '../../importer'
+import { processFile } from '../../importer'
 import { TranslationData } from '../../types'
-import {
-  clearVideoCache,
-  getFullVideoId,
-  initializeVideoCache,
-  isValidVideoId
-} from '../../utils/videoCache'
+import { getFullVideoId, isValidVideoId } from '../../utils/videoCache'
+
+const videoDescriptionSchema = z
+  .object({
+    identifier: z.string(),
+    text: z.string(),
+    languageCode: z.string()
+  })
+  .transform((data) => {
+    const databaseId = getFullVideoId(data.identifier)
+    if (!databaseId) throw new Error('Invalid video ID')
+
+    return {
+      videoId: databaseId,
+      languageId: data.languageCode,
+      value: data.text,
+      primary: false
+    }
+  })
 
 const missingVideos = new Set<string>()
 
 function validateVideoDescriptionData(data: TranslationData): boolean {
-  const crowdinId = data.sourceString.identifier
-  if (!crowdinId || !isValidVideoId(crowdinId)) {
-    if (crowdinId) {
-      missingVideos.add(crowdinId)
+  const identifier = data.sourceString.identifier
+  if (!identifier || !isValidVideoId(identifier)) {
+    if (identifier) {
+      missingVideos.add(identifier)
     }
     return false
   }
-  const databaseId = getFullVideoId(crowdinId)
+
+  if (!data.translation.text) {
+    return false
+  }
+
+  const languageId =
+    CROWDIN_CONFIG.languageCodes[
+      data.languageCode as keyof typeof CROWDIN_CONFIG.languageCodes
+    ]
+  if (!languageId) {
+    return false
+  }
+
+  const databaseId = getFullVideoId(identifier)
   if (!databaseId) {
-    if (crowdinId) {
-      missingVideos.add(crowdinId)
+    if (identifier) {
+      missingVideos.add(identifier)
     }
     return false
   }
+
   return true
 }
 
 async function upsertVideoDescriptionTranslation(
   data: TranslationData
 ): Promise<void> {
-  // Log missing videos summary when we're done processing
   if (missingVideos.size > 0) {
     console.warn('Videos do not exist in database', {
       count: missingVideos.size,
@@ -44,59 +69,32 @@ async function upsertVideoDescriptionTranslation(
     missingVideos.clear()
   }
 
-  const text = getTranslationText(data.translation)
-  if (!text) return
+  if (!validateVideoDescriptionData(data)) return
 
-  const languageId =
-    CROWDIN_CONFIG.languageCodes[
-      data.languageCode as keyof typeof CROWDIN_CONFIG.languageCodes
-    ]
-  if (!languageId) return
-
-  const crowdinId = data.sourceString.identifier
-  const databaseId = getFullVideoId(crowdinId)
-  if (!databaseId) return
+  const result = videoDescriptionSchema.parse({
+    identifier: data.sourceString.identifier,
+    text: data.translation.text,
+    languageCode:
+      CROWDIN_CONFIG.languageCodes[
+        data.languageCode as keyof typeof CROWDIN_CONFIG.languageCodes
+      ]
+  })
 
   await prisma.videoDescription.upsert({
     where: {
       videoId_languageId: {
-        videoId: databaseId,
-        languageId
+        videoId: result.videoId,
+        languageId: result.languageId
       }
     },
-    update: {
-      value: text
-    },
-    create: {
-      videoId: databaseId,
-      languageId,
-      value: text,
-      primary: false
-    }
+    update: result,
+    create: result
   })
 }
 
-export async function importVideoDescriptions(
-  sourceStringsApi: SourceStrings,
-  stringTranslationsApi: StringTranslations,
-  logger?: Logger
-): Promise<() => void> {
-  await initializeVideoCache(logger)
-
+export async function importVideoDescriptions(): Promise<void> {
   await processFile(
     CROWDIN_CONFIG.files.media_metadata_description,
-    upsertVideoDescriptionTranslation,
-    async (data) => {
-      for (const item of data) {
-        await upsertVideoDescriptionTranslation(item)
-      }
-    },
-    {
-      sourceStrings: sourceStringsApi,
-      stringTranslations: stringTranslationsApi
-    },
-    logger
+    upsertVideoDescriptionTranslation
   )
-
-  return () => clearVideoCache()
 }

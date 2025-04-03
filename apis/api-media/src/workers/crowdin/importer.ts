@@ -1,4 +1,7 @@
-import { SourceStrings, StringTranslations } from '@crowdin/crowdin-api-client'
+import crowdin, {
+  SourceStrings,
+  StringTranslations
+} from '@crowdin/crowdin-api-client'
 import { SourceStringsModel } from '@crowdin/crowdin-api-client/out/sourceStrings'
 import { Logger } from 'pino'
 
@@ -11,41 +14,67 @@ import {
   CrowdinTranslation,
   ProcessedTranslation,
   TranslationData,
-  createCrowdinApiError
+  createCrowdinApiError,
+  handleCrowdinError
 } from './types'
+
+if (!process.env.CROWDIN_API_KEY) {
+  throw new Error('Crowdin API key not set')
+}
+
+const credentials = {
+  token: process.env.CROWDIN_API_KEY
+}
+
+const { stringTranslationsApi, sourceStringsApi } = new crowdin(credentials)
+
+async function fetchPaginatedData<T>(
+  fetchPage: (
+    offset: number,
+    limit: number
+  ) => Promise<{ data: { data: T }[] }>,
+  limit = 500
+): Promise<T[]> {
+  let allData: T[] = []
+  let offset = 0
+
+  while (true) {
+    const response = await fetchPage(offset, limit)
+    allData = allData.concat(response.data.map((d) => d.data))
+    if (response.data.length < limit) break
+    offset += limit
+  }
+
+  return allData
+}
 
 export async function fetchSourceStrings(
   fileId: number,
-  api: SourceStrings
+  api: SourceStrings,
+  logger?: Logger
 ): Promise<Array<SourceStringsModel.String>> {
   try {
-    let allSourceStrings: unknown[] = []
-    let offset = 0
-    const limit = 500
-
-    while (true) {
-      const response = await api.listProjectStrings(CROWDIN_CONFIG.projectId, {
+    const allSourceStrings = await fetchPaginatedData((offset, limit) =>
+      api.listProjectStrings(CROWDIN_CONFIG.projectId, {
         fileId,
         limit,
         offset
       })
-
-      allSourceStrings = allSourceStrings.concat(
-        response.data.map((d) => d.data)
-      )
-
-      if (response.data.length < limit) {
-        break
-      }
-      offset += limit
-    }
+    )
 
     const { validStrings, invalidStrings } =
       parseSourceStrings(allSourceStrings)
 
     if (invalidStrings.length > 0) {
+      logger?.warn(
+        { invalid: invalidStrings.length, total: allSourceStrings.length },
+        'invalid source strings'
+      )
+    }
+
+    if (validStrings.length === 0) {
       throw createCrowdinApiError(
-        `Invalid source strings found: ${invalidStrings.map((s) => s.error).join(', ')}`,
+        'No valid source strings found',
         undefined,
         fileId
       )
@@ -64,88 +93,51 @@ export async function fetchSourceStrings(
 export async function fetchTranslations(
   languageCode: string,
   fileId: number,
-  api: StringTranslations
+  api: StringTranslations,
+  logger?: Logger
 ): Promise<CrowdinTranslation[]> {
   try {
-    let allTranslations: unknown[] = []
-    const limit = 500
-    let offset = 0
-
-    while (true) {
-      const translations = await api.listLanguageTranslations(
-        CROWDIN_CONFIG.projectId,
-        languageCode,
-        {
-          fileId,
-          limit,
-          offset
-        }
-      )
-
-      allTranslations = allTranslations.concat(
-        translations.data.map((t) => t.data)
-      )
-
-      if (translations.data.length < limit) {
-        break
-      }
-      offset += limit
-    }
+    const allTranslations = await fetchPaginatedData((offset, limit) =>
+      api.listLanguageTranslations(CROWDIN_CONFIG.projectId, languageCode, {
+        fileId,
+        limit,
+        offset
+      })
+    )
 
     const { validTranslations, invalidTranslations } =
       parseTranslations(allTranslations)
 
     if (invalidTranslations.length > 0) {
-      throw createCrowdinApiError(
-        `Invalid translations found: ${invalidTranslations.map((t) => t.error).join(', ')}`,
-        undefined,
-        fileId,
-        languageCode
+      logger?.warn(
+        { invalid: invalidTranslations.length, total: allTranslations.length },
+        'invalid translations'
       )
     }
 
     return validTranslations as CrowdinTranslation[]
   } catch (error) {
-    if (
-      error instanceof Error &&
-      'code' in error &&
-      (error as any).code === 404
-    ) {
-      throw createCrowdinApiError(
-        `Language ${languageCode} not configured in project`,
-        404,
-        fileId,
-        languageCode
-      )
-    }
-    throw createCrowdinApiError(
-      `Failed to fetch translations: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      undefined,
-      fileId,
-      languageCode
-    )
+    handleCrowdinError(error, fileId, languageCode)
   }
 }
 
-export async function processTranslations(
+export function processTranslations(
   translations: CrowdinTranslation[],
   sourceStringMap: Map<number, SourceStringsModel.String>,
   languageCode: string,
   validateData: (data: TranslationData) => boolean
-): Promise<ProcessedTranslation[]> {
-  const validTranslations: ProcessedTranslation[] = []
+): ProcessedTranslation[] {
+  return translations
+    .map((translation) => {
+      const sourceString = sourceStringMap.get(translation.stringId)
+      if (!sourceString) return null
 
-  for (const translation of translations) {
-    const sourceString = sourceStringMap.get(translation.stringId)
-    if (!sourceString) continue
+      const data = { sourceString, translation, languageCode }
+      if (!validateData(data)) return null
 
-    const data = { sourceString, translation, languageCode }
-    if (!validateData(data)) continue
-
-    validTranslations.push(data)
-  }
-
-  return validTranslations
+      return data
+    })
+    .filter((data): data is ProcessedTranslation => data !== null)
 }
 
 export async function processLanguage(
@@ -157,79 +149,47 @@ export async function processLanguage(
   apis: CrowdinApis,
   logger?: Logger
 ): Promise<void> {
-  logger?.info(`Fetching translations for ${languageCode}`)
-
   try {
     const translations = await fetchTranslations(
       languageCode,
       file.id,
-      apis.stringTranslations
-    )
-    logger?.info(
-      { count: translations.length, languageCode },
-      'Total translations fetched'
+      apis.stringTranslations,
+      logger
     )
 
-    if (translations.length > 0) {
-      logger?.info('Processing translations...')
-      const validTranslations = await processTranslations(
-        translations,
-        sourceStringMap,
-        languageCode,
-        validateData
-      )
+    if (translations.length === 0) return
 
-      logger?.info(
-        { count: validTranslations.length },
-        'Found valid translations to upsert'
-      )
+    const validTranslations = processTranslations(
+      translations,
+      sourceStringMap,
+      languageCode,
+      validateData
+    )
 
-      if (validTranslations.length > 0) {
-        for (const data of validTranslations) {
-          await upsertTranslation(data)
-        }
-        logger?.info(
-          `Successfully upserted ${validTranslations.length} translations`
-        )
-      } else {
-        logger?.warn('No valid translations to upsert')
-      }
+    if (validTranslations.length === 0) return
+
+    for (const data of validTranslations) {
+      await upsertTranslation(data)
     }
+
+    logger?.info(
+      { processed: validTranslations.length },
+      'translations processed'
+    )
   } catch (error) {
     if (
       error instanceof Error &&
       'code' in error &&
       (error as any).code === 404
-    ) {
-      logger?.warn(`Language ${languageCode} not configured in project`)
+    )
       return
-    }
     throw error
   }
-}
-
-export function getTranslationText(
-  translation: CrowdinTranslation
-): string | undefined {
-  if ('text' in translation && typeof translation.text === 'string') {
-    return translation.text
-  } else if (
-    'plurals' in translation &&
-    translation.plurals &&
-    typeof translation.plurals === 'object' &&
-    'one' in translation.plurals &&
-    typeof translation.plurals.one === 'string'
-  ) {
-    return translation.plurals.one
-  }
-  return undefined
 }
 
 export async function processFile(
   file: ArclightFile,
   importOne: (data: TranslationData) => Promise<void>,
-  importMany: (data: TranslationData[]) => Promise<void>,
-  apis: CrowdinApis,
   parentLogger?: Logger
 ): Promise<void> {
   const logger = parentLogger?.child({
@@ -240,53 +200,48 @@ export async function processFile(
   const errors: CrowdinError[] = []
 
   try {
-    const sourceStrings = await fetchSourceStrings(file.id, apis.sourceStrings)
-    if (sourceStrings.length === 0) {
-      logger?.info('❌ No strings found to translate')
-      return
-    }
-
-    logger?.info(
-      { count: sourceStrings.length, fileName: file.name },
-      'Found strings in file'
+    const sourceStrings = await fetchSourceStrings(
+      file.id,
+      sourceStringsApi,
+      logger
     )
-    const sourceStringMap = new Map(sourceStrings.map((str) => [str.id, str]))
+    if (sourceStrings.length === 0) return
 
+    const sourceStringMap = new Map(sourceStrings.map((str) => [str.id, str]))
     let page = 0
+
     for (const languageCode of Object.keys(CROWDIN_CONFIG.languageCodes)) {
       try {
         const translations = await fetchTranslations(
           languageCode,
           file.id,
-          apis.stringTranslations
+          stringTranslationsApi,
+          logger
         )
 
-        if (translations.length > 0) {
-          page++
-          logger?.info(
-            { page, translations: translations.length, languageCode },
-            'importing language batch'
-          )
+        if (translations.length === 0) continue
 
-          const validTranslations = await processTranslations(
-            translations,
-            sourceStringMap,
-            languageCode,
-            () => true
-          )
+        page++
+        logger?.info({ page, rows: translations.length }, 'importing page')
 
-          if (validTranslations.length > 0) {
-            try {
-              await importMany(validTranslations)
-            } catch (error) {
-              if (error instanceof Error) {
-                errors.push({
-                  fileId: file.id,
-                  languageCode,
-                  message: error.message
-                })
-              }
+        const validTranslations = processTranslations(
+          translations,
+          sourceStringMap,
+          languageCode,
+          () => true
+        )
+
+        if (validTranslations.length > 0) {
+          try {
+            for (const data of validTranslations) {
+              await importOne(data)
             }
+          } catch (error) {
+            errors.push({
+              fileId: file.id,
+              languageCode,
+              message: error instanceof Error ? error.message : 'Unknown error'
+            })
           }
         }
       } catch (error) {
@@ -295,8 +250,7 @@ export async function processFile(
           'code' in error &&
           (error as any).code === 404
         ) {
-          // Skip 404 errors (language not configured)
-          continue
+          continue // Skip 404 errors (language not configured)
         }
         errors.push({
           fileId: file.id,
@@ -309,12 +263,13 @@ export async function processFile(
     if (errors.length > 0) {
       logger?.error({ errors }, 'file import finished with errors')
     } else {
-      logger?.info('file import finished successfully')
+      logger?.info('file import finished')
     }
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'Unknown error'
-    logger?.error({ error: errorMessage }, 'file import failed')
+    logger?.error(
+      { error: error instanceof Error ? error.message : 'Unknown error' },
+      'file import failed'
+    )
     throw error
   }
 }

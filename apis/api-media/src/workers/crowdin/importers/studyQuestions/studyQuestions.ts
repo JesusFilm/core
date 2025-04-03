@@ -1,30 +1,56 @@
-import { SourceStrings, StringTranslations } from '@crowdin/crowdin-api-client'
-import { Logger } from 'pino'
+import { z } from 'zod'
 
 import { prisma } from '../../../../lib/prisma'
 import { CROWDIN_CONFIG } from '../../config'
-import { getTranslationText, processFile } from '../../importer'
+import { processFile } from '../../importer'
 import { TranslationData } from '../../types'
 
 const questionMap = new Map<string, Array<{ videoId: string; order: number }>>()
 const missingQuestions = new Set<string>()
 
-export function getQuestionData(
+const studyQuestionSchema = z
+  .object({
+    identifier: z.string(),
+    text: z.string(),
+    languageCode: z.string(),
+    context: z.string().optional()
+  })
+  .transform((data) => {
+    const questionId = getQuestionId({
+      sourceString: { context: data.context }
+    } as TranslationData)
+    if (!questionId) throw new Error('Missing question ID')
+
+    const questions = getQuestionData(questionId)
+    if (!questions || questions.length === 0)
+      throw new Error('Question not found')
+
+    return questions.map(({ videoId, order }) => ({
+      videoId,
+      languageId: data.languageCode,
+      order,
+      value: data.text,
+      primary: false,
+      crowdInId: questionId
+    }))
+  })
+
+function getQuestionData(
   questionId: string
 ): Array<{ videoId: string; order: number }> | undefined {
   return questionMap.get(questionId)
 }
 
-export function hasQuestion(questionId: string): boolean {
+function hasQuestion(questionId: string): boolean {
   return questionMap.has(questionId)
 }
 
-export function clearState(): void {
+function clearState(): void {
   questionMap.clear()
   missingQuestions.clear()
 }
 
-async function initializeQuestionMap(logger?: Logger): Promise<void> {
+async function initializeQuestionMap(): Promise<void> {
   const questions = await prisma.videoStudyQuestion.findMany({
     select: {
       videoId: true,
@@ -47,8 +73,6 @@ async function initializeQuestionMap(logger?: Logger): Promise<void> {
       { videoId, order }
     ])
   })
-
-  logger?.info({ count: questions.length }, 'Found existing study questions')
 }
 
 function getQuestionId(data: TranslationData): string | undefined {
@@ -60,85 +84,69 @@ function getQuestionId(data: TranslationData): string | undefined {
   return firstLine
 }
 
-async function upsertStudyQuestionTranslation(
-  data: TranslationData
-): Promise<void> {
-  const text = getTranslationText(data.translation)
-  if (!text) return
+function validateStudyQuestionData(data: TranslationData): boolean {
+  if (!data.translation.text) {
+    return false
+  }
 
   const languageId =
     CROWDIN_CONFIG.languageCodes[
       data.languageCode as keyof typeof CROWDIN_CONFIG.languageCodes
     ]
-  if (!languageId) return
-
-  const questionId = getQuestionId(data)
-  if (!questionId) return
-
-  if (!hasQuestion(questionId)) {
-    missingQuestions.add(questionId)
-    return
+  if (!languageId) {
+    return false
   }
 
-  const questions = getQuestionData(questionId)
-  if (!questions || questions.length === 0) return
+  const questionId = getQuestionId(data)
+  if (!questionId || !hasQuestion(questionId)) {
+    if (questionId) {
+      missingQuestions.add(questionId)
+    }
+    return false
+  }
 
-  // Since we have the data in our cache, we can use it directly
+  return true
+}
+
+async function upsertStudyQuestionTranslation(
+  data: TranslationData
+): Promise<void> {
+  if (!validateStudyQuestionData(data)) return
+
+  const result = studyQuestionSchema.parse({
+    identifier: data.sourceString.identifier,
+    text: data.translation.text,
+    languageCode:
+      CROWDIN_CONFIG.languageCodes[
+        data.languageCode as keyof typeof CROWDIN_CONFIG.languageCodes
+      ],
+    context: data.sourceString.context
+  })
+
   await Promise.all(
-    questions.map(({ videoId, order }) =>
+    result.map((question) =>
       prisma.videoStudyQuestion.upsert({
         where: {
           videoId_languageId_order: {
-            videoId,
-            languageId,
-            order
+            videoId: question.videoId,
+            languageId: question.languageId,
+            order: question.order
           }
         },
-        update: {
-          value: text
-        },
-        create: {
-          videoId,
-          languageId,
-          order,
-          value: text,
-          primary: false,
-          crowdInId: questionId
-        }
+        update: question,
+        create: question
       })
     )
   )
 }
 
-export async function importStudyQuestions(
-  sourceStringsApi: SourceStrings,
-  stringTranslationsApi: StringTranslations,
-  logger?: Logger
-): Promise<() => void> {
-  await initializeQuestionMap(logger)
+export async function importStudyQuestions(): Promise<void> {
+  await initializeQuestionMap()
 
   await processFile(
     CROWDIN_CONFIG.files.study_questions,
-    upsertStudyQuestionTranslation,
-    async (data) => {
-      for (const item of data) {
-        await upsertStudyQuestionTranslation(item)
-      }
-    },
-    {
-      sourceStrings: sourceStringsApi,
-      stringTranslations: stringTranslationsApi
-    },
-    logger
+    upsertStudyQuestionTranslation
   )
 
-  // Log missing questions summary after all processing is complete
-  if (missingQuestions.size > 0) {
-    logger?.warn('Questions do not exist in database', {
-      count: missingQuestions.size,
-      questions: Array.from(missingQuestions)
-    })
-  }
-
-  return () => clearState()
+  clearState()
 }

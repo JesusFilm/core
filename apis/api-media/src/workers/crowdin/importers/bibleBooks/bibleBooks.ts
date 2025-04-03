@@ -1,76 +1,68 @@
-import { SourceStrings, StringTranslations } from '@crowdin/crowdin-api-client'
-import { Logger } from 'pino'
+import { z } from 'zod'
 
 import { prisma } from '../../../../lib/prisma'
 import { CROWDIN_CONFIG } from '../../config'
-import { getTranslationText, processFile } from '../../importer'
+import { processFile } from '../../importer'
 import { TranslationData } from '../../types'
-import {
-  clearBibleBooks,
-  hasBook,
-  initializeBibleBooks
-} from '../../utils/bibleBooksCache'
+
+const bibleBookSchema = z
+  .object({
+    identifier: z.string(),
+    text: z.string(),
+    languageCode: z.string()
+  })
+  .transform((data) => ({
+    bibleBookId: data.identifier,
+    languageId: data.languageCode,
+    value: data.text,
+    primary: false
+  }))
 
 function validateBibleBookData(data: TranslationData): boolean {
-  const bookId = data.sourceString.identifier
-  if (!bookId || !hasBook(bookId)) {
+  if (!data.translation.text) {
     return false
   }
+
+  const languageId =
+    CROWDIN_CONFIG.languageCodes[
+      data.languageCode as keyof typeof CROWDIN_CONFIG.languageCodes
+    ]
+  if (!languageId) {
+    return false
+  }
+
   return true
 }
 
 async function upsertBibleBookTranslation(
   data: TranslationData
 ): Promise<void> {
-  const text = getTranslationText(data.translation)
-  if (!text) return
+  if (!validateBibleBookData(data)) return
 
-  const languageId =
-    CROWDIN_CONFIG.languageCodes[
-      data.languageCode as keyof typeof CROWDIN_CONFIG.languageCodes
-    ]
-  if (!languageId) return
+  const result = bibleBookSchema.parse({
+    identifier: data.sourceString.identifier,
+    text: data.translation.text,
+    languageCode:
+      CROWDIN_CONFIG.languageCodes[
+        data.languageCode as keyof typeof CROWDIN_CONFIG.languageCodes
+      ]
+  })
 
   await prisma.bibleBookName.upsert({
     where: {
       bibleBookId_languageId: {
-        bibleBookId: data.sourceString.identifier,
-        languageId
+        bibleBookId: result.bibleBookId,
+        languageId: result.languageId
       }
     },
-    update: {
-      value: text
-    },
-    create: {
-      bibleBookId: data.sourceString.identifier,
-      languageId,
-      value: text,
-      primary: false
-    }
+    update: result,
+    create: result
   })
 }
 
-export async function importBibleBooks(
-  sourceStringsApi: SourceStrings,
-  stringTranslationsApi: StringTranslations,
-  logger?: Logger
-): Promise<() => void> {
-  await initializeBibleBooks()
-
+export async function importBibleBooks(): Promise<void> {
   await processFile(
     CROWDIN_CONFIG.files.bible_books,
-    upsertBibleBookTranslation,
-    async (data) => {
-      for (const item of data) {
-        await upsertBibleBookTranslation(item)
-      }
-    },
-    {
-      sourceStrings: sourceStringsApi,
-      stringTranslations: stringTranslationsApi
-    },
-    logger
+    upsertBibleBookTranslation
   )
-
-  return () => clearBibleBooks()
 }

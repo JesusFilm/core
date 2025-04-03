@@ -25,10 +25,33 @@ export function createCrowdinApiError(
   return error
 }
 
+export function handleCrowdinError(
+  error: unknown,
+  fileId?: number,
+  languageCode?: string
+): never {
+  if (
+    error instanceof Error &&
+    'code' in error &&
+    (error as any).code === 404
+  ) {
+    throw createCrowdinApiError(
+      `Language ${languageCode} not configured in project`,
+      404,
+      fileId,
+      languageCode
+    )
+  }
+  throw createCrowdinApiError(
+    `Failed to fetch translations: ${error instanceof Error ? error.message : 'Unknown error'}`,
+    undefined,
+    fileId,
+    languageCode
+  )
+}
+
 export type CrowdinTranslation =
-  | StringTranslationsModel.PlainLanguageTranslation
-  | StringTranslationsModel.PluralLanguageTranslation
-  | StringTranslationsModel.IcuLanguageTranslation
+  StringTranslationsModel.PlainLanguageTranslation
 
 export interface ArclightFile {
   id: number

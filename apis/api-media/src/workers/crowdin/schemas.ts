@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const plainTranslationSchema = z.object({
+export const translationSchema = z.object({
   stringId: z.number(),
   contentType: z.literal('text/plain'),
   translationId: z.number().optional(),
@@ -14,43 +14,6 @@ export const plainTranslationSchema = z.object({
   createdAt: z.string(),
   updatedAt: z.string().nullable().optional()
 })
-
-export const pluralTranslationSchema = z.object({
-  stringId: z.number(),
-  contentType: z.literal('application/x-gettext-plural'),
-  plurals: z.object({
-    one: z.string(),
-    other: z.string()
-  }),
-  user: z.object({
-    id: z.number(),
-    username: z.string(),
-    fullName: z.string().optional(),
-    avatarUrl: z.string().optional()
-  }),
-  createdAt: z.string(),
-  updatedAt: z.string().nullable().optional()
-})
-
-export const icuTranslationSchema = z.object({
-  stringId: z.number(),
-  contentType: z.literal('text/icu'),
-  text: z.string(),
-  user: z.object({
-    id: z.number(),
-    username: z.string(),
-    fullName: z.string().optional(),
-    avatarUrl: z.string().optional()
-  }),
-  createdAt: z.string(),
-  updatedAt: z.string().nullable().optional()
-})
-
-export const translationSchema = z.discriminatedUnion('contentType', [
-  plainTranslationSchema,
-  pluralTranslationSchema,
-  icuTranslationSchema
-])
 
 export const sourceStringSchema = z.object({
   id: z.number(),
@@ -93,8 +56,8 @@ export function parseProcessedTranslation(data: unknown) {
 }
 
 export function parseTranslations(data: unknown[]) {
-  const validTranslations: z.infer<typeof translationSchema>[] = []
-  const invalidTranslations: { id: number; error: string }[] = []
+  const validTranslations = []
+  const invalidTranslations = []
 
   for (const item of data) {
     const result = translationSchema.safeParse(item)
@@ -112,8 +75,8 @@ export function parseTranslations(data: unknown[]) {
 }
 
 export function parseSourceStrings(data: unknown[]) {
-  const validStrings: z.infer<typeof sourceStringSchema>[] = []
-  const invalidStrings: { id: number; error: string }[] = []
+  const validStrings = []
+  const invalidStrings = []
 
   for (const item of data) {
     const result = sourceStringSchema.safeParse(item)
