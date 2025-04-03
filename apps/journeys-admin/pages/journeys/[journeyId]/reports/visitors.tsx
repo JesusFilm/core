@@ -104,7 +104,7 @@ function JourneyVisitorsPage(): ReactElement {
     router.query.withSubmittedText === 'true'
   )
   const [withIcon, setWithIcon] = useState(false)
-  const [hideInteractive, setHideInterActive] = useState(false)
+  const [hideInteractive, setHideInterActive] = useState(true)
   const [sortSetting, setSortSetting] = useState<'date' | 'duration'>('date')
 
   const { fetchMore, loading } = useQuery<GetJourneyVisitors>(
@@ -178,7 +178,7 @@ function JourneyVisitorsPage(): ReactElement {
     setWithPollAnswers(false)
     setWithSubmittedText(false)
     setWithIcon(false)
-    setHideInterActive(false)
+    setHideInterActive(true)
     setSortSetting('date')
   }
 
