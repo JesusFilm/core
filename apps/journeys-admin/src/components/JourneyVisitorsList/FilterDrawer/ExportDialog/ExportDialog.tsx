@@ -39,12 +39,14 @@ function DateRangePicker({
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Stack direction="row" spacing={2}>
         <DateField
+          size="small"
           label={t('Start Date')}
           value={startDate}
           onChange={onStartDateChange}
           format="dd-MM-yyyy"
         />
         <DateField
+          size="small"
           label={t('End Date')}
           value={endDate}
           onChange={onEndDateChange}
@@ -202,6 +204,16 @@ export function ExportDialog({
         closeButton: true
       }}
       divider
+      dialogActionChildren={
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={handleExport}
+          disabled={getSelectedEvents().length === 0}
+        >
+          {t('Export (CSV)')}
+        </Button>
+      }
     >
       <Box sx={{ px: 4 }}>
         <Box sx={{ pb: 2 }}>
@@ -392,16 +404,6 @@ export function ExportDialog({
             </Box>
           </FormGroup>
         </Stack>
-      </Box>
-      <Box sx={{ p: 4, display: 'flex', justifyContent: 'flex-end' }}>
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={handleExport}
-          disabled={getSelectedEvents().length === 0}
-        >
-          {t('Export (CSV)')}
-        </Button>
       </Box>
     </Dialog>
   )
