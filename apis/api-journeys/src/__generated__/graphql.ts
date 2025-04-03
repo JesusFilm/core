@@ -2750,6 +2750,7 @@ export type Query = {
   journeyCollection: JourneyCollection;
   journeyCollections: Array<Maybe<JourneyCollection>>;
   journeyEventsConnection: JourneyEventsConnection;
+  journeyEventsCount: Scalars['Int']['output'];
   /** Get a JourneyVisitor count by JourneyVisitorFilter */
   journeyVisitorCount: Scalars['Int']['output'];
   /** Get a list of Visitor Information by Journey */
@@ -2952,6 +2953,12 @@ export type QueryJourneyEventsConnectionArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   filter?: InputMaybe<JourneyEventsFilter>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  journeyId: Scalars['ID']['input'];
+};
+
+
+export type QueryJourneyEventsCountArgs = {
+  filter?: InputMaybe<JourneyEventsFilter>;
   journeyId: Scalars['ID']['input'];
 };
 
