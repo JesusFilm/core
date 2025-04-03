@@ -79,9 +79,10 @@ export function ExportDialog({
   // Individual checkbox states
   const [journeyView, setJourneyView] = useState(true)
   const [chatOpened, setChatOpened] = useState(true)
+  const [textSubmission, setTextSubmission] = useState(true)
   const [pollOptions, setPollOptions] = useState(true)
   const [buttonClicks, setButtonClicks] = useState(true)
-  const [submittedText, setSubmittedText] = useState(true)
+  const [subscription, setSubscription] = useState(true)
   const [videoEvents, setVideoEvents] = useState<VideoEventsState>({
     start: true,
     play: true,
@@ -101,7 +102,7 @@ export function ExportDialog({
   const [videoEventsParent, setVideoEventsParent] = useState(true)
 
   // Add state for video events collapse
-  const [videoEventsExpanded, setVideoEventsExpanded] = useState(true)
+  const [videoEventsExpanded, setVideoEventsExpanded] = useState(false)
 
   // Handle individual video event changes
   const handleVideoEventChange = (event: string, checked: boolean): void => {
@@ -140,9 +141,10 @@ export function ExportDialog({
     setSelectAll(checked)
     setJourneyView(checked)
     setChatOpened(checked)
+    setTextSubmission(checked)
     setPollOptions(checked)
     setButtonClicks(checked)
-    setSubmittedText(checked)
+    setSubscription(checked)
     handleVideoEventsParentChange(checked)
   }
 
@@ -151,18 +153,20 @@ export function ExportDialog({
     const allSelected =
       journeyView &&
       chatOpened &&
+      textSubmission &&
       pollOptions &&
       buttonClicks &&
-      submittedText &&
+      subscription &&
       allVideoEventsSelected
 
     setSelectAll(allSelected)
   }, [
     journeyView,
     chatOpened,
+    textSubmission,
     pollOptions,
     buttonClicks,
-    submittedText,
+    subscription,
     allVideoEventsSelected
   ])
 
@@ -172,12 +176,10 @@ export function ExportDialog({
 
     if (journeyView) events.push(EventType.JourneyViewEvent)
     if (chatOpened) events.push(EventType.ChatOpenEvent)
+    if (textSubmission) events.push(EventType.TextResponseSubmissionEvent)
     if (pollOptions) events.push(EventType.RadioQuestionSubmissionEvent)
     if (buttonClicks) events.push(EventType.ButtonClickEvent)
-    if (submittedText) {
-      events.push(EventType.SignUpSubmissionEvent)
-      events.push(EventType.TextResponseSubmissionEvent)
-    }
+    if (subscription) events.push(EventType.SignUpSubmissionEvent)
     if (videoEvents.start) events.push(EventType.VideoStartEvent)
     if (videoEvents.play) events.push(EventType.VideoPlayEvent)
     if (videoEvents.pause) events.push(EventType.VideoPauseEvent)
@@ -236,7 +238,7 @@ export function ExportDialog({
                   onChange={(e) => setJourneyView(e.target.checked)}
                 />
               }
-              label={t('Journey View')}
+              label={t('Journey Start')}
             />
             <FormControlLabel
               control={
@@ -245,7 +247,16 @@ export function ExportDialog({
                   onChange={(e) => setChatOpened(e.target.checked)}
                 />
               }
-              label={t('Chat Opened')}
+              label={t('Chat Open')}
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={textSubmission}
+                  onChange={(e) => setTextSubmission(e.target.checked)}
+                />
+              }
+              label={t('Text Submission')}
             />
             <FormControlLabel
               control={
@@ -254,7 +265,7 @@ export function ExportDialog({
                   onChange={(e) => setPollOptions(e.target.checked)}
                 />
               }
-              label={t('Poll options')}
+              label={t('Poll Selection')}
             />
             <FormControlLabel
               control={
@@ -263,16 +274,16 @@ export function ExportDialog({
                   onChange={(e) => setButtonClicks(e.target.checked)}
                 />
               }
-              label={t('Button Clicks')}
+              label={t('Button Click')}
             />
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={submittedText}
-                  onChange={(e) => setSubmittedText(e.target.checked)}
+                  checked={subscription}
+                  onChange={(e) => setSubscription(e.target.checked)}
                 />
               }
-              label={t('Submitted text')}
+              label={t('Subscription')}
             />
             <Box>
               <Box
@@ -305,7 +316,7 @@ export function ExportDialog({
                         }}
                       />
                     }
-                    label={t('Video Events')}
+                    label={t('Video Interaction')}
                     onClick={(e) => e.stopPropagation()}
                   />
                   <IconButton size="small" sx={{ pointerEvents: 'none' }}>
@@ -382,9 +393,15 @@ export function ExportDialog({
           </FormGroup>
         </Stack>
       </Box>
-      <Button variant="contained" onClick={handleExport} sx={{ width: '100%' }}>
-        {t('Export (CSV)')}
-      </Button>
+      <Box sx={{ p: 4, display: 'flex', justifyContent: 'flex-end' }}>
+        <Button
+          variant="contained"
+          onClick={handleExport}
+          disabled={getSelectedEvents().length === 0}
+        >
+          {t('Export (CSV)')}
+        </Button>
+      </Box>
     </Dialog>
   )
 }
