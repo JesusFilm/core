@@ -196,7 +196,7 @@ export function Card({
       const blockId = block.id
       const responseValue = values[blockId]
 
-      if (!responseValue || responseValue === '') return Promise.resolve(null)
+      if (!responseValue || responseValue === '') return null
 
       const id = uuidv4()
       return textResponseSubmissionEventCreate({
@@ -220,9 +220,14 @@ export function Card({
       })
     })
 
+    console.log('submissionPromises', submissionPromises)
+
     await Promise.all(submissionPromises)
       .then(() => {
-        if (submissionPromises.length > 0) {
+        const areAllPromisesNull = submissionPromises.every(
+          (promise) => promise === null
+        )
+        if (areAllPromisesNull === false) {
           enqueueSnackbar(t('Thank you for your response!'), {
             variant: 'success'
           })
