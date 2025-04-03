@@ -43,7 +43,7 @@ export const WithSettings: Story = {
   parameters: {
     nextjs: {
       navigation: {
-        pathname: '/en/settings',
+        pathname: '/settings',
         segments: [['locale', 'en']]
       }
     }
@@ -55,7 +55,7 @@ export const WithVideos: Story = {
   parameters: {
     nextjs: {
       navigation: {
-        pathname: '/en/videos',
+        pathname: '/videos',
         segments: [['locale', 'en']]
       }
     }
@@ -67,7 +67,7 @@ export const WithVideosAndId: Story = {
   parameters: {
     nextjs: {
       navigation: {
-        pathname: '/en/videos/1_jf-0-0',
+        pathname: '/videos/1_jf-0-0',
         segments: [
           ['locale', 'en'],
           ['videoId', '1_jf-0-0']

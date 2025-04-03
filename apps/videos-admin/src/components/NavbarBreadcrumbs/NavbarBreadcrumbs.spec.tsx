@@ -14,7 +14,7 @@ describe('NavbarBreadcrumbs', () => {
   beforeEach(() => jest.clearAllMocks())
 
   it('should show home breadcrumb', async () => {
-    mockedUsePathname.mockReturnValue('/en/videos')
+    mockedUsePathname.mockReturnValue('/')
     render(<NavbarBreadcrumbs />)
 
     expect(screen.getByTestId('HomeRoundedIcon')).toBeInTheDocument()
@@ -22,7 +22,7 @@ describe('NavbarBreadcrumbs', () => {
   })
 
   it('should show icon and values for existing breadcrumbs', async () => {
-    mockedUsePathname.mockReturnValue('/en/videos')
+    mockedUsePathname.mockReturnValue('/videos')
     render(<NavbarBreadcrumbs />)
 
     expect(screen.getByTestId('VideoLibraryRoundedIcon')).toBeInTheDocument()
@@ -30,7 +30,7 @@ describe('NavbarBreadcrumbs', () => {
   })
 
   it('should handle routes that are not predefined', async () => {
-    mockedUsePathname.mockReturnValue('/en/random')
+    mockedUsePathname.mockReturnValue('/random')
     render(<NavbarBreadcrumbs />)
 
     expect(screen.getByText('Random')).toBeInTheDocument()
