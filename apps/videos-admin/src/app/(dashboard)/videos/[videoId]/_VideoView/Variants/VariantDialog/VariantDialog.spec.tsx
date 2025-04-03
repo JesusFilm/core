@@ -1,6 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen } from '@testing-library/react'
-import { NextIntlClientProvider } from 'next-intl'
 
 import { GetAdminVideoVariant } from '../../../../../../../libs/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
@@ -18,11 +17,11 @@ const variant: GetAdminVideoVariant =
 describe('VariantDialog', () => {
   it('should show variant information', () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider>
           <VariantDialog variant={variant} open />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     expect(
@@ -39,11 +38,11 @@ describe('VariantDialog', () => {
     const handleClose = jest.fn()
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider>
           <VariantDialog variant={variant} open handleClose={handleClose} />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     fireEvent.click(screen.getByTestId('dialog-close-button'))

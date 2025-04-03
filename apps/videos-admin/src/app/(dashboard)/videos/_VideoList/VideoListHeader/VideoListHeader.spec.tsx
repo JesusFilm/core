@@ -1,7 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { NextIntlClientProvider } from 'next-intl'
 
 import { VideoListHeader } from './VideoListHeader'
 
@@ -15,9 +14,9 @@ jest.mock('next/navigation', () => ({
 describe('VideoListHeader', () => {
   it('should render', () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <VideoListHeader />
-      </NextIntlClientProvider>
+      
     )
 
     expect(screen.getByText('Video Library')).toBeInTheDocument()
@@ -26,11 +25,11 @@ describe('VideoListHeader', () => {
 
   it('should show create form when button is clicked', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider>
           <VideoListHeader />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()

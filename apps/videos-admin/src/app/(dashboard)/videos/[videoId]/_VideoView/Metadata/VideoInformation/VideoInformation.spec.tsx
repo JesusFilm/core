@@ -1,7 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { NextIntlClientProvider } from 'next-intl'
 
 import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
@@ -77,9 +76,9 @@ describe('VideoInformation', () => {
   it('should show disabled save button if values not changed', () => {
     render(
       <MockedProvider>
-        <NextIntlClientProvider locale="en">
+        
           <VideoInformation video={mockVideo} />
-        </NextIntlClientProvider>
+        
       </MockedProvider>
     )
 
@@ -89,9 +88,9 @@ describe('VideoInformation', () => {
   it('should enable save button if title field has been changed', async () => {
     render(
       <MockedProvider>
-        <NextIntlClientProvider locale="en">
+        
           <VideoInformation video={mockVideo} />
-        </NextIntlClientProvider>
+        
       </MockedProvider>
     )
 
@@ -111,9 +110,9 @@ describe('VideoInformation', () => {
   it('should enable save button if status has been changed', async () => {
     render(
       <MockedProvider>
-        <NextIntlClientProvider locale="en">
+        
           <VideoInformation video={mockVideo} />
-        </NextIntlClientProvider>
+        
       </MockedProvider>
     )
 
@@ -133,9 +132,9 @@ describe('VideoInformation', () => {
   it('should enable form buttons if label has been changed', async () => {
     render(
       <MockedProvider>
-        <NextIntlClientProvider locale="en">
+        
           <VideoInformation video={mockVideo} />
-        </NextIntlClientProvider>
+        
       </MockedProvider>
     )
 
@@ -157,9 +156,9 @@ describe('VideoInformation', () => {
       <MockedProvider
         mocks={[mockCreateVideoTitle, mockUpdateVideoInformation]}
       >
-        <NextIntlClientProvider locale="en">
+        
           <VideoInformation video={{ ...mockVideo, title: [] }} />
-        </NextIntlClientProvider>
+        
       </MockedProvider>
     )
 
@@ -180,9 +179,9 @@ describe('VideoInformation', () => {
   it('should update video information on submit', async () => {
     render(
       <MockedProvider mocks={[mockUpdateVideoInformation]}>
-        <NextIntlClientProvider locale="en">
+        
           <VideoInformation video={mockVideo} />
-        </NextIntlClientProvider>
+        
       </MockedProvider>
     )
 
@@ -204,9 +203,9 @@ describe('VideoInformation', () => {
   it('should require title field', async () => {
     render(
       <MockedProvider>
-        <NextIntlClientProvider locale="en">
+        
           <VideoInformation video={mockVideo} />
-        </NextIntlClientProvider>
+        
       </MockedProvider>
     )
 
@@ -224,9 +223,9 @@ describe('VideoInformation', () => {
   it('should reset form when cancel button is clicked', async () => {
     render(
       <MockedProvider>
-        <NextIntlClientProvider locale="en">
+        
           <VideoInformation video={mockVideo} />
-        </NextIntlClientProvider>
+        
       </MockedProvider>
     )
 

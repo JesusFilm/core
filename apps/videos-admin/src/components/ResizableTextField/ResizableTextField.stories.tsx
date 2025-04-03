@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { NextIntlClientProvider } from 'next-intl'
+
 import { ComponentProps } from 'react'
 
 import { videosAdminConfig } from '../../libs/storybookConfig'
@@ -16,8 +16,7 @@ type Story = StoryObj<ComponentProps<typeof ResizableTextField>>
 
 const Template: Story = {
   render: ({ disabled, error, helperText }) => (
-    <NextIntlClientProvider locale="en">
-      <ResizableTextField
+    <ResizableTextField
         id="someId"
         name="some name"
         value="some text"
@@ -25,7 +24,6 @@ const Template: Story = {
         error={error}
         helperText={helperText}
       />
-    </NextIntlClientProvider>
   )
 }
 

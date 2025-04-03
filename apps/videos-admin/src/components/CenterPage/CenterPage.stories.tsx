@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { NextIntlClientProvider } from 'next-intl'
+
 import { ComponentProps } from 'react'
 
 import { videosAdminConfig } from '../../libs/storybookConfig'
@@ -24,17 +24,13 @@ const meta: Meta<typeof CenterPage> = {
 }
 
 export default meta
-type Story = StoryObj<ComponentProps<typeof CenterPage> & { locale: string }>
+type Story = StoryObj<ComponentProps<typeof CenterPage>>
 
 export const Default: Story = {
-  render: ({ locale }) => (
-    <NextIntlClientProvider locale={locale}>
-      <CenterPage>
+  render: () => (
+    <CenterPage>
         <div>Hello World</div>
       </CenterPage>
-    </NextIntlClientProvider>
   ),
-  args: {
-    locale: 'en'
-  }
+  
 }

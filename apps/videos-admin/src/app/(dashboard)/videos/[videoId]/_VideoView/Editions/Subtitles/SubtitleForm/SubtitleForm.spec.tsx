@@ -1,7 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { NextIntlClientProvider } from 'next-intl'
 
 import { getLanguagesMock } from '@core/journeys/ui/useLanguagesQuery/useLanguagesQuery.mock'
 
@@ -37,7 +36,7 @@ describe('SubtitleForm', () => {
     const onSubmit = jest.fn()
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider mocks={[getLanguagesMock]}>
           <SubtitleForm
             variant="create"
@@ -46,7 +45,7 @@ describe('SubtitleForm', () => {
             subtitleLanguagesMap={mockSubtitleLanguagesMap}
           />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()
@@ -84,7 +83,7 @@ describe('SubtitleForm', () => {
     })
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider mocks={[getLanguagesMock]}>
           <SubtitleForm
             variant="edit"
@@ -98,7 +97,7 @@ describe('SubtitleForm', () => {
             subtitleLanguagesMap={mockSubtitleLanguagesMap}
           />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     expect(screen.getByText('existing.vtt')).toBeInTheDocument()
@@ -107,7 +106,7 @@ describe('SubtitleForm', () => {
   it('should handle simultaneous uploads of VTT and SRT files', async () => {
     const onSubmit = jest.fn()
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider mocks={[getLanguagesMock]}>
           <SubtitleForm
             variant="create"
@@ -120,7 +119,7 @@ describe('SubtitleForm', () => {
             subtitleLanguagesMap={mockSubtitleLanguagesMap}
           />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()
@@ -165,7 +164,7 @@ describe('SubtitleForm', () => {
 
   it('should filter out languages that already have subtitles', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider mocks={[getLanguagesMock]}>
           <SubtitleForm
             variant="create"
@@ -174,7 +173,7 @@ describe('SubtitleForm', () => {
             subtitleLanguagesMap={mockSubtitleLanguagesMap}
           />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()
@@ -198,7 +197,7 @@ describe('SubtitleForm', () => {
 
   it('should include current subtitle language when editing', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider mocks={[getLanguagesMock]}>
           <SubtitleForm
             variant="edit"
@@ -212,7 +211,7 @@ describe('SubtitleForm', () => {
             subtitleLanguagesMap={mockSubtitleLanguagesMap}
           />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()

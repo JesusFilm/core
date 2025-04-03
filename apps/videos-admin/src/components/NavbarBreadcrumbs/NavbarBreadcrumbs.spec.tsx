@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { usePathname } from 'next/navigation'
-import { NextIntlClientProvider } from 'next-intl'
+
 
 import { NavbarBreadcrumbs } from './NavbarBreadcrumbs'
 
@@ -17,9 +17,8 @@ describe('NavbarBreadcrumbs', () => {
   it('should show home breadcrumb', async () => {
     mockedUsePathname.mockReturnValue('/en/videos')
     render(
-      <NextIntlClientProvider locale="en">
-        <NavbarBreadcrumbs />
-      </NextIntlClientProvider>
+      <NavbarBreadcrumbs />
+
     )
 
     expect(screen.getByTestId('HomeRoundedIcon')).toBeInTheDocument()
@@ -29,9 +28,9 @@ describe('NavbarBreadcrumbs', () => {
   it('should show icon and values for existing breadcrumbs', async () => {
     mockedUsePathname.mockReturnValue('/en/videos')
     render(
-      <NextIntlClientProvider locale="en">
+      
         <NavbarBreadcrumbs />
-      </NextIntlClientProvider>
+      
     )
 
     expect(screen.getByTestId('VideoLibraryRoundedIcon')).toBeInTheDocument()
@@ -41,9 +40,8 @@ describe('NavbarBreadcrumbs', () => {
   it('should handle routes that are not predefined', async () => {
     mockedUsePathname.mockReturnValue('/en/random')
     render(
-      <NextIntlClientProvider locale="en">
+      
         <NavbarBreadcrumbs />
-      </NextIntlClientProvider>
     )
 
     expect(screen.getByText('Random')).toBeInTheDocument()

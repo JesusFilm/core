@@ -1,6 +1,5 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { NextIntlClientProvider } from 'next-intl'
 
 import { ConfirmDeleteDialog } from './ConfirmDeleteDialog'
 
@@ -14,13 +13,13 @@ describe('ConfirmDeleteDialog', () => {
 
   it('should render the dialog', () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <ConfirmDeleteDialog
           open
           handleClose={handleClose}
           handleConfirm={handleConfirm}
         />
-      </NextIntlClientProvider>
+      
     )
 
     expect(
@@ -32,13 +31,13 @@ describe('ConfirmDeleteDialog', () => {
 
   it('should call handleClose when cancel is clicked', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <ConfirmDeleteDialog
           open
           handleClose={handleClose}
           handleConfirm={handleConfirm}
         />
-      </NextIntlClientProvider>
+      
     )
 
     await userEvent.click(screen.getByRole('button', { name: 'Cancel' }))
@@ -48,13 +47,13 @@ describe('ConfirmDeleteDialog', () => {
 
   it('should call handleConfirm when confirm is clicked', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <ConfirmDeleteDialog
           open
           handleClose={handleClose}
           handleConfirm={handleConfirm}
         />
-      </NextIntlClientProvider>
+      
     )
 
     await userEvent.click(screen.getByRole('button', { name: 'Confirm' }))
@@ -64,13 +63,13 @@ describe('ConfirmDeleteDialog', () => {
 
   it('should not render when open is false', () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <ConfirmDeleteDialog
           open={false}
           handleClose={handleClose}
           handleConfirm={handleConfirm}
         />
-      </NextIntlClientProvider>
+      
     )
 
     expect(

@@ -1,7 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import { useParams } from 'next/navigation'
-import { NextIntlClientProvider } from 'next-intl'
 
 import { useAdminVideoMock } from '../../../../../libs/useAdminVideo/useAdminVideo.mock'
 import VideoViewPage from '../page'
@@ -20,9 +19,9 @@ describe('VideoViewPage', () => {
 
     render(
       <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
-        <NextIntlClientProvider locale="en">
+        
           <VideoViewPage />
-        </NextIntlClientProvider>
+        
       </MockedProvider>
     )
 

@@ -1,6 +1,5 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { NextIntlClientProvider } from 'next-intl'
 
 import { EditionForm } from './EditionForm'
 
@@ -9,13 +8,13 @@ describe('EditionForm', () => {
     const onSubmit = jest.fn()
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <EditionForm
           variant="create"
           initialValues={{ name: '' }}
           onSubmit={onSubmit}
         />
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()
@@ -40,13 +39,13 @@ describe('EditionForm', () => {
     const onSubmit = jest.fn()
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <EditionForm
           variant="edit"
           initialValues={{ name: 'base' }}
           onSubmit={onSubmit}
         />
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()

@@ -2,7 +2,6 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { GraphQLError } from 'graphql'
-import { NextIntlClientProvider } from 'next-intl'
 
 import { SnackbarProvider } from '../../../../../../../../libs/SnackbarProvider'
 import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
@@ -37,7 +36,7 @@ const deleteEditionMock: MockedResponse<
 describe('EditionDelete', () => {
   it('should render', () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider>
           <VideoProvider video={mockVideo}>
             <EditionDelete
@@ -46,7 +45,7 @@ describe('EditionDelete', () => {
             />
           </VideoProvider>
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     expect(
@@ -66,7 +65,7 @@ describe('EditionDelete', () => {
       .mockReturnValue(deleteEditionMock.result)
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <SnackbarProvider>
           <MockedProvider
             mocks={[{ ...deleteEditionMock, result: deleteEditionMockResult }]}
@@ -79,7 +78,7 @@ describe('EditionDelete', () => {
             </VideoProvider>
           </MockedProvider>
         </SnackbarProvider>
-      </NextIntlClientProvider>
+      
     )
     const user = userEvent.setup()
     await user.click(screen.getByRole('button', { name: 'Delete' }))
@@ -106,7 +105,7 @@ describe('EditionDelete', () => {
     }
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <SnackbarProvider>
           <MockedProvider mocks={[errorMock]}>
             <VideoProvider video={mockVideo}>
@@ -117,7 +116,7 @@ describe('EditionDelete', () => {
             </VideoProvider>
           </MockedProvider>
         </SnackbarProvider>
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()
@@ -132,13 +131,13 @@ describe('EditionDelete', () => {
     const close = jest.fn()
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider>
           <VideoProvider video={mockVideo}>
             <EditionDelete close={close} edition={mockVideo.videoEditions[0]} />
           </VideoProvider>
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()

@@ -1,14 +1,13 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { NextIntlClientProvider } from 'next-intl'
 
 import { AudioLanguageFileUpload } from './AudioLanguageFileUpload'
 
 describe('AudioLanguageFileUpload', () => {
   it('should render upload area', () => {
     render(
-      <NextIntlClientProvider locale="en" messages={{}}>
+      
         <AudioLanguageFileUpload onFileSelect={jest.fn()} />
-      </NextIntlClientProvider>
+      
     )
 
     expect(screen.getByTestId('AudioLanguageFileUpload')).toBeInTheDocument()
@@ -20,9 +19,9 @@ describe('AudioLanguageFileUpload', () => {
     const file = new File(['test'], 'test.mp4', { type: 'video/mp4' })
 
     render(
-      <NextIntlClientProvider locale="en" messages={{}}>
+      
         <AudioLanguageFileUpload onFileSelect={jest.fn()} selectedFile={file} />
-      </NextIntlClientProvider>
+      
     )
 
     expect(screen.getByText('test.mp4')).toBeInTheDocument()
@@ -32,13 +31,13 @@ describe('AudioLanguageFileUpload', () => {
   describe('upload states', () => {
     it('should show uploading state with progress bar', () => {
       render(
-        <NextIntlClientProvider locale="en" messages={{}}>
+        
           <AudioLanguageFileUpload
             onFileSelect={jest.fn()}
             uploading
             uploadProgress={50}
           />
-        </NextIntlClientProvider>
+        
       )
 
       expect(screen.getByText('Uploading...')).toBeInTheDocument()
@@ -52,9 +51,9 @@ describe('AudioLanguageFileUpload', () => {
 
     it('should show processing state with indeterminate progress bar', () => {
       render(
-        <NextIntlClientProvider locale="en" messages={{}}>
+        
           <AudioLanguageFileUpload onFileSelect={jest.fn()} processing />
-        </NextIntlClientProvider>
+        
       )
 
       expect(screen.getByText('Processing...')).toBeInTheDocument()
@@ -67,12 +66,12 @@ describe('AudioLanguageFileUpload', () => {
 
     it('should show error state', () => {
       render(
-        <NextIntlClientProvider locale="en" messages={{}}>
+        
           <AudioLanguageFileUpload
             onFileSelect={jest.fn()}
             error="Something went wrong"
           />
-        </NextIntlClientProvider>
+        
       )
 
       expect(screen.getByText('Upload Failed!')).toBeInTheDocument()
@@ -88,9 +87,9 @@ describe('AudioLanguageFileUpload', () => {
       const onFileSelect = jest.fn()
 
       render(
-        <NextIntlClientProvider locale="en" messages={{}}>
+        
           <AudioLanguageFileUpload onFileSelect={onFileSelect} />
-        </NextIntlClientProvider>
+        
       )
       const input = screen.getByTestId('DropZone')
       Object.defineProperty(input, 'files', {
@@ -105,9 +104,9 @@ describe('AudioLanguageFileUpload', () => {
       const onFileSelect = jest.fn()
 
       render(
-        <NextIntlClientProvider locale="en" messages={{}}>
+        
           <AudioLanguageFileUpload onFileSelect={onFileSelect} />
-        </NextIntlClientProvider>
+        
       )
 
       const dropzone = screen.getByTestId('AudioLanguageDropZone')

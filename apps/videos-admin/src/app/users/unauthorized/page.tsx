@@ -6,7 +6,6 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { graphql } from 'gql.tada'
 import Image from 'next/image'
-import { getTranslations } from 'next-intl/server'
 import { ReactNode } from 'react'
 
 import minimalLogo from '../../../../assets/minimal-logo.png'
@@ -25,7 +24,6 @@ const GET_AUTH = graphql(`
 `)
 
 export default async function UnauthorizedPage(): Promise<ReactNode> {
-  const t = await getTranslations()
   const user = await getUser()
   const { data } = await makeClient({
     headers: { Authorization: user?.token != null ? `JWT ${user.token}` : '' }
@@ -37,7 +35,7 @@ export default async function UnauthorizedPage(): Promise<ReactNode> {
     <CenterPage>
       <Image
         src={minimalLogo}
-        alt={t('Jesus Film Project')}
+        alt="Jesus Film Project"
         width={100}
         height={100}
       />
@@ -47,31 +45,29 @@ export default async function UnauthorizedPage(): Promise<ReactNode> {
           variant="h4"
           sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
         >
-          {t('401 Unauthorized')}
+          401 Unauthorized
         </Typography>
         <Typography>
-          {t(
-            "We couldn't validate your credentials. Please ask an administrator to add the necessary role to your account by forwarding them your ID & User ID."
-          )}
+          We couldn't validate your credentials. Please ask an administrator to
+          add the necessary role to your account by forwarding them your ID &
+          User ID.
         </Typography>
         {process.env.NODE_ENV === 'development' && (
           <Alert severity="warning" sx={{ mt: 2 }}>
-            <strong>{t('You need to create a UserMediaRole record')}</strong>
+            <strong>You need to create a UserMediaRole record</strong>
             <ol>
-              <li>{t('Open Prisma Studio for api-media')}</li>
-              <li>{t('Select the UserMediaRole model')}</li>
+              <li>Open Prisma Studio for api-media</li>
+              <li>Select the UserMediaRole model</li>
               <li>
-                {t(
-                  'Add a record with the id and userId below with at least one role'
-                )}
+                Add a record with the id and userId below with at least one role
               </li>
-              <li>{t('Sign out and back in again')}</li>
+              <li>Sign out and back in again</li>
             </ol>
           </Alert>
         )}
       </Box>
       <FormControl>
-        <FormLabel htmlFor="id">{t('ID')}</FormLabel>
+        <FormLabel htmlFor="id">ID</FormLabel>
         <TextField
           id="id"
           name="id"
@@ -85,7 +81,7 @@ export default async function UnauthorizedPage(): Promise<ReactNode> {
         />
       </FormControl>
       <FormControl>
-        <FormLabel htmlFor="uid">{t('User ID')}</FormLabel>
+        <FormLabel htmlFor="uid">User ID</FormLabel>
         <TextField
           id="uid"
           name="uid"

@@ -1,6 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { NextIntlClientProvider } from 'next-intl'
 import { SnackbarProvider } from 'notistack'
 
 import { UploadVideoVariantProvider } from '../../../../../../libs/UploadVideoVariantProvider'
@@ -26,9 +25,9 @@ describe('Variants', () => {
   it('should render variants', () => {
     render(
       <MockedProvider>
-        <NextIntlClientProvider locale="en">
+        
           <Variants variants={mockVideoVariants} />
-        </NextIntlClientProvider>
+        
       </MockedProvider>
     )
 
@@ -38,9 +37,9 @@ describe('Variants', () => {
   it('should open variant modal when variant is clicked', async () => {
     render(
       <MockedProvider>
-        <NextIntlClientProvider locale="en">
+        
           <Variants variants={mockVideoVariants} />
-        </NextIntlClientProvider>
+        
       </MockedProvider>
     )
 
@@ -55,9 +54,9 @@ describe('Variants', () => {
   it('should close variant modal', async () => {
     render(
       <MockedProvider>
-        <NextIntlClientProvider locale="en">
+        
           <Variants variants={mockVideoVariants} />
-        </NextIntlClientProvider>
+        
       </MockedProvider>
     )
 
@@ -81,9 +80,9 @@ describe('Variants', () => {
   it('should have correct id for the Section element so correct virtualization dimensions can be calculated', async () => {
     render(
       <MockedProvider>
-        <NextIntlClientProvider locale="en">
+        
           <Variants variants={mockVideoVariants} />
-        </NextIntlClientProvider>
+        
       </MockedProvider>
     )
 
@@ -111,11 +110,11 @@ describe('Variants', () => {
 
     render(
       <MockedProvider mocks={[deleteMutationMock]}>
-        <NextIntlClientProvider locale="en">
+        
           <SnackbarProvider>
             <Variants variants={mockVideoVariants} />
           </SnackbarProvider>
-        </NextIntlClientProvider>
+        
       </MockedProvider>
     )
 
@@ -138,11 +137,11 @@ describe('Variants', () => {
   it('should open add audio language dialog when clicking add audio language button', async () => {
     render(
       <MockedProvider>
-        <NextIntlClientProvider locale="en">
+        
           <UploadVideoVariantProvider>
             <Variants variants={mockVideoVariants} />
           </UploadVideoVariantProvider>
-        </NextIntlClientProvider>
+        
       </MockedProvider>
     )
     fireEvent.click(screen.getByText('Add Audio Language'))
@@ -152,11 +151,11 @@ describe('Variants', () => {
   it('should close add audio language dialog', async () => {
     render(
       <MockedProvider>
-        <NextIntlClientProvider locale="en">
+        
           <UploadVideoVariantProvider>
             <Variants variants={mockVideoVariants} />
           </UploadVideoVariantProvider>
-        </NextIntlClientProvider>
+        
       </MockedProvider>
     )
     fireEvent.click(screen.getByText('Add Audio Language'))

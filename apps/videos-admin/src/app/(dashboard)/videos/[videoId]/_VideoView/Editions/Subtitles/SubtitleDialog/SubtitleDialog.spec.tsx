@@ -1,7 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { NextIntlClientProvider } from 'next-intl'
 
 import { DialogAction } from '../../../../../../../../components/CrudDialog'
 import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
@@ -16,14 +15,14 @@ const mockSubtitle = mockEdition.videoSubtitles[0]
 describe('SubtitleDialog', () => {
   it('should not render when action is null', () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <SubtitleDialog
           subtitle={mockSubtitle}
           edition={mockEdition}
           action={null}
           close={jest.fn()}
         />
-      </NextIntlClientProvider>
+      
     )
 
     expect(screen.queryByText('Subtitle Create')).not.toBeInTheDocument()
@@ -31,7 +30,7 @@ describe('SubtitleDialog', () => {
 
   it('should render create subtitle dialog', () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <VideoProvider video={mockVideo}>
           <MockedProvider mocks={[]}>
             <SubtitleDialog
@@ -42,7 +41,7 @@ describe('SubtitleDialog', () => {
             />
           </MockedProvider>
         </VideoProvider>
-      </NextIntlClientProvider>
+      
     )
 
     expect(screen.getByText('Create Subtitle')).toBeInTheDocument()
@@ -50,7 +49,7 @@ describe('SubtitleDialog', () => {
 
   it('should render edit subtitle dialog', () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <VideoProvider video={mockVideo}>
           <MockedProvider mocks={[]}>
             <SubtitleDialog
@@ -61,7 +60,7 @@ describe('SubtitleDialog', () => {
             />
           </MockedProvider>
         </VideoProvider>
-      </NextIntlClientProvider>
+      
     )
 
     expect(screen.getByText('Edit Subtitle')).toBeInTheDocument()
@@ -69,7 +68,7 @@ describe('SubtitleDialog', () => {
 
   it('should render delete subtitle dialog', () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <VideoProvider video={mockVideo}>
           <MockedProvider mocks={[]}>
             <SubtitleDialog
@@ -80,7 +79,7 @@ describe('SubtitleDialog', () => {
             />
           </MockedProvider>
         </VideoProvider>
-      </NextIntlClientProvider>
+      
     )
 
     expect(screen.getByText('Delete Subtitle')).toBeInTheDocument()
@@ -90,7 +89,7 @@ describe('SubtitleDialog', () => {
     const close = jest.fn()
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <VideoProvider video={mockVideo}>
           <MockedProvider mocks={[]}>
             <SubtitleDialog
@@ -101,7 +100,7 @@ describe('SubtitleDialog', () => {
             />
           </MockedProvider>
         </VideoProvider>
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()

@@ -1,6 +1,5 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { NextIntlClientProvider } from 'next-intl'
 
 import { useAdminVideoMock } from '../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 
@@ -12,7 +11,7 @@ const mockEdition = mockVideo.videoEditions[0]
 describe('EditionCard', () => {
   it('should render', () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <EditionCard
           edition={mockEdition}
           onClick={jest.fn()}
@@ -22,7 +21,7 @@ describe('EditionCard', () => {
             delete: jest.fn()
           }}
         />
-      </NextIntlClientProvider>
+      
     )
 
     expect(screen.getByText(mockEdition.name)).toBeInTheDocument()
@@ -37,7 +36,7 @@ describe('EditionCard', () => {
   it('should call onClick when clicked', async () => {
     const onClick = jest.fn()
     render(
-      <NextIntlClientProvider locale="en">
+      
         <EditionCard
           edition={mockEdition}
           onClick={onClick}
@@ -47,7 +46,7 @@ describe('EditionCard', () => {
             delete: jest.fn()
           }}
         />
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()
@@ -61,7 +60,7 @@ describe('EditionCard', () => {
     const deleteFn = jest.fn()
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <EditionCard
           edition={{ ...mockEdition, videoSubtitles: [] }}
           onClick={jest.fn()}
@@ -71,7 +70,7 @@ describe('EditionCard', () => {
             delete: deleteFn
           }}
         />
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()
@@ -89,7 +88,7 @@ describe('EditionCard', () => {
 
   it('should not show delete option if there are subtitles', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <EditionCard
           edition={mockEdition}
           onClick={jest.fn()}
@@ -99,7 +98,7 @@ describe('EditionCard', () => {
             delete: jest.fn()
           }}
         />
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()

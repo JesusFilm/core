@@ -1,6 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { NextIntlClientProvider } from 'next-intl'
 import { SnackbarProvider } from 'notistack'
 
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
@@ -154,7 +153,7 @@ describe('AddAudioLanguageDialog', () => {
     render(
       <MockedProvider mocks={[getLanguagesMock]}>
         <SnackbarProvider>
-          <NextIntlClientProvider locale="en" messages={{}}>
+          
             <UploadVideoVariantProvider>
               <AddAudioLanguageDialog
                 open
@@ -186,7 +185,7 @@ describe('AddAudioLanguageDialog', () => {
                 ]}
               />
             </UploadVideoVariantProvider>
-          </NextIntlClientProvider>
+          
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -204,7 +203,7 @@ describe('AddAudioLanguageDialog', () => {
         mocks={[{ ...getLanguagesMock, result: getLanguagesMockResult }]}
       >
         <SnackbarProvider>
-          <NextIntlClientProvider locale="en" messages={{}}>
+          
             <UploadVideoVariantProvider>
               <AddAudioLanguageDialog
                 open
@@ -236,7 +235,7 @@ describe('AddAudioLanguageDialog', () => {
                 ]}
               />
             </UploadVideoVariantProvider>
-          </NextIntlClientProvider>
+          
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -273,7 +272,7 @@ describe('AddAudioLanguageDialog', () => {
         ]}
       >
         <SnackbarProvider>
-          <NextIntlClientProvider locale="en" messages={{}}>
+          
             <UploadVideoVariantProvider>
               <AddAudioLanguageDialog
                 open
@@ -305,7 +304,7 @@ describe('AddAudioLanguageDialog', () => {
                 ]}
               />
             </UploadVideoVariantProvider>
-          </NextIntlClientProvider>
+          
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -380,7 +379,7 @@ describe('AddAudioLanguageDialog', () => {
         mocks={[getLanguagesMock, { ...cloudflareR2CreateMock, result }]}
       >
         <SnackbarProvider>
-          <NextIntlClientProvider locale="en" messages={{}}>
+          
             <UploadVideoVariantProvider>
               <AddAudioLanguageDialog
                 open
@@ -412,7 +411,7 @@ describe('AddAudioLanguageDialog', () => {
                 ]}
               />
             </UploadVideoVariantProvider>
-          </NextIntlClientProvider>
+          
         </SnackbarProvider>
       </MockedProvider>
     )

@@ -1,19 +1,18 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { NextIntlClientProvider } from 'next-intl'
+
 
 import { ResizableTextField } from './ResizableTextField'
 
 describe('ResizableTextField', () => {
   it('should render text', () => {
     render(
-      <NextIntlClientProvider locale="en">
-        <ResizableTextField
+      <ResizableTextField
           id="id"
           name="testTextField"
           value="some text"
           disabled
         />
-      </NextIntlClientProvider>
+
     )
 
     expect(screen.getByRole('textbox')).toHaveValue('some text')
@@ -21,9 +20,8 @@ describe('ResizableTextField', () => {
 
   it('should be disabled', () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <ResizableTextField id="id" name="test" value="some text" disabled />
-      </NextIntlClientProvider>
     )
 
     expect(screen.getByRole('textbox')).toHaveValue('some text')

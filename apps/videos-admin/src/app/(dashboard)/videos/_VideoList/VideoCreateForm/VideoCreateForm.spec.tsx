@@ -2,7 +2,6 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { GraphQLError } from 'graphql'
-import { NextIntlClientProvider } from 'next-intl'
 
 import { getLanguagesMock } from '@core/journeys/ui/useLanguagesQuery/useLanguagesQuery.mock'
 
@@ -62,11 +61,11 @@ describe('VideoCreateForm', () => {
 
   it('should render form', () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider>
           <VideoCreateForm close={mockCancel} />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     expect(screen.getByRole('textbox', { name: 'ID' })).toBeInTheDocument()
@@ -81,11 +80,11 @@ describe('VideoCreateForm', () => {
 
   it('should emit cancel callback on cancel', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider>
           <VideoCreateForm close={mockCancel} />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()
@@ -97,11 +96,11 @@ describe('VideoCreateForm', () => {
 
   it('should require all fields', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider>
           <VideoCreateForm close={mockCancel} />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()
@@ -120,7 +119,7 @@ describe('VideoCreateForm', () => {
       .mockReturnValue(getLanguagesMock.result)
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider
           mocks={[
             { ...getLanguagesMock, result: getLanguagesMockResult },
@@ -130,7 +129,7 @@ describe('VideoCreateForm', () => {
         >
           <VideoCreateForm close={mockCancel} />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()
@@ -173,13 +172,13 @@ describe('VideoCreateForm', () => {
     }
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <SnackbarProvider>
           <MockedProvider mocks={[getLanguagesMock, errorMock]}>
             <VideoCreateForm close={mockCancel} />
           </MockedProvider>
         </SnackbarProvider>
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()

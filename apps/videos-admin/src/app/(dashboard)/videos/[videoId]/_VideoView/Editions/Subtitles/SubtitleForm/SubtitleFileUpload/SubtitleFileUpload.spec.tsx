@@ -1,7 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useField } from 'formik'
-import { NextIntlClientProvider } from 'next-intl'
 
 import { GetAdminVideo_AdminVideo_VideoEdition_VideoSubtitle as Subtitle } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo'
 
@@ -50,9 +49,9 @@ describe('SubtitleFileUpload', () => {
     useFieldMock.mockImplementationOnce(() => [fieldMockSrt])
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <SubtitleFileUpload />
-      </NextIntlClientProvider>
+      
     )
 
     await waitFor(() => {
@@ -71,9 +70,9 @@ describe('SubtitleFileUpload', () => {
     ])
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <SubtitleFileUpload />
-      </NextIntlClientProvider>
+      
     )
 
     await waitFor(() => {
@@ -92,9 +91,9 @@ describe('SubtitleFileUpload', () => {
     useFieldMock.mockImplementationOnce(() => [fieldMockSrt])
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <SubtitleFileUpload />
-      </NextIntlClientProvider>
+      
     )
     const user = userEvent.setup()
 
@@ -118,9 +117,9 @@ describe('SubtitleFileUpload', () => {
     ])
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <SubtitleFileUpload />
-      </NextIntlClientProvider>
+      
     )
     const user = userEvent.setup()
 
@@ -141,9 +140,9 @@ describe('SubtitleFileUpload', () => {
     useFieldMock.mockImplementationOnce(() => [fieldMockSrt])
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <SubtitleFileUpload />
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()
@@ -163,9 +162,9 @@ describe('SubtitleFileUpload', () => {
     ])
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <SubtitleFileUpload />
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()
@@ -194,9 +193,9 @@ describe('SubtitleFileUpload', () => {
     ])
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <SubtitleFileUpload />
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()
@@ -220,9 +219,9 @@ describe('SubtitleFileUpload', () => {
     }
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <SubtitleFileUpload subtitle={subtitle as Subtitle} />
-      </NextIntlClientProvider>
+      
     )
 
     await waitFor(() => {
@@ -244,9 +243,9 @@ describe('SubtitleFileUpload', () => {
     }
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <SubtitleFileUpload subtitle={subtitle as Subtitle} />
-      </NextIntlClientProvider>
+      
     )
 
     await waitFor(() => {

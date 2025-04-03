@@ -2,7 +2,6 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import _unescape from 'lodash/unescape'
-import { NextIntlClientProvider } from 'next-intl'
 
 import { GetAdminVideo_AdminVideo_VideoDescriptions as VideoDescriptions } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
@@ -74,11 +73,11 @@ describe('VideoDescription', () => {
   it('should show disabled save button by default is values not changed', () => {
     render(
       <MockedProvider>
-        <NextIntlClientProvider locale="en">
+        
           <VideoProvider video={mockVideo}>
             <VideoDescription videoDescriptions={mockVideoDescriptions} />
           </VideoProvider>
-        </NextIntlClientProvider>
+        
       </MockedProvider>
     )
 
@@ -88,11 +87,11 @@ describe('VideoDescription', () => {
   it('should enable form buttons if description has been changed', async () => {
     render(
       <MockedProvider>
-        <NextIntlClientProvider locale="en">
+        
           <VideoProvider video={mockVideo}>
             <VideoDescription videoDescriptions={mockVideoDescriptions} />
           </VideoProvider>
-        </NextIntlClientProvider>
+        
       </MockedProvider>
     )
 
@@ -121,11 +120,11 @@ describe('VideoDescription', () => {
           mockUpdateVideoDescription
         ]}
       >
-        <NextIntlClientProvider locale="en">
+        
           <VideoProvider video={mockVideo}>
             <VideoDescription videoDescriptions={[]} />
           </VideoProvider>
-        </NextIntlClientProvider>
+        
       </MockedProvider>
     )
 
@@ -143,11 +142,11 @@ describe('VideoDescription', () => {
   it('should update video description on submit', async () => {
     render(
       <MockedProvider mocks={[mockUpdateVideoDescription]}>
-        <NextIntlClientProvider locale="en">
+        
           <VideoProvider video={mockVideo}>
             <VideoDescription videoDescriptions={mockVideoDescriptions} />
           </VideoProvider>
-        </NextIntlClientProvider>
+        
       </MockedProvider>
     )
 
@@ -169,11 +168,11 @@ describe('VideoDescription', () => {
   it('should require description field', async () => {
     render(
       <MockedProvider>
-        <NextIntlClientProvider locale="en">
+        
           <VideoProvider video={mockVideo}>
             <VideoDescription videoDescriptions={mockVideoDescriptions} />
           </VideoProvider>
-        </NextIntlClientProvider>
+        
       </MockedProvider>
     )
 
@@ -193,11 +192,11 @@ describe('VideoDescription', () => {
   it('should reset form when cancel is clicked', async () => {
     render(
       <MockedProvider>
-        <NextIntlClientProvider locale="en">
+        
           <VideoProvider video={mockVideo}>
             <VideoDescription videoDescriptions={mockVideoDescriptions} />
           </VideoProvider>
-        </NextIntlClientProvider>
+        
       </MockedProvider>
     )
     const user = userEvent.setup()

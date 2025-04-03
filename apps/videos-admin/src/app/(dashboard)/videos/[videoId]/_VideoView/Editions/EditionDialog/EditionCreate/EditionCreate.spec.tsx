@@ -2,7 +2,6 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { GraphQLError } from 'graphql'
-import { NextIntlClientProvider } from 'next-intl'
 
 import { SnackbarProvider } from '../../../../../../../../libs/SnackbarProvider'
 import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
@@ -21,13 +20,13 @@ const createEditionMock = getCreateEditionMock({
 describe('EditionCreate', () => {
   it('should render', () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider>
           <VideoProvider video={mockVideo}>
             <EditionCreate close={jest.fn()} />
           </VideoProvider>
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
     const textbox = screen.getByRole('textbox', { name: 'Name' })
 
@@ -40,7 +39,7 @@ describe('EditionCreate', () => {
     const close = jest.fn()
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <SnackbarProvider>
           <MockedProvider mocks={[createEditionMock]}>
             <VideoProvider video={mockVideo}>
@@ -48,7 +47,7 @@ describe('EditionCreate', () => {
             </VideoProvider>
           </MockedProvider>
         </SnackbarProvider>
-      </NextIntlClientProvider>
+      
     )
     const user = userEvent.setup()
 
@@ -79,7 +78,7 @@ describe('EditionCreate', () => {
     }
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <SnackbarProvider>
           <MockedProvider mocks={[errorMock]}>
             <VideoProvider video={mockVideo}>
@@ -87,7 +86,7 @@ describe('EditionCreate', () => {
             </VideoProvider>
           </MockedProvider>
         </SnackbarProvider>
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()

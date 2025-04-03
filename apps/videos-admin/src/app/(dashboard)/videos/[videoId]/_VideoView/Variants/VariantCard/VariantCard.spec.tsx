@@ -1,5 +1,4 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { NextIntlClientProvider } from 'next-intl'
 
 import { GetAdminVideoVariant } from '../../../../../../../libs/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
@@ -18,9 +17,9 @@ describe('VariantCard', () => {
   it('should display language and languageId of variant', () => {
     const onClick = jest.fn()
     render(
-      <NextIntlClientProvider locale="en">
+      
         <VariantCard variant={variant} onClick={onClick} />
-      </NextIntlClientProvider>
+      
     )
 
     expect(screen.getByText('Munukutuba')).toBeInTheDocument()
@@ -29,9 +28,9 @@ describe('VariantCard', () => {
   it('should handle card click', async () => {
     const onClick = jest.fn()
     render(
-      <NextIntlClientProvider locale="en">
+      
         <VariantCard variant={variant} onClick={onClick} />
-      </NextIntlClientProvider>
+      
     )
 
     fireEvent.click(screen.getByRole('listitem'))

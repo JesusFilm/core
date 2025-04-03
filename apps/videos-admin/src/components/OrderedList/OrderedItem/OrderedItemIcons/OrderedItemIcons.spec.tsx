@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { NextIntlClientProvider } from 'next-intl'
+
 
 import Edit2 from '@core/shared/ui/icons/Edit2'
 import EyeOpen from '@core/shared/ui/icons/EyeOpen'
@@ -11,8 +11,7 @@ describe('OrderedItemIcons', () => {
     const viewOnClick = jest.fn()
     const editOnClick = jest.fn()
     render(
-      <NextIntlClientProvider locale="en">
-        <OrderedItemIcons
+      <OrderedItemIcons
           iconButtons={[
             {
               Icon: EyeOpen,
@@ -30,7 +29,6 @@ describe('OrderedItemIcons', () => {
             }
           ]}
         />
-      </NextIntlClientProvider>
     )
 
     fireEvent.click(screen.getByTestId('EyeOpenIcon'))

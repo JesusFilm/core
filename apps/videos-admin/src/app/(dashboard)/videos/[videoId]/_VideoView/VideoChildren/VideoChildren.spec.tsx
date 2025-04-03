@@ -2,7 +2,6 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { usePathname, useRouter } from 'next/navigation'
-import { NextIntlClientProvider } from 'next-intl'
 
 import { GetAdminVideo_AdminVideo_Children as AdminVideoChildren } from '../../../../../../libs/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../libs/useAdminVideo/useAdminVideo.mock'
@@ -23,7 +22,7 @@ const mockUsePathname = usePathname as jest.MockedFunction<typeof usePathname>
 describe('VideoChildren', () => {
   it('should render', () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider>
           <VideoChildren
             videoId="videoId"
@@ -31,7 +30,7 @@ describe('VideoChildren', () => {
             label="Clips"
           />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     expect(screen.getByTestId('OrderedItem-0')).toBeInTheDocument()
@@ -45,7 +44,7 @@ describe('VideoChildren', () => {
     mockUsePathname.mockReturnValue('/en/videos/1_jf6101-0-0')
     const oneChildVideo = [childVideos[0]]
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider>
           <VideoChildren
             videoId="videoId"
@@ -53,7 +52,7 @@ describe('VideoChildren', () => {
             label="Clips"
           />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     expect(screen.getByTestId('OrderedItem-0')).toBeInTheDocument()
@@ -65,11 +64,11 @@ describe('VideoChildren', () => {
 
   it('should show fall back if no video children', () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider>
           <VideoChildren videoId="videoId" childVideos={[]} label="Clips" />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     expect(screen.getByText('No children to show')).toBeInTheDocument()

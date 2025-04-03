@@ -1,7 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { NextIntlClientProvider } from 'next-intl'
 
 import { SnackbarProvider } from '../../../../../../../libs/SnackbarProvider'
 import { GetAdminVideo_AdminVideo_VideoSnippets as VideoSnippets } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
@@ -69,11 +68,11 @@ describe('VideoSnippet', () => {
   it('should show disabled save button when values have not been changed', () => {
     render(
       <MockedProvider>
-        <NextIntlClientProvider locale="en">
+        
           <VideoProvider video={mockVideo}>
             <VideoSnippet videoSnippets={mockVideoSnippets} />
           </VideoProvider>
-        </NextIntlClientProvider>
+        
       </MockedProvider>
     )
 
@@ -83,11 +82,11 @@ describe('VideoSnippet', () => {
   it('should enable form buttons if snippet has been changed', async () => {
     render(
       <MockedProvider>
-        <NextIntlClientProvider locale="en">
+        
           <VideoProvider video={mockVideo}>
             <VideoSnippet videoSnippets={mockVideoSnippets} />
           </VideoProvider>
-        </NextIntlClientProvider>
+        
       </MockedProvider>
     )
 
@@ -108,7 +107,7 @@ describe('VideoSnippet', () => {
 
   it('should create video snippet if none exists', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider mocks={[mockCreateVideoSnippet]}>
           <SnackbarProvider>
             <VideoProvider video={mockVideo}>
@@ -116,7 +115,7 @@ describe('VideoSnippet', () => {
             </VideoProvider>
           </SnackbarProvider>
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()
@@ -140,7 +139,7 @@ describe('VideoSnippet', () => {
 
   it('should update video snippet on submit', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider mocks={[mockUpdateVideoSnippet]}>
           <SnackbarProvider>
             <VideoProvider video={mockVideo}>
@@ -148,7 +147,7 @@ describe('VideoSnippet', () => {
             </VideoProvider>
           </SnackbarProvider>
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
@@ -172,11 +171,11 @@ describe('VideoSnippet', () => {
   it('should require snippet field', async () => {
     render(
       <MockedProvider>
-        <NextIntlClientProvider locale="en">
+        
           <VideoProvider video={mockVideo}>
             <VideoSnippet videoSnippets={mockVideoSnippets} />
           </VideoProvider>
-        </NextIntlClientProvider>
+        
       </MockedProvider>
     )
 
@@ -196,11 +195,11 @@ describe('VideoSnippet', () => {
   it('should reset form when cancel is clicked', async () => {
     render(
       <MockedProvider>
-        <NextIntlClientProvider locale="en">
+        
           <VideoProvider video={mockVideo}>
             <VideoSnippet videoSnippets={mockVideoSnippets} />
           </VideoProvider>
-        </NextIntlClientProvider>
+        
       </MockedProvider>
     )
     const user = userEvent.setup()

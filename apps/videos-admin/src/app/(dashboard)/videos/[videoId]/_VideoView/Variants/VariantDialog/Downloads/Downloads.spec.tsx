@@ -1,7 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { NextIntlClientProvider } from 'next-intl'
 import { SnackbarProvider } from 'notistack'
 
 import { GetAdminVideoVariant_Downloads as VariantDownloads } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
@@ -82,7 +81,7 @@ describe('Downloads', () => {
 
   it('should show downloads', () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider mocks={[]}>
           <Downloads
             downloads={mockVariantDownloads}
@@ -90,7 +89,7 @@ describe('Downloads', () => {
             languageId="529"
           />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     expect(
@@ -103,7 +102,7 @@ describe('Downloads', () => {
 
   it('should show message if no downloads available', () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider mocks={[]}>
           <Downloads
             downloads={[]}
@@ -111,7 +110,7 @@ describe('Downloads', () => {
             languageId="529"
           />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     expect(screen.getByText('No downloads available')).toBeInTheDocument()
@@ -119,7 +118,7 @@ describe('Downloads', () => {
 
   it('should show add download button', () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider mocks={[]}>
           <Downloads
             downloads={mockVariantDownloads}
@@ -127,7 +126,7 @@ describe('Downloads', () => {
             languageId="529"
           />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     expect(
@@ -137,7 +136,7 @@ describe('Downloads', () => {
 
   it('should open add download dialog when button is clicked', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider>
           <SnackbarProvider>
             <Downloads
@@ -147,7 +146,7 @@ describe('Downloads', () => {
             />
           </SnackbarProvider>
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     await userEvent.click(screen.getByRole('button', { name: 'Add Download' }))
@@ -159,7 +158,7 @@ describe('Downloads', () => {
 
   it('should show delete button for each download', () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider mocks={[]}>
           <Downloads
             downloads={mockVariantDownloads}
@@ -167,7 +166,7 @@ describe('Downloads', () => {
             languageId="529"
           />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     expect(screen.getAllByRole('button', { name: 'Delete' })).toHaveLength(
@@ -177,7 +176,7 @@ describe('Downloads', () => {
 
   it('should open confirmation dialog when delete button is clicked', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider>
           <SnackbarProvider>
             <Downloads
@@ -187,7 +186,7 @@ describe('Downloads', () => {
             />
           </SnackbarProvider>
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     await userEvent.click(screen.getAllByRole('button', { name: 'Delete' })[0])
@@ -203,7 +202,7 @@ describe('Downloads', () => {
       .mockReturnValue(videoVariantDownloadDeleteMock.result)
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider
           mocks={[{ ...videoVariantDownloadDeleteMock, result: mockResult }]}
         >
@@ -215,7 +214,7 @@ describe('Downloads', () => {
             />
           </SnackbarProvider>
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     await userEvent.click(screen.getAllByRole('button', { name: 'Delete' })[0])
@@ -232,7 +231,7 @@ describe('Downloads', () => {
       .mockReturnValue(videoVariantDownloadCreateMock.result)
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider
           mocks={[
             {
@@ -250,7 +249,7 @@ describe('Downloads', () => {
             />
           </SnackbarProvider>
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     await userEvent.click(screen.getByRole('button', { name: 'Add Download' }))

@@ -1,7 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { NextIntlClientProvider } from 'next-intl'
 import { SnackbarProvider } from 'notistack'
 
 import { getLanguagesMock } from '@core/journeys/ui/useLanguagesQuery/useLanguagesQuery.mock'
@@ -124,7 +123,7 @@ describe('SubtitleEdit', () => {
 
   it('should render', () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <VideoProvider video={mockVideo}>
           <MockedProvider mocks={[]}>
             <SubtitleEdit
@@ -134,7 +133,7 @@ describe('SubtitleEdit', () => {
             />
           </MockedProvider>
         </VideoProvider>
-      </NextIntlClientProvider>
+      
     )
 
     expect(screen.getByTestId('SubtitleForm')).toBeInTheDocument()
@@ -143,7 +142,7 @@ describe('SubtitleEdit', () => {
 
   it('should prevent changing to a language that already has a subtitle', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <SnackbarProvider>
           <VideoProvider video={mockVideo}>
             <MockedProvider mocks={[getLanguagesMock]}>
@@ -155,7 +154,7 @@ describe('SubtitleEdit', () => {
             </MockedProvider>
           </VideoProvider>
         </SnackbarProvider>
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()
@@ -187,7 +186,7 @@ describe('SubtitleEdit', () => {
     describe('vtt', () => {
       it('should update subtitle without a file', async () => {
         render(
-          <NextIntlClientProvider locale="en">
+          
             <VideoProvider video={mockVideo}>
               <MockedProvider
                 mocks={[
@@ -209,7 +208,7 @@ describe('SubtitleEdit', () => {
                 />
               </MockedProvider>
             </VideoProvider>
-          </NextIntlClientProvider>
+          
         )
 
         const user = userEvent.setup()
@@ -228,7 +227,7 @@ describe('SubtitleEdit', () => {
 
       it('should update without an existing file', async () => {
         render(
-          <NextIntlClientProvider locale="en">
+          
             <VideoProvider video={mockVideo}>
               <MockedProvider
                 mocks={[
@@ -250,7 +249,7 @@ describe('SubtitleEdit', () => {
                 />
               </MockedProvider>
             </VideoProvider>
-          </NextIntlClientProvider>
+          
         )
         const user = userEvent.setup()
 
@@ -291,7 +290,7 @@ describe('SubtitleEdit', () => {
         })
 
         render(
-          <NextIntlClientProvider locale="en">
+          
             <VideoProvider video={mockVideo}>
               <MockedProvider
                 mocks={[
@@ -310,7 +309,7 @@ describe('SubtitleEdit', () => {
                 />
               </MockedProvider>
             </VideoProvider>
-          </NextIntlClientProvider>
+          
         )
         const user = userEvent.setup()
 
@@ -338,7 +337,7 @@ describe('SubtitleEdit', () => {
     describe('srt', () => {
       it('should update subtitle without a file', async () => {
         render(
-          <NextIntlClientProvider locale="en">
+          
             <VideoProvider video={mockVideo}>
               <MockedProvider
                 mocks={[
@@ -360,7 +359,7 @@ describe('SubtitleEdit', () => {
                 />
               </MockedProvider>
             </VideoProvider>
-          </NextIntlClientProvider>
+          
         )
 
         const user = userEvent.setup()
@@ -379,7 +378,7 @@ describe('SubtitleEdit', () => {
 
       it('should update without an existing file', async () => {
         render(
-          <NextIntlClientProvider locale="en">
+          
             <VideoProvider video={mockVideo}>
               <MockedProvider
                 mocks={[
@@ -401,7 +400,7 @@ describe('SubtitleEdit', () => {
                 />
               </MockedProvider>
             </VideoProvider>
-          </NextIntlClientProvider>
+          
         )
         const user = userEvent.setup()
 
@@ -444,7 +443,7 @@ describe('SubtitleEdit', () => {
         })
 
         render(
-          <NextIntlClientProvider locale="en">
+          
             <VideoProvider video={mockVideo}>
               <MockedProvider
                 mocks={[
@@ -463,7 +462,7 @@ describe('SubtitleEdit', () => {
                 />
               </MockedProvider>
             </VideoProvider>
-          </NextIntlClientProvider>
+          
         )
         const user = userEvent.setup()
 
@@ -524,7 +523,7 @@ describe('SubtitleEdit', () => {
       })
 
       render(
-        <NextIntlClientProvider locale="en">
+        
           <VideoProvider video={mockVideo}>
             <MockedProvider
               mocks={[
@@ -543,7 +542,7 @@ describe('SubtitleEdit', () => {
               />
             </MockedProvider>
           </VideoProvider>
-        </NextIntlClientProvider>
+        
       )
       const user = userEvent.setup()
 

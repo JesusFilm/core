@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { NextIntlClientProvider } from 'next-intl'
 import { ComponentProps } from 'react'
 
 import { videosAdminConfig } from '../../../../../libs/storybookConfig'
@@ -21,9 +20,9 @@ type Story = StoryObj<ComponentProps<typeof VideoView>>
 
 const Template: Story = {
   render: () => (
-    <NextIntlClientProvider locale="en">
+    
       <VideoView />
-    </NextIntlClientProvider>
+    
   )
 }
 

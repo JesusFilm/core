@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
-import { NextIntlClientProvider } from 'next-intl'
 import { ComponentProps } from 'react'
 
 import { AuthProvider } from '../../libs/auth/AuthProvider'
@@ -30,7 +29,7 @@ type Story = StoryObj<
 >
 
 export const Default: Story = {
-  render: ({ locale }) => (
+  render: () => (
     <AuthProvider
       user={{
         id: '1',
@@ -39,12 +38,10 @@ export const Default: Story = {
         photoURL: 'url-of-nameinghams-photo'
       }}
     >
-      <NextIntlClientProvider locale={locale}>
+      
         <SideMenuMobile open toggleDrawer={(newOpen: boolean) => noop} />
-      </NextIntlClientProvider>
+      
     </AuthProvider>
   ),
-  args: {
-    locale: 'en'
-  }
+  
 }

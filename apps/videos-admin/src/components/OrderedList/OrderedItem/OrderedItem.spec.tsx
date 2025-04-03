@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, within } from '@testing-library/react'
-import { NextIntlClientProvider } from 'next-intl'
+
 
 import Edit2 from '@core/shared/ui/icons/Edit2'
 import EyeOpen from '@core/shared/ui/icons/EyeOpen'
@@ -9,9 +9,8 @@ import { OrderedItem } from './OrderedItem'
 describe('OrderedItem', () => {
   it('should render', () => {
     render(
-      <NextIntlClientProvider locale="en">
-        <OrderedItem id="item.id" label="Ordered item" idx={0} />
-      </NextIntlClientProvider>
+      <OrderedItem id="item.id" label="Ordered item" idx={0} />
+
     )
 
     expect(
@@ -26,14 +25,14 @@ describe('OrderedItem', () => {
     const viewHandlerMock = jest.fn()
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <OrderedItem
           id="item.id"
           label="Ordered item"
           idx={0}
           menuActions={[{ label: 'View', handler: viewHandlerMock }]}
         />
-      </NextIntlClientProvider>
+      
     )
 
     const actions = screen.getByRole('button', { name: 'ordered-item-actions' })
@@ -61,7 +60,7 @@ describe('OrderedItem', () => {
     const editOnClick = jest.fn()
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <OrderedItem
           id="item.id"
           label="Ordered item"
@@ -83,7 +82,7 @@ describe('OrderedItem', () => {
             }
           ]}
         />
-      </NextIntlClientProvider>
+      
     )
 
     const viewButton = screen.getByTestId('EyeOpenIcon')
@@ -97,7 +96,7 @@ describe('OrderedItem', () => {
 
   it('should render image', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <OrderedItem
           id="item.id"
           label="Ordered item"
@@ -107,7 +106,6 @@ describe('OrderedItem', () => {
             alt: 'JESUS'
           }}
         />
-      </NextIntlClientProvider>
     )
 
     expect(screen.getByRole('img')).toBeInTheDocument()

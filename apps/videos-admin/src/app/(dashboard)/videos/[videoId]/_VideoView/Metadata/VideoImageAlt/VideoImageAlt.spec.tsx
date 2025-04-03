@@ -1,7 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { NextIntlClientProvider } from 'next-intl'
 
 import { GetAdminVideo_AdminVideo_VideoImageAlts as VideoImageAlts } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
@@ -68,11 +67,11 @@ describe('VideoImageAlt', () => {
   it('should disable form buttons if values have not been changed', () => {
     render(
       <MockedProvider>
-        <NextIntlClientProvider locale="en">
+        
           <VideoProvider video={mockVideo}>
             <VideoImageAlt videoImageAlts={mockVideoImageAlt} />
           </VideoProvider>
-        </NextIntlClientProvider>
+        
       </MockedProvider>
     )
 
@@ -85,11 +84,11 @@ describe('VideoImageAlt', () => {
   it('should enable form buttons if alt has changed', async () => {
     render(
       <MockedProvider>
-        <NextIntlClientProvider locale="en">
+        
           <VideoProvider video={mockVideo}>
             <VideoImageAlt videoImageAlts={mockVideoImageAlt} />
           </VideoProvider>
-        </NextIntlClientProvider>
+        
       </MockedProvider>
     )
 
@@ -108,11 +107,11 @@ describe('VideoImageAlt', () => {
       <MockedProvider
         mocks={[mockCreateVideoImageAlt, mockUpdateVideoImageAlt]}
       >
-        <NextIntlClientProvider locale="en">
+        
           <VideoProvider video={mockVideo}>
             <VideoImageAlt videoImageAlts={[]} />
           </VideoProvider>
-        </NextIntlClientProvider>
+        
       </MockedProvider>
     )
 
@@ -134,11 +133,11 @@ describe('VideoImageAlt', () => {
   it('should update video image alt on submit', async () => {
     render(
       <MockedProvider mocks={[mockUpdateVideoImageAlt]}>
-        <NextIntlClientProvider locale="en">
+        
           <VideoProvider video={mockVideo}>
             <VideoImageAlt videoImageAlts={mockVideoImageAlt} />
           </VideoProvider>
-        </NextIntlClientProvider>
+        
       </MockedProvider>
     )
 
@@ -158,11 +157,11 @@ describe('VideoImageAlt', () => {
   it('should require image alt field', async () => {
     render(
       <MockedProvider>
-        <NextIntlClientProvider locale="en">
+        
           <VideoProvider video={mockVideo}>
             <VideoImageAlt videoImageAlts={mockVideoImageAlt} />
           </VideoProvider>
-        </NextIntlClientProvider>
+        
       </MockedProvider>
     )
 
@@ -180,11 +179,11 @@ describe('VideoImageAlt', () => {
   it('should reset form when cancel button is clicked', async () => {
     render(
       <MockedProvider>
-        <NextIntlClientProvider locale="en">
+        
           <VideoProvider video={mockVideo}>
             <VideoImageAlt videoImageAlts={mockVideoImageAlt} />
           </VideoProvider>
-        </NextIntlClientProvider>
+        
       </MockedProvider>
     )
 

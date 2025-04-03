@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/test'
-import { NextIntlClientProvider } from 'next-intl'
 import { ComponentProps } from 'react'
 
 import { videosAdminConfig } from '../../../../../../../libs/storybookConfig'
@@ -32,9 +31,9 @@ type Story = StoryObj<ComponentProps<typeof VideoSnippet>>
 
 const Template: Story = {
   render: ({ videoSnippets }) => (
-    <NextIntlClientProvider locale="en">
+    
       <VideoSnippet videoSnippets={videoSnippets} />
-    </NextIntlClientProvider>
+    
   )
 }
 

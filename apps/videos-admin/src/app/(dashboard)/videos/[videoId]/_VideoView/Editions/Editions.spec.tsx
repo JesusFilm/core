@@ -1,7 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { NextIntlClientProvider } from 'next-intl'
 
 import { useAdminVideoMock } from '../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 import { VideoProvider } from '../../../../../../libs/VideoProvider'
@@ -13,11 +12,11 @@ const mockVideo = useAdminVideoMock['result']?.['data']?.['adminVideo']
 describe('Editions', () => {
   it('should render with editions', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider>
           <Editions editions={mockVideo.videoEditions} />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     expect(screen.getByText('Editions')).toBeInTheDocument()
@@ -32,11 +31,11 @@ describe('Editions', () => {
 
   it('should render with no editions', () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider>
           <Editions editions={[]} />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     expect(screen.getByText('Editions')).toBeInTheDocument()
@@ -45,13 +44,13 @@ describe('Editions', () => {
 
   it('should open create edition dialog', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider>
           <VideoProvider video={mockVideo}>
             <Editions editions={mockVideo.videoEditions} />
           </VideoProvider>
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()
@@ -66,11 +65,11 @@ describe('Editions', () => {
 
   it('should open edition dialog when edition is clicked', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider>
           <Editions editions={mockVideo.videoEditions} />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()
@@ -84,11 +83,11 @@ describe('Editions', () => {
 
   it('should close edition dialog', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider>
           <Editions editions={mockVideo.videoEditions} />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()
@@ -111,13 +110,13 @@ describe('Editions', () => {
 
   it('should open edit edition dialog', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider>
           <VideoProvider video={mockVideo}>
             <Editions editions={mockVideo.videoEditions} />
           </VideoProvider>
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()
@@ -141,7 +140,7 @@ describe('Editions', () => {
 
   it('should open delete edition dialog', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider>
           <VideoProvider video={mockVideo}>
             <Editions
@@ -149,7 +148,7 @@ describe('Editions', () => {
             />
           </VideoProvider>
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()

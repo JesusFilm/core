@@ -1,7 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { NextIntlClientProvider } from 'next-intl'
 import fetch, { Response } from 'node-fetch'
 import { SnackbarProvider } from 'notistack'
 
@@ -131,7 +130,7 @@ describe('VideoImageUpload', () => {
     })
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <SnackbarProvider>
           <MockedProvider
             cache={cache}
@@ -150,7 +149,7 @@ describe('VideoImageUpload', () => {
             <VideoImageUpload video={video} />
           </MockedProvider>
         </SnackbarProvider>
-      </NextIntlClientProvider>
+      
     )
     const input = screen.getByTestId('DropZone')
     const file = new File(['file'], 'testFile.png', {
@@ -220,7 +219,7 @@ describe('VideoImageUpload', () => {
     })
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <SnackbarProvider>
           <MockedProvider
             cache={cache}
@@ -239,7 +238,7 @@ describe('VideoImageUpload', () => {
             <VideoImageUpload video={video} />
           </MockedProvider>
         </SnackbarProvider>
-      </NextIntlClientProvider>
+      
     )
     const input = screen.getByTestId('DropZone')
     const file = new File(['file'], 'testFile.png', {
@@ -280,7 +279,7 @@ describe('VideoImageUpload', () => {
   it('should call on upload complete when file dropped', async () => {
     const mockOnUploadComplete = jest.fn()
     render(
-      <NextIntlClientProvider locale="en">
+      
         <SnackbarProvider>
           <MockedProvider>
             <VideoImageUpload
@@ -289,7 +288,7 @@ describe('VideoImageUpload', () => {
             />
           </MockedProvider>
         </SnackbarProvider>
-      </NextIntlClientProvider>
+      
     )
     const input = screen.getByTestId('DropZone')
     fireEvent.drop(input)
@@ -300,7 +299,7 @@ describe('VideoImageUpload', () => {
     const result = jest.fn().mockReturnValue(null)
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <SnackbarProvider>
           <MockedProvider
             mocks={[{ ...mockCreateCloudflareUploadByFile, result }]}
@@ -308,7 +307,7 @@ describe('VideoImageUpload', () => {
             <VideoImageUpload video={video} />
           </MockedProvider>
         </SnackbarProvider>
-      </NextIntlClientProvider>
+      
     )
     const input = screen.getByTestId('DropZone')
     const file = new File(['file'], 'testFile.png', {
@@ -342,7 +341,7 @@ describe('VideoImageUpload', () => {
       .mockReturnValue(mockCreateCloudflareUploadByFile.result)
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <SnackbarProvider>
           <MockedProvider
             mocks={[{ ...mockCreateCloudflareUploadByFile, result }]}
@@ -350,7 +349,7 @@ describe('VideoImageUpload', () => {
             <VideoImageUpload video={video} />
           </MockedProvider>
         </SnackbarProvider>
-      </NextIntlClientProvider>
+      
     )
     const input = screen.getByTestId('DropZone')
     const file = new File(['file'], 'testFile.png', {

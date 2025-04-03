@@ -2,7 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
-import { NextIntlClientProvider } from 'next-intl'
+
 
 import { getLanguagesMock } from '@core/journeys/ui/useLanguagesQuery/useLanguagesQuery.mock'
 
@@ -13,8 +13,7 @@ describe('FormLanguageSelect', () => {
     const handleSubmit = jest.fn()
 
     render(
-      <NextIntlClientProvider locale="en">
-        <MockedProvider mocks={[getLanguagesMock]}>
+      <MockedProvider mocks={[getLanguagesMock]}>
           <Formik initialValues={{ language: '' }} onSubmit={handleSubmit}>
             <Form>
               <FormLanguageSelect name="language" label="Language" />
@@ -22,7 +21,7 @@ describe('FormLanguageSelect', () => {
             </Form>
           </Formik>
         </MockedProvider>
-      </NextIntlClientProvider>
+
     )
 
     const user = userEvent.setup()
@@ -57,7 +56,7 @@ describe('FormLanguageSelect', () => {
     }
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider mocks={[getLanguagesMock]}>
           <Formik initialValues={{ language: '529' }} onSubmit={jest.fn()}>
             <Form>
@@ -69,7 +68,7 @@ describe('FormLanguageSelect', () => {
             </Form>
           </Formik>
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     // Check that the initial language is selected
@@ -84,7 +83,7 @@ describe('FormLanguageSelect', () => {
     ])
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider mocks={[getLanguagesMock]}>
           <Formik initialValues={{ language: '' }} onSubmit={jest.fn()}>
             <Form>
@@ -96,7 +95,7 @@ describe('FormLanguageSelect', () => {
             </Form>
           </Formik>
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()
@@ -130,7 +129,7 @@ describe('FormLanguageSelect', () => {
     ])
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider mocks={[getLanguagesMock]}>
           <Formik initialValues={{ language: '529' }} onSubmit={jest.fn()}>
             <Form>
@@ -149,7 +148,7 @@ describe('FormLanguageSelect', () => {
             </Form>
           </Formik>
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()
@@ -177,7 +176,7 @@ describe('FormLanguageSelect', () => {
 
   it('should show validation error', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider mocks={[getLanguagesMock]}>
           <Formik
             initialValues={{ language: '' }}
@@ -196,7 +195,6 @@ describe('FormLanguageSelect', () => {
             </Form>
           </Formik>
         </MockedProvider>
-      </NextIntlClientProvider>
     )
 
     const user = userEvent.setup()

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { userEvent, within } from '@storybook/test'
-import { NextIntlClientProvider } from 'next-intl'
+
 import { ComponentProps } from 'react'
 
 import { videosAdminConfig } from '../../libs/storybookConfig'
@@ -22,17 +22,15 @@ const meta: Meta<typeof OptionsMenu> = {
 }
 
 export default meta
-type Story = StoryObj<ComponentProps<typeof OptionsMenu> & { locale: string }>
+type Story = StoryObj<ComponentProps<typeof OptionsMenu>>
 
 export const Default: Story = {
-  render: ({ locale }) => (
-    <NextIntlClientProvider locale={locale}>
+  render: () => (
+    
       <OptionsMenu />
-    </NextIntlClientProvider>
+    
   ),
-  args: {
-    locale: 'en'
-  },
+  ,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     const menuButton = canvas.getByTestId('MenuButton')

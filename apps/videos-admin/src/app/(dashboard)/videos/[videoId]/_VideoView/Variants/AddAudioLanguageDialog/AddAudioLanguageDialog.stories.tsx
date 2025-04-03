@@ -1,7 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
-import { NextIntlClientProvider } from 'next-intl'
 import { SnackbarProvider } from 'notistack'
 
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
@@ -87,9 +86,9 @@ const Template: Story = {
       ]}
     >
       <SnackbarProvider>
-        <NextIntlClientProvider locale="en" messages={{}}>
+        
           <AddAudioLanguageDialog {...args} />
-        </NextIntlClientProvider>
+        
       </SnackbarProvider>
     </MockedProvider>
   )

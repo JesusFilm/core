@@ -1,7 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { NextIntlClientProvider } from 'next-intl'
 
 import { SnackbarProvider } from '../../../../../../../../../libs/SnackbarProvider'
 import { getCreateR2AssetMock } from '../../../../../../../../../libs/useCreateR2Asset/useCreateR2Asset.mock'
@@ -59,7 +58,7 @@ describe('AddVideoVariantDownloadDialog', () => {
 
   it('should render the dialog', () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <SnackbarProvider>
           <MockedProvider mocks={[]}>
             <AddVideoVariantDownloadDialog
@@ -70,7 +69,7 @@ describe('AddVideoVariantDownloadDialog', () => {
             />
           </MockedProvider>
         </SnackbarProvider>
-      </NextIntlClientProvider>
+      
     )
 
     expect(screen.getByText('Add Download')).toBeInTheDocument()
@@ -81,7 +80,7 @@ describe('AddVideoVariantDownloadDialog', () => {
 
   it('should not allow selecting a quality that already exists', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <SnackbarProvider>
           <MockedProvider mocks={[]}>
             <AddVideoVariantDownloadDialog
@@ -92,7 +91,7 @@ describe('AddVideoVariantDownloadDialog', () => {
             />
           </MockedProvider>
         </SnackbarProvider>
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()
@@ -115,7 +114,7 @@ describe('AddVideoVariantDownloadDialog', () => {
 
   it('should handle file upload and set video dimensions', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <SnackbarProvider>
           <MockedProvider mocks={[]}>
             <AddVideoVariantDownloadDialog
@@ -126,7 +125,7 @@ describe('AddVideoVariantDownloadDialog', () => {
             />
           </MockedProvider>
         </SnackbarProvider>
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()
@@ -155,7 +154,7 @@ describe('AddVideoVariantDownloadDialog', () => {
 
   it('should handle video loading error', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <SnackbarProvider>
           <MockedProvider mocks={[]}>
             <AddVideoVariantDownloadDialog
@@ -166,7 +165,7 @@ describe('AddVideoVariantDownloadDialog', () => {
             />
           </MockedProvider>
         </SnackbarProvider>
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()
@@ -215,7 +214,7 @@ describe('AddVideoVariantDownloadDialog', () => {
     const onSuccess = jest.fn()
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <SnackbarProvider>
           <MockedProvider mocks={[createR2AssetMock, createDownloadMock]}>
             <AddVideoVariantDownloadDialog
@@ -228,7 +227,7 @@ describe('AddVideoVariantDownloadDialog', () => {
             />
           </MockedProvider>
         </SnackbarProvider>
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()
@@ -263,7 +262,7 @@ describe('AddVideoVariantDownloadDialog', () => {
     const handleClose = jest.fn()
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <SnackbarProvider>
           <MockedProvider mocks={[]}>
             <AddVideoVariantDownloadDialog
@@ -275,7 +274,7 @@ describe('AddVideoVariantDownloadDialog', () => {
             />
           </MockedProvider>
         </SnackbarProvider>
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()

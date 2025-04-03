@@ -6,7 +6,6 @@ import {
   waitFor,
   within
 } from '@testing-library/react'
-import { NextIntlClientProvider } from 'next-intl'
 
 import { DELETE_STUDY_QUESTION, StudyQuestionsList } from './StudyQuestionsList'
 
@@ -20,7 +19,7 @@ jest.mock('notistack', () => ({
 describe('StudyQuestions', () => {
   it('should render', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider>
           <StudyQuestionsList
             studyQuestions={[
@@ -39,7 +38,7 @@ describe('StudyQuestions', () => {
             ]}
           />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     expect(screen.getByText('Study Questions')).toBeInTheDocument()
@@ -64,11 +63,11 @@ describe('StudyQuestions', () => {
 
   it('should render fallback', () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider>
           <StudyQuestionsList studyQuestions={[]} />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     expect(screen.getByText('No study questions')).toBeInTheDocument()
@@ -76,7 +75,7 @@ describe('StudyQuestions', () => {
 
   it('should open delete dialog when delete action is clicked', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider>
           <StudyQuestionsList
             studyQuestions={[
@@ -87,7 +86,7 @@ describe('StudyQuestions', () => {
             ]}
           />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     // Open the menu for the first item
@@ -109,7 +108,7 @@ describe('StudyQuestions', () => {
 
   it('should close delete dialog when cancel is clicked', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider>
           <StudyQuestionsList
             studyQuestions={[
@@ -120,7 +119,7 @@ describe('StudyQuestions', () => {
             ]}
           />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     // Open the menu for the first item
@@ -161,7 +160,7 @@ describe('StudyQuestions', () => {
     ]
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider mocks={mocks} addTypename={false}>
           <StudyQuestionsList
             studyQuestions={[
@@ -172,7 +171,7 @@ describe('StudyQuestions', () => {
             ]}
           />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     // Open the menu for the first item

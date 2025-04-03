@@ -1,7 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { NextIntlClientProvider } from 'next-intl'
 
 import {
   GET_ADMIN_VIDEOS_AND_COUNT,
@@ -59,11 +58,11 @@ describe('VideoList', () => {
 
   it('should show loading icon when loading', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider>
           <VideoList />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     expect(screen.getByRole('progressbar')).toBeInTheDocument()
@@ -72,11 +71,11 @@ describe('VideoList', () => {
   it('should show all videos', async () => {
     const result = jest.fn().mockReturnValue(mockGetVideosAndCount.result)
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider mocks={[{ ...mockGetVideosAndCount, result }]}>
           <VideoList />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -107,7 +106,7 @@ describe('VideoList', () => {
       .mockReturnValue(mockGetVideosAndCountFilter.result)
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider
           mocks={[
             { ...mockGetVideosAndCount, result },
@@ -116,7 +115,7 @@ describe('VideoList', () => {
         >
           <VideoList />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
     const user = userEvent.setup()
 
@@ -157,7 +156,7 @@ describe('VideoList', () => {
       .mockReturnValue(mockGetVideosAndCountFilter.result)
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider
           mocks={[
             { ...mockGetVideosAndCount, result },
@@ -166,7 +165,7 @@ describe('VideoList', () => {
         >
           <VideoList />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -223,7 +222,7 @@ describe('VideoList', () => {
     const result2 = jest.fn().mockReturnValue(mockGetVideosCountPageTwo.result)
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider
           mocks={[
             { ...mockGetVideosCountPageOne, result },
@@ -232,7 +231,7 @@ describe('VideoList', () => {
         >
           <VideoList />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -279,7 +278,7 @@ describe('VideoList', () => {
     const result2 = jest.fn().mockReturnValue(mockGetVideosCountPageTwo.result)
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider
           mocks={[
             { ...mockGetVideosCountPageOne, result },
@@ -288,7 +287,7 @@ describe('VideoList', () => {
         >
           <VideoList />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -348,7 +347,7 @@ describe('VideoList', () => {
 
     const result2 = jest.fn().mockReturnValue(mockGetVideosCountPageTwo.result)
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider
           mocks={[
             { ...mockGetVideosCountPageOne, result },
@@ -357,7 +356,7 @@ describe('VideoList', () => {
         >
           <VideoList />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())

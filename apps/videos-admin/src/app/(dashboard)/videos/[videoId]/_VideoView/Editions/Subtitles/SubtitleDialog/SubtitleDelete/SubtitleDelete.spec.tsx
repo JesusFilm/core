@@ -1,7 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { NextIntlClientProvider } from 'next-intl'
 
 import { useAdminVideoMock } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 
@@ -30,7 +29,7 @@ const deleteSubtitleMock: MockedResponse<
 describe('SubtitleDelete', () => {
   it('should render', () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider mocks={[]}>
           <SubtitleDelete
             edition={mockEdition}
@@ -38,7 +37,7 @@ describe('SubtitleDelete', () => {
             close={jest.fn()}
           />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     expect(
@@ -55,7 +54,7 @@ describe('SubtitleDelete', () => {
     const close = jest.fn()
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider mocks={[]}>
           <SubtitleDelete
             edition={mockEdition}
@@ -63,7 +62,7 @@ describe('SubtitleDelete', () => {
             close={close}
           />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()
@@ -76,7 +75,7 @@ describe('SubtitleDelete', () => {
     const close = jest.fn()
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider mocks={[deleteSubtitleMock]}>
           <SubtitleDelete
             edition={mockEdition}
@@ -84,7 +83,7 @@ describe('SubtitleDelete', () => {
             close={close}
           />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()

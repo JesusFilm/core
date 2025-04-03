@@ -1,6 +1,5 @@
 import { MockedResponse } from '@apollo/client/testing'
 import type { Meta, StoryObj } from '@storybook/react'
-import { NextIntlClientProvider } from 'next-intl'
 import { ComponentProps } from 'react'
 
 import { videosAdminConfig } from '../../../../libs/storybookConfig'
@@ -27,7 +26,7 @@ const meta: Meta<typeof VideoList> = {
 }
 
 export default meta
-type Story = StoryObj<ComponentProps<typeof VideoList> & { locale: string }>
+type Story = StoryObj<ComponentProps<typeof VideoList>>
 
 const mockGetAdminVideosAndCount: MockedResponse<
   GetAdminVideosAndCount,
@@ -104,25 +103,21 @@ const mockGetAdminVideosAndCount100: MockedResponse<
 }
 
 export const Default: Story = {
-  render: ({ locale }) => (
-    <NextIntlClientProvider locale={locale}>
+  render: () => (
+    
       <VideoList />
-    </NextIntlClientProvider>
+    
   ),
-  args: {
-    locale: 'en'
-  }
+  
 }
 
 export const WithVideos: Story = {
-  render: ({ locale }) => (
-    <NextIntlClientProvider locale={locale}>
+  render: () => (
+    
       <VideoList />
-    </NextIntlClientProvider>
+    
   ),
-  args: {
-    locale: 'en'
-  },
+  ,
   parameters: {
     apolloClient: {
       mocks: [mockGetAdminVideosAndCount]
@@ -131,14 +126,12 @@ export const WithVideos: Story = {
 }
 
 export const WithVideosLong: Story = {
-  render: ({ locale }) => (
-    <NextIntlClientProvider locale={locale}>
+  render: () => (
+    
       <VideoList />
-    </NextIntlClientProvider>
+    
   ),
-  args: {
-    locale: 'en'
-  },
+  ,
   parameters: {
     apolloClient: {
       mocks: [mockGetAdminVideosAndCount100]

@@ -1,6 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { NextIntlClientProvider } from 'next-intl'
 
 import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
@@ -13,11 +12,11 @@ describe('VideoImage', () => {
 
   it('should show video image', () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider>
           <VideoImage video={video} />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     expect(screen.getByAltText('JESUS')).toBeInTheDocument()
@@ -25,11 +24,11 @@ describe('VideoImage', () => {
 
   it('should show edit button', () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider>
           <VideoImage video={video} />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     expect(screen.getByRole('button')).toBeInTheDocument()
@@ -37,11 +36,11 @@ describe('VideoImage', () => {
 
   it('should show tooltip when hovering over edit button', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider>
           <VideoImage video={video} />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     fireEvent.mouseOver(screen.getByRole('button'))
@@ -52,11 +51,11 @@ describe('VideoImage', () => {
 
   it('should open file upload dialog on edit button click', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider>
           <VideoImage video={video} />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
     expect(screen.getByRole('button')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button'))
@@ -70,11 +69,11 @@ describe('VideoImage', () => {
 
   it('should close file upload dialog on close button click', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider>
           <VideoImage video={video} />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
     expect(screen.getByRole('button')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button'))
@@ -91,11 +90,11 @@ describe('VideoImage', () => {
 
   it('should close file upload on file upload completion', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider>
           <VideoImage video={video} />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
     expect(screen.getByRole('button')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button'))
@@ -112,11 +111,11 @@ describe('VideoImage', () => {
 
   it('should show fallback if src is null', () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <MockedProvider>
           <VideoImage video={{ ...video, images: [] }} />
         </MockedProvider>
-      </NextIntlClientProvider>
+      
     )
 
     expect(screen.getByTestId('Upload1Icon')).toBeInTheDocument()

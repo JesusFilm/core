@@ -2,7 +2,6 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { GraphQLError } from 'graphql'
-import { NextIntlClientProvider } from 'next-intl'
 
 import { getLanguagesMock } from '@core/journeys/ui/useLanguagesQuery/useLanguagesQuery.mock'
 
@@ -99,7 +98,7 @@ describe('SubtitleCreate', () => {
 
   it('should render', () => {
     render(
-      <NextIntlClientProvider locale="en">
+      
         <VideoProvider video={mockVideo}>
           <SnackbarProvider>
             <MockedProvider mocks={[]}>
@@ -111,7 +110,7 @@ describe('SubtitleCreate', () => {
             </MockedProvider>
           </SnackbarProvider>
         </VideoProvider>
-      </NextIntlClientProvider>
+      
     )
 
     expect(screen.getByTestId('SubtitleForm')).toBeInTheDocument()
@@ -131,7 +130,7 @@ describe('SubtitleCreate', () => {
     })
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <VideoProvider video={mockVideo}>
           <MockedProvider mocks={[getLanguagesMock, createSubtitleMock]}>
             <SubtitleCreate
@@ -141,7 +140,7 @@ describe('SubtitleCreate', () => {
             />
           </MockedProvider>
         </VideoProvider>
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()
@@ -162,7 +161,7 @@ describe('SubtitleCreate', () => {
     const close = jest.fn()
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <SnackbarProvider>
           <VideoProvider video={mockVideo}>
             <MockedProvider mocks={[getLanguagesMock]}>
@@ -174,7 +173,7 @@ describe('SubtitleCreate', () => {
             </MockedProvider>
           </VideoProvider>
         </SnackbarProvider>
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()
@@ -213,7 +212,7 @@ describe('SubtitleCreate', () => {
     })
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <VideoProvider video={mockVideo}>
           <MockedProvider
             mocks={[
@@ -229,7 +228,7 @@ describe('SubtitleCreate', () => {
             />
           </MockedProvider>
         </VideoProvider>
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()
@@ -275,7 +274,7 @@ describe('SubtitleCreate', () => {
     })
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <VideoProvider video={mockVideo}>
           <MockedProvider
             mocks={[
@@ -291,7 +290,7 @@ describe('SubtitleCreate', () => {
             />
           </MockedProvider>
         </VideoProvider>
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()
@@ -349,7 +348,7 @@ describe('SubtitleCreate', () => {
     })
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <VideoProvider video={mockVideo}>
           <MockedProvider
             mocks={[
@@ -366,7 +365,7 @@ describe('SubtitleCreate', () => {
             />
           </MockedProvider>
         </VideoProvider>
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()
@@ -436,7 +435,7 @@ describe('SubtitleCreate', () => {
     }
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <SnackbarProvider>
           <VideoProvider video={mockVideo}>
             <MockedProvider
@@ -454,7 +453,7 @@ describe('SubtitleCreate', () => {
             </MockedProvider>
           </VideoProvider>
         </SnackbarProvider>
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()
@@ -493,7 +492,7 @@ describe('SubtitleCreate', () => {
     })
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <VideoProvider video={mockVideo}>
           <MockedProvider mocks={[getLanguagesMock, createSubtitleMock]}>
             <SubtitleCreate
@@ -503,7 +502,7 @@ describe('SubtitleCreate', () => {
             />
           </MockedProvider>
         </VideoProvider>
-      </NextIntlClientProvider>
+      
     )
 
     const user = userEvent.setup()

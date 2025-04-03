@@ -1,6 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { NextIntlClientProvider } from 'next-intl'
 import { SnackbarProvider } from 'notistack'
 
 import { DELETE_VIDEO_VARIANT } from '../../../../../../../libs/useDeleteVideoVariantMutation'
@@ -87,25 +86,18 @@ describe('DeleteVariantDialog', () => {
 
     render(
       <MockedProvider mocks={[deleteMutationMock]}>
-        <NextIntlClientProvider locale="en">
-          <SnackbarProvider>
-            <DeleteVariantDialog
-              variant={mockVariant}
-              open
-              onClose={handleClose}
-              onSuccess={handleSuccess}
-            />
-          </SnackbarProvider>
-        </NextIntlClientProvider>
+        <SnackbarProvider>
+          <DeleteVariantDialog
+            variant={mockVariant}
+            open
+            onClose={handleClose}
+            onSuccess={handleSuccess}
+          />
+        </SnackbarProvider>
       </MockedProvider>
     )
 
     expect(screen.getByText('Delete Audio Language')).toBeInTheDocument()
-
-    await waitFor(() =>
-      expect(screen.getByText('deleteVariantDialog')).toBeInTheDocument()
-    )
-
     expect(screen.getByText('Cancel')).toBeInTheDocument()
     expect(screen.getByText('Delete')).toBeInTheDocument()
   })
@@ -116,16 +108,14 @@ describe('DeleteVariantDialog', () => {
 
     render(
       <MockedProvider mocks={[deleteMutationMock]}>
-        <NextIntlClientProvider locale="en">
-          <SnackbarProvider>
-            <DeleteVariantDialog
-              variant={mockVariant}
-              open={false}
-              onClose={handleClose}
-              onSuccess={handleSuccess}
-            />
-          </SnackbarProvider>
-        </NextIntlClientProvider>
+        <SnackbarProvider>
+          <DeleteVariantDialog
+            variant={mockVariant}
+            open={false}
+            onClose={handleClose}
+            onSuccess={handleSuccess}
+          />
+        </SnackbarProvider>
       </MockedProvider>
     )
 
@@ -138,16 +128,14 @@ describe('DeleteVariantDialog', () => {
 
     render(
       <MockedProvider mocks={[deleteMutationMock]}>
-        <NextIntlClientProvider locale="en">
-          <SnackbarProvider>
-            <DeleteVariantDialog
-              variant={mockVariant}
-              open
-              onClose={handleClose}
-              onSuccess={handleSuccess}
-            />
-          </SnackbarProvider>
-        </NextIntlClientProvider>
+        <SnackbarProvider>
+          <DeleteVariantDialog
+            variant={mockVariant}
+            open
+            onClose={handleClose}
+            onSuccess={handleSuccess}
+          />
+        </SnackbarProvider>
       </MockedProvider>
     )
 
@@ -169,16 +157,14 @@ describe('DeleteVariantDialog', () => {
       <MockedProvider
         mocks={[{ ...deleteMutationMock, result: deleteMutationMockResult }]}
       >
-        <NextIntlClientProvider locale="en">
-          <SnackbarProvider>
-            <DeleteVariantDialog
-              variant={mockVariant}
-              open
-              onClose={handleClose}
-              onSuccess={handleSuccess}
-            />
-          </SnackbarProvider>
-        </NextIntlClientProvider>
+        <SnackbarProvider>
+          <DeleteVariantDialog
+            variant={mockVariant}
+            open
+            onClose={handleClose}
+            onSuccess={handleSuccess}
+          />
+        </SnackbarProvider>
       </MockedProvider>
     )
 
@@ -212,16 +198,14 @@ describe('DeleteVariantDialog', () => {
 
     render(
       <MockedProvider mocks={[errorMock]}>
-        <NextIntlClientProvider locale="en">
-          <SnackbarProvider>
-            <DeleteVariantDialog
-              variant={mockVariant}
-              open
-              onClose={handleClose}
-              onSuccess={handleSuccess}
-            />
-          </SnackbarProvider>
-        </NextIntlClientProvider>
+        <SnackbarProvider>
+          <DeleteVariantDialog
+            variant={mockVariant}
+            open
+            onClose={handleClose}
+            onSuccess={handleSuccess}
+          />
+        </SnackbarProvider>
       </MockedProvider>
     )
 

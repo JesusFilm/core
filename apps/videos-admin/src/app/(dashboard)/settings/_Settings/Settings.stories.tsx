@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { NextIntlClientProvider } from 'next-intl'
 import { ComponentProps } from 'react'
 
 import { videosAdminConfig } from '../../../../libs/storybookConfig'
@@ -23,15 +22,13 @@ const meta: Meta<typeof Settings> = {
 
 export default meta
 
-type Story = StoryObj<ComponentProps<typeof Settings> & { locale: string }>
+type Story = StoryObj<ComponentProps<typeof Settings>>
 
 export const Default: Story = {
-  render: ({ locale }) => (
-    <NextIntlClientProvider locale={locale}>
+  render: () => (
+    
       <Settings />
-    </NextIntlClientProvider>
+    
   ),
-  args: {
-    locale: 'en'
-  }
+  
 }

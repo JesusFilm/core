@@ -1,5 +1,4 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { NextIntlClientProvider } from 'next-intl'
 
 import { FileUpload } from './FileUpload'
 
@@ -9,7 +8,7 @@ describe('FileUpload', () => {
     const onUploadComplete = jest.fn()
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <FileUpload
           onDrop={mockOnDrop}
           onUploadComplete={onUploadComplete}
@@ -18,7 +17,7 @@ describe('FileUpload', () => {
           }}
           loading={false}
         />
-      </NextIntlClientProvider>
+      
     )
 
     const input = screen.getByTestId('DropZone')
@@ -38,7 +37,7 @@ describe('FileUpload', () => {
     const onUploadComplete = jest.fn()
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <FileUpload
           onDrop={mockOnDrop}
           onUploadComplete={onUploadComplete}
@@ -47,7 +46,7 @@ describe('FileUpload', () => {
           }}
           loading={false}
         />
-      </NextIntlClientProvider>
+      
     )
 
     const input = screen.getByTestId('DropZone')
@@ -61,7 +60,7 @@ describe('FileUpload', () => {
     const onUploadComplete = jest.fn()
 
     render(
-      <NextIntlClientProvider locale="en">
+      
         <FileUpload
           onDrop={mockOnDrop}
           onUploadComplete={onUploadComplete}
@@ -70,7 +69,7 @@ describe('FileUpload', () => {
           }}
           loading
         />
-      </NextIntlClientProvider>
+      
     )
 
     await waitFor(() =>
