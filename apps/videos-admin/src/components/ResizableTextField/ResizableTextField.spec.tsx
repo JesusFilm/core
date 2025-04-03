@@ -1,18 +1,16 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 
-
 import { ResizableTextField } from './ResizableTextField'
 
 describe('ResizableTextField', () => {
   it('should render text', () => {
     render(
       <ResizableTextField
-          id="id"
-          name="testTextField"
-          value="some text"
-          disabled
-        />
-
+        id="id"
+        name="testTextField"
+        value="some text"
+        disabled
+      />
     )
 
     expect(screen.getByRole('textbox')).toHaveValue('some text')
@@ -20,8 +18,7 @@ describe('ResizableTextField', () => {
 
   it('should be disabled', () => {
     render(
-      
-        <ResizableTextField id="id" name="test" value="some text" disabled />
+      <ResizableTextField id="id" name="test" value="some text" disabled />
     )
 
     expect(screen.getByRole('textbox')).toHaveValue('some text')

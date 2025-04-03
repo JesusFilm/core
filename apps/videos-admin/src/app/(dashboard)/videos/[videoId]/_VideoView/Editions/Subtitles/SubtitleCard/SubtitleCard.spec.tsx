@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 
 import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 
@@ -11,13 +11,11 @@ const mockPrimarySubtitle = mockEdition.videoSubtitles[0]
 describe('SubtitleCard', () => {
   it('should render primary subtitle', () => {
     render(
-      
-        <SubtitleCard
-          subtitle={mockPrimarySubtitle}
-          onClick={jest.fn()}
-          actions={{ view: jest.fn(), edit: jest.fn(), delete: jest.fn() }}
-        />
-      
+      <SubtitleCard
+        subtitle={mockPrimarySubtitle}
+        onClick={jest.fn()}
+        actions={{ view: jest.fn(), edit: jest.fn(), delete: jest.fn() }}
+      />
     )
     expect(
       screen.getByText(

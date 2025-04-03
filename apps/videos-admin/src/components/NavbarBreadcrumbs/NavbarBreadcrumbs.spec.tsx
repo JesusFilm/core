@@ -1,7 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { usePathname } from 'next/navigation'
 
-
 import { NavbarBreadcrumbs } from './NavbarBreadcrumbs'
 
 jest.mock('next/navigation', () => ({
@@ -16,10 +15,7 @@ describe('NavbarBreadcrumbs', () => {
 
   it('should show home breadcrumb', async () => {
     mockedUsePathname.mockReturnValue('/en/videos')
-    render(
-      <NavbarBreadcrumbs />
-
-    )
+    render(<NavbarBreadcrumbs />)
 
     expect(screen.getByTestId('HomeRoundedIcon')).toBeInTheDocument()
     expect(screen.getByText('Dashboard')).toBeInTheDocument()
@@ -27,11 +23,7 @@ describe('NavbarBreadcrumbs', () => {
 
   it('should show icon and values for existing breadcrumbs', async () => {
     mockedUsePathname.mockReturnValue('/en/videos')
-    render(
-      
-        <NavbarBreadcrumbs />
-      
-    )
+    render(<NavbarBreadcrumbs />)
 
     expect(screen.getByTestId('VideoLibraryRoundedIcon')).toBeInTheDocument()
     expect(screen.getByText('Video Library')).toBeInTheDocument()
@@ -39,10 +31,7 @@ describe('NavbarBreadcrumbs', () => {
 
   it('should handle routes that are not predefined', async () => {
     mockedUsePathname.mockReturnValue('/en/random')
-    render(
-      
-        <NavbarBreadcrumbs />
-    )
+    render(<NavbarBreadcrumbs />)
 
     expect(screen.getByText('Random')).toBeInTheDocument()
   })

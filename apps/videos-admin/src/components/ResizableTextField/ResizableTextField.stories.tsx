@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react'
-
 import { ComponentProps } from 'react'
 
 import { videosAdminConfig } from '../../libs/storybookConfig'
@@ -17,13 +16,13 @@ type Story = StoryObj<ComponentProps<typeof ResizableTextField>>
 const Template: Story = {
   render: ({ disabled, error, helperText }) => (
     <ResizableTextField
-        id="someId"
-        name="some name"
-        value="some text"
-        disabled={disabled}
-        error={error}
-        helperText={helperText}
-      />
+      id="someId"
+      name="some name"
+      value="some text"
+      disabled={disabled}
+      error={error}
+      helperText={helperText}
+    />
   )
 }
 

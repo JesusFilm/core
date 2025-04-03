@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react'
-
 import { ComponentPropsWithoutRef } from 'react'
 
 import { videosAdminConfig } from '../../libs/storybookConfig'
@@ -25,11 +24,7 @@ export default meta
 type Story = StoryObj<ComponentPropsWithoutRef<typeof PublishedChip>>
 
 export const Published: Story = {
-  render: ({ published }) => (
-    
-      <PublishedChip published={published} />
-    
-  ),
+  render: ({ published }) => <PublishedChip published={published} />,
   args: {
     published: true
   }

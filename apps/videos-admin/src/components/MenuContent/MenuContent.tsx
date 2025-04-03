@@ -8,7 +8,7 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import Stack from '@mui/material/Stack'
 import Link from 'next/link'
-import { useParams, usePathname } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { ReactElement, ReactNode } from 'react'
 
 interface Item {
@@ -19,7 +19,6 @@ interface Item {
 }
 
 export function MenuContent(): ReactElement {
-  const params = useParams()
   const pathname = usePathname()
 
   const mainListItems: Item[] = [

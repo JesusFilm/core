@@ -1,6 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 
-
 import { OrderedItemMenu } from './OrderedItemMenu'
 
 describe('OrderedItemMenu', () => {
@@ -8,9 +7,9 @@ describe('OrderedItemMenu', () => {
     const editOnClick = jest.fn()
     render(
       <OrderedItemMenu
-          id="someId"
-          actions={[{ label: 'Edit', handler: editOnClick }]}
-        />
+        id="someId"
+        actions={[{ label: 'Edit', handler: editOnClick }]}
+      />
     )
 
     fireEvent.click(screen.getByRole('button'))

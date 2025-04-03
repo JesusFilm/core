@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react'
-
 import { ComponentProps } from 'react'
 
 import { videosAdminConfig } from '../../libs/storybookConfig'
@@ -28,11 +27,7 @@ type Story = StoryObj<
 >
 
 export const Default: Story = {
-  render: () => (
-    <NavbarBreadcrumbs />
-
-  ),
-  ,
+  render: () => <NavbarBreadcrumbs />,
   parameters: {
     nextjs: {
       navigation: {
@@ -44,12 +39,7 @@ export const Default: Story = {
 }
 
 export const WithSettings: Story = {
-  render: () => (
-    
-      <NavbarBreadcrumbs />
-    
-  ),
-  ,
+  render: () => <NavbarBreadcrumbs />,
   parameters: {
     nextjs: {
       navigation: {
@@ -61,12 +51,7 @@ export const WithSettings: Story = {
 }
 
 export const WithVideos: Story = {
-  render: () => (
-    
-      <NavbarBreadcrumbs />
-    
-  ),
-  ,
+  render: () => <NavbarBreadcrumbs />,
   parameters: {
     nextjs: {
       navigation: {
@@ -78,11 +63,7 @@ export const WithVideos: Story = {
 }
 
 export const WithVideosAndId: Story = {
-  render: () => (
-    
-      <NavbarBreadcrumbs />
-  ),
-  ,
+  render: () => <NavbarBreadcrumbs />,
   parameters: {
     nextjs: {
       navigation: {

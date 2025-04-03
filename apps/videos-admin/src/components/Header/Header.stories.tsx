@@ -25,12 +25,7 @@ export default meta
 type Story = StoryObj<ComponentProps<typeof Header>>
 
 export const Default: Story = {
-  render: () => (
-    
-      <Header />
-    
-  ),
-  ,
+  render: () => <Header />,
   parameters: {
     nextjs: {
       navigation: {
@@ -42,12 +37,7 @@ export const Default: Story = {
 }
 
 export const WithSettings: Story = {
-  render: () => (
-    
-      <Header />
-    
-  ),
-  ,
+  render: () => <Header />,
   parameters: {
     nextjs: {
       navigation: {
@@ -59,12 +49,7 @@ export const WithSettings: Story = {
 }
 
 export const WithVideos: Story = {
-  render: () => (
-    
-      <Header />
-    
-  ),
-  ,
+  render: () => <Header />,
   parameters: {
     nextjs: {
       navigation: {
@@ -76,12 +61,7 @@ export const WithVideos: Story = {
 }
 
 export const WithVideosAndId: Story = {
-  render: () => (
-    
-      <Header />
-    
-  ),
-  ,
+  render: () => <Header />,
   parameters: {
     nextjs: {
       navigation: {

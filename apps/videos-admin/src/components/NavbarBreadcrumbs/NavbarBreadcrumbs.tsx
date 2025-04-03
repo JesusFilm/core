@@ -7,7 +7,7 @@ import MuiLink from '@mui/material/Link'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Link from 'next/link'
-import { useParams, usePathname } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { ReactElement, ReactNode } from 'react'
 
 const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({

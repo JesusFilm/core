@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react'
-
 import { ComponentProps } from 'react'
 
 import { videosAdminConfig } from '../../libs/storybookConfig'
@@ -29,8 +28,7 @@ type Story = StoryObj<ComponentProps<typeof CenterPage>>
 export const Default: Story = {
   render: () => (
     <CenterPage>
-        <div>Hello World</div>
-      </CenterPage>
-  ),
-  
+      <div>Hello World</div>
+    </CenterPage>
+  )
 }

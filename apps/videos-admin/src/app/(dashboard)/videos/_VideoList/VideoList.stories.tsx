@@ -103,21 +103,11 @@ const mockGetAdminVideosAndCount100: MockedResponse<
 }
 
 export const Default: Story = {
-  render: () => (
-    
-      <VideoList />
-    
-  ),
-  
+  render: () => <VideoList />
 }
 
 export const WithVideos: Story = {
-  render: () => (
-    
-      <VideoList />
-    
-  ),
-  ,
+  render: () => <VideoList />,
   parameters: {
     apolloClient: {
       mocks: [mockGetAdminVideosAndCount]
@@ -126,12 +116,7 @@ export const WithVideos: Story = {
 }
 
 export const WithVideosLong: Story = {
-  render: () => (
-    
-      <VideoList />
-    
-  ),
-  ,
+  render: () => <VideoList />,
   parameters: {
     apolloClient: {
       mocks: [mockGetAdminVideosAndCount100]

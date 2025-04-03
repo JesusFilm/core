@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react'
-
 import { ComponentProps } from 'react'
 
 import { videosAdminConfig } from '../../libs/storybookConfig'
@@ -27,11 +26,7 @@ export default meta
 type Story = StoryObj<ComponentProps<typeof MenuButton>>
 
 export const Default: Story = {
-  render: ({ locale, showBadge }) => (
-    
-      <MenuButton showBadge={showBadge} />
-    
-  ),
+  render: ({ locale, showBadge }) => <MenuButton showBadge={showBadge} />,
   args: {
     locale: 'en',
     showBadge: false

@@ -1,6 +1,5 @@
 import { render, screen } from '@testing-library/react'
 
-
 import { AuthProvider } from '../../libs/auth/AuthProvider'
 
 import { SideMenu } from './SideMenu'
@@ -22,7 +21,6 @@ describe('SideMenu', () => {
         }}
       >
         <SideMenu />
-
       </AuthProvider>
     )
 
@@ -39,9 +37,7 @@ describe('SideMenu', () => {
           photoURL: 'url-of-nameinghams-photo'
         }}
       >
-        
-          <SideMenu />
-        
+        <SideMenu />
       </AuthProvider>
     )
 
@@ -62,9 +58,7 @@ describe('SideMenu', () => {
           photoURL: 'url-of-nameinghams-photo'
         }}
       >
-        
-          <SideMenu />
-        
+        <SideMenu />
       </AuthProvider>
     )
 
@@ -83,8 +77,7 @@ describe('SideMenu', () => {
           photoURL: 'url-of-nameinghams-photo'
         }}
       >
-        
-          <SideMenu />
+        <SideMenu />
       </AuthProvider>
     )
 

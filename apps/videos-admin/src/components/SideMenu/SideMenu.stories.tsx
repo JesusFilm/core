@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react'
-
 import { ComponentProps } from 'react'
 
 import { AuthProvider } from '../../libs/auth/AuthProvider'
@@ -34,10 +33,7 @@ export const Default: Story = {
         photoURL: 'url-of-nameinghams-photo'
       }}
     >
-      
-        <SideMenu />
-      
+      <SideMenu />
     </AuthProvider>
-  ),
-  
+  )
 }
