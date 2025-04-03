@@ -13,8 +13,8 @@ export default function EasterPage(): ReactElement {
   return (
     <>
       <NextSeo
-        nofollow
         noindex
+        nofollow
         titleTemplate="%s | Jesus Film Project"
         defaultTitle="Easter 2025 videos & resources about Lent, Holy Week, Resurrection | Jesus Film Project"
         description="Explore the other side of Easter — one filled with betrayal, hope, and a claim that changed the world."
@@ -24,13 +24,18 @@ export default function EasterPage(): ReactElement {
           description:
             'Explore the other side of Easter — one filled with betrayal, hope, and a claim that changed the world.',
           url: 'https://watch.jesusfilm.org/watch/easter',
+          type: 'website',
+          locale: 'en_US',
           images: [
             {
               url: 'https://images.unsplash.com/photo-1482424917728-d82d29662023?w=1400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjN8fGNocmlzdHxlbnwwfHwwfHx8MA%3D%3D',
               width: 1400,
-              alt: 'Easter - Jesus Film Project'
+              height: 933,
+              alt: 'Easter - Jesus Film Project',
+              type: 'image/jpeg'
             }
-          ]
+          ],
+          site_name: 'Jesus Film Project'
         }}
         facebook={
           process.env.NEXT_PUBLIC_FACEBOOK_APP_ID != null
@@ -41,7 +46,8 @@ export default function EasterPage(): ReactElement {
         }
         twitter={{
           site: '@JesusFilm',
-          cardType: 'summary_large_image'
+          cardType: 'summary_large_image',
+          handle: '@JesusFilm'
         }}
       />
       <SnackbarProvider>
