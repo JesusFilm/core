@@ -214,7 +214,6 @@ describe('AddVideoVariantDownloadDialog', () => {
         variables: {
           input: {
             fileName: expect.any(String),
-            fileCategory: 'VIDEO',
             originalFilename: 'test-video.mp4',
             contentType: 'video/mp4',
             contentLength: expect.any(Number),
@@ -230,9 +229,15 @@ describe('AddVideoVariantDownloadDialog', () => {
         query: VIDEO_VARIANT_DOWNLOAD_CREATE,
         variables: {
           input: {
-            cloudflareR2AssetId: '1',
+-           cloudflareR2AssetId: '1',
++           assetId: '1',
             videoVariantId: '1',
-            quality: 'low'
+            quality: 'low',
++           size: expect.any(Number),
++           height: expect.any(Number),
++           width: expect.any(Number),
++           url: expect.any(String),
++           version: 0
           }
         }
       },

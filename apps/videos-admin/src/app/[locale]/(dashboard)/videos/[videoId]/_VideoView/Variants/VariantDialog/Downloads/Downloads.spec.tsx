@@ -251,9 +251,10 @@ describe('Downloads', () => {
       }
     }))
 
+    // Make the mock function more resilient by ensuring it always returns something
     const createR2AssetMockResult = jest
       .fn()
-      .mockReturnValue(createR2AssetMockResultFn)
+      .mockImplementation(() => createR2AssetMockResultFn())
 
     const mockCreateR2AssetMock = {
       request: {
