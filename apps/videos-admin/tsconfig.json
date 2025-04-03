@@ -33,7 +33,8 @@
     "src/app/_ApolloProvider/ApolloProvider.tsx",
     "src/i18n.ts",
     "src/middleware.ts",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "../../dist/apps/videos-admin/.next/types/**/*.ts"
   ],
   "exclude": ["node_modules", "jest.config.ts", ".next"]
 }

@@ -8,7 +8,7 @@ import { graphql } from 'gql.tada'
 import Image from 'next/image'
 import { ReactNode } from 'react'
 
-import minimalLogo from '../../../../assets/minimal-logo.png'
+import minimalLogo from '../../../assets/minimal-logo.png'
 import { CenterPage } from '../../../components/CenterPage'
 import { makeClient } from '../../../libs/apollo/makeClient'
 import { getUser } from '../../../libs/auth/getUser'
