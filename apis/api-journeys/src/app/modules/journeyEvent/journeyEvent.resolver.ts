@@ -39,10 +39,10 @@ export class JourneyEventResolver {
     })
   }
 
-  @ResolveField()
-  __resolveType(obj: { __typename?: string; typename: string }): string {
-    return obj.__typename ?? obj.typename
-  }
+  // @ResolveField()
+  // __resolveType(obj: { __typename?: string; typename: string }): string {
+  //   return obj.__typename ?? obj.typename
+  // }
 
   // @ResolveField()
   // async journey(@Parent() journeyEvent): Promise<Journey | null> {

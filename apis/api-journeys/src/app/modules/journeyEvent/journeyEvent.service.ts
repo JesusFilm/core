@@ -65,7 +65,7 @@ export class JourneyEventService {
         journey: true,
         visitor: true
       },
-      orderBy: { createdAt: 'desc' },
+      // orderBy: { createdAt: 'desc' },
       cursor: after != null ? { id: after } : undefined,
       skip: after == null ? 0 : 1,
       take: first + 1
