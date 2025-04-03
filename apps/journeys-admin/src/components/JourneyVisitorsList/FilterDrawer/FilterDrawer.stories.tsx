@@ -39,6 +39,7 @@ export const Default = {
     titleAction: <ClearAllButton />,
     sidePanelChildren: (
       <FilterDrawer
+        journeyId="123"
         sortSetting="date"
         chatStarted={false}
         withPollAnswers={false}
@@ -56,6 +57,7 @@ export const Complete = {
     ...Default.args,
     sidePanelChildren: (
       <FilterDrawer
+        journeyId="123"
         sortSetting="date"
         chatStarted
         withPollAnswers
