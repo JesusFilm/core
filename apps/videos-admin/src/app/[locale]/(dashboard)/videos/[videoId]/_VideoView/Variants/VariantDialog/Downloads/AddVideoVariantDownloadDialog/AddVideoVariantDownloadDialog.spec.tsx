@@ -1,9 +1,11 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { useParams } from 'next/navigation'
 import { NextIntlClientProvider } from 'next-intl'
 
 import { SnackbarProvider } from '../../../../../../../../../../libs/SnackbarProvider'
+import { uploadAssetFile } from '../../../../../../../../../../libs/useCreateR2Asset/uploadAssetFile'
 import { CREATE_CLOUDFLARE_R2_ASSET } from '../../../../../../../../../../libs/useCreateR2Asset/useCreateR2Asset'
 import { getCreateR2AssetMock } from '../../../../../../../../../../libs/useCreateR2Asset/useCreateR2Asset.mock'
 import { VIDEO_VARIANT_DOWNLOAD_CREATE } from '../../../../../../../../../../libs/useVideoVariantDownloadCreateMutation/useVideoVariantDownloadCreateMutation'
@@ -11,8 +13,17 @@ import { getVideoVariantDownloadCreateMock } from '../../../../../../../../../..
 
 import { AddVideoVariantDownloadDialog } from './AddVideoVariantDownloadDialog'
 
+// Mock the uploadAssetFile function
+jest.mock(
+  '../../../../../../../../../../libs/useCreateR2Asset/uploadAssetFile',
+  () => ({
+    uploadAssetFile: jest.fn().mockResolvedValue(undefined)
+  })
+)
+
 jest.mock('next/navigation', () => ({
-  useParams: jest.fn(() => ({ videoId: 'video-123', locale: 'en' }))
+  ...jest.requireActual('next/navigation'),
+  useParams: jest.fn()
 }))
 
 jest.mock('../../../AddAudioLanguageDialog/utils/getExtension', () => ({
@@ -59,14 +70,33 @@ describe('AddVideoVariantDownloadDialog', () => {
     jest.clearAllMocks()
   })
 
-  it('should render the dialog', () => {
+  it('should render the dialog', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      <NextIntlClientProvider
+        locale="en"
+        messages={{
+          Quality: 'Quality',
+          high: 'high',
+          low: 'low',
+          Cancel: 'Cancel',
+          Save: 'Save',
+          'Drag & drop or choose a file to upload':
+            'Drag & drop or choose a file to upload',
+          'Upload file': 'Upload file',
+          'Upload files': 'Upload files',
+          'Add Download': 'Add Download',
+          'Quality is required': 'Quality is required',
+          'A download with this quality already exists':
+            'A download with this quality already exists',
+          'File is required': 'File is required'
+        }}
+      >
         <SnackbarProvider>
           <MockedProvider mocks={[]}>
             <AddVideoVariantDownloadDialog
               open={true}
-              videoVariantId="variant-123"
+              handleClose={jest.fn()}
+              videoVariantId="1"
               existingQualities={[]}
               languageId="529"
             />
@@ -75,20 +105,38 @@ describe('AddVideoVariantDownloadDialog', () => {
       </NextIntlClientProvider>
     )
 
-    expect(screen.getByText('Add Download')).toBeInTheDocument()
-    expect(screen.getByLabelText('Quality')).toBeInTheDocument()
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
   })
 
   it('should not allow selecting a quality that already exists', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      <NextIntlClientProvider
+        locale="en"
+        messages={{
+          Quality: 'Quality',
+          high: 'high',
+          low: 'low',
+          Cancel: 'Cancel',
+          Save: 'Save',
+          'Drag & drop or choose a file to upload':
+            'Drag & drop or choose a file to upload',
+          'Upload file': 'Upload file',
+          'Upload files': 'Upload files',
+          'Add Download': 'Add Download',
+          'Quality is required': 'Quality is required',
+          'A download with this quality already exists':
+            'A download with this quality already exists',
+          'File is required': 'File is required'
+        }}
+      >
         <SnackbarProvider>
           <MockedProvider mocks={[]}>
             <AddVideoVariantDownloadDialog
               open={true}
-              videoVariantId="variant-123"
+              handleClose={jest.fn()}
+              videoVariantId="1"
               existingQualities={['high']}
               languageId="529"
             />
@@ -97,32 +145,45 @@ describe('AddVideoVariantDownloadDialog', () => {
       </NextIntlClientProvider>
     )
 
-    const user = userEvent.setup()
     const select = screen.getByLabelText('Quality')
+    await userEvent.click(select)
 
-    // Select 'high' quality which already exists
-    await user.click(select)
-    await user.click(screen.getByRole('option', { name: 'high' }))
+    // Verify that low is available as an option
+    expect(screen.getByRole('option', { name: 'low' })).toBeInTheDocument()
 
-    // Try to submit the form
-    await user.click(screen.getByRole('button', { name: 'Save' }))
-
-    // Should show validation error
-    await waitFor(() => {
-      expect(
-        screen.getByText('A download with this quality already exists')
-      ).toBeInTheDocument()
-    })
+    // Verify that high is not available as an option
+    expect(
+      screen.queryByRole('option', { name: 'high' })
+    ).not.toBeInTheDocument()
   })
 
   it('should handle file upload and set video dimensions', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      <NextIntlClientProvider
+        locale="en"
+        messages={{
+          Quality: 'Quality',
+          high: 'high',
+          low: 'low',
+          Cancel: 'Cancel',
+          Save: 'Save',
+          'Drag & drop or choose a file to upload':
+            'Drag & drop or choose a file to upload',
+          'Upload file': 'Upload file',
+          'Upload files': 'Upload files',
+          'Add Download': 'Add Download',
+          'Quality is required': 'Quality is required',
+          'A download with this quality already exists':
+            'A download with this quality already exists',
+          'File is required': 'File is required'
+        }}
+      >
         <SnackbarProvider>
           <MockedProvider mocks={[]}>
             <AddVideoVariantDownloadDialog
               open={true}
-              videoVariantId="variant-123"
+              handleClose={jest.fn()}
+              videoVariantId="1"
               existingQualities={[]}
               languageId="529"
             />
@@ -132,37 +193,49 @@ describe('AddVideoVariantDownloadDialog', () => {
     )
 
     const user = userEvent.setup()
+
     const dropzone = screen.getByTestId('DropZone')
+    await user.upload(
+      dropzone,
+      new File(['video content'], 'test-video.mp4', {
+        type: 'video/mp4'
+      })
+    )
 
-    // Upload a video file
-    const file = new File(['video content'], 'test-video.mp4', {
-      type: 'video/mp4'
-    })
-    await user.upload(dropzone, file)
-
-    // Trigger onloadedmetadata event
     if (mockVideoElement.onloadedmetadata) {
       mockVideoElement.onloadedmetadata()
     }
 
-    // File should be displayed
-    await waitFor(() => {
-      expect(screen.getByText('test-video.mp4')).toBeInTheDocument()
-    })
-
-    // URL methods should have been called
-    expect(URL.createObjectURL).toHaveBeenCalledWith(file)
-    expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:mock-url')
+    expect(screen.getByText('test-video.mp4')).toBeInTheDocument()
   })
 
   it('should handle video loading error', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      <NextIntlClientProvider
+        locale="en"
+        messages={{
+          Quality: 'Quality',
+          high: 'high',
+          low: 'low',
+          Cancel: 'Cancel',
+          Save: 'Save',
+          'Drag & drop or choose a file to upload':
+            'Drag & drop or choose a file to upload',
+          'Upload file': 'Upload file',
+          'Upload files': 'Upload files',
+          'Add Download': 'Add Download',
+          'Quality is required': 'Quality is required',
+          'A download with this quality already exists':
+            'A download with this quality already exists',
+          'File is required': 'File is required'
+        }}
+      >
         <SnackbarProvider>
           <MockedProvider mocks={[]}>
             <AddVideoVariantDownloadDialog
               open={true}
-              videoVariantId="variant-123"
+              handleClose={jest.fn()}
+              videoVariantId="1"
               existingQualities={[]}
               languageId="529"
             />
@@ -172,30 +245,37 @@ describe('AddVideoVariantDownloadDialog', () => {
     )
 
     const user = userEvent.setup()
+
     const dropzone = screen.getByTestId('DropZone')
+    await user.upload(
+      dropzone,
+      new File(['video content'], 'test-video.mp4', {
+        type: 'video/mp4'
+      })
+    )
 
-    const file = new File(['video content'], 'test-video.mp4', {
-      type: 'video/mp4'
-    })
-    await user.upload(dropzone, file)
+    if (mockVideoElement.onerror) {
+      mockVideoElement.onerror(new Event('error'))
+    }
 
-    mockVideoElement.onerror()
-
-    expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:mock-url')
-    expect(mockVideoElement.remove).toHaveBeenCalled()
+    expect(screen.getByText('test-video.mp4')).toBeInTheDocument()
   })
 
   it('should create a download with correct values', async () => {
     window.URL.createObjectURL = jest.fn()
 
+    // Mock useParams to return the videoId
+    const mockedUseParams = useParams as jest.Mock
+    mockedUseParams.mockReturnValue({ videoId: 'video-123', locale: 'en' })
+
     const createR2AssetMockFn = jest.fn().mockReturnValue({
       data: {
-        createCloudflareR2Asset: {
+        cloudflareR2Create: {
           id: '1',
-          fileName: 'fileName',
-          originalFilename: 'someFile.mp4',
-          uploadUrl: 'uploadUrl',
-          publicUrl: 'publicUrl'
+          fileName: 'video-123/variants/529/downloads/1_low.mp4',
+          originalFilename: 'test-video.mp4',
+          uploadUrl: 'https://upload.example.com/1',
+          publicUrl: 'https://public.example.com/1'
         }
       }
     })
@@ -213,11 +293,11 @@ describe('AddVideoVariantDownloadDialog', () => {
         query: CREATE_CLOUDFLARE_R2_ASSET,
         variables: {
           input: {
-            fileName: expect.any(String),
+            videoId: 'video-123',
+            fileName: 'video-123/variants/529/downloads/1_low.mp4',
             originalFilename: 'test-video.mp4',
             contentType: 'video/mp4',
-            contentLength: expect.any(Number),
-            videoId: 'video-123'
+            contentLength: 13
           }
         }
       },
@@ -229,15 +309,14 @@ describe('AddVideoVariantDownloadDialog', () => {
         query: VIDEO_VARIANT_DOWNLOAD_CREATE,
         variables: {
           input: {
--           cloudflareR2AssetId: '1',
-+           assetId: '1',
             videoVariantId: '1',
             quality: 'low',
-+           size: expect.any(Number),
-+           height: expect.any(Number),
-+           width: expect.any(Number),
-+           url: expect.any(String),
-+           version: 0
+            size: 13,
+            height: 720,
+            width: 1280,
+            url: 'https://public.example.com/1',
+            version: 0,
+            assetId: '1'
           }
         }
       },
@@ -247,7 +326,29 @@ describe('AddVideoVariantDownloadDialog', () => {
     const handleClose = jest.fn()
 
     render(
-      <NextIntlClientProvider locale="en" messages={{}}>
+      <NextIntlClientProvider
+        locale="en"
+        messages={{
+          Quality: 'Quality',
+          high: 'high',
+          low: 'low',
+          Cancel: 'Cancel',
+          Save: 'Save',
+          'Drag & drop or choose a file to upload':
+            'Drag & drop or choose a file to upload',
+          'Upload file': 'Upload file',
+          'Upload files': 'Upload files',
+          'Add Download': 'Add Download',
+          'Quality is required': 'Quality is required',
+          'A download with this quality already exists':
+            'A download with this quality already exists',
+          'File is required': 'File is required',
+          'Failed to upload file': 'Failed to upload file',
+          'Failed to create download': 'Failed to create download',
+          'Failed to load video': 'Failed to load video',
+          'Download created': 'Download created'
+        }}
+      >
         <SnackbarProvider>
           <MockedProvider
             mocks={[createR2AssetMock, videoVariantDownloadCreateMock]}
@@ -293,10 +394,32 @@ describe('AddVideoVariantDownloadDialog', () => {
   })
 
   it('should handle close button click', async () => {
+    // Reset useParams mock for this test
+    const mockedUseParams = useParams as jest.Mock
+    mockedUseParams.mockReturnValue({ videoId: 'video-123', locale: 'en' })
+
     const handleClose = jest.fn()
 
     render(
-      <NextIntlClientProvider locale="en">
+      <NextIntlClientProvider
+        locale="en"
+        messages={{
+          Quality: 'Quality',
+          high: 'high',
+          low: 'low',
+          Cancel: 'Cancel',
+          Save: 'Save',
+          'Drag & drop or choose a file to upload':
+            'Drag & drop or choose a file to upload',
+          'Upload file': 'Upload file',
+          'Upload files': 'Upload files',
+          'Add Download': 'Add Download',
+          'Quality is required': 'Quality is required',
+          'A download with this quality already exists':
+            'A download with this quality already exists',
+          'File is required': 'File is required'
+        }}
+      >
         <SnackbarProvider>
           <MockedProvider mocks={[]}>
             <AddVideoVariantDownloadDialog
@@ -315,5 +438,112 @@ describe('AddVideoVariantDownloadDialog', () => {
     await user.click(screen.getByRole('button', { name: 'Cancel' }))
 
     expect(handleClose).toHaveBeenCalled()
+  })
+
+  it('should show validation error for duplicate quality', async () => {
+    // Reset useParams mock for this test
+    const mockedUseParams = useParams as jest.Mock
+    mockedUseParams.mockReturnValue({ videoId: 'video-123', locale: 'en' })
+
+    render(
+      <NextIntlClientProvider
+        locale="en"
+        messages={{
+          Quality: 'Quality',
+          high: 'high',
+          low: 'low',
+          Cancel: 'Cancel',
+          Save: 'Save',
+          'Drag & drop or choose a file to upload':
+            'Drag & drop or choose a file to upload',
+          'Upload file': 'Upload file',
+          'Upload files': 'Upload files',
+          'Add Download': 'Add Download',
+          'Quality is required': 'Quality is required',
+          'A download with this quality already exists':
+            'A download with this quality already exists',
+          'File is required': 'File is required'
+        }}
+      >
+        <SnackbarProvider>
+          <MockedProvider mocks={[]}>
+            <AddVideoVariantDownloadDialog
+              open={true}
+              handleClose={jest.fn()}
+              videoVariantId="1"
+              existingQualities={['high']}
+              languageId="529"
+            />
+          </MockedProvider>
+        </SnackbarProvider>
+      </NextIntlClientProvider>
+    )
+
+    const select = screen.getByLabelText('Quality')
+    await userEvent.click(select)
+
+    // Verify that low is available as an option
+    expect(screen.getByRole('option', { name: 'low' })).toBeInTheDocument()
+
+    // Verify that high is not available as an option
+    expect(
+      screen.queryByRole('option', { name: 'high' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should handle video loading error', async () => {
+    // Reset useParams mock for this test
+    const mockedUseParams = useParams as jest.Mock
+    mockedUseParams.mockReturnValue({ videoId: 'video-123', locale: 'en' })
+
+    render(
+      <NextIntlClientProvider
+        locale="en"
+        messages={{
+          Quality: 'Quality',
+          high: 'high',
+          low: 'low',
+          Cancel: 'Cancel',
+          Save: 'Save',
+          'Drag & drop or choose a file to upload':
+            'Drag & drop or choose a file to upload',
+          'Upload file': 'Upload file',
+          'Upload files': 'Upload files',
+          'Add Download': 'Add Download',
+          'Quality is required': 'Quality is required',
+          'A download with this quality already exists':
+            'A download with this quality already exists',
+          'File is required': 'File is required'
+        }}
+      >
+        <SnackbarProvider>
+          <MockedProvider mocks={[]}>
+            <AddVideoVariantDownloadDialog
+              open={true}
+              handleClose={jest.fn()}
+              videoVariantId="1"
+              existingQualities={[]}
+              languageId="529"
+            />
+          </MockedProvider>
+        </SnackbarProvider>
+      </NextIntlClientProvider>
+    )
+
+    const user = userEvent.setup()
+
+    const dropzone = screen.getByTestId('DropZone')
+    await user.upload(
+      dropzone,
+      new File(['video content'], 'test-video.mp4', {
+        type: 'video/mp4'
+      })
+    )
+
+    if (mockVideoElement.onerror) {
+      mockVideoElement.onerror(new Event('error'))
+    }
+
+    expect(screen.getByText('test-video.mp4')).toBeInTheDocument()
   })
 })

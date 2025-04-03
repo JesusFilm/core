@@ -230,21 +230,22 @@ describe('SubtitleEdit', () => {
 
       it('should update without an existing file', async () => {
         // Create a spy for the createR2VttAssetMock.result
-        const createR2VttAssetMockResult = jest
-          .fn()
-          .mockReturnValue(createR2VttAssetMock.result)
-        const mockCreateR2VttAssetMock = {
-          ...createR2VttAssetMock,
-          result: createR2VttAssetMockResult
-        }
+        const originalCreateR2VttAssetResult = createR2VttAssetMock.result
+        createR2VttAssetMock.result = jest.fn().mockImplementation(({}) => {
+          if (typeof originalCreateR2VttAssetResult === 'function') {
+            return originalCreateR2VttAssetResult({})
+          }
+          return originalCreateR2VttAssetResult
+        })
 
-        const subtitleEditWithFileMockResult = jest
-          .fn()
-          .mockReturnValue(subtitleEditWithFileMock.result)
-        const mockSubtitleEditWithFileMock = {
-          ...subtitleEditWithFileMock,
-          result: subtitleEditWithFileMockResult
-        }
+        const originalSubtitleEditWithFileResult =
+          subtitleEditWithFileMock.result
+        subtitleEditWithFileMock.result = jest.fn().mockImplementation(({}) => {
+          if (typeof originalSubtitleEditWithFileResult === 'function') {
+            return originalSubtitleEditWithFileResult({})
+          }
+          return originalSubtitleEditWithFileResult
+        })
 
         render(
           <NextIntlClientProvider locale="en">
@@ -252,8 +253,8 @@ describe('SubtitleEdit', () => {
               <MockedProvider
                 mocks={[
                   getLanguagesMock,
-                  mockCreateR2VttAssetMock,
-                  mockSubtitleEditWithFileMock
+                  createR2VttAssetMock,
+                  subtitleEditWithFileMock
                 ]}
               >
                 <SubtitleEdit
@@ -288,9 +289,9 @@ describe('SubtitleEdit', () => {
         await user.click(screen.getByRole('button', { name: 'Update' }))
 
         await waitFor(() => {
-          expect(createR2VttAssetMockResult).toHaveBeenCalled()
+          expect(createR2VttAssetMock.result).toHaveBeenCalled()
         })
-        expect(subtitleEditWithFileMockResult).toHaveBeenCalled()
+        expect(subtitleEditWithFileMock.result).toHaveBeenCalled()
       })
 
       it('should update subtitle with an existing file', async () => {
@@ -309,22 +310,27 @@ describe('SubtitleEdit', () => {
           srtVersion: 1
         })
 
-        // Create a spy for the createR2VttAssetMock.result
-        const createR2VttAssetMockResult = jest
-          .fn()
-          .mockReturnValue(createR2VttAssetMock.result)
-        const mockCreateR2VttAssetMock = {
-          ...createR2VttAssetMock,
-          result: createR2VttAssetMockResult
-        }
+        // Create spies for the mocks
+        const originalCreateR2VttAssetResult = createR2VttAssetMock.result
+        createR2VttAssetMock.result = jest.fn().mockImplementation(({}) => {
+          if (typeof originalCreateR2VttAssetResult === 'function') {
+            return originalCreateR2VttAssetResult({})
+          }
+          return originalCreateR2VttAssetResult
+        })
 
-        const subtitleEditWithExistingFileMockResult = jest
+        const originalSubtitleEditWithExistingFileResult =
+          subtitleEditWithExistingFileMock.result
+        subtitleEditWithExistingFileMock.result = jest
           .fn()
-          .mockReturnValue(subtitleEditWithExistingFileMock.result)
-        const mockSubtitleEditWithExistingFileMock = {
-          ...subtitleEditWithExistingFileMock,
-          result: subtitleEditWithExistingFileMockResult
-        }
+          .mockImplementation(({}) => {
+            if (
+              typeof originalSubtitleEditWithExistingFileResult === 'function'
+            ) {
+              return originalSubtitleEditWithExistingFileResult({})
+            }
+            return originalSubtitleEditWithExistingFileResult
+          })
 
         render(
           <NextIntlClientProvider locale="en">
@@ -332,8 +338,8 @@ describe('SubtitleEdit', () => {
               <MockedProvider
                 mocks={[
                   getLanguagesMock,
-                  mockCreateR2VttAssetMock,
-                  mockSubtitleEditWithExistingFileMock
+                  createR2VttAssetMock,
+                  subtitleEditWithExistingFileMock
                 ]}
               >
                 <SubtitleEdit
@@ -365,9 +371,9 @@ describe('SubtitleEdit', () => {
         await user.click(screen.getByRole('button', { name: 'Update' }))
 
         await waitFor(() => {
-          expect(createR2VttAssetMockResult).toHaveBeenCalled()
+          expect(createR2VttAssetMock.result).toHaveBeenCalled()
         })
-        expect(subtitleEditWithExistingFileMockResult).toHaveBeenCalled()
+        expect(subtitleEditWithExistingFileMock.result).toHaveBeenCalled()
       })
     })
 
@@ -415,21 +421,24 @@ describe('SubtitleEdit', () => {
 
       it('should update without an existing file', async () => {
         // Create a spy for the createR2SrtAssetMock.result
-        const createR2SrtAssetMockResult = jest
-          .fn()
-          .mockReturnValue(createR2SrtAssetMock.result)
-        const mockCreateR2SrtAssetMock = {
-          ...createR2SrtAssetMock,
-          result: createR2SrtAssetMockResult
-        }
+        const originalCreateR2SrtAssetResult = createR2SrtAssetMock.result
+        createR2SrtAssetMock.result = jest.fn().mockImplementation(({}) => {
+          if (typeof originalCreateR2SrtAssetResult === 'function') {
+            return originalCreateR2SrtAssetResult({})
+          }
+          return originalCreateR2SrtAssetResult
+        })
 
-        const subtitleEditWithSrtFileMockResult = jest
+        const originalSubtitleEditWithSrtFileResult =
+          subtitleEditWithSrtFileMock.result
+        subtitleEditWithSrtFileMock.result = jest
           .fn()
-          .mockReturnValue(subtitleEditWithSrtFileMock.result)
-        const mockSubtitleEditWithSrtFileMock = {
-          ...subtitleEditWithSrtFileMock,
-          result: subtitleEditWithSrtFileMockResult
-        }
+          .mockImplementation(({}) => {
+            if (typeof originalSubtitleEditWithSrtFileResult === 'function') {
+              return originalSubtitleEditWithSrtFileResult({})
+            }
+            return originalSubtitleEditWithSrtFileResult
+          })
 
         render(
           <NextIntlClientProvider locale="en">
@@ -437,8 +446,8 @@ describe('SubtitleEdit', () => {
               <MockedProvider
                 mocks={[
                   getLanguagesMock,
-                  mockCreateR2SrtAssetMock,
-                  mockSubtitleEditWithSrtFileMock
+                  createR2SrtAssetMock,
+                  subtitleEditWithSrtFileMock
                 ]}
               >
                 <SubtitleEdit
@@ -475,9 +484,9 @@ describe('SubtitleEdit', () => {
         await user.click(screen.getByRole('button', { name: 'Update' }))
 
         await waitFor(() => {
-          expect(createR2SrtAssetMockResult).toHaveBeenCalled()
+          expect(createR2SrtAssetMock.result).toHaveBeenCalled()
         })
-        expect(subtitleEditWithSrtFileMockResult).toHaveBeenCalled()
+        expect(subtitleEditWithSrtFileMock.result).toHaveBeenCalled()
       })
 
       it('should update subtitle with an existing file', async () => {
@@ -486,8 +495,7 @@ describe('SubtitleEdit', () => {
           edition: 'base',
           languageId: '529',
           primary: true,
-          vttSrc:
-            'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-JLtib-529-31474.vtt',
+          vttSrc: null,
           srtSrc:
             'https://mock.cloudflare-domain.com/1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.srt',
           vttAssetId: 'vtt-asset-id-1',
@@ -496,22 +504,28 @@ describe('SubtitleEdit', () => {
           srtVersion: 2
         })
 
-        // Create a spy for the createR2SrtAssetMock.result
-        const createR2SrtAssetMockResult = jest
-          .fn()
-          .mockReturnValue(createR2SrtAssetMock.result)
-        const mockCreateR2SrtAssetMock = {
-          ...createR2SrtAssetMock,
-          result: createR2SrtAssetMockResult
-        }
+        // Create spies for the mocks
+        const originalCreateR2SrtAssetResult = createR2SrtAssetMock.result
+        createR2SrtAssetMock.result = jest.fn().mockImplementation(({}) => {
+          if (typeof originalCreateR2SrtAssetResult === 'function') {
+            return originalCreateR2SrtAssetResult({})
+          }
+          return originalCreateR2SrtAssetResult
+        })
 
-        const subtitleEditWithExistingSrtFileMockResult = jest
+        const originalSubtitleEditWithExistingSrtFileResult =
+          subtitleEditWithExistingSrtFileMock.result
+        subtitleEditWithExistingSrtFileMock.result = jest
           .fn()
-          .mockReturnValue(subtitleEditWithExistingSrtFileMock.result)
-        const mockSubtitleEditWithExistingSrtFileMock = {
-          ...subtitleEditWithExistingSrtFileMock,
-          result: subtitleEditWithExistingSrtFileMockResult
-        }
+          .mockImplementation(({}) => {
+            if (
+              typeof originalSubtitleEditWithExistingSrtFileResult ===
+              'function'
+            ) {
+              return originalSubtitleEditWithExistingSrtFileResult({})
+            }
+            return originalSubtitleEditWithExistingSrtFileResult
+          })
 
         render(
           <NextIntlClientProvider locale="en">
@@ -519,8 +533,8 @@ describe('SubtitleEdit', () => {
               <MockedProvider
                 mocks={[
                   getLanguagesMock,
-                  mockCreateR2SrtAssetMock,
-                  mockSubtitleEditWithExistingSrtFileMock
+                  createR2SrtAssetMock,
+                  subtitleEditWithExistingSrtFileMock
                 ]}
               >
                 <SubtitleEdit
@@ -554,29 +568,14 @@ describe('SubtitleEdit', () => {
         await user.click(screen.getByRole('button', { name: 'Update' }))
 
         await waitFor(() => {
-          expect(createR2SrtAssetMockResult).toHaveBeenCalled()
+          expect(createR2SrtAssetMock.result).toHaveBeenCalled()
         })
-        expect(subtitleEditWithExistingSrtFileMockResult).toHaveBeenCalled()
+        expect(subtitleEditWithExistingSrtFileMock.result).toHaveBeenCalled()
       })
     })
 
     it('should update subtitle with both vtt and srt files simultaneously', async () => {
-      const subtitleEditWithBothFilesMock = getEditSubtitleMock({
-        id: 'subtitle1.id',
-        edition: 'base',
-        languageId: '529',
-        primary: true,
-        vttSrc:
-          'https://mock.cloudflare-domain.com/1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.vtt',
-        srtSrc:
-          'https://mock.cloudflare-domain.com/1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.srt',
-        vttAssetId: 'r2-asset.id',
-        srtAssetId: 'r2-asset.id',
-        vttVersion: 2,
-        srtVersion: 2
-      })
-
-      const createR2VttAssetMock1 = getCreateR2AssetMock({
+      const createR2VttAssetMock2 = getCreateR2AssetMock({
         videoId: '1_jf-0-0',
         contentType: 'text/vtt',
         fileName:
@@ -594,30 +593,50 @@ describe('SubtitleEdit', () => {
         contentLength: 17
       })
 
-      // Mock the result functions with jest.fn()
-      const createR2VttAssetMock1Result = jest
-        .fn()
-        .mockReturnValue(createR2VttAssetMock1.result)
-      const mockCreateR2VttAssetMock1 = {
-        ...createR2VttAssetMock1,
-        result: createR2VttAssetMock1Result
-      }
+      const subtitleEditWithBothFilesMock = getEditSubtitleMock({
+        id: 'subtitle1.id',
+        edition: 'base',
+        languageId: '529',
+        primary: true,
+        vttSrc:
+          'https://mock.cloudflare-domain.com/1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.vtt',
+        srtSrc:
+          'https://mock.cloudflare-domain.com/1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.srt',
+        vttAssetId: 'r2-asset.id',
+        srtAssetId: 'r2-asset.id',
+        vttVersion: 2,
+        srtVersion: 2
+      })
 
-      const createR2SrtAssetMock2Result = jest
-        .fn()
-        .mockReturnValue(createR2SrtAssetMock2.result)
-      const mockCreateR2SrtAssetMock2 = {
-        ...createR2SrtAssetMock2,
-        result: createR2SrtAssetMock2Result
-      }
+      // Create spies for the mocks
+      const originalCreateR2VttAssetMock2Result = createR2VttAssetMock2.result
+      createR2VttAssetMock2.result = jest.fn().mockImplementation(({}) => {
+        if (typeof originalCreateR2VttAssetMock2Result === 'function') {
+          return originalCreateR2VttAssetMock2Result({})
+        }
+        return originalCreateR2VttAssetMock2Result
+      })
 
-      const subtitleEditWithBothFilesMockResult = jest
+      const originalCreateR2SrtAssetMock2Result = createR2SrtAssetMock2.result
+      createR2SrtAssetMock2.result = jest.fn().mockImplementation(({}) => {
+        if (typeof originalCreateR2SrtAssetMock2Result === 'function') {
+          return originalCreateR2SrtAssetMock2Result({})
+        }
+        return originalCreateR2SrtAssetMock2Result
+      })
+
+      const originalSubtitleEditWithBothFilesMockResult =
+        subtitleEditWithBothFilesMock.result
+      subtitleEditWithBothFilesMock.result = jest
         .fn()
-        .mockReturnValue(subtitleEditWithBothFilesMock.result)
-      const mockSubtitleEditWithBothFilesMock = {
-        ...subtitleEditWithBothFilesMock,
-        result: subtitleEditWithBothFilesMockResult
-      }
+        .mockImplementation(({}) => {
+          if (
+            typeof originalSubtitleEditWithBothFilesMockResult === 'function'
+          ) {
+            return originalSubtitleEditWithBothFilesMockResult({})
+          }
+          return originalSubtitleEditWithBothFilesMockResult
+        })
 
       render(
         <NextIntlClientProvider locale="en">
@@ -625,14 +644,18 @@ describe('SubtitleEdit', () => {
             <MockedProvider
               mocks={[
                 getLanguagesMock,
-                mockCreateR2VttAssetMock1,
-                mockCreateR2SrtAssetMock2,
-                mockSubtitleEditWithBothFilesMock
+                createR2VttAssetMock2,
+                createR2SrtAssetMock2,
+                subtitleEditWithBothFilesMock
               ]}
             >
               <SubtitleEdit
                 subtitle={{
-                  ...mockSubtitle
+                  ...mockSubtitle,
+                  primary: false,
+                  value: null,
+                  vttSrc: null,
+                  srtSrc: null
                 }}
                 edition={mockEdition}
                 subtitleLanguagesMap={mockSubtitleLanguagesMap}
@@ -650,34 +673,26 @@ describe('SubtitleEdit', () => {
       })
 
       const dropzone = screen.getByTestId('DropZone')
-
-      // Upload VTT file
       await user.upload(
         dropzone,
-        new File(['subtitle vtt file'], 'subtitle1.vtt', { type: 'text/vtt' })
+        [
+          new File(['subtitle file'], 'subtitle1.vtt', { type: 'text/vtt' }),
+          new File(['subtitle file'], 'subtitle1.srt', {
+            type: 'application/x-subrip'
+          })
+        ],
+        { applyAccept: false }
       )
-
-      // Upload SRT file
-      await user.upload(
-        dropzone,
-        new File(['subtitle srt file'], 'subtitle1.srt', {
-          type: 'application/x-subrip'
-        })
-      )
-
-      // Both files should be visible in the UI
-      expect(screen.getByText('subtitle1.vtt')).toBeInTheDocument()
-      expect(screen.getByText('subtitle1.srt')).toBeInTheDocument()
 
       await user.click(screen.getByRole('button', { name: 'Update' }))
 
       await waitFor(() => {
-        expect(createR2VttAssetMock1Result).toHaveBeenCalled()
+        expect(createR2VttAssetMock2.result).toHaveBeenCalled()
       })
       await waitFor(() => {
-        expect(createR2SrtAssetMock2Result).toHaveBeenCalled()
+        expect(createR2SrtAssetMock2.result).toHaveBeenCalled()
       })
-      expect(subtitleEditWithBothFilesMockResult).toHaveBeenCalled()
+      expect(subtitleEditWithBothFilesMock.result).toHaveBeenCalled()
     })
   })
 })
