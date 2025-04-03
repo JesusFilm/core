@@ -32,13 +32,13 @@ export const GET_JOURNEY_EVENTS_EXPORT = gql`
           typename
           progress
           messagePlatform
-          journey {
-            slug
-          }
-          visitor {
-            email
-            name
-          }
+          # journey {
+          #   slug
+          # }
+          # visitor {
+          #   email
+          #   name
+          # }
         }
       }
       pageInfo {
@@ -184,14 +184,16 @@ export function useJourneyEventsExport(): {
       const eventData: JourneyEvent[] = events.map((edge) => {
         return {
           ...edge.node,
-          // slug: 'test',
-          slug: edge.node.journey?.slug,
-          name: edge.node.visitor?.name,
-          email: edge.node.visitor?.email
+          slug: 'test-slug',
+          name: 'test-name',
+          email: 'test-email'
+          // slug: edge.node.journey?.slug,
+          // name: edge.node.visitor?.name,
+          // email: edge.node.visitor?.email
         }
       })
-      // const journeySlug = 'test'
-      const journeySlug = events[0]?.node.journey?.slug ?? ''
+      const journeySlug = 'test-slug'
+      // const journeySlug = events[0]?.node.journey?.slug ?? ''
       handleCsvProcessing(eventData, journeySlug)
       // TODO: Update exportHistory
 
