@@ -2,16 +2,25 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { act, renderHook, waitFor } from '@testing-library/react'
 
 import {
+  CreateEventsExportLog,
+  CreateEventsExportLogVariables
+} from '../../../__generated__/CreateEventsExportLog'
+import {
   GetJourneyEvents,
   GetJourneyEventsVariables
 } from '../../../__generated__/GetJourneyEvents'
+import { EventType } from '../../../__generated__/globalTypes'
 
 import {
+  CREATE_EVENTS_EXPORT_LOG,
   FILTERED_EVENTS,
   GET_JOURNEY_EVENTS_EXPORT,
   useJourneyEventsExport
 } from './useJourneyEventsExport'
-import { mockJourneyEventsQuery } from './useJourneyEventsExport.mock'
+import {
+  mockCreateEventsExportLogMutation,
+  mockGetJourneyEventsQuery
+} from './useJourneyEventsExport.mock'
 
 describe('useJourneyEventsExport', () => {
   const originalCreateElement = document.createElement
@@ -25,7 +34,10 @@ describe('useJourneyEventsExport', () => {
   })
 
   it('should export journey events to a CSV file when called', async () => {
-    const queryResult = jest.fn(() => ({ ...mockJourneyEventsQuery.result }))
+    const queryResult = jest.fn(() => ({ ...mockGetJourneyEventsQuery.result }))
+    const mutationResult = jest.fn(() => ({
+      ...mockCreateEventsExportLogMutation.result
+    }))
 
     const createElementSpy = jest.spyOn(document, 'createElement')
     const appendChildSpy = jest.spyOn(document.body, 'appendChild')
@@ -37,7 +49,10 @@ describe('useJourneyEventsExport', () => {
     const { result } = renderHook(() => useJourneyEventsExport(), {
       wrapper: ({ children }) => (
         <MockedProvider
-          mocks={[{ ...mockJourneyEventsQuery, result: queryResult }]}
+          mocks={[
+            { ...mockGetJourneyEventsQuery, result: queryResult },
+            { ...mockCreateEventsExportLogMutation, result: mutationResult }
+          ]}
         >
           {children}
         </MockedProvider>
@@ -52,8 +67,11 @@ describe('useJourneyEventsExport', () => {
     })
 
     expect(queryResult).toHaveBeenCalled()
+    await waitFor(() => expect(mutationResult).toHaveBeenCalled())
 
-    await waitFor(() => expect(createElementSpy).toHaveBeenCalledWith('a'))
+    // await waitFor(() =>
+    expect(createElementSpy).toHaveBeenCalledWith('a')
+    // )
     expect(setAttributeSpy).toHaveBeenCalledWith(
       'download',
       expect.stringMatching(/\[\d{4}-\d{2}-\d{2}\] test-journey\.csv/)
@@ -69,7 +87,7 @@ describe('useJourneyEventsExport', () => {
       'setAttribute'
     )
 
-    const mockJourneyEventsQueryPage1: MockedResponse<
+    const mockGetJourneyEventsQueryPage1: MockedResponse<
       GetJourneyEvents,
       GetJourneyEventsVariables
     > = {
@@ -127,7 +145,7 @@ describe('useJourneyEventsExport', () => {
       }))
     }
 
-    const mockJourneyEventsQueryPage2: MockedResponse<
+    const mockGetJourneyEventsQueryPage2: MockedResponse<
       GetJourneyEvents,
       GetJourneyEventsVariables
     > = {
@@ -185,10 +203,39 @@ describe('useJourneyEventsExport', () => {
       }))
     }
 
+    const mockCreateEventsExportLogMutation: MockedResponse<
+      CreateEventsExportLog,
+      CreateEventsExportLogVariables
+    > = {
+      request: {
+        query: CREATE_EVENTS_EXPORT_LOG,
+        variables: {
+          input: {
+            journeyId: 'journey1',
+            eventsFilter: [EventType.ButtonClickEvent],
+            dateRangeStart: '2023-01-15T12:00:00Z',
+            dateRangeEnd: '2024-01-15T12:00:00Z'
+          }
+        }
+      },
+      result: jest.fn(() => ({
+        data: {
+          createJourneyEventsExportLog: {
+            __typename: 'JourneyEventsExportLog',
+            id: '123'
+          }
+        }
+      }))
+    }
+
     const { result } = renderHook(() => useJourneyEventsExport(), {
       wrapper: ({ children }) => (
         <MockedProvider
-          mocks={[mockJourneyEventsQueryPage1, mockJourneyEventsQueryPage2]}
+          mocks={[
+            mockGetJourneyEventsQueryPage1,
+            mockGetJourneyEventsQueryPage2,
+            mockCreateEventsExportLogMutation
+          ]}
         >
           {children}
         </MockedProvider>
@@ -206,8 +253,8 @@ describe('useJourneyEventsExport', () => {
       })
     })
 
-    expect(mockJourneyEventsQueryPage1.result).toHaveBeenCalled()
-    expect(mockJourneyEventsQueryPage2.result).toHaveBeenCalled()
+    expect(mockGetJourneyEventsQueryPage1.result).toHaveBeenCalled()
+    expect(mockGetJourneyEventsQueryPage2.result).toHaveBeenCalled()
 
     await waitFor(() => expect(createElementSpy).toHaveBeenCalledWith('a'))
     expect(setAttributeSpy).toHaveBeenCalledWith(
@@ -235,7 +282,8 @@ describe('useJourneyEventsExport', () => {
                 }
               },
               error: new Error('Failed to retrieve data for export.')
-            }
+            },
+            mockCreateEventsExportLogMutation
           ]}
         >
           {children}
