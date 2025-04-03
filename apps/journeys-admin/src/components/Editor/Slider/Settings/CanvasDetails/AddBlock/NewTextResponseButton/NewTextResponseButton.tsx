@@ -94,7 +94,7 @@ export function NewTextResponseButton(): ReactElement {
         id: uuidv4(),
         __typename: 'ButtonBlock',
         parentBlockId: card.id,
-        label: t('Submit'),
+        label: '',
         buttonVariant: ButtonVariant.contained,
         buttonColor: ButtonColor.primary,
         size: ButtonSize.medium,

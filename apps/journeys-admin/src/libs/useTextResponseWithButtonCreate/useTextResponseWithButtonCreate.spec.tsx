@@ -34,7 +34,7 @@ describe('useTextResponseWithButtonCreate', () => {
       id: 'button.id',
       parentBlockId: 'card.id',
       parentOrder: 1,
-      label: 'Submit',
+      label: '',
       buttonVariant: ButtonVariant.contained,
       buttonColor: ButtonColor.primary,
       size: ButtonSize.medium,
