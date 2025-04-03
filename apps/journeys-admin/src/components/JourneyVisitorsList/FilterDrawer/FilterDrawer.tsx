@@ -32,6 +32,7 @@ interface FilterDrawerProps {
 }
 
 export function FilterDrawer({
+  journeyId,
   handleClose,
   handleChange,
   sortSetting,
@@ -40,13 +41,12 @@ export function FilterDrawer({
   withSubmittedText,
   withIcon,
   hideInteractive,
-  handleClearAll,
-  journeyId
+  handleClearAll
 }: FilterDrawerProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { exportJourneyEvents } = useJourneyEventsExport()
   return (
-    <Box sx={{ height: '100vh' }} data-testid="FilterDrawer">
+    <Stack sx={{ height: '100vh' }} data-testid="FilterDrawer">
       <Box sx={{ display: { sm: 'block', md: 'none' } }}>
         <Stack direction="row" sx={{ px: 6, py: 2 }} alignItems="center">
           <Typography variant="subtitle1">{t('Refine Results')}</Typography>
@@ -135,6 +135,6 @@ export function FilterDrawer({
           {t('Export')}
         </Button>
       )}
-    </Box>
+    </Stack>
   )
 }
