@@ -90,6 +90,24 @@ describe('Edit Label field', () => {
     }))
   }
 
+  const mockLabelUpdateWhitespace = {
+    request: {
+      query: TEXT_RESPONSE_LABEL_UPDATE,
+      variables: {
+        id: block.id,
+        label: ''
+      }
+    },
+    result: jest.fn(() => ({
+      data: {
+        textResponseBlockUpdate: {
+          id: block.id,
+          label: ''
+        }
+      }
+    }))
+  }
+
   beforeEach(() => jest.clearAllMocks())
 
   it('should display label value', () => {
@@ -204,5 +222,28 @@ describe('Edit Label field', () => {
     const field = screen.getByRole('textbox', { name: 'Label' })
     await userEvent.type(field, ' more')
     await waitFor(() => expect(mockLabelUpdate1.result).not.toHaveBeenCalled())
+  })
+
+  it('should not call mutation if only whitespace is entered', async () => {
+    const link = ApolloLink.from([
+      new DebounceLink(500),
+      new MockLink([mockLabelUpdateWhitespace])
+    ])
+
+    render(
+      <MockedProvider link={link} addTypename={false}>
+        <EditorProvider initialState={{ selectedBlock: block }}>
+          <Label />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    const field = screen.getByRole('textbox', { name: 'Label' })
+    await userEvent.clear(field)
+    await userEvent.type(field, ' ')
+  
+    await waitFor(() => {
+      expect(mockLabelUpdateWhitespace.result).not.toHaveBeenCalled()
+    })
   })
 })
