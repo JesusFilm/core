@@ -57,7 +57,6 @@ export function BibleQuotesCarousel({
         mousewheel={{
           forceToAxis: true
         }}
-        freeMode
         watchOverflow
         slidesPerView={'auto'}
         pagination={{ clickable: true }}
