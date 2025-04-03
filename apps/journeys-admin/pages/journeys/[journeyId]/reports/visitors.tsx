@@ -20,7 +20,6 @@ import {
 import { UserJourneyOpen } from '../../../../__generated__/UserJourneyOpen'
 import { HelpScoutBeacon } from '../../../../src/components/HelpScoutBeacon'
 import { JourneyVisitorsList } from '../../../../src/components/JourneyVisitorsList'
-import { ClearAllButton } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/ClearAllButton'
 import { FilterDrawer } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/FilterDrawer'
 import { VisitorToolbar } from '../../../../src/components/JourneyVisitorsList/VisitorToolbar/VisitorToolbar'
 import { PageWrapper } from '../../../../src/components/PageWrapper'
@@ -229,6 +228,7 @@ function JourneyVisitorsPage(): ReactElement {
         }
         sidePanelChildren={
           <FilterDrawer
+            journeyId={journeyId}
             handleChange={handleChange}
             sortSetting={sortSetting}
             chatStarted={chatStarted}
