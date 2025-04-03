@@ -263,7 +263,7 @@ describe('AddVideoVariantDownloadDialog', () => {
 
     const select = screen.getByLabelText('Quality')
     await user.click(select)
-    await user.click(screen.getByRole('option', { name: 'SD' }))
+    await user.click(screen.getByRole('option', { name: 'low' }))
 
     const dropzone = screen.getByTestId('DropZone')
     await user.upload(
