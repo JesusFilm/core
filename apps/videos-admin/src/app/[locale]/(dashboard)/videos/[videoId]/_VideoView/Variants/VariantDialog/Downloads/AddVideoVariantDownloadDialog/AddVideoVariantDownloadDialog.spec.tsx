@@ -232,7 +232,7 @@ describe('AddVideoVariantDownloadDialog', () => {
           input: {
             cloudflareR2AssetId: '1',
             videoVariantId: '1',
-            quality: 'SD'
+            quality: 'low'
           }
         }
       },
