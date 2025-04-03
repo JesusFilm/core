@@ -1,113 +1,38 @@
 import { SourceStrings, StringTranslations } from '@crowdin/crowdin-api-client'
 import { SourceStringsModel } from '@crowdin/crowdin-api-client/out/sourceStrings'
-import { StringTranslationsModel } from '@crowdin/crowdin-api-client/out/stringTranslations'
 import { Logger } from 'pino'
 
-export type CrowdinTranslation =
-  | StringTranslationsModel.PlainLanguageTranslation
-  | StringTranslationsModel.PluralLanguageTranslation
-  | StringTranslationsModel.IcuLanguageTranslation
+import { CROWDIN_CONFIG } from './config'
+import { parseSourceStrings, parseTranslations } from './schemas'
+import {
+  ArclightFile,
+  CrowdinApis,
+  CrowdinError,
+  CrowdinTranslation,
+  ProcessedTranslation,
+  TranslationData,
+  createCrowdinApiError
+} from './types'
 
-export interface ArclightFile {
-  id: number
-  name: string
-  title: string
-  path: string
-}
-
-export interface TranslationData {
-  sourceString: SourceStringsModel.String
-  translation: CrowdinTranslation
-  languageCode: string
-}
-
-export const ARCLIGHT_FILES = {
-  collection_title: {
-    id: 31,
-    name: 'collection_title.csv',
-    title: 'Collection Titles',
-    path: '/Arclight/collection_title.csv'
-  },
-  collection_long_description: {
-    id: 33,
-    name: 'collection_long_description.csv',
-    title: 'Collection Long Descriptions',
-    path: '/Arclight/collection_long_description.csv'
-  },
-  media_metadata_tile: {
-    id: 34,
-    name: 'media_metadata_tile.csv',
-    title: 'Video Titles',
-    path: '/Arclight/media_metadata_tile.csv'
-  },
-  media_metadata_description: {
-    id: 35,
-    name: 'media_metadata_description.csv',
-    title: 'Video Long Descriptions',
-    path: '/Arclight/media_metadata_description.csv'
-  },
-  bible_books: {
-    id: 36,
-    name: 'Bible_books.csv',
-    title: 'Bible Books',
-    path: '/Arclight/Bible_books.csv'
-  },
-  study_questions: {
-    id: 37,
-    name: 'study_questions.csv',
-    title: 'Study Questions',
-    path: '/Arclight/study_questions.csv'
-  }
-} as const
-
-export const CROWDIN_LANGUAGE_CODE_TO_ID = {
-  ko: '3804',
-  ar: '139485',
-  'es-MX': '21028',
-  'pt-BR': '584',
-  tr: '1942',
-  'zh-CN': '21754',
-  fa: '6788',
-  'ur-PK': '407',
-  he: '6930',
-  hi: '6464',
-  fr: '496',
-  'zh-TW': '21753',
-  ru: '3934',
-  de: '1106',
-  id: '16639',
-  ja: '7083',
-  vi: '3887',
-  th: '13169'
-} as const
-
-export class BaseTranslation {
-  protected readonly projectId = 47654
-
-  constructor(
-    protected readonly sourceStringsApi: SourceStrings,
-    protected readonly stringTranslationsApi: StringTranslations,
-    protected readonly logger?: Logger
-  ) {}
-
-  protected async fetchSourceStrings(
-    fileId: number
-  ): Promise<Array<{ data: SourceStringsModel.String }>> {
-    let allSourceStrings: Array<{ data: SourceStringsModel.String }> = []
+export async function fetchSourceStrings(
+  fileId: number,
+  api: SourceStrings
+): Promise<Array<SourceStringsModel.String>> {
+  try {
+    let allSourceStrings: unknown[] = []
     let offset = 0
     const limit = 500
 
     while (true) {
-      const response = await this.sourceStringsApi.listProjectStrings(
-        this.projectId,
-        {
-          fileId,
-          limit,
-          offset
-        }
-      )
+      const response = await api.listProjectStrings(CROWDIN_CONFIG.projectId, {
+        fileId,
+        limit,
+        offset
+      })
 
-      allSourceStrings = allSourceStrings.concat(response.data)
+      allSourceStrings = allSourceStrings.concat(
+        response.data.map((d) => d.data)
+      )
 
       if (response.data.length < limit) {
         break
@@ -115,71 +40,50 @@ export class BaseTranslation {
       offset += limit
     }
 
-    return allSourceStrings
-  }
+    const { validStrings, invalidStrings } =
+      parseSourceStrings(allSourceStrings)
 
-  protected async processLanguage(
-    languageCode: string,
-    file: ArclightFile,
-    sourceStringMap: Map<number, SourceStringsModel.String>,
-    validateData: (data: TranslationData) => boolean,
-    upsertTranslation: (data: TranslationData) => Promise<void>
-  ): Promise<void> {
-    this.logger?.info(`Fetching translations for ${languageCode}`)
-
-    try {
-      const translations = await this.fetchTranslations(languageCode, file.id)
-      this.logger?.info(
-        { count: translations.length, languageCode },
-        'Total translations fetched'
+    if (invalidStrings.length > 0) {
+      throw createCrowdinApiError(
+        `Invalid source strings found: ${invalidStrings.map((s) => s.error).join(', ')}`,
+        undefined,
+        fileId
       )
-
-      if (translations.length > 0) {
-        this.logger?.info('Processing translations...')
-        await this.processTranslations(
-          translations,
-          sourceStringMap,
-          languageCode,
-          validateData,
-          upsertTranslation
-        )
-      }
-    } catch (error: any) {
-      if (error?.code === 404) {
-        this.logger?.warn(`Language ${languageCode} not configured in project`)
-        return
-      }
-      throw error
     }
-  }
 
-  protected async fetchTranslations(
-    languageCode: string,
-    fileId: number
-  ): Promise<CrowdinTranslation[]> {
-    let allTranslations: CrowdinTranslation[] = []
-    let offset = 0
+    return validStrings as unknown as Array<SourceStringsModel.String>
+  } catch (error) {
+    throw createCrowdinApiError(
+      `Failed to fetch source strings: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      undefined,
+      fileId
+    )
+  }
+}
+
+export async function fetchTranslations(
+  languageCode: string,
+  fileId: number,
+  api: StringTranslations
+): Promise<CrowdinTranslation[]> {
+  try {
+    let allTranslations: unknown[] = []
     const limit = 500
+    let offset = 0
 
     while (true) {
-      const translations =
-        await this.stringTranslationsApi.listLanguageTranslations(
-          this.projectId,
-          languageCode,
-          {
-            fileId,
-            limit,
-            offset
-          }
-        )
-
-      allTranslations = allTranslations.concat(
-        translations.data.map((t: { data: CrowdinTranslation }) => t.data)
+      const translations = await api.listLanguageTranslations(
+        CROWDIN_CONFIG.projectId,
+        languageCode,
+        {
+          fileId,
+          limit,
+          offset
+        }
       )
 
-      this.logger?.debug(
-        { count: translations.data.length, offset },
-        'Fetched translations batch'
+      allTranslations = allTranslations.concat(
+        translations.data.map((t) => t.data)
       )
 
       if (translations.data.length < limit) {
@@ -188,91 +92,229 @@ export class BaseTranslation {
       offset += limit
     }
 
-    return allTranslations
-  }
+    const { validTranslations, invalidTranslations } =
+      parseTranslations(allTranslations)
 
-  protected async processTranslations(
-    translations: CrowdinTranslation[],
-    sourceStringMap: Map<number, SourceStringsModel.String>,
-    languageCode: string,
-    validateData: (data: TranslationData) => boolean,
-    upsertTranslation: (data: TranslationData) => Promise<void>
-  ): Promise<void> {
-    const validTranslations: TranslationData[] = []
-
-    for (const translation of translations) {
-      const sourceString = sourceStringMap.get(translation.stringId)
-      if (!sourceString) continue
-
-      const data = { sourceString, translation, languageCode }
-      if (!validateData(data)) continue
-
-      validTranslations.push(data)
+    if (invalidTranslations.length > 0) {
+      throw createCrowdinApiError(
+        `Invalid translations found: ${invalidTranslations.map((t) => t.error).join(', ')}`,
+        undefined,
+        fileId,
+        languageCode
+      )
     }
 
-    this.logger?.info(
-      { count: validTranslations.length },
-      'Found valid translations to upsert'
+    return validTranslations as CrowdinTranslation[]
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      'code' in error &&
+      (error as any).code === 404
+    ) {
+      throw createCrowdinApiError(
+        `Language ${languageCode} not configured in project`,
+        404,
+        fileId,
+        languageCode
+      )
+    }
+    throw createCrowdinApiError(
+      `Failed to fetch translations: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      undefined,
+      fileId,
+      languageCode
+    )
+  }
+}
+
+export async function processTranslations(
+  translations: CrowdinTranslation[],
+  sourceStringMap: Map<number, SourceStringsModel.String>,
+  languageCode: string,
+  validateData: (data: TranslationData) => boolean
+): Promise<ProcessedTranslation[]> {
+  const validTranslations: ProcessedTranslation[] = []
+
+  for (const translation of translations) {
+    const sourceString = sourceStringMap.get(translation.stringId)
+    if (!sourceString) continue
+
+    const data = { sourceString, translation, languageCode }
+    if (!validateData(data)) continue
+
+    validTranslations.push(data)
+  }
+
+  return validTranslations
+}
+
+export async function processLanguage(
+  languageCode: string,
+  file: ArclightFile,
+  sourceStringMap: Map<number, SourceStringsModel.String>,
+  validateData: (data: TranslationData) => boolean,
+  upsertTranslation: (data: TranslationData) => Promise<void>,
+  apis: CrowdinApis,
+  logger?: Logger
+): Promise<void> {
+  logger?.info(`Fetching translations for ${languageCode}`)
+
+  try {
+    const translations = await fetchTranslations(
+      languageCode,
+      file.id,
+      apis.stringTranslations
+    )
+    logger?.info(
+      { count: translations.length, languageCode },
+      'Total translations fetched'
     )
 
-    if (validTranslations.length > 0) {
-      for (const data of validTranslations) {
-        await upsertTranslation(data)
-      }
-      this.logger?.info(
-        `Successfully upserted ${validTranslations.length} translations`
+    if (translations.length > 0) {
+      logger?.info('Processing translations...')
+      const validTranslations = await processTranslations(
+        translations,
+        sourceStringMap,
+        languageCode,
+        validateData
       )
-    } else {
-      this.logger?.warn('No valid translations to upsert')
-    }
-  }
 
-  protected getTranslationText(
-    translation: CrowdinTranslation
-  ): string | undefined {
-    if ('text' in translation && typeof translation.text === 'string') {
-      return translation.text
-    } else if (
-      'plurals' in translation &&
-      translation.plurals &&
-      typeof translation.plurals === 'object' &&
-      'one' in translation.plurals &&
-      typeof translation.plurals.one === 'string'
+      logger?.info(
+        { count: validTranslations.length },
+        'Found valid translations to upsert'
+      )
+
+      if (validTranslations.length > 0) {
+        for (const data of validTranslations) {
+          await upsertTranslation(data)
+        }
+        logger?.info(
+          `Successfully upserted ${validTranslations.length} translations`
+        )
+      } else {
+        logger?.warn('No valid translations to upsert')
+      }
+    }
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      'code' in error &&
+      (error as any).code === 404
     ) {
-      return translation.plurals.one
+      logger?.warn(`Language ${languageCode} not configured in project`)
+      return
     }
-    return undefined
+    throw error
   }
+}
 
-  async processFile(
-    file: ArclightFile,
-    validateData: (data: TranslationData) => boolean,
-    upsertTranslation: (data: TranslationData) => Promise<void>
-  ): Promise<void> {
-    this.logger?.info({ fileName: file.name }, 'Fetching strings from file')
-    const sourceStrings = await this.fetchSourceStrings(file.id)
+export function getTranslationText(
+  translation: CrowdinTranslation
+): string | undefined {
+  if ('text' in translation && typeof translation.text === 'string') {
+    return translation.text
+  } else if (
+    'plurals' in translation &&
+    translation.plurals &&
+    typeof translation.plurals === 'object' &&
+    'one' in translation.plurals &&
+    typeof translation.plurals.one === 'string'
+  ) {
+    return translation.plurals.one
+  }
+  return undefined
+}
 
+export async function processFile(
+  file: ArclightFile,
+  importOne: (data: TranslationData) => Promise<void>,
+  importMany: (data: TranslationData[]) => Promise<void>,
+  apis: CrowdinApis,
+  parentLogger?: Logger
+): Promise<void> {
+  const logger = parentLogger?.child({
+    file: file.name.replace('.csv', '')
+  })
+
+  logger?.info('file import started')
+  const errors: CrowdinError[] = []
+
+  try {
+    const sourceStrings = await fetchSourceStrings(file.id, apis.sourceStrings)
     if (sourceStrings.length === 0) {
-      this.logger?.info('❌ No strings found to translate')
+      logger?.info('❌ No strings found to translate')
       return
     }
 
-    this.logger?.info(
+    logger?.info(
       { count: sourceStrings.length, fileName: file.name },
       'Found strings in file'
     )
-    const sourceStringMap = new Map(
-      sourceStrings.map(({ data }) => [data.id, data])
-    )
+    const sourceStringMap = new Map(sourceStrings.map((str) => [str.id, str]))
 
-    for (const languageCode in CROWDIN_LANGUAGE_CODE_TO_ID) {
-      await this.processLanguage(
-        languageCode,
-        file,
-        sourceStringMap,
-        validateData,
-        upsertTranslation
-      )
+    let page = 0
+    for (const languageCode of Object.keys(CROWDIN_CONFIG.languageCodes)) {
+      try {
+        const translations = await fetchTranslations(
+          languageCode,
+          file.id,
+          apis.stringTranslations
+        )
+
+        if (translations.length > 0) {
+          page++
+          logger?.info(
+            { page, translations: translations.length, languageCode },
+            'importing language batch'
+          )
+
+          const validTranslations = await processTranslations(
+            translations,
+            sourceStringMap,
+            languageCode,
+            () => true
+          )
+
+          if (validTranslations.length > 0) {
+            try {
+              await importMany(validTranslations)
+            } catch (error) {
+              if (error instanceof Error) {
+                errors.push({
+                  fileId: file.id,
+                  languageCode,
+                  message: error.message
+                })
+              }
+            }
+          }
+        }
+      } catch (error) {
+        if (
+          error instanceof Error &&
+          'code' in error &&
+          (error as any).code === 404
+        ) {
+          // Skip 404 errors (language not configured)
+          continue
+        }
+        errors.push({
+          fileId: file.id,
+          languageCode,
+          message: error instanceof Error ? error.message : 'Unknown error'
+        })
+      }
     }
+
+    if (errors.length > 0) {
+      logger?.error({ errors }, 'file import finished with errors')
+    } else {
+      logger?.info('file import finished successfully')
+    }
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error'
+    logger?.error({ error: errorMessage }, 'file import failed')
+    throw error
   }
 }

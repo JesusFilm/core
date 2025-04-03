@@ -2,14 +2,12 @@ import { SourceStrings, StringTranslations } from '@crowdin/crowdin-api-client'
 import { Logger } from 'pino'
 
 import { prisma } from '../../../../lib/prisma'
-import {
-  ARCLIGHT_FILES,
-  BaseTranslation,
-  CROWDIN_LANGUAGE_CODE_TO_ID,
-  TranslationData
-} from '../../importer'
+import { CROWDIN_CONFIG } from '../../config'
+import { getTranslationText, processFile } from '../../importer'
+import { TranslationData } from '../../types'
 
 const questionMap = new Map<string, Array<{ videoId: string; order: number }>>()
+const missingQuestions = new Set<string>()
 
 async function initializeQuestionMap(logger?: Logger): Promise<void> {
   const questions = await prisma.videoStudyQuestion.findMany({
@@ -52,6 +50,80 @@ function clearQuestionMap(): void {
   questionMap.clear()
 }
 
+function getQuestionId(data: TranslationData): string | undefined {
+  const context = data.sourceString.context
+  if (!context) return undefined
+
+  // Get the first line of the context which should be our ID
+  const firstLine = context.split('\n')[0]
+  return firstLine
+}
+
+function validateStudyQuestionData(data: TranslationData): boolean {
+  const questionId = getQuestionId(data)
+  if (!questionId || !hasQuestion(questionId)) {
+    if (questionId) {
+      missingQuestions.add(questionId)
+    }
+    return false
+  }
+  return true
+}
+
+async function upsertStudyQuestionTranslation(
+  data: TranslationData
+): Promise<void> {
+  // Log missing questions summary when we're done processing
+  if (missingQuestions.size > 0) {
+    console.warn('Questions do not exist in database', {
+      count: missingQuestions.size,
+      questions: Array.from(missingQuestions)
+    })
+    missingQuestions.clear()
+  }
+
+  const text = getTranslationText(data.translation)
+  if (!text) return
+
+  const languageId =
+    CROWDIN_CONFIG.languageCodes[
+      data.languageCode as keyof typeof CROWDIN_CONFIG.languageCodes
+    ]
+  if (!languageId) return
+
+  const questionId = getQuestionId(data)
+  if (!questionId) return
+
+  const questions = getQuestionData(questionId)
+  if (!questions || questions.length === 0) return
+
+  // Since we have the data in our cache, we can use it directly
+  await Promise.all(
+    questions.map(({ videoId, order }) =>
+      prisma.videoStudyQuestion.upsert({
+        where: {
+          videoId_languageId_order: {
+            videoId,
+            languageId,
+            order
+          }
+        },
+        update: {
+          value: text
+        },
+        create: {
+          videoId,
+          languageId,
+          order,
+          value: text,
+          primary: false,
+          crowdInId: questionId
+        }
+      })
+    )
+  )
+}
+
 export async function importStudyQuestions(
   sourceStringsApi: SourceStrings,
   stringTranslationsApi: StringTranslations,
@@ -59,98 +131,20 @@ export async function importStudyQuestions(
 ): Promise<() => void> {
   await initializeQuestionMap(logger)
 
-  const translator = new StudyQuestionsTranslator(
-    sourceStringsApi,
-    stringTranslationsApi,
+  await processFile(
+    CROWDIN_CONFIG.files.study_questions,
+    upsertStudyQuestionTranslation,
+    async (data) => {
+      for (const item of data) {
+        await upsertStudyQuestionTranslation(item)
+      }
+    },
+    {
+      sourceStrings: sourceStringsApi,
+      stringTranslations: stringTranslationsApi
+    },
     logger
-  )
-  const validateData = translator.validateData.bind(translator)
-  const upsertTranslation = translator.upsertTranslation.bind(translator)
-
-  await translator.processFile(
-    ARCLIGHT_FILES.study_questions,
-    validateData,
-    upsertTranslation
   )
 
   return () => clearQuestionMap()
-}
-
-class StudyQuestionsTranslator extends BaseTranslation {
-  private missingQuestions = new Set<string>()
-
-  private getQuestionId(data: TranslationData): string | undefined {
-    const context = data.sourceString.context
-    if (!context) return undefined
-
-    // Get the first line of the context which should be our ID
-    const firstLine = context.split('\n')[0]
-    return firstLine
-  }
-
-  validateData(data: TranslationData): boolean {
-    const questionId = this.getQuestionId(data)
-    if (!questionId || !hasQuestion(questionId)) {
-      if (questionId) {
-        this.missingQuestions.add(questionId)
-      }
-      return false
-    }
-    return true
-  }
-
-  async upsertTranslation(data: TranslationData): Promise<void> {
-    // Log missing questions summary when we're done processing
-    if (this.missingQuestions.size > 0) {
-      this.logger?.warn(
-        {
-          count: this.missingQuestions.size,
-          questions: Array.from(this.missingQuestions)
-        },
-        'Questions do not exist in database'
-      )
-      this.missingQuestions.clear()
-    }
-
-    const text = this.getTranslationText(data.translation)
-    if (!text) return
-
-    const languageId =
-      CROWDIN_LANGUAGE_CODE_TO_ID[
-        data.languageCode as keyof typeof CROWDIN_LANGUAGE_CODE_TO_ID
-      ]
-    if (!languageId) return
-
-    const questionId = this.getQuestionId(data)
-    if (!questionId) return
-
-    const questions = getQuestionData(questionId)
-    if (!questions || questions.length === 0) return
-
-    // Since we have the data in our cache, we can use it directly
-    await Promise.all(
-      questions.map(({ videoId, order }) =>
-        prisma.videoStudyQuestion.upsert({
-          where: {
-            videoId_languageId_order: {
-              videoId,
-              languageId,
-              order
-            }
-          },
-          update: {
-            value: text
-          },
-          create: {
-            videoId,
-            languageId,
-            order,
-            value: text,
-            primary: false,
-            crowdInId: questionId
-          }
-        })
-      )
-    )
-  }
 }
