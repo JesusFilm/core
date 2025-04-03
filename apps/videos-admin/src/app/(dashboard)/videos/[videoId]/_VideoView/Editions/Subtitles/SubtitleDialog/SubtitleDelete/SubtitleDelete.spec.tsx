@@ -29,15 +29,13 @@ const deleteSubtitleMock: MockedResponse<
 describe('SubtitleDelete', () => {
   it('should render', () => {
     render(
-      
-        <MockedProvider mocks={[]}>
-          <SubtitleDelete
-            edition={mockEdition}
-            subtitle={mockSubtitle}
-            close={jest.fn()}
-          />
-        </MockedProvider>
-      
+      <MockedProvider mocks={[]}>
+        <SubtitleDelete
+          edition={mockEdition}
+          subtitle={mockSubtitle}
+          close={jest.fn()}
+        />
+      </MockedProvider>
     )
 
     expect(
@@ -54,15 +52,13 @@ describe('SubtitleDelete', () => {
     const close = jest.fn()
 
     render(
-      
-        <MockedProvider mocks={[]}>
-          <SubtitleDelete
-            edition={mockEdition}
-            subtitle={mockSubtitle}
-            close={close}
-          />
-        </MockedProvider>
-      
+      <MockedProvider mocks={[]}>
+        <SubtitleDelete
+          edition={mockEdition}
+          subtitle={mockSubtitle}
+          close={close}
+        />
+      </MockedProvider>
     )
 
     const user = userEvent.setup()
@@ -75,15 +71,13 @@ describe('SubtitleDelete', () => {
     const close = jest.fn()
 
     render(
-      
-        <MockedProvider mocks={[deleteSubtitleMock]}>
-          <SubtitleDelete
-            edition={mockEdition}
-            subtitle={mockSubtitle}
-            close={close}
-          />
-        </MockedProvider>
-      
+      <MockedProvider mocks={[deleteSubtitleMock]}>
+        <SubtitleDelete
+          edition={mockEdition}
+          subtitle={mockSubtitle}
+          close={close}
+        />
+      </MockedProvider>
     )
 
     const user = userEvent.setup()

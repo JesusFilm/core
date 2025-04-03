@@ -19,26 +19,24 @@ jest.mock('notistack', () => ({
 describe('StudyQuestions', () => {
   it('should render', async () => {
     render(
-      
-        <MockedProvider>
-          <StudyQuestionsList
-            studyQuestions={[
-              {
-                id: 'studyQuestion.1',
-                value: 'Study question 1 text'
-              },
-              {
-                id: 'studyQuestions.2',
-                value: 'Study question 2 text'
-              },
-              {
-                id: 'studyQuestion.3',
-                value: 'Study question 3 text'
-              }
-            ]}
-          />
-        </MockedProvider>
-      
+      <MockedProvider>
+        <StudyQuestionsList
+          studyQuestions={[
+            {
+              id: 'studyQuestion.1',
+              value: 'Study question 1 text'
+            },
+            {
+              id: 'studyQuestions.2',
+              value: 'Study question 2 text'
+            },
+            {
+              id: 'studyQuestion.3',
+              value: 'Study question 3 text'
+            }
+          ]}
+        />
+      </MockedProvider>
     )
 
     expect(screen.getByText('Study Questions')).toBeInTheDocument()
@@ -63,11 +61,9 @@ describe('StudyQuestions', () => {
 
   it('should render fallback', () => {
     render(
-      
-        <MockedProvider>
-          <StudyQuestionsList studyQuestions={[]} />
-        </MockedProvider>
-      
+      <MockedProvider>
+        <StudyQuestionsList studyQuestions={[]} />
+      </MockedProvider>
     )
 
     expect(screen.getByText('No study questions')).toBeInTheDocument()
@@ -75,18 +71,16 @@ describe('StudyQuestions', () => {
 
   it('should open delete dialog when delete action is clicked', async () => {
     render(
-      
-        <MockedProvider>
-          <StudyQuestionsList
-            studyQuestions={[
-              {
-                id: 'studyQuestion.1',
-                value: 'Study question 1 text'
-              }
-            ]}
-          />
-        </MockedProvider>
-      
+      <MockedProvider>
+        <StudyQuestionsList
+          studyQuestions={[
+            {
+              id: 'studyQuestion.1',
+              value: 'Study question 1 text'
+            }
+          ]}
+        />
+      </MockedProvider>
     )
 
     // Open the menu for the first item
@@ -108,18 +102,16 @@ describe('StudyQuestions', () => {
 
   it('should close delete dialog when cancel is clicked', async () => {
     render(
-      
-        <MockedProvider>
-          <StudyQuestionsList
-            studyQuestions={[
-              {
-                id: 'studyQuestion.1',
-                value: 'Study question 1 text'
-              }
-            ]}
-          />
-        </MockedProvider>
-      
+      <MockedProvider>
+        <StudyQuestionsList
+          studyQuestions={[
+            {
+              id: 'studyQuestion.1',
+              value: 'Study question 1 text'
+            }
+          ]}
+        />
+      </MockedProvider>
     )
 
     // Open the menu for the first item
@@ -160,18 +152,16 @@ describe('StudyQuestions', () => {
     ]
 
     render(
-      
-        <MockedProvider mocks={mocks} addTypename={false}>
-          <StudyQuestionsList
-            studyQuestions={[
-              {
-                id: 'studyQuestion.1',
-                value: 'Study question 1 text'
-              }
-            ]}
-          />
-        </MockedProvider>
-      
+      <MockedProvider mocks={mocks} addTypename={false}>
+        <StudyQuestionsList
+          studyQuestions={[
+            {
+              id: 'studyQuestion.1',
+              value: 'Study question 1 text'
+            }
+          ]}
+        />
+      </MockedProvider>
     )
 
     // Open the menu for the first item

@@ -207,9 +207,7 @@ const createWrapper = (mocks: any[] = []) => {
     return (
       <MockedProvider mocks={mocks}>
         <SnackbarProvider>
-          
-            <UploadVideoVariantProvider>{children}</UploadVideoVariantProvider>
-          
+          <UploadVideoVariantProvider>{children}</UploadVideoVariantProvider>
         </SnackbarProvider>
       </MockedProvider>
     )

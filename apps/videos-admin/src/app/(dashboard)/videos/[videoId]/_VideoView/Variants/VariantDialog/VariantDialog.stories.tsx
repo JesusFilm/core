@@ -22,11 +22,7 @@ const mockVideoVariant: VideoVariant =
 type Story = StoryObj<ComponentProps<typeof VariantDialog>>
 
 const Template: Story = {
-  render: (args) => (
-    
-      <VariantDialog {...args} />
-    
-  )
+  render: (args) => <VariantDialog {...args} />
 }
 
 export const Default = {

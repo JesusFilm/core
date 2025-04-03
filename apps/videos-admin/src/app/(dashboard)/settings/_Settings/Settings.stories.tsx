@@ -25,10 +25,5 @@ export default meta
 type Story = StoryObj<ComponentProps<typeof Settings>>
 
 export const Default: Story = {
-  render: () => (
-    
-      <Settings />
-    
-  ),
-  
+  render: () => <Settings />
 }

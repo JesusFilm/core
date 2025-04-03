@@ -11,17 +11,15 @@ const mockEdition = mockVideo.videoEditions[0]
 describe('EditionCard', () => {
   it('should render', () => {
     render(
-      
-        <EditionCard
-          edition={mockEdition}
-          onClick={jest.fn()}
-          actions={{
-            view: jest.fn(),
-            edit: jest.fn(),
-            delete: jest.fn()
-          }}
-        />
-      
+      <EditionCard
+        edition={mockEdition}
+        onClick={jest.fn()}
+        actions={{
+          view: jest.fn(),
+          edit: jest.fn(),
+          delete: jest.fn()
+        }}
+      />
     )
 
     expect(screen.getByText(mockEdition.name)).toBeInTheDocument()
@@ -36,17 +34,15 @@ describe('EditionCard', () => {
   it('should call onClick when clicked', async () => {
     const onClick = jest.fn()
     render(
-      
-        <EditionCard
-          edition={mockEdition}
-          onClick={onClick}
-          actions={{
-            view: jest.fn(),
-            edit: jest.fn(),
-            delete: jest.fn()
-          }}
-        />
-      
+      <EditionCard
+        edition={mockEdition}
+        onClick={onClick}
+        actions={{
+          view: jest.fn(),
+          edit: jest.fn(),
+          delete: jest.fn()
+        }}
+      />
     )
 
     const user = userEvent.setup()
@@ -60,17 +56,15 @@ describe('EditionCard', () => {
     const deleteFn = jest.fn()
 
     render(
-      
-        <EditionCard
-          edition={{ ...mockEdition, videoSubtitles: [] }}
-          onClick={jest.fn()}
-          actions={{
-            view: viewFn,
-            edit: editFn,
-            delete: deleteFn
-          }}
-        />
-      
+      <EditionCard
+        edition={{ ...mockEdition, videoSubtitles: [] }}
+        onClick={jest.fn()}
+        actions={{
+          view: viewFn,
+          edit: editFn,
+          delete: deleteFn
+        }}
+      />
     )
 
     const user = userEvent.setup()
@@ -88,17 +82,15 @@ describe('EditionCard', () => {
 
   it('should not show delete option if there are subtitles', async () => {
     render(
-      
-        <EditionCard
-          edition={mockEdition}
-          onClick={jest.fn()}
-          actions={{
-            view: jest.fn(),
-            edit: jest.fn(),
-            delete: jest.fn()
-          }}
-        />
-      
+      <EditionCard
+        edition={mockEdition}
+        onClick={jest.fn()}
+        actions={{
+          view: jest.fn(),
+          edit: jest.fn(),
+          delete: jest.fn()
+        }}
+      />
     )
 
     const user = userEvent.setup()

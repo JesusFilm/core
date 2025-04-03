@@ -19,9 +19,7 @@ describe('VideoViewPage', () => {
 
     render(
       <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
-        
-          <VideoViewPage />
-        
+        <VideoViewPage />
       </MockedProvider>
     )
 

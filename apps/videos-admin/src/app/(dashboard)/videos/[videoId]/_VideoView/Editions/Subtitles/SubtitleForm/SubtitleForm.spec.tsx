@@ -36,16 +36,14 @@ describe('SubtitleForm', () => {
     const onSubmit = jest.fn()
 
     render(
-      
-        <MockedProvider mocks={[getLanguagesMock]}>
-          <SubtitleForm
-            variant="create"
-            initialValues={{ language: '', vttFile: null, srtFile: null }}
-            onSubmit={onSubmit}
-            subtitleLanguagesMap={mockSubtitleLanguagesMap}
-          />
-        </MockedProvider>
-      
+      <MockedProvider mocks={[getLanguagesMock]}>
+        <SubtitleForm
+          variant="create"
+          initialValues={{ language: '', vttFile: null, srtFile: null }}
+          onSubmit={onSubmit}
+          subtitleLanguagesMap={mockSubtitleLanguagesMap}
+        />
+      </MockedProvider>
     )
 
     const user = userEvent.setup()
@@ -83,21 +81,19 @@ describe('SubtitleForm', () => {
     })
 
     render(
-      
-        <MockedProvider mocks={[getLanguagesMock]}>
-          <SubtitleForm
-            variant="edit"
-            subtitle={mockSubtitle}
-            initialValues={{
-              language: mockSubtitle.language.id,
-              vttFile: existingFile,
-              srtFile: null
-            }}
-            onSubmit={onSubmit}
-            subtitleLanguagesMap={mockSubtitleLanguagesMap}
-          />
-        </MockedProvider>
-      
+      <MockedProvider mocks={[getLanguagesMock]}>
+        <SubtitleForm
+          variant="edit"
+          subtitle={mockSubtitle}
+          initialValues={{
+            language: mockSubtitle.language.id,
+            vttFile: existingFile,
+            srtFile: null
+          }}
+          onSubmit={onSubmit}
+          subtitleLanguagesMap={mockSubtitleLanguagesMap}
+        />
+      </MockedProvider>
     )
 
     expect(screen.getByText('existing.vtt')).toBeInTheDocument()
@@ -106,20 +102,18 @@ describe('SubtitleForm', () => {
   it('should handle simultaneous uploads of VTT and SRT files', async () => {
     const onSubmit = jest.fn()
     render(
-      
-        <MockedProvider mocks={[getLanguagesMock]}>
-          <SubtitleForm
-            variant="create"
-            initialValues={{
-              language: '',
-              vttFile: null,
-              srtFile: null
-            }}
-            onSubmit={onSubmit}
-            subtitleLanguagesMap={mockSubtitleLanguagesMap}
-          />
-        </MockedProvider>
-      
+      <MockedProvider mocks={[getLanguagesMock]}>
+        <SubtitleForm
+          variant="create"
+          initialValues={{
+            language: '',
+            vttFile: null,
+            srtFile: null
+          }}
+          onSubmit={onSubmit}
+          subtitleLanguagesMap={mockSubtitleLanguagesMap}
+        />
+      </MockedProvider>
     )
 
     const user = userEvent.setup()
@@ -164,16 +158,14 @@ describe('SubtitleForm', () => {
 
   it('should filter out languages that already have subtitles', async () => {
     render(
-      
-        <MockedProvider mocks={[getLanguagesMock]}>
-          <SubtitleForm
-            variant="create"
-            initialValues={{ language: '', vttFile: null, srtFile: null }}
-            onSubmit={jest.fn()}
-            subtitleLanguagesMap={mockSubtitleLanguagesMap}
-          />
-        </MockedProvider>
-      
+      <MockedProvider mocks={[getLanguagesMock]}>
+        <SubtitleForm
+          variant="create"
+          initialValues={{ language: '', vttFile: null, srtFile: null }}
+          onSubmit={jest.fn()}
+          subtitleLanguagesMap={mockSubtitleLanguagesMap}
+        />
+      </MockedProvider>
     )
 
     const user = userEvent.setup()
@@ -197,21 +189,19 @@ describe('SubtitleForm', () => {
 
   it('should include current subtitle language when editing', async () => {
     render(
-      
-        <MockedProvider mocks={[getLanguagesMock]}>
-          <SubtitleForm
-            variant="edit"
-            subtitle={mockSubtitle}
-            initialValues={{
-              language: mockSubtitle.language.id,
-              vttFile: null,
-              srtFile: null
-            }}
-            onSubmit={jest.fn()}
-            subtitleLanguagesMap={mockSubtitleLanguagesMap}
-          />
-        </MockedProvider>
-      
+      <MockedProvider mocks={[getLanguagesMock]}>
+        <SubtitleForm
+          variant="edit"
+          subtitle={mockSubtitle}
+          initialValues={{
+            language: mockSubtitle.language.id,
+            vttFile: null,
+            srtFile: null
+          }}
+          onSubmit={jest.fn()}
+          subtitleLanguagesMap={mockSubtitleLanguagesMap}
+        />
+      </MockedProvider>
     )
 
     const user = userEvent.setup()

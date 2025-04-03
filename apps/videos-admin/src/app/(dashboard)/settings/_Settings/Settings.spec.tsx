@@ -4,11 +4,7 @@ import { Settings } from './Settings'
 
 describe('Settings', () => {
   it('should render settings', () => {
-    render(
-      
-        <Settings />
-      
-    )
+    render(<Settings />)
 
     expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(
       'Settings'

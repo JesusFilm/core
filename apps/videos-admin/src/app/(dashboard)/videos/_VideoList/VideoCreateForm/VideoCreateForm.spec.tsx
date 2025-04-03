@@ -61,11 +61,9 @@ describe('VideoCreateForm', () => {
 
   it('should render form', () => {
     render(
-      
-        <MockedProvider>
-          <VideoCreateForm close={mockCancel} />
-        </MockedProvider>
-      
+      <MockedProvider>
+        <VideoCreateForm close={mockCancel} />
+      </MockedProvider>
     )
 
     expect(screen.getByRole('textbox', { name: 'ID' })).toBeInTheDocument()
@@ -80,11 +78,9 @@ describe('VideoCreateForm', () => {
 
   it('should emit cancel callback on cancel', async () => {
     render(
-      
-        <MockedProvider>
-          <VideoCreateForm close={mockCancel} />
-        </MockedProvider>
-      
+      <MockedProvider>
+        <VideoCreateForm close={mockCancel} />
+      </MockedProvider>
     )
 
     const user = userEvent.setup()
@@ -96,11 +92,9 @@ describe('VideoCreateForm', () => {
 
   it('should require all fields', async () => {
     render(
-      
-        <MockedProvider>
-          <VideoCreateForm close={mockCancel} />
-        </MockedProvider>
-      
+      <MockedProvider>
+        <VideoCreateForm close={mockCancel} />
+      </MockedProvider>
     )
 
     const user = userEvent.setup()
@@ -119,17 +113,15 @@ describe('VideoCreateForm', () => {
       .mockReturnValue(getLanguagesMock.result)
 
     render(
-      
-        <MockedProvider
-          mocks={[
-            { ...getLanguagesMock, result: getLanguagesMockResult },
-            createVideoMock,
-            createEditionMock
-          ]}
-        >
-          <VideoCreateForm close={mockCancel} />
-        </MockedProvider>
-      
+      <MockedProvider
+        mocks={[
+          { ...getLanguagesMock, result: getLanguagesMockResult },
+          createVideoMock,
+          createEditionMock
+        ]}
+      >
+        <VideoCreateForm close={mockCancel} />
+      </MockedProvider>
     )
 
     const user = userEvent.setup()
@@ -172,13 +164,11 @@ describe('VideoCreateForm', () => {
     }
 
     render(
-      
-        <SnackbarProvider>
-          <MockedProvider mocks={[getLanguagesMock, errorMock]}>
-            <VideoCreateForm close={mockCancel} />
-          </MockedProvider>
-        </SnackbarProvider>
-      
+      <SnackbarProvider>
+        <MockedProvider mocks={[getLanguagesMock, errorMock]}>
+          <VideoCreateForm close={mockCancel} />
+        </MockedProvider>
+      </SnackbarProvider>
     )
 
     const user = userEvent.setup()

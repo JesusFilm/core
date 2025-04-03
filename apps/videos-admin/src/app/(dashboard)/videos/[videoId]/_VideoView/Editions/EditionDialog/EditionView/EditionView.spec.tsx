@@ -12,11 +12,7 @@ const mockEdition = mockVideo.videoEditions[0]
 
 describe('EditionView', () => {
   it('should render with subtitles', () => {
-    render(
-      
-        <EditionView edition={mockEdition} />
-      
-    )
+    render(<EditionView edition={mockEdition} />)
 
     expect(screen.getByText('Subtitles')).toBeInTheDocument()
     expect(
@@ -26,24 +22,18 @@ describe('EditionView', () => {
   })
 
   it('should render with no subtitles', () => {
-    render(
-      
-        <EditionView edition={{ ...mockEdition, videoSubtitles: [] }} />
-      
-    )
+    render(<EditionView edition={{ ...mockEdition, videoSubtitles: [] }} />)
 
     expect(screen.getByText('No subtitles')).toBeInTheDocument()
   })
 
   it('should show the subtitle create dialog', async () => {
     render(
-      
-        <VideoProvider video={mockVideo}>
-          <MockedProvider mocks={[]}>
-            <EditionView edition={mockEdition} />
-          </MockedProvider>
-        </VideoProvider>
-      
+      <VideoProvider video={mockVideo}>
+        <MockedProvider mocks={[]}>
+          <EditionView edition={mockEdition} />
+        </MockedProvider>
+      </VideoProvider>
     )
 
     const user = userEvent.setup()

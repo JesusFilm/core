@@ -38,10 +38,7 @@ export const Default: Story = {
         photoURL: 'url-of-nameinghams-photo'
       }}
     >
-      
-        <SideMenuMobile open toggleDrawer={(newOpen: boolean) => noop} />
-      
+      <SideMenuMobile open toggleDrawer={(newOpen: boolean) => noop} />
     </AuthProvider>
-  ),
-  
+  )
 }

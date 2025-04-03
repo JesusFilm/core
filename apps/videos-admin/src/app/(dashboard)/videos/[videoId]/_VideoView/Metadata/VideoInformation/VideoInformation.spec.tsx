@@ -76,9 +76,7 @@ describe('VideoInformation', () => {
   it('should show disabled save button if values not changed', () => {
     render(
       <MockedProvider>
-        
-          <VideoInformation video={mockVideo} />
-        
+        <VideoInformation video={mockVideo} />
       </MockedProvider>
     )
 
@@ -88,9 +86,7 @@ describe('VideoInformation', () => {
   it('should enable save button if title field has been changed', async () => {
     render(
       <MockedProvider>
-        
-          <VideoInformation video={mockVideo} />
-        
+        <VideoInformation video={mockVideo} />
       </MockedProvider>
     )
 
@@ -110,9 +106,7 @@ describe('VideoInformation', () => {
   it('should enable save button if status has been changed', async () => {
     render(
       <MockedProvider>
-        
-          <VideoInformation video={mockVideo} />
-        
+        <VideoInformation video={mockVideo} />
       </MockedProvider>
     )
 
@@ -132,9 +126,7 @@ describe('VideoInformation', () => {
   it('should enable form buttons if label has been changed', async () => {
     render(
       <MockedProvider>
-        
-          <VideoInformation video={mockVideo} />
-        
+        <VideoInformation video={mockVideo} />
       </MockedProvider>
     )
 
@@ -156,9 +148,7 @@ describe('VideoInformation', () => {
       <MockedProvider
         mocks={[mockCreateVideoTitle, mockUpdateVideoInformation]}
       >
-        
-          <VideoInformation video={{ ...mockVideo, title: [] }} />
-        
+        <VideoInformation video={{ ...mockVideo, title: [] }} />
       </MockedProvider>
     )
 
@@ -179,9 +169,7 @@ describe('VideoInformation', () => {
   it('should update video information on submit', async () => {
     render(
       <MockedProvider mocks={[mockUpdateVideoInformation]}>
-        
-          <VideoInformation video={mockVideo} />
-        
+        <VideoInformation video={mockVideo} />
       </MockedProvider>
     )
 
@@ -203,9 +191,7 @@ describe('VideoInformation', () => {
   it('should require title field', async () => {
     render(
       <MockedProvider>
-        
-          <VideoInformation video={mockVideo} />
-        
+        <VideoInformation video={mockVideo} />
       </MockedProvider>
     )
 
@@ -223,9 +209,7 @@ describe('VideoInformation', () => {
   it('should reset form when cancel button is clicked', async () => {
     render(
       <MockedProvider>
-        
-          <VideoInformation video={mockVideo} />
-        
+        <VideoInformation video={mockVideo} />
       </MockedProvider>
     )
 

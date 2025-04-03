@@ -12,11 +12,9 @@ describe('VideoImage', () => {
 
   it('should show video image', () => {
     render(
-      
-        <MockedProvider>
-          <VideoImage video={video} />
-        </MockedProvider>
-      
+      <MockedProvider>
+        <VideoImage video={video} />
+      </MockedProvider>
     )
 
     expect(screen.getByAltText('JESUS')).toBeInTheDocument()
@@ -24,11 +22,9 @@ describe('VideoImage', () => {
 
   it('should show edit button', () => {
     render(
-      
-        <MockedProvider>
-          <VideoImage video={video} />
-        </MockedProvider>
-      
+      <MockedProvider>
+        <VideoImage video={video} />
+      </MockedProvider>
     )
 
     expect(screen.getByRole('button')).toBeInTheDocument()
@@ -36,11 +32,9 @@ describe('VideoImage', () => {
 
   it('should show tooltip when hovering over edit button', async () => {
     render(
-      
-        <MockedProvider>
-          <VideoImage video={video} />
-        </MockedProvider>
-      
+      <MockedProvider>
+        <VideoImage video={video} />
+      </MockedProvider>
     )
 
     fireEvent.mouseOver(screen.getByRole('button'))
@@ -51,11 +45,9 @@ describe('VideoImage', () => {
 
   it('should open file upload dialog on edit button click', async () => {
     render(
-      
-        <MockedProvider>
-          <VideoImage video={video} />
-        </MockedProvider>
-      
+      <MockedProvider>
+        <VideoImage video={video} />
+      </MockedProvider>
     )
     expect(screen.getByRole('button')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button'))
@@ -69,11 +61,9 @@ describe('VideoImage', () => {
 
   it('should close file upload dialog on close button click', async () => {
     render(
-      
-        <MockedProvider>
-          <VideoImage video={video} />
-        </MockedProvider>
-      
+      <MockedProvider>
+        <VideoImage video={video} />
+      </MockedProvider>
     )
     expect(screen.getByRole('button')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button'))
@@ -90,11 +80,9 @@ describe('VideoImage', () => {
 
   it('should close file upload on file upload completion', async () => {
     render(
-      
-        <MockedProvider>
-          <VideoImage video={video} />
-        </MockedProvider>
-      
+      <MockedProvider>
+        <VideoImage video={video} />
+      </MockedProvider>
     )
     expect(screen.getByRole('button')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button'))
@@ -111,11 +99,9 @@ describe('VideoImage', () => {
 
   it('should show fallback if src is null', () => {
     render(
-      
-        <MockedProvider>
-          <VideoImage video={{ ...video, images: [] }} />
-        </MockedProvider>
-      
+      <MockedProvider>
+        <VideoImage video={{ ...video, images: [] }} />
+      </MockedProvider>
     )
 
     expect(screen.getByTestId('Upload1Icon')).toBeInTheDocument()

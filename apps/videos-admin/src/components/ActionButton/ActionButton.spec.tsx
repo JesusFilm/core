@@ -5,11 +5,7 @@ import { ActionButton } from './ActionButton'
 
 describe('ActionButton', () => {
   it('should render without actions', async () => {
-    render(
-      
-        <ActionButton actions={{}} />
-      
-    )
+    render(<ActionButton actions={{}} />)
 
     const user = userEvent.setup()
 
@@ -29,15 +25,13 @@ describe('ActionButton', () => {
     const deleteFn = jest.fn()
 
     render(
-      
-        <ActionButton
-          actions={{
-            view: viewFn,
-            edit: editFn,
-            delete: deleteFn
-          }}
-        />
-      
+      <ActionButton
+        actions={{
+          view: viewFn,
+          edit: editFn,
+          delete: deleteFn
+        }}
+      />
     )
 
     const user = userEvent.setup()

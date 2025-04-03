@@ -25,9 +25,7 @@ describe('Variants', () => {
   it('should render variants', () => {
     render(
       <MockedProvider>
-        
-          <Variants variants={mockVideoVariants} />
-        
+        <Variants variants={mockVideoVariants} />
       </MockedProvider>
     )
 
@@ -37,9 +35,7 @@ describe('Variants', () => {
   it('should open variant modal when variant is clicked', async () => {
     render(
       <MockedProvider>
-        
-          <Variants variants={mockVideoVariants} />
-        
+        <Variants variants={mockVideoVariants} />
       </MockedProvider>
     )
 
@@ -54,9 +50,7 @@ describe('Variants', () => {
   it('should close variant modal', async () => {
     render(
       <MockedProvider>
-        
-          <Variants variants={mockVideoVariants} />
-        
+        <Variants variants={mockVideoVariants} />
       </MockedProvider>
     )
 
@@ -80,9 +74,7 @@ describe('Variants', () => {
   it('should have correct id for the Section element so correct virtualization dimensions can be calculated', async () => {
     render(
       <MockedProvider>
-        
-          <Variants variants={mockVideoVariants} />
-        
+        <Variants variants={mockVideoVariants} />
       </MockedProvider>
     )
 
@@ -110,11 +102,9 @@ describe('Variants', () => {
 
     render(
       <MockedProvider mocks={[deleteMutationMock]}>
-        
-          <SnackbarProvider>
-            <Variants variants={mockVideoVariants} />
-          </SnackbarProvider>
-        
+        <SnackbarProvider>
+          <Variants variants={mockVideoVariants} />
+        </SnackbarProvider>
       </MockedProvider>
     )
 
@@ -137,11 +127,9 @@ describe('Variants', () => {
   it('should open add audio language dialog when clicking add audio language button', async () => {
     render(
       <MockedProvider>
-        
-          <UploadVideoVariantProvider>
-            <Variants variants={mockVideoVariants} />
-          </UploadVideoVariantProvider>
-        
+        <UploadVideoVariantProvider>
+          <Variants variants={mockVideoVariants} />
+        </UploadVideoVariantProvider>
       </MockedProvider>
     )
     fireEvent.click(screen.getByText('Add Audio Language'))
@@ -151,11 +139,9 @@ describe('Variants', () => {
   it('should close add audio language dialog', async () => {
     render(
       <MockedProvider>
-        
-          <UploadVideoVariantProvider>
-            <Variants variants={mockVideoVariants} />
-          </UploadVideoVariantProvider>
-        
+        <UploadVideoVariantProvider>
+          <Variants variants={mockVideoVariants} />
+        </UploadVideoVariantProvider>
       </MockedProvider>
     )
     fireEvent.click(screen.getByText('Add Audio Language'))

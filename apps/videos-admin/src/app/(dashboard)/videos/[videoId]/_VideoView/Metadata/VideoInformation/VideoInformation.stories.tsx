@@ -24,11 +24,7 @@ const mockVideo: AdminVideo =
 type Story = StoryObj<ComponentProps<typeof VideoInformation>>
 
 const Template: Story = {
-  render: ({ video }) => (
-    
-      <VideoInformation video={video} />
-    
-  )
+  render: ({ video }) => <VideoInformation video={video} />
 }
 
 export const Default = {

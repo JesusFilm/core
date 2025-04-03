@@ -123,17 +123,15 @@ describe('SubtitleEdit', () => {
 
   it('should render', () => {
     render(
-      
-        <VideoProvider video={mockVideo}>
-          <MockedProvider mocks={[]}>
-            <SubtitleEdit
-              subtitle={mockSubtitle}
-              edition={mockEdition}
-              subtitleLanguagesMap={mockSubtitleLanguagesMap}
-            />
-          </MockedProvider>
-        </VideoProvider>
-      
+      <VideoProvider video={mockVideo}>
+        <MockedProvider mocks={[]}>
+          <SubtitleEdit
+            subtitle={mockSubtitle}
+            edition={mockEdition}
+            subtitleLanguagesMap={mockSubtitleLanguagesMap}
+          />
+        </MockedProvider>
+      </VideoProvider>
     )
 
     expect(screen.getByTestId('SubtitleForm')).toBeInTheDocument()
@@ -142,19 +140,17 @@ describe('SubtitleEdit', () => {
 
   it('should prevent changing to a language that already has a subtitle', async () => {
     render(
-      
-        <SnackbarProvider>
-          <VideoProvider video={mockVideo}>
-            <MockedProvider mocks={[getLanguagesMock]}>
-              <SubtitleEdit
-                subtitle={mockSubtitle}
-                edition={mockEdition}
-                subtitleLanguagesMap={mockSubtitleLanguagesMap}
-              />
-            </MockedProvider>
-          </VideoProvider>
-        </SnackbarProvider>
-      
+      <SnackbarProvider>
+        <VideoProvider video={mockVideo}>
+          <MockedProvider mocks={[getLanguagesMock]}>
+            <SubtitleEdit
+              subtitle={mockSubtitle}
+              edition={mockEdition}
+              subtitleLanguagesMap={mockSubtitleLanguagesMap}
+            />
+          </MockedProvider>
+        </VideoProvider>
+      </SnackbarProvider>
     )
 
     const user = userEvent.setup()
@@ -186,29 +182,27 @@ describe('SubtitleEdit', () => {
     describe('vtt', () => {
       it('should update subtitle without a file', async () => {
         render(
-          
-            <VideoProvider video={mockVideo}>
-              <MockedProvider
-                mocks={[
-                  getLanguagesMock,
-                  createR2VttAssetMock,
-                  subtitleEditWithoutFileMock
-                ]}
-              >
-                <SubtitleEdit
-                  subtitle={{
-                    ...mockSubtitle,
-                    primary: false,
-                    value: null,
-                    vttSrc: null,
-                    srtSrc: null
-                  }}
-                  edition={mockEdition}
-                  subtitleLanguagesMap={mockSubtitleLanguagesMap}
-                />
-              </MockedProvider>
-            </VideoProvider>
-          
+          <VideoProvider video={mockVideo}>
+            <MockedProvider
+              mocks={[
+                getLanguagesMock,
+                createR2VttAssetMock,
+                subtitleEditWithoutFileMock
+              ]}
+            >
+              <SubtitleEdit
+                subtitle={{
+                  ...mockSubtitle,
+                  primary: false,
+                  value: null,
+                  vttSrc: null,
+                  srtSrc: null
+                }}
+                edition={mockEdition}
+                subtitleLanguagesMap={mockSubtitleLanguagesMap}
+              />
+            </MockedProvider>
+          </VideoProvider>
         )
 
         const user = userEvent.setup()
@@ -227,29 +221,27 @@ describe('SubtitleEdit', () => {
 
       it('should update without an existing file', async () => {
         render(
-          
-            <VideoProvider video={mockVideo}>
-              <MockedProvider
-                mocks={[
-                  getLanguagesMock,
-                  createR2VttAssetMock,
-                  subtitleEditWithFileMock
-                ]}
-              >
-                <SubtitleEdit
-                  subtitle={{
-                    ...mockSubtitle,
-                    primary: false,
-                    value: null,
-                    vttSrc: null,
-                    srtSrc: null
-                  }}
-                  edition={mockEdition}
-                  subtitleLanguagesMap={mockSubtitleLanguagesMap}
-                />
-              </MockedProvider>
-            </VideoProvider>
-          
+          <VideoProvider video={mockVideo}>
+            <MockedProvider
+              mocks={[
+                getLanguagesMock,
+                createR2VttAssetMock,
+                subtitleEditWithFileMock
+              ]}
+            >
+              <SubtitleEdit
+                subtitle={{
+                  ...mockSubtitle,
+                  primary: false,
+                  value: null,
+                  vttSrc: null,
+                  srtSrc: null
+                }}
+                edition={mockEdition}
+                subtitleLanguagesMap={mockSubtitleLanguagesMap}
+              />
+            </MockedProvider>
+          </VideoProvider>
         )
         const user = userEvent.setup()
 
@@ -290,26 +282,24 @@ describe('SubtitleEdit', () => {
         })
 
         render(
-          
-            <VideoProvider video={mockVideo}>
-              <MockedProvider
-                mocks={[
-                  getLanguagesMock,
-                  createR2VttAssetMock,
-                  subtitleEditWithExistingFileMock
-                ]}
-              >
-                <SubtitleEdit
-                  subtitle={{
-                    ...mockSubtitle,
-                    primary: false
-                  }}
-                  edition={mockEdition}
-                  subtitleLanguagesMap={mockSubtitleLanguagesMap}
-                />
-              </MockedProvider>
-            </VideoProvider>
-          
+          <VideoProvider video={mockVideo}>
+            <MockedProvider
+              mocks={[
+                getLanguagesMock,
+                createR2VttAssetMock,
+                subtitleEditWithExistingFileMock
+              ]}
+            >
+              <SubtitleEdit
+                subtitle={{
+                  ...mockSubtitle,
+                  primary: false
+                }}
+                edition={mockEdition}
+                subtitleLanguagesMap={mockSubtitleLanguagesMap}
+              />
+            </MockedProvider>
+          </VideoProvider>
         )
         const user = userEvent.setup()
 
@@ -337,29 +327,27 @@ describe('SubtitleEdit', () => {
     describe('srt', () => {
       it('should update subtitle without a file', async () => {
         render(
-          
-            <VideoProvider video={mockVideo}>
-              <MockedProvider
-                mocks={[
-                  getLanguagesMock,
-                  createR2SrtAssetMock,
-                  subtitleEditWithoutFileMock
-                ]}
-              >
-                <SubtitleEdit
-                  subtitle={{
-                    ...mockSubtitle,
-                    primary: false,
-                    value: null,
-                    vttSrc: null,
-                    srtSrc: null
-                  }}
-                  edition={mockEdition}
-                  subtitleLanguagesMap={mockSubtitleLanguagesMap}
-                />
-              </MockedProvider>
-            </VideoProvider>
-          
+          <VideoProvider video={mockVideo}>
+            <MockedProvider
+              mocks={[
+                getLanguagesMock,
+                createR2SrtAssetMock,
+                subtitleEditWithoutFileMock
+              ]}
+            >
+              <SubtitleEdit
+                subtitle={{
+                  ...mockSubtitle,
+                  primary: false,
+                  value: null,
+                  vttSrc: null,
+                  srtSrc: null
+                }}
+                edition={mockEdition}
+                subtitleLanguagesMap={mockSubtitleLanguagesMap}
+              />
+            </MockedProvider>
+          </VideoProvider>
         )
 
         const user = userEvent.setup()
@@ -378,29 +366,27 @@ describe('SubtitleEdit', () => {
 
       it('should update without an existing file', async () => {
         render(
-          
-            <VideoProvider video={mockVideo}>
-              <MockedProvider
-                mocks={[
-                  getLanguagesMock,
-                  createR2SrtAssetMock,
-                  subtitleEditWithSrtFileMock
-                ]}
-              >
-                <SubtitleEdit
-                  subtitle={{
-                    ...mockSubtitle,
-                    primary: false,
-                    value: null,
-                    vttSrc: null,
-                    srtSrc: null
-                  }}
-                  edition={mockEdition}
-                  subtitleLanguagesMap={mockSubtitleLanguagesMap}
-                />
-              </MockedProvider>
-            </VideoProvider>
-          
+          <VideoProvider video={mockVideo}>
+            <MockedProvider
+              mocks={[
+                getLanguagesMock,
+                createR2SrtAssetMock,
+                subtitleEditWithSrtFileMock
+              ]}
+            >
+              <SubtitleEdit
+                subtitle={{
+                  ...mockSubtitle,
+                  primary: false,
+                  value: null,
+                  vttSrc: null,
+                  srtSrc: null
+                }}
+                edition={mockEdition}
+                subtitleLanguagesMap={mockSubtitleLanguagesMap}
+              />
+            </MockedProvider>
+          </VideoProvider>
         )
         const user = userEvent.setup()
 
@@ -443,26 +429,24 @@ describe('SubtitleEdit', () => {
         })
 
         render(
-          
-            <VideoProvider video={mockVideo}>
-              <MockedProvider
-                mocks={[
-                  getLanguagesMock,
-                  createR2SrtAssetMock,
-                  subtitleEditWithExistingSrtFileMock
-                ]}
-              >
-                <SubtitleEdit
-                  subtitle={{
-                    ...mockSubtitle,
-                    primary: false
-                  }}
-                  edition={mockEdition}
-                  subtitleLanguagesMap={mockSubtitleLanguagesMap}
-                />
-              </MockedProvider>
-            </VideoProvider>
-          
+          <VideoProvider video={mockVideo}>
+            <MockedProvider
+              mocks={[
+                getLanguagesMock,
+                createR2SrtAssetMock,
+                subtitleEditWithExistingSrtFileMock
+              ]}
+            >
+              <SubtitleEdit
+                subtitle={{
+                  ...mockSubtitle,
+                  primary: false
+                }}
+                edition={mockEdition}
+                subtitleLanguagesMap={mockSubtitleLanguagesMap}
+              />
+            </MockedProvider>
+          </VideoProvider>
         )
         const user = userEvent.setup()
 
@@ -523,26 +507,24 @@ describe('SubtitleEdit', () => {
       })
 
       render(
-        
-          <VideoProvider video={mockVideo}>
-            <MockedProvider
-              mocks={[
-                getLanguagesMock,
-                createR2VttAssetMock1,
-                createR2SrtAssetMock2,
-                subtitleEditWithBothFilesMock
-              ]}
-            >
-              <SubtitleEdit
-                subtitle={{
-                  ...mockSubtitle
-                }}
-                edition={mockEdition}
-                subtitleLanguagesMap={mockSubtitleLanguagesMap}
-              />
-            </MockedProvider>
-          </VideoProvider>
-        
+        <VideoProvider video={mockVideo}>
+          <MockedProvider
+            mocks={[
+              getLanguagesMock,
+              createR2VttAssetMock1,
+              createR2SrtAssetMock2,
+              subtitleEditWithBothFilesMock
+            ]}
+          >
+            <SubtitleEdit
+              subtitle={{
+                ...mockSubtitle
+              }}
+              edition={mockEdition}
+              subtitleLanguagesMap={mockSubtitleLanguagesMap}
+            />
+          </MockedProvider>
+        </VideoProvider>
       )
       const user = userEvent.setup()
 

@@ -8,13 +8,11 @@ describe('EditionForm', () => {
     const onSubmit = jest.fn()
 
     render(
-      
-        <EditionForm
-          variant="create"
-          initialValues={{ name: '' }}
-          onSubmit={onSubmit}
-        />
-      
+      <EditionForm
+        variant="create"
+        initialValues={{ name: '' }}
+        onSubmit={onSubmit}
+      />
     )
 
     const user = userEvent.setup()
@@ -39,13 +37,11 @@ describe('EditionForm', () => {
     const onSubmit = jest.fn()
 
     render(
-      
-        <EditionForm
-          variant="edit"
-          initialValues={{ name: 'base' }}
-          onSubmit={onSubmit}
-        />
-      
+      <EditionForm
+        variant="edit"
+        initialValues={{ name: 'base' }}
+        onSubmit={onSubmit}
+      />
     )
 
     const user = userEvent.setup()

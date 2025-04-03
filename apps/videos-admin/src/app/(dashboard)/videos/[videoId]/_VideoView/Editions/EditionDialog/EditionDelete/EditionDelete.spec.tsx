@@ -36,16 +36,14 @@ const deleteEditionMock: MockedResponse<
 describe('EditionDelete', () => {
   it('should render', () => {
     render(
-      
-        <MockedProvider>
-          <VideoProvider video={mockVideo}>
-            <EditionDelete
-              close={jest.fn()}
-              edition={mockVideo.videoEditions[0]}
-            />
-          </VideoProvider>
-        </MockedProvider>
-      
+      <MockedProvider>
+        <VideoProvider video={mockVideo}>
+          <EditionDelete
+            close={jest.fn()}
+            edition={mockVideo.videoEditions[0]}
+          />
+        </VideoProvider>
+      </MockedProvider>
     )
 
     expect(
@@ -65,20 +63,15 @@ describe('EditionDelete', () => {
       .mockReturnValue(deleteEditionMock.result)
 
     render(
-      
-        <SnackbarProvider>
-          <MockedProvider
-            mocks={[{ ...deleteEditionMock, result: deleteEditionMockResult }]}
-          >
-            <VideoProvider video={mockVideo}>
-              <EditionDelete
-                close={close}
-                edition={mockVideo.videoEditions[0]}
-              />
-            </VideoProvider>
-          </MockedProvider>
-        </SnackbarProvider>
-      
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[{ ...deleteEditionMock, result: deleteEditionMockResult }]}
+        >
+          <VideoProvider video={mockVideo}>
+            <EditionDelete close={close} edition={mockVideo.videoEditions[0]} />
+          </VideoProvider>
+        </MockedProvider>
+      </SnackbarProvider>
     )
     const user = userEvent.setup()
     await user.click(screen.getByRole('button', { name: 'Delete' }))
@@ -105,18 +98,16 @@ describe('EditionDelete', () => {
     }
 
     render(
-      
-        <SnackbarProvider>
-          <MockedProvider mocks={[errorMock]}>
-            <VideoProvider video={mockVideo}>
-              <EditionDelete
-                close={jest.fn()}
-                edition={mockVideo.videoEditions[0]}
-              />
-            </VideoProvider>
-          </MockedProvider>
-        </SnackbarProvider>
-      
+      <SnackbarProvider>
+        <MockedProvider mocks={[errorMock]}>
+          <VideoProvider video={mockVideo}>
+            <EditionDelete
+              close={jest.fn()}
+              edition={mockVideo.videoEditions[0]}
+            />
+          </VideoProvider>
+        </MockedProvider>
+      </SnackbarProvider>
     )
 
     const user = userEvent.setup()
@@ -131,13 +122,11 @@ describe('EditionDelete', () => {
     const close = jest.fn()
 
     render(
-      
-        <MockedProvider>
-          <VideoProvider video={mockVideo}>
-            <EditionDelete close={close} edition={mockVideo.videoEditions[0]} />
-          </VideoProvider>
-        </MockedProvider>
-      
+      <MockedProvider>
+        <VideoProvider video={mockVideo}>
+          <EditionDelete close={close} edition={mockVideo.videoEditions[0]} />
+        </VideoProvider>
+      </MockedProvider>
     )
 
     const user = userEvent.setup()

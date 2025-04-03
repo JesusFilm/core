@@ -25,9 +25,7 @@ type Story = StoryObj<ComponentProps<typeof VideoImageAlt>>
 
 const Template: Story = {
   render: ({ videoImageAlts }) => (
-    
-      <VideoImageAlt videoImageAlts={videoImageAlts} />
-    
+    <VideoImageAlt videoImageAlts={videoImageAlts} />
   )
 }
 

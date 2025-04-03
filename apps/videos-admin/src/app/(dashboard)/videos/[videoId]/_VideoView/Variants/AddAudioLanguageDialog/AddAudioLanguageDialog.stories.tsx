@@ -86,9 +86,7 @@ const Template: Story = {
       ]}
     >
       <SnackbarProvider>
-        
-          <AddAudioLanguageDialog {...args} />
-        
+        <AddAudioLanguageDialog {...args} />
       </SnackbarProvider>
     </MockedProvider>
   )

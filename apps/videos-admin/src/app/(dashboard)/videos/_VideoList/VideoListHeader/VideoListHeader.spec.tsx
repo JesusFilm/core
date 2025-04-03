@@ -13,11 +13,7 @@ jest.mock('next/navigation', () => ({
 
 describe('VideoListHeader', () => {
   it('should render', () => {
-    render(
-      
-        <VideoListHeader />
-      
-    )
+    render(<VideoListHeader />)
 
     expect(screen.getByText('Video Library')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Create' })).toBeInTheDocument()
@@ -25,11 +21,9 @@ describe('VideoListHeader', () => {
 
   it('should show create form when button is clicked', async () => {
     render(
-      
-        <MockedProvider>
-          <VideoListHeader />
-        </MockedProvider>
-      
+      <MockedProvider>
+        <VideoListHeader />
+      </MockedProvider>
     )
 
     const user = userEvent.setup()

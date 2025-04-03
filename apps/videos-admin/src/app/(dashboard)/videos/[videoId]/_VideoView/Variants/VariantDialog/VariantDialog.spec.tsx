@@ -17,11 +17,9 @@ const variant: GetAdminVideoVariant =
 describe('VariantDialog', () => {
   it('should show variant information', () => {
     render(
-      
-        <MockedProvider>
-          <VariantDialog variant={variant} open />
-        </MockedProvider>
-      
+      <MockedProvider>
+        <VariantDialog variant={variant} open />
+      </MockedProvider>
     )
 
     expect(
@@ -38,11 +36,9 @@ describe('VariantDialog', () => {
     const handleClose = jest.fn()
 
     render(
-      
-        <MockedProvider>
-          <VariantDialog variant={variant} open handleClose={handleClose} />
-        </MockedProvider>
-      
+      <MockedProvider>
+        <VariantDialog variant={variant} open handleClose={handleClose} />
+      </MockedProvider>
     )
 
     fireEvent.click(screen.getByTestId('dialog-close-button'))

@@ -24,10 +24,5 @@ export default meta
 type Story = StoryObj<ComponentProps<typeof AppNavbar>>
 
 export const Default: Story = {
-  render: () => (
-    
-      <AppNavbar />
-    
-  ),
-  
+  render: () => <AppNavbar />
 }

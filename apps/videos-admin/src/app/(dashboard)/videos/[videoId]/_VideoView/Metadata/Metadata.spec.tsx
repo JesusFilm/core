@@ -13,13 +13,11 @@ describe('Metadata', () => {
 
   it('should render with data', () => {
     render(
-      
-        <MockedProvider>
-          <VideoProvider video={mockAdminVideo}>
-            <Metadata video={mockAdminVideo} />
-          </VideoProvider>
-        </MockedProvider>
-      
+      <MockedProvider>
+        <VideoProvider video={mockAdminVideo}>
+          <Metadata video={mockAdminVideo} />
+        </VideoProvider>
+      </MockedProvider>
     )
 
     expect(screen.getByText('Information')).toBeInTheDocument()

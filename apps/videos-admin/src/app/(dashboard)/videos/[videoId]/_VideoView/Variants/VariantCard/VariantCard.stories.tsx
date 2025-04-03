@@ -22,11 +22,7 @@ const mockVideoVariant: VideoVariant =
 type Story = StoryObj<ComponentProps<typeof VariantCard>>
 
 const Template: Story = {
-  render: (args) => (
-    
-      <VariantCard {...args} />
-    
-  )
+  render: (args) => <VariantCard {...args} />
 }
 
 export const Default = {

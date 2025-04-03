@@ -25,9 +25,7 @@ type Story = StoryObj<ComponentProps<typeof VideoDescription>>
 
 const Template: Story = {
   render: ({ videoDescriptions }) => (
-    
-      <VideoDescription videoDescriptions={videoDescriptions} />
-    
+    <VideoDescription videoDescriptions={videoDescriptions} />
   )
 }
 

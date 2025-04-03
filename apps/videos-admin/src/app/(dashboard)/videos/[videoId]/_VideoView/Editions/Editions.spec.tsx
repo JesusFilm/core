@@ -12,11 +12,9 @@ const mockVideo = useAdminVideoMock['result']?.['data']?.['adminVideo']
 describe('Editions', () => {
   it('should render with editions', async () => {
     render(
-      
-        <MockedProvider>
-          <Editions editions={mockVideo.videoEditions} />
-        </MockedProvider>
-      
+      <MockedProvider>
+        <Editions editions={mockVideo.videoEditions} />
+      </MockedProvider>
     )
 
     expect(screen.getByText('Editions')).toBeInTheDocument()
@@ -31,11 +29,9 @@ describe('Editions', () => {
 
   it('should render with no editions', () => {
     render(
-      
-        <MockedProvider>
-          <Editions editions={[]} />
-        </MockedProvider>
-      
+      <MockedProvider>
+        <Editions editions={[]} />
+      </MockedProvider>
     )
 
     expect(screen.getByText('Editions')).toBeInTheDocument()
@@ -44,13 +40,11 @@ describe('Editions', () => {
 
   it('should open create edition dialog', async () => {
     render(
-      
-        <MockedProvider>
-          <VideoProvider video={mockVideo}>
-            <Editions editions={mockVideo.videoEditions} />
-          </VideoProvider>
-        </MockedProvider>
-      
+      <MockedProvider>
+        <VideoProvider video={mockVideo}>
+          <Editions editions={mockVideo.videoEditions} />
+        </VideoProvider>
+      </MockedProvider>
     )
 
     const user = userEvent.setup()
@@ -65,11 +59,9 @@ describe('Editions', () => {
 
   it('should open edition dialog when edition is clicked', async () => {
     render(
-      
-        <MockedProvider>
-          <Editions editions={mockVideo.videoEditions} />
-        </MockedProvider>
-      
+      <MockedProvider>
+        <Editions editions={mockVideo.videoEditions} />
+      </MockedProvider>
     )
 
     const user = userEvent.setup()
@@ -83,11 +75,9 @@ describe('Editions', () => {
 
   it('should close edition dialog', async () => {
     render(
-      
-        <MockedProvider>
-          <Editions editions={mockVideo.videoEditions} />
-        </MockedProvider>
-      
+      <MockedProvider>
+        <Editions editions={mockVideo.videoEditions} />
+      </MockedProvider>
     )
 
     const user = userEvent.setup()
@@ -110,13 +100,11 @@ describe('Editions', () => {
 
   it('should open edit edition dialog', async () => {
     render(
-      
-        <MockedProvider>
-          <VideoProvider video={mockVideo}>
-            <Editions editions={mockVideo.videoEditions} />
-          </VideoProvider>
-        </MockedProvider>
-      
+      <MockedProvider>
+        <VideoProvider video={mockVideo}>
+          <Editions editions={mockVideo.videoEditions} />
+        </VideoProvider>
+      </MockedProvider>
     )
 
     const user = userEvent.setup()
@@ -140,15 +128,13 @@ describe('Editions', () => {
 
   it('should open delete edition dialog', async () => {
     render(
-      
-        <MockedProvider>
-          <VideoProvider video={mockVideo}>
-            <Editions
-              editions={[{ ...mockVideo.videoEditions[0], videoSubtitles: [] }]}
-            />
-          </VideoProvider>
-        </MockedProvider>
-      
+      <MockedProvider>
+        <VideoProvider video={mockVideo}>
+          <Editions
+            editions={[{ ...mockVideo.videoEditions[0], videoSubtitles: [] }]}
+          />
+        </VideoProvider>
+      </MockedProvider>
     )
 
     const user = userEvent.setup()

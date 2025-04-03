@@ -19,11 +19,7 @@ const meta: Meta<typeof VideoView> = {
 type Story = StoryObj<ComponentProps<typeof VideoView>>
 
 const Template: Story = {
-  render: () => (
-    
-      <VideoView />
-    
-  )
+  render: () => <VideoView />
 }
 
 export const Default = {

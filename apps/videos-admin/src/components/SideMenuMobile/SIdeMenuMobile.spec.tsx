@@ -22,9 +22,7 @@ describe('SideMenuMobile', () => {
           photoURL: 'url-of-nameinghams-photo'
         }}
       >
-        
-          <SideMenuMobile toggleDrawer={handleToggle} open />
-        
+        <SideMenuMobile toggleDrawer={handleToggle} open />
       </AuthProvider>
     )
 
@@ -46,9 +44,7 @@ describe('SideMenuMobile', () => {
           photoURL: 'url-of-nameinghams-photo'
         }}
       >
-        
-          <SideMenuMobile toggleDrawer={handleToggle} open />
-        
+        <SideMenuMobile toggleDrawer={handleToggle} open />
       </AuthProvider>
     )
 

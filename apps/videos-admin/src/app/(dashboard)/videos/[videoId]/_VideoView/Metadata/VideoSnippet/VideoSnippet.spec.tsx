@@ -68,11 +68,9 @@ describe('VideoSnippet', () => {
   it('should show disabled save button when values have not been changed', () => {
     render(
       <MockedProvider>
-        
-          <VideoProvider video={mockVideo}>
-            <VideoSnippet videoSnippets={mockVideoSnippets} />
-          </VideoProvider>
-        
+        <VideoProvider video={mockVideo}>
+          <VideoSnippet videoSnippets={mockVideoSnippets} />
+        </VideoProvider>
       </MockedProvider>
     )
 
@@ -82,11 +80,9 @@ describe('VideoSnippet', () => {
   it('should enable form buttons if snippet has been changed', async () => {
     render(
       <MockedProvider>
-        
-          <VideoProvider video={mockVideo}>
-            <VideoSnippet videoSnippets={mockVideoSnippets} />
-          </VideoProvider>
-        
+        <VideoProvider video={mockVideo}>
+          <VideoSnippet videoSnippets={mockVideoSnippets} />
+        </VideoProvider>
       </MockedProvider>
     )
 
@@ -107,15 +103,13 @@ describe('VideoSnippet', () => {
 
   it('should create video snippet if none exists', async () => {
     render(
-      
-        <MockedProvider mocks={[mockCreateVideoSnippet]}>
-          <SnackbarProvider>
-            <VideoProvider video={mockVideo}>
-              <VideoSnippet videoSnippets={[]} />
-            </VideoProvider>
-          </SnackbarProvider>
-        </MockedProvider>
-      
+      <MockedProvider mocks={[mockCreateVideoSnippet]}>
+        <SnackbarProvider>
+          <VideoProvider video={mockVideo}>
+            <VideoSnippet videoSnippets={[]} />
+          </VideoProvider>
+        </SnackbarProvider>
+      </MockedProvider>
     )
 
     const user = userEvent.setup()
@@ -139,15 +133,13 @@ describe('VideoSnippet', () => {
 
   it('should update video snippet on submit', async () => {
     render(
-      
-        <MockedProvider mocks={[mockUpdateVideoSnippet]}>
-          <SnackbarProvider>
-            <VideoProvider video={mockVideo}>
-              <VideoSnippet videoSnippets={mockVideoSnippets} />
-            </VideoProvider>
-          </SnackbarProvider>
-        </MockedProvider>
-      
+      <MockedProvider mocks={[mockUpdateVideoSnippet]}>
+        <SnackbarProvider>
+          <VideoProvider video={mockVideo}>
+            <VideoSnippet videoSnippets={mockVideoSnippets} />
+          </VideoProvider>
+        </SnackbarProvider>
+      </MockedProvider>
     )
 
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
@@ -171,11 +163,9 @@ describe('VideoSnippet', () => {
   it('should require snippet field', async () => {
     render(
       <MockedProvider>
-        
-          <VideoProvider video={mockVideo}>
-            <VideoSnippet videoSnippets={mockVideoSnippets} />
-          </VideoProvider>
-        
+        <VideoProvider video={mockVideo}>
+          <VideoSnippet videoSnippets={mockVideoSnippets} />
+        </VideoProvider>
       </MockedProvider>
     )
 
@@ -195,11 +185,9 @@ describe('VideoSnippet', () => {
   it('should reset form when cancel is clicked', async () => {
     render(
       <MockedProvider>
-        
-          <VideoProvider video={mockVideo}>
-            <VideoSnippet videoSnippets={mockVideoSnippets} />
-          </VideoProvider>
-        
+        <VideoProvider video={mockVideo}>
+          <VideoSnippet videoSnippets={mockVideoSnippets} />
+        </VideoProvider>
       </MockedProvider>
     )
     const user = userEvent.setup()

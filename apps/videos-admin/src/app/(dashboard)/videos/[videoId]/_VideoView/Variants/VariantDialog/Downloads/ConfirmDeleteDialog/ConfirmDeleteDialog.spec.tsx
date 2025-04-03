@@ -13,13 +13,11 @@ describe('ConfirmDeleteDialog', () => {
 
   it('should render the dialog', () => {
     render(
-      
-        <ConfirmDeleteDialog
-          open
-          handleClose={handleClose}
-          handleConfirm={handleConfirm}
-        />
-      
+      <ConfirmDeleteDialog
+        open
+        handleClose={handleClose}
+        handleConfirm={handleConfirm}
+      />
     )
 
     expect(
@@ -31,13 +29,11 @@ describe('ConfirmDeleteDialog', () => {
 
   it('should call handleClose when cancel is clicked', async () => {
     render(
-      
-        <ConfirmDeleteDialog
-          open
-          handleClose={handleClose}
-          handleConfirm={handleConfirm}
-        />
-      
+      <ConfirmDeleteDialog
+        open
+        handleClose={handleClose}
+        handleConfirm={handleConfirm}
+      />
     )
 
     await userEvent.click(screen.getByRole('button', { name: 'Cancel' }))
@@ -47,13 +43,11 @@ describe('ConfirmDeleteDialog', () => {
 
   it('should call handleConfirm when confirm is clicked', async () => {
     render(
-      
-        <ConfirmDeleteDialog
-          open
-          handleClose={handleClose}
-          handleConfirm={handleConfirm}
-        />
-      
+      <ConfirmDeleteDialog
+        open
+        handleClose={handleClose}
+        handleConfirm={handleConfirm}
+      />
     )
 
     await userEvent.click(screen.getByRole('button', { name: 'Confirm' }))
@@ -63,13 +57,11 @@ describe('ConfirmDeleteDialog', () => {
 
   it('should not render when open is false', () => {
     render(
-      
-        <ConfirmDeleteDialog
-          open={false}
-          handleClose={handleClose}
-          handleConfirm={handleConfirm}
-        />
-      
+      <ConfirmDeleteDialog
+        open={false}
+        handleClose={handleClose}
+        handleConfirm={handleConfirm}
+      />
     )
 
     expect(

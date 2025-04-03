@@ -16,22 +16,14 @@ const variant: GetAdminVideoVariant =
 describe('VariantCard', () => {
   it('should display language and languageId of variant', () => {
     const onClick = jest.fn()
-    render(
-      
-        <VariantCard variant={variant} onClick={onClick} />
-      
-    )
+    render(<VariantCard variant={variant} onClick={onClick} />)
 
     expect(screen.getByText('Munukutuba')).toBeInTheDocument()
   })
 
   it('should handle card click', async () => {
     const onClick = jest.fn()
-    render(
-      
-        <VariantCard variant={variant} onClick={onClick} />
-      
-    )
+    render(<VariantCard variant={variant} onClick={onClick} />)
 
     fireEvent.click(screen.getByRole('listitem'))
     await waitFor(() =>

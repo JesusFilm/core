@@ -6,11 +6,7 @@ jest.mock('next/navigation')
 
 describe('AppNavBar', () => {
   it('should show theme toggle and menu button and logo', () => {
-    render(
-      
-        <AppNavbar />
-      
-    )
+    render(<AppNavbar />)
     expect(screen.getByRole('img')).toBeInTheDocument()
 
     expect(screen.getByTestId('ToggleColorModeDark')).toBeInTheDocument()
@@ -18,11 +14,7 @@ describe('AppNavBar', () => {
   })
 
   it('should show menu drawer on menu button click', async () => {
-    render(
-      
-        <AppNavbar />
-      
-    )
+    render(<AppNavbar />)
 
     await waitFor(() =>
       fireEvent.click(screen.getByRole('button', { name: 'menu' }))

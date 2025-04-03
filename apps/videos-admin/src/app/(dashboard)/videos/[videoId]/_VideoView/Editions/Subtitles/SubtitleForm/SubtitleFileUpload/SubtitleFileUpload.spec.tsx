@@ -48,11 +48,7 @@ describe('SubtitleFileUpload', () => {
     ])
     useFieldMock.mockImplementationOnce(() => [fieldMockSrt])
 
-    render(
-      
-        <SubtitleFileUpload />
-      
-    )
+    render(<SubtitleFileUpload />)
 
     await waitFor(() => {
       expect(screen.getByTestId('LinkFile')).toBeInTheDocument()
@@ -69,11 +65,7 @@ describe('SubtitleFileUpload', () => {
       { ...fieldMockSrt, value: fileSrt }
     ])
 
-    render(
-      
-        <SubtitleFileUpload />
-      
-    )
+    render(<SubtitleFileUpload />)
 
     await waitFor(() => {
       expect(screen.getByTestId('LinkFile')).toBeInTheDocument()
@@ -90,11 +82,7 @@ describe('SubtitleFileUpload', () => {
     ])
     useFieldMock.mockImplementationOnce(() => [fieldMockSrt])
 
-    render(
-      
-        <SubtitleFileUpload />
-      
-    )
+    render(<SubtitleFileUpload />)
     const user = userEvent.setup()
 
     const button = screen.getByRole('button', { name: 'delete-file' })
@@ -116,11 +104,7 @@ describe('SubtitleFileUpload', () => {
       { ...helpersMock }
     ])
 
-    render(
-      
-        <SubtitleFileUpload />
-      
-    )
+    render(<SubtitleFileUpload />)
     const user = userEvent.setup()
 
     const button = screen.getByRole('button', { name: 'delete-file' })
@@ -139,11 +123,7 @@ describe('SubtitleFileUpload', () => {
     ])
     useFieldMock.mockImplementationOnce(() => [fieldMockSrt])
 
-    render(
-      
-        <SubtitleFileUpload />
-      
-    )
+    render(<SubtitleFileUpload />)
 
     const user = userEvent.setup()
     const fileVtt = new File(['test'], 'test.vtt', { type: 'text/vtt' })
@@ -161,11 +141,7 @@ describe('SubtitleFileUpload', () => {
       { ...helpersMock }
     ])
 
-    render(
-      
-        <SubtitleFileUpload />
-      
-    )
+    render(<SubtitleFileUpload />)
 
     const user = userEvent.setup()
     const fileSrt = new File(['test'], 'test.srt', {
@@ -192,11 +168,7 @@ describe('SubtitleFileUpload', () => {
       srtHelpersMock
     ])
 
-    render(
-      
-        <SubtitleFileUpload />
-      
-    )
+    render(<SubtitleFileUpload />)
 
     const user = userEvent.setup()
     const fileVtt = new File(['test'], 'test.vtt', { type: 'text/vtt' })
@@ -218,11 +190,7 @@ describe('SubtitleFileUpload', () => {
       vttSrc: 'https://example.com/subtitle.vtt'
     }
 
-    render(
-      
-        <SubtitleFileUpload subtitle={subtitle as Subtitle} />
-      
-    )
+    render(<SubtitleFileUpload subtitle={subtitle as Subtitle} />)
 
     await waitFor(() => {
       expect(screen.getByTestId('LinkFile')).toBeInTheDocument()
@@ -242,11 +210,7 @@ describe('SubtitleFileUpload', () => {
       srtSrc: 'https://example.com/subtitle.srt'
     }
 
-    render(
-      
-        <SubtitleFileUpload subtitle={subtitle as Subtitle} />
-      
-    )
+    render(<SubtitleFileUpload subtitle={subtitle as Subtitle} />)
 
     await waitFor(() => {
       expect(screen.getByTestId('LinkFile')).toBeInTheDocument()

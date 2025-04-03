@@ -24,11 +24,7 @@ const mockVideoVariants: VideoVariants[] =
 type Story = StoryObj<ComponentProps<typeof Variants>>
 
 const Template: Story = {
-  render: ({ variants }) => (
-    
-      <Variants variants={variants} />
-    
-  )
+  render: ({ variants }) => <Variants variants={variants} />
 }
 
 export const Default = {

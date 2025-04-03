@@ -30,11 +30,7 @@ const mockVideoSnippets: VideoSnippets =
 type Story = StoryObj<ComponentProps<typeof VideoSnippet>>
 
 const Template: Story = {
-  render: ({ videoSnippets }) => (
-    
-      <VideoSnippet videoSnippets={videoSnippets} />
-    
-  )
+  render: ({ videoSnippets }) => <VideoSnippet videoSnippets={videoSnippets} />
 }
 
 export const Default = {

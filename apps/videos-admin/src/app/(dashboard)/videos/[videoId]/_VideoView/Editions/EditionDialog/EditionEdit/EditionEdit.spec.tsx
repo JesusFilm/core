@@ -42,16 +42,11 @@ const editEditionMock: MockedResponse<
 describe('EditionEdit', () => {
   it('should render', () => {
     render(
-      
-        <MockedProvider>
-          <VideoProvider video={mockVideo}>
-            <EditionEdit
-              close={jest.fn()}
-              edition={mockVideo.videoEditions[0]}
-            />
-          </VideoProvider>
-        </MockedProvider>
-      
+      <MockedProvider>
+        <VideoProvider video={mockVideo}>
+          <EditionEdit close={jest.fn()} edition={mockVideo.videoEditions[0]} />
+        </VideoProvider>
+      </MockedProvider>
     )
     const textbox = screen.getByRole('textbox', { name: 'Name' })
 
@@ -67,17 +62,15 @@ describe('EditionEdit', () => {
       .mockReturnValue(editEditionMock.result)
 
     render(
-      
-        <SnackbarProvider>
-          <MockedProvider
-            mocks={[{ ...editEditionMock, result: editEditionMockResult }]}
-          >
-            <VideoProvider video={mockVideo}>
-              <EditionEdit close={close} edition={mockVideo.videoEditions[0]} />
-            </VideoProvider>
-          </MockedProvider>
-        </SnackbarProvider>
-      
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[{ ...editEditionMock, result: editEditionMockResult }]}
+        >
+          <VideoProvider video={mockVideo}>
+            <EditionEdit close={close} edition={mockVideo.videoEditions[0]} />
+          </VideoProvider>
+        </MockedProvider>
+      </SnackbarProvider>
     )
     const user = userEvent.setup()
 
@@ -109,18 +102,16 @@ describe('EditionEdit', () => {
     }
 
     render(
-      
-        <SnackbarProvider>
-          <MockedProvider mocks={[errorMock]}>
-            <VideoProvider video={mockVideo}>
-              <EditionEdit
-                close={jest.fn()}
-                edition={mockVideo.videoEditions[0]}
-              />
-            </VideoProvider>
-          </MockedProvider>
-        </SnackbarProvider>
-      
+      <SnackbarProvider>
+        <MockedProvider mocks={[errorMock]}>
+          <VideoProvider video={mockVideo}>
+            <EditionEdit
+              close={jest.fn()}
+              edition={mockVideo.videoEditions[0]}
+            />
+          </VideoProvider>
+        </MockedProvider>
+      </SnackbarProvider>
     )
 
     const user = userEvent.setup()

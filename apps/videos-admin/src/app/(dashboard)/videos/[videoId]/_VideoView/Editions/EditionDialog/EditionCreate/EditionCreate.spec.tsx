@@ -20,13 +20,11 @@ const createEditionMock = getCreateEditionMock({
 describe('EditionCreate', () => {
   it('should render', () => {
     render(
-      
-        <MockedProvider>
-          <VideoProvider video={mockVideo}>
-            <EditionCreate close={jest.fn()} />
-          </VideoProvider>
-        </MockedProvider>
-      
+      <MockedProvider>
+        <VideoProvider video={mockVideo}>
+          <EditionCreate close={jest.fn()} />
+        </VideoProvider>
+      </MockedProvider>
     )
     const textbox = screen.getByRole('textbox', { name: 'Name' })
 
@@ -39,15 +37,13 @@ describe('EditionCreate', () => {
     const close = jest.fn()
 
     render(
-      
-        <SnackbarProvider>
-          <MockedProvider mocks={[createEditionMock]}>
-            <VideoProvider video={mockVideo}>
-              <EditionCreate close={close} />
-            </VideoProvider>
-          </MockedProvider>
-        </SnackbarProvider>
-      
+      <SnackbarProvider>
+        <MockedProvider mocks={[createEditionMock]}>
+          <VideoProvider video={mockVideo}>
+            <EditionCreate close={close} />
+          </VideoProvider>
+        </MockedProvider>
+      </SnackbarProvider>
     )
     const user = userEvent.setup()
 
@@ -78,15 +74,13 @@ describe('EditionCreate', () => {
     }
 
     render(
-      
-        <SnackbarProvider>
-          <MockedProvider mocks={[errorMock]}>
-            <VideoProvider video={mockVideo}>
-              <EditionCreate close={jest.fn()} />
-            </VideoProvider>
-          </MockedProvider>
-        </SnackbarProvider>
-      
+      <SnackbarProvider>
+        <MockedProvider mocks={[errorMock]}>
+          <VideoProvider video={mockVideo}>
+            <EditionCreate close={jest.fn()} />
+          </VideoProvider>
+        </MockedProvider>
+      </SnackbarProvider>
     )
 
     const user = userEvent.setup()

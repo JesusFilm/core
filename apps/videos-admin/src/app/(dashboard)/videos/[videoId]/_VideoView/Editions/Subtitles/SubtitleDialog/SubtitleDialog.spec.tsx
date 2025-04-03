@@ -15,14 +15,12 @@ const mockSubtitle = mockEdition.videoSubtitles[0]
 describe('SubtitleDialog', () => {
   it('should not render when action is null', () => {
     render(
-      
-        <SubtitleDialog
-          subtitle={mockSubtitle}
-          edition={mockEdition}
-          action={null}
-          close={jest.fn()}
-        />
-      
+      <SubtitleDialog
+        subtitle={mockSubtitle}
+        edition={mockEdition}
+        action={null}
+        close={jest.fn()}
+      />
     )
 
     expect(screen.queryByText('Subtitle Create')).not.toBeInTheDocument()
@@ -30,18 +28,16 @@ describe('SubtitleDialog', () => {
 
   it('should render create subtitle dialog', () => {
     render(
-      
-        <VideoProvider video={mockVideo}>
-          <MockedProvider mocks={[]}>
-            <SubtitleDialog
-              subtitle={mockSubtitle}
-              edition={mockEdition}
-              action={DialogAction.CREATE}
-              close={jest.fn()}
-            />
-          </MockedProvider>
-        </VideoProvider>
-      
+      <VideoProvider video={mockVideo}>
+        <MockedProvider mocks={[]}>
+          <SubtitleDialog
+            subtitle={mockSubtitle}
+            edition={mockEdition}
+            action={DialogAction.CREATE}
+            close={jest.fn()}
+          />
+        </MockedProvider>
+      </VideoProvider>
     )
 
     expect(screen.getByText('Create Subtitle')).toBeInTheDocument()
@@ -49,18 +45,16 @@ describe('SubtitleDialog', () => {
 
   it('should render edit subtitle dialog', () => {
     render(
-      
-        <VideoProvider video={mockVideo}>
-          <MockedProvider mocks={[]}>
-            <SubtitleDialog
-              subtitle={mockSubtitle}
-              edition={mockEdition}
-              action={DialogAction.EDIT}
-              close={jest.fn()}
-            />
-          </MockedProvider>
-        </VideoProvider>
-      
+      <VideoProvider video={mockVideo}>
+        <MockedProvider mocks={[]}>
+          <SubtitleDialog
+            subtitle={mockSubtitle}
+            edition={mockEdition}
+            action={DialogAction.EDIT}
+            close={jest.fn()}
+          />
+        </MockedProvider>
+      </VideoProvider>
     )
 
     expect(screen.getByText('Edit Subtitle')).toBeInTheDocument()
@@ -68,18 +62,16 @@ describe('SubtitleDialog', () => {
 
   it('should render delete subtitle dialog', () => {
     render(
-      
-        <VideoProvider video={mockVideo}>
-          <MockedProvider mocks={[]}>
-            <SubtitleDialog
-              subtitle={mockSubtitle}
-              edition={mockEdition}
-              action={DialogAction.DELETE}
-              close={jest.fn()}
-            />
-          </MockedProvider>
-        </VideoProvider>
-      
+      <VideoProvider video={mockVideo}>
+        <MockedProvider mocks={[]}>
+          <SubtitleDialog
+            subtitle={mockSubtitle}
+            edition={mockEdition}
+            action={DialogAction.DELETE}
+            close={jest.fn()}
+          />
+        </MockedProvider>
+      </VideoProvider>
     )
 
     expect(screen.getByText('Delete Subtitle')).toBeInTheDocument()
@@ -89,18 +81,16 @@ describe('SubtitleDialog', () => {
     const close = jest.fn()
 
     render(
-      
-        <VideoProvider video={mockVideo}>
-          <MockedProvider mocks={[]}>
-            <SubtitleDialog
-              subtitle={mockSubtitle}
-              edition={mockEdition}
-              action={DialogAction.CREATE}
-              close={close}
-            />
-          </MockedProvider>
-        </VideoProvider>
-      
+      <VideoProvider video={mockVideo}>
+        <MockedProvider mocks={[]}>
+          <SubtitleDialog
+            subtitle={mockSubtitle}
+            edition={mockEdition}
+            action={DialogAction.CREATE}
+            close={close}
+          />
+        </MockedProvider>
+      </VideoProvider>
     )
 
     const user = userEvent.setup()

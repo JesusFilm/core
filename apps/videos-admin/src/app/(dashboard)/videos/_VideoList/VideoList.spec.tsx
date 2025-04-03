@@ -58,11 +58,9 @@ describe('VideoList', () => {
 
   it('should show loading icon when loading', async () => {
     render(
-      
-        <MockedProvider>
-          <VideoList />
-        </MockedProvider>
-      
+      <MockedProvider>
+        <VideoList />
+      </MockedProvider>
     )
 
     expect(screen.getByRole('progressbar')).toBeInTheDocument()
@@ -71,11 +69,9 @@ describe('VideoList', () => {
   it('should show all videos', async () => {
     const result = jest.fn().mockReturnValue(mockGetVideosAndCount.result)
     render(
-      
-        <MockedProvider mocks={[{ ...mockGetVideosAndCount, result }]}>
-          <VideoList />
-        </MockedProvider>
-      
+      <MockedProvider mocks={[{ ...mockGetVideosAndCount, result }]}>
+        <VideoList />
+      </MockedProvider>
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -106,16 +102,14 @@ describe('VideoList', () => {
       .mockReturnValue(mockGetVideosAndCountFilter.result)
 
     render(
-      
-        <MockedProvider
-          mocks={[
-            { ...mockGetVideosAndCount, result },
-            { ...mockGetVideosAndCountFilter, result: result2 }
-          ]}
-        >
-          <VideoList />
-        </MockedProvider>
-      
+      <MockedProvider
+        mocks={[
+          { ...mockGetVideosAndCount, result },
+          { ...mockGetVideosAndCountFilter, result: result2 }
+        ]}
+      >
+        <VideoList />
+      </MockedProvider>
     )
     const user = userEvent.setup()
 
@@ -156,16 +150,14 @@ describe('VideoList', () => {
       .mockReturnValue(mockGetVideosAndCountFilter.result)
 
     render(
-      
-        <MockedProvider
-          mocks={[
-            { ...mockGetVideosAndCount, result },
-            { ...mockGetVideosAndCountFilter, result: result2 }
-          ]}
-        >
-          <VideoList />
-        </MockedProvider>
-      
+      <MockedProvider
+        mocks={[
+          { ...mockGetVideosAndCount, result },
+          { ...mockGetVideosAndCountFilter, result: result2 }
+        ]}
+      >
+        <VideoList />
+      </MockedProvider>
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -222,16 +214,14 @@ describe('VideoList', () => {
     const result2 = jest.fn().mockReturnValue(mockGetVideosCountPageTwo.result)
 
     render(
-      
-        <MockedProvider
-          mocks={[
-            { ...mockGetVideosCountPageOne, result },
-            { ...mockGetVideosCountPageTwo, result: result2 }
-          ]}
-        >
-          <VideoList />
-        </MockedProvider>
-      
+      <MockedProvider
+        mocks={[
+          { ...mockGetVideosCountPageOne, result },
+          { ...mockGetVideosCountPageTwo, result: result2 }
+        ]}
+      >
+        <VideoList />
+      </MockedProvider>
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -278,16 +268,14 @@ describe('VideoList', () => {
     const result2 = jest.fn().mockReturnValue(mockGetVideosCountPageTwo.result)
 
     render(
-      
-        <MockedProvider
-          mocks={[
-            { ...mockGetVideosCountPageOne, result },
-            { ...mockGetVideosCountPageTwo, result: result2 }
-          ]}
-        >
-          <VideoList />
-        </MockedProvider>
-      
+      <MockedProvider
+        mocks={[
+          { ...mockGetVideosCountPageOne, result },
+          { ...mockGetVideosCountPageTwo, result: result2 }
+        ]}
+      >
+        <VideoList />
+      </MockedProvider>
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -347,16 +335,14 @@ describe('VideoList', () => {
 
     const result2 = jest.fn().mockReturnValue(mockGetVideosCountPageTwo.result)
     render(
-      
-        <MockedProvider
-          mocks={[
-            { ...mockGetVideosCountPageOne, result },
-            { ...mockGetVideosCountPageTwo, result: result2 }
-          ]}
-        >
-          <VideoList />
-        </MockedProvider>
-      
+      <MockedProvider
+        mocks={[
+          { ...mockGetVideosCountPageOne, result },
+          { ...mockGetVideosCountPageTwo, result: result2 }
+        ]}
+      >
+        <VideoList />
+      </MockedProvider>
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())

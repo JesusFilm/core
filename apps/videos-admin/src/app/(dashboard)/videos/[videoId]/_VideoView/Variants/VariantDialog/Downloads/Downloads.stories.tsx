@@ -25,13 +25,11 @@ type Story = StoryObj<ComponentProps<typeof Downloads>>
 
 const Template: Story = {
   render: ({ downloads }) => (
-    
-      <Downloads
-        downloads={downloads}
-        videoVariantId="variant-id"
-        languageId="529"
-      />
-    
+    <Downloads
+      downloads={downloads}
+      videoVariantId="variant-id"
+      languageId="529"
+    />
   )
 }
 

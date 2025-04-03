@@ -73,11 +73,9 @@ describe('VideoDescription', () => {
   it('should show disabled save button by default is values not changed', () => {
     render(
       <MockedProvider>
-        
-          <VideoProvider video={mockVideo}>
-            <VideoDescription videoDescriptions={mockVideoDescriptions} />
-          </VideoProvider>
-        
+        <VideoProvider video={mockVideo}>
+          <VideoDescription videoDescriptions={mockVideoDescriptions} />
+        </VideoProvider>
       </MockedProvider>
     )
 
@@ -87,11 +85,9 @@ describe('VideoDescription', () => {
   it('should enable form buttons if description has been changed', async () => {
     render(
       <MockedProvider>
-        
-          <VideoProvider video={mockVideo}>
-            <VideoDescription videoDescriptions={mockVideoDescriptions} />
-          </VideoProvider>
-        
+        <VideoProvider video={mockVideo}>
+          <VideoDescription videoDescriptions={mockVideoDescriptions} />
+        </VideoProvider>
       </MockedProvider>
     )
 
@@ -120,11 +116,9 @@ describe('VideoDescription', () => {
           mockUpdateVideoDescription
         ]}
       >
-        
-          <VideoProvider video={mockVideo}>
-            <VideoDescription videoDescriptions={[]} />
-          </VideoProvider>
-        
+        <VideoProvider video={mockVideo}>
+          <VideoDescription videoDescriptions={[]} />
+        </VideoProvider>
       </MockedProvider>
     )
 
@@ -142,11 +136,9 @@ describe('VideoDescription', () => {
   it('should update video description on submit', async () => {
     render(
       <MockedProvider mocks={[mockUpdateVideoDescription]}>
-        
-          <VideoProvider video={mockVideo}>
-            <VideoDescription videoDescriptions={mockVideoDescriptions} />
-          </VideoProvider>
-        
+        <VideoProvider video={mockVideo}>
+          <VideoDescription videoDescriptions={mockVideoDescriptions} />
+        </VideoProvider>
       </MockedProvider>
     )
 
@@ -168,11 +160,9 @@ describe('VideoDescription', () => {
   it('should require description field', async () => {
     render(
       <MockedProvider>
-        
-          <VideoProvider video={mockVideo}>
-            <VideoDescription videoDescriptions={mockVideoDescriptions} />
-          </VideoProvider>
-        
+        <VideoProvider video={mockVideo}>
+          <VideoDescription videoDescriptions={mockVideoDescriptions} />
+        </VideoProvider>
       </MockedProvider>
     )
 
@@ -192,11 +182,9 @@ describe('VideoDescription', () => {
   it('should reset form when cancel is clicked', async () => {
     render(
       <MockedProvider>
-        
-          <VideoProvider video={mockVideo}>
-            <VideoDescription videoDescriptions={mockVideoDescriptions} />
-          </VideoProvider>
-        
+        <VideoProvider video={mockVideo}>
+          <VideoDescription videoDescriptions={mockVideoDescriptions} />
+        </VideoProvider>
       </MockedProvider>
     )
     const user = userEvent.setup()

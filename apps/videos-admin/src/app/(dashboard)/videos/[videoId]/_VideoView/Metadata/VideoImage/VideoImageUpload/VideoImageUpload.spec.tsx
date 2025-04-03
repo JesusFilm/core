@@ -130,26 +130,24 @@ describe('VideoImageUpload', () => {
     })
 
     render(
-      
-        <SnackbarProvider>
-          <MockedProvider
-            cache={cache}
-            mocks={[
-              { ...mockCreateCloudflareUploadByFile, result },
-              {
-                ...mockCloudflareUploadComplete,
-                result: result2
-              },
-              {
-                ...mockDeleteCloudflareImage,
-                result: result3
-              }
-            ]}
-          >
-            <VideoImageUpload video={video} />
-          </MockedProvider>
-        </SnackbarProvider>
-      
+      <SnackbarProvider>
+        <MockedProvider
+          cache={cache}
+          mocks={[
+            { ...mockCreateCloudflareUploadByFile, result },
+            {
+              ...mockCloudflareUploadComplete,
+              result: result2
+            },
+            {
+              ...mockDeleteCloudflareImage,
+              result: result3
+            }
+          ]}
+        >
+          <VideoImageUpload video={video} />
+        </MockedProvider>
+      </SnackbarProvider>
     )
     const input = screen.getByTestId('DropZone')
     const file = new File(['file'], 'testFile.png', {
@@ -219,26 +217,24 @@ describe('VideoImageUpload', () => {
     })
 
     render(
-      
-        <SnackbarProvider>
-          <MockedProvider
-            cache={cache}
-            mocks={[
-              { ...mockCreateCloudflareUploadByFile, result },
-              {
-                ...mockCloudflareUploadComplete,
-                result: result2
-              },
-              {
-                ...mockDeleteCloudflareImage,
-                result: result3
-              }
-            ]}
-          >
-            <VideoImageUpload video={video} />
-          </MockedProvider>
-        </SnackbarProvider>
-      
+      <SnackbarProvider>
+        <MockedProvider
+          cache={cache}
+          mocks={[
+            { ...mockCreateCloudflareUploadByFile, result },
+            {
+              ...mockCloudflareUploadComplete,
+              result: result2
+            },
+            {
+              ...mockDeleteCloudflareImage,
+              result: result3
+            }
+          ]}
+        >
+          <VideoImageUpload video={video} />
+        </MockedProvider>
+      </SnackbarProvider>
     )
     const input = screen.getByTestId('DropZone')
     const file = new File(['file'], 'testFile.png', {
@@ -279,16 +275,14 @@ describe('VideoImageUpload', () => {
   it('should call on upload complete when file dropped', async () => {
     const mockOnUploadComplete = jest.fn()
     render(
-      
-        <SnackbarProvider>
-          <MockedProvider>
-            <VideoImageUpload
-              video={video}
-              onUploadComplete={mockOnUploadComplete}
-            />
-          </MockedProvider>
-        </SnackbarProvider>
-      
+      <SnackbarProvider>
+        <MockedProvider>
+          <VideoImageUpload
+            video={video}
+            onUploadComplete={mockOnUploadComplete}
+          />
+        </MockedProvider>
+      </SnackbarProvider>
     )
     const input = screen.getByTestId('DropZone')
     fireEvent.drop(input)
@@ -299,15 +293,13 @@ describe('VideoImageUpload', () => {
     const result = jest.fn().mockReturnValue(null)
 
     render(
-      
-        <SnackbarProvider>
-          <MockedProvider
-            mocks={[{ ...mockCreateCloudflareUploadByFile, result }]}
-          >
-            <VideoImageUpload video={video} />
-          </MockedProvider>
-        </SnackbarProvider>
-      
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[{ ...mockCreateCloudflareUploadByFile, result }]}
+        >
+          <VideoImageUpload video={video} />
+        </MockedProvider>
+      </SnackbarProvider>
     )
     const input = screen.getByTestId('DropZone')
     const file = new File(['file'], 'testFile.png', {
@@ -341,15 +333,13 @@ describe('VideoImageUpload', () => {
       .mockReturnValue(mockCreateCloudflareUploadByFile.result)
 
     render(
-      
-        <SnackbarProvider>
-          <MockedProvider
-            mocks={[{ ...mockCreateCloudflareUploadByFile, result }]}
-          >
-            <VideoImageUpload video={video} />
-          </MockedProvider>
-        </SnackbarProvider>
-      
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[{ ...mockCreateCloudflareUploadByFile, result }]}
+        >
+          <VideoImageUpload video={video} />
+        </MockedProvider>
+      </SnackbarProvider>
     )
     const input = screen.getByTestId('DropZone')
     const file = new File(['file'], 'testFile.png', {

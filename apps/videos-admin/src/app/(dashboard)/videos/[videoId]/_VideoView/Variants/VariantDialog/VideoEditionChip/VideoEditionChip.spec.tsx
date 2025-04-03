@@ -4,11 +4,7 @@ import { VideoEditionChip } from '.'
 
 describe('VideoEditionChip', () => {
   it('should render the edition name in a chip', () => {
-    render(
-      
-        <VideoEditionChip editionName="base" />
-      
-    )
+    render(<VideoEditionChip editionName="base" />)
 
     const editionField = screen.getByTestId('VideoEditionChip')
     expect(editionField).toBeInTheDocument()

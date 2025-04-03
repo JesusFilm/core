@@ -8,16 +8,14 @@ describe('FileUpload', () => {
     const onUploadComplete = jest.fn()
 
     render(
-      
-        <FileUpload
-          onDrop={mockOnDrop}
-          onUploadComplete={onUploadComplete}
-          accept={{
-            'image/*': []
-          }}
-          loading={false}
-        />
-      
+      <FileUpload
+        onDrop={mockOnDrop}
+        onUploadComplete={onUploadComplete}
+        accept={{
+          'image/*': []
+        }}
+        loading={false}
+      />
     )
 
     const input = screen.getByTestId('DropZone')
@@ -37,16 +35,14 @@ describe('FileUpload', () => {
     const onUploadComplete = jest.fn()
 
     render(
-      
-        <FileUpload
-          onDrop={mockOnDrop}
-          onUploadComplete={onUploadComplete}
-          accept={{
-            'image/*': []
-          }}
-          loading={false}
-        />
-      
+      <FileUpload
+        onDrop={mockOnDrop}
+        onUploadComplete={onUploadComplete}
+        accept={{
+          'image/*': []
+        }}
+        loading={false}
+      />
     )
 
     const input = screen.getByTestId('DropZone')
@@ -60,16 +56,14 @@ describe('FileUpload', () => {
     const onUploadComplete = jest.fn()
 
     render(
-      
-        <FileUpload
-          onDrop={mockOnDrop}
-          onUploadComplete={onUploadComplete}
-          accept={{
-            'image/*': []
-          }}
-          loading
-        />
-      
+      <FileUpload
+        onDrop={mockOnDrop}
+        onUploadComplete={onUploadComplete}
+        accept={{
+          'image/*': []
+        }}
+        loading
+      />
     )
 
     await waitFor(() =>

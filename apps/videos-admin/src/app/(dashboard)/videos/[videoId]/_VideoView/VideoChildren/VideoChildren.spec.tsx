@@ -22,15 +22,13 @@ const mockUsePathname = usePathname as jest.MockedFunction<typeof usePathname>
 describe('VideoChildren', () => {
   it('should render', () => {
     render(
-      
-        <MockedProvider>
-          <VideoChildren
-            videoId="videoId"
-            childVideos={childVideos}
-            label="Clips"
-          />
-        </MockedProvider>
-      
+      <MockedProvider>
+        <VideoChildren
+          videoId="videoId"
+          childVideos={childVideos}
+          label="Clips"
+        />
+      </MockedProvider>
     )
 
     expect(screen.getByTestId('OrderedItem-0')).toBeInTheDocument()
@@ -44,15 +42,13 @@ describe('VideoChildren', () => {
     mockUsePathname.mockReturnValue('/en/videos/1_jf6101-0-0')
     const oneChildVideo = [childVideos[0]]
     render(
-      
-        <MockedProvider>
-          <VideoChildren
-            videoId="videoId"
-            childVideos={oneChildVideo}
-            label="Clips"
-          />
-        </MockedProvider>
-      
+      <MockedProvider>
+        <VideoChildren
+          videoId="videoId"
+          childVideos={oneChildVideo}
+          label="Clips"
+        />
+      </MockedProvider>
     )
 
     expect(screen.getByTestId('OrderedItem-0')).toBeInTheDocument()
@@ -64,11 +60,9 @@ describe('VideoChildren', () => {
 
   it('should show fall back if no video children', () => {
     render(
-      
-        <MockedProvider>
-          <VideoChildren videoId="videoId" childVideos={[]} label="Clips" />
-        </MockedProvider>
-      
+      <MockedProvider>
+        <VideoChildren videoId="videoId" childVideos={[]} label="Clips" />
+      </MockedProvider>
     )
 
     expect(screen.getByText('No children to show')).toBeInTheDocument()

@@ -98,19 +98,17 @@ describe('SubtitleCreate', () => {
 
   it('should render', () => {
     render(
-      
-        <VideoProvider video={mockVideo}>
-          <SnackbarProvider>
-            <MockedProvider mocks={[]}>
-              <SubtitleCreate
-                edition={mockEdition}
-                close={jest.fn()}
-                subtitleLanguagesMap={mockSubtitleLanguagesMap}
-              />
-            </MockedProvider>
-          </SnackbarProvider>
-        </VideoProvider>
-      
+      <VideoProvider video={mockVideo}>
+        <SnackbarProvider>
+          <MockedProvider mocks={[]}>
+            <SubtitleCreate
+              edition={mockEdition}
+              close={jest.fn()}
+              subtitleLanguagesMap={mockSubtitleLanguagesMap}
+            />
+          </MockedProvider>
+        </SnackbarProvider>
+      </VideoProvider>
     )
 
     expect(screen.getByTestId('SubtitleForm')).toBeInTheDocument()
@@ -130,17 +128,15 @@ describe('SubtitleCreate', () => {
     })
 
     render(
-      
-        <VideoProvider video={mockVideo}>
-          <MockedProvider mocks={[getLanguagesMock, createSubtitleMock]}>
-            <SubtitleCreate
-              edition={mockEdition}
-              close={jest.fn()}
-              subtitleLanguagesMap={mockSubtitleLanguagesMap}
-            />
-          </MockedProvider>
-        </VideoProvider>
-      
+      <VideoProvider video={mockVideo}>
+        <MockedProvider mocks={[getLanguagesMock, createSubtitleMock]}>
+          <SubtitleCreate
+            edition={mockEdition}
+            close={jest.fn()}
+            subtitleLanguagesMap={mockSubtitleLanguagesMap}
+          />
+        </MockedProvider>
+      </VideoProvider>
     )
 
     const user = userEvent.setup()
@@ -161,19 +157,17 @@ describe('SubtitleCreate', () => {
     const close = jest.fn()
 
     render(
-      
-        <SnackbarProvider>
-          <VideoProvider video={mockVideo}>
-            <MockedProvider mocks={[getLanguagesMock]}>
-              <SubtitleCreate
-                edition={mockEdition}
-                close={close}
-                subtitleLanguagesMap={mockSubtitleLanguagesMap}
-              />
-            </MockedProvider>
-          </VideoProvider>
-        </SnackbarProvider>
-      
+      <SnackbarProvider>
+        <VideoProvider video={mockVideo}>
+          <MockedProvider mocks={[getLanguagesMock]}>
+            <SubtitleCreate
+              edition={mockEdition}
+              close={close}
+              subtitleLanguagesMap={mockSubtitleLanguagesMap}
+            />
+          </MockedProvider>
+        </VideoProvider>
+      </SnackbarProvider>
     )
 
     const user = userEvent.setup()
@@ -212,23 +206,21 @@ describe('SubtitleCreate', () => {
     })
 
     render(
-      
-        <VideoProvider video={mockVideo}>
-          <MockedProvider
-            mocks={[
-              getLanguagesMock,
-              createR2SubtitleAssetMock,
-              createSubtitleMock
-            ]}
-          >
-            <SubtitleCreate
-              edition={mockEdition}
-              close={jest.fn()}
-              subtitleLanguagesMap={mockSubtitleLanguagesMap}
-            />
-          </MockedProvider>
-        </VideoProvider>
-      
+      <VideoProvider video={mockVideo}>
+        <MockedProvider
+          mocks={[
+            getLanguagesMock,
+            createR2SubtitleAssetMock,
+            createSubtitleMock
+          ]}
+        >
+          <SubtitleCreate
+            edition={mockEdition}
+            close={jest.fn()}
+            subtitleLanguagesMap={mockSubtitleLanguagesMap}
+          />
+        </MockedProvider>
+      </VideoProvider>
     )
 
     const user = userEvent.setup()
@@ -274,23 +266,21 @@ describe('SubtitleCreate', () => {
     })
 
     render(
-      
-        <VideoProvider video={mockVideo}>
-          <MockedProvider
-            mocks={[
-              getLanguagesMock,
-              createR2SubtitleAssetMock,
-              createSubtitleMock
-            ]}
-          >
-            <SubtitleCreate
-              edition={mockEdition}
-              close={jest.fn()}
-              subtitleLanguagesMap={mockSubtitleLanguagesMap}
-            />
-          </MockedProvider>
-        </VideoProvider>
-      
+      <VideoProvider video={mockVideo}>
+        <MockedProvider
+          mocks={[
+            getLanguagesMock,
+            createR2SubtitleAssetMock,
+            createSubtitleMock
+          ]}
+        >
+          <SubtitleCreate
+            edition={mockEdition}
+            close={jest.fn()}
+            subtitleLanguagesMap={mockSubtitleLanguagesMap}
+          />
+        </MockedProvider>
+      </VideoProvider>
     )
 
     const user = userEvent.setup()
@@ -348,24 +338,22 @@ describe('SubtitleCreate', () => {
     })
 
     render(
-      
-        <VideoProvider video={mockVideo}>
-          <MockedProvider
-            mocks={[
-              getLanguagesMock,
-              createR2VttAssetMock,
-              createR2SrtAssetMock,
-              createSubtitleMock
-            ]}
-          >
-            <SubtitleCreate
-              edition={mockEdition}
-              close={jest.fn()}
-              subtitleLanguagesMap={mockSubtitleLanguagesMap}
-            />
-          </MockedProvider>
-        </VideoProvider>
-      
+      <VideoProvider video={mockVideo}>
+        <MockedProvider
+          mocks={[
+            getLanguagesMock,
+            createR2VttAssetMock,
+            createR2SrtAssetMock,
+            createSubtitleMock
+          ]}
+        >
+          <SubtitleCreate
+            edition={mockEdition}
+            close={jest.fn()}
+            subtitleLanguagesMap={mockSubtitleLanguagesMap}
+          />
+        </MockedProvider>
+      </VideoProvider>
     )
 
     const user = userEvent.setup()
@@ -435,25 +423,23 @@ describe('SubtitleCreate', () => {
     }
 
     render(
-      
-        <SnackbarProvider>
-          <VideoProvider video={mockVideo}>
-            <MockedProvider
-              mocks={[
-                getLanguagesMock,
-                createR2AssetErrorMock,
-                createSubtitleMock
-              ]}
-            >
-              <SubtitleCreate
-                edition={mockEdition}
-                close={jest.fn()}
-                subtitleLanguagesMap={mockSubtitleLanguagesMap}
-              />
-            </MockedProvider>
-          </VideoProvider>
-        </SnackbarProvider>
-      
+      <SnackbarProvider>
+        <VideoProvider video={mockVideo}>
+          <MockedProvider
+            mocks={[
+              getLanguagesMock,
+              createR2AssetErrorMock,
+              createSubtitleMock
+            ]}
+          >
+            <SubtitleCreate
+              edition={mockEdition}
+              close={jest.fn()}
+              subtitleLanguagesMap={mockSubtitleLanguagesMap}
+            />
+          </MockedProvider>
+        </VideoProvider>
+      </SnackbarProvider>
     )
 
     const user = userEvent.setup()
@@ -492,17 +478,15 @@ describe('SubtitleCreate', () => {
     })
 
     render(
-      
-        <VideoProvider video={mockVideo}>
-          <MockedProvider mocks={[getLanguagesMock, createSubtitleMock]}>
-            <SubtitleCreate
-              edition={mockEdition2}
-              close={jest.fn()}
-              subtitleLanguagesMap={mockSubtitleLanguagesMap2}
-            />
-          </MockedProvider>
-        </VideoProvider>
-      
+      <VideoProvider video={mockVideo}>
+        <MockedProvider mocks={[getLanguagesMock, createSubtitleMock]}>
+          <SubtitleCreate
+            edition={mockEdition2}
+            close={jest.fn()}
+            subtitleLanguagesMap={mockSubtitleLanguagesMap2}
+          />
+        </MockedProvider>
+      </VideoProvider>
     )
 
     const user = userEvent.setup()

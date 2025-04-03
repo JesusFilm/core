@@ -67,11 +67,9 @@ describe('VideoImageAlt', () => {
   it('should disable form buttons if values have not been changed', () => {
     render(
       <MockedProvider>
-        
-          <VideoProvider video={mockVideo}>
-            <VideoImageAlt videoImageAlts={mockVideoImageAlt} />
-          </VideoProvider>
-        
+        <VideoProvider video={mockVideo}>
+          <VideoImageAlt videoImageAlts={mockVideoImageAlt} />
+        </VideoProvider>
       </MockedProvider>
     )
 
@@ -84,11 +82,9 @@ describe('VideoImageAlt', () => {
   it('should enable form buttons if alt has changed', async () => {
     render(
       <MockedProvider>
-        
-          <VideoProvider video={mockVideo}>
-            <VideoImageAlt videoImageAlts={mockVideoImageAlt} />
-          </VideoProvider>
-        
+        <VideoProvider video={mockVideo}>
+          <VideoImageAlt videoImageAlts={mockVideoImageAlt} />
+        </VideoProvider>
       </MockedProvider>
     )
 
@@ -107,11 +103,9 @@ describe('VideoImageAlt', () => {
       <MockedProvider
         mocks={[mockCreateVideoImageAlt, mockUpdateVideoImageAlt]}
       >
-        
-          <VideoProvider video={mockVideo}>
-            <VideoImageAlt videoImageAlts={[]} />
-          </VideoProvider>
-        
+        <VideoProvider video={mockVideo}>
+          <VideoImageAlt videoImageAlts={[]} />
+        </VideoProvider>
       </MockedProvider>
     )
 
@@ -133,11 +127,9 @@ describe('VideoImageAlt', () => {
   it('should update video image alt on submit', async () => {
     render(
       <MockedProvider mocks={[mockUpdateVideoImageAlt]}>
-        
-          <VideoProvider video={mockVideo}>
-            <VideoImageAlt videoImageAlts={mockVideoImageAlt} />
-          </VideoProvider>
-        
+        <VideoProvider video={mockVideo}>
+          <VideoImageAlt videoImageAlts={mockVideoImageAlt} />
+        </VideoProvider>
       </MockedProvider>
     )
 
@@ -157,11 +149,9 @@ describe('VideoImageAlt', () => {
   it('should require image alt field', async () => {
     render(
       <MockedProvider>
-        
-          <VideoProvider video={mockVideo}>
-            <VideoImageAlt videoImageAlts={mockVideoImageAlt} />
-          </VideoProvider>
-        
+        <VideoProvider video={mockVideo}>
+          <VideoImageAlt videoImageAlts={mockVideoImageAlt} />
+        </VideoProvider>
       </MockedProvider>
     )
 
@@ -179,11 +169,9 @@ describe('VideoImageAlt', () => {
   it('should reset form when cancel button is clicked', async () => {
     render(
       <MockedProvider>
-        
-          <VideoProvider video={mockVideo}>
-            <VideoImageAlt videoImageAlts={mockVideoImageAlt} />
-          </VideoProvider>
-        
+        <VideoProvider video={mockVideo}>
+          <VideoImageAlt videoImageAlts={mockVideoImageAlt} />
+        </VideoProvider>
       </MockedProvider>
     )
 

@@ -22,11 +22,7 @@ describe('OptionsMenu', () => {
   it('should handle logout', async () => {
     const mockHandleLogOut = jest.fn()
     mockUseLogout.mockReturnValue(mockHandleLogOut)
-    render(
-      
-        <OptionsMenu />
-      
-    )
+    render(<OptionsMenu />)
 
     fireEvent.click(screen.getByRole('button'))
     await waitFor(() =>
@@ -38,11 +34,7 @@ describe('OptionsMenu', () => {
   it('should handle gettings click', async () => {
     const push = jest.fn()
     mockRouter.mockReturnValue({ push } as unknown as AppRouterInstance)
-    render(
-      
-        <OptionsMenu />
-      
-    )
+    render(<OptionsMenu />)
 
     fireEvent.click(screen.getByRole('button'))
     await waitFor(() =>

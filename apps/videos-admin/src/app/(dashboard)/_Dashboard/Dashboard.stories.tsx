@@ -25,10 +25,5 @@ export default meta
 type Story = StoryObj<ComponentProps<typeof Dashboard>>
 
 export const Default: Story = {
-  render: () => (
-    
-      <Dashboard />
-    
-  ),
-  
+  render: () => <Dashboard />
 }

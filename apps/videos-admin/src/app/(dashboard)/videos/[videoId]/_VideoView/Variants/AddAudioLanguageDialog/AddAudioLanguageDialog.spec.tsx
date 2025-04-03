@@ -153,39 +153,37 @@ describe('AddAudioLanguageDialog', () => {
     render(
       <MockedProvider mocks={[getLanguagesMock]}>
         <SnackbarProvider>
-          
-            <UploadVideoVariantProvider>
-              <AddAudioLanguageDialog
-                open
-                handleClose={jest.fn()}
-                variantLanguagesMap={new Map()}
-                editions={[
-                  {
-                    id: 'edition1',
-                    name: 'base',
-                    videoSubtitles: [
-                      {
-                        id: 'subtitle1',
-                        vttSrc: null,
-                        srtSrc: null,
-                        value: 'English Subtitle',
-                        primary: true,
-                        vttAsset: null,
-                        srtAsset: null,
-                        vttVersion: 0,
-                        srtVersion: 0,
-                        language: {
-                          id: '529',
-                          slug: 'en',
-                          name: [{ value: 'English', primary: true }]
-                        }
+          <UploadVideoVariantProvider>
+            <AddAudioLanguageDialog
+              open
+              handleClose={jest.fn()}
+              variantLanguagesMap={new Map()}
+              editions={[
+                {
+                  id: 'edition1',
+                  name: 'base',
+                  videoSubtitles: [
+                    {
+                      id: 'subtitle1',
+                      vttSrc: null,
+                      srtSrc: null,
+                      value: 'English Subtitle',
+                      primary: true,
+                      vttAsset: null,
+                      srtAsset: null,
+                      vttVersion: 0,
+                      srtVersion: 0,
+                      language: {
+                        id: '529',
+                        slug: 'en',
+                        name: [{ value: 'English', primary: true }]
                       }
-                    ]
-                  }
-                ]}
-              />
-            </UploadVideoVariantProvider>
-          
+                    }
+                  ]
+                }
+              ]}
+            />
+          </UploadVideoVariantProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -203,39 +201,37 @@ describe('AddAudioLanguageDialog', () => {
         mocks={[{ ...getLanguagesMock, result: getLanguagesMockResult }]}
       >
         <SnackbarProvider>
-          
-            <UploadVideoVariantProvider>
-              <AddAudioLanguageDialog
-                open
-                handleClose={jest.fn()}
-                variantLanguagesMap={new Map()}
-                editions={[
-                  {
-                    id: 'edition1',
-                    name: 'base',
-                    videoSubtitles: [
-                      {
-                        id: 'subtitle1',
-                        vttSrc: null,
-                        srtSrc: null,
-                        value: 'English Subtitle',
-                        primary: true,
-                        vttAsset: null,
-                        srtAsset: null,
-                        vttVersion: 0,
-                        srtVersion: 0,
-                        language: {
-                          id: '529',
-                          slug: 'en',
-                          name: [{ value: 'English', primary: true }]
-                        }
+          <UploadVideoVariantProvider>
+            <AddAudioLanguageDialog
+              open
+              handleClose={jest.fn()}
+              variantLanguagesMap={new Map()}
+              editions={[
+                {
+                  id: 'edition1',
+                  name: 'base',
+                  videoSubtitles: [
+                    {
+                      id: 'subtitle1',
+                      vttSrc: null,
+                      srtSrc: null,
+                      value: 'English Subtitle',
+                      primary: true,
+                      vttAsset: null,
+                      srtAsset: null,
+                      vttVersion: 0,
+                      srtVersion: 0,
+                      language: {
+                        id: '529',
+                        slug: 'en',
+                        name: [{ value: 'English', primary: true }]
                       }
-                    ]
-                  }
-                ]}
-              />
-            </UploadVideoVariantProvider>
-          
+                    }
+                  ]
+                }
+              ]}
+            />
+          </UploadVideoVariantProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -272,39 +268,37 @@ describe('AddAudioLanguageDialog', () => {
         ]}
       >
         <SnackbarProvider>
-          
-            <UploadVideoVariantProvider>
-              <AddAudioLanguageDialog
-                open
-                handleClose={handleClose}
-                variantLanguagesMap={new Map()}
-                editions={[
-                  {
-                    id: 'edition1',
-                    name: 'base',
-                    videoSubtitles: [
-                      {
-                        id: 'subtitle1',
-                        vttSrc: null,
-                        srtSrc: null,
-                        value: 'English Subtitle',
-                        primary: true,
-                        vttAsset: null,
-                        srtAsset: null,
-                        vttVersion: 0,
-                        srtVersion: 0,
-                        language: {
-                          id: '529',
-                          slug: 'en',
-                          name: [{ value: 'English', primary: true }]
-                        }
+          <UploadVideoVariantProvider>
+            <AddAudioLanguageDialog
+              open
+              handleClose={handleClose}
+              variantLanguagesMap={new Map()}
+              editions={[
+                {
+                  id: 'edition1',
+                  name: 'base',
+                  videoSubtitles: [
+                    {
+                      id: 'subtitle1',
+                      vttSrc: null,
+                      srtSrc: null,
+                      value: 'English Subtitle',
+                      primary: true,
+                      vttAsset: null,
+                      srtAsset: null,
+                      vttVersion: 0,
+                      srtVersion: 0,
+                      language: {
+                        id: '529',
+                        slug: 'en',
+                        name: [{ value: 'English', primary: true }]
                       }
-                    ]
-                  }
-                ]}
-              />
-            </UploadVideoVariantProvider>
-          
+                    }
+                  ]
+                }
+              ]}
+            />
+          </UploadVideoVariantProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -379,39 +373,37 @@ describe('AddAudioLanguageDialog', () => {
         mocks={[getLanguagesMock, { ...cloudflareR2CreateMock, result }]}
       >
         <SnackbarProvider>
-          
-            <UploadVideoVariantProvider>
-              <AddAudioLanguageDialog
-                open
-                handleClose={jest.fn()}
-                variantLanguagesMap={new Map()}
-                editions={[
-                  {
-                    id: 'edition1',
-                    name: 'base',
-                    videoSubtitles: [
-                      {
-                        id: 'subtitle1',
-                        vttSrc: null,
-                        srtSrc: null,
-                        value: 'English Subtitle',
-                        primary: true,
-                        vttAsset: null,
-                        srtAsset: null,
-                        vttVersion: 0,
-                        srtVersion: 0,
-                        language: {
-                          id: '529',
-                          slug: 'en',
-                          name: [{ value: 'English', primary: true }]
-                        }
+          <UploadVideoVariantProvider>
+            <AddAudioLanguageDialog
+              open
+              handleClose={jest.fn()}
+              variantLanguagesMap={new Map()}
+              editions={[
+                {
+                  id: 'edition1',
+                  name: 'base',
+                  videoSubtitles: [
+                    {
+                      id: 'subtitle1',
+                      vttSrc: null,
+                      srtSrc: null,
+                      value: 'English Subtitle',
+                      primary: true,
+                      vttAsset: null,
+                      srtAsset: null,
+                      vttVersion: 0,
+                      srtVersion: 0,
+                      language: {
+                        id: '529',
+                        slug: 'en',
+                        name: [{ value: 'English', primary: true }]
                       }
-                    ]
-                  }
-                ]}
-              />
-            </UploadVideoVariantProvider>
-          
+                    }
+                  ]
+                }
+              ]}
+            />
+          </UploadVideoVariantProvider>
         </SnackbarProvider>
       </MockedProvider>
     )

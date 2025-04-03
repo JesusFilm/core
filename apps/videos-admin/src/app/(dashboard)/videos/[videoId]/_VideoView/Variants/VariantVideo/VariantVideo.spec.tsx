@@ -7,11 +7,9 @@ describe('VariantVideo', () => {
   it('should display video of variant with HLS', async () => {
     const hlsSrc = 'https://arc.gt/hls/english/master.m3u8'
     render(
-      
-        <MockedProvider>
-          <VariantVideo hlsSrc={hlsSrc} />
-        </MockedProvider>
-      
+      <MockedProvider>
+        <VariantVideo hlsSrc={hlsSrc} />
+      </MockedProvider>
     )
 
     await waitFor(() =>
@@ -21,11 +19,9 @@ describe('VariantVideo', () => {
 
   it('should display fallback when HLS is not available', async () => {
     render(
-      
-        <MockedProvider>
-          <VariantVideo hlsSrc={null} />
-        </MockedProvider>
-      
+      <MockedProvider>
+        <VariantVideo hlsSrc={null} />
+      </MockedProvider>
     )
 
     expect(screen.getByText('HLS stream not available')).toBeInTheDocument()
