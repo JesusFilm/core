@@ -2,9 +2,11 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
+import { SnackbarProvider } from 'notistack'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
+  TextResponseType,
   ThemeMode,
   ThemeName,
   VideoBlockSource
@@ -25,6 +27,7 @@ import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { StepViewEventCreate } from '../Step/__generated__/StepViewEventCreate'
 import { STEP_VIEW_EVENT_CREATE } from '../Step/Step'
+import { TEXT_RESPONSE_SUBMISSION_EVENT_CREATE } from '../TextResponse/TextResponse'
 import { VideoFields } from '../Video/__generated__/VideoFields'
 
 import { StepNextEventCreate } from './__generated__/StepNextEventCreate'
@@ -191,6 +194,21 @@ describe('CardBlock', () => {
     ]
   }
 
+  const textResponseBlock: TreeBlock = {
+    id: 'textResponseBlockId',
+    __typename: 'TextResponseBlock',
+    parentBlockId: null,
+    parentOrder: 0,
+    children: [],
+    label: 'Text Response',
+    placeholder: 'Enter your text',
+    hint: 'This is a hint',
+    minRows: 1,
+    type: TextResponseType.freeForm,
+    routeId: null,
+    integrationId: null
+  }
+
   const imageBlock: TreeBlock<ImageFields> = {
     id: 'imageBlockId',
     __typename: 'ImageBlock',
@@ -308,6 +326,28 @@ describe('CardBlock', () => {
         stepNextEventCreate: {
           id: 'uuid',
           __typename: 'StepNextEvent'
+        }
+      }
+    }))
+  }
+
+  const mockTextResponseSubmissionEventCreate = {
+    request: {
+      query: TEXT_RESPONSE_SUBMISSION_EVENT_CREATE,
+      variables: {
+        input: {
+          id: 'uuid',
+          blockId: 'textResponseBlockId',
+          stepId: 'step1.id',
+          label: 'Untitled',
+          value: 'Test response'
+        }
+      }
+    },
+    result: jest.fn(() => ({
+      data: {
+        textResponseSubmissionEventCreate: {
+          id: 'mocked-submission-id'
         }
       }
     }))
@@ -690,5 +730,58 @@ describe('CardBlock', () => {
     const cardFormElement = getByTestId(`card-form-${card2.id}`)
     expect(cardFormElement).toBeInTheDocument()
     expect(cardFormElement.tagName).toBe('FORM')
+  })
+
+  it('should handle formik submission', async () => {
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
+
+    const textResponseStep: TreeBlock<StepBlock> = {
+      ...step1,
+      children: [],
+      locked: false
+    }
+    const textResponseCard: TreeBlock<CardBlock> = {
+      ...card1,
+      children: [
+        textResponseStep,
+        { ...textResponseBlock, parentBlockId: card1.id }
+      ]
+    }
+
+    treeBlocksVar([textResponseCard, step2, step3])
+    blockHistoryVar([textResponseStep])
+
+    const { getByTestId, getByLabelText, getByText } = render(
+      <MockedProvider
+        mocks={[
+          mockStepNextEventCreate,
+          mockTextResponseSubmissionEventCreate,
+          getStepViewEventMock(step1.id, 'Untitled')
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey }}>
+            <Card {...textResponseCard} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      const textInput = getByLabelText('Text Response')
+      fireEvent.change(textInput, { target: { value: 'Test response' } })
+    })
+
+    const form = getByTestId(`card-form-${card1.id}`)
+    fireEvent.submit(form)
+
+    await waitFor(() =>
+      expect(mockTextResponseSubmissionEventCreate.result).toHaveBeenCalled()
+    )
+
+    await waitFor(() =>
+      expect(getByText('Thank you for your response!')).toBeInTheDocument()
+    )
   })
 })
