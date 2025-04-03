@@ -220,12 +220,18 @@ export function Card({
       })
     })
 
-    await Promise.all(submissionPromises).catch((e) => {
-      if (e instanceof ApolloError)
-        enqueueSnackbar(e.message, {
-          variant: 'error'
+    await Promise.all(submissionPromises)
+      .then(() => {
+        enqueueSnackbar(t('Thank you for your response!'), {
+          variant: 'success'
         })
-    })
+      })
+      .catch((e) => {
+        if (e instanceof ApolloError)
+          enqueueSnackbar(e.message, {
+            variant: 'error'
+          })
+      })
   }
 
   // should always be called with nextActiveBlock()
