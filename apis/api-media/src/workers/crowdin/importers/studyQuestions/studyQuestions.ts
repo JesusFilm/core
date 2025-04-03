@@ -9,6 +9,21 @@ import { TranslationData } from '../../types'
 const questionMap = new Map<string, Array<{ videoId: string; order: number }>>()
 const missingQuestions = new Set<string>()
 
+export function getQuestionData(
+  questionId: string
+): Array<{ videoId: string; order: number }> | undefined {
+  return questionMap.get(questionId)
+}
+
+export function hasQuestion(questionId: string): boolean {
+  return questionMap.has(questionId)
+}
+
+export function clearState(): void {
+  questionMap.clear()
+  missingQuestions.clear()
+}
+
 async function initializeQuestionMap(logger?: Logger): Promise<void> {
   const questions = await prisma.videoStudyQuestion.findMany({
     select: {
@@ -36,20 +51,6 @@ async function initializeQuestionMap(logger?: Logger): Promise<void> {
   logger?.info({ count: questions.length }, 'Found existing study questions')
 }
 
-function getQuestionData(
-  questionId: string
-): Array<{ videoId: string; order: number }> | undefined {
-  return questionMap.get(questionId)
-}
-
-function hasQuestion(questionId: string): boolean {
-  return questionMap.has(questionId)
-}
-
-function clearQuestionMap(): void {
-  questionMap.clear()
-}
-
 function getQuestionId(data: TranslationData): string | undefined {
   const context = data.sourceString.context
   if (!context) return undefined
@@ -59,29 +60,9 @@ function getQuestionId(data: TranslationData): string | undefined {
   return firstLine
 }
 
-function validateStudyQuestionData(data: TranslationData): boolean {
-  const questionId = getQuestionId(data)
-  if (!questionId || !hasQuestion(questionId)) {
-    if (questionId) {
-      missingQuestions.add(questionId)
-    }
-    return false
-  }
-  return true
-}
-
 async function upsertStudyQuestionTranslation(
   data: TranslationData
 ): Promise<void> {
-  // Log missing questions summary when we're done processing
-  if (missingQuestions.size > 0) {
-    console.warn('Questions do not exist in database', {
-      count: missingQuestions.size,
-      questions: Array.from(missingQuestions)
-    })
-    missingQuestions.clear()
-  }
-
   const text = getTranslationText(data.translation)
   if (!text) return
 
@@ -93,6 +74,11 @@ async function upsertStudyQuestionTranslation(
 
   const questionId = getQuestionId(data)
   if (!questionId) return
+
+  if (!hasQuestion(questionId)) {
+    missingQuestions.add(questionId)
+    return
+  }
 
   const questions = getQuestionData(questionId)
   if (!questions || questions.length === 0) return
@@ -146,5 +132,13 @@ export async function importStudyQuestions(
     logger
   )
 
-  return () => clearQuestionMap()
+  // Log missing questions summary after all processing is complete
+  if (missingQuestions.size > 0) {
+    logger?.warn('Questions do not exist in database', {
+      count: missingQuestions.size,
+      questions: Array.from(missingQuestions)
+    })
+  }
+
+  return () => clearState()
 }

@@ -1,7 +1,4 @@
-import crowdin, {
-  CrowdinError,
-  CrowdinValidationError
-} from '@crowdin/crowdin-api-client'
+import crowdin from '@crowdin/crowdin-api-client'
 import { Logger } from 'pino'
 
 import {
@@ -44,15 +41,17 @@ export async function service(logger?: Logger): Promise<void> {
     logger?.info('Running cleanup functions...')
     cleanup.forEach((fn) => fn?.())
   } catch (error: unknown) {
-    if (error instanceof CrowdinValidationError) {
-      logger?.error({ error: error.message }, 'Validation error')
-    } else if (error instanceof CrowdinError) {
-      logger?.error(
-        { error: error.message, code: error.code },
-        'Crowdin API error'
-      )
-    } else if (error instanceof Error) {
-      logger?.error({ error: error.message }, 'Unexpected error')
+    if (error instanceof Error) {
+      if (error.name === 'CrowdinValidationError') {
+        logger?.error({ error: error.message }, 'Validation error')
+      } else if (error.name === 'CrowdinError' && 'code' in error) {
+        logger?.error(
+          { error: error.message, code: (error as { code: number }).code },
+          'Crowdin API error'
+        )
+      } else {
+        logger?.error({ error: error.message }, 'Unexpected error')
+      }
     } else {
       logger?.error({ error }, 'Unexpected error')
     }
