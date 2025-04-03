@@ -396,6 +396,7 @@ export function ExportDialog({
       <Box sx={{ p: 4, display: 'flex', justifyContent: 'flex-end' }}>
         <Button
           variant="contained"
+          color="secondary"
           onClick={handleExport}
           disabled={getSelectedEvents().length === 0}
         >
