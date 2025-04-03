@@ -204,7 +204,7 @@ export function ExportDialog({
       <Box sx={{ px: 4 }}>
         <Box sx={{ pb: 2 }}>
           <Typography variant="subtitle2" gutterBottom>
-            {t('Select date range')}
+            {t('Select date range (optional)')}
           </Typography>
         </Box>
         <DateRangePicker
