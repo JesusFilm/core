@@ -1040,6 +1040,7 @@ input TextResponseBlockCreateInput {
 input TextResponseBlockUpdateInput {
   parentBlockId: ID
   label: String
+  placeholder: String
   required: Boolean
   hint: String
   minRows: Int
@@ -3120,6 +3121,9 @@ input VisitorUpdateInput {
 
   """The referring url of the visitor"""
   referrer: String
+
+  """The phone number of the visitor"""
+  phone: String
 }
 
 type Translation {
