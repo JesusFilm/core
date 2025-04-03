@@ -35,6 +35,7 @@ import {
 } from './__generated__/StepPreviousEventCreate'
 import { ContainedCover } from './ContainedCover'
 import { ExpandedCover } from './ExpandedCover'
+import { ParallaxCover } from './ParallaxCover/ParallaxCover'
 
 export const STEP_NEXT_EVENT_CREATE = gql`
   mutation StepNextEventCreate($input: StepNextEventCreateInput!) {
@@ -307,7 +308,16 @@ export function Card({
       onClick={handleNavigation}
     >
       {(coverBlock != null && !fullscreen) || videoBlock != null ? (
-        <ContainedCover
+        // <ContainedCover
+        //   backgroundColor={cardColor}
+        //   backgroundBlur={blurUrl}
+        //   videoBlock={videoBlock}
+        //   imageBlock={imageBlock}
+        //   hasFullscreenVideo={hasFullscreenVideo}
+        // >
+        //   {renderedChildren}
+        // </ContainedCover>
+        <ParallaxCover
           backgroundColor={cardColor}
           backgroundBlur={blurUrl}
           videoBlock={videoBlock}
@@ -315,7 +325,7 @@ export function Card({
           hasFullscreenVideo={hasFullscreenVideo}
         >
           {renderedChildren}
-        </ContainedCover>
+        </ParallaxCover>
       ) : (
         <ExpandedCover
           backgroundColor={cardColor}
