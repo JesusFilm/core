@@ -18,11 +18,12 @@ export const SeeAllButton = ({
   onClick
 }: SeeAllButtonProps): ReactElement => {
   return (
-    <button
+    <a
+      href="https://www.jesusfilm.org/watch?utm_source=jesusfilm-watch"
+      target="_blank"
       aria-label="See all videos"
       tabIndex={0}
       className="mt-3 inline-flex items-center gap-2 px-4 py-2 text-xs text-black font-bold uppercase tracking-wider rounded-full bg-white hover:bg-red-500 hover:text-white transition-colors duration-200 cursor-pointer"
-      onClick={onClick}
     >
       <Play3
         name="Play3"
@@ -32,6 +33,6 @@ export const SeeAllButton = ({
         }}
       />
       <span>{text}</span>
-    </button>
+    </a>
   )
 }

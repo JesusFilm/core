@@ -40,16 +40,13 @@ export const Questions = ({
             {questionsTitle}
           </h4>
 
-          <button
+          <a
             data-testid="AskQuestionButton"
-            onClick={onOpenDialog}
+            href="https://issuesiface.com/talk?utm_source=jesusfilm-watch"
+            target="_blank"
+            rel="noopener noreferrer"
             aria-label="Ask a question"
             tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                onOpenDialog?.()
-              }
-            }}
             className="inline-flex items-center gap-2 px-4 py-2 text-xs text-black font-bold uppercase tracking-wider rounded-full bg-white hover:bg-red-500 hover:text-white transition-colors duration-200 cursor-pointer flex-shrink-0"
           >
             <Icon
@@ -60,7 +57,7 @@ export const Questions = ({
               }}
             />
             <span>{askButtonText}</span>
-          </button>
+          </a>
         </div>
 
         <div className="relative">

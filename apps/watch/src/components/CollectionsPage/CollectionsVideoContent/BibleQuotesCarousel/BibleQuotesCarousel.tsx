@@ -99,15 +99,12 @@ export function BibleQuotesCarousel({
               <h3 className="font-bold text-white/90 text-balance text-2xl mb-4 mt-2">
                 {freeResource.title}
               </h3>
-              <button
-                onClick={onOpenDialog}
+              <a
+                href="https://join.bsfinternational.org/?utm_source=jesusfilm-watch"
+                target="_blank"
+                rel="noopener noreferrer"
                 aria-label="Join Bible study"
                 tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    onOpenDialog?.()
-                  }
-                }}
                 className="inline-flex items-center gap-2 px-4 py-2 text-sm text-black font-bold uppercase tracking-wider rounded-full bg-white hover:bg-white/80 transition-colors duration-200 cursor-pointer"
               >
                 <Icon
@@ -118,7 +115,7 @@ export function BibleQuotesCarousel({
                   }}
                 />
                 <span>{freeResource.buttonText}</span>
-              </button>
+              </a>
             </BibleQuote>
           </SwiperSlide>
         )}
