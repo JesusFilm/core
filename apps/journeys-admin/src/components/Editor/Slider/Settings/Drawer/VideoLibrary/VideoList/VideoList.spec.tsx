@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { videos } from './data'
 
@@ -32,25 +32,29 @@ describe('VideoList', () => {
 
   it('should call onSelect when Video is clicked', async () => {
     const onSelect = jest.fn()
-    const { getByRole } = render(
-      <MockedProvider>
-        <VideoList
-          videos={videos}
-          loading={false}
-          fetchMore={jest.fn()}
-          hasMore
-          onSelect={onSelect}
-        />
-      </MockedProvider>
-    )
+    await act(async () => {
+      render(
+        <MockedProvider>
+          <VideoList
+            videos={videos}
+            loading={false}
+            fetchMore={jest.fn()}
+            hasMore
+            onSelect={onSelect}
+          />
+        </MockedProvider>
+      )
+    })
+
     fireEvent.click(
-      getByRole('button', {
+      screen.getByRole('button', {
         name: "Andreas' Story After living a life full of fighter planes and porsches, Andreas realizes something is missing. 03:06"
       })
     )
     await waitFor(() =>
-      fireEvent.click(getByRole('button', { name: 'Select' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Select' }))
     )
+
     expect(onSelect).toHaveBeenCalled()
   })
 
