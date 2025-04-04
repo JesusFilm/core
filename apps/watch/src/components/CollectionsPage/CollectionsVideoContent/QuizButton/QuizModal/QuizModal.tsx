@@ -48,7 +48,7 @@ export function QuizModal({ open, onClose }: QuizModalProps): ReactElement {
           </div>
           <iframe
             data-testid="QuizIframe"
-            src="https://your.nextstep.is/embed/jf-videos-quizz?expand=false"
+            src="https://your.nextstep.is/embed/easter2025?expand=false"
             className="border-0 w-full h-full z-1"
             title="Next Step of Faith Quiz"
           />
