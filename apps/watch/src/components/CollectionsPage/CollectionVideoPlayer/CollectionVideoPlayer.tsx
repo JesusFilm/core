@@ -5,8 +5,10 @@ import PauseRounded from '@mui/icons-material/PauseRounded'
 import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
 import VolumeOff from '@mui/icons-material/VolumeOff'
 import VolumeUp from '@mui/icons-material/VolumeUp'
+import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Slider from '@mui/material/Slider'
+import Typography from '@mui/material/Typography'
 import fscreen from 'fscreen'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useRef, useState } from 'react'
@@ -15,6 +17,7 @@ import Player from 'video.js/dist/types/player'
 
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 import { isIOS } from '@core/shared/ui/deviceUtils'
+import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import { GET_VIDEO_CONTENT } from '../../../../pages/watch/[part1]/[part2]'
 
@@ -38,7 +41,9 @@ export function CollectionVideoPlayer({
 
   const [player, setPlayer] = useState<Player>()
   const [isMuted, setIsMuted] = useState(mutePage)
-  const [progress, setProgress] = useState(0)
+  const [currentTime, setCurrentTime] = useState(0)
+  const [duration, setDuration] = useState(0)
+  const [displayTime, setDisplayTime] = useState('0:00')
   const [isFullscreen, setIsFullscreen] = useState(
     fscreen?.fullscreenElement != null
   )
@@ -62,27 +67,31 @@ export function CollectionVideoPlayer({
   useEffect(() => {
     if (player && isPlayerReady) {
       const handleTimeUpdate = () => {
-        const currentTime = player.currentTime()
-        const duration = player.duration()
-        if (currentTime && duration && duration > 0) {
-          setProgress((currentTime / duration) * 100)
-        }
+        const time = player.currentTime() ?? 0
+        const videoDuration = player.duration() ?? 0
+
+        setCurrentTime(time)
+        setDuration(videoDuration)
+        setDisplayTime(secondsToTimeFormat(time, { trimZeroes: true }))
+      }
+
+      const handleDurationChange = () => {
+        setDuration(player.duration() ?? 0)
       }
 
       player.on('timeupdate', handleTimeUpdate)
+      player.on('durationchange', handleDurationChange)
+
       return () => {
         player.off('timeupdate', handleTimeUpdate)
+        player.off('durationchange', handleDurationChange)
       }
     }
   }, [player, isPlayerReady])
 
   const handleSeek = (_event: Event, newValue: number | number[]) => {
     if (player && isPlayerReady && typeof newValue === 'number') {
-      const duration = player.duration()
-      if (duration) {
-        const newTime = (duration * newValue) / 100
-        player.currentTime(newTime)
-      }
+      player.currentTime(newValue)
     }
   }
 
@@ -316,8 +325,8 @@ export function CollectionVideoPlayer({
             transition: 'opacity 0.3s ease'
           }}
         >
-          <div className="flex items-center justify-between">
-            {/* Progress bar */}
+          <div className="flex items-center justify-between gap-2">
+            {/* Play/Pause button */}
             <IconButton
               onClick={handlePlayPause}
               sx={{
@@ -329,28 +338,50 @@ export function CollectionVideoPlayer({
             >
               {isPlaying ? <PauseRounded /> : <PlayArrowRounded />}
             </IconButton>
-            <Slider
-              value={progress}
-              onChange={handleSeek}
-              aria-label="Video progress"
-              sx={{
-                color: '#fff',
-                height: 4,
-                '& .MuiSlider-thumb': {
-                  width: 8,
-                  height: 8,
-                  transition: '0.3s cubic-bezier(.47,1.64,.41,.8)',
-                  '&:hover, &.Mui-focusVisible': {
-                    boxShadow: '0px 0px 0px 8px rgba(255, 0, 0, 0.16)'
+
+            {/* Progress slider */}
+            <Box sx={{ flex: 1, display: 'flex', alignItems: 'center' }}>
+              <Slider
+                value={currentTime}
+                onChange={handleSeek}
+                min={0}
+                max={duration || 100}
+                aria-label="Video progress"
+                sx={{
+                  color: '#fff',
+                  height: 4,
+                  '& .MuiSlider-thumb': {
+                    width: 8,
+                    height: 8,
+                    transition: '0.3s cubic-bezier(.47,1.64,.41,.8)',
+                    '&:hover, &.Mui-focusVisible': {
+                      boxShadow: '0px 0px 0px 8px rgba(255, 0, 0, 0.16)'
+                    }
+                  },
+                  '& .MuiSlider-rail': {
+                    opacity: 0.28
                   }
-                },
-                '& .MuiSlider-rail': {
-                  opacity: 0.28
-                }
+                }}
+              />
+            </Box>
+
+            {/* Time display */}
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'white',
+                mr: 1,
+                ml: 1,
+                minWidth: '60px',
+                textAlign: 'right'
               }}
-            />
+            >
+              {displayTime} /{' '}
+              {secondsToTimeFormat(duration, { trimZeroes: true })}
+            </Typography>
           </div>
         </div>
+
         {/* Large Mute button */}
         {isMuted && (
           <IconButton
