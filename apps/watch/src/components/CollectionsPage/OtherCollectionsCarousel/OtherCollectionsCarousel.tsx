@@ -1,5 +1,4 @@
 /* eslint-disable i18next/no-literal-string */
-import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
@@ -60,19 +59,22 @@ export function OtherCollectionsCarousel({
           <a
             href="https://www.jesusfilm.org/watch?utm_source=jesusfilm-watch"
             target="_blank"
-            aria-label={watchButtonText}
-            className="mt-3 inline-flex items-center gap-2 px-4 py-2 text-xs text-black font-bold uppercase tracking-wider rounded-full bg-white hover:bg-red-500 hover:text-white transition-colors duration-200 cursor-pointer"
-            data-testid="WatchButton"
           >
-            <Icon
-              name="Play3"
-              sx={{
-                width: 16,
-                height: 16
-              }}
-              data-testid="PlayIcon"
-            />
-            <span>{watchButtonText}</span>
+            <button
+              aria-label={watchButtonText}
+              className="mt-3 inline-flex items-center gap-2 px-4 py-2 text-xs text-black font-bold uppercase tracking-wider rounded-full bg-white hover:bg-red-500 hover:text-white transition-colors duration-200 cursor-pointer"
+              data-testid="WatchButton"
+            >
+              <Icon
+                name="Play3"
+                sx={{
+                  width: 16,
+                  height: 16
+                }}
+                data-testid="PlayIcon"
+              />
+              <span>{watchButtonText}</span>
+            </button>
           </a>
         </div>
       </div>

@@ -24,7 +24,7 @@ describe('QuizModal', () => {
     expect(iframe).toBeInTheDocument()
     expect(iframe).toHaveAttribute(
       'src',
-      'https://your.nextstep.is/embed/jf-videos-quizz?expand=false'
+      'https://your.nextstep.is/embed/easter2025?expand=false'
     )
     expect(iframe).toHaveClass('border-0 w-full h-full')
   })

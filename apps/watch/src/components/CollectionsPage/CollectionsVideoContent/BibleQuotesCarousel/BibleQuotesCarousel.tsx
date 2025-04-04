@@ -103,19 +103,22 @@ export function BibleQuotesCarousel({
               <a
                 href="https://join.bsfinternational.org/?utm_source=jesusfilm-watch"
                 target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Join Bible study"
-                tabIndex={0}
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm text-black font-bold uppercase tracking-wider rounded-full bg-white hover:bg-white/80 transition-colors duration-200 cursor-pointer"
               >
-                <Icon
-                  name="Bible"
-                  sx={{
-                    width: 16,
-                    height: 16
-                  }}
-                />
-                <span>{freeResource.buttonText}</span>
+                <button
+                  rel="noopener noreferrer"
+                  aria-label="Join Bible study"
+                  tabIndex={0}
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm text-black font-bold uppercase tracking-wider rounded-full bg-white hover:bg-white/80 transition-colors duration-200 cursor-pointer"
+                >
+                  <Icon
+                    name="Bible"
+                    sx={{
+                      width: 16,
+                      height: 16
+                    }}
+                  />
+                  <span>{freeResource.buttonText}</span>
+                </button>
               </a>
             </BibleQuote>
           </SwiperSlide>

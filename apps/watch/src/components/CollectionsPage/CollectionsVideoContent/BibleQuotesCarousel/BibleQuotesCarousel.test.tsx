@@ -90,7 +90,7 @@ describe('BibleQuotesCarousel', () => {
     expect(mockOpenDialog).toHaveBeenCalledTimes(1)
   })
 
-  it('calls onOpenDialog when free resource button is clicked', () => {
+  it('has correct link for free resource button', () => {
     render(
       <BibleQuotesCarousel
         bibleQuotes={[]}
@@ -101,9 +101,10 @@ describe('BibleQuotesCarousel', () => {
       />
     )
 
-    const joinButton = screen.getByRole('button', { name: /join bible study/i })
-    fireEvent.click(joinButton)
-
-    expect(mockOpenDialog).toHaveBeenCalledTimes(1)
+    const link = screen.getByRole('link')
+    expect(link).toHaveAttribute(
+      'href',
+      'https://join.bsfinternational.org/?utm_source=jesusfilm-watch'
+    )
   })
 })
