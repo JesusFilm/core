@@ -132,6 +132,8 @@ export function Button({
     [action, treeBlocks, t]
   )
 
+  const fallbackLabel = submitEnabled ? t('Submit') : t('Button')
+
   function createClickEvent(): void {
     if (variant === 'default' || variant === 'embed') {
       const id = uuidv4()
@@ -287,7 +289,7 @@ export function Button({
             ? editableLabel
             : label !== ''
               ? label
-              : t('Submit')}
+              : fallbackLabel}
         </span>
       </MuiButton>
     </Box>
