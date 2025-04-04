@@ -12,6 +12,7 @@ import {
   CREATE_VIDEO,
   CreateVideo,
   CreateVideoVariables,
+  GET_PARENT_VIDEO_LABEL,
   VideoCreateForm
 } from './VideoCreateForm'
 
@@ -51,6 +52,24 @@ const createVideoMock: MockedResponse<CreateVideo, CreateVideoVariables> = {
     }
   }))
 }
+
+const getParentVideoLabelMock = {
+  request: {
+    query: GET_PARENT_VIDEO_LABEL,
+    variables: {
+      videoId: 'parent_video_id'
+    }
+  },
+  result: {
+    data: {
+      adminVideo: {
+        id: 'parent_video_id',
+        label: 'collection'
+      }
+    }
+  }
+}
+
 const createEditionMock = getCreateEditionMock({
   videoId: 'test_video',
   name: 'base'
@@ -193,6 +212,85 @@ describe('VideoCreateForm', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Something went wrong.')).toBeInTheDocument()
+    })
+  })
+
+  it('should show parent ID message when parentId is provided', async () => {
+    render(
+      <MockedProvider>
+        <VideoCreateForm close={mockCancel} parentId="parent_video_id" />
+      </MockedProvider>
+    )
+
+    expect(
+      screen.getByText(
+        'This video will be added as a child to video with ID: parent_video_id'
+      )
+    ).toBeInTheDocument()
+  })
+
+  it('should call onCreateSuccess callback instead of router navigation when provided', async () => {
+    const onCreateSuccessMock = jest.fn()
+    const getLanguagesMockResult = jest
+      .fn()
+      .mockReturnValue(getLanguagesMock.result)
+
+    render(
+      <MockedProvider
+        mocks={[
+          { ...getLanguagesMock, result: getLanguagesMockResult },
+          createVideoMock,
+          createEditionMock
+        ]}
+      >
+        <VideoCreateForm
+          close={mockCancel}
+          onCreateSuccess={onCreateSuccessMock}
+        />
+      </MockedProvider>
+    )
+
+    const user = userEvent.setup()
+
+    await user.type(screen.getByRole('textbox', { name: 'ID' }), 'test_video')
+    await user.type(
+      screen.getByRole('textbox', { name: 'Slug' }),
+      'test_video_slug'
+    )
+
+    await user.click(screen.getByRole('combobox', { name: 'Label' }))
+    await waitFor(async () => {
+      await user.click(screen.getByRole('option', { name: 'Short Film' }))
+    })
+
+    await user.click(screen.getByRole('combobox', { name: 'Primary Language' }))
+    await waitFor(async () => {
+      await user.click(screen.getByRole('option', { name: 'English' }))
+    })
+
+    await user.click(screen.getByRole('button', { name: 'Create' }))
+
+    await waitFor(() => {
+      expect(createVideoMock.result).toHaveBeenCalled()
+    })
+    expect(createEditionMock.result).toHaveBeenCalled()
+    expect(onCreateSuccessMock).toHaveBeenCalledWith('test_video')
+    expect(mockUseRouter).not.toHaveBeenCalled()
+  })
+
+  it('should auto-select suggested label based on parent video type', async () => {
+    render(
+      <MockedProvider mocks={[getParentVideoLabelMock]}>
+        <VideoCreateForm close={mockCancel} parentId="parent_video_id" />
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Based on the parent Collection, we've suggested Episode"
+        )
+      ).toBeInTheDocument()
     })
   })
 })
