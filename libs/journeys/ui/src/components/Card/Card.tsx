@@ -195,8 +195,7 @@ export function Card({
     const submissionPromises = textResponseBlocks.map((block) => {
       const blockId = block.id
       const responseValue = values[blockId]
-
-      if (!responseValue || responseValue === '') return null
+      if (!responseValue || responseValue?.trim() === '') return null
 
       const id = uuidv4()
       return textResponseSubmissionEventCreate({
@@ -219,7 +218,6 @@ export function Card({
         return id
       })
     })
-
     await Promise.all(submissionPromises)
       .then(() => {
         const areAllPromisesNull = submissionPromises.every(
