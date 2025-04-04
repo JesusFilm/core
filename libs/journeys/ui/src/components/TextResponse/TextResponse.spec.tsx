@@ -130,6 +130,35 @@ describe('TextResponse', () => {
     expect(screen.getByLabelText('Label')).toBeInTheDocument()
   })
 
+  it('should show default text if label has pure whitespace', async () => {
+    const whitespaceLabelBlock: TreeBlock<TextResponseFields> = {
+      __typename: 'TextResponseBlock',
+      id: 'textResponse0.id',
+      parentBlockId: '0',
+      parentOrder: 0,
+      label: '   ',
+      placeholder: null,
+      hint: null,
+      minRows: null,
+      integrationId: null,
+      type: null,
+      routeId: null,
+      children: []
+    }
+
+    render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <JourneyProvider>
+          <SnackbarProvider>
+            <TextResponse {...whitespaceLabelBlock} uuid={() => 'uuid'} />
+          </SnackbarProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByLabelText('Label')).toBeInTheDocument()
+  })
+
   it('should be in a loading state when waiting for response', async () => {
     const { getByRole, getByLabelText } = render(
       <ApolloLoadingProvider>
