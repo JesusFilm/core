@@ -1,4 +1,4 @@
-import crowdin, {
+import crowdinClient, {
   SourceStrings,
   StringTranslations
 } from '@crowdin/crowdin-api-client'
@@ -18,15 +18,15 @@ import {
   handleCrowdinError
 } from './types'
 
-if (!process.env.CROWDIN_API_KEY) {
-  throw new Error('Crowdin API key not set')
-}
+// Export the client instance directly
+export const client = new crowdinClient({
+  token: process.env.CROWDIN_API_KEY ?? ''
+})
 
-const credentials = {
-  token: process.env.CROWDIN_API_KEY
+export const apis: CrowdinApis = {
+  sourceStrings: client.sourceStringsApi,
+  stringTranslations: client.stringTranslationsApi
 }
-
-const { stringTranslationsApi, sourceStringsApi } = new crowdin(credentials)
 
 export async function processFile(
   file: ArclightFile,
@@ -43,7 +43,7 @@ export async function processFile(
   try {
     const sourceStrings = await fetchSourceStrings(
       file.id,
-      sourceStringsApi,
+      apis.sourceStrings,
       logger
     )
     if (sourceStrings.length === 0) return
@@ -56,7 +56,7 @@ export async function processFile(
         const translations = await fetchTranslations(
           languageCode,
           file.id,
-          stringTranslationsApi,
+          apis.stringTranslations,
           logger
         )
 
