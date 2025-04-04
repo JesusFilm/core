@@ -135,7 +135,7 @@ export function VariantDialog({
               color="text.secondary"
               sx={{ mr: 1 }}
             >
-              {t('Status')}
+              Status
             </Typography>
             <FormControl variant="filled" size="small" sx={{ minWidth: 120 }}>
               <Select
@@ -152,7 +152,7 @@ export function VariantDialog({
               >
                 {videoStatuses.map(({ label, value }) => (
                   <MenuItem key={value} value={value}>
-                    {t(label)}
+                    {label}
                   </MenuItem>
                 ))}
               </Select>
@@ -164,7 +164,7 @@ export function VariantDialog({
               onClick={handleSave}
               disabled={!hasChanges}
             >
-              {t('Save')}
+              Save
             </Button>
           </Stack>
         </Box>
