@@ -52,6 +52,7 @@ export interface StepDuplicate_blockDuplicate_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: StepDuplicate_blockDuplicate_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface StepDuplicate_blockDuplicate_CardBlock {

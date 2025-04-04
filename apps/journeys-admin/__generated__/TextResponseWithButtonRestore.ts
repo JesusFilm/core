@@ -3,43 +3,43 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CardBlockUpdateInput, ButtonVariant, ButtonColor, ButtonSize, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { ButtonVariant, ButtonColor, ButtonSize, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: CardQuoteRestore
+// GraphQL mutation operation: TextResponseWithButtonRestore
 // ====================================================
 
-export interface CardQuoteRestore_image_GridContainerBlock {
+export interface TextResponseWithButtonRestore_textResponse_GridContainerBlock {
   __typename: "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
 }
 
-export interface CardQuoteRestore_image_ButtonBlock_action_NavigateToBlockAction {
+export interface TextResponseWithButtonRestore_textResponse_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface CardQuoteRestore_image_ButtonBlock_action_LinkAction {
+export interface TextResponseWithButtonRestore_textResponse_ButtonBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export interface CardQuoteRestore_image_ButtonBlock_action_EmailAction {
+export interface TextResponseWithButtonRestore_textResponse_ButtonBlock_action_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
 
-export type CardQuoteRestore_image_ButtonBlock_action = CardQuoteRestore_image_ButtonBlock_action_NavigateToBlockAction | CardQuoteRestore_image_ButtonBlock_action_LinkAction | CardQuoteRestore_image_ButtonBlock_action_EmailAction;
+export type TextResponseWithButtonRestore_textResponse_ButtonBlock_action = TextResponseWithButtonRestore_textResponse_ButtonBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_textResponse_ButtonBlock_action_LinkAction | TextResponseWithButtonRestore_textResponse_ButtonBlock_action_EmailAction;
 
-export interface CardQuoteRestore_image_ButtonBlock {
+export interface TextResponseWithButtonRestore_textResponse_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
   parentBlockId: string | null;
@@ -50,12 +50,11 @@ export interface CardQuoteRestore_image_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
-  submitEnabled: boolean | null;
-  action: CardQuoteRestore_image_ButtonBlock_action | null;
+  action: TextResponseWithButtonRestore_textResponse_ButtonBlock_action | null;
   submitEnabled: boolean | null;
 }
 
-export interface CardQuoteRestore_image_CardBlock {
+export interface TextResponseWithButtonRestore_textResponse_CardBlock {
   __typename: "CardBlock";
   id: string;
   parentBlockId: string | null;
@@ -88,7 +87,7 @@ export interface CardQuoteRestore_image_CardBlock {
   fullscreen: boolean;
 }
 
-export interface CardQuoteRestore_image_IconBlock {
+export interface TextResponseWithButtonRestore_textResponse_IconBlock {
   __typename: "IconBlock";
   id: string;
   parentBlockId: string | null;
@@ -98,7 +97,7 @@ export interface CardQuoteRestore_image_IconBlock {
   iconColor: IconColor | null;
 }
 
-export interface CardQuoteRestore_image_ImageBlock {
+export interface TextResponseWithButtonRestore_textResponse_ImageBlock {
   __typename: "ImageBlock";
   id: string;
   parentBlockId: string | null;
@@ -117,79 +116,79 @@ export interface CardQuoteRestore_image_ImageBlock {
   focalLeft: number | null;
 }
 
-export interface CardQuoteRestore_image_RadioOptionBlock_action_NavigateToBlockAction {
+export interface TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface CardQuoteRestore_image_RadioOptionBlock_action_LinkAction {
+export interface TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export interface CardQuoteRestore_image_RadioOptionBlock_action_EmailAction {
+export interface TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
 
-export type CardQuoteRestore_image_RadioOptionBlock_action = CardQuoteRestore_image_RadioOptionBlock_action_NavigateToBlockAction | CardQuoteRestore_image_RadioOptionBlock_action_LinkAction | CardQuoteRestore_image_RadioOptionBlock_action_EmailAction;
+export type TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action = TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_LinkAction | TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_EmailAction;
 
-export interface CardQuoteRestore_image_RadioOptionBlock {
+export interface TextResponseWithButtonRestore_textResponse_RadioOptionBlock {
   __typename: "RadioOptionBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  action: CardQuoteRestore_image_RadioOptionBlock_action | null;
+  action: TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action | null;
 }
 
-export interface CardQuoteRestore_image_RadioQuestionBlock {
+export interface TextResponseWithButtonRestore_textResponse_RadioQuestionBlock {
   __typename: "RadioQuestionBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
 }
 
-export interface CardQuoteRestore_image_SignUpBlock_action_NavigateToBlockAction {
+export interface TextResponseWithButtonRestore_textResponse_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface CardQuoteRestore_image_SignUpBlock_action_LinkAction {
+export interface TextResponseWithButtonRestore_textResponse_SignUpBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export interface CardQuoteRestore_image_SignUpBlock_action_EmailAction {
+export interface TextResponseWithButtonRestore_textResponse_SignUpBlock_action_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
 
-export type CardQuoteRestore_image_SignUpBlock_action = CardQuoteRestore_image_SignUpBlock_action_NavigateToBlockAction | CardQuoteRestore_image_SignUpBlock_action_LinkAction | CardQuoteRestore_image_SignUpBlock_action_EmailAction;
+export type TextResponseWithButtonRestore_textResponse_SignUpBlock_action = TextResponseWithButtonRestore_textResponse_SignUpBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_textResponse_SignUpBlock_action_LinkAction | TextResponseWithButtonRestore_textResponse_SignUpBlock_action_EmailAction;
 
-export interface CardQuoteRestore_image_SignUpBlock {
+export interface TextResponseWithButtonRestore_textResponse_SignUpBlock {
   __typename: "SignUpBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
   submitLabel: string | null;
   submitIconId: string | null;
-  action: CardQuoteRestore_image_SignUpBlock_action | null;
+  action: TextResponseWithButtonRestore_textResponse_SignUpBlock_action | null;
 }
 
-export interface CardQuoteRestore_image_SpacerBlock {
+export interface TextResponseWithButtonRestore_textResponse_SpacerBlock {
   __typename: "SpacerBlock";
   id: string;
   parentBlockId: string | null;
@@ -197,7 +196,7 @@ export interface CardQuoteRestore_image_SpacerBlock {
   spacing: number | null;
 }
 
-export interface CardQuoteRestore_image_StepBlock {
+export interface TextResponseWithButtonRestore_textResponse_StepBlock {
   __typename: "StepBlock";
   id: string;
   parentBlockId: string | null;
@@ -222,7 +221,7 @@ export interface CardQuoteRestore_image_StepBlock {
   slug: string | null;
 }
 
-export interface CardQuoteRestore_image_TextResponseBlock {
+export interface TextResponseWithButtonRestore_textResponse_TextResponseBlock {
   __typename: "TextResponseBlock";
   id: string;
   parentBlockId: string | null;
@@ -236,7 +235,7 @@ export interface CardQuoteRestore_image_TextResponseBlock {
   integrationId: string | null;
 }
 
-export interface CardQuoteRestore_image_TypographyBlock {
+export interface TextResponseWithButtonRestore_textResponse_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
   parentBlockId: string | null;
@@ -247,81 +246,81 @@ export interface CardQuoteRestore_image_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
-export interface CardQuoteRestore_image_VideoBlock_mediaVideo_Video_title {
+export interface TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
 }
 
-export interface CardQuoteRestore_image_VideoBlock_mediaVideo_Video_images {
+export interface TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_Video_images {
   __typename: "CloudflareImage";
   mobileCinematicHigh: string | null;
 }
 
-export interface CardQuoteRestore_image_VideoBlock_mediaVideo_Video_variant {
+export interface TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
   hls: string | null;
 }
 
-export interface CardQuoteRestore_image_VideoBlock_mediaVideo_Video_variantLanguages_name {
+export interface TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
 
-export interface CardQuoteRestore_image_VideoBlock_mediaVideo_Video_variantLanguages {
+export interface TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_Video_variantLanguages {
   __typename: "Language";
   id: string;
-  name: CardQuoteRestore_image_VideoBlock_mediaVideo_Video_variantLanguages_name[];
+  name: TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_Video_variantLanguages_name[];
 }
 
-export interface CardQuoteRestore_image_VideoBlock_mediaVideo_Video {
+export interface TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_Video {
   __typename: "Video";
   id: string;
-  title: CardQuoteRestore_image_VideoBlock_mediaVideo_Video_title[];
-  images: CardQuoteRestore_image_VideoBlock_mediaVideo_Video_images[];
-  variant: CardQuoteRestore_image_VideoBlock_mediaVideo_Video_variant | null;
-  variantLanguages: CardQuoteRestore_image_VideoBlock_mediaVideo_Video_variantLanguages[];
+  title: TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_Video_title[];
+  images: TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_Video_images[];
+  variant: TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_Video_variant | null;
+  variantLanguages: TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
 
-export interface CardQuoteRestore_image_VideoBlock_mediaVideo_MuxVideo {
+export interface TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_MuxVideo {
   __typename: "MuxVideo";
   id: string;
   assetId: string | null;
   playbackId: string | null;
 }
 
-export interface CardQuoteRestore_image_VideoBlock_mediaVideo_YouTube {
+export interface TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_YouTube {
   __typename: "YouTube";
   id: string;
 }
 
-export type CardQuoteRestore_image_VideoBlock_mediaVideo = CardQuoteRestore_image_VideoBlock_mediaVideo_Video | CardQuoteRestore_image_VideoBlock_mediaVideo_MuxVideo | CardQuoteRestore_image_VideoBlock_mediaVideo_YouTube;
+export type TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo = TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_Video | TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_MuxVideo | TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_YouTube;
 
-export interface CardQuoteRestore_image_VideoBlock_action_NavigateToBlockAction {
+export interface TextResponseWithButtonRestore_textResponse_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface CardQuoteRestore_image_VideoBlock_action_LinkAction {
+export interface TextResponseWithButtonRestore_textResponse_VideoBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export interface CardQuoteRestore_image_VideoBlock_action_EmailAction {
+export interface TextResponseWithButtonRestore_textResponse_VideoBlock_action_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
 
-export type CardQuoteRestore_image_VideoBlock_action = CardQuoteRestore_image_VideoBlock_action_NavigateToBlockAction | CardQuoteRestore_image_VideoBlock_action_LinkAction | CardQuoteRestore_image_VideoBlock_action_EmailAction;
+export type TextResponseWithButtonRestore_textResponse_VideoBlock_action = TextResponseWithButtonRestore_textResponse_VideoBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_textResponse_VideoBlock_action_LinkAction | TextResponseWithButtonRestore_textResponse_VideoBlock_action_EmailAction;
 
-export interface CardQuoteRestore_image_VideoBlock {
+export interface TextResponseWithButtonRestore_textResponse_VideoBlock {
   __typename: "VideoBlock";
   id: string;
   parentBlockId: string | null;
@@ -389,37 +388,37 @@ export interface CardQuoteRestore_image_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  mediaVideo: CardQuoteRestore_image_VideoBlock_mediaVideo | null;
+  mediaVideo: TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */
-  action: CardQuoteRestore_image_VideoBlock_action | null;
+  action: TextResponseWithButtonRestore_textResponse_VideoBlock_action | null;
 }
 
-export interface CardQuoteRestore_image_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
+export interface TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface CardQuoteRestore_image_VideoTriggerBlock_triggerAction_LinkAction {
+export interface TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export interface CardQuoteRestore_image_VideoTriggerBlock_triggerAction_EmailAction {
+export interface TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
 
-export type CardQuoteRestore_image_VideoTriggerBlock_triggerAction = CardQuoteRestore_image_VideoTriggerBlock_triggerAction_NavigateToBlockAction | CardQuoteRestore_image_VideoTriggerBlock_triggerAction_LinkAction | CardQuoteRestore_image_VideoTriggerBlock_triggerAction_EmailAction;
+export type TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction = TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_NavigateToBlockAction | TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_LinkAction | TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_EmailAction;
 
-export interface CardQuoteRestore_image_VideoTriggerBlock {
+export interface TextResponseWithButtonRestore_textResponse_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";
   id: string;
   parentBlockId: string | null;
@@ -429,42 +428,42 @@ export interface CardQuoteRestore_image_VideoTriggerBlock {
    * this is the number of seconds since the start of the video
    */
   triggerStart: number;
-  triggerAction: CardQuoteRestore_image_VideoTriggerBlock_triggerAction;
+  triggerAction: TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction;
 }
 
-export type CardQuoteRestore_image = CardQuoteRestore_image_GridContainerBlock | CardQuoteRestore_image_ButtonBlock | CardQuoteRestore_image_CardBlock | CardQuoteRestore_image_IconBlock | CardQuoteRestore_image_ImageBlock | CardQuoteRestore_image_RadioOptionBlock | CardQuoteRestore_image_RadioQuestionBlock | CardQuoteRestore_image_SignUpBlock | CardQuoteRestore_image_SpacerBlock | CardQuoteRestore_image_StepBlock | CardQuoteRestore_image_TextResponseBlock | CardQuoteRestore_image_TypographyBlock | CardQuoteRestore_image_VideoBlock | CardQuoteRestore_image_VideoTriggerBlock;
+export type TextResponseWithButtonRestore_textResponse = TextResponseWithButtonRestore_textResponse_GridContainerBlock | TextResponseWithButtonRestore_textResponse_ButtonBlock | TextResponseWithButtonRestore_textResponse_CardBlock | TextResponseWithButtonRestore_textResponse_IconBlock | TextResponseWithButtonRestore_textResponse_ImageBlock | TextResponseWithButtonRestore_textResponse_RadioOptionBlock | TextResponseWithButtonRestore_textResponse_RadioQuestionBlock | TextResponseWithButtonRestore_textResponse_SignUpBlock | TextResponseWithButtonRestore_textResponse_SpacerBlock | TextResponseWithButtonRestore_textResponse_StepBlock | TextResponseWithButtonRestore_textResponse_TextResponseBlock | TextResponseWithButtonRestore_textResponse_TypographyBlock | TextResponseWithButtonRestore_textResponse_VideoBlock | TextResponseWithButtonRestore_textResponse_VideoTriggerBlock;
 
-export interface CardQuoteRestore_subtitle_GridContainerBlock {
+export interface TextResponseWithButtonRestore_button_GridContainerBlock {
   __typename: "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
 }
 
-export interface CardQuoteRestore_subtitle_ButtonBlock_action_NavigateToBlockAction {
+export interface TextResponseWithButtonRestore_button_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface CardQuoteRestore_subtitle_ButtonBlock_action_LinkAction {
+export interface TextResponseWithButtonRestore_button_ButtonBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export interface CardQuoteRestore_subtitle_ButtonBlock_action_EmailAction {
+export interface TextResponseWithButtonRestore_button_ButtonBlock_action_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
 
-export type CardQuoteRestore_subtitle_ButtonBlock_action = CardQuoteRestore_subtitle_ButtonBlock_action_NavigateToBlockAction | CardQuoteRestore_subtitle_ButtonBlock_action_LinkAction | CardQuoteRestore_subtitle_ButtonBlock_action_EmailAction;
+export type TextResponseWithButtonRestore_button_ButtonBlock_action = TextResponseWithButtonRestore_button_ButtonBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_button_ButtonBlock_action_LinkAction | TextResponseWithButtonRestore_button_ButtonBlock_action_EmailAction;
 
-export interface CardQuoteRestore_subtitle_ButtonBlock {
+export interface TextResponseWithButtonRestore_button_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
   parentBlockId: string | null;
@@ -475,12 +474,11 @@ export interface CardQuoteRestore_subtitle_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
-  submitEnabled: boolean | null;
-  action: CardQuoteRestore_subtitle_ButtonBlock_action | null;
+  action: TextResponseWithButtonRestore_button_ButtonBlock_action | null;
   submitEnabled: boolean | null;
 }
 
-export interface CardQuoteRestore_subtitle_CardBlock {
+export interface TextResponseWithButtonRestore_button_CardBlock {
   __typename: "CardBlock";
   id: string;
   parentBlockId: string | null;
@@ -513,7 +511,7 @@ export interface CardQuoteRestore_subtitle_CardBlock {
   fullscreen: boolean;
 }
 
-export interface CardQuoteRestore_subtitle_IconBlock {
+export interface TextResponseWithButtonRestore_button_IconBlock {
   __typename: "IconBlock";
   id: string;
   parentBlockId: string | null;
@@ -523,7 +521,7 @@ export interface CardQuoteRestore_subtitle_IconBlock {
   iconColor: IconColor | null;
 }
 
-export interface CardQuoteRestore_subtitle_ImageBlock {
+export interface TextResponseWithButtonRestore_button_ImageBlock {
   __typename: "ImageBlock";
   id: string;
   parentBlockId: string | null;
@@ -542,79 +540,79 @@ export interface CardQuoteRestore_subtitle_ImageBlock {
   focalLeft: number | null;
 }
 
-export interface CardQuoteRestore_subtitle_RadioOptionBlock_action_NavigateToBlockAction {
+export interface TextResponseWithButtonRestore_button_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface CardQuoteRestore_subtitle_RadioOptionBlock_action_LinkAction {
+export interface TextResponseWithButtonRestore_button_RadioOptionBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export interface CardQuoteRestore_subtitle_RadioOptionBlock_action_EmailAction {
+export interface TextResponseWithButtonRestore_button_RadioOptionBlock_action_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
 
-export type CardQuoteRestore_subtitle_RadioOptionBlock_action = CardQuoteRestore_subtitle_RadioOptionBlock_action_NavigateToBlockAction | CardQuoteRestore_subtitle_RadioOptionBlock_action_LinkAction | CardQuoteRestore_subtitle_RadioOptionBlock_action_EmailAction;
+export type TextResponseWithButtonRestore_button_RadioOptionBlock_action = TextResponseWithButtonRestore_button_RadioOptionBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_button_RadioOptionBlock_action_LinkAction | TextResponseWithButtonRestore_button_RadioOptionBlock_action_EmailAction;
 
-export interface CardQuoteRestore_subtitle_RadioOptionBlock {
+export interface TextResponseWithButtonRestore_button_RadioOptionBlock {
   __typename: "RadioOptionBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  action: CardQuoteRestore_subtitle_RadioOptionBlock_action | null;
+  action: TextResponseWithButtonRestore_button_RadioOptionBlock_action | null;
 }
 
-export interface CardQuoteRestore_subtitle_RadioQuestionBlock {
+export interface TextResponseWithButtonRestore_button_RadioQuestionBlock {
   __typename: "RadioQuestionBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
 }
 
-export interface CardQuoteRestore_subtitle_SignUpBlock_action_NavigateToBlockAction {
+export interface TextResponseWithButtonRestore_button_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface CardQuoteRestore_subtitle_SignUpBlock_action_LinkAction {
+export interface TextResponseWithButtonRestore_button_SignUpBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export interface CardQuoteRestore_subtitle_SignUpBlock_action_EmailAction {
+export interface TextResponseWithButtonRestore_button_SignUpBlock_action_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
 
-export type CardQuoteRestore_subtitle_SignUpBlock_action = CardQuoteRestore_subtitle_SignUpBlock_action_NavigateToBlockAction | CardQuoteRestore_subtitle_SignUpBlock_action_LinkAction | CardQuoteRestore_subtitle_SignUpBlock_action_EmailAction;
+export type TextResponseWithButtonRestore_button_SignUpBlock_action = TextResponseWithButtonRestore_button_SignUpBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_button_SignUpBlock_action_LinkAction | TextResponseWithButtonRestore_button_SignUpBlock_action_EmailAction;
 
-export interface CardQuoteRestore_subtitle_SignUpBlock {
+export interface TextResponseWithButtonRestore_button_SignUpBlock {
   __typename: "SignUpBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
   submitLabel: string | null;
   submitIconId: string | null;
-  action: CardQuoteRestore_subtitle_SignUpBlock_action | null;
+  action: TextResponseWithButtonRestore_button_SignUpBlock_action | null;
 }
 
-export interface CardQuoteRestore_subtitle_SpacerBlock {
+export interface TextResponseWithButtonRestore_button_SpacerBlock {
   __typename: "SpacerBlock";
   id: string;
   parentBlockId: string | null;
@@ -622,7 +620,7 @@ export interface CardQuoteRestore_subtitle_SpacerBlock {
   spacing: number | null;
 }
 
-export interface CardQuoteRestore_subtitle_StepBlock {
+export interface TextResponseWithButtonRestore_button_StepBlock {
   __typename: "StepBlock";
   id: string;
   parentBlockId: string | null;
@@ -647,7 +645,7 @@ export interface CardQuoteRestore_subtitle_StepBlock {
   slug: string | null;
 }
 
-export interface CardQuoteRestore_subtitle_TextResponseBlock {
+export interface TextResponseWithButtonRestore_button_TextResponseBlock {
   __typename: "TextResponseBlock";
   id: string;
   parentBlockId: string | null;
@@ -661,7 +659,7 @@ export interface CardQuoteRestore_subtitle_TextResponseBlock {
   integrationId: string | null;
 }
 
-export interface CardQuoteRestore_subtitle_TypographyBlock {
+export interface TextResponseWithButtonRestore_button_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
   parentBlockId: string | null;
@@ -672,81 +670,81 @@ export interface CardQuoteRestore_subtitle_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
-export interface CardQuoteRestore_subtitle_VideoBlock_mediaVideo_Video_title {
+export interface TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
 }
 
-export interface CardQuoteRestore_subtitle_VideoBlock_mediaVideo_Video_images {
+export interface TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_Video_images {
   __typename: "CloudflareImage";
   mobileCinematicHigh: string | null;
 }
 
-export interface CardQuoteRestore_subtitle_VideoBlock_mediaVideo_Video_variant {
+export interface TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
   hls: string | null;
 }
 
-export interface CardQuoteRestore_subtitle_VideoBlock_mediaVideo_Video_variantLanguages_name {
+export interface TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
 
-export interface CardQuoteRestore_subtitle_VideoBlock_mediaVideo_Video_variantLanguages {
+export interface TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_Video_variantLanguages {
   __typename: "Language";
   id: string;
-  name: CardQuoteRestore_subtitle_VideoBlock_mediaVideo_Video_variantLanguages_name[];
+  name: TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_Video_variantLanguages_name[];
 }
 
-export interface CardQuoteRestore_subtitle_VideoBlock_mediaVideo_Video {
+export interface TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_Video {
   __typename: "Video";
   id: string;
-  title: CardQuoteRestore_subtitle_VideoBlock_mediaVideo_Video_title[];
-  images: CardQuoteRestore_subtitle_VideoBlock_mediaVideo_Video_images[];
-  variant: CardQuoteRestore_subtitle_VideoBlock_mediaVideo_Video_variant | null;
-  variantLanguages: CardQuoteRestore_subtitle_VideoBlock_mediaVideo_Video_variantLanguages[];
+  title: TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_Video_title[];
+  images: TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_Video_images[];
+  variant: TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_Video_variant | null;
+  variantLanguages: TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
 
-export interface CardQuoteRestore_subtitle_VideoBlock_mediaVideo_MuxVideo {
+export interface TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_MuxVideo {
   __typename: "MuxVideo";
   id: string;
   assetId: string | null;
   playbackId: string | null;
 }
 
-export interface CardQuoteRestore_subtitle_VideoBlock_mediaVideo_YouTube {
+export interface TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_YouTube {
   __typename: "YouTube";
   id: string;
 }
 
-export type CardQuoteRestore_subtitle_VideoBlock_mediaVideo = CardQuoteRestore_subtitle_VideoBlock_mediaVideo_Video | CardQuoteRestore_subtitle_VideoBlock_mediaVideo_MuxVideo | CardQuoteRestore_subtitle_VideoBlock_mediaVideo_YouTube;
+export type TextResponseWithButtonRestore_button_VideoBlock_mediaVideo = TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_Video | TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_MuxVideo | TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_YouTube;
 
-export interface CardQuoteRestore_subtitle_VideoBlock_action_NavigateToBlockAction {
+export interface TextResponseWithButtonRestore_button_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface CardQuoteRestore_subtitle_VideoBlock_action_LinkAction {
+export interface TextResponseWithButtonRestore_button_VideoBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export interface CardQuoteRestore_subtitle_VideoBlock_action_EmailAction {
+export interface TextResponseWithButtonRestore_button_VideoBlock_action_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
 
-export type CardQuoteRestore_subtitle_VideoBlock_action = CardQuoteRestore_subtitle_VideoBlock_action_NavigateToBlockAction | CardQuoteRestore_subtitle_VideoBlock_action_LinkAction | CardQuoteRestore_subtitle_VideoBlock_action_EmailAction;
+export type TextResponseWithButtonRestore_button_VideoBlock_action = TextResponseWithButtonRestore_button_VideoBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_button_VideoBlock_action_LinkAction | TextResponseWithButtonRestore_button_VideoBlock_action_EmailAction;
 
-export interface CardQuoteRestore_subtitle_VideoBlock {
+export interface TextResponseWithButtonRestore_button_VideoBlock {
   __typename: "VideoBlock";
   id: string;
   parentBlockId: string | null;
@@ -814,37 +812,37 @@ export interface CardQuoteRestore_subtitle_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  mediaVideo: CardQuoteRestore_subtitle_VideoBlock_mediaVideo | null;
+  mediaVideo: TextResponseWithButtonRestore_button_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */
-  action: CardQuoteRestore_subtitle_VideoBlock_action | null;
+  action: TextResponseWithButtonRestore_button_VideoBlock_action | null;
 }
 
-export interface CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
+export interface TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction_LinkAction {
+export interface TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export interface CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction_EmailAction {
+export interface TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
 
-export type CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction = CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction_NavigateToBlockAction | CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction_LinkAction | CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction_EmailAction;
+export type TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction = TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_NavigateToBlockAction | TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_LinkAction | TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_EmailAction;
 
-export interface CardQuoteRestore_subtitle_VideoTriggerBlock {
+export interface TextResponseWithButtonRestore_button_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";
   id: string;
   parentBlockId: string | null;
@@ -854,42 +852,42 @@ export interface CardQuoteRestore_subtitle_VideoTriggerBlock {
    * this is the number of seconds since the start of the video
    */
   triggerStart: number;
-  triggerAction: CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction;
+  triggerAction: TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction;
 }
 
-export type CardQuoteRestore_subtitle = CardQuoteRestore_subtitle_GridContainerBlock | CardQuoteRestore_subtitle_ButtonBlock | CardQuoteRestore_subtitle_CardBlock | CardQuoteRestore_subtitle_IconBlock | CardQuoteRestore_subtitle_ImageBlock | CardQuoteRestore_subtitle_RadioOptionBlock | CardQuoteRestore_subtitle_RadioQuestionBlock | CardQuoteRestore_subtitle_SignUpBlock | CardQuoteRestore_subtitle_SpacerBlock | CardQuoteRestore_subtitle_StepBlock | CardQuoteRestore_subtitle_TextResponseBlock | CardQuoteRestore_subtitle_TypographyBlock | CardQuoteRestore_subtitle_VideoBlock | CardQuoteRestore_subtitle_VideoTriggerBlock;
+export type TextResponseWithButtonRestore_button = TextResponseWithButtonRestore_button_GridContainerBlock | TextResponseWithButtonRestore_button_ButtonBlock | TextResponseWithButtonRestore_button_CardBlock | TextResponseWithButtonRestore_button_IconBlock | TextResponseWithButtonRestore_button_ImageBlock | TextResponseWithButtonRestore_button_RadioOptionBlock | TextResponseWithButtonRestore_button_RadioQuestionBlock | TextResponseWithButtonRestore_button_SignUpBlock | TextResponseWithButtonRestore_button_SpacerBlock | TextResponseWithButtonRestore_button_StepBlock | TextResponseWithButtonRestore_button_TextResponseBlock | TextResponseWithButtonRestore_button_TypographyBlock | TextResponseWithButtonRestore_button_VideoBlock | TextResponseWithButtonRestore_button_VideoTriggerBlock;
 
-export interface CardQuoteRestore_title_GridContainerBlock {
+export interface TextResponseWithButtonRestore_startIcon_GridContainerBlock {
   __typename: "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
 }
 
-export interface CardQuoteRestore_title_ButtonBlock_action_NavigateToBlockAction {
+export interface TextResponseWithButtonRestore_startIcon_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface CardQuoteRestore_title_ButtonBlock_action_LinkAction {
+export interface TextResponseWithButtonRestore_startIcon_ButtonBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export interface CardQuoteRestore_title_ButtonBlock_action_EmailAction {
+export interface TextResponseWithButtonRestore_startIcon_ButtonBlock_action_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
 
-export type CardQuoteRestore_title_ButtonBlock_action = CardQuoteRestore_title_ButtonBlock_action_NavigateToBlockAction | CardQuoteRestore_title_ButtonBlock_action_LinkAction | CardQuoteRestore_title_ButtonBlock_action_EmailAction;
+export type TextResponseWithButtonRestore_startIcon_ButtonBlock_action = TextResponseWithButtonRestore_startIcon_ButtonBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_startIcon_ButtonBlock_action_LinkAction | TextResponseWithButtonRestore_startIcon_ButtonBlock_action_EmailAction;
 
-export interface CardQuoteRestore_title_ButtonBlock {
+export interface TextResponseWithButtonRestore_startIcon_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
   parentBlockId: string | null;
@@ -900,12 +898,11 @@ export interface CardQuoteRestore_title_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
-  submitEnabled: boolean | null;
-  action: CardQuoteRestore_title_ButtonBlock_action | null;
+  action: TextResponseWithButtonRestore_startIcon_ButtonBlock_action | null;
   submitEnabled: boolean | null;
 }
 
-export interface CardQuoteRestore_title_CardBlock {
+export interface TextResponseWithButtonRestore_startIcon_CardBlock {
   __typename: "CardBlock";
   id: string;
   parentBlockId: string | null;
@@ -938,7 +935,7 @@ export interface CardQuoteRestore_title_CardBlock {
   fullscreen: boolean;
 }
 
-export interface CardQuoteRestore_title_IconBlock {
+export interface TextResponseWithButtonRestore_startIcon_IconBlock {
   __typename: "IconBlock";
   id: string;
   parentBlockId: string | null;
@@ -948,7 +945,7 @@ export interface CardQuoteRestore_title_IconBlock {
   iconColor: IconColor | null;
 }
 
-export interface CardQuoteRestore_title_ImageBlock {
+export interface TextResponseWithButtonRestore_startIcon_ImageBlock {
   __typename: "ImageBlock";
   id: string;
   parentBlockId: string | null;
@@ -967,79 +964,79 @@ export interface CardQuoteRestore_title_ImageBlock {
   focalLeft: number | null;
 }
 
-export interface CardQuoteRestore_title_RadioOptionBlock_action_NavigateToBlockAction {
+export interface TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface CardQuoteRestore_title_RadioOptionBlock_action_LinkAction {
+export interface TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export interface CardQuoteRestore_title_RadioOptionBlock_action_EmailAction {
+export interface TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
 
-export type CardQuoteRestore_title_RadioOptionBlock_action = CardQuoteRestore_title_RadioOptionBlock_action_NavigateToBlockAction | CardQuoteRestore_title_RadioOptionBlock_action_LinkAction | CardQuoteRestore_title_RadioOptionBlock_action_EmailAction;
+export type TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action = TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_LinkAction | TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_EmailAction;
 
-export interface CardQuoteRestore_title_RadioOptionBlock {
+export interface TextResponseWithButtonRestore_startIcon_RadioOptionBlock {
   __typename: "RadioOptionBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  action: CardQuoteRestore_title_RadioOptionBlock_action | null;
+  action: TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action | null;
 }
 
-export interface CardQuoteRestore_title_RadioQuestionBlock {
+export interface TextResponseWithButtonRestore_startIcon_RadioQuestionBlock {
   __typename: "RadioQuestionBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
 }
 
-export interface CardQuoteRestore_title_SignUpBlock_action_NavigateToBlockAction {
+export interface TextResponseWithButtonRestore_startIcon_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface CardQuoteRestore_title_SignUpBlock_action_LinkAction {
+export interface TextResponseWithButtonRestore_startIcon_SignUpBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export interface CardQuoteRestore_title_SignUpBlock_action_EmailAction {
+export interface TextResponseWithButtonRestore_startIcon_SignUpBlock_action_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
 
-export type CardQuoteRestore_title_SignUpBlock_action = CardQuoteRestore_title_SignUpBlock_action_NavigateToBlockAction | CardQuoteRestore_title_SignUpBlock_action_LinkAction | CardQuoteRestore_title_SignUpBlock_action_EmailAction;
+export type TextResponseWithButtonRestore_startIcon_SignUpBlock_action = TextResponseWithButtonRestore_startIcon_SignUpBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_startIcon_SignUpBlock_action_LinkAction | TextResponseWithButtonRestore_startIcon_SignUpBlock_action_EmailAction;
 
-export interface CardQuoteRestore_title_SignUpBlock {
+export interface TextResponseWithButtonRestore_startIcon_SignUpBlock {
   __typename: "SignUpBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
   submitLabel: string | null;
   submitIconId: string | null;
-  action: CardQuoteRestore_title_SignUpBlock_action | null;
+  action: TextResponseWithButtonRestore_startIcon_SignUpBlock_action | null;
 }
 
-export interface CardQuoteRestore_title_SpacerBlock {
+export interface TextResponseWithButtonRestore_startIcon_SpacerBlock {
   __typename: "SpacerBlock";
   id: string;
   parentBlockId: string | null;
@@ -1047,7 +1044,7 @@ export interface CardQuoteRestore_title_SpacerBlock {
   spacing: number | null;
 }
 
-export interface CardQuoteRestore_title_StepBlock {
+export interface TextResponseWithButtonRestore_startIcon_StepBlock {
   __typename: "StepBlock";
   id: string;
   parentBlockId: string | null;
@@ -1072,7 +1069,7 @@ export interface CardQuoteRestore_title_StepBlock {
   slug: string | null;
 }
 
-export interface CardQuoteRestore_title_TextResponseBlock {
+export interface TextResponseWithButtonRestore_startIcon_TextResponseBlock {
   __typename: "TextResponseBlock";
   id: string;
   parentBlockId: string | null;
@@ -1086,7 +1083,7 @@ export interface CardQuoteRestore_title_TextResponseBlock {
   integrationId: string | null;
 }
 
-export interface CardQuoteRestore_title_TypographyBlock {
+export interface TextResponseWithButtonRestore_startIcon_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
   parentBlockId: string | null;
@@ -1097,81 +1094,81 @@ export interface CardQuoteRestore_title_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
-export interface CardQuoteRestore_title_VideoBlock_mediaVideo_Video_title {
+export interface TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
 }
 
-export interface CardQuoteRestore_title_VideoBlock_mediaVideo_Video_images {
+export interface TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_Video_images {
   __typename: "CloudflareImage";
   mobileCinematicHigh: string | null;
 }
 
-export interface CardQuoteRestore_title_VideoBlock_mediaVideo_Video_variant {
+export interface TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
   hls: string | null;
 }
 
-export interface CardQuoteRestore_title_VideoBlock_mediaVideo_Video_variantLanguages_name {
+export interface TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
 
-export interface CardQuoteRestore_title_VideoBlock_mediaVideo_Video_variantLanguages {
+export interface TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_Video_variantLanguages {
   __typename: "Language";
   id: string;
-  name: CardQuoteRestore_title_VideoBlock_mediaVideo_Video_variantLanguages_name[];
+  name: TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_Video_variantLanguages_name[];
 }
 
-export interface CardQuoteRestore_title_VideoBlock_mediaVideo_Video {
+export interface TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_Video {
   __typename: "Video";
   id: string;
-  title: CardQuoteRestore_title_VideoBlock_mediaVideo_Video_title[];
-  images: CardQuoteRestore_title_VideoBlock_mediaVideo_Video_images[];
-  variant: CardQuoteRestore_title_VideoBlock_mediaVideo_Video_variant | null;
-  variantLanguages: CardQuoteRestore_title_VideoBlock_mediaVideo_Video_variantLanguages[];
+  title: TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_Video_title[];
+  images: TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_Video_images[];
+  variant: TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_Video_variant | null;
+  variantLanguages: TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
 
-export interface CardQuoteRestore_title_VideoBlock_mediaVideo_MuxVideo {
+export interface TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_MuxVideo {
   __typename: "MuxVideo";
   id: string;
   assetId: string | null;
   playbackId: string | null;
 }
 
-export interface CardQuoteRestore_title_VideoBlock_mediaVideo_YouTube {
+export interface TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_YouTube {
   __typename: "YouTube";
   id: string;
 }
 
-export type CardQuoteRestore_title_VideoBlock_mediaVideo = CardQuoteRestore_title_VideoBlock_mediaVideo_Video | CardQuoteRestore_title_VideoBlock_mediaVideo_MuxVideo | CardQuoteRestore_title_VideoBlock_mediaVideo_YouTube;
+export type TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo = TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_Video | TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_MuxVideo | TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_YouTube;
 
-export interface CardQuoteRestore_title_VideoBlock_action_NavigateToBlockAction {
+export interface TextResponseWithButtonRestore_startIcon_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface CardQuoteRestore_title_VideoBlock_action_LinkAction {
+export interface TextResponseWithButtonRestore_startIcon_VideoBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export interface CardQuoteRestore_title_VideoBlock_action_EmailAction {
+export interface TextResponseWithButtonRestore_startIcon_VideoBlock_action_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
 
-export type CardQuoteRestore_title_VideoBlock_action = CardQuoteRestore_title_VideoBlock_action_NavigateToBlockAction | CardQuoteRestore_title_VideoBlock_action_LinkAction | CardQuoteRestore_title_VideoBlock_action_EmailAction;
+export type TextResponseWithButtonRestore_startIcon_VideoBlock_action = TextResponseWithButtonRestore_startIcon_VideoBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_startIcon_VideoBlock_action_LinkAction | TextResponseWithButtonRestore_startIcon_VideoBlock_action_EmailAction;
 
-export interface CardQuoteRestore_title_VideoBlock {
+export interface TextResponseWithButtonRestore_startIcon_VideoBlock {
   __typename: "VideoBlock";
   id: string;
   parentBlockId: string | null;
@@ -1239,37 +1236,37 @@ export interface CardQuoteRestore_title_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  mediaVideo: CardQuoteRestore_title_VideoBlock_mediaVideo | null;
+  mediaVideo: TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */
-  action: CardQuoteRestore_title_VideoBlock_action | null;
+  action: TextResponseWithButtonRestore_startIcon_VideoBlock_action | null;
 }
 
-export interface CardQuoteRestore_title_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
+export interface TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface CardQuoteRestore_title_VideoTriggerBlock_triggerAction_LinkAction {
+export interface TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export interface CardQuoteRestore_title_VideoTriggerBlock_triggerAction_EmailAction {
+export interface TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
 
-export type CardQuoteRestore_title_VideoTriggerBlock_triggerAction = CardQuoteRestore_title_VideoTriggerBlock_triggerAction_NavigateToBlockAction | CardQuoteRestore_title_VideoTriggerBlock_triggerAction_LinkAction | CardQuoteRestore_title_VideoTriggerBlock_triggerAction_EmailAction;
+export type TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction = TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_NavigateToBlockAction | TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_LinkAction | TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_EmailAction;
 
-export interface CardQuoteRestore_title_VideoTriggerBlock {
+export interface TextResponseWithButtonRestore_startIcon_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";
   id: string;
   parentBlockId: string | null;
@@ -1279,42 +1276,42 @@ export interface CardQuoteRestore_title_VideoTriggerBlock {
    * this is the number of seconds since the start of the video
    */
   triggerStart: number;
-  triggerAction: CardQuoteRestore_title_VideoTriggerBlock_triggerAction;
+  triggerAction: TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction;
 }
 
-export type CardQuoteRestore_title = CardQuoteRestore_title_GridContainerBlock | CardQuoteRestore_title_ButtonBlock | CardQuoteRestore_title_CardBlock | CardQuoteRestore_title_IconBlock | CardQuoteRestore_title_ImageBlock | CardQuoteRestore_title_RadioOptionBlock | CardQuoteRestore_title_RadioQuestionBlock | CardQuoteRestore_title_SignUpBlock | CardQuoteRestore_title_SpacerBlock | CardQuoteRestore_title_StepBlock | CardQuoteRestore_title_TextResponseBlock | CardQuoteRestore_title_TypographyBlock | CardQuoteRestore_title_VideoBlock | CardQuoteRestore_title_VideoTriggerBlock;
+export type TextResponseWithButtonRestore_startIcon = TextResponseWithButtonRestore_startIcon_GridContainerBlock | TextResponseWithButtonRestore_startIcon_ButtonBlock | TextResponseWithButtonRestore_startIcon_CardBlock | TextResponseWithButtonRestore_startIcon_IconBlock | TextResponseWithButtonRestore_startIcon_ImageBlock | TextResponseWithButtonRestore_startIcon_RadioOptionBlock | TextResponseWithButtonRestore_startIcon_RadioQuestionBlock | TextResponseWithButtonRestore_startIcon_SignUpBlock | TextResponseWithButtonRestore_startIcon_SpacerBlock | TextResponseWithButtonRestore_startIcon_StepBlock | TextResponseWithButtonRestore_startIcon_TextResponseBlock | TextResponseWithButtonRestore_startIcon_TypographyBlock | TextResponseWithButtonRestore_startIcon_VideoBlock | TextResponseWithButtonRestore_startIcon_VideoTriggerBlock;
 
-export interface CardQuoteRestore_body_GridContainerBlock {
+export interface TextResponseWithButtonRestore_endIcon_GridContainerBlock {
   __typename: "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
 }
 
-export interface CardQuoteRestore_body_ButtonBlock_action_NavigateToBlockAction {
+export interface TextResponseWithButtonRestore_endIcon_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface CardQuoteRestore_body_ButtonBlock_action_LinkAction {
+export interface TextResponseWithButtonRestore_endIcon_ButtonBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export interface CardQuoteRestore_body_ButtonBlock_action_EmailAction {
+export interface TextResponseWithButtonRestore_endIcon_ButtonBlock_action_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
 
-export type CardQuoteRestore_body_ButtonBlock_action = CardQuoteRestore_body_ButtonBlock_action_NavigateToBlockAction | CardQuoteRestore_body_ButtonBlock_action_LinkAction | CardQuoteRestore_body_ButtonBlock_action_EmailAction;
+export type TextResponseWithButtonRestore_endIcon_ButtonBlock_action = TextResponseWithButtonRestore_endIcon_ButtonBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_endIcon_ButtonBlock_action_LinkAction | TextResponseWithButtonRestore_endIcon_ButtonBlock_action_EmailAction;
 
-export interface CardQuoteRestore_body_ButtonBlock {
+export interface TextResponseWithButtonRestore_endIcon_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
   parentBlockId: string | null;
@@ -1325,12 +1322,11 @@ export interface CardQuoteRestore_body_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
-  submitEnabled: boolean | null;
-  action: CardQuoteRestore_body_ButtonBlock_action | null;
+  action: TextResponseWithButtonRestore_endIcon_ButtonBlock_action | null;
   submitEnabled: boolean | null;
 }
 
-export interface CardQuoteRestore_body_CardBlock {
+export interface TextResponseWithButtonRestore_endIcon_CardBlock {
   __typename: "CardBlock";
   id: string;
   parentBlockId: string | null;
@@ -1363,7 +1359,7 @@ export interface CardQuoteRestore_body_CardBlock {
   fullscreen: boolean;
 }
 
-export interface CardQuoteRestore_body_IconBlock {
+export interface TextResponseWithButtonRestore_endIcon_IconBlock {
   __typename: "IconBlock";
   id: string;
   parentBlockId: string | null;
@@ -1373,7 +1369,7 @@ export interface CardQuoteRestore_body_IconBlock {
   iconColor: IconColor | null;
 }
 
-export interface CardQuoteRestore_body_ImageBlock {
+export interface TextResponseWithButtonRestore_endIcon_ImageBlock {
   __typename: "ImageBlock";
   id: string;
   parentBlockId: string | null;
@@ -1392,79 +1388,79 @@ export interface CardQuoteRestore_body_ImageBlock {
   focalLeft: number | null;
 }
 
-export interface CardQuoteRestore_body_RadioOptionBlock_action_NavigateToBlockAction {
+export interface TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface CardQuoteRestore_body_RadioOptionBlock_action_LinkAction {
+export interface TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export interface CardQuoteRestore_body_RadioOptionBlock_action_EmailAction {
+export interface TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
 
-export type CardQuoteRestore_body_RadioOptionBlock_action = CardQuoteRestore_body_RadioOptionBlock_action_NavigateToBlockAction | CardQuoteRestore_body_RadioOptionBlock_action_LinkAction | CardQuoteRestore_body_RadioOptionBlock_action_EmailAction;
+export type TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action = TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_LinkAction | TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_EmailAction;
 
-export interface CardQuoteRestore_body_RadioOptionBlock {
+export interface TextResponseWithButtonRestore_endIcon_RadioOptionBlock {
   __typename: "RadioOptionBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  action: CardQuoteRestore_body_RadioOptionBlock_action | null;
+  action: TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action | null;
 }
 
-export interface CardQuoteRestore_body_RadioQuestionBlock {
+export interface TextResponseWithButtonRestore_endIcon_RadioQuestionBlock {
   __typename: "RadioQuestionBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
 }
 
-export interface CardQuoteRestore_body_SignUpBlock_action_NavigateToBlockAction {
+export interface TextResponseWithButtonRestore_endIcon_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface CardQuoteRestore_body_SignUpBlock_action_LinkAction {
+export interface TextResponseWithButtonRestore_endIcon_SignUpBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export interface CardQuoteRestore_body_SignUpBlock_action_EmailAction {
+export interface TextResponseWithButtonRestore_endIcon_SignUpBlock_action_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
 
-export type CardQuoteRestore_body_SignUpBlock_action = CardQuoteRestore_body_SignUpBlock_action_NavigateToBlockAction | CardQuoteRestore_body_SignUpBlock_action_LinkAction | CardQuoteRestore_body_SignUpBlock_action_EmailAction;
+export type TextResponseWithButtonRestore_endIcon_SignUpBlock_action = TextResponseWithButtonRestore_endIcon_SignUpBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_endIcon_SignUpBlock_action_LinkAction | TextResponseWithButtonRestore_endIcon_SignUpBlock_action_EmailAction;
 
-export interface CardQuoteRestore_body_SignUpBlock {
+export interface TextResponseWithButtonRestore_endIcon_SignUpBlock {
   __typename: "SignUpBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
   submitLabel: string | null;
   submitIconId: string | null;
-  action: CardQuoteRestore_body_SignUpBlock_action | null;
+  action: TextResponseWithButtonRestore_endIcon_SignUpBlock_action | null;
 }
 
-export interface CardQuoteRestore_body_SpacerBlock {
+export interface TextResponseWithButtonRestore_endIcon_SpacerBlock {
   __typename: "SpacerBlock";
   id: string;
   parentBlockId: string | null;
@@ -1472,7 +1468,7 @@ export interface CardQuoteRestore_body_SpacerBlock {
   spacing: number | null;
 }
 
-export interface CardQuoteRestore_body_StepBlock {
+export interface TextResponseWithButtonRestore_endIcon_StepBlock {
   __typename: "StepBlock";
   id: string;
   parentBlockId: string | null;
@@ -1497,7 +1493,7 @@ export interface CardQuoteRestore_body_StepBlock {
   slug: string | null;
 }
 
-export interface CardQuoteRestore_body_TextResponseBlock {
+export interface TextResponseWithButtonRestore_endIcon_TextResponseBlock {
   __typename: "TextResponseBlock";
   id: string;
   parentBlockId: string | null;
@@ -1511,7 +1507,7 @@ export interface CardQuoteRestore_body_TextResponseBlock {
   integrationId: string | null;
 }
 
-export interface CardQuoteRestore_body_TypographyBlock {
+export interface TextResponseWithButtonRestore_endIcon_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
   parentBlockId: string | null;
@@ -1522,81 +1518,81 @@ export interface CardQuoteRestore_body_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
-export interface CardQuoteRestore_body_VideoBlock_mediaVideo_Video_title {
+export interface TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
 }
 
-export interface CardQuoteRestore_body_VideoBlock_mediaVideo_Video_images {
+export interface TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_Video_images {
   __typename: "CloudflareImage";
   mobileCinematicHigh: string | null;
 }
 
-export interface CardQuoteRestore_body_VideoBlock_mediaVideo_Video_variant {
+export interface TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
   hls: string | null;
 }
 
-export interface CardQuoteRestore_body_VideoBlock_mediaVideo_Video_variantLanguages_name {
+export interface TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
 
-export interface CardQuoteRestore_body_VideoBlock_mediaVideo_Video_variantLanguages {
+export interface TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_Video_variantLanguages {
   __typename: "Language";
   id: string;
-  name: CardQuoteRestore_body_VideoBlock_mediaVideo_Video_variantLanguages_name[];
+  name: TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_Video_variantLanguages_name[];
 }
 
-export interface CardQuoteRestore_body_VideoBlock_mediaVideo_Video {
+export interface TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_Video {
   __typename: "Video";
   id: string;
-  title: CardQuoteRestore_body_VideoBlock_mediaVideo_Video_title[];
-  images: CardQuoteRestore_body_VideoBlock_mediaVideo_Video_images[];
-  variant: CardQuoteRestore_body_VideoBlock_mediaVideo_Video_variant | null;
-  variantLanguages: CardQuoteRestore_body_VideoBlock_mediaVideo_Video_variantLanguages[];
+  title: TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_Video_title[];
+  images: TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_Video_images[];
+  variant: TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_Video_variant | null;
+  variantLanguages: TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
 
-export interface CardQuoteRestore_body_VideoBlock_mediaVideo_MuxVideo {
+export interface TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_MuxVideo {
   __typename: "MuxVideo";
   id: string;
   assetId: string | null;
   playbackId: string | null;
 }
 
-export interface CardQuoteRestore_body_VideoBlock_mediaVideo_YouTube {
+export interface TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_YouTube {
   __typename: "YouTube";
   id: string;
 }
 
-export type CardQuoteRestore_body_VideoBlock_mediaVideo = CardQuoteRestore_body_VideoBlock_mediaVideo_Video | CardQuoteRestore_body_VideoBlock_mediaVideo_MuxVideo | CardQuoteRestore_body_VideoBlock_mediaVideo_YouTube;
+export type TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo = TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_Video | TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_MuxVideo | TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_YouTube;
 
-export interface CardQuoteRestore_body_VideoBlock_action_NavigateToBlockAction {
+export interface TextResponseWithButtonRestore_endIcon_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface CardQuoteRestore_body_VideoBlock_action_LinkAction {
+export interface TextResponseWithButtonRestore_endIcon_VideoBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export interface CardQuoteRestore_body_VideoBlock_action_EmailAction {
+export interface TextResponseWithButtonRestore_endIcon_VideoBlock_action_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
 
-export type CardQuoteRestore_body_VideoBlock_action = CardQuoteRestore_body_VideoBlock_action_NavigateToBlockAction | CardQuoteRestore_body_VideoBlock_action_LinkAction | CardQuoteRestore_body_VideoBlock_action_EmailAction;
+export type TextResponseWithButtonRestore_endIcon_VideoBlock_action = TextResponseWithButtonRestore_endIcon_VideoBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_endIcon_VideoBlock_action_LinkAction | TextResponseWithButtonRestore_endIcon_VideoBlock_action_EmailAction;
 
-export interface CardQuoteRestore_body_VideoBlock {
+export interface TextResponseWithButtonRestore_endIcon_VideoBlock {
   __typename: "VideoBlock";
   id: string;
   parentBlockId: string | null;
@@ -1664,37 +1660,37 @@ export interface CardQuoteRestore_body_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  mediaVideo: CardQuoteRestore_body_VideoBlock_mediaVideo | null;
+  mediaVideo: TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */
-  action: CardQuoteRestore_body_VideoBlock_action | null;
+  action: TextResponseWithButtonRestore_endIcon_VideoBlock_action | null;
 }
 
-export interface CardQuoteRestore_body_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
+export interface TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface CardQuoteRestore_body_VideoTriggerBlock_triggerAction_LinkAction {
+export interface TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export interface CardQuoteRestore_body_VideoTriggerBlock_triggerAction_EmailAction {
+export interface TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
 
-export type CardQuoteRestore_body_VideoTriggerBlock_triggerAction = CardQuoteRestore_body_VideoTriggerBlock_triggerAction_NavigateToBlockAction | CardQuoteRestore_body_VideoTriggerBlock_triggerAction_LinkAction | CardQuoteRestore_body_VideoTriggerBlock_triggerAction_EmailAction;
+export type TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction = TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_NavigateToBlockAction | TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_LinkAction | TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_EmailAction;
 
-export interface CardQuoteRestore_body_VideoTriggerBlock {
+export interface TextResponseWithButtonRestore_endIcon_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";
   id: string;
   parentBlockId: string | null;
@@ -1704,69 +1700,33 @@ export interface CardQuoteRestore_body_VideoTriggerBlock {
    * this is the number of seconds since the start of the video
    */
   triggerStart: number;
-  triggerAction: CardQuoteRestore_body_VideoTriggerBlock_triggerAction;
+  triggerAction: TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction;
 }
 
-export type CardQuoteRestore_body = CardQuoteRestore_body_GridContainerBlock | CardQuoteRestore_body_ButtonBlock | CardQuoteRestore_body_CardBlock | CardQuoteRestore_body_IconBlock | CardQuoteRestore_body_ImageBlock | CardQuoteRestore_body_RadioOptionBlock | CardQuoteRestore_body_RadioQuestionBlock | CardQuoteRestore_body_SignUpBlock | CardQuoteRestore_body_SpacerBlock | CardQuoteRestore_body_StepBlock | CardQuoteRestore_body_TextResponseBlock | CardQuoteRestore_body_TypographyBlock | CardQuoteRestore_body_VideoBlock | CardQuoteRestore_body_VideoTriggerBlock;
+export type TextResponseWithButtonRestore_endIcon = TextResponseWithButtonRestore_endIcon_GridContainerBlock | TextResponseWithButtonRestore_endIcon_ButtonBlock | TextResponseWithButtonRestore_endIcon_CardBlock | TextResponseWithButtonRestore_endIcon_IconBlock | TextResponseWithButtonRestore_endIcon_ImageBlock | TextResponseWithButtonRestore_endIcon_RadioOptionBlock | TextResponseWithButtonRestore_endIcon_RadioQuestionBlock | TextResponseWithButtonRestore_endIcon_SignUpBlock | TextResponseWithButtonRestore_endIcon_SpacerBlock | TextResponseWithButtonRestore_endIcon_StepBlock | TextResponseWithButtonRestore_endIcon_TextResponseBlock | TextResponseWithButtonRestore_endIcon_TypographyBlock | TextResponseWithButtonRestore_endIcon_VideoBlock | TextResponseWithButtonRestore_endIcon_VideoTriggerBlock;
 
-export interface CardQuoteRestore_cardBlockUpdate {
-  __typename: "CardBlock";
-  id: string;
-  parentBlockId: string | null;
-  parentOrder: number | null;
+export interface TextResponseWithButtonRestore {
   /**
-   * backgroundColor should be a HEX color value e.g #FFFFFF for white.
+   * blockRestore is used for redo/undo
    */
-  backgroundColor: string | null;
+  textResponse: TextResponseWithButtonRestore_textResponse[];
   /**
-   * coverBlockId is present if a child block should be used as a cover.
-   * This child block should not be rendered normally, instead it should be used
-   * as a background. Blocks are often of type ImageBlock or VideoBlock.
+   * blockRestore is used for redo/undo
    */
-  coverBlockId: string | null;
+  button: TextResponseWithButtonRestore_button[];
   /**
-   * themeMode can override journey themeMode. If nothing is set then use
-   * themeMode from journey
+   * blockRestore is used for redo/undo
    */
-  themeMode: ThemeMode | null;
+  startIcon: TextResponseWithButtonRestore_startIcon[];
   /**
-   * themeName can override journey themeName. If nothing is set then use
-   * themeName from journey
+   * blockRestore is used for redo/undo
    */
-  themeName: ThemeName | null;
-  /**
-   * fullscreen should control how the coverBlock is displayed. When fullscreen
-   * is set to true the coverBlock Image should be displayed as a blur in the
-   * background.
-   */
-  fullscreen: boolean;
+  endIcon: TextResponseWithButtonRestore_endIcon[];
 }
 
-export interface CardQuoteRestore {
-  /**
-   * blockRestore is used for redo/undo
-   */
-  image: CardQuoteRestore_image[];
-  /**
-   * blockRestore is used for redo/undo
-   */
-  subtitle: CardQuoteRestore_subtitle[];
-  /**
-   * blockRestore is used for redo/undo
-   */
-  title: CardQuoteRestore_title[];
-  /**
-   * blockRestore is used for redo/undo
-   */
-  body: CardQuoteRestore_body[];
-  cardBlockUpdate: CardQuoteRestore_cardBlockUpdate;
-}
-
-export interface CardQuoteRestoreVariables {
-  imageId: string;
-  subtitleId: string;
-  titleId: string;
-  bodyId: string;
-  cardId: string;
-  cardInput: CardBlockUpdateInput;
+export interface TextResponseWithButtonRestoreVariables {
+  textResponseId: string;
+  buttonId: string;
+  startIconId: string;
+  endIconId: string;
 }

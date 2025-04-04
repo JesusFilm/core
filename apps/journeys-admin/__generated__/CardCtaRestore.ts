@@ -52,6 +52,7 @@ export interface CardCtaRestore_imageRestore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardCtaRestore_imageRestore_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface CardCtaRestore_imageRestore_CardBlock {
@@ -476,6 +477,7 @@ export interface CardCtaRestore_subtitleRestore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardCtaRestore_subtitleRestore_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface CardCtaRestore_subtitleRestore_CardBlock {
@@ -900,6 +902,7 @@ export interface CardCtaRestore_titleRestore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardCtaRestore_titleRestore_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface CardCtaRestore_titleRestore_CardBlock {
@@ -1324,6 +1327,7 @@ export interface CardCtaRestore_button1Restore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardCtaRestore_button1Restore_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface CardCtaRestore_button1Restore_CardBlock {
@@ -1748,6 +1752,7 @@ export interface CardCtaRestore_startIcon1Restore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardCtaRestore_startIcon1Restore_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface CardCtaRestore_startIcon1Restore_CardBlock {
@@ -2172,6 +2177,7 @@ export interface CardCtaRestore_endIcon1Restore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardCtaRestore_endIcon1Restore_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface CardCtaRestore_endIcon1Restore_CardBlock {
@@ -2596,6 +2602,7 @@ export interface CardCtaRestore_button2Restore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardCtaRestore_button2Restore_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface CardCtaRestore_button2Restore_CardBlock {
@@ -3020,6 +3027,7 @@ export interface CardCtaRestore_startIcon2Restore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardCtaRestore_startIcon2Restore_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface CardCtaRestore_startIcon2Restore_CardBlock {
@@ -3444,6 +3452,7 @@ export interface CardCtaRestore_endIcon2Restore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardCtaRestore_endIcon2Restore_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface CardCtaRestore_endIcon2Restore_CardBlock {
@@ -3868,6 +3877,7 @@ export interface CardCtaRestore_button3Restore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardCtaRestore_button3Restore_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface CardCtaRestore_button3Restore_CardBlock {
@@ -4292,6 +4302,7 @@ export interface CardCtaRestore_startIcon3Restore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardCtaRestore_startIcon3Restore_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface CardCtaRestore_startIcon3Restore_CardBlock {
@@ -4716,6 +4727,7 @@ export interface CardCtaRestore_endIcon3Restore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardCtaRestore_endIcon3Restore_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface CardCtaRestore_endIcon3Restore_CardBlock {

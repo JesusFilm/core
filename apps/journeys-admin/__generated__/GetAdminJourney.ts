@@ -66,6 +66,7 @@ export interface GetAdminJourney_journey_blocks_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: GetAdminJourney_journey_blocks_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface GetAdminJourney_journey_blocks_CardBlock {

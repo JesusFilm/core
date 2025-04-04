@@ -20,6 +20,7 @@ describe('DragDropWrapper', () => {
     endIconId: null,
     submitEnabled: null,
     action: null,
+    submitEnabled: null,
     children: []
   }
 
