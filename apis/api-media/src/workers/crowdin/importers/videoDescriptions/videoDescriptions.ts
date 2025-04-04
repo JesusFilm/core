@@ -1,10 +1,11 @@
+import { Logger } from 'pino'
 import { z } from 'zod'
 
 import { prisma } from '../../../../lib/prisma'
 import { CROWDIN_CONFIG } from '../../config'
 import { processFile } from '../../importer'
 import { TranslationData } from '../../types'
-import { getFullVideoId, isValidVideoId } from '../../utils/videoCache'
+import { getFullVideoId, setValidVideoIds } from '../videoTitles/videoTitles'
 
 const videoDescriptionSchema = z
   .object({
@@ -14,7 +15,10 @@ const videoDescriptionSchema = z
   })
   .transform((data) => {
     const databaseId = getFullVideoId(data.identifier)
-    if (!databaseId) throw new Error('Invalid video ID')
+    if (!databaseId) {
+      missingVideos.add(data.identifier)
+      throw new Error('Invalid video ID')
+    }
 
     return {
       videoId: databaseId,
@@ -26,59 +30,43 @@ const videoDescriptionSchema = z
 
 const missingVideos = new Set<string>()
 
-export async function importVideoDescriptions(): Promise<() => void> {
+export async function importVideoDescriptions(
+  parentLogger?: Logger
+): Promise<() => void> {
+  const logger = parentLogger?.child({ importer: 'videoDescriptions' })
+  logger?.info('Starting video descriptions import')
+
+  // Initialize video IDs first
+  const videos = await prisma.video.findMany({
+    select: { id: true }
+  })
+  setValidVideoIds(videos, logger)
+
   await processFile(
     CROWDIN_CONFIG.files.media_metadata_description,
-    upsertVideoDescriptionTranslation
+    async (data: TranslationData) => {
+      await upsertVideoDescriptionTranslation(data)
+    },
+    logger
   )
+
+  if (missingVideos.size > 0) {
+    logger?.warn(
+      {
+        count: missingVideos.size,
+        videos: Array.from(missingVideos)
+      },
+      'Videos not found in database'
+    )
+  }
+
+  logger?.info('Finished video descriptions import')
   return () => missingVideos.clear()
-}
-
-function validateVideoDescriptionData(data: TranslationData): boolean {
-  const identifier = data.sourceString.identifier
-  if (!identifier || !isValidVideoId(identifier)) {
-    if (identifier) {
-      missingVideos.add(identifier)
-    }
-    return false
-  }
-
-  if (!data.translation.text) {
-    return false
-  }
-
-  const languageId =
-    CROWDIN_CONFIG.languageCodes[
-      data.languageCode as keyof typeof CROWDIN_CONFIG.languageCodes
-    ]
-  if (!languageId) {
-    return false
-  }
-
-  const databaseId = getFullVideoId(identifier)
-  if (!databaseId) {
-    if (identifier) {
-      missingVideos.add(identifier)
-    }
-    return false
-  }
-
-  return true
 }
 
 async function upsertVideoDescriptionTranslation(
   data: TranslationData
 ): Promise<void> {
-  if (missingVideos.size > 0) {
-    console.warn('Videos do not exist in database', {
-      count: missingVideos.size,
-      videos: Array.from(missingVideos)
-    })
-    missingVideos.clear()
-  }
-
-  if (!validateVideoDescriptionData(data)) return
-
   const result = videoDescriptionSchema.parse({
     identifier: data.sourceString.identifier,
     text: data.translation.text,

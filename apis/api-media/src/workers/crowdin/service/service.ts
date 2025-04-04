@@ -1,3 +1,5 @@
+import { Logger } from 'pino'
+
 import {
   importBibleBooks,
   importStudyQuestions,
@@ -5,12 +7,12 @@ import {
   importVideoTitles
 } from '../importers'
 
-export async function service(): Promise<void> {
+export async function service(logger?: Logger): Promise<void> {
   const cleanup = [
-    await importVideoTitles(),
-    await importVideoDescriptions(),
-    await importStudyQuestions(),
-    await importBibleBooks()
+    await importVideoTitles(logger),
+    await importVideoDescriptions(logger),
+    await importStudyQuestions(logger),
+    await importBibleBooks(logger)
   ]
 
   cleanup.forEach((fn) => fn?.())

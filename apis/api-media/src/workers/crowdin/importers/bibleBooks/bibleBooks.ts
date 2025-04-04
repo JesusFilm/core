@@ -1,3 +1,4 @@
+import { Logger } from 'pino'
 import { z } from 'zod'
 
 import { prisma } from '../../../../lib/prisma'
@@ -18,11 +19,34 @@ const bibleBookSchema = z
     primary: false
   }))
 
-export async function importBibleBooks(): Promise<void> {
+const missingBooks = new Set<string>()
+
+export async function importBibleBooks(
+  parentLogger?: Logger
+): Promise<() => void> {
+  const logger = parentLogger?.child({ importer: 'bibleBooks' })
+  logger?.info('Starting bible books import')
+
   await processFile(
     CROWDIN_CONFIG.files.bible_books,
-    upsertBibleBookTranslation
+    async (data: TranslationData) => {
+      await upsertBibleBookTranslation(data)
+    },
+    logger
   )
+
+  if (missingBooks.size > 0) {
+    logger?.warn(
+      {
+        count: missingBooks.size,
+        books: Array.from(missingBooks)
+      },
+      'Bible books not found in database'
+    )
+  }
+
+  logger?.info('Finished bible books import')
+  return () => missingBooks.clear()
 }
 
 async function upsertBibleBookTranslation(

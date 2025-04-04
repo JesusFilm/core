@@ -37,7 +37,7 @@ export async function processFile(
     file: file.name.replace('.csv', '')
   })
 
-  logger?.info('file import started')
+  logger?.info('file import started for file: ' + file.name)
   const errors: CrowdinError[] = []
 
   try {
@@ -61,9 +61,15 @@ export async function processFile(
         )
 
         if (translations.length === 0) continue
+        logger?.info(
+          { page, rows: translations.length },
+          'importing page for file: ' +
+            file.name +
+            ' and language: ' +
+            languageCode
+        )
 
         page++
-        logger?.info({ page, rows: translations.length }, 'importing page')
 
         const validTranslations = processTranslations(
           translations,
@@ -102,14 +108,17 @@ export async function processFile(
     }
 
     if (errors.length > 0) {
-      logger?.error({ errors }, 'file import finished with errors')
+      logger?.error(
+        { errors },
+        'file import finished with errors for file: ' + file.name
+      )
     } else {
-      logger?.info('file import finished')
+      logger?.info('file import finished for file: ' + file.name)
     }
   } catch (error) {
     logger?.error(
       { error: error instanceof Error ? error.message : 'Unknown error' },
-      'file import failed'
+      'file import failed for file: ' + file.name
     )
     throw error
   }
@@ -131,7 +140,6 @@ async function fetchPaginatedData<T>(
     if (response.data.length < limit) break
     offset += limit
   }
-
   return allData
 }
 
@@ -141,12 +149,14 @@ export async function fetchSourceStrings(
   logger?: Logger
 ): Promise<Array<SourceStringsModel.String>> {
   try {
-    const allSourceStrings = await fetchPaginatedData((offset, limit) =>
-      api.listProjectStrings(CROWDIN_CONFIG.projectId, {
-        fileId,
-        limit,
-        offset
-      })
+    const allSourceStrings = await fetchPaginatedData(
+      (offset, limit) =>
+        api.listProjectStrings(CROWDIN_CONFIG.projectId, {
+          fileId,
+          limit,
+          offset
+        }),
+      500
     )
 
     const { validStrings, invalidStrings } =
@@ -184,12 +194,14 @@ export async function fetchTranslations(
   logger?: Logger
 ): Promise<CrowdinTranslation[]> {
   try {
-    const allTranslations = await fetchPaginatedData((offset, limit) =>
-      api.listLanguageTranslations(CROWDIN_CONFIG.projectId, languageCode, {
-        fileId,
-        limit,
-        offset
-      })
+    const allTranslations = await fetchPaginatedData(
+      (offset, limit) =>
+        api.listLanguageTranslations(CROWDIN_CONFIG.projectId, languageCode, {
+          fileId,
+          limit,
+          offset
+        }),
+      500
     )
 
     const { validTranslations, invalidTranslations } =

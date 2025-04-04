@@ -1,3 +1,4 @@
+import { Logger } from 'pino'
 import { z } from 'zod'
 
 import { prisma } from '../../../../lib/prisma'
@@ -22,8 +23,10 @@ const studyQuestionSchema = z
     if (!questionId) throw new Error('Missing question ID')
 
     const questions = getQuestionData(questionId)
-    if (!questions || questions.length === 0)
+    if (!questions || questions.length === 0) {
+      missingQuestions.add(questionId)
       throw new Error('Question not found')
+    }
 
     return questions.map(({ videoId, order }) => ({
       videoId,
@@ -35,14 +38,33 @@ const studyQuestionSchema = z
     }))
   })
 
-export async function importStudyQuestions(): Promise<() => void> {
-  await initializeQuestionMap()
+export async function importStudyQuestions(
+  parentLogger?: Logger
+): Promise<() => void> {
+  const logger = parentLogger?.child({ importer: 'studyQuestions' })
+  logger?.info('Starting study questions import')
+
+  await initializeQuestionMap(logger)
 
   await processFile(
     CROWDIN_CONFIG.files.study_questions,
-    upsertStudyQuestionTranslation
+    async (data: TranslationData) => {
+      await upsertStudyQuestionTranslation(data)
+    },
+    logger
   )
 
+  if (missingQuestions.size > 0) {
+    logger?.warn(
+      {
+        count: missingQuestions.size,
+        questions: Array.from(missingQuestions)
+      },
+      'Study questions not found in database'
+    )
+  }
+
+  logger?.info('Finished study questions import')
   return () => {
     questionMap.clear()
     missingQuestions.clear()
@@ -59,7 +81,7 @@ function hasQuestion(questionId: string): boolean {
   return questionMap.has(questionId)
 }
 
-async function initializeQuestionMap(): Promise<void> {
+async function initializeQuestionMap(logger?: Logger): Promise<void> {
   const questions = await prisma.videoStudyQuestion.findMany({
     select: {
       videoId: true,
@@ -82,6 +104,8 @@ async function initializeQuestionMap(): Promise<void> {
       { videoId, order }
     ])
   })
+
+  logger?.info({ count: questions.length }, 'Initialized question map')
 }
 
 function getQuestionId(data: TranslationData): string | undefined {
@@ -120,8 +144,6 @@ function validateStudyQuestionData(data: TranslationData): boolean {
 async function upsertStudyQuestionTranslation(
   data: TranslationData
 ): Promise<void> {
-  if (!validateStudyQuestionData(data)) return
-
   const result = studyQuestionSchema.parse({
     identifier: data.sourceString.identifier,
     text: data.translation.text,
