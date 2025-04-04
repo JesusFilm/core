@@ -3,8 +3,6 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { GraphQLError } from 'graphql'
 
-import { getLanguagesMock } from '@core/journeys/ui/useLanguagesQuery/useLanguagesQuery.mock'
-
 import { SnackbarProvider } from '../../../../../libs/SnackbarProvider'
 import { getCreateEditionMock } from '../../../../../libs/useCreateEdition/useCreateEdition.mock'
 
@@ -69,9 +67,6 @@ describe('VideoCreateForm', () => {
     expect(screen.getByRole('textbox', { name: 'ID' })).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: 'Slug' })).toBeInTheDocument()
     expect(screen.getByRole('combobox', { name: 'Label' })).toBeInTheDocument()
-    expect(
-      screen.getByRole('combobox', { name: 'Primary Language' })
-    ).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Create' })).toBeInTheDocument()
   })
@@ -104,22 +99,11 @@ describe('VideoCreateForm', () => {
     expect(screen.getByText('ID is required')).toBeInTheDocument()
     expect(screen.getByText('Slug is required')).toBeInTheDocument()
     expect(screen.getByText('Label is required')).toBeInTheDocument()
-    expect(screen.getByText('Primary language is required')).toBeInTheDocument()
   })
 
   it('should create a video', async () => {
-    const getLanguagesMockResult = jest
-      .fn()
-      .mockReturnValue(getLanguagesMock.result)
-
     render(
-      <MockedProvider
-        mocks={[
-          { ...getLanguagesMock, result: getLanguagesMockResult },
-          createVideoMock,
-          createEditionMock
-        ]}
-      >
+      <MockedProvider mocks={[createVideoMock, createEditionMock]}>
         <VideoCreateForm close={mockCancel} />
       </MockedProvider>
     )
@@ -135,11 +119,6 @@ describe('VideoCreateForm', () => {
     await user.click(screen.getByRole('combobox', { name: 'Label' }))
     await waitFor(async () => {
       await user.click(screen.getByRole('option', { name: 'Short Film' }))
-    })
-
-    await user.click(screen.getByRole('combobox', { name: 'Primary Language' }))
-    await waitFor(async () => {
-      await user.click(screen.getByRole('option', { name: 'English' }))
     })
 
     await user.click(screen.getByRole('button', { name: 'Create' }))
@@ -165,7 +144,7 @@ describe('VideoCreateForm', () => {
 
     render(
       <SnackbarProvider>
-        <MockedProvider mocks={[getLanguagesMock, errorMock]}>
+        <MockedProvider mocks={[errorMock]}>
           <VideoCreateForm close={mockCancel} />
         </MockedProvider>
       </SnackbarProvider>
@@ -182,11 +161,6 @@ describe('VideoCreateForm', () => {
     await user.click(screen.getByRole('combobox', { name: 'Label' }))
     await waitFor(async () => {
       await user.click(screen.getByRole('option', { name: 'Short Film' }))
-    })
-
-    await user.click(screen.getByRole('combobox', { name: 'Primary Language' }))
-    await waitFor(async () => {
-      await user.click(screen.getByRole('option', { name: 'English' }))
     })
 
     await user.click(screen.getByRole('button', { name: 'Create' }))
