@@ -74,6 +74,13 @@ export const defaultJourney: Journey = {
       }
     ]
   },
+  team: {
+    __typename: 'Team',
+    id: 'teamId',
+    title: 'Team Title',
+    publicTitle: null,
+    customDomains: []
+  },
   updatedAt: formatISO(startOfYear(new Date(fakeDate))),
   createdAt: formatISO(startOfYear(new Date(fakeDate))),
   publishedAt: null,

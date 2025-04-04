@@ -24,16 +24,22 @@ interface SlugDialogProps {
   open?: boolean
   onClose?: () => void
   hostname?: string
+  journey?: {
+    id: string
+    slug?: string | null
+  }
 }
 
 export function SlugDialog({
   open,
   onClose,
-  hostname
+  hostname,
+  journey: journeyProp
 }: SlugDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [journeyUpdate] = useMutation<JourneySlugUpdate>(JOURNEY_SLUG_UPDATE)
-  const { journey } = useJourney()
+  const { journey: journeyContext } = useJourney()
+  const journey = journeyProp ?? journeyContext
   const { enqueueSnackbar } = useSnackbar()
   const slugSchema = object().shape({
     slug: string().required(t('Required'))

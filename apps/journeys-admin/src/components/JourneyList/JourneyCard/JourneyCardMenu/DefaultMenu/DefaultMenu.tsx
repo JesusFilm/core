@@ -8,6 +8,7 @@ import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { useUserRoleQuery } from '@core/journeys/ui/useUserRoleQuery'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
+import ShareIcon from '@core/shared/ui/icons/Share'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
@@ -49,7 +50,11 @@ interface DefaultMenuProps {
   published: boolean
   setOpenAccessDialog: () => void
   handleCloseMenu: () => void
+  /** Function to open the details dialog for editing journey details */
   setOpenTrashDialog: () => void
+  /** Function to open the share dialog for sharing journey options */
+  setOpenDetailsDialog: () => void
+  setOpenShareDialog: () => void
   template?: boolean
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
 }
@@ -63,6 +68,8 @@ export function DefaultMenu({
   setOpenAccessDialog,
   handleCloseMenu,
   setOpenTrashDialog,
+  setOpenDetailsDialog,
+  setOpenShareDialog,
   template,
   refetch
 }: DefaultMenuProps): ReactElement {
@@ -121,18 +128,15 @@ export function DefaultMenu({
 
   return (
     <>
-      <NextLink
-        href={
-          template === true
-            ? `/templates/${journeyId}`
-            : `/journeys/${journeyId}`
-        }
-        passHref
-        legacyBehavior
-        prefetch={false}
-      >
-        <MenuItem label={t('Edit')} icon={<Edit2Icon color="secondary" />} />
-      </NextLink>
+      <MenuItem
+        label={t('Edit Details')}
+        icon={<Edit2Icon color="secondary" />}
+        onClick={() => {
+          setOpenDetailsDialog()
+          handleCloseMenu()
+        }}
+      />
+      <Divider />
       {template !== true && (
         <MenuItem
           label={t('Access')}
@@ -157,10 +161,18 @@ export function DefaultMenu({
           openInNew
         />
       </NextLink>
+      <MenuItem
+        label={t('Share')}
+        icon={<ShareIcon color="secondary" />}
+        onClick={() => {
+          setOpenShareDialog()
+          handleCloseMenu()
+        }}
+      />
+      <Divider />
       {template !== true && (
         <DuplicateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />
       )}
-      <Divider />
       <CopyToTeamMenuItem id={id} handleCloseMenu={handleCloseMenu} />
       <ArchiveJourney
         status={status}
