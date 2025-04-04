@@ -27,6 +27,7 @@ describe('useBlockActionDeleteMutation', () => {
     size: null,
     startIconId: null,
     endIconId: null,
+    submitEnabled: null,
     action: {
       __typename: 'NavigateToBlockAction',
       gtmEventName: null,

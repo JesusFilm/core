@@ -50,6 +50,7 @@ export interface CardQuoteRestore_image_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardQuoteRestore_image_ButtonBlock_action | null;
 }
 
@@ -225,6 +226,7 @@ export interface CardQuoteRestore_image_TextResponseBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
   placeholder: string | null;
   hint: string | null;
@@ -473,6 +475,7 @@ export interface CardQuoteRestore_subtitle_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardQuoteRestore_subtitle_ButtonBlock_action | null;
 }
 
@@ -648,6 +651,7 @@ export interface CardQuoteRestore_subtitle_TextResponseBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
   placeholder: string | null;
   hint: string | null;
@@ -896,6 +900,7 @@ export interface CardQuoteRestore_title_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardQuoteRestore_title_ButtonBlock_action | null;
 }
 
@@ -1071,6 +1076,7 @@ export interface CardQuoteRestore_title_TextResponseBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
   placeholder: string | null;
   hint: string | null;
@@ -1319,6 +1325,7 @@ export interface CardQuoteRestore_body_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardQuoteRestore_body_ButtonBlock_action | null;
 }
 
@@ -1494,6 +1501,7 @@ export interface CardQuoteRestore_body_TextResponseBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
   placeholder: string | null;
   hint: string | null;
