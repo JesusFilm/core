@@ -16,6 +16,7 @@ import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete/LanguageAutocomplete'
 
+import { videoStatuses } from '../../../../../../../constants'
 import { useUploadVideoVariant } from '../../../../../../../libs/UploadVideoVariantProvider'
 import {
   GetAdminVideoVariant,
@@ -40,7 +41,8 @@ const validationSchema = object().shape({
 const initialValues: FormikValues = {
   edition: '',
   language: null,
-  file: null
+  file: null,
+  published: 'published'
 }
 
 export function AddAudioLanguageDialog({
@@ -75,7 +77,8 @@ export function AddAudioLanguageDialog({
       values.language.id,
       values.language.slug,
       values.edition,
-      handleClose
+      handleClose,
+      values.published === 'published'
     )
   }
 
@@ -171,6 +174,26 @@ export function AddAudioLanguageDialog({
                     )}
                   />
                 </Box>
+                <FormControl variant="standard">
+                  <InputLabel id="status-select-label">Status</InputLabel>
+                  <Select
+                    labelId="status-select-label"
+                    id="status"
+                    name="published"
+                    label="Status"
+                    value={values.published}
+                    onChange={async (event) => {
+                      await setFieldValue('published', event.target.value)
+                    }}
+                    disabled={isUploadInProgress}
+                  >
+                    {videoStatuses.map(({ label, value }) => (
+                      <MenuItem key={value} value={value}>
+                        {label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
                 <AudioLanguageFileUpload
                   disabled={isUploadInProgress}
                   onFileSelect={async (file) => {
