@@ -32,12 +32,6 @@ export function OtherCollectionsCarousel({
   missionHighlight,
   movieUrls
 }: OtherCollectionsCarouselProps): ReactElement {
-  const router = useRouter()
-
-  const handleNavigateToWatch = (): void => {
-    void router.push('/watch')
-  }
-
   return (
     <div
       className="relative bg-linear-to-tr from-blue-950/10  via-purple-950/10 to-[#91214A]/90 py-16"
@@ -63,8 +57,9 @@ export function OtherCollectionsCarousel({
               </h2>
             </div>
           </div>
-          <button
-            onClick={handleNavigateToWatch}
+          <a
+            href="https://www.jesusfilm.org/watch?utm_source=jesusfilm-watch"
+            target="_blank"
             aria-label={watchButtonText}
             className="mt-3 inline-flex items-center gap-2 px-4 py-2 text-xs text-black font-bold uppercase tracking-wider rounded-full bg-white hover:bg-red-500 hover:text-white transition-colors duration-200 cursor-pointer"
             data-testid="WatchButton"
@@ -78,7 +73,7 @@ export function OtherCollectionsCarousel({
               data-testid="PlayIcon"
             />
             <span>{watchButtonText}</span>
-          </button>
+          </a>
         </div>
       </div>
 
