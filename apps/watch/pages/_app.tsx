@@ -23,6 +23,8 @@ import { useApolloClient } from '../src/libs/apolloClient'
 import 'swiper/css'
 import 'swiper/css/a11y'
 import 'swiper/css/navigation'
+import '../public/watch/assets/fonts/fonts.css'
+import '../public/watch/globals.css'
 
 const clientSideEmotionCache = createEmotionCache({ prepend: false })
 const notoSerif = Noto_Serif({
