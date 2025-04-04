@@ -185,6 +185,12 @@
       "options": {
         "command": "codecov -f coverage/apis/api-journeys/cobertura-coverage.xml -F apps.api-journeys"
       }
+    },
+    "replace-subscribe-blocks": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-journeys/src/workers/migrations/subscribe-blocks/replace-subscribe-blocks.ts"
+      }
     }
   }
 }
