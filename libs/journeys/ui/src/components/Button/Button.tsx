@@ -58,6 +58,33 @@ export interface ButtonProps extends TreeBlock<ButtonFields> {
   editableLabel?: ReactElement
 }
 
+/**
+ * Button component - An interactive button for triggering actions in a Journey.
+ *
+ * This component renders a button that can trigger various actions:
+ * - Navigation to another step
+ * - Opening external links
+ * - Opening messaging platforms (WhatsApp, Messenger, etc.)
+ * - Form submission
+ *
+ * It also tracks analytics events for button interactions and handles
+ * different visual styles based on configuration.
+ *
+ * @param {ButtonProps} props - Component props
+ * @param {string} props.id - Unique identifier for the button (blockId)
+ * @param {ButtonVariant} [props.buttonVariant] - Visual style variant (contained, outlined, text)
+ * @param {string} props.label - Button text label
+ * @param {string} [props.buttonColor] - MUI color name for the button
+ * @param {string} [props.size] - Button size (small, medium, large)
+ * @param {string} [props.startIconId] - ID of an icon to display at the start of the button
+ * @param {string} [props.endIconId] - ID of an icon to display at the end of the button
+ * @param {Object} [props.action] - Action configuration for what happens when button is clicked
+ * @param {Array<TreeBlock>} props.children - Child blocks (typically icon blocks)
+ * @param {ReactElement} [props.editableLabel] - Custom label element for editable mode
+ * @param {boolean} [props.submitEnabled] - Whether the button should act as a form submit button
+ *
+ * @returns {ReactElement} The rendered Button component
+ */
 export function Button({
   id: blockId,
   buttonVariant,
@@ -68,7 +95,8 @@ export function Button({
   endIconId,
   action,
   children,
-  editableLabel
+  editableLabel,
+  submitEnabled
 }: ButtonProps): ReactElement {
   const [buttonClickEventCreate] = useMutation<
     ButtonClickEventCreate,
@@ -233,6 +261,7 @@ export function Button({
       data-testid={`JourneysButton-${blockId}`}
     >
       <MuiButton
+        type={submitEnabled ? 'submit' : 'button'}
         variant={buttonVariant ?? ButtonVariant.contained}
         color={buttonColor ?? undefined}
         size={size ?? undefined}
