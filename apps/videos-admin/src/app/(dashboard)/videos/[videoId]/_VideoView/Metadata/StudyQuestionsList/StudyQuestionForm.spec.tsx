@@ -2,14 +2,6 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { StudyQuestionForm } from './StudyQuestionForm'
 
-const messages = {
-  'Study Question': 'Study Question',
-  Add: 'Add',
-  Update: 'Update',
-  'Study question is required': 'Study question is required',
-  'Enter study question': 'Enter study question'
-}
-
 describe('StudyQuestionForm', () => {
   it('should render create form', () => {
     const handleSubmit = jest.fn()
