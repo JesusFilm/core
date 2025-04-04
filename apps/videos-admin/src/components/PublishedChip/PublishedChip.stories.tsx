@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { NextIntlClientProvider } from 'next-intl'
 import { ComponentPropsWithoutRef } from 'react'
 
 import { videosAdminConfig } from '../../libs/storybookConfig'
@@ -25,11 +24,7 @@ export default meta
 type Story = StoryObj<ComponentPropsWithoutRef<typeof PublishedChip>>
 
 export const Published: Story = {
-  render: ({ published }) => (
-    <NextIntlClientProvider locale="en">
-      <PublishedChip published={published} />
-    </NextIntlClientProvider>
-  ),
+  render: ({ published }) => <PublishedChip published={published} />,
   args: {
     published: true
   }

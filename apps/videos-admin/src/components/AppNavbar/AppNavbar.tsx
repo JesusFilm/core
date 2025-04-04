@@ -8,7 +8,6 @@ import { tabsClasses } from '@mui/material/Tabs'
 import MuiToolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
-import { useTranslations } from 'next-intl'
 import { ReactElement, useState } from 'react'
 
 import minimalLogo from '../../assets/minimal-logo.png'
@@ -32,7 +31,6 @@ const Toolbar = styled(MuiToolbar)({
 })
 
 export function AppNavbar(): ReactElement {
-  const t = useTranslations()
   const [open, setOpen] = useState(false)
 
   const toggleDrawer = (newOpen: boolean) => () => {
@@ -65,7 +63,7 @@ export function AppNavbar(): ReactElement {
           <Stack direction="row" spacing={1} sx={{ justifyContent: 'center' }}>
             <Image
               src={minimalLogo}
-              alt={t('Jesus Film Project')}
+              alt="Jesus Film Project"
               width={37}
               height={37}
             />
@@ -74,7 +72,7 @@ export function AppNavbar(): ReactElement {
               component="h1"
               sx={{ color: 'text.primary' }}
             >
-              {t('Nexus')}
+              Nexus
             </Typography>
           </Stack>
           <Stack direction="row" spacing={1}>
