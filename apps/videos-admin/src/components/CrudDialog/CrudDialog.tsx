@@ -1,4 +1,3 @@
-import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -23,18 +22,16 @@ export function CrudDialog({
   resource,
   children
 }: CrudDialogProps): ReactElement {
-  const t = useTranslations()
-
   const getTitle = (action: DialogAction | null): string => {
     switch (action) {
       case DialogAction.VIEW:
-        return t(`View ${resource}`)
+        return `View ${resource}`
       case DialogAction.CREATE:
-        return t(`Create ${resource}`)
+        return `Create ${resource}`
       case DialogAction.EDIT:
-        return t(`Edit ${resource}`)
+        return `Edit ${resource}`
       case DialogAction.DELETE:
-        return t(`Delete ${resource}`)
+        return `Delete ${resource}`
       default:
         return ''
     }
