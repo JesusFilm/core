@@ -50,6 +50,7 @@ export interface StepBlockRestoreFromAction_blockRestore_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: StepBlockRestoreFromAction_blockRestore_ButtonBlock_action | null;
   submitEnabled: boolean | null;
 }

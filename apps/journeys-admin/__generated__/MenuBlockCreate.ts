@@ -133,6 +133,7 @@ export interface MenuBlockCreate_button1 {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: MenuBlockCreate_button1_action | null;
   submitEnabled: boolean | null;
 }
@@ -171,6 +172,7 @@ export interface MenuBlockCreate_button2 {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: MenuBlockCreate_button2_action | null;
   submitEnabled: boolean | null;
 }
@@ -209,6 +211,7 @@ export interface MenuBlockCreate_button3 {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: MenuBlockCreate_button3_action | null;
   submitEnabled: boolean | null;
 }
