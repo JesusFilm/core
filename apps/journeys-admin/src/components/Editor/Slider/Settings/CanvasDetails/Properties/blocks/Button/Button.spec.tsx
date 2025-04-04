@@ -64,6 +64,7 @@ describe('Button attributes', () => {
       size: ButtonSize.large,
       startIconId: 'icon1',
       endIconId: 'icon2',
+      submitEnabled: null,
       action: {
         __typename: 'NavigateToBlockAction',
         parentBlockId: 'button.id',

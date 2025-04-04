@@ -43,6 +43,7 @@ export interface ButtonFields {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: ButtonFields_action | null;
   submitEnabled: boolean | null;
 }
