@@ -2,9 +2,6 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true'
 })
 const { composePlugins, withNx } = require('@nx/next')
-const createNextIntlPlugin = require('next-intl/plugin')
-
-const withNextIntl = createNextIntlPlugin()
 
 /**
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
@@ -63,8 +60,4 @@ const nextConfig = {
   }
 }
 
-module.exports = composePlugins(
-  withBundleAnalyzer,
-  withNextIntl,
-  withNx
-)(nextConfig)
+module.exports = composePlugins(withBundleAnalyzer, withNx)(nextConfig)

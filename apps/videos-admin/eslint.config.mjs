@@ -36,7 +36,7 @@ export default [
   { languageOptions: { globals: { ...globals.jest } } },
   {
     files: ['apps/videos-admin/src/libs/storybookConfig/videosAdminConfig.tsx'],
-    rules: { 'eslint-disable i18next/no-literal-string': 'off' }
+    rules: { 'i18next/no-literal-string': 'off' }
   },
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
@@ -44,7 +44,8 @@ export default [
       '@next/next/no-html-link-for-pages': [
         'error',
         'apps/videos-admin/src/pages'
-      ]
+      ],
+      'i18next/no-literal-string': 'off'
     }
   },
   {
