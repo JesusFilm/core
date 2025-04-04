@@ -1209,7 +1209,7 @@ export class CardLevelActionPage {
     }
   }
 
-  async updateMinimumRowsOptionFortextInput() {
+  async updateMinimumRowsOptionForResponseField() {
     const textAreaPath = 'textarea#textResponse-field'
     await expect(
       this.page.frameLocator(this.journeyCardFrame).locator(textAreaPath)
