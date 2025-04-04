@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { usePathname, useRouter } from 'next/navigation'
 
@@ -244,5 +244,44 @@ describe('VideoChildren', () => {
     expect(screen.getAllByTestId(/OrderedItem-\d+/)).toHaveLength(
       childVideos.length
     )
+  })
+
+  it('should navigate to video edit page when clicking the edit menu option', async () => {
+    const push = jest.fn()
+    mockRouter.mockReturnValue({ push } as unknown as AppRouterInstance)
+    mockUsePathname.mockReturnValue('/en/videos/1_jf6101-0-0')
+    const oneChildVideo = [childVideos[0]]
+
+    await act(async () => {
+      render(
+        <MockedProvider>
+          <VideoChildren
+            videoId="videoId"
+            childVideos={oneChildVideo}
+            label="Clips"
+          />
+        </MockedProvider>
+      )
+    })
+
+    // Find the menu button (More button) in the OrderedItem
+    const orderedItem = screen.getByTestId('OrderedItem-0')
+    const menuButton = within(orderedItem).getByLabelText(
+      'ordered-item-actions'
+    )
+
+    // Open the menu
+    await act(async () => {
+      fireEvent.click(menuButton)
+    })
+
+    // Click the Edit menu option
+    const editMenuItem = screen.getByText('Edit')
+    await act(async () => {
+      fireEvent.click(editMenuItem)
+    })
+
+    // Check that router.push was called with the correct path
+    expect(push).toHaveBeenCalledWith(`/videos/${oneChildVideo[0].id}`)
   })
 })
