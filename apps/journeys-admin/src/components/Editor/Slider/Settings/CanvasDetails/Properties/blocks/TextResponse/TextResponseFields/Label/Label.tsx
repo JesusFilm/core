@@ -66,15 +66,13 @@ export function Label(): ReactElement {
   }
 
   function handleSubmit(value: string): void {
-    const trimmedValue = value.trim()
-    if ((value.length > 0 && trimmedValue === '') || selectedBlock == null)
-      return
+    if (selectedBlock == null) return
 
     add({
       id: commandInput.id,
       parameters: {
         execute: {
-          label: trimmedValue,
+          label: value,
           context: {},
           runDispatch: false
         },
@@ -84,7 +82,7 @@ export function Label(): ReactElement {
           runDispatch: true
         },
         redo: {
-          label: trimmedValue,
+          label: value,
           context: { debounceTimeout: 1 },
           runDispatch: true
         }
