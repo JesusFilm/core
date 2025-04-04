@@ -683,6 +683,121 @@ export function CollectionsPage(): ReactElement {
             buttonText: 'Join Our Bible study'
           }}
         />
+
+        <CollectionVideoContentCarousel
+          subtitle={'Bible Videos'}
+          title={'Easter Events Day By Day'}
+          description={
+            'Follow along with the events of Easter day by day as described in the Gospel of Luke.'
+          }
+          contentId="upper-room-teaching/english"
+          videoTitle={'Upper Room Teaching'}
+          mutePage={mutePage}
+          setMutePage={setMutePage}
+          seeAllText="See All"
+          shortVideoText="Short Video"
+          slides={[
+            {
+              contentId: 'upper-room-teaching/english',
+              imageUrl:
+                'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6143-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
+              backgroundColor: '#161817',
+              title: 'Upper Room Teaching'
+            },
+            {
+              contentId: 'jesus-is-betrayed-and-arrested/english',
+              imageUrl:
+                'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6144-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
+              backgroundColor: '#000906',
+              title: 'Jesus is Betrayed and Arrested'
+            },
+            {
+              contentId: 'peter-disowns-jesus/english',
+              imageUrl:
+                'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6145-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
+              backgroundColor: '#100704',
+              title: 'Peter Disowns Jesus'
+            },
+            {
+              contentId: 'jesus-is-mocked-and-questioned/english',
+              imageUrl:
+                'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6146-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
+              backgroundColor: '#0A0E0D',
+              title: 'Jesus is Mocked and Questioned'
+            },
+            {
+              contentId: 'jesus-is-brought-to-pilate/english',
+              imageUrl:
+                'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6147-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
+              backgroundColor: '#170E07',
+              title: 'Jesus is Brought To Pilate'
+            },
+            {
+              contentId: 'jesus-is-brought-to-herod/english',
+              imageUrl:
+                'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6148-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
+              backgroundColor: '#0F0D03',
+              title: 'Jesus is Brought to Herod'
+            },
+            {
+              contentId: 'jesus-is-sentenced/english',
+              imageUrl:
+                'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6149-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
+              backgroundColor: '#322314',
+              title: 'Jesus is Sentenced'
+            },
+            {
+              contentId: 'death-of-jesus/english',
+              imageUrl:
+                'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6155-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
+              backgroundColor: '#1D1B13',
+              title: 'Death of Jesus'
+            },
+            {
+              contentId: 'burial-of-jesus/english',
+              imageUrl:
+                'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6156-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
+              backgroundColor: '#231E1F',
+              title: 'Burial of Jesus'
+            },
+            {
+              contentId: 'angels-at-the-tomb/english',
+              imageUrl:
+                'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6157-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
+              backgroundColor: '#1A190E',
+              title: 'Angels at the Tomb'
+            },
+            {
+              contentId: 'the-tomb-is-empty/english',
+              imageUrl:
+                'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6158-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
+              backgroundColor: '#151D12',
+              title: 'The Tomb is Empty'
+            },
+            {
+              contentId: 'resurrected-jesus-appears/english',
+              imageUrl:
+                'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6159-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
+              backgroundColor: '#0B0501',
+              title: 'Resurrected Jesus Appears'
+            },
+            {
+              contentId: 'great-commission-and-ascension/english',
+              imageUrl:
+                'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6160-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
+              backgroundColor: '#2B2118',
+              title: 'The Great Commission and Ascension'
+            },
+            {
+              contentId: 'invitation-to-know-jesus-personally/english',
+              imageUrl:
+                'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6161-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
+              backgroundColor: '#27160F',
+              title: 'Invitation to Know Jesus Personally'
+            }
+          ]}
+        />
+
         <CollectionsVideoContent
           contentId="the-story-short-film/english"
           subtitle={'The Story Short Film'}
