@@ -24,7 +24,7 @@ export const QuizButton = ({ buttonText }: QuizButtonProps): ReactElement => {
 
   return (
     <>
-      <div className="px-6 lg:px-8 pt-12 mx-auto lg:w-1/2 xl:w-1/2 2xl:w-2xl">
+      <div className="px-6 lg:px-8 pt-12 mx-auto w-full sm:w-auto lg:w-1/2 xl:w-1/2 2xl:w-2xl">
         <button
           onClick={() => setQuizModalOpen(true)}
           className="relative w-full overflow-hidden bg-gradient-to-tr from-yellow-500 via-amber-500 to-red-700 bg-blend-multiply animate-mesh-gradient hover:animate-mesh-gradient-fast rounded-lg shadow-lg group hover:bg-orange-500"
