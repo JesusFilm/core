@@ -1,7 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { act, renderHook, waitFor } from '@testing-library/react'
 import axios from 'axios'
-import { NextIntlClientProvider } from 'next-intl'
 import { SnackbarProvider, useSnackbar } from 'notistack'
 import { ReactNode } from 'react'
 
@@ -208,9 +207,7 @@ const createWrapper = (mocks: any[] = []) => {
     return (
       <MockedProvider mocks={mocks}>
         <SnackbarProvider>
-          <NextIntlClientProvider locale="en" messages={{}}>
-            <UploadVideoVariantProvider>{children}</UploadVideoVariantProvider>
-          </NextIntlClientProvider>
+          <UploadVideoVariantProvider>{children}</UploadVideoVariantProvider>
         </SnackbarProvider>
       </MockedProvider>
     )

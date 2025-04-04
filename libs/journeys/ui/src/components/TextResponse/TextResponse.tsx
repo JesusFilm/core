@@ -1,6 +1,7 @@
 import { ApolloError, gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import { SxProps } from '@mui/system/styleFunctionSx'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { Form, Formik } from 'formik'
@@ -10,6 +11,7 @@ import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
+import { TextResponseType } from '../../../__generated__/globalTypes'
 import { useBlocks } from '../../libs/block'
 import type { TreeBlock } from '../../libs/block'
 import { useEditor } from '../../libs/EditorProvider'
@@ -20,6 +22,9 @@ import { TextField } from '../TextField'
 import { TextResponseFields } from './__generated__/TextResponseFields'
 import { TextResponseSubmissionEventCreate } from './__generated__/TextResponseSubmissionEventCreate'
 
+/**
+ * GraphQL mutation for creating a text response submission event.
+ */
 export const TEXT_RESPONSE_SUBMISSION_EVENT_CREATE = gql`
   mutation TextResponseSubmissionEventCreate(
     $input: TextResponseSubmissionEventCreateInput!
@@ -34,17 +39,31 @@ interface TextResponseProps extends TreeBlock<TextResponseFields> {
   editableSubmitLabel?: ReactElement
   sx?: SxProps
 }
-
 interface TextResponseFormValues {
   response: string
 }
 
+/**
+ * A component that renders a text input field for user responses.
+ * Captures and submits user's text input, sending data to the backend and triggering GTM events.
+ *
+ * @param {TextResponseProps} props - The component props.
+ * @param {string} props.id - Block ID.
+ * @param {() => string} [props.uuid=uuidv4] - Function to generate a UUID.
+ * @param {string} props.label - Label for the text input.
+ * @param {string} [props.placeholder] - Placeholder text.
+ * @param {string} [props.hint] - Helper text displayed below the input.
+ * @param {number} [props.minRows] - Minimum number of rows for the text area.
+ * @returns {ReactElement} The TextResponse component.
+ */
 export const TextResponse = ({
   id: blockId,
   uuid = uuidv4,
   label,
+  placeholder,
   hint,
-  minRows
+  minRows,
+  type
 }: TextResponseProps): ReactElement => {
   const { t } = useTranslation('libs-journeys-ui')
 
@@ -112,11 +131,20 @@ export const TextResponse = ({
       <Formik initialValues={initialValues} onSubmit={noop} enableReinitialize>
         {({ values, handleChange, handleBlur }) => (
           <Form data-testid={`textResponse-${blockId}`}>
-            <Stack>
+            <Stack flexDirection="column" spacing={1}>
+              <Typography
+                id="textResponse-label"
+                variant="subtitle2"
+                sx={{
+                  fontsize: 14
+                }}
+              >
+                {label.trim() === '' ? 'Label' : label}
+              </Typography>
               <TextField
                 id="textResponse-field"
                 name="response"
-                label={label === '' ? 'Your answer here' : label}
+                placeholder={placeholder != null ? placeholder : ''}
                 value={values.response}
                 helperText={hint != null ? hint : ''}
                 multiline
@@ -131,11 +159,23 @@ export const TextResponse = ({
                     await onSubmitHandler(values)
                   }
                 }}
-                inputProps={{
-                  maxLength: 1000,
-                  readOnly: selectedBlock !== undefined,
-                  sx: {
-                    pointerEvents: selectedBlock !== undefined ? 'none' : 'auto'
+                slotProps={{
+                  htmlInput: {
+                    'aria-labelledby': 'textResponse-label',
+                    maxLength: 1000,
+                    readOnly: selectedBlock !== undefined,
+                    inputMode: type === TextResponseType.phone ? 'tel' : 'text',
+                    sx: {
+                      pointerEvents:
+                        selectedBlock !== undefined ? 'none' : 'auto',
+                      pt: 2,
+                      pb: 1
+                    }
+                  },
+                  input: {
+                    sx: {
+                      pt: 0
+                    }
                   }
                 }}
                 sx={{
