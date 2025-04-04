@@ -5,7 +5,11 @@ import { prisma } from '../../../../lib/prisma'
 import { CROWDIN_CONFIG } from '../../config'
 import { processFile } from '../../importer'
 import { TranslationData } from '../../types'
-import { getFullVideoId, setValidVideoIds } from '../videoTitles/videoTitles'
+import {
+  getFullVideoId,
+  resetVideoCache,
+  setValidVideoIds
+} from '../videoTitles/videoTitles'
 
 const videoDescriptionSchema = z
   .object({
@@ -16,7 +20,6 @@ const videoDescriptionSchema = z
   .transform((data) => {
     const databaseId = getFullVideoId(data.identifier)
     if (!databaseId) {
-      missingVideos.add(data.identifier)
       throw new Error('Invalid video ID')
     }
 
@@ -28,15 +31,12 @@ const videoDescriptionSchema = z
     }
   })
 
-const missingVideos = new Set<string>()
-
 export async function importVideoDescriptions(
   parentLogger?: Logger
 ): Promise<() => void> {
   const logger = parentLogger?.child({ importer: 'videoDescriptions' })
   logger?.info('Starting video descriptions import')
 
-  // Initialize video IDs first
   const videos = await prisma.video.findMany({
     select: { id: true }
   })
@@ -50,18 +50,10 @@ export async function importVideoDescriptions(
     logger
   )
 
-  if (missingVideos.size > 0) {
-    logger?.warn(
-      {
-        count: missingVideos.size,
-        videos: Array.from(missingVideos)
-      },
-      'Videos not found in database'
-    )
-  }
-
   logger?.info('Finished video descriptions import')
-  return () => missingVideos.clear()
+  return () => {
+    resetVideoCache()
+  }
 }
 
 async function upsertVideoDescriptionTranslation(

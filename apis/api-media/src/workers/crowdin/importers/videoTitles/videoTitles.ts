@@ -40,6 +40,11 @@ export function getFullVideoId(crowdinId: string): string | undefined {
   return fullId
 }
 
+export function resetVideoCache(): void {
+  videoIds = []
+  videos = []
+}
+
 const videoTitleSchema = z
   .object({
     identifier: z.string(),
@@ -49,7 +54,6 @@ const videoTitleSchema = z
   .transform((data) => {
     const databaseId = getFullVideoId(data.identifier)
     if (!databaseId) {
-      missingVideos.add(data.identifier)
       throw new Error('Invalid video ID')
     }
 
@@ -61,15 +65,12 @@ const videoTitleSchema = z
     }
   })
 
-const missingVideos = new Set<string>()
-
 export async function importVideoTitles(
   parentLogger?: Logger
 ): Promise<() => void> {
   const logger = parentLogger?.child({ importer: 'videoTitles' })
   logger?.info('Starting video titles import')
 
-  // Initialize video IDs first
   videos = await prisma.video.findMany({
     select: { id: true }
   })
@@ -83,21 +84,9 @@ export async function importVideoTitles(
     logger
   )
 
-  if (missingVideos.size > 0) {
-    logger?.warn(
-      {
-        count: missingVideos.size,
-        videos: Array.from(missingVideos)
-      },
-      'Videos not found in database'
-    )
-  }
-
   logger?.info('Finished video titles import')
   return () => {
-    missingVideos.clear()
-    videoIds = []
-    videos = []
+    resetVideoCache()
   }
 }
 
