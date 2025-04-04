@@ -35,8 +35,8 @@ export function CollectionIntroText({
   locale
 }: CollectionIntroTextProps): ReactElement {
   return (
-    <div className="block relative flex flex-col gap-4 padded pb-16 responsive-container w-full">
-      <div className="w-full dates-block 2xl:pr-0 order-last pb-12 xl:pb-0">
+    <div className="block relative flex flex-col md:flex-row gap-4 padded pb-16 responsive-container w-full">
+      <div className="w-full flex-1 dates-block 2xl:pr-0 order-last pb-12 xl:pb-0">
         <EasterDates
           title={easterDatesTitle}
           westernEasterLabel={westernEasterLabel}
@@ -45,7 +45,7 @@ export function CollectionIntroText({
           locale={locale}
         />
       </div>
-      <div className="into-text space-y-6 xl:pr-20">
+      <div className="into-text space-y-6 xl:pr-20 flex-1">
         <h2 className="text-4xl font-bold mb-0">{title}</h2>
         <p className="text-xl opacity-50">{subtitle}</p>
         <p className="text-xl xl:text-2xl">

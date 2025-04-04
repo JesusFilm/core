@@ -53,6 +53,7 @@ export function BibleQuotesCarousel({
       />
       <Swiper
         modules={[Mousewheel, FreeMode, A11y]}
+        grabCursor
         observeParents
         mousewheel={{
           forceToAxis: true
