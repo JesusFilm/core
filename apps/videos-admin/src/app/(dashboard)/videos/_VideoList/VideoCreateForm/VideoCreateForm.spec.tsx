@@ -1,5 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { GraphQLError } from 'graphql'
 
@@ -15,12 +15,6 @@ import {
   GET_PARENT_VIDEO_LABEL,
   VideoCreateForm
 } from './VideoCreateForm'
-
-jest.mock('next/navigation', () => ({
-  ...jest.requireActual('next/navigation'),
-  useRouter: jest.fn(),
-  usePathname: jest.fn()
-}))
 
 const mockUseRouter = jest.fn()
 
@@ -78,12 +72,22 @@ const createEditionMock = getCreateEditionMock({
 describe('VideoCreateForm', () => {
   const mockCancel = jest.fn()
 
-  it('should render form', () => {
-    render(
-      <MockedProvider>
-        <VideoCreateForm close={mockCancel} />
-      </MockedProvider>
-    )
+  beforeEach(() => {
+    mockUseRouter.mockClear()
+    mockCancel.mockClear()
+    if (typeof createVideoMock.result === 'function') {
+      jest.clearAllMocks()
+    }
+  })
+
+  it('should render form', async () => {
+    await act(async () => {
+      render(
+        <MockedProvider>
+          <VideoCreateForm close={mockCancel} />
+        </MockedProvider>
+      )
+    })
 
     expect(screen.getByRole('textbox', { name: 'ID' })).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: 'Slug' })).toBeInTheDocument()
@@ -96,29 +100,42 @@ describe('VideoCreateForm', () => {
   })
 
   it('should emit cancel callback on cancel', async () => {
-    render(
-      <MockedProvider>
-        <VideoCreateForm close={mockCancel} />
-      </MockedProvider>
-    )
+    await act(async () => {
+      render(
+        <MockedProvider>
+          <VideoCreateForm close={mockCancel} />
+        </MockedProvider>
+      )
+    })
 
     const user = userEvent.setup()
 
-    await user.click(screen.getByRole('button', { name: 'Cancel' }))
+    await act(async () => {
+      await user.click(screen.getByRole('button', { name: 'Cancel' }))
+    })
 
     expect(mockCancel).toHaveBeenCalled()
   })
 
   it('should require all fields', async () => {
-    render(
-      <MockedProvider>
-        <VideoCreateForm close={mockCancel} />
-      </MockedProvider>
-    )
+    await act(async () => {
+      render(
+        <MockedProvider>
+          <VideoCreateForm close={mockCancel} />
+        </MockedProvider>
+      )
+    })
 
     const user = userEvent.setup()
 
-    await user.click(screen.getByRole('button', { name: 'Create' }))
+    await act(async () => {
+      await user.click(screen.getByRole('button', { name: 'Create' }))
+    })
+
+    // Allow time for validation errors to appear
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0))
+    })
 
     expect(screen.getByText('ID is required')).toBeInTheDocument()
     expect(screen.getByText('Slug is required')).toBeInTheDocument()
@@ -126,46 +143,78 @@ describe('VideoCreateForm', () => {
     expect(screen.getByText('Primary language is required')).toBeInTheDocument()
   })
 
-  it('should create a video', async () => {
+  it('should successfully create a video and navigate to the video page', async () => {
     const getLanguagesMockResult = jest
       .fn()
       .mockReturnValue(getLanguagesMock.result)
 
-    render(
-      <MockedProvider
-        mocks={[
-          { ...getLanguagesMock, result: getLanguagesMockResult },
-          createVideoMock,
-          createEditionMock
-        ]}
-      >
-        <VideoCreateForm close={mockCancel} />
-      </MockedProvider>
-    )
+    await act(async () => {
+      render(
+        <MockedProvider
+          mocks={[
+            { ...getLanguagesMock, result: getLanguagesMockResult },
+            createVideoMock,
+            createEditionMock
+          ]}
+        >
+          <VideoCreateForm close={mockCancel} />
+        </MockedProvider>
+      )
+    })
 
     const user = userEvent.setup()
 
-    await user.type(screen.getByRole('textbox', { name: 'ID' }), 'test_video')
-    await user.type(
-      screen.getByRole('textbox', { name: 'Slug' }),
-      'test_video_slug'
-    )
+    // Fill in form fields
+    await act(async () => {
+      await user.type(screen.getByRole('textbox', { name: 'ID' }), 'test_video')
+    })
 
-    await user.click(screen.getByRole('combobox', { name: 'Label' }))
-    await waitFor(async () => {
+    await act(async () => {
+      await user.type(
+        screen.getByRole('textbox', { name: 'Slug' }),
+        'test_video_slug'
+      )
+    })
+
+    await act(async () => {
+      await user.click(screen.getByRole('combobox', { name: 'Label' }))
+    })
+
+    // Allow time for dropdown to open
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0))
+    })
+
+    await act(async () => {
       await user.click(screen.getByRole('option', { name: 'Short Film' }))
     })
 
-    await user.click(screen.getByRole('combobox', { name: 'Primary Language' }))
-    await waitFor(async () => {
+    await act(async () => {
+      await user.click(
+        screen.getByRole('combobox', { name: 'Primary Language' })
+      )
+    })
+
+    // Allow time for dropdown to open
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0))
+    })
+
+    await act(async () => {
       await user.click(screen.getByRole('option', { name: 'English' }))
     })
 
-    await user.click(screen.getByRole('button', { name: 'Create' }))
-
-    await waitFor(() => {
-      expect(createVideoMock.result).toHaveBeenCalled()
+    // Submit the form
+    await act(async () => {
+      await user.click(screen.getByRole('button', { name: 'Create' }))
     })
+
+    // Allow time for mutations to complete
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 100))
+    })
+
+    expect(createVideoMock.result).toHaveBeenCalled()
     expect(createEditionMock.result).toHaveBeenCalled()
     expect(mockUseRouter).toHaveBeenCalledWith('/videos/test_video')
   })
@@ -182,45 +231,84 @@ describe('VideoCreateForm', () => {
       }
     }
 
-    render(
-      <SnackbarProvider>
-        <MockedProvider mocks={[getLanguagesMock, errorMock]}>
-          <VideoCreateForm close={mockCancel} />
-        </MockedProvider>
-      </SnackbarProvider>
-    )
+    await act(async () => {
+      render(
+        <SnackbarProvider>
+          <MockedProvider mocks={[getLanguagesMock, errorMock]}>
+            <VideoCreateForm close={mockCancel} />
+          </MockedProvider>
+        </SnackbarProvider>
+      )
+    })
 
     const user = userEvent.setup()
 
-    await user.type(screen.getByRole('textbox', { name: 'ID' }), 'test_video')
-    await user.type(
-      screen.getByRole('textbox', { name: 'Slug' }),
-      'test_video_slug'
-    )
+    // Fill in form fields
+    await act(async () => {
+      await user.type(screen.getByRole('textbox', { name: 'ID' }), 'test_video')
+    })
 
-    await user.click(screen.getByRole('combobox', { name: 'Label' }))
-    await waitFor(async () => {
+    await act(async () => {
+      await user.type(
+        screen.getByRole('textbox', { name: 'Slug' }),
+        'test_video_slug'
+      )
+    })
+
+    await act(async () => {
+      await user.click(screen.getByRole('combobox', { name: 'Label' }))
+    })
+
+    // Allow time for dropdown to open
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0))
+    })
+
+    await act(async () => {
       await user.click(screen.getByRole('option', { name: 'Short Film' }))
     })
 
-    await user.click(screen.getByRole('combobox', { name: 'Primary Language' }))
-    await waitFor(async () => {
+    await act(async () => {
+      await user.click(
+        screen.getByRole('combobox', { name: 'Primary Language' })
+      )
+    })
+
+    // Allow time for dropdown to open
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0))
+    })
+
+    await act(async () => {
       await user.click(screen.getByRole('option', { name: 'English' }))
     })
 
-    await user.click(screen.getByRole('button', { name: 'Create' }))
-
-    await waitFor(() => {
-      expect(screen.getByText('Something went wrong.')).toBeInTheDocument()
+    // Submit the form
+    await act(async () => {
+      await user.click(screen.getByRole('button', { name: 'Create' }))
     })
+
+    // Allow time for error to be displayed
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0))
+    })
+
+    expect(screen.getByText('Something went wrong.')).toBeInTheDocument()
   })
 
   it('should show parent ID message when parentId is provided', async () => {
-    render(
-      <MockedProvider>
-        <VideoCreateForm close={mockCancel} parentId="parent_video_id" />
-      </MockedProvider>
-    )
+    await act(async () => {
+      render(
+        <MockedProvider mocks={[getParentVideoLabelMock]}>
+          <VideoCreateForm close={mockCancel} parentId="parent_video_id" />
+        </MockedProvider>
+      )
+    })
+
+    // Allow time for the query to complete
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0))
+    })
 
     expect(
       screen.getByText(
@@ -229,68 +317,105 @@ describe('VideoCreateForm', () => {
     ).toBeInTheDocument()
   })
 
-  it('should call onCreateSuccess callback instead of router navigation when provided', async () => {
+  it('should use onCreateSuccess callback instead of router navigation when the callback is provided', async () => {
     const onCreateSuccessMock = jest.fn()
     const getLanguagesMockResult = jest
       .fn()
       .mockReturnValue(getLanguagesMock.result)
 
-    render(
-      <MockedProvider
-        mocks={[
-          { ...getLanguagesMock, result: getLanguagesMockResult },
-          createVideoMock,
-          createEditionMock
-        ]}
-      >
-        <VideoCreateForm
-          close={mockCancel}
-          onCreateSuccess={onCreateSuccessMock}
-        />
-      </MockedProvider>
-    )
+    await act(async () => {
+      render(
+        <MockedProvider
+          mocks={[
+            { ...getLanguagesMock, result: getLanguagesMockResult },
+            createVideoMock,
+            createEditionMock
+          ]}
+        >
+          <VideoCreateForm
+            close={mockCancel}
+            onCreateSuccess={onCreateSuccessMock}
+          />
+        </MockedProvider>
+      )
+    })
 
     const user = userEvent.setup()
 
-    await user.type(screen.getByRole('textbox', { name: 'ID' }), 'test_video')
-    await user.type(
-      screen.getByRole('textbox', { name: 'Slug' }),
-      'test_video_slug'
-    )
+    // Fill in form fields
+    await act(async () => {
+      await user.type(screen.getByRole('textbox', { name: 'ID' }), 'test_video')
+    })
 
-    await user.click(screen.getByRole('combobox', { name: 'Label' }))
-    await waitFor(async () => {
+    await act(async () => {
+      await user.type(
+        screen.getByRole('textbox', { name: 'Slug' }),
+        'test_video_slug'
+      )
+    })
+
+    await act(async () => {
+      await user.click(screen.getByRole('combobox', { name: 'Label' }))
+    })
+
+    // Allow time for dropdown to open
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0))
+    })
+
+    await act(async () => {
       await user.click(screen.getByRole('option', { name: 'Short Film' }))
     })
 
-    await user.click(screen.getByRole('combobox', { name: 'Primary Language' }))
-    await waitFor(async () => {
+    await act(async () => {
+      await user.click(
+        screen.getByRole('combobox', { name: 'Primary Language' })
+      )
+    })
+
+    // Allow time for dropdown to open
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0))
+    })
+
+    await act(async () => {
       await user.click(screen.getByRole('option', { name: 'English' }))
     })
 
-    await user.click(screen.getByRole('button', { name: 'Create' }))
-
-    await waitFor(() => {
-      expect(createVideoMock.result).toHaveBeenCalled()
+    // Submit the form
+    await act(async () => {
+      await user.click(screen.getByRole('button', { name: 'Create' }))
     })
+
+    // Allow time for mutations to complete
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 100))
+    })
+
+    expect(createVideoMock.result).toHaveBeenCalled()
     expect(createEditionMock.result).toHaveBeenCalled()
     expect(onCreateSuccessMock).toHaveBeenCalledWith('test_video')
     expect(mockUseRouter).not.toHaveBeenCalled()
   })
 
   it('should auto-select suggested label based on parent video type', async () => {
-    render(
-      <MockedProvider mocks={[getParentVideoLabelMock]}>
-        <VideoCreateForm close={mockCancel} parentId="parent_video_id" />
-      </MockedProvider>
-    )
-
-    await waitFor(() => {
-      expect(
-        screen.getByText(
-          "Based on the parent Collection, we've suggested Episode"
-        )
-      ).toBeInTheDocument()
+    await act(async () => {
+      render(
+        <MockedProvider mocks={[getParentVideoLabelMock]}>
+          <VideoCreateForm close={mockCancel} parentId="parent_video_id" />
+        </MockedProvider>
+      )
     })
+
+    // Allow time for the query to complete
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0))
+    })
+
+    expect(
+      screen.getByText(
+        "Based on the parent Collection, we've suggested Episode"
+      )
+    ).toBeInTheDocument()
   })
 })

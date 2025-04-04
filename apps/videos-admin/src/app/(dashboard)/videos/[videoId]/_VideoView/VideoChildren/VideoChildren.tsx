@@ -1,8 +1,6 @@
 import { useMutation } from '@apollo/client'
 import { DragEndEvent } from '@dnd-kit/core'
 import { arrayMove } from '@dnd-kit/sortable'
-import Button from '@mui/material/Button'
-import Typography from '@mui/material/Typography'
 import { graphql } from 'gql.tada'
 import { usePathname, useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'

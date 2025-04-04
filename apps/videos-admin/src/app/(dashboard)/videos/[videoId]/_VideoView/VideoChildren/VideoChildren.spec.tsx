@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { usePathname, useRouter } from 'next/navigation'
 
@@ -85,16 +85,18 @@ describe('VideoChildren', () => {
     mockUsePathname.mockReturnValue('/en/videos/1_jf6101-0-0')
   })
 
-  it('should render', () => {
-    render(
-      <MockedProvider>
-        <VideoChildren
-          videoId="videoId"
-          childVideos={childVideos}
-          label="Clips"
-        />
-      </MockedProvider>
-    )
+  it('should render', async () => {
+    await act(async () => {
+      render(
+        <MockedProvider>
+          <VideoChildren
+            videoId="videoId"
+            childVideos={childVideos}
+            label="Clips"
+          />
+        </MockedProvider>
+      )
+    })
 
     expect(screen.getByTestId('OrderedItem-0')).toBeInTheDocument()
     expect(screen.getByTestId('OrderedItem-1')).toBeInTheDocument()
@@ -107,66 +109,81 @@ describe('VideoChildren', () => {
     mockRouter.mockReturnValue({ push } as unknown as AppRouterInstance)
     mockUsePathname.mockReturnValue('/en/videos/1_jf6101-0-0')
     const oneChildVideo = [childVideos[0]]
-    render(
-      <MockedProvider>
-        <VideoChildren
-          videoId="videoId"
-          childVideos={oneChildVideo}
-          label="Clips"
-        />
-      </MockedProvider>
-    )
+
+    await act(async () => {
+      render(
+        <MockedProvider>
+          <VideoChildren
+            videoId="videoId"
+            childVideos={oneChildVideo}
+            label="Clips"
+          />
+        </MockedProvider>
+      )
+    })
 
     expect(screen.getByTestId('OrderedItem-0')).toBeInTheDocument()
-    fireEvent.click(screen.getByTestId('OrderedItem-0'))
-    await waitFor(() =>
-      expect(push).toHaveBeenCalledWith('/en/videos/1_jf6101-0-0')
-    )
+
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('OrderedItem-0'))
+    })
+
+    expect(push).toHaveBeenCalledWith('/en/videos/1_jf6101-0-0')
   })
 
-  it('should show fallback if no video children', () => {
-    render(
-      <MockedProvider>
-        <VideoChildren videoId="videoId" childVideos={[]} label="Clips" />
-      </MockedProvider>
-    )
+  it('should show fallback if no video children', async () => {
+    await act(async () => {
+      render(
+        <MockedProvider>
+          <VideoChildren videoId="videoId" childVideos={[]} label="Clips" />
+        </MockedProvider>
+      )
+    })
 
     expect(screen.getByText('No children to show')).toBeInTheDocument()
     expect(screen.getByText('Add')).toBeInTheDocument()
   })
 
-  it('should handle null childVideos gracefully', () => {
-    render(
-      <MockedProvider>
-        <VideoChildren
-          videoId="videoId"
-          childVideos={null as unknown as AdminVideoChildren}
-          label="Clips"
-        />
-      </MockedProvider>
-    )
+  it('should handle null childVideos gracefully', async () => {
+    await act(async () => {
+      render(
+        <MockedProvider>
+          <VideoChildren
+            videoId="videoId"
+            childVideos={null as unknown as AdminVideoChildren}
+            label="Clips"
+          />
+        </MockedProvider>
+      )
+    })
 
     expect(screen.getByText('No children to show')).toBeInTheDocument()
     expect(screen.getByText('Add')).toBeInTheDocument()
   })
 
-  it('should open create dialog when Add button is clicked', () => {
-    render(
-      <MockedProvider>
-        <VideoChildren
-          videoId="videoId"
-          childVideos={childVideos}
-          label="Clips"
-        />
-      </MockedProvider>
-    )
+  it('should open create dialog when Add button is clicked', async () => {
+    await act(async () => {
+      render(
+        <MockedProvider>
+          <VideoChildren
+            videoId="videoId"
+            childVideos={childVideos}
+            label="Clips"
+          />
+        </MockedProvider>
+      )
+    })
 
     expect(screen.queryByText('Create New Clip')).not.toBeInTheDocument()
-    fireEvent.click(screen.getByText('Add'))
+
+    await act(async () => {
+      fireEvent.click(screen.getByText('Add'))
+    })
+
     expect(screen.getByText('Create New Clip')).toBeInTheDocument()
   })
 
-  it('should handle null values in child video properties', () => {
+  it('should handle null values in child video properties', async () => {
     const incompleteChildVideos = [
       {
         ...childVideos[0],
@@ -176,43 +193,52 @@ describe('VideoChildren', () => {
       }
     ]
 
-    render(
-      <MockedProvider>
-        <VideoChildren
-          videoId="videoId"
-          childVideos={incompleteChildVideos as unknown as AdminVideoChildren}
-          label="Clips"
-        />
-      </MockedProvider>
-    )
+    await act(async () => {
+      render(
+        <MockedProvider>
+          <VideoChildren
+            videoId="videoId"
+            childVideos={incompleteChildVideos as unknown as AdminVideoChildren}
+            label="Clips"
+          />
+        </MockedProvider>
+      )
+    })
 
-    expect(screen.getByText('Untitled Video')).toBeInTheDocument()
+    expect(screen.getByText('1. Untitled Video')).toBeInTheDocument()
   })
 
-  it('should update local state when childVideos prop changes', () => {
-    const { rerender } = render(
-      <MockedProvider>
-        <VideoChildren
-          videoId="videoId"
-          childVideos={[childVideos[0]]}
-          label="Clips"
-        />
-      </MockedProvider>
-    )
+  it('should update local state when childVideos prop changes', async () => {
+    let rerender
+
+    await act(async () => {
+      const renderResult = render(
+        <MockedProvider>
+          <VideoChildren
+            videoId="videoId"
+            childVideos={[childVideos[0]]}
+            label="Clips"
+          />
+        </MockedProvider>
+      )
+      rerender = renderResult.rerender
+    })
 
     // Only first child should be visible
     expect(screen.getAllByTestId(/OrderedItem-\d+/)).toHaveLength(1)
 
     // Update with more children
-    rerender(
-      <MockedProvider>
-        <VideoChildren
-          videoId="videoId"
-          childVideos={childVideos}
-          label="Clips"
-        />
-      </MockedProvider>
-    )
+    await act(async () => {
+      rerender(
+        <MockedProvider>
+          <VideoChildren
+            videoId="videoId"
+            childVideos={childVideos}
+            label="Clips"
+          />
+        </MockedProvider>
+      )
+    })
 
     // Now all children should be visible
     expect(screen.getAllByTestId(/OrderedItem-\d+/)).toHaveLength(
