@@ -43,13 +43,7 @@ export const CollectionVideoContentCarousel = ({
   seeAllText,
   shortVideoText
 }: CollectionVideoContentCarouselProps): ReactElement => {
-  const { t } = useTranslation('apps-watch')
-  const router = useRouter()
   const [selectedContentId, setSelectedContentId] = useState<string>(contentId)
-
-  const handleSeeAllClick = () => {
-    void router.push(`/watch`)
-  }
 
   const handleSlideClick = (contentId: string, title: string) => {
     if (selectedContentId === contentId) {
@@ -79,7 +73,7 @@ export const CollectionVideoContentCarousel = ({
               </h3>
             </div>
           </div>
-          <SeeAllButton text={seeAllText} onClick={handleSeeAllClick} />
+          <SeeAllButton text={seeAllText} />
         </div>
       </div>
 

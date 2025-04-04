@@ -41,22 +41,25 @@ export const Questions = ({
           </h4>
 
           <a
-            data-testid="AskQuestionButton"
             href="https://issuesiface.com/talk?utm_source=jesusfilm-watch"
             target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Ask a question"
-            tabIndex={0}
-            className="inline-flex items-center gap-2 px-4 py-2 text-xs text-black font-bold uppercase tracking-wider rounded-full bg-white hover:bg-red-500 hover:text-white transition-colors duration-200 cursor-pointer flex-shrink-0"
           >
-            <Icon
-              name="MessageCircle"
-              sx={{
-                width: 16,
-                height: 16
-              }}
-            />
-            <span>{askButtonText}</span>
+            <button
+              data-testid="AskQuestionButton"
+              rel="noopener noreferrer"
+              aria-label="Ask a question"
+              tabIndex={0}
+              className="inline-flex items-center gap-2 px-4 py-2 text-xs text-black font-bold uppercase tracking-wider rounded-full bg-white hover:bg-red-500 hover:text-white transition-colors duration-200 cursor-pointer flex-shrink-0"
+            >
+              <Icon
+                name="MessageCircle"
+                sx={{
+                  width: 16,
+                  height: 16
+                }}
+              />
+              <span>{askButtonText}</span>
+            </button>
           </a>
         </div>
 

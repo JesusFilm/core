@@ -51,15 +51,16 @@ describe('Questions Component', () => {
     )
   })
 
-  it('calls onOpenDialog when ask button is clicked', () => {
+  it('has the correct link', () => {
     render(
       <Questions questions={mockQuestions} onOpenDialog={mockOnOpenDialog} />
     )
 
-    const askButton = screen.getByTestId('AskQuestionButton')
-    fireEvent.click(askButton)
-
-    expect(mockOnOpenDialog).toHaveBeenCalledTimes(1)
+    const link = screen.getByRole('link')
+    expect(link).toHaveAttribute(
+      'href',
+      'https://issuesiface.com/talk?utm_source=jesusfilm-watch'
+    )
   })
 
   it('toggles questions when clicked', () => {

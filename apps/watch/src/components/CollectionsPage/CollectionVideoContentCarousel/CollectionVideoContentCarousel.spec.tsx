@@ -110,15 +110,6 @@ describe('CollectionVideoContentCarousel', () => {
     })
   })
 
-  it('navigates to /watch when See All button is clicked', () => {
-    render(<CollectionVideoContentCarousel {...defaultProps} />)
-
-    const seeAllButton = screen.getByText('See All')
-    fireEvent.click(seeAllButton)
-
-    expect(mockRouter.push).toHaveBeenCalledWith('/watch')
-  })
-
   it('changes video when a slide is clicked', async () => {
     render(<CollectionVideoContentCarousel {...defaultProps} />)
 
@@ -155,6 +146,16 @@ describe('CollectionVideoContentCarousel', () => {
 
     expect(screen.getByTestId('video-player-content-id')).toHaveTextContent(
       'content-1'
+    )
+  })
+
+  it('should have the correct link', () => {
+    render(<CollectionVideoContentCarousel {...defaultProps} />)
+
+    const link = screen.getByRole('link')
+    expect(link).toHaveAttribute(
+      'href',
+      'https://www.jesusfilm.org/watch?utm_source=jesusfilm-watch'
     )
   })
 
