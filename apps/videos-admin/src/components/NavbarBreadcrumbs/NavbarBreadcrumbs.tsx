@@ -7,8 +7,7 @@ import MuiLink from '@mui/material/Link'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Link from 'next/link'
-import { useParams, usePathname } from 'next/navigation'
-import { useTranslations } from 'next-intl'
+import { usePathname } from 'next/navigation'
 import { ReactElement, ReactNode } from 'react'
 
 const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
@@ -28,23 +27,17 @@ interface Label {
 }
 
 export function NavbarBreadcrumbs(): ReactElement {
-  const t = useTranslations()
   const paths = usePathname()
   const pathNames = paths?.split('/').filter((path) => path) ?? []
-  const params = useParams()
 
   const labels: { [key: string]: Label } = {
-    [params?.locale?.toString() ?? 'en']: {
-      icon: <HomeRoundedIcon fontSize="inherit" />,
-      value: t('Dashboard')
-    },
     videos: {
       icon: <VideoLibraryRoundedIcon fontSize="inherit" />,
-      value: t('Video Library')
+      value: 'Video Library'
     },
     settings: {
       icon: <SettingsRoundedIcon fontSize="inherit" />,
-      value: t('Settings')
+      value: 'Settings'
     }
   }
 
@@ -54,38 +47,54 @@ export function NavbarBreadcrumbs(): ReactElement {
       separator={<NavigateNextRoundedIcon fontSize="small" />}
       data-testid="NavBarBreadcrumbs"
     >
-      {pathNames.map((link, index) => {
-        const href = `/${pathNames.slice(0, index + 1).join('/')}`
-        const itemLink = labels[link] ?? {
-          value: link[0].toUpperCase() + link.slice(1, link.length)
-        }
-        return index + 1 < pathNames.length ? (
-          <MuiLink
-            component={Link}
-            href={href}
-            key={index}
-            sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
-          >
-            {itemLink.icon}
-            {itemLink.value}
-          </MuiLink>
-        ) : (
-          <Typography
-            key={index}
-            variant="body1"
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              color: 'text.primary',
-              fontWeight: 600,
-              gap: 0.5
-            }}
-          >
-            {itemLink.icon}
-            {itemLink.value}
-          </Typography>
-        )
-      })}
+      {pathNames.length === 0 ? (
+        <Typography
+          variant="body1"
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            color: 'text.primary',
+            fontWeight: 600,
+            gap: 0.5
+          }}
+        >
+          <HomeRoundedIcon fontSize="inherit" />
+          Dashboard
+        </Typography>
+      ) : (
+        pathNames.map((link, index) => {
+          const href = `/${pathNames.slice(0, index + 1).join('/')}`
+          const itemLink = labels[link] ?? {
+            value: link[0].toUpperCase() + link.slice(1, link.length)
+          }
+          return index + 1 < pathNames.length ? (
+            <MuiLink
+              component={Link}
+              href={href}
+              key={index}
+              sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
+            >
+              {itemLink.icon}
+              {itemLink.value}
+            </MuiLink>
+          ) : (
+            <Typography
+              key={index}
+              variant="body1"
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                color: 'text.primary',
+                fontWeight: 600,
+                gap: 0.5
+              }}
+            >
+              {itemLink.icon}
+              {itemLink.value}
+            </Typography>
+          )
+        })
+      )}
     </StyledBreadcrumbs>
   )
 }
