@@ -4,6 +4,7 @@ import Player from 'video.js/dist/types/player'
 
 import { ContainerHeroVideo } from '../ContainerHeroVideo'
 
+import { CollectionsHeader } from './CollectionsHeader'
 import { ContainerHeroMuteButton } from './ContainerHeroMuteButton'
 
 export interface ContainerHeroProps {
@@ -23,7 +24,6 @@ export function ContainerHero({
   descriptionBeforeYear,
   descriptionAfterYear
 }: ContainerHeroProps): ReactElement {
-  const { t } = useTranslation('apps-watch')
   const [playerRef, setPlayerRef] = useState<Player | null>(null)
   const [isMuted, setIsMuted] = useState(true)
   const [hasUnmutedOnce, setHasUnmutedOnce] = useState(false)
@@ -57,6 +57,7 @@ export function ContainerHero({
       className="h-[70vh] w-full flex items-end relative transition-height duration-300 ease-out bg-stone-900 font-sans"
       data-testid="ContainerHero"
     >
+      <CollectionsHeader />
       <ContainerHeroVideo
         onMutedChange={handleMutedChange}
         onPlayerReady={handlePlayerReady}
