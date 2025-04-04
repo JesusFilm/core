@@ -120,7 +120,6 @@ describe('useJourneyEventsExport', () => {
                   value: 'Value 1',
                   typename: 'ButtonClickEvent',
                   progress: null,
-                  messagePlatform: null,
                   journey: {
                     __typename: 'Journey',
                     slug: 'test-journey'
@@ -178,7 +177,6 @@ describe('useJourneyEventsExport', () => {
                   value: 'Value 2',
                   typename: 'ButtonClickEvent',
                   progress: null,
-                  messagePlatform: null,
                   journey: {
                     __typename: 'Journey',
                     slug: 'test-journey'

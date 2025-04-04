@@ -33,7 +33,6 @@ export const GET_JOURNEY_EVENTS_EXPORT = gql`
           value
           typename
           progress
-          messagePlatform
           journey {
             slug
           }
@@ -68,7 +67,6 @@ const EVENT_CSV_OPTIONS = {
     { key: 'label', header: 'Label' },
     { key: 'value', header: 'Value' },
     { key: 'progress', header: 'Video Progress' },
-    { key: 'messagePlatform', header: 'Message Platform' },
     { key: 'journeyId', header: 'Journey ID' },
     { key: 'slug', header: 'Slug' },
     { key: 'visitorId', header: 'Visitor ID' },

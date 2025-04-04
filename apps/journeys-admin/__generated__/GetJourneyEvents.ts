@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyEventsFilter, MessagePlatform } from "./globalTypes";
+import { JourneyEventsFilter } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetJourneyEvents
@@ -39,7 +39,6 @@ export interface GetJourneyEvents_journeyEventsConnection_edges_node {
    */
   typename: string | null;
   progress: number | null;
-  messagePlatform: MessagePlatform | null;
   /**
    * Related fields queried from relevant ids in the events table
    */

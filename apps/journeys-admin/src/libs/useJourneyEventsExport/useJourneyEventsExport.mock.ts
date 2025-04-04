@@ -46,7 +46,6 @@ export const mockGetJourneyEventsQuery: MockedResponse<
               value: 'Test Value',
               typename: 'ButtonClickEvent',
               progress: null,
-              messagePlatform: null,
               journey: {
                 __typename: 'Journey',
                 slug: 'test-journey'
