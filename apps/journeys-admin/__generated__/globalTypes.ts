@@ -31,25 +31,6 @@ export enum ButtonVariant {
   text = "text",
 }
 
-export enum EventType {
-  ButtonClickEvent = "ButtonClickEvent",
-  ChatOpenEvent = "ChatOpenEvent",
-  JourneyViewEvent = "JourneyViewEvent",
-  RadioQuestionSubmissionEvent = "RadioQuestionSubmissionEvent",
-  SignUpSubmissionEvent = "SignUpSubmissionEvent",
-  StepNextEvent = "StepNextEvent",
-  StepPreviousEvent = "StepPreviousEvent",
-  StepViewEvent = "StepViewEvent",
-  TextResponseSubmissionEvent = "TextResponseSubmissionEvent",
-  VideoCollapseEvent = "VideoCollapseEvent",
-  VideoCompleteEvent = "VideoCompleteEvent",
-  VideoExpandEvent = "VideoExpandEvent",
-  VideoPauseEvent = "VideoPauseEvent",
-  VideoPlayEvent = "VideoPlayEvent",
-  VideoProgressEvent = "VideoProgressEvent",
-  VideoStartEvent = "VideoStartEvent",
-}
-
 export enum IconColor {
   action = "action",
   disabled = "disabled",
@@ -449,13 +430,6 @@ export interface JourneyCollectionCreateInput {
 export interface JourneyCollectionUpdateInput {
   title?: string | null;
   journeyIds?: string[] | null;
-}
-
-export interface JourneyEventsExportLogInput {
-  journeyId: string;
-  eventsFilter: EventType[];
-  dateRangeStart?: any | null;
-  dateRangeEnd?: any | null;
 }
 
 export interface JourneyEventsFilter {
