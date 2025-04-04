@@ -98,6 +98,7 @@ enum TextResponseType {
   freeForm
   name
   email
+  phone
 }
 
 model ChatButton {
@@ -138,6 +139,7 @@ model Event {
   updatedAt               DateTime          @default(now()) @updatedAt
   visitor                 Visitor           @relation(fields: [visitorId], references: [id], onDelete: Cascade)
   journeyVisitor          JourneyVisitor?   @relation(fields: [journeyVisitorJourneyId, journeyVisitorVisitorId], references: [journeyId, visitorId])
+  journey                 Journey?          @relation(fields: [journeyId], references: [id])
 
   @@index(journeyId)
   @@index(visitorId)
@@ -164,6 +166,7 @@ model Visitor {
   messagePlatformId         String?
   name                      String?
   notes                     String?
+  phone                     String?
   status                    VisitorStatus?
   referrer                  String?
   teamId                    String
@@ -412,6 +415,8 @@ model Journey {
   menuStepBlock             Block?                      @relation("MenuStepBlock", fields: [menuStepBlockId], references: [id], onDelete: SetNull)
   menuButtonIcon            JourneyMenuButtonIcon?
   qrCode                    QrCode[]
+  Event                     Event[]
+  journeyEventsExportLogs   JourneyEventsExportLog[]
 
   @@index(title)
 }
@@ -467,6 +472,8 @@ model Block {
   parentBlockId           String?
   parentOrder             Int?
   label                   String?
+  placeholder             String?
+  required                Boolean?             @default(false)
   variant                 String?
   color                   String?
   size                    String?
@@ -494,6 +501,7 @@ model Block {
   blurhash                String?
   submitIconId            String?
   submitLabel             String?
+  submitEnabled           Boolean?             @default(true)
   nextBlockId             String?
   locked                  Boolean?
   hint                    String?
@@ -631,4 +639,18 @@ model QrCode {
   backgroundColor String? @default("#FFFFFF")
   team            Team    @relation(fields: [teamId], references: [id])
   journey         Journey @relation(fields: [journeyId], references: [id])
+}
+
+model JourneyEventsExportLog {
+  id             String    @id @default(uuid())
+  createdAt      DateTime  @default(now())
+  userId         String
+  journeyId      String
+  eventsFilter   String[]
+  dateRangeStart DateTime?
+  dateRangeEnd   DateTime?
+  journey        Journey   @relation(fields: [journeyId], references: [id])
+
+  @@index(journeyId)
+  @@index(createdAt)
 }

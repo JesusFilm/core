@@ -51,36 +51,48 @@ function run({
 }
 
 async function main(): Promise<void> {
-  run(
-    await import(
-      /* webpackChunkName: "algolia" */
-      './algolia'
+  if (process.env.NODE_ENV === 'production') {
+    run(
+      await import(
+        /* webpackChunkName: "algolia" */
+        './algolia'
+      )
     )
-  )
-  run(
-    await import(
-      /* webpackChunkName: "big-query" */
-      './bigQuery'
+    run(
+      await import(
+        /* webpackChunkName: "crowdin" */
+        './crowdin'
+      )
     )
-  )
-  run(
-    await import(
-      /* webpackChunkName: "blocklist" */
-      './blocklist'
+    run(
+      await import(
+        /* webpackChunkName: "blocklist" */
+        './blocklist'
+      )
     )
-  )
-  run(
-    await import(
-      /* webpackChunkName: "crowdin" */
-      './crowdin'
+
+    run(
+      await import(
+        /* webpackChunkName: "data-export" */
+        './dataExport'
+      )
     )
-  )
-  run(
-    await import(
-      /* webpackChunkName: "seed" */
-      './seed'
+    run(
+      await import(
+        /* webpackChunkName: "big-query" */
+        './bigQuery'
+      )
     )
-  )
+  }
+
+  if (process.env.NODE_ENV !== 'production') {
+    run(
+      await import(
+        /* webpackChunkName: "seed" */
+        './seed'
+      )
+    )
+  }
 }
 
 // avoid running on test environment
