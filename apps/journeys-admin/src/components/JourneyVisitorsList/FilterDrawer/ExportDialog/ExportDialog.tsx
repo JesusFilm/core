@@ -86,20 +86,35 @@ interface ExportDialogProps {
 }
 
 interface CheckboxState {
-  journeyView: boolean
-  chatOpened: boolean
-  textSubmission: boolean
-  pollOptions: boolean
-  buttonClicks: boolean
-  subscription: boolean
-  videoEvents: {
-    start: boolean
-    play: boolean
-    pause: boolean
-    complete: boolean
-    progress: boolean
-  }
+  JourneyViewEvent: boolean
+  ChatOpenEvent: boolean
+  TextResponseSubmissionEvent: boolean
+  RadioQuestionSubmissionEvent: boolean
+  ButtonClickEvent: boolean
+  SignUpSubmissionEvent: boolean
+  VideoStartEvent: boolean
+  VideoPlayEvent: boolean
+  VideoPauseEvent: boolean
+  VideoCompleteEvent: boolean
+  VideoProgressEvent: boolean
 }
+
+const VIDEO_EVENT_KEYS = [
+  'VideoStartEvent',
+  'VideoPlayEvent',
+  'VideoPauseEvent',
+  'VideoCompleteEvent',
+  'VideoProgressEvent'
+] as const
+
+const REGULAR_EVENT_KEYS = [
+  'JourneyViewEvent',
+  'ChatOpenEvent',
+  'TextResponseSubmissionEvent',
+  'RadioQuestionSubmissionEvent',
+  'ButtonClickEvent',
+  'SignUpSubmissionEvent'
+] as const
 
 export function ExportDialog({
   open,
@@ -109,19 +124,17 @@ export function ExportDialog({
   const { t } = useTranslation('apps-journeys-admin')
 
   const [checkboxState, setCheckboxState] = useState<CheckboxState>({
-    journeyView: true,
-    chatOpened: true,
-    textSubmission: true,
-    pollOptions: true,
-    buttonClicks: true,
-    subscription: true,
-    videoEvents: {
-      start: true,
-      play: true,
-      pause: true,
-      complete: true,
-      progress: true
-    }
+    JourneyViewEvent: true,
+    ChatOpenEvent: true,
+    TextResponseSubmissionEvent: true,
+    RadioQuestionSubmissionEvent: true,
+    ButtonClickEvent: true,
+    SignUpSubmissionEvent: true,
+    VideoStartEvent: true,
+    VideoPlayEvent: true,
+    VideoPauseEvent: true,
+    VideoCompleteEvent: true,
+    VideoProgressEvent: true
   })
 
   const [startDate, setStartDate] = useState<Date | null>(null)
@@ -129,126 +142,64 @@ export function ExportDialog({
 
   const [selectAll, setSelectAll] = useState(true)
 
-  const [videoEventsParent, setVideoEventsParent] = useState(true)
-
   const [videoEventsExpanded, setVideoEventsExpanded] = useState(false)
 
-  const handleVideoEventChange = (event: string, checked: boolean): void => {
+  const [videoEventsSelected, setVideoEventsSelected] = useState<
+    'all' | 'some' | 'none'
+  >('all')
+
+  const handleSelectAllVideoEvents = (checked: boolean): void => {
     setCheckboxState((prev) => ({
       ...prev,
-      videoEvents: {
-        ...prev.videoEvents,
-        [event]: checked
-      }
-    }))
-  }
-
-  const allVideoEventsSelected = Object.values(checkboxState.videoEvents).every(
-    (value) => value === true
-  )
-
-  const someVideoEventsSelected = Object.values(checkboxState.videoEvents).some(
-    (value) => value === true
-  )
-
-  const handleVideoEventsParentChange = (checked: boolean): void => {
-    setVideoEventsParent(checked)
-    setCheckboxState((prev) => ({
-      ...prev,
-      videoEvents: {
-        start: checked,
-        play: checked,
-        pause: checked,
-        complete: checked,
-        progress: checked
-      }
+      VideoStartEvent: checked,
+      VideoPlayEvent: checked,
+      VideoPauseEvent: checked,
+      VideoCompleteEvent: checked,
+      VideoProgressEvent: checked
     }))
   }
 
   const handleSelectAll = (checked: boolean): void => {
-    setSelectAll(checked)
     setCheckboxState({
-      journeyView: checked,
-      chatOpened: checked,
-      textSubmission: checked,
-      pollOptions: checked,
-      buttonClicks: checked,
-      subscription: checked,
-      videoEvents: {
-        start: checked,
-        play: checked,
-        pause: checked,
-        complete: checked,
-        progress: checked
-      }
+      JourneyViewEvent: checked,
+      ChatOpenEvent: checked,
+      TextResponseSubmissionEvent: checked,
+      RadioQuestionSubmissionEvent: checked,
+      ButtonClickEvent: checked,
+      SignUpSubmissionEvent: checked,
+      VideoStartEvent: checked,
+      VideoPlayEvent: checked,
+      VideoPauseEvent: checked,
+      VideoCompleteEvent: checked,
+      VideoProgressEvent: checked
     })
-    setVideoEventsParent(checked)
   }
 
   useEffect(() => {
-    const allSelected =
-      checkboxState.journeyView &&
-      checkboxState.chatOpened &&
-      checkboxState.textSubmission &&
-      checkboxState.pollOptions &&
-      checkboxState.buttonClicks &&
-      checkboxState.subscription &&
-      allVideoEventsSelected
+    const someVideosSelected = VIDEO_EVENT_KEYS.some(
+      (key) => checkboxState[key]
+    )
+    const allVideosSelected = VIDEO_EVENT_KEYS.every(
+      (key) => checkboxState[key]
+    )
+    const allRegularEventsSelected = REGULAR_EVENT_KEYS.every(
+      (key) => checkboxState[key]
+    )
 
-    setSelectAll(allSelected)
-  }, [checkboxState, allVideoEventsSelected])
+    setVideoEventsSelected(
+      allVideosSelected ? 'all' : someVideosSelected ? 'some' : 'none'
+    )
+    setSelectAll(allRegularEventsSelected && allVideosSelected)
+  }, [checkboxState])
 
-  // Convert checkbox states to EventType array for export
   const getSelectedEvents = (): EventType[] => {
     const events: EventType[] = []
 
     forIn(checkboxState, (value, key) => {
-      if (key === 'videoEvents') {
-        forIn(value, (checked, videoKey) => {
-          if (checked) {
-            switch (videoKey) {
-              case 'start':
-                events.push(EventType.VideoStartEvent)
-                break
-              case 'play':
-                events.push(EventType.VideoPlayEvent)
-                break
-              case 'pause':
-                events.push(EventType.VideoPauseEvent)
-                break
-              case 'complete':
-                events.push(EventType.VideoCompleteEvent)
-                break
-              case 'progress':
-                events.push(EventType.VideoProgressEvent)
-                break
-            }
-          }
-        })
-      } else if (value) {
-        switch (key) {
-          case 'journeyView':
-            events.push(EventType.JourneyViewEvent)
-            break
-          case 'chatOpened':
-            events.push(EventType.ChatOpenEvent)
-            break
-          case 'textSubmission':
-            events.push(EventType.TextResponseSubmissionEvent)
-            break
-          case 'pollOptions':
-            events.push(EventType.RadioQuestionSubmissionEvent)
-            break
-          case 'buttonClicks':
-            events.push(EventType.ButtonClickEvent)
-            break
-          case 'subscription':
-            events.push(EventType.SignUpSubmissionEvent)
-            break
-        }
+      if (value) {
+        events.push(EventType[key])
       }
     })
-
     return events
   }
 
@@ -304,47 +255,62 @@ export function ExportDialog({
               label="All"
             />
             <CheckboxOption
-              checked={checkboxState.journeyView}
+              checked={checkboxState.JourneyViewEvent}
               onChange={(checked) =>
-                setCheckboxState((prev) => ({ ...prev, journeyView: checked }))
+                setCheckboxState((prev) => ({
+                  ...prev,
+                  JourneyViewEvent: checked
+                }))
               }
               label="Journey Start"
             />
             <CheckboxOption
-              checked={checkboxState.chatOpened}
+              checked={checkboxState.ChatOpenEvent}
               onChange={(checked) =>
-                setCheckboxState((prev) => ({ ...prev, chatOpened: checked }))
+                setCheckboxState((prev) => ({
+                  ...prev,
+                  ChatOpenEvent: checked
+                }))
               }
               label="Chat Open"
             />
             <CheckboxOption
-              checked={checkboxState.textSubmission}
+              checked={checkboxState.TextResponseSubmissionEvent}
               onChange={(checked) =>
                 setCheckboxState((prev) => ({
                   ...prev,
-                  textSubmission: checked
+                  TextResponseSubmissionEvent: checked
                 }))
               }
               label="Text Submission"
             />
             <CheckboxOption
-              checked={checkboxState.pollOptions}
+              checked={checkboxState.RadioQuestionSubmissionEvent}
               onChange={(checked) =>
-                setCheckboxState((prev) => ({ ...prev, pollOptions: checked }))
+                setCheckboxState((prev) => ({
+                  ...prev,
+                  RadioQuestionSubmissionEvent: checked
+                }))
               }
               label="Poll Selection"
             />
             <CheckboxOption
-              checked={checkboxState.buttonClicks}
+              checked={checkboxState.ButtonClickEvent}
               onChange={(checked) =>
-                setCheckboxState((prev) => ({ ...prev, buttonClicks: checked }))
+                setCheckboxState((prev) => ({
+                  ...prev,
+                  ButtonClickEvent: checked
+                }))
               }
               label="Button Click"
             />
             <CheckboxOption
-              checked={checkboxState.subscription}
+              checked={checkboxState.SignUpSubmissionEvent}
               onChange={(checked) =>
-                setCheckboxState((prev) => ({ ...prev, subscription: checked }))
+                setCheckboxState((prev) => ({
+                  ...prev,
+                  SignUpSubmissionEvent: checked
+                }))
               }
               label="Subscription"
             />
@@ -367,15 +333,13 @@ export function ExportDialog({
                   sx={{ pr: 2 }}
                 >
                   <CheckboxOption
-                    checked={videoEventsParent}
+                    checked={videoEventsSelected === 'all'}
                     onChange={(checked) => {
-                      handleVideoEventsParentChange(checked)
+                      handleSelectAllVideoEvents(checked)
                     }}
-                    label="Video Interaction"
+                    label="Video Events"
                     onClick={(e) => e.stopPropagation()}
-                    indeterminate={
-                      !allVideoEventsSelected && someVideoEventsSelected
-                    }
+                    indeterminate={videoEventsSelected === 'some'}
                   />
                   <IconButton size="small" sx={{ pointerEvents: 'none' }}>
                     {videoEventsExpanded ? (
@@ -390,37 +354,52 @@ export function ExportDialog({
                 <Box sx={{ ml: 3 }}>
                   <FormGroup>
                     <CheckboxOption
-                      checked={checkboxState.videoEvents.start}
+                      checked={checkboxState.VideoStartEvent}
                       onChange={(checked) =>
-                        handleVideoEventChange('start', checked)
+                        setCheckboxState((prev) => ({
+                          ...prev,
+                          VideoStartEvent: checked
+                        }))
                       }
                       label="Start"
                     />
                     <CheckboxOption
-                      checked={checkboxState.videoEvents.play}
+                      checked={checkboxState.VideoPlayEvent}
                       onChange={(checked) =>
-                        handleVideoEventChange('play', checked)
+                        setCheckboxState((prev) => ({
+                          ...prev,
+                          VideoPlayEvent: checked
+                        }))
                       }
                       label="Play"
                     />
                     <CheckboxOption
-                      checked={checkboxState.videoEvents.pause}
+                      checked={checkboxState.VideoPauseEvent}
                       onChange={(checked) =>
-                        handleVideoEventChange('pause', checked)
+                        setCheckboxState((prev) => ({
+                          ...prev,
+                          VideoPauseEvent: checked
+                        }))
                       }
                       label="Pause"
                     />
                     <CheckboxOption
-                      checked={checkboxState.videoEvents.complete}
+                      checked={checkboxState.VideoCompleteEvent}
                       onChange={(checked) =>
-                        handleVideoEventChange('complete', checked)
+                        setCheckboxState((prev) => ({
+                          ...prev,
+                          VideoCompleteEvent: checked
+                        }))
                       }
                       label="Complete"
                     />
                     <CheckboxOption
-                      checked={checkboxState.videoEvents.progress}
+                      checked={checkboxState.VideoProgressEvent}
                       onChange={(checked) =>
-                        handleVideoEventChange('progress', checked)
+                        setCheckboxState((prev) => ({
+                          ...prev,
+                          VideoProgressEvent: checked
+                        }))
                       }
                       label="Progress"
                     />
