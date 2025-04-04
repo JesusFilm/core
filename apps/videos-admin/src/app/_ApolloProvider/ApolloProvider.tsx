@@ -10,7 +10,7 @@ import {
   ApolloClient,
   ApolloNextAppProvider,
   InMemoryCache
-} from '@apollo/experimental-nextjs-app-support'
+} from '@apollo/client-integration-nextjs'
 import { PropsWithChildren, ReactNode } from 'react'
 
 import { cache } from '../../libs/apollo/cache'
