@@ -259,35 +259,14 @@ describe('AddAudioLanguageDialog', () => {
       .fn()
       .mockReturnValue(createVideoVariantMock.result)
 
-    const mockCloudflareR2CreateMock = {
-      ...cloudflareR2CreateMock,
-      result: cloudflareR2CreateMockResult
-    }
-    const mockCreateMuxVideoMock = {
-      ...createMuxVideoMock,
-      result: createMuxVideoMockResult
-    }
-    const mockGetMuxVideoMock = {
-      ...getMuxVideoMock,
-      result: getMuxVideoMockResult
-    }
-    const mockCreateVideoVariantMock = {
-      ...createVideoVariantMock,
-      result: createVideoVariantMockResult
-    }
-    const mockGetLanguagesMock = {
-      ...getLanguagesMock,
-      result: getLanguagesMockResult
-    }
-
     render(
       <MockedProvider
         mocks={[
-          mockGetLanguagesMock,
-          mockCloudflareR2CreateMock,
-          mockCreateMuxVideoMock,
-          mockGetMuxVideoMock,
-          mockCreateVideoVariantMock
+          { ...getLanguagesMock, result: getLanguagesMockResult },
+          { ...cloudflareR2CreateMock, result: cloudflareR2CreateMockResult },
+          { ...createMuxVideoMock, result: createMuxVideoMockResult },
+          { ...getMuxVideoMock, result: getMuxVideoMockResult },
+          { ...createVideoVariantMock, result: createVideoVariantMockResult }
         ]}
       >
         <SnackbarProvider>
@@ -366,7 +345,7 @@ describe('AddAudioLanguageDialog', () => {
   })
 
   it('should show error when R2 upload fails', async () => {
-    const cloudflareR2CreateErrorMock = {
+    const cloudflareR2CreateMock = {
       request: {
         query: CLOUDFLARE_R2_CREATE,
         variables: {
@@ -391,17 +370,11 @@ describe('AddAudioLanguageDialog', () => {
         }
       }
     }
-    const cloudflareR2CreateErrorMockResult = jest
-      .fn()
-      .mockReturnValue(cloudflareR2CreateErrorMock.result)
-    const mockCloudflareR2CreateErrorMock = {
-      ...cloudflareR2CreateErrorMock,
-      result: cloudflareR2CreateErrorMockResult
-    }
+    const result = jest.fn().mockReturnValue(cloudflareR2CreateMock.result)
 
     render(
       <MockedProvider
-        mocks={[getLanguagesMock, mockCloudflareR2CreateErrorMock]}
+        mocks={[getLanguagesMock, { ...cloudflareR2CreateMock, result }]}
       >
         <SnackbarProvider>
           <UploadVideoVariantProvider>
