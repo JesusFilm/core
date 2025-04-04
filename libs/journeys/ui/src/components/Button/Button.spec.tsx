@@ -82,7 +82,6 @@ const block: TreeBlock<ButtonFields> = {
   size: ButtonSize.small,
   startIconId: null,
   endIconId: null,
-  submitEnabled: null,
   action: null,
   submitEnabled: false,
   children: []
