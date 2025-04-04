@@ -149,7 +149,7 @@ describe('CollectionVideoContentCarousel', () => {
     )
   })
 
-  it('should have the correct link', () => {
+  it('should have the correct link for see all button', () => {
     render(<CollectionVideoContentCarousel {...defaultProps} />)
 
     const link = screen.getByRole('link')
