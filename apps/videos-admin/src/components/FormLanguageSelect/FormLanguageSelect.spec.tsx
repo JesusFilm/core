@@ -2,7 +2,6 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
-import { NextIntlClientProvider } from 'next-intl'
 
 import { getLanguagesMock } from '@core/journeys/ui/useLanguagesQuery/useLanguagesQuery.mock'
 
@@ -13,16 +12,14 @@ describe('FormLanguageSelect', () => {
     const handleSubmit = jest.fn()
 
     render(
-      <NextIntlClientProvider locale="en">
-        <MockedProvider mocks={[getLanguagesMock]}>
-          <Formik initialValues={{ language: '' }} onSubmit={handleSubmit}>
-            <Form>
-              <FormLanguageSelect name="language" label="Language" />
-              <button type="submit">Submit</button>
-            </Form>
-          </Formik>
-        </MockedProvider>
-      </NextIntlClientProvider>
+      <MockedProvider mocks={[getLanguagesMock]}>
+        <Formik initialValues={{ language: '' }} onSubmit={handleSubmit}>
+          <Form>
+            <FormLanguageSelect name="language" label="Language" />
+            <button type="submit">Submit</button>
+          </Form>
+        </Formik>
+      </MockedProvider>
     )
 
     const user = userEvent.setup()
@@ -57,19 +54,17 @@ describe('FormLanguageSelect', () => {
     }
 
     render(
-      <NextIntlClientProvider locale="en">
-        <MockedProvider mocks={[getLanguagesMock]}>
-          <Formik initialValues={{ language: '529' }} onSubmit={jest.fn()}>
-            <Form>
-              <FormLanguageSelect
-                name="language"
-                label="Language"
-                initialLanguage={initialLanguage}
-              />
-            </Form>
-          </Formik>
-        </MockedProvider>
-      </NextIntlClientProvider>
+      <MockedProvider mocks={[getLanguagesMock]}>
+        <Formik initialValues={{ language: '529' }} onSubmit={jest.fn()}>
+          <Form>
+            <FormLanguageSelect
+              name="language"
+              label="Language"
+              initialLanguage={initialLanguage}
+            />
+          </Form>
+        </Formik>
+      </MockedProvider>
     )
 
     // Check that the initial language is selected
@@ -84,19 +79,17 @@ describe('FormLanguageSelect', () => {
     ])
 
     render(
-      <NextIntlClientProvider locale="en">
-        <MockedProvider mocks={[getLanguagesMock]}>
-          <Formik initialValues={{ language: '' }} onSubmit={jest.fn()}>
-            <Form>
-              <FormLanguageSelect
-                name="language"
-                label="Language"
-                existingLanguages={existingLanguages}
-              />
-            </Form>
-          </Formik>
-        </MockedProvider>
-      </NextIntlClientProvider>
+      <MockedProvider mocks={[getLanguagesMock]}>
+        <Formik initialValues={{ language: '' }} onSubmit={jest.fn()}>
+          <Form>
+            <FormLanguageSelect
+              name="language"
+              label="Language"
+              existingLanguages={existingLanguages}
+            />
+          </Form>
+        </Formik>
+      </MockedProvider>
     )
 
     const user = userEvent.setup()
@@ -130,26 +123,24 @@ describe('FormLanguageSelect', () => {
     ])
 
     render(
-      <NextIntlClientProvider locale="en">
-        <MockedProvider mocks={[getLanguagesMock]}>
-          <Formik initialValues={{ language: '529' }} onSubmit={jest.fn()}>
-            <Form>
-              <FormLanguageSelect
-                name="language"
-                label="Language"
-                existingLanguages={existingLanguages}
-                parentObjectId="subtitle1"
-                initialLanguage={{
-                  id: '529',
-                  localName: 'English',
-                  nativeName: 'English',
-                  slug: 'english'
-                }}
-              />
-            </Form>
-          </Formik>
-        </MockedProvider>
-      </NextIntlClientProvider>
+      <MockedProvider mocks={[getLanguagesMock]}>
+        <Formik initialValues={{ language: '529' }} onSubmit={jest.fn()}>
+          <Form>
+            <FormLanguageSelect
+              name="language"
+              label="Language"
+              existingLanguages={existingLanguages}
+              parentObjectId="subtitle1"
+              initialLanguage={{
+                id: '529',
+                localName: 'English',
+                nativeName: 'English',
+                slug: 'english'
+              }}
+            />
+          </Form>
+        </Formik>
+      </MockedProvider>
     )
 
     const user = userEvent.setup()
@@ -177,26 +168,24 @@ describe('FormLanguageSelect', () => {
 
   it('should show validation error', async () => {
     render(
-      <NextIntlClientProvider locale="en">
-        <MockedProvider mocks={[getLanguagesMock]}>
-          <Formik
-            initialValues={{ language: '' }}
-            onSubmit={jest.fn()}
-            validate={(values) => {
-              const errors: { language?: string } = {}
-              if (!values.language) {
-                errors.language = 'Language is required'
-              }
-              return errors
-            }}
-          >
-            <Form>
-              <FormLanguageSelect name="language" label="Language" />
-              <button type="submit">Submit</button>
-            </Form>
-          </Formik>
-        </MockedProvider>
-      </NextIntlClientProvider>
+      <MockedProvider mocks={[getLanguagesMock]}>
+        <Formik
+          initialValues={{ language: '' }}
+          onSubmit={jest.fn()}
+          validate={(values) => {
+            const errors: { language?: string } = {}
+            if (!values.language) {
+              errors.language = 'Language is required'
+            }
+            return errors
+          }}
+        >
+          <Form>
+            <FormLanguageSelect name="language" label="Language" />
+            <button type="submit">Submit</button>
+          </Form>
+        </Formik>
+      </MockedProvider>
     )
 
     const user = userEvent.setup()

@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { NextIntlClientProvider } from 'next-intl'
 import { ComponentProps } from 'react'
 
 import { videosAdminConfig } from '../../libs/storybookConfig'
@@ -24,14 +23,10 @@ const meta: Meta<typeof MenuButton> = {
 }
 
 export default meta
-type Story = StoryObj<ComponentProps<typeof MenuButton> & { locale: string }>
+type Story = StoryObj<ComponentProps<typeof MenuButton>>
 
 export const Default: Story = {
-  render: ({ locale, showBadge }) => (
-    <NextIntlClientProvider locale={locale}>
-      <MenuButton showBadge={showBadge} />
-    </NextIntlClientProvider>
-  ),
+  render: ({ locale, showBadge }) => <MenuButton showBadge={showBadge} />,
   args: {
     locale: 'en',
     showBadge: false
