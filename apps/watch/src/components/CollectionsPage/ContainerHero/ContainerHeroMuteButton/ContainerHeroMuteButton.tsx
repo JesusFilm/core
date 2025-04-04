@@ -1,3 +1,4 @@
+import VolumeOffOutlined from '@mui/icons-material/VolumeOffOutlined'
 import { ReactElement } from 'react'
 
 interface ContainerHeroMuteButtonProps {
@@ -43,10 +44,12 @@ export function ContainerHeroMuteButton({
           strokeLinecap="round"
           strokeLinejoin="round"
         >
-          <line x1="1" y1="1" x2="23" y2="23"></line>
-          <path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"></path>
-          <path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23"></path>
-          <line x1="9" y1="9" x2="9" y2="9"></line>
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M16.883 8.5V4l-4.651 4.651H5.5v6.697h4.046M16.883 13v7L13 16.117M6 18.5l3.546-3.152M19.5 6.5l-9.954 8.848"
+          />
         </svg>
       )}
     </button>
