@@ -2,12 +2,17 @@ import { MockedProvider } from '@apollo/client/testing'
 import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { usePathname, useRouter } from 'next/navigation'
+import { useSnackbar } from 'notistack'
 
 import { GetAdminVideo_AdminVideo_Children as AdminVideoChildren } from '../../../../../../libs/useAdminVideo'
 import { GET_ADMIN_VIDEO } from '../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 
-import { VIDEO_CHILDREN_ORDER_UPDATE, VideoChildren } from './VideoChildren'
+import {
+  REMOVE_VIDEO_CHILD,
+  VIDEO_CHILDREN_ORDER_UPDATE,
+  VideoChildren
+} from './VideoChildren'
 
 const childVideos: AdminVideoChildren =
   useAdminVideoMock['result']?.['data']?.['adminVideo']?.['children']
@@ -17,10 +22,11 @@ jest.mock('next/navigation', () => ({
   usePathname: jest.fn()
 }))
 
+const mockEnqueueSnackbar = jest.fn()
 jest.mock('notistack', () => ({
   ...jest.requireActual('notistack'),
   useSnackbar: () => ({
-    enqueueSnackbar: jest.fn()
+    enqueueSnackbar: mockEnqueueSnackbar
   })
 }))
 
@@ -70,6 +76,26 @@ const mutationMock = {
             imageAlt: [{ id: 'alt2', value: 'Alt text 2' }]
           }
         ]
+      }
+    }
+  }
+}
+
+const removeChildMock = {
+  request: {
+    query: REMOVE_VIDEO_CHILD,
+    variables: {
+      input: {
+        id: 'videoId',
+        childIds: []
+      }
+    }
+  },
+  result: {
+    data: {
+      videoUpdate: {
+        id: 'videoId',
+        children: []
       }
     }
   }
@@ -283,5 +309,49 @@ describe('VideoChildren', () => {
 
     // Check that router.push was called with the correct path
     expect(push).toHaveBeenCalledWith(`/videos/${oneChildVideo[0].id}`)
+  })
+
+  it('should remove a child video when clicking the remove menu option', async () => {
+    const oneChildVideo = [childVideos[0]]
+
+    await act(async () => {
+      render(
+        <MockedProvider mocks={[removeChildMock]}>
+          <VideoChildren
+            videoId="videoId"
+            childVideos={oneChildVideo}
+            label="Clips"
+          />
+        </MockedProvider>
+      )
+    })
+
+    // Find the menu button (More button) in the OrderedItem
+    const orderedItem = screen.getByTestId('OrderedItem-0')
+    const menuButton = within(orderedItem).getByLabelText(
+      'ordered-item-actions'
+    )
+
+    // Open the menu
+    await act(async () => {
+      fireEvent.click(menuButton)
+    })
+
+    // Click the Remove menu option
+    const removeMenuItem = screen.getByText('Remove')
+    await act(async () => {
+      fireEvent.click(removeMenuItem)
+    })
+
+    // Wait for the mutation to complete
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0))
+    })
+
+    // Verify the success notification was shown
+    expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+      'Successfully removed child video.',
+      { variant: 'success' }
+    )
   })
 })

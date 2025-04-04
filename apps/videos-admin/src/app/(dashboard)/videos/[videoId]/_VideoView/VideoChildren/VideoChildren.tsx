@@ -45,6 +45,29 @@ export const VIDEO_CHILDREN_ORDER_UPDATE = graphql(`
   }
 `)
 
+export const REMOVE_VIDEO_CHILD = graphql(`
+  mutation RemoveVideoChild($input: VideoUpdateInput!) {
+    videoUpdate(input: $input) {
+      id
+      children {
+        id
+        title {
+          id
+          value
+        }
+        images(aspectRatio: banner) {
+          id
+          mobileCinematicHigh
+        }
+        imageAlt {
+          id
+          value
+        }
+      }
+    }
+  }
+`)
+
 export function VideoChildren({
   videoId,
   childVideos,
@@ -65,6 +88,15 @@ export function VideoChildren({
   }, [childVideos])
 
   const [updateVideoChildrenOrder] = useMutation(VIDEO_CHILDREN_ORDER_UPDATE, {
+    refetchQueries: [
+      {
+        query: GET_ADMIN_VIDEO,
+        variables: { videoId }
+      }
+    ]
+  })
+
+  const [removeVideoChild] = useMutation(REMOVE_VIDEO_CHILD, {
     refetchQueries: [
       {
         query: GET_ADMIN_VIDEO,
@@ -114,6 +146,48 @@ export function VideoChildren({
       })
     } finally {
       setShowCreateDialog(false)
+    }
+  }
+
+  const handleRemoveChild = async (childId: string): Promise<void> => {
+    try {
+      // Remove child by updating the childIds array without the removed child
+      const updatedChildIds = videos
+        .map((video) => video.id)
+        .filter((id) => id !== childId)
+
+      const result = await removeVideoChild({
+        variables: {
+          input: {
+            id: videoId,
+            childIds: updatedChildIds
+          }
+        },
+        update: (cache, { data }) => {
+          if (data?.videoUpdate?.children) {
+            // Update the local state with the new list of children
+            setVideos(data.videoUpdate.children)
+
+            // Update the cache for any queries that use this video's children
+            cache.modify({
+              id: cache.identify({ __typename: 'Video', id: videoId }),
+              fields: {
+                children: () => data.videoUpdate.children
+              }
+            })
+          }
+        }
+      })
+
+      if (result.data?.videoUpdate?.children) {
+        enqueueSnackbar('Successfully removed child video.', {
+          variant: 'success'
+        })
+      }
+    } catch (error) {
+      enqueueSnackbar('Failed to remove child video.', {
+        variant: 'error'
+      })
     }
   }
 
@@ -216,6 +290,10 @@ export function VideoChildren({
                 {
                   label: 'Edit',
                   handler: handleEditClick
+                },
+                {
+                  label: 'Remove',
+                  handler: handleRemoveChild
                 }
               ]}
             />
