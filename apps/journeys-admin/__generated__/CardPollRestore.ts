@@ -51,6 +51,7 @@ export interface CardPollRestore_imageRestore_ButtonBlock {
   startIconId: string | null;
   endIconId: string | null;
   action: CardPollRestore_imageRestore_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface CardPollRestore_imageRestore_CardBlock {
@@ -474,6 +475,7 @@ export interface CardPollRestore_subtitleRestore_ButtonBlock {
   startIconId: string | null;
   endIconId: string | null;
   action: CardPollRestore_subtitleRestore_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface CardPollRestore_subtitleRestore_CardBlock {
@@ -897,6 +899,7 @@ export interface CardPollRestore_titleRestore_ButtonBlock {
   startIconId: string | null;
   endIconId: string | null;
   action: CardPollRestore_titleRestore_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface CardPollRestore_titleRestore_CardBlock {
@@ -1320,6 +1323,7 @@ export interface CardPollRestore_radioQuestionRestore_ButtonBlock {
   startIconId: string | null;
   endIconId: string | null;
   action: CardPollRestore_radioQuestionRestore_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface CardPollRestore_radioQuestionRestore_CardBlock {
@@ -1743,6 +1747,7 @@ export interface CardPollRestore_radioOption1Restore_ButtonBlock {
   startIconId: string | null;
   endIconId: string | null;
   action: CardPollRestore_radioOption1Restore_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface CardPollRestore_radioOption1Restore_CardBlock {
@@ -2166,6 +2171,7 @@ export interface CardPollRestore_radioOption2Restore_ButtonBlock {
   startIconId: string | null;
   endIconId: string | null;
   action: CardPollRestore_radioOption2Restore_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface CardPollRestore_radioOption2Restore_CardBlock {
@@ -2589,6 +2595,7 @@ export interface CardPollRestore_radioOption3Restore_ButtonBlock {
   startIconId: string | null;
   endIconId: string | null;
   action: CardPollRestore_radioOption3Restore_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface CardPollRestore_radioOption3Restore_CardBlock {
@@ -3012,6 +3019,7 @@ export interface CardPollRestore_radioOption4Restore_ButtonBlock {
   startIconId: string | null;
   endIconId: string | null;
   action: CardPollRestore_radioOption4Restore_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface CardPollRestore_radioOption4Restore_CardBlock {
@@ -3435,6 +3443,7 @@ export interface CardPollRestore_bodyRestore_ButtonBlock {
   startIconId: string | null;
   endIconId: string | null;
   action: CardPollRestore_bodyRestore_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface CardPollRestore_bodyRestore_CardBlock {

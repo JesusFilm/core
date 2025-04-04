@@ -68,6 +68,7 @@ export function Button({
   endIconId,
   action,
   children,
+  submitEnabled,
   editableLabel
 }: ButtonProps): ReactElement {
   const [buttonClickEventCreate] = useMutation<
@@ -103,6 +104,8 @@ export function Button({
     () => getActionLabel(action, treeBlocks, t),
     [action, treeBlocks, t]
   )
+
+  const fallbackLabel = submitEnabled ? t('Submit') : t('Button')
 
   function createClickEvent(): void {
     if (variant === 'default' || variant === 'embed') {
@@ -258,7 +261,7 @@ export function Button({
             ? editableLabel
             : label !== ''
               ? label
-              : t('Submit')}
+              : fallbackLabel}
         </span>
       </MuiButton>
     </Box>

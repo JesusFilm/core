@@ -51,6 +51,7 @@ export interface CardIntroRestore_subtitle_ButtonBlock {
   startIconId: string | null;
   endIconId: string | null;
   action: CardIntroRestore_subtitle_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface CardIntroRestore_subtitle_CardBlock {
@@ -474,6 +475,7 @@ export interface CardIntroRestore_title_ButtonBlock {
   startIconId: string | null;
   endIconId: string | null;
   action: CardIntroRestore_title_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface CardIntroRestore_title_CardBlock {
@@ -897,6 +899,7 @@ export interface CardIntroRestore_body_ButtonBlock {
   startIconId: string | null;
   endIconId: string | null;
   action: CardIntroRestore_body_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface CardIntroRestore_body_CardBlock {
@@ -1320,6 +1323,7 @@ export interface CardIntroRestore_button_ButtonBlock {
   startIconId: string | null;
   endIconId: string | null;
   action: CardIntroRestore_button_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface CardIntroRestore_button_CardBlock {
@@ -1743,6 +1747,7 @@ export interface CardIntroRestore_startIcon_ButtonBlock {
   startIconId: string | null;
   endIconId: string | null;
   action: CardIntroRestore_startIcon_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface CardIntroRestore_startIcon_CardBlock {
@@ -2166,6 +2171,7 @@ export interface CardIntroRestore_endIcon_ButtonBlock {
   startIconId: string | null;
   endIconId: string | null;
   action: CardIntroRestore_endIcon_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface CardIntroRestore_endIcon_CardBlock {
@@ -2589,6 +2595,7 @@ export interface CardIntroRestore_video_ButtonBlock {
   startIconId: string | null;
   endIconId: string | null;
   action: CardIntroRestore_video_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface CardIntroRestore_video_CardBlock {

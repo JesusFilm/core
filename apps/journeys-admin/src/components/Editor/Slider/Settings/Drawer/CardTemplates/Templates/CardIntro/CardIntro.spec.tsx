@@ -188,6 +188,7 @@ describe('CardIntro', () => {
           size: null,
           startIconId: null,
           endIconId: null,
+          submitEnabled: null,
           action: null,
           __typename: 'ButtonBlock'
         },
@@ -219,6 +220,7 @@ describe('CardIntro', () => {
           size: null,
           startIconId: 'startIconId',
           endIconId: 'endIconId',
+          submitEnabled: null,
           action: null,
           __typename: 'ButtonBlock'
         },
