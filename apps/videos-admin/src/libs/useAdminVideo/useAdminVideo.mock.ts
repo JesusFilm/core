@@ -271,8 +271,14 @@ export const useAdminVideoMock: MockedResponse<
                   'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-JLtib-529-31474.srt',
                 value:
                   'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-JLtib-529-31474.vtt',
-                vttAsset: { id: 'vtt-asset-id-1' },
-                srtAsset: { id: 'srt-asset-id-1' },
+                vttAsset: {
+                  id: 'vtt-asset-id-1',
+                  originalFilename: 'subtitle1.vtt'
+                },
+                srtAsset: {
+                  id: 'srt-asset-id-1',
+                  originalFilename: 'subtitle1.srt'
+                },
                 vttVersion: 1,
                 srtVersion: 1,
                 language: {
@@ -295,8 +301,14 @@ export const useAdminVideoMock: MockedResponse<
                   'https://d389zwyrhi20m0.cloudfront.net/496/1_jf-0-0/0-0-JL-496-31801.srt',
                 value:
                   'https://d389zwyrhi20m0.cloudfront.net/496/1_jf-0-0/0-0-JL-496-31801.vtt',
-                vttAsset: { id: 'vtt-asset-id-1' },
-                srtAsset: { id: 'srt-asset-id-1' },
+                vttAsset: {
+                  id: 'vtt-asset-id-1',
+                  originalFilename: 'subtitle2.vtt'
+                },
+                srtAsset: {
+                  id: 'srt-asset-id-1',
+                  originalFilename: 'subtitle2.srt'
+                },
                 vttVersion: 1,
                 srtVersion: 1,
                 language: {
@@ -329,8 +341,14 @@ export const useAdminVideoMock: MockedResponse<
                   'https://d389zwyrhi20m0.cloudfront.net/496/1_jf-0-0/0-0-JL-496-31801.srt',
                 value:
                   'https://d389zwyrhi20m0.cloudfront.net/496/1_jf-0-0/0-0-JL-496-31801.vtt',
-                vttAsset: { id: 'vtt-asset-id-2' },
-                srtAsset: { id: 'srt-asset-id-2' },
+                vttAsset: {
+                  id: 'vtt-asset-id-2',
+                  originalFilename: 'subtitle2.vtt'
+                },
+                srtAsset: {
+                  id: 'srt-asset-id-2',
+                  originalFilename: 'subtitle2.srt'
+                },
                 vttVersion: 1,
                 srtVersion: 1,
                 language: {
@@ -362,8 +380,14 @@ export const useAdminVideoMock: MockedResponse<
               'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-JLtib-529-31474.srt',
             value:
               'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-JLtib-529-31474.vtt',
-            vttAsset: { id: 'vtt-asset-id-1' },
-            srtAsset: { id: 'srt-asset-id-1' },
+            vttAsset: {
+              id: 'vtt-asset-id-1',
+              originalFilename: 'subtitle1.vtt'
+            },
+            srtAsset: {
+              id: 'srt-asset-id-1',
+              originalFilename: 'subtitle1.srt'
+            },
             vttVersion: 1,
             srtVersion: 1,
             language: {
@@ -385,8 +409,14 @@ export const useAdminVideoMock: MockedResponse<
               'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-JLnoCI-529-31474.srt',
             value:
               'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-JLnoCI-529-31474.vtt',
-            vttAsset: { id: 'vtt-asset-id-2' },
-            srtAsset: { id: 'srt-asset-id-2' },
+            vttAsset: {
+              id: 'vtt-asset-id-2',
+              originalFilename: 'subtitle2.vtt'
+            },
+            srtAsset: {
+              id: 'srt-asset-id-2',
+              originalFilename: 'subtitle2.srt'
+            },
             vttVersion: 1,
             srtVersion: 1,
             language: {
@@ -408,8 +438,14 @@ export const useAdminVideoMock: MockedResponse<
               'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-OTwCC-529-31474.srt',
             value:
               'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-OTwCC-529-31474.vtt',
-            vttAsset: { id: 'vtt-asset-id-3' },
-            srtAsset: { id: 'srt-asset-id-3' },
+            vttAsset: {
+              id: 'vtt-asset-id-3',
+              originalFilename: 'subtitle3.vtt'
+            },
+            srtAsset: {
+              id: 'srt-asset-id-3',
+              originalFilename: 'subtitle3.srt'
+            },
             vttVersion: 1,
             srtVersion: 1,
             language: {
