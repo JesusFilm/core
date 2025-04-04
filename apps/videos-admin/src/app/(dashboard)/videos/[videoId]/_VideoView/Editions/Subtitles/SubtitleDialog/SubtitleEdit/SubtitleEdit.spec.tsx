@@ -89,6 +89,7 @@ const subtitleEditWithSrtFileMock = getEditSubtitleMock({
 const createR2VttAssetMock = getCreateR2AssetMock({
   videoId: '1_jf-0-0',
   contentType: 'text/vtt',
+  originalFilename: 'subtitle1.vtt',
   fileName:
     '1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.vtt',
   contentLength: 13
@@ -97,6 +98,7 @@ const createR2VttAssetMock = getCreateR2AssetMock({
 const createR2SrtAssetMock = getCreateR2AssetMock({
   videoId: '1_jf-0-0',
   contentType: 'application/x-subrip',
+  originalFilename: 'subtitle1.srt',
   fileName:
     '1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.srt',
   contentLength: 13
@@ -493,6 +495,7 @@ describe('SubtitleEdit', () => {
       const createR2VttAssetMock1 = getCreateR2AssetMock({
         videoId: '1_jf-0-0',
         contentType: 'text/vtt',
+        originalFilename: 'subtitle1.vtt',
         fileName:
           '1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.vtt',
         contentLength: 17
@@ -501,6 +504,7 @@ describe('SubtitleEdit', () => {
       const createR2SrtAssetMock2 = getCreateR2AssetMock({
         videoId: '1_jf-0-0',
         contentType: 'application/x-subrip',
+        originalFilename: 'subtitle1.srt',
         fileName:
           '1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.srt',
         contentLength: 17

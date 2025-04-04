@@ -35,6 +35,7 @@ const cloudflareR2CreateMock = {
     variables: {
       input: {
         fileName: `video-id/variants/language-id/videos/uuidv4/language-id_video-id.mp4`,
+        originalFilename: 'test.mp4',
         contentType: 'video/mp4',
         contentLength: 4,
         videoId: 'video-id'
@@ -46,6 +47,7 @@ const cloudflareR2CreateMock = {
       cloudflareR2Create: {
         id: 'r2-id',
         fileName: 'test.mp4',
+        originalFilename: 'test.mp4',
         uploadUrl: 'https://upload-url.com',
         publicUrl: 'https://public-url.com'
       }
@@ -134,6 +136,7 @@ const cloudflareR2CreateErrorMock = {
     variables: {
       input: {
         fileName: `video-id/variants/language-id/videos/uuidv4/language-id_video-id.mp4`,
+        originalFilename: 'test.mp4',
         contentType: 'video/mp4',
         contentLength: 4,
         videoId: 'video-id'
@@ -145,6 +148,7 @@ const cloudflareR2CreateErrorMock = {
       cloudflareR2Create: {
         id: 'r2-id',
         fileName: 'test.mp4',
+        originalFilename: 'test.mp4',
         uploadUrl: null,
         publicUrl: null
       }

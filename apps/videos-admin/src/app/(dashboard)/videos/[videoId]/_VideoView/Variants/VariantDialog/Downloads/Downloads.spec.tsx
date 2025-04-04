@@ -34,6 +34,7 @@ const videoVariantDownloadCreateMock = getVideoVariantDownloadCreateMock({
 const createR2AssetMock = getCreateR2AssetMock({
   videoId: 'video-123',
   fileName: 'video-123/variants/529/downloads/variant-id_high.mp4',
+  originalFilename: 'test-video.mp4',
   contentType: 'video/mp4',
   contentLength: 13
 })

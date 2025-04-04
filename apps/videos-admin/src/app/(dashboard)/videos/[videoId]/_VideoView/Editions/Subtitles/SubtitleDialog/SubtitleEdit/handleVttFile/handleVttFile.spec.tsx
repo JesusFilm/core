@@ -14,8 +14,11 @@ describe('handleVttFile', () => {
   const mockCreateR2Asset = jest.fn().mockResolvedValue({
     data: {
       cloudflareR2Create: {
+        id: 'mock-r2-asset-id',
         uploadUrl: mockUploadUrl,
-        publicUrl: mockPublicUrl
+        publicUrl: mockPublicUrl,
+        fileName: 'test.vtt',
+        originalFilename: 'test.vtt'
       }
     }
   })
@@ -43,6 +46,7 @@ describe('handleVttFile', () => {
         input: {
           videoId: mockVideo.id,
           fileName: expect.any(String),
+          originalFilename: mockFile.name,
           contentType: mockFile.type,
           contentLength: mockFile.size
         }
@@ -58,7 +62,7 @@ describe('handleVttFile', () => {
 
     expect(result).toStrictEqual({
       publicUrl: 'https://example.com/public/test.vtt',
-      r2AssetId: undefined,
+      r2AssetId: 'mock-r2-asset-id',
       uploadUrl: 'https://example.com/upload'
     })
   })
@@ -67,6 +71,9 @@ describe('handleVttFile', () => {
     mockCreateR2Asset.mockResolvedValueOnce({
       data: {
         cloudflareR2Create: {
+          id: 'mock-r2-asset-id',
+          fileName: 'test.vtt',
+          originalFilename: 'test.vtt',
           uploadUrl: null,
           publicUrl: null
         }

@@ -98,6 +98,7 @@ export function AddVideoVariantDownloadDialog({
         input: {
           videoId: videoId,
           fileName: `${videoId}/variants/${languageId}/downloads/${videoVariantId}_${values.quality}${extension}`,
+          originalFilename: uploadedFile.name,
           contentType: uploadedFile.type,
           contentLength: uploadedFile.size
         }
