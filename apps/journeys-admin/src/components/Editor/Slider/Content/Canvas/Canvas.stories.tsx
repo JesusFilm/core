@@ -108,6 +108,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
             size: ButtonSize.large,
             startIconId: 'icon',
             endIconId: null,
+            submitEnabled: null,
             action: {
               __typename: 'NavigateToBlockAction',
               parentBlockId: 'button0.id',
@@ -199,6 +200,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
             size: ButtonSize.large,
             startIconId: 'icon',
             endIconId: null,
+            submitEnabled: null,
             action: {
               __typename: 'NavigateToBlockAction',
               parentBlockId: 'button1.id',
@@ -606,6 +608,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
             size: ButtonSize.large,
             startIconId: 'icon',
             endIconId: null,
+            submitEnabled: null,
             action: {
               __typename: 'NavigateToBlockAction',
               parentBlockId: 'button2.id',
