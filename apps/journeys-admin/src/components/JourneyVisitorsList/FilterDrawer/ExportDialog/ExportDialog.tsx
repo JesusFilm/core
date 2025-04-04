@@ -204,8 +204,7 @@ export function ExportDialog({
   }
 
   const handleExport = async (): Promise<void> => {
-    console.log(getSelectedEvents())
-    // await onExport(getSelectedEvents())
+    await onExport(getSelectedEvents())
   }
 
   return (
