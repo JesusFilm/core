@@ -50,6 +50,7 @@ export interface CardFormRestore_image_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardFormRestore_image_ButtonBlock_action | null;
   submitEnabled: boolean | null;
 }
@@ -474,6 +475,7 @@ export interface CardFormRestore_subtitle_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardFormRestore_subtitle_ButtonBlock_action | null;
   submitEnabled: boolean | null;
 }
@@ -898,6 +900,7 @@ export interface CardFormRestore_title_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardFormRestore_title_ButtonBlock_action | null;
   submitEnabled: boolean | null;
 }
@@ -1322,6 +1325,7 @@ export interface CardFormRestore_textResponse_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardFormRestore_textResponse_ButtonBlock_action | null;
   submitEnabled: boolean | null;
 }
@@ -1746,6 +1750,7 @@ export interface CardFormRestore_body_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardFormRestore_body_ButtonBlock_action | null;
   submitEnabled: boolean | null;
 }

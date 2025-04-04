@@ -76,6 +76,7 @@ export interface CardIntroCreate_button {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardIntroCreate_button_action | null;
   submitEnabled: boolean | null;
 }
@@ -134,6 +135,7 @@ export interface CardIntroCreate_buttonBlockUpdate {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardIntroCreate_buttonBlockUpdate_action | null;
   submitEnabled: boolean | null;
 }
