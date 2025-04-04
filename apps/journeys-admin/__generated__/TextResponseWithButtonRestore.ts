@@ -50,8 +50,8 @@ export interface TextResponseWithButtonRestore_textResponse_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
-  action: TextResponseWithButtonRestore_textResponse_ButtonBlock_action | null;
   submitEnabled: boolean | null;
+  action: TextResponseWithButtonRestore_textResponse_ButtonBlock_action | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_CardBlock {
@@ -474,8 +474,8 @@ export interface TextResponseWithButtonRestore_button_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
-  action: TextResponseWithButtonRestore_button_ButtonBlock_action | null;
   submitEnabled: boolean | null;
+  action: TextResponseWithButtonRestore_button_ButtonBlock_action | null;
 }
 
 export interface TextResponseWithButtonRestore_button_CardBlock {
@@ -898,8 +898,8 @@ export interface TextResponseWithButtonRestore_startIcon_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
-  action: TextResponseWithButtonRestore_startIcon_ButtonBlock_action | null;
   submitEnabled: boolean | null;
+  action: TextResponseWithButtonRestore_startIcon_ButtonBlock_action | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_CardBlock {
@@ -1322,8 +1322,8 @@ export interface TextResponseWithButtonRestore_endIcon_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
-  action: TextResponseWithButtonRestore_endIcon_ButtonBlock_action | null;
   submitEnabled: boolean | null;
+  action: TextResponseWithButtonRestore_endIcon_ButtonBlock_action | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_CardBlock {
