@@ -1083,7 +1083,7 @@ export function CollectionsPage(): ReactElement {
           description={
             "If you've ever wondered what Christianity is about, or what sort of lifestyle it empowers you to live, the New Believer Course exists to help you understand the Gospel and live your life in response to it."
           }
-          contentId="'1-the-simple-gospel/english"
+          contentId="1-the-simple-gospel/english"
           videoTitle={'1. The Simple Gospel'}
           mutePage={mutePage}
           setMutePage={setMutePage}
