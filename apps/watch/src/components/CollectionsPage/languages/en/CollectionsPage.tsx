@@ -566,6 +566,114 @@ export function CollectionsPage(): ReactElement {
             buttonText: 'Join Our Bible study'
           }}
         />
+
+        <CollectionsVideoContent
+          contentId="talk-with-nicodemus/english"
+          subtitle={'From Religion to Relationship'}
+          title={'The Gospel in One Conversation'}
+          description={
+            "In a private conversation at night, Nicodemus, a respected Jewish teacher, came to Jesus seeking truth. Jesus told him that no one can see the kingdom of God unless they are born again. This deep conversation reveals the heart of Jesus' mission—to bring spiritual rebirth through the Holy Spirit. Discover what it means to be born again and why it’s essential for eternal life."
+          }
+          mutePage={mutePage}
+          setMutePage={setMutePage}
+          questionsTitle="Related questions"
+          askButtonText="Ask yours"
+          bibleQuotesTitle="Bible quotes"
+          quizButtonText="What's your next step of faith?"
+          shareButtonText="Share"
+          questions={[
+            {
+              id: 1,
+              question: 'What does it mean to be born again?',
+              answer: (
+                <>
+                  <p>
+                    {
+                      "Being 'born again' means experiencing a spiritual rebirth. Jesus explained to Nicodemus that this rebirth is not physical but spiritual—born of water and the Spirit."
+                    }
+                  </p>
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                    <li>{'It is a work of the Holy Spirit'}</li>
+                    <li>{'It involves believing in Jesus as Savior'}</li>
+                    <li>
+                      {'It brings new life and a new relationship with God'}
+                    </li>
+                  </ul>
+                </>
+              )
+            },
+            {
+              id: 2,
+              question: 'Why did Jesus tell Nicodemus he must be born again?',
+              answer: (
+                <>
+                  <p>
+                    {
+                      'Jesus wanted Nicodemus to understand that religious knowledge and good deeds are not enough. To enter God’s kingdom, a complete inner transformation is needed.'
+                    }
+                  </p>
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                    <li>{'It shows our need for spiritual renewal'}</li>
+                    <li>{'It points to salvation through faith, not works'}</li>
+                    <li>{'It emphasizes the role of the Holy Spirit'}</li>
+                  </ul>
+                </>
+              )
+            },
+            {
+              id: 3,
+              question: 'How can someone be born again?',
+              answer: (
+                <>
+                  <p>
+                    {
+                      'Jesus explained that being born again comes through believing in Him. It is a personal step of faith that results in a new life in God.'
+                    }
+                  </p>
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                    <li>{'Believe in Jesus Christ as the Son of God'}</li>
+                    <li>{'Accept His sacrifice for your sins'}</li>
+                    <li>
+                      {'Invite the Holy Spirit to renew your heart and mind'}
+                    </li>
+                  </ul>
+                </>
+              )
+            }
+          ]}
+          bibleQuotes={[
+            {
+              imageUrl:
+                'https://images.unsplash.com/photo-1497449493050-aad1e7cad165?w=1400&auto=format&fit=crop&q=60',
+              bgColor: '#0A0A0A',
+              author: 'John 3:3',
+              text: 'Jesus replied, “Very truly I tell you, no one can see the kingdom of God unless they are born again.”'
+            },
+            {
+              imageUrl:
+                'https://images.unsplash.com/photo-1574957973698-418ac4c877af?w=1400&auto=format&fit=crop&q=60',
+              bgColor: '#1A1A1D',
+              author: 'John 3:5',
+              text: 'Jesus answered, “Very truly I tell you, no one can enter the kingdom of God unless they are born of water and the Spirit.”'
+            },
+            {
+              imageUrl:
+                'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?w=1400&auto=format&fit=crop&q=60',
+              bgColor: '#3E3E42',
+              author: 'John 3:16',
+              text: 'For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.'
+            }
+          ]}
+          freeResource={{
+            imageUrl:
+              'https://images.unsplash.com/photo-1650658720644-e1588bd66de3?w=900&auto=format&fit=crop&q=60',
+            bgColor: '#5F4C5E',
+            subtitle: 'Free Resources',
+            title: 'Want to understand more about the resurrection?',
+            buttonText: 'Join Our Bible study'
+          }}
+        />
+
         <CollectionsVideoContent
           contentId="did-jesus-come-back-from-the-dead/english"
           subtitle={'Did Jesus Come Back From the Dead?'}
@@ -1161,6 +1269,108 @@ export function CollectionsPage(): ReactElement {
               title: '10. Church'
             }
           ]}
+        />
+
+        <CollectionsVideoContent
+          contentId="invitation-to-know-jesus-personally/english"
+          subtitle={'Are you ready to make the next step of faith?'}
+          title={'Invitation to Know Jesus Personally'}
+          description={
+            "The invitation is open to everyone. It means turning to God and trusting Jesus with our lives and to forgive our sins. We can speak to Him in prayer when we're ready to become followers of Jesus."
+          }
+          mutePage={mutePage}
+          setMutePage={setMutePage}
+          questionsTitle="Related questions"
+          askButtonText="Ask yours"
+          bibleQuotesTitle="Bible quotes"
+          quizButtonText="What's your next step of faith?"
+          shareButtonText="Share"
+          questions={[
+            {
+              id: 1,
+              question: 'Why do I need saving if I’m a good person?',
+              answer: (
+                <>
+                  <p>
+                    The Bible says, “There is no one righteous, not even one”
+                    (Romans 3:10). God’s standard is perfection, and all have
+                    sinned and fall short of His glory (Romans 3:23). Being good
+                    by human standards isn’t enough to remove the guilt of sin.
+                    Salvation is not earned by good deeds but received by grace
+                    through faith in Jesus (Ephesians 2:8–9). Only His sacrifice
+                    can cleanse us and make us right with God.
+                  </p>
+                </>
+              )
+            },
+            {
+              id: 2,
+              question:
+                "Why did Jesus have to die? Couldn't God just forgive us?",
+              answer: (
+                <>
+                  <p>
+                    God is holy and just, and the Bible says, “The wages of sin
+                    is death” (Romans 6:23). Sin separates us from God, and
+                    justice demands a penalty. Jesus died in our place as a
+                    perfect sacrifice to satisfy God's justice and show His
+                    love. Hebrews 9:22 says, “Without the shedding of blood
+                    there is no forgiveness.” Jesus paid the debt we couldn’t
+                    pay, and through Him, forgiveness is offered.
+                  </p>
+                </>
+              )
+            },
+            {
+              id: 3,
+              question:
+                'If Jesus rose from the dead, why doesn’t everyone believe in Him?',
+              answer: (
+                <>
+                  <p>
+                    Many reject Jesus because they love darkness more than light
+                    (John 3:19). Believing in Jesus requires humility,
+                    repentance, and surrender. Some are blinded by pride, sin,
+                    or the world’s distractions (2 Corinthians 4:4). Others have
+                    not truly heard the Gospel or have hardened their hearts.
+                    Faith is a response to God's call, but He does not force
+                    anyone to believe (Revelation 3:20).
+                  </p>
+                </>
+              )
+            }
+          ]}
+          bibleQuotes={[
+            {
+              imageUrl:
+                'https://images.unsplash.com/photo-1521106581851-da5b6457f674?w=900&auto=format&fit=crop&q=60',
+              bgColor: '#1A1815',
+              author: 'John 1:29',
+              text: 'Look, the Lamb of God, who takes away the sin of the world!'
+            },
+            {
+              imageUrl:
+                'https://images.unsplash.com/photo-1522442676585-c751dab71864?w=900&auto=format&fit=crop&q=60',
+              bgColor: '#A88E78',
+              author: 'Romans 6:23',
+              text: 'For the wages of sin is death, but the gift of God is eternal life in Christ Jesus our Lord.'
+            },
+            {
+              imageUrl:
+                'https://images.unsplash.com/photo-1678181896030-11cf0237d704?w=900&auto=format&fit=crop&q=60',
+              bgColor: '#72593A',
+              author: 'Revelation 3:20',
+              text: 'Here I am! I stand at the door and knock. If anyone hears my voice and opens the door, I will come in and eat with that person, and they with me.'
+            }
+          ]}
+          freeResource={{
+            imageUrl:
+              'https://images.unsplash.com/photo-1650658720644-e1588bd66de3?w=900&auto=format&fit=crop&q=60',
+            bgColor: '#5F4C5E',
+            subtitle: 'Free Resources',
+            title: "Want to deepen your understanding of Jesus' life?",
+            buttonText: 'Join Our Bible study'
+          }}
         />
       </CollectionsPageContent>
     </PageWrapper>
