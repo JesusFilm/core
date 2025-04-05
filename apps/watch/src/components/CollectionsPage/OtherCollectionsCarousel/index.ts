@@ -1,0 +1,1 @@
+export { OtherCollectionsCarousel } from './OtherCollectionsCarousel'

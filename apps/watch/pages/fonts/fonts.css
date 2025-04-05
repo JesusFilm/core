@@ -1,0 +1,34 @@
+@font-face {
+  font-family: 'ApercuBold';
+  src:
+    url('/watch/assets/fonts/apercu_bold.eot') format('embedded-opentype'),
+    url('/watch/assets/fonts/apercu_bold.woff2') format('woff2'),
+    url('/watch/assets/fonts/apercu_bold.woff') format('woff'),
+    url('/watch/assets/fonts/apercu_bold.ttf') format('truetype'),
+    url('/watch/assets/fonts/apercu_bold.svg') format('svg'),
+    url('/watch/assets/fonts/apercu_bold.otf');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Apercu';
+  src:
+    url('/watch/assets/fonts/apercu_regular.woff2') format('woff2'),
+    url('/watch/assets/fonts/apercu_regular.woff') format('woff'),
+    url('/watch/assets/fonts/apercu_regular.ttf') format('truetype'),
+    url('/watch/assets/fonts/apercu_regular.svg') format('svg'),
+    url('/watch/assets/fonts/apercu_bold.otf');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('./Montserrat-VariableFont_wght.ttf') format('woff2-variations');
+  src: url('./Montserrat-VariableFont_wght.ttf') format('woff2')
+    tech('variations');
+  font-weight: 100 1000;
+}
