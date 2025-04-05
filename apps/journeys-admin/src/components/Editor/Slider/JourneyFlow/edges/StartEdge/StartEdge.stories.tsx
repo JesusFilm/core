@@ -1,8 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
+import { Background, Node, Position, ReactFlow } from '@xyflow/react'
 import { ComponentPropsWithoutRef } from 'react'
-import { Background, Node, Position, ReactFlow } from 'reactflow'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'

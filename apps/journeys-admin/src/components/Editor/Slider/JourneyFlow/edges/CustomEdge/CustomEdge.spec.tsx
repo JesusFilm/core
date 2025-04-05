@@ -1,15 +1,15 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen } from '@testing-library/react'
+import { Position, ReactFlowProvider } from '@xyflow/react'
 import { ReactElement } from 'react'
-import { Position, ReactFlowProvider } from 'reactflow'
 
 import { mockReactFlow } from '../../../../../../../test/mockReactFlow'
 import { useDeleteEdge } from '../../libs/useDeleteEdge'
 
 import { CustomEdge } from '.'
 
-jest.mock('reactflow', () => {
-  const originalModule = jest.requireActual('reactflow')
+jest.mock('@xyflow/react', () => {
+  const originalModule = jest.requireActual('@xyflow/react')
   return {
     __esModule: true,
     ...originalModule,

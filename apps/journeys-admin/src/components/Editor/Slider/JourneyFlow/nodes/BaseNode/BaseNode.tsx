@@ -1,5 +1,12 @@
 import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
+import {
+  Handle,
+  OnConnect,
+  Position,
+  useOnSelectionChange,
+  useStore
+} from '@xyflow/react'
 import isFunction from 'lodash/isFunction'
 import { useTranslation } from 'next-i18next'
 import {
@@ -9,13 +16,6 @@ import {
   useEffect,
   useState
 } from 'react'
-import {
-  Handle,
-  OnConnect,
-  Position,
-  useOnSelectionChange,
-  useStore
-} from 'reactflow'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'

@@ -58,21 +58,21 @@ describe('transformReferrers', () => {
           source: 'Facebook',
           target: 'SocialPreview',
           type: 'Referrer',
-          updatable: false
+          reconnectable: false
         },
         {
           id: 'Google->SocialPreview',
           source: 'Google',
           target: 'SocialPreview',
           type: 'Referrer',
-          updatable: false
+          reconnectable: false
         },
         {
           id: 'other sources->SocialPreview',
           source: 'other sources',
           target: 'SocialPreview',
           type: 'Referrer',
-          updatable: false
+          reconnectable: false
         }
       ]
     })
@@ -127,21 +127,21 @@ describe('transformReferrers', () => {
           source: 'Facebook',
           target: 'SocialPreview',
           type: 'Referrer',
-          updatable: false
+          reconnectable: false
         },
         {
           id: 'Google->SocialPreview',
           source: 'Google',
           target: 'SocialPreview',
           type: 'Referrer',
-          updatable: false
+          reconnectable: false
         },
         {
           id: 'Direct / None->SocialPreview',
           source: 'Direct / None',
           target: 'SocialPreview',
           type: 'Referrer',
-          updatable: false
+          reconnectable: false
         }
       ]
     })
@@ -184,14 +184,14 @@ describe('transformReferrers', () => {
           source: 'Facebook',
           target: 'SocialPreview',
           type: 'Referrer',
-          updatable: false
+          reconnectable: false
         },
         {
           id: 'Direct / None->SocialPreview',
           source: 'Direct / None',
           target: 'SocialPreview',
           type: 'Referrer',
-          updatable: false
+          reconnectable: false
         }
       ]
     })
@@ -222,7 +222,7 @@ describe('transformReferrers', () => {
           source: 'Direct / None',
           target: 'SocialPreview',
           type: 'Referrer',
-          updatable: false
+          reconnectable: false
         }
       ]
     })
