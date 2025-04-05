@@ -9,7 +9,6 @@ import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import { InferType, mixed, object, string } from 'yup'
 
-import { FormLanguageSelect } from '../../../../../components/FormLanguageSelect'
 import { FormSelectField } from '../../../../../components/FormSelectField'
 import { FormTextField } from '../../../../../components/FormTextField'
 import { videoLabels } from '../../../../../constants'
@@ -46,7 +45,6 @@ export function VideoCreateForm({ close }: VideoCreateFormProps): ReactElement {
   const validationSchema = object().shape({
     id: string().trim().required('ID is required'),
     slug: string().trim().required('Slug is required'),
-    primaryLanguageId: string().required('Primary language is required'),
     label: mixed<VideoLabel>()
       .oneOf(Object.values(VideoLabel))
       .required('Label is required')
@@ -65,7 +63,7 @@ export function VideoCreateForm({ close }: VideoCreateFormProps): ReactElement {
           id: values.id,
           slug: values.slug,
           label: values.label,
-          primaryLanguageId: values.primaryLanguageId,
+          primaryLanguageId: '529',
           noIndex: false,
           published: false,
           childIds: []
@@ -105,8 +103,7 @@ export function VideoCreateForm({ close }: VideoCreateFormProps): ReactElement {
   const initialValues: InferType<typeof validationSchema> = {
     id: '',
     slug: '',
-    label: '' as VideoLabel,
-    primaryLanguageId: ''
+    label: '' as VideoLabel
   }
 
   return (
@@ -124,10 +121,6 @@ export function VideoCreateForm({ close }: VideoCreateFormProps): ReactElement {
             label="Label"
             options={videoLabels}
             fullWidth
-          />
-          <FormLanguageSelect
-            name="primaryLanguageId"
-            label="Primary Language"
           />
           <Stack direction="row" sx={{ gap: 1, mt: 2 }}>
             <Button variant="outlined" onClick={close} fullWidth>
