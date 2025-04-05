@@ -1,9 +1,11 @@
-import { ReactElement } from 'react'
+'use client'
 
-import { VideoView } from './_VideoView'
+import { useVideo } from '../../../../libs/VideoProvider'
 
-export const revalidate = 300
+import { Metadata } from './_VideoView/Metadata'
 
-export default function VideoViewPage(): ReactElement {
-  return <VideoView />
+export default function VideoPage() {
+  const video = useVideo()
+
+  return <Metadata video={video} />
 }
