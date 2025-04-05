@@ -248,7 +248,6 @@ export function CollectionVideoPlayer({
         preload: 'auto',
         loop: true,
         fluid: true,
-        aspectRatio: '16:9',
         poster: videoData.content.images?.[0]?.mobileCinematicHigh ?? undefined
       })
 
@@ -278,12 +277,17 @@ export function CollectionVideoPlayer({
       ref={containerRef}
       onClick={handlePlayPause}
     >
-      <div className="beveled block relative aspect-video rounded-lg overflow-hidden bg-black shadow-2xl shadow-stone-950/70">
+      <div className="beveled block relative aspect-3/2 rounded-lg overflow-hidden bg-black shadow-2xl shadow-stone-950/70">
         {/* Video container */}
         <div className="absolute inset-0 w-full h-full">
           <video
-            className="video-js vjs-fluid vjs-default-skin absolute inset-0 w-full h-full object-cover"
+            className="video-js vjs-fill vjs-default-skin absolute inset-0 w-full h-full object-cover"
             ref={videoRef}
+            style={{
+              objectFit: 'cover',
+              width: '100%',
+              height: '100%'
+            }}
             playsInline
           />
         </div>
