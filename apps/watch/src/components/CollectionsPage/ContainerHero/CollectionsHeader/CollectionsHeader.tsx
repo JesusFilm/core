@@ -1,8 +1,22 @@
+import LanguageIcon from '@mui/icons-material/Language'
+import IconButton from '@mui/material/IconButton'
 import Image from 'next/image'
 import NextLink from 'next/link'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
+
+import { LanguageModal } from './LanguageModal'
 
 export function CollectionsHeader(): ReactElement {
+  const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false)
+
+  const handleOpenLanguageModal = (): void => {
+    setIsLanguageModalOpen(true)
+  }
+
+  const handleCloseLanguageModal = (): void => {
+    setIsLanguageModalOpen(false)
+  }
+
   return (
     <>
       <div
@@ -18,7 +32,22 @@ export function CollectionsHeader(): ReactElement {
             className="max-w-[50px] lg:max-w-[70px]"
           />
         </NextLink>
+        <IconButton
+          data-testid="LanguageButton"
+          onClick={handleOpenLanguageModal}
+          aria-label="select language"
+          tabIndex={0}
+          sx={{
+            color: 'white'
+          }}
+        >
+          <LanguageIcon />
+        </IconButton>
       </div>
+      <LanguageModal
+        open={isLanguageModalOpen}
+        onClose={handleCloseLanguageModal}
+      />
     </>
   )
 }
