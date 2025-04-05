@@ -20,10 +20,7 @@ export function CollectionsPageContent({
           backdropFilter: 'brightness(.6) blur(40px)'
         }}
       ></div>
-      <div
-        className="pt-7 w-full mt-[-100vh]"
-        data-testid="CollectionPageContainer"
-      >
+      <div className="w-full mt-[-100vh]" data-testid="CollectionPageContainer">
         <div
           className="max-w-[1920px] mx-auto "
           data-testid="CollectionPageContent"

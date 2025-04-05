@@ -54,7 +54,7 @@ export function ContainerHero({
 
   return (
     <div
-      className="h-[70vh] w-full flex items-end relative transition-height duration-300 ease-out bg-stone-900 font-sans"
+      className="h-[90vh] md:h-[70vh] w-full flex items-end relative transition-height duration-300 ease-out bg-stone-900 font-sans"
       data-testid="ContainerHero"
     >
       <CollectionsHeader />
@@ -68,7 +68,7 @@ export function ContainerHero({
         className="w-full relative flex flex-col sm:flex-row max-w-[1920px] mx-auto pb-4"
       >
         <div
-          className="absolute top-0 left-0 right-0 h-full w-full pointer-events-none"
+          className="absolute top-0 left-0 right-0 h-full w-full pointer-events-none md:hidden"
           style={{
             backdropFilter: 'brightness(.6) blur(40px)',
             mask: 'linear-gradient(0deg, rgba(2,0,36,1) 46%, rgba(2,0,36,1) 53%, rgba(0,0,0,0) 100%)'
@@ -76,7 +76,7 @@ export function ContainerHero({
         />
         <div
           data-testid="ContainerHeroTitle"
-          className="w-full flex padded pb-4"
+          className="w-full flex padded pb-4 min-h-[500px] items-end"
         >
           <div className="pb-4 sm:pb-0 w-full relative z-[2] flex flex-col">
             <div className="flex items-center justify-between w-full z-[2]">
@@ -88,11 +88,11 @@ export function ContainerHero({
                 onClick={handleToggleMute}
               />
             </div>
-            <p className="text-secondary-contrast opacity-50 mix-blend-screen z-[2] uppercase tracking-widest text-white">
+            {/* <p className="text-secondary-contrast opacity-50 mix-blend-screen z-[2] uppercase tracking-widest text-white">
               {collectionDetails}
-            </p>
+            </p> */}
             <h1
-              className="text-xl md:text-2xl text-primary mt-8 z-[2] text-balance"
+              className="text-secondary-contrast opacity-50 mix-blend-screen z-[2] uppercase tracking-widest text-white"
               data-testid="ContainerHeroDescription"
             >
               {`${descriptionBeforeYear} ${currentYear} ${descriptionAfterYear}`}

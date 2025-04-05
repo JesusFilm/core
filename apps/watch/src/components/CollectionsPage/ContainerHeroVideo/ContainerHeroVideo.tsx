@@ -86,7 +86,7 @@ export function ContainerHeroVideo({
         playsInline
       >
         <source
-          src="https://stream.mux.com/OWsElOe7FF8fR8lwFVY4uqGFc01xgKwQZIIcrIgu4aKc.m3u8"
+          src="https://stream.mux.com/J3WBxqGgXxi01201FYmW0202ayeL7PGXfuuXR02nvjQCE7bI.m3u8"
           type="application/x-mpegURL"
           data-testid="ContainerHeroVideoSource"
         />

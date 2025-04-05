@@ -81,7 +81,7 @@ export function CollectionsPage(): ReactElement {
       hideFooter
     >
       <CollectionsPageContent>
-        <CollectionNavigationCarousel contentItems={navigationContentItems} />
+        {/* <CollectionNavigationCarousel contentItems={navigationContentItems} /> */}
         <CollectionIntroText
           title="The real Easter story"
           subtitle="Easter isn't just a celebration"

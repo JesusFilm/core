@@ -111,7 +111,7 @@ export const EasterDates = ({
               }
             }}
           >
-            <h4 className="font-bold text-white text-3xl text-opacity-90">
+            <h4 className="font-bold text-black/85 text-2xl xl:text-3xl text-opacity-90">
               {title.replace('{year}', currentYear.toString())}
             </h4>
           </AccordionSummary>
