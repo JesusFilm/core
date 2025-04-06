@@ -8,6 +8,10 @@ import {
   GetJourneyEvents,
   GetJourneyEventsVariables
 } from '../../../__generated__/GetJourneyEvents'
+import {
+  GetJourneyEventsCount,
+  GetJourneyEventsCountVariables
+} from '../../../__generated__/GetJourneyEventsCount'
 
 import {
   CREATE_EVENTS_EXPORT_LOG,
@@ -15,10 +19,6 @@ import {
   GET_JOURNEY_EVENTS_COUNT,
   GET_JOURNEY_EVENTS_EXPORT
 } from './useJourneyEventsExport'
-import {
-  GetJourneyEventsCount,
-  GetJourneyEventsCountVariables
-} from '../../../__generated__/GetJourneyEventsCount'
 
 export const mockGetJourneyEventsQuery: MockedResponse<
   GetJourneyEvents,
