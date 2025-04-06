@@ -18,8 +18,8 @@ import {
   useJourneyEventsExport
 } from './useJourneyEventsExport'
 import {
-  mockCreateEventsExportLogMutation,
   getMockGetJourneyEventsCountQuery,
+  mockCreateEventsExportLogMutation,
   mockGetJourneyEventsQuery
 } from './useJourneyEventsExport.mock'
 

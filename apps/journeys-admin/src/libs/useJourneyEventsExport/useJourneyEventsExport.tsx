@@ -4,13 +4,13 @@ import { format } from 'date-fns'
 import isNil from 'lodash/isNil'
 import omitBy from 'lodash/omitBy'
 import { useTranslation } from 'next-i18next'
+import { useState } from 'react'
 
 import {
   GetJourneyEventsVariables,
   GetJourneyEvents_journeyEventsConnection_edges as JourneyEventEdge,
   GetJourneyEvents_journeyEventsConnection_edges_node as JourneyEventNode
 } from '../../../__generated__/GetJourneyEvents'
-import { useState } from 'react'
 
 export const GET_JOURNEY_EVENTS_COUNT = gql`
   query GetJourneyEventsCount($journeyId: ID!, $filter: JourneyEventsFilter) {
