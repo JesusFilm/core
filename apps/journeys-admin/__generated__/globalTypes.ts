@@ -454,8 +454,8 @@ export interface JourneyCollectionUpdateInput {
 export interface JourneyEventsExportLogInput {
   journeyId: string;
   eventsFilter: EventType[];
-  dateRangeStart?: string | null;
-  dateRangeEnd?: string | null;
+  dateRangeStart?: any | null;
+  dateRangeEnd?: any | null;
 }
 
 export interface JourneyEventsFilter {

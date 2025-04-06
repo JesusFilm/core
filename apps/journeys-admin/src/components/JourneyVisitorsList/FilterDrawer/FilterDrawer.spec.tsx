@@ -8,18 +8,18 @@ import {
   CreateEventsExportLog,
   CreateEventsExportLogVariables
 } from '../../../../__generated__/CreateEventsExportLog'
-import { ButtonAction } from '../../../../__generated__/globalTypes'
-
-import {
-  CREATE_EVENTS_EXPORT_LOG,
-  FilterDrawer,
-  GET_JOURNEY_EVENTS_EXPORT
-} from './FilterDrawer'
 import {
   GetJourneyEvents,
   GetJourneyEventsVariables
 } from '../../../../__generated__/GetJourneyEvents'
-import { GetJourney_journey } from '../../../../__generated__/GetJourney'
+import { ButtonAction } from '../../../../__generated__/globalTypes'
+import {
+  FILTERED_EVENTS,
+  GET_JOURNEY_EVENTS_EXPORT
+} from '../../../libs/useJourneyEventsExport/useJourneyEventsExport'
+import { mockCreateEventsExportLogMutation } from '../../../libs/useJourneyEventsExport/useJourneyEventsExport.mock'
+
+import { FilterDrawer } from './FilterDrawer'
 
 const getJourneyEventsMock: MockedResponse<
   GetJourneyEvents,
@@ -28,9 +28,12 @@ const getJourneyEventsMock: MockedResponse<
   request: {
     query: GET_JOURNEY_EVENTS_EXPORT,
     variables: {
-      journeyId: '123',
+      journeyId: 'journey1',
+      filter: {
+        typenames: FILTERED_EVENTS
+      },
       after: null,
-      first: 50
+      first: 20000
     }
   },
   result: jest.fn(() => ({
@@ -40,56 +43,56 @@ const getJourneyEventsMock: MockedResponse<
         edges: [
           {
             __typename: 'JourneyEventEdge',
+            cursor: 'cursor1',
             node: {
               __typename: 'JourneyEvent',
-              id: '123',
               journeyId: '123',
-              createdAt: '2021-01-01',
+              visitorId: 'visitor.id',
               label: 'Test',
               value: 'Test',
-              action: null,
-              actionValue: null,
-              messagePlatform: null,
-              language: null,
-              email: null,
-              blockId: null,
-              position: null,
-              source: null,
-              progress: null,
               typename: 'StepViewEvent',
-              visitorId: 'visitor.id',
-              visitor: null
+              progress: null,
+              messagePlatform: null,
+              journey: {
+                __typename: 'Journey',
+                slug: 'test-journey'
+              },
+              visitor: {
+                __typename: 'Visitor',
+                email: 'test@example.com',
+                name: 'Test User'
+              }
             }
           },
           {
             __typename: 'JourneyEventEdge',
+            cursor: 'cursor2',
             node: {
               __typename: 'JourneyEvent',
-              id: '123',
               journeyId: '123',
-              createdAt: '2021-01-01',
               label: 'Test',
               value: 'Test',
-              action: ButtonAction.NavigateToBlockAction,
-              actionValue: 'nextBlock',
               messagePlatform: null,
-              language: null,
-              email: null,
-              blockId: null,
-              position: null,
-              source: null,
               progress: null,
               typename: 'StepViewEvent',
               visitorId: 'visitor.id',
-              visitor: null
+              visitor: {
+                __typename: 'Visitor',
+                email: 'test@example.com',
+                name: 'Test User'
+              },
+              journey: {
+                __typename: 'Journey',
+                slug: 'test-journey'
+              }
             }
           }
         ],
         pageInfo: {
           hasNextPage: false,
           hasPreviousPage: false,
-          startCursor: 'ace21868-f605-4b2c-8a4d-c8c8b5947b49',
-          endCursor: 'de0c1bf8-d43b-40a9-b7d3-9368cc870263',
+          startCursor: 'cursor1',
+          endCursor: 'cursor2',
           __typename: 'PageInfo'
         }
       }
@@ -97,33 +100,8 @@ const getJourneyEventsMock: MockedResponse<
   }))
 }
 
-const createEventsExportLogMock: MockedResponse<
-  CreateEventsExportLog,
-  CreateEventsExportLogVariables
-> = {
-  request: {
-    query: CREATE_EVENTS_EXPORT_LOG,
-    variables: {
-      input: {
-        journeyId: '123',
-        eventsFilter: []
-      }
-    }
-  },
-  result: jest.fn(() => ({
-    data: {
-      createJourneyEventsExportLog: {
-        __typename: 'JourneyEventsExportLog',
-        id: '123'
-      }
-    }
-  }))
-}
 const props = {
-  journey: {
-    id: '123',
-    slug: 'test-journey'
-  } as GetJourney_journey,
+  journeyId: 'journey1',
   chatStarted: false,
   withPollAnswers: false,
   withSubmittedText: false,
@@ -190,12 +168,12 @@ describe('FilterDrawer', () => {
       )
 
       expect(
-        screen.getByRole('button', { name: 'Export data' })
+        screen.getByRole('button', { name: 'Export Data' })
       ).toBeInTheDocument()
     })
 
-    it('should not render the export button if journey is not provided', async () => {
-      const { journey, ...rest } = props
+    it('should not render the export button if journeyId is not provided', async () => {
+      const { journeyId, ...rest } = props
 
       render(
         <MockedProvider>
@@ -204,14 +182,21 @@ describe('FilterDrawer', () => {
       )
 
       expect(
-        screen.queryByRole('button', { name: 'Export data' })
+        screen.queryByRole('button', { name: 'Export Data' })
       ).not.toBeInTheDocument()
     })
 
     it('should fetch data when export button is clicked', async () => {
+      const mutationResult = jest.fn(() => ({
+        ...mockCreateEventsExportLogMutation.result
+      }))
+
       render(
         <MockedProvider
-          mocks={[getJourneyEventsMock, createEventsExportLogMock]}
+          mocks={[
+            getJourneyEventsMock,
+            { ...mockCreateEventsExportLogMutation, result: mutationResult }
+          ]}
         >
           <FilterDrawer {...props} />
         </MockedProvider>
@@ -219,12 +204,12 @@ describe('FilterDrawer', () => {
 
       const user = userEvent.setup()
 
-      await user.click(screen.getByRole('button', { name: 'Export data' }))
+      await user.click(screen.getByRole('button', { name: 'Export Data' }))
 
       await waitFor(() => {
         expect(getJourneyEventsMock.result).toHaveBeenCalled()
       })
-      expect(createEventsExportLogMock.result).toHaveBeenCalled()
+      expect(mutationResult).toHaveBeenCalled()
     })
 
     it('should download the csv file', async () => {
@@ -237,14 +222,14 @@ describe('FilterDrawer', () => {
 
       render(
         <MockedProvider
-          mocks={[getJourneyEventsMock, createEventsExportLogMock]}
+          mocks={[getJourneyEventsMock, mockCreateEventsExportLogMutation]}
         >
           <FilterDrawer {...props} />
         </MockedProvider>
       )
 
       const user = userEvent.setup()
-      await user.click(screen.getByRole('button', { name: 'Export data' }))
+      await user.click(screen.getByRole('button', { name: 'Export Data' }))
 
       expect(createElementSpy).toHaveBeenCalledWith('a')
       expect(setAttributeSpy).toHaveBeenCalledWith(
@@ -255,6 +240,9 @@ describe('FilterDrawer', () => {
     })
 
     it('should show an error if no data is found', async () => {
+      const mutationResult = jest.fn(() => ({
+        ...mockCreateEventsExportLogMutation.result
+      }))
       const getJourneyEventsErrorMock = {
         ...getJourneyEventsMock,
         result: jest.fn(() => ({
@@ -269,7 +257,10 @@ describe('FilterDrawer', () => {
       render(
         <SnackbarProvider>
           <MockedProvider
-            mocks={[getJourneyEventsErrorMock, createEventsExportLogMock]}
+            mocks={[
+              getJourneyEventsErrorMock,
+              { ...mockCreateEventsExportLogMutation, result: mutationResult }
+            ]}
           >
             <FilterDrawer {...props} />
           </MockedProvider>
@@ -277,13 +268,13 @@ describe('FilterDrawer', () => {
       )
 
       const user = userEvent.setup()
-      await user.click(screen.getByRole('button', { name: 'Export data' }))
+      await user.click(screen.getByRole('button', { name: 'Export Data' }))
 
       expect(getJourneyEventsErrorMock.result).toHaveBeenCalled()
       expect(
         screen.getByText('Failed to retrieve data for export.')
       ).toBeInTheDocument()
-      expect(createEventsExportLogMock.result).not.toHaveBeenCalled()
+      expect(mutationResult).not.toHaveBeenCalled()
     })
   })
 })

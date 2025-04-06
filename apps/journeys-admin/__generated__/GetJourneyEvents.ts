@@ -9,68 +9,55 @@ import { JourneyEventsFilter, ButtonAction, MessagePlatform, VideoBlockSource } 
 // GraphQL query operation: GetJourneyEvents
 // ====================================================
 
-export interface GetJourneyEvents_journeyEventsConnection_edges_node_language_name {
-  __typename: "LanguageName";
-  value: string;
-}
-
-export interface GetJourneyEvents_journeyEventsConnection_edges_node_language {
-  __typename: "Language";
-  id: string;
-  name: GetJourneyEvents_journeyEventsConnection_edges_node_language_name[];
+export interface GetJourneyEvents_journeyEventsConnection_edges_node_journey {
+  __typename: "Journey";
+  slug: string;
 }
 
 export interface GetJourneyEvents_journeyEventsConnection_edges_node_visitor {
   __typename: "Visitor";
   /**
-   * The name of the visitor as populated by VisitorUpdate mutation or
-   * SignUpEventSubmissionEventCreate mutation.
-   */
-  name: string | null;
-  /**
    * The email address of the visitor as populated by VisitorUpdate mutation or
    * SignUpEventSubmissionEventCreate mutation.
    */
   email: string | null;
+  /**
+   * The name of the visitor as populated by VisitorUpdate mutation or
+   * SignUpEventSubmissionEventCreate mutation.
+   */
+  name: string | null;
 }
 
 export interface GetJourneyEvents_journeyEventsConnection_edges_node {
   __typename: "JourneyEvent";
-  /**
-   * Base event fields from Event interface
-   */
-  id: string;
   journeyId: string;
-  createdAt: any;
+  visitorId: string | null;
   label: string | null;
   value: string | null;
-  /**
-   * Additional specific event fields
-   */
-  action: ButtonAction | null;
-  actionValue: string | null;
-  messagePlatform: MessagePlatform | null;
-  language: GetJourneyEvents_journeyEventsConnection_edges_node_language | null;
-  email: string | null;
-  blockId: string | null;
-  position: number | null;
-  source: VideoBlockSource | null;
-  progress: number | null;
   /**
    * database fields from table, not explicitly surfaced from any other types
    */
   typename: string | null;
-  visitorId: string | null;
+  progress: number | null;
+  /**
+   * Related fields queried from relevant ids in the events table
+   */
+  journey: GetJourneyEvents_journeyEventsConnection_edges_node_journey | null;
   visitor: GetJourneyEvents_journeyEventsConnection_edges_node_visitor | null;
 }
 
 export interface GetJourneyEvents_journeyEventsConnection_edges {
   __typename: "JourneyEventEdge";
+  cursor: string;
   node: GetJourneyEvents_journeyEventsConnection_edges_node;
 }
 
 export interface GetJourneyEvents_journeyEventsConnection_pageInfo {
   __typename: "PageInfo";
+  /**
+   * When paginating forwards, the cursor to continue.
+   */
+  endCursor: string | null;
   /**
    * When paginating forwards, are there more items?
    */
@@ -83,10 +70,6 @@ export interface GetJourneyEvents_journeyEventsConnection_pageInfo {
    * When paginating backwards, the cursor to continue.
    */
   startCursor: string | null;
-  /**
-   * When paginating forwards, the cursor to continue.
-   */
-  endCursor: string | null;
 }
 
 export interface GetJourneyEvents_journeyEventsConnection {

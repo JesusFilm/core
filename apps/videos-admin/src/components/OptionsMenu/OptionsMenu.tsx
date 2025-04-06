@@ -9,7 +9,6 @@ import MuiMenuItem from '@mui/material/MenuItem'
 import { paperClasses } from '@mui/material/Paper'
 import { styled } from '@mui/material/styles'
 import { useRouter } from 'next/navigation'
-import { useTranslations } from 'next-intl'
 import { MouseEvent, ReactElement, useState } from 'react'
 
 import { useLogout } from '../../libs/useLogout'
@@ -20,7 +19,6 @@ const MenuItem = styled(MuiMenuItem)({
 })
 
 export function OptionsMenu(): ReactElement {
-  const t = useTranslations()
   const router = useRouter()
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -69,7 +67,7 @@ export function OptionsMenu(): ReactElement {
           }
         }}
       >
-        <MenuItem onClick={handleSettingsClick}>{t('Settings')}</MenuItem>
+        <MenuItem onClick={handleSettingsClick}>Settings</MenuItem>
         <Divider />
         <MenuItem
           onClick={handleLogout}
@@ -80,7 +78,7 @@ export function OptionsMenu(): ReactElement {
             }
           }}
         >
-          <ListItemText>{t('Sign Out')}</ListItemText>
+          <ListItemText>Sign Out</ListItemText>
           <ListItemIcon>
             <LogoutRoundedIcon fontSize="small" />
           </ListItemIcon>
