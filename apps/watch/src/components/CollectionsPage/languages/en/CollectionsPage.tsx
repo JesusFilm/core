@@ -79,6 +79,7 @@ export function CollectionsPage(): ReactElement {
           collectionDetails="Collection • 26 Videos"
           descriptionBeforeYear="Easter"
           descriptionAfterYear="videos & resources about Lent, Holy Week, Resurrection"
+          feedbackButtonLabel="Give Feedback"
         />
       }
       hideHeader

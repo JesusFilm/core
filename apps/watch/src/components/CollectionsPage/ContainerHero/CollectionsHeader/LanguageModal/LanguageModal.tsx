@@ -18,6 +18,7 @@ const Transition = forwardRef(function Transition(
 interface LanguageModalProps {
   open: boolean
   onClose: () => void
+  feedbackButtonLabel: string
 }
 
 const languages = [
@@ -30,7 +31,8 @@ const languages = [
 
 export function LanguageModal({
   open,
-  onClose
+  onClose,
+  feedbackButtonLabel
 }: LanguageModalProps): ReactElement {
   const handleClose = (): void => {
     onClose()
@@ -78,7 +80,8 @@ export function LanguageModal({
               className="mt-6 inline-block text-center gap-2 px-4 py-4 text-md text-white font-semibold tracking-wider rounded-lg bg-stone-800/10 hover:bg-red-500 hover:text-white transition-colors duration-200 cursor-pointer"
               data-testid={`language-button-support`}
             >
-              <EmailIcon sx={{ fontSize: 20, marginRight: 2 }} /> Give Feedback
+              <EmailIcon sx={{ fontSize: 20, marginRight: 2 }} />{' '}
+              {feedbackButtonLabel}
             </a>
           </div>
         </div>

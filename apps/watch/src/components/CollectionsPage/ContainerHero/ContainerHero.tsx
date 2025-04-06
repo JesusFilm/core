@@ -10,19 +10,19 @@ import { ContainerHeroMuteButton } from './ContainerHeroMuteButton'
 export interface ContainerHeroProps {
   /** Title displayed in the hero section */
   title: string
-  /** Collection details text */
-  collectionDetails: string
   /** Text before the year in the description */
   descriptionBeforeYear: string
   /** Text after the year in the description */
   descriptionAfterYear: string
+  /** Label for the feedback button */
+  feedbackButtonLabel: string
 }
 
 export function ContainerHero({
   title,
-  collectionDetails,
   descriptionBeforeYear,
-  descriptionAfterYear
+  descriptionAfterYear,
+  feedbackButtonLabel
 }: ContainerHeroProps): ReactElement {
   const [playerRef, setPlayerRef] = useState<Player | null>(null)
   const [isMuted, setIsMuted] = useState(true)
@@ -57,7 +57,7 @@ export function ContainerHero({
       className="h-[90vh] md:h-[70vh] w-full flex items-end relative transition-height duration-300 ease-out bg-stone-900 font-sans"
       data-testid="ContainerHero"
     >
-      <CollectionsHeader />
+      <CollectionsHeader feedbackButtonLabel={feedbackButtonLabel} />
       <ContainerHeroVideo
         onMutedChange={handleMutedChange}
         onPlayerReady={handlePlayerReady}
@@ -88,9 +88,7 @@ export function ContainerHero({
                 onClick={handleToggleMute}
               />
             </div>
-            {/* <p className="text-secondary-contrast opacity-50 mix-blend-screen z-[2] uppercase tracking-widest text-white">
-              {collectionDetails}
-            </p> */}
+
             <h1
               className="text-secondary-contrast opacity-50 mix-blend-screen z-[2] uppercase tracking-widest text-white"
               data-testid="ContainerHeroDescription"

@@ -6,7 +6,11 @@ import { ReactElement, useState } from 'react'
 
 import { LanguageModal } from './LanguageModal'
 
-export function CollectionsHeader(): ReactElement {
+export function CollectionsHeader({
+  feedbackButtonLabel
+}: {
+  feedbackButtonLabel: string
+}): ReactElement {
   const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false)
 
   const handleOpenLanguageModal = (): void => {
@@ -47,6 +51,7 @@ export function CollectionsHeader(): ReactElement {
       <LanguageModal
         open={isLanguageModalOpen}
         onClose={handleCloseLanguageModal}
+        feedbackButtonLabel={feedbackButtonLabel}
       />
     </>
   )

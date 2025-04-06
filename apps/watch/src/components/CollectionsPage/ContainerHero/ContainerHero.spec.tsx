@@ -78,10 +78,10 @@ describe('ContainerHero', () => {
   const currentYear = new Date().getFullYear()
   const defaultProps: ContainerHeroProps = {
     title: 'Easter',
-    collectionDetails: 'Collection • 26 Videos',
     descriptionBeforeYear: 'Easter',
     descriptionAfterYear:
-      'videos & resources about Lent, Holy Week, Resurrection'
+      'videos & resources about Lent, Holy Week, Resurrection',
+    feedbackButtonLabel: 'Feedback'
   }
 
   beforeEach(() => {
@@ -124,7 +124,6 @@ describe('ContainerHero', () => {
     render(<ContainerHero {...defaultProps} />)
 
     expect(screen.getByText('Easter')).toBeInTheDocument()
-    expect(screen.getByText('Collection • 26 Videos')).toBeInTheDocument()
 
     const expectedDescription = `Easter ${currentYear} videos & resources about Lent, Holy Week, Resurrection`
     expect(screen.getByTestId('ContainerHeroDescription')).toHaveTextContent(
