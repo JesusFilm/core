@@ -5,7 +5,6 @@ import Divider from '@mui/material/Divider'
 import Drawer, { drawerClasses } from '@mui/material/Drawer'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
 import { useAuth } from '../../libs/auth/authContext'
@@ -21,7 +20,6 @@ export function SideMenuMobile({
   open,
   toggleDrawer
 }: SideMenuMobileProps): ReactElement {
-  const t = useTranslations()
   const auth = useAuth()
   const handleLogout = useLogout()
 
@@ -72,7 +70,7 @@ export function SideMenuMobile({
             fullWidth
             startIcon={<LogoutRoundedIcon />}
           >
-            {t('Sign Out')}
+            Sign Out
           </Button>
         </Stack>
       </Stack>
