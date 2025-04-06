@@ -18,23 +18,23 @@ describe('HeaderMenuPanel', () => {
   it('should handle accordion expand and collapse', async () => {
     render(<HeaderMenuPanel onClose={mockOnClose} />)
 
-    const accordion = screen.getByRole('button', { name: 'About Us' })
+    const accordion = screen.getByRole('button', { name: 'Give' })
     expect(
-      screen.queryByRole('link', { name: 'Our Organization' })
+      screen.queryByRole('link', { name: 'Ways to Give' })
     ).not.toBeInTheDocument()
     expect(accordion).toHaveAttribute('aria-expanded', 'false')
 
     fireEvent.click(accordion)
     expect(accordion).toHaveAttribute('aria-expanded', 'true')
     expect(
-      screen.getByRole('link', { name: 'Our Organization' })
+      screen.getByRole('link', { name: 'Ways to Give' })
     ).toBeInTheDocument()
 
     fireEvent.click(accordion)
     expect(accordion).toHaveAttribute('aria-expanded', 'false')
     await waitFor(() =>
       expect(
-        screen.queryByRole('link', { name: 'Our Organization' })
+        screen.queryByRole('link', { name: 'Ways to Give' })
       ).not.toBeInTheDocument()
     )
   })
