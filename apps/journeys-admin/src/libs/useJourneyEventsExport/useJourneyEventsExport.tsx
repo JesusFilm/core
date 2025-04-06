@@ -2,6 +2,7 @@ import { gql, useLazyQuery, useMutation } from '@apollo/client'
 import isNil from 'lodash/isNil'
 import omitBy from 'lodash/omitBy'
 import { useTranslation } from 'next-i18next'
+import { useState } from 'react'
 
 import {
   GetJourneyEventsVariables,
@@ -12,6 +13,12 @@ import {
 import { FILTERED_EVENTS } from './utils/constants'
 import { processCsv } from './utils/processCsv'
 import { transformEvents } from './utils/transformEvents'
+
+export const GET_JOURNEY_EVENTS_COUNT = gql`
+  query GetJourneyEventsCount($journeyId: ID!, $filter: JourneyEventsFilter) {
+    journeyEventsCount(journeyId: $journeyId, filter: $filter)
+  }
+`
 
 export const GET_JOURNEY_EVENTS_EXPORT = gql`
   query GetJourneyEvents(
@@ -70,15 +77,20 @@ export interface JourneyEvent
   email?: string | null
 }
 
-export function useJourneyEventsExport(): {
+export function useJourneyEventsExport(): [
   exportJourneyEvents: ({
     journeyId,
     filter
-  }: Pick<GetJourneyEventsVariables, 'journeyId' | 'filter'>) => Promise<void>
-} {
+  }: Pick<GetJourneyEventsVariables, 'journeyId' | 'filter'>) => Promise<void>,
+  { downloading: boolean; progress: number }
+] {
   const { t } = useTranslation('apps-journeys-admin')
+  const [getJourneyEventsCount] = useLazyQuery(GET_JOURNEY_EVENTS_COUNT)
   const [getJourneyEvents] = useLazyQuery(GET_JOURNEY_EVENTS_EXPORT)
   const [createEventsExportLog] = useMutation(CREATE_EVENTS_EXPORT_LOG)
+
+  const [downloading, setDownloading] = useState(false)
+  const [progress, setProgress] = useState(0)
 
   async function exportJourneyEvents({
     journeyId,
@@ -87,6 +99,8 @@ export function useJourneyEventsExport(): {
     const events: JourneyEventEdge[] = []
     let cursor: string | null = null
     let hasNextPage = false
+    let total = 0
+
     const filterTypenames = filter?.typenames ?? []
     const typenames =
       filterTypenames.length > 0
@@ -98,21 +112,35 @@ export function useJourneyEventsExport(): {
           })
         : FILTERED_EVENTS
 
+    const filterArg = {
+      typenames,
+      ...omitBy(
+        {
+          periodRangeStart: filter?.periodRangeStart,
+          periodRangeEnd: filter?.periodRangeEnd
+        },
+        isNil
+      )
+    }
+
     try {
+      setDownloading(true)
+      setProgress(0)
+
+      const { data } = await getJourneyEventsCount({
+        variables: {
+          journeyId,
+          filter: filterArg
+        }
+      })
+
+      total = data.journeyEventsCount ?? 0
+
       do {
         const { data } = await getJourneyEvents({
           variables: {
             journeyId,
-            filter: {
-              typenames,
-              ...omitBy(
-                {
-                  periodRangeStart: filter?.periodRangeStart,
-                  periodRangeEnd: filter?.periodRangeEnd
-                },
-                isNil
-              )
-            },
+            filter: filterArg,
             first: 20000,
             after: cursor
           }
@@ -124,6 +152,8 @@ export function useJourneyEventsExport(): {
 
         const edges = data?.journeyEventsConnection.edges ?? []
         events.push(...edges)
+
+        setProgress(Math.floor((events.length / total) * 100))
 
         cursor = data?.journeyEventsConnection.pageInfo.endCursor
         hasNextPage = data?.journeyEventsConnection.pageInfo.hasNextPage
@@ -147,10 +177,10 @@ export function useJourneyEventsExport(): {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       throw new Error(t('Failed to retrieve data for export.'))
+    } finally {
+      setDownloading(false)
     }
   }
 
-  return {
-    exportJourneyEvents
-  }
+  return [exportJourneyEvents, { downloading, progress }]
 }
