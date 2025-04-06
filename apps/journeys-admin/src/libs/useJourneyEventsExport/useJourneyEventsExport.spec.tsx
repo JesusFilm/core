@@ -19,8 +19,11 @@ import {
 } from './useJourneyEventsExport'
 import {
   mockCreateEventsExportLogMutation,
+  getMockGetJourneyEventsCountQuery,
   mockGetJourneyEventsQuery
 } from './useJourneyEventsExport.mock'
+
+const mockGetJourneyEventsCountQuery = getMockGetJourneyEventsCountQuery()
 
 describe('useJourneyEventsExport', () => {
   const originalCreateElement = document.createElement
@@ -50,6 +53,7 @@ describe('useJourneyEventsExport', () => {
       wrapper: ({ children }) => (
         <MockedProvider
           mocks={[
+            mockGetJourneyEventsCountQuery,
             { ...mockGetJourneyEventsQuery, result: queryResult },
             { ...mockCreateEventsExportLogMutation, result: mutationResult }
           ]}
@@ -60,18 +64,19 @@ describe('useJourneyEventsExport', () => {
     })
 
     await act(async () => {
-      await result.current.exportJourneyEvents({
+      await result.current[0]({
         journeyId: 'journey1',
         filter: {}
       })
     })
 
     expect(queryResult).toHaveBeenCalled()
+    await waitFor(() =>
+      expect(mockGetJourneyEventsCountQuery.result).toHaveBeenCalled()
+    )
     await waitFor(() => expect(mutationResult).toHaveBeenCalled())
 
-    // await waitFor(() =>
     expect(createElementSpy).toHaveBeenCalledWith('a')
-    // )
     expect(setAttributeSpy).toHaveBeenCalledWith(
       'download',
       expect.stringMatching(/\[\d{4}-\d{2}-\d{2}\] test-journey\.csv/)
@@ -86,6 +91,15 @@ describe('useJourneyEventsExport', () => {
       HTMLAnchorElement.prototype,
       'setAttribute'
     )
+
+    const mockJourneyEventsCountQueryAll = getMockGetJourneyEventsCountQuery({
+      journeyId: 'journey1',
+      filter: {
+        typenames: ['ButtonClickEvent'],
+        periodRangeStart: '2023-01-15T12:00:00Z',
+        periodRangeEnd: '2024-01-15T12:00:00Z'
+      }
+    })
 
     const mockGetJourneyEventsQueryPage1: MockedResponse<
       GetJourneyEvents,
@@ -230,6 +244,7 @@ describe('useJourneyEventsExport', () => {
       wrapper: ({ children }) => (
         <MockedProvider
           mocks={[
+            mockJourneyEventsCountQueryAll,
             mockGetJourneyEventsQueryPage1,
             mockGetJourneyEventsQueryPage2,
             mockCreateEventsExportLogMutation
@@ -241,7 +256,7 @@ describe('useJourneyEventsExport', () => {
     })
 
     await act(async () => {
-      await result.current.exportJourneyEvents({
+      await result.current[0]({
         journeyId: 'journey1',
         filter: {
           typenames: ['ButtonClickEvent'],
@@ -291,7 +306,7 @@ describe('useJourneyEventsExport', () => {
 
     await expect(
       act(async () => {
-        await result.current.exportJourneyEvents({
+        await result.current[0]({
           journeyId: 'journey1',
           filter: {}
         })
