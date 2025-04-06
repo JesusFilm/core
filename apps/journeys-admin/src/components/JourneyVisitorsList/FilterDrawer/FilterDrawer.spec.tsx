@@ -13,8 +13,8 @@ import {
   GET_JOURNEY_EVENTS_EXPORT
 } from '../../../libs/useJourneyEventsExport/useJourneyEventsExport'
 import {
-  mockCreateEventsExportLogMutation,
-  getMockGetJourneyEventsCountQuery
+  getMockGetJourneyEventsCountQuery,
+  mockCreateEventsExportLogMutation
 } from '../../../libs/useJourneyEventsExport/useJourneyEventsExport.mock'
 
 import { FilterDrawer } from './FilterDrawer'
