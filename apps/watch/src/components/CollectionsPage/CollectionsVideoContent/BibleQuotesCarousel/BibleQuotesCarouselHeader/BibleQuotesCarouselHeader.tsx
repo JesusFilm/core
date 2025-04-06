@@ -5,16 +5,39 @@ import { Icon } from '@core/shared/ui/icons/Icon'
 
 interface BibleQuotesCarouselHeaderProps {
   bibleQuotesTitle: string
-  onOpenDialog?: () => void
   shareButtonText: string
 }
 
 export function BibleQuotesCarouselHeader({
   bibleQuotesTitle,
-  onOpenDialog,
   shareButtonText
 }: BibleQuotesCarouselHeaderProps): ReactElement {
   const { t } = useTranslation('apps-watch')
+
+  const handleShare = async (): Promise<void> => {
+    const shareUrl = new URL(window.location.href)
+    shareUrl.searchParams.append('utm_source', 'share')
+
+    const shareData = {
+      url: shareUrl.toString(),
+      title:
+        '👋 Check out these videos about Easter origins. I thought you would like it.',
+      text: ''
+    }
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData)
+      } else {
+        // Fallback to clipboard copy if native share is not available
+        await navigator.clipboard.writeText(
+          `${shareData.text}\n\n${shareUrl.toString()}`
+        )
+      }
+    } catch (error) {
+      console.error('Error sharing:', error)
+    }
+  }
 
   return (
     <div className="padded">
@@ -25,12 +48,12 @@ export function BibleQuotesCarouselHeader({
           </h3>
         </div>
         <button
-          onClick={onOpenDialog}
+          onClick={handleShare}
           aria-label="Share Bible quotes"
           tabIndex={0}
           onKeyDown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') {
-              onOpenDialog?.()
+              void handleShare()
             }
           }}
           className="inline-flex items-center gap-2 px-4 py-2 text-xs text-black font-bold uppercase tracking-wider rounded-full bg-white hover:bg-red-500 hover:text-white transition-colors duration-200 cursor-pointer"
