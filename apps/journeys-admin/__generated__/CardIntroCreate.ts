@@ -78,7 +78,6 @@ export interface CardIntroCreate_button {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardIntroCreate_button_action | null;
-  submitEnabled: boolean | null;
 }
 
 export interface CardIntroCreate_startIcon {
@@ -137,7 +136,6 @@ export interface CardIntroCreate_buttonBlockUpdate {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardIntroCreate_buttonBlockUpdate_action | null;
-  submitEnabled: boolean | null;
 }
 
 export interface CardIntroCreate_video_mediaVideo_Video_title {

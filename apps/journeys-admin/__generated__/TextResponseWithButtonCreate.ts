@@ -57,8 +57,8 @@ export interface TextResponseWithButtonCreate_button {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
-  action: TextResponseWithButtonCreate_button_action | null;
   submitEnabled: boolean | null;
+  action: TextResponseWithButtonCreate_button_action | null;
 }
 
 export interface TextResponseWithButtonCreate_startIcon {
@@ -115,8 +115,8 @@ export interface TextResponseWithButtonCreate_buttonUpdate {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
-  action: TextResponseWithButtonCreate_buttonUpdate_action | null;
   submitEnabled: boolean | null;
+  action: TextResponseWithButtonCreate_buttonUpdate_action | null;
 }
 
 export interface TextResponseWithButtonCreate {
