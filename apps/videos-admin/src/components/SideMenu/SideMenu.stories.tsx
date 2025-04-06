@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { NextIntlClientProvider } from 'next-intl'
 import { ComponentProps } from 'react'
 
 import { AuthProvider } from '../../libs/auth/AuthProvider'
@@ -22,10 +21,10 @@ const meta: Meta<typeof SideMenu> = {
 }
 
 export default meta
-type Story = StoryObj<ComponentProps<typeof SideMenu> & { locale: string }>
+type Story = StoryObj<ComponentProps<typeof SideMenu>>
 
 export const Default: Story = {
-  render: ({ locale }) => (
+  render: () => (
     <AuthProvider
       user={{
         id: '1',
@@ -34,12 +33,7 @@ export const Default: Story = {
         photoURL: 'url-of-nameinghams-photo'
       }}
     >
-      <NextIntlClientProvider locale={locale}>
-        <SideMenu />
-      </NextIntlClientProvider>
+      <SideMenu />
     </AuthProvider>
-  ),
-  args: {
-    locale: 'en'
-  }
+  )
 }

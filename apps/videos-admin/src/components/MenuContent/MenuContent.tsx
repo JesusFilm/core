@@ -8,8 +8,7 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import Stack from '@mui/material/Stack'
 import Link from 'next/link'
-import { useParams, usePathname } from 'next/navigation'
-import { useTranslations } from 'next-intl'
+import { usePathname } from 'next/navigation'
 import { ReactElement, ReactNode } from 'react'
 
 interface Item {
@@ -20,29 +19,27 @@ interface Item {
 }
 
 export function MenuContent(): ReactElement {
-  const t = useTranslations()
-  const params = useParams()
   const pathname = usePathname()
 
   const mainListItems: Item[] = [
     {
-      text: t('Home'),
+      text: 'Home',
       icon: <HomeRoundedIcon />,
-      href: `/${params?.locale?.toString() ?? 'en'}`
+      href: '/'
     },
     {
-      text: t('Video Library'),
+      text: 'Video Library',
       icon: <VideoLibraryRoundedIcon />,
-      href: `/${params?.locale?.toString() ?? 'en'}/videos`,
+      href: '/videos',
       startsWith: true
     }
   ]
 
   const secondaryListItems: Item[] = [
     {
-      text: t('Settings'),
+      text: 'Settings',
       icon: <SettingsRoundedIcon />,
-      href: `/${params?.locale?.toString() ?? 'en'}/settings`,
+      href: '/settings',
       startsWith: true
     }
   ]

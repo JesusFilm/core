@@ -191,18 +191,12 @@ export function Card({
     const submissionPromises = textResponseBlocks.map((block) => {
       const blockId = block.id
       const responseValue = values[blockId]
-      const heading =
-        activeBlock != null
-          ? getStepHeading(
-              activeBlock.id,
-              activeBlock.children,
-              treeBlocks,
-              t,
-              blockId
-            )
-          : t('None')
-      if (!responseValue || responseValue === '') return Promise.resolve(null)
+      if (!responseValue || responseValue?.trim() === '') return null
 
+      const heading =
+      activeBlock != null
+        ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t, blockId)
+        : t('None')
       const id = uuidv4()
       return textResponseSubmissionEventCreate({
         variables: {
@@ -224,13 +218,23 @@ export function Card({
         return id
       })
     })
-
-    await Promise.all(submissionPromises).catch((e) => {
-      if (e instanceof ApolloError)
-        enqueueSnackbar(e.message, {
-          variant: 'error'
-        })
-    })
+    await Promise.all(submissionPromises)
+      .then(() => {
+        const areAllPromisesNull = submissionPromises.every(
+          (promise) => promise === null
+        )
+        if (areAllPromisesNull === false) {
+          enqueueSnackbar(t('Thank you for your response!'), {
+            variant: 'success'
+          })
+        }
+      })
+      .catch((e) => {
+        if (e instanceof ApolloError)
+          enqueueSnackbar(e.message, {
+            variant: 'error'
+          })
+      })
   }
 
   // should always be called with nextActiveBlock()
