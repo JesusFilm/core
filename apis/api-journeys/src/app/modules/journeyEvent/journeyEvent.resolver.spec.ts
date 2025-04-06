@@ -25,7 +25,8 @@ describe('JourneyEventResolver', () => {
   let journeyEventService: JourneyEventService
 
   const mockJourneyEventService = {
-    getJourneyEvents: jest.fn()
+    getJourneyEvents: jest.fn(),
+    getJourneyEventsCount: jest.fn()
   }
 
   beforeEach(async () => {
@@ -146,6 +147,33 @@ describe('JourneyEventResolver', () => {
       })
       expect(result).toEqual(mockResponse)
     })
+  })
+
+  it('calls getJourneyEventsCount with correct parameters', async () => {
+    const accessibleEvent: Prisma.EventWhereInput = {}
+    const journeyId = 'journey-id'
+    const filter: JourneyEventsFilter = {
+      typenames: ['TextResponseSubmissionEvent']
+    }
+
+    const mockResponse = 10
+
+    jest
+      .spyOn(journeyEventService, 'getJourneyEventsCount')
+      .mockResolvedValue(mockResponse)
+
+    const result = await resolver.journeyEventsCount(
+      accessibleEvent,
+      journeyId,
+      filter
+    )
+
+    expect(journeyEventService.getJourneyEventsCount).toHaveBeenCalledWith({
+      accessibleEvent,
+      journeyId,
+      filter
+    })
+    expect(result).toEqual(mockResponse)
   })
 
   describe('journey field resolver', () => {
