@@ -46,6 +46,7 @@ interface VideoSectionProps {
   setMutePage?: (muted: boolean) => void
   quizButtonText: string
   shareButtonText: string
+  shareDataTitle: string
 }
 
 export const CollectionsVideoContent = ({
@@ -65,7 +66,8 @@ export const CollectionsVideoContent = ({
   setMutePage,
   onOpenDialog,
   quizButtonText,
-  shareButtonText
+  shareButtonText,
+  shareDataTitle
 }: VideoSectionProps): ReactElement => {
   return (
     <div id={contentId} className="py-16 relative">
@@ -100,6 +102,7 @@ export const CollectionsVideoContent = ({
             freeResource={freeResource}
             onOpenDialog={onOpenDialog}
             shareButtonText={shareButtonText}
+            shareDataTitle={shareDataTitle}
           />
           <QuizButton buttonText={quizButtonText} />
         </>

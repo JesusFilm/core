@@ -1,3 +1,4 @@
+/* eslint-disable i18next/no-literal-string */
 import { ReactElement, useState } from 'react'
 
 import { PageWrapper } from '../../../PageWrapper'
@@ -67,6 +68,9 @@ export function CollectionsPage(): ReactElement {
     }
   ]
 
+  const shareDataTitle =
+    '👋 Check out these videos about Easter origins. I thought you would like it.'
+
   return (
     <PageWrapper
       hero={
@@ -113,6 +117,7 @@ export function CollectionsPage(): ReactElement {
           bibleQuotesTitle="Bible quotes"
           quizButtonText="What's your next step of faith?"
           shareButtonText="Share"
+          shareDataTitle={shareDataTitle}
           questions={[
             {
               id: 1,
@@ -286,6 +291,7 @@ export function CollectionsPage(): ReactElement {
           askButtonText="Ask yours"
           bibleQuotesTitle="Bible quotes"
           shareButtonText="Share"
+          shareDataTitle={shareDataTitle}
           quizButtonText="What's your next step of faith?"
           questions={[
             {
@@ -456,6 +462,7 @@ export function CollectionsPage(): ReactElement {
           askButtonText="Ask yours"
           bibleQuotesTitle="Bible quotes"
           shareButtonText="Share"
+          shareDataTitle={shareDataTitle}
           quizButtonText="What's your next step of faith?"
           questions={[
             {
@@ -581,6 +588,7 @@ export function CollectionsPage(): ReactElement {
           bibleQuotesTitle="Bible quotes"
           quizButtonText="What's your next step of faith?"
           shareButtonText="Share"
+          shareDataTitle={shareDataTitle}
           questions={[
             {
               id: 1,
@@ -688,6 +696,7 @@ export function CollectionsPage(): ReactElement {
           bibleQuotesTitle="Bible quotes"
           quizButtonText="What's your next step of faith?"
           shareButtonText="Share"
+          shareDataTitle={shareDataTitle}
           questions={[
             {
               id: 1,
@@ -920,6 +929,7 @@ export function CollectionsPage(): ReactElement {
           bibleQuotesTitle="Bible quotes"
           quizButtonText="What's your next step of faith?"
           shareButtonText="Share"
+          shareDataTitle={shareDataTitle}
           questions={[
             {
               id: 1,
@@ -1067,6 +1077,7 @@ export function CollectionsPage(): ReactElement {
           bibleQuotesTitle="Bible quotes"
           quizButtonText="What's your next step of faith?"
           shareButtonText="Share"
+          shareDataTitle={shareDataTitle}
           questions={[
             {
               id: 1,
@@ -1285,6 +1296,7 @@ export function CollectionsPage(): ReactElement {
           bibleQuotesTitle="Bible quotes"
           quizButtonText="What's your next step of faith?"
           shareButtonText="Share"
+          shareDataTitle={shareDataTitle}
           questions={[
             {
               id: 1,

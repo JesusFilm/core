@@ -6,11 +6,13 @@ import { Icon } from '@core/shared/ui/icons/Icon'
 interface BibleQuotesCarouselHeaderProps {
   bibleQuotesTitle: string
   shareButtonText: string
+  shareDataTitle: string
 }
 
 export function BibleQuotesCarouselHeader({
   bibleQuotesTitle,
-  shareButtonText
+  shareButtonText,
+  shareDataTitle
 }: BibleQuotesCarouselHeaderProps): ReactElement {
   const { t } = useTranslation('apps-watch')
 
@@ -20,22 +22,17 @@ export function BibleQuotesCarouselHeader({
 
     const shareData = {
       url: shareUrl.toString(),
-      title:
-        '👋 Check out these videos about Easter origins. I thought you would like it.',
+      title: shareDataTitle,
       text: ''
     }
 
-    try {
-      if (navigator.share) {
-        await navigator.share(shareData)
-      } else {
-        // Fallback to clipboard copy if native share is not available
-        await navigator.clipboard.writeText(
-          `${shareData.text}\n\n${shareUrl.toString()}`
-        )
-      }
-    } catch (error) {
-      console.error('Error sharing:', error)
+    if (navigator.share) {
+      await navigator.share(shareData)
+    } else {
+      // Fallback to clipboard copy if native share is not available
+      await navigator.clipboard.writeText(
+        `${shareData.text}\n\n${shareUrl.toString()}`
+      )
     }
   }
 

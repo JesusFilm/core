@@ -11,12 +11,40 @@ jest.mock('next-i18next', () => ({
 describe('BibleQuotesCarouselHeader', () => {
   const defaultProps = {
     bibleQuotesTitle: 'Bible Quotes Title',
-    onOpenDialog: jest.fn(),
-    shareButtonText: 'Share'
+    shareButtonText: 'Share',
+    shareDataTitle: 'Share Data Title'
+  }
+
+  const originalNavigator = { ...global.navigator }
+  const mockShare = jest.fn().mockResolvedValue(undefined)
+  const mockClipboard = {
+    writeText: jest.fn().mockResolvedValue(undefined)
   }
 
   beforeEach(() => {
     jest.clearAllMocks()
+    Object.defineProperty(global.navigator, 'share', {
+      value: mockShare,
+      configurable: true
+    })
+    Object.defineProperty(global.navigator, 'clipboard', {
+      value: mockClipboard,
+      configurable: true
+    })
+    Object.defineProperty(window, 'location', {
+      value: {
+        href: 'https://watch.jesusfilm.org/easter'
+      },
+      writable: true
+    })
+  })
+
+  afterEach(() => {
+    Object.defineProperty(global, 'navigator', {
+      value: originalNavigator,
+      configurable: true,
+      writable: true
+    })
   })
 
   it('renders the title correctly', () => {
@@ -26,37 +54,54 @@ describe('BibleQuotesCarouselHeader', () => {
     expect(screen.getByText('Share')).toBeInTheDocument()
   })
 
-  it('calls onOpenDialog when the share button is clicked', () => {
+  it('calls navigator.share when the share button is clicked and share API is available', async () => {
     render(<BibleQuotesCarouselHeader {...defaultProps} />)
 
     fireEvent.click(screen.getByText('Share'))
-    expect(defaultProps.onOpenDialog).toHaveBeenCalledTimes(1)
+
+    expect(mockShare).toHaveBeenCalledTimes(1)
+    expect(mockShare).toHaveBeenCalledWith({
+      url: expect.stringContaining(
+        'https://watch.jesusfilm.org/easter?utm_source=share'
+      ),
+      title: expect.any(String),
+      text: expect.any(String)
+    })
   })
 
-  it('calls onOpenDialog when Enter key is pressed on the share button', () => {
+  it('falls back to clipboard.writeText when navigator.share is not available', async () => {
+    Object.defineProperty(global.navigator, 'share', {
+      value: undefined,
+      configurable: true
+    })
+
+    render(<BibleQuotesCarouselHeader {...defaultProps} />)
+
+    fireEvent.click(screen.getByText('Share'))
+
+    expect(mockClipboard.writeText).toHaveBeenCalledTimes(1)
+    expect(mockClipboard.writeText).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'https://watch.jesusfilm.org/easter?utm_source=share'
+      )
+    )
+  })
+
+  it('calls share handler when Enter key is pressed on the share button', () => {
     render(<BibleQuotesCarouselHeader {...defaultProps} />)
 
     const shareButton = screen.getByText('Share').closest('button')!
     fireEvent.keyDown(shareButton, { key: 'Enter' })
-    expect(defaultProps.onOpenDialog).toHaveBeenCalledTimes(1)
+
+    expect(mockShare).toHaveBeenCalledTimes(1)
   })
 
-  it('handles undefined onOpenDialog prop gracefully', () => {
-    const { onOpenDialog, ...propsWithoutCallback } = defaultProps
-    const consoleSpy = jest.spyOn(console, 'error')
+  it('calls share handler when Space key is pressed on the share button', () => {
+    render(<BibleQuotesCarouselHeader {...defaultProps} />)
 
-    render(<BibleQuotesCarouselHeader {...propsWithoutCallback} />)
+    const shareButton = screen.getByText('Share').closest('button')!
+    fireEvent.keyDown(shareButton, { key: ' ' })
 
-    // Test that clicking the button doesn't cause errors
-    fireEvent.click(screen.getByText('Share'))
-
-    // Test that pressing Enter key doesn't cause errors
-    fireEvent.keyDown(screen.getByText('Share').closest('button')!, {
-      key: 'Enter'
-    })
-
-    // Verify no console errors were produced
-    expect(consoleSpy).not.toHaveBeenCalled()
-    consoleSpy.mockRestore()
+    expect(mockShare).toHaveBeenCalledTimes(1)
   })
 })

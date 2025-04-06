@@ -30,6 +30,7 @@ interface BibleQuotesCarouselProps {
   freeResource?: FreeResourceData
   onOpenDialog?: () => void
   shareButtonText: string
+  shareDataTitle: string
 }
 
 export function BibleQuotesCarousel({
@@ -37,7 +38,8 @@ export function BibleQuotesCarousel({
   bibleQuotesTitle,
   freeResource,
   onOpenDialog,
-  shareButtonText
+  shareButtonText,
+  shareDataTitle
 }: BibleQuotesCarouselProps): ReactElement {
   const { t } = useTranslation('apps-watch')
 
@@ -48,8 +50,8 @@ export function BibleQuotesCarousel({
     >
       <BibleQuotesCarouselHeader
         bibleQuotesTitle={bibleQuotesTitle}
-        onOpenDialog={onOpenDialog}
         shareButtonText={shareButtonText}
+        shareDataTitle={shareDataTitle}
       />
       <Swiper
         modules={[Mousewheel, FreeMode, A11y]}

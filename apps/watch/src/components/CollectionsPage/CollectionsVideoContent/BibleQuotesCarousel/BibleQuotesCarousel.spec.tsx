@@ -33,8 +33,44 @@ describe('BibleQuotesCarousel', () => {
 
   const mockOpenDialog = jest.fn()
 
+  // Store original navigator methods
+  const originalNavigator = { ...global.navigator }
+  const mockShare = jest.fn().mockResolvedValue(undefined)
+  const mockClipboard = {
+    writeText: jest.fn().mockResolvedValue(undefined)
+  }
+
   beforeEach(() => {
     jest.clearAllMocks()
+
+    // Mock the navigator.share API
+    Object.defineProperty(global.navigator, 'share', {
+      value: mockShare,
+      configurable: true
+    })
+
+    // Mock the navigator.clipboard API
+    Object.defineProperty(global.navigator, 'clipboard', {
+      value: mockClipboard,
+      configurable: true
+    })
+
+    // Mock window.location
+    Object.defineProperty(window, 'location', {
+      value: {
+        href: 'https://watch.jesusfilm.org/easter'
+      },
+      writable: true
+    })
+  })
+
+  afterEach(() => {
+    // Restore original navigator
+    Object.defineProperty(global, 'navigator', {
+      value: originalNavigator,
+      configurable: true,
+      writable: true
+    })
   })
 
   it('renders with bible quotes and title', () => {
@@ -44,6 +80,7 @@ describe('BibleQuotesCarousel', () => {
         bibleQuotesTitle="Bible Quotes"
         onOpenDialog={mockOpenDialog}
         shareButtonText="Share"
+        shareDataTitle="Share Data Title"
       />
     )
 
@@ -64,6 +101,7 @@ describe('BibleQuotesCarousel', () => {
         freeResource={mockFreeResource}
         onOpenDialog={mockOpenDialog}
         shareButtonText="Share"
+        shareDataTitle="Share Data Title"
       />
     )
 
@@ -72,13 +110,13 @@ describe('BibleQuotesCarousel', () => {
     expect(screen.getByText('Start studying')).toBeInTheDocument()
   })
 
-  it('calls onOpenDialog when share button is clicked', () => {
+  it('calls navigator.share when the share button is clicked', async () => {
     render(
       <BibleQuotesCarousel
         bibleQuotes={mockBibleQuotes}
         bibleQuotesTitle="Bible Quotes"
-        onOpenDialog={mockOpenDialog}
         shareButtonText="Share"
+        shareDataTitle="Share Data Title"
       />
     )
 
@@ -87,7 +125,14 @@ describe('BibleQuotesCarousel', () => {
     })
     fireEvent.click(shareButton)
 
-    expect(mockOpenDialog).toHaveBeenCalledTimes(1)
+    expect(mockShare).toHaveBeenCalledTimes(1)
+    expect(mockShare).toHaveBeenCalledWith({
+      url: expect.stringContaining(
+        'https://watch.jesusfilm.org/easter?utm_source=share'
+      ),
+      title: expect.any(String),
+      text: expect.any(String)
+    })
   })
 
   it('has correct link for free resource button', () => {
@@ -96,8 +141,8 @@ describe('BibleQuotesCarousel', () => {
         bibleQuotes={[]}
         bibleQuotesTitle="Bible Quotes"
         freeResource={mockFreeResource}
-        onOpenDialog={mockOpenDialog}
         shareButtonText="Share"
+        shareDataTitle="Share Data Title"
       />
     )
 
