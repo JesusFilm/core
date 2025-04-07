@@ -313,7 +313,6 @@ describe('DuplicateBlock', () => {
   })
 
   it('should return button with submitEnabled=false on the optimistic response when duplicating a submit button', async () => {
-    // Create a ButtonBlock with submitEnabled: true
     const buttonBlock: TreeBlock<ButtonBlock> = {
       id: 'button0.id',
       __typename: 'ButtonBlock',

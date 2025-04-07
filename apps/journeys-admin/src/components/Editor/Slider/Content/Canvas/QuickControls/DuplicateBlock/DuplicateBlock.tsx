@@ -80,12 +80,8 @@ export function DuplicateBlock({
     const block = {
       ...omit(selectedBlock, 'children'),
       id: uuidv4(),
-      // if the block is a button block and submitEnabled is true, set submitEnabled to false
-      // TODO: Write a test for this
-      ...(selectedBlock.__typename === 'ButtonBlock' &&
-      selectedBlock.submitEnabled === true
-        ? { submitEnabled: false }
-        : {})
+      // ensures submitEnabled is false for button blocks on the optimistic response
+      submitEnabled: false
     }
 
     const idMap: BlockDuplicateIdMap[] = [
