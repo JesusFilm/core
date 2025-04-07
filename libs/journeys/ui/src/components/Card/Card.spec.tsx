@@ -787,4 +787,50 @@ describe('CardBlock', () => {
       expect(mockTextResponseSubmissionEventCreate.result).toHaveBeenCalled()
     )
   })
+
+  it('should handle empty formik submission', async () => {
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
+
+    const textResponseStep: TreeBlock<StepBlock> = {
+      ...step1,
+      children: [],
+      locked: false
+    }
+    const textResponseCard: TreeBlock<CardBlock> = {
+      ...card1,
+      children: [
+        textResponseStep,
+        { ...textResponseBlock, parentBlockId: card1.id }
+      ]
+    }
+
+    treeBlocksVar([textResponseCard, step2, step3])
+    blockHistoryVar([textResponseStep])
+
+    const { getByTestId, queryByText } = render(
+      <MockedProvider
+        mocks={[
+          mockStepNextEventCreate,
+          mockTextResponseSubmissionEventCreate,
+          getStepViewEventMock(step1.id, 'Untitled')
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey }}>
+            <Card {...textResponseCard} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const form = getByTestId(`card-form-${card1.id}`)
+    fireEvent.submit(form)
+
+    await waitFor(() =>
+      expect(
+        mockTextResponseSubmissionEventCreate.result
+      ).not.toHaveBeenCalled()
+    )
+  })
 })
