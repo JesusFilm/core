@@ -41,9 +41,6 @@ export const BLOCK_DUPLICATE = gql`
     ) {
       id
       ...BlockFields
-      ... on ButtonBlock {
-        submitEnabled
-      }
     }
   }
 `
@@ -128,6 +125,7 @@ export function DuplicateBlock({
             ]
           },
           update(cache, { data }) {
+            console.log('update ', data)
             if (data?.blockDuplicate == null) return
             data.blockDuplicate.forEach((block) => {
               cache.modify({
