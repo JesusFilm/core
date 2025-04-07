@@ -26,6 +26,7 @@ import { PageWrapper } from '../../../../src/components/PageWrapper'
 import { ReportsNavigation } from '../../../../src/components/ReportsNavigation'
 import { initAndAuthApp } from '../../../../src/libs/initAndAuthApp'
 import { GET_ADMIN_JOURNEY, USER_JOURNEY_OPEN } from '../../[journeyId]'
+import { ExportEventsButton } from '../../../../src/components/JourneyVisitorsList/ExportEventsButton'
 
 export const GET_JOURNEY_VISITORS = gql`
   query GetJourneyVisitors(
@@ -213,6 +214,7 @@ function JourneyVisitorsPage(): ReactElement {
               hideInteractive={hideInteractive}
               handleClearAll={handleClearAll}
             />
+            <ExportEventsButton journeyId={journeyId} />
           </Stack>
         }
         sidePanelTitle={
