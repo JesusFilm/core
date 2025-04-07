@@ -112,13 +112,11 @@ describe('TextResponse', () => {
     }
 
     render(
-      <MockedProvider mocks={[]} addTypename={false}>
-        <JourneyProvider>
-          <SnackbarProvider>
-            <TextResponse {...whitespaceLabelBlock} uuid={() => 'uuid'} />
-          </SnackbarProvider>
-        </JourneyProvider>
-      </MockedProvider>
+      <JourneyProvider>
+        <SnackbarProvider>
+          <TextResponse {...whitespaceLabelBlock} />
+        </SnackbarProvider>
+      </JourneyProvider>
     )
 
     expect(screen.getByLabelText('Label')).toBeInTheDocument()
