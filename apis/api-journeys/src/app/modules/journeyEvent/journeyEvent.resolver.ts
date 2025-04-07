@@ -34,4 +34,19 @@ export class JourneyEventResolver {
       after
     })
   }
+
+  @Query()
+  @UseGuards(AppCaslGuard)
+  async journeyEventsCount(
+    @CaslAccessible('Event')
+    accessibleEvent: Prisma.EventWhereInput,
+    @Args('journeyId') journeyId: string,
+    @Args('filter') filter: JourneyEventsFilter
+  ) {
+    return await this.journeyEventService.getJourneyEventsCount({
+      journeyId,
+      accessibleEvent,
+      filter
+    })
+  }
 }
