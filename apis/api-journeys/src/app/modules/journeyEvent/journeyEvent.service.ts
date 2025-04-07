@@ -61,7 +61,22 @@ export class JourneyEventService {
 
     const result = await this.prismaService.event.findMany({
       where,
-      include: {
+      select: {
+        id: true,
+        journeyId: true,
+        createdAt: true,
+        label: true,
+        value: true,
+        typename: true,
+        visitorId: true,
+        action: true,
+        actionValue: true,
+        messagePlatform: true,
+        email: true,
+        blockId: true,
+        position: true,
+        source: true,
+        progress: true,
         journey: {
           select: {
             slug: true
@@ -84,21 +99,22 @@ export class JourneyEventService {
     return {
       edges: sendResult.map((event) => ({
         node: {
-          id: event.id,
-          journeyId: event.journeyId ?? '',
+          ...event,
+          // id: event.id,
+          journeyId: event.journeyId ?? journeyId,
           createdAt: event.createdAt.toISOString(),
-          label: event.label,
-          value: event.value,
-          typename: event.typename,
-          visitorId: event.visitorId,
+          // label: event.label,
+          // value: event.value,
+          // typename: event.typename,
+          // visitorId: event.visitorId,
           action: event.action as ButtonAction,
-          actionValue: event.actionValue,
+          // actionValue: event.actionValue,
           messagePlatform: event.messagePlatform as MessagePlatform,
-          email: event.email,
-          blockId: event.blockId,
-          position: event.position,
+          // email: event.email,
+          // blockId: event.blockId,
+          // position: event.position,
           source: event.source as VideoBlockSource,
-          progress: event.progress,
+          // progress: event.progress,
           journey: event.journey as unknown as Journey,
           visitor: event.visitor as unknown as Visitor
         },
@@ -113,5 +129,19 @@ export class JourneyEventService {
           result.length > 0 ? sendResult[sendResult.length - 1].id : null
       }
     }
+  }
+
+  async getJourneyEventsCount({
+    journeyId,
+    accessibleEvent,
+    filter
+  }: {
+    journeyId: string
+    accessibleEvent: Prisma.EventWhereInput
+    filter: JourneyEventsFilter
+  }): Promise<number> {
+    const where = this.generateWhere(journeyId, filter, accessibleEvent)
+
+    return await this.prismaService.event.count({ where })
   }
 }
