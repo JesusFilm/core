@@ -10,7 +10,7 @@ import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3'
-import { DateField } from '@mui/x-date-pickers/DateField'
+import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import forIn from 'lodash/forIn'
 import { useTranslation } from 'next-i18next'
@@ -48,29 +48,27 @@ function DateRangePicker({
       <Stack direction="row" spacing={2} alignItems="center">
         <CalendarTodayIcon sx={{ color: 'text.secondary' }} />
         <Stack direction="row" spacing={2} sx={{ '& > *': { flex: 1 } }}>
-          <DateField
-            size="small"
+          <DatePicker
             label={t('Start Date')}
             value={startDate}
             onChange={onStartDateChange}
             format="dd-MM-yyyy"
-            clearable
             slotProps={{
               textField: {
+                size: 'small',
                 error: startDateError != null,
                 helperText: startDateError
               }
             }}
           />
-          <DateField
-            size="small"
+          <DatePicker
             label={t('End Date')}
             value={endDate}
             onChange={onEndDateChange}
             format="dd-MM-yyyy"
-            clearable
             slotProps={{
               textField: {
+                size: 'small',
                 error: endDateError != null,
                 helperText: endDateError
               }
@@ -233,7 +231,7 @@ export function ExportDialog({
         title: t('Export Analytics'),
         closeButton: true
       }}
-      divider
+      divider={false}
       dialogActionChildren={
         <Button
           variant="contained"
