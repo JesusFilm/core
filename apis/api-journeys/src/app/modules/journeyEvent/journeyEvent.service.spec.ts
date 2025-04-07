@@ -24,7 +24,8 @@ describe('JourneyEventService', () => {
           provide: PrismaService,
           useValue: {
             event: {
-              findMany: jest.fn()
+              findMany: jest.fn(),
+              count: jest.fn()
             }
           }
         }
@@ -392,6 +393,120 @@ describe('JourneyEventService', () => {
       expect(result.pageInfo.hasNextPage).toBe(false)
       expect(result.pageInfo.startCursor).toBe('event-1')
       expect(result.pageInfo.endCursor).toBe('event-2')
+    })
+  })
+
+  describe('getJourneyEventsCount', () => {
+    it('returns the correct count of events', async () => {
+      const journeyId = 'journey-1'
+      const filter: JourneyEventsFilter = {
+        typenames: ['TextResponseSubmissionEvent']
+      }
+      const accessibleEvent: Prisma.EventWhereInput = {}
+
+      const mockEvents = [
+        {
+          id: 'event-2',
+          journeyId: 'journey-1',
+          createdAt: new Date('2023-01-15T12:00:00Z'),
+          updatedAt: new Date('2023-01-15T12:00:00Z'),
+          typename: 'TextResponseSubmissionEvent',
+          visitorId: 'visitor-1',
+          label: 'Event 2',
+          value: 'Value 2',
+          action: ButtonAction.NavigateToBlockAction,
+          actionValue: 'next',
+          messagePlatform: MessagePlatform.facebook,
+          email: 'test@example.com',
+          blockId: 'block-1',
+          stepId: null,
+          nextStepId: null,
+          previousStepId: null,
+          userId: 'user-1',
+          journeyVisitorJourneyId: 'journey-1',
+          journeyVisitorVisitorId: 'visitor-1',
+          languageId: 'en',
+          radioOptionBlockId: null,
+          position: 30,
+          source: VideoBlockSource.internal,
+          progress: 0.5
+        },
+        {
+          id: 'event-3',
+          journeyId: 'journey-1',
+          createdAt: new Date('2023-01-14T12:00:00Z'),
+          updatedAt: new Date('2023-01-14T12:00:00Z'),
+          typename: 'TextResponseSubmissionEvent',
+          visitorId: 'visitor-1',
+          label: 'Event 3',
+          value: 'Value 3',
+          action: null,
+          actionValue: null,
+          messagePlatform: null,
+          email: null,
+          blockId: null,
+          stepId: null,
+          nextStepId: null,
+          previousStepId: null,
+          userId: 'user-1',
+          journeyVisitorJourneyId: 'journey-1',
+          journeyVisitorVisitorId: 'visitor-1',
+          languageId: 'en',
+          radioOptionBlockId: null,
+          position: null,
+          source: null,
+          progress: null
+        },
+        {
+          id: 'event-4',
+          journeyId: 'journey-1',
+          createdAt: new Date('2023-01-13T12:00:00Z'),
+          updatedAt: new Date('2023-01-13T12:00:00Z'),
+          typename: 'TextResponseSubmissionEvent',
+          visitorId: 'visitor-1',
+          label: 'Event 4',
+          value: 'Value 4',
+          action: null,
+          actionValue: null,
+          messagePlatform: null,
+          email: null,
+          blockId: null,
+          stepId: null,
+          nextStepId: null,
+          previousStepId: null,
+          userId: 'user-1',
+          journeyVisitorJourneyId: 'journey-1',
+          journeyVisitorVisitorId: 'visitor-1',
+          languageId: 'en',
+          radioOptionBlockId: null,
+          position: null,
+          source: null,
+          progress: null
+        }
+      ]
+
+      jest
+        .spyOn(prismaService.event, 'count')
+        .mockResolvedValue(mockEvents.length)
+
+      const result = await service.getJourneyEventsCount({
+        journeyId,
+        accessibleEvent,
+        filter
+      })
+
+      expect(prismaService.event.count).toHaveBeenCalledWith({
+        where: {
+          journeyId: 'journey-1',
+          createdAt: {
+            gte: undefined,
+            lte: undefined
+          },
+          AND: [{}, { typename: { in: ['TextResponseSubmissionEvent'] } }]
+        }
+      })
+
+      expect(result).toEqual(mockEvents.length)
     })
   })
 })
