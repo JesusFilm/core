@@ -115,7 +115,7 @@ describe('FilterDrawer', () => {
         <FilterDrawer {...props} />
       </MockedProvider>
     )
-    
+
     fireEvent.click(screen.getByText('Clear all'))
     expect(props.handleClearAll).toHaveBeenCalled()
   })
