@@ -18,14 +18,14 @@ describe('Header', () => {
   it('should open navigation panel on menu icon click', async () => {
     render(<Header />)
     fireEvent.click(screen.getByRole('button', { name: 'open header menu' }))
-    expect(screen.getByRole('button', { name: 'About Us' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Give' })).toBeInTheDocument()
   })
 
   it('should set menuOpen prop on LocalAppBar when menu is clicked', () => {
     render(<Header />)
 
     expect(
-      screen.queryByRole('button', { name: 'About Us' })
+      screen.queryByRole('button', { name: 'Give' })
     ).not.toBeInTheDocument()
     const menuButton = screen.getByRole('button', { name: 'open header menu' })
     expect(menuButton).not.toHaveClass('expanded')
@@ -34,7 +34,7 @@ describe('Header', () => {
     fireEvent.click(menuButton)
     expect(menuButton).toHaveClass('expanded')
     expect(menuButton).toHaveAttribute('aria-expanded', 'true')
-    expect(screen.getByRole('button', { name: 'About Us' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Give' })).toBeInTheDocument()
   })
 
   it('should hide bottom app bar', () => {
