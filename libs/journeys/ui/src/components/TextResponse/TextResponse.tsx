@@ -104,7 +104,7 @@ export const TextResponse = ({
             fontsize: 14
           }}
         >
-          {label === '' ? 'Label' : label}
+          {label.trim() === '' ? 'Label' : label}
         </Typography>
         <TextField
           id={`textResponse-field`}
