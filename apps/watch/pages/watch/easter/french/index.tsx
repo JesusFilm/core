@@ -64,7 +64,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
     props: {
       flags: await getFlags(),
       ...(await serverSideTranslations(
-        context.locale ?? 'en',
+        context.locale ?? 'fr',
         ['apps-watch'],
         i18nConfig
       ))
