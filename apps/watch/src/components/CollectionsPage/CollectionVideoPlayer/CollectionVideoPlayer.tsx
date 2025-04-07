@@ -406,15 +406,13 @@ export function CollectionVideoPlayer({
         {/* Loading and error states */}
         {videoLoading && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/20 z-20">
-            <p className="text-white font-medium">{t('Loading video...')}</p>
+            <p className="text-white font-medium">{'Loading video...'}</p>
           </div>
         )}
         {videoError && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/20 z-20">
             <p className="text-red-500 font-medium">
-              {t('Error loading video: {{ videoError }}', {
-                videoError: videoError.message
-              })}
+              {'Error loading video: ' + videoError.message}
             </p>
           </div>
         )}
