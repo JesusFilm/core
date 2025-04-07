@@ -1,11 +1,23 @@
 import {
+  SourceStrings as MockSourceStrings,
+  StringTranslations as MockStringTranslations,
+  mockSourceString,
+  mockTranslation
+} from './__mocks__/@crowdin/crowdin-api-client'
+import { LANGUAGE_CODES } from './config'
+import {
   apis,
   fetchSourceStrings,
   fetchTranslations,
   processFile
 } from './importer'
 
-jest.mock('@crowdin/crowdin-api-client')
+const sourceStringsApi = MockSourceStrings as jest.Mocked<
+  typeof MockSourceStrings
+>
+const stringTranslationsApi = MockStringTranslations as jest.Mocked<
+  typeof MockStringTranslations
+>
 
 const mockFile = {
   id: 1,
@@ -14,69 +26,111 @@ const mockFile = {
   path: 'test.csv'
 }
 
-const mockTranslation = {
-  stringId: 1,
-  contentType: 'text/plain',
-  translationId: 1234,
-  text: 'Translated Text',
-  user: {
-    id: 1,
-    username: 'test',
-    fullName: 'test'
-  },
-  createdAt: '2024-01-01T00:00:00Z'
-}
-
-const mockSourceStrings = [
-  {
-    id: 1,
-    projectId: 1,
-    fileId: 1,
-    branchId: null,
-    directoryId: null,
-    identifier: 'test_string',
-    text: 'Hello',
-    type: 'text',
-    context: '1\nThis is a test',
-    maxLength: null,
-    isHidden: false,
-    isDuplicate: false,
-    masterStringId: null,
-    revision: 1,
-    hasPlurals: false,
-    isIcu: false,
-    labelIds: [],
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: null
-  }
-]
-
-describe('importVideoTitles', () => {
+describe('Crowdin Importer', () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })
 
-  afterEach(() => {
-    jest.clearAllMocks()
+  describe('fetchSourceStrings', () => {
+    it('should handle pagination correctly', async () => {
+      // First page has full results, second page has partial
+      sourceStringsApi.listProjectStrings
+        .mockResolvedValueOnce({
+          data: Array(500).fill({ data: mockSourceString })
+        })
+        .mockResolvedValueOnce({
+          data: Array(50).fill({ data: mockSourceString })
+        })
+
+      const strings = await fetchSourceStrings(mockFile.id, apis.sourceStrings)
+      expect(strings).toHaveLength(550)
+      expect(sourceStringsApi.listProjectStrings).toHaveBeenCalledTimes(2)
+    })
+
+    it('should handle empty results', async () => {
+      sourceStringsApi.listProjectStrings.mockResolvedValue({ data: [] })
+      const strings = await fetchSourceStrings(mockFile.id, apis.sourceStrings)
+      expect(strings).toHaveLength(0)
+    })
+
+    it('should handle API errors', async () => {
+      sourceStringsApi.listProjectStrings.mockRejectedValue(
+        new Error('API Error')
+      )
+      await expect(
+        fetchSourceStrings(mockFile.id, apis.sourceStrings)
+      ).rejects.toThrow()
+    })
   })
 
-  it('should fetch source strings', async () => {
-    const strings = await fetchSourceStrings(mockFile.id, apis.sourceStrings)
-    expect(strings).toEqual(mockSourceStrings)
+  describe('fetchTranslations', () => {
+    it('should filter non-plain text translations', async () => {
+      stringTranslationsApi.listLanguageTranslations.mockResolvedValue({
+        data: [
+          { data: mockTranslation },
+          { data: { ...mockTranslation, contentType: 'text/html' } }
+        ]
+      })
+
+      const translations = await fetchTranslations(
+        'ru',
+        mockFile.id,
+        apis.stringTranslations
+      )
+      expect(translations).toHaveLength(1)
+      expect(translations[0].contentType).toBe('text/plain')
+    })
+
+    it('should handle pagination in translations', async () => {
+      stringTranslationsApi.listLanguageTranslations
+        .mockResolvedValueOnce({
+          data: Array(500).fill({ data: mockTranslation })
+        })
+        .mockResolvedValueOnce({
+          data: Array(50).fill({ data: mockTranslation })
+        })
+
+      const translations = await fetchTranslations(
+        'ru',
+        mockFile.id,
+        apis.stringTranslations
+      )
+      expect(translations).toHaveLength(550)
+    })
   })
 
-  it('should fetch translations', async () => {
-    const translations = await fetchTranslations(
-      'ru',
-      mockFile.id,
-      apis.stringTranslations
-    )
-    expect(translations).toEqual([mockTranslation])
-  })
+  describe('processFile', () => {
+    it('should process multiple languages', async () => {
+      // Set up source strings to return data first
+      sourceStringsApi.listProjectStrings.mockResolvedValue({
+        data: [{ data: mockSourceString }]
+      })
 
-  it('should process a file successfully', async () => {
-    const importOne = jest.fn()
-    await processFile(mockFile, importOne)
-    expect(importOne).toHaveBeenCalled()
+      const importOne = jest.fn()
+      await processFile(mockFile, importOne)
+
+      expect(
+        stringTranslationsApi.listLanguageTranslations
+      ).toHaveBeenCalledTimes(Object.keys(LANGUAGE_CODES).length)
+      expect(importOne).toHaveBeenCalled()
+    })
+
+    it('should skip processing when no source strings exist', async () => {
+      sourceStringsApi.listProjectStrings.mockResolvedValue({ data: [] })
+      const importOne = jest.fn()
+
+      await processFile(mockFile, importOne)
+      expect(importOne).not.toHaveBeenCalled()
+    })
+
+    it('should handle errors for individual languages', async () => {
+      stringTranslationsApi.listLanguageTranslations.mockRejectedValue(
+        new Error('Translation API Error')
+      )
+      const importOne = jest.fn()
+
+      await processFile(mockFile, importOne)
+      expect(importOne).not.toHaveBeenCalled()
+    })
   })
 })
