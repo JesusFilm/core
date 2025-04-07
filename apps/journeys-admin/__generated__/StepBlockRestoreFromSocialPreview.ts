@@ -52,7 +52,6 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock_action | null;
-  submitEnabled: boolean | null;
 }
 
 export interface StepBlockRestoreFromSocialPreview_blockRestore_CardBlock {
