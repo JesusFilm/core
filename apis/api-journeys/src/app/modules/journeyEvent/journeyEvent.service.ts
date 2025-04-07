@@ -79,11 +79,13 @@ export class JourneyEventService {
         progress: true,
         journey: {
           select: {
+            id: true,
             slug: true
           }
         },
         visitor: {
           select: {
+            id: true,
             name: true,
             email: true
           }
