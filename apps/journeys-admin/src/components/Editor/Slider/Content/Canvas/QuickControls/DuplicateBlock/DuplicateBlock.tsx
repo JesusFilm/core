@@ -125,7 +125,6 @@ export function DuplicateBlock({
             ]
           },
           update(cache, { data }) {
-            console.log('update ', data)
             if (data?.blockDuplicate == null) return
             data.blockDuplicate.forEach((block) => {
               cache.modify({
