@@ -201,7 +201,7 @@ export function Card({
     const submissionPromises = textResponseBlocks.map((block) => {
       const blockId = block.id
       const responseValue = values[blockId]
-      if (!responseValue || responseValue?.trim() === '') return null
+      if (!responseValue || responseValue?.trim() === '') return Promise.resolve(null)
 
       const id = uuidv4()
       return textResponseSubmissionEventCreate({
@@ -225,16 +225,6 @@ export function Card({
       })
     })
     await Promise.all(submissionPromises)
-      .then(() => {
-        const areAllPromisesNull = submissionPromises.every(
-          (promise) => promise === null
-        )
-        if (areAllPromisesNull === false) {
-          enqueueSnackbar(t('Thank you for your response!'), {
-            variant: 'success'
-          })
-        }
-      })
       .catch((e) => {
         if (e instanceof ApolloError)
           enqueueSnackbar(e.message, {
