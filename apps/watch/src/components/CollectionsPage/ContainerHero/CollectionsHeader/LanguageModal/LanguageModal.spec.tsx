@@ -6,29 +6,8 @@ describe('LanguageModal', () => {
   const mockOnClose = jest.fn()
   const feedbackButtonLabel = 'Contact Support'
 
-  let originalHref: string
-
   beforeEach(() => {
     jest.clearAllMocks()
-    originalHref = window.location.href
-
-    Object.defineProperty(window, 'location', {
-      value: {
-        ...window.location,
-        href: 'http://example.com'
-      },
-      writable: true
-    })
-  })
-
-  afterEach(() => {
-    Object.defineProperty(window, 'location', {
-      value: {
-        ...window.location,
-        href: originalHref
-      },
-      writable: true
-    })
   })
 
   it('renders correctly when open is true', () => {
@@ -84,13 +63,7 @@ describe('LanguageModal', () => {
     expect(mockOnClose).toHaveBeenCalledTimes(1)
   })
 
-  it('calls handleLanguageSelect with correct URL when a language is selected', () => {
-    const hrefSetter = jest.fn()
-    Object.defineProperty(window.location, 'href', {
-      get: () => 'http://example.com',
-      set: hrefSetter
-    })
-
+  it('has correct href when a language is selected', () => {
     render(
       <LanguageModal
         open={true}
@@ -100,10 +73,16 @@ describe('LanguageModal', () => {
     )
 
     const englishButton = screen.getByTestId('language-button-en')
-    fireEvent.click(englishButton)
+    expect(englishButton).toHaveAttribute('href', '/watch/easter/english')
 
-    expect(hrefSetter).toHaveBeenCalledWith('/easter/english')
-    expect(mockOnClose).toHaveBeenCalledTimes(1)
+    const frenchButton = screen.getByTestId('language-button-fr')
+    expect(frenchButton).toHaveAttribute('href', '/watch/easter/french')
+
+    const spanishButton = screen.getByTestId('language-button-es')
+    expect(spanishButton).toHaveAttribute(
+      'href',
+      '/watch/easter/spanish-latin-american'
+    )
   })
 
   it('has a link to the contact page', () => {
