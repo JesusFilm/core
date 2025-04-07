@@ -41,6 +41,9 @@ export const BLOCK_DUPLICATE = gql`
     ) {
       id
       ...BlockFields
+      ... on ButtonBlock {
+        submitEnabled
+      }
     }
   }
 `
@@ -79,7 +82,13 @@ export function DuplicateBlock({
 
     const block = {
       ...omit(selectedBlock, 'children'),
-      id: uuidv4()
+      id: uuidv4(),
+      // if the block is a button block and submitEnabled is true, set submitEnabled to false
+      // TODO: Write a test for this
+      ...(selectedBlock.__typename === 'ButtonBlock' &&
+      selectedBlock.submitEnabled === true
+        ? { submitEnabled: false }
+        : {})
     }
 
     const idMap: BlockDuplicateIdMap[] = [
