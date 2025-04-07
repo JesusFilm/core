@@ -88,31 +88,6 @@ const StyledForm = styled(Form)(() => ({}))
  *
  * @returns {ReactElement} The rendered Card component
  */
-const StyledForm = styled(Form)(() => ({}))
-
-/**
- * Card component - The primary container for content in a Journey.
- *
- * This component is responsible for rendering a card with various content blocks,
- * handling navigation between steps, managing form state for text responses,
- * and tracking analytics events for user interactions.
- *
- * The Card can display content in different layouts based on configuration:
- * - It can show a cover image or video in contained or expanded mode
- * - It handles form submission for text responses
- * - It provides touch/click navigation between steps
- * - It tracks navigation events and submits them to analytics
- *
- * @param {CardProps} props - Component props
- * @param {string} props.id - Unique identifier for the card
- * @param {Array<TreeBlock>} props.children - Child blocks to render within the card
- * @param {string} [props.backgroundColor] - Background color of the card
- * @param {string} [props.coverBlockId] - ID of the block to use as a cover (image or video)
- * @param {boolean} [props.fullscreen] - Whether the card should be displayed in fullscreen mode
- * @param {WrappersProps} [props.wrappers] - Optional wrapper components for blocks rendered inside the card
- *
- * @returns {ReactElement} The rendered Card component
- */
 export function Card({
   id,
   children,
@@ -122,7 +97,6 @@ export function Card({
   wrappers
 }: CardProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
-  const { enqueueSnackbar } = useSnackbar()
   const [stepNextEventCreate] = useMutation<
     StepNextEventCreate,
     StepNextEventCreateVariables
@@ -131,10 +105,6 @@ export function Card({
     StepPreviousEventCreate,
     StepPreviousEventCreateVariables
   >(STEP_PREVIOUS_EVENT_CREATE)
-  const [textResponseSubmissionEventCreate] =
-    useMutation<TextResponseSubmissionEventCreate>(
-      TEXT_RESPONSE_SUBMISSION_EVENT_CREATE
-    )
   const [textResponseSubmissionEventCreate] =
     useMutation<TextResponseSubmissionEventCreate>(
       TEXT_RESPONSE_SUBMISSION_EVENT_CREATE
@@ -207,72 +177,6 @@ export function Card({
   const validationSchema = useMemo(
     () => getValidationSchema(children, t),
     [children, t]
-  )
-
-  const textResponseBlocks = useMemo(
-    () => getTextResponseBlocks(children),
-    [children]
-  )
-
-  /**
-   * Handles form submission for text responses within the card.
-   * Submits all text response values to the server and tracks analytics events.
-   *
-   * @param {FormikValues} values - The form values to submit
-   * @returns {Promise<void>} A promise that resolves when all submissions are complete
-   */
-  const handleFormSubmit = async (values: FormikValues): Promise<void> => {
-    if (variant !== 'default' && variant !== 'embed') return
-    const heading =
-      activeBlock != null
-        ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t)
-        : t('None')
-
-    const submissionPromises = textResponseBlocks.map((block) => {
-      const blockId = block.id
-      const responseValue = values[blockId]
-
-      if (!responseValue || responseValue === '') return Promise.resolve(null)
-
-      const id = uuidv4()
-      return textResponseSubmissionEventCreate({
-        variables: {
-          input: {
-            id,
-            blockId,
-            stepId: activeBlock?.id,
-            label: heading,
-            value: responseValue
-          }
-        }
-      }).then(() => {
-        sendGTMEvent({
-          event: 'text_response_submission',
-          eventId: id,
-          blockId,
-          stepName: heading
-        })
-        return id
-      })
-    })
-
-    await Promise.all(submissionPromises)
-      .then(() => {
-        enqueueSnackbar(t('Thank you for your response!'), {
-          variant: 'success'
-        })
-      })
-      .catch((e) => {
-        if (e instanceof ApolloError)
-          enqueueSnackbar(e.message, {
-            variant: 'error'
-          })
-      })
-  }
-
-  const formikInitialValues = useMemo(
-    () => getFormInitialValues(children),
-    [children]
   )
 
   const textResponseBlocks = useMemo(
@@ -515,62 +419,43 @@ export function Card({
             borderRadius: { xs: 'inherit', lg: 3 }
           }}
         >
-          <Formik
-            initialValues={formikInitialValues}
-            onSubmit={handleFormSubmit}
-            enableReinitialize
+          <Paper
+            data-testid={`JourneysCard-${id}`}
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'flex-end',
+              borderRadius: { xs: 'inherit', lg: 3 },
+              backgroundColor,
+              width: '100%',
+              height: '100%',
+              overflow: 'hidden',
+              transform: 'translateZ(0)' // safari glitch with border radius
+            }}
+            elevation={3}
+            onClick={handleNavigation}
           >
-            {({ handleSubmit }) => (
-              <StyledForm
-                data-testid={`card-form-${id}`}
-                onSubmit={handleSubmit}
-                sx={{
-                  height: '100%',
-                  width: '100%',
-                  overflow: 'hidden',
-                  borderRadius: { xs: 'inherit', lg: 3 }
-                }}
+            {(coverBlock != null && !fullscreen) || videoBlock != null ? (
+              <ContainedCover
+                backgroundColor={cardColor}
+                backgroundBlur={blurUrl}
+                videoBlock={videoBlock}
+                imageBlock={imageBlock}
+                hasFullscreenVideo={hasFullscreenVideo}
               >
-                <Paper
-                  data-testid={`JourneysCard-${id}`}
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'flex-end',
-                    borderRadius: { xs: 'inherit', lg: 3 },
-                    backgroundColor,
-                    width: '100%',
-                    height: '100%',
-                    overflow: 'hidden',
-                    transform: 'translateZ(0)' // safari glitch with border radius
-                  }}
-                  elevation={3}
-                  onClick={handleNavigation}
-                >
-                  {(coverBlock != null && !fullscreen) || videoBlock != null ? (
-                    <ContainedCover
-                      backgroundColor={cardColor}
-                      backgroundBlur={blurUrl}
-                      videoBlock={videoBlock}
-                      imageBlock={imageBlock}
-                      hasFullscreenVideo={hasFullscreenVideo}
-                    >
-                      {renderedChildren}
-                    </ContainedCover>
-                  ) : (
-                    <ExpandedCover
-                      backgroundColor={cardColor}
-                      backgroundBlur={blurUrl}
-                      imageBlock={imageBlock}
-                      hasFullscreenVideo={hasFullscreenVideo}
-                    >
-                      {renderedChildren}
-                    </ExpandedCover>
-                  )}
-                </Paper>
-              </StyledForm>
+                {renderedChildren}
+              </ContainedCover>
+            ) : (
+              <ExpandedCover
+                backgroundColor={cardColor}
+                backgroundBlur={blurUrl}
+                imageBlock={imageBlock}
+                hasFullscreenVideo={hasFullscreenVideo}
+              >
+                {renderedChildren}
+              </ExpandedCover>
             )}
-          </Formik>
+          </Paper>
         </StyledForm>
       )}
     </Formik>

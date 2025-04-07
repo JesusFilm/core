@@ -90,13 +90,8 @@ export function NewButtonButton(): ReactElement {
       parentOrder: card.children.length ?? 0,
       startIconId: uuidv4(),
       endIconId: uuidv4(),
-<<<<<<< HEAD
-      submitEnabled: null,
-      action: null
-=======
       action: null,
       submitEnabled: shouldBeSubmitButton
->>>>>>> edmondshen/prj-2305-feature-branch-form-field-improvements
     }
 
     addBlock({
