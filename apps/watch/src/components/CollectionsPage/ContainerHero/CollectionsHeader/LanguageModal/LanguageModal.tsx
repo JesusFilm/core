@@ -24,8 +24,8 @@ interface LanguageModalProps {
 const languages = [
   { code: 'en', name: 'English', urlName: 'english' },
   { code: 'fr', name: 'Français', urlName: 'french' },
-  { code: 'es', name: 'Español', urlName: 'spanish' },
-  { code: 'pt', name: 'Português', urlName: 'portuguese' },
+  { code: 'es', name: 'Español', urlName: 'spanish-latin-american' },
+  { code: 'pt', name: 'Português', urlName: 'portuguese-brazil' },
   { code: 'ru', name: 'Русский', urlName: 'russian' }
 ]
 
