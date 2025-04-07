@@ -8,7 +8,10 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { BlockDuplicate } from '../../../../../../../../__generated__/BlockDuplicate'
+import {
+  BlockDuplicate,
+  BlockDuplicate_blockDuplicate_ButtonBlock
+} from '../../../../../../../../__generated__/BlockDuplicate'
 import {
   BlockFields_ButtonBlock as ButtonBlock,
   BlockFields_TypographyBlock as TypographyBlock
@@ -328,7 +331,8 @@ describe('DuplicateBlock', () => {
     }
 
     // capture the optimistic response from the mutation
-    let capturedOptimisticResponse: any = null
+    let capturedOptimisticResponse: BlockDuplicate | null = null
+
     jest
       .spyOn(require('@apollo/client'), 'useMutation')
       .mockImplementation(() => {
@@ -364,9 +368,13 @@ describe('DuplicateBlock', () => {
     expect(capturedOptimisticResponse).not.toBeNull()
 
     // Assert the optimistic response returns the selected block and the duplicated block
-    expect(capturedOptimisticResponse.blockDuplicate.length).toEqual(2)
-    const originalButton = capturedOptimisticResponse.blockDuplicate[0]
-    const duplicatedButton = capturedOptimisticResponse.blockDuplicate[1]
+    expect(capturedOptimisticResponse!.blockDuplicate.length).toEqual(2)
+
+    // Cast to ButtonBlock type since we know these are button blocks
+    const originalButton = capturedOptimisticResponse!
+      .blockDuplicate[0] as BlockDuplicate_blockDuplicate_ButtonBlock
+    const duplicatedButton = capturedOptimisticResponse!
+      .blockDuplicate[1] as BlockDuplicate_blockDuplicate_ButtonBlock
 
     expect(originalButton.id).toBe(buttonBlock.id)
     expect(originalButton.submitEnabled).toBe(true)
