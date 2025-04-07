@@ -1,71 +1,60 @@
-const mockSourceStrings = [
-  {
+export const mockTranslation = {
+  stringId: 1,
+  contentType: 'text/plain',
+  translationId: 1234,
+  text: 'Translated Text',
+  user: {
     id: 1,
-    projectId: 123,
-    fileId: 456,
-    branchId: null,
-    directoryId: null,
-    identifier: 'video_123',
-    text: 'Sample Video Title',
-    type: 'text',
-    context: '',
-    maxLength: 0,
-    isHidden: false,
-    isDuplicate: false,
-    masterStringId: null,
-    revision: 1,
-    hasPlurals: false,
-    isIcu: false,
-    labelIds: [],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  }
-]
+    username: 'test',
+    fullName: 'test'
+  },
+  createdAt: '2024-01-01T00:00:00Z'
+}
 
-const mockTranslations = [
-  {
-    stringId: 1,
-    contentType: 'text/plain',
-    translationId: 1,
-    text: 'Translated Video Title',
-    pluralCategoryName: null,
-    user: {
-      id: 123,
-      username: 'translator',
-      fullName: 'Test Translator',
-      avatarUrl: 'https://example.com/avatar.png'
-    },
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  }
-]
+export const mockSourceString = {
+  id: 1,
+  projectId: 1,
+  fileId: 1,
+  branchId: null,
+  directoryId: null,
+  identifier: 'test_string',
+  text: 'Hello',
+  type: 'text',
+  context: '1\nThis is a test',
+  maxLength: null,
+  isHidden: false,
+  isDuplicate: false,
+  masterStringId: null,
+  revision: 1,
+  hasPlurals: false,
+  isIcu: false,
+  labelIds: [],
+  createdAt: '2024-01-01T00:00:00Z',
+  updatedAt: null
+}
 
-class SourceStrings {
-  listProjectStrings = jest.fn().mockImplementation(() => {
-    return Promise.resolve({
-      data: mockSourceStrings.map((str) => ({ data: str }))
-    })
+export const SourceStrings = {
+  listProjectStrings: jest.fn().mockImplementation(() => {
+    return {
+      data: [{ data: mockSourceString }]
+    }
   })
 }
 
-class StringTranslations {
-  listLanguageTranslations = jest.fn().mockImplementation(() => {
-    return Promise.resolve({
-      data: mockTranslations.map((trans) => ({ data: trans }))
-    })
+export const StringTranslations = {
+  listLanguageTranslations: jest.fn().mockImplementation(() => {
+    return {
+      data: [{ data: mockTranslation }]
+    }
   })
 }
 
-class CrowdinClient {
-  sourceStringsApi: SourceStrings
-  stringTranslationsApi: StringTranslations
+export default class Crowdin {
+  sourceStringsApi: typeof SourceStrings
+  stringTranslationsApi: typeof StringTranslations
 
-  constructor(options: { token: string }) {
-    this.sourceStringsApi = new SourceStrings()
-    this.stringTranslationsApi = new StringTranslations()
+  constructor(config: { token: string }) {
+    this.sourceStringsApi = SourceStrings
+    this.stringTranslationsApi = StringTranslations
   }
 }
-
-export { SourceStrings, StringTranslations }
-
-export default CrowdinClient

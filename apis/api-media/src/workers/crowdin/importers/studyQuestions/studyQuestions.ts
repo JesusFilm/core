@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { prisma } from '../../../../lib/prisma'
 import { CROWDIN_CONFIG } from '../../config'
 import { processFile } from '../../importer'
-import { TranslationData } from '../../types'
+import { ProcessedTranslation } from '../../types'
 
 const questionMap = new Map<string, Array<{ videoId: string; order: number }>>()
 const missingQuestions = new Set<string>()
@@ -13,24 +13,23 @@ const studyQuestionSchema = z
   .object({
     identifier: z.string(),
     text: z.string(),
-    languageCode: z.string(),
-    context: z.string().optional()
+    languageId: z.string(),
+    context: z.string()
   })
   .transform((data) => {
-    const questionId = getQuestionId({
-      sourceString: { context: data.context }
-    } as TranslationData)
-    if (!questionId) throw new Error('Missing question ID')
+    const questionId = getQuestionId(data.context)
 
-    const questions = getQuestionData(questionId)
-    if (!questions || questions.length === 0) {
+    if (!questionId) throw new Error('Question not found')
+
+    const questionData = getQuestionData(questionId)
+    if (!questionData || questionData.length === 0) {
       missingQuestions.add(questionId)
       throw new Error('Question not found')
     }
 
-    return questions.map(({ videoId, order }) => ({
+    return questionData.map(({ videoId, order }) => ({
       videoId,
-      languageId: data.languageCode,
+      languageId: data.languageId,
       order,
       value: data.text,
       primary: false,
@@ -48,7 +47,7 @@ export async function importStudyQuestions(
 
   await processFile(
     CROWDIN_CONFIG.files.study_questions,
-    async (data: TranslationData) => {
+    async (data: ProcessedTranslation) => {
       await upsertStudyQuestionTranslation(data)
     },
     logger
@@ -75,10 +74,6 @@ function getQuestionData(
   questionId: string
 ): Array<{ videoId: string; order: number }> | undefined {
   return questionMap.get(questionId)
-}
-
-function hasQuestion(questionId: string): boolean {
-  return questionMap.has(questionId)
 }
 
 async function initializeQuestionMap(logger?: Logger): Promise<void> {
@@ -108,50 +103,21 @@ async function initializeQuestionMap(logger?: Logger): Promise<void> {
   logger?.info({ count: questions.length }, 'Initialized question map')
 }
 
-function getQuestionId(data: TranslationData): string | undefined {
-  const context = data.sourceString.context
+function getQuestionId(context: string): string | undefined {
   if (!context) return undefined
 
-  // Get the first line of the context which should be our ID
   const firstLine = context.split('\n')[0]
   return firstLine
 }
 
-function validateStudyQuestionData(data: TranslationData): boolean {
-  if (!data.translation.text) {
-    return false
-  }
-
-  const languageId =
-    CROWDIN_CONFIG.languageCodes[
-      data.languageCode as keyof typeof CROWDIN_CONFIG.languageCodes
-    ]
-  if (!languageId) {
-    return false
-  }
-
-  const questionId = getQuestionId(data)
-  if (!questionId || !hasQuestion(questionId)) {
-    if (questionId) {
-      missingQuestions.add(questionId)
-    }
-    return false
-  }
-
-  return true
-}
-
 async function upsertStudyQuestionTranslation(
-  data: TranslationData
+  data: ProcessedTranslation
 ): Promise<void> {
   const result = studyQuestionSchema.parse({
-    identifier: data.sourceString.identifier,
-    text: data.translation.text,
-    languageCode:
-      CROWDIN_CONFIG.languageCodes[
-        data.languageCode as keyof typeof CROWDIN_CONFIG.languageCodes
-      ],
-    context: data.sourceString.context
+    identifier: data.identifier,
+    text: data.text,
+    languageId: data.languageId,
+    context: data.context
   })
 
   await Promise.all(

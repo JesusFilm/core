@@ -79,7 +79,8 @@ export interface CrowdinApis {
 }
 
 export interface ProcessedTranslation {
-  sourceString: SourceStringsModel.String
-  translation: CrowdinTranslation
-  languageCode: string
+  identifier: string
+  text: string
+  context: string
+  languageId: string
 }

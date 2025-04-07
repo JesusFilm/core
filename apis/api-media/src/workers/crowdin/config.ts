@@ -45,25 +45,26 @@ export const CROWDIN_CONFIG = {
       title: 'Study Questions',
       path: '/Arclight/study_questions.csv'
     } as ArclightFile
-  },
-  languageCodes: {
-    ko: '3804',
-    ar: '139485',
-    'es-MX': '21028',
-    'pt-BR': '584',
-    tr: '1942',
-    'zh-CN': '21754',
-    fa: '6788',
-    'ur-PK': '407',
-    he: '6930',
-    hi: '6464',
-    fr: '496',
-    'zh-TW': '21753',
-    ru: '3934',
-    de: '1106',
-    id: '16639',
-    ja: '7083',
-    vi: '3887',
-    th: '13169'
-  } as const
+  }
+}
+
+export const LANGUAGE_CODES = {
+  ko: '3804',
+  ar: '139485',
+  'es-MX': '21028',
+  'pt-BR': '584',
+  tr: '1942',
+  'zh-CN': '21754',
+  fa: '6788',
+  'ur-PK': '407',
+  he: '6930',
+  hi: '6464',
+  fr: '496',
+  'zh-TW': '21753',
+  ru: '3934',
+  de: '1106',
+  id: '16639',
+  ja: '7083',
+  vi: '3887',
+  th: '13169'
 }
