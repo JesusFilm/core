@@ -3,16 +3,10 @@ import { Meta, StoryObj } from '@storybook/react'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
-import type { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import { PageWrapper } from '../../PageWrapper'
 
 import { ClearAllButton } from './ClearAllButton'
 import { FilterDrawer } from './FilterDrawer'
-
-const journey = {
-  id: '123',
-  slug: 'test-journey'
-} as Journey
 
 const FilterDrawerStory: Meta<typeof FilterDrawer> = {
   ...journeysAdminConfig,

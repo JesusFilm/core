@@ -1,4 +1,4 @@
-import { gql, useLazyQuery, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
@@ -11,13 +11,9 @@ import RadioGroup from '@mui/material/RadioGroup'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
 import X2Icon from '@core/shared/ui/icons/X2'
-
-import { GetJourneyEventsVariables } from '../../../../__generated__/GetJourneyEvents'
-import { useJourneyEventsExport } from '../../../libs/useJourneyEventsExport'
 
 import { ClearAllButton } from './ClearAllButton'
 import { ExportDialog } from './ExportDialog'
@@ -48,20 +44,7 @@ export function FilterDrawer({
   handleClearAll
 }: FilterDrawerProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { enqueueSnackbar } = useSnackbar()
-  const { exportJourneyEvents } = useJourneyEventsExport()
   const [showExportDialog, setShowExportDialog] = useState(false)
-  const handleExport = async (
-    input: Pick<GetJourneyEventsVariables, 'journeyId' | 'filter'>
-  ): Promise<void> => {
-    try {
-      await exportJourneyEvents(input)
-    } catch (error) {
-      enqueueSnackbar(error.message, {
-        variant: 'error'
-      })
-    }
-  }
 
   return (
     <Stack sx={{ height: '100vh' }} data-testid="FilterDrawer">
@@ -158,13 +141,13 @@ export function FilterDrawer({
               sx={{ width: '100%' }}
               onClick={() => setShowExportDialog(true)}
             >
-              {t('Export data')}
+              {t('Export Data')}
             </Button>
           </Box>
           <ExportDialog
             open={showExportDialog}
             onClose={() => setShowExportDialog(false)}
-            onExport={() => handleExport({ journeyId })}
+            journeyId={journeyId}
           />
         </>
       )}

@@ -4,6 +4,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Collapse from '@mui/material/Collapse'
+import Divider from '@mui/material/Divider'
 import FormGroup from '@mui/material/FormGroup'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
@@ -13,11 +14,13 @@ import { DateField } from '@mui/x-date-pickers/DateField'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import forIn from 'lodash/forIn'
 import { useTranslation } from 'next-i18next'
+import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { EventType } from '../../../../../__generated__/globalTypes'
+import { useJourneyEventsExport } from '../../../../libs/useJourneyEventsExport'
 
 import { CheckboxOption } from './CheckboxOption'
 
@@ -82,7 +85,7 @@ function DateRangePicker({
 interface ExportDialogProps {
   open: boolean
   onClose: () => void
-  onExport: (selectedEvents: EventType[]) => Promise<void>
+  journeyId: string
 }
 
 interface CheckboxState {
@@ -119,9 +122,11 @@ const REGULAR_EVENT_KEYS = [
 export function ExportDialog({
   open,
   onClose,
-  onExport
+  journeyId
 }: ExportDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { enqueueSnackbar } = useSnackbar()
+  const { exportJourneyEvents } = useJourneyEventsExport()
 
   const [checkboxState, setCheckboxState] = useState<CheckboxState>({
     JourneyViewEvent: true,
@@ -204,7 +209,20 @@ export function ExportDialog({
   }
 
   const handleExport = async (): Promise<void> => {
-    await onExport(getSelectedEvents())
+    try {
+      const filter = {
+        typenames: getSelectedEvents(),
+        ...(startDate && { periodRangeStart: startDate.toISOString() }),
+        ...(endDate && { periodRangeEnd: endDate.toISOString() })
+      }
+
+      await exportJourneyEvents({ journeyId, filter })
+      onClose()
+    } catch (error) {
+      enqueueSnackbar(error.message, {
+        variant: 'error'
+      })
+    }
   }
 
   return (
@@ -253,6 +271,7 @@ export function ExportDialog({
               onChange={handleSelectAll}
               label="All"
             />
+            <Divider />
             <CheckboxOption
               checked={checkboxState.JourneyViewEvent}
               onChange={(checked) =>

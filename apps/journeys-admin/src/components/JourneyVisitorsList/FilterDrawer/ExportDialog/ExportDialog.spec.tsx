@@ -1,126 +1,171 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { GraphQLError } from 'graphql'
+import { SnackbarProvider } from 'notistack'
 
-import { EventType } from '../../../../../__generated__/globalTypes'
+import {
+  GetJourneyEvents,
+  GetJourneyEventsVariables
+} from '../../../../../__generated__/GetJourneyEvents'
+import {
+  FILTERED_EVENTS,
+  GET_JOURNEY_EVENTS_EXPORT
+} from '../../../../libs/useJourneyEventsExport/useJourneyEventsExport'
+import { mockCreateEventsExportLogMutation } from '../../../../libs/useJourneyEventsExport/useJourneyEventsExport.mock'
 
 import { ExportDialog } from './ExportDialog'
 
+const getJourneyEventsMock: MockedResponse<
+  GetJourneyEvents,
+  GetJourneyEventsVariables
+> = {
+  request: {
+    query: GET_JOURNEY_EVENTS_EXPORT,
+    variables: {
+      journeyId: 'journey1',
+      filter: {
+        typenames: FILTERED_EVENTS
+      },
+      after: null,
+      first: 20000
+    }
+  },
+  result: jest.fn(() => ({
+    data: {
+      journeyEventsConnection: {
+        __typename: 'JourneyEventsConnection',
+        edges: [
+          {
+            __typename: 'JourneyEventEdge',
+            cursor: 'cursor1',
+            node: {
+              __typename: 'JourneyEvent',
+              journeyId: '123',
+              visitorId: 'visitor.id',
+              label: 'Test',
+              value: 'Test',
+              typename: 'StepViewEvent',
+              progress: null,
+              messagePlatform: null,
+              journey: {
+                __typename: 'Journey',
+                slug: 'test-journey'
+              },
+              visitor: {
+                __typename: 'Visitor',
+                email: 'test@example.com',
+                name: 'Test User'
+              }
+            }
+          }
+        ],
+        pageInfo: {
+          hasNextPage: false,
+          hasPreviousPage: false,
+          startCursor: 'cursor1',
+          endCursor: 'cursor1',
+          __typename: 'PageInfo'
+        }
+      }
+    }
+  }))
+}
+
+const props = {
+  open: true,
+  onClose: jest.fn(),
+  journeyId: 'journey1'
+}
+
 describe('ExportDialog', () => {
-  const onClose = jest.fn()
-  const onExport = jest.fn()
+  it('should fetch data when export button is clicked', async () => {
+    const mutationResult = jest.fn(() => ({
+      ...mockCreateEventsExportLogMutation.result
+    }))
 
-  beforeEach(() => {
-    jest.clearAllMocks()
+    render(
+      <MockedProvider
+        mocks={[
+          getJourneyEventsMock,
+          { ...mockCreateEventsExportLogMutation, result: mutationResult }
+        ]}
+      >
+        <ExportDialog {...props} />
+      </MockedProvider>
+    )
+
+    const user = userEvent.setup()
+    await user.click(screen.getByRole('button', { name: 'Export (CSV)' }))
+
+    await waitFor(() => {
+      expect(getJourneyEventsMock.result).toHaveBeenCalled()
+    })
+    expect(mutationResult).toHaveBeenCalled()
   })
 
-  it('should render all checkboxes checked by default', () => {
-    render(<ExportDialog open onClose={onClose} onExport={onExport} />)
+  it('should download the csv file', async () => {
+    const createElementSpy = jest.spyOn(document, 'createElement')
+    const appendChildSpy = jest.spyOn(document.body, 'appendChild')
+    const setAttributeSpy = jest.spyOn(
+      HTMLAnchorElement.prototype,
+      'setAttribute'
+    )
 
-    // Check "All" checkbox
-    const allCheckbox = screen.getByRole('checkbox', { name: 'All' })
-    expect(allCheckbox).toBeChecked()
+    render(
+      <MockedProvider
+        mocks={[getJourneyEventsMock, mockCreateEventsExportLogMutation]}
+      >
+        <ExportDialog {...props} />
+      </MockedProvider>
+    )
 
-    // Check individual checkboxes
-    expect(screen.getByRole('checkbox', { name: 'Journey View' })).toBeChecked()
-    expect(screen.getByRole('checkbox', { name: 'Chat Opened' })).toBeChecked()
-    expect(screen.getByRole('checkbox', { name: 'Poll options' })).toBeChecked()
+    const user = userEvent.setup()
+    await user.click(screen.getByRole('button', { name: 'Export (CSV)' }))
+
+    expect(createElementSpy).toHaveBeenCalledWith('a')
+    expect(setAttributeSpy).toHaveBeenCalledWith(
+      'download',
+      expect.stringMatching(/\[\d{4}-\d{2}-\d{2}\] test-journey\.csv/)
+    )
+    expect(appendChildSpy).toHaveBeenCalled()
+  })
+
+  it('should show an error if no data is found', async () => {
+    const mutationResult = jest.fn(() => ({
+      ...mockCreateEventsExportLogMutation.result
+    }))
+    const getJourneyEventsErrorMock = {
+      ...getJourneyEventsMock,
+      result: jest.fn(() => ({
+        errors: [
+          new GraphQLError('Unexpected error', {
+            extensions: { code: 'DOWNSTREAM_SERVICE_ERROR' }
+          })
+        ]
+      }))
+    }
+
+    render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[
+            getJourneyEventsErrorMock,
+            { ...mockCreateEventsExportLogMutation, result: mutationResult }
+          ]}
+        >
+          <ExportDialog {...props} />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    const user = userEvent.setup()
+    await user.click(screen.getByRole('button', { name: 'Export (CSV)' }))
+
+    expect(getJourneyEventsErrorMock.result).toHaveBeenCalled()
     expect(
-      screen.getByRole('checkbox', { name: 'Button Clicks' })
-    ).toBeChecked()
-    expect(
-      screen.getByRole('checkbox', { name: 'Submitted text' })
-    ).toBeChecked()
-
-    // Check Video Events and its children
-    expect(screen.getByRole('checkbox', { name: 'Video Events' })).toBeChecked()
-    expect(screen.getByRole('checkbox', { name: 'Start' })).toBeChecked()
-    expect(screen.getByRole('checkbox', { name: 'Play' })).toBeChecked()
-    expect(screen.getByRole('checkbox', { name: 'Pause' })).toBeChecked()
-    expect(screen.getByRole('checkbox', { name: 'Complete' })).toBeChecked()
-    expect(screen.getByRole('checkbox', { name: 'Progress' })).toBeChecked()
-  })
-
-  it('should uncheck "All" when any checkbox is unchecked', () => {
-    render(<ExportDialog open onClose={onClose} onExport={onExport} />)
-
-    const allCheckbox = screen.getByRole('checkbox', { name: 'All' })
-    const journeyViewCheckbox = screen.getByRole('checkbox', {
-      name: 'Journey View'
-    })
-
-    fireEvent.click(journeyViewCheckbox)
-
-    expect(allCheckbox).not.toBeChecked()
-    expect(journeyViewCheckbox).not.toBeChecked()
-  })
-
-  it('should check/uncheck all video events when video events parent is checked/unchecked', () => {
-    render(<ExportDialog open onClose={onClose} onExport={onExport} />)
-
-    const videoEventsCheckbox = screen.getByRole('checkbox', {
-      name: 'Video Events'
-    })
-
-    // Uncheck video events
-    fireEvent.click(videoEventsCheckbox)
-
-    expect(screen.getByRole('checkbox', { name: 'Start' })).not.toBeChecked()
-    expect(screen.getByRole('checkbox', { name: 'Play' })).not.toBeChecked()
-    expect(screen.getByRole('checkbox', { name: 'Pause' })).not.toBeChecked()
-    expect(screen.getByRole('checkbox', { name: 'Complete' })).not.toBeChecked()
-    expect(screen.getByRole('checkbox', { name: 'Progress' })).not.toBeChecked()
-
-    // Check video events again
-    fireEvent.click(videoEventsCheckbox)
-
-    expect(screen.getByRole('checkbox', { name: 'Start' })).toBeChecked()
-    expect(screen.getByRole('checkbox', { name: 'Play' })).toBeChecked()
-    expect(screen.getByRole('checkbox', { name: 'Pause' })).toBeChecked()
-    expect(screen.getByRole('checkbox', { name: 'Complete' })).toBeChecked()
-    expect(screen.getByRole('checkbox', { name: 'Progress' })).toBeChecked()
-  })
-
-  it('should show video events parent in indeterminate state when some children are checked', () => {
-    render(<ExportDialog open onClose={onClose} onExport={onExport} />)
-
-    const startCheckbox = screen.getByRole('checkbox', { name: 'Start' })
-    const videoEventsCheckbox = screen.getByRole('checkbox', {
-      name: 'Video Events'
-    })
-
-    fireEvent.click(startCheckbox)
-
-    expect(videoEventsCheckbox.indeterminate).toBe(true)
-  })
-
-  it('should call onExport with correct event types when export button is clicked', async () => {
-    render(<ExportDialog open onClose={onClose} onExport={onExport} />)
-
-    // Uncheck some options
-    fireEvent.click(screen.getByRole('checkbox', { name: 'Journey View' }))
-    fireEvent.click(screen.getByRole('checkbox', { name: 'Chat Opened' }))
-    fireEvent.click(screen.getByRole('checkbox', { name: 'Start' }))
-
-    const exportButton = screen.getByRole('button', { name: 'Export (CSV)' })
-    fireEvent.click(exportButton)
-
-    expect(onExport).toHaveBeenCalledWith([
-      EventType.RadioQuestionSubmissionEvent,
-      EventType.ButtonClickEvent,
-      EventType.SignUpSubmissionEvent,
-      EventType.TextResponseSubmissionEvent,
-      EventType.VideoPlayEvent,
-      EventType.VideoPauseEvent,
-      EventType.VideoCompleteEvent,
-      EventType.VideoProgressEvent
-    ])
-  })
-
-  it('should call onClose when close button is clicked', () => {
-    render(<ExportDialog open onClose={onClose} onExport={onExport} />)
-
-    const closeButton = screen.getByTestId('dialog-close-button')
-    fireEvent.click(closeButton)
-
-    expect(onClose).toHaveBeenCalled()
+      screen.getByText('Failed to retrieve data for export.')
+    ).toBeInTheDocument()
+    expect(mutationResult).not.toHaveBeenCalled()
   })
 })
