@@ -1,4 +1,4 @@
-import type { GetStaticPaths, GetStaticProps } from 'next'
+import type { GetStaticProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
 import { SnackbarProvider } from 'notistack'
