@@ -38,11 +38,6 @@ export function LanguageModal({
     onClose()
   }
 
-  const handleLanguageSelect = (urlName: string): void => {
-    window.location.href = `/easter/${urlName}`
-    handleClose()
-  }
-
   return (
     <Dialog
       data-testid="LanguageModal"
@@ -62,13 +57,9 @@ export function LanguageModal({
           <div className="grid grid-cols-1 gap-4 font-sans">
             {languages.map((language) => (
               <a
-                href={`/easter/${language.urlName}`}
+                href={`/watch/easter/${language.urlName}`}
                 key={language.code}
                 className="inline-block text-center gap-2 px-4 py-4 text-md text-white font-semibold uppercase tracking-wider rounded-lg bg-stone-800/50 hover:bg-red-500 hover:text-white transition-colors duration-200 cursor-pointer"
-                onClick={(e) => {
-                  e.preventDefault()
-                  handleLanguageSelect(language.urlName)
-                }}
                 data-testid={`language-button-${language.code}`}
               >
                 {language.name}

@@ -4,10 +4,10 @@ import { NextSeo } from 'next-seo'
 import { SnackbarProvider } from 'notistack'
 import type { ReactElement } from 'react'
 
-import i18nConfig from '../../../next-i18next.config'
-import { CollectionsPage } from '../../../src/components/CollectionsPage/languages/es'
-import { getFlags } from '../../../src/libs/getFlags'
-import { LanguageProvider } from '../../../src/libs/languageContext/LanguageContext'
+import i18nConfig from '../../../../next-i18next.config'
+import { CollectionsPage } from '../../../../src/components/CollectionsPage/languages/fr'
+import { getFlags } from '../../../../src/libs/getFlags'
+import { LanguageProvider } from '../../../../src/libs/languageContext/LanguageContext'
 
 export default function EasterPage(): ReactElement {
   return (
@@ -16,22 +16,22 @@ export default function EasterPage(): ReactElement {
         noindex
         nofollow
         titleTemplate="%s | Jesus Film Project"
-        defaultTitle="Easter 2025 videos & resources about Lent, Holy Week, Resurrection | Jesus Film Project"
-        description="Explore the other side of Easter — one filled with betrayal, hope, and a claim that changed the world."
+        defaultTitle="Pâques 2025 - vidéos et ressources sur le Carême, la Semaine Sainte, la Résurrection | Jesus Film Project"
+        description="Explorez l'autre côté de Pâques — une histoire de trahison, d'espérance et d'une affirmation qui a changé le monde."
         openGraph={{
           title:
-            'What If Everything You Thought About Easter Is Only Half the Story?',
+            "Et si tout ce que vous pensiez savoir sur Pâques n'était que la moitié de l'histoire ?",
           description:
-            'Explore the other side of Easter — one filled with betrayal, hope, and a claim that changed the world.',
-          url: 'https://watch.jesusfilm.org/watch/easter',
+            "Explorez l'autre côté de Pâques — une histoire de trahison, d'espérance et d'une affirmation qui a changé le monde.",
+          url: 'https://watch.jesusfilm.org/watch/easter/french',
           type: 'website',
-          locale: 'en_US',
+          locale: 'fr_FR',
           images: [
             {
               url: 'https://images.unsplash.com/photo-1482424917728-d82d29662023?w=1400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjN8fGNocmlzdHxlbnwwfHwwfHx8MA%3D%3D',
               width: 1400,
               height: 933,
-              alt: 'Easter - Jesus Film Project',
+              alt: 'Pâques - Jesus Film Project',
               type: 'image/jpeg'
             }
           ],

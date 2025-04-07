@@ -4,10 +4,10 @@ import { NextSeo } from 'next-seo'
 import { SnackbarProvider } from 'notistack'
 import type { ReactElement } from 'react'
 
-import i18nConfig from '../../../next-i18next.config'
-import { CollectionsPage } from '../../../src/components/CollectionsPage/languages/es'
-import { getFlags } from '../../../src/libs/getFlags'
-import { LanguageProvider } from '../../../src/libs/languageContext/LanguageContext'
+import i18nConfig from '../../../../next-i18next.config'
+import { CollectionsPage } from '../../../../src/components/CollectionsPage/languages/es'
+import { getFlags } from '../../../../src/libs/getFlags'
+import { LanguageProvider } from '../../../../src/libs/languageContext/LanguageContext'
 
 export default function EasterPage(): ReactElement {
   return (
@@ -23,7 +23,7 @@ export default function EasterPage(): ReactElement {
             'What If Everything You Thought About Easter Is Only Half the Story?',
           description:
             'Explore the other side of Easter — one filled with betrayal, hope, and a claim that changed the world.',
-          url: 'https://watch.jesusfilm.org/watch/easter',
+          url: 'https://watch.jesusfilm.org/watch/easter/english',
           type: 'website',
           locale: 'en_US',
           images: [
