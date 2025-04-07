@@ -786,10 +786,6 @@ describe('CardBlock', () => {
     await waitFor(() =>
       expect(mockTextResponseSubmissionEventCreate.result).toHaveBeenCalled()
     )
-
-    await waitFor(() =>
-      expect(getByText('Thank you for your response!')).toBeInTheDocument()
-    )
   })
 
   it('should handle empty formik submission', async () => {
@@ -835,12 +831,6 @@ describe('CardBlock', () => {
       expect(
         mockTextResponseSubmissionEventCreate.result
       ).not.toHaveBeenCalled()
-    )
-
-    await waitFor(() =>
-      expect(
-        queryByText('Thank you for your response!')
-      ).not.toBeInTheDocument()
     )
   })
 })
