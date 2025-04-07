@@ -19,7 +19,7 @@ export function CollectionsPage(): ReactElement {
   // Content items data with contentId that will match the CollectionsVideoContent IDs
   const navigationContentItems: ContentItem[] = [
     {
-      contentId: 'easter-explained/english',
+      contentId: 'easter-explained/spanish-latin-american',
       title: 'El Verdadero Significado de la Pascua',
       category: 'Video Corto',
       image:
@@ -27,7 +27,7 @@ export function CollectionsPage(): ReactElement {
       bgColor: '#1A1815'
     },
     {
-      contentId: 'my-last-day/english',
+      contentId: 'my-last-day/spanish-latin-american',
       title:
         'La última hora de la vida de Jesús desde el punto de vista de un criminal',
       category: 'Video Corto',
@@ -36,7 +36,7 @@ export function CollectionsPage(): ReactElement {
       bgColor: '#A88E78'
     },
     {
-      contentId: 'why-did-jesus-have-to-die/english',
+      contentId: 'why-did-jesus-have-to-die/spanish-latin-american',
       title: 'El Propósito del Sacrificio de Jesús',
       category: 'Video Corto',
       image:
@@ -44,7 +44,7 @@ export function CollectionsPage(): ReactElement {
       bgColor: '#62884C'
     },
     {
-      contentId: 'did-jesus-come-back-from-the-dead/english',
+      contentId: 'did-jesus-come-back-from-the-dead/spanish-latin-american',
       title: 'La Verdad Sobre la Resurrección de Jesús',
       category: 'Video Corto',
       image:
@@ -52,7 +52,7 @@ export function CollectionsPage(): ReactElement {
       bgColor: '#5F4C5E'
     },
     {
-      contentId: 'the-story-short-film/english',
+      contentId: 'the-story-short-film/spanish-latin-american',
       title: 'La Historia: Cómo Todo Comenzó y Cómo Nunca Terminará',
       category: 'Video Corto',
       image:
@@ -60,7 +60,7 @@ export function CollectionsPage(): ReactElement {
       bgColor: '#72593A'
     },
     {
-      contentId: 'chosen-witness/english',
+      contentId: 'chosen-witness/spanish-latin-american',
       title: 'María Magdalena: Una Vida Transformada por Jesús',
       category: 'Video Corto',
       image:
@@ -104,7 +104,7 @@ export function CollectionsPage(): ReactElement {
           locale="es"
         />
         <CollectionsVideoContent
-          contentId="easter-explained/english"
+          contentId="easter-explained/spanish-latin-american"
           subtitle={'La Victoria de Jesús Sobre el Pecado y la Muerte'}
           title={'El Verdadero Significado de la Pascua'}
           description={
@@ -258,42 +258,42 @@ export function CollectionsPage(): ReactElement {
               imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/cfER11',
               altText: 'Póster de la Película JESÚS',
               externalUrl:
-                'https://www.jesusfilm.org/watch/jesus.html/english.html'
+                'https://www.jesusfilm.org/watch/jesus.html/spanish-latin-american.html'
             },
             {
               imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/9wGrB0',
               altText: 'Póster de la Película La Vida de Jesús',
               externalUrl:
-                'https://www.jesusfilm.org/watch/life-of-jesus-gospel-of-john.html/english.html'
+                'https://www.jesusfilm.org/watch/life-of-jesus-gospel-of-john.html/spanish-latin-american.html'
             },
             {
               imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/zeoyJz',
               altText: 'Póster de la Película del Evangelio de Mateo',
               externalUrl:
-                'https://www.jesusfilm.org/watch/lumo-the-gospel-of-matthew.html/lumo-matthew-1-1-2-23/english.html'
+                'https://www.jesusfilm.org/watch/lumo-the-gospel-of-matthew.html/lumo-matthew-1-1-2-23/spanish-latin-american.html'
             },
             {
               imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/Ol9PXg',
               altText: 'Póster de la Película del Evangelio de Marcos',
               externalUrl:
-                'https://www.jesusfilm.org/watch/lumo-the-gospel-of-mark.html/lumo-mark-1-1-45/english.html'
+                'https://www.jesusfilm.org/watch/lumo-the-gospel-of-mark.html/lumo-mark-1-1-45/spanish-latin-american.html'
             },
             {
               imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/cft9yz',
               altText: 'Póster de la Película del Evangelio de Lucas',
               externalUrl:
-                'https://www.jesusfilm.org/watch/lumo-the-gospel-of-luke.html/lumo-luke-1-1-56/english.html'
+                'https://www.jesusfilm.org/watch/lumo-the-gospel-of-luke.html/lumo-luke-1-1-56/spanish-latin-american.html'
             },
             {
               imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/TxsUi3',
               altText: 'Póster de la Película del Evangelio de Juan',
               externalUrl:
-                'https://www.jesusfilm.org/watch/lumo-the-gospel-of-john.html/lumo-john-1-1-34/english.html'
+                'https://www.jesusfilm.org/watch/lumo-the-gospel-of-john.html/lumo-john-1-1-34/spanish-latin-american.html'
             }
           ]}
         />
         <CollectionsVideoContent
-          contentId="my-last-day/english"
+          contentId="my-last-day/spanish-latin-american"
           subtitle={'Mi Último Día'}
           title={
             'La última hora de la vida de Jesús desde el punto de vista de un criminal'
@@ -446,7 +446,7 @@ export function CollectionsPage(): ReactElement {
           description={
             'Embárcate en esta aventura para viajar en el tiempo al siglo I y examinar otras teorías sobre la tumba vacía de Jesús.'
           }
-          contentId="31-how-did-jesus-die/english"
+          contentId="31-how-did-jesus-die/spanish-latin-american"
           videoTitle={'¿Cómo Murió Jesús?'}
           mutePage={mutePage}
           setMutePage={setMutePage}
@@ -454,21 +454,21 @@ export function CollectionsPage(): ReactElement {
           shortVideoText="Video Corto"
           slides={[
             {
-              contentId: '31-how-did-jesus-die/english',
+              contentId: '31-how-did-jesus-die/spanish-latin-american',
               imageUrl:
                 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/7_0-nfs0301.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
               backgroundColor: '#161817',
               title: '¿Cómo Murió Jesús?'
             },
             {
-              contentId: '32-what-happened-next/english',
+              contentId: '32-what-happened-next/spanish-latin-american',
               imageUrl:
                 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/7_0-nfs0302.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
               backgroundColor: '#000906',
               title: '¿Qué Pasó Después?'
             },
             {
-              contentId: '33-do-the-facts-stack-up/english',
+              contentId: '33-do-the-facts-stack-up/spanish-latin-american',
               imageUrl:
                 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/7_0-nfs0303.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
               backgroundColor: '#2B2018',
@@ -477,7 +477,7 @@ export function CollectionsPage(): ReactElement {
           ]}
         />
         <CollectionsVideoContent
-          contentId="why-did-jesus-have-to-die/english"
+          contentId="why-did-jesus-have-to-die/spanish-latin-american"
           subtitle={'¿Por Qué Jesús Tuvo Que Morir?'}
           title={'El Propósito del Sacrificio de Jesús'}
           description={
@@ -610,7 +610,7 @@ export function CollectionsPage(): ReactElement {
         />
 
         <CollectionsVideoContent
-          contentId="talk-with-nicodemus/english"
+          contentId="talk-with-nicodemus/spanish-latin-american"
           subtitle={'De la Religión a la Relación'}
           title={'El Evangelio en Una Conversación'}
           description={
@@ -719,7 +719,7 @@ export function CollectionsPage(): ReactElement {
         />
 
         <CollectionsVideoContent
-          contentId="did-jesus-come-back-from-the-dead/english"
+          contentId="did-jesus-come-back-from-the-dead/spanish-latin-american"
           subtitle={'¿Volvió Jesús de la Muerte?'}
           title={'La Verdad Sobre la Resurrección de Jesús'}
           description={
@@ -853,7 +853,7 @@ export function CollectionsPage(): ReactElement {
           description={
             'Sigue día a día los acontecimientos de la Pascua tal como se describen en el Evangelio de Lucas.'
           }
-          contentId="upper-room-teaching/english"
+          contentId="upper-room-teaching/spanish-latin-american"
           videoTitle={'Enseñanza en el Aposento Alto'}
           mutePage={mutePage}
           setMutePage={setMutePage}
@@ -861,98 +861,102 @@ export function CollectionsPage(): ReactElement {
           shortVideoText="Video Corto"
           slides={[
             {
-              contentId: 'upper-room-teaching/english',
+              contentId: 'upper-room-teaching/spanish-latin-american',
               imageUrl:
                 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6143-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
               backgroundColor: '#161817',
               title: 'Enseñanza en el Aposento Alto'
             },
             {
-              contentId: 'jesus-is-betrayed-and-arrested/english',
+              contentId:
+                'jesus-is-betrayed-and-arrested/spanish-latin-american',
               imageUrl:
                 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6144-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
               backgroundColor: '#000906',
               title: 'Jesús es Traicionado y Arrestado'
             },
             {
-              contentId: 'peter-disowns-jesus/english',
+              contentId: 'peter-disowns-jesus/spanish-latin-american',
               imageUrl:
                 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6145-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
               backgroundColor: '#100704',
               title: 'Pedro Niega a Jesús'
             },
             {
-              contentId: 'jesus-is-mocked-and-questioned/english',
+              contentId:
+                'jesus-is-mocked-and-questioned/spanish-latin-american',
               imageUrl:
                 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6146-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
               backgroundColor: '#0A0E0D',
               title: 'Jesús es Burlado e Interrogado'
             },
             {
-              contentId: 'jesus-is-brought-to-pilate/english',
+              contentId: 'jesus-is-brought-to-pilate/spanish-latin-american',
               imageUrl:
                 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6147-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
               backgroundColor: '#170E07',
               title: 'Jesús es Llevado Ante Pilato'
             },
             {
-              contentId: 'jesus-is-brought-to-herod/english',
+              contentId: 'jesus-is-brought-to-herod/spanish-latin-american',
               imageUrl:
                 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6148-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
               backgroundColor: '#0F0D03',
               title: 'Jesús es Llevado Ante Herodes'
             },
             {
-              contentId: 'jesus-is-sentenced/english',
+              contentId: 'jesus-is-sentenced/spanish-latin-american',
               imageUrl:
                 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6149-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
               backgroundColor: '#322314',
               title: 'Jesús es Condenado'
             },
             {
-              contentId: 'death-of-jesus/english',
+              contentId: 'death-of-jesus/spanish-latin-american',
               imageUrl:
                 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6155-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
               backgroundColor: '#1D1B13',
               title: 'Muerte de Jesús'
             },
             {
-              contentId: 'burial-of-jesus/english',
+              contentId: 'burial-of-jesus/spanish-latin-american',
               imageUrl:
                 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6156-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
               backgroundColor: '#231E1F',
               title: 'Sepultura de Jesús'
             },
             {
-              contentId: 'angels-at-the-tomb/english',
+              contentId: 'angels-at-the-tomb/spanish-latin-american',
               imageUrl:
                 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6157-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
               backgroundColor: '#1A190E',
               title: 'Ángeles en la Tumba'
             },
             {
-              contentId: 'the-tomb-is-empty/english',
+              contentId: 'the-tomb-is-empty/spanish-latin-american',
               imageUrl:
                 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6158-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
               backgroundColor: '#151D12',
               title: 'La Tumba está Vacía'
             },
             {
-              contentId: 'resurrected-jesus-appears/english',
+              contentId: 'resurrected-jesus-appears/spanish-latin-american',
               imageUrl:
                 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6159-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
               backgroundColor: '#0B0501',
               title: 'Jesús Resucitado Aparece'
             },
             {
-              contentId: 'great-commission-and-ascension/english',
+              contentId:
+                'great-commission-and-ascension/spanish-latin-american',
               imageUrl:
                 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6160-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
               backgroundColor: '#2B2118',
               title: 'La Gran Comisión y la Ascensión'
             },
             {
-              contentId: 'invitation-to-know-jesus-personally/english',
+              contentId:
+                'invitation-to-know-jesus-personally/spanish-latin-american',
               imageUrl:
                 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6161-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
               backgroundColor: '#27160F',
@@ -962,7 +966,7 @@ export function CollectionsPage(): ReactElement {
         />
 
         <CollectionsVideoContent
-          contentId="the-story-short-film/english"
+          contentId="the-story-short-film/spanish-latin-american"
           subtitle={'Cortometraje La Historia'}
           title={'La Historia: Cómo Todo Comenzó y Cómo Nunca Terminará'}
           description={
@@ -1109,7 +1113,7 @@ export function CollectionsPage(): ReactElement {
           }}
         />
         <CollectionsVideoContent
-          contentId="chosen-witness/english"
+          contentId="chosen-witness/spanish-latin-american"
           subtitle={'Testigo Elegida'}
           title={'María Magdalena: Una Vida Transformada por Jesús'}
           description={
@@ -1257,7 +1261,7 @@ export function CollectionsPage(): ReactElement {
           description={
             'Si alguna vez te has preguntado de qué se trata el cristianismo, o qué tipo de estilo de vida te permite vivir, el Curso para Nuevos Creyentes existe para ayudarte a entender el Evangelio y vivir tu vida en respuesta a él.'
           }
-          contentId="1-the-simple-gospel/english"
+          contentId="1-the-simple-gospel/spanish-latin-american"
           videoTitle={'1. El Evangelio Simple'}
           mutePage={mutePage}
           setMutePage={setMutePage}
@@ -1265,70 +1269,70 @@ export function CollectionsPage(): ReactElement {
           shortVideoText="Video Corto"
           slides={[
             {
-              contentId: '1-the-simple-gospel/english',
+              contentId: '1-the-simple-gospel/spanish-latin-american',
               imageUrl:
                 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/8_NBC01.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
               backgroundColor: '#FF9A8E',
               title: '1. El Evangelio Simple'
             },
             {
-              contentId: '2-the-blood-of-jesus/english',
+              contentId: '2-the-blood-of-jesus/spanish-latin-american',
               imageUrl:
                 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/8_NBC02.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
               backgroundColor: '#D4BD20',
               title: '2. La Sangre de Jesús'
             },
             {
-              contentId: '3-life-after-death/english',
+              contentId: '3-life-after-death/spanish-latin-american',
               imageUrl:
                 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/8_NBC03.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
               backgroundColor: '#FBAB2C',
               title: '3. La Vida Después de la Muerte'
             },
             {
-              contentId: '4-god-forgiveness/english',
+              contentId: '4-god-forgiveness/spanish-latin-american',
               imageUrl:
                 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/8_NBC04.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
               backgroundColor: '#BD862D',
               title: '4. El Perdón de Dios'
             },
             {
-              contentId: '5-savior-lord-and-friend/english',
+              contentId: '5-savior-lord-and-friend/spanish-latin-american',
               imageUrl:
                 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/8_NBC05.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
               backgroundColor: '#3C7B86',
               title: '5. Salvador, Señor y Amigo'
             },
             {
-              contentId: '6-being-made-new/english',
+              contentId: '6-being-made-new/spanish-latin-american',
               imageUrl:
                 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/8_NBC06.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
               backgroundColor: '#02B9B6',
               title: '6. Siendo Renovados'
             },
             {
-              contentId: '7-living-for-god/english',
+              contentId: '7-living-for-god/spanish-latin-american',
               imageUrl:
                 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/8_NBC07.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
               backgroundColor: '#243856',
               title: '7. Viviendo para Dios'
             },
             {
-              contentId: '8-the-bible/english',
+              contentId: '8-the-bible/spanish-latin-american',
               imageUrl:
                 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/8_NBC08.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
               backgroundColor: '#FCB02D',
               title: '8. La Biblia'
             },
             {
-              contentId: '9-prayer/english',
+              contentId: '9-prayer/spanish-latin-american',
               imageUrl:
                 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/8_NBC09.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
               backgroundColor: '#3C7B86',
               title: '9. La Oración'
             },
             {
-              contentId: '10-church/english',
+              contentId: '10-church/spanish-latin-american',
               imageUrl:
                 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/8_NBC10.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
               backgroundColor: '#EB8311',
@@ -1338,7 +1342,7 @@ export function CollectionsPage(): ReactElement {
         />
 
         <CollectionsVideoContent
-          contentId="invitation-to-know-jesus-personally/english"
+          contentId="invitation-to-know-jesus-personally/spanish-latin-american"
           subtitle={'¿Estás listo para dar el siguiente paso de fe?'}
           title={'Invitación a Conocer a Jesús Personalmente'}
           description={
