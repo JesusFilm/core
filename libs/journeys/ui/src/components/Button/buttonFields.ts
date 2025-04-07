@@ -18,5 +18,6 @@ export const BUTTON_FIELDS = gql`
     action {
       ...ActionFields
     }
+    submitEnabled
   }
 `

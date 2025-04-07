@@ -11,25 +11,8 @@ export interface HeaderLinkProps {
 
 export const headerLinks: HeaderLinkProps[] = [
   {
-    label: 'About Us',
-    subLinks: [
-      { label: 'Our Organization', url: '/about/' },
-      { label: 'Our History', url: '/about/history/' },
-      {
-        label: 'Leadership Team',
-        url: '/about/team/'
-      },
-      { label: 'Why Film?', url: '/about/why-film/' },
-      {
-        label: 'Statement Of Faith',
-        url: '/about/faith-statement/'
-      },
-      { label: 'FAQs', url: '/about/faq/' },
-      {
-        label: 'Statistics',
-        url: '/partners/resources/strategies/statistics/'
-      }
-    ]
+    label: 'About',
+    url: '/about/'
   },
   { label: 'Blog', url: '/blog/' },
   {

@@ -90,6 +90,9 @@ describe('CardBlock', () => {
   })
 
   beforeEach(() => {
+    jest.clearAllMocks()
+    treeBlocksVar([])
+    blockHistoryVar([])
     mockUuidv4.mockReturnValue('uuid')
     const blurImageMock = blurImage as jest.Mock
     blurImageMock.mockReturnValue(
@@ -339,7 +342,7 @@ describe('CardBlock', () => {
           id: 'uuid',
           blockId: 'textResponseBlockId',
           stepId: 'step1.id',
-          label: 'Untitled',
+          label: 'Step {{number}}',
           value: 'Test response'
         }
       }
@@ -561,7 +564,11 @@ describe('CardBlock', () => {
 
     const { getByTestId } = render(
       <MockedProvider
-        mocks={[getStepViewEventMock(step2.id), mockStepPreviousEventCreate]}
+        mocks={[
+          getStepViewEventMock(step2.id),
+          getStepViewEventMock(step1.id),
+          mockStepPreviousEventCreate
+        ]}
       >
         <JourneyProvider value={{ journey }}>
           <Card {...card2} />
@@ -700,7 +707,13 @@ describe('CardBlock', () => {
     blockHistoryVar([step1, step2])
 
     const { getByTestId } = render(
-      <MockedProvider mocks={[mockStepPreviousEventCreate]}>
+      <MockedProvider
+        mocks={[
+          getStepViewEventMock(step2.id),
+          getStepViewEventMock(step1.id),
+          mockStepPreviousEventCreate
+        ]}
+      >
         <JourneyProvider value={{ journey }}>
           <Card {...card2} />
         </JourneyProvider>
@@ -736,28 +749,22 @@ describe('CardBlock', () => {
     const mockPlausible = jest.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
 
-    const textResponseStep: TreeBlock<StepBlock> = {
-      ...step1,
-      children: [],
-      locked: false
-    }
     const textResponseCard: TreeBlock<CardBlock> = {
       ...card1,
-      children: [
-        textResponseStep,
-        { ...textResponseBlock, parentBlockId: card1.id }
-      ]
+      children: [{ ...textResponseBlock, parentBlockId: card1.id }]
     }
 
-    treeBlocksVar([textResponseCard, step2, step3])
-    blockHistoryVar([textResponseStep])
+    treeBlocksVar([step1, step2, step3])
+    blockHistoryVar([step1])
 
     const { getByTestId, getByLabelText, getByText } = render(
       <MockedProvider
         mocks={[
           mockStepNextEventCreate,
           mockTextResponseSubmissionEventCreate,
-          getStepViewEventMock(step1.id, 'Untitled')
+          getStepViewEventMock(step1.id, 'Step {{number}}'),
+          getStepViewEventMock(step2.id, 'Step {{number}}'),
+          getStepViewEventMock(step3.id, 'Step {{number}}')
         ]}
       >
         <SnackbarProvider>
@@ -782,6 +789,58 @@ describe('CardBlock', () => {
 
     await waitFor(() =>
       expect(getByText('Thank you for your response!')).toBeInTheDocument()
+    )
+  })
+
+  it('should handle empty formik submission', async () => {
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
+
+    const textResponseStep: TreeBlock<StepBlock> = {
+      ...step1,
+      children: [],
+      locked: false
+    }
+    const textResponseCard: TreeBlock<CardBlock> = {
+      ...card1,
+      children: [
+        textResponseStep,
+        { ...textResponseBlock, parentBlockId: card1.id }
+      ]
+    }
+
+    treeBlocksVar([textResponseCard, step2, step3])
+    blockHistoryVar([textResponseStep])
+
+    const { getByTestId, queryByText } = render(
+      <MockedProvider
+        mocks={[
+          mockStepNextEventCreate,
+          mockTextResponseSubmissionEventCreate,
+          getStepViewEventMock(step1.id, 'Untitled')
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey }}>
+            <Card {...textResponseCard} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const form = getByTestId(`card-form-${card1.id}`)
+    fireEvent.submit(form)
+
+    await waitFor(() =>
+      expect(
+        mockTextResponseSubmissionEventCreate.result
+      ).not.toHaveBeenCalled()
+    )
+
+    await waitFor(() =>
+      expect(
+        queryByText('Thank you for your response!')
+      ).not.toBeInTheDocument()
     )
   })
 })
