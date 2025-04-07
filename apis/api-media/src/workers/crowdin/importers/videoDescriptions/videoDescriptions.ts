@@ -5,31 +5,14 @@ import { prisma } from '../../../../lib/prisma'
 import { CROWDIN_CONFIG } from '../../config'
 import { processFile } from '../../importer'
 import { ProcessedTranslation } from '../../types'
-import {
-  getFullVideoId,
-  resetVideoCache,
-  setValidVideoIds
-} from '../videoTitles/videoTitles'
+import { getFullVideoId, resetVideoCache } from '../videoTitles/videoTitles'
 
-const videoDescriptionSchema = z
-  .object({
-    identifier: z.string(),
-    text: z.string(),
-    languageId: z.string()
-  })
-  .transform((data) => {
-    const databaseId = getFullVideoId(data.identifier)
-    if (!databaseId) {
-      throw new Error('Invalid video ID')
-    }
-
-    return {
-      videoId: databaseId,
-      languageId: data.languageId,
-      value: data.text,
-      primary: false
-    }
-  })
+const videoDescriptionSchema = z.object({
+  videoId: z.string(),
+  value: z.string(),
+  languageId: z.string(),
+  primary: z.boolean()
+})
 
 export async function importVideoDescriptions(
   parentLogger?: Logger
@@ -37,15 +20,10 @@ export async function importVideoDescriptions(
   const logger = parentLogger?.child({ importer: 'videoDescriptions' })
   logger?.info('Starting video descriptions import')
 
-  const videos = await prisma.video.findMany({
-    select: { id: true }
-  })
-  setValidVideoIds(videos, logger)
-
   await processFile(
     CROWDIN_CONFIG.files.media_metadata_description,
     async (data: ProcessedTranslation) => {
-      await upsertVideoDescriptionTranslation(data)
+      await upsertVideoDescriptionTranslation(data, logger)
     },
     logger
   )
@@ -57,22 +35,39 @@ export async function importVideoDescriptions(
 }
 
 async function upsertVideoDescriptionTranslation(
-  data: ProcessedTranslation
+  data: ProcessedTranslation,
+  logger?: Logger
 ): Promise<void> {
-  const result = videoDescriptionSchema.parse({
-    identifier: data.identifier,
-    text: data.text,
-    languageId: data.languageId
-  })
+  try {
+    const databaseId = getFullVideoId(data.identifier)
+    if (!databaseId) {
+      logger?.debug(
+        `Skipping video description - Invalid ID: ${data.identifier}`
+      )
+      return
+    }
 
-  await prisma.videoDescription.upsert({
-    where: {
-      videoId_languageId: {
-        videoId: result.videoId,
-        languageId: result.languageId
-      }
-    },
-    update: result,
-    create: result
-  })
+    const result = videoDescriptionSchema.parse({
+      videoId: databaseId,
+      value: data.text,
+      languageId: data.languageId,
+      primary: false
+    })
+
+    await prisma.videoDescription.upsert({
+      where: {
+        videoId_languageId: {
+          videoId: databaseId,
+          languageId: data.languageId
+        }
+      },
+      update: result,
+      create: result
+    })
+  } catch (error) {
+    logger?.error(
+      `Failed to upsert video description for video ${data.identifier} in language ${data.languageId}:`,
+      error
+    )
+  }
 }

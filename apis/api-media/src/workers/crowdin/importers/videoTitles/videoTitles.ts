@@ -6,26 +6,14 @@ import { CROWDIN_CONFIG } from '../../config'
 import { processFile } from '../../importer'
 import { ProcessedTranslation } from '../../types'
 
-let videoIds: string[] = []
 let videos: Array<{ id: string }> = []
 
-export function setValidVideoIds(
-  videos: Array<{ id: string }>,
-  logger?: Logger
-): void {
-  videoIds = videos.map(({ id }) => {
-    const match = id.match(/_(.+)$/)
-    if (match) {
-      return match[1]
-    }
-    return id
-  })
-  logger?.info({ count: videos.length }, 'Initialized video cache')
-}
-
-export function isValidVideoId(crowdinId: string): boolean {
-  return videoIds.includes(crowdinId)
-}
+const videoTitleSchema = z.object({
+  videoId: z.string(),
+  value: z.string(),
+  languageId: z.string(),
+  primary: z.boolean()
+})
 
 export function getFullVideoId(crowdinId: string): string | undefined {
   const originalId = videos.find((v) => v.id === crowdinId)?.id
@@ -40,29 +28,8 @@ export function getFullVideoId(crowdinId: string): string | undefined {
 }
 
 export function resetVideoCache(): void {
-  videoIds = []
   videos = []
 }
-
-const videoTitleSchema = z
-  .object({
-    identifier: z.string(),
-    text: z.string(),
-    languageId: z.string()
-  })
-  .transform((data) => {
-    const databaseId = getFullVideoId(data.identifier)
-    if (!databaseId) {
-      throw new Error('Invalid video ID')
-    }
-
-    return {
-      videoId: databaseId,
-      languageId: data.languageId,
-      value: data.text,
-      primary: false
-    }
-  })
 
 export async function importVideoTitles(
   parentLogger?: Logger
@@ -73,12 +40,11 @@ export async function importVideoTitles(
   videos = await prisma.video.findMany({
     select: { id: true }
   })
-  setValidVideoIds(videos, logger)
 
   await processFile(
     CROWDIN_CONFIG.files.media_metadata_tile,
     async (data: ProcessedTranslation) => {
-      await upsertVideoTitleTranslation(data)
+      await upsertVideoTitleTranslation(data, logger)
     },
     logger
   )
@@ -90,22 +56,37 @@ export async function importVideoTitles(
 }
 
 async function upsertVideoTitleTranslation(
-  data: ProcessedTranslation
+  data: ProcessedTranslation,
+  logger?: Logger
 ): Promise<void> {
-  const result = videoTitleSchema.parse({
-    identifier: data.identifier,
-    text: data.text,
-    languageId: data.languageId
-  })
+  try {
+    const databaseId = getFullVideoId(data.identifier)
+    if (!databaseId) {
+      logger?.debug(`Skipping video title - Invalid ID: ${data.identifier}`)
+      return
+    }
 
-  await prisma.videoTitle.upsert({
-    where: {
-      videoId_languageId: {
-        videoId: result.videoId,
-        languageId: result.languageId
-      }
-    },
-    update: result,
-    create: result
-  })
+    const result = videoTitleSchema.parse({
+      videoId: databaseId,
+      value: data.text,
+      languageId: data.languageId,
+      primary: false
+    })
+
+    await prisma.videoTitle.upsert({
+      where: {
+        videoId_languageId: {
+          videoId: databaseId,
+          languageId: data.languageId
+        }
+      },
+      update: result,
+      create: result
+    })
+  } catch (error) {
+    logger?.error(
+      `Failed to upsert video title for video ${data.identifier} in language ${data.languageId}:`,
+      error
+    )
+  }
 }

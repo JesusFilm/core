@@ -6,36 +6,16 @@ import { CROWDIN_CONFIG } from '../../config'
 import { processFile } from '../../importer'
 import { ProcessedTranslation } from '../../types'
 
-const questionMap = new Map<string, Array<{ videoId: string; order: number }>>()
+const questionMap = new Map<string, { videoId: string; order: number }>()
 const missingQuestions = new Set<string>()
 
-const studyQuestionSchema = z
-  .object({
-    identifier: z.string(),
-    text: z.string(),
-    languageId: z.string(),
-    context: z.string()
-  })
-  .transform((data) => {
-    const questionId = getQuestionId(data.context)
-
-    if (!questionId) throw new Error('Question not found')
-
-    const questionData = getQuestionData(questionId)
-    if (!questionData || questionData.length === 0) {
-      missingQuestions.add(questionId)
-      throw new Error('Question not found')
-    }
-
-    return questionData.map(({ videoId, order }) => ({
-      videoId,
-      languageId: data.languageId,
-      order,
-      value: data.text,
-      primary: false,
-      crowdInId: questionId
-    }))
-  })
+const questionSchema = z.object({
+  crowdInId: z.string(),
+  value: z.string(),
+  languageId: z.string(),
+  order: z.number(),
+  primary: z.boolean()
+})
 
 export async function importStudyQuestions(
   parentLogger?: Logger
@@ -48,7 +28,7 @@ export async function importStudyQuestions(
   await processFile(
     CROWDIN_CONFIG.files.study_questions,
     async (data: ProcessedTranslation) => {
-      await upsertStudyQuestionTranslation(data)
+      await upsertStudyQuestionTranslation(data, logger)
     },
     logger
   )
@@ -72,7 +52,7 @@ export async function importStudyQuestions(
 
 function getQuestionData(
   questionId: string
-): Array<{ videoId: string; order: number }> | undefined {
+): { videoId: string; order: number } | undefined {
   return questionMap.get(questionId)
 }
 
@@ -93,11 +73,7 @@ async function initializeQuestionMap(logger?: Logger): Promise<void> {
   questions.forEach((question) => {
     const { crowdInId, videoId, order } = question
     if (!crowdInId || !videoId) return
-
-    questionMap.set(crowdInId, [
-      ...(questionMap.get(crowdInId) || []),
-      { videoId, order }
-    ])
+    questionMap.set(crowdInId, { videoId, order })
   })
 
   logger?.info({ count: questions.length }, 'Initialized question map')
@@ -111,28 +87,45 @@ function getQuestionId(context: string): string | undefined {
 }
 
 async function upsertStudyQuestionTranslation(
-  data: ProcessedTranslation
+  data: ProcessedTranslation,
+  logger?: Logger
 ): Promise<void> {
-  const result = studyQuestionSchema.parse({
-    identifier: data.identifier,
-    text: data.text,
-    languageId: data.languageId,
-    context: data.context
-  })
+  try {
+    const questionId = getQuestionId(data.context)
+    if (!questionId) {
+      logger?.debug(`Skipping study question - Invalid ID: ${data.context}`)
+      return
+    }
 
-  await Promise.all(
-    result.map((question) =>
-      prisma.videoStudyQuestion.upsert({
-        where: {
-          videoId_languageId_order: {
-            videoId: question.videoId,
-            languageId: question.languageId,
-            order: question.order
-          }
-        },
-        update: question,
-        create: question
-      })
+    const questionData = getQuestionData(questionId)
+    if (!questionData) {
+      missingQuestions.add(questionId)
+      return
+    }
+
+    const result = questionSchema.parse({
+      crowdInId: questionId,
+      value: data.text,
+      languageId: data.languageId,
+      order: questionData.order,
+      primary: false
+    })
+
+    await prisma.videoStudyQuestion.upsert({
+      where: {
+        videoId_languageId_order: {
+          videoId: questionData.videoId,
+          languageId: data.languageId,
+          order: questionData.order
+        }
+      },
+      update: result,
+      create: result
+    })
+  } catch (error) {
+    logger?.error(
+      `Failed to upsert study question for video ${data.context} in language ${data.languageId}:`,
+      error
     )
-  )
+  }
 }

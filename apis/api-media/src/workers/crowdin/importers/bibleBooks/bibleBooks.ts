@@ -6,18 +6,12 @@ import { CROWDIN_CONFIG } from '../../config'
 import { processFile } from '../../importer'
 import { ProcessedTranslation } from '../../types'
 
-const bibleBookSchema = z
-  .object({
-    identifier: z.string(),
-    text: z.string(),
-    languageId: z.string()
-  })
-  .transform((data) => ({
-    bibleBookId: data.identifier,
-    languageId: data.languageId,
-    value: data.text,
-    primary: false
-  }))
+const bibleBookSchema = z.object({
+  bibleBookId: z.string(),
+  languageId: z.string(),
+  value: z.string(),
+  primary: z.boolean()
+})
 
 const missingBooks = new Set<string>()
 
@@ -30,7 +24,7 @@ export async function importBibleBooks(
   await processFile(
     CROWDIN_CONFIG.files.bible_books,
     async (data: ProcessedTranslation) => {
-      await upsertBibleBookTranslation(data)
+      await upsertBibleBookTranslation(data, logger)
     },
     logger
   )
@@ -50,22 +44,31 @@ export async function importBibleBooks(
 }
 
 async function upsertBibleBookTranslation(
-  data: ProcessedTranslation
+  data: ProcessedTranslation,
+  logger?: Logger
 ): Promise<void> {
-  const result = bibleBookSchema.parse({
-    identifier: data.identifier,
-    text: data.text,
-    languageId: data.languageId
-  })
+  try {
+    const result = bibleBookSchema.parse({
+      bibleBookId: data.identifier,
+      value: data.text,
+      languageId: data.languageId,
+      primary: false
+    })
 
-  await prisma.bibleBookName.upsert({
-    where: {
-      bibleBookId_languageId: {
-        bibleBookId: result.bibleBookId,
-        languageId: result.languageId
-      }
-    },
-    update: result,
-    create: result
-  })
+    await prisma.bibleBookName.upsert({
+      where: {
+        bibleBookId_languageId: {
+          bibleBookId: result.bibleBookId,
+          languageId: result.languageId
+        }
+      },
+      update: result,
+      create: result
+    })
+  } catch (error) {
+    logger?.error(
+      `Failed to upsert bible book ${data.identifier} in language ${data.languageId}:`,
+      error
+    )
+  }
 }
