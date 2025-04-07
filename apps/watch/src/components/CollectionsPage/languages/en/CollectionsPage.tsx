@@ -85,7 +85,7 @@ export function CollectionsPage(): ReactElement {
       hideFooter
     >
       <CollectionsPageContent>
-        {/* <CollectionNavigationCarousel contentItems={navigationContentItems} /> */}
+        <CollectionNavigationCarousel contentItems={navigationContentItems} />
         <CollectionIntroText
           title="The real Easter story"
           subtitle="Easter isn't just a celebration"
@@ -234,6 +234,7 @@ export function CollectionsPage(): ReactElement {
           }}
         />
         <OtherCollectionsCarousel
+          contentId="other-collections"
           collectionSubtitle="Video Bible Collection"
           collectionTitle="The Easter story is a key part of a bigger picture"
           watchButtonText="Watch"
@@ -414,6 +415,7 @@ export function CollectionsPage(): ReactElement {
         />
 
         <CollectionVideoContentCarousel
+          id="easter-documentary-series"
           subtitle={'Easter Documentary Series'}
           title={'Did Jesus Defeat Death?'}
           description={
@@ -802,6 +804,7 @@ export function CollectionsPage(): ReactElement {
         />
 
         <CollectionVideoContentCarousel
+          id="easter-events-day-by-day"
           subtitle={'Bible Videos'}
           title={'Easter Events Day By Day'}
           description={
@@ -1197,6 +1200,7 @@ export function CollectionsPage(): ReactElement {
         />
 
         <CollectionVideoContentCarousel
+          id="new-believer-course"
           subtitle={'Video Course'}
           title={'New Believer Course'}
           description={

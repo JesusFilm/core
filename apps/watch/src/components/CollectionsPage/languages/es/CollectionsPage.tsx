@@ -86,7 +86,7 @@ export function CollectionsPage(): ReactElement {
       hideFooter
     >
       <CollectionsPageContent>
-        {/* <CollectionNavigationCarousel contentItems={navigationContentItems} /> */}
+        <CollectionNavigationCarousel contentItems={navigationContentItems} />
         <CollectionIntroText
           title="La verdadera historia de la Pascua"
           subtitle="La Pascua no es solo una celebración"
