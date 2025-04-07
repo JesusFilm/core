@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyEventsFilter, ButtonAction, MessagePlatform, VideoBlockSource } from "./globalTypes";
+import { JourneyEventsFilter } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetJourneyEvents

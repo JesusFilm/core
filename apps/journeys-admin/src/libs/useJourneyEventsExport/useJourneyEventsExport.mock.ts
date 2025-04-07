@@ -79,19 +79,7 @@ export const mockCreateEventsExportLogMutation: MockedResponse<
     variables: {
       input: {
         journeyId: 'journey1',
-        eventsFilter: [
-          'JourneyViewEvent',
-          'ChatOpenEvent',
-          'TextResponseSubmissionEvent',
-          'RadioQuestionSubmissionEvent',
-          'ButtonClickEvent',
-          'SignUpSubmissionEvent',
-          'VideoStartEvent',
-          'VideoPlayEvent',
-          'VideoPauseEvent',
-          'VideoCompleteEvent',
-          'VideoProgressEvent'
-        ]
+        eventsFilter: []
       }
     }
   },

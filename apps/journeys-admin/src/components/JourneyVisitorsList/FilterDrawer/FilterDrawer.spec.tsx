@@ -178,5 +178,96 @@ describe('FilterDrawer', () => {
         screen.queryByRole('button', { name: 'Export Data' })
       ).not.toBeInTheDocument()
     })
+
+    it('should fetch data when export button is clicked', async () => {
+      const mutationResult = jest.fn(() => ({
+        ...mockCreateEventsExportLogMutation.result
+      }))
+
+      render(
+        <MockedProvider
+          mocks={[
+            getJourneyEventsMock,
+            { ...mockCreateEventsExportLogMutation, result: mutationResult }
+          ]}
+        >
+          <FilterDrawer {...props} />
+        </MockedProvider>
+      )
+
+      const user = userEvent.setup()
+
+      await user.click(screen.getByRole('button', { name: 'Export Data' }))
+
+      await waitFor(() => {
+        expect(getJourneyEventsMock.result).toHaveBeenCalled()
+      })
+      expect(mutationResult).toHaveBeenCalled()
+    })
+
+    it('should download the csv file', async () => {
+      const createElementSpy = jest.spyOn(document, 'createElement')
+      const appendChildSpy = jest.spyOn(document.body, 'appendChild')
+      const setAttributeSpy = jest.spyOn(
+        HTMLAnchorElement.prototype,
+        'setAttribute'
+      )
+
+      render(
+        <MockedProvider
+          mocks={[getJourneyEventsMock, mockCreateEventsExportLogMutation]}
+        >
+          <FilterDrawer {...props} />
+        </MockedProvider>
+      )
+
+      const user = userEvent.setup()
+      await user.click(screen.getByRole('button', { name: 'Export Data' }))
+
+      expect(createElementSpy).toHaveBeenCalledWith('a')
+      expect(setAttributeSpy).toHaveBeenCalledWith(
+        'download',
+        expect.stringMatching(/\[\d{4}-\d{2}-\d{2}\] test-journey\.csv/)
+      )
+      expect(appendChildSpy).toHaveBeenCalled()
+    })
+
+    it('should show an error if no data is found', async () => {
+      const mutationResult = jest.fn(() => ({
+        ...mockCreateEventsExportLogMutation.result
+      }))
+      const getJourneyEventsErrorMock = {
+        ...getJourneyEventsMock,
+        result: jest.fn(() => ({
+          errors: [
+            new GraphQLError('Unexpected error', {
+              extensions: { code: 'DOWNSTREAM_SERVICE_ERROR' }
+            })
+          ]
+        }))
+      }
+
+      render(
+        <SnackbarProvider>
+          <MockedProvider
+            mocks={[
+              getJourneyEventsErrorMock,
+              { ...mockCreateEventsExportLogMutation, result: mutationResult }
+            ]}
+          >
+            <FilterDrawer {...props} />
+          </MockedProvider>
+        </SnackbarProvider>
+      )
+
+      const user = userEvent.setup()
+      await user.click(screen.getByRole('button', { name: 'Export Data' }))
+
+      expect(getJourneyEventsErrorMock.result).toHaveBeenCalled()
+      expect(
+        screen.getByText('Failed to retrieve data for export.')
+      ).toBeInTheDocument()
+      expect(mutationResult).not.toHaveBeenCalled()
+    })
   })
 })
