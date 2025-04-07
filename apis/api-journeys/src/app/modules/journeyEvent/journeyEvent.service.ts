@@ -62,10 +62,19 @@ export class JourneyEventService {
     const result = await this.prismaService.event.findMany({
       where,
       include: {
-        journey: true,
-        visitor: true
+        journey: {
+          select: {
+            slug: true
+          }
+        },
+        visitor: {
+          select: {
+            name: true,
+            email: true
+          }
+        }
       },
-      // orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: 'desc' },
       cursor: after != null ? { id: after } : undefined,
       skip: after == null ? 0 : 1,
       take: first + 1
