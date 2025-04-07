@@ -180,8 +180,8 @@ export function useJourneyEventsExport(): {
                 isNil
               )
             },
-            first: 100,
-            // first: 20000,
+            // first: 100,
+            first: 20000,
             after: cursor
           }
         })
