@@ -37,9 +37,15 @@ export async function importVideoTitles(
   const logger = parentLogger?.child({ importer: 'videoTitles' })
   logger?.info('Starting video titles import')
 
-  videos = await prisma.video.findMany({
-    select: { id: true }
-  })
+  try {
+    videos = await prisma.video.findMany({
+      select: { id: true }
+    })
+    logger?.info(`Loaded ${videos.length} videos from database`)
+  } catch (error) {
+    logger?.error('Failed to fetch videos from database:', error)
+    throw new Error('Video import failed: Unable to load video data')
+  }
 
   await processFile(
     CROWDIN_CONFIG.files.media_metadata_tile,
