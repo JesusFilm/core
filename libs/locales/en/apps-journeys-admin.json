@@ -323,6 +323,7 @@
   "Video Properties": "Video Properties",
   "Image Properties": "Image Properties",
   "Typography Properties": "Typography Properties",
+  "Submit Button Properties": "Submit Button Properties",
   "Button Properties": "Button Properties",
   "Poll Block Selected": "Poll Block Selected",
   "Poll Option Properties": "Poll Option Properties",
@@ -611,7 +612,6 @@
   "Your Name": "Your Name",
   "Please Enter Your Name": "Please Enter Your Name",
   "Clear all": "Clear all",
-  "Failed to retrieve data for export.": "Failed to retrieve data for export.",
   "Filter By": "Filter By",
   "Chat Started": "Chat Started",
   "With Poll Answers": "With Poll Answers",
@@ -807,5 +807,6 @@
   "Last Active": "Last Active",
   "User Data": "User Data",
   "Polls": "Polls",
-  "{{ name }}'s Team": "{{ name }}'s Team"
+  "{{ name }}'s Team": "{{ name }}'s Team",
+  "Failed to retrieve data for export.": "Failed to retrieve data for export."
 }

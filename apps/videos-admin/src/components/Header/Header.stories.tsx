@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { NextIntlClientProvider } from 'next-intl'
 import { ComponentProps } from 'react'
 
 import { videosAdminConfig } from '../../libs/storybookConfig'
@@ -23,17 +22,10 @@ const meta: Meta<typeof Header> = {
 }
 
 export default meta
-type Story = StoryObj<ComponentProps<typeof Header> & { locale: string }>
+type Story = StoryObj<ComponentProps<typeof Header>>
 
 export const Default: Story = {
-  render: ({ locale }) => (
-    <NextIntlClientProvider locale={locale}>
-      <Header />
-    </NextIntlClientProvider>
-  ),
-  args: {
-    locale: 'en'
-  },
+  render: () => <Header />,
   parameters: {
     nextjs: {
       navigation: {
@@ -45,18 +37,11 @@ export const Default: Story = {
 }
 
 export const WithSettings: Story = {
-  render: ({ locale }) => (
-    <NextIntlClientProvider locale={locale}>
-      <Header />
-    </NextIntlClientProvider>
-  ),
-  args: {
-    locale: 'en'
-  },
+  render: () => <Header />,
   parameters: {
     nextjs: {
       navigation: {
-        pathname: '/en/settings',
+        pathname: '/settings',
         segments: [['locale', 'en']]
       }
     }
@@ -64,18 +49,11 @@ export const WithSettings: Story = {
 }
 
 export const WithVideos: Story = {
-  render: ({ locale }) => (
-    <NextIntlClientProvider locale={locale}>
-      <Header />
-    </NextIntlClientProvider>
-  ),
-  args: {
-    locale: 'en'
-  },
+  render: () => <Header />,
   parameters: {
     nextjs: {
       navigation: {
-        pathname: '/en/videos',
+        pathname: '/videos',
         segments: [['locale', 'en']]
       }
     }
@@ -83,18 +61,11 @@ export const WithVideos: Story = {
 }
 
 export const WithVideosAndId: Story = {
-  render: ({ locale }) => (
-    <NextIntlClientProvider locale={locale}>
-      <Header />
-    </NextIntlClientProvider>
-  ),
-  args: {
-    locale: 'en'
-  },
+  render: () => <Header />,
   parameters: {
     nextjs: {
       navigation: {
-        pathname: '/en/videos/1_jf-0-0',
+        pathname: '/videos/1_jf-0-0',
         segments: [
           ['locale', 'en'],
           ['videoId', '1_jf-0-0']
