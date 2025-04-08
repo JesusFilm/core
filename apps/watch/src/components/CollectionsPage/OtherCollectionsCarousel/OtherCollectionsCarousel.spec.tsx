@@ -23,6 +23,7 @@ describe('OtherCollectionsCarousel', () => {
   it('renders without crashing', () => {
     render(
       <OtherCollectionsCarousel
+        id="test-id"
         collectionSubtitle="Video Bible Collection"
         collectionTitle="The Easter story is a key part of a bigger picture"
         watchButtonText="Watch"
@@ -38,6 +39,7 @@ describe('OtherCollectionsCarousel', () => {
   it('displays collection titles correctly', () => {
     render(
       <OtherCollectionsCarousel
+        id="test-id"
         collectionSubtitle="Video Bible Collection"
         collectionTitle="The Easter story is a key part of a bigger picture"
         watchButtonText="Watch"
@@ -62,6 +64,7 @@ describe('OtherCollectionsCarousel', () => {
   it('renders the swiper component', () => {
     render(
       <OtherCollectionsCarousel
+        id="test-id"
         collectionSubtitle="Video Bible Collection"
         collectionTitle="The Easter story is a key part of a bigger picture"
         watchButtonText="Watch"
@@ -78,6 +81,7 @@ describe('OtherCollectionsCarousel', () => {
   it('has the correct link for the watch button', () => {
     render(
       <OtherCollectionsCarousel
+        id="test-id"
         collectionSubtitle="Video Bible Collection"
         collectionTitle="The Easter story is a key part of a bigger picture"
         watchButtonText="Watch"
@@ -102,6 +106,7 @@ describe('OtherCollectionsCarousel', () => {
   it('renders movie slides with correct links and images', () => {
     render(
       <OtherCollectionsCarousel
+        id="test-id"
         collectionSubtitle="Video Bible Collection"
         collectionTitle="The Easter story is a key part of a bigger picture"
         watchButtonText="Watch"

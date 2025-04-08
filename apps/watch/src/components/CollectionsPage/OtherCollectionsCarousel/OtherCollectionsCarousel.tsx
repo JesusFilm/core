@@ -5,6 +5,8 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { Icon } from '@core/shared/ui/icons/Icon'
 
 export interface OtherCollectionsCarouselProps {
+  /** ID for the scroll navigation */
+  id: string
   /** Subtitle for the collections section */
   collectionSubtitle: string
   /** Title for the collections section */
@@ -24,6 +26,7 @@ export interface OtherCollectionsCarouselProps {
 }
 
 export function OtherCollectionsCarousel({
+  id,
   collectionSubtitle,
   collectionTitle,
   watchButtonText,
@@ -33,7 +36,8 @@ export function OtherCollectionsCarousel({
 }: OtherCollectionsCarouselProps): ReactElement {
   return (
     <div
-      className="relative bg-linear-to-tr from-blue-950/10  via-purple-950/10 to-[#91214A]/90 py-16"
+      id={id}
+      className="relative bg-linear-to-tr from-blue-950/10  via-purple-950/10 to-[#91214A]/90 py-16 scroll-snap-start-always"
       data-testid="OtherCollectionsCarousel"
     >
       <div className="absolute inset-0 bg-[url(./assets/overlay.svg)] bg-repeat mix-blend-multiply"></div>

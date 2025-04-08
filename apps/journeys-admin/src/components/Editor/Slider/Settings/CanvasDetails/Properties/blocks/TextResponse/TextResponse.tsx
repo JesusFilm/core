@@ -32,7 +32,7 @@ export function TextResponse({
       <Accordion
         id={`${id}-text-field-options`}
         icon={<TextInput1Icon />}
-        name={t('Text Input')}
+        name={t('Response Field')}
         value={label}
       >
         <TextResponseFields />
