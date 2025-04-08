@@ -118,66 +118,6 @@ describe('getStepHeading', () => {
     expect(getStepHeading('step.id', children, steps, t)).toBe('Heading')
   })
 
-  it('returns label of block when blockId is provided', () => {
-    const children: TreeBlock[] = [
-      {
-        __typename: 'CardBlock',
-        id: 'card.id',
-        parentBlockId: 'step.id',
-        parentOrder: null,
-        backgroundColor: null,
-        coverBlockId: null,
-        themeMode: null,
-        themeName: null,
-        fullscreen: false,
-        children: [
-          {
-            __typename: 'TextResponseBlock',
-            id: 'textResponse.id',
-            parentBlockId: 'card.id',
-            parentOrder: 0,
-            label: 'Text Response Label',
-            hint: null,
-            minRows: null,
-            placeholder: null,
-            type: null,
-            routeId: null,
-            integrationId: null,
-            children: []
-          },
-          {
-            __typename: 'TypographyBlock',
-            id: 'typography.id',
-            parentBlockId: 'card.id',
-            parentOrder: 1,
-            align: null,
-            color: null,
-            variant: TypographyVariant.h1,
-            content: 'Heading',
-            children: []
-          }
-        ]
-      }
-    ]
-
-    const steps: TreeBlock[] = [
-      {
-        ...stepBlock,
-        children
-      }
-    ]
-
-    // Test that when blockId is provided, it returns the label of that block
-    expect(
-      getStepHeading('step.id', children, steps, t, 'textResponse.id')
-    ).toBe('Text Response Label')
-
-    // Test that when blockId is provided but doesn't exist, it falls back to normal behavior
-    expect(
-      getStepHeading('step.id', children, steps, t, 'nonexistent.id')
-    ).toBe('Heading')
-  })
-
   it('returns step number if there are no typography blocks', () => {
     const children: TreeBlock[] = []
     const steps: TreeBlock[] = [
