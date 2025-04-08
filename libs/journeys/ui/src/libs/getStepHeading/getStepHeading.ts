@@ -59,7 +59,7 @@ export function getStepHeading(
   stepId: string,
   children: TreeBlock[],
   steps: TreeBlock[],
-  t: (str: string, options?: TOptions) => string,
+  t: (str: string, options?: TOptions) => string
 ): string {
   const descendants = flatten(children)
 
