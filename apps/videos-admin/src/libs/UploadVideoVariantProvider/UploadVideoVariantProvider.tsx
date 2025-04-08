@@ -13,6 +13,7 @@ export const CLOUDFLARE_R2_CREATE = graphql(`
     cloudflareR2Create(input: $input) {
       id
       fileName
+      originalFilename
       uploadUrl
       publicUrl
     }
@@ -298,6 +299,7 @@ export function UploadVideoVariantProvider({
         variables: {
           input: {
             fileName: `${videoId}/variants/${languageId}/videos/${uuidv4()}/${videoVariantId}${extension}`,
+            originalFilename: file.name,
             contentType: file.type,
             contentLength: file.size,
             videoId
