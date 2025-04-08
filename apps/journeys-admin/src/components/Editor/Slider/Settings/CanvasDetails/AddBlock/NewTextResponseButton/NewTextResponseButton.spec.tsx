@@ -158,7 +158,7 @@ describe('NewTextResponseButton', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByRole('button', { name: 'Text Input' }))
+    fireEvent.click(getByRole('button', { name: 'Response Field' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
     fireEvent.click(getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(deleteResult).toHaveBeenCalled())
@@ -220,7 +220,7 @@ describe('NewTextResponseButton', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByRole('button', { name: 'Text Input' }))
+    fireEvent.click(getByRole('button', { name: 'Response Field' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
     fireEvent.click(getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(deleteResult).toHaveBeenCalled())
