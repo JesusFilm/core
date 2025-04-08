@@ -131,7 +131,7 @@ describe('NewTextResponseButton', () => {
         </MockedProvider>
       )
 
-      fireEvent.click(getByRole('button', { name: 'Text Input' }))
+      fireEvent.click(getByRole('button', { name: 'Response Field' }))
       await waitFor(() =>
         expect(textResponseBlockCreateMock.result).toHaveBeenCalled()
       )
@@ -193,7 +193,7 @@ describe('NewTextResponseButton', () => {
         </MockedProvider>
       )
 
-      fireEvent.click(getByRole('button', { name: 'Text Input' }))
+      fireEvent.click(getByRole('button', { name: 'Response Field' }))
       await waitFor(() =>
         expect(textResponseBlockCreateMock.result).toHaveBeenCalled()
       )
