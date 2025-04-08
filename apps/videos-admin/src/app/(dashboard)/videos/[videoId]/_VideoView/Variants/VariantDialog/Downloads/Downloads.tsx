@@ -40,12 +40,14 @@ interface DownloadsProps {
   downloads: VariantDownloads
   videoVariantId: string
   languageId: string
+  assetId?: string | null
 }
 
 export function Downloads({
   downloads,
   videoVariantId,
-  languageId
+  languageId,
+  assetId
 }: DownloadsProps): ReactElement {
   const [deleteVideoVariantDownload] = useVideoVariantDownloadDeleteMutation()
   const [isAddDialogOpen, setIsAddDialogOpen] = useState<boolean | null>(null)
@@ -147,6 +149,7 @@ export function Downloads({
           videoVariantId={videoVariantId}
           existingQualities={existingQualities}
           languageId={languageId}
+          assetId={assetId}
         />
       )}
 

@@ -1,3 +1,5 @@
+import { useMutation } from '@apollo/client'
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
@@ -6,13 +8,16 @@ import DialogTitle from '@mui/material/DialogTitle'
 import FormControl from '@mui/material/FormControl'
 import FormHelperText from '@mui/material/FormHelperText'
 import InputLabel from '@mui/material/InputLabel'
+import LinearProgress from '@mui/material/LinearProgress'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import { Form, Formik, FormikValues } from 'formik'
+import { graphql } from 'gql.tada'
 import { useParams } from 'next/navigation'
 import { enqueueSnackbar } from 'notistack'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { object, string } from 'yup'
 
 import { LinkFile } from '../../../../../../../../../components/LinkFile'
@@ -24,6 +29,18 @@ import { useVideoVariantDownloadCreateMutation } from '../../../../../../../../.
 import { FileUpload } from '../../../../Metadata/VideoImage/FileUpload'
 import { getExtension } from '../../../AddAudioLanguageDialog/utils/getExtension'
 
+const TRANSCODE_ASSET = graphql(`
+  mutation TranscodeAsset($input: TranscodeVideoInput!) {
+    transcodeAsset(input: $input)
+  }
+`)
+
+const GET_TRANSCODE_ASSET_PROGRESS = graphql(`
+  mutation GetTranscodeAssetProgress($jobId: String!) {
+    getTranscodeAssetProgress(jobId: $jobId)
+  }
+`)
+
 interface AddVideoVariantDownloadDialogProps {
   open: boolean
   handleClose?: () => void
@@ -31,6 +48,7 @@ interface AddVideoVariantDownloadDialogProps {
   videoVariantId: string
   existingQualities: string[]
   languageId: string
+  assetId?: string | null
 }
 
 export function AddVideoVariantDownloadDialog({
@@ -39,7 +57,8 @@ export function AddVideoVariantDownloadDialog({
   onSuccess,
   videoVariantId,
   languageId,
-  existingQualities
+  existingQualities,
+  assetId
 }: AddVideoVariantDownloadDialogProps): ReactElement {
   const params = useParams<{ videoId: string; locale: string }>()
   const videoId = params?.videoId
@@ -50,6 +69,13 @@ export function AddVideoVariantDownloadDialog({
     width: number
     height: number
   } | null>(null)
+  const [transcodeJobId, setTranscodeJobId] = useState<string | null>(null)
+  const [transcodeProgress, setTranscodeProgress] = useState<number>(0)
+  const [isTranscoding, setIsTranscoding] = useState<boolean>(false)
+  const [transcodeError, setTranscodeError] = useState<string | null>(null)
+
+  const [transcodeAsset] = useMutation(TRANSCODE_ASSET)
+  const [getTranscodeAssetProgress] = useMutation(GET_TRANSCODE_ASSET_PROGRESS)
 
   const handleUpload = async (file: File): Promise<void> => {
     if (!file) return
@@ -84,12 +110,118 @@ export function AddVideoVariantDownloadDialog({
       .test(
         'unique-quality',
         'A download with this quality already exists',
-        (value) => !existingQualities.includes(value)
+        (value) => {
+          // Strip "generate-" prefix for validation
+          const baseQuality = value.replace('generate-', '')
+          return !existingQualities.includes(baseQuality)
+        }
       ),
-    file: string().required('File is required')
+    file: string().when('quality', {
+      is: (val: string) => !val.startsWith('generate-'),
+      then: (schema) => schema.required('File is required'),
+      otherwise: (schema) => schema.optional()
+    })
   })
 
+  const startTranscoding = async (
+    resolution: string,
+    bitrate: string,
+    quality: string
+  ): Promise<void> => {
+    if (!assetId || !videoId) {
+      setTranscodeError('Asset or video ID not available')
+      return
+    }
+
+    try {
+      setIsTranscoding(true)
+      setTranscodeError(null)
+
+      // Generate a filename for the transcoded version
+      const timestamp = Date.now()
+      const outputFilename = `${quality}-${languageId}-${timestamp}.mp4`
+
+      const { data } = await transcodeAsset({
+        variables: {
+          input: {
+            r2AssetId: assetId,
+            resolution,
+            videoBitrate: bitrate,
+            outputFilename,
+            outputPath: `/videos/${videoId}`
+          }
+        }
+      })
+
+      if (data?.transcodeAsset) {
+        setTranscodeJobId(data.transcodeAsset)
+      }
+    } catch (error) {
+      setTranscodeError(
+        error instanceof Error ? error.message : 'Failed to start transcoding'
+      )
+      setIsTranscoding(false)
+    }
+  }
+
+  // Poll for transcode progress
+  useEffect(() => {
+    if (!transcodeJobId) return
+
+    const interval = setInterval(async () => {
+      try {
+        const { data } = await getTranscodeAssetProgress({
+          variables: {
+            jobId: transcodeJobId
+          }
+        })
+
+        if (data?.getTranscodeAssetProgress != null) {
+          setTranscodeProgress(data.getTranscodeAssetProgress)
+
+          // If progress is 100%, stop polling
+          if (data.getTranscodeAssetProgress === 100) {
+            setIsTranscoding(false)
+            // When complete, call onSuccess to refresh the download list
+            onSuccess?.()
+            // Close the dialog
+            handleClose?.()
+            // Show success message
+            enqueueSnackbar('Download created successfully', {
+              variant: 'success'
+            })
+            clearInterval(interval)
+          }
+        }
+      } catch (error) {
+        setTranscodeError(
+          error instanceof Error
+            ? error.message
+            : 'Failed to get transcoding progress'
+        )
+        setIsTranscoding(false)
+        clearInterval(interval)
+      }
+    }, 2000)
+
+    return () => clearInterval(interval)
+  }, [transcodeJobId, getTranscodeAssetProgress, onSuccess, handleClose])
+
   const handleSubmit = async (values: FormikValues): Promise<void> => {
+    // Handle generate qualities
+    if (values.quality.startsWith('generate-')) {
+      const quality = values.quality.replace('generate-', '')
+
+      if (quality === 'high') {
+        await startTranscoding('720p', '2500', 'high')
+      } else if (quality === 'low') {
+        await startTranscoding('270p', '500', 'low')
+      }
+
+      return
+    }
+
+    // Handle regular file upload
     if (uploadedFile == null || videoDimensions == null || videoId == null)
       return
     const extension = getExtension(values.file.name)
@@ -146,6 +278,14 @@ export function AddVideoVariantDownloadDialog({
     handleClose?.()
   }
 
+  const isGenerateOption = (quality: string): boolean => {
+    return quality.startsWith('generate-')
+  }
+
+  const getButtonText = (quality: string): string => {
+    return isGenerateOption(quality) ? 'Generate' : 'Add'
+  }
+
   return (
     <Dialog
       open={open}
@@ -186,37 +326,112 @@ export function AddVideoVariantDownloadDialog({
                     error={touched.quality && Boolean(errors.quality)}
                     onChange={handleChange}
                   >
-                    <MenuItem value="high">high</MenuItem>
-                    <MenuItem value="low">low</MenuItem>
+                    <MenuItem value="high">high (Upload)</MenuItem>
+                    <MenuItem value="low">low (Upload)</MenuItem>
+                    <MenuItem value="generate-high" disabled={!assetId}>
+                      Generate high{!assetId ? ' (master unavailable)' : ''}
+                    </MenuItem>
+                    <MenuItem value="generate-low" disabled={!assetId}>
+                      Generate low{!assetId ? ' (master unavailable)' : ''}
+                    </MenuItem>
                   </Select>
                   <FormHelperText sx={{ minHeight: 20 }}>
                     {errors.quality != null &&
                       typeof errors.quality === 'string' &&
                       errors.quality}
+                    {!assetId &&
+                      isGenerateOption(values.quality) &&
+                      'No asset available for transcoding'}
                   </FormHelperText>
                 </FormControl>
 
-                <FileUpload
-                  accept={{ 'video/*': [] }}
-                  loading={false}
-                  onDrop={async (file) => {
-                    await setFieldValue('file', file)
-                    await handleUpload(file)
-                  }}
-                />
+                {!isGenerateOption(values.quality) ? (
+                  <>
+                    <FileUpload
+                      accept={{ 'video/*': [] }}
+                      loading={false}
+                      onDrop={async (file) => {
+                        await setFieldValue('file', file)
+                        await handleUpload(file)
+                      }}
+                    />
 
-                {uploadedFile != null && (
-                  <LinkFile
-                    name={uploadedFile.name}
-                    link={URL.createObjectURL(uploadedFile)}
-                  />
+                    {uploadedFile != null && (
+                      <LinkFile
+                        name={uploadedFile.name}
+                        link={URL.createObjectURL(uploadedFile)}
+                      />
+                    )}
+                  </>
+                ) : (
+                  <>
+                    {!assetId && (
+                      <Typography variant="body2" color="text.secondary">
+                        No asset available for transcoding. Please upload an
+                        audio variant first.
+                      </Typography>
+                    )}
+                    {assetId && (
+                      <Typography variant="body2" color="text.secondary">
+                        This will generate a{' '}
+                        {values.quality === 'generate-high'
+                          ? 'high quality (720p, 2500kbps)'
+                          : 'low quality (270p, 500kbps)'}{' '}
+                        download from the existing asset.
+                      </Typography>
+                    )}
+                  </>
+                )}
+
+                {isTranscoding && (
+                  <Box sx={{ width: '100%', mt: 2 }}>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      gutterBottom
+                    >
+                      Transcoding{' '}
+                      {values.quality === 'generate-high'
+                        ? 'to 720p (2500kbps)'
+                        : 'to 270p (500kbps)'}
+                      ...
+                    </Typography>
+                    <LinearProgress
+                      variant="determinate"
+                      value={transcodeProgress}
+                      sx={{ height: 10, borderRadius: 1 }}
+                    />
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      align="right"
+                      sx={{ mt: 0.5 }}
+                    >
+                      {transcodeProgress}%
+                    </Typography>
+                  </Box>
+                )}
+
+                {transcodeError && (
+                  <Typography color="error" variant="body2">
+                    {transcodeError}
+                  </Typography>
                 )}
               </Stack>
             </DialogContent>
             <DialogActions>
               <Button onClick={handleClose}>Cancel</Button>
-              <Button type="submit" disabled={isSubmitting} variant="contained">
-                Add
+              <Button
+                type="submit"
+                disabled={
+                  isSubmitting ||
+                  isTranscoding ||
+                  (isGenerateOption(values.quality) && !assetId) ||
+                  (!isGenerateOption(values.quality) && !uploadedFile)
+                }
+                variant="contained"
+              >
+                {getButtonText(values.quality)}
               </Button>
             </DialogActions>
           </Form>
