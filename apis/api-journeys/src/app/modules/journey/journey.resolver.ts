@@ -492,7 +492,7 @@ export class JourneyResolver {
       originalBlocks,
       id,
       null,
-      true,
+      // true,
       duplicateStepIds,
       undefined,
       duplicateJourneyId,
