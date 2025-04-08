@@ -42,7 +42,8 @@ jest.mock('video.js', () => {
     pause: jest.fn(),
     muted: jest.fn(),
     currentTime: jest.fn(),
-    dispose: jest.fn()
+    dispose: jest.fn(),
+    src: jest.fn()
   }
 
   const mockVideoJs = jest.fn(() => mockPlayer)
@@ -94,7 +95,8 @@ describe('ContainerHero', () => {
       pause: jest.fn(),
       muted: jest.fn(),
       currentTime: jest.fn(),
-      dispose: jest.fn()
+      dispose: jest.fn(),
+      src: jest.fn()
     }
     mockVideoJs.mockImplementation(() => mockPlayer as Player)
   })

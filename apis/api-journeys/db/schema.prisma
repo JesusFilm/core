@@ -146,6 +146,7 @@ model Event {
   @@index(blockId)
   @@index(userId)
   @@index([journeyId, visitorId, typename, createdAt(sort: Desc)])
+  @@index([journeyId, typename, createdAt(sort: Desc)])
 }
 
 model Visitor {
@@ -275,6 +276,7 @@ model UserTeam {
   @@unique([teamId, userId])
   @@index(role)
   @@index(teamId)
+  @@index([userId, role, teamId])
 }
 
 model UserTeamInvite {
@@ -319,6 +321,7 @@ model UserJourney {
   @@unique([journeyId, userId])
   @@index(journeyId)
   @@index(role)
+  @@index([userId, role, journeyId])
 }
 
 model JourneyTag {
