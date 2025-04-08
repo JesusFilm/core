@@ -70,7 +70,7 @@ export const CollectionsVideoContent = ({
   shareDataTitle
 }: VideoSectionProps): ReactElement => {
   return (
-    <div id={contentId} className="py-16 relative">
+    <div id={contentId} className="py-16 relative scroll-snap-start-always">
       {showDivider && <hr className="section-divider" />}
       <CollectionVideoPlayer
         contentId={contentId}

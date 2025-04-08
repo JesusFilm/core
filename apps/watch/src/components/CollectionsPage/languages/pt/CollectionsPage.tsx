@@ -228,6 +228,7 @@ export function CollectionsPage(): ReactElement {
           }}
         />
         <OtherCollectionsCarousel
+          id="other-collections"
           collectionSubtitle="Coleção de Vídeos Bíblicos"
           collectionTitle="A história da Páscoa é parte fundamental de um quadro maior"
           watchButtonText="Assistir"
@@ -416,6 +417,7 @@ export function CollectionsPage(): ReactElement {
         />
 
         <CollectionVideoContentCarousel
+          id="easter-documentary-series"
           subtitle={'Série Documentária da Páscoa'}
           title={'Jesus Venceu a Morte?'}
           description={
@@ -786,6 +788,7 @@ export function CollectionsPage(): ReactElement {
         />
 
         <CollectionVideoContentCarousel
+          id="new-believer-course"
           subtitle={'Curso para Novos Crentes'}
           title={'Curso para Novos Crentes'}
           description={
