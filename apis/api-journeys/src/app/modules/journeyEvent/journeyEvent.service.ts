@@ -97,4 +97,18 @@ export class JourneyEventService {
       }
     }
   }
+
+  async getJourneyEventsCount({
+    journeyId,
+    accessibleEvent,
+    filter
+  }: {
+    journeyId: string
+    accessibleEvent: Prisma.EventWhereInput
+    filter: JourneyEventsFilter
+  }): Promise<number> {
+    const where = this.generateWhere(journeyId, filter, accessibleEvent)
+
+    return await this.prismaService.event.count({ where })
+  }
 }
