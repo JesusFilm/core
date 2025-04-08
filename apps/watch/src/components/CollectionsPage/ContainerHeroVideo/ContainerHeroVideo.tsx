@@ -39,57 +39,27 @@ export function ContainerHeroVideo({
     // Initialize player
     const player = videojs(videoRef.current, {
       ...defaultVideoJsOptions,
-      autoplay: false,
-      preload: 'auto',
+      autoplay: true,
       controls: false,
       loop: true,
       muted: true,
       fluid: false,
       fill: true,
       responsive: false,
-      aspectRatio: undefined,
-      playsinline: true,
-      html5: {
-        nativeTextTracks: false,
-        nativeAudioTracks: false,
-        nativeVideoTracks: false,
-        vhs: {
-          overrideNative: true
-        }
-      }
+      aspectRatio: undefined
     })
 
     playerRef.current = player
     onPlayerReady(player)
 
-    // Add fallback autoplay attempt
-    player.ready(() => {
-      const playPromise = player.play()
-
-      if (playPromise !== undefined) {
-        playPromise.catch((error) => {
-          console.log('Autoplay prevented:', error)
-
-          // Add a visibility check and try to play when visible
-          const observer = new IntersectionObserver((entries) => {
-            entries.forEach((entry) => {
-              if (entry.isIntersecting) {
-                player.play().catch((e) => console.log('Play failed:', e))
-              }
-            })
-          })
-
-          if (videoRef.current) {
-            observer.observe(videoRef.current)
-          }
-        })
-      }
-    })
-
     // Sync muted state with player
     player.on('volumechange', () => {
       onMutedChange(player.muted() ?? true)
     })
+
+    void player.src(
+      'https://stream.mux.com/J3WBxqGgXxi01201FYmW0202ayeL7PGXfuuXR02nvjQCE7bI.m3u8'
+    )
 
     return () => {
       if (playerRef.current) {

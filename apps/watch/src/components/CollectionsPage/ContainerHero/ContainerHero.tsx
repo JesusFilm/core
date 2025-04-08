@@ -31,7 +31,6 @@ export function ContainerHero({
 
   const handlePlayerReady = useCallback((player: Player): void => {
     setPlayerRef(player)
-    void player.play()
   }, [])
 
   const handleMutedChange = useCallback((muted: boolean): void => {
