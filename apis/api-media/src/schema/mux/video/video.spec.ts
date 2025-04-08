@@ -475,7 +475,7 @@ describe('mux/video', () => {
           }
         })
 
-        expect(enableDownload).toHaveBeenCalledWith('videoId', true)
+        expect(enableDownload).toHaveBeenCalledWith('videoId', false)
 
         // Check that the database was updated
         expect(prismaMock.muxVideo.update).toHaveBeenCalledWith({
