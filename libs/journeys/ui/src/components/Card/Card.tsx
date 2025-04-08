@@ -16,6 +16,7 @@ import {
 import { TreeBlock, useBlocks } from '../../libs/block'
 import { blurImage } from '../../libs/blurImage'
 import { getStepHeading } from '../../libs/getStepHeading'
+import { getTextResponseLabel } from '../../libs/getTextResponseLabel'
 import { useJourney } from '../../libs/JourneyProvider'
 import { JourneyPlausibleEvents } from '../../libs/plausibleHelpers'
 import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
@@ -196,7 +197,8 @@ export function Card({
 
       const heading =
       activeBlock != null
-        ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t, blockId)
+        ? (getTextResponseLabel(activeBlock.children, blockId) ??
+          getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t))
         : t('None')
       const id = uuidv4()
       return textResponseSubmissionEventCreate({
