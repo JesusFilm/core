@@ -37,6 +37,7 @@ export const CREATE_VIDEO_VARIANT = graphql(`
       id
       videoId
       slug
+      published
       hls
       language {
         id
@@ -70,6 +71,7 @@ interface UploadVideoVariantState {
   languageId: string | null
   languageSlug: string | null
   videoId: string | null
+  published: boolean | null
   onComplete?: () => void
 }
 
@@ -81,7 +83,8 @@ interface UploadVideoVariantContextType {
     languageId: string,
     languageSlug: string,
     edition: string,
-    onComplete?: () => void
+    onComplete?: () => void,
+    published?: boolean
   ) => Promise<void>
   clearUploadState: () => void
 }
@@ -96,6 +99,7 @@ const initialState: UploadVideoVariantState = {
   languageId: null,
   languageSlug: null,
   videoId: null,
+  published: null,
   onComplete: undefined
 }
 
@@ -110,6 +114,7 @@ type UploadAction =
       languageId: string
       languageSlug: string
       edition: string
+      published: boolean
       onComplete?: () => void
     }
   | { type: 'SET_PROGRESS'; progress: number }
@@ -131,6 +136,7 @@ function uploadReducer(
         languageId: action.languageId,
         languageSlug: action.languageSlug,
         edition: action.edition,
+        published: action.published,
         onComplete: action.onComplete
       }
     case 'SET_PROGRESS':
@@ -197,7 +203,8 @@ export function UploadVideoVariantProvider({
       state.videoId == null ||
       state.languageId == null ||
       state.languageSlug == null ||
-      state.edition == null
+      state.edition == null ||
+      state.published == null
     )
       return
 
@@ -211,7 +218,7 @@ export function UploadVideoVariantProvider({
             languageId: state.languageId,
             slug: `${state.videoId}/${state.languageSlug}`,
             downloadable: true,
-            published: true,
+            published: state.published,
             muxVideoId: muxId,
             hls: `https://stream.mux.com/${playbackId}.m3u8`
           }
@@ -235,6 +242,7 @@ export function UploadVideoVariantProvider({
                       id
                       videoId
                       slug
+                      published
                       hls
                       language {
                         id
@@ -269,7 +277,8 @@ export function UploadVideoVariantProvider({
     languageId: string,
     languageSlug: string,
     edition: string,
-    onComplete?: () => void
+    onComplete?: () => void,
+    published = true
   ) => {
     try {
       dispatch({
@@ -278,6 +287,7 @@ export function UploadVideoVariantProvider({
         languageId,
         languageSlug,
         edition,
+        published,
         onComplete
       })
 
@@ -372,9 +382,9 @@ export function UploadVideoVariantProvider({
   )
 }
 
-export function useUploadVideoVariant() {
+export function useUploadVideoVariant(): UploadVideoVariantContextType {
   const context = useContext(UploadVideoVariantContext)
-  if (context === undefined) {
+  if (context == null) {
     throw new Error(
       'useUploadVideoVariant must be used within a UploadVideoVariantProvider'
     )

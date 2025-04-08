@@ -1,9 +1,11 @@
 import DeleteIcon from '@mui/icons-material/Delete'
+import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
 import { CSSProperties, MouseEvent, ReactElement } from 'react'
 
+import { PublishedChip } from '../../../../../../../components/PublishedChip'
 import { GetAdminVideoVariant } from '../../../../../../../libs/useAdminVideo'
 
 export interface VariantCardProps {
@@ -63,7 +65,10 @@ export function VariantCard({
           justifyContent: 'space-between'
         }}
       >
-        <ListItemText primary={primaryText} secondary={variant.language.id} />
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <ListItemText primary={primaryText} secondary={variant.language.id} />
+          <PublishedChip published={variant.published} />
+        </Box>
         {onDelete && (
           <IconButton
             size="small"
