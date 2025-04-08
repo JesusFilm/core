@@ -46,7 +46,16 @@ export function ContainerHeroVideo({
       fluid: false,
       fill: true,
       responsive: false,
-      aspectRatio: undefined
+      aspectRatio: undefined,
+      playsinline: true,
+      html5: {
+        nativeTextTracks: false,
+        nativeAudioTracks: false,
+        nativeVideoTracks: false,
+        vhs: {
+          overrideNative: true
+        }
+      }
     })
 
     playerRef.current = player
