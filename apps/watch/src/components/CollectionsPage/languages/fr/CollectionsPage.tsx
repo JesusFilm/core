@@ -89,17 +89,17 @@ export function CollectionsPage(): ReactElement {
         {/* <CollectionNavigationCarousel contentItems={navigationContentItems} /> */}
         <CollectionIntroText
           title="La véritable histoire de Pâques"
-          subtitle="Et si Pâques était plus profond que vous ne le pensez ?"
+          subtitle="Des questions ? En recherche ? Découvrez le véritable pouvoir de Pâques."
           firstParagraph={{
             beforeHighlight:
-              "Au-delà des œufs et des lapins se trouve l'histoire de pourquoi ",
-            highlightedText: "l'humanité a besoin d'un sauveur",
+              "Au-delà des œufs et des lapins se trouve l'histoire de ",
+            highlightedText: 'la vie, la mort et la résurrection de Jésus.',
             afterHighlight:
-              ". Les Évangiles capturent honnêtement l'angoisse de Jésus, le reniement de Pierre et l'incrédulité des disciples—des émotions brutes qui reflètent nos propres luttes."
+              " Le véritable pouvoir de Pâques va au-delà des services religieux et des rituels — il touche à la raison même pour laquelle l'humanité a besoin d'un Sauveur."
           }}
-          secondParagraph="Cette célébration de triomphe parle à nos moments de doute et pointe vers l'espoir au-delà de nous-mêmes. Des questions ? En recherche ? Découvrez la véritable puissance de Pâques."
+          secondParagraph="Les Évangiles sont étonnamment honnêtes sur les émotions que Jésus a ressenties — Sa profonde angoisse lorsque l\'un de Ses plus proches amis a nié Le connaître, et l\'incrédulité des autres disciples face à Sa résurrection — des émotions brutes qui reflètent nos propres luttes."
           easterDatesTitle="Quand Pâques est-il célébré en {year} ?"
-          thirdParagraph="Explorez notre collection de vidéos et de ressources interactives qui vous invitent à découvrir l'histoire authentique—une histoire qui a changé l'histoire et continue de transformer des vies aujourd'hui. Car la plus grande célébration de l'histoire humaine est bien plus que des traditions—c'est la puissance de la résurrection."
+          thirdParagraph="Explorez notre collection de vidéos et de ressources interactives qui vous invitent à découvrir l\'histoire authentique — une histoire qui a changé le cours de l\'histoire et continue de transformer des vies aujourd\'hui. Car la plus grande célébration de l\'histoire humaine va bien au-delà des traditions — elle concerne le pouvoir de la résurrection"
           westernEasterLabel="Pâques Occidental (Catholique/Protestant)"
           orthodoxEasterLabel="Orthodoxe"
           passoverLabel="Pâque Juive"

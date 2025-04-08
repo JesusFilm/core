@@ -89,23 +89,22 @@ export function CollectionsPage(): ReactElement {
         <CollectionNavigationCarousel contentItems={navigationContentItems} />
         <CollectionIntroText
           title="La verdadera historia de la Pascua"
-          subtitle="¿Y si la Pascua fuera más profunda de lo que piensas?"
+          subtitle="¿Cuestionando? ¿Buscando? Descubre el verdadero poder de la Pascua."
           firstParagraph={{
             beforeHighlight:
-              'Más allá de huevos y conejos está la historia de por qué ',
-            highlightedText: 'la humanidad necesita un salvador.',
+              'Más allá de los huevos y conejos está la historia de ',
+            highlightedText: 'la vida, muerte y resurrección de Jesús.',
             afterHighlight:
-              ' Los Evangelios capturan honestamente la angustia de Jesús, la negación de Pedro y la incredulidad de los discípulos—emociones crudas que reflejan nuestras propias luchas.'
+              ' El verdadero poder de la Pascua va más allá de los servicios religiosos y rituales — y llega hasta la razón misma por la que los humanos necesitan un Salvador.'
           }}
-          secondParagraph="Esta celebración de triunfo habla a nuestros momentos de duda y señala la esperanza más allá de nosotros mismos.
-¿Cuestionando? ¿Buscando? Descubre el verdadero poder de la Pascua."
+          secondParagraph="Los Evangelios son sorprendentemente honestos sobre las emociones que Jesús experimentó — Su profunda angustia porque uno de Sus amigos más cercanos negó conocerlo, y la incredulidad de los otros discípulos en Su resurrección — emociones crudas que reflejan nuestras propias luchas."
           easterDatesTitle="¿Cuándo se celebra la Pascua en {year}?"
-          thirdParagraph="Explora nuestra colección de videos y recursos interactivos que te invitan a conocer la historia auténtica—una que cambió la historia y continúa transformando vidas hoy.
-Porque la mayor celebración en la historia humana es mucho más que tradiciones—se trata del poder de la resurrección"
+          thirdParagraph="Explora nuestra colección de videos y recursos interactivos que te invitan a conocer la historia auténtica — una que cambió la historia y continúa transformando vidas hoy.
+Porque la celebración más grande en la historia de la humanidad va mucho más allá de las tradiciones — se trata del poder de la resurrección"
           westernEasterLabel="Pascua Occidental (Católica/Protestante)"
           orthodoxEasterLabel="Ortodoxa"
           passoverLabel="Pascua Judía"
-          locale="es"
+          locale="es-ES"
         />
         <CollectionsVideoContent
           contentId="easter-explained/spanish-latin-american"
