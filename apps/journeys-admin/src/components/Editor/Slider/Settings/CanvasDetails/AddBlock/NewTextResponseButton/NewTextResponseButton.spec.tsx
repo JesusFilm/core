@@ -90,7 +90,7 @@ describe('NewTextResponseButton', () => {
         </MockedProvider>
       )
 
-      fireEvent.click(getByRole('button', { name: 'Text Input' }))
+      fireEvent.click(getByRole('button', { name: 'Response Field' }))
       await waitFor(() =>
         expect(textResponseBlockCreateMock.result).toHaveBeenCalled()
       )
@@ -232,7 +232,7 @@ describe('NewTextResponseButton', () => {
         </MockedProvider>
       )
 
-      fireEvent.click(getByRole('button', { name: 'Text Input' }))
+      fireEvent.click(getByRole('button', { name: 'Response Field' }))
       await waitFor(() =>
         expect(textResponseBlockCreateMock.result).toHaveBeenCalled()
       )
@@ -288,7 +288,7 @@ describe('NewTextResponseButton', () => {
         </MockedProvider>
       )
 
-      fireEvent.click(getByRole('button', { name: 'Text Input' }))
+      fireEvent.click(getByRole('button', { name: 'Response Field' }))
 
       await waitFor(() => {
         expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([
@@ -332,7 +332,7 @@ describe('NewTextResponseButton', () => {
         </MockedProvider>
       )
 
-      fireEvent.click(getByRole('button', { name: 'Text Input' }))
+      fireEvent.click(getByRole('button', { name: 'Response Field' }))
       await waitFor(() =>
         expect(textResponseWithButtonCreateMock.result).toHaveBeenCalled()
       )
@@ -375,7 +375,7 @@ describe('NewTextResponseButton', () => {
         </MockedProvider>
       )
 
-      fireEvent.click(getByRole('button', { name: 'Text Input' }))
+      fireEvent.click(getByRole('button', { name: 'Response Field' }))
       await waitFor(() =>
         expect(textResponseWithButtonCreateMock.result).toHaveBeenCalled()
       )
@@ -410,8 +410,8 @@ describe('NewTextResponseButton', () => {
           </JourneyProvider>
         </MockedProvider>
       )
-      fireEvent.click(getByRole('button', { name: 'Text Input' }))
-      expect(getByRole('button', { name: 'Text Input' })).toBeDisabled()
+      fireEvent.click(getByRole('button', { name: 'Response Field' }))
+      expect(getByRole('button', { name: 'Response Field' })).toBeDisabled()
     })
 
     it('textResponseWithButton: should disable when loading', async () => {
@@ -431,8 +431,8 @@ describe('NewTextResponseButton', () => {
           </JourneyProvider>
         </MockedProvider>
       )
-      fireEvent.click(getByRole('button', { name: 'Text Input' }))
-      expect(getByRole('button', { name: 'Text Input' })).toBeDisabled()
+      fireEvent.click(getByRole('button', { name: 'Response Field' }))
+      expect(getByRole('button', { name: 'Response Field' })).toBeDisabled()
     })
   })
 })
