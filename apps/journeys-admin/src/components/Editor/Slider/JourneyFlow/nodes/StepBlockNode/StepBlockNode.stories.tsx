@@ -2,9 +2,9 @@ import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 import { userEvent, waitFor, within } from '@storybook/test'
+import { Background, ReactFlow } from '@xyflow/react'
 import { ComponentPropsWithoutRef } from 'react'
-import { Background, ReactFlow } from 'reactflow'
-import 'reactflow/dist/style.css'
+import '@xyflow/react/dist/style.css'
 
 import {
   ActiveContent,

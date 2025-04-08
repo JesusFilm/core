@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
-import { ReactFlowProvider } from 'reactflow'
+import { ReactFlowProvider } from '@xyflow/react'
 
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 

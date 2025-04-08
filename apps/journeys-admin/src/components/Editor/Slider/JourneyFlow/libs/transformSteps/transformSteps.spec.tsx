@@ -374,7 +374,7 @@ describe('transformSteps', () => {
         data: {},
         draggable: false,
         id: 'LinkNode-button1.id',
-        parentNode: 'step1.id',
+        parentId: 'step1.id',
         position: { x: 300, y: 103 },
         type: 'Link'
       },
@@ -382,7 +382,7 @@ describe('transformSteps', () => {
         data: {},
         draggable: false,
         id: 'LinkNode-button2.id',
-        parentNode: 'step1.id',
+        parentId: 'step1.id',
         position: { x: 300, y: 175 },
         type: 'Link'
       },
