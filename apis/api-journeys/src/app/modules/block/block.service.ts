@@ -125,7 +125,7 @@ export class BlockService {
   @FromPostgresql()
   async duplicateBlock(
     block: BlockWithAction,
-    // isStepBlock: boolean,
+    isStepBlock: boolean,
     parentOrder?: number,
     idMap?: BlockDuplicateIdMap[],
     x?: number,
@@ -136,7 +136,7 @@ export class BlockService {
       block.id,
       block.journeyId,
       block.parentBlockId ?? null,
-      // isStepBlock,
+      isStepBlock,
       duplicateBlockId,
       idMap
     )
@@ -220,7 +220,7 @@ export class BlockService {
     children: BlockWithAction[],
     journeyId: string,
     parentBlockId: string | null,
-    // isStepBlock: boolean,
+    isStepBlock: boolean,
     // Use to custom set children blockIds
     duplicateIds: Map<string, string>,
     idMap?: BlockDuplicateIdMap[],
@@ -234,7 +234,7 @@ export class BlockService {
           block.id,
           journeyId,
           parentBlockId,
-          // isStepBlock,
+          isStepBlock,
           duplicateIds.get(block.id),
           idMap,
           duplicateJourneyId,
@@ -252,7 +252,7 @@ export class BlockService {
     id: string,
     journeyId: string,
     parentBlockId: string | null,
-    // isStepBlock: boolean,
+    isStepBlock: boolean,
     duplicateId?: string,
     idMap?: BlockDuplicateIdMap[],
     // Below 2 only used when duplicating journeys
@@ -305,16 +305,12 @@ export class BlockService {
             : action
       }
       if (
-        key === 'submitEnabled'
-        //  &&
-        // block[key] === true &&
-        // duplicateJourneyId == null &&
-        // !isStepBlock
+        key === 'submitEnabled' &&
+        block[key] === true &&
+        duplicateJourneyId == null &&
+        !isStepBlock
       ) {
-        const isStep = block.typename === 'StepBlock'
-        const isJourney = duplicateJourneyId != null
-
-        updatedBlockProps[key] = isStep || isJourney ? true : false
+        updatedBlockProps[key] = false
       }
     })
     const defaultDuplicateBlock = {
@@ -332,7 +328,7 @@ export class BlockService {
       children,
       journeyId,
       duplicateBlockId,
-      // isStepBlock,
+      isStepBlock,
       childIds,
       idMap,
       duplicateJourneyId,
