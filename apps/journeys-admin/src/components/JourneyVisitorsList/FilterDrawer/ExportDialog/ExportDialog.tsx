@@ -1,4 +1,4 @@
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
+import { gql, useQuery } from '@apollo/client'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import Box from '@mui/material/Box'
@@ -9,9 +9,6 @@ import FormGroup from '@mui/material/FormGroup'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3'
-import { DatePicker } from '@mui/x-date-pickers/DatePicker'
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import forIn from 'lodash/forIn'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
@@ -21,64 +18,19 @@ import { Dialog } from '@core/shared/ui/Dialog'
 
 import { EventType } from '../../../../../__generated__/globalTypes'
 import { useJourneyEventsExport } from '../../../../libs/useJourneyEventsExport'
+import { DateRangePicker } from '../../../DateRangePicker'
+import { Spacing } from '../../../Editor/Slider/Settings/CanvasDetails/Properties/blocks/Spacer/Spacing'
 
 import { CheckboxOption } from './CheckboxOption'
 
-interface DateRangePickerProps {
-  startDate: Date | null
-  endDate: Date | null
-  onStartDateChange: (date: Date | null) => void
-  onEndDateChange: (date: Date | null) => void
-  startDateError: string | null
-  endDateError: string | null
-}
-
-function DateRangePicker({
-  startDate,
-  endDate,
-  onStartDateChange,
-  onEndDateChange,
-  startDateError,
-  endDateError
-}: DateRangePickerProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
-
-  return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <Stack direction="row" spacing={2} alignItems="center">
-        <CalendarTodayIcon sx={{ color: 'text.secondary' }} />
-        <Stack direction="row" spacing={2} sx={{ '& > *': { flex: 1 } }}>
-          <DatePicker
-            label={t('Start Date')}
-            value={startDate}
-            onChange={onStartDateChange}
-            format="dd-MM-yyyy"
-            slotProps={{
-              textField: {
-                size: 'small',
-                error: startDateError != null,
-                helperText: startDateError
-              }
-            }}
-          />
-          <DatePicker
-            label={t('End Date')}
-            value={endDate}
-            onChange={onEndDateChange}
-            format="dd-MM-yyyy"
-            slotProps={{
-              textField: {
-                size: 'small',
-                error: endDateError != null,
-                helperText: endDateError
-              }
-            }}
-          />
-        </Stack>
-      </Stack>
-    </LocalizationProvider>
-  )
-}
+const GET_JOURNEY_CREATED_AT = gql`
+  query GetJourneyCreatedAt($id: ID!) {
+    journey: adminJourney(id: $id, idType: databaseId) {
+      id
+      createdAt
+    }
+  }
+`
 
 interface ExportDialogProps {
   open: boolean
@@ -125,6 +77,9 @@ export function ExportDialog({
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const { exportJourneyEvents } = useJourneyEventsExport()
+  const { data: journeyData } = useQuery(GET_JOURNEY_CREATED_AT, {
+    variables: { id: journeyId }
+  })
 
   const [checkboxState, setCheckboxState] = useState<CheckboxState>({
     JourneyViewEvent: true,
@@ -140,8 +95,18 @@ export function ExportDialog({
     VideoProgressEvent: true
   })
 
-  const [startDate, setStartDate] = useState<Date | null>(null)
-  const [endDate, setEndDate] = useState<Date | null>(null)
+  const [startDate, setStartDate] = useState<Date | null>(() =>
+    journeyData?.journey?.createdAt
+      ? new Date(journeyData.journey.createdAt)
+      : null
+  )
+  const [endDate, setEndDate] = useState<Date | null>(new Date())
+
+  useEffect(() => {
+    if (journeyData?.journey?.createdAt != null) {
+      setStartDate(new Date(journeyData.journey.createdAt))
+    }
+  }, [journeyData?.journey?.createdAt])
 
   const [selectAll, setSelectAll] = useState(true)
 
@@ -238,29 +203,28 @@ export function ExportDialog({
           color="secondary"
           onClick={handleExport}
           disabled={getSelectedEvents().length === 0}
+          sx={{
+            mb: 3,
+            mr: 3
+          }}
         >
           {t('Export (CSV)')}
         </Button>
       }
     >
-      <Box sx={{ px: 4 }}>
-        <Box sx={{ pb: 2 }}>
-          <Typography variant="subtitle2" gutterBottom>
-            {t('Select date range (optional)')}
-          </Typography>
+      <Box sx={{ pb: 4 }}>
+        <Box sx={{ pb: 2, pt: 4, width: '100%' }}>
+          <DateRangePicker
+            startDate={startDate}
+            endDate={endDate}
+            onStartDateChange={setStartDate}
+            onEndDateChange={setEndDate}
+          />
         </Box>
-        <DateRangePicker
-          startDate={startDate}
-          endDate={endDate}
-          onStartDateChange={setStartDate}
-          onEndDateChange={setEndDate}
-          startDateError={null}
-          endDateError={null}
-        />
       </Box>
-      <Box sx={{ p: 4 }}>
+      <Box>
         <Typography variant="subtitle2" gutterBottom>
-          {t('Select visitors actions')}
+          {t('Select visitor actions')}
         </Typography>
         <Stack spacing={2}>
           <FormGroup>
@@ -269,7 +233,9 @@ export function ExportDialog({
               onChange={handleSelectAll}
               label="All"
             />
-            <Divider />
+            <Box sx={{ py: 1 }}>
+              <Divider />
+            </Box>
             <CheckboxOption
               checked={checkboxState.JourneyViewEvent}
               onChange={(checked) =>
@@ -338,8 +304,8 @@ export function ExportDialog({
                   '&:hover': {
                     backgroundColor: 'action.hover'
                   },
-                  mx: -3,
-                  px: 3
+                  ml: -3,
+                  pl: 3
                 }}
               >
                 <Stack
