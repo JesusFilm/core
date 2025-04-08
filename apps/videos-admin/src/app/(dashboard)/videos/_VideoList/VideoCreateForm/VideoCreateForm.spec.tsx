@@ -171,7 +171,9 @@ describe('VideoCreateForm', () => {
       await user.click(screen.getByRole('option', { name: 'Short Film' }))
     })
 
-    await user.click(screen.getByRole('button', { name: 'Create' }))
+    await act(async () => {
+      await user.click(screen.getByRole('button', { name: 'Create' }))
+    })
 
     // Allow time for mutations to complete
     await act(async () => {
@@ -316,7 +318,9 @@ describe('VideoCreateForm', () => {
       await user.click(screen.getByRole('option', { name: 'Short Film' }))
     })
 
-    await user.click(screen.getByRole('button', { name: 'Create' }))
+    await act(async () => {
+      await user.click(screen.getByRole('button', { name: 'Create' }))
+    })
 
     // Allow time for mutations to complete
     await act(async () => {
