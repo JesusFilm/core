@@ -31,21 +31,21 @@ describe('VideoList', () => {
         adminVideosCount: 3,
         adminVideos: [
           {
-            id: 'example-id',
+            id: 'example-id-1',
             snippet: [{ value: 'Example snippet', primary: true }],
             title: [{ value: 'Example title', primary: true }],
             published: true,
             locked: true
           },
           {
-            id: 'example-id',
+            id: 'example-id-2',
             snippet: [{ value: 'Example snippet', primary: true }],
             title: [{ value: 'Example title', primary: true }],
             published: false,
             locked: false
           },
           {
-            id: 'example-id',
+            id: 'example-id-3',
             snippet: [{ value: 'Example snippet', primary: true }],
             title: [{ value: 'Example title', primary: true }],
             published: true,
@@ -77,7 +77,7 @@ describe('VideoList', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
 
     await waitFor(() =>
-      expect(screen.getAllByText('example-id')).toHaveLength(3)
+      expect(screen.getAllByText(/example-id-\d/)).toHaveLength(3)
     )
   })
 
@@ -162,7 +162,7 @@ describe('VideoList', () => {
 
     await waitFor(() => expect(result).toHaveBeenCalled())
     await waitFor(() =>
-      expect(screen.getAllByText('example-id')).toHaveLength(3)
+      expect(screen.getAllByText(/example-id-\d/)).toHaveLength(3)
     )
     fireEvent.click(screen.getByRole('button', { name: 'Show filters' }))
     const select = screen.getByRole('combobox', { name: 'Columns' })
@@ -185,7 +185,7 @@ describe('VideoList', () => {
           adminVideosCount: 100,
           adminVideos: [
             {
-              id: 'example-id',
+              id: 'example-id-1',
               snippet: [{ value: 'Example snippet', primary: true }],
               title: [{ value: 'Example title', primary: true }],
               published: true,
@@ -239,7 +239,7 @@ describe('VideoList', () => {
           adminVideosCount: 100,
           adminVideos: [
             {
-              id: 'example-id',
+              id: 'example-id-1',
               snippet: [{ value: 'Example snippet', primary: true }],
               title: [{ value: 'Example title', primary: true }],
               published: true,
@@ -293,7 +293,7 @@ describe('VideoList', () => {
           adminVideosCount: 100,
           adminVideos: [
             {
-              id: 'example-id',
+              id: 'example-id-1',
               snippet: [{ value: 'Example snippet', primary: true }],
               title: [{ value: 'Example title', primary: true }],
               published: true,
@@ -321,7 +321,7 @@ describe('VideoList', () => {
           adminVideosCount: 100,
           adminVideos: [
             {
-              id: 'example-id',
+              id: 'example-id-1',
               snippet: [{ value: 'Example snippet', primary: true }],
               title: [{ value: 'Example title', primary: true }],
               published: true,
