@@ -18,7 +18,7 @@ describe('ContainerHeroMuteButton', () => {
       'p-3 rounded-full bg-black/50 text-white ml-4 -mb-3 mr-1 transition-colors hover:bg-black/70'
     )
 
-    const lineElements = screen.getByTestId('UnmuteIcon')
+    const lineElements = screen.getByTestId('MuteIcon')
     await waitFor(() => {
       expect(lineElements).toBeInTheDocument()
     })
@@ -30,7 +30,7 @@ describe('ContainerHeroMuteButton', () => {
     const button = screen.getByRole('button')
     expect(button).toBeInTheDocument()
 
-    const lineElements = screen.getByTestId('MuteIcon')
+    const lineElements = screen.getByTestId('UnmuteIcon')
     await waitFor(() => {
       expect(lineElements).toBeInTheDocument()
     })
@@ -50,14 +50,14 @@ describe('ContainerHeroMuteButton', () => {
       <ContainerHeroMuteButton isMuted={true} onClick={mockOnClick} />
     )
 
-    const mutedSvg = screen.getByTestId('UnmuteIcon')
+    const mutedSvg = screen.getByTestId('MuteIcon')
     expect(mutedSvg).toBeInTheDocument()
 
     const mutedSvgContent = mutedSvg?.innerHTML
 
     rerender(<ContainerHeroMuteButton isMuted={false} onClick={mockOnClick} />)
 
-    const unmutedSvg = screen.getByTestId('MuteIcon')
+    const unmutedSvg = screen.getByTestId('UnmuteIcon')
     expect(unmutedSvg).toBeInTheDocument()
 
     const unmutedSvgContent = unmutedSvg?.innerHTML
