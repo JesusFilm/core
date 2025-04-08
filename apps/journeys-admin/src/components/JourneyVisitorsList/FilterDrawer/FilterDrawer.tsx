@@ -32,6 +32,7 @@ interface FilterDrawerProps {
   hideInteractive: boolean
   handleClearAll?: () => void
   journeyId?: string
+  showExportButton?: boolean
 }
 
 export function FilterDrawer({
@@ -44,7 +45,8 @@ export function FilterDrawer({
   withSubmittedText,
   withIcon,
   hideInteractive,
-  handleClearAll
+  handleClearAll,
+  showExportButton = false
 }: FilterDrawerProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
@@ -149,7 +151,7 @@ export function FilterDrawer({
         </RadioGroup>
       </Box>
 
-      {journeyId != null && (
+      {journeyId != null && showExportButton && (
         <Box sx={{ px: 6, py: 5, mt: 'auto' }}>
           {downloading ? (
             <LinearProgress

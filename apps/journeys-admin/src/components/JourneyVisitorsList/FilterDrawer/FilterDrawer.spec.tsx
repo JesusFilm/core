@@ -108,7 +108,8 @@ const props = {
   withIcon: false,
   hideInteractive: false,
   handleClearAll: jest.fn(),
-  handleChange: jest.fn((e) => e.target.value)
+  handleChange: jest.fn((e) => e.target.value),
+  showExportButton: true
 }
 
 describe('FilterDrawer', () => {
@@ -174,6 +175,20 @@ describe('FilterDrawer', () => {
 
     it('should not render the export button if journeyId is not provided', async () => {
       const { journeyId, ...rest } = props
+
+      render(
+        <MockedProvider>
+          <FilterDrawer {...rest} />
+        </MockedProvider>
+      )
+
+      expect(
+        screen.queryByRole('button', { name: 'Export Data' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('should not render the export button if showExportButton is false', async () => {
+      const { showExportButton, ...rest } = props
 
       render(
         <MockedProvider>
