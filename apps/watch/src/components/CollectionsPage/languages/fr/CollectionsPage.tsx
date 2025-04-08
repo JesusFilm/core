@@ -89,18 +89,20 @@ export function CollectionsPage(): ReactElement {
         {/* <CollectionNavigationCarousel contentItems={navigationContentItems} /> */}
         <CollectionIntroText
           title="La véritable histoire de Pâques"
-          subtitle="Pâques n'est pas seulement une célébration"
+          subtitle="Et si Pâques était plus profond que vous ne le pensez ?"
           firstParagraph={{
-            beforeHighlight: 'Les Évangiles sont ',
-            highlightedText: 'étonnamment honnêtes',
+            beforeHighlight:
+              "Au-delà des œufs et des lapins se trouve l'histoire de pourquoi ",
+            highlightedText: "l'humanité a besoin d'un sauveur",
             afterHighlight:
-              " à propos des émotions que Jésus a vécues—Sa profonde angoisse, l'un de Ses plus proches amis qui nie même Le connaître, et d'autres disciples—incrédules face à Sa résurrection."
+              ". Les Évangiles capturent honnêtement l'angoisse de Jésus, le reniement de Pierre et l'incrédulité des disciples—des émotions brutes qui reflètent nos propres luttes."
           }}
-          secondParagraph="Si vous avez des doutes ou si vous souhaitez redécouvrir le sens de Pâques, explorez cette collection de vidéos et de ressources interactives."
+          secondParagraph="Cette célébration de triomphe parle à nos moments de doute et pointe vers l'espoir au-delà de nous-mêmes. Des questions ? En recherche ? Découvrez la véritable puissance de Pâques."
           easterDatesTitle="Quand Pâques est-il célébré en {year} ?"
-          westernEasterLabel="Pâques occidental (Catholique/Protestant)"
+          thirdParagraph="Explorez notre collection de vidéos et de ressources interactives qui vous invitent à découvrir l'histoire authentique—une histoire qui a changé l'histoire et continue de transformer des vies aujourd'hui. Car la plus grande célébration de l'histoire humaine est bien plus que des traditions—c'est la puissance de la résurrection."
+          westernEasterLabel="Pâques Occidental (Catholique/Protestant)"
           orthodoxEasterLabel="Orthodoxe"
-          passoverLabel="Pâque juive"
+          passoverLabel="Pâque Juive"
           locale="fr-FR"
         />
         <CollectionsVideoContent

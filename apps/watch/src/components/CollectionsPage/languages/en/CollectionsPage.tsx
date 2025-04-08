@@ -88,15 +88,18 @@ export function CollectionsPage(): ReactElement {
         <CollectionNavigationCarousel contentItems={navigationContentItems} />
         <CollectionIntroText
           title="The real Easter story"
-          subtitle="Easter isn't just a celebration"
+          subtitle="What if Easter goes deeper than you think?"
           firstParagraph={{
-            beforeHighlight: 'The Gospels are ',
-            highlightedText: 'shockingly honest',
+            beforeHighlight: 'Beyond eggs and bunnies lies the story of why ',
+            highlightedText: 'humanity needs a savior.',
             afterHighlight:
-              ' about the emotions Jesus experienced—His deep anguish, one of His closest friends denying even to know Him, and other disciples—disbelief in His resurrection.'
+              '  The Gospels honestly capture Jesus’s anguish, Peter’s denial, and the disciples’ disbelief—raw emotions that mirror our own struggles.'
           }}
-          secondParagraph="If you have doubts or want to rediscover the meaning of Easter explore this collection of videos and interactive resources."
+          secondParagraph="This celebration of triumph speaks to our moments of doubt and points to hope beyond ourselves.
+Questioning? Searching? Discover the true power of Easter."
           easterDatesTitle="When is Easter celebrated in {year}?"
+          thirdParagraph="Explore our collection of videos and interactive resources that invite you into the authentic story—one that changed history and continues to transform lives today.
+Because the greatest celebration in human history is about far more than traditions—it’s about resurrection power"
           westernEasterLabel="Western Easter (Catholic/Protestant)"
           orthodoxEasterLabel="Orthodox"
           passoverLabel="Jewish Passover"

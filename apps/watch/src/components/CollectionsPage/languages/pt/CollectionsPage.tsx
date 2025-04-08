@@ -88,15 +88,19 @@ export function CollectionsPage(): ReactElement {
         <CollectionNavigationCarousel contentItems={navigationContentItems} />
         <CollectionIntroText
           title="A verdadeira história da Páscoa"
-          subtitle="A Páscoa não é apenas uma celebração"
+          subtitle="E se a Páscoa for mais profunda do que você pensa?"
           firstParagraph={{
-            beforeHighlight: 'Os Evangelhos são ',
-            highlightedText: 'surpreendentemente honestos',
+            beforeHighlight:
+              'Além de ovos e coelhos está a história de por que a ',
+            highlightedText: 'humanidade precisa de um salvador.',
             afterHighlight:
-              ' sobre as emoções que Jesus experimentou—Sua profunda angústia, um de Seus amigos mais próximos negando até mesmo conhecê-Lo, e outros discípulos—a descrença em Sua ressurreição.'
+              ' Os Evangelhos capturam honestamente a angústia de Jesus, a negação de Pedro e a descrença dos discípulos—emoções cruas que refletem nossas próprias lutas.'
           }}
-          secondParagraph="Se você tem dúvidas ou quer redescobrir o significado da Páscoa, explore esta coleção de vídeos e recursos interativos."
+          secondParagraph="Esta celebração de triunfo fala aos nossos momentos de dúvida e aponta para a esperança além de nós mesmos.
+Questionando? Procurando? Descubra o verdadeiro poder da Páscoa."
           easterDatesTitle="Quando a Páscoa é celebrada em {year}?"
+          thirdParagraph="Explore nossa coleção de vídeos e recursos interativos que convidam você a conhecer a história autêntica—uma que mudou a história e continua transformando vidas hoje.
+Porque a maior celebração da história humana é muito mais do que tradições—é sobre o poder da ressurreição"
           westernEasterLabel="Páscoa Ocidental (Católica/Protestante)"
           orthodoxEasterLabel="Ortodoxa"
           passoverLabel="Pessach Judaico"
