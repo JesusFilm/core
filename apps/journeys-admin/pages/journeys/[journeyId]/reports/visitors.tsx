@@ -12,11 +12,22 @@ import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useState } from 'react'
 
-import { GetAdminJourney } from '../../../../__generated__/GetAdminJourney'
+import { useTeam } from '@core/journeys/ui/TeamProvider'
+import { useUserRoleQuery } from '@core/journeys/ui/useUserRoleQuery'
+
+import {
+  GetAdminJourney,
+  GetAdminJourney_journey as Journey
+} from '../../../../__generated__/GetAdminJourney'
 import {
   GetJourneyVisitors,
   GetJourneyVisitors_visitors_edges as VisitorEdge
 } from '../../../../__generated__/GetJourneyVisitors'
+import {
+  Role,
+  UserJourneyRole,
+  UserTeamRole
+} from '../../../../__generated__/globalTypes'
 import { UserJourneyOpen } from '../../../../__generated__/UserJourneyOpen'
 import { HelpScoutBeacon } from '../../../../src/components/HelpScoutBeacon'
 import { JourneyVisitorsList } from '../../../../src/components/JourneyVisitorsList'
@@ -27,6 +38,14 @@ import { PageWrapper } from '../../../../src/components/PageWrapper'
 import { ReportsNavigation } from '../../../../src/components/ReportsNavigation'
 import { initAndAuthApp } from '../../../../src/libs/initAndAuthApp'
 import { GET_ADMIN_JOURNEY, USER_JOURNEY_OPEN } from '../../[journeyId]'
+
+export const GET_ROLE = gql`
+  query GetRole {
+    getUserRole {
+      roles
+    }
+  }
+`
 
 export const GET_JOURNEY_VISITORS = gql`
   query GetJourneyVisitors(
@@ -80,7 +99,7 @@ export const GET_JOURNEY_VISITORS_COUNT = gql`
   }
 `
 
-function JourneyVisitorsPage(): ReactElement {
+function JourneyVisitorsPage({ journey }: { journey: Journey }): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const user = useUser()
   const router = useRouter()
@@ -108,6 +127,8 @@ function JourneyVisitorsPage(): ReactElement {
   const [hideInteractive, setHideInterActive] = useState(false)
   const [sortSetting, setSortSetting] = useState<'date' | 'duration'>('date')
 
+  const { data: userRoleData } = useUserRoleQuery()
+  const { activeTeam } = useTeam()
   const { fetchMore, loading } = useQuery<GetJourneyVisitors>(
     GET_JOURNEY_VISITORS,
     {
@@ -147,6 +168,25 @@ function JourneyVisitorsPage(): ReactElement {
       }
     }
   }
+
+  const owner = journey.userJourneys?.find(
+    (userJourney) => userJourney.role === UserJourneyRole.owner
+  )
+  const isOwner = owner?.user?.id === user?.id
+
+  const isPublisher = userRoleData?.getUserRole?.roles?.includes(Role.publisher)
+
+  const currentUserTeamRole = activeTeam?.userTeams?.find(
+    ({ user: { email } }) => email === user?.email
+  )?.role
+
+  const hasValidTeamRole =
+    currentUserTeamRole != null &&
+    [UserTeamRole.manager, UserTeamRole.member].includes(currentUserTeamRole)
+
+  const showExportButton = journey.template
+    ? isPublisher
+    : hasValidTeamRole || isOwner
 
   const handleChange = async (e): Promise<void> => {
     switch (e.target.value) {
@@ -214,7 +254,7 @@ function JourneyVisitorsPage(): ReactElement {
               hideInteractive={hideInteractive}
               handleClearAll={handleClearAll}
             />
-            <ExportEventsButton journeyId={journeyId} />
+            {showExportButton && <ExportEventsButton journeyId={journeyId} />}
           </Stack>
         }
         sidePanelTitle={
@@ -239,6 +279,7 @@ function JourneyVisitorsPage(): ReactElement {
             withIcon={withIcon}
             hideInteractive={hideInteractive}
             handleClearAll={handleClearAll}
+            showExportButton={showExportButton}
           />
         }
       >
@@ -268,13 +309,17 @@ export const getServerSideProps = withUserTokenSSR({
 
   if (redirect != null) return { redirect }
 
+  let journey: Journey | null = null
+
   try {
-    await apolloClient.query<GetAdminJourney>({
+    const { data } = await apolloClient.query<GetAdminJourney>({
       query: GET_ADMIN_JOURNEY,
       variables: {
         id: query?.journeyId
       }
     })
+
+    journey = data?.journey
   } catch (_) {
     return {
       redirect: {
@@ -291,7 +336,8 @@ export const getServerSideProps = withUserTokenSSR({
 
   return {
     props: {
-      ...translations
+      ...translations,
+      journey
     }
   }
 })
