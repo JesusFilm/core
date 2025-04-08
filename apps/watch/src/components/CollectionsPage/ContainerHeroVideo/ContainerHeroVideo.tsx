@@ -39,7 +39,8 @@ export function ContainerHeroVideo({
     // Initialize player
     const player = videojs(videoRef.current, {
       ...defaultVideoJsOptions,
-      autoplay: true,
+      autoplay: false,
+      preload: 'auto',
       controls: false,
       loop: true,
       muted: true,
