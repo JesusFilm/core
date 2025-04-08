@@ -3,6 +3,7 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
+import omit from 'lodash/omit'
 
 import { CurrentUserAgent } from '@core/nest/decorators/CurrentUserAgent'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
@@ -64,7 +65,7 @@ export class JourneyViewEventResolver {
     if (existingEvent == null) {
       const promises = [
         this.eventService.save({
-          ...input,
+          ...omit(input, 'journeyId'),
           id: input.id ?? undefined,
           typename: 'JourneyViewEvent',
           visitor: { connect: { id: visitor.id } },
