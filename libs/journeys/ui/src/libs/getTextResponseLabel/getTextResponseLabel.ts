@@ -1,26 +1,17 @@
-import { TreeBlock } from '../../libs/block'
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../libs/block/__generated__/BlockFields'
+import { TreeBlock } from '../block'
 
-function flatten(children: TreeBlock[]): TreeBlock[] {
-  return children.reduce<TreeBlock[]>(
-    (result, item) => [...result, item, ...flatten(item.children)],
-    []
-  )
-}
+/**
+ * Retrieves the label from a TextResponseBlock if available, otherwise returns null.
+ *
+ * @param block - The text response block to extract the label from.
+ * @returns The label string if label if present and non-empty, otherwise null.
+ */
 
 export function getTextResponseLabel(
-  children: TreeBlock[],
-  blockId: string
+  block: TreeBlock<TextResponseBlock>
 ): string | null {
-  const descendants = flatten(children)
-  const matchingTextResponseBlock = descendants.find((block) => block.id === blockId)
-  
-  if (
-    matchingTextResponseBlock != null &&
-    matchingTextResponseBlock?.__typename === 'TextResponseBlock' &&
-    matchingTextResponseBlock?.label.trim() !== ''
-  ) {
-    return matchingTextResponseBlock.label
-  }
-  return null
+  return block.__typename === 'TextResponseBlock' && block.label.trim() !== ''
+    ? block.label
+    : null
 }

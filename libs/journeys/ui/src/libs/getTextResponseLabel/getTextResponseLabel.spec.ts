@@ -19,138 +19,26 @@ describe('getTextResponseLabel', () => {
     children: []
   }
 
-  it('returns label of matching text response block', () => {
-    const children: TreeBlock[] = [
-      {
-        __typename: 'CardBlock',
-        id: 'card.id',
-        parentBlockId: 'step.id',
-        parentOrder: null,
-        backgroundColor: null,
-        coverBlockId: null,
-        themeMode: null,
-        themeName: null,
-        fullscreen: false,
-        children: [
-          textResponseBlock
-        ]
-      }
-    ]
-
-    expect(getTextResponseLabel(children, 'textResponse.id')).toBe('Text Response Label')
+  it('returns label of the text response block', () => {
+    expect(getTextResponseLabel(textResponseBlock)).toBe('Text Response Label')
   })
 
-  it('returns null when no matching block is found', () => {
-    const children: TreeBlock[] = [
-      {
-        __typename: 'CardBlock',
-        id: 'card.id',
-        parentBlockId: 'step.id',
-        parentOrder: null,
-        backgroundColor: null,
-        coverBlockId: null,
-        themeMode: null,
-        themeName: null,
-        fullscreen: false,
-        children: [
-          textResponseBlock
-        ]
-      }
-    ]
+  it('returns null when label is empty or whitespace', () => {
+    const blockWithWhitespaceLabel = { ...textResponseBlock, label: '   ' }
+    const blockWithEmptyLabel = { ...textResponseBlock, label: '' }
 
-    expect(getTextResponseLabel(children, 'nonexistent.id')).toBeNull()
+    expect(getTextResponseLabel(blockWithWhitespaceLabel)).toBeNull()
+    expect(getTextResponseLabel(blockWithEmptyLabel)).toBeNull()
   })
 
-  it('returns null when matching block is not a TextResponseBlock', () => {
-    const children: TreeBlock[] = [
-      {
-        __typename: 'CardBlock',
-        id: 'card.id',
-        parentBlockId: 'step.id',
-        parentOrder: null,
-        backgroundColor: null,
-        coverBlockId: null,
-        themeMode: null,
-        themeName: null,
-        fullscreen: false,
-        children: [
-          {
-            __typename: 'TypographyBlock',
-            id: 'typography.id',
-            parentBlockId: 'card.id',
-            parentOrder: 0,
-            align: null,
-            color: null,
-            content: 'Some content',
-            variant: null,
-            children: []
-          }
-        ]
-      }
-    ]
-
-    expect(getTextResponseLabel(children, 'typography.id')).toBeNull()
-  })
-
-  it('returns null when text response block has empty label', () => {
-    const children: TreeBlock[] = [
-      {
-        __typename: 'CardBlock',
-        id: 'card.id',
-        parentBlockId: 'step.id',
-        parentOrder: null,
-        backgroundColor: null,
-        coverBlockId: null,
-        themeMode: null,
-        themeName: null,
-        fullscreen: false,
-        children: [
-          {
-            ...textResponseBlock,
-            label: '   ' // empty or whitespace-only label
-          }
-        ]
-      }
-    ]
-
-    expect(getTextResponseLabel(children, 'textResponse.id')).toBeNull()
-  })
-
-  it('finds text response block in nested children', () => {
-    const children: TreeBlock[] = [
-      {
-        __typename: 'CardBlock',
-        id: 'card.id',
-        parentBlockId: 'step.id',
-        parentOrder: null,
-        backgroundColor: null,
-        coverBlockId: null,
-        themeMode: null,
-        themeName: null,
-        fullscreen: false,
-        children: [
-          {
-            __typename: 'CardBlock',
-            id: 'nestedCard.id',
-            parentBlockId: 'card.id',
-            parentOrder: null,
-            backgroundColor: null,
-            coverBlockId: null,
-            themeMode: null,
-            themeName: null,
-            fullscreen: false,
-            children: [
-              {
-                ...textResponseBlock,
-                id: 'nestedTextResponse.id',
-                label: 'Nested Text Response Label'
-              }
-            ]
-          }
-        ]
-      }
-    ]
-
-    expect(getTextResponseLabel(children, 'nestedTextResponse.id')).toBe('Nested Text Response Label')
+  it('returns null when block is not a TextResponseBlock - e.g. parameter was improperly type-casted', () => {
+    const nonTextResponseBlock: TreeBlock<any> = {
+      __typename: 'TypographyBlock',
+      id: 'typography.id',
+      parentBlockId: 'card.id',
+      parentOrder: 0,
+      children: []
+    }
+    expect(getTextResponseLabel(nonTextResponseBlock)).toBeNull()
   })
 })

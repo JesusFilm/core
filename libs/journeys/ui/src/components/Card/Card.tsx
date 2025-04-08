@@ -14,6 +14,7 @@ import {
   StepPreviousEventCreateInput
 } from '../../../__generated__/globalTypes'
 import { TreeBlock, useBlocks } from '../../libs/block'
+import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../libs/block/__generated__/BlockFields'
 import { blurImage } from '../../libs/blurImage'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { getTextResponseLabel } from '../../libs/getTextResponseLabel'
@@ -197,7 +198,7 @@ export function Card({
 
       const heading =
       activeBlock != null
-        ? (getTextResponseLabel(activeBlock.children, blockId) ??
+        ? (getTextResponseLabel(block) ??
           getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t))
         : t('None')
       const id = uuidv4()
