@@ -238,6 +238,7 @@ export function CollectionsPage(): ReactElement {
           }}
         />
         <OtherCollectionsCarousel
+          id="other-collections"
           collectionSubtitle="Библейская видеоколлекция"
           collectionTitle="История Пасхи - ключевая часть большой картины"
           watchButtonText="Смотреть"
@@ -415,6 +416,7 @@ export function CollectionsPage(): ReactElement {
         />
 
         <CollectionVideoContentCarousel
+          id="easter-events-day-by-day"
           subtitle={'Пасхальный документальный сериал'}
           title={'Победил ли Иисус смерть?'}
           description={
@@ -750,6 +752,7 @@ export function CollectionsPage(): ReactElement {
         />
 
         <CollectionVideoContentCarousel
+          id="easter-events-day-by-day"
           subtitle={'Библейские видео'}
           title={'События Пасхи день за днем'}
           description={
@@ -1138,6 +1141,7 @@ export function CollectionsPage(): ReactElement {
         />
 
         <CollectionVideoContentCarousel
+          id="new-believer-course"
           subtitle={'Видеокурс'}
           title={'Курс для новых верующих'}
           description={
