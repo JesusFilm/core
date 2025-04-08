@@ -46,7 +46,7 @@ export const GET_ADMIN_VIDEO = graphql(`
           value
         }
       }
-      variants {
+      variants(input: { onlyPublished: false }) {
         id
         videoId
         slug
