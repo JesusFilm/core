@@ -62,6 +62,30 @@ export function ContainerHeroVideo({
     playerRef.current = player
     onPlayerReady(player)
 
+    // Add fallback autoplay attempt
+    player.ready(() => {
+      const playPromise = player.play()
+
+      if (playPromise !== undefined) {
+        playPromise.catch((error) => {
+          console.log('Autoplay prevented:', error)
+
+          // Add a visibility check and try to play when visible
+          const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                player.play().catch((e) => console.log('Play failed:', e))
+              }
+            })
+          })
+
+          if (videoRef.current) {
+            observer.observe(videoRef.current)
+          }
+        })
+      }
+    })
+
     // Sync muted state with player
     player.on('volumechange', () => {
       onMutedChange(player.muted() ?? true)
