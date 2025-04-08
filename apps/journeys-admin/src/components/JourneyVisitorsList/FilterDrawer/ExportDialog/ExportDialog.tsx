@@ -19,11 +19,10 @@ import { Dialog } from '@core/shared/ui/Dialog'
 import { EventType } from '../../../../../__generated__/globalTypes'
 import { useJourneyEventsExport } from '../../../../libs/useJourneyEventsExport'
 import { DateRangePicker } from '../../../DateRangePicker'
-import { Spacing } from '../../../Editor/Slider/Settings/CanvasDetails/Properties/blocks/Spacer/Spacing'
 
 import { CheckboxOption } from './CheckboxOption'
 
-const GET_JOURNEY_CREATED_AT = gql`
+export const GET_JOURNEY_CREATED_AT = gql`
   query GetJourneyCreatedAt($id: ID!) {
     journey: adminJourney(id: $id, idType: databaseId) {
       id
@@ -299,6 +298,7 @@ export function ExportDialog({
             <Box>
               <Box
                 onClick={() => setVideoEventsExpanded(!videoEventsExpanded)}
+                data-testid="video-events-expander"
                 sx={{
                   cursor: 'pointer',
                   '&:hover': {
