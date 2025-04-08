@@ -47,6 +47,7 @@ describe('CollectionVideoContentCarousel', () => {
   }
 
   const defaultProps = {
+    id: 'test-id',
     title: 'Test Title',
     subtitle: 'Test Subtitle',
     description: 'First four words and remaining text of the description',
