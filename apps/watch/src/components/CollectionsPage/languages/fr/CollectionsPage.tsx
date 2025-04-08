@@ -252,6 +252,7 @@ export function CollectionsPage(): ReactElement {
           }}
         />
         <OtherCollectionsCarousel
+          id="other-collections"
           collectionSubtitle="Collection Bible Vidéo"
           collectionTitle="L'histoire de Pâques fait partie d'un tableau plus grand"
           watchButtonText="Regarder"
@@ -448,6 +449,7 @@ export function CollectionsPage(): ReactElement {
         />
 
         <CollectionVideoContentCarousel
+          id="easter-documentary-series"
           subtitle={'Série Documentaire de Pâques'}
           title={'Jésus a-t-il vaincu la mort ?'}
           description={
@@ -617,6 +619,7 @@ export function CollectionsPage(): ReactElement {
         />
 
         <CollectionVideoContentCarousel
+          id="easter-events-day-by-day"
           subtitle={'Vidéos Bibliques'}
           title={'Les Événements de Pâques Jour par Jour'}
           description={
@@ -1030,6 +1033,7 @@ export function CollectionsPage(): ReactElement {
         />
 
         <CollectionVideoContentCarousel
+          id="new-believer-course"
           subtitle={'Cours Vidéo'}
           title={'Cours pour Nouveaux Croyants'}
           description={

@@ -170,7 +170,7 @@ export function NewTextResponseButton(): ReactElement {
   return (
     <Button
       icon={<TextInput1Icon />}
-      value={t('Text Input')}
+      value={t('Response Field')}
       onClick={handleClick}
       testId="NewTextResponseButton"
       disabled={textResponseLoading || textResponseWithButtonLoading}
