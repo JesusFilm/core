@@ -429,43 +429,191 @@ async function compressFile(
 }
 
 /**
+ * Post-processes the SQL dump to remove foreign key constraints
+ * that reference excluded tables
+ */
+async function postProcessSqlDump(
+  sqlFilePath: string,
+  logger: Logger
+): Promise<void> {
+  logger.info(
+    'Post-processing SQL dump to remove references to excluded tables'
+  )
+
+  try {
+    let content = await fsPromises.readFile(sqlFilePath, 'utf8')
+
+    // Process each excluded table to remove references to it
+    for (const excludedTable of EXCLUDED_TABLES) {
+      logger.info(`Processing references to ${excludedTable}`)
+
+      // Multiple patterns to handle various types of references to excluded tables
+
+      // 1. Foreign key constraints
+      const foreignKeyPattern = new RegExp(
+        `ALTER TABLE [^;]+ ADD CONSTRAINT [^;]+ FOREIGN KEY \\([^)]+\\) REFERENCES (public\\.)?["']?${excludedTable}["']?[^;]*;`,
+        'g'
+      )
+
+      // 2. Any other REFERENCES to the excluded table
+      const tableReferencePattern = new RegExp(
+        `REFERENCES (public\\.)?["']?${excludedTable}["']?\\([^)]*\\)`,
+        'g'
+      )
+
+      // 3. CREATE TABLE statements for the excluded table
+      const createTablePattern = new RegExp(
+        `CREATE TABLE (public\\.)?["']?${excludedTable}["']?[\\s\\S]*?;(\\n\\n|\\n)`,
+        'g'
+      )
+
+      // 4. INSERT statements for the excluded table
+      const insertPattern = new RegExp(
+        `INSERT INTO (public\\.)?["']?${excludedTable}["']?[^;]*;(\\n)?`,
+        'g'
+      )
+
+      // 5. COPY statements for the excluded table (might span multiple lines)
+      const copyPattern = new RegExp(
+        `COPY (public\\.)?["']?${excludedTable}["']?[\\s\\S]*?\\\\.\\n`,
+        'g'
+      )
+
+      // 6. CREATE INDEX statements for the excluded table
+      const indexPattern = new RegExp(
+        `CREATE INDEX [^;]+ ON (public\\.)?["']?${excludedTable}["']?[^;]*;(\\n)?`,
+        'g'
+      )
+
+      // 7. ALTER TABLE statements that modify the excluded table directly
+      const alterTablePattern = new RegExp(
+        `ALTER TABLE (ONLY )?(public\\.)?["']?${excludedTable}["']?[^;]*;(\\n)?`,
+        'g'
+      )
+
+      // Apply replacements, keeping track of counts
+      let replacementCount = 0
+
+      // Apply foreign key constraint replacements
+      const foreignKeyMatches = content.match(foreignKeyPattern) || []
+      replacementCount += foreignKeyMatches.length
+      content = content.replace(
+        foreignKeyPattern,
+        `-- Removed foreign key constraint referencing ${excludedTable}\n`
+      )
+
+      // Apply other reference replacements
+      const referenceMatches = content.match(tableReferencePattern) || []
+      replacementCount += referenceMatches.length
+      content = content.replace(
+        tableReferencePattern,
+        `REFERENCES null_table(id) /* Removed reference to ${excludedTable} */`
+      )
+
+      // Apply CREATE TABLE replacements
+      const createTableMatches = content.match(createTablePattern) || []
+      replacementCount += createTableMatches.length
+      content = content.replace(
+        createTablePattern,
+        `-- Removed CREATE TABLE for ${excludedTable}\n\n`
+      )
+
+      // Apply INSERT replacements
+      const insertMatches = content.match(insertPattern) || []
+      replacementCount += insertMatches.length
+      content = content.replace(
+        insertPattern,
+        `-- Removed INSERT INTO ${excludedTable}\n`
+      )
+
+      // Apply COPY replacements
+      const copyMatches = content.match(copyPattern) || []
+      replacementCount += copyMatches.length
+      content = content.replace(
+        copyPattern,
+        `-- Removed COPY statement for ${excludedTable}\n`
+      )
+
+      // Apply CREATE INDEX replacements
+      const indexMatches = content.match(indexPattern) || []
+      replacementCount += indexMatches.length
+      content = content.replace(
+        indexPattern,
+        `-- Removed CREATE INDEX on ${excludedTable}\n`
+      )
+
+      // Apply ALTER TABLE replacements
+      const alterTableMatches = content.match(alterTablePattern) || []
+      replacementCount += alterTableMatches.length
+      content = content.replace(
+        alterTablePattern,
+        `-- Removed ALTER TABLE on ${excludedTable}\n`
+      )
+
+      if (replacementCount > 0) {
+        logger.info(
+          `Removed ${replacementCount} references to ${excludedTable}`
+        )
+      }
+    }
+
+    await fsPromises.writeFile(sqlFilePath, content)
+    logger.info('SQL dump post-processing completed')
+  } catch (error) {
+    logger.error({ error }, 'Error post-processing SQL dump')
+    throw error instanceof Error ? error : new Error(String(error))
+  }
+}
+
+/**
  * Export data from the media database to backup files
  */
 export const service = async (customLogger?: Logger): Promise<void> => {
-  const logger = customLogger ?? baseLogger.child({ worker: 'dataExport' })
+  const logger = customLogger ?? baseLogger.child({ worker: 'data-export' })
+  logger.info('Starting data export worker')
 
   try {
-    const outputDir = join(process.cwd(), 'exports')
-    await fsPromises.mkdir(outputDir, { recursive: true })
+    if (!process.env.PG_DATABASE_URL_MEDIA) {
+      throw new Error('Database URL is not configured')
+    }
 
-    // Define output files
-    const sqlFile = join(outputDir, SQL_BACKUP_FILE_NAME)
-    const gzippedFile = join(outputDir, GZIPPED_BACKUP_FILE_NAME)
+    // Directory for temporary files
+    const exportDir = join(process.cwd(), 'exports')
+    await fsPromises.mkdir(exportDir, { recursive: true })
+    logger.info(`Created export directory: ${exportDir}`)
 
-    // Generate database backup in plain SQL format
+    // Full paths to output files
+    const sqlFile = join(exportDir, SQL_BACKUP_FILE_NAME)
+    const gzippedFile = join(exportDir, GZIPPED_BACKUP_FILE_NAME)
+
+    // Execute the database export with pg_dump
     await executePgDump(sqlFile, logger)
+
+    // Post-process the SQL dump to remove foreign key constraints to excluded tables
+    await postProcessSqlDump(sqlFile, logger)
 
     // Compress the SQL file
     await compressFile(sqlFile, gzippedFile, logger)
 
-    // Export CloudflareImage data with videoId not null
-    const cloudflareImageFile = await exportCloudflareImageData(
-      outputDir,
-      logger
-    )
-
     // Upload to R2
     await uploadToR2(gzippedFile, logger)
-    await uploadToR2(cloudflareImageFile, logger)
 
-    // Clean up local files
+    // Export CloudflareImage data (for video thumbnails)
+    const cloudflareImagesFile = await exportCloudflareImageData(
+      exportDir,
+      logger
+    )
+    await uploadToR2(cloudflareImagesFile, logger, CLOUDFLARE_IMAGES_FILE_NAME)
+
+    // Clean up temporary files
+    logger.info('Cleaning up temporary files')
     await fsPromises.unlink(sqlFile)
     await fsPromises.unlink(gzippedFile)
-    await fsPromises.unlink(cloudflareImageFile)
+    await fsPromises.unlink(cloudflareImagesFile)
 
-    logger.info('Database export and upload completed successfully')
+    logger.info('Data export completed successfully')
   } catch (error) {
-    logger.error({ error }, 'Error during database export')
+    logger.error({ error }, 'Error during data export')
     throw error instanceof Error ? error : new Error(String(error))
   }
 }
