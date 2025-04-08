@@ -51,8 +51,8 @@ export const CREATE_VIDEO_VARIANT = graphql(`
 `)
 
 export const GET_MY_MUX_VIDEO = graphql(`
-  query GetMyMuxVideo($id: ID!) {
-    getMyMuxVideo(id: $id) {
+  query GetMyMuxVideo($id: ID!, $userGenerated: Boolean) {
+    getMyMuxVideo(id: $id, userGenerated: $userGenerated) {
       id
       assetId
       playbackId

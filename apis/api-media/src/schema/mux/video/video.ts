@@ -73,14 +73,23 @@ builder.queryFields((t) => ({
     type: 'MuxVideo',
     nullable: false,
     args: {
-      id: t.arg({ type: 'ID', required: true })
+      id: t.arg({ type: 'ID', required: true }),
+      userGenerated: t.arg({ type: 'Boolean', required: false })
     },
-    resolve: async (query, _root, { id }, { user }) => {
+    resolve: async (
+      query,
+      _root,
+      { id, userGenerated },
+      { user, currentRoles }
+    ) => {
       if (user == null)
         throw new GraphQLError('User not found', {
           extensions: { code: 'NOT_FOUND' }
         })
 
+      const isUserGenerated = !currentRoles.includes('publisher')
+        ? true
+        : (userGenerated ?? false)
       let video = await prisma.muxVideo.findFirstOrThrow({
         ...query,
         where: { id, userId: user.id }
@@ -102,7 +111,7 @@ builder.queryFields((t) => ({
         video.assetId != null &&
         (!video.readyToStream || video.playbackId == null)
       ) {
-        const muxVideo = await getVideo(video.assetId, false)
+        const muxVideo = await getVideo(video.assetId, isUserGenerated)
 
         if (
           muxVideo.status === 'ready' &&

@@ -167,7 +167,8 @@ const getMuxVideoMock = {
   request: {
     query: GET_MY_MUX_VIDEO,
     variables: {
-      id: 'muxVideo1'
+      id: 'muxVideo1',
+      userGenerated: false
     }
   },
   result: {
