@@ -234,7 +234,7 @@ export function CollectionsPage(): ReactElement {
           }}
         />
         <OtherCollectionsCarousel
-          contentId="other-collections"
+          id="other-collections"
           collectionSubtitle="Video Bible Collection"
           collectionTitle="The Easter story is a key part of a bigger picture"
           watchButtonText="Watch"

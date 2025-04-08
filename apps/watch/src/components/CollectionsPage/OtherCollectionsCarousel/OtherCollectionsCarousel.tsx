@@ -6,7 +6,7 @@ import { Icon } from '@core/shared/ui/icons/Icon'
 
 export interface OtherCollectionsCarouselProps {
   /** ID for the scroll navigation */
-  contentId: string
+  id: string
   /** Subtitle for the collections section */
   collectionSubtitle: string
   /** Title for the collections section */
@@ -26,7 +26,7 @@ export interface OtherCollectionsCarouselProps {
 }
 
 export function OtherCollectionsCarousel({
-  contentId,
+  id,
   collectionSubtitle,
   collectionTitle,
   watchButtonText,
@@ -36,7 +36,7 @@ export function OtherCollectionsCarousel({
 }: OtherCollectionsCarouselProps): ReactElement {
   return (
     <div
-      id={contentId}
+      id={id}
       className="relative bg-linear-to-tr from-blue-950/10  via-purple-950/10 to-[#91214A]/90 py-16 scroll-snap-start-always"
       data-testid="OtherCollectionsCarousel"
     >
