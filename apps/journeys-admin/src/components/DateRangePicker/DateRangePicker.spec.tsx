@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { DateRangePicker } from './DateRangePicker'
@@ -25,7 +25,10 @@ describe('DateRangePicker', () => {
     expect(screen.getByLabelText('To')).toBeInTheDocument()
   })
 
-  it('calls onChange handlers when dates are changed', async () => {
+  it('calls onChange handlers when calendar dates are clicked', async () => {
+    // Removed fake timers
+    const user = userEvent.setup()
+
     render(
       <DateRangePicker
         startDate={null}
@@ -38,15 +41,35 @@ describe('DateRangePicker', () => {
     const startDateInput = screen.getByLabelText('From')
     const endDateInput = screen.getByLabelText('To')
 
-    await userEvent.click(startDateInput)
-    const startDate = screen.getByRole('gridcell', { name: '1' })
-    await userEvent.click(startDate)
+    await user.click(startDateInput)
+    const startDateCell = screen.getAllByRole('gridcell', { name: '1' })[0]
+    await user.click(startDateCell)
 
-    await userEvent.click(endDateInput)
-    const endDate = screen.getByRole('gridcell', { name: '2' })
-    await userEvent.click(endDate)
+    await user.click(endDateInput)
+    const endDateCell = screen.getAllByRole('gridcell', { name: '2' })[0]
+    await user.click(endDateCell)
 
-    expect(mockStartDateChange).toHaveBeenCalled()
-    expect(mockEndDateChange).toHaveBeenCalled()
+    expect(mockStartDateChange).toHaveBeenCalledTimes(1)
+    expect(mockEndDateChange).toHaveBeenCalledTimes(1)
+    // Check the first argument of the first call is a Date
+    expect(mockStartDateChange.mock.calls[0][0]).toBeInstanceOf(Date)
+    expect(mockEndDateChange.mock.calls[0][0]).toBeInstanceOf(Date)
+  })
+
+  it('renders the pickers with initial values', () => {
+    const initialStartDate = new Date(2024, 0, 15) // Jan 15, 2024
+    const initialEndDate = new Date(2024, 1, 20) // Feb 20, 2024
+
+    render(
+      <DateRangePicker
+        startDate={initialStartDate}
+        endDate={initialEndDate}
+        onStartDateChange={mockStartDateChange}
+        onEndDateChange={mockEndDateChange}
+      />
+    )
+
+    expect(screen.getByLabelText('From')).toHaveValue('15-01-2024')
+    expect(screen.getByLabelText('To')).toHaveValue('20-02-2024')
   })
 })
