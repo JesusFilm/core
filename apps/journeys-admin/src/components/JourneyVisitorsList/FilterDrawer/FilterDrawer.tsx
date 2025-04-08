@@ -93,21 +93,21 @@ export function FilterDrawer({
           <FormControlLabel
             control={<Checkbox />}
             label={t('Poll Answers')}
-            value="With Poll Answers"
+            value="Poll Answers"
             onChange={handleChange}
             checked={withPollAnswers}
           />
           <FormControlLabel
             control={<Checkbox />}
             label={t('Submitted Text')}
-            value="With Submitted Text"
+            value="Submitted Text"
             onChange={handleChange}
             checked={withSubmittedText}
           />
           <FormControlLabel
             control={<Checkbox />}
             label={t('Icon')}
-            value="With Icon"
+            value="Icon"
             onChange={handleChange}
             checked={withIcon}
           />
