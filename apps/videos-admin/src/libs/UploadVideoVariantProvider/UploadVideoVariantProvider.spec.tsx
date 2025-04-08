@@ -57,7 +57,8 @@ const createMuxVideoUploadByUrlMock = {
   request: {
     query: CREATE_MUX_VIDEO_UPLOAD_BY_URL,
     variables: {
-      url: 'https://public-url.com'
+      url: 'https://public-url.com',
+      userGenerated: false
     }
   },
   result: {
@@ -156,7 +157,8 @@ const createMuxVideoUploadByUrlErrorMock = {
   request: {
     query: CREATE_MUX_VIDEO_UPLOAD_BY_URL,
     variables: {
-      url: 'https://public-url.com'
+      url: 'https://public-url.com',
+      userGenerated: false
     }
   },
   error: new Error('Mux creation failed')

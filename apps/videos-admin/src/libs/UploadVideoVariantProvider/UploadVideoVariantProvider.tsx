@@ -20,8 +20,8 @@ export const CLOUDFLARE_R2_CREATE = graphql(`
 `)
 
 export const CREATE_MUX_VIDEO_UPLOAD_BY_URL = graphql(`
-  mutation CreateMuxVideoUploadByUrl($url: String!) {
-    createMuxVideoUploadByUrl(url: $url) {
+  mutation CreateMuxVideoUploadByUrl($url: String!, $userGenerated: Boolean) {
+    createMuxVideoUploadByUrl(url: $url, userGenerated: $userGenerated) {
       id
       assetId
       playbackId
@@ -349,7 +349,10 @@ export function UploadVideoVariantProvider({
 
       // Start polling for Mux video status
       void getMyMuxVideo({
-        variables: { id: muxResponse.data.createMuxVideoUploadByUrl.id }
+        variables: {
+          id: muxResponse.data.createMuxVideoUploadByUrl.id,
+          userGenerated: false
+        }
       })
     } catch (error) {
       let errorMessage: string
