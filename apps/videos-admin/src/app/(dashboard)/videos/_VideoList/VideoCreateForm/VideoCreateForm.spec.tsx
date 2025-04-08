@@ -201,11 +201,9 @@ describe('VideoCreateForm', () => {
       <SnackbarProvider>
         <MockedProvider mocks={[errorMock]}>
           <VideoCreateForm close={mockCancel} />
-            <VideoCreateForm close={mockCancel} />
-          </MockedProvider>
-        </SnackbarProvider>
-      )
-    })
+        </MockedProvider>
+      </SnackbarProvider>
+    )
 
     const user = userEvent.setup()
 
@@ -270,19 +268,10 @@ describe('VideoCreateForm', () => {
 
   it('should use onCreateSuccess callback instead of router navigation when the callback is provided', async () => {
     const onCreateSuccessMock = jest.fn()
-    const getLanguagesMockResult = jest
-      .fn()
-      .mockReturnValue(getLanguagesMock.result)
 
     await act(async () => {
       render(
-        <MockedProvider
-          mocks={[
-            { ...getLanguagesMock, result: getLanguagesMockResult },
-            createVideoMock,
-            createEditionMock
-          ]}
-        >
+        <MockedProvider mocks={[createVideoMock, createEditionMock]}>
           <VideoCreateForm
             close={mockCancel}
             onCreateSuccess={onCreateSuccessMock}
