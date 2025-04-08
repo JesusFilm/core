@@ -4,7 +4,7 @@ import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import { ReactElement } from 'react'
 
-export default function MetadataLoading(): ReactElement {
+export default function EditionsLoading(): ReactElement {
   return (
     <Box
       sx={{
@@ -14,7 +14,7 @@ export default function MetadataLoading(): ReactElement {
         placeItems: 'center',
         p: 4
       }}
-      data-testid="metadata-loading"
+      data-testid="editions-loading"
     >
       <CircularProgress />
     </Box>

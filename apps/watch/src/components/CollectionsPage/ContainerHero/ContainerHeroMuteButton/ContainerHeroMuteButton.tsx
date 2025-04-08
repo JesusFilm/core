@@ -18,21 +18,6 @@ export function ContainerHeroMuteButton({
     >
       {isMuted ? (
         <svg
-          data-testid="UnmuteIcon"
-          xmlns="http://www.w3.org/2000/svg"
-          width="32"
-          height="32"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M11 5L6 9H2v6h4l5 4zM19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-        </svg>
-      ) : (
-        <svg
           data-testid="MuteIcon"
           xmlns="http://www.w3.org/2000/svg"
           width="32"
@@ -50,6 +35,21 @@ export function ContainerHeroMuteButton({
             stroke-width="2"
             d="M16.883 8.5V4l-4.651 4.651H5.5v6.697h4.046M16.883 13v7L13 16.117M6 18.5l3.546-3.152M19.5 6.5l-9.954 8.848"
           />
+        </svg>
+      ) : (
+        <svg
+          data-testid="UnmuteIcon"
+          xmlns="http://www.w3.org/2000/svg"
+          width="32"
+          height="32"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M11 5L6 9H2v6h4l5 4zM19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
         </svg>
       )}
     </button>
