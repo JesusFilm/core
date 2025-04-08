@@ -86,7 +86,7 @@ export function CollectionsPage(): ReactElement {
       hideFooter
     >
       <CollectionsPageContent>
-        {/* <CollectionNavigationCarousel contentItems={navigationContentItems} /> */}
+        <CollectionNavigationCarousel contentItems={navigationContentItems} />
         <CollectionIntroText
           title="La verdadera historia de la Pascua"
           subtitle="La Pascua no es solo una celebración"
@@ -248,6 +248,7 @@ export function CollectionsPage(): ReactElement {
           }}
         />
         <OtherCollectionsCarousel
+          id="other-collections"
           collectionSubtitle="Colección de Videos Bíblicos"
           collectionTitle="La historia de la Pascua es una parte clave de un cuadro más grande"
           watchButtonText="Ver"
@@ -441,6 +442,7 @@ export function CollectionsPage(): ReactElement {
         />
 
         <CollectionVideoContentCarousel
+          id="easter-documentary-series"
           subtitle={'Serie Documental de Pascua'}
           title={'¿Venció Jesús a la Muerte?'}
           description={
@@ -848,6 +850,7 @@ export function CollectionsPage(): ReactElement {
         />
 
         <CollectionVideoContentCarousel
+          id="easter-events-day-by-day"
           subtitle={'Videos Bíblicos'}
           title={'Eventos de Pascua Día a Día'}
           description={
@@ -1256,6 +1259,7 @@ export function CollectionsPage(): ReactElement {
         />
 
         <CollectionVideoContentCarousel
+          id="new-believer-course"
           subtitle={'Curso en Video'}
           title={'Curso para Nuevos Creyentes'}
           description={
