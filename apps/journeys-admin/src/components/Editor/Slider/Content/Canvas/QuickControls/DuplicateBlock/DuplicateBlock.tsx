@@ -79,7 +79,9 @@ export function DuplicateBlock({
 
     const block = {
       ...omit(selectedBlock, 'children'),
-      id: uuidv4()
+      id: uuidv4(),
+      // ensures submitEnabled is false for button blocks on the optimistic response
+      submitEnabled: false
     }
 
     const idMap: BlockDuplicateIdMap[] = [

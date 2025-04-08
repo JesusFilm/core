@@ -83,6 +83,7 @@ const block: TreeBlock<ButtonFields> = {
   startIconId: null,
   endIconId: null,
   action: null,
+  submitEnabled: false,
   children: []
 }
 
@@ -578,18 +579,133 @@ describe('Button', () => {
     )
   })
 
-  it('should show default button text if button label is empty', () => {
+  describe('button label rendering', () => {
+    it('should display custom label when provided', () => {
+      render(
+        <MockedProvider>
+          <Button {...block} label="Custom Label" />
+        </MockedProvider>
+      )
+      expect(screen.getByRole('button')).toHaveTextContent('Custom Label')
+    })
+
+    it('should display "Submit" when submitEnabled is true and no label is provided', () => {
+      const submitButton = {
+        ...block,
+        label: '',
+        submitEnabled: true
+      }
+      render(
+        <MockedProvider>
+          <Button {...submitButton} />
+        </MockedProvider>
+      )
+      expect(screen.getByRole('button')).toHaveTextContent('Submit')
+    })
+
+    it('should display "Button" when submitEnabled is false and no label is provided', () => {
+      const regularButton = {
+        ...block,
+        label: '',
+        submitEnabled: false
+      }
+      render(
+        <MockedProvider>
+          <Button {...regularButton} />
+        </MockedProvider>
+      )
+      expect(screen.getByRole('button')).toHaveTextContent('Button')
+    })
+
+    it('should prioritize custom label over submitEnabled status', () => {
+      const buttonWithLabelAndSubmitEnabled = {
+        ...block,
+        label: 'Custom Label',
+        submitEnabled: true
+      }
+      render(
+        <MockedProvider>
+          <Button {...buttonWithLabelAndSubmitEnabled} />
+        </MockedProvider>
+      )
+      expect(screen.getByRole('button')).toHaveTextContent('Custom Label')
+    })
+
+    it('should display editable label component when provided', () => {
+      const EditableLabelComponent = () => (
+        <span data-testid="editable-label">Editable Label</span>
+      )
+
+      const buttonWithEditableLabel = {
+        ...block,
+        label: 'Regular Label',
+        editableLabel: <EditableLabelComponent />
+      }
+
+      render(
+        <MockedProvider>
+          <Button {...buttonWithEditableLabel} />
+        </MockedProvider>
+      )
+
+      expect(screen.getByTestId('editable-label')).toBeInTheDocument()
+      expect(screen.getByTestId('editable-label')).toHaveTextContent(
+        'Editable Label'
+      )
+      expect(screen.queryByText('Regular Label')).not.toBeInTheDocument()
+    })
+  })
+
+  it('should submit form when submitEnabled is true', () => {
     const emptyButtonLabelMock = {
       ...block,
-      label: ''
+      label: '',
+      submitEnabled: true
     }
     render(
       <MockedProvider>
         <Button {...emptyButtonLabelMock} />
       </MockedProvider>
     )
-    expect(screen.getByRole('button', { name: 'Submit' })).toHaveTextContent(
-      'Submit'
+    const submitButton = screen.getByRole('button', { name: 'Submit' })
+    expect(submitButton).toHaveTextContent('Submit')
+    expect(submitButton).toHaveAttribute('type', 'submit')
+  })
+
+  it('should have type="button" when submitEnabled is false', () => {
+    const buttonMock = {
+      ...block,
+      submitEnabled: false
+    }
+    render(
+      <MockedProvider>
+        <Button {...buttonMock} />
+      </MockedProvider>
     )
+    const button = screen.getByRole('button')
+    expect(button).toHaveAttribute('type', 'button')
+  })
+
+  it('should trigger form submission when clicked in a form context', () => {
+    const handleSubmit = jest.fn((e) => e.preventDefault())
+    const submitButtonMock = {
+      ...block,
+      label: 'Submit Form',
+      submitEnabled: true
+    }
+
+    render(
+      <MockedProvider>
+        <form onSubmit={handleSubmit} data-testid="test-form">
+          <Button {...submitButtonMock} />
+        </form>
+      </MockedProvider>
+    )
+
+    const submitButton = screen.getByRole('button', { name: 'Submit Form' })
+    expect(submitButton).toHaveAttribute('type', 'submit')
+
+    fireEvent.click(submitButton)
+    expect(handleSubmit).toHaveBeenCalledTimes(1)
   })
 })

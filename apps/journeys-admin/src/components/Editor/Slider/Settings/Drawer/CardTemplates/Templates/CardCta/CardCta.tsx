@@ -342,6 +342,7 @@ export function CardCta(): ReactElement {
       size: ButtonSize.large,
       startIconId: null,
       endIconId: null,
+      submitEnabled: null,
       action: null,
       __typename: 'ButtonBlock'
     } satisfies ButtonBlock
@@ -376,6 +377,7 @@ export function CardCta(): ReactElement {
       size: ButtonSize.large,
       startIconId: null,
       endIconId: null,
+      submitEnabled: null,
       action: null,
       __typename: 'ButtonBlock'
     } satisfies ButtonBlock
@@ -410,6 +412,7 @@ export function CardCta(): ReactElement {
       size: ButtonSize.large,
       startIconId: null,
       endIconId: null,
+      submitEnabled: null,
       action: null,
       __typename: 'ButtonBlock'
     } satisfies ButtonBlock
