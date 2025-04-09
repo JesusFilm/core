@@ -33,6 +33,18 @@ interface FilterFormProps {
   setSelectedEvents: (events: string[]) => void
 }
 
+/**
+ * Form component that allows users to select which journey events to export.
+ * Contains a list of checkboxes for regular events and collapsible video events.
+ * Features:
+ * - Select all/none functionality
+ * - Grouped video events with expand/collapse
+ * - Indeterminate state for video events group
+ * - Automatic event type conversion for export
+ *
+ * @param setSelectedEvents - Callback function to update the selected events array in the parent component
+ * @returns A form with checkboxes for selecting different types of journey events
+ */
 export function FilterForm({
   setSelectedEvents
 }: FilterFormProps): ReactElement {
