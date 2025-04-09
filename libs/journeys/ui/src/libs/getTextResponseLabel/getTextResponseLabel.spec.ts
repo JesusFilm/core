@@ -16,6 +16,7 @@ describe('getTextResponseLabel', () => {
     type: null,
     routeId: null,
     integrationId: null,
+    required: null,
     children: []
   }
 
