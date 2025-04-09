@@ -16,6 +16,7 @@ import {
 import { TreeBlock, useBlocks } from '../../libs/block'
 import { blurImage } from '../../libs/blurImage'
 import { getStepHeading } from '../../libs/getStepHeading'
+import { getTextResponseLabel } from '../../libs/getTextResponseLabel'
 import { useJourney } from '../../libs/JourneyProvider'
 import { JourneyPlausibleEvents } from '../../libs/plausibleHelpers'
 import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
@@ -198,10 +199,6 @@ export function Card({
   ): Promise<void> => {
     const { resetForm } = formikHelpers
     if (variant !== 'default' && variant !== 'embed') return
-    const heading =
-      activeBlock != null
-        ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t)
-        : t('None')
 
     const submissionPromises = textResponseBlocks.map((block) => {
       const blockId = block.id
@@ -209,6 +206,11 @@ export function Card({
       if (!responseValue || responseValue?.trim() === '')
         return Promise.resolve(null)
 
+      const heading =
+      activeBlock != null
+        ? (getTextResponseLabel(block) ??
+          getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t))
+        : t('None')
       const id = uuidv4()
       return textResponseSubmissionEventCreate({
         variables: {

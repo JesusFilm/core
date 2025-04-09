@@ -58,4 +58,5 @@ extend type Query {
     first: Int
     after: String
   ): JourneyEventsConnection!
+  journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter): Int!
 }

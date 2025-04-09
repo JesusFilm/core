@@ -4,7 +4,7 @@ import { GetAdminVideo as AdminVideo } from '../useAdminVideo'
 
 type Video = AdminVideo['adminVideo']
 
-const VideoContext = createContext<Video | undefined>(undefined)
+export const VideoContext = createContext<Video | undefined>(undefined)
 
 export function VideoProvider({
   children,
