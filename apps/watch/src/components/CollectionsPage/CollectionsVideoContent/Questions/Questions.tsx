@@ -18,13 +18,15 @@ interface QuestionsProps {
   questionsTitle?: string
   askButtonText?: string
   onOpenDialog?: () => void
+  contentId: string
 }
 
 export const Questions = ({
   questions,
   questionsTitle = 'Related questions',
   askButtonText = 'Ask yours',
-  onOpenDialog
+  onOpenDialog,
+  contentId
 }: QuestionsProps): ReactElement => {
   const [openQuestion, setOpenQuestion] = useState<number | null>(null)
   const { t } = useTranslation('apps-watch')
@@ -37,7 +39,8 @@ export const Questions = ({
     sendGTMEvent({
       event: 'easter_2025_ask_question_button_click',
       eventId: uuidv4(),
-      date: new Date().toISOString()
+      date: new Date().toISOString(),
+      contentId
     })
   }
 

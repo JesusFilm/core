@@ -84,9 +84,9 @@ export const CollectionsVideoContent = ({
           title={title}
           description={description}
         />
-
         {questions.length > 0 && (
           <Questions
+            contentId={contentId}
             questions={questions}
             questionsTitle={questionsTitle}
             askButtonText={askButtonText}
@@ -97,6 +97,7 @@ export const CollectionsVideoContent = ({
       {(bibleQuotes.length > 0 || freeResource) && (
         <>
           <BibleQuotesCarousel
+            contentId={contentId}
             bibleQuotes={bibleQuotes}
             bibleQuotesTitle={bibleQuotesTitle}
             freeResource={freeResource}
@@ -104,7 +105,7 @@ export const CollectionsVideoContent = ({
             shareButtonText={shareButtonText}
             shareDataTitle={shareDataTitle}
           />
-          <QuizButton buttonText={quizButtonText} />
+          <QuizButton buttonText={quizButtonText} contentId={contentId} />
         </>
       )}
     </div>

@@ -27,6 +27,7 @@ interface FreeResourceData {
 }
 
 interface BibleQuotesCarouselProps {
+  contentId: string
   bibleQuotes: BibleQuoteData[]
   bibleQuotesTitle: string
   freeResource?: FreeResourceData
@@ -36,6 +37,7 @@ interface BibleQuotesCarouselProps {
 }
 
 export function BibleQuotesCarousel({
+  contentId,
   bibleQuotes,
   bibleQuotesTitle,
   freeResource,
@@ -49,7 +51,8 @@ export function BibleQuotesCarousel({
     sendGTMEvent({
       event: 'easter_2025_join_study_button_click',
       eventId: uuidv4(),
-      date: new Date().toISOString()
+      date: new Date().toISOString(),
+      contentId
     })
   }
 
@@ -59,6 +62,7 @@ export function BibleQuotesCarousel({
       data-testid="bible-quotes-carousel"
     >
       <BibleQuotesCarouselHeader
+        contentId={contentId}
         bibleQuotesTitle={bibleQuotesTitle}
         shareButtonText={shareButtonText}
         shareDataTitle={shareDataTitle}

@@ -9,12 +9,14 @@ interface BibleQuotesCarouselHeaderProps {
   bibleQuotesTitle: string
   shareButtonText: string
   shareDataTitle: string
+  contentId: string
 }
 
 export function BibleQuotesCarouselHeader({
   bibleQuotesTitle,
   shareButtonText,
-  shareDataTitle
+  shareDataTitle,
+  contentId
 }: BibleQuotesCarouselHeaderProps): ReactElement {
   const { t } = useTranslation('apps-watch')
 
@@ -31,7 +33,8 @@ export function BibleQuotesCarouselHeader({
     sendGTMEvent({
       event: 'easter_2025_share_button_click',
       eventId: uuidv4(),
-      date: new Date().toISOString()
+      date: new Date().toISOString(),
+      contentId
     })
 
     if (navigator.share) {

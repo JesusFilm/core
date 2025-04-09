@@ -17,9 +17,13 @@ const QuizModal = dynamic(
 
 interface QuizButtonProps {
   buttonText: string
+  contentId: string
 }
 
-export const QuizButton = ({ buttonText }: QuizButtonProps): ReactElement => {
+export const QuizButton = ({
+  buttonText,
+  contentId
+}: QuizButtonProps): ReactElement => {
   const { t } = useTranslation('apps-watch')
 
   const [quizModalOpen, setQuizModalOpen] = useState<boolean | null>(null)
@@ -29,7 +33,8 @@ export const QuizButton = ({ buttonText }: QuizButtonProps): ReactElement => {
     sendGTMEvent({
       event: 'easter_2025_quiz_button_click',
       eventId: uuidv4(),
-      date: new Date().toISOString()
+      date: new Date().toISOString(),
+      contentId
     })
   }
 
