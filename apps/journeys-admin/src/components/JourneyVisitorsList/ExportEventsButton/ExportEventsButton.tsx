@@ -16,7 +16,7 @@ export function ExportEventsButton({
   journeyId
 }: ExportEventsButtonProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
-  const [exportJourneyEvents] = useJourneyEventsExport()
+  const [exportJourneyEvents, { downloading }] = useJourneyEventsExport()
 
   const handleExport = async (
     input: Pick<GetJourneyEventsVariables, 'journeyId' | 'filter'>
@@ -32,7 +32,10 @@ export function ExportEventsButton({
 
   return (
     <Box sx={{ display: { sm: 'block', md: 'none' } }}>
-      <IconButton onClick={() => handleExport({ journeyId })}>
+      <IconButton
+        onClick={() => handleExport({ journeyId })}
+        disabled={downloading}
+      >
         <Download2 />
       </IconButton>
     </Box>
