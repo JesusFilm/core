@@ -149,7 +149,8 @@ describe('JourneyEventService', () => {
           visitor: {
             id: 'visitor-1',
             name: 'Test Visitor',
-            email: 'visitor@test.com'
+            email: 'visitor@test.com',
+            phone: '1234567890'
           }
         },
         {
@@ -184,7 +185,8 @@ describe('JourneyEventService', () => {
           visitor: {
             id: 'visitor-1',
             name: 'Test Visitor',
-            email: 'visitor@test.com'
+            email: 'visitor@test.com',
+            phone: '1234567890'
           }
         },
         {
@@ -219,7 +221,8 @@ describe('JourneyEventService', () => {
           visitor: {
             id: 'visitor-1',
             name: 'Test Visitor',
-            email: 'visitor@test.com'
+            email: 'visitor@test.com',
+            phone: '1234567890'
           }
         }
       ]
@@ -269,7 +272,8 @@ describe('JourneyEventService', () => {
             select: {
               id: true,
               name: true,
-              email: true
+              email: true,
+              phone: true
             }
           }
         },
@@ -307,6 +311,10 @@ describe('JourneyEventService', () => {
               progress: 0.5,
               journeyVisitorJourneyId: 'journey-1',
               journeyVisitorVisitorId: 'visitor-1',
+              journeySlug: 'test-journey',
+              visitorName: 'Test Visitor',
+              visitorEmail: 'visitor@test.com',
+              visitorPhone: '1234567890',
               journey: {
                 id: 'journey-1',
                 slug: 'test-journey'
@@ -314,7 +322,8 @@ describe('JourneyEventService', () => {
               visitor: {
                 id: 'visitor-1',
                 name: 'Test Visitor',
-                email: 'visitor@test.com'
+                email: 'visitor@test.com',
+                phone: '1234567890'
               }
             },
             cursor: 'event-2'
@@ -345,6 +354,10 @@ describe('JourneyEventService', () => {
               progress: null,
               journeyVisitorJourneyId: 'journey-1',
               journeyVisitorVisitorId: 'visitor-1',
+              journeySlug: 'test-journey',
+              visitorName: 'Test Visitor',
+              visitorEmail: 'visitor@test.com',
+              visitorPhone: '1234567890',
               journey: {
                 id: 'journey-1',
                 slug: 'test-journey'
@@ -352,7 +365,8 @@ describe('JourneyEventService', () => {
               visitor: {
                 id: 'visitor-1',
                 name: 'Test Visitor',
-                email: 'visitor@test.com'
+                email: 'visitor@test.com',
+                phone: '1234567890'
               }
             },
             cursor: 'event-3'
@@ -419,7 +433,8 @@ describe('JourneyEventService', () => {
             select: {
               id: true,
               name: true,
-              email: true
+              email: true,
+              phone: true
             }
           }
         },
@@ -481,7 +496,8 @@ describe('JourneyEventService', () => {
           visitor: {
             id: 'visitor-1',
             name: 'Test Visitor',
-            email: 'visitor@test.com'
+            email: 'visitor@test.com',
+            phone: '1234567890'
           }
         },
         {
@@ -516,7 +532,8 @@ describe('JourneyEventService', () => {
           visitor: {
             id: 'visitor-1',
             name: 'Test Visitor',
-            email: 'visitor@test.com'
+            email: 'visitor@test.com',
+            phone: '1234567890'
           }
         }
       ]
