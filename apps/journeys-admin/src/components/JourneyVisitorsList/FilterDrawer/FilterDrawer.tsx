@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
 import Divider from '@mui/material/Divider'
 import FormControlLabel from '@mui/material/FormControlLabel'
@@ -9,9 +10,13 @@ import RadioGroup from '@mui/material/RadioGroup'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
+import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
 import X2Icon from '@core/shared/ui/icons/X2'
+
+import { GetJourneyEventsVariables } from '../../../../__generated__/GetJourneyEvents'
+import { useJourneyEventsExport } from '../../../libs/useJourneyEventsExport'
 
 import { ClearAllButton } from './ClearAllButton'
 
@@ -25,9 +30,11 @@ interface FilterDrawerProps {
   withIcon: boolean
   hideInteractive: boolean
   handleClearAll?: () => void
+  journeyId?: string
 }
 
 export function FilterDrawer({
+  journeyId,
   handleClose,
   handleChange,
   sortSetting,
@@ -39,8 +46,23 @@ export function FilterDrawer({
   handleClearAll
 }: FilterDrawerProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { enqueueSnackbar } = useSnackbar()
+  const { exportJourneyEvents } = useJourneyEventsExport()
+
+  const handleExport = async (
+    input: Pick<GetJourneyEventsVariables, 'journeyId' | 'filter'>
+  ): Promise<void> => {
+    try {
+      await exportJourneyEvents(input)
+    } catch (error) {
+      enqueueSnackbar(error.message, {
+        variant: 'error'
+      })
+    }
+  }
+
   return (
-    <Box sx={{ height: '100vh' }} data-testid="FilterDrawer">
+    <Stack sx={{ height: '100vh' }} data-testid="FilterDrawer">
       <Box sx={{ display: { sm: 'block', md: 'none' } }}>
         <Stack direction="row" sx={{ px: 6, py: 2 }} alignItems="center">
           <Typography variant="subtitle1">{t('Refine Results')}</Typography>
@@ -70,22 +92,22 @@ export function FilterDrawer({
           />
           <FormControlLabel
             control={<Checkbox />}
-            label={t('With Poll Answers')}
-            value="With Poll Answers"
+            label={t('Poll Answers')}
+            value="Poll Answers"
             onChange={handleChange}
             checked={withPollAnswers}
           />
           <FormControlLabel
             control={<Checkbox />}
-            label={t('With Submitted Text')}
-            value="With Submitted Text"
+            label={t('Submitted Text')}
+            value="Submitted Text"
             onChange={handleChange}
             checked={withSubmittedText}
           />
           <FormControlLabel
             control={<Checkbox />}
-            label={t('With Icon')}
-            value="With Icon"
+            label={t('Icon')}
+            value="Icon"
             onChange={handleChange}
             checked={withIcon}
           />
@@ -124,6 +146,19 @@ export function FilterDrawer({
           />
         </RadioGroup>
       </Box>
-    </Box>
+
+      {journeyId != null && (
+        <Box sx={{ px: 6, py: 5, mt: 'auto' }}>
+          <Button
+            variant="contained"
+            color="secondary"
+            fullWidth
+            onClick={() => handleExport({ journeyId })}
+          >
+            {t('Export Data')}
+          </Button>
+        </Box>
+      )}
+    </Stack>
   )
 }

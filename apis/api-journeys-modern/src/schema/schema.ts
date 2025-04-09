@@ -2,6 +2,7 @@
 // and object type in the schema
 
 import './mediaVideo'
+import './journeyEventsExportLog'
 
 import { builder } from './builder'
 

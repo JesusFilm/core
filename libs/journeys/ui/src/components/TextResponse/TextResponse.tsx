@@ -11,6 +11,7 @@ import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
+import { TextResponseType } from '../../../__generated__/globalTypes'
 import { useBlocks } from '../../libs/block'
 import type { TreeBlock } from '../../libs/block'
 import { useEditor } from '../../libs/EditorProvider'
@@ -61,7 +62,8 @@ export const TextResponse = ({
   label,
   placeholder,
   hint,
-  minRows
+  minRows,
+  type
 }: TextResponseProps): ReactElement => {
   const { t } = useTranslation('libs-journeys-ui')
 
@@ -137,7 +139,7 @@ export const TextResponse = ({
                   fontsize: 14
                 }}
               >
-                {label === '' ? 'Label' : label}
+                {label.trim() === '' ? 'Label' : label}
               </Typography>
               <TextField
                 id="textResponse-field"
@@ -162,6 +164,7 @@ export const TextResponse = ({
                     'aria-labelledby': 'textResponse-label',
                     maxLength: 1000,
                     readOnly: selectedBlock !== undefined,
+                    inputMode: type === TextResponseType.phone ? 'tel' : 'text',
                     sx: {
                       pointerEvents:
                         selectedBlock !== undefined ? 'none' : 'auto',

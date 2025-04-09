@@ -106,6 +106,14 @@
         ]
       }
     },
+    "prisma-resolve-squash": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx prisma migrate resolve --schema apis/api-media/db/schema.prisma --applied 000000000000_squashed_migrations"
+        ]
+      }
+    },
     "prisma-seed": {
       "executor": "nx:run-commands",
       "options": {
