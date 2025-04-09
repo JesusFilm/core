@@ -23,34 +23,40 @@ describe('eventAcl', () => {
 
   const eventUserTeamManager = subject('Event', {
     id: 'eventId',
-    visitor: {
+    journey: {
       team: {
         userTeams: [{ userId: user.id, role: UserTeamRole.manager }]
-      }
+      },
+      userJourneys: []
     }
   } as unknown as Event)
 
   const eventUserTeamMember = subject('Event', {
     id: 'eventId',
-    visitor: {
+    journey: {
       team: {
         userTeams: [{ userId: user.id, role: UserTeamRole.member }]
-      }
+      },
+      userJourneys: []
     }
   } as unknown as Event)
 
   const eventNoTeamRole = subject('Event', {
     id: 'eventId',
-    visitor: {
+    journey: {
       team: {
         userTeams: []
-      }
+      },
+      userJourneys: []
     }
   } as unknown as Event)
 
   const eventJourneyOwner = subject('Event', {
     id: 'eventId',
     journey: {
+      team: {
+        userTeams: []
+      },
       userJourneys: [
         {
           userId: user.id,
@@ -63,6 +69,9 @@ describe('eventAcl', () => {
   const eventJourneyEditor = subject('Event', {
     id: 'eventId',
     journey: {
+      team: {
+        userTeams: []
+      },
       userJourneys: [
         {
           userId: user.id,
@@ -75,10 +84,10 @@ describe('eventAcl', () => {
   const eventEmpty = subject('Event', {
     id: 'eventId',
     journey: {
+      team: {
+        userTeams: []
+      },
       userJourneys: []
-    },
-    visitor: {
-      team: { userTeams: [] }
     }
   } as unknown as Event)
 

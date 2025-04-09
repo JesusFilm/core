@@ -484,6 +484,7 @@ extend type Query {
   journeyCollection(id: ID!): JourneyCollection!
   journeyCollections(teamId: ID!): [JourneyCollection]!
   journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, first: Int, after: String): JourneyEventsConnection!
+  journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter): Int!
   getJourneyProfile: JourneyProfile
 
   """Get a list of Visitor Information by Journey"""
@@ -2364,8 +2365,12 @@ type JourneyEvent implements Event {
   visitorId: String
 
   """Related fields queried from relevant ids in the events table"""
-  journey: Journey
-  visitor: Visitor
+  journey: Journey @deprecated(reason: "Use specific fields instead")
+  visitor: Visitor @deprecated(reason: "Use specific fields instead")
+  journeySlug: String
+  visitorName: String
+  visitorEmail: String
+  visitorPhone: String
 }
 
 type JourneyEventEdge {
