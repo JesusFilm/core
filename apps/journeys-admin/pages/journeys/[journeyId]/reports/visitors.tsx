@@ -20,13 +20,13 @@ import {
 import { UserJourneyOpen } from '../../../../__generated__/UserJourneyOpen'
 import { HelpScoutBeacon } from '../../../../src/components/HelpScoutBeacon'
 import { JourneyVisitorsList } from '../../../../src/components/JourneyVisitorsList'
+import { ExportEventsButton } from '../../../../src/components/JourneyVisitorsList/ExportEventsButton'
 import { FilterDrawer } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/FilterDrawer'
 import { VisitorToolbar } from '../../../../src/components/JourneyVisitorsList/VisitorToolbar/VisitorToolbar'
 import { PageWrapper } from '../../../../src/components/PageWrapper'
 import { ReportsNavigation } from '../../../../src/components/ReportsNavigation'
 import { initAndAuthApp } from '../../../../src/libs/initAndAuthApp'
 import { GET_ADMIN_JOURNEY, USER_JOURNEY_OPEN } from '../../[journeyId]'
-import { ExportEventsButton } from '../../../../src/components/JourneyVisitorsList/ExportEventsButton'
 
 export const GET_JOURNEY_VISITORS = gql`
   query GetJourneyVisitors(

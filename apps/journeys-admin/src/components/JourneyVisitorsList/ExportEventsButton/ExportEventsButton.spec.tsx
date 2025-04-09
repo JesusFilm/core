@@ -1,12 +1,14 @@
-import { render, screen, waitFor } from '@testing-library/react'
-import { ExportEventsButton } from './ExportEventsButton'
 import { MockedProvider } from '@apollo/client/testing'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+
 import {
   getMockGetJourneyEventsCountQuery,
   mockCreateEventsExportLogMutation,
   mockGetJourneyEventsQuery
 } from '../../../libs/useJourneyEventsExport/useJourneyEventsExport.mock'
+
+import { ExportEventsButton } from './ExportEventsButton'
 
 const mockGetJourneyEventsCountQuery = getMockGetJourneyEventsCountQuery()
 
