@@ -14,6 +14,7 @@ jest.mock('@next/third-parties/google', () => ({
 
 describe('BibleQuotesCarouselHeader', () => {
   const defaultProps = {
+    contentId: '123',
     bibleQuotesTitle: 'Bible Quotes Title',
     shareButtonText: 'Share',
     shareDataTitle: 'Share Data Title'

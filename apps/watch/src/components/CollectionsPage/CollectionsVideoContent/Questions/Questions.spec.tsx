@@ -36,6 +36,7 @@ describe('Questions Component', () => {
     render(
       <Questions
         questions={mockQuestions}
+        contentId="123"
         questionsTitle="Test Questions"
         askButtonText="Ask Question"
         onOpenDialog={mockOnOpenDialog}
@@ -57,7 +58,13 @@ describe('Questions Component', () => {
 
   it('has the correct link', () => {
     render(
-      <Questions questions={mockQuestions} onOpenDialog={mockOnOpenDialog} />
+      <Questions
+        questions={mockQuestions}
+        contentId="123"
+        questionsTitle="Test Questions"
+        askButtonText="Ask Question"
+        onOpenDialog={mockOnOpenDialog}
+      />
     )
 
     const link = screen.getByRole('link')
@@ -69,7 +76,13 @@ describe('Questions Component', () => {
 
   it('toggles questions when clicked', () => {
     render(
-      <Questions questions={mockQuestions} onOpenDialog={mockOnOpenDialog} />
+      <Questions
+        questions={mockQuestions}
+        contentId="123"
+        questionsTitle="Test Questions"
+        askButtonText="Ask Question"
+        onOpenDialog={mockOnOpenDialog}
+      />
     )
 
     const toggleButtons = screen.getAllByTestId('toggle-button')
