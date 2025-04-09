@@ -28,12 +28,14 @@ interface VideoPlayerProps {
   title?: string
   mutePage?: boolean
   setMutePage?: (muted: boolean) => void
+  startAt?: number
 }
 
 export function CollectionVideoPlayer({
   contentId,
   mutePage,
-  setMutePage
+  setMutePage,
+  startAt
 }: VideoPlayerProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   const containerRef = useRef<HTMLDivElement>(null)
@@ -265,6 +267,13 @@ export function CollectionVideoPlayer({
             src: videoData.content.variant.hls,
             type: 'application/x-mpegURL'
           })
+
+          if (startAt != null)
+            newPlayer.one('loadedmetadata', () => {
+              if (startAt > 0) {
+                newPlayer.currentTime(startAt / 1000)
+              }
+            })
         }
       })
 
@@ -273,14 +282,13 @@ export function CollectionVideoPlayer({
   }, [videoData, contentId, player, isPlayerReady])
 
   return (
-    <div
-      className="relative mb-4 padded cursor-pointer"
-      ref={containerRef}
-      onClick={handlePlayPause}
-    >
+    <div className="relative mb-4 padded cursor-pointer" ref={containerRef}>
       <div className="beveled block relative aspect-video rounded-lg overflow-hidden bg-black shadow-2xl shadow-stone-950/70">
         {/* Video container */}
-        <div className="absolute inset-0 w-full h-full">
+        <div
+          className="absolute inset-0 w-full h-full"
+          onClick={handlePlayPause}
+        >
           <video
             className="video-js vjs-fluid vjs-default-skin absolute inset-0 w-full h-full object-cover"
             ref={videoRef}
