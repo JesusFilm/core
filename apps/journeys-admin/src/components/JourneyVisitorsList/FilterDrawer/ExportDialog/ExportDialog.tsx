@@ -261,17 +261,13 @@ export function ExportDialog({
         </Button>
       }
     >
-      <Box sx={{ pb: 4 }}>
-        <Box sx={{ pb: 2, pt: 4, width: '100%' }}>
-          <DateRangePicker
-            startDate={startDate}
-            endDate={endDate}
-            onStartDateChange={setStartDate}
-            onEndDateChange={setEndDate}
-          />
-        </Box>
-      </Box>
-      <Box>
+      <DateRangePicker
+        startDate={startDate}
+        endDate={endDate}
+        onStartDateChange={setStartDate}
+        onEndDateChange={setEndDate}
+      />
+      <Box sx={{ pt: 4 }}>
         <Typography variant="subtitle2" gutterBottom>
           {t('Select visitor actions')}
         </Typography>
