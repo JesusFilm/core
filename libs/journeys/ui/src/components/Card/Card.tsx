@@ -2,7 +2,7 @@ import { ApolloError, gql, useMutation } from '@apollo/client'
 import Paper from '@mui/material/Paper'
 import { styled, useTheme } from '@mui/material/styles'
 import { sendGTMEvent } from '@next/third-parties/google'
-import { Form, Formik, FormikValues } from 'formik'
+import { Form, Formik, FormikHelpers, FormikValues } from 'formik'
 import { useTranslation } from 'next-i18next'
 import { usePlausible } from 'next-plausible'
 import { useSnackbar } from 'notistack'
@@ -189,9 +189,14 @@ export function Card({
    * Submits all text response values to the server and tracks analytics events.
    *
    * @param {FormikValues} values - The form values to submit
+   * @param {FormikHelpers<FormikValues>} formikHelpers - Formik helpers for resetForm
    * @returns {Promise<void>} A promise that resolves when all submissions are complete
    */
-  const handleFormSubmit = async (values: FormikValues): Promise<void> => {
+  const handleFormSubmit = async (
+    values: FormikValues,
+    formikHelpers: FormikHelpers<FormikValues>
+  ): Promise<void> => {
+    const { resetForm } = formikHelpers
     if (variant !== 'default' && variant !== 'embed') return
     const heading =
       activeBlock != null
@@ -225,12 +230,16 @@ export function Card({
         return id
       })
     })
-    await Promise.all(submissionPromises).catch((e) => {
-      if (e instanceof ApolloError)
-        enqueueSnackbar(e.message, {
-          variant: 'error'
-        })
-    })
+    await Promise.all(submissionPromises)
+      .then(() => {
+        resetForm()
+      })
+      .catch((e) => {
+        if (e instanceof ApolloError)
+          enqueueSnackbar(e.message, {
+            variant: 'error'
+          })
+      })
   }
 
   // should always be called with nextActiveBlock()
@@ -397,11 +406,15 @@ export function Card({
       onSubmit={handleFormSubmit}
       validationSchema={validationSchema}
       enableReinitialize
+      validateOnChange
     >
       {({ handleSubmit }) => (
         <StyledForm
           data-testid={`card-form-${id}`}
-          onSubmit={handleSubmit}
+          onSubmit={(e) => {
+            e.preventDefault()
+            handleSubmit()
+          }}
           sx={{
             height: '100%',
             width: '100%',
