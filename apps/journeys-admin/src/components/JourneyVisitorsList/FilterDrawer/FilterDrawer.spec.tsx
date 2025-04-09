@@ -5,20 +5,16 @@ import { GraphQLError } from 'graphql'
 import { SnackbarProvider } from 'notistack'
 
 import {
-  CreateEventsExportLog,
-  CreateEventsExportLogVariables
-} from '../../../../__generated__/CreateEventsExportLog'
-import {
   GetJourneyEvents,
   GetJourneyEventsVariables
 } from '../../../../__generated__/GetJourneyEvents'
-import { ButtonAction } from '../../../../__generated__/globalTypes'
-
 import {
-  CREATE_EVENTS_EXPORT_LOG,
-  FilterDrawer,
+  FILTERED_EVENTS,
   GET_JOURNEY_EVENTS_EXPORT
-} from './FilterDrawer'
+} from '../../../libs/useJourneyEventsExport/useJourneyEventsExport'
+import { mockCreateEventsExportLogMutation } from '../../../libs/useJourneyEventsExport/useJourneyEventsExport.mock'
+
+import { FilterDrawer } from './FilterDrawer'
 
 const getJourneyEventsMock: MockedResponse<
   GetJourneyEvents,
@@ -27,9 +23,12 @@ const getJourneyEventsMock: MockedResponse<
   request: {
     query: GET_JOURNEY_EVENTS_EXPORT,
     variables: {
-      journeyId: '123',
+      journeyId: 'journey1',
+      filter: {
+        typenames: FILTERED_EVENTS
+      },
       after: null,
-      first: 50
+      first: 20000
     }
   },
   result: jest.fn(() => ({
@@ -39,58 +38,46 @@ const getJourneyEventsMock: MockedResponse<
         edges: [
           {
             __typename: 'JourneyEventEdge',
+            cursor: 'cursor1',
             node: {
               __typename: 'JourneyEvent',
-              id: '123',
               journeyId: '123',
-              createdAt: '2021-01-01',
+              visitorId: 'visitor.id',
               label: 'Test',
               value: 'Test',
-              action: null,
-              actionValue: null,
-              messagePlatform: null,
-              language: null,
-              email: null,
-              blockId: null,
-              position: null,
-              source: null,
-              progress: null,
               typename: 'StepViewEvent',
-              visitorId: 'visitor.id',
-              visitor: null,
+              progress: null,
+              messagePlatform: null,
               journey: {
                 __typename: 'Journey',
-                id: '123',
-                title: 'Test Journey',
                 slug: 'test-journey'
+              },
+              visitor: {
+                __typename: 'Visitor',
+                email: 'test@example.com',
+                name: 'Test User'
               }
             }
           },
           {
             __typename: 'JourneyEventEdge',
+            cursor: 'cursor2',
             node: {
               __typename: 'JourneyEvent',
-              id: '123',
               journeyId: '123',
-              createdAt: '2021-01-01',
               label: 'Test',
               value: 'Test',
-              action: ButtonAction.NavigateToBlockAction,
-              actionValue: 'nextBlock',
               messagePlatform: null,
-              language: null,
-              email: null,
-              blockId: null,
-              position: null,
-              source: null,
               progress: null,
               typename: 'StepViewEvent',
               visitorId: 'visitor.id',
-              visitor: null,
+              visitor: {
+                __typename: 'Visitor',
+                email: 'test@example.com',
+                name: 'Test User'
+              },
               journey: {
                 __typename: 'Journey',
-                id: '123',
-                title: 'Test Journey',
                 slug: 'test-journey'
               }
             }
@@ -99,8 +86,8 @@ const getJourneyEventsMock: MockedResponse<
         pageInfo: {
           hasNextPage: false,
           hasPreviousPage: false,
-          startCursor: 'ace21868-f605-4b2c-8a4d-c8c8b5947b49',
-          endCursor: 'de0c1bf8-d43b-40a9-b7d3-9368cc870263',
+          startCursor: 'cursor1',
+          endCursor: 'cursor2',
           __typename: 'PageInfo'
         }
       }
@@ -108,30 +95,8 @@ const getJourneyEventsMock: MockedResponse<
   }))
 }
 
-const createEventsExportLogMock: MockedResponse<
-  CreateEventsExportLog,
-  CreateEventsExportLogVariables
-> = {
-  request: {
-    query: CREATE_EVENTS_EXPORT_LOG,
-    variables: {
-      input: {
-        journeyId: '123',
-        eventsFilter: []
-      }
-    }
-  },
-  result: jest.fn(() => ({
-    data: {
-      createJourneyEventsExportLog: {
-        __typename: 'JourneyEventsExportLog',
-        id: '123'
-      }
-    }
-  }))
-}
 const props = {
-  journeyId: '123',
+  journeyId: 'journey1',
   chatStarted: false,
   withPollAnswers: false,
   withSubmittedText: false,
@@ -163,12 +128,12 @@ describe('FilterDrawer', () => {
 
     fireEvent.click(screen.getByText('Chat Started'))
     expect(handleChange).toHaveReturnedWith('Chat Started')
-    fireEvent.click(screen.getByText('With Poll Answers'))
-    expect(handleChange).toHaveReturnedWith('With Poll Answers')
-    fireEvent.click(screen.getByText('With Submitted Text'))
-    expect(handleChange).toHaveReturnedWith('With Submitted Text')
-    fireEvent.click(screen.getByText('With Icon'))
-    expect(handleChange).toHaveReturnedWith('With Icon')
+    fireEvent.click(screen.getByText('Poll Answers'))
+    expect(handleChange).toHaveReturnedWith('Poll Answers')
+    fireEvent.click(screen.getByText('Submitted Text'))
+    expect(handleChange).toHaveReturnedWith('Submitted Text')
+    fireEvent.click(screen.getByText('Icon'))
+    expect(handleChange).toHaveReturnedWith('Icon')
     fireEvent.click(screen.getByText('Hide Inactive'))
     expect(handleChange).toHaveReturnedWith('Hide Inactive')
     fireEvent.click(screen.getByText('Duration'))
@@ -217,9 +182,16 @@ describe('FilterDrawer', () => {
     })
 
     it('should fetch data when export button is clicked', async () => {
+      const mutationResult = jest.fn(() => ({
+        ...mockCreateEventsExportLogMutation.result
+      }))
+
       render(
         <MockedProvider
-          mocks={[getJourneyEventsMock, createEventsExportLogMock]}
+          mocks={[
+            getJourneyEventsMock,
+            { ...mockCreateEventsExportLogMutation, result: mutationResult }
+          ]}
         >
           <FilterDrawer {...props} />
         </MockedProvider>
@@ -232,7 +204,7 @@ describe('FilterDrawer', () => {
       await waitFor(() => {
         expect(getJourneyEventsMock.result).toHaveBeenCalled()
       })
-      expect(createEventsExportLogMock.result).toHaveBeenCalled()
+      expect(mutationResult).toHaveBeenCalled()
     })
 
     it('should download the csv file', async () => {
@@ -245,7 +217,7 @@ describe('FilterDrawer', () => {
 
       render(
         <MockedProvider
-          mocks={[getJourneyEventsMock, createEventsExportLogMock]}
+          mocks={[getJourneyEventsMock, mockCreateEventsExportLogMutation]}
         >
           <FilterDrawer {...props} />
         </MockedProvider>
@@ -263,6 +235,9 @@ describe('FilterDrawer', () => {
     })
 
     it('should show an error if no data is found', async () => {
+      const mutationResult = jest.fn(() => ({
+        ...mockCreateEventsExportLogMutation.result
+      }))
       const getJourneyEventsErrorMock = {
         ...getJourneyEventsMock,
         result: jest.fn(() => ({
@@ -277,7 +252,10 @@ describe('FilterDrawer', () => {
       render(
         <SnackbarProvider>
           <MockedProvider
-            mocks={[getJourneyEventsErrorMock, createEventsExportLogMock]}
+            mocks={[
+              getJourneyEventsErrorMock,
+              { ...mockCreateEventsExportLogMutation, result: mutationResult }
+            ]}
           >
             <FilterDrawer {...props} />
           </MockedProvider>
@@ -291,7 +269,7 @@ describe('FilterDrawer', () => {
       expect(
         screen.getByText('Failed to retrieve data for export.')
       ).toBeInTheDocument()
-      expect(createEventsExportLogMock.result).not.toHaveBeenCalled()
+      expect(mutationResult).not.toHaveBeenCalled()
     })
   })
 })
