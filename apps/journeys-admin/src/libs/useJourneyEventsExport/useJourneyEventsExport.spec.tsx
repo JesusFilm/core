@@ -172,15 +172,10 @@ describe('useJourneyEventsExport', () => {
                   value: 'Value 2',
                   typename: 'ButtonClickEvent',
                   progress: null,
-                  journey: {
-                    __typename: 'Journey',
-                    slug: 'test-journey'
-                  },
-                  visitor: {
-                    __typename: 'Visitor',
-                    email: 'test2@example.com',
-                    name: 'User 2'
-                  }
+                  journeySlug: 'test-journey',
+                  visitorName: 'Test User 2',
+                  visitorEmail: 'test2@example.com',
+                  visitorPhone: '1234567890'
                 }
               }
             ],
