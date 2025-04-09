@@ -342,7 +342,7 @@ describe('CardBlock', () => {
           id: 'uuid',
           blockId: 'textResponseBlockId',
           stepId: 'step1.id',
-          label: 'Step {{number}}',
+          label: 'Text Response',
           value: 'Test response'
         }
       }
