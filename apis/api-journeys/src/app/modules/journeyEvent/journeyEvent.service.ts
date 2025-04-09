@@ -87,7 +87,8 @@ export class JourneyEventService {
           select: {
             id: true,
             name: true,
-            email: true
+            email: true,
+            phone: true
           }
         }
       },
@@ -102,11 +103,16 @@ export class JourneyEventService {
       edges: sendResult.map((event) => ({
         node: {
           ...event,
-          journeyId: event.journeyId ?? journeyId,
+          journeyId: event.journey?.id ?? journeyId,
+          visitorId: event.visitor?.id ?? null,
           createdAt: event.createdAt.toISOString(),
           action: event.action as ButtonAction,
           messagePlatform: event.messagePlatform as MessagePlatform,
           source: event.source as VideoBlockSource,
+          journeySlug: event.journey?.slug,
+          visitorName: event.visitor?.name,
+          visitorEmail: event.visitor?.email,
+          visitorPhone: event.visitor?.phone,
           journey: event.journey as unknown as Journey,
           visitor: event.visitor as unknown as Visitor
         },
