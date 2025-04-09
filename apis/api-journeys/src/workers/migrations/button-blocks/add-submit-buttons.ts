@@ -11,81 +11,98 @@ import {
 const prisma = new PrismaClient()
 
 interface Stats {
-  journeysProcessed: number
   cardsModified: number
   buttonsAdded: number
 }
 
 async function main(): Promise<void> {
   const stats: Stats = {
-    journeysProcessed: 0,
     cardsModified: 0,
     buttonsAdded: 0
   }
 
   try {
-    // Get all journeys with their blocks
-    const journeys = await prisma.journey.findMany({
+    // Get all cards that have child blocks
+    const cards = await prisma.block.findMany({
+      where: {
+        typename: 'CardBlock',
+        childBlocks: {
+          some: {} // Has at least one child block
+        }
+      },
       include: {
-        blocks: true
+        childBlocks: true // Include child blocks to check their types
       }
     })
 
-    stats.journeysProcessed = journeys.length
-
-    for (const journey of journeys) {
-      // Get all cards in the journey
-      const cards = journey.blocks.filter(
-        (block) => block.typename === 'CardBlock'
+    for (const card of cards) {
+      // Check if card has text response block but no button
+      const hasTextResponse = card.childBlocks.some(
+        (block) => block.typename === 'TextResponseBlock'
+      )
+      const hasButton = card.childBlocks.some(
+        (block) => block.typename === 'ButtonBlock'
       )
 
-      for (const card of cards) {
-        // Get all blocks in this card
-        const cardBlocks = journey.blocks.filter(
-          (block) => block.parentBlockId === card.id
-        )
+      if (hasTextResponse && !hasButton) {
+        // Create button block with required input structure
+        const buttonId = uuidv4()
+        const startIconId = uuidv4()
+        const endIconId = uuidv4()
 
-        // Check if card has text response block but no button
-        const hasTextResponse = cardBlocks.some(
-          (block) => block.typename === 'TextResponseBlock'
-        )
-        const hasButton = cardBlocks.some(
-          (block) => block.typename === 'ButtonBlock'
-        )
+        // Create start icon block
+        await prisma.block.create({
+          data: {
+            id: startIconId,
+            journeyId: card.journeyId,
+            typename: 'IconBlock',
+            parentBlockId: buttonId
+          }
+        })
 
-        if (hasTextResponse && !hasButton) {
-          // Create new button block
-          const button = {
-            id: uuidv4(),
-            journeyId: journey.id,
+        // Create end icon block
+        await prisma.block.create({
+          data: {
+            id: endIconId,
+            journeyId: card.journeyId,
+            typename: 'IconBlock',
+            parentBlockId: buttonId
+          }
+        })
+
+        // Create button block
+        await prisma.block.create({
+          data: {
+            id: buttonId,
+            journeyId: card.journeyId,
             typename: 'ButtonBlock',
             parentBlockId: card.id,
-            parentOrder: cardBlocks.length,
+            parentOrder: card.childBlocks.length,
             label: '',
             variant: ButtonVariant.contained,
             color: ButtonColor.primary,
             size: ButtonSize.medium,
-            startIconId: uuidv4(),
-            endIconId: uuidv4(),
-            action: null,
             submitEnabled: true
           }
+        })
 
-          // Add button to database
-          await prisma.block.create({
-            data: button
-          })
+        // Update button with icon references
+        await prisma.block.update({
+          where: { id: buttonId },
+          data: {
+            startIconId,
+            endIconId
+          }
+        })
 
-          stats.cardsModified++
-          stats.buttonsAdded++
-        }
+        stats.cardsModified++
+        stats.buttonsAdded++
       }
     }
 
     // Log summary
     console.log('Migration completed successfully!')
     console.log('Summary:')
-    console.log(`- Journeys processed: ${stats.journeysProcessed}`)
     console.log(`- Cards modified: ${stats.cardsModified}`)
     console.log(`- Submit buttons added: ${stats.buttonsAdded}`)
   } catch (error) {
