@@ -1695,8 +1695,12 @@ type JourneyEvent implements Event @join__type(graph: API_JOURNEYS)  @join__impl
   """
   Related fields queried from relevant ids in the events table
   """
-  journey: Journey
-  visitor: Visitor
+  journey: Journey @deprecated(reason: "Use specific fields instead") 
+  visitor: Visitor @deprecated(reason: "Use specific fields instead") 
+  journeySlug: String
+  visitorName: String
+  visitorEmail: String
+  visitorPhone: String
 }
 
 type JourneyEventEdge @join__type(graph: API_JOURNEYS)  {

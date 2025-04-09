@@ -892,9 +892,13 @@ export type JourneyEvent = Event & {
   email?: Maybe<Scalars['String']['output']>;
   /** Base event fields from Event interface */
   id: Scalars['ID']['output'];
-  /** Related fields queried from relevant ids in the events table */
+  /**
+   * Related fields queried from relevant ids in the events table
+   * @deprecated Use specific fields instead
+   */
   journey?: Maybe<Journey>;
   journeyId: Scalars['ID']['output'];
+  journeySlug?: Maybe<Scalars['String']['output']>;
   label?: Maybe<Scalars['String']['output']>;
   language?: Maybe<Language>;
   messagePlatform?: Maybe<MessagePlatform>;
@@ -904,8 +908,12 @@ export type JourneyEvent = Event & {
   /** database fields from table, not explicitly surfaced from any other types */
   typename?: Maybe<Scalars['String']['output']>;
   value?: Maybe<Scalars['String']['output']>;
+  /** @deprecated Use specific fields instead */
   visitor?: Maybe<Visitor>;
+  visitorEmail?: Maybe<Scalars['String']['output']>;
   visitorId?: Maybe<Scalars['String']['output']>;
+  visitorName?: Maybe<Scalars['String']['output']>;
+  visitorPhone?: Maybe<Scalars['String']['output']>;
 };
 
 export type JourneyEventEdge = {
