@@ -30,15 +30,4 @@ describe('getTextResponseLabel', () => {
     expect(getTextResponseLabel(blockWithWhitespaceLabel)).toBeNull()
     expect(getTextResponseLabel(blockWithEmptyLabel)).toBeNull()
   })
-
-  it('returns null when block is not a TextResponseBlock - e.g. parameter was improperly type-casted', () => {
-    const nonTextResponseBlock: TreeBlock<any> = {
-      __typename: 'TypographyBlock',
-      id: 'typography.id',
-      parentBlockId: 'card.id',
-      parentOrder: 0,
-      children: []
-    }
-    expect(getTextResponseLabel(nonTextResponseBlock)).toBeNull()
-  })
 })

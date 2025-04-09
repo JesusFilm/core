@@ -14,7 +14,6 @@ import {
   StepPreviousEventCreateInput
 } from '../../../__generated__/globalTypes'
 import { TreeBlock, useBlocks } from '../../libs/block'
-import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../libs/block/__generated__/BlockFields'
 import { blurImage } from '../../libs/blurImage'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { getTextResponseLabel } from '../../libs/getTextResponseLabel'
