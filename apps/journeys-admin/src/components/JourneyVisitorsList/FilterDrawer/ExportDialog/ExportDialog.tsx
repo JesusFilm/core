@@ -111,9 +111,7 @@ export function ExportDialog({
         <Typography variant="subtitle2" gutterBottom>
           {t('Select visitor actions')}
         </Typography>
-        <Stack spacing={2}>
-          <FilterForm setSelectedEvents={setSelectedEvents} />
-        </Stack>
+        <FilterForm setSelectedEvents={setSelectedEvents} />
       </Box>
     </Dialog>
   )
