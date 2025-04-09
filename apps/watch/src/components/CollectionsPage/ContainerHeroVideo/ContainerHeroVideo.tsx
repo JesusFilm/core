@@ -57,6 +57,10 @@ export function ContainerHeroVideo({
       onMutedChange(player.muted() ?? true)
     })
 
+    void player.src(
+      'https://stream.mux.com/J3WBxqGgXxi01201FYmW0202ayeL7PGXfuuXR02nvjQCE7bI.m3u8'
+    )
+
     return () => {
       if (playerRef.current) {
         playerRef.current.dispose()
