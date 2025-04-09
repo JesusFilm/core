@@ -41,7 +41,7 @@ import { ContainedCover } from './ContainedCover'
 import { ExpandedCover } from './ExpandedCover'
 import { getFormInitialValues } from './utils/getFormInitialValues'
 import { getTextResponseBlocks } from './utils/getTextResponseBlocks'
-import { getValidationSchema } from './utils/getValidationSchema'
+import { getValidationSchema } from './utils/getValidationSchema/getValidationSchema'
 
 export const STEP_NEXT_EVENT_CREATE = gql`
   mutation StepNextEventCreate($input: StepNextEventCreateInput!) {

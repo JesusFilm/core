@@ -1,11 +1,10 @@
 import { TFunction } from 'next-i18next'
 import { object, string } from 'yup'
 
-import { TextResponseType } from '../../../../__generated__/globalTypes'
-import { TreeBlock } from '../../../libs/block'
-import { TextResponseFields } from '../../TextResponse/__generated__/TextResponseFields'
-
-import { getTextResponseBlocks } from './getTextResponseBlocks'
+import { TextResponseType } from '../../../../../__generated__/globalTypes'
+import { TreeBlock } from '../../../../libs/block'
+import { TextResponseFields } from '../../../TextResponse/__generated__/TextResponseFields'
+import { getTextResponseBlocks } from '../getTextResponseBlocks'
 
 /**
  * Builds a Yup validation schema for TextResponse blocks in a card
