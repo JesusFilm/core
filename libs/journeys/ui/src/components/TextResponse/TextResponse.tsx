@@ -86,6 +86,8 @@ export const TextResponse = ({
 
   const initialValues: TextResponseFormValues = { response: '' }
 
+  const trimmedPlaceholder = placeholder != null ? placeholder.trim().replace(/\s+/g, ' ') : ''
+
   const onSubmitHandler = async (
     values: TextResponseFormValues
   ): Promise<void> => {
@@ -144,7 +146,7 @@ export const TextResponse = ({
               <TextField
                 id="textResponse-field"
                 name="response"
-                placeholder={placeholder != null ? placeholder : ''}
+                placeholder={trimmedPlaceholder}
                 value={values.response}
                 helperText={hint != null ? hint : ''}
                 multiline

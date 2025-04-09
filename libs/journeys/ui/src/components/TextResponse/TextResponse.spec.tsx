@@ -319,6 +319,46 @@ describe('TextResponse', () => {
     )
   })
 
+  it('should show placeholder text with only one whitespace inbetween words', () => {
+    const blockWithPlaceholder: TreeBlock<TextResponseFields> = {
+      ...block,
+      placeholder: '     Enter      your      thoughts      here     '
+    }
+
+    render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <JourneyProvider>
+          <SnackbarProvider>
+            <TextResponse {...blockWithPlaceholder} uuid={() => 'uuid'} />
+          </SnackbarProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByRole('textbox')).toHaveAttribute(
+      'placeholder',
+      'Enter your thoughts here'
+    )
+  })
+
+    it('should show empty placeholder text if placeholder is null', () => {
+
+    render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <JourneyProvider>
+          <SnackbarProvider>
+            <TextResponse {...block} uuid={() => 'uuid'} />
+          </SnackbarProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByRole('textbox')).toHaveAttribute(
+      'placeholder',
+      ''
+    )
+  })
+
   it('should not allow selection in editor', () => {
     const { getAllByRole } = render(
       <JourneyProvider>
