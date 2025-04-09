@@ -242,6 +242,7 @@ export function Button({
 
   const handleClick = async (e: MouseEvent): Promise<void> => {
     e.stopPropagation()
+    if (formik == null) return
 
     if (isEmptyForm()) {
       e.preventDefault()
