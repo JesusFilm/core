@@ -1,7 +1,9 @@
+import { sendGTMEvent } from '@next/third-parties/google'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
+import { v4 as uuidv4 } from 'uuid'
 
 import { Icon } from '@core/shared/ui/icons/Icon'
 
@@ -42,6 +44,14 @@ export function BibleQuotesCarousel({
   shareDataTitle
 }: BibleQuotesCarouselProps): ReactElement {
   const { t } = useTranslation('apps-watch')
+
+  function handleShareClick() {
+    sendGTMEvent({
+      event: 'easter_2025_join_study_button_click',
+      eventId: uuidv4(),
+      date: new Date().toISOString()
+    })
+  }
 
   return (
     <div
@@ -111,6 +121,7 @@ export function BibleQuotesCarousel({
                   aria-label="Join Bible study"
                   tabIndex={0}
                   className="inline-flex items-center gap-2 px-4 py-2 text-sm text-black font-bold uppercase tracking-wider rounded-full bg-white hover:bg-white/80 transition-colors duration-200 cursor-pointer"
+                  onClick={handleShareClick}
                 >
                   <Icon
                     name="Bible"

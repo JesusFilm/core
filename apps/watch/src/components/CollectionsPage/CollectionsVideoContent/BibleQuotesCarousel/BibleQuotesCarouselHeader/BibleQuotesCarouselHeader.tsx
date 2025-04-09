@@ -1,5 +1,7 @@
+import { sendGTMEvent } from '@next/third-parties/google'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 
 import { Icon } from '@core/shared/ui/icons/Icon'
 
@@ -25,6 +27,12 @@ export function BibleQuotesCarouselHeader({
       title: shareDataTitle,
       text: ''
     }
+
+    sendGTMEvent({
+      event: 'easter_2025_share_button_click',
+      eventId: uuidv4(),
+      date: new Date().toISOString()
+    })
 
     if (navigator.share) {
       await navigator.share(shareData)

@@ -8,6 +8,8 @@ jest.mock('next-i18next', () => ({
   })
 }))
 
+jest.mock('@next/third-parties/google')
+
 describe('BibleQuotesCarousel', () => {
   const mockBibleQuotes = [
     {

@@ -8,6 +8,10 @@ jest.mock('next-i18next', () => ({
   })
 }))
 
+jest.mock('@next/third-parties/google', () => ({
+  sendGTMEvent: jest.fn()
+}))
+
 jest.mock('./Question', () => ({
   Question: ({ children, question, isOpen, onToggle }: any) => (
     <div data-testid="question-component">

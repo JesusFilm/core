@@ -1,6 +1,7 @@
-import Box from '@mui/material/Box'
+import { sendGTMEvent } from '@next/third-parties/google'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 
 import { Icon } from '@core/shared/ui/icons/Icon'
 
@@ -32,6 +33,14 @@ export const Questions = ({
     setOpenQuestion(openQuestion === id ? null : id)
   }
 
+  function handleAskQuestionClick() {
+    sendGTMEvent({
+      event: 'easter_2025_ask_question_button_click',
+      eventId: uuidv4(),
+      date: new Date().toISOString()
+    })
+  }
+
   return (
     <div className="xl:w-2/5">
       <div className="questions-block pt-16 xl:pt-4">
@@ -45,6 +54,7 @@ export const Questions = ({
             target="_blank"
           >
             <button
+              onClick={handleAskQuestionClick}
               data-testid="AskQuestionButton"
               rel="noopener noreferrer"
               aria-label="Ask a question"
