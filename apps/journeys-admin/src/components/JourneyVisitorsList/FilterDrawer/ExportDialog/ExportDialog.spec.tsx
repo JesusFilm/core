@@ -7,8 +7,8 @@ import { ReactElement } from 'react'
 
 import { EventType } from '../../../../../__generated__/globalTypes'
 import { useJourneyEventsExport } from '../../../../libs/useJourneyEventsExport'
-import { DateRangePickerProps } from '../../../DateRangePicker'
 
+import { DateRangePickerProps } from './DateRangePicker'
 import { ExportDialog } from './ExportDialog'
 
 jest.mock('../../../../libs/useJourneyEventsExport', () => ({

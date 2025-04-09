@@ -37,7 +37,7 @@ export function CheckboxOption({
           onChange={(e) => onChange(e.target.checked)}
         />
       }
-      label={t(label)}
+      label={label}
       onClick={onClick}
     />
   )
