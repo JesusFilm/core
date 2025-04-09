@@ -122,5 +122,31 @@ describe('FilterDrawer', () => {
         expect(screen.getByText('Export Analytics')).toBeInTheDocument()
       })
     })
+
+    it('closes the export dialog when the dialog close button is clicked', async () => {
+      const user = userEvent.setup()
+      render(
+        <SnackbarProvider>
+          <MockedProvider mocks={[mockJourneyCreatedAt]}>
+            <FilterDrawer {...props} />
+          </MockedProvider>
+        </SnackbarProvider>
+      )
+
+      // Open the dialog
+      const exportButton = screen.getByRole('button', { name: 'Export Data' })
+      await user.click(exportButton)
+      await waitFor(() => {
+        expect(screen.getByText('Export Analytics')).toBeInTheDocument()
+      })
+
+      const closeButton = screen.getByTestId('dialog-close-button')
+      await user.click(closeButton)
+
+      // Check dialog is closed after click
+      await waitFor(() => {
+        expect(screen.queryByText('Export Analytics')).not.toBeInTheDocument()
+      })
+    })
   })
 })
