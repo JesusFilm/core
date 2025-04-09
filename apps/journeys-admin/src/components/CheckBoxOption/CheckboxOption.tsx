@@ -11,6 +11,14 @@ interface CheckboxOptionProps {
   indeterminate?: boolean
 }
 
+/**
+ * A reusable checkbox component that combines MUI Checkbox with FormControlLabel
+ * @param checked - Whether the checkbox is checked
+ * @param onChange - Callback fired when checkbox state changes
+ * @param label - Text label for the checkbox (will be translated)
+ * @param onClick - Optional click handler for the entire component
+ * @param indeterminate - Optional flag for indeterminate state (partially checked)
+ */
 export function CheckboxOption({
   checked,
   onChange,

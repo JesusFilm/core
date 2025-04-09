@@ -18,9 +18,8 @@ import ChevronUp from '@core/shared/ui/icons/ChevronUp'
 
 import { EventType } from '../../../../../__generated__/globalTypes'
 import { useJourneyEventsExport } from '../../../../libs/useJourneyEventsExport'
+import { CheckboxOption } from '../../../CheckBoxOption/CheckboxOption'
 import { DateRangePicker } from '../../../DateRangePicker'
-
-import { CheckboxOption } from './CheckboxOption'
 
 export const GET_JOURNEY_CREATED_AT = gql`
   query GetJourneyCreatedAt($id: ID!) {
@@ -113,6 +112,12 @@ const CheckboxGroup: React.FC<{
   )
 }
 
+/**
+ * Dialog component for exporting journey analytics events
+ * @param open - Whether the dialog is visible
+ * @param onClose - Callback fired when the dialog is closed
+ * @param journeyId - ID of the journey to export events from
+ */
 export function ExportDialog({
   open,
   onClose,
