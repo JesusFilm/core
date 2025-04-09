@@ -20,6 +20,8 @@ interface CollectionIntroTextProps extends EasterDatesPropsWithoutTitle {
   secondParagraph: string
   /** Easter dates title */
   easterDatesTitle: string
+  /** Third paragraph */
+  thirdParagraph: string
 }
 
 export function CollectionIntroText({
@@ -27,6 +29,7 @@ export function CollectionIntroText({
   subtitle,
   firstParagraph,
   secondParagraph,
+  thirdParagraph,
   // EasterDates props
   easterDatesTitle,
   westernEasterLabel,
@@ -56,6 +59,7 @@ export function CollectionIntroText({
           {firstParagraph.afterHighlight}
         </p>
         <p className="text-xl xl:text-2xl ">{secondParagraph}</p>
+        <p className="text-xl xl:text-2xl ">{thirdParagraph}</p>
       </div>
     </div>
   )

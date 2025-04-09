@@ -88,18 +88,20 @@ export function CollectionsPage(): ReactElement {
         <CollectionNavigationCarousel contentItems={navigationContentItems} />
         <CollectionIntroText
           title="A verdadeira história da Páscoa"
-          subtitle="A Páscoa não é apenas uma celebração"
+          subtitle="Questionando? Buscando? Descubra o verdadeiro poder da Páscoa."
           firstParagraph={{
-            beforeHighlight: 'Os Evangelhos são ',
-            highlightedText: 'surpreendentemente honestos',
+            beforeHighlight: 'Além dos ovos e coelhos está a história da ',
+            highlightedText: 'vida, morte e ressurreição de Jesus.',
             afterHighlight:
-              ' sobre as emoções que Jesus experimentou—Sua profunda angústia, um de Seus amigos mais próximos negando até mesmo conhecê-Lo, e outros discípulos—a descrença em Sua ressurreição.'
+              ' O verdadeiro poder da Páscoa vai além dos serviços religiosos e rituais — e chega até a própria razão pela qual os humanos precisam de um Salvador.'
           }}
-          secondParagraph="Se você tem dúvidas ou quer redescobrir o significado da Páscoa, explore esta coleção de vídeos e recursos interativos."
-          easterDatesTitle="Quando a Páscoa é celebrada em {year}?"
+          secondParagraph="Os Evangelhos são surpreendentemente honestos sobre as emoções que Jesus experimentou — Sua profunda angústia porque um de Seus amigos mais próximos negou conhecê-lo, e a incredulidade dos outros discípulos em Sua ressurreição — emoções cruas que refletem nossas próprias lutas."
+          easterDatesTitle="Quando é a Páscoa em {year}?"
+          thirdParagraph="Explore nossa coleção de vídeos e recursos interativos que convidam você a conhecer a história autêntica — uma que mudou a história e continua transformando vidas hoje.
+Porque a maior celebração na história da humanidade vai muito além das tradições — trata-se do poder da ressurreição"
           westernEasterLabel="Páscoa Ocidental (Católica/Protestante)"
           orthodoxEasterLabel="Ortodoxa"
-          passoverLabel="Pessach Judaico"
+          passoverLabel="Páscoa Judaica"
           locale="pt-BR"
         />
         <CollectionsVideoContent
