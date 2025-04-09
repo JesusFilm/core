@@ -1,11 +1,13 @@
-import IconButton from '@mui/material/IconButton'
-import { ReactElement } from 'react'
-import { useJourneyEventsExport } from '../../../libs/useJourneyEventsExport'
-import { useSnackbar } from 'notistack'
-import { GetJourneyEventsVariables } from '../../../../__generated__/GetJourneyEvents'
-import CircularProgress from '@mui/material/CircularProgress'
-import Download2 from '@core/shared/ui/icons/Download2'
 import Box from '@mui/material/Box'
+import CircularProgress from '@mui/material/CircularProgress'
+import IconButton from '@mui/material/IconButton'
+import { useSnackbar } from 'notistack'
+import { ReactElement } from 'react'
+
+import Download2 from '@core/shared/ui/icons/Download2'
+
+import { GetJourneyEventsVariables } from '../../../../__generated__/GetJourneyEvents'
+import { useJourneyEventsExport } from '../../../libs/useJourneyEventsExport'
 
 interface ExportEventsButtonProps {
   journeyId: string
@@ -32,7 +34,9 @@ export function ExportEventsButton({
   return (
     <Box sx={{ display: { sm: 'block', md: 'none' } }}>
       {downloading ? (
-        <CircularProgress variant="indeterminate" />
+        <Box sx={{ p: 2 }}>
+          <CircularProgress variant="indeterminate" size={24} />
+        </Box>
       ) : (
         <IconButton onClick={() => handleExport({ journeyId })}>
           <Download2 />
