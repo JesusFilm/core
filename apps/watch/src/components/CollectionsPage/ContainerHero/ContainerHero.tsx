@@ -1,4 +1,3 @@
-import { useTranslation } from 'next-i18next'
 import { ReactElement, useCallback, useState } from 'react'
 import Player from 'video.js/dist/types/player'
 

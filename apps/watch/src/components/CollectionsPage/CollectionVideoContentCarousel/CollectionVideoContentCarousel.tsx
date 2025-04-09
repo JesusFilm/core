@@ -1,10 +1,6 @@
 import Image from 'next/image'
-import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
-
-import Play3 from '@core/shared/ui/icons/Play3'
 
 import { CollectionVideoPlayer } from '../CollectionVideoPlayer/CollectionVideoPlayer'
 
@@ -19,6 +15,8 @@ interface SlideData {
 }
 
 interface CollectionVideoContentCarouselProps {
+  /** ID for the scroll navigation */
+  id: string
   title: string
   subtitle: string
   description: string
@@ -32,6 +30,7 @@ interface CollectionVideoContentCarouselProps {
 }
 
 export const CollectionVideoContentCarousel = ({
+  id,
   title,
   subtitle,
   description,
@@ -57,7 +56,10 @@ export const CollectionVideoContentCarousel = ({
   const remainingText = description.slice(firstFourWords.length)
 
   return (
-    <div className="relative bg-linear-to-tr from-violet-950/10 via-indigo-500/10 to-cyan-300/50 py-16">
+    <div
+      id={id}
+      className="relative bg-linear-to-tr from-violet-950/10 via-indigo-500/10 to-cyan-300/50 py-16 scroll-snap-start-always"
+    >
       <hr className="section-divider" />
 
       <div className="absolute inset-0 overlay-texture-image bg-repeat mix-blend-multiply"></div>

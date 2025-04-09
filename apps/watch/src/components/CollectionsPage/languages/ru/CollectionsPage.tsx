@@ -88,15 +88,18 @@ export function CollectionsPage(): ReactElement {
         {/* <CollectionNavigationCarousel contentItems={navigationContentItems} /> */}
         <CollectionIntroText
           title="Настоящая история Пасхи"
-          subtitle="Пасха - это не просто праздник"
+          subtitle="Есть вопросы? В поиске? Откройте для себя истинную силу Пасхи."
           firstParagraph={{
-            beforeHighlight: 'Евангелия ',
-            highlightedText: 'поразительно честны',
+            beforeHighlight:
+              'За пределами пасхальных яиц и кроликов лежит история ',
+            highlightedText: 'жизни, смерти и воскресения Иисуса.',
             afterHighlight:
-              ' в описании эмоций, которые испытывал Иисус — Его глубокая тоска, один из Его ближайших друзей отрекся от Него, а другие ученики не верили в Его воскресение.'
+              ' Истинная сила Пасхи выходит за рамки церковных служб и обрядов — она касается самой причины, почему человечеству нужен Спаситель.'
           }}
-          secondParagraph="Если у вас есть сомнения или вы хотите заново открыть для себя смысл Пасхи, изучите эту коллекцию видео и интерактивных материалов."
+          secondParagraph="Евангелия удивительно честно рассказывают об эмоциях, которые испытывал Иисус — Его глубокой скорби из-за того, что один из Его ближайших друзей отрекся от знакомства с Ним, и неверии других учеников в Его воскресение — эти искренние эмоции отражают наши собственные борения."
           easterDatesTitle="Когда празднуется Пасха в {year} году?"
+          thirdParagraph="Исследуйте нашу коллекцию видео и интерактивных материалов, которые приглашают вас познакомиться с подлинной историей — историей, изменившей ход времени и продолжающей преображать жизни сегодня.
+Потому что величайшее празднование в истории человечества выходит далеко за рамки традиций — оно о силе воскресения"
           westernEasterLabel="Западная Пасха (Католическая/Протестантская)"
           orthodoxEasterLabel="Православная"
           passoverLabel="Еврейская Пасха"
@@ -238,6 +241,7 @@ export function CollectionsPage(): ReactElement {
           }}
         />
         <OtherCollectionsCarousel
+          id="other-collections"
           collectionSubtitle="Библейская видеоколлекция"
           collectionTitle="История Пасхи - ключевая часть большой картины"
           watchButtonText="Смотреть"
@@ -415,6 +419,7 @@ export function CollectionsPage(): ReactElement {
         />
 
         <CollectionVideoContentCarousel
+          id="easter-events-day-by-day"
           subtitle={'Пасхальный документальный сериал'}
           title={'Победил ли Иисус смерть?'}
           description={
@@ -750,6 +755,7 @@ export function CollectionsPage(): ReactElement {
         />
 
         <CollectionVideoContentCarousel
+          id="easter-events-day-by-day"
           subtitle={'Библейские видео'}
           title={'События Пасхи день за днем'}
           description={
@@ -1138,6 +1144,7 @@ export function CollectionsPage(): ReactElement {
         />
 
         <CollectionVideoContentCarousel
+          id="new-believer-course"
           subtitle={'Видеокурс'}
           title={'Курс для новых верующих'}
           description={
