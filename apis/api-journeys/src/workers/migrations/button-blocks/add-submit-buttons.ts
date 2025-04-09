@@ -45,45 +45,42 @@ async function main(): Promise<void> {
       )
 
       if (hasTextResponse && !hasButton) {
-        // Create button block with required input structure
+        // Create block IDs
         const buttonId = uuidv4()
         const startIconId = uuidv4()
         const endIconId = uuidv4()
 
-        // Create start icon block
-        await prisma.block.create({
-          data: {
-            id: startIconId,
-            journeyId: card.journeyId,
-            typename: 'IconBlock',
-            parentBlockId: buttonId
-          }
-        })
+        // Define the blocks
+        const startIcon = {
+          id: startIconId,
+          journeyId: card.journeyId,
+          typename: 'IconBlock',
+          parentBlockId: buttonId
+        }
 
-        // Create end icon block
-        await prisma.block.create({
-          data: {
-            id: endIconId,
-            journeyId: card.journeyId,
-            typename: 'IconBlock',
-            parentBlockId: buttonId
-          }
-        })
+        const endIcon = {
+          id: endIconId,
+          journeyId: card.journeyId,
+          typename: 'IconBlock',
+          parentBlockId: buttonId
+        }
 
-        // Create button block
-        await prisma.block.create({
-          data: {
-            id: buttonId,
-            journeyId: card.journeyId,
-            typename: 'ButtonBlock',
-            parentBlockId: card.id,
-            parentOrder: card.childBlocks.length,
-            label: '',
-            variant: ButtonVariant.contained,
-            color: ButtonColor.primary,
-            size: ButtonSize.medium,
-            submitEnabled: true
-          }
+        const button = {
+          id: buttonId,
+          journeyId: card.journeyId,
+          typename: 'ButtonBlock',
+          parentBlockId: card.id,
+          parentOrder: card.childBlocks.length,
+          label: '',
+          variant: ButtonVariant.contained,
+          color: ButtonColor.primary,
+          size: ButtonSize.medium,
+          submitEnabled: true
+        }
+
+        // Create all blocks at once
+        await prisma.block.createMany({
+          data: [startIcon, endIcon, button]
         })
 
         // Update button with icon references
