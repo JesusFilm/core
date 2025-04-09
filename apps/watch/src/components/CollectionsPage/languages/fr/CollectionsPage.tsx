@@ -89,18 +89,20 @@ export function CollectionsPage(): ReactElement {
         {/* <CollectionNavigationCarousel contentItems={navigationContentItems} /> */}
         <CollectionIntroText
           title="La véritable histoire de Pâques"
-          subtitle="Pâques n'est pas seulement une célébration"
+          subtitle="Des questions ? En recherche ? Découvrez le véritable pouvoir de Pâques."
           firstParagraph={{
-            beforeHighlight: 'Les Évangiles sont ',
-            highlightedText: 'étonnamment honnêtes',
+            beforeHighlight:
+              "Au-delà des œufs et des lapins se trouve l'histoire de ",
+            highlightedText: 'la vie, la mort et la résurrection de Jésus.',
             afterHighlight:
-              " à propos des émotions que Jésus a vécues—Sa profonde angoisse, l'un de Ses plus proches amis qui nie même Le connaître, et d'autres disciples—incrédules face à Sa résurrection."
+              " Le véritable pouvoir de Pâques va au-delà des services religieux et des rituels — il touche à la raison même pour laquelle l'humanité a besoin d'un Sauveur."
           }}
-          secondParagraph="Si vous avez des doutes ou si vous souhaitez redécouvrir le sens de Pâques, explorez cette collection de vidéos et de ressources interactives."
+          secondParagraph="Les Évangiles sont étonnamment honnêtes sur les émotions que Jésus a ressenties — Sa profonde angoisse lorsque l\'un de Ses plus proches amis a nié Le connaître, et l\'incrédulité des autres disciples face à Sa résurrection — des émotions brutes qui reflètent nos propres luttes."
           easterDatesTitle="Quand Pâques est-il célébré en {year} ?"
-          westernEasterLabel="Pâques occidental (Catholique/Protestant)"
+          thirdParagraph="Explorez notre collection de vidéos et de ressources interactives qui vous invitent à découvrir l\'histoire authentique — une histoire qui a changé le cours de l\'histoire et continue de transformer des vies aujourd\'hui. Car la plus grande célébration de l\'histoire humaine va bien au-delà des traditions — elle concerne le pouvoir de la résurrection"
+          westernEasterLabel="Pâques Occidental (Catholique/Protestant)"
           orthodoxEasterLabel="Orthodoxe"
-          passoverLabel="Pâque juive"
+          passoverLabel="Pâque Juive"
           locale="fr-FR"
         />
         <CollectionsVideoContent
