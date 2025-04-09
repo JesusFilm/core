@@ -1,32 +1,17 @@
 {
   "tasksRunnerOptions": {
     "default": {
-      "options": {
-        "canTrackAnalytics": false,
-        "showUsageWarnings": true
-      }
+      "options": { "canTrackAnalytics": false, "showUsageWarnings": true }
     }
   },
   "generators": {
     "@nx/react": {
-      "application": {
-        "style": "css",
-        "linter": "eslint",
-        "babel": true
-      },
-      "component": {
-        "style": "css"
-      },
-      "library": {
-        "style": "css",
-        "linter": "eslint"
-      }
+      "application": { "style": "css", "linter": "eslint", "babel": true },
+      "component": { "style": "css" },
+      "library": { "style": "css", "linter": "eslint" }
     },
     "@nx/next": {
-      "application": {
-        "style": "@emotion/styled",
-        "linter": "eslint"
-      }
+      "application": { "style": "@emotion/styled", "linter": "eslint" }
     }
   },
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
@@ -45,21 +30,12 @@
         "{projectRoot}/tsconfig.storybook.json"
       ]
     },
-    "e2e": {
-      "cache": true
-    },
+    "e2e": { "cache": true },
     "@nx/jest:jest": {
       "inputs": ["default", "^production", "{workspaceRoot}/jest.preset.js"],
       "cache": true,
-      "options": {
-        "passWithNoTests": true
-      },
-      "configurations": {
-        "ci": {
-          "ci": true,
-          "codeCoverage": true
-        }
-      }
+      "options": { "passWithNoTests": true },
+      "configurations": { "ci": { "ci": true, "codeCoverage": true } }
     },
     "@nx/eslint:lint": {
       "inputs": [
@@ -84,10 +60,7 @@
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"]
     },
-    "@nx/vite:test": {
-      "cache": true,
-      "inputs": ["default", "^production"]
-    }
+    "@nx/vite:test": { "cache": true, "inputs": ["default", "^production"] }
   },
   "namedInputs": {
     "default": ["{projectRoot}/**/*", "sharedGlobals"],
@@ -110,9 +83,8 @@
   "plugins": [
     {
       "plugin": "@nx/eslint/plugin",
-      "options": {
-        "targetName": "eslint:lint"
-      }
+      "options": { "targetName": "eslint:lint" }
     }
-  ]
+  ],
+  "nxCloudId": "67f5cc993cd3c537c150a59e"
 }
