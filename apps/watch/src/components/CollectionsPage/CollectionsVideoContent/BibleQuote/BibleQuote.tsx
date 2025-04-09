@@ -27,7 +27,8 @@ export function BibleQuote({
       style={{ backgroundColor: bgColor }}
     >
       <Image
-        fill
+        height={400}
+        width={400}
         src={imageUrl}
         alt="Bible quote"
         className="absolute top-0 w-full h-[260px] object-cover overflow-hidden [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_50%,transparent_100%)] [mask-size:cover]"
