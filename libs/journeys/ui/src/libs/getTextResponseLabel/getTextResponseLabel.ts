@@ -2,7 +2,7 @@ import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../libs/b
 import { TreeBlock } from '../block'
 
 /**
- * Retrieves the label from a TextResponseBlock if available, otherwise returns null.
+ * Retrieves the label from a TextResponseBlock if the label is not empty, otherwise returns null.
  *
  * @param block - The text response block to extract the label from.
  * @returns The label string (if label is non-empty), otherwise null.
