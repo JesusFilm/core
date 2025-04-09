@@ -1,7 +1,7 @@
 import { Reflector } from '@nestjs/core'
 import { Test, TestingModule } from '@nestjs/testing'
 
-import { Journey, Prisma, Visitor } from '.prisma/api-journeys-client'
+import { Prisma } from '.prisma/api-journeys-client'
 import { CaslFactory } from '@core/nest/common/CaslAuthModule'
 
 import {
@@ -25,7 +25,8 @@ describe('JourneyEventResolver', () => {
   let journeyEventService: JourneyEventService
 
   const mockJourneyEventService = {
-    getJourneyEvents: jest.fn()
+    getJourneyEvents: jest.fn(),
+    getJourneyEventsCount: jest.fn()
   }
 
   beforeEach(async () => {
@@ -71,25 +72,6 @@ describe('JourneyEventResolver', () => {
 
     resolver = module.get<JourneyEventResolver>(JourneyEventResolver)
     journeyEventService = module.get<JourneyEventService>(JourneyEventService)
-  })
-
-  describe('__resolveType', () => {
-    it('returns __typename when present', () => {
-      const event = {
-        __typename: 'TextResponseSubmissionEvent',
-        typename: 'OtherType'
-      }
-
-      expect(resolver.__resolveType(event)).toBe('TextResponseSubmissionEvent')
-    })
-
-    it('falls back to typename when __typename is missing', () => {
-      const event = {
-        typename: 'TextResponseSubmissionEvent'
-      }
-
-      expect(resolver.__resolveType(event)).toBe('TextResponseSubmissionEvent')
-    })
   })
 
   describe('journeyEventsConnection', () => {
@@ -148,83 +130,32 @@ describe('JourneyEventResolver', () => {
     })
   })
 
-  describe('journey field resolver', () => {
-    it('fetches journey by journeyId', async () => {
-      const event = { journeyId: 'journey-1' }
-      const mockJourney = {
-        id: 'journey-1',
-        title: 'Test Journey',
-        languageId: 'en',
-        description: null,
-        slug: 'test-journey',
-        archivedAt: null,
-        createdAt: new Date(),
-        deletedAt: null,
-        publishedAt: null,
-        trashedAt: null,
-        featuredAt: null,
-        seoTitle: null,
-        seoDescription: null,
-        status: 'draft',
-        teamId: 'team-1',
-        themeMode: 'light',
-        themeName: 'base',
-        updatedAt: new Date()
-      } as Journey
+  describe('journeyEventsCount', () => {
+    it('calls getJourneyEventsCount with correct parameters', async () => {
+      const accessibleEvent: Prisma.EventWhereInput = {}
+      const journeyId = 'journey-id'
+      const filter: JourneyEventsFilter = {
+        typenames: ['TextResponseSubmissionEvent']
+      }
+
+      const mockResponse = 10
 
       jest
-        .spyOn(resolver['prismaService'].journey, 'findUnique')
-        .mockResolvedValue(mockJourney)
+        .spyOn(journeyEventService, 'getJourneyEventsCount')
+        .mockResolvedValue(mockResponse)
 
-      const result = await resolver.journey(event)
-
-      expect(resolver['prismaService'].journey.findUnique).toHaveBeenCalledWith(
-        {
-          where: { id: 'journey-1' }
-        }
+      const result = await resolver.journeyEventsCount(
+        accessibleEvent,
+        journeyId,
+        filter
       )
-      expect(result).toEqual(mockJourney)
-    })
-  })
 
-  describe('visitor field resolver', () => {
-    it('fetches visitor by visitorId', async () => {
-      const event = { visitorId: 'visitor-1' }
-      const mockVisitor = {
-        id: 'visitor-1',
-        name: 'Test Visitor',
-        createdAt: new Date(),
-        status: null,
-        teamId: 'team-1',
-        updatedAt: new Date(),
-        userId: 'user-1',
-        countryCode: null,
-        duration: 0,
-        email: null,
-        lastChatStartedAt: null,
-        lastChatPlatform: null,
-        lastStepViewedAt: null,
-        lastLinkAction: null,
-        lastTextResponse: null,
-        lastRadioQuestion: null,
-        lastRadioOptionSubmission: null,
-        messagePlatform: null,
-        notes: null,
-        userAgent: null
-      } as Visitor
-
-      jest
-        .spyOn(resolver['prismaService'].visitor, 'findUnique')
-        .mockResolvedValue(mockVisitor)
-
-      const result = await resolver.visitor(event)
-
-      expect(resolver['prismaService'].visitor.findUnique).toHaveBeenCalledWith(
-        {
-          where: { id: 'visitor-1' }
-        }
-      )
-      expect(result).toEqual(mockVisitor)
+      expect(journeyEventService.getJourneyEventsCount).toHaveBeenCalledWith({
+        accessibleEvent,
+        journeyId,
+        filter
+      })
+      expect(result).toEqual(mockResponse)
     })
   })
 })

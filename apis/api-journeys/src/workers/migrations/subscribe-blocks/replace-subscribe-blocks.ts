@@ -38,7 +38,7 @@ async function fetchSignUpBlocks(): Promise<void> {
           where: {
             deletedAt: null
           }
-        },
+        }
       }
     })
 
@@ -48,7 +48,11 @@ async function fetchSignUpBlocks(): Promise<void> {
     // Log each block with a formatted output and fetch its parent block
     for (let i = 0; i < signUpBlocks.length; i++) {
       const block = signUpBlocks[i]
-      console.log(`\n--- SignUpBlock ${i + 1} ---`, 'journeyId:', block.journeyId)
+      console.log(
+        `\n--- SignUpBlock ${i + 1} ---`,
+        'journeyId:',
+        block.journeyId
+      )
 
       // Update the parentOrder of all blocks that have a parentBlockId that matches the current block's parentBlockId
       await prisma.block.updateMany({
@@ -75,7 +79,7 @@ async function fetchSignUpBlocks(): Promise<void> {
         __typename: 'TextResponseBlock',
         journeyId: block.journeyId,
         parentBlockId: block.parentBlockId,
-        parentOrder: (block.parentOrder ?? 0),
+        parentOrder: block.parentOrder ?? 0,
         label: t('Name'),
         minRows: 1,
         type: TextResponseType.Name,
@@ -159,22 +163,24 @@ async function fetchSignUpBlocks(): Promise<void> {
             : undefined,
           childBlocks: {
             createMany: {
-              data: [{
-                id: iconBlockId,
-                typename: 'IconBlock',
-                journeyId: block.journeyId,
-                color: originalIconBlock?.color ?? 'inherit',
-                name: originalIconBlock?.name,
-                updatedAt: new Date()
-              },
-              {
-                id: iconBlockId2,
-                typename: 'IconBlock',
-                journeyId: block.journeyId,
-                color: 'inherit',
-                updatedAt: new Date()
-              }
-            ]}
+              data: [
+                {
+                  id: iconBlockId,
+                  typename: 'IconBlock',
+                  journeyId: block.journeyId,
+                  color: originalIconBlock?.color ?? 'inherit',
+                  name: originalIconBlock?.name,
+                  updatedAt: new Date()
+                },
+                {
+                  id: iconBlockId2,
+                  typename: 'IconBlock',
+                  journeyId: block.journeyId,
+                  color: 'inherit',
+                  updatedAt: new Date()
+                }
+              ]
+            }
           }
         }
       })
