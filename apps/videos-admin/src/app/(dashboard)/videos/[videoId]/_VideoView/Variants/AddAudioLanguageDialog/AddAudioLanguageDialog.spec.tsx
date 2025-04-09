@@ -407,7 +407,9 @@ describe('AddAudioLanguageDialog', () => {
     await waitFor(() => {
       expect(createVideoVariantMockResult).toHaveBeenCalled()
     })
-    expect(handleClose).toHaveBeenCalled()
+    await waitFor(() => {
+      expect(handleClose).toHaveBeenCalled()
+    })
   })
 
   it('should handle complete upload and variant creation flow with unpublished state', async () => {

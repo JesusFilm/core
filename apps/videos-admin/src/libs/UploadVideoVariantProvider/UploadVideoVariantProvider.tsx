@@ -7,6 +7,7 @@ import { ReactNode, createContext, useContext, useReducer } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { getExtension } from '../../app/(dashboard)/videos/[videoId]/_VideoView/Variants/AddAudioLanguageDialog/utils/getExtension'
+import { GET_ADMIN_VIDEO } from '../useAdminVideo/useAdminVideo'
 
 export const CLOUDFLARE_R2_CREATE = graphql(`
   mutation CloudflareR2Create($input: CloudflareR2CreateInput!) {
@@ -228,6 +229,8 @@ export function UploadVideoVariantProvider({
         },
         update: (cache, { data }) => {
           if (data?.videoVariantCreate == null || state.videoId == null) return
+
+          // Update the Video in the cache
           cache.modify({
             id: cache.identify({
               __typename: 'Video',
@@ -255,9 +258,42 @@ export function UploadVideoVariantProvider({
                   `)
                 })
                 return [...existingVariants, newVariantRef]
+              },
+              variantLanguagesCount(existingCount = 0) {
+                return existingCount + 1
               }
             }
           })
+
+          // Try to update the AdminVideo in the cache by reading the current data
+          try {
+            const existingData = cache.readQuery({
+              query: GET_ADMIN_VIDEO,
+              variables: { videoId: state.videoId }
+            })
+
+            if (existingData?.adminVideo != null) {
+              // Update the AdminVideo with the new variant
+              cache.writeQuery({
+                query: GET_ADMIN_VIDEO,
+                variables: { videoId: state.videoId },
+                data: {
+                  adminVideo: {
+                    ...existingData.adminVideo,
+                    variants: [
+                      ...existingData.adminVideo.variants,
+                      data.videoVariantCreate
+                    ],
+                    variantLanguagesCount:
+                      existingData.adminVideo.variantLanguagesCount + 1
+                  }
+                }
+              })
+            }
+          } catch (error) {
+            // If there's an error reading/writing to the cache, we'll fall back to the page refresh
+            console.error('Error updating adminVideo in cache:', error)
+          }
         }
       })
 
