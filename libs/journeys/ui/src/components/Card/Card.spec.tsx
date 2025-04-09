@@ -6,6 +6,9 @@ import { SnackbarProvider } from 'notistack'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
   TextResponseType,
   ThemeMode,
   ThemeName,
@@ -24,6 +27,11 @@ import { blurImage } from '../../libs/blurImage'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
+import {
+  ButtonFields,
+  ButtonFields_action_LinkAction as LinkAction
+} from '../Button/__generated__/ButtonFields'
+import { BUTTON_CLICK_EVENT_CREATE } from '../Button/Button'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { StepViewEventCreate } from '../Step/__generated__/StepViewEventCreate'
 import { STEP_VIEW_EVENT_CREATE } from '../Step/Step'
@@ -357,15 +365,59 @@ describe('CardBlock', () => {
     }))
   }
 
+  const mockTextResponse1SubmissionEventCreate = {
+    request: {
+      query: TEXT_RESPONSE_SUBMISSION_EVENT_CREATE,
+      variables: {
+        input: {
+          id: 'uuid',
+          blockId: 'textResponse1',
+          stepId: 'step1.id',
+          label: 'Text Response 1',
+          value: 'Test response for field 1'
+        }
+      }
+    },
+    result: jest.fn(() => ({
+      data: {
+        textResponseSubmissionEventCreate: {
+          id: 'mocked-submission-id'
+        }
+      }
+    }))
+  }
+
+  const mockTextResponse2SubmissionEventCreate = {
+    request: {
+      query: TEXT_RESPONSE_SUBMISSION_EVENT_CREATE,
+      variables: {
+        input: {
+          id: 'uuid',
+          blockId: 'textResponse2',
+          stepId: 'step1.id',
+          label: 'Text Response 2',
+          value: 'Test response for field 2'
+        }
+      }
+    },
+    result: jest.fn(() => ({
+      data: {
+        textResponseSubmissionEventCreate: {
+          id: 'mocked-submission-id'
+        }
+      }
+    }))
+  }
+
   const mockTextResponseEmailSubmissionEventCreate = {
     request: {
       query: TEXT_RESPONSE_SUBMISSION_EVENT_CREATE,
       variables: {
         input: {
           id: 'uuid',
-          blockId: 'textResponseBlockId',
+          blockId: 'textResponse1',
           stepId: 'step1.id',
-          label: 'Step {{number}}',
+          label: 'Text Response 1',
           value: 'test@example.com'
         }
       }
@@ -857,7 +909,7 @@ describe('CardBlock', () => {
     )
   })
 
-  it('should handle formik submission for field that is required', async () => {
+  it('should validate required fields in forms', async () => {
     const mockPlausible = jest.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
 
@@ -866,22 +918,84 @@ describe('CardBlock', () => {
       required: true
     }
 
+    const action: LinkAction = {
+      __typename: 'LinkAction',
+      parentBlockId: 'button',
+      gtmEventName: null,
+      url: 'https://test.com/some-site'
+    }
+
+    const buttonBlock: TreeBlock<ButtonFields> = {
+      __typename: 'ButtonBlock',
+      id: 'button',
+      parentBlockId: 'question',
+      parentOrder: 0,
+      label: 'This is a button',
+      buttonVariant: ButtonVariant.contained,
+      buttonColor: ButtonColor.primary,
+      size: ButtonSize.small,
+      startIconId: null,
+      endIconId: null,
+      action: action,
+      submitEnabled: true,
+      children: []
+    }
+
     const textResponseCard: TreeBlock<CardBlock> = {
       ...card1,
       children: [
         step1,
-        { ...requiredTextResponseBlock, parentBlockId: card1.id }
+        {
+          ...requiredTextResponseBlock,
+          id: 'textResponse1',
+          label: 'Text Response 1',
+          parentBlockId: card1.id
+        },
+        {
+          ...requiredTextResponseBlock,
+          id: 'textResponse2',
+          label: 'Text Response 2',
+          parentBlockId: card1.id
+        },
+        { ...buttonBlock, parentBlockId: card1.id }
       ]
     }
 
     treeBlocksVar([step1, step2, step3])
     blockHistoryVar([step1])
 
+    const mockButtonClickEvent = {
+      request: {
+        query: BUTTON_CLICK_EVENT_CREATE,
+        variables: {
+          input: {
+            id: 'uuid',
+            blockId: 'button',
+            stepId: 'step1.id',
+            label: 'Step {{number}}',
+            value: buttonBlock.label,
+            action: action.__typename,
+            actionValue: action.url
+          }
+        }
+      },
+      result: jest.fn(() => ({
+        data: {
+          buttonClickEventCreate: {
+            id: 'uuid',
+            __typename: 'ButtonClickEvent'
+          }
+        }
+      }))
+    }
+
     render(
       <MockedProvider
         mocks={[
           mockStepNextEventCreate,
-          mockTextResponseSubmissionEventCreate,
+          mockButtonClickEvent,
+          mockTextResponse1SubmissionEventCreate,
+          mockTextResponse2SubmissionEventCreate,
           getStepViewEventMock(step1.id, 'Step {{number}}')
         ]}
       >
@@ -893,51 +1007,160 @@ describe('CardBlock', () => {
       </MockedProvider>
     )
 
-    const form = screen.getByTestId(`card-form-${card1.id}`)
-    fireEvent.submit(form)
+    await waitFor(() => {
+      expect(
+        screen.getByRole('button', { name: 'This is a button' })
+      ).toBeInTheDocument()
+    })
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('textbox', { name: 'Text Response 1*' })
+      ).toBeInTheDocument()
+    })
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('textbox', { name: 'Text Response 2*' })
+      ).toBeInTheDocument()
+    })
+
+    fireEvent.change(
+      screen.getByRole('textbox', { name: 'Text Response 2*' }),
+      {
+        target: { value: 'Test response for field 2' }
+      }
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'This is a button' }))
+
+    await waitFor(() => {
+      expect(
+        mockTextResponse1SubmissionEventCreate.result
+      ).not.toHaveBeenCalled()
+    })
+
+    await waitFor(() => {
+      expect(
+        mockTextResponse2SubmissionEventCreate.result
+      ).not.toHaveBeenCalled()
+    })
+
+    await waitFor(() => {
+      expect(mockButtonClickEvent.result).not.toHaveBeenCalled()
+    })
 
     await waitFor(() => {
       expect(screen.getByText('This field is required')).toBeInTheDocument()
     })
 
-    await waitFor(() =>
-      expect(
-        mockTextResponseSubmissionEventCreate.result
-      ).not.toHaveBeenCalled()
+    fireEvent.change(
+      screen.getByRole('textbox', { name: 'Text Response 1*' }),
+      {
+        target: { value: 'Test response for field 1' }
+      }
     )
 
-    fireEvent.change(screen.getByRole('textbox', { name: 'Text Response*' }), {
-      target: { value: 'Test response' }
+    fireEvent.click(screen.getByRole('button', { name: 'This is a button' }))
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText('This field is required')
+      ).not.toBeInTheDocument()
     })
 
-    fireEvent.submit(form)
-
-    await waitFor(() =>
-      expect(mockTextResponseSubmissionEventCreate.result).toHaveBeenCalled()
-    )
+    await waitFor(() => {
+      expect(mockTextResponse1SubmissionEventCreate.result).toHaveBeenCalled()
+    })
+    await waitFor(() => {
+      expect(mockTextResponse2SubmissionEventCreate.result).toHaveBeenCalled()
+    })
+    await waitFor(() => {
+      expect(mockButtonClickEvent.result).toHaveBeenCalled()
+    })
   })
 
-  it('should handle formik submission for email field', async () => {
+  it('should validate required fields in forms', async () => {
     const mockPlausible = jest.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
 
-    const emailResponseBlock = {
+    const requiredTextResponseBlock = {
       ...textResponseBlock,
-      type: TextResponseType.email
+      required: true
+    }
+
+    const action: LinkAction = {
+      __typename: 'LinkAction',
+      parentBlockId: 'button',
+      gtmEventName: null,
+      url: 'https://test.com/some-site'
+    }
+
+    const buttonBlock: TreeBlock<ButtonFields> = {
+      __typename: 'ButtonBlock',
+      id: 'button',
+      parentBlockId: 'question',
+      parentOrder: 0,
+      label: 'This is a button',
+      buttonVariant: ButtonVariant.contained,
+      buttonColor: ButtonColor.primary,
+      size: ButtonSize.small,
+      startIconId: null,
+      endIconId: null,
+      action: action,
+      submitEnabled: true,
+      children: []
     }
 
     const textResponseCard: TreeBlock<CardBlock> = {
       ...card1,
-      children: [step1, { ...emailResponseBlock, parentBlockId: card1.id }]
+      children: [
+        step1,
+        {
+          ...requiredTextResponseBlock,
+          id: 'textResponse1',
+          label: 'Text Response 1',
+          parentBlockId: card1.id,
+          type: TextResponseType.email
+        },
+
+        { ...buttonBlock, parentBlockId: card1.id }
+      ]
     }
 
     treeBlocksVar([step1, step2, step3])
     blockHistoryVar([step1])
 
+    const mockButtonClickEvent = {
+      request: {
+        query: BUTTON_CLICK_EVENT_CREATE,
+        variables: {
+          input: {
+            id: 'uuid',
+            blockId: 'button',
+            stepId: 'step1.id',
+            label: 'Step {{number}}',
+            value: buttonBlock.label,
+            action: action.__typename,
+            actionValue: action.url
+          }
+        }
+      },
+      result: jest.fn(() => ({
+        data: {
+          buttonClickEventCreate: {
+            id: 'uuid',
+            __typename: 'ButtonClickEvent'
+          }
+        }
+      }))
+    }
+
     render(
       <MockedProvider
         mocks={[
           mockStepNextEventCreate,
+          mockButtonClickEvent,
           mockTextResponseEmailSubmissionEventCreate,
           getStepViewEventMock(step1.id, 'Step {{number}}')
         ]}
@@ -950,11 +1173,36 @@ describe('CardBlock', () => {
       </MockedProvider>
     )
 
-    const emailInput = screen.getByLabelText('Text Response')
-    fireEvent.change(emailInput, { target: { value: 'invalid-email' } })
+    await waitFor(() => {
+      expect(
+        screen.getByRole('button', { name: 'This is a button' })
+      ).toBeInTheDocument()
+    })
 
-    const form = screen.getByTestId(`card-form-${card1.id}`)
-    fireEvent.submit(form)
+    await waitFor(() => {
+      expect(
+        screen.getByRole('textbox', { name: 'Text Response 1*' })
+      ).toBeInTheDocument()
+    })
+
+    fireEvent.change(
+      screen.getByRole('textbox', { name: 'Text Response 1*' }),
+      {
+        target: { value: 'Test response for field 2' }
+      }
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'This is a button' }))
+
+    await waitFor(() => {
+      expect(
+        mockTextResponseEmailSubmissionEventCreate.result
+      ).not.toHaveBeenCalled()
+    })
+
+    await waitFor(() => {
+      expect(mockButtonClickEvent.result).not.toHaveBeenCalled()
+    })
 
     await waitFor(() => {
       expect(
@@ -962,16 +1210,29 @@ describe('CardBlock', () => {
       ).toBeInTheDocument()
     })
 
-    fireEvent.change(screen.getByRole('textbox', { name: 'Text Response' }), {
-      target: { value: 'test@example.com' }
+    fireEvent.change(
+      screen.getByRole('textbox', { name: 'Text Response 1*' }),
+      {
+        target: { value: 'test@example.com' }
+      }
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'This is a button' }))
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText('Please enter a valid email address')
+      ).not.toBeInTheDocument()
     })
 
-    fireEvent.submit(form)
-
-    await waitFor(() =>
+    await waitFor(() => {
       expect(
         mockTextResponseEmailSubmissionEventCreate.result
       ).toHaveBeenCalled()
-    )
+    })
+
+    await waitFor(() => {
+      expect(mockButtonClickEvent.result).toHaveBeenCalled()
+    })
   })
 })
