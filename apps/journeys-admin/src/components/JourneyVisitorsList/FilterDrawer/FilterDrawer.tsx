@@ -30,7 +30,7 @@ interface FilterDrawerProps {
   withSubmittedText: boolean
   withIcon: boolean
   hideInteractive: boolean
-  handleClearAll?: () => void
+  handleClearAll: () => void
   journeyId?: string
 }
 

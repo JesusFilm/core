@@ -238,6 +238,7 @@ function JourneyVisitorsPage(): ReactElement {
             withSubmittedText={withSubmittedText}
             withIcon={withIcon}
             hideInteractive={hideInteractive}
+            handleClearAll={handleClearAll}
           />
         }
       >

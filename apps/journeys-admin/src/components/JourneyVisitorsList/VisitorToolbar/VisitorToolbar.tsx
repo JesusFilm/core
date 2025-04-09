@@ -9,7 +9,7 @@ import { FilterDrawer } from '../FilterDrawer/FilterDrawer'
 
 interface VisitorProps {
   handleChange?: (e) => void
-  handleClearAll?: () => void
+  handleClearAll: () => void
   sortSetting?: 'date' | 'duration'
   chatStarted: boolean
   withPollAnswers: boolean
