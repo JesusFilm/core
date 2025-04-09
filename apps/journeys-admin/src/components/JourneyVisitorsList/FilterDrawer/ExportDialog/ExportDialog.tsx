@@ -51,22 +51,67 @@ interface CheckboxState {
   VideoProgressEvent: boolean
 }
 
-const VIDEO_EVENT_KEYS = [
-  'VideoStartEvent',
-  'VideoPlayEvent',
-  'VideoPauseEvent',
-  'VideoCompleteEvent',
-  'VideoProgressEvent'
-] as const
+interface EventCheckboxConfig {
+  key: keyof CheckboxState
+  label: string
+}
 
-const REGULAR_EVENT_KEYS = [
-  'JourneyViewEvent',
-  'ChatOpenEvent',
-  'TextResponseSubmissionEvent',
-  'RadioQuestionSubmissionEvent',
-  'ButtonClickEvent',
-  'SignUpSubmissionEvent'
-] as const
+const REGULAR_EVENTS_CONFIG: EventCheckboxConfig[] = [
+  { key: 'JourneyViewEvent', label: 'Journey Start' },
+  { key: 'ChatOpenEvent', label: 'Chat Open' },
+  { key: 'TextResponseSubmissionEvent', label: 'Text Submission' },
+  { key: 'RadioQuestionSubmissionEvent', label: 'Poll Selection' },
+  { key: 'ButtonClickEvent', label: 'Button Click' },
+  { key: 'SignUpSubmissionEvent', label: 'Subscription' }
+]
+
+const VIDEO_EVENTS_CONFIG: EventCheckboxConfig[] = [
+  { key: 'VideoStartEvent', label: 'Start' },
+  { key: 'VideoPlayEvent', label: 'Play' },
+  { key: 'VideoPauseEvent', label: 'Pause' },
+  { key: 'VideoCompleteEvent', label: 'Complete' },
+  { key: 'VideoProgressEvent', label: 'Progress' }
+]
+
+const VIDEO_EVENT_KEYS = VIDEO_EVENTS_CONFIG.map((config) => config.key)
+const REGULAR_EVENT_KEYS = REGULAR_EVENTS_CONFIG.map((config) => config.key)
+
+/**
+ * Renders a group of checkboxes based on provided configuration
+ * @param configs - Array of event configurations defining the checkboxes to render
+ * @param checkboxState - Current state of all checkboxes
+ * @param setCheckboxState - Function to update checkbox states
+ * @param indent - Whether to indent the checkbox group (used for nested groups)
+ */
+const CheckboxGroup: React.FC<{
+  configs: EventCheckboxConfig[]
+  checkboxState: CheckboxState
+  setCheckboxState: React.Dispatch<React.SetStateAction<CheckboxState>>
+  indent?: boolean
+}> = ({ configs, checkboxState, setCheckboxState, indent = false }) => {
+  const { t } = useTranslation('apps-journeys-admin')
+
+  return (
+    <Box sx={{ ml: indent ? 3 : 0 }}>
+      <FormGroup>
+        {/* Map over event configs to render individual checkboxes */}
+        {configs.map(({ key, label }) => (
+          <CheckboxOption
+            key={key}
+            checked={checkboxState[key]}
+            onChange={(checked) =>
+              setCheckboxState((prev) => ({
+                ...prev,
+                [key]: checked
+              }))
+            }
+            label={t(label)}
+          />
+        ))}
+      </FormGroup>
+    </Box>
+  )
+}
 
 export function ExportDialog({
   open,
@@ -235,157 +280,54 @@ export function ExportDialog({
             <Box sx={{ py: 1 }}>
               <Divider />
             </Box>
-            <CheckboxOption
-              checked={checkboxState.JourneyViewEvent}
-              onChange={(checked) =>
-                setCheckboxState((prev) => ({
-                  ...prev,
-                  JourneyViewEvent: checked
-                }))
-              }
-              label={t('Journey Start')}
+
+            {/* Regular events */}
+            <CheckboxGroup
+              configs={REGULAR_EVENTS_CONFIG}
+              checkboxState={checkboxState}
+              setCheckboxState={setCheckboxState}
             />
-            <CheckboxOption
-              checked={checkboxState.ChatOpenEvent}
-              onChange={(checked) =>
-                setCheckboxState((prev) => ({
-                  ...prev,
-                  ChatOpenEvent: checked
-                }))
-              }
-              label={t('Chat Open')}
-            />
-            <CheckboxOption
-              checked={checkboxState.TextResponseSubmissionEvent}
-              onChange={(checked) =>
-                setCheckboxState((prev) => ({
-                  ...prev,
-                  TextResponseSubmissionEvent: checked
-                }))
-              }
-              label={t('Text Submission')}
-            />
-            <CheckboxOption
-              checked={checkboxState.RadioQuestionSubmissionEvent}
-              onChange={(checked) =>
-                setCheckboxState((prev) => ({
-                  ...prev,
-                  RadioQuestionSubmissionEvent: checked
-                }))
-              }
-              label={t('Poll Selection')}
-            />
-            <CheckboxOption
-              checked={checkboxState.ButtonClickEvent}
-              onChange={(checked) =>
-                setCheckboxState((prev) => ({
-                  ...prev,
-                  ButtonClickEvent: checked
-                }))
-              }
-              label={t('Button Click')}
-            />
-            <CheckboxOption
-              checked={checkboxState.SignUpSubmissionEvent}
-              onChange={(checked) =>
-                setCheckboxState((prev) => ({
-                  ...prev,
-                  SignUpSubmissionEvent: checked
-                }))
-              }
-              label={t('Subscription')}
-            />
-              <Box
-                onClick={() => setVideoEventsExpanded(!videoEventsExpanded)}
-                data-testid="video-events-expander"
-                sx={{
-                  cursor: 'pointer',
-                  '&:hover': {
-                    backgroundColor: 'action.hover'
-                  },
-                  ml: -3,
-                  pl: 3
-                }}
+            {/* Video events section */}
+            <Box
+              onClick={() => setVideoEventsExpanded(!videoEventsExpanded)}
+              data-testid="video-events-expander"
+              sx={{
+                cursor: 'pointer',
+                '&:hover': {
+                  backgroundColor: 'action.hover'
+                },
+                ml: -3,
+                pl: 3
+              }}
+            >
+              <Stack
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between"
+                sx={{ pr: 2 }}
               >
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-between"
-                  sx={{ pr: 2 }}
-                >
-                  <CheckboxOption
-                    checked={videoEventsSelected === 'all'}
-                    onChange={(checked) => {
-                      handleSelectAllVideoEvents(checked)
-                    }}
-                    label={t('Video Events')}
-                    onClick={(e) => e.stopPropagation()}
-                    indeterminate={videoEventsSelected === 'some'}
-                  />
-                  <IconButton size="small" sx={{ pointerEvents: 'none' }}>
-                    {videoEventsExpanded ? (
-                      <ChevronUp />
-                    ) : (
-                      <ChevronDown />
-                    )}
-                  </IconButton>
-                </Stack>
-              </Box>
-              <Collapse in={videoEventsExpanded}>
-                <Box sx={{ ml: 3 }}>
-                  <FormGroup>
-                    <CheckboxOption
-                      checked={checkboxState.VideoStartEvent}
-                      onChange={(checked) =>
-                        setCheckboxState((prev) => ({
-                          ...prev,
-                          VideoStartEvent: checked
-                        }))
-                      }
-                      label={t('Start')}
-                    />
-                    <CheckboxOption
-                      checked={checkboxState.VideoPlayEvent}
-                      onChange={(checked) =>
-                        setCheckboxState((prev) => ({
-                          ...prev,
-                          VideoPlayEvent: checked
-                        }))
-                      }
-                      label={t('Play')}
-                    />
-                    <CheckboxOption
-                      checked={checkboxState.VideoPauseEvent}
-                      onChange={(checked) =>
-                        setCheckboxState((prev) => ({
-                          ...prev,
-                          VideoPauseEvent: checked
-                        }))
-                      }
-                      label={t('Pause')}
-                    />
-                    <CheckboxOption
-                      checked={checkboxState.VideoCompleteEvent}
-                      onChange={(checked) =>
-                        setCheckboxState((prev) => ({
-                          ...prev,
-                          VideoCompleteEvent: checked
-                        }))
-                      }
-                      label={t('Complete')}
-                    />
-                    <CheckboxOption
-                      checked={checkboxState.VideoProgressEvent}
-                      onChange={(checked) =>
-                        setCheckboxState((prev) => ({
-                          ...prev,
-                          VideoProgressEvent: checked
-                        }))
-                      }
-                      label={t('Progress')}
-                    />
-                  </FormGroup>
-                </Box>
+                <CheckboxOption
+                  checked={videoEventsSelected === 'all'}
+                  onChange={(checked) => {
+                    handleSelectAllVideoEvents(checked)
+                  }}
+                  label={t('Video Events')}
+                  onClick={(e) => e.stopPropagation()}
+                  indeterminate={videoEventsSelected === 'some'}
+                />
+                <IconButton size="small" sx={{ pointerEvents: 'none' }}>
+                  {videoEventsExpanded ? <ChevronUp /> : <ChevronDown />}
+                </IconButton>
+              </Stack>
+            </Box>
+            {/* Video events checkboxes */}
+            <Collapse in={videoEventsExpanded}>
+              <CheckboxGroup
+                configs={VIDEO_EVENTS_CONFIG}
+                checkboxState={checkboxState}
+                setCheckboxState={setCheckboxState}
+                indent
+              />
             </Collapse>
           </FormGroup>
         </Stack>
