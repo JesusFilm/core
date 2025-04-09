@@ -230,7 +230,7 @@ export function ExportDialog({
             <CheckboxOption
               checked={selectAll}
               onChange={handleSelectAll}
-              label="All"
+              label={t('All')}
             />
             <Box sx={{ py: 1 }}>
               <Divider />
@@ -243,7 +243,7 @@ export function ExportDialog({
                   JourneyViewEvent: checked
                 }))
               }
-              label="Journey Start"
+              label={t('Journey Start')}
             />
             <CheckboxOption
               checked={checkboxState.ChatOpenEvent}
@@ -253,7 +253,7 @@ export function ExportDialog({
                   ChatOpenEvent: checked
                 }))
               }
-              label="Chat Open"
+              label={t('Chat Open')}
             />
             <CheckboxOption
               checked={checkboxState.TextResponseSubmissionEvent}
@@ -263,7 +263,7 @@ export function ExportDialog({
                   TextResponseSubmissionEvent: checked
                 }))
               }
-              label="Text Submission"
+              label={t('Text Submission')}
             />
             <CheckboxOption
               checked={checkboxState.RadioQuestionSubmissionEvent}
@@ -273,7 +273,7 @@ export function ExportDialog({
                   RadioQuestionSubmissionEvent: checked
                 }))
               }
-              label="Poll Selection"
+              label={t('Poll Selection')}
             />
             <CheckboxOption
               checked={checkboxState.ButtonClickEvent}
@@ -283,7 +283,7 @@ export function ExportDialog({
                   ButtonClickEvent: checked
                 }))
               }
-              label="Button Click"
+              label={t('Button Click')}
             />
             <CheckboxOption
               checked={checkboxState.SignUpSubmissionEvent}
@@ -293,9 +293,8 @@ export function ExportDialog({
                   SignUpSubmissionEvent: checked
                 }))
               }
-              label="Subscription"
+              label={t('Subscription')}
             />
-            <Box>
               <Box
                 onClick={() => setVideoEventsExpanded(!videoEventsExpanded)}
                 data-testid="video-events-expander"
@@ -319,7 +318,7 @@ export function ExportDialog({
                     onChange={(checked) => {
                       handleSelectAllVideoEvents(checked)
                     }}
-                    label="Video Events"
+                    label={t('Video Events')}
                     onClick={(e) => e.stopPropagation()}
                     indeterminate={videoEventsSelected === 'some'}
                   />
@@ -343,7 +342,7 @@ export function ExportDialog({
                           VideoStartEvent: checked
                         }))
                       }
-                      label="Start"
+                      label={t('Start')}
                     />
                     <CheckboxOption
                       checked={checkboxState.VideoPlayEvent}
@@ -353,7 +352,7 @@ export function ExportDialog({
                           VideoPlayEvent: checked
                         }))
                       }
-                      label="Play"
+                      label={t('Play')}
                     />
                     <CheckboxOption
                       checked={checkboxState.VideoPauseEvent}
@@ -363,7 +362,7 @@ export function ExportDialog({
                           VideoPauseEvent: checked
                         }))
                       }
-                      label="Pause"
+                      label={t('Pause')}
                     />
                     <CheckboxOption
                       checked={checkboxState.VideoCompleteEvent}
@@ -373,7 +372,7 @@ export function ExportDialog({
                           VideoCompleteEvent: checked
                         }))
                       }
-                      label="Complete"
+                      label={t('Complete')}
                     />
                     <CheckboxOption
                       checked={checkboxState.VideoProgressEvent}
@@ -383,12 +382,11 @@ export function ExportDialog({
                           VideoProgressEvent: checked
                         }))
                       }
-                      label="Progress"
+                      label={t('Progress')}
                     />
                   </FormGroup>
                 </Box>
-              </Collapse>
-            </Box>
+            </Collapse>
           </FormGroup>
         </Stack>
       </Box>
