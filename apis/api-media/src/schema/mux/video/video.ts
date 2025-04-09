@@ -89,14 +89,14 @@ builder.queryFields((t) => ({
 
       const isUserGenerated = !currentRoles.includes('publisher')
         ? true
-        : (userGenerated ?? false)
+        : (userGenerated ?? true)
       let video = await prisma.muxVideo.findFirstOrThrow({
         ...query,
         where: { id, userId: user.id }
       })
 
       if (video.assetId == null && video.uploadId != null) {
-        const muxUpload = await getUpload(video.uploadId, false)
+        const muxUpload = await getUpload(video.uploadId, isUserGenerated)
         if (muxUpload.asset_id != null) {
           video = await prisma.muxVideo.update({
             ...query,
@@ -143,12 +143,10 @@ builder.queryFields((t) => ({
         ...query,
         where: { id }
       })
+      const isUserGenerated = userGenerated ?? true
 
       if (video.assetId == null && video.uploadId != null) {
-        const muxUpload = await getUpload(
-          video.uploadId,
-          userGenerated ?? false
-        )
+        const muxUpload = await getUpload(video.uploadId, isUserGenerated)
         if (muxUpload.asset_id != null) {
           video = await prisma.muxVideo.update({
             ...query,
@@ -163,7 +161,7 @@ builder.queryFields((t) => ({
         video.assetId != null &&
         (!video.readyToStream || video.playbackId == null)
       ) {
-        const muxVideo = await getVideo(video.assetId, userGenerated ?? false)
+        const muxVideo = await getVideo(video.assetId, isUserGenerated)
 
         if (
           muxVideo.status === 'ready' &&
@@ -195,15 +193,22 @@ builder.mutationFields((t) => ({
         name: t.arg({ type: 'String', required: true }),
         userGenerated: t.arg({ type: 'Boolean', required: false })
       },
-      resolve: async (query, _root, { name, userGenerated }, { user }) => {
+      resolve: async (
+        query,
+        _root,
+        { name, userGenerated },
+        { user, currentRoles }
+      ) => {
         if (user == null)
           throw new GraphQLError('User not found', {
             extensions: { code: 'NOT_FOUND' }
           })
 
-        const { id, uploadUrl } = await createVideoByDirectUpload(
-          userGenerated ?? false
-        )
+        const isUserGenerated = !currentRoles.includes('publisher')
+          ? true
+          : (userGenerated ?? true)
+        const { id, uploadUrl } =
+          await createVideoByDirectUpload(isUserGenerated)
 
         return await prisma.muxVideo.create({
           ...query,
@@ -236,7 +241,8 @@ builder.mutationFields((t) => ({
 
       const isUserGenerated = !currentRoles.includes('publisher')
         ? true
-        : (userGenerated ?? false)
+        : (userGenerated ?? true)
+
       const { id } = await createVideoFromUrl(url, isUserGenerated)
 
       return await prisma.muxVideo.create({
@@ -258,7 +264,7 @@ builder.mutationFields((t) => ({
         throw new GraphQLError('User not found', {
           extensions: { code: 'NOT_FOUND' }
         })
-      await enableDownload(id, true)
+      await enableDownload(id, false)
       return await prisma.muxVideo.update({
         ...query,
         where: { id },
@@ -283,7 +289,7 @@ builder.mutationFields((t) => ({
       const where: Prisma.MuxVideoWhereUniqueInput = { id }
       const isUserGenerated = !currentRoles.includes('publisher')
         ? true
-        : (userGenerated ?? false)
+        : (userGenerated ?? true)
       if (!currentRoles.includes('publisher')) {
         where.userId = user.id
       }

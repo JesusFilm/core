@@ -380,7 +380,7 @@ type Query {
   bibleCitations: [BibleCitation!]!
   keywords: [Keyword!]!
   getMyMuxVideos(offset: Int, limit: Int): [MuxVideo!]!
-  getMyMuxVideo(id: ID!): MuxVideo!
+  getMyMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo!
   getMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo
 
   """List of short link domains that can be used for short links"""
