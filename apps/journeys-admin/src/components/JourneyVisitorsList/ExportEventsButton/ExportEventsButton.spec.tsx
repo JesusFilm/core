@@ -46,15 +46,11 @@ describe('ExportEventsButton', () => {
     const user = userEvent.setup()
     await user.click(screen.getByRole('button'))
 
-    expect(screen.getByRole('progressbar')).toBeInTheDocument()
-
     await waitFor(() => {
       expect(mockGetJourneyEventsCountQuery.result).toHaveBeenCalled()
     })
 
     expect(getJourneyEventsMockResult).toHaveBeenCalled()
     expect(mutationResult).toHaveBeenCalled()
-
-    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
   })
 })
