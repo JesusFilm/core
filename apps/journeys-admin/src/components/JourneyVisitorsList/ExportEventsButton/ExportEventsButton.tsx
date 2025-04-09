@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box'
-import CircularProgress from '@mui/material/CircularProgress'
 import IconButton from '@mui/material/IconButton'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
@@ -17,7 +16,7 @@ export function ExportEventsButton({
   journeyId
 }: ExportEventsButtonProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
-  const [exportJourneyEvents, { downloading }] = useJourneyEventsExport()
+  const [exportJourneyEvents] = useJourneyEventsExport()
 
   const handleExport = async (
     input: Pick<GetJourneyEventsVariables, 'journeyId' | 'filter'>
@@ -33,15 +32,9 @@ export function ExportEventsButton({
 
   return (
     <Box sx={{ display: { sm: 'block', md: 'none' } }}>
-      {downloading ? (
-        <Box sx={{ p: 2 }}>
-          <CircularProgress variant="indeterminate" size={24} />
-        </Box>
-      ) : (
-        <IconButton onClick={() => handleExport({ journeyId })}>
-          <Download2 />
-        </IconButton>
-      )}
+      <IconButton onClick={() => handleExport({ journeyId })}>
+        <Download2 />
+      </IconButton>
     </Box>
   )
 }
