@@ -1,1 +1,1 @@
-export { getTextResponseLabel } from './getTextResponseLabel.ts'
+export { getTextResponseLabel } from './getTextResponseLabel'
