@@ -331,7 +331,8 @@ export function UploadVideoVariantProvider({
       // Create Mux video
       const muxResponse = await createMuxVideo({
         variables: {
-          url: r2Response.data.cloudflareR2Create.publicUrl
+          url: r2Response.data.cloudflareR2Create.publicUrl,
+          userGenerated: false
         }
       })
 
