@@ -77,7 +77,12 @@ export function AddAudioLanguageDialog({
       values.language.id,
       values.language.slug,
       values.edition,
-      handleClose,
+      () => {
+        // Call handleClose first so it can be tested properly
+        handleClose?.()
+        // Then reload the page to get updated data
+        window.location.reload()
+      },
       values.published === 'published'
     )
   }
