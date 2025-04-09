@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
+import noop from 'lodash/noop'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
@@ -46,6 +47,7 @@ export const Default = {
         withSubmittedText={false}
         withIcon={false}
         hideInteractive={false}
+        handleClearAll={noop}
       />
     )
   }
@@ -64,6 +66,7 @@ export const Complete = {
         withSubmittedText
         withIcon
         hideInteractive
+        handleClearAll={noop}
       />
     )
   }
