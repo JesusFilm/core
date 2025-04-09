@@ -149,7 +149,8 @@ const createMuxVideoMock = {
   request: {
     query: CREATE_MUX_VIDEO_UPLOAD_BY_URL,
     variables: {
-      url: 'https://public.url'
+      url: 'https://public.url',
+      userGenerated: false
     }
   },
   result: {
@@ -168,7 +169,8 @@ const getMuxVideoMock = {
   request: {
     query: GET_MY_MUX_VIDEO,
     variables: {
-      id: 'muxVideo1'
+      id: 'muxVideo1',
+      userGenerated: false
     }
   },
   result: {
