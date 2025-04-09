@@ -247,7 +247,7 @@ export function Button({
       e.preventDefault()
     }
 
-    if (!isEmptyForm() && !formik.isValid) return
+    if (!isEmptyForm() && !formik.isValid && submitEnabled) return
 
     if (messagePlatform == null) {
       void createClickEvent()

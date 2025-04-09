@@ -1,6 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { sendGTMEvent } from '@next/third-parties/google'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
 import { SnackbarProvider } from 'notistack'
 import { v4 as uuidv4 } from 'uuid'
@@ -209,7 +209,8 @@ describe('CardBlock', () => {
     minRows: 1,
     type: TextResponseType.freeForm,
     routeId: null,
-    integrationId: null
+    integrationId: null,
+    required: null
   }
 
   const imageBlock: TreeBlock<ImageFields> = {
@@ -344,6 +345,28 @@ describe('CardBlock', () => {
           stepId: 'step1.id',
           label: 'Step {{number}}',
           value: 'Test response'
+        }
+      }
+    },
+    result: jest.fn(() => ({
+      data: {
+        textResponseSubmissionEventCreate: {
+          id: 'mocked-submission-id'
+        }
+      }
+    }))
+  }
+
+  const mockTextResponseEmailSubmissionEventCreate = {
+    request: {
+      query: TEXT_RESPONSE_SUBMISSION_EVENT_CREATE,
+      variables: {
+        input: {
+          id: 'uuid',
+          blockId: 'textResponseBlockId',
+          stepId: 'step1.id',
+          label: 'Step {{number}}',
+          value: 'test@example.com'
         }
       }
     },
@@ -757,7 +780,7 @@ describe('CardBlock', () => {
     treeBlocksVar([step1, step2, step3])
     blockHistoryVar([step1])
 
-    const { getByTestId, getByLabelText, getByText } = render(
+    const { getByTestId, getByLabelText } = render(
       <MockedProvider
         mocks={[
           mockStepNextEventCreate,
@@ -808,7 +831,7 @@ describe('CardBlock', () => {
     treeBlocksVar([textResponseCard, step2, step3])
     blockHistoryVar([textResponseStep])
 
-    const { getByTestId, queryByText } = render(
+    const { getByTestId } = render(
       <MockedProvider
         mocks={[
           mockStepNextEventCreate,
@@ -831,6 +854,124 @@ describe('CardBlock', () => {
       expect(
         mockTextResponseSubmissionEventCreate.result
       ).not.toHaveBeenCalled()
+    )
+  })
+
+  it('should handle formik submission for field that is required', async () => {
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
+
+    const requiredTextResponseBlock = {
+      ...textResponseBlock,
+      required: true
+    }
+
+    const textResponseCard: TreeBlock<CardBlock> = {
+      ...card1,
+      children: [
+        step1,
+        { ...requiredTextResponseBlock, parentBlockId: card1.id }
+      ]
+    }
+
+    treeBlocksVar([step1, step2, step3])
+    blockHistoryVar([step1])
+
+    render(
+      <MockedProvider
+        mocks={[
+          mockStepNextEventCreate,
+          mockTextResponseSubmissionEventCreate,
+          getStepViewEventMock(step1.id, 'Step {{number}}')
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey }}>
+            <Card {...textResponseCard} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const form = screen.getByTestId(`card-form-${card1.id}`)
+    fireEvent.submit(form)
+
+    await waitFor(() => {
+      expect(screen.getByText('This field is required')).toBeInTheDocument()
+    })
+
+    await waitFor(() =>
+      expect(
+        mockTextResponseSubmissionEventCreate.result
+      ).not.toHaveBeenCalled()
+    )
+
+    fireEvent.change(screen.getByRole('textbox', { name: 'Text Response*' }), {
+      target: { value: 'Test response' }
+    })
+
+    fireEvent.submit(form)
+
+    await waitFor(() =>
+      expect(mockTextResponseSubmissionEventCreate.result).toHaveBeenCalled()
+    )
+  })
+
+  it('should handle formik submission for email field', async () => {
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
+
+    const emailResponseBlock = {
+      ...textResponseBlock,
+      type: TextResponseType.email
+    }
+
+    const textResponseCard: TreeBlock<CardBlock> = {
+      ...card1,
+      children: [step1, { ...emailResponseBlock, parentBlockId: card1.id }]
+    }
+
+    treeBlocksVar([step1, step2, step3])
+    blockHistoryVar([step1])
+
+    render(
+      <MockedProvider
+        mocks={[
+          mockStepNextEventCreate,
+          mockTextResponseEmailSubmissionEventCreate,
+          getStepViewEventMock(step1.id, 'Step {{number}}')
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey }}>
+            <Card {...textResponseCard} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const emailInput = screen.getByLabelText('Text Response')
+    fireEvent.change(emailInput, { target: { value: 'invalid-email' } })
+
+    const form = screen.getByTestId(`card-form-${card1.id}`)
+    fireEvent.submit(form)
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Please enter a valid email address')
+      ).toBeInTheDocument()
+    })
+
+    fireEvent.change(screen.getByRole('textbox', { name: 'Text Response' }), {
+      target: { value: 'test@example.com' }
+    })
+
+    fireEvent.submit(form)
+
+    await waitFor(() =>
+      expect(
+        mockTextResponseEmailSubmissionEventCreate.result
+      ).toHaveBeenCalled()
     )
   })
 })
