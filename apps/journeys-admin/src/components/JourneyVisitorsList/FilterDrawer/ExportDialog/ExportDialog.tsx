@@ -203,8 +203,8 @@ export function ExportDialog({
           onClick={handleExport}
           disabled={getSelectedEvents().length === 0}
           sx={{
-            mb: 3,
-            mr: 3
+            mb: { xs: 0, sm: 3 },
+            mr: { xs: 0, sm: 3 }
           }}
         >
           {t('Export (CSV)')}
