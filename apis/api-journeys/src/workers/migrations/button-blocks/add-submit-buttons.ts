@@ -28,7 +28,7 @@ async function main(): Promise<void> {
   try {
     console.log('Starting migration...')
     // Get all cards that have child blocks
-    const limit = 10
+    const limit = 100
     let offset = 0
     let hasMore = true
     while (hasMore) {
@@ -109,6 +109,8 @@ async function main(): Promise<void> {
           stats.cardsModified++
           stats.buttonsAdded++
           stats.iconsAdded += 2
+        } else {
+          console.log(`Card ${card.id} already has a button`)
         }
       }
     }
