@@ -12,7 +12,7 @@ import {
 const prisma = new PrismaClient()
 
 /**
- * Main function to fetch all SignUpBlocks and log them with their parent blocks
+ * Main function to fetch all SignUpBlocks
  */
 async function fetchSignUpBlocks(): Promise<void> {
   try {
@@ -20,7 +20,6 @@ async function fetchSignUpBlocks(): Promise<void> {
     const signUpBlocks = await prisma.block.findMany({
       where: {
         typename: 'SignUpBlock',
-        // journeyId: '4d51d094-fe79-453f-b3b7-2bf897406740',
         deletedAt: null // Only fetch non-deleted blocks
       },
       include: {
@@ -83,7 +82,6 @@ async function fetchSignUpBlocks(): Promise<void> {
         required: true
       }
 
-      // Create email response block
       const emailTextResponseBlock: TextResponseBlock = {
         id: uuidv4(),
         __typename: 'TextResponseBlock',
@@ -96,7 +94,6 @@ async function fetchSignUpBlocks(): Promise<void> {
         required: true
       }
 
-      // Create the TextResponseBlock
       await prisma.block.create({
         data: {
           typename: 'TextResponseBlock',
