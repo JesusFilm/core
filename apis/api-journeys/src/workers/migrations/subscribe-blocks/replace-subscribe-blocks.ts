@@ -11,189 +11,229 @@ import {
 // Create a new PrismaClient instance for this script
 const prisma = new PrismaClient()
 
+interface Stats {
+  blocksProcessed: number
+  startTime: number
+}
+
 /**
  * Main function to fetch all SignUpBlocks
  */
 async function fetchSignUpBlocks(): Promise<void> {
+  const stats: Stats = {
+    blocksProcessed: 0,
+    startTime: Date.now()
+  }
+
   try {
+    console.log('Starting subscribe block replacement migration...')
     // 1. Query all blocks with typename 'SignUpBlock'
-    const signUpBlocks = await prisma.block.findMany({
-      where: {
-        typename: 'SignUpBlock',
-        deletedAt: null // Only fetch non-deleted blocks
-      },
-      include: {
-        // Include related data that might be useful
-        action: true,
-        journey: {
-          select: {
-            id: true,
-            title: true
-          }
-        },
-        childBlocks: {
-          orderBy: {
-            parentOrder: 'asc'
-          },
-          where: {
-            deletedAt: null
-          }
-        }
-      }
-    })
+    const limit = 100
+    let hasMore = true
 
-    // Log the number of blocks found
-    console.log(`Found ${signUpBlocks.length} SignUpBlocks`)
-
-    // Log each block with a formatted output and fetch its parent block
-    for (let i = 0; i < signUpBlocks.length; i++) {
-      const block = signUpBlocks[i]
-      console.log(
-        `\n--- SignUpBlock ${i + 1} ---`,
-        'journeyId:',
-        block.journeyId
-      )
-
-      // Update the parentOrder of all blocks that have a parentBlockId that matches the current block's parentBlockId
-      await prisma.block.updateMany({
+    while (hasMore) {
+      // First, get the total count of remaining blocks
+      const totalCount = await prisma.block.count({
         where: {
-          parentBlockId: block.parentBlockId,
-          id: {
-            not: block.id // Exclude the original SignUpBlock
-          },
-          parentOrder: {
-            gt: block.parentOrder ?? 0 // Only update blocks with higher parentOrder
-          },
-          deletedAt: null // Maintain consistency with your existing queries
+          typename: 'SignUpBlock',
+          deletedAt: null
+        }
+      })
+
+      const signUpBlocks = await prisma.block.findMany({
+        where: {
+          typename: 'SignUpBlock',
+          deletedAt: null // Only fetch non-deleted blocks
         },
-        data: {
-          parentOrder: {
-            increment: 2 // Increment by 4 to make room for the new blocks
-          }
-        }
-      })
-
-      // 2. Insert 2 Text Response Blocks and 1 Button block
-      const nameTextResponseBlock: TextResponseBlock = {
-        id: uuidv4(),
-        __typename: 'TextResponseBlock',
-        journeyId: block.journeyId,
-        parentBlockId: block.parentBlockId,
-        parentOrder: block.parentOrder ?? 0,
-        label: t('Name'),
-        minRows: 1,
-        type: TextResponseType.Name,
-        required: true
-      }
-
-      const emailTextResponseBlock: TextResponseBlock = {
-        id: uuidv4(),
-        __typename: 'TextResponseBlock',
-        journeyId: block.journeyId,
-        parentBlockId: block.parentBlockId,
-        parentOrder: (block.parentOrder ?? 0) + 1,
-        label: t('Email'),
-        minRows: 1,
-        type: TextResponseType.Email,
-        required: true
-      }
-
-      await prisma.block.create({
-        data: {
-          typename: 'TextResponseBlock',
-          journeyId: nameTextResponseBlock.journeyId,
-          parentBlockId: nameTextResponseBlock.parentBlockId,
-          parentOrder: nameTextResponseBlock.parentOrder,
-          label: nameTextResponseBlock.label,
-          minRows: nameTextResponseBlock.minRows,
-          type: nameTextResponseBlock.type,
-          required: nameTextResponseBlock.required,
-          updatedAt: new Date()
-        }
-      })
-
-      await prisma.block.create({
-        data: {
-          typename: 'TextResponseBlock',
-          journeyId: emailTextResponseBlock.journeyId,
-          parentBlockId: emailTextResponseBlock.parentBlockId,
-          parentOrder: emailTextResponseBlock.parentOrder,
-          label: emailTextResponseBlock.label,
-          minRows: emailTextResponseBlock.minRows,
-          type: emailTextResponseBlock.type,
-          required: emailTextResponseBlock.required,
-          updatedAt: new Date()
-        }
-      })
-
-      // Create button block with ID
-      const originalIconBlock = block?.childBlocks.find(
-        (child) => child.typename === 'IconBlock'
-      )
-
-      const buttonBlockId = uuidv4()
-      const iconBlockId = uuidv4()
-      const iconBlockId2 = uuidv4()
-      await prisma.block.create({
-        data: {
-          id: buttonBlockId,
-          typename: 'ButtonBlock',
-          journeyId: block.journeyId,
-          parentBlockId: block.parentBlockId,
-          parentOrder: (block.parentOrder ?? 0) + 2,
-          label: block.submitLabel ?? t('Submit'),
-          variant: 'contained',
-          color: 'primary',
-          size: 'medium',
-          submitEnabled: true,
-          updatedAt: new Date(),
-          startIconId: iconBlockId,
-          endIconId: iconBlockId2,
-          action: block.action
-            ? {
-                create: {
-                  gtmEventName: block.action.gtmEventName,
-                  blockId: block.action.blockId,
-                  journeyId: block.action.journeyId,
-                  url: block.action.url,
-                  target: block.action.target,
-                  email: block.action.email
-                }
-              }
-            : undefined,
+        include: {
+          // Include related data that might be useful
+          action: true,
+          journey: {
+            select: {
+              id: true,
+              title: true
+            }
+          },
           childBlocks: {
-            createMany: {
-              data: [
-                {
-                  id: iconBlockId,
-                  typename: 'IconBlock',
-                  journeyId: block.journeyId,
-                  color: originalIconBlock?.color ?? 'inherit',
-                  name: originalIconBlock?.name,
-                  updatedAt: new Date()
-                },
-                {
-                  id: iconBlockId2,
-                  typename: 'IconBlock',
-                  journeyId: block.journeyId,
-                  color: 'inherit',
-                  updatedAt: new Date()
-                }
-              ]
+            orderBy: {
+              parentOrder: 'asc'
+            },
+            where: {
+              deletedAt: null
             }
           }
-        }
+        },
+        take: limit
       })
 
-      // 4. Finally, remove the original SignUpBlock
-      await prisma.block.delete({
-        where: {
-          id: block.id
+      console.log(`Processing batch of ${signUpBlocks.length} SignUpBlocks (Total remaining: ${totalCount})`)
+
+      // Process each block in the current batch
+      for (const block of signUpBlocks) {
+        console.log(
+          `\n--- Processing SignUpBlock ---`,
+          'journeyId:',
+          block.journeyId
+        )
+
+        // Update the parentOrder of all blocks that have a parentBlockId that matches the current block's parentBlockId
+        await prisma.block.updateMany({
+          where: {
+            parentBlockId: block.parentBlockId,
+            id: {
+              not: block.id // Exclude the original SignUpBlock
+            },
+            parentOrder: {
+              gt: block.parentOrder ?? 0 // Only update blocks with higher parentOrder
+            },
+            deletedAt: null // Maintain consistency with your existing queries
+          },
+          data: {
+            parentOrder: {
+              increment: 2 // Increment by 2 to make room for the new blocks
+            }
+          }
+        })
+
+        // 2. Insert 2 Text Response Blocks and 1 Button block
+        const nameTextResponseBlock: TextResponseBlock = {
+          id: uuidv4(),
+          __typename: 'TextResponseBlock',
+          journeyId: block.journeyId,
+          parentBlockId: block.parentBlockId,
+          parentOrder: block.parentOrder ?? 0,
+          label: t('Name'),
+          minRows: 1,
+          type: TextResponseType.Name,
+          required: true
         }
-      })
+
+        const emailTextResponseBlock: TextResponseBlock = {
+          id: uuidv4(),
+          __typename: 'TextResponseBlock',
+          journeyId: block.journeyId,
+          parentBlockId: block.parentBlockId,
+          parentOrder: (block.parentOrder ?? 0) + 1,
+          label: t('Email'),
+          minRows: 1,
+          type: TextResponseType.Email,
+          required: true
+        }
+
+        await prisma.block.create({
+          data: {
+            typename: 'TextResponseBlock',
+            journeyId: nameTextResponseBlock.journeyId,
+            parentBlockId: nameTextResponseBlock.parentBlockId,
+            parentOrder: nameTextResponseBlock.parentOrder,
+            label: nameTextResponseBlock.label,
+            minRows: nameTextResponseBlock.minRows,
+            type: nameTextResponseBlock.type,
+            required: nameTextResponseBlock.required,
+            updatedAt: new Date()
+          }
+        })
+
+        await prisma.block.create({
+          data: {
+            typename: 'TextResponseBlock',
+            journeyId: emailTextResponseBlock.journeyId,
+            parentBlockId: emailTextResponseBlock.parentBlockId,
+            parentOrder: emailTextResponseBlock.parentOrder,
+            label: emailTextResponseBlock.label,
+            minRows: emailTextResponseBlock.minRows,
+            type: emailTextResponseBlock.type,
+            required: emailTextResponseBlock.required,
+            updatedAt: new Date()
+          }
+        })
+
+        // Create button block with ID
+        const originalIconBlock = block?.childBlocks.find(
+          (child) => child.typename === 'IconBlock'
+        )
+
+        const buttonBlockId = uuidv4()
+        const iconBlockId = uuidv4()
+        const iconBlockId2 = uuidv4()
+        await prisma.block.create({
+          data: {
+            id: buttonBlockId,
+            typename: 'ButtonBlock',
+            journeyId: block.journeyId,
+            parentBlockId: block.parentBlockId,
+            parentOrder: (block.parentOrder ?? 0) + 2,
+            label: block.submitLabel ?? t('Submit'),
+            variant: 'contained',
+            color: 'primary',
+            size: 'medium',
+            submitEnabled: true,
+            updatedAt: new Date(),
+            startIconId: iconBlockId,
+            endIconId: iconBlockId2,
+            action: block.action
+              ? {
+                  create: {
+                    gtmEventName: block.action.gtmEventName,
+                    blockId: block.action.blockId,
+                    journeyId: block.action.journeyId,
+                    url: block.action.url,
+                    target: block.action.target,
+                    email: block.action.email
+                  }
+                }
+              : undefined,
+            childBlocks: {
+              createMany: {
+                data: [
+                  {
+                    id: iconBlockId,
+                    typename: 'IconBlock',
+                    journeyId: block.journeyId,
+                    color: originalIconBlock?.color ?? 'inherit',
+                    name: originalIconBlock?.name,
+                    updatedAt: new Date()
+                  },
+                  {
+                    id: iconBlockId2,
+                    typename: 'IconBlock',
+                    journeyId: block.journeyId,
+                    color: 'inherit',
+                    updatedAt: new Date()
+                  }
+                ]
+              }
+            }
+          }
+        })
+
+        // 4. Finally, remove the original SignUpBlock
+        await prisma.block.delete({
+          where: {
+            id: block.id
+          }
+        })
+
+        stats.blocksProcessed++
+      }
+
+      if (signUpBlocks.length < limit) {
+        console.log('No more SignUpBlocks to process')
+        hasMore = false
+      }
     }
+
+    const executionTime = (Date.now() - stats.startTime) / 1000 // Convert to seconds
+
+    // Log summary
+    console.log('\nMigration completed successfully!')
+    console.log('Summary:')
+    console.log(`- Blocks processed: ${stats.blocksProcessed}`)
+    console.log(`- Execution time: ${executionTime.toFixed(2)} seconds`)
+
   } catch (error) {
     console.error('Error fetching SignUpBlocks:', error)
+    process.exit(1)
   } finally {
     // Disconnect from the Prisma client when done
     await prisma.$disconnect()
