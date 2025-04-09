@@ -1,4 +1,3 @@
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import Stack from '@mui/material/Stack'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
@@ -7,6 +6,7 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import CalendarIcon from '@core/shared/ui/icons/Calendar1'
+import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 
 export interface DateRangePickerProps {
   startDate: Date | null
@@ -43,7 +43,7 @@ export function DateRangePicker({
             onChange={onStartDateChange}
             format="dd-MM-yyyy"
             slots={{
-              openPickerIcon: KeyboardArrowDownIcon
+              openPickerIcon: ChevronDown
             }}
             slotProps={{
               textField: {
@@ -58,7 +58,7 @@ export function DateRangePicker({
             onChange={onEndDateChange}
             format="dd-MM-yyyy"
             slots={{
-              openPickerIcon: KeyboardArrowDownIcon
+              openPickerIcon: ChevronDown
             }}
             slotProps={{
               textField: {

@@ -136,7 +136,7 @@ export function FilterDrawer({
           <Box sx={{ px: 6, py: 5, mt: 'auto' }}>
             <Button
               variant="contained"
-              color="primary"
+              color="secondary"
               sx={{ width: '100%' }}
               onClick={() => setShowExportDialog(true)}
             >

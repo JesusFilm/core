@@ -1,6 +1,4 @@
 import { gql, useQuery } from '@apollo/client'
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Collapse from '@mui/material/Collapse'
@@ -15,6 +13,8 @@ import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
+import ChevronDown from '@core/shared/ui/icons/ChevronDown'
+import ChevronUp from '@core/shared/ui/icons/ChevronUp'
 
 import { EventType } from '../../../../../__generated__/globalTypes'
 import { useJourneyEventsExport } from '../../../../libs/useJourneyEventsExport'
@@ -324,9 +324,9 @@ export function ExportDialog({
                   />
                   <IconButton size="small" sx={{ pointerEvents: 'none' }}>
                     {videoEventsExpanded ? (
-                      <KeyboardArrowUpIcon />
+                      <ChevronUp />
                     ) : (
-                      <KeyboardArrowDownIcon />
+                      <ChevronDown />
                     )}
                   </IconButton>
                 </Stack>
