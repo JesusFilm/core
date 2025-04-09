@@ -3,7 +3,8 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
-import { ReactElement, useState } from 'react'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { ReactElement, useEffect, useState } from 'react'
 
 const calculateWesternEaster = (year: number): Date => {
   const a = year % 19
@@ -62,7 +63,12 @@ export const EasterDates = ({
   const westernEaster = calculateWesternEaster(currentYear)
   const orthodoxEaster = calculateOrthodoxEaster(currentYear)
   const passover = calculatePassover(currentYear)
-  const [expanded, setExpanded] = useState<boolean>(false)
+  const smUp = useMediaQuery('(min-width: 640px)')
+  const [expanded, setExpanded] = useState<boolean>(smUp)
+
+  useEffect(() => {
+    setExpanded(smUp)
+  }, [smUp])
 
   // Define date options internally
   const dateOptions: Intl.DateTimeFormatOptions = {
