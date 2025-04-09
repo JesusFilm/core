@@ -195,7 +195,7 @@ describe('FilterDrawer', () => {
 
       const user = userEvent.setup()
 
-      expect(screen.queryByTestId('ExportProgress')).not.toBeInTheDocument()
+      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
 
       await user.click(screen.getByRole('button', { name: 'Export Data' }))
 
@@ -203,7 +203,7 @@ describe('FilterDrawer', () => {
         expect(mockGetJourneyEventsCountQuery.result).toHaveBeenCalled()
       })
 
-      expect(screen.getByTestId('ExportProgress')).toBeInTheDocument()
+      expect(screen.getByRole('progressbar')).toBeInTheDocument()
       expect(getJourneyEventsMock.result).toHaveBeenCalled()
 
       expect(mutationResult).toHaveBeenCalled()

@@ -1,3 +1,4 @@
+import LoadingButton from '@mui/lab/LoadingButton'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
@@ -151,25 +152,17 @@ export function FilterDrawer({
 
       {journeyId != null && (
         <Box sx={{ px: 6, py: 5, mt: 'auto' }}>
-          {downloading ? (
-            <LinearProgress
-              data-testid="ExportProgress"
-              value={progress}
-              variant="determinate"
-              sx={{ height: 32, borderRadius: 2 }}
-            />
-          ) : (
-            <Button
-              variant="contained"
-              color="secondary"
-              fullWidth
-              onClick={() => handleExport({ journeyId })}
-              disabled={downloading}
-              sx={{ borderRadius: 2 }}
-            >
-              {t('Export Data')}
-            </Button>
-          )}
+          <LoadingButton
+            loading={downloading}
+            variant="contained"
+            color="secondary"
+            fullWidth
+            onClick={() => handleExport({ journeyId })}
+            disabled={downloading}
+            sx={{ borderRadius: 2 }}
+          >
+            {t('Export Data')}
+          </LoadingButton>
         </Box>
       )}
     </Stack>
