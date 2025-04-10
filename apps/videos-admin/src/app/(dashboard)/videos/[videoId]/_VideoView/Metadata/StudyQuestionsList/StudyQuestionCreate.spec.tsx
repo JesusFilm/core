@@ -2,53 +2,20 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
-import { VideoProvider } from '../../../../../../../libs/VideoProvider'
-
 import {
   CREATE_STUDY_QUESTION,
   StudyQuestionCreate
 } from './StudyQuestionCreate'
+import { GET_STUDY_QUESTIONS } from './StudyQuestionsList'
 
-// Define the enum locally for testing purposes
-enum VideoLabel {
-  collection = 'collection',
-  episode = 'episode',
-  featureFilm = 'featureFilm',
-  segment = 'segment',
-  series = 'series',
-  shortFilm = 'shortFilm',
-  trailer = 'trailer',
-  behindTheScenes = 'behindTheScenes'
-}
-
-const video = {
-  id: 'video-1',
-  slug: 'test-video',
-  label: VideoLabel.featureFilm,
-  published: true,
-  title: [{ id: '1', value: 'Test Video' }],
-  locked: false,
-  images: [],
-  imageAlt: [],
-  noIndex: false,
-  description: [],
-  snippet: [],
-  children: [],
-  variants: [],
-  studyQuestions: [],
-  variantLanguagesCount: 0,
-  subtitles: [],
-  videoEditions: []
-}
+const videoId = 'video-1'
 
 describe('StudyQuestionCreate', () => {
   it('should render create button', () => {
     render(
       <MockedProvider>
         <SnackbarProvider>
-          <VideoProvider video={video}>
-            <StudyQuestionCreate videoId="video-1" order={3} />
-          </VideoProvider>
+          <StudyQuestionCreate videoId={videoId} order={3} />
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -60,9 +27,7 @@ describe('StudyQuestionCreate', () => {
     render(
       <MockedProvider>
         <SnackbarProvider>
-          <VideoProvider video={video}>
-            <StudyQuestionCreate videoId="video-1" order={3} />
-          </VideoProvider>
+          <StudyQuestionCreate videoId={videoId} order={3} />
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -73,6 +38,7 @@ describe('StudyQuestionCreate', () => {
 
   it('should create study question with correct order and trigger refetch', async () => {
     const onQuestionAdded = jest.fn()
+    const newQuestionId = 'new-question-123'
 
     // Create the mocks
     const mocks = [
@@ -81,7 +47,7 @@ describe('StudyQuestionCreate', () => {
           query: CREATE_STUDY_QUESTION,
           variables: {
             input: {
-              videoId: 'video-1',
+              videoId,
               value: 'New question',
               languageId: '529',
               primary: true,
@@ -92,9 +58,31 @@ describe('StudyQuestionCreate', () => {
         result: {
           data: {
             videoStudyQuestionCreate: {
-              id: '3',
+              id: newQuestionId,
               value: 'New question',
               __typename: 'VideoStudyQuestion'
+            }
+          }
+        }
+      },
+      {
+        request: {
+          query: GET_STUDY_QUESTIONS,
+          variables: { videoId }
+        },
+        result: {
+          data: {
+            adminVideo: {
+              id: videoId,
+              studyQuestions: [
+                {
+                  id: newQuestionId,
+                  value: 'New question',
+                  order: 3,
+                  __typename: 'VideoStudyQuestion'
+                }
+              ],
+              __typename: 'AdminVideo'
             }
           }
         }
@@ -104,13 +92,11 @@ describe('StudyQuestionCreate', () => {
     render(
       <MockedProvider mocks={mocks} addTypename={true}>
         <SnackbarProvider>
-          <VideoProvider video={video}>
-            <StudyQuestionCreate
-              videoId="video-1"
-              order={3}
-              onQuestionAdded={onQuestionAdded}
-            />
-          </VideoProvider>
+          <StudyQuestionCreate
+            videoId={videoId}
+            order={3}
+            onQuestionAdded={onQuestionAdded}
+          />
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -143,7 +129,7 @@ describe('StudyQuestionCreate', () => {
           query: CREATE_STUDY_QUESTION,
           variables: {
             input: {
-              videoId: 'video-1',
+              videoId,
               value: 'New question',
               languageId: '529',
               primary: true,
@@ -158,9 +144,7 @@ describe('StudyQuestionCreate', () => {
     render(
       <MockedProvider mocks={mocks} addTypename={false}>
         <SnackbarProvider>
-          <VideoProvider video={video}>
-            <StudyQuestionCreate videoId="video-1" order={3} />
-          </VideoProvider>
+          <StudyQuestionCreate videoId={videoId} order={3} />
         </SnackbarProvider>
       </MockedProvider>
     )

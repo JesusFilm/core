@@ -2,60 +2,26 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
-import { GET_ADMIN_VIDEO } from '../../../../../../../libs/useAdminVideo'
-import { VideoProvider } from '../../../../../../../libs/VideoProvider'
-
 import {
   StudyQuestionDialog,
   UPDATE_STUDY_QUESTION
 } from './StudyQuestionDialog'
+import { mockStudyQuestions } from './StudyQuestions.mock'
 import { GET_STUDY_QUESTIONS } from './StudyQuestionsList'
 
-// Define the enum locally for testing purposes
-enum VideoLabel {
-  collection = 'collection',
-  episode = 'episode',
-  featureFilm = 'featureFilm',
-  segment = 'segment',
-  series = 'series',
-  shortFilm = 'shortFilm',
-  trailer = 'trailer',
-  behindTheScenes = 'behindTheScenes'
-}
-
-const video = {
-  id: 'video-1',
-  title: [{ id: '1', value: 'Test Video', primary: true }],
-  slug: 'test-video',
-  published: true,
-  locked: false,
-  images: [],
-  imageAlt: [],
-  noIndex: false,
-  description: [],
-  snippet: [],
-  children: [],
-  variants: [],
-  studyQuestions: [],
-  variantLanguagesCount: 0,
-  subtitles: [],
-  videoEditions: [],
-  label: VideoLabel.featureFilm
-}
+const videoId = 'video-1'
 
 describe('StudyQuestionDialog', () => {
   it('should render dialog', () => {
     render(
       <MockedProvider>
         <SnackbarProvider>
-          <VideoProvider video={video}>
-            <StudyQuestionDialog
-              open={true}
-              onClose={jest.fn()}
-              studyQuestion={{ id: '1', value: 'Test question' }}
-              videoId="video-1"
-            />
-          </VideoProvider>
+          <StudyQuestionDialog
+            open={true}
+            onClose={jest.fn()}
+            studyQuestion={{ id: '1', value: 'Test question' }}
+            videoId={videoId}
+          />
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -70,6 +36,14 @@ describe('StudyQuestionDialog', () => {
     const onClose = jest.fn()
     const onQuestionUpdated = jest.fn()
 
+    // Define the updated question
+    const updatedQuestion = {
+      id: mockStudyQuestions[0].id,
+      value: 'Updated question',
+      order: 1,
+      __typename: 'VideoStudyQuestion'
+    }
+
     // Create the proper mocked response
     const mocks = [
       {
@@ -77,7 +51,7 @@ describe('StudyQuestionDialog', () => {
           query: UPDATE_STUDY_QUESTION,
           variables: {
             input: {
-              id: '1',
+              id: mockStudyQuestions[0].id,
               value: 'Updated question'
             }
           }
@@ -85,7 +59,7 @@ describe('StudyQuestionDialog', () => {
         result: {
           data: {
             videoStudyQuestionUpdate: {
-              id: '1',
+              id: mockStudyQuestions[0].id,
               value: 'Updated question',
               __typename: 'VideoStudyQuestion'
             }
@@ -95,41 +69,14 @@ describe('StudyQuestionDialog', () => {
       {
         request: {
           query: GET_STUDY_QUESTIONS,
-          variables: { videoId: 'video-1' }
+          variables: { videoId }
         },
         result: {
           data: {
             adminVideo: {
-              id: 'video-1',
-              studyQuestions: [
-                {
-                  id: '1',
-                  value: 'Updated question',
-                  order: 1,
-                  __typename: 'VideoStudyQuestion'
-                }
-              ],
+              id: videoId,
+              studyQuestions: [updatedQuestion, ...mockStudyQuestions.slice(1)],
               __typename: 'AdminVideo'
-            }
-          }
-        }
-      },
-      {
-        request: {
-          query: GET_ADMIN_VIDEO,
-          variables: { videoId: 'video-1' }
-        },
-        result: {
-          data: {
-            adminVideo: {
-              ...video,
-              studyQuestions: [
-                {
-                  id: '1',
-                  value: 'Updated question',
-                  __typename: 'VideoStudyQuestion'
-                }
-              ]
             }
           }
         }
@@ -139,15 +86,16 @@ describe('StudyQuestionDialog', () => {
     render(
       <MockedProvider mocks={mocks} addTypename={true}>
         <SnackbarProvider>
-          <VideoProvider video={video}>
-            <StudyQuestionDialog
-              open={true}
-              onClose={onClose}
-              studyQuestion={{ id: '1', value: 'Test question' }}
-              onQuestionUpdated={onQuestionUpdated}
-              videoId="video-1"
-            />
-          </VideoProvider>
+          <StudyQuestionDialog
+            open={true}
+            onClose={onClose}
+            studyQuestion={{
+              id: mockStudyQuestions[0].id,
+              value: 'Test question'
+            }}
+            onQuestionUpdated={onQuestionUpdated}
+            videoId={videoId}
+          />
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -172,7 +120,7 @@ describe('StudyQuestionDialog', () => {
           query: UPDATE_STUDY_QUESTION,
           variables: {
             input: {
-              id: '1',
+              id: mockStudyQuestions[0].id,
               value: 'Updated question'
             }
           }
@@ -184,14 +132,15 @@ describe('StudyQuestionDialog', () => {
     render(
       <MockedProvider mocks={mocks} addTypename={false}>
         <SnackbarProvider>
-          <VideoProvider video={video}>
-            <StudyQuestionDialog
-              open={true}
-              onClose={jest.fn()}
-              studyQuestion={{ id: '1', value: 'Test question' }}
-              videoId="video-1"
-            />
-          </VideoProvider>
+          <StudyQuestionDialog
+            open={true}
+            onClose={jest.fn()}
+            studyQuestion={{
+              id: mockStudyQuestions[0].id,
+              value: 'Test question'
+            }}
+            videoId={videoId}
+          />
         </SnackbarProvider>
       </MockedProvider>
     )

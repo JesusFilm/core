@@ -9,7 +9,6 @@ import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
 import { StudyQuestionForm } from './StudyQuestionForm'
-import { GET_STUDY_QUESTIONS } from './StudyQuestionsList'
 
 export const CREATE_STUDY_QUESTION = graphql(`
   mutation CreateStudyQuestion($input: VideoStudyQuestionCreateInput!) {

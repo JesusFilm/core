@@ -122,26 +122,7 @@ export const useAdminVideoMock: MockedResponse<
             ]
           }
         ],
-        studyQuestions: [
-          {
-            id: '2481b77c-7eff-4039-9173-d5383ebdd222',
-            value: "How is the sacrifice of Jesus part of God's plan?"
-          },
-          {
-            id: 'e22f7314-0d2f-4ef3-835f-155d41706a19',
-            value:
-              'How do the different groups of people respond to Jesus and His teachings?'
-          },
-          {
-            id: '66c0d6a0-2861-4aaa-984d-47049d97292d',
-            value:
-              'What are some of the miracles Jesus performed? How do they affect those people?'
-          },
-          {
-            id: '8c5cb753-a161-435e-8233-27b735d577ec',
-            value: 'How do you respond to the life of Jesus?'
-          }
-        ],
+        studyQuestions: [],
         variants: [
           {
             id: '1_4334-jf-0-0',
