@@ -31,7 +31,7 @@ export function BibleQuotesCarouselHeader({
     }
 
     sendGTMEvent({
-      event: 'easter_2025_share_button_click',
+      event: 'share_button_click',
       eventId: uuidv4(),
       date: new Date().toISOString(),
       contentId

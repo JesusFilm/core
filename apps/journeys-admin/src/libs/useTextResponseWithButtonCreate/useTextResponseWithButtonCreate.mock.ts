@@ -68,6 +68,7 @@ export const textResponseWithButtonCreateMock: MockedResponse<
         routeId: null,
         integrationId: null,
         placeholder: null,
+        required: null,
         __typename: 'TextResponseBlock'
       },
       button: {

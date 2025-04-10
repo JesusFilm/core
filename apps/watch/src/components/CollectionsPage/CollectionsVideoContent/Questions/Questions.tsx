@@ -37,7 +37,7 @@ export const Questions = ({
 
   function handleAskQuestionClick() {
     sendGTMEvent({
-      event: 'easter_2025_ask_question_button_click',
+      event: 'ask_question_button_click',
       eventId: uuidv4(),
       date: new Date().toISOString(),
       contentId

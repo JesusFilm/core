@@ -86,6 +86,7 @@ export function NewTextResponseButton(): ReactElement {
       type: null,
       routeId: null,
       integrationId: null,
+      required: null,
       __typename: 'TextResponseBlock'
     }
 

@@ -39,6 +39,7 @@ export const textResponseWithButtonRestoreMock: MockedResponse<
           routeId: null,
           integrationId: null,
           placeholder: null,
+          required: null,
           __typename: 'TextResponseBlock'
         }
       ],

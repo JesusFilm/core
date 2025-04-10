@@ -28,6 +28,7 @@ describe('useTextResponseWithButtonCreate', () => {
       routeId: null,
       integrationId: null,
       placeholder: null,
+      required: null,
       __typename: 'TextResponseBlock' as const
     } satisfies TextResponseBlock,
     buttonBlock: {

@@ -226,6 +226,7 @@ export interface BlockDuplicate_blockDuplicate_TextResponseBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
   placeholder: string | null;
   hint: string | null;

@@ -1,5 +1,6 @@
 /* eslint-disable i18next/no-literal-string */
 import { ReactElement } from 'react'
+import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { Icon } from '@core/shared/ui/icons/Icon'
@@ -85,6 +86,11 @@ export function OtherCollectionsCarousel({
 
       <div className="">
         <Swiper
+          modules={[Mousewheel, FreeMode, A11y]}
+          mousewheel={{
+            forceToAxis: true
+          }}
+          observeParents
           slidesPerView="auto"
           spaceBetween={0}
           pagination={{ clickable: true }}

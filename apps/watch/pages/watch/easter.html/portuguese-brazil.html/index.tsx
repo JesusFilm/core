@@ -13,8 +13,6 @@ export default function EasterPage(): ReactElement {
   return (
     <>
       <NextSeo
-        noindex
-        nofollow
         titleTemplate="%s | Jesus Film Project"
         defaultTitle="Vídeos e recursos da Páscoa 2025 sobre Quaresma, Semana Santa e Ressurreição | Jesus Film Project"
         description="Explore o outro lado da Páscoa — repleto de traição, esperança e uma afirmação que mudou o mundo."

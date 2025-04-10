@@ -60,7 +60,8 @@ export const textResponseBlockCreateMock: MockedResponse<TextResponseBlockCreate
           type: null,
           routeId: null,
           integrationId: null,
-          placeholder: null
+          placeholder: null,
+          required: null
         }
       }
     }))

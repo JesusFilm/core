@@ -91,6 +91,7 @@ const textResponse: TreeBlock<TextResponseBlock> = {
   integrationId: null,
   type: null,
   routeId: null,
+  required: null,
   children: []
 }
 

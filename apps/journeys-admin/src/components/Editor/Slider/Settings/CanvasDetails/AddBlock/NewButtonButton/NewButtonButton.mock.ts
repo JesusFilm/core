@@ -33,6 +33,7 @@ export const textResponseBlock: TreeBlock<TextResponseBlock> = {
   routeId: null,
   integrationId: null,
   placeholder: null,
+  required: null,
   children: []
 }
 

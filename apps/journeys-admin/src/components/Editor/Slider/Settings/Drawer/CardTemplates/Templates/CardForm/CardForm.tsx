@@ -297,6 +297,7 @@ export function CardForm(): ReactElement {
       type: null,
       routeId: null,
       integrationId: null,
+      required: null,
       __typename: 'TextResponseBlock'
     } satisfies TextResponseBlock
 

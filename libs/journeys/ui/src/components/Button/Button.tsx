@@ -2,6 +2,7 @@ import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import MuiButton from '@mui/material/Button'
 import { sendGTMEvent } from '@next/third-parties/google'
+import { useFormikContext } from 'formik'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { usePlausible } from 'next-plausible'
@@ -111,7 +112,9 @@ export function Button({
   const { variant, journey } = useJourney()
   const { treeBlocks, blockHistory } = useBlocks()
   const { t } = useTranslation('libs-journeys-ui')
+  const formik = useFormikContext()
   const activeBlock = blockHistory[blockHistory.length - 1]
+  const router = useRouter()
 
   const heading =
     activeBlock != null
@@ -233,9 +236,23 @@ export function Button({
     }
   }
 
-  const router = useRouter()
+  function isEmptyForm(): boolean {
+    return Object.values(formik.values as string).every((value) => value === '')
+  }
+
   const handleClick = async (e: MouseEvent): Promise<void> => {
     e.stopPropagation()
+
+    if (submitEnabled && formik != null) {
+      const errors = await formik.validateForm(formik.values)
+
+      if (isEmptyForm()) {
+        e.preventDefault()
+      }
+
+      if (!isEmptyForm() && Object.keys(errors).length > 0) return
+    }
+
     if (messagePlatform == null) {
       void createClickEvent()
     } else {

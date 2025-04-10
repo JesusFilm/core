@@ -49,7 +49,7 @@ export function BibleQuotesCarousel({
 
   function handleShareClick() {
     sendGTMEvent({
-      event: 'easter_2025_join_study_button_click',
+      event: 'join_study_button_click',
       eventId: uuidv4(),
       date: new Date().toISOString(),
       contentId
