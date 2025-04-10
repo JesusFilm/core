@@ -1,6 +1,7 @@
-import Box from '@mui/material/Box'
+import { sendGTMEvent } from '@next/third-parties/google'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 
 import { Icon } from '@core/shared/ui/icons/Icon'
 
@@ -17,19 +18,30 @@ interface QuestionsProps {
   questionsTitle?: string
   askButtonText?: string
   onOpenDialog?: () => void
+  contentId: string
 }
 
 export const Questions = ({
   questions,
   questionsTitle = 'Related questions',
   askButtonText = 'Ask yours',
-  onOpenDialog
+  onOpenDialog,
+  contentId
 }: QuestionsProps): ReactElement => {
   const [openQuestion, setOpenQuestion] = useState<number | null>(null)
   const { t } = useTranslation('apps-watch')
 
   const handleQuestionToggle = (id: number): void => {
     setOpenQuestion(openQuestion === id ? null : id)
+  }
+
+  function handleAskQuestionClick() {
+    sendGTMEvent({
+      event: 'easter_2025_ask_question_button_click',
+      eventId: uuidv4(),
+      date: new Date().toISOString(),
+      contentId
+    })
   }
 
   return (
@@ -45,6 +57,7 @@ export const Questions = ({
             target="_blank"
           >
             <button
+              onClick={handleAskQuestionClick}
               data-testid="AskQuestionButton"
               rel="noopener noreferrer"
               aria-label="Ask a question"

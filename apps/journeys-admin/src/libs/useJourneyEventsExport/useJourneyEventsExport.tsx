@@ -33,13 +33,10 @@ export const GET_JOURNEY_EVENTS_EXPORT = gql`
           value
           typename
           progress
-          journey {
-            slug
-          }
-          visitor {
-            email
-            name
-          }
+          journeySlug
+          visitorName
+          visitorEmail
+          visitorPhone
         }
       }
       pageInfo {
@@ -68,11 +65,11 @@ const EVENT_CSV_OPTIONS = {
     { key: 'value', header: 'Value' },
     { key: 'progress', header: 'Video Progress' },
     { key: 'journeyId', header: 'Journey ID' },
-    { key: 'slug', header: 'Slug' },
+    { key: 'journeySlug', header: 'Slug' },
     { key: 'visitorId', header: 'Visitor ID' },
-    { key: 'name', header: 'Name' },
-    { key: 'email', header: 'Email' }
-    //TODO: visitor phone
+    { key: 'visitorName', header: 'Name' },
+    { key: 'visitorEmail', header: 'Email' },
+    { key: 'visitorPhone', header: 'Phone' }
   ]
 }
 
@@ -196,16 +193,9 @@ export function useJourneyEventsExport(): {
         hasNextPage = data?.journeyEventsConnection.pageInfo.hasNextPage
       } while (hasNextPage)
 
-      const eventData: JourneyEvent[] = events.map((edge) => {
-        return {
-          ...edge.node,
-          slug: edge.node.journey?.slug,
-          name: edge.node.visitor?.name,
-          email: edge.node.visitor?.email
-        }
-      })
+      const eventData: JourneyEvent[] = events.map((edge) => edge.node)
 
-      const journeySlug = events[0]?.node.journey?.slug ?? ''
+      const journeySlug = events[0]?.node.journeySlug ?? ''
       handleCsvProcessing(eventData, journeySlug)
 
       void createEventsExportLog({
