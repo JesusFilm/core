@@ -1,13 +1,15 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
+
+import { GetJourneyCreatedAt, GetJourneyCreatedAtVariables } from '../../../../__generated__/GetJourneyCreatedAt'
 
 import { GET_JOURNEY_CREATED_AT } from './ExportDialog/ExportDialog'
 import { FilterDrawer } from './FilterDrawer'
 
 const journeyCreatedAt = '2023-01-01T00:00:00.000Z'
-const mockJourneyCreatedAt = {
+const mockJourneyCreatedAt: MockedResponse<GetJourneyCreatedAt, GetJourneyCreatedAtVariables> = {
   request: {
     query: GET_JOURNEY_CREATED_AT,
     variables: { id: 'journey1' }
