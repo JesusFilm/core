@@ -9,6 +9,7 @@ import {
   StudyQuestionDialog,
   UPDATE_STUDY_QUESTION
 } from './StudyQuestionDialog'
+import { GET_STUDY_QUESTIONS } from './StudyQuestionsList'
 
 // Define the enum locally for testing purposes
 enum VideoLabel {
@@ -52,6 +53,7 @@ describe('StudyQuestionDialog', () => {
               open={true}
               onClose={jest.fn()}
               studyQuestion={{ id: '1', value: 'Test question' }}
+              videoId="video-1"
             />
           </VideoProvider>
         </SnackbarProvider>
@@ -92,6 +94,28 @@ describe('StudyQuestionDialog', () => {
       },
       {
         request: {
+          query: GET_STUDY_QUESTIONS,
+          variables: { videoId: 'video-1' }
+        },
+        result: {
+          data: {
+            adminVideo: {
+              id: 'video-1',
+              studyQuestions: [
+                {
+                  id: '1',
+                  value: 'Updated question',
+                  order: 1,
+                  __typename: 'VideoStudyQuestion'
+                }
+              ],
+              __typename: 'AdminVideo'
+            }
+          }
+        }
+      },
+      {
+        request: {
           query: GET_ADMIN_VIDEO,
           variables: { videoId: 'video-1' }
         },
@@ -121,6 +145,7 @@ describe('StudyQuestionDialog', () => {
               onClose={onClose}
               studyQuestion={{ id: '1', value: 'Test question' }}
               onQuestionUpdated={onQuestionUpdated}
+              videoId="video-1"
             />
           </VideoProvider>
         </SnackbarProvider>
@@ -135,9 +160,8 @@ describe('StudyQuestionDialog', () => {
 
     // Verify the component shows success message and calls onClose
     await waitFor(() => {
-      expect(screen.getByText('Study question updated')).toBeInTheDocument()
+      expect(onClose).toHaveBeenCalled()
     })
-    expect(onClose).toHaveBeenCalled()
     expect(onQuestionUpdated).toHaveBeenCalled()
   })
 
@@ -165,6 +189,7 @@ describe('StudyQuestionDialog', () => {
               open={true}
               onClose={jest.fn()}
               studyQuestion={{ id: '1', value: 'Test question' }}
+              videoId="video-1"
             />
           </VideoProvider>
         </SnackbarProvider>

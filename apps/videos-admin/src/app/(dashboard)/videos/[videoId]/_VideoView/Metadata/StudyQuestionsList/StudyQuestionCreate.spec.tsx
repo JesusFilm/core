@@ -41,18 +41,13 @@ const video = {
   videoEditions: []
 }
 
-const mockStudyQuestions = [
-  { id: '1', value: 'Question 1' },
-  { id: '2', value: 'Question 2' }
-]
-
 describe('StudyQuestionCreate', () => {
   it('should render create button', () => {
     render(
       <MockedProvider>
         <SnackbarProvider>
           <VideoProvider video={video}>
-            <StudyQuestionCreate studyQuestions={mockStudyQuestions} />
+            <StudyQuestionCreate videoId="video-1" order={3} />
           </VideoProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -66,7 +61,7 @@ describe('StudyQuestionCreate', () => {
       <MockedProvider>
         <SnackbarProvider>
           <VideoProvider video={video}>
-            <StudyQuestionCreate studyQuestions={mockStudyQuestions} />
+            <StudyQuestionCreate videoId="video-1" order={3} />
           </VideoProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -77,7 +72,6 @@ describe('StudyQuestionCreate', () => {
   })
 
   it('should create study question with correct order and trigger refetch', async () => {
-    const nextOrder = mockStudyQuestions.length + 1
     const onQuestionAdded = jest.fn()
 
     // Create the mocks
@@ -91,7 +85,7 @@ describe('StudyQuestionCreate', () => {
               value: 'New question',
               languageId: '529',
               primary: true,
-              order: nextOrder
+              order: 3
             }
           }
         },
@@ -112,7 +106,8 @@ describe('StudyQuestionCreate', () => {
         <SnackbarProvider>
           <VideoProvider video={video}>
             <StudyQuestionCreate
-              studyQuestions={mockStudyQuestions}
+              videoId="video-1"
+              order={3}
               onQuestionAdded={onQuestionAdded}
             />
           </VideoProvider>
@@ -152,7 +147,7 @@ describe('StudyQuestionCreate', () => {
               value: 'New question',
               languageId: '529',
               primary: true,
-              order: mockStudyQuestions.length + 1
+              order: 3
             }
           }
         },
@@ -164,7 +159,7 @@ describe('StudyQuestionCreate', () => {
       <MockedProvider mocks={mocks} addTypename={false}>
         <SnackbarProvider>
           <VideoProvider video={video}>
-            <StudyQuestionCreate studyQuestions={mockStudyQuestions} />
+            <StudyQuestionCreate videoId="video-1" order={3} />
           </VideoProvider>
         </SnackbarProvider>
       </MockedProvider>

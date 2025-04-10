@@ -67,35 +67,6 @@ export function StudyQuestionCreate({
             primary: true,
             order
           }
-        },
-        update: (cache, { data }) => {
-          if (!data?.videoStudyQuestionCreate) return
-
-          // Read the current data from cache
-          const existingData = cache.readQuery({
-            query: GET_STUDY_QUESTIONS,
-            variables: { videoId }
-          })
-
-          if (!existingData) return
-
-          // Get the new question from the mutation response
-          const newQuestion = data.videoStudyQuestionCreate
-
-          // Write the updated questions back to the cache with the new question added
-          cache.writeQuery({
-            query: GET_STUDY_QUESTIONS,
-            variables: { videoId },
-            data: {
-              adminVideo: {
-                ...existingData.adminVideo,
-                studyQuestions: [
-                  ...existingData.adminVideo.studyQuestions,
-                  newQuestion
-                ]
-              }
-            }
-          })
         }
       })
     } catch (error) {

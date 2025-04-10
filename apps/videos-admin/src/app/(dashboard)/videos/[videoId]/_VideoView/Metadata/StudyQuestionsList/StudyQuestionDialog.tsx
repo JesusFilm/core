@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import Dialog from '@mui/material/Dialog'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
@@ -38,7 +38,8 @@ export function StudyQuestionDialog({
   open,
   onClose,
   studyQuestion,
-  videoId
+  videoId,
+  onQuestionUpdated
 }: StudyQuestionDialogProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
 
@@ -48,11 +49,20 @@ export function StudyQuestionDialog({
   >(UPDATE_STUDY_QUESTION, {
     onCompleted: () => {
       enqueueSnackbar('Study question updated', { variant: 'success' })
+      if (onQuestionUpdated) {
+        onQuestionUpdated()
+      }
       onClose()
     },
     onError: (error) => {
       enqueueSnackbar(error.message, { variant: 'error' })
-    }
+    },
+    refetchQueries: [
+      {
+        query: GET_STUDY_QUESTIONS,
+        variables: { videoId }
+      }
+    ]
   })
 
   const handleSubmit = async (values: { value: string }): Promise<void> => {
@@ -63,38 +73,6 @@ export function StudyQuestionDialog({
             id: studyQuestion.id,
             value: values.value
           }
-        },
-        update: (cache, { data }) => {
-          if (!data?.videoStudyQuestionUpdate) return
-
-          // Read the current data from cache
-          const existingData = cache.readQuery({
-            query: GET_STUDY_QUESTIONS,
-            variables: { videoId }
-          })
-
-          if (!existingData) return
-
-          // Get the updated question from the mutation response
-          const updatedQuestion = data.videoStudyQuestionUpdate
-
-          // Create a new array with the updated question
-          const updatedQuestions = existingData.adminVideo.studyQuestions.map(
-            (question) =>
-              question.id === updatedQuestion.id ? updatedQuestion : question
-          )
-
-          // Write the updated questions back to the cache
-          cache.writeQuery({
-            query: GET_STUDY_QUESTIONS,
-            variables: { videoId },
-            data: {
-              adminVideo: {
-                ...existingData.adminVideo,
-                studyQuestions: updatedQuestions
-              }
-            }
-          })
         }
       })
     } catch (error) {

@@ -132,30 +132,20 @@ export function StudyQuestionsList({
       updatedQuestions.splice(newIndex, 0, movedItem)
 
       try {
+        // Update all questions in sequence without updating cache each time
         for (let i = 0; i < updatedQuestions.length; i++) {
           const question = updatedQuestions[i]
           await updateStudyQuestionOrder({
             variables: {
               input: { id: question.id, order: i + 1 }
-            },
-            update: (cache) => {
-              cache.writeQuery({
-                query: GET_STUDY_QUESTIONS,
-                variables: { videoId },
-                data: {
-                  adminVideo: {
-                    id: videoId,
-                    studyQuestions: updatedQuestions
-                  }
-                }
-              })
             }
           })
         }
         enqueueSnackbar('Question order updated', { variant: 'success' })
+        void refetch()
       } catch (error) {
         enqueueSnackbar('Error updating study question order:', error)
-        await refetch()
+        void refetch()
       }
     }
   }
@@ -166,16 +156,19 @@ export function StudyQuestionsList({
 
   const handleCloseDialog = () => {
     setSelectedQuestion(null)
+    void refetch()
   }
 
   const handleOpenDeleteDialog = (id: string): void => {
     setQuestionToDelete(id)
     setDeleteDialogOpen(true)
+    void refetch()
   }
 
   const handleCloseDeleteDialog = (): void => {
     setDeleteDialogOpen(false)
     setQuestionToDelete(null)
+    void refetch()
   }
 
   const handleDeleteQuestion = async (): Promise<void> => {

@@ -72,10 +72,6 @@ export const GET_ADMIN_VIDEO = graphql(`
           url
         }
       }
-      studyQuestions {
-        id
-        value
-      }
       variantLanguagesCount
       subtitles {
         id
