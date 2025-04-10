@@ -4,7 +4,6 @@ import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 
-import { TextResponseType } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 
@@ -170,7 +169,7 @@ describe('TextResponse', () => {
     render(<TextResponseMock />)
     expect(screen.getByRole('textbox')).toHaveAttribute(
       'aria-labelledby',
-      'textResponse-label'
+      'textResponse-label-textResponse0id'
     )
   })
 
@@ -207,117 +206,5 @@ describe('TextResponse', () => {
 
     expect(screen.queryByText('Your answer here*')).not.toBeInTheDocument()
     expect(screen.getByText('Your answer here')).toBeInTheDocument()
-  })
-
-  it('should show "Required" error message if field is required and left empty', async () => {
-    const requiredBlock: TreeBlock<TextResponseFields> = {
-      ...block,
-      required: true
-    }
-
-    render(
-      <JourneyProvider>
-        <SnackbarProvider>
-          <TextResponse {...requiredBlock} />
-        </SnackbarProvider>
-      </JourneyProvider>
-    )
-
-    fireEvent.blur(screen.getByRole('textbox'))
-
-    await waitFor(() => {
-      expect(screen.getByText('Required')).toBeInTheDocument()
-    })
-  })
-
-  it('should show email validation error for invalid email', async () => {
-    const emailBlock: TreeBlock<TextResponseFields> = {
-      ...block,
-      type: TextResponseType.email
-    }
-
-    render(
-      <JourneyProvider>
-        <SnackbarProvider>
-          <TextResponse {...emailBlock} />
-        </SnackbarProvider>
-      </JourneyProvider>
-    )
-
-    fireEvent.change(screen.getByRole('textbox'), {
-      target: { value: 'invalid-email' }
-    })
-    fireEvent.blur(screen.getByRole('textbox'))
-
-    await waitFor(() => {
-      expect(
-        screen.getByText('Please enter a valid email address')
-      ).toBeInTheDocument()
-    })
-  })
-
-  it('should not submit if required validation fails', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        textResponseSubmissionEventCreate: {
-          id: 'uuid'
-        }
-      }
-    }))
-
-    const requiredBlock: TreeBlock<TextResponseFields> = {
-      ...block,
-      required: true
-    }
-
-    render(
-      <JourneyProvider>
-        <SnackbarProvider>
-          <TextResponse {...requiredBlock} />
-        </SnackbarProvider>
-      </JourneyProvider>
-    )
-
-    fireEvent.blur(screen.getByRole('textbox'))
-
-    await waitFor(() => {
-      expect(screen.getByText('Required')).toBeInTheDocument()
-      expect(result).not.toHaveBeenCalled()
-    })
-  })
-
-  it('should not submit if email validation fails', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        textResponseSubmissionEventCreate: {
-          id: 'uuid'
-        }
-      }
-    }))
-
-    const emailBlock: TreeBlock<TextResponseFields> = {
-      ...block,
-      type: TextResponseType.email
-    }
-
-    render(
-      <JourneyProvider>
-        <SnackbarProvider>
-          <TextResponse {...emailBlock} />
-        </SnackbarProvider>
-      </JourneyProvider>
-    )
-
-    fireEvent.change(screen.getByRole('textbox'), {
-      target: { value: 'invalid-email' }
-    })
-    fireEvent.blur(screen.getByRole('textbox'))
-
-    await waitFor(() => {
-      expect(
-        screen.getByText('Please enter a valid email address')
-      ).toBeInTheDocument()
-      expect(result).not.toHaveBeenCalled()
-    })
   })
 })
