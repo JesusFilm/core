@@ -87,16 +87,18 @@ export function CollectionsPage(): ReactElement {
       <CollectionsPageContent>
         <CollectionNavigationCarousel contentItems={navigationContentItems} />
         <CollectionIntroText
-          title="The real Easter story"
-          subtitle="Easter isn't just a celebration"
+          title="The Real Easter story"
+          subtitle="Questioning? Searching? Discover the true power of Easter."
           firstParagraph={{
-            beforeHighlight: 'The Gospels are ',
-            highlightedText: 'shockingly honest',
+            beforeHighlight: 'Beyond eggs and bunnies lies the story of ',
+            highlightedText: "Jesus's life, death and resurrection.",
             afterHighlight:
-              ' about the emotions Jesus experienced—His deep anguish, one of His closest friends denying even to know Him, and other disciples—disbelief in His resurrection.'
+              ' The true power of Easter goes beyond church services and rituals — and into the very reason why humans need a Savior.'
           }}
-          secondParagraph="If you have doubts or want to rediscover the meaning of Easter explore this collection of videos and interactive resources."
+          secondParagraph="The Gospels are shockingly honest about the emotions Jesus experienced — His deep anguish over one of His closest friends denying he even knew Him, and the other disciples' disbelief in His resurrection — raw emotions that mirror our own struggles."
           easterDatesTitle="When is Easter celebrated in {year}?"
+          thirdParagraph="Explore our collection of videos and interactive resources that invite you into the authentic story — one that changed history and continues to transform lives today.
+Because the greatest celebration in human history is about far more than traditions — it's about resurrection power"
           westernEasterLabel="Western Easter (Catholic/Protestant)"
           orthodoxEasterLabel="Orthodox"
           passoverLabel="Jewish Passover"
@@ -166,7 +168,7 @@ export function CollectionsPage(): ReactElement {
                     <li>
                       {'It fulfills Old Testament prophecies about the Messiah'}
                     </li>
-                    <li>{"It demonstrates God's power to give new life"}</li>
+                    <li>{`It demonstrates God's power to give new life`}</li>
                     <li>
                       {
                         'It provides hope for our own resurrection and eternal life'
@@ -294,6 +296,7 @@ export function CollectionsPage(): ReactElement {
           shareButtonText="Share"
           shareDataTitle={shareDataTitle}
           quizButtonText="What's your next step of faith?"
+          startAt={3000}
           questions={[
             {
               id: 1,
@@ -339,7 +342,7 @@ export function CollectionsPage(): ReactElement {
                         'His death fulfilled Old Testament prophecies (Isaiah 53)'
                       }
                     </li>
-                    <li>{"He took on the punishment for humanity's sins"}</li>
+                    <li>{`He took on the punishment for humanity's sins`}</li>
                     <li>
                       {
                         'By not saving Himself, He demonstrated His ultimate love and obedience to God'
@@ -581,7 +584,7 @@ export function CollectionsPage(): ReactElement {
           subtitle={'From Religion to Relationship'}
           title={'The Gospel in One Conversation'}
           description={
-            "In a private conversation at night, Nicodemus, a respected Jewish teacher, came to Jesus seeking truth. Jesus told him that no one can see the kingdom of God unless they are born again. This deep conversation reveals the heart of Jesus' mission—to bring spiritual rebirth through the Holy Spirit. Discover what it means to be born again and why it’s essential for eternal life."
+            "In a private conversation at night, Nicodemus, a respected Jewish teacher, came to Jesus seeking truth. Jesus told him that no one can see the kingdom of God unless they are born again. This deep conversation reveals the heart of Jesus' mission—to bring spiritual rebirth through the Holy Spirit. Discover what it means to be born again and why it's essential for eternal life."
           }
           mutePage={mutePage}
           setMutePage={setMutePage}
@@ -618,9 +621,7 @@ export function CollectionsPage(): ReactElement {
               answer: (
                 <>
                   <p>
-                    {
-                      'Jesus wanted Nicodemus to understand that religious knowledge and good deeds are not enough. To enter God’s kingdom, a complete inner transformation is needed.'
-                    }
+                    {`Jesus wanted Nicodemus to understand that religious knowledge and good deeds are not enough. To enter God's kingdom, a complete inner transformation is needed.`}
                   </p>
                   <ul className="list-disc pl-6 mt-2 space-y-2">
                     <li>{'It shows our need for spiritual renewal'}</li>
@@ -657,14 +658,14 @@ export function CollectionsPage(): ReactElement {
                 'https://images.unsplash.com/photo-1497449493050-aad1e7cad165?w=1400&auto=format&fit=crop&q=60',
               bgColor: '#0A0A0A',
               author: 'John 3:3',
-              text: 'Jesus replied, “Very truly I tell you, no one can see the kingdom of God unless they are born again.”'
+              text: 'Jesus replied, "Very truly I tell you, no one can see the kingdom of God unless they are born again."'
             },
             {
               imageUrl:
                 'https://images.unsplash.com/photo-1574957973698-418ac4c877af?w=1400&auto=format&fit=crop&q=60',
               bgColor: '#1A1A1D',
               author: 'John 3:5',
-              text: 'Jesus answered, “Very truly I tell you, no one can enter the kingdom of God unless they are born of water and the Spirit.”'
+              text: 'Jesus answered, "Very truly I tell you, no one can enter the kingdom of God unless they are born of water and the Spirit."'
             },
             {
               imageUrl:
@@ -714,7 +715,7 @@ export function CollectionsPage(): ReactElement {
                     <li>
                       {'Roman soldiers confirmed His death before burying Him'}
                     </li>
-                    <li>{"Jesus' tomb was sealed and guarded"}</li>
+                    <li>{`Jesus' tomb was sealed and guarded`}</li>
                     <li>
                       {
                         'Hundreds of witnesses saw Jesus alive after His resurrection'
@@ -738,9 +739,11 @@ export function CollectionsPage(): ReactElement {
                     {'The resurrection is central to Christian faith because:'}
                   </p>
                   <ul className="list-disc pl-6 mt-2 space-y-2">
-                    <li>{"It proves Jesus' victory over sin and death"}</li>
-                    <li>{'It fulfills prophecies about the Messiah'}</li>
-                    <li>{'It confirms that Jesus is the Son of God'}</li>
+                    <li>{`It proves Jesus' victory over sin and death`}</li>
+                    <li>
+                      {'It fulfills Old Testament prophecies about the Messiah'}
+                    </li>
+                    <li>{`It demonstrates God's power to give new life`}</li>
                     <li>
                       {'It gives believers hope of eternal life with Him'}
                     </li>
@@ -1304,17 +1307,13 @@ export function CollectionsPage(): ReactElement {
           questions={[
             {
               id: 1,
-              question: 'Why do I need saving if I’m a good person?',
+              question: "Why do I need saving if I'm a good person?",
               answer: (
                 <>
                   <p>
-                    The Bible says, “There is no one righteous, not even one”
-                    (Romans 3:10). God’s standard is perfection, and all have
-                    sinned and fall short of His glory (Romans 3:23). Being good
-                    by human standards isn’t enough to remove the guilt of sin.
-                    Salvation is not earned by good deeds but received by grace
-                    through faith in Jesus (Ephesians 2:8–9). Only His sacrifice
-                    can cleanse us and make us right with God.
+                    {
+                      'The Bible says, "There is no one righteous, not even one" (Romans 3:10). God\'s standard is perfection, and all have sinned and fall short of His glory (Romans 3:23). Being good by human standards isn\'t enough to remove the guilt of sin. Salvation is not earned by good deeds but received by grace through faith in Jesus (Ephesians 2:8–9). Only His sacrifice can cleanse us and make us right with God.'
+                    }
                   </p>
                 </>
               )
@@ -1326,13 +1325,9 @@ export function CollectionsPage(): ReactElement {
               answer: (
                 <>
                   <p>
-                    God is holy and just, and the Bible says, “The wages of sin
-                    is death” (Romans 6:23). Sin separates us from God, and
-                    justice demands a penalty. Jesus died in our place as a
-                    perfect sacrifice to satisfy God's justice and show His
-                    love. Hebrews 9:22 says, “Without the shedding of blood
-                    there is no forgiveness.” Jesus paid the debt we couldn’t
-                    pay, and through Him, forgiveness is offered.
+                    {
+                      'God is holy and just, and the Bible says, "The wages of sin is death" (Romans 6:23). Sin separates us from God, and justice demands a penalty. Jesus died in our place as a perfect sacrifice to satisfy God\'s justice and show His love. Hebrews 9:22 says, "Without the shedding of blood there is no forgiveness." Jesus paid the debt we couldn\'t pay, and through Him, forgiveness is offered.'
+                    }
                   </p>
                 </>
               )
@@ -1340,17 +1335,13 @@ export function CollectionsPage(): ReactElement {
             {
               id: 3,
               question:
-                'If Jesus rose from the dead, why doesn’t everyone believe in Him?',
+                "If Jesus rose from the dead, why doesn't everyone believe in Him?",
               answer: (
                 <>
                   <p>
-                    Many reject Jesus because they love darkness more than light
-                    (John 3:19). Believing in Jesus requires humility,
-                    repentance, and surrender. Some are blinded by pride, sin,
-                    or the world’s distractions (2 Corinthians 4:4). Others have
-                    not truly heard the Gospel or have hardened their hearts.
-                    Faith is a response to God's call, but He does not force
-                    anyone to believe (Revelation 3:20).
+                    {
+                      "Many reject Jesus because they love darkness more than light (John 3:19). Believing in Jesus requires humility, repentance, and surrender. Some are blinded by pride, sin, or the world's distractions (2 Corinthians 4:4). Others have not truly heard the Gospel or have hardened their hearts. Faith is a response to God's call, but He does not force anyone to believe (Revelation 3:20)."
+                    }
                   </p>
                 </>
               )

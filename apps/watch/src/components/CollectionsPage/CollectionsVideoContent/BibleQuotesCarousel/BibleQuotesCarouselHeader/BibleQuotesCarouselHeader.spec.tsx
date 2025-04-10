@@ -8,8 +8,13 @@ jest.mock('next-i18next', () => ({
   })
 }))
 
+jest.mock('@next/third-parties/google', () => ({
+  sendGTMEvent: jest.fn()
+}))
+
 describe('BibleQuotesCarouselHeader', () => {
   const defaultProps = {
+    contentId: '123',
     bibleQuotesTitle: 'Bible Quotes Title',
     shareButtonText: 'Share',
     shareDataTitle: 'Share Data Title'
