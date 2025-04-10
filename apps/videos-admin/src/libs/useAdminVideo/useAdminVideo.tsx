@@ -140,8 +140,6 @@ export type GetAdminVideo_AdminVideo_VideoDescriptions =
   GetAdminVideo['adminVideo']['description']
 export type GetAdminVideo_AdminVideo_VideoImageAlts =
   GetAdminVideo['adminVideo']['imageAlt']
-export type GetAdminVideo_AdminVideo_StudyQuestions =
-  GetAdminVideo['adminVideo']['studyQuestions']
 export type GetAdminVideo_AdminVideo_Children =
   GetAdminVideo['adminVideo']['children']
 export type GetAdminVideo_AdminVideo_VideoEditions =

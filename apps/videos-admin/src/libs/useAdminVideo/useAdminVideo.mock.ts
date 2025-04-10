@@ -122,7 +122,6 @@ export const useAdminVideoMock: MockedResponse<
             ]
           }
         ],
-        studyQuestions: [],
         variants: [
           {
             id: '1_4334-jf-0-0',
