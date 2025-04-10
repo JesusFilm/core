@@ -20,6 +20,9 @@ export interface GetJourneyEvents_journeyEventsConnection_edges_node {
    */
   typename: string | null;
   progress: number | null;
+  /**
+   * Related fields queried from relevant ids in the events table
+   */
   journeySlug: string | null;
   visitorName: string | null;
   visitorEmail: string | null;
