@@ -31,7 +31,7 @@ export const QuizButton = ({
   function handleClick() {
     setQuizModalOpen(true)
     sendGTMEvent({
-      event: 'easter_2025_quiz_button_click',
+      event: 'quiz_button_click',
       eventId: uuidv4(),
       date: new Date().toISOString(),
       contentId
