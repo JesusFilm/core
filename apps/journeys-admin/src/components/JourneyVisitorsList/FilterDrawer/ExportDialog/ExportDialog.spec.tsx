@@ -1,4 +1,3 @@
-import { gql } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -9,7 +8,7 @@ import { EventType } from '../../../../../__generated__/globalTypes'
 import { useJourneyEventsExport } from '../../../../libs/useJourneyEventsExport'
 
 import { DateRangePickerProps } from './DateRangePicker'
-import { ExportDialog } from './ExportDialog'
+import { ExportDialog, GET_JOURNEY_CREATED_AT } from './ExportDialog'
 
 jest.mock('../../../../libs/useJourneyEventsExport', () => ({
   useJourneyEventsExport: jest.fn()
@@ -52,15 +51,6 @@ jest.mock('next-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key })
 }))
 
-const GET_JOURNEY_CREATED_AT_MOCK_QUERY = gql`
-  query GetJourneyCreatedAt($id: ID!) {
-    journey: adminJourney(id: $id, idType: databaseId) {
-      id
-      createdAt
-      __typename
-    }
-  }
-`
 
 const mockExportJourneyEvents = jest.fn()
 const mockOnClose = jest.fn()
@@ -68,7 +58,7 @@ const mockOnClose = jest.fn()
 const journeyCreatedAt = '2023-01-01T00:00:00.000Z'
 const mockJourneyCreatedAt = {
   request: {
-    query: GET_JOURNEY_CREATED_AT_MOCK_QUERY,
+    query: GET_JOURNEY_CREATED_AT,
     variables: { id: 'journey1' }
   },
   result: {
