@@ -59,9 +59,13 @@ export default function EasterPage(): ReactElement {
 
 export const getStaticProps: GetStaticProps = async (context) => {
   return {
-    redirect: {
-      destination: '/watch/easter.html/english.html',
-      permanent: false
+    props: {
+      flags: await getFlags(),
+      ...(await serverSideTranslations(
+        context.locale ?? 'en',
+        ['apps-watch'],
+        i18nConfig
+      ))
     }
   }
 }
