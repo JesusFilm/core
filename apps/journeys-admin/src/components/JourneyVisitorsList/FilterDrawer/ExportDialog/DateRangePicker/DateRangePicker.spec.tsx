@@ -1,5 +1,4 @@
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { fireEvent, render, screen } from '@testing-library/react'
 
 import { DateRangePicker } from './DateRangePicker'
 
@@ -26,9 +25,6 @@ describe('DateRangePicker', () => {
   })
 
   it('calls onChange handlers when calendar dates are clicked', async () => {
-    // Removed fake timers
-    const user = userEvent.setup()
-
     render(
       <DateRangePicker
         startDate={null}
@@ -41,13 +37,13 @@ describe('DateRangePicker', () => {
     const startDateInput = screen.getByLabelText('From')
     const endDateInput = screen.getByLabelText('To')
 
-    await user.click(startDateInput)
+    fireEvent.click(startDateInput)
     const startDateCell = screen.getAllByRole('gridcell', { name: '1' })[0]
-    await user.click(startDateCell)
+    fireEvent.click(startDateCell)
 
-    await user.click(endDateInput)
+    fireEvent.click(endDateInput)
     const endDateCell = screen.getAllByRole('gridcell', { name: '2' })[0]
-    await user.click(endDateCell)
+    fireEvent.click(endDateCell)
 
     expect(mockStartDateChange).toHaveBeenCalledTimes(1)
     expect(mockEndDateChange).toHaveBeenCalledTimes(1)
