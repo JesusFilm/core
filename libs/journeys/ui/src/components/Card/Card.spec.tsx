@@ -1,4 +1,4 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
@@ -6,13 +6,9 @@ import { SnackbarProvider } from 'notistack'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
-  ButtonColor,
-  ButtonSize,
-  ButtonVariant,
   TextResponseType,
   ThemeMode,
-  ThemeName,
-  VideoBlockSource
+  ThemeName
 } from '../../../__generated__/globalTypes'
 import {
   type TreeBlock,
@@ -21,26 +17,39 @@ import {
 } from '../../libs/block'
 import {
   BlockFields_CardBlock as CardBlock,
-  BlockFields_StepBlock as StepBlock
+  BlockFields_StepBlock as StepBlock,
+  BlockFields_TextResponseBlock as TextResponseBlock
 } from '../../libs/block/__generated__/BlockFields'
 import { blurImage } from '../../libs/blurImage'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
-import {
-  ButtonFields,
-  ButtonFields_action_LinkAction as LinkAction
-} from '../Button/__generated__/ButtonFields'
-import { BUTTON_CLICK_EVENT_CREATE } from '../Button/Button'
-import { ImageFields } from '../Image/__generated__/ImageFields'
-import { StepViewEventCreate } from '../Step/__generated__/StepViewEventCreate'
-import { STEP_VIEW_EVENT_CREATE } from '../Step/Step'
-import { TEXT_RESPONSE_SUBMISSION_EVENT_CREATE } from '../TextResponse/TextResponse'
-import { VideoFields } from '../Video/__generated__/VideoFields'
 
-import { StepNextEventCreate } from './__generated__/StepNextEventCreate'
-import { StepPreviousEventCreate } from './__generated__/StepPreviousEventCreate'
-import { STEP_NEXT_EVENT_CREATE, STEP_PREVIOUS_EVENT_CREATE } from './Card'
+import {
+  action,
+  block,
+  buttonBlock,
+  card1,
+  card2,
+  card3,
+  createMockButtonClickEvent,
+  getStepViewEventMock,
+  imageBlock,
+  journey,
+  leftSide,
+  mockStepNextEventCreate,
+  mockStepPreviousEventCreate,
+  mockTextResponse1SubmissionEventCreate,
+  mockTextResponse2SubmissionEventCreate,
+  mockTextResponseEmailSubmissionEventCreate,
+  mockTextResponseSubmissionEventCreate,
+  rightSide,
+  step1,
+  step2,
+  step3,
+  textResponseBlock,
+  videoBlock
+} from './Card.mock'
 
 import { Card } from '.'
 
@@ -83,9 +92,6 @@ const mockUsePlausible = usePlausible as jest.MockedFunction<
 >
 
 describe('CardBlock', () => {
-  const leftSide = { clientX: 0 }
-  const rightSide = { clientX: 1000 }
-
   const originalLocation = window.location
   const mockOrigin = 'https://example.com'
 
@@ -110,349 +116,6 @@ describe('CardBlock', () => {
 
   afterAll(() => {
     Object.defineProperty(window, 'location', originalLocation)
-  })
-
-  const step1: TreeBlock<StepBlock> = {
-    id: 'step1.id',
-    __typename: 'StepBlock',
-    parentBlockId: 'card1.id',
-    parentOrder: 0,
-    locked: false,
-    nextBlockId: 'step2.id',
-    slug: null,
-    children: []
-  }
-  const step2: TreeBlock<StepBlock> = {
-    id: 'step2.id',
-    __typename: 'StepBlock',
-    parentBlockId: 'card2.id',
-    parentOrder: 0,
-    locked: false,
-    nextBlockId: 'step3.id',
-    slug: null,
-    children: []
-  }
-  const step3: TreeBlock<StepBlock> = {
-    id: 'step3.id',
-    __typename: 'StepBlock',
-    parentBlockId: 'card3.id',
-    parentOrder: 0,
-    locked: false,
-    nextBlockId: null,
-    slug: null,
-    children: []
-  }
-  const card1: TreeBlock<CardBlock> = {
-    id: 'card1.id',
-    __typename: 'CardBlock',
-    parentOrder: 0,
-    parentBlockId: null,
-    backgroundColor: null,
-    coverBlockId: null,
-    themeName: null,
-    themeMode: null,
-    fullscreen: false,
-    children: [step1]
-  }
-
-  const card2: TreeBlock<CardBlock> = {
-    id: 'card2.id',
-    __typename: 'CardBlock',
-    parentOrder: 1,
-    parentBlockId: null,
-    backgroundColor: null,
-    coverBlockId: null,
-    themeName: null,
-    themeMode: null,
-    fullscreen: false,
-    children: [step2]
-  }
-  const card3: TreeBlock<CardBlock> = {
-    id: 'card3.id',
-    __typename: 'CardBlock',
-    parentOrder: 2,
-    parentBlockId: null,
-    backgroundColor: null,
-    coverBlockId: null,
-    themeName: null,
-    themeMode: null,
-    fullscreen: false,
-    children: [step3]
-  }
-
-  const block: TreeBlock = {
-    __typename: 'CardBlock',
-    id: 'card',
-    parentBlockId: null,
-    backgroundColor: null,
-    coverBlockId: null,
-    parentOrder: 0,
-    themeMode: null,
-    themeName: null,
-    fullscreen: false,
-    children: [
-      {
-        id: 'typographyBlockId',
-        __typename: 'TypographyBlock',
-        parentBlockId: null,
-        parentOrder: 0,
-        align: null,
-        color: null,
-        content: 'How did we get here?',
-        variant: null,
-        children: []
-      }
-    ]
-  }
-
-  const textResponseBlock: TreeBlock = {
-    id: 'textResponseBlockId',
-    __typename: 'TextResponseBlock',
-    parentBlockId: null,
-    parentOrder: 0,
-    children: [],
-    label: 'Text Response',
-    placeholder: 'Enter your text',
-    hint: 'This is a hint',
-    minRows: 1,
-    type: TextResponseType.freeForm,
-    routeId: null,
-    integrationId: null,
-    required: null
-  }
-
-  const imageBlock: TreeBlock<ImageFields> = {
-    id: 'imageBlockId',
-    __typename: 'ImageBlock',
-    src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
-    alt: 'random image from unsplash',
-    width: 1600,
-    height: 1067,
-    blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
-    parentBlockId: 'card',
-    parentOrder: 0,
-    scale: null,
-    focalLeft: 50,
-    focalTop: 50,
-    children: []
-  }
-
-  const videoBlock: TreeBlock<VideoFields> = {
-    __typename: 'VideoBlock',
-    id: 'videoBlockId',
-    parentBlockId: 'card',
-    parentOrder: 0,
-    muted: true,
-    autoplay: true,
-    startAt: null,
-    endAt: null,
-    posterBlockId: 'posterBlockId',
-    fullsize: null,
-    action: null,
-    videoId: '2_0-FallingPlates',
-    videoVariantLanguageId: '529',
-    source: VideoBlockSource.internal,
-    title: null,
-    description: null,
-    duration: null,
-    image: null,
-    objectFit: null,
-    mediaVideo: {
-      __typename: 'Video',
-      id: '2_0-FallingPlates',
-      title: [
-        {
-          __typename: 'VideoTitle',
-          value: 'FallingPlates'
-        }
-      ],
-      images: [
-        {
-          __typename: 'CloudflareImage',
-          mobileCinematicHigh:
-            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
-        }
-      ],
-      variant: {
-        __typename: 'VideoVariant',
-        id: '2_0-FallingPlates-529',
-        hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-      },
-      variantLanguages: []
-    },
-    children: [
-      {
-        ...imageBlock,
-        id: 'posterBlockId',
-        alt: 'random image from unsplash - video',
-        parentBlockId: 'videoBlockId'
-      }
-    ]
-  }
-
-  const journey = {
-    id: 'journey.id',
-    language: {
-      bcp: 'en'
-    }
-  } as unknown as Journey
-
-  const mockStepPreviousEventCreate: MockedResponse<StepPreviousEventCreate> = {
-    request: {
-      query: STEP_PREVIOUS_EVENT_CREATE,
-      variables: {
-        input: {
-          id: 'uuid',
-          blockId: 'step2.id',
-          previousStepId: 'step1.id',
-          label: 'Step {{number}}',
-          value: 'Step {{number}}'
-        }
-      }
-    },
-    result: jest.fn(() => ({
-      data: {
-        stepPreviousEventCreate: {
-          id: 'uuid',
-          __typename: 'StepPreviousEvent'
-        }
-      }
-    }))
-  }
-
-  const mockStepNextEventCreate: MockedResponse<StepNextEventCreate> = {
-    request: {
-      query: STEP_NEXT_EVENT_CREATE,
-      variables: {
-        input: {
-          id: 'uuid',
-          blockId: 'step1.id',
-          nextStepId: 'step2.id',
-          label: 'Step {{number}}',
-          value: 'Step {{number}}'
-        }
-      }
-    },
-    result: jest.fn(() => ({
-      data: {
-        stepNextEventCreate: {
-          id: 'uuid',
-          __typename: 'StepNextEvent'
-        }
-      }
-    }))
-  }
-
-  const mockTextResponseSubmissionEventCreate = {
-    request: {
-      query: TEXT_RESPONSE_SUBMISSION_EVENT_CREATE,
-      variables: {
-        input: {
-          id: 'uuid',
-          blockId: 'textResponseBlockId',
-          stepId: 'step1.id',
-          label: 'Text Response',
-          value: 'Test response'
-        }
-      }
-    },
-    result: jest.fn(() => ({
-      data: {
-        textResponseSubmissionEventCreate: {
-          id: 'mocked-submission-id'
-        }
-      }
-    }))
-  }
-
-  const mockTextResponse1SubmissionEventCreate = {
-    request: {
-      query: TEXT_RESPONSE_SUBMISSION_EVENT_CREATE,
-      variables: {
-        input: {
-          id: 'uuid',
-          blockId: 'textResponse1',
-          stepId: 'step1.id',
-          label: 'Text Response 1',
-          value: 'Test response for field 1'
-        }
-      }
-    },
-    result: jest.fn(() => ({
-      data: {
-        textResponseSubmissionEventCreate: {
-          id: 'mocked-submission-id'
-        }
-      }
-    }))
-  }
-
-  const mockTextResponse2SubmissionEventCreate = {
-    request: {
-      query: TEXT_RESPONSE_SUBMISSION_EVENT_CREATE,
-      variables: {
-        input: {
-          id: 'uuid',
-          blockId: 'textResponse2',
-          stepId: 'step1.id',
-          label: 'Text Response 2',
-          value: 'Test response for field 2'
-        }
-      }
-    },
-    result: jest.fn(() => ({
-      data: {
-        textResponseSubmissionEventCreate: {
-          id: 'mocked-submission-id'
-        }
-      }
-    }))
-  }
-
-  const mockTextResponseEmailSubmissionEventCreate = {
-    request: {
-      query: TEXT_RESPONSE_SUBMISSION_EVENT_CREATE,
-      variables: {
-        input: {
-          id: 'uuid',
-          blockId: 'textResponse1',
-          stepId: 'step1.id',
-          label: 'Text Response 1',
-          value: 'test@example.com'
-        }
-      }
-    },
-    result: jest.fn(() => ({
-      data: {
-        textResponseSubmissionEventCreate: {
-          id: 'mocked-submission-id'
-        }
-      }
-    }))
-  }
-
-  const getStepViewEventMock = (
-    blockId: string,
-    value?: string
-  ): MockedResponse<StepViewEventCreate> => ({
-    request: {
-      query: STEP_VIEW_EVENT_CREATE,
-      variables: {
-        input: {
-          id: 'uuid',
-          blockId,
-          value: value ?? 'Step {{number}}'
-        }
-      }
-    },
-    result: {
-      data: {
-        stepViewEventCreate: {
-          id: 'uuid',
-          __typename: 'StepViewEvent'
-        }
-      }
-    }
   })
 
   it('should render card with theme background color', async () => {
@@ -913,81 +576,38 @@ describe('CardBlock', () => {
     const mockPlausible = jest.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
 
-    const requiredTextResponseBlock = {
-      ...textResponseBlock,
-      required: true
-    }
-
-    const action: LinkAction = {
-      __typename: 'LinkAction',
-      parentBlockId: 'button',
-      gtmEventName: null,
-      url: 'https://test.com/some-site'
-    }
-
-    const buttonBlock: TreeBlock<ButtonFields> = {
-      __typename: 'ButtonBlock',
-      id: 'button',
-      parentBlockId: 'question',
-      parentOrder: 0,
-      label: 'This is a button',
-      buttonVariant: ButtonVariant.contained,
-      buttonColor: ButtonColor.primary,
-      size: ButtonSize.small,
-      startIconId: null,
-      endIconId: null,
-      action: action,
-      submitEnabled: true,
-      children: []
-    }
-
     const textResponseCard: TreeBlock<CardBlock> = {
       ...card1,
       children: [
         step1,
         {
-          ...requiredTextResponseBlock,
+          ...textResponseBlock,
           id: 'textResponse1',
           label: 'Text Response 1',
-          parentBlockId: card1.id
+          parentBlockId: card1.id,
+          required: true
         },
         {
-          ...requiredTextResponseBlock,
+          ...textResponseBlock,
           id: 'textResponse2',
           label: 'Text Response 2',
-          parentBlockId: card1.id
+          parentBlockId: card1.id,
+          required: true
         },
-        { ...buttonBlock, parentBlockId: card1.id }
+        { ...buttonBlock, parentBlockId: card1.id, submitEnabled: true }
       ]
     }
 
     treeBlocksVar([step1, step2, step3])
     blockHistoryVar([step1])
 
-    const mockButtonClickEvent = {
-      request: {
-        query: BUTTON_CLICK_EVENT_CREATE,
-        variables: {
-          input: {
-            id: 'uuid',
-            blockId: 'button',
-            stepId: 'step1.id',
-            label: 'Step {{number}}',
-            value: buttonBlock.label,
-            action: action.__typename,
-            actionValue: action.url
-          }
-        }
-      },
-      result: jest.fn(() => ({
-        data: {
-          buttonClickEventCreate: {
-            id: 'uuid',
-            __typename: 'ButtonClickEvent'
-          }
-        }
-      }))
-    }
+    const mockButtonClickEvent = createMockButtonClickEvent(
+      'button',
+      'step1.id',
+      buttonBlock.label,
+      action.__typename,
+      action.url
+    )
 
     render(
       <MockedProvider
@@ -1080,7 +700,7 @@ describe('CardBlock', () => {
     })
   })
 
-  it('should validate required fields in forms', async () => {
+  it('should validate required email field in forms', async () => {
     const mockPlausible = jest.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
 
@@ -1089,72 +709,32 @@ describe('CardBlock', () => {
       required: true
     }
 
-    const action: LinkAction = {
-      __typename: 'LinkAction',
-      parentBlockId: 'button',
-      gtmEventName: null,
-      url: 'https://test.com/some-site'
-    }
-
-    const buttonBlock: TreeBlock<ButtonFields> = {
-      __typename: 'ButtonBlock',
-      id: 'button',
-      parentBlockId: 'question',
-      parentOrder: 0,
-      label: 'This is a button',
-      buttonVariant: ButtonVariant.contained,
-      buttonColor: ButtonColor.primary,
-      size: ButtonSize.small,
-      startIconId: null,
-      endIconId: null,
-      action: action,
-      submitEnabled: true,
-      children: []
-    }
-
     const textResponseCard: TreeBlock<CardBlock> = {
       ...card1,
       children: [
         step1,
         {
-          ...requiredTextResponseBlock,
+          ...(requiredTextResponseBlock as unknown as TreeBlock<TextResponseBlock>),
           id: 'textResponse1',
           label: 'Text Response 1',
           parentBlockId: card1.id,
           type: TextResponseType.email
         },
 
-        { ...buttonBlock, parentBlockId: card1.id }
+        { ...buttonBlock, parentBlockId: card1.id, submitEnabled: true }
       ]
     }
 
     treeBlocksVar([step1, step2, step3])
     blockHistoryVar([step1])
 
-    const mockButtonClickEvent = {
-      request: {
-        query: BUTTON_CLICK_EVENT_CREATE,
-        variables: {
-          input: {
-            id: 'uuid',
-            blockId: 'button',
-            stepId: 'step1.id',
-            label: 'Step {{number}}',
-            value: buttonBlock.label,
-            action: action.__typename,
-            actionValue: action.url
-          }
-        }
-      },
-      result: jest.fn(() => ({
-        data: {
-          buttonClickEventCreate: {
-            id: 'uuid',
-            __typename: 'ButtonClickEvent'
-          }
-        }
-      }))
-    }
+    const mockButtonClickEvent = createMockButtonClickEvent(
+      'button',
+      'step1.id',
+      buttonBlock.label,
+      action.__typename,
+      action.url
+    )
 
     render(
       <MockedProvider
