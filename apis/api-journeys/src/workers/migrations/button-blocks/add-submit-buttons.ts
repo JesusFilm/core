@@ -45,7 +45,7 @@ async function main(): Promise<void> {
             {
               childBlocks: {
                 none: {
-                  typename: 'ButtonBlock'
+                  AND: [{ typename: 'ButtonBlock' }, { deletedAt: null }]
                 }
               }
             }
