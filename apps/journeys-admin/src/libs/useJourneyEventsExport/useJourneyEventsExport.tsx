@@ -132,7 +132,7 @@ export function useJourneyEventsExport(): {
       const eventData = transformEvents(events)
 
       const journeySlug = events[0]?.node.journeySlug ?? ''
-      processCsv(eventData, journeySlug)
+      processCsv(eventData, journeySlug, t)
 
       void createEventsExportLog({
         variables: {

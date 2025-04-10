@@ -1,17 +1,21 @@
-export const EVENT_CSV_OPTIONS = {
-  header: true,
-  columns: [
-    { key: 'createdAt', header: 'Date & Time' },
-    { key: 'visitorId', header: 'Visitor ID' },
-    { key: 'visitorName', header: 'Name' },
-    { key: 'visitorEmail', header: 'Email' },
-    { key: 'visitorPhone', header: 'Phone' },
-    { key: 'journeyId', header: 'Journey ID' },
-    { key: 'journeySlug', header: 'Slug' },
-    { key: 'typename', header: 'Event Type' },
-    { key: 'label', header: 'Label' },
-    { key: 'value', header: 'Value' }
-  ]
+import { TFunction } from 'i18next'
+
+export function getTranslatedCsvOptions(t: TFunction) {
+  return {
+    header: true,
+    columns: [
+      { key: 'createdAt', header: t('Date & Time') },
+      { key: 'visitorId', header: t('Visitor ID') },
+      { key: 'visitorName', header: t('Name') },
+      { key: 'visitorEmail', header: t('Email') },
+      { key: 'visitorPhone', header: t('Phone') },
+      { key: 'journeyId', header: t('Journey ID') },
+      { key: 'journeySlug', header: t('Slug') },
+      { key: 'typename', header: t('Event Type') },
+      { key: 'label', header: t('Label') },
+      { key: 'value', header: t('Value') }
+    ]
+  }
 }
 
 const ALL_EVENT_TYPES = [
