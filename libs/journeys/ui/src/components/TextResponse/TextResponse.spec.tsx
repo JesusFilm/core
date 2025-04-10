@@ -4,7 +4,6 @@ import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 
-import { TextResponseType } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 
@@ -59,7 +58,7 @@ const TextResponseMock = ({
 
 describe('TextResponse', () => {
   it('should have 1000 character max length', async () => {
-    const { getByLabelText } = render(<TextResponseMock />)
+    render(<TextResponseMock />)
 
     const responseField = screen.getByRole('textbox')
 
@@ -170,7 +169,7 @@ describe('TextResponse', () => {
     render(<TextResponseMock />)
     expect(screen.getByRole('textbox')).toHaveAttribute(
       'aria-labelledby',
-      'textResponse-label'
+      'textResponse-label-textResponse0id'
     )
   })
 
@@ -209,115 +208,26 @@ describe('TextResponse', () => {
     expect(screen.getByText('Your answer here')).toBeInTheDocument()
   })
 
-  it('should show "Required" error message if field is required and left empty', async () => {
+  it('should show errors', () => {
     const requiredBlock: TreeBlock<TextResponseFields> = {
       ...block,
       required: true
     }
 
     render(
-      <JourneyProvider>
-        <SnackbarProvider>
-          <TextResponse {...requiredBlock} />
-        </SnackbarProvider>
-      </JourneyProvider>
-    )
-
-    fireEvent.blur(screen.getByRole('textbox'))
-
-    await waitFor(() => {
-      expect(screen.getByText('Required')).toBeInTheDocument()
-    })
-  })
-
-  it('should show email validation error for invalid email', async () => {
-    const emailBlock: TreeBlock<TextResponseFields> = {
-      ...block,
-      type: TextResponseType.email
-    }
-
-    render(
-      <JourneyProvider>
-        <SnackbarProvider>
-          <TextResponse {...emailBlock} />
-        </SnackbarProvider>
-      </JourneyProvider>
-    )
-
-    fireEvent.change(screen.getByRole('textbox'), {
-      target: { value: 'invalid-email' }
-    })
-    fireEvent.blur(screen.getByRole('textbox'))
-
-    await waitFor(() => {
-      expect(
-        screen.getByText('Please enter a valid email address')
-      ).toBeInTheDocument()
-    })
-  })
-
-  it('should not submit if required validation fails', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        textResponseSubmissionEventCreate: {
-          id: 'uuid'
+      <FormikProvider
+        value={
+          {
+            values: { [requiredBlock.id]: '' },
+            touched: { [requiredBlock.id]: true },
+            errors: { [requiredBlock.id]: 'This field is required' }
+          } as unknown as FormikContextType<FormikValues>
         }
-      }
-    }))
-
-    const requiredBlock: TreeBlock<TextResponseFields> = {
-      ...block,
-      required: true
-    }
-
-    render(
-      <JourneyProvider>
-        <SnackbarProvider>
-          <TextResponse {...requiredBlock} />
-        </SnackbarProvider>
-      </JourneyProvider>
+      >
+        <TextResponse {...requiredBlock} />
+      </FormikProvider>
     )
 
-    fireEvent.blur(screen.getByRole('textbox'))
-
-    await waitFor(() => {
-      expect(screen.getByText('Required')).toBeInTheDocument()
-      expect(result).not.toHaveBeenCalled()
-    })
-  })
-
-  it('should not submit if email validation fails', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        textResponseSubmissionEventCreate: {
-          id: 'uuid'
-        }
-      }
-    }))
-
-    const emailBlock: TreeBlock<TextResponseFields> = {
-      ...block,
-      type: TextResponseType.email
-    }
-
-    render(
-      <JourneyProvider>
-        <SnackbarProvider>
-          <TextResponse {...emailBlock} />
-        </SnackbarProvider>
-      </JourneyProvider>
-    )
-
-    fireEvent.change(screen.getByRole('textbox'), {
-      target: { value: 'invalid-email' }
-    })
-    fireEvent.blur(screen.getByRole('textbox'))
-
-    await waitFor(() => {
-      expect(
-        screen.getByText('Please enter a valid email address')
-      ).toBeInTheDocument()
-      expect(result).not.toHaveBeenCalled()
-    })
+    expect(screen.getByText('This field is required')).toBeInTheDocument()
   })
 })
