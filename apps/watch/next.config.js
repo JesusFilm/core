@@ -80,7 +80,7 @@ const nextConfig = {
       {
         source: '/watch/easter',
         destination: '/watch/easter.html/english.html',
-        locale: false
+        permanent: true
       }
     ]
   }
