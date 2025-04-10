@@ -11,6 +11,8 @@ import {
   GetJourneyEvents_journeyEventsConnection_edges_node as JourneyEventNode
 } from '../../../__generated__/GetJourneyEvents'
 
+import { transformEvents } from './utils/transformEvents'
+
 export const GET_JOURNEY_EVENTS_EXPORT = gql`
   query GetJourneyEvents(
     $journeyId: ID!
@@ -37,6 +39,7 @@ export const GET_JOURNEY_EVENTS_EXPORT = gql`
           visitorName
           visitorEmail
           visitorPhone
+          createdAt
         }
       }
       pageInfo {
@@ -60,16 +63,16 @@ export const CREATE_EVENTS_EXPORT_LOG = gql`
 const EVENT_CSV_OPTIONS = {
   header: true,
   columns: [
-    { key: 'typename', header: 'Event Type' },
-    { key: 'label', header: 'Label' },
-    { key: 'value', header: 'Value' },
-    { key: 'progress', header: 'Video Progress' },
-    { key: 'journeyId', header: 'Journey ID' },
-    { key: 'journeySlug', header: 'Slug' },
+    { key: 'createdAt', header: 'Date & Time' },
     { key: 'visitorId', header: 'Visitor ID' },
     { key: 'visitorName', header: 'Name' },
     { key: 'visitorEmail', header: 'Email' },
-    { key: 'visitorPhone', header: 'Phone' }
+    { key: 'visitorPhone', header: 'Phone' },
+    { key: 'journeyId', header: 'Journey ID' },
+    { key: 'journeySlug', header: 'Slug' },
+    { key: 'typename', header: 'Event Type' },
+    { key: 'label', header: 'Label' },
+    { key: 'value', header: 'Value' }
   ]
 }
 
@@ -106,8 +109,11 @@ export const FILTERED_EVENTS = ALL_EVENT_TYPES.filter((event) => {
   }
 })
 
-interface JourneyEvent
-  extends Omit<JourneyEventNode, '__typename' | 'journey' | 'visitor'> {
+export interface JourneyEvent
+  extends Omit<
+    JourneyEventNode,
+    '__typename' | 'journey' | 'visitor' | 'progress'
+  > {
   slug?: string | null
   name?: string | null
   email?: string | null
@@ -193,7 +199,7 @@ export function useJourneyEventsExport(): {
         hasNextPage = data?.journeyEventsConnection.pageInfo.hasNextPage
       } while (hasNextPage)
 
-      const eventData: JourneyEvent[] = events.map((edge) => edge.node)
+      const eventData = transformEvents(events)
 
       const journeySlug = events[0]?.node.journeySlug ?? ''
       handleCsvProcessing(eventData, journeySlug)
