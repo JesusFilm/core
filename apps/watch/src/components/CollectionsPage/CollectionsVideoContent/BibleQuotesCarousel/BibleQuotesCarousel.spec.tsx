@@ -8,6 +8,8 @@ jest.mock('next-i18next', () => ({
   })
 }))
 
+jest.mock('@next/third-parties/google')
+
 describe('BibleQuotesCarousel', () => {
   const mockBibleQuotes = [
     {
@@ -76,6 +78,7 @@ describe('BibleQuotesCarousel', () => {
   it('renders with bible quotes and title', () => {
     render(
       <BibleQuotesCarousel
+        contentId="123"
         bibleQuotes={mockBibleQuotes}
         bibleQuotesTitle="Bible Quotes"
         onOpenDialog={mockOpenDialog}
@@ -96,6 +99,7 @@ describe('BibleQuotesCarousel', () => {
   it('renders with free resource', () => {
     render(
       <BibleQuotesCarousel
+        contentId="123"
         bibleQuotes={[]}
         bibleQuotesTitle="Bible Quotes"
         freeResource={mockFreeResource}
@@ -113,6 +117,7 @@ describe('BibleQuotesCarousel', () => {
   it('calls navigator.share when the share button is clicked', async () => {
     render(
       <BibleQuotesCarousel
+        contentId="123"
         bibleQuotes={mockBibleQuotes}
         bibleQuotesTitle="Bible Quotes"
         shareButtonText="Share"
@@ -138,6 +143,7 @@ describe('BibleQuotesCarousel', () => {
   it('has correct link for free resource button', () => {
     render(
       <BibleQuotesCarousel
+        contentId="123"
         bibleQuotes={[]}
         bibleQuotesTitle="Bible Quotes"
         freeResource={mockFreeResource}
