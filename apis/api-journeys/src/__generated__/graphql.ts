@@ -4635,6 +4635,7 @@ export type VideoStudyQuestion = {
   __typename?: 'VideoStudyQuestion';
   id: Scalars['ID']['output'];
   language: Language;
+  order: Scalars['Int']['output'];
   primary: Scalars['Boolean']['output'];
   value: Scalars['String']['output'];
 };
