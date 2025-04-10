@@ -116,7 +116,7 @@ export function CollectionVideoPlayer({
   const handleSeek = (_event: Event, newValue: number | number[]) => {
     if (player && isPlayerReady && typeof newValue === 'number') {
       eventToDataLayer(
-        'easter_2025_video_seek',
+        'video_seek',
         videoData?.content.id,
         videoData?.content.variant?.language.id,
         videoData?.content.title[0].value,
@@ -181,7 +181,7 @@ export function CollectionVideoPlayer({
     if (containerRef.current && player && isPlayerReady) {
       if (!isFullscreen) {
         eventToDataLayer(
-          'easter_2025_video_enter_full_screen',
+          'video_enter_full_screen',
           videoData?.content.id,
           videoData?.content.variant?.language.id,
           videoData?.content.title[0].value,
@@ -213,7 +213,7 @@ export function CollectionVideoPlayer({
         }
       } else {
         eventToDataLayer(
-          'easter_2025_video_exit_full_screen',
+          'video_exit_full_screen',
           videoData?.content.id,
           videoData?.content.variant?.language.id,
           videoData?.content.title[0].value,
@@ -239,7 +239,7 @@ export function CollectionVideoPlayer({
       const newMutedState = !isMuted
 
       eventToDataLayer(
-        `easter_2025_video_mute_toggle_${newMutedState ? 'unmute' : 'mute'}`,
+        `video_mute_toggle_${newMutedState ? 'unmute' : 'mute'}`,
         videoData?.content.id,
         videoData?.content.variant?.language.id,
         videoData?.content.title[0].value,
@@ -269,7 +269,7 @@ export function CollectionVideoPlayer({
   const handlePlayPause = () => {
     if (player && isPlayerReady) {
       eventToDataLayer(
-        `easter_2025_video_play_pause_${isPlaying ? 'pause' : 'play'}`,
+        `video_play_pause_${isPlaying ? 'pause' : 'play'}`,
         videoData?.content.id,
         videoData?.content.variant?.language.id,
         videoData?.content.title[0].value,
@@ -326,7 +326,7 @@ export function CollectionVideoPlayer({
       player.on('ended', () => {
         if (!isMuted) {
           eventToDataLayer(
-            'easter_2025_video_ended',
+            'video_ended',
             videoData?.content.id,
             videoData?.content.variant?.language.id,
             videoData?.content.title[0].value,
