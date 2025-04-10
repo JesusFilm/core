@@ -314,17 +314,7 @@ describe('JourneyEventService', () => {
               journeySlug: 'test-journey',
               visitorName: 'Test Visitor',
               visitorEmail: 'visitor@test.com',
-              visitorPhone: '1234567890',
-              journey: {
-                id: 'journey-1',
-                slug: 'test-journey'
-              },
-              visitor: {
-                id: 'visitor-1',
-                name: 'Test Visitor',
-                email: 'visitor@test.com',
-                phone: '1234567890'
-              }
+              visitorPhone: '1234567890'
             },
             cursor: 'event-2'
           },
@@ -357,17 +347,7 @@ describe('JourneyEventService', () => {
               journeySlug: 'test-journey',
               visitorName: 'Test Visitor',
               visitorEmail: 'visitor@test.com',
-              visitorPhone: '1234567890',
-              journey: {
-                id: 'journey-1',
-                slug: 'test-journey'
-              },
-              visitor: {
-                id: 'visitor-1',
-                name: 'Test Visitor',
-                email: 'visitor@test.com',
-                phone: '1234567890'
-              }
+              visitorPhone: '1234567890'
             },
             cursor: 'event-3'
           }

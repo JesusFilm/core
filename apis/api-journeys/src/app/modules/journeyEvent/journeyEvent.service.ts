@@ -1,17 +1,16 @@
 import { Injectable } from '@nestjs/common'
 import isNil from 'lodash/isNil'
+import omit from 'lodash/omit'
 import omitBy from 'lodash/omitBy'
 
 import { Prisma } from '.prisma/api-journeys-client'
 
 import {
   ButtonAction,
-  Journey,
   JourneyEventsConnection,
   JourneyEventsFilter,
   MessagePlatform,
-  VideoBlockSource,
-  Visitor
+  VideoBlockSource
 } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
@@ -102,7 +101,7 @@ export class JourneyEventService {
     return {
       edges: sendResult.map((event) => ({
         node: {
-          ...event,
+          ...omit(event, ['journey', 'visitor']),
           journeyId: event.journey?.id ?? journeyId,
           visitorId: event.visitor?.id ?? null,
           createdAt: event.createdAt.toISOString(),
@@ -112,9 +111,7 @@ export class JourneyEventService {
           journeySlug: event.journey?.slug,
           visitorName: event.visitor?.name,
           visitorEmail: event.visitor?.email,
-          visitorPhone: event.visitor?.phone,
-          journey: event.journey as unknown as Journey,
-          visitor: event.visitor as unknown as Visitor
+          visitorPhone: event.visitor?.phone
         },
         cursor: event.id
       })),

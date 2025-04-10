@@ -1730,8 +1730,6 @@ export class JourneyEvent implements Event {
     progress?: Nullable<number>;
     typename?: Nullable<string>;
     visitorId?: Nullable<string>;
-    journey?: Nullable<Journey>;
-    visitor?: Nullable<Visitor>;
     journeySlug?: Nullable<string>;
     visitorName?: Nullable<string>;
     visitorEmail?: Nullable<string>;

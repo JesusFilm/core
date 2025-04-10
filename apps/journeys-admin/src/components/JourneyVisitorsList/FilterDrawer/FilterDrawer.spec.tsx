@@ -48,15 +48,10 @@ const getJourneyEventsMock: MockedResponse<
               typename: 'StepViewEvent',
               progress: null,
               messagePlatform: null,
-              journey: {
-                __typename: 'Journey',
-                slug: 'test-journey'
-              },
-              visitor: {
-                __typename: 'Visitor',
-                email: 'test@example.com',
-                name: 'Test User'
-              }
+              journeySlug: 'test-journey',
+              visitorName: 'Test User',
+              visitorEmail: 'test@example.com',
+              visitorPhone: '1234567890'
             }
           },
           {
@@ -71,15 +66,10 @@ const getJourneyEventsMock: MockedResponse<
               progress: null,
               typename: 'StepViewEvent',
               visitorId: 'visitor.id',
-              visitor: {
-                __typename: 'Visitor',
-                email: 'test@example.com',
-                name: 'Test User'
-              },
-              journey: {
-                __typename: 'Journey',
-                slug: 'test-journey'
-              }
+              journeySlug: 'test-journey',
+              visitorName: 'Test User',
+              visitorEmail: 'test@example.com',
+              visitorPhone: '1234567890'
             }
           }
         ],

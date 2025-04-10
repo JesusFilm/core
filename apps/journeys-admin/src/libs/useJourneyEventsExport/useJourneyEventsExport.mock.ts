@@ -46,15 +46,10 @@ export const mockGetJourneyEventsQuery: MockedResponse<
               value: 'Test Value',
               typename: 'ButtonClickEvent',
               progress: null,
-              journey: {
-                __typename: 'Journey',
-                slug: 'test-journey'
-              },
-              visitor: {
-                __typename: 'Visitor',
-                email: 'test@example.com',
-                name: 'Test User'
-              }
+              journeySlug: 'test-journey',
+              visitorName: 'Test User',
+              visitorEmail: 'test@example.com',
+              visitorPhone: '1234567890'
             }
           }
         ],
