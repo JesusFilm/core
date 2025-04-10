@@ -21,12 +21,18 @@ import {
   mockGetJourneyEventsQuery
 } from './useJourneyEventsExport.mock'
 import { FILTERED_EVENTS } from './utils/constants'
+import { processCsv } from './utils/processCsv/processCsv'
 
 jest.mock('./utils/processCsv/processCsv', () => ({
   processCsv: jest.fn()
 }))
+const mockProcessCsv = processCsv as jest.MockedFunction<typeof processCsv>
 
 describe('useJourneyEventsExport', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
   it('should fetch journey events', async () => {
     const queryResult = jest.fn(() => ({ ...mockGetJourneyEventsQuery.result }))
     const mutationResult = jest.fn(() => ({
@@ -55,6 +61,7 @@ describe('useJourneyEventsExport', () => {
 
     expect(queryResult).toHaveBeenCalled()
     await waitFor(() => expect(mutationResult).toHaveBeenCalled())
+    expect(mockProcessCsv).toHaveBeenCalled()
   })
 
   it('should fetch journey events with pagination', async () => {
@@ -216,6 +223,7 @@ describe('useJourneyEventsExport', () => {
 
     expect(mockGetJourneyEventsQueryPage1.result).toHaveBeenCalled()
     expect(mockGetJourneyEventsQueryPage2.result).toHaveBeenCalled()
+    expect(mockProcessCsv).toHaveBeenCalled()
   })
 
   it('should throw an error when data retrieval fails', async () => {
