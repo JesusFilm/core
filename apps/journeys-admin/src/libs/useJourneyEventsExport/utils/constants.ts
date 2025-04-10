@@ -1,5 +1,7 @@
 import { TFunction } from 'i18next'
 
+import { EventType } from '../../../../__generated__/globalTypes'
+
 export function getTranslatedCsvOptions(t: TFunction) {
   return {
     header: true,
@@ -18,35 +20,19 @@ export function getTranslatedCsvOptions(t: TFunction) {
   }
 }
 
-const ALL_EVENT_TYPES = [
-  'ButtonClickEvent',
-  'ChatOpenEvent',
-  'JourneyViewEvent',
-  'RadioQuestionSubmissionEvent',
-  'SignUpSubmissionEvent',
-  'StepViewEvent',
-  'StepNextEvent',
-  'StepPreviousEvent',
-  'TextResponseSubmissionEvent',
-  'VideoStartEvent',
-  'VideoPlayEvent',
-  'VideoPauseEvent',
-  'VideoCompleteEvent',
-  'VideoExpandEvent',
-  'VideoCollapseEvent',
-  'VideoProgressEvent'
-]
+const ALL_EVENT_TYPES = Object.values(EventType) as string[]
 
-export const FILTERED_EVENTS = ALL_EVENT_TYPES.filter((event) => {
-  if (
-    event === 'StepViewEvent' ||
-    event === 'StepNextEvent' ||
-    event === 'StepPreviousEvent' ||
-    event === 'VideoExpandEvent' ||
-    event === 'VideoCollapseEvent'
-  ) {
-    return false
-  } else {
-    return true
-  }
-})
+export const FILTERED_EVENTS = ALL_EVENT_TYPES.filter(
+  (event) =>
+    event === 'ButtonClickEvent' ||
+    event === 'ChatOpenEvent' ||
+    event === 'JourneyViewEvent' ||
+    event === 'RadioQuestionSubmissionEvent' ||
+    event === 'SignUpSubmissionEvent' ||
+    event === 'TextResponseSubmissionEvent' ||
+    event === 'VideoStartEvent' ||
+    event === 'VideoPlayEvent' ||
+    event === 'VideoPauseEvent' ||
+    event === 'VideoCompleteEvent' ||
+    event === 'VideoProgressEvent'
+)
