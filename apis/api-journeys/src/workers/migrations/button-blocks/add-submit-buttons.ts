@@ -35,14 +35,15 @@ async function main(): Promise<void> {
       const cards = await prisma.block.findMany({
         where: {
           typename: 'CardBlock'
-          // childBlocks: {
-          //   some: {} // Has at least one child block
-          // }
         },
         skip: offset,
         take: limit,
         include: {
-          childBlocks: true // Include child blocks to check their types
+          childBlocks: {
+            where: {
+              deletedAt: null
+            }
+          }
         }
       })
       if (cards.length < limit) {
