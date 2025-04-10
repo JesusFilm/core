@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { ThemeProvider } from '@mui/material/styles'
 import { Meta, StoryObj } from '@storybook/react'
@@ -7,6 +7,10 @@ import { SnackbarProvider } from 'notistack'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { adminLight } from '@core/shared/ui/themes/journeysAdmin/theme'
 
+import {
+  GetJourneyCreatedAt,
+  GetJourneyCreatedAtVariables
+} from '../../../../../__generated__/GetJourneyCreatedAt'
 import {
   JourneyStatus,
   ThemeMode,
@@ -40,55 +44,50 @@ const journey = {
   publishedAt: null,
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
-  blocks: [],
-  primaryImageBlock: null,
-  creatorDescription: null,
-  creatorImageBlock: null,
   strategySlug: null,
   seoTitle: null,
   seoDescription: null,
-  template: false,
+  template: null,
+  blocks: null,
+  primaryImageBlock: null,
+  creatorDescription: null,
+  creatorImageBlock: null,
+  userJourneys: null,
+  chatButtons: [],
   host: null,
   team: null,
-  userJourneys: [],
   tags: [],
-  visitors: 0,
-  translations: [],
-  chatButtons: [],
   website: null,
-  showShareButton: false,
-  showLikeButton: false,
-  showDislikeButton: false,
+  showShareButton: null,
+  showLikeButton: null,
+  showDislikeButton: null,
   displayTitle: null,
   logoImageBlock: null,
   menuButtonIcon: null,
-  menuStepBlock: null,
-  trashedAt: null,
-  archivedAt: null,
-  duplicatedFromJourneyId: null,
-  journeyCollection: null
+  menuStepBlock: null
 }
 
-const mocks = [
-  {
-    request: {
-      query: GET_JOURNEY_CREATED_AT,
-      variables: { id: 'journey-id' }
-    },
-    result: {
-      data: {
-        journey
-      }
+const getJourneyCreatedAtMock: MockedResponse<
+  GetJourneyCreatedAt,
+  GetJourneyCreatedAtVariables
+> = {
+  request: {
+    query: GET_JOURNEY_CREATED_AT,
+    variables: { id: 'journey-id' }
+  },
+  result: {
+    data: {
+      journey
     }
   }
-]
+}
 
 const meta: Meta<typeof ExportDialog> = {
   title: 'Journeys-Admin/JourneyVisitorsList/FilterDrawer/ExportDialog',
   component: ExportDialog,
   decorators: [
     (Story) => (
-      <MockedProvider mocks={mocks}>
+      <MockedProvider>
         <ThemeProvider theme={adminLight}>
           <SnackbarProvider>
             <JourneyProvider value={{ journey }}>
@@ -137,17 +136,7 @@ export const LoadingState: Story = {
   },
   parameters: {
     apolloClient: {
-      mocks: [
-        {
-          request: {
-            query: GET_JOURNEY_CREATED_AT,
-            variables: { id: 'journey-id' }
-          },
-          result: {
-            loading: true
-          }
-        }
-      ]
+      mocks: [getJourneyCreatedAtMock]
     }
   }
 }
@@ -160,15 +149,7 @@ export const ErrorState: Story = {
   },
   parameters: {
     apolloClient: {
-      mocks: [
-        {
-          request: {
-            query: GET_JOURNEY_CREATED_AT,
-            variables: { id: 'journey-id' }
-          },
-          error: new Error('Failed to load journey')
-        }
-      ]
+      mocks: [getJourneyCreatedAtMock]
     }
   }
 }
