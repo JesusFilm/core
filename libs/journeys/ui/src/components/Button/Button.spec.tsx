@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { useFormikContext } from 'formik'
 import { usePlausible } from 'next-plausible'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -70,6 +71,20 @@ jest.mock('next-plausible', () => ({
 const mockUsePlausible = usePlausible as jest.MockedFunction<
   typeof usePlausible
 >
+
+jest.mock('next-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
+jest.mock('formik', () => ({
+  __esModule: true,
+  useFormikContext: jest.fn()
+}))
 
 const block: TreeBlock<ButtonFields> = {
   __typename: 'ButtonBlock',
@@ -141,6 +156,151 @@ describe('Button', () => {
 
   afterAll(() => {
     Object.defineProperty(window, 'location', originalLocation)
+  })
+
+  describe('form validation handling', () => {
+    beforeEach(() => {
+      jest.clearAllMocks()
+    })
+
+    const submitButtonMock = {
+      ...block,
+      label: 'Submit Form',
+      submitEnabled: true
+    }
+
+    const mockButtonClickEvent = {
+      request: {
+        query: BUTTON_CLICK_EVENT_CREATE,
+        variables: {
+          input: {
+            id: 'uuid',
+            blockId: 'button',
+            stepId: 'step.id',
+            label: 'stepName',
+            value: 'Submit Form',
+            action: undefined,
+            actionValue: undefined
+          }
+        }
+      },
+      result: jest.fn(() => ({
+        data: {
+          buttonClickEventCreate: {
+            id: 'uuid',
+            __typename: 'ButtonClickEvent',
+            action: undefined,
+            actionValue: undefined
+          }
+        }
+      }))
+    }
+
+    it('should not submit form on empty form', async () => {
+      mockUuidv4.mockReturnValueOnce('uuid')
+      const validateFormMock = jest.fn()
+      const handleSubmitMock = jest.fn()
+
+      blockHistoryVar([activeBlock])
+      treeBlocksVar([activeBlock])
+
+      const formikContextMock = {
+        values: { field1: '', field2: '' },
+        errors: {},
+        validateForm: validateFormMock,
+        handleSubmit: handleSubmitMock
+      }
+
+      const useFormikContextMock = useFormikContext as jest.Mock
+      useFormikContextMock.mockReturnValue(formikContextMock)
+
+      render(
+        <MockedProvider mocks={[mockButtonClickEvent]}>
+          <Button {...submitButtonMock} />
+        </MockedProvider>
+      )
+
+      const submitButton = screen.getByRole('button', { name: 'Submit Form' })
+
+      fireEvent.click(submitButton)
+
+      await waitFor(() => {
+        expect(validateFormMock).toHaveBeenCalled()
+        expect(mockButtonClickEvent.result).toHaveBeenCalled()
+        expect(handleSubmitMock).not.toHaveBeenCalled()
+      })
+    })
+
+    it('should prevent handleAction when validaton fails', async () => {
+      mockUuidv4.mockReturnValueOnce('uuid')
+      const validateFormMock = jest.fn()
+      const handleSubmitMock = jest.fn()
+
+      blockHistoryVar([activeBlock])
+      treeBlocksVar([activeBlock])
+
+      const formikContextMock = {
+        values: { field1: 'asd', field2: '' },
+        errors: { field1: 'Error' },
+        validateForm: validateFormMock,
+        handleSubmit: handleSubmitMock
+      }
+
+      const useFormikContextMock = useFormikContext as jest.Mock
+      useFormikContextMock.mockReturnValue(formikContextMock)
+
+      render(
+        <MockedProvider mocks={[mockButtonClickEvent]}>
+          <Button {...submitButtonMock} />
+        </MockedProvider>
+      )
+
+      const submitButton = screen.getByRole('button', { name: 'Submit Form' })
+
+      fireEvent.click(submitButton)
+
+      await waitFor(() => {
+        expect(validateFormMock).toHaveBeenCalled()
+        expect(mockButtonClickEvent.result).not.toHaveBeenCalled()
+        expect(handleAction).not.toHaveBeenCalled()
+      })
+    })
+
+    it('should continue with action if form is valid and not empty', async () => {
+      mockUuidv4.mockReturnValueOnce('uuid')
+      const validateFormMock = jest.fn()
+      const handleSubmitMock = jest.fn()
+
+      blockHistoryVar([activeBlock])
+      treeBlocksVar([activeBlock])
+
+      const formikContextMock = {
+        values: { field1: 'asd', field2: '' },
+        errors: {},
+        validateForm: validateFormMock,
+        handleSubmit: handleSubmitMock
+      }
+
+      const useFormikContextMock = useFormikContext as jest.Mock
+      useFormikContextMock.mockReturnValue(formikContextMock)
+
+      render(
+        <MockedProvider mocks={[mockButtonClickEvent]}>
+          <JourneyProvider>
+            <Button {...submitButtonMock} />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      const submitButton = screen.getByRole('button', { name: 'Submit Form' })
+      fireEvent.click(submitButton)
+
+      await waitFor(() => {
+        expect(validateFormMock).toHaveBeenCalled()
+        expect(mockButtonClickEvent.result).toHaveBeenCalled()
+        expect(handleAction).toHaveBeenCalled()
+      })
+    })
   })
 
   it('should create a buttonClickEvent onClick', async () => {

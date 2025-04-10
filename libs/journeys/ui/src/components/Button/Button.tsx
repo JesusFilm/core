@@ -244,13 +244,13 @@ export function Button({
     e.stopPropagation()
 
     if (submitEnabled && formik != null) {
-      const errors = await formik?.validateForm()
+      const errors = await formik.validateForm(formik.values)
 
       if (isEmptyForm()) {
         e.preventDefault()
       }
 
-      if (!isEmptyForm() && Object.keys(errors).length > 0) return
+      if (!isEmptyForm() && errors && Object.keys(errors).length > 0) return
     }
 
     if (messagePlatform == null) {
