@@ -3,6 +3,19 @@ import { TFunction } from 'next-i18next'
 import { processCsv } from './processCsv'
 
 describe('processCsv', () => {
+  let originalBlob: typeof global.Blob
+  let originalCreateObjectURL: typeof global.URL.createObjectURL
+
+  beforeEach(() => {
+    originalBlob = global.Blob
+    originalCreateObjectURL = global.URL.createObjectURL
+  })
+
+  afterEach(() => {
+    global.Blob = originalBlob
+    global.URL.createObjectURL = originalCreateObjectURL
+  })
+
   it('should process the CSV file', () => {
     // Mock Blob and URL.createObjectURL
     const mockBlob = {}
