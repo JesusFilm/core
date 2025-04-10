@@ -250,7 +250,7 @@ export function Button({
         e.preventDefault()
       }
 
-      if (!isEmptyForm() && errors && Object.keys(errors).length > 0) return
+      if (!isEmptyForm() && Object.keys(errors).length > 0) return
     }
 
     if (messagePlatform == null) {

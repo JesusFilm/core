@@ -198,7 +198,7 @@ describe('Button', () => {
 
     it('should not submit form on empty form', async () => {
       mockUuidv4.mockReturnValueOnce('uuid')
-      const validateFormMock = jest.fn()
+      const validateFormMock = jest.fn().mockResolvedValue({})
       const handleSubmitMock = jest.fn()
 
       blockHistoryVar([activeBlock])
@@ -206,7 +206,6 @@ describe('Button', () => {
 
       const formikContextMock = {
         values: { field1: '', field2: '' },
-        errors: {},
         validateForm: validateFormMock,
         handleSubmit: handleSubmitMock
       }
@@ -233,7 +232,9 @@ describe('Button', () => {
 
     it('should prevent handleAction when validaton fails', async () => {
       mockUuidv4.mockReturnValueOnce('uuid')
-      const validateFormMock = jest.fn()
+      const validateFormMock = jest.fn().mockResolvedValue({
+        field1: 'Error'
+      })
       const handleSubmitMock = jest.fn()
 
       blockHistoryVar([activeBlock])
@@ -241,7 +242,6 @@ describe('Button', () => {
 
       const formikContextMock = {
         values: { field1: 'asd', field2: '' },
-        errors: { field1: 'Error' },
         validateForm: validateFormMock,
         handleSubmit: handleSubmitMock
       }
@@ -266,9 +266,9 @@ describe('Button', () => {
       })
     })
 
-    it('should continue with action if form is valid and not empty', async () => {
+    it('should create button click event if form is valid and not empty', async () => {
       mockUuidv4.mockReturnValueOnce('uuid')
-      const validateFormMock = jest.fn()
+      const validateFormMock = jest.fn().mockResolvedValue({})
       const handleSubmitMock = jest.fn()
 
       blockHistoryVar([activeBlock])
@@ -276,7 +276,6 @@ describe('Button', () => {
 
       const formikContextMock = {
         values: { field1: 'asd', field2: '' },
-        errors: {},
         validateForm: validateFormMock,
         handleSubmit: handleSubmitMock
       }
