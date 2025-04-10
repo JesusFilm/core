@@ -26,7 +26,7 @@ interface FilterDrawerProps {
   withSubmittedText: boolean
   withIcon: boolean
   hideInteractive: boolean
-  handleClearAll?: () => void
+  handleClearAll: () => void
   journeyId?: string
 }
 
@@ -76,22 +76,22 @@ export function FilterDrawer({
           />
           <FormControlLabel
             control={<Checkbox />}
-            label={t('With Poll Answers')}
-            value="With Poll Answers"
+            label={t('Poll Answers')}
+            value="Poll Answers"
             onChange={handleChange}
             checked={withPollAnswers}
           />
           <FormControlLabel
             control={<Checkbox />}
-            label={t('With Submitted Text')}
-            value="With Submitted Text"
+            label={t('Submitted Text')}
+            value="Submitted Text"
             onChange={handleChange}
             checked={withSubmittedText}
           />
           <FormControlLabel
             control={<Checkbox />}
-            label={t('With Icon')}
-            value="With Icon"
+            label={t('Icon')}
+            value="Icon"
             onChange={handleChange}
             checked={withIcon}
           />
