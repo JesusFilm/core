@@ -296,6 +296,7 @@ Because the greatest celebration in human history is about far more than traditi
           shareButtonText="Share"
           shareDataTitle={shareDataTitle}
           quizButtonText="What's your next step of faith?"
+          startAt={3000}
           questions={[
             {
               id: 1,
