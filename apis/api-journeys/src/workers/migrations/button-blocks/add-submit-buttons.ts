@@ -29,7 +29,6 @@ async function main(): Promise<void> {
     console.log('Starting migration...')
     // Get all cards that have child blocks
     const limit = 100
-    let offset = 0
     let hasMore = true
     while (hasMore) {
       const cards = await prisma.block.findMany({
@@ -52,7 +51,6 @@ async function main(): Promise<void> {
             }
           ]
         },
-        skip: offset,
         take: limit,
         include: {
           childBlocks: {
@@ -65,7 +63,6 @@ async function main(): Promise<void> {
       if (cards.length < limit) {
         hasMore = false
       }
-      offset += limit
       console.log(`Found ${cards.length} cards with child blocks`)
 
       for (const card of cards) {
