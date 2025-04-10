@@ -26,8 +26,6 @@ export function CheckboxOption({
   onClick,
   indeterminate
 }: CheckboxOptionProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
-
   return (
     <FormControlLabel
       control={
