@@ -1,6 +1,4 @@
 import { gql, useLazyQuery, useMutation } from '@apollo/client'
-import { stringify } from 'csv-stringify/sync'
-import { format } from 'date-fns'
 import isNil from 'lodash/isNil'
 import omitBy from 'lodash/omitBy'
 import { useTranslation } from 'next-i18next'
@@ -11,6 +9,8 @@ import {
   GetJourneyEvents_journeyEventsConnection_edges_node as JourneyEventNode
 } from '../../../__generated__/GetJourneyEvents'
 
+import { FILTERED_EVENTS } from './utils/constants'
+import { processCsv } from './utils/processCsv'
 import { transformEvents } from './utils/transformEvents'
 
 export const GET_JOURNEY_EVENTS_EXPORT = gql`
@@ -60,55 +60,6 @@ export const CREATE_EVENTS_EXPORT_LOG = gql`
   }
 `
 
-const EVENT_CSV_OPTIONS = {
-  header: true,
-  columns: [
-    { key: 'createdAt', header: 'Date & Time' },
-    { key: 'visitorId', header: 'Visitor ID' },
-    { key: 'visitorName', header: 'Name' },
-    { key: 'visitorEmail', header: 'Email' },
-    { key: 'visitorPhone', header: 'Phone' },
-    { key: 'journeyId', header: 'Journey ID' },
-    { key: 'journeySlug', header: 'Slug' },
-    { key: 'typename', header: 'Event Type' },
-    { key: 'label', header: 'Label' },
-    { key: 'value', header: 'Value' }
-  ]
-}
-
-const ALL_EVENT_TYPES = [
-  'ButtonClickEvent',
-  'ChatOpenEvent',
-  'JourneyViewEvent',
-  'RadioQuestionSubmissionEvent',
-  'SignUpSubmissionEvent',
-  'StepViewEvent',
-  'StepNextEvent',
-  'StepPreviousEvent',
-  'TextResponseSubmissionEvent',
-  'VideoStartEvent',
-  'VideoPlayEvent',
-  'VideoPauseEvent',
-  'VideoCompleteEvent',
-  'VideoExpandEvent',
-  'VideoCollapseEvent',
-  'VideoProgressEvent'
-]
-
-export const FILTERED_EVENTS = ALL_EVENT_TYPES.filter((event) => {
-  if (
-    event === 'StepViewEvent' ||
-    event === 'StepNextEvent' ||
-    event === 'StepPreviousEvent' ||
-    event === 'VideoExpandEvent' ||
-    event === 'VideoCollapseEvent'
-  ) {
-    return false
-  } else {
-    return true
-  }
-})
-
 export interface JourneyEvent
   extends Omit<
     JourneyEventNode,
@@ -128,27 +79,6 @@ export function useJourneyEventsExport(): {
   const { t } = useTranslation('apps-journeys-admin')
   const [getJourneyEvents] = useLazyQuery(GET_JOURNEY_EVENTS_EXPORT)
   const [createEventsExportLog] = useMutation(CREATE_EVENTS_EXPORT_LOG)
-
-  function handleCsvProcessing(
-    eventData: JourneyEvent[],
-    journeySlug: string
-  ): void {
-    const csv = stringify(eventData, EVENT_CSV_OPTIONS)
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
-    const url = window.URL.createObjectURL(blob)
-    const today = format(new Date(), 'yyyy-MM-dd')
-    const fileName = `[${today}] ${journeySlug}.csv`
-    const link = document.createElement('a')
-
-    link.target = '_blank'
-    link.href = url
-    link.setAttribute('download', fileName)
-    document.body.appendChild(link)
-    link.click()
-
-    document.body.removeChild(link)
-    window.URL.revokeObjectURL(url)
-  }
 
   async function exportJourneyEvents({
     journeyId,
@@ -202,7 +132,7 @@ export function useJourneyEventsExport(): {
       const eventData = transformEvents(events)
 
       const journeySlug = events[0]?.node.journeySlug ?? ''
-      handleCsvProcessing(eventData, journeySlug)
+      processCsv(eventData, journeySlug)
 
       void createEventsExportLog({
         variables: {
