@@ -14,7 +14,7 @@ import { ExportDialog } from './ExportDialog'
 jest.mock('../../../../libs/useJourneyEventsExport', () => ({
   useJourneyEventsExport: jest.fn()
 }))
-jest.mock('../../../DateRangePicker', () => ({
+jest.mock('./DateRangePicker', () => ({
   DateRangePicker: ({
     startDate,
     endDate,
