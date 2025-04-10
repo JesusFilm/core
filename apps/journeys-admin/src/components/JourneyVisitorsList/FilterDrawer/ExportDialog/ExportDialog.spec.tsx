@@ -51,7 +51,6 @@ jest.mock('next-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key })
 }))
 
-
 const mockExportJourneyEvents = jest.fn()
 const mockOnClose = jest.fn()
 
