@@ -1,11 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import {
-  Formik,
-  FormikContextType,
-  FormikErrors,
-  FormikProvider,
-  FormikValues
-} from 'formik'
+import { Formik, FormikContextType, FormikProvider, FormikValues } from 'formik'
 import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
@@ -42,14 +36,12 @@ const block: TreeBlock<TextResponseFields> = {
 
 interface TextResponseMockProps {
   values?: FormikValues
-  errors?: FormikErrors<FormikValues>
   handleSubmit?: () => void
 }
 
 const TextResponseMock = ({
   values,
-  handleSubmit,
-  errors
+  handleSubmit
 }: TextResponseMockProps): ReactElement => (
   <JourneyProvider>
     <SnackbarProvider>
@@ -57,7 +49,6 @@ const TextResponseMock = ({
         initialValues={{ ...values }}
         onSubmit={handleSubmit ?? noop}
         isSubmitting={true}
-        errors={errors}
       >
         <TextResponse {...block} />
       </Formik>
