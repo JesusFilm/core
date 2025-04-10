@@ -66,7 +66,9 @@ async function fetchSignUpBlocks(): Promise<void> {
         take: limit
       })
 
-      console.log(`Processing batch of ${signUpBlocks.length} SignUpBlocks (Total remaining: ${totalCount})`)
+      console.log(
+        `Processing batch of ${signUpBlocks.length} SignUpBlocks (Total remaining: ${totalCount})`
+      )
 
       // Process each block in the current batch
       for (const block of signUpBlocks) {
@@ -230,7 +232,6 @@ async function fetchSignUpBlocks(): Promise<void> {
     console.log('Summary:')
     console.log(`- Blocks processed: ${stats.blocksProcessed}`)
     console.log(`- Execution time: ${executionTime.toFixed(2)} seconds`)
-
   } catch (error) {
     console.error('Error fetching SignUpBlocks:', error)
     process.exit(1)
