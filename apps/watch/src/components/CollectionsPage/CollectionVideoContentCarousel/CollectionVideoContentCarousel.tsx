@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import { ReactElement, useState } from 'react'
+import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { CollectionVideoPlayer } from '../CollectionVideoPlayer/CollectionVideoPlayer'
@@ -104,6 +105,11 @@ export const CollectionVideoContentCarousel = ({
 
       <div className="pt-8">
         <Swiper
+          modules={[Mousewheel, FreeMode, A11y]}
+          mousewheel={{
+            forceToAxis: true
+          }}
+          observeParents
           data-testid="CollectionVideoContentCarousel"
           slidesPerView={'auto'}
           pagination={{ clickable: true }}
