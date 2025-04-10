@@ -9,7 +9,6 @@ import { useSnackbar } from 'notistack'
 import { ReactElement, useMemo } from 'react'
 import { InferType, mixed, object, string } from 'yup'
 
-import { FormLanguageSelect } from '../../../../../components/FormLanguageSelect'
 import { FormSelectField } from '../../../../../components/FormSelectField'
 import { FormTextField } from '../../../../../components/FormTextField'
 import { videoLabels } from '../../../../../constants'
@@ -61,7 +60,6 @@ export function VideoCreateForm({
   const validationSchema = object().shape({
     id: string().trim().required('ID is required'),
     slug: string().trim().required('Slug is required'),
-    primaryLanguageId: string().required('Primary language is required'),
     label: mixed<VideoLabel>()
       .oneOf(Object.values(VideoLabel))
       .required('Label is required')
@@ -103,7 +101,7 @@ export function VideoCreateForm({
           id: values.id,
           slug: values.slug,
           label: values.label,
-          primaryLanguageId: values.primaryLanguageId,
+          primaryLanguageId: '529',
           noIndex: false,
           published: false,
           childIds: []
@@ -148,8 +146,7 @@ export function VideoCreateForm({
   const initialValues: InferType<typeof validationSchema> = {
     id: '',
     slug: '',
-    label: suggestedLabel || ('' as VideoLabel),
-    primaryLanguageId: ''
+    label: suggestedLabel || ('' as VideoLabel)
   }
 
   // Get explanatory text for the suggested label
@@ -189,10 +186,6 @@ export function VideoCreateForm({
               {getSuggestedLabelExplanation()}
             </Typography>
           )}
-          <FormLanguageSelect
-            name="primaryLanguageId"
-            label="Primary Language"
-          />
           {parentId && (
             <Typography variant="caption" color="text.secondary">
               This video will be added as a child to video with ID: {parentId}
