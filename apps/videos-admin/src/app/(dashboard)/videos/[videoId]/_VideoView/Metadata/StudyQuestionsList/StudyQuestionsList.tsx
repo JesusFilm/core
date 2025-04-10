@@ -1,4 +1,4 @@
-import { useApolloClient, useMutation } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import { DragEndEvent } from '@dnd-kit/core'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -9,13 +9,10 @@ import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
 import { ResultOf, VariablesOf, graphql } from 'gql.tada'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useCallback, useState } from 'react'
+import { ReactElement, Suspense, useState } from 'react'
 
 import { OrderedList } from '../../../../../../../components/OrderedList'
 import { OrderedItem } from '../../../../../../../components/OrderedList/OrderedItem'
-import { GET_ADMIN_VIDEO } from '../../../../../../../libs/useAdminVideo'
-import { GetAdminVideo_AdminVideo_StudyQuestions as StudyQuestions } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { useVideo } from '../../../../../../../libs/VideoProvider'
 import { Section } from '../../Section'
 
 import { StudyQuestionCreate } from './StudyQuestionCreate'
@@ -25,7 +22,7 @@ export const UPDATE_STUDY_QUESTION_ORDER = graphql(`
   mutation UpdateStudyQuestionOrder($input: VideoStudyQuestionUpdateInput!) {
     videoStudyQuestionUpdate(input: $input) {
       id
-      value
+      order
     }
   }
 `)
@@ -34,6 +31,19 @@ export const DELETE_STUDY_QUESTION = graphql(`
   mutation DeleteStudyQuestion($id: ID!) {
     videoStudyQuestionDelete(id: $id) {
       id
+    }
+  }
+`)
+
+export const GET_STUDY_QUESTIONS = graphql(`
+  query GetStudyQuestions($videoId: ID!) {
+    adminVideo(id: $videoId) {
+      id
+      studyQuestions {
+        id
+        value
+        order
+      }
     }
   }
 `)
@@ -50,18 +60,27 @@ export type DeleteStudyQuestionVariables = VariablesOf<
   typeof DELETE_STUDY_QUESTION
 >
 
+export type GetStudyQuestions = ResultOf<typeof GET_STUDY_QUESTIONS>
+export type GetStudyQuestionsVariables = VariablesOf<typeof GET_STUDY_QUESTIONS>
+
 interface StudyQuestionsListProps {
-  studyQuestions: StudyQuestions
+  videoId: string
 }
 
 export function StudyQuestionsList({
-  studyQuestions
+  videoId
 }: StudyQuestionsListProps): ReactElement | null {
-  const video = useVideo()
-  const apolloClient = useApolloClient()
   const { enqueueSnackbar } = useSnackbar()
 
-  const [studyQuestionItems, setStudyQuestionItems] = useState(studyQuestions)
+  // Use regular useQuery to handle loading states
+  const { data, refetch } = useQuery<
+    GetStudyQuestions,
+    GetStudyQuestionsVariables
+  >(GET_STUDY_QUESTIONS, {
+    variables: { videoId },
+    fetchPolicy: 'cache-and-network'
+  })
+
   const [selectedQuestion, setSelectedQuestion] = useState<{
     id: string
     value: string
@@ -69,35 +88,10 @@ export function StudyQuestionsList({
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [questionToDelete, setQuestionToDelete] = useState<string | null>(null)
 
-  // Function to refetch the video data
-  const refetchVideoData = useCallback(async () => {
-    try {
-      const result = await apolloClient.refetchQueries({
-        include: [GET_ADMIN_VIDEO],
-        updateCache(cache) {
-          // Force clear any cached video data to ensure we get fresh data
-          cache.evict({ fieldName: 'adminVideo', args: { id: video.id } })
-          cache.gc()
-        }
-      })
-      return result
-    } catch (error) {
-      console.error('Error refetching video data:', error)
-      throw error
-    }
-  }, [apolloClient, video.id])
-
   const [updateStudyQuestionOrder] = useMutation<
     UpdateStudyQuestionOrder,
     UpdateStudyQuestionOrderVariables
   >(UPDATE_STUDY_QUESTION_ORDER, {
-    onCompleted: async () => {
-      try {
-        await refetchVideoData()
-      } catch (error) {
-        console.error('Error refetching after order update:', error)
-      }
-    },
     onError: (error) => {
       enqueueSnackbar(error.message, { variant: 'error' })
     }
@@ -106,13 +100,8 @@ export function StudyQuestionsList({
   const [deleteStudyQuestion, { loading: deleteLoading }] = useMutation(
     DELETE_STUDY_QUESTION,
     {
-      onCompleted: async () => {
+      onCompleted: () => {
         enqueueSnackbar('Study question deleted', { variant: 'success' })
-        try {
-          await refetchVideoData()
-        } catch (error) {
-          console.error('Error refetching after delete:', error)
-        }
         handleCloseDeleteDialog()
       },
       onError: (error) => {
@@ -123,21 +112,50 @@ export function StudyQuestionsList({
 
   async function updateOrderOnDrag(e: DragEndEvent): Promise<void> {
     const { active, over } = e
-    if (over == null) return
+    if (over == null || data == null) return
     if (e.active.id !== over.id) {
-      const newIndex = studyQuestions.findIndex((item) => item.id === over.id)
+      const oldIndex = data.adminVideo.studyQuestions.findIndex(
+        (item) => item.id === active.id
+      )
+      const newIndex = data.adminVideo.studyQuestions.findIndex(
+        (item) => item.id === over.id
+      )
 
-      const questionToMove = studyQuestions.find((q) => q.id === active.id)
+      const questionToMove = data.adminVideo.studyQuestions.find(
+        (q) => q.id === active.id
+      )
       if (!questionToMove) return
 
+      // Create a new array with the reordered items
+      const updatedQuestions = [...data.adminVideo.studyQuestions]
+      const [movedItem] = updatedQuestions.splice(oldIndex, 1)
+      updatedQuestions.splice(newIndex, 0, movedItem)
+
       try {
-        await updateStudyQuestionOrder({
-          variables: {
-            input: { id: active.id.toString(), order: newIndex + 1 }
-          }
-        })
+        for (let i = 0; i < updatedQuestions.length; i++) {
+          const question = updatedQuestions[i]
+          await updateStudyQuestionOrder({
+            variables: {
+              input: { id: question.id, order: i + 1 }
+            },
+            update: (cache) => {
+              cache.writeQuery({
+                query: GET_STUDY_QUESTIONS,
+                variables: { videoId },
+                data: {
+                  adminVideo: {
+                    id: videoId,
+                    studyQuestions: updatedQuestions
+                  }
+                }
+              })
+            }
+          })
+        }
+        enqueueSnackbar('Question order updated', { variant: 'success' })
       } catch (error) {
-        console.error('Error updating study question order:', error)
+        enqueueSnackbar('Error updating study question order:', error)
+        await refetch()
       }
     }
   }
@@ -169,34 +187,26 @@ export function StudyQuestionsList({
           id: questionToDelete
         }
       })
-
-      setStudyQuestionItems((items) =>
-        items.filter((item) => item.id !== questionToDelete)
-      )
-
-      enqueueSnackbar('Study question deleted', {
-        variant: 'success'
-      })
-
-      handleCloseDeleteDialog()
     } catch (error) {
-      console.error('Error deleting study question:', error)
+      enqueueSnackbar('Error deleting study question:', error)
+      await refetch()
     }
   }
 
-  const totalQuestions = studyQuestionItems?.length ?? 0
-
   return (
-    <>
+    <Suspense fallback={<CircularProgress />}>
       <Section title="Study Questions" variant="outlined">
-        {totalQuestions > 0 ? (
-          <OrderedList onOrderUpdate={updateOrderOnDrag} items={studyQuestions}>
-            {studyQuestions?.map(({ id, value }, idx) => (
+        {data != null && data.adminVideo.studyQuestions.length > 0 ? (
+          <OrderedList
+            onOrderUpdate={updateOrderOnDrag}
+            items={data.adminVideo.studyQuestions}
+          >
+            {data.adminVideo.studyQuestions.map(({ id, value, order }) => (
               <OrderedItem
                 key={id}
                 id={id}
                 label={value}
-                idx={idx}
+                idx={order - 1}
                 menuActions={[
                   {
                     label: 'Edit',
@@ -214,8 +224,11 @@ export function StudyQuestionsList({
           <Section.Fallback>No study questions</Section.Fallback>
         )}
         <StudyQuestionCreate
-          studyQuestions={studyQuestions}
-          onQuestionAdded={refetchVideoData}
+          order={(data?.adminVideo.studyQuestions.length ?? 0) + 1}
+          videoId={videoId}
+          onQuestionAdded={() => {
+            void refetch()
+          }}
         />
       </Section>
       {selectedQuestion != null && (
@@ -223,7 +236,7 @@ export function StudyQuestionsList({
           open={true}
           onClose={handleCloseDialog}
           studyQuestion={selectedQuestion}
-          onQuestionUpdated={refetchVideoData}
+          videoId={videoId}
         />
       )}
       <Dialog
@@ -254,6 +267,6 @@ export function StudyQuestionsList({
           </Button>
         </DialogActions>
       </Dialog>
-    </>
+    </Suspense>
   )
 }

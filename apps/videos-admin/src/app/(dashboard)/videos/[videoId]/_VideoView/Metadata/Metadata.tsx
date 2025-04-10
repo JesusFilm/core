@@ -33,7 +33,7 @@ export function Metadata({ video }: MetadataProps): ReactElement {
       <Section title="Description" variant="outlined">
         <VideoDescription videoDescriptions={video.description} />
       </Section>
-      <StudyQuestionsList studyQuestions={video.studyQuestions} />
+      <StudyQuestionsList videoId={video.id} />
     </Stack>
   )
 }

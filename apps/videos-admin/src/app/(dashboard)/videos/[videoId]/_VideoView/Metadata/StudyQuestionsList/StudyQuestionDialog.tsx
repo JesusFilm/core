@@ -6,10 +6,8 @@ import { ResultOf, VariablesOf, graphql } from 'gql.tada'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
-import { GET_ADMIN_VIDEO } from '../../../../../../../libs/useAdminVideo'
-import { useVideo } from '../../../../../../../libs/VideoProvider'
-
 import { StudyQuestionForm } from './StudyQuestionForm'
+import { GET_STUDY_QUESTIONS } from './StudyQuestionsList'
 
 export const UPDATE_STUDY_QUESTION = graphql(`
   mutation UpdateStudyQuestion($input: VideoStudyQuestionUpdateInput!) {
@@ -32,6 +30,7 @@ interface StudyQuestionDialogProps {
     id: string
     value: string
   }
+  videoId: string
   onQuestionUpdated?: () => void
 }
 
@@ -39,10 +38,9 @@ export function StudyQuestionDialog({
   open,
   onClose,
   studyQuestion,
-  onQuestionUpdated
+  videoId
 }: StudyQuestionDialogProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
-  const video = useVideo()
 
   const [updateStudyQuestion, { loading }] = useMutation<
     UpdateStudyQuestion,
@@ -50,9 +48,6 @@ export function StudyQuestionDialog({
   >(UPDATE_STUDY_QUESTION, {
     onCompleted: () => {
       enqueueSnackbar('Study question updated', { variant: 'success' })
-      if (onQuestionUpdated) {
-        onQuestionUpdated()
-      }
       onClose()
     },
     onError: (error) => {
@@ -69,12 +64,38 @@ export function StudyQuestionDialog({
             value: values.value
           }
         },
-        refetchQueries: [
-          {
-            query: GET_ADMIN_VIDEO,
-            variables: { videoId: video.id }
-          }
-        ]
+        update: (cache, { data }) => {
+          if (!data?.videoStudyQuestionUpdate) return
+
+          // Read the current data from cache
+          const existingData = cache.readQuery({
+            query: GET_STUDY_QUESTIONS,
+            variables: { videoId }
+          })
+
+          if (!existingData) return
+
+          // Get the updated question from the mutation response
+          const updatedQuestion = data.videoStudyQuestionUpdate
+
+          // Create a new array with the updated question
+          const updatedQuestions = existingData.adminVideo.studyQuestions.map(
+            (question) =>
+              question.id === updatedQuestion.id ? updatedQuestion : question
+          )
+
+          // Write the updated questions back to the cache
+          cache.writeQuery({
+            query: GET_STUDY_QUESTIONS,
+            variables: { videoId },
+            data: {
+              adminVideo: {
+                ...existingData.adminVideo,
+                studyQuestions: updatedQuestions
+              }
+            }
+          })
+        }
       })
     } catch (error) {
       enqueueSnackbar(error.message, { variant: 'error' })
