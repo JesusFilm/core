@@ -13,8 +13,6 @@ export default function EasterPage(): ReactElement {
   return (
     <>
       <NextSeo
-        noindex
-        nofollow
         titleTemplate="%s | Jesus Film Project"
         defaultTitle="Easter 2025 videos & resources about Lent, Holy Week, Resurrection | Jesus Film Project"
         description="Explore the other side of Easter — one filled with betrayal, hope, and a claim that changed the world."
@@ -61,6 +59,10 @@ export default function EasterPage(): ReactElement {
 
 export const getStaticProps: GetStaticProps = async (context) => {
   return {
+    redirect: {
+      destination: '/watch/easter.html/english.html',
+      permanent: false
+    },
     props: {
       flags: await getFlags(),
       ...(await serverSideTranslations(
