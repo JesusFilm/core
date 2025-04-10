@@ -11,7 +11,7 @@ export function getTextResponseBlocks(
   children: TreeBlock[]
 ): TreeBlock<TextResponseBlock>[] {
   return children.filter(
-    (block): block is TreeBlock<TextResponseBlock> => 
-    block.__typename === 'TextResponseBlock'
+    (block): block is TreeBlock<TextResponseBlock> =>
+      block.__typename === 'TextResponseBlock'
   )
 }

@@ -207,10 +207,10 @@ export function Card({
         return Promise.resolve(null)
 
       const heading =
-      activeBlock != null
-        ? (getTextResponseLabel(block) ??
-          getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t))
-        : t('None')
+        activeBlock != null
+          ? (getTextResponseLabel(block) ??
+            getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t))
+          : t('None')
       const id = uuidv4()
       return textResponseSubmissionEventCreate({
         variables: {

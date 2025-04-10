@@ -5,7 +5,7 @@ import { Action, AppAclFn, AppAclParameters } from '../../lib/casl/caslFactory'
 export const eventAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
   // read event as a team member
   can(Action.Read, 'Event', {
-    visitor: {
+    journey: {
       is: {
         team: {
           is: {

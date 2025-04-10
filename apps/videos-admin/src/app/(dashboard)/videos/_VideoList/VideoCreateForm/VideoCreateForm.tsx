@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -6,10 +6,9 @@ import { Form, Formik } from 'formik'
 import { ResultOf, VariablesOf, graphql } from 'gql.tada'
 import { usePathname, useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, useMemo } from 'react'
 import { InferType, mixed, object, string } from 'yup'
 
-import { FormLanguageSelect } from '../../../../../components/FormLanguageSelect'
 import { FormSelectField } from '../../../../../components/FormSelectField'
 import { FormTextField } from '../../../../../components/FormTextField'
 import { videoLabels } from '../../../../../constants'
@@ -34,19 +33,33 @@ export const CREATE_VIDEO = graphql(`
   }
 `)
 
+export const GET_PARENT_VIDEO_LABEL = graphql(`
+  query GetParentVideoLabel($videoId: ID!) {
+    adminVideo(id: $videoId) {
+      id
+      label
+    }
+  }
+`)
+
 export type CreateVideoVariables = VariablesOf<typeof CREATE_VIDEO>
 export type CreateVideo = ResultOf<typeof CREATE_VIDEO>
 
 interface VideoCreateFormProps {
   close: () => void
+  parentId?: string
+  onCreateSuccess?: (videoId: string) => void
 }
 
-export function VideoCreateForm({ close }: VideoCreateFormProps): ReactElement {
+export function VideoCreateForm({
+  close,
+  parentId,
+  onCreateSuccess
+}: VideoCreateFormProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
   const validationSchema = object().shape({
     id: string().trim().required('ID is required'),
     slug: string().trim().required('Slug is required'),
-    primaryLanguageId: string().required('Primary language is required'),
     label: mixed<VideoLabel>()
       .oneOf(Object.values(VideoLabel))
       .required('Label is required')
@@ -55,8 +68,31 @@ export function VideoCreateForm({ close }: VideoCreateFormProps): ReactElement {
   const router = useRouter()
   const pathname = usePathname()
 
+  const { data: parentData } = useQuery(GET_PARENT_VIDEO_LABEL, {
+    variables: { videoId: parentId || '' },
+    skip: !parentId
+  })
+
   const [createVideo] = useMutation(CREATE_VIDEO)
   const [createEdition] = useCreateEditionMutation()
+
+  // Determine the suggested child label based on parent label
+  const suggestedLabel = useMemo(() => {
+    if (!parentId || !parentData?.adminVideo?.label) return undefined
+
+    const parentLabel = parentData.adminVideo.label
+
+    switch (parentLabel) {
+      case 'collection':
+        return VideoLabel.episode
+      case 'featureFilm':
+        return VideoLabel.segment
+      case 'series':
+        return VideoLabel.episode
+      default:
+        return undefined
+    }
+  }, [parentId, parentData])
 
   const handleSubmit = async (values: InferType<typeof validationSchema>) => {
     await createVideo({
@@ -65,7 +101,7 @@ export function VideoCreateForm({ close }: VideoCreateFormProps): ReactElement {
           id: values.id,
           slug: values.slug,
           label: values.label,
-          primaryLanguageId: values.primaryLanguageId,
+          primaryLanguageId: '529',
           noIndex: false,
           published: false,
           childIds: []
@@ -85,8 +121,13 @@ export function VideoCreateForm({ close }: VideoCreateFormProps): ReactElement {
             enqueueSnackbar('Successfully created video.', {
               variant: 'success'
             })
-            close()
-            router.push(`${pathname}/${values.id}`)
+
+            if (onCreateSuccess != null) {
+              onCreateSuccess(videoId)
+            } else {
+              close()
+              router.push(`${pathname}/${values.id}`)
+            }
           },
           onError: () => {
             enqueueSnackbar('Failed to create video edition.', {
@@ -105,8 +146,22 @@ export function VideoCreateForm({ close }: VideoCreateFormProps): ReactElement {
   const initialValues: InferType<typeof validationSchema> = {
     id: '',
     slug: '',
-    label: '' as VideoLabel,
-    primaryLanguageId: ''
+    label: suggestedLabel || ('' as VideoLabel)
+  }
+
+  // Get explanatory text for the suggested label
+  const getSuggestedLabelExplanation = (): string => {
+    if (!suggestedLabel) return ''
+
+    const parentLabel = parentData?.adminVideo?.label
+    const suggestedLabelName = videoLabels.find(
+      (vl) => vl.value === suggestedLabel
+    )?.label
+    const parentLabelName = videoLabels.find(
+      (vl) => vl.value === parentLabel
+    )?.label
+
+    return `Based on the parent ${parentLabelName}, we've suggested ${suggestedLabelName}`
   }
 
   return (
@@ -114,6 +169,7 @@ export function VideoCreateForm({ close }: VideoCreateFormProps): ReactElement {
       initialValues={initialValues}
       onSubmit={handleSubmit}
       validationSchema={validationSchema}
+      enableReinitialize={true}
     >
       <Form data-testid="VideoCreateForm">
         <Stack gap={2}>
@@ -125,10 +181,16 @@ export function VideoCreateForm({ close }: VideoCreateFormProps): ReactElement {
             options={videoLabels}
             fullWidth
           />
-          <FormLanguageSelect
-            name="primaryLanguageId"
-            label="Primary Language"
-          />
+          {suggestedLabel && (
+            <Typography variant="caption" color="text.secondary">
+              {getSuggestedLabelExplanation()}
+            </Typography>
+          )}
+          {parentId && (
+            <Typography variant="caption" color="text.secondary">
+              This video will be added as a child to video with ID: {parentId}
+            </Typography>
+          )}
           <Stack direction="row" sx={{ gap: 1, mt: 2 }}>
             <Button variant="outlined" onClick={close} fullWidth>
               <Typography>Cancel</Typography>
