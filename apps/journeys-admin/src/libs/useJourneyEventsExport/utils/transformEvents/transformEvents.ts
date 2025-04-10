@@ -1,9 +1,7 @@
-import { GetJourneyEvents_journeyEventsConnection_edges } from '../../../../../__generated__/GetJourneyEvents'
+import { GetJourneyEvents_journeyEventsConnection_edges as EventEdge } from '../../../../../__generated__/GetJourneyEvents'
 import { JourneyEvent } from '../../useJourneyEventsExport'
 
-export function transformEvents(
-  events: GetJourneyEvents_journeyEventsConnection_edges[]
-): JourneyEvent[] {
+export function transformEvents(events: EventEdge[]): JourneyEvent[] {
   return events.map((edge) => {
     switch (edge.node.typename) {
       case 'VideoProgressEvent':
