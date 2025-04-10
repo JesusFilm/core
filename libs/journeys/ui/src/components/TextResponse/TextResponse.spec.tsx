@@ -1,5 +1,11 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { Formik, FormikContextType, FormikProvider, FormikValues } from 'formik'
+import {
+  Formik,
+  FormikContextType,
+  FormikErrors,
+  FormikProvider,
+  FormikValues
+} from 'formik'
 import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
@@ -36,12 +42,14 @@ const block: TreeBlock<TextResponseFields> = {
 
 interface TextResponseMockProps {
   values?: FormikValues
+  errors?: FormikErrors<FormikValues>
   handleSubmit?: () => void
 }
 
 const TextResponseMock = ({
   values,
-  handleSubmit
+  handleSubmit,
+  errors
 }: TextResponseMockProps): ReactElement => (
   <JourneyProvider>
     <SnackbarProvider>
@@ -49,6 +57,7 @@ const TextResponseMock = ({
         initialValues={{ ...values }}
         onSubmit={handleSubmit ?? noop}
         isSubmitting={true}
+        errors={errors}
       >
         <TextResponse {...block} />
       </Formik>
@@ -206,5 +215,28 @@ describe('TextResponse', () => {
 
     expect(screen.queryByText('Your answer here*')).not.toBeInTheDocument()
     expect(screen.getByText('Your answer here')).toBeInTheDocument()
+  })
+
+  it('should show errors', () => {
+    const requiredBlock: TreeBlock<TextResponseFields> = {
+      ...block,
+      required: true
+    }
+
+    render(
+      <FormikProvider
+        value={
+          {
+            values: { [requiredBlock.id]: '' },
+            touched: { [requiredBlock.id]: true },
+            errors: { [requiredBlock.id]: 'This field is required' }
+          } as unknown as FormikContextType<FormikValues>
+        }
+      >
+        <TextResponse {...requiredBlock} />
+      </FormikProvider>
+    )
+
+    expect(screen.getByText('This field is required')).toBeInTheDocument()
   })
 })
