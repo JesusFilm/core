@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 
 import { StudyQuestionForm } from './StudyQuestionForm'
 
@@ -67,11 +67,16 @@ describe('StudyQuestionForm', () => {
       />
     )
 
-    fireEvent.submit(screen.getByRole('button'))
-
-    await waitFor(() => {
-      expect(screen.getByText('Study question is required')).toBeInTheDocument()
+    await act(async () => {
+      fireEvent.submit(screen.getByRole('button'))
     })
+
+    // Wait for validation errors to appear
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0))
+    })
+
+    expect(screen.getByText('Study question is required')).toBeInTheDocument()
     expect(handleSubmit).not.toHaveBeenCalled()
   })
 
@@ -85,17 +90,25 @@ describe('StudyQuestionForm', () => {
       />
     )
 
-    fireEvent.change(screen.getByPlaceholderText('Enter study question'), {
-      target: { value: 'New question' }
+    await act(async () => {
+      fireEvent.change(screen.getByPlaceholderText('Enter study question'), {
+        target: { value: 'New question' }
+      })
     })
-    fireEvent.submit(screen.getByRole('button'))
 
-    await waitFor(() => {
-      expect(handleSubmit).toHaveBeenCalledWith(
-        { value: 'New question' },
-        expect.anything()
-      )
+    await act(async () => {
+      fireEvent.submit(screen.getByRole('button'))
     })
+
+    // Wait for form submission to complete
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0))
+    })
+
+    expect(handleSubmit).toHaveBeenCalledWith(
+      { value: 'New question' },
+      expect.anything()
+    )
   })
 
   it('should disable submit button when loading', () => {

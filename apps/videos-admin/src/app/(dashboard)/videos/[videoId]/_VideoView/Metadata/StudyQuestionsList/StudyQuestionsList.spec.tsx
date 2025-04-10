@@ -57,11 +57,8 @@ describe('StudyQuestions', () => {
     expect(screen.getByText('Study Questions')).toBeInTheDocument()
 
     // Wait for the query to complete
-    await waitFor(() => {
-      const question1 = screen.getByTestId('OrderedItem-0')
-      expect(
-        within(question1).getByText(`1. ${mockStudyQuestions[0].value}`)
-      ).toBeInTheDocument()
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0))
     })
 
     const question1 = screen.getByTestId('OrderedItem-0')
@@ -95,27 +92,27 @@ describe('StudyQuestions', () => {
     )
 
     // Wait for the query to complete
-    await waitFor(() => {
-      const question = screen.getByTestId('OrderedItem-0')
-      expect(
-        within(question).getByText(`1. ${mockStudyQuestions[0].value}`)
-      ).toBeInTheDocument()
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0))
     })
 
     // Click the menu button for the first question
     const question1 = screen.getByTestId('OrderedItem-0')
     // Use the correct aria-label for the menu button
     const menuButton = within(question1).getByLabelText('ordered-item-actions')
-    fireEvent.click(menuButton)
+
+    await act(async () => {
+      fireEvent.click(menuButton)
+    })
 
     // Click the edit option
     const editOption = screen.getByText('Edit')
-    fireEvent.click(editOption)
+    await act(async () => {
+      fireEvent.click(editOption)
+    })
 
     // Dialog should open
-    await waitFor(() => {
-      expect(screen.getByText('Edit Study Question')).toBeInTheDocument()
-    })
+    expect(screen.getByText('Edit Study Question')).toBeInTheDocument()
 
     // The text field should contain the question text
     expect(screen.getByPlaceholderText('Enter study question')).toHaveValue(
@@ -166,9 +163,8 @@ describe('StudyQuestions', () => {
     )
 
     // Wait for the component to render
-    await waitFor(() => {
-      const question1 = screen.getByTestId('OrderedItem-0')
-      expect(within(question1).getByText(/Question 1/i)).toBeInTheDocument()
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0))
     })
 
     // Access the updateOrderOnDrag function by mocking the OrderedList's onOrderUpdate prop
@@ -228,18 +224,21 @@ describe('StudyQuestions', () => {
     )
 
     // Wait for the component to render
-    await waitFor(() => {
-      const question = screen.getByTestId('OrderedItem-0')
-      expect(question).toBeInTheDocument()
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0))
     })
 
     // Find the menu button on the OrderedItem using the correct aria-label
     const menuButton = screen.getByLabelText('ordered-item-actions')
-    await userEvent.click(menuButton)
+    await act(async () => {
+      await userEvent.click(menuButton)
+    })
 
     // Click delete in the menu
     const deleteButton = screen.getByText('Delete')
-    await userEvent.click(deleteButton)
+    await act(async () => {
+      await userEvent.click(deleteButton)
+    })
 
     // Verify dialog appears
     const dialogTitle = screen.getByText('Delete Study Question')
@@ -253,7 +252,9 @@ describe('StudyQuestions', () => {
 
     // Click confirm delete
     const confirmDeleteButton = screen.getByRole('button', { name: 'Delete' })
-    await userEvent.click(confirmDeleteButton)
+    await act(async () => {
+      await userEvent.click(confirmDeleteButton)
+    })
 
     expect(mockDeleteMutation).toHaveBeenCalledWith({
       variables: {
@@ -285,14 +286,16 @@ describe('StudyQuestions', () => {
     )
 
     // Wait for the component to render
-    await waitFor(() => {
-      // Look for the section element first
-      const section = screen.getByTestId('Study Questions-section')
-      expect(section).toBeInTheDocument()
-
-      // Then check if it contains the fallback text somewhere in its content
-      expect(screen.getByText(/No study questions/i)).toBeInTheDocument()
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0))
     })
+
+    // Look for the section element first
+    const section = screen.getByTestId('Study Questions-section')
+    expect(section).toBeInTheDocument()
+
+    // Then check if it contains the fallback text somewhere in its content
+    expect(screen.getByText(/No study questions/i)).toBeInTheDocument()
 
     // There should be an add question button
     expect(screen.getByRole('button', { name: 'Add' })).toBeInTheDocument()

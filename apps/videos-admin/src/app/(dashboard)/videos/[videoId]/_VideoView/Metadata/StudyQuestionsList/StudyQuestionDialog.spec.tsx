@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import {
@@ -101,15 +101,23 @@ describe('StudyQuestionDialog', () => {
     )
 
     // Update the study question
-    fireEvent.change(screen.getByPlaceholderText('Enter study question'), {
-      target: { value: 'Updated question' }
+    await act(async () => {
+      fireEvent.change(screen.getByPlaceholderText('Enter study question'), {
+        target: { value: 'Updated question' }
+      })
     })
-    fireEvent.click(screen.getByRole('button', { name: 'Update' }))
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Update' }))
+    })
+
+    // Wait for the mutation to complete
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0))
+    })
 
     // Verify the component shows success message and calls onClose
-    await waitFor(() => {
-      expect(onClose).toHaveBeenCalled()
-    })
+    expect(onClose).toHaveBeenCalled()
     expect(onQuestionUpdated).toHaveBeenCalled()
   })
 
@@ -145,13 +153,21 @@ describe('StudyQuestionDialog', () => {
       </MockedProvider>
     )
 
-    fireEvent.change(screen.getByPlaceholderText('Enter study question'), {
-      target: { value: 'Updated question' }
+    await act(async () => {
+      fireEvent.change(screen.getByPlaceholderText('Enter study question'), {
+        target: { value: 'Updated question' }
+      })
     })
-    fireEvent.click(screen.getByRole('button', { name: 'Update' }))
 
-    await waitFor(() => {
-      expect(screen.getByText('Failed to update')).toBeInTheDocument()
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Update' }))
     })
+
+    // Wait for the error to be displayed
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0))
+    })
+
+    expect(screen.getByText('Failed to update')).toBeInTheDocument()
   })
 })
