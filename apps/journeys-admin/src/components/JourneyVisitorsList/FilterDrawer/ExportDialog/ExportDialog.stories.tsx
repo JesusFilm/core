@@ -16,10 +16,11 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../__generated__/globalTypes'
+import { JourneyFields } from '../../../../../__generated__/JourneyFields'
 
 import { ExportDialog, GET_JOURNEY_CREATED_AT } from './ExportDialog'
 
-const journey = {
+const journey: JourneyFields = {
   __typename: 'Journey' as const,
   id: 'journey-id',
   createdAt: '2024-01-01T00:00:00Z',
