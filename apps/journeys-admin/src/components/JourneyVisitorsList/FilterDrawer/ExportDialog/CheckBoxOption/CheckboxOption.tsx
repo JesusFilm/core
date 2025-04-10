@@ -1,6 +1,5 @@
 import Checkbox from '@mui/material/Checkbox'
 import FormControlLabel from '@mui/material/FormControlLabel'
-import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 interface CheckboxOptionProps {
