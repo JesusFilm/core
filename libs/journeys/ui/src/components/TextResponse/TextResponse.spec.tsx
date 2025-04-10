@@ -67,7 +67,7 @@ const TextResponseMock = ({
 
 describe('TextResponse', () => {
   it('should have 1000 character max length', async () => {
-    const { getByLabelText } = render(<TextResponseMock />)
+    render(<TextResponseMock />)
 
     const responseField = screen.getByRole('textbox')
 
