@@ -226,6 +226,7 @@ export interface CardIntroRestore_subtitle_TextResponseBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
   placeholder: string | null;
   hint: string | null;
@@ -650,6 +651,7 @@ export interface CardIntroRestore_title_TextResponseBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
   placeholder: string | null;
   hint: string | null;
@@ -1074,6 +1076,7 @@ export interface CardIntroRestore_body_TextResponseBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
   placeholder: string | null;
   hint: string | null;
@@ -1498,6 +1501,7 @@ export interface CardIntroRestore_button_TextResponseBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
   placeholder: string | null;
   hint: string | null;
@@ -1922,6 +1926,7 @@ export interface CardIntroRestore_startIcon_TextResponseBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
   placeholder: string | null;
   hint: string | null;
@@ -2346,6 +2351,7 @@ export interface CardIntroRestore_endIcon_TextResponseBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
   placeholder: string | null;
   hint: string | null;
@@ -2770,6 +2776,7 @@ export interface CardIntroRestore_video_TextResponseBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
   placeholder: string | null;
   hint: string | null;

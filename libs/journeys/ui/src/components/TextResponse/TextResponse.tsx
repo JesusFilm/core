@@ -52,7 +52,8 @@ export const TextResponse = ({
   placeholder,
   hint,
   minRows,
-  type
+  type,
+  required
 }: TextResponseProps): ReactElement => {
   const [value, setValue] = useState('')
 
@@ -98,13 +99,14 @@ export const TextResponse = ({
         spacing={1}
       >
         <Typography
-          id="textResponse-label"
+          id={`textResponse-label-${blockId}`}
           variant="subtitle2"
           sx={{
             fontsize: 14
           }}
         >
           {label.trim() === '' ? 'Label' : label}
+          {(required ?? false) ? '*' : ''}
         </Typography>
         <TextField
           id={`textResponse-field`}
@@ -120,7 +122,7 @@ export const TextResponse = ({
           onBlur={handleInputBlur}
           slotProps={{
             htmlInput: {
-              'aria-labelledby': 'textResponse-label',
+              'aria-labelledby': `textResponse-label-${blockId}`,
               maxLength: 1000,
               readOnly: selectedBlock !== undefined,
               inputMode: type === TextResponseType.phone ? 'tel' : 'text',

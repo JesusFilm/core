@@ -226,6 +226,7 @@ export interface CardFormRestore_image_TextResponseBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
   placeholder: string | null;
   hint: string | null;
@@ -650,6 +651,7 @@ export interface CardFormRestore_subtitle_TextResponseBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
   placeholder: string | null;
   hint: string | null;
@@ -1074,6 +1076,7 @@ export interface CardFormRestore_title_TextResponseBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
   placeholder: string | null;
   hint: string | null;
@@ -1498,6 +1501,7 @@ export interface CardFormRestore_textResponse_TextResponseBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
   placeholder: string | null;
   hint: string | null;
@@ -3194,6 +3198,7 @@ export interface CardFormRestore_body_TextResponseBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
   placeholder: string | null;
   hint: string | null;

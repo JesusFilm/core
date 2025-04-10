@@ -642,6 +642,7 @@ export const imageBlocks: TreeBlock[] = [
             integrationId: null,
             type: null,
             routeId: null,
+            required: null,
             children: []
           },
           {

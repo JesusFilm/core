@@ -4,6 +4,7 @@ import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 
+import { TextResponseType } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 
@@ -27,6 +28,7 @@ const block: TreeBlock<TextResponseFields> = {
   placeholder: null,
   hint: null,
   minRows: null,
+  required: null,
   integrationId: null,
   type: null,
   routeId: null,
@@ -59,7 +61,7 @@ describe('TextResponse', () => {
   it('should have 1000 character max length', async () => {
     const { getByLabelText } = render(<TextResponseMock />)
 
-    const responseField = getByLabelText('Your answer here')
+    const responseField = screen.getByRole('textbox')
 
     await waitFor(() => {
       expect(responseField).toHaveAttribute('maxlength', '1000')
@@ -76,6 +78,7 @@ describe('TextResponse', () => {
       placeholder: null,
       hint: null,
       minRows: null,
+      required: null,
       integrationId: null,
       type: null,
       routeId: null,
@@ -92,7 +95,7 @@ describe('TextResponse', () => {
       </JourneyProvider>
     )
 
-    expect(screen.getByLabelText('Label')).toBeInTheDocument()
+    expect(screen.getByText('Label')).toBeInTheDocument()
   })
 
   it('should show default text if label has pure whitespace', async () => {
@@ -108,6 +111,7 @@ describe('TextResponse', () => {
       integrationId: null,
       type: null,
       routeId: null,
+      required: null,
       children: []
     }
 
@@ -143,7 +147,7 @@ describe('TextResponse', () => {
   })
 
   it('should not allow selection in editor', () => {
-    const { getAllByRole } = render(
+    render(
       <JourneyProvider>
         <SnackbarProvider>
           <TextResponseMock />
@@ -151,7 +155,7 @@ describe('TextResponse', () => {
       </JourneyProvider>
     )
 
-    const response = getAllByRole('textbox')[0]
+    const response = screen.getByRole('textbox')
     fireEvent.click(response)
     expect(response.matches(':focus')).not.toBeTruthy()
   })
@@ -168,5 +172,152 @@ describe('TextResponse', () => {
       'aria-labelledby',
       'textResponse-label'
     )
+  })
+
+  it('should show asterisk if required', () => {
+    const requiredBlock: TreeBlock<TextResponseFields> = {
+      ...block,
+      required: true
+    }
+
+    render(
+      <JourneyProvider>
+        <SnackbarProvider>
+          <TextResponse {...requiredBlock} />
+        </SnackbarProvider>
+      </JourneyProvider>
+    )
+
+    expect(screen.getByText('Your answer here*')).toBeInTheDocument()
+  })
+
+  it('should not show asterisk if not required', () => {
+    const notRequiredBlock: TreeBlock<TextResponseFields> = {
+      ...block,
+      required: false
+    }
+
+    render(
+      <JourneyProvider>
+        <SnackbarProvider>
+          <TextResponse {...notRequiredBlock} />
+        </SnackbarProvider>
+      </JourneyProvider>
+    )
+
+    expect(screen.queryByText('Your answer here*')).not.toBeInTheDocument()
+    expect(screen.getByText('Your answer here')).toBeInTheDocument()
+  })
+
+  it('should show "Required" error message if field is required and left empty', async () => {
+    const requiredBlock: TreeBlock<TextResponseFields> = {
+      ...block,
+      required: true
+    }
+
+    render(
+      <JourneyProvider>
+        <SnackbarProvider>
+          <TextResponse {...requiredBlock} />
+        </SnackbarProvider>
+      </JourneyProvider>
+    )
+
+    fireEvent.blur(screen.getByRole('textbox'))
+
+    await waitFor(() => {
+      expect(screen.getByText('Required')).toBeInTheDocument()
+    })
+  })
+
+  it('should show email validation error for invalid email', async () => {
+    const emailBlock: TreeBlock<TextResponseFields> = {
+      ...block,
+      type: TextResponseType.email
+    }
+
+    render(
+      <JourneyProvider>
+        <SnackbarProvider>
+          <TextResponse {...emailBlock} />
+        </SnackbarProvider>
+      </JourneyProvider>
+    )
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'invalid-email' }
+    })
+    fireEvent.blur(screen.getByRole('textbox'))
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Please enter a valid email address')
+      ).toBeInTheDocument()
+    })
+  })
+
+  it('should not submit if required validation fails', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        textResponseSubmissionEventCreate: {
+          id: 'uuid'
+        }
+      }
+    }))
+
+    const requiredBlock: TreeBlock<TextResponseFields> = {
+      ...block,
+      required: true
+    }
+
+    render(
+      <JourneyProvider>
+        <SnackbarProvider>
+          <TextResponse {...requiredBlock} />
+        </SnackbarProvider>
+      </JourneyProvider>
+    )
+
+    fireEvent.blur(screen.getByRole('textbox'))
+
+    await waitFor(() => {
+      expect(screen.getByText('Required')).toBeInTheDocument()
+      expect(result).not.toHaveBeenCalled()
+    })
+  })
+
+  it('should not submit if email validation fails', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        textResponseSubmissionEventCreate: {
+          id: 'uuid'
+        }
+      }
+    }))
+
+    const emailBlock: TreeBlock<TextResponseFields> = {
+      ...block,
+      type: TextResponseType.email
+    }
+
+    render(
+      <JourneyProvider>
+        <SnackbarProvider>
+          <TextResponse {...emailBlock} />
+        </SnackbarProvider>
+      </JourneyProvider>
+    )
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'invalid-email' }
+    })
+    fireEvent.blur(screen.getByRole('textbox'))
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Please enter a valid email address')
+      ).toBeInTheDocument()
+      expect(result).not.toHaveBeenCalled()
+    })
   })
 })
