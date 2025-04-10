@@ -109,6 +109,7 @@ describe('VideoChildren', () => {
     mockRouter.mockReturnValue({ push } as unknown as AppRouterInstance)
     mockUsePathname.mockReturnValue('/en/videos/1_jf6101-0-0')
     const oneChildVideo = [childVideos[0]]
+
     await act(async () => {
       render(
         <MockedProvider>
