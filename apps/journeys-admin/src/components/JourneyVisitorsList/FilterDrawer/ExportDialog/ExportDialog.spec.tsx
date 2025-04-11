@@ -17,9 +17,9 @@ import {
 import { EventType } from '../../../../../__generated__/globalTypes'
 import {
   CREATE_EVENTS_EXPORT_LOG,
-  FILTERED_EVENTS,
   GET_JOURNEY_EVENTS_EXPORT
 } from '../../../../libs/useJourneyEventsExport/useJourneyEventsExport'
+import { FILTERED_EVENTS } from '../../../../libs/useJourneyEventsExport/utils/constants'
 
 import { ExportDialog, GET_JOURNEY_CREATED_AT } from './ExportDialog'
 
@@ -105,7 +105,8 @@ describe('ExportDialog', () => {
                 journeySlug: 'test-journey',
                 visitorName: 'Test User',
                 visitorEmail: 'test@example.com',
-                visitorPhone: '1234567890'
+                visitorPhone: '1234567890',
+                createdAt: '2023-01-01T00:00:00.000Z'
               }
             },
             {
@@ -122,7 +123,8 @@ describe('ExportDialog', () => {
                 journeySlug: 'test-journey',
                 visitorName: 'Test User',
                 visitorEmail: 'test@example.com',
-                visitorPhone: '1234567890'
+                visitorPhone: '1234567890',
+                createdAt: '2023-01-01T00:00:00.000Z'
               }
             }
           ],
