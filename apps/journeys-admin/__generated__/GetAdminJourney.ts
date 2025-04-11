@@ -64,6 +64,7 @@ export interface GetAdminJourney_journey_blocks_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: GetAdminJourney_journey_blocks_ButtonBlock_action | null;
 }
 
@@ -239,6 +240,7 @@ export interface GetAdminJourney_journey_blocks_TextResponseBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
   placeholder: string | null;
   hint: string | null;

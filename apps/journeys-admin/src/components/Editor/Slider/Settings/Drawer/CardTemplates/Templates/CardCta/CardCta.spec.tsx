@@ -240,6 +240,7 @@ describe('CardCta', () => {
           size: ButtonSize.large,
           startIconId: null,
           endIconId: null,
+          submitEnabled: null,
           action: null,
           __typename: 'ButtonBlock'
         },
@@ -271,6 +272,7 @@ describe('CardCta', () => {
           size: ButtonSize.large,
           startIconId: 'startIcon1Id',
           endIconId: 'endIcon1Id',
+          submitEnabled: null,
           action: null,
           __typename: 'ButtonBlock'
         },
@@ -284,6 +286,7 @@ describe('CardCta', () => {
           size: ButtonSize.large,
           startIconId: null,
           endIconId: null,
+          submitEnabled: null,
           action: null,
           __typename: 'ButtonBlock'
         },
@@ -315,6 +318,7 @@ describe('CardCta', () => {
           size: ButtonSize.large,
           startIconId: 'startIcon2Id',
           endIconId: 'endIcon2Id',
+          submitEnabled: null,
           action: null,
           __typename: 'ButtonBlock'
         },
@@ -328,6 +332,7 @@ describe('CardCta', () => {
           size: ButtonSize.large,
           startIconId: null,
           endIconId: null,
+          submitEnabled: null,
           action: null,
           __typename: 'ButtonBlock'
         },
@@ -359,6 +364,7 @@ describe('CardCta', () => {
           size: ButtonSize.large,
           startIconId: 'startIcon3Id',
           endIconId: 'endIcon3Id',
+          submitEnabled: null,
           action: null,
           __typename: 'ButtonBlock'
         },

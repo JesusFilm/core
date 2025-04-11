@@ -239,6 +239,7 @@ export function CardForm(): ReactElement {
       type: null,
       routeId: null,
       integrationId: null,
+      required: null,
       __typename: 'TextResponseBlock'
     } satisfies TextResponseBlock
 
@@ -296,7 +297,8 @@ export function CardForm(): ReactElement {
                 'minRows',
                 'type',
                 'routeId',
-                'integrationId'
+                'integrationId',
+                'required'
               ]),
               journeyId: journey.id
             },

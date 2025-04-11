@@ -33,6 +33,7 @@ describe('Edit Label field', () => {
     integrationId: null,
     type: null,
     routeId: null,
+    required: null,
     children: []
   }
 
