@@ -28,6 +28,10 @@ import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand/useBlockCreateCommand'
 import { Button } from '../Button'
 
+// Import getNewParentOrder and useBlockOrderUpdateMutation for updating block order
+// TODO: Add import for getNewParentOrder from '../../../../../../../libs/useBlockOrderUpdateMutation'
+// TODO: Add import for useBlockOrderUpdateMutation from '../../../../../../../libs/useBlockOrderUpdateMutation'
+
 export const TEXT_RESPONSE_BLOCK_CREATE = gql`
   ${TEXT_RESPONSE_FIELDS}
   mutation TextResponseBlockCreate($input: TextResponseBlockCreateInput!) {
@@ -51,6 +55,9 @@ export function NewTextResponseButton(): ReactElement {
   ] = useTextResponseWithButtonCreate()
   const [removeTextResponseWithButton] = useTextResponseWithButtonDelete()
   const [restoreTextResponseWithButton] = useTextResponseWithButtonRestore()
+
+  // TODO: Add the blockOrderUpdate mutation for updating block orders
+  // const [blockOrderUpdate] = useBlockOrderUpdateMutation()
 
   const { journey } = useJourney()
   const {
@@ -78,7 +85,7 @@ export function NewTextResponseButton(): ReactElement {
     const textResponseBlock: TextResponseBlock = {
       id: uuidv4(),
       parentBlockId: card.id,
-      parentOrder: card.children.length ?? 0,
+      parentOrder: card.children.length ?? 0, // Note: parentOrder set by resolver, not by us
       label: t('Label'),
       placeholder: null,
       hint: null,
@@ -140,9 +147,21 @@ export function NewTextResponseButton(): ReactElement {
         }
       })
     } else {
+      // TODO: Implement the new placement logic for TextResponseBlock when submit button exists
+
+      // 1. Find the submit button's position in the card
+      // const submitButtonIndex = card.children.findIndex(
+      //   (block) =>
+      //     block.__typename === 'ButtonBlock' &&
+      //     (block as TreeBlock<ButtonBlock>).submitEnabled === true
+      // );
+
+      // const targetPosition = submitButtonIndex;
+
       addBlock({
         block: textResponseBlock,
         execute() {
+          // 2. Create the TextResponseBlock (resolver will place it at the end by default)
           void textResponseBlockCreate({
             variables: {
               input: {
@@ -150,17 +169,53 @@ export function NewTextResponseButton(): ReactElement {
                 journeyId: journey.id,
                 parentBlockId: textResponseBlock.parentBlockId,
                 label: textResponseBlock.label
+                // Note: We don't set parentOrder here - it's set by the resolver
               }
             },
             optimisticResponse: {
               textResponseBlockCreate: textResponseBlock
             },
             update(cache, { data }) {
+              // 3. First update the cache with the new block
               blockCreateUpdate(
                 cache,
                 journey.id,
                 data?.textResponseBlockCreate
               )
+
+              // 4. Immediately move the block above the submit button to prevent UI jumping
+              // We update the client-side cache first for a smooth visual transition
+              // const updatedBlock = {
+              //   ...data?.textResponseBlockCreate,
+              //   parentOrder: targetPosition
+              // };
+
+              // 5. Update the cache manually to reflect new order before sending mutation
+              // This prevents the visual "jumping" effect as both operations appear as one
+              // cache.modify({
+              //   id: cache.identify({ __typename: 'CardBlock', id: card.id }),
+              //   fields: {
+              //     children(existingChildren = []) {
+              //       // Create new children array with updated order
+              //       // ...implementation details...
+              //     }
+              //   }
+              // });
+
+              // 6. Send the actual blockOrderUpdate mutation to persist changes on server
+              // void blockOrderUpdate({
+              //   variables: {
+              //     id: data?.textResponseBlockCreate.id,
+              //     parentOrder: targetPosition
+              //   },
+              //   optimisticResponse: {
+              //     blockOrderUpdate: {
+              //       id: data?.textResponseBlockCreate.id,
+              //       parentOrder: targetPosition,
+              //       __typename: 'TextResponseBlock'
+              //     }
+              //   }
+              // });
             }
           })
         }
