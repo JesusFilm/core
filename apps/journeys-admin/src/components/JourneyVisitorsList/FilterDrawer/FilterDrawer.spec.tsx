@@ -8,11 +8,9 @@ import {
   GetJourneyEvents,
   GetJourneyEventsVariables
 } from '../../../../__generated__/GetJourneyEvents'
-import {
-  FILTERED_EVENTS,
-  GET_JOURNEY_EVENTS_EXPORT
-} from '../../../libs/useJourneyEventsExport/useJourneyEventsExport'
+import { GET_JOURNEY_EVENTS_EXPORT } from '../../../libs/useJourneyEventsExport/useJourneyEventsExport'
 import { mockCreateEventsExportLogMutation } from '../../../libs/useJourneyEventsExport/useJourneyEventsExport.mock'
+import { FILTERED_EVENTS } from '../../../libs/useJourneyEventsExport/utils/constants'
 
 import { FilterDrawer } from './FilterDrawer'
 
@@ -51,7 +49,8 @@ const getJourneyEventsMock: MockedResponse<
               journeySlug: 'test-journey',
               visitorName: 'Test User',
               visitorEmail: 'test@example.com',
-              visitorPhone: '1234567890'
+              visitorPhone: '1234567890',
+              createdAt: '2023-01-01T00:00:00Z'
             }
           },
           {
@@ -69,7 +68,8 @@ const getJourneyEventsMock: MockedResponse<
               journeySlug: 'test-journey',
               visitorName: 'Test User',
               visitorEmail: 'test@example.com',
-              visitorPhone: '1234567890'
+              visitorPhone: '1234567890',
+              createdAt: '2023-01-01T00:00:00Z'
             }
           }
         ],
