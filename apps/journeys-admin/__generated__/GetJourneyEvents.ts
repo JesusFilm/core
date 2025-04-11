@@ -27,6 +27,7 @@ export interface GetJourneyEvents_journeyEventsConnection_edges_node {
   visitorName: string | null;
   visitorEmail: string | null;
   visitorPhone: string | null;
+  createdAt: any;
 }
 
 export interface GetJourneyEvents_journeyEventsConnection_edges {
