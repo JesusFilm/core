@@ -7,6 +7,7 @@ import { ReactNode, createContext, useContext, useReducer } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { getExtension } from '../../app/(dashboard)/videos/[videoId]/_VideoView/Variants/AddAudioLanguageDialog/utils/getExtension'
+import { GET_ADMIN_VIDEO } from '../useAdminVideo/useAdminVideo'
 
 export const CLOUDFLARE_R2_CREATE = graphql(`
   mutation CloudflareR2Create($input: CloudflareR2CreateInput!) {
@@ -20,8 +21,8 @@ export const CLOUDFLARE_R2_CREATE = graphql(`
 `)
 
 export const CREATE_MUX_VIDEO_UPLOAD_BY_URL = graphql(`
-  mutation CreateMuxVideoUploadByUrl($url: String!) {
-    createMuxVideoUploadByUrl(url: $url) {
+  mutation CreateMuxVideoUploadByUrl($url: String!, $userGenerated: Boolean) {
+    createMuxVideoUploadByUrl(url: $url, userGenerated: $userGenerated) {
       id
       assetId
       playbackId
@@ -37,6 +38,7 @@ export const CREATE_VIDEO_VARIANT = graphql(`
       id
       videoId
       slug
+      published
       hls
       language {
         id
@@ -50,8 +52,8 @@ export const CREATE_VIDEO_VARIANT = graphql(`
 `)
 
 export const GET_MY_MUX_VIDEO = graphql(`
-  query GetMyMuxVideo($id: ID!) {
-    getMyMuxVideo(id: $id) {
+  query GetMyMuxVideo($id: ID!, $userGenerated: Boolean) {
+    getMyMuxVideo(id: $id, userGenerated: $userGenerated) {
       id
       assetId
       playbackId
@@ -70,6 +72,7 @@ interface UploadVideoVariantState {
   languageId: string | null
   languageSlug: string | null
   videoId: string | null
+  published: boolean | null
   onComplete?: () => void
 }
 
@@ -81,7 +84,8 @@ interface UploadVideoVariantContextType {
     languageId: string,
     languageSlug: string,
     edition: string,
-    onComplete?: () => void
+    onComplete?: () => void,
+    published?: boolean
   ) => Promise<void>
   clearUploadState: () => void
 }
@@ -96,6 +100,7 @@ const initialState: UploadVideoVariantState = {
   languageId: null,
   languageSlug: null,
   videoId: null,
+  published: null,
   onComplete: undefined
 }
 
@@ -110,6 +115,7 @@ type UploadAction =
       languageId: string
       languageSlug: string
       edition: string
+      published: boolean
       onComplete?: () => void
     }
   | { type: 'SET_PROGRESS'; progress: number }
@@ -131,6 +137,7 @@ function uploadReducer(
         languageId: action.languageId,
         languageSlug: action.languageSlug,
         edition: action.edition,
+        published: action.published,
         onComplete: action.onComplete
       }
     case 'SET_PROGRESS':
@@ -197,7 +204,8 @@ export function UploadVideoVariantProvider({
       state.videoId == null ||
       state.languageId == null ||
       state.languageSlug == null ||
-      state.edition == null
+      state.edition == null ||
+      state.published == null
     )
       return
 
@@ -211,7 +219,7 @@ export function UploadVideoVariantProvider({
             languageId: state.languageId,
             slug: `${state.videoId}/${state.languageSlug}`,
             downloadable: true,
-            published: true,
+            published: state.published,
             muxVideoId: muxId,
             hls: `https://stream.mux.com/${playbackId}.m3u8`
           }
@@ -221,6 +229,8 @@ export function UploadVideoVariantProvider({
         },
         update: (cache, { data }) => {
           if (data?.videoVariantCreate == null || state.videoId == null) return
+
+          // Update the Video in the cache
           cache.modify({
             id: cache.identify({
               __typename: 'Video',
@@ -235,6 +245,7 @@ export function UploadVideoVariantProvider({
                       id
                       videoId
                       slug
+                      published
                       hls
                       language {
                         id
@@ -247,9 +258,42 @@ export function UploadVideoVariantProvider({
                   `)
                 })
                 return [...existingVariants, newVariantRef]
+              },
+              variantLanguagesCount(existingCount = 0) {
+                return existingCount + 1
               }
             }
           })
+
+          // Try to update the AdminVideo in the cache by reading the current data
+          try {
+            const existingData = cache.readQuery({
+              query: GET_ADMIN_VIDEO,
+              variables: { videoId: state.videoId }
+            })
+
+            if (existingData?.adminVideo != null) {
+              // Update the AdminVideo with the new variant
+              cache.writeQuery({
+                query: GET_ADMIN_VIDEO,
+                variables: { videoId: state.videoId },
+                data: {
+                  adminVideo: {
+                    ...existingData.adminVideo,
+                    variants: [
+                      ...existingData.adminVideo.variants,
+                      data.videoVariantCreate
+                    ],
+                    variantLanguagesCount:
+                      existingData.adminVideo.variantLanguagesCount + 1
+                  }
+                }
+              })
+            }
+          } catch (error) {
+            // If there's an error reading/writing to the cache, we'll fall back to the page refresh
+            console.error('Error updating adminVideo in cache:', error)
+          }
         }
       })
 
@@ -269,7 +313,8 @@ export function UploadVideoVariantProvider({
     languageId: string,
     languageSlug: string,
     edition: string,
-    onComplete?: () => void
+    onComplete?: () => void,
+    published = true
   ) => {
     try {
       dispatch({
@@ -278,6 +323,7 @@ export function UploadVideoVariantProvider({
         languageId,
         languageSlug,
         edition,
+        published,
         onComplete
       })
 
@@ -321,7 +367,8 @@ export function UploadVideoVariantProvider({
       // Create Mux video
       const muxResponse = await createMuxVideo({
         variables: {
-          url: r2Response.data.cloudflareR2Create.publicUrl
+          url: r2Response.data.cloudflareR2Create.publicUrl,
+          userGenerated: false
         }
       })
 
@@ -339,7 +386,10 @@ export function UploadVideoVariantProvider({
 
       // Start polling for Mux video status
       void getMyMuxVideo({
-        variables: { id: muxResponse.data.createMuxVideoUploadByUrl.id }
+        variables: {
+          id: muxResponse.data.createMuxVideoUploadByUrl.id,
+          userGenerated: false
+        }
       })
     } catch (error) {
       let errorMessage: string
@@ -372,9 +422,9 @@ export function UploadVideoVariantProvider({
   )
 }
 
-export function useUploadVideoVariant() {
+export function useUploadVideoVariant(): UploadVideoVariantContextType {
   const context = useContext(UploadVideoVariantContext)
-  if (context === undefined) {
+  if (context == null) {
     throw new Error(
       'useUploadVideoVariant must be used within a UploadVideoVariantProvider'
     )

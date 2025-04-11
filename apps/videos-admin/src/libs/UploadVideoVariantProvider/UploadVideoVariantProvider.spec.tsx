@@ -57,7 +57,8 @@ const createMuxVideoUploadByUrlMock = {
   request: {
     query: CREATE_MUX_VIDEO_UPLOAD_BY_URL,
     variables: {
-      url: 'https://public-url.com'
+      url: 'https://public-url.com',
+      userGenerated: false
     }
   },
   result: {
@@ -76,7 +77,8 @@ const getMyMuxVideoMock = {
   request: {
     query: GET_MY_MUX_VIDEO,
     variables: {
-      id: 'mux-id'
+      id: 'mux-id',
+      userGenerated: false
     }
   },
   result: {
@@ -156,7 +158,8 @@ const createMuxVideoUploadByUrlErrorMock = {
   request: {
     query: CREATE_MUX_VIDEO_UPLOAD_BY_URL,
     variables: {
-      url: 'https://public-url.com'
+      url: 'https://public-url.com',
+      userGenerated: false
     }
   },
   error: new Error('Mux creation failed')
@@ -192,7 +195,9 @@ const initialStateForTests = {
   edition: null,
   languageId: null,
   languageSlug: null,
-  videoId: null
+  videoId: null,
+  published: null,
+  onComplete: undefined
 }
 
 const mockEnqueueSnackbar = jest.fn()
@@ -431,6 +436,7 @@ describe('UploadVideoVariantContext', () => {
           languageSlug: null,
           muxVideoId: null,
           onComplete: undefined,
+          published: null,
           uploadProgress: 0,
           videoId: null
         })

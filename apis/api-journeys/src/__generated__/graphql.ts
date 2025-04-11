@@ -1666,11 +1666,13 @@ export type MutationCreateJourneyEventsExportLogArgs = {
 
 export type MutationCreateMuxVideoUploadByFileArgs = {
   name: Scalars['String']['input'];
+  userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
 export type MutationCreateMuxVideoUploadByUrlArgs = {
   url: Scalars['String']['input'];
+  userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -1707,6 +1709,7 @@ export type MutationDeleteCloudflareImageArgs = {
 
 export type MutationDeleteMuxVideoArgs = {
   id: Scalars['ID']['input'];
+  userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -2899,6 +2902,7 @@ export type QueryCustomDomainsArgs = {
 
 export type QueryGetMuxVideoArgs = {
   id: Scalars['ID']['input'];
+  userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -2915,6 +2919,7 @@ export type QueryGetMyCloudflareImagesArgs = {
 
 export type QueryGetMyMuxVideoArgs = {
   id: Scalars['ID']['input'];
+  userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
