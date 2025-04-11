@@ -13,8 +13,11 @@ describe('handleSrtFile', () => {
   const mockCreateR2Asset = jest.fn().mockResolvedValue({
     data: {
       cloudflareR2Create: {
+        id: 'mock-r2-asset-id',
         uploadUrl: mockUploadUrl,
-        publicUrl: mockPublicUrl
+        publicUrl: mockPublicUrl,
+        fileName: 'test.srt',
+        originalFilename: 'test.srt'
       }
     }
   })
@@ -42,6 +45,7 @@ describe('handleSrtFile', () => {
         input: {
           videoId: mockVideo.id,
           fileName: expect.any(String),
+          originalFilename: mockFile.name,
           contentType: mockFile.type,
           contentLength: mockFile.size
         }
@@ -57,7 +61,7 @@ describe('handleSrtFile', () => {
 
     expect(result).toStrictEqual({
       publicUrl: 'https://example.com/public/test.srt',
-      r2AssetId: undefined,
+      r2AssetId: 'mock-r2-asset-id',
       uploadUrl: 'https://example.com/upload'
     })
   })
@@ -66,6 +70,9 @@ describe('handleSrtFile', () => {
     mockCreateR2Asset.mockResolvedValueOnce({
       data: {
         cloudflareR2Create: {
+          id: 'mock-r2-asset-id',
+          fileName: 'test.srt',
+          originalFilename: 'test.srt',
           uploadUrl: null,
           publicUrl: null
         }

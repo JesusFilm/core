@@ -185,6 +185,7 @@ describe('AddVideoVariantDownloadDialog', () => {
     const createR2AssetMock = getCreateR2AssetMock({
       videoId,
       fileName: `${videoId}/variants/529/downloads/${videoVariantId}_high.mp4`,
+      originalFilename: 'test-video.mp4',
       contentType: 'video/mp4',
       contentLength: file.size
     })
