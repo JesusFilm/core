@@ -64,7 +64,7 @@ describe('useJourneyEventsExport', () => {
     })
 
     await act(async () => {
-      await result.current[0]({
+      await result.current.exportJourneyEvents({
         journeyId: 'journey1',
         filter: {}
       })
@@ -246,7 +246,7 @@ describe('useJourneyEventsExport', () => {
     })
 
     await act(async () => {
-      await result.current[0]({
+      await result.current.exportJourneyEvents({
         journeyId: 'journey1',
         filter: {
           typenames: ['ButtonClickEvent'],
@@ -296,7 +296,7 @@ describe('useJourneyEventsExport', () => {
 
     await expect(
       act(async () => {
-        await result.current[0]({
+        await result.current.exportJourneyEvents({
           journeyId: 'journey1',
           filter: {}
         })

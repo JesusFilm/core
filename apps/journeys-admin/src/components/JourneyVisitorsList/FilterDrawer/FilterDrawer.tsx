@@ -47,8 +47,7 @@ export function FilterDrawer({
 }: FilterDrawerProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const [exportJourneyEvents, { downloading, progress }] =
-    useJourneyEventsExport()
+  const { exportJourneyEvents, downloading } = useJourneyEventsExport()
 
   const handleExport = async (
     input: Pick<GetJourneyEventsVariables, 'journeyId' | 'filter'>
