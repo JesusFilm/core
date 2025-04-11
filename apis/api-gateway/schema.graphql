@@ -2657,6 +2657,7 @@ type VideoStudyQuestion @join__type(graph: API_MEDIA)  {
   id: ID!
   value: String!
   primary: Boolean!
+  order: Int!
   language: Language!
 }
 

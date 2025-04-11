@@ -297,6 +297,19 @@ export function CollectionVideoPlayer({
       if (isVisible) {
         player.muted(mutePage)
         setIsMuted(mutePage)
+        eventToDataLayer(
+          `video_autoplay_starts`,
+          videoData?.content.id,
+          videoData?.content.variant?.language.id,
+          videoData?.content.title[0].value,
+          videoData?.content.variant?.language?.name.find(
+            ({ primary }) => !primary
+          )?.value ?? videoData?.content.variant?.language?.name[0]?.value,
+          Math.round(player.currentTime() ?? 0),
+          Math.round(
+            ((player.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
+          )
+        )
         void player.play()
         setIsPlaying(true)
       } else {
