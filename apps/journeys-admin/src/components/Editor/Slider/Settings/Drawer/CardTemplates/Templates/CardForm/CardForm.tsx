@@ -297,7 +297,8 @@ export function CardForm(): ReactElement {
                 'minRows',
                 'type',
                 'routeId',
-                'integrationId'
+                'integrationId',
+                'required'
               ]),
               journeyId: journey.id
             },
