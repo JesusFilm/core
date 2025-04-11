@@ -1,9 +1,8 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import Box from '@mui/material/Box'
+import { MockedResponse } from '@apollo/client/testing'
 import { ThemeProvider } from '@mui/material/styles'
 import { Meta, StoryObj } from '@storybook/react'
-import { SnackbarProvider } from 'notistack'
 
+import { simpleComponentConfig } from '@core/shared/ui/simpleComponentConfig'
 import { adminLight } from '@core/shared/ui/themes/journeysAdmin/theme'
 
 import {
@@ -35,51 +34,26 @@ const getJourneyCreatedAtMock: MockedResponse<
   }
 }
 
-const meta: Meta<typeof ExportDialog> = {
+const ExportDialogStory: Meta<typeof ExportDialog> = {
+  ...simpleComponentConfig,
   title: 'Journeys-Admin/JourneyVisitorsList/FilterDrawer/ExportDialog',
-  component: ExportDialog,
-  decorators: [
-    (Story) => (
-      <MockedProvider>
-        <ThemeProvider theme={adminLight}>
-          <SnackbarProvider>
-            <Box sx={{ p: 6, backgroundColor: 'background.paper' }}>
-              <Story />
-            </Box>
-          </SnackbarProvider>
-        </ThemeProvider>
-      </MockedProvider>
-    )
-  ],
-  parameters: {
-    layout: 'centered',
-    backgrounds: {
-      default: 'light'
-    }
-  }
+  component: ExportDialog
 }
-
-export default meta
 
 type Story = StoryObj<typeof ExportDialog>
 
-export const Default: Story = {
-  args: {
-    open: true,
-    onClose: () => null,
-    journeyId: 'journey-id'
+const Template: Story = {
+  render: ({ ...args }) => {
+    return (
+      <ThemeProvider theme={adminLight}>
+        <ExportDialog {...args} />
+      </ThemeProvider>
+    )
   }
 }
 
-export const Closed: Story = {
-  args: {
-    open: false,
-    onClose: () => null,
-    journeyId: 'journey-id'
-  }
-}
-
-export const LoadingState: Story = {
+export const Default = {
+  ...Template,
   args: {
     open: true,
     onClose: () => null,
@@ -92,15 +66,4 @@ export const LoadingState: Story = {
   }
 }
 
-export const ErrorState: Story = {
-  args: {
-    open: true,
-    onClose: () => null,
-    journeyId: 'journey-id'
-  },
-  parameters: {
-    apolloClient: {
-      mocks: [getJourneyCreatedAtMock]
-    }
-  }
-}
+export default ExportDialogStory
