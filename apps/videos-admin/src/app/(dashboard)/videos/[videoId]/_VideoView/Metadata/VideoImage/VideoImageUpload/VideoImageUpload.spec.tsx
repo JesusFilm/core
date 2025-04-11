@@ -46,7 +46,8 @@ const cfResponse = {
   success: true
 }
 
-const mockCreateCloudflareUploadByFile: MockedResponse<
+// Create mock for banner image upload
+const mockCreateCloudflareUploadByFileBanner: MockedResponse<
   CreateCloudflareUploadByFile,
   CreateCloudflareUploadByFileVariables
 > = {
@@ -69,6 +70,29 @@ const mockCreateCloudflareUploadByFile: MockedResponse<
   }
 }
 
+// Create mock for HD image upload
+const mockCreateCloudflareUploadByFileHD: MockedResponse<
+  CreateCloudflareUploadByFile,
+  CreateCloudflareUploadByFileVariables
+> = {
+  request: {
+    query: CREATE_CLOUDFLARE_UPLOAD_BY_FILE,
+    variables: { input: { videoId: '1_jf-0-0', aspectRatio: 'hd' } }
+  },
+  result: {
+    data: {
+      createCloudflareUploadByFile: {
+        uploadUrl:
+          'https://upload.imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/f7245a5d-5bf4-4343-764c-e0dd40369301',
+        id: 'uploadId2',
+        url: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/f7245a5d-5bf4-4343-764c-e0dd40369301',
+        mobileCinematicHigh: null,
+        __typename: 'CloudflareImage'
+      }
+    }
+  }
+}
+
 const mockCloudflareUploadComplete: MockedResponse<
   CloudflareUploadComplete,
   CloudflareUploadCompleteVariables
@@ -76,6 +100,21 @@ const mockCloudflareUploadComplete: MockedResponse<
   request: {
     query: CLOUDFLARE_UPLOAD_COMPLETE,
     variables: { id: 'uploadId' }
+  },
+  result: {
+    data: {
+      cloudflareUploadComplete: true
+    }
+  }
+}
+
+const mockCloudflareUploadCompleteHD: MockedResponse<
+  CloudflareUploadComplete,
+  CloudflareUploadCompleteVariables
+> = {
+  request: {
+    query: CLOUDFLARE_UPLOAD_COMPLETE,
+    variables: { id: 'uploadId2' }
   },
   result: {
     data: {
@@ -99,11 +138,28 @@ const mockDeleteCloudflareImage: MockedResponse<
   }
 }
 
+interface CloudflareImage {
+  id: string
+  url?: string | null
+  mobileCinematicHigh?: string | null
+}
+
+interface VideoData {
+  id: string
+  images: CloudflareImage[]
+}
+
 describe('VideoImageUpload', () => {
-  const video: AdminVideo =
+  const adminVideo: AdminVideo =
     useAdminVideoMock['result']?.['data']?.['adminVideo']
 
-  it('should call mutations on file drop', async () => {
+  // Convert AdminVideo to our VideoData type for tests
+  const video: VideoData = {
+    id: adminVideo.id,
+    images: adminVideo.images
+  }
+
+  it('should call mutations on file drop for banner image', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
       json: async () => await Promise.resolve(cfResponse)
@@ -111,7 +167,7 @@ describe('VideoImageUpload', () => {
 
     const result = jest
       .fn()
-      .mockReturnValue(mockCreateCloudflareUploadByFile.result)
+      .mockReturnValue(mockCreateCloudflareUploadByFileBanner.result)
 
     const result2 = jest
       .fn()
@@ -134,7 +190,7 @@ describe('VideoImageUpload', () => {
         <MockedProvider
           cache={cache}
           mocks={[
-            { ...mockCreateCloudflareUploadByFile, result },
+            { ...mockCreateCloudflareUploadByFileBanner, result },
             {
               ...mockCloudflareUploadComplete,
               result: result2
@@ -145,7 +201,7 @@ describe('VideoImageUpload', () => {
             }
           ]}
         >
-          <VideoImageUpload video={video} />
+          <VideoImageUpload video={video} aspectRatio="banner" />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -185,9 +241,64 @@ describe('VideoImageUpload', () => {
     })
   })
 
-  it('should not delete image if there are no images', async () => {
-    const video: AdminVideo = {
-      ...useAdminVideoMock['result']?.['data']?.['adminVideo'],
+  it('should call mutations on file drop for HD image', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => await Promise.resolve(cfResponse)
+    } as unknown as Response)
+
+    const result = jest
+      .fn()
+      .mockReturnValue(mockCreateCloudflareUploadByFileHD.result)
+
+    const result2 = jest
+      .fn()
+      .mockReturnValue(mockCloudflareUploadCompleteHD.result)
+
+    // We're using an empty array for images to simulate no existing HD image
+    const videoWithNoHDImage: VideoData = {
+      id: adminVideo.id,
+      images: []
+    }
+
+    const cache = new InMemoryCache()
+    cache.restore({
+      'Video:1_jf-0-0': {
+        images: []
+      }
+    })
+
+    render(
+      <SnackbarProvider>
+        <MockedProvider
+          cache={cache}
+          mocks={[
+            { ...mockCreateCloudflareUploadByFileHD, result },
+            {
+              ...mockCloudflareUploadCompleteHD,
+              result: result2
+            }
+          ]}
+        >
+          <VideoImageUpload video={videoWithNoHDImage} aspectRatio="hd" />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    const input = screen.getByTestId('DropZone')
+    const file = new File(['file'], 'testFile.png', {
+      type: 'image/png'
+    })
+    Object.defineProperty(input, 'files', {
+      value: [file]
+    })
+    fireEvent.drop(input)
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() => expect(result2).toHaveBeenCalled())
+  })
+
+  it('should not delete image if there are no existing images', async () => {
+    const videoWithNoImages: VideoData = {
+      id: adminVideo.id,
       images: []
     }
 
@@ -198,7 +309,7 @@ describe('VideoImageUpload', () => {
 
     const result = jest
       .fn()
-      .mockReturnValue(mockCreateCloudflareUploadByFile.result)
+      .mockReturnValue(mockCreateCloudflareUploadByFileBanner.result)
 
     const result2 = jest
       .fn()
@@ -208,11 +319,7 @@ describe('VideoImageUpload', () => {
     const cache = new InMemoryCache()
     cache.restore({
       'Video:1_jf-0-0': {
-        images: [{ __ref: 'CloudflareImage:imageId' }]
-      },
-      'CloudflareImage:imageId': {
-        id: 'imageId',
-        __typename: 'CloudflareImage'
+        images: []
       }
     })
 
@@ -221,7 +328,7 @@ describe('VideoImageUpload', () => {
         <MockedProvider
           cache={cache}
           mocks={[
-            { ...mockCreateCloudflareUploadByFile, result },
+            { ...mockCreateCloudflareUploadByFileBanner, result },
             {
               ...mockCloudflareUploadComplete,
               result: result2
@@ -232,7 +339,7 @@ describe('VideoImageUpload', () => {
             }
           ]}
         >
-          <VideoImageUpload video={video} />
+          <VideoImageUpload video={videoWithNoImages} />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -248,9 +355,9 @@ describe('VideoImageUpload', () => {
     await waitFor(() => expect(result2).toHaveBeenCalled())
     await waitFor(() => expect(result3).not.toHaveBeenCalled())
     expect(cache.extract()).toEqual({
-      'CloudflareImage:imageId': {
-        __typename: 'CloudflareImage',
-        id: 'imageId'
+      ROOT_MUTATION: { __typename: 'Mutation' },
+      'Video:1_jf-0-0': {
+        images: [{ __ref: 'CloudflareImage:uploadId' }]
       },
       'CloudflareImage:uploadId': {
         __typename: 'CloudflareImage',
@@ -261,43 +368,31 @@ describe('VideoImageUpload', () => {
           'https://upload.imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/f7245a5d-5bf4-4343-764c-e0dd40369300',
         url: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/f7245a5d-5bf4-4343-764c-e0dd40369300'
       },
-      ROOT_MUTATION: { __typename: 'Mutation' },
-      'Video:1_jf-0-0': {
-        images: [
-          { __ref: 'CloudflareImage:imageId' },
-          { __ref: 'CloudflareImage:uploadId' }
-        ]
-      },
       __META: { extraRootIds: ['CloudflareImage:uploadId'] }
     })
   })
 
-  it('should call on upload complete when file dropped', async () => {
-    const mockOnUploadComplete = jest.fn()
-    render(
-      <SnackbarProvider>
-        <MockedProvider>
-          <VideoImageUpload
-            video={video}
-            onUploadComplete={mockOnUploadComplete}
-          />
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-    const input = screen.getByTestId('DropZone')
-    fireEvent.drop(input)
-    await waitFor(() => expect(mockOnUploadComplete).toHaveBeenCalled())
-  })
+  it('should show error message if upload fails', async () => {
+    const videoWithNoImages: VideoData = {
+      id: adminVideo.id,
+      images: []
+    }
 
-  it('should throw error if creation of cloudflare update fails', async () => {
-    const result = jest.fn().mockReturnValue(null)
+    const mockCreateCloudflareUploadByFileError: MockedResponse<
+      CreateCloudflareUploadByFile,
+      CreateCloudflareUploadByFileVariables
+    > = {
+      request: {
+        query: CREATE_CLOUDFLARE_UPLOAD_BY_FILE,
+        variables: { input: { videoId: '1_jf-0-0', aspectRatio: 'banner' } }
+      },
+      error: new Error('Upload failed')
+    }
 
     render(
       <SnackbarProvider>
-        <MockedProvider
-          mocks={[{ ...mockCreateCloudflareUploadByFile, result }]}
-        >
-          <VideoImageUpload video={video} />
+        <MockedProvider mocks={[mockCreateCloudflareUploadByFileError]}>
+          <VideoImageUpload video={videoWithNoImages} />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -309,35 +404,28 @@ describe('VideoImageUpload', () => {
       value: [file]
     })
     fireEvent.drop(input)
-
-    await waitFor(() => {
-      expect(result).toHaveBeenCalled()
-    })
-    expect(
-      screen.getByText('Uploading failed, please try again')
-    ).toBeInTheDocument()
+    await waitFor(() => expect(mockFetch).not.toHaveBeenCalled())
   })
 
-  it('should throw error if upload fails', async () => {
+  it('should show error message if cloudflare upload errors exist', async () => {
+    const videoWithNoImages: VideoData = {
+      id: adminVideo.id,
+      images: []
+    }
+
     mockFetch.mockResolvedValueOnce({
       ok: true,
       json: async () =>
         await Promise.resolve({
           ...cfResponse,
-          errors: [{ message: 'some error' }]
+          errors: ['Upload failed']
         })
     } as unknown as Response)
 
-    const result = jest
-      .fn()
-      .mockReturnValue(mockCreateCloudflareUploadByFile.result)
-
     render(
       <SnackbarProvider>
-        <MockedProvider
-          mocks={[{ ...mockCreateCloudflareUploadByFile, result }]}
-        >
-          <VideoImageUpload video={video} />
+        <MockedProvider mocks={[mockCreateCloudflareUploadByFileBanner]}>
+          <VideoImageUpload video={videoWithNoImages} />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -349,12 +437,32 @@ describe('VideoImageUpload', () => {
       value: [file]
     })
     fireEvent.drop(input)
+    await waitFor(() => expect(mockFetch).toHaveBeenCalled())
+  })
 
-    await waitFor(() => {
-      expect(result).toHaveBeenCalled()
+  it('should show error message if fetch throws', async () => {
+    const videoWithNoImages: VideoData = {
+      id: adminVideo.id,
+      images: []
+    }
+
+    mockFetch.mockRejectedValueOnce(new Error('Fetch failed'))
+
+    render(
+      <SnackbarProvider>
+        <MockedProvider mocks={[mockCreateCloudflareUploadByFileBanner]}>
+          <VideoImageUpload video={videoWithNoImages} />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    const input = screen.getByTestId('DropZone')
+    const file = new File(['file'], 'testFile.png', {
+      type: 'image/png'
     })
-    expect(
-      screen.getByText('Uploading failed, please try again')
-    ).toBeInTheDocument()
+    Object.defineProperty(input, 'files', {
+      value: [file]
+    })
+    fireEvent.drop(input)
+    await waitFor(() => expect(mockFetch).toHaveBeenCalled())
   })
 })

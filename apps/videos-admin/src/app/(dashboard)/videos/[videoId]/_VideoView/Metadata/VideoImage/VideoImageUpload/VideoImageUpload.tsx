@@ -5,7 +5,6 @@ import fetch from 'node-fetch'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
-import { GetAdminVideo } from '../../../../../../../../libs/useAdminVideo'
 import { FileUpload } from '../FileUpload'
 
 export const CREATE_CLOUDFLARE_UPLOAD_BY_FILE = graphql(`
@@ -53,15 +52,28 @@ export type DeleteVideoCloudflareImageVariables = VariablesOf<
   typeof DELETE_VIDEO_CLOUDFLARE_IMAGE
 >
 
-interface VideoImageUpload {
-  video: GetAdminVideo['adminVideo']
+interface CloudflareImage {
+  id: string
+  url?: string | null
+  mobileCinematicHigh?: string | null
+}
+
+interface VideoData {
+  id: string
+  images: CloudflareImage[]
+}
+
+interface VideoImageUploadProps {
+  video: VideoData
+  aspectRatio?: 'banner' | 'hd'
   onUploadComplete?: () => void
 }
 
 export function VideoImageUpload({
   video,
+  aspectRatio = 'banner',
   onUploadComplete
-}: VideoImageUpload): ReactElement {
+}: VideoImageUploadProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
   const [loading, setLoading] = useState(false)
   const { cache } = useApolloClient()
@@ -73,6 +85,16 @@ export function VideoImageUpload({
 
   const [deleteImage] = useMutation(DELETE_VIDEO_CLOUDFLARE_IMAGE)
 
+  // Helper to find the existing image of the specified aspect ratio
+  const findExistingImage = (): CloudflareImage | undefined => {
+    return video.images.find((img) => {
+      if (aspectRatio === 'banner') {
+        return img.mobileCinematicHigh != null
+      }
+      return img.url != null && img.mobileCinematicHigh == null
+    })
+  }
+
   const handleDrop = async (file: File): Promise<void> => {
     if (file == null) return
     setLoading(true)
@@ -80,7 +102,7 @@ export function VideoImageUpload({
       variables: {
         input: {
           videoId: video.id,
-          aspectRatio: 'banner'
+          aspectRatio
         }
       },
       onError() {
@@ -118,13 +140,17 @@ export function VideoImageUpload({
             id
           }
         })
-        if (video.images.length > 0) {
+
+        // Find and delete the existing image of the same aspect ratio if exists
+        const existingImage = findExistingImage()
+        if (existingImage) {
           await deleteImage({
             variables: {
-              id: video.images[0].id
+              id: existingImage.id
             }
           })
         }
+
         if (response.success) {
           cache.modify({
             id: cache.identify({ id: video.id, __typename: 'Video' }),
@@ -145,21 +171,28 @@ export function VideoImageUpload({
               }
             }
           })
-          cache.modify({
-            id: cache.identify({ id: video.id, __typename: 'Video' }),
-            fields: {
-              images(refs, { readField }) {
-                if (video.images.length === 0) return refs
-                return refs.filter(
-                  (ref) => video.images[0].id !== readField('id', ref)
-                )
+
+          // Remove the old image from the cache if it exists
+          if (existingImage) {
+            cache.modify({
+              id: cache.identify({ id: video.id, __typename: 'Video' }),
+              fields: {
+                images(refs, { readField }) {
+                  return refs.filter(
+                    (ref) => existingImage.id !== readField('id', ref)
+                  )
+                }
               }
+            })
+          }
+
+          enqueueSnackbar(
+            `${aspectRatio.toUpperCase()} image uploaded successfully`,
+            {
+              variant: 'success',
+              preventDuplicate: false
             }
-          })
-          enqueueSnackbar('Image uploaded successfully', {
-            variant: 'success',
-            preventDuplicate: false
-          })
+          )
         }
       } catch {
         enqueueSnackbar('Uploading failed, please try again', {

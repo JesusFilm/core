@@ -11,6 +11,25 @@ import { VideoImageAlt } from './VideoImageAlt'
 import { VideoInformation } from './VideoInformation'
 import { VideoSnippet } from './VideoSnippet'
 
+interface CloudflareImage {
+  id: string
+  url?: string | null
+  mobileCinematicHigh?: string | null
+}
+
+interface ImageAlt {
+  id: string
+  value?: string | null
+}
+
+interface VideoData {
+  id: string
+  images: CloudflareImage[]
+  imageAlt: ImageAlt[]
+  snippet: any[]
+  description: any[]
+}
+
 interface MetadataProps {
   video: AdminVideo
 }
@@ -21,7 +40,7 @@ export function Metadata({ video }: MetadataProps): ReactElement {
       <Section title="Information" variant="outlined">
         <VideoInformation video={video} />
       </Section>
-      <Section title="Image" variant="outlined">
+      <Section title="Images" variant="outlined">
         <Stack gap={4}>
           <VideoImage video={video} />
           <VideoImageAlt videoImageAlts={video.imageAlt} />
