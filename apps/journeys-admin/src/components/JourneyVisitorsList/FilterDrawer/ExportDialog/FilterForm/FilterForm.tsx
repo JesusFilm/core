@@ -13,7 +13,7 @@ import ChevronUp from '@core/shared/ui/icons/ChevronUp'
 
 import { EventType } from '../../../../../../__generated__/globalTypes'
 import { FILTERED_EVENTS } from '../../../../../libs/useJourneyEventsExport/utils/constants'
-import { CheckboxOption } from '../CheckBoxOption/CheckboxOption'
+import { CheckboxOption } from '../CheckBoxOption'
 
 interface CheckboxState {
   JourneyViewEvent: boolean

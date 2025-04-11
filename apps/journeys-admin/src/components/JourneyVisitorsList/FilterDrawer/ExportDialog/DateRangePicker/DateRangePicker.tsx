@@ -9,7 +9,7 @@ import { ReactElement } from 'react'
 import CalendarIcon from '@core/shared/ui/icons/Calendar1'
 import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 
-export interface DateRangePickerProps {
+interface DateRangePickerProps {
   startDate: Date | null
   endDate: Date | null
   onStartDateChange: (date: Date | null) => void
