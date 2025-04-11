@@ -137,6 +137,12 @@ export function Button({
 
   const fallbackLabel = submitEnabled ? t('Submit') : t('Button')
 
+  const buttonType = submitEnabled
+    ? variant !== 'admin'
+      ? 'submit'
+      : 'button'
+    : 'button'
+
   function createClickEvent(): void {
     if (variant === 'default' || variant === 'embed') {
       const id = uuidv4()
@@ -280,7 +286,7 @@ export function Button({
       data-testid={`JourneysButton-${blockId}`}
     >
       <MuiButton
-        type={submitEnabled ? 'submit' : 'button'}
+        type={buttonType}
         variant={buttonVariant ?? ButtonVariant.contained}
         color={buttonColor ?? undefined}
         size={size ?? undefined}

@@ -831,14 +831,49 @@ describe('Button', () => {
     expect(submitButton).toHaveAttribute('type', 'submit')
   })
 
-  it('should have type="button" when submitEnabled is false', () => {
+  it('should have type="submit" when submitEnabled is true and variant is not admin', () => {
+    const buttonMock = {
+      ...block,
+      submitEnabled: true
+    }
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey, variant: 'default' }}>
+          <Button {...buttonMock} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    const button = screen.getByRole('button')
+    expect(button).toHaveAttribute('type', 'submit')
+  })
+
+  it('should have type="button" when submitEnabled is false and variant is not admin', () => {
     const buttonMock = {
       ...block,
       submitEnabled: false
     }
     render(
       <MockedProvider>
-        <Button {...buttonMock} />
+        <JourneyProvider value={{ journey, variant: 'default' }}>
+          <Button {...buttonMock} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    const button = screen.getByRole('button')
+    expect(button).toHaveAttribute('type', 'button')
+  })
+
+  it('should have type="button" when submitEnabled is true and variant is admin', () => {
+    const buttonMock = {
+      ...block,
+      submitEnabled: true,
+      variant: 'admin'
+    }
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <Button {...buttonMock} />
+        </JourneyProvider>
       </MockedProvider>
     )
     const button = screen.getByRole('button')
