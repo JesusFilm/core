@@ -2,7 +2,7 @@ import Checkbox from '@mui/material/Checkbox'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import { ReactElement } from 'react'
 
-interface CheckboxOptionProps {
+export interface CheckboxOptionProps {
   checked: boolean
   onChange: (checked: boolean) => void
   label: string

@@ -57,7 +57,7 @@ export function ExportDialog({
     if (journeyData?.journey?.createdAt != null) {
       setStartDate(new Date(journeyData.journey.createdAt))
     }
-  }, [journeyData?.journey?.createdAt])
+  }, [journeyData])
 
   const handleExport = async (): Promise<void> => {
     try {
