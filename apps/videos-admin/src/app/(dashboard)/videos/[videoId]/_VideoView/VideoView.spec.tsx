@@ -4,6 +4,7 @@ import { useParams } from 'next/navigation'
 
 import { useAdminVideoMock } from '../../../../../libs/useAdminVideo/useAdminVideo.mock'
 
+import { createStudyQuestionsMock } from './Metadata/StudyQuestionsList/StudyQuestions.mock'
 import { VideoView } from './VideoView'
 
 jest.mock('next/navigation', () => ({
@@ -19,8 +20,13 @@ describe('VideoView', () => {
     mockUseParams.mockReturnValue({ videoId: 'someId' })
     const result = jest.fn().mockReturnValue(useAdminVideoMock.result)
 
+    // Use the imported mock for study questions
+    const studyQuestionsMock = createStudyQuestionsMock('1_jf-0-0')
+
     render(
-      <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
+      <MockedProvider
+        mocks={[{ ...useAdminVideoMock, result }, studyQuestionsMock]}
+      >
         <VideoView />
       </MockedProvider>
     )
@@ -40,20 +46,32 @@ describe('VideoView', () => {
     expect(screen.getByLabelText('description')).toHaveTextContent(
       "This film is a perfect introduction to Jesus through the Gospel of Luke. Jesus constantly surprises and confounds people, from His miraculous birth to His rise from the grave. Follow His life through excerpts from the Book of Luke, all the miracles, the teachings, and the passion. God creates everything and loves mankind. But mankind disobeys God. God and mankind are separated, but God loves mankind so much, He arranges redemption for mankind. He sends his Son Jesus to be a perfect sacrifice to make amends for us. Before Jesus arrives, God prepares mankind. Prophets speak of the birth, the life, and the death of Jesus. Jesus attracts attention. He teaches in parables no one really understands, gives sight to the blind, and helps those who no one sees as worth helping. He scares the Jewish leaders, they see him as a threat. So they arrange, through Judas the traitor and their Roman oppressors, for the crucifixion of Jesus. They think the matter is settled. But the women who serve Jesus discover an empty tomb. The disciples panic. When Jesus appears, they doubt He's real. But it's what He proclaimed all along: He is their perfect sacrifice, their Savior, victor over death. He ascends to heaven, telling His followers to tell others about Him and His teachings."
     )
-    expect(
-      screen.getByRole('heading', {
-        level: 6,
-        name: "1. How is the sacrifice of Jesus part of God's plan?"
-      })
-    ).toBeInTheDocument()
+
+    // Wait for the study questions to load
+    await waitFor(() => {
+      expect(screen.getByText('Study Questions')).toBeInTheDocument()
+    })
+
+    // Use a different assertion that matches the new format
+    await waitFor(() => {
+      const questionText = screen.getByText(
+        "1. How is the sacrifice of Jesus part of God's plan?"
+      )
+      expect(questionText).toBeInTheDocument()
+    })
   })
 
   it('should change tabs', async () => {
     mockUseParams.mockReturnValue({ videoId: 'someId' })
     const result = jest.fn().mockReturnValue(useAdminVideoMock.result)
 
+    // Use the imported mock for study questions
+    const studyQuestionsMock = createStudyQuestionsMock('1_jf-0-0')
+
     render(
-      <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
+      <MockedProvider
+        mocks={[{ ...useAdminVideoMock, result }, studyQuestionsMock]}
+      >
         <VideoView />
       </MockedProvider>
     )

@@ -6,10 +6,8 @@ import { ResultOf, VariablesOf, graphql } from 'gql.tada'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
-import { GET_ADMIN_VIDEO } from '../../../../../../../libs/useAdminVideo'
-import { useVideo } from '../../../../../../../libs/VideoProvider'
-
 import { StudyQuestionForm } from './StudyQuestionForm'
+import { GET_STUDY_QUESTIONS } from './StudyQuestionsList'
 
 export const UPDATE_STUDY_QUESTION = graphql(`
   mutation UpdateStudyQuestion($input: VideoStudyQuestionUpdateInput!) {
@@ -32,6 +30,7 @@ interface StudyQuestionDialogProps {
     id: string
     value: string
   }
+  videoId: string
   onQuestionUpdated?: () => void
 }
 
@@ -39,10 +38,10 @@ export function StudyQuestionDialog({
   open,
   onClose,
   studyQuestion,
+  videoId,
   onQuestionUpdated
 }: StudyQuestionDialogProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
-  const video = useVideo()
 
   const [updateStudyQuestion, { loading }] = useMutation<
     UpdateStudyQuestion,
@@ -57,7 +56,13 @@ export function StudyQuestionDialog({
     },
     onError: (error) => {
       enqueueSnackbar(error.message, { variant: 'error' })
-    }
+    },
+    refetchQueries: [
+      {
+        query: GET_STUDY_QUESTIONS,
+        variables: { videoId }
+      }
+    ]
   })
 
   const handleSubmit = async (values: { value: string }): Promise<void> => {
@@ -68,13 +73,7 @@ export function StudyQuestionDialog({
             id: studyQuestion.id,
             value: values.value
           }
-        },
-        refetchQueries: [
-          {
-            query: GET_ADMIN_VIDEO,
-            variables: { videoId: video.id }
-          }
-        ]
+        }
       })
     } catch (error) {
       enqueueSnackbar(error.message, { variant: 'error' })

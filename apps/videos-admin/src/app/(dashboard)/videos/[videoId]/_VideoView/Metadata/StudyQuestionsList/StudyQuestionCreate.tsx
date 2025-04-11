@@ -8,10 +8,6 @@ import { ResultOf, VariablesOf, graphql } from 'gql.tada'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
-import { GET_ADMIN_VIDEO } from '../../../../../../../libs/useAdminVideo'
-import { GetAdminVideo_AdminVideo_StudyQuestions as StudyQuestions } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { useVideo } from '../../../../../../../libs/VideoProvider'
-
 import { StudyQuestionForm } from './StudyQuestionForm'
 
 export const CREATE_STUDY_QUESTION = graphql(`
@@ -29,16 +25,17 @@ export type CreateStudyQuestionVariables = VariablesOf<
 >
 
 interface StudyQuestionCreateProps {
-  studyQuestions: StudyQuestions
+  order: number
+  videoId: string
   onQuestionAdded?: () => void
 }
 
 export function StudyQuestionCreate({
-  studyQuestions,
+  order,
+  videoId,
   onQuestionAdded
 }: StudyQuestionCreateProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
-  const video = useVideo()
   const [open, setOpen] = useState(false)
 
   const [createStudyQuestion, { loading }] = useMutation<
@@ -59,26 +56,17 @@ export function StudyQuestionCreate({
   })
 
   const handleSubmit = async (values: { value: string }): Promise<void> => {
-    const nextOrder = studyQuestions.length + 1
-
     try {
       await createStudyQuestion({
         variables: {
           input: {
-            videoId: video.id,
+            videoId: videoId,
             value: values.value,
             languageId: '529',
             primary: true,
-            order: nextOrder
+            order
           }
-        },
-        // Add the refetchQueries directly to the mutation call
-        refetchQueries: [
-          {
-            query: GET_ADMIN_VIDEO,
-            variables: { videoId: video.id }
-          }
-        ]
+        }
       })
     } catch (error) {
       enqueueSnackbar(error.message, { variant: 'error' })
