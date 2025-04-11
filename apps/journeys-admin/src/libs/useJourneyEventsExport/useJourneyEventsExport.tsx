@@ -77,13 +77,14 @@ export interface JourneyEvent
   email?: string | null
 }
 
-export function useJourneyEventsExport(): [
+export function useJourneyEventsExport(): {
   exportJourneyEvents: ({
     journeyId,
     filter
-  }: Pick<GetJourneyEventsVariables, 'journeyId' | 'filter'>) => Promise<void>,
-  { downloading: boolean; progress: number }
-] {
+  }: Pick<GetJourneyEventsVariables, 'journeyId' | 'filter'>) => Promise<void>
+  downloading: boolean
+  progress: number
+} {
   const { t } = useTranslation('apps-journeys-admin')
   const [getJourneyEventsCount] = useLazyQuery(GET_JOURNEY_EVENTS_COUNT)
   const [getJourneyEvents] = useLazyQuery(GET_JOURNEY_EVENTS_EXPORT)
@@ -182,5 +183,5 @@ export function useJourneyEventsExport(): [
     }
   }
 
-  return [exportJourneyEvents, { downloading, progress }]
+  return { exportJourneyEvents, downloading, progress }
 }
