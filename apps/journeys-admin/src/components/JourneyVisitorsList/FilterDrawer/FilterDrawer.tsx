@@ -5,6 +5,7 @@ import Divider from '@mui/material/Divider'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import FormGroup from '@mui/material/FormGroup'
 import IconButton from '@mui/material/IconButton'
+import LinearProgress from '@mui/material/LinearProgress'
 import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
 import Stack from '@mui/material/Stack'
@@ -47,7 +48,8 @@ export function FilterDrawer({
 }: FilterDrawerProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const { exportJourneyEvents } = useJourneyEventsExport()
+  const [exportJourneyEvents, { downloading, progress }] =
+    useJourneyEventsExport()
 
   const handleExport = async (
     input: Pick<GetJourneyEventsVariables, 'journeyId' | 'filter'>
@@ -149,14 +151,25 @@ export function FilterDrawer({
 
       {journeyId != null && (
         <Box sx={{ px: 6, py: 5, mt: 'auto' }}>
-          <Button
-            variant="contained"
-            color="secondary"
-            fullWidth
-            onClick={() => handleExport({ journeyId })}
-          >
-            {t('Export Data')}
-          </Button>
+          {downloading ? (
+            <LinearProgress
+              data-testid="ExportProgress"
+              value={progress}
+              variant="determinate"
+              sx={{ height: 32, borderRadius: 2 }}
+            />
+          ) : (
+            <Button
+              variant="contained"
+              color="secondary"
+              fullWidth
+              onClick={() => handleExport({ journeyId })}
+              disabled={downloading}
+              sx={{ borderRadius: 2 }}
+            >
+              {t('Export Data')}
+            </Button>
+          )}
         </Box>
       )}
     </Stack>

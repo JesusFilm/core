@@ -12,7 +12,10 @@ import {
   FILTERED_EVENTS,
   GET_JOURNEY_EVENTS_EXPORT
 } from '../../../libs/useJourneyEventsExport/useJourneyEventsExport'
-import { mockCreateEventsExportLogMutation } from '../../../libs/useJourneyEventsExport/useJourneyEventsExport.mock'
+import {
+  getMockGetJourneyEventsCountQuery,
+  mockCreateEventsExportLogMutation
+} from '../../../libs/useJourneyEventsExport/useJourneyEventsExport.mock'
 
 import { FilterDrawer } from './FilterDrawer'
 
@@ -84,6 +87,8 @@ const getJourneyEventsMock: MockedResponse<
     }
   }))
 }
+
+const mockGetJourneyEventsCountQuery = getMockGetJourneyEventsCountQuery()
 
 const props = {
   journeyId: 'journey1',
@@ -179,6 +184,7 @@ describe('FilterDrawer', () => {
       render(
         <MockedProvider
           mocks={[
+            mockGetJourneyEventsCountQuery,
             getJourneyEventsMock,
             { ...mockCreateEventsExportLogMutation, result: mutationResult }
           ]}
@@ -189,11 +195,17 @@ describe('FilterDrawer', () => {
 
       const user = userEvent.setup()
 
+      expect(screen.queryByTestId('ExportProgress')).not.toBeInTheDocument()
+
       await user.click(screen.getByRole('button', { name: 'Export Data' }))
 
       await waitFor(() => {
-        expect(getJourneyEventsMock.result).toHaveBeenCalled()
+        expect(mockGetJourneyEventsCountQuery.result).toHaveBeenCalled()
       })
+
+      expect(screen.getByTestId('ExportProgress')).toBeInTheDocument()
+      expect(getJourneyEventsMock.result).toHaveBeenCalled()
+
       expect(mutationResult).toHaveBeenCalled()
     })
 
@@ -207,7 +219,11 @@ describe('FilterDrawer', () => {
 
       render(
         <MockedProvider
-          mocks={[getJourneyEventsMock, mockCreateEventsExportLogMutation]}
+          mocks={[
+            mockGetJourneyEventsCountQuery,
+            getJourneyEventsMock,
+            mockCreateEventsExportLogMutation
+          ]}
         >
           <FilterDrawer {...props} />
         </MockedProvider>
@@ -243,6 +259,7 @@ describe('FilterDrawer', () => {
         <SnackbarProvider>
           <MockedProvider
             mocks={[
+              mockGetJourneyEventsCountQuery,
               getJourneyEventsErrorMock,
               { ...mockCreateEventsExportLogMutation, result: mutationResult }
             ]}
@@ -255,7 +272,13 @@ describe('FilterDrawer', () => {
       const user = userEvent.setup()
       await user.click(screen.getByRole('button', { name: 'Export Data' }))
 
-      expect(getJourneyEventsErrorMock.result).toHaveBeenCalled()
+      await waitFor(() => {
+        expect(mockGetJourneyEventsCountQuery.result).toHaveBeenCalled()
+      })
+
+      await waitFor(() => {
+        expect(getJourneyEventsErrorMock.result).toHaveBeenCalled()
+      })
       expect(
         screen.getByText('Failed to retrieve data for export.')
       ).toBeInTheDocument()
