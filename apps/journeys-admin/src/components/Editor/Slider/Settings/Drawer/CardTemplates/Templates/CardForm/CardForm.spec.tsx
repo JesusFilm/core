@@ -20,9 +20,6 @@ import {
   CardFormRestoreVariables
 } from '../../../../../../../../../__generated__/CardFormRestore'
 import {
-  ButtonColor,
-  ButtonSize,
-  ButtonVariant,
   TypographyColor,
   TypographyVariant
 } from '../../../../../../../../../__generated__/globalTypes'
@@ -120,33 +117,6 @@ describe('CardForm', () => {
           parentBlockId: 'cardId',
           label: 'My Prayer:'
         },
-        buttonInput: {
-          id: 'buttonId',
-          journeyId: 'journeyId',
-          parentBlockId: 'cardId',
-          label: '',
-          variant: ButtonVariant.contained,
-          color: ButtonColor.primary,
-          size: ButtonSize.medium,
-          submitEnabled: true
-        },
-        buttonId: 'buttonId',
-        buttonUpdateInput: {
-          startIconId: 'startIconId',
-          endIconId: 'endIconId'
-        },
-        startIconInput: {
-          id: 'startIconId',
-          journeyId: 'journeyId',
-          parentBlockId: 'buttonId',
-          name: null
-        },
-        endIconInput: {
-          id: 'endIconId',
-          journeyId: 'journeyId',
-          parentBlockId: 'buttonId',
-          name: null
-        },
         bodyInput: {
           id: 'bodyId',
           align: null,
@@ -214,56 +184,10 @@ describe('CardForm', () => {
           required: null,
           __typename: 'TextResponseBlock'
         },
-        button: {
-          id: 'buttonId',
-          parentBlockId: 'cardId',
-          parentOrder: 3,
-          label: '',
-          buttonVariant: ButtonVariant.contained,
-          buttonColor: ButtonColor.primary,
-          size: ButtonSize.medium,
-          startIconId: 'startIconId',
-          endIconId: 'endIconId',
-          action: null,
-          submitEnabled: true,
-          __typename: 'ButtonBlock'
-        },
-        startIcon: {
-          id: 'startIconId',
-          parentBlockId: 'buttonId',
-          parentOrder: null,
-          iconName: null,
-          iconSize: null,
-          iconColor: null,
-          __typename: 'IconBlock'
-        },
-        endIcon: {
-          id: 'endIconId',
-          parentBlockId: 'buttonId',
-          parentOrder: null,
-          iconName: null,
-          iconSize: null,
-          iconColor: null,
-          __typename: 'IconBlock'
-        },
-        buttonUpdate: {
-          id: 'buttonId',
-          parentBlockId: 'cardId',
-          parentOrder: 3,
-          label: '',
-          buttonVariant: ButtonVariant.contained,
-          buttonColor: ButtonColor.primary,
-          size: ButtonSize.medium,
-          startIconId: 'startIconId',
-          endIconId: 'endIconId',
-          action: null,
-          submitEnabled: true,
-          __typename: 'ButtonBlock'
-        },
         body: {
           id: 'bodyId',
           parentBlockId: 'cardId',
-          parentOrder: 4,
+          parentOrder: 3,
           align: null,
           color: TypographyColor.secondary,
           content:
@@ -298,9 +222,6 @@ describe('CardForm', () => {
         textResponseId: 'textResponseId',
         titleId: 'titleId',
         subtitleId: 'subtitleId',
-        buttonId: 'buttonId',
-        startIconId: 'startIconId',
-        endIconId: 'endIconId',
         journeyId: 'journeyId',
         cardId: 'cardId',
         cardInput: { fullscreen: false }
@@ -313,9 +234,6 @@ describe('CardForm', () => {
         textResponse: [],
         title: [],
         subtitle: [],
-        button: [],
-        startIcon: [],
-        endIcon: [],
         cardBlockUpdate: card
       }
     }
@@ -333,9 +251,6 @@ describe('CardForm', () => {
         textResponseId: 'textResponseId',
         titleId: 'titleId',
         subtitleId: 'subtitleId',
-        buttonId: 'buttonId',
-        startIconId: 'startIconId',
-        endIconId: 'endIconId',
         journeyId: 'journeyId',
         cardId: 'cardId',
         cardInput: { fullscreen: true }
@@ -348,9 +263,6 @@ describe('CardForm', () => {
         textResponse: [],
         title: [],
         subtitle: [],
-        button: [],
-        startIcon: [],
-        endIcon: [],
         cardBlockUpdate: card
       }
     }
@@ -361,9 +273,6 @@ describe('CardForm', () => {
     mockUuidv4.mockReturnValueOnce('subtitleId')
     mockUuidv4.mockReturnValueOnce('titleId')
     mockUuidv4.mockReturnValueOnce('textResponseId')
-    mockUuidv4.mockReturnValueOnce('buttonId')
-    mockUuidv4.mockReturnValueOnce('startIconId')
-    mockUuidv4.mockReturnValueOnce('endIconId')
     mockUuidv4.mockReturnValueOnce('bodyId')
 
     const cache = new InMemoryCache()
@@ -395,9 +304,6 @@ describe('CardForm', () => {
         { __ref: 'TypographyBlock:subtitleId' },
         { __ref: 'TypographyBlock:titleId' },
         { __ref: 'TextResponseBlock:textResponseId' },
-        { __ref: 'ButtonBlock:buttonId' },
-        { __ref: 'IconBlock:startIconId' },
-        { __ref: 'IconBlock:endIconId' },
         { __ref: 'TypographyBlock:bodyId' }
       ])
     })
@@ -408,9 +314,6 @@ describe('CardForm', () => {
     mockUuidv4.mockReturnValueOnce('subtitleId')
     mockUuidv4.mockReturnValueOnce('titleId')
     mockUuidv4.mockReturnValueOnce('textResponseId')
-    mockUuidv4.mockReturnValueOnce('buttonId')
-    mockUuidv4.mockReturnValueOnce('startIconId')
-    mockUuidv4.mockReturnValueOnce('endIconId')
     mockUuidv4.mockReturnValueOnce('bodyId')
 
     const result = jest.fn().mockResolvedValue(cardFormCreateMock.result)
@@ -448,9 +351,6 @@ describe('CardForm', () => {
     mockUuidv4.mockReturnValueOnce('subtitleId')
     mockUuidv4.mockReturnValueOnce('titleId')
     mockUuidv4.mockReturnValueOnce('textResponseId')
-    mockUuidv4.mockReturnValueOnce('buttonId')
-    mockUuidv4.mockReturnValueOnce('startIconId')
-    mockUuidv4.mockReturnValueOnce('endIconId')
     mockUuidv4.mockReturnValueOnce('bodyId')
 
     const result = jest.fn().mockResolvedValue(cardFormCreateMock.result)
