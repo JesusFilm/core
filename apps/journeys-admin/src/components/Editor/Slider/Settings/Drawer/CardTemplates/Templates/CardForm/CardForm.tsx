@@ -7,20 +7,16 @@ import type { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
-import { BUTTON_FIELDS } from '@core/journeys/ui/Button/buttonFields'
 import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
 import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TEXT_RESPONSE_FIELDS } from '@core/journeys/ui/TextResponse/textResponseFields'
 import { TYPOGRAPHY_FIELDS } from '@core/journeys/ui/Typography/typographyFields'
 
 import {
-  BlockFields_ButtonBlock as ButtonBlock,
   BlockFields_CardBlock as CardBlock,
-  BlockFields_IconBlock as IconBlock,
   BlockFields_ImageBlock as ImageBlock,
   BlockFields_TextResponseBlock as TextResponseBlock,
   BlockFields_TypographyBlock as TypographyBlock
@@ -38,10 +34,6 @@ import {
   CardFormRestoreVariables
 } from '../../../../../../../../../__generated__/CardFormRestore'
 import {
-  ButtonColor,
-  ButtonSize,
-  ButtonVariant,
-  IconName,
   ThemeMode,
   ThemeName,
   TypographyColor,
@@ -58,19 +50,12 @@ export const CARD_FORM_CREATE = gql`
   ${IMAGE_FIELDS}
   ${TYPOGRAPHY_FIELDS}
   ${TEXT_RESPONSE_FIELDS}
-  ${BUTTON_FIELDS}
-  ${ICON_FIELDS}
   ${CARD_FIELDS}
   mutation CardFormCreate(
     $imageInput: ImageBlockCreateInput!
     $subtitleInput: TypographyBlockCreateInput!
     $titleInput: TypographyBlockCreateInput!
     $textResponseInput: TextResponseBlockCreateInput!
-    $buttonInput: ButtonBlockCreateInput!
-    $buttonId: ID!
-    $buttonUpdateInput: ButtonBlockUpdateInput!
-    $startIconInput: IconBlockCreateInput!
-    $endIconInput: IconBlockCreateInput!
     $bodyInput: TypographyBlockCreateInput!
     $journeyId: ID!
     $cardId: ID!
@@ -87,22 +72,6 @@ export const CARD_FORM_CREATE = gql`
     }
     textResponse: textResponseBlockCreate(input: $textResponseInput) {
       ...TextResponseFields
-    }
-    button: buttonBlockCreate(input: $buttonInput) {
-      ...ButtonFields
-    }
-    startIcon: iconBlockCreate(input: $startIconInput) {
-      ...IconFields
-    }
-    endIcon: iconBlockCreate(input: $endIconInput) {
-      ...IconFields
-    }
-    buttonUpdate: buttonBlockUpdate(
-      id: $buttonId
-      journeyId: $journeyId
-      input: $buttonUpdateInput
-    ) {
-      ...ButtonFields
     }
     body: typographyBlockCreate(input: $bodyInput) {
       ...TypographyFields
@@ -123,27 +92,12 @@ export const CARD_FORM_DELETE = gql`
     $subtitleId: ID!
     $titleId: ID!
     $textResponseId: ID!
-    $buttonId: ID!
-    $startIconId: ID!
-    $endIconId: ID!
     $bodyId: ID!
     $cardId: ID!
     $journeyId: ID!
     $cardInput: CardBlockUpdateInput!
   ) {
     body: blockDelete(id: $bodyId) {
-      id
-      parentOrder
-    }
-    endIcon: blockDelete(id: $endIconId) {
-      id
-      parentOrder
-    }
-    startIcon: blockDelete(id: $startIconId) {
-      id
-      parentOrder
-    }
-    button: blockDelete(id: $buttonId) {
       id
       parentOrder
     }
@@ -179,9 +133,6 @@ export const CARD_FORM_RESTORE = gql`
     $subtitleId: ID!
     $titleId: ID!
     $textResponseId: ID!
-    $buttonId: ID!
-    $startIconId: ID!
-    $endIconId: ID!
     $bodyId: ID!
     $cardId: ID!
     $journeyId: ID!
@@ -197,15 +148,6 @@ export const CARD_FORM_RESTORE = gql`
       ...BlockFields
     }
     textResponse: blockRestore(id: $textResponseId) {
-      ...BlockFields
-    }
-    button: blockRestore(id: $buttonId) {
-      ...BlockFields
-    }
-    startIcon: blockRestore(id: $startIconId) {
-      ...BlockFields
-    }
-    endIcon: blockRestore(id: $endIconId) {
       ...BlockFields
     }
     body: blockRestore(id: $bodyId) {
@@ -301,25 +243,10 @@ export function CardForm(): ReactElement {
       __typename: 'TextResponseBlock'
     } satisfies TextResponseBlock
 
-    const buttonBlock = {
-      id: uuidv4(),
-      __typename: 'ButtonBlock',
-      parentBlockId: cardId,
-      parentOrder: 3,
-      label: '',
-      buttonVariant: ButtonVariant.contained,
-      buttonColor: ButtonColor.primary,
-      size: ButtonSize.medium,
-      startIconId: uuidv4(),
-      endIconId: uuidv4(),
-      action: null,
-      submitEnabled: true
-    } satisfies ButtonBlock
-
     const body = {
       id: uuidv4(),
       parentBlockId: cardId,
-      parentOrder: 4,
+      parentOrder: 3,
       align: null,
       color: TypographyColor.secondary,
       content: t(
@@ -341,14 +268,7 @@ export function CardForm(): ReactElement {
       __typename: 'CardBlock'
     } satisfies CardBlock
 
-    const createdBlocks = [
-      imageBlock,
-      subtitle,
-      title,
-      textResponseBlock,
-      buttonBlock,
-      body
-    ]
+    const createdBlocks = [imageBlock, subtitle, title, textResponseBlock, body]
 
     add({
       parameters: { execute: {}, undo: {} },
@@ -381,33 +301,6 @@ export function CardForm(): ReactElement {
               ]),
               journeyId: journey.id
             },
-            buttonInput: {
-              id: buttonBlock.id,
-              journeyId: journey.id,
-              parentBlockId: buttonBlock.parentBlockId,
-              label: buttonBlock.label,
-              variant: buttonBlock.buttonVariant,
-              color: buttonBlock.buttonColor,
-              size: buttonBlock.size,
-              submitEnabled: true
-            },
-            buttonId: buttonBlock.id,
-            buttonUpdateInput: {
-              startIconId: buttonBlock.startIconId,
-              endIconId: buttonBlock.endIconId
-            },
-            startIconInput: {
-              id: buttonBlock.startIconId,
-              journeyId: journey.id,
-              parentBlockId: buttonBlock.id,
-              name: null
-            },
-            endIconInput: {
-              id: buttonBlock.endIconId,
-              journeyId: journey.id,
-              parentBlockId: buttonBlock.id,
-              name: null
-            },
             bodyInput: {
               ...omit(body, ['__typename', 'parentOrder']),
               journeyId: journey.id
@@ -421,30 +314,6 @@ export function CardForm(): ReactElement {
             subtitle,
             title,
             textResponse: textResponseBlock,
-            button: buttonBlock,
-            startIcon: {
-              id: buttonBlock.startIconId,
-              parentBlockId: buttonBlock.id,
-              parentOrder: null,
-              iconName: null,
-              iconSize: null,
-              iconColor: null,
-              __typename: 'IconBlock' as const
-            },
-            endIcon: {
-              id: buttonBlock.endIconId,
-              parentBlockId: buttonBlock.id,
-              parentOrder: null,
-              iconName: null,
-              iconSize: null,
-              iconColor: null,
-              __typename: 'IconBlock' as const
-            },
-            buttonUpdate: {
-              ...buttonBlock,
-              startIconId: buttonBlock.startIconId,
-              endIconId: buttonBlock.endIconId
-            },
             body,
             cardBlockUpdate: cardBlock
           },
@@ -460,8 +329,7 @@ export function CardForm(): ReactElement {
                       }
                     `
                     const keys = Object.keys(data).filter(
-                      (key) =>
-                        key !== 'cardBlockUpdate' && key !== 'buttonUpdate'
+                      (key) => key !== 'cardBlockUpdate'
                     )
                     return [
                       ...existingBlockRefs,
@@ -487,9 +355,6 @@ export function CardForm(): ReactElement {
             textResponseId: textResponseBlock.id,
             titleId: title.id,
             subtitleId: subtitle.id,
-            buttonId: buttonBlock.id,
-            startIconId: buttonBlock.startIconId,
-            endIconId: buttonBlock.endIconId,
             journeyId: journey.id,
             cardId: cardBlock.id,
             cardInput: { fullscreen: !cardBlock.fullscreen }
@@ -500,9 +365,6 @@ export function CardForm(): ReactElement {
             textResponse: [],
             title: [],
             subtitle: [],
-            button: [],
-            startIcon: [],
-            endIcon: [],
             cardBlockUpdate: { ...cardBlock, fullscreen: !cardBlock.fullscreen }
           },
           update(cache, { data }) {
@@ -537,42 +399,16 @@ export function CardForm(): ReactElement {
             textResponseId: textResponseBlock.id,
             titleId: title.id,
             subtitleId: subtitle.id,
-            buttonId: buttonBlock.id,
-            startIconId: buttonBlock.startIconId,
-            endIconId: buttonBlock.endIconId,
             journeyId: journey.id,
             cardId: cardBlock.id,
             cardInput: { fullscreen: cardBlock.fullscreen }
           },
           optimisticResponse: {
             image: [imageBlock],
-            subtitle: [subtitle],
-            title: [title],
-            textResponse: [textResponseBlock],
-            button: [buttonBlock],
-            startIcon: [
-              {
-                id: buttonBlock.startIconId,
-                parentBlockId: buttonBlock.id,
-                parentOrder: null,
-                iconName: null,
-                iconSize: null,
-                iconColor: null,
-                __typename: 'IconBlock' as const
-              }
-            ],
-            endIcon: [
-              {
-                id: buttonBlock.endIconId,
-                parentBlockId: buttonBlock.id,
-                parentOrder: null,
-                iconName: null,
-                iconSize: null,
-                iconColor: null,
-                __typename: 'IconBlock' as const
-              }
-            ],
             body: [body],
+            textResponse: [textResponseBlock],
+            title: [title],
+            subtitle: [subtitle],
             cardBlockUpdate: cardBlock
           },
           update(cache, { data }) {

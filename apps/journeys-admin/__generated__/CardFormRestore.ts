@@ -3462,18 +3462,6 @@ export interface CardFormRestore {
   /**
    * blockRestore is used for redo/undo
    */
-  button: CardFormRestore_button[];
-  /**
-   * blockRestore is used for redo/undo
-   */
-  startIcon: CardFormRestore_startIcon[];
-  /**
-   * blockRestore is used for redo/undo
-   */
-  endIcon: CardFormRestore_endIcon[];
-  /**
-   * blockRestore is used for redo/undo
-   */
   body: CardFormRestore_body[];
   cardBlockUpdate: CardFormRestore_cardBlockUpdate;
 }
@@ -3483,9 +3471,6 @@ export interface CardFormRestoreVariables {
   subtitleId: string;
   titleId: string;
   textResponseId: string;
-  buttonId: string;
-  startIconId: string;
-  endIconId: string;
   bodyId: string;
   cardId: string;
   journeyId: string;
