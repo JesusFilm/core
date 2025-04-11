@@ -4,9 +4,6 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import fetch, { Response } from 'node-fetch'
 import { SnackbarProvider } from 'notistack'
 
-import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-
 import {
   CLOUDFLARE_UPLOAD_COMPLETE,
   CREATE_CLOUDFLARE_UPLOAD_BY_FILE,
@@ -17,6 +14,7 @@ import {
   DELETE_VIDEO_CLOUDFLARE_IMAGE,
   DeleteVideoCloudflareImage,
   DeleteVideoCloudflareImageVariables,
+  ImageAspectRatio,
   VideoImageUpload
 } from './VideoImageUpload'
 
@@ -53,7 +51,9 @@ const mockCreateCloudflareUploadByFileBanner: MockedResponse<
 > = {
   request: {
     query: CREATE_CLOUDFLARE_UPLOAD_BY_FILE,
-    variables: { input: { videoId: '1_jf-0-0', aspectRatio: 'banner' } }
+    variables: {
+      input: { videoId: '1_jf-0-0', aspectRatio: ImageAspectRatio.banner }
+    }
   },
   result: {
     data: {
@@ -64,6 +64,8 @@ const mockCreateCloudflareUploadByFileBanner: MockedResponse<
         url: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/f7245a5d-5bf4-4343-764c-e0dd40369300',
         mobileCinematicHigh:
           'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/f7245a5d-5bf4-4343-764c-e0dd40369300/f=jpg,w=1280,h=600,q=95',
+        videoStill: null,
+        aspectRatio: 'banner',
         __typename: 'CloudflareImage'
       }
     }
@@ -77,7 +79,9 @@ const mockCreateCloudflareUploadByFileHD: MockedResponse<
 > = {
   request: {
     query: CREATE_CLOUDFLARE_UPLOAD_BY_FILE,
-    variables: { input: { videoId: '1_jf-0-0', aspectRatio: 'hd' } }
+    variables: {
+      input: { videoId: '1_jf-0-0', aspectRatio: ImageAspectRatio.hd }
+    }
   },
   result: {
     data: {
@@ -86,7 +90,10 @@ const mockCreateCloudflareUploadByFileHD: MockedResponse<
           'https://upload.imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/f7245a5d-5bf4-4343-764c-e0dd40369301',
         id: 'uploadId2',
         url: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/f7245a5d-5bf4-4343-764c-e0dd40369301',
+        videoStill:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/f7245a5d-5bf4-4343-764c-e0dd40369301/f=jpg,w=1280,h=720,q=95',
         mobileCinematicHigh: null,
+        aspectRatio: 'hd',
         __typename: 'CloudflareImage'
       }
     }
@@ -142,6 +149,8 @@ interface CloudflareImage {
   id: string
   url?: string | null
   mobileCinematicHigh?: string | null
+  videoStill?: string | null
+  aspectRatio?: string
 }
 
 interface VideoData {
@@ -150,13 +159,18 @@ interface VideoData {
 }
 
 describe('VideoImageUpload', () => {
-  const adminVideo: AdminVideo =
-    useAdminVideoMock['result']?.['data']?.['adminVideo']
-
-  // Convert AdminVideo to our VideoData type for tests
+  // Sample video data for testing
   const video: VideoData = {
-    id: adminVideo.id,
-    images: adminVideo.images
+    id: '1_jf-0-0',
+    images: [
+      {
+        id: '1_jf-0-0.mobileCinematicHigh.jpg',
+        url: 'https://example.com/image.jpg',
+        mobileCinematicHigh: 'https://example.com/image-mobile.jpg',
+        videoStill: null,
+        aspectRatio: 'banner'
+      }
+    ]
   }
 
   it('should call mutations on file drop for banner image', async () => {
@@ -201,7 +215,10 @@ describe('VideoImageUpload', () => {
             }
           ]}
         >
-          <VideoImageUpload video={video} aspectRatio="banner" />
+          <VideoImageUpload
+            video={video}
+            aspectRatio={ImageAspectRatio.banner}
+          />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -228,7 +245,9 @@ describe('VideoImageUpload', () => {
           'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/f7245a5d-5bf4-4343-764c-e0dd40369300/f=jpg,w=1280,h=600,q=95',
         uploadUrl:
           'https://upload.imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/f7245a5d-5bf4-4343-764c-e0dd40369300',
-        url: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/f7245a5d-5bf4-4343-764c-e0dd40369300'
+        url: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/f7245a5d-5bf4-4343-764c-e0dd40369300',
+        videoStill: null,
+        aspectRatio: 'banner'
       },
       ROOT_MUTATION: { __typename: 'Mutation' },
       'Video:1_jf-0-0': {
@@ -257,7 +276,7 @@ describe('VideoImageUpload', () => {
 
     // We're using an empty array for images to simulate no existing HD image
     const videoWithNoHDImage: VideoData = {
-      id: adminVideo.id,
+      id: '1_jf-0-0',
       images: []
     }
 
@@ -280,7 +299,10 @@ describe('VideoImageUpload', () => {
             }
           ]}
         >
-          <VideoImageUpload video={videoWithNoHDImage} aspectRatio="hd" />
+          <VideoImageUpload
+            video={videoWithNoHDImage}
+            aspectRatio={ImageAspectRatio.hd}
+          />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -298,7 +320,7 @@ describe('VideoImageUpload', () => {
 
   it('should not delete image if there are no existing images', async () => {
     const videoWithNoImages: VideoData = {
-      id: adminVideo.id,
+      id: '1_jf-0-0',
       images: []
     }
 
@@ -339,7 +361,10 @@ describe('VideoImageUpload', () => {
             }
           ]}
         >
-          <VideoImageUpload video={videoWithNoImages} />
+          <VideoImageUpload
+            video={videoWithNoImages}
+            aspectRatio={ImageAspectRatio.banner}
+          />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -366,7 +391,9 @@ describe('VideoImageUpload', () => {
           'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/f7245a5d-5bf4-4343-764c-e0dd40369300/f=jpg,w=1280,h=600,q=95',
         uploadUrl:
           'https://upload.imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/f7245a5d-5bf4-4343-764c-e0dd40369300',
-        url: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/f7245a5d-5bf4-4343-764c-e0dd40369300'
+        url: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/f7245a5d-5bf4-4343-764c-e0dd40369300',
+        videoStill: null,
+        aspectRatio: 'banner'
       },
       __META: { extraRootIds: ['CloudflareImage:uploadId'] }
     })
@@ -374,7 +401,7 @@ describe('VideoImageUpload', () => {
 
   it('should show error message if upload fails', async () => {
     const videoWithNoImages: VideoData = {
-      id: adminVideo.id,
+      id: '1_jf-0-0',
       images: []
     }
 
@@ -384,15 +411,23 @@ describe('VideoImageUpload', () => {
     > = {
       request: {
         query: CREATE_CLOUDFLARE_UPLOAD_BY_FILE,
-        variables: { input: { videoId: '1_jf-0-0', aspectRatio: 'banner' } }
+        variables: {
+          input: { videoId: '1_jf-0-0', aspectRatio: ImageAspectRatio.banner }
+        }
       },
       error: new Error('Upload failed')
     }
 
+    // Reset the mock fetch before the test
+    mockFetch.mockReset()
+
     render(
       <SnackbarProvider>
         <MockedProvider mocks={[mockCreateCloudflareUploadByFileError]}>
-          <VideoImageUpload video={videoWithNoImages} />
+          <VideoImageUpload
+            video={videoWithNoImages}
+            aspectRatio={ImageAspectRatio.banner}
+          />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -404,12 +439,18 @@ describe('VideoImageUpload', () => {
       value: [file]
     })
     fireEvent.drop(input)
-    await waitFor(() => expect(mockFetch).not.toHaveBeenCalled())
+
+    // Check for error notification
+    await waitFor(() => {
+      expect(
+        screen.getByText('Uploading failed, please try again')
+      ).toBeInTheDocument()
+    })
   })
 
   it('should show error message if cloudflare upload errors exist', async () => {
     const videoWithNoImages: VideoData = {
-      id: adminVideo.id,
+      id: '1_jf-0-0',
       images: []
     }
 
@@ -425,7 +466,10 @@ describe('VideoImageUpload', () => {
     render(
       <SnackbarProvider>
         <MockedProvider mocks={[mockCreateCloudflareUploadByFileBanner]}>
-          <VideoImageUpload video={videoWithNoImages} />
+          <VideoImageUpload
+            video={videoWithNoImages}
+            aspectRatio={ImageAspectRatio.banner}
+          />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -442,7 +486,7 @@ describe('VideoImageUpload', () => {
 
   it('should show error message if fetch throws', async () => {
     const videoWithNoImages: VideoData = {
-      id: adminVideo.id,
+      id: '1_jf-0-0',
       images: []
     }
 
@@ -451,7 +495,10 @@ describe('VideoImageUpload', () => {
     render(
       <SnackbarProvider>
         <MockedProvider mocks={[mockCreateCloudflareUploadByFileBanner]}>
-          <VideoImageUpload video={videoWithNoImages} />
+          <VideoImageUpload
+            video={videoWithNoImages}
+            aspectRatio={ImageAspectRatio.banner}
+          />
         </MockedProvider>
       </SnackbarProvider>
     )

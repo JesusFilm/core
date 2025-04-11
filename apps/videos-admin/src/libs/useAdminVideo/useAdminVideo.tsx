@@ -13,10 +13,12 @@ export const GET_ADMIN_VIDEO = graphql(`
         value
       }
       locked
-      images(aspectRatio: banner) {
+      images {
         id
         mobileCinematicHigh
         url
+        aspectRatio
+        videoStill
       }
       imageAlt {
         id
@@ -37,9 +39,11 @@ export const GET_ADMIN_VIDEO = graphql(`
           id
           value
         }
-        images(aspectRatio: banner) {
+        images {
           id
           mobileCinematicHigh
+          aspectRatio
+          videoStill
         }
         imageAlt {
           id

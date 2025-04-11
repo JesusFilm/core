@@ -32,16 +32,14 @@ describe('VideoView', () => {
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(
-      screen.getByRole('heading', { level: 4, name: 'JESUS' })
-    ).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 4 })).toHaveTextContent('JESUS')
+    expect(screen.getAllByRole('img', { name: 'JESUS' })).toHaveLength(2)
+    expect(screen.getByLabelText('snippet')).toHaveTextContent(
+      'Jesus constantly surprises and confounds people, from His miraculous birth to His rise from the grave. Follow His life through excerpts from the Book of Luke, all the miracles, the teachings, and the passion.'
+    )
     expect(screen.getByRole('textbox', { name: 'Title' })).toHaveValue('JESUS')
     expect(screen.getByRole('textbox', { name: 'Image Alt' })).toHaveValue(
       'JESUS'
-    )
-    expect(screen.getByRole('img', { name: 'JESUS' })).toBeInTheDocument()
-    expect(screen.getByLabelText('snippet')).toHaveTextContent(
-      'Jesus constantly surprises and confounds people, from His miraculous birth to His rise from the grave. Follow His life through excerpts from the Book of Luke, all the miracles, the teachings, and the passion.'
     )
     expect(screen.getByLabelText('description')).toHaveTextContent(
       "This film is a perfect introduction to Jesus through the Gospel of Luke. Jesus constantly surprises and confounds people, from His miraculous birth to His rise from the grave. Follow His life through excerpts from the Book of Luke, all the miracles, the teachings, and the passion. God creates everything and loves mankind. But mankind disobeys God. God and mankind are separated, but God loves mankind so much, He arranges redemption for mankind. He sends his Son Jesus to be a perfect sacrifice to make amends for us. Before Jesus arrives, God prepares mankind. Prophets speak of the birth, the life, and the death of Jesus. Jesus attracts attention. He teaches in parables no one really understands, gives sight to the blind, and helps those who no one sees as worth helping. He scares the Jewish leaders, they see him as a threat. So they arrange, through Judas the traitor and their Roman oppressors, for the crucifixion of Jesus. They think the matter is settled. But the women who serve Jesus discover an empty tomb. The disciples panic. When Jesus appears, they doubt He's real. But it's what He proclaimed all along: He is their perfect sacrifice, their Savior, victor over death. He ascends to heaven, telling His followers to tell others about Him and His teachings."

@@ -7,6 +7,12 @@ import { ReactElement, useState } from 'react'
 
 import { FileUpload } from '../FileUpload'
 
+// Aligned with ImageAspectRatio enum from Prisma schema
+export enum ImageAspectRatio {
+  hd = 'hd', // 16:9
+  banner = 'banner' // 2.13:1
+}
+
 export const CREATE_CLOUDFLARE_UPLOAD_BY_FILE = graphql(`
   mutation CreateCloudflareUploadByFile($input: ImageInput!) {
     createCloudflareUploadByFile(input: $input) {
@@ -15,6 +21,8 @@ export const CREATE_CLOUDFLARE_UPLOAD_BY_FILE = graphql(`
       id
       url
       mobileCinematicHigh
+      videoStill
+      aspectRatio
     }
   }
 `)
@@ -56,6 +64,8 @@ interface CloudflareImage {
   id: string
   url?: string | null
   mobileCinematicHigh?: string | null
+  videoStill?: string | null
+  aspectRatio?: string
 }
 
 interface VideoData {
@@ -65,13 +75,13 @@ interface VideoData {
 
 interface VideoImageUploadProps {
   video: VideoData
-  aspectRatio?: 'banner' | 'hd'
+  aspectRatio?: ImageAspectRatio
   onUploadComplete?: () => void
 }
 
 export function VideoImageUpload({
   video,
-  aspectRatio = 'banner',
+  aspectRatio = ImageAspectRatio.banner,
   onUploadComplete
 }: VideoImageUploadProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
@@ -88,9 +98,16 @@ export function VideoImageUpload({
   // Helper to find the existing image of the specified aspect ratio
   const findExistingImage = (): CloudflareImage | undefined => {
     return video.images.find((img) => {
-      if (aspectRatio === 'banner') {
+      // First check if the image has the aspectRatio property
+      if (img.aspectRatio != null) {
+        return img.aspectRatio === aspectRatio
+      }
+
+      // Fallback for images without aspectRatio property based on simple logic
+      if (aspectRatio === ImageAspectRatio.banner) {
         return img.mobileCinematicHigh != null
       }
+      // For HD images, look for ones without mobileCinematicHigh
       return img.url != null && img.mobileCinematicHigh == null
     })
   }
@@ -164,6 +181,8 @@ export function VideoImageUpload({
                       url
                       uploadUrl
                       mobileCinematicHigh
+                      videoStill
+                      aspectRatio
                     }
                   `
                 })

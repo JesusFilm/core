@@ -25,7 +25,17 @@ export const useAdminVideoMock: MockedResponse<
             id: '1_jf-0-0.mobileCinematicHigh.jpg',
             mobileCinematicHigh:
               'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
-            url: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf-0-0.mobileCinematicHigh.jpg'
+            url: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf-0-0.mobileCinematicHigh.jpg',
+            videoStill: null,
+            aspectRatio: 'banner'
+          },
+          {
+            id: '1_jf-0-0.hd.jpg',
+            mobileCinematicHigh: null,
+            url: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf-0-0.hd.jpg',
+            videoStill:
+              'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf-0-0.hd.jpg/f=jpg,w=1280,h=720,q=95',
+            aspectRatio: 'hd'
           }
         ],
         imageAlt: [
@@ -67,7 +77,16 @@ export const useAdminVideoMock: MockedResponse<
               {
                 id: '1_jf6101-0-0.mobileCinematicHigh.jpg',
                 mobileCinematicHigh:
-                  'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6101-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+                  'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6101-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
+                videoStill: null,
+                aspectRatio: 'banner'
+              },
+              {
+                id: '1_jf6101-0-0.hd.jpg',
+                mobileCinematicHigh: null,
+                videoStill:
+                  'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6101-0-0.hd.jpg/f=jpg,w=1280,h=720,q=95',
+                aspectRatio: 'hd'
               }
             ],
             imageAlt: [
@@ -89,7 +108,16 @@ export const useAdminVideoMock: MockedResponse<
               {
                 id: '1_jf6102-0-0.mobileCinematicHigh.jpg',
                 mobileCinematicHigh:
-                  'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6102-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+                  'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6102-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
+                videoStill: null,
+                aspectRatio: 'banner'
+              },
+              {
+                id: '1_jf6102-0-0.hd.jpg',
+                mobileCinematicHigh: null,
+                videoStill:
+                  'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6102-0-0.hd.jpg/f=jpg,w=1280,h=720,q=95',
+                aspectRatio: 'hd'
               }
             ],
             imageAlt: [
@@ -111,7 +139,16 @@ export const useAdminVideoMock: MockedResponse<
               {
                 id: '1_jf6103-0-0.mobileCinematicHigh.jpg',
                 mobileCinematicHigh:
-                  'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6103-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+                  'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6103-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
+                videoStill: null,
+                aspectRatio: 'banner'
+              },
+              {
+                id: '1_jf6103-0-0.hd.jpg',
+                mobileCinematicHigh: null,
+                videoStill:
+                  'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6103-0-0.hd.jpg/f=jpg,w=1280,h=720,q=95',
+                aspectRatio: 'hd'
               }
             ],
             imageAlt: [

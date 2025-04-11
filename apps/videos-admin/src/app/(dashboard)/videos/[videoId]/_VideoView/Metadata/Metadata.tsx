@@ -42,7 +42,7 @@ export function Metadata({ video }: MetadataProps): ReactElement {
       </Section>
       <Section title="Images" variant="outlined">
         <Stack gap={4}>
-          <VideoImage video={video} />
+          <VideoImage videoId={video.id} />
           <VideoImageAlt videoImageAlts={video.imageAlt} />
         </Stack>
       </Section>

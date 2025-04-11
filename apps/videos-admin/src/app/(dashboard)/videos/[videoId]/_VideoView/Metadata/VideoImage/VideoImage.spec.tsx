@@ -1,194 +1,272 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
-import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { useAdminVideoMock } from '../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
+import { GET_VIDEO_IMAGES, ImageAspectRatio, VideoImage } from './VideoImage'
 
-import { VideoImage } from './VideoImage'
+// Mock the VideoImageUpload component
+jest.mock('./VideoImageUpload', () => ({
+  VideoImageUpload: ({ aspectRatio, onUploadComplete }) => (
+    <div data-testid={`MockedVideoImageUpload-${aspectRatio}`}>
+      <button onClick={onUploadComplete}>Complete Upload</button>
+    </div>
+  ),
+  ImageAspectRatio
+}))
 
-interface CloudflareImage {
-  id: string
-  url?: string | null
-  mobileCinematicHigh?: string | null
+// Sample mock data for the GraphQL query
+const mockVideoData = {
+  id: 'test-video-id',
+  images: [
+    {
+      id: 'banner-image-id',
+      url: 'https://example.com/banner-image',
+      mobileCinematicHigh: 'https://example.com/banner-image-mobile',
+      videoStill: null,
+      aspectRatio: 'banner',
+      __typename: 'CloudflareImage'
+    },
+    {
+      id: 'hd-image-id',
+      url: 'https://example.com/hd-image',
+      mobileCinematicHigh: null,
+      videoStill: 'https://example.com/hd-image-still',
+      aspectRatio: 'hd',
+      __typename: 'CloudflareImage'
+    }
+  ],
+  imageAlt: [
+    {
+      id: 'image-alt-id',
+      value: 'Sample alt text',
+      __typename: 'ImageAlt'
+    }
+  ],
+  __typename: 'Video'
 }
 
-interface ImageAlt {
-  id: string
-  value?: string | null
+// Create mocked query response
+const mockQueryResponse: MockedResponse = {
+  request: {
+    query: GET_VIDEO_IMAGES,
+    variables: { id: 'test-video-id' }
+  },
+  result: {
+    data: {
+      video: mockVideoData
+    }
+  }
 }
 
-interface VideoData {
-  id: string
-  images: CloudflareImage[]
-  imageAlt: ImageAlt[]
+// Create mock for loading state
+const mockLoadingResponse: MockedResponse = {
+  request: {
+    query: GET_VIDEO_IMAGES,
+    variables: { id: 'test-video-id' }
+  },
+  result: {
+    data: {
+      video: mockVideoData
+    }
+  },
+  delay: 100 // Simulate network delay
+}
+
+// Create mock for error state
+const mockErrorResponse: MockedResponse = {
+  request: {
+    query: GET_VIDEO_IMAGES,
+    variables: { id: 'test-video-id' }
+  },
+  error: new Error('Failed to load video images')
+}
+
+// Create mock for empty response
+const mockEmptyResponse: MockedResponse = {
+  request: {
+    query: GET_VIDEO_IMAGES,
+    variables: { id: 'empty-video-id' }
+  },
+  result: {
+    data: {
+      video: null
+    }
+  }
 }
 
 describe('VideoImage', () => {
-  const adminVideo: AdminVideo =
-    useAdminVideoMock['result']?.['data']?.['adminVideo']
-
-  // Convert AdminVideo to our VideoData type for tests
-  const video: VideoData = {
-    id: adminVideo.id,
-    images: adminVideo.images,
-    imageAlt: adminVideo.imageAlt
-  }
-
-  it('should show video images', () => {
+  it('renders video images when data is available', async () => {
     render(
-      <MockedProvider>
-        <VideoImage video={video} />
+      <MockedProvider mocks={[mockQueryResponse]}>
+        <VideoImage videoId="test-video-id" />
       </MockedProvider>
     )
 
-    expect(screen.getByText('Banner Image')).toBeInTheDocument()
-    expect(screen.getByText('HD Image')).toBeInTheDocument()
+    // Initially shows loading state
+    expect(screen.getByRole('progressbar')).toBeInTheDocument()
 
-    // Check the banner image
-    if (video.images.some((img) => img.mobileCinematicHigh)) {
-      expect(screen.getByAltText('JESUS')).toBeInTheDocument()
-    }
+    // Wait for data to load
+    await waitFor(() => {
+      expect(screen.getByText('Banner Image')).toBeInTheDocument()
+      expect(screen.getByText('HD Image')).toBeInTheDocument()
+    })
+
+    // Images should be rendered
+    expect(screen.getAllByRole('img')).toHaveLength(2)
   })
 
-  it('should show edit buttons', () => {
+  it('shows loading state while fetching data', () => {
     render(
-      <MockedProvider>
-        <VideoImage video={video} />
+      <MockedProvider mocks={[mockLoadingResponse]}>
+        <VideoImage videoId="test-video-id" />
       </MockedProvider>
     )
 
-    const buttons = screen.getAllByRole('button')
-    expect(buttons.length).toBeGreaterThanOrEqual(2)
+    expect(screen.getByRole('progressbar')).toBeInTheDocument()
   })
 
-  it('should show tooltip when hovering over banner edit button', async () => {
+  it('shows error message when query fails', async () => {
     render(
-      <MockedProvider>
-        <VideoImage video={video} />
+      <MockedProvider mocks={[mockErrorResponse]}>
+        <VideoImage videoId="test-video-id" />
       </MockedProvider>
     )
 
-    const bannerButton = screen.getByLabelText('Change banner image')
-    fireEvent.mouseOver(bannerButton)
-    await waitFor(() =>
-      expect(screen.getByText('Change banner image')).toBeInTheDocument()
-    )
-  })
-
-  it('should show tooltip when hovering over HD edit button', async () => {
-    render(
-      <MockedProvider>
-        <VideoImage video={video} />
-      </MockedProvider>
-    )
-
-    const hdButton = screen.getByLabelText('Change HD image')
-    fireEvent.mouseOver(hdButton)
-    await waitFor(() =>
-      expect(screen.getByText('Change HD image')).toBeInTheDocument()
-    )
-  })
-
-  it('should open banner file upload dialog on banner edit button click', async () => {
-    render(
-      <MockedProvider>
-        <VideoImage video={video} />
-      </MockedProvider>
-    )
-
-    const bannerButton = screen.getByLabelText('Change banner image')
-    fireEvent.click(bannerButton)
-
-    await waitFor(() =>
+    await waitFor(() => {
       expect(
-        screen.getByTestId('VideoImageUploadDialog-Banner')
+        screen.getByText(/Error loading video images:/i)
       ).toBeInTheDocument()
+    })
+  })
+
+  it('shows message when no video data is available', async () => {
+    render(
+      <MockedProvider mocks={[mockEmptyResponse]}>
+        <VideoImage videoId="empty-video-id" />
+      </MockedProvider>
     )
+
+    await waitFor(() => {
+      expect(screen.getByText(/No image data available/i)).toBeInTheDocument()
+    })
+  })
+
+  it('opens banner image upload dialog when edit button is clicked', async () => {
+    render(
+      <MockedProvider mocks={[mockQueryResponse]}>
+        <VideoImage videoId="test-video-id" />
+      </MockedProvider>
+    )
+
+    // Wait for data to load
+    await waitFor(() => {
+      expect(screen.getByText('Banner Image')).toBeInTheDocument()
+    })
+
+    // Find the edit buttons (there are two, one for banner and one for HD)
+    const editButtons = screen.getAllByRole('button', { name: /change/i })
+
+    // Click the banner image edit button (first one)
+    fireEvent.click(editButtons[0])
+
+    // Dialog should open
     expect(
-      screen.getByText('Warning: this change will apply immediately')
+      screen.getByTestId('VideoImageUploadDialog-Banner')
+    ).toBeInTheDocument()
+    expect(screen.getByText('Change Banner Image')).toBeInTheDocument()
+    expect(
+      screen.getByText(/Warning: this change will apply immediately/i)
+    ).toBeInTheDocument()
+    expect(
+      screen.getByTestId('MockedVideoImageUpload-banner')
     ).toBeInTheDocument()
   })
 
-  it('should open HD file upload dialog on HD edit button click', async () => {
+  it('opens HD image upload dialog when edit button is clicked', async () => {
     render(
-      <MockedProvider>
-        <VideoImage video={video} />
+      <MockedProvider mocks={[mockQueryResponse]}>
+        <VideoImage videoId="test-video-id" />
       </MockedProvider>
     )
 
-    const hdButton = screen.getByLabelText('Change HD image')
-    fireEvent.click(hdButton)
+    // Wait for data to load
+    await waitFor(() => {
+      expect(screen.getByText('HD Image')).toBeInTheDocument()
+    })
 
-    await waitFor(() =>
-      expect(
-        screen.getByTestId('VideoImageUploadDialog-HD')
-      ).toBeInTheDocument()
-    )
+    // Find the edit buttons (there are two, one for banner and one for HD)
+    const editButtons = screen.getAllByRole('button', { name: /change/i })
+
+    // Click the HD image edit button (second one)
+    fireEvent.click(editButtons[1])
+
+    // Dialog should open
+    expect(screen.getByTestId('VideoImageUploadDialog-HD')).toBeInTheDocument()
+    expect(screen.getByText('Change HD Image')).toBeInTheDocument()
     expect(
-      screen.getByText('Warning: this change will apply immediately')
+      screen.getByText(/Warning: this change will apply immediately/i)
     ).toBeInTheDocument()
+    expect(screen.getByTestId('MockedVideoImageUpload-hd')).toBeInTheDocument()
   })
 
-  it('should close banner file upload dialog on close button click', async () => {
+  it('closes banner dialog when upload is complete', async () => {
     render(
-      <MockedProvider>
-        <VideoImage video={video} />
+      <MockedProvider mocks={[mockQueryResponse]}>
+        <VideoImage videoId="test-video-id" />
       </MockedProvider>
     )
 
-    const bannerButton = screen.getByLabelText('Change banner image')
-    fireEvent.click(bannerButton)
+    // Wait for data to load
+    await waitFor(() => {
+      expect(screen.getByText('Banner Image')).toBeInTheDocument()
+    })
 
-    await waitFor(() =>
-      expect(
-        screen.getByTestId('VideoImageUploadDialog-Banner')
-      ).toBeInTheDocument()
-    )
+    // Open the banner dialog
+    const editButtons = screen.getAllByRole('button', { name: /change/i })
+    fireEvent.click(editButtons[0])
 
-    fireEvent.click(screen.getByTestId('dialog-close-button'))
+    // Verify dialog is open
+    expect(
+      screen.getByTestId('VideoImageUploadDialog-Banner')
+    ).toBeInTheDocument()
 
-    await waitFor(() =>
+    // Click the "Complete Upload" button in the mocked VideoImageUpload component
+    fireEvent.click(screen.getByText('Complete Upload'))
+
+    // Dialog should close
+    await waitFor(() => {
       expect(
         screen.queryByTestId('VideoImageUploadDialog-Banner')
       ).not.toBeInTheDocument()
-    )
+    })
   })
 
-  it('should close HD file upload dialog on file upload completion', async () => {
+  it('closes HD dialog when upload is complete', async () => {
     render(
-      <MockedProvider>
-        <VideoImage video={video} />
+      <MockedProvider mocks={[mockQueryResponse]}>
+        <VideoImage videoId="test-video-id" />
       </MockedProvider>
     )
 
-    const hdButton = screen.getByLabelText('Change HD image')
-    fireEvent.click(hdButton)
+    // Wait for data to load
+    await waitFor(() => {
+      expect(screen.getByText('HD Image')).toBeInTheDocument()
+    })
 
-    await waitFor(() =>
-      expect(
-        screen.getByTestId('VideoImageUploadDialog-HD')
-      ).toBeInTheDocument()
-    )
+    // Open the HD dialog
+    const editButtons = screen.getAllByRole('button', { name: /change/i })
+    fireEvent.click(editButtons[1])
 
-    fireEvent.drop(screen.getByTestId('DropZone'))
+    // Verify dialog is open
+    expect(screen.getByTestId('VideoImageUploadDialog-HD')).toBeInTheDocument()
 
-    await waitFor(() =>
+    // Click the "Complete Upload" button in the mocked VideoImageUpload component
+    fireEvent.click(screen.getByText('Complete Upload'))
+
+    // Dialog should close
+    await waitFor(() => {
       expect(
         screen.queryByTestId('VideoImageUploadDialog-HD')
       ).not.toBeInTheDocument()
-    )
-  })
-
-  it('should show fallback if images are empty', () => {
-    render(
-      <MockedProvider>
-        <VideoImage video={{ ...video, images: [] }} />
-      </MockedProvider>
-    )
-
-    const uploadIcons = screen.getAllByTestId('Upload1Icon')
-    expect(uploadIcons.length).toBe(2) // One for banner, one for HD
-    expect(screen.getByText('Upload banner image')).toBeInTheDocument()
-    expect(screen.getByText('Upload HD image')).toBeInTheDocument()
+    })
   })
 })
