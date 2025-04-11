@@ -16,8 +16,8 @@ export function TextResponseFields(): ReactElement {
       <Label />
       <Placeholder />
       <Hint />
-      <MinRows />
       <Type />
+      <MinRows />
       <GrowthSpacesIntegrations />
     </Stack>
   )
