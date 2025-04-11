@@ -1,5 +1,5 @@
+import LoadingButton from '@mui/lab/LoadingButton'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
 import Divider from '@mui/material/Divider'
 import FormControlLabel from '@mui/material/FormControlLabel'
@@ -47,7 +47,7 @@ export function FilterDrawer({
 }: FilterDrawerProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const { exportJourneyEvents } = useJourneyEventsExport()
+  const { exportJourneyEvents, downloading } = useJourneyEventsExport()
 
   const handleExport = async (
     input: Pick<GetJourneyEventsVariables, 'journeyId' | 'filter'>
@@ -149,14 +149,17 @@ export function FilterDrawer({
 
       {journeyId != null && (
         <Box sx={{ px: 6, py: 5, mt: 'auto' }}>
-          <Button
+          <LoadingButton
+            loading={downloading}
             variant="contained"
             color="secondary"
             fullWidth
             onClick={() => handleExport({ journeyId })}
+            disabled={downloading}
+            sx={{ borderRadius: 2 }}
           >
             {t('Export Data')}
-          </Button>
+          </LoadingButton>
         </Box>
       )}
     </Stack>
