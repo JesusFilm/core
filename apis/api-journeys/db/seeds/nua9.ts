@@ -5,8 +5,9 @@ import { PrismaClient } from '.prisma/api-journeys-client'
 import {
   JourneyStatus,
   TextResponseType,
-  ThemeMode
-, ThemeName } from '../../src/app/__generated__/graphql'
+  ThemeMode,
+  ThemeName
+} from '../../src/app/__generated__/graphql'
 
 const prisma = new PrismaClient()
 
