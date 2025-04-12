@@ -6,7 +6,16 @@ import { ReactElement } from 'react'
 
 export default function MetadataLoading(): ReactElement {
   return (
-    <Box sx={{ height: 240, display: 'grid', placeItems: 'center' }}>
+    <Box
+      sx={{
+        height: '100%',
+        width: '100%',
+        display: 'grid',
+        placeItems: 'center',
+        p: 4
+      }}
+      data-testid="metadata-loading"
+    >
       <CircularProgress />
     </Box>
   )

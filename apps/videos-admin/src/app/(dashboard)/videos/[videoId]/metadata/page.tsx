@@ -1,8 +1,11 @@
+import { useSuspenseQuery } from '@apollo/client'
 import Stack from '@mui/material/Stack'
+import { graphql } from 'gql.tada'
 import { ReactElement } from 'react'
 
-import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../libs/useAdminVideo/useAdminVideo'
-import { Section } from '../Section'
+import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../libs/useAdminVideo/useAdminVideo'
+import { DEFAULT_VIDEO_LANGUAGE_ID } from '../_VideoView/constants'
+import { Section } from '../_VideoView/Section'
 
 import { StudyQuestionsList } from './StudyQuestionsList'
 import { VideoDescription } from './VideoDescription'
@@ -31,10 +34,46 @@ interface VideoData {
 }
 
 interface MetadataProps {
-  video: AdminVideo
+  params: {
+    videoId: string
+  }
 }
 
-export function Metadata({ video }: MetadataProps): ReactElement {
+const GET_VIDEO_METADATA = graphql(`
+  query GetVideoMetadata($id: ID!, $languageId: ID!) {
+    adminVideo(id: $id) {
+      id
+      title(languageId: $languageId) {
+        id
+        value
+      }
+      snippet(languageId: $languageId) {
+        id
+        value
+      }
+      description(languageId: $languageId) {
+        id
+        value
+      }
+      imageAlt(languageId: $languageId) {
+        id
+        value
+      }
+    }
+  }
+`)
+
+export default function Metadata({ params }: MetadataProps): ReactElement {
+  const { videoId } = params
+  const { data } = useSuspenseQuery(GET_VIDEO_METADATA, {
+    variables: {
+      id: videoId,
+      languageId: DEFAULT_VIDEO_LANGUAGE_ID
+    }
+  })
+
+  const video = data.adminVideo
+
   return (
     <Stack gap={2} data-testid="VideoMetadata">
       <Section title="Information" variant="outlined">

@@ -1,11 +1,7 @@
 'use client'
 
-import { useVideo } from '../../../../libs/VideoProvider'
+import DefaultTab from './metadata/page'
 
-import { Metadata } from './_VideoView/Metadata'
-
-export default function VideoPage() {
-  const video = useVideo()
-
-  return <Metadata video={video} />
+export default function TabsPage({ params }: { params: { videoId: string } }) {
+  return <DefaultTab params={params} />
 }

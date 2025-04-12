@@ -14,10 +14,10 @@ import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
-import { CancelButton } from '../../../../../../../components/CancelButton'
-import { SaveButton } from '../../../../../../../components/SaveButton'
-import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
+import { CancelButton } from '../../../../../../components/CancelButton'
+import { SaveButton } from '../../../../../../components/SaveButton'
+import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../libs/useAdminVideo/useAdminVideo'
+import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../_VideoView/constants'
 
 const videoStatuses = [
   { label: 'Published', value: 'published' },

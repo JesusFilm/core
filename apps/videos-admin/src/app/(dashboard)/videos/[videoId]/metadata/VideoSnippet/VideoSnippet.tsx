@@ -8,12 +8,12 @@ import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
-import { CancelButton } from '../../../../../../../components/CancelButton'
-import { ResizableTextField } from '../../../../../../../components/ResizableTextField'
-import { SaveButton } from '../../../../../../../components/SaveButton'
-import { GetAdminVideo_AdminVideo_VideoSnippets as VideoSnippets } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { useVideo } from '../../../../../../../libs/VideoProvider'
-import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
+import { CancelButton } from '../../../../../../components/CancelButton'
+import { ResizableTextField } from '../../../../../../components/ResizableTextField'
+import { SaveButton } from '../../../../../../components/SaveButton'
+import { GetAdminVideo_AdminVideo_VideoSnippets as VideoSnippets } from '../../../../../../libs/useAdminVideo/useAdminVideo'
+import { useVideo } from '../../../../../../libs/VideoProvider'
+import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../_VideoView/constants'
 
 export const CREATE_VIDEO_SNIPPET = graphql(`
   mutation CreateVideoSnippet($input: VideoTranslationCreateInput!) {

@@ -21,7 +21,7 @@ import {
   useCreateR2AssetMutation
 } from '../../../../../../../../../libs/useCreateR2Asset'
 import { useVideoVariantDownloadCreateMutation } from '../../../../../../../../../libs/useVideoVariantDownloadCreateMutation'
-import { FileUpload } from '../../../../Metadata/VideoImage/FileUpload'
+import { FileUpload } from '../../../../../@tabs/metadata/VideoImage/FileUpload'
 import { getExtension } from '../../../AddAudioLanguageDialog/utils/getExtension'
 
 interface AddVideoVariantDownloadDialogProps {

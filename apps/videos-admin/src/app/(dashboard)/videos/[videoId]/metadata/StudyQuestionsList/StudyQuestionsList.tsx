@@ -11,9 +11,9 @@ import { ResultOf, VariablesOf, graphql } from 'gql.tada'
 import { useSnackbar } from 'notistack'
 import { ReactElement, Suspense, useState } from 'react'
 
-import { OrderedList } from '../../../../../../../components/OrderedList'
-import { OrderedItem } from '../../../../../../../components/OrderedList/OrderedItem'
-import { Section } from '../../Section'
+import { OrderedList } from '../../../../../../components/OrderedList'
+import { OrderedItem } from '../../../../../../components/OrderedList/OrderedItem'
+import { Section } from '../../_VideoView/Section'
 
 import { StudyQuestionCreate } from './StudyQuestionCreate'
 import { StudyQuestionDialog } from './StudyQuestionDialog'

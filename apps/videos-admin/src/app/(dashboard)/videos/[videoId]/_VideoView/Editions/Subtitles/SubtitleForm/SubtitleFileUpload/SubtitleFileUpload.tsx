@@ -4,7 +4,7 @@ import { useField } from 'formik'
 
 import { LinkFile } from '../../../../../../../../../components/LinkFile'
 import { GetAdminVideo_AdminVideo_VideoEdition_VideoSubtitle as Subtitle } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { FileUpload } from '../../../../Metadata/VideoImage/FileUpload'
+import { FileUpload } from '../../../../../@tabs/metadata/VideoImage/FileUpload'
 
 import { validateSubtitleFile } from './validateSubtitleFile'
 

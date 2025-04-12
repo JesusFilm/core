@@ -15,7 +15,7 @@ import { VideoProvider } from '../../../../../libs/VideoProvider'
 
 import { Editions } from './Editions'
 import { LockedVideoView } from './LockedVideoView'
-import { Metadata } from './Metadata'
+import { Metadata } from '../@tabs/metadata'
 import { TabContainer } from './Tabs/TabContainer'
 import { TabLabel } from './Tabs/TabLabel'
 import { Variants } from './Variants'

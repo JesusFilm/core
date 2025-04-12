@@ -8,11 +8,11 @@ import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
-import { CancelButton } from '../../../../../../../components/CancelButton'
-import { SaveButton } from '../../../../../../../components/SaveButton'
-import { GetAdminVideo_AdminVideo_VideoImageAlts as VideoImageAlts } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { useVideo } from '../../../../../../../libs/VideoProvider'
-import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
+import { CancelButton } from '../../../../../../components/CancelButton'
+import { SaveButton } from '../../../../../../components/SaveButton'
+import { GetAdminVideo_AdminVideo_VideoImageAlts as VideoImageAlts } from '../../../../../../libs/useAdminVideo/useAdminVideo'
+import { useVideo } from '../../../../../../libs/VideoProvider'
+import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../_VideoView/constants'
 
 export const CREATE_VIDEO_IMAGE_ALT = graphql(`
   mutation CreateVideoImageAlt($input: VideoTranslationCreateInput!) {

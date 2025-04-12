@@ -4,7 +4,7 @@ import { useParams } from 'next/navigation'
 
 import { useAdminVideoMock } from '../../../../../libs/useAdminVideo/useAdminVideo.mock'
 
-import { createStudyQuestionsMock } from './Metadata/StudyQuestionsList/StudyQuestions.mock'
+import { createStudyQuestionsMock } from '../@tabs/metadata/StudyQuestionsList/StudyQuestions.mock'
 import { VideoView } from './VideoView'
 
 jest.mock('next/navigation', () => ({

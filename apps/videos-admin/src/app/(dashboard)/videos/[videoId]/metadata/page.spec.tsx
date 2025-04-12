@@ -5,7 +5,7 @@ import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../libs/u
 import { useAdminVideoMock } from '../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 import { VideoProvider } from '../../libs/VideoProvider'
 
-import { Metadata } from './Metadata'
+import { Metadata } from './page'
 import { GET_VIDEO_IMAGES } from './VideoImage/VideoImage'
 
 // Mock the VideoImage component to prevent test failures due to query
