@@ -30,7 +30,7 @@
     "**/*.js",
     "**/*.jsx",
     "next-env.d.ts",
-    "src/app/_ApolloProvider/ApolloProvider.tsx",
+    "src/app/_apolloProvider/ApolloProvider.tsx",
     "src/i18n.ts",
     "src/middleware.ts",
     ".next/types/**/*.ts",

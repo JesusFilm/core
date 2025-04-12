@@ -1,25 +1,16 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import dynamic from 'next/dynamic'
 import { ReactElement } from 'react'
 
 import Plus2 from '@core/shared/ui/icons/Plus2'
 
 import { DialogAction } from '../../../../../../components/CrudDialog'
+import { Section } from '../../../../../../components/Section'
 import { GetAdminVideo_AdminVideo_VideoEdition as Edition } from '../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useCrudState } from '../../../../../../libs/useCrudState'
-import { Section } from '../Section'
 
 import { EditionCard } from './EditionCard'
-
-const EditionDialog = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "EditionDialog" */
-      './EditionDialog/EditionDialog'
-    ).then((mod) => mod.EditionDialog),
-  { ssr: false }
-)
+import { EditionDialog } from './EditionDialog/EditionDialog'
 
 interface EditionsProps {
   editions: Array<Edition>

@@ -1,3 +1,5 @@
+'use client'
+
 import { useMutation, useQuery } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'

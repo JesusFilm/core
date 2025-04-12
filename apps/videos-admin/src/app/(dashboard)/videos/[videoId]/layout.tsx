@@ -2,13 +2,10 @@
 
 import { useSuspenseQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
-import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
-import Tab from '@mui/material/Tab'
-import Tabs from '@mui/material/Tabs'
 import Typography from '@mui/material/Typography'
 import { graphql } from 'gql.tada'
-import { useParams, useRouter, useSelectedLayoutSegment } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { ReactNode } from 'react'
 
 import { PublishedChip } from '../../../../components/PublishedChip'
@@ -16,7 +13,7 @@ import { DEFAULT_VIDEO_LANGUAGE_ID } from '../constants'
 
 import { VideoViewFallback } from './_fallback'
 import { LockedVideoView } from './_locked'
-import { TabLabel } from './_tabs/TabLabel'
+import { VideoTabView } from './_tabs/TabView'
 import { getVideoChildrenLabel } from './children/VideoChildren/getVideoChildrenLabel'
 
 const GET_TAB_DATA = graphql(`
@@ -37,11 +34,7 @@ const GET_TAB_DATA = graphql(`
   }
 `)
 
-export default function VideoViewLayout({
-  children
-}: {
-  children: ReactNode
-}): ReactNode {
+export default function VideoViewLayout({ children }): ReactNode {
   const params = useParams<{ videoId: string }>()
   const { data } = useSuspenseQuery(GET_TAB_DATA, {
     variables: {
@@ -59,9 +52,6 @@ export default function VideoViewLayout({
   if (video.locked) {
     return <LockedVideoView />
   }
-
-  const currentTab = useSelectedLayoutSegment() || 'metadata'
-  const router = useRouter()
   const videoTitle = video?.title?.[0]?.value ?? ''
 
   const showVideoChildren: boolean =
@@ -75,32 +65,29 @@ export default function VideoViewLayout({
     {
       label: 'Metadata',
       value: 'metadata',
-      count: null
+      count: null,
+      href: `/videos/${params?.videoId}`
     },
     {
       label: 'Audio Languages',
       value: 'audio',
-      count: video.variantLanguagesCount
+      count: video.variantLanguagesCount,
+      href: `/videos/${params?.videoId}/audio`
     },
     {
       label: 'Editions',
       value: 'editions',
-      count: video.editionsCount
+      count: video.editionsCount,
+      href: `/videos/${params?.videoId}/editions`
     }
   ]
   if (showVideoChildren && videoLabel != null) {
     tabs.splice(1, 0, {
       label: 'Children',
       value: 'children',
-      count: video.childrenCount
+      count: video.childrenCount,
+      href: `/videos/${params?.videoId}/children`
     })
-  }
-
-  function handleTabChange(
-    event: React.SyntheticEvent,
-    newValue: number
-  ): void {
-    router.push(`/videos/${params?.videoId}/${newValue}`)
   }
 
   return (
@@ -109,38 +96,21 @@ export default function VideoViewLayout({
       sx={{ width: '100%', maxWidth: 1700 }}
       data-testid="VideoView"
     >
-      {data != null && (
-        <Stack
-          gap={2}
-          sx={{
-            mb: 2,
-            alignItems: { xs: 'start', sm: 'center' },
-            flexDirection: { xs: 'col', sm: 'row' }
-          }}
-        >
-          <Typography variant="h4">{videoTitle}</Typography>
-          <PublishedChip published={video.published} />
-        </Stack>
-      )}
+      <Stack
+        gap={2}
+        sx={{
+          mb: 2,
+          alignItems: { xs: 'start', sm: 'center' },
+          flexDirection: { xs: 'col', sm: 'row' }
+        }}
+      >
+        <Typography variant="h4">{videoTitle}</Typography>
+        <PublishedChip published={video.published} />
+      </Stack>
+
       <Stack gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
         <Box width="100%">
-          <Tabs
-            value={currentTab}
-            aria-label="video-edit-tabs"
-            onChange={handleTabChange}
-          >
-            {tabs.map((tab) => (
-              <Tab
-                key={tab.value}
-                value={tab.value}
-                label={
-                  <TabLabel label={tab.label} count={tab.count ?? undefined} />
-                }
-              />
-            ))}
-          </Tabs>
-          <Divider sx={{ mb: 4 }} />
-          {children}
+          <VideoTabView tabs={tabs} children={children} />
         </Box>
       </Stack>
     </Stack>

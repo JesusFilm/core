@@ -1,3 +1,5 @@
+'use client'
+
 import { Meta, StoryObj } from '@storybook/react'
 import { Formik } from 'formik'
 import { ComponentPropsWithoutRef } from 'react'

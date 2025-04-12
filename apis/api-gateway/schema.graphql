@@ -989,7 +989,6 @@ type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId", extensi
   primaryLanguageId: ID!
   source: VideoBlockSource @join__field(graph: API_JOURNEYS_MODERN, type: "VideoBlockSource!")  @join__field(graph: API_MEDIA, type: "VideoBlockSource") 
   bibleCitations: [BibleCitation!]! @join__field(graph: API_MEDIA) 
-  editions: [VideoEdition!]! @join__field(graph: API_MEDIA) 
   editionsCount: Int! @join__field(graph: API_MEDIA) 
   keywords(languageId: ID) : [Keyword!]! @join__field(graph: API_MEDIA) 
   label: VideoLabel! @join__field(graph: API_MEDIA) 
