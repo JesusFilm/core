@@ -5,8 +5,8 @@ import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../libs/u
 import { useAdminVideoMock } from '../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 import { VideoProvider } from '../../libs/VideoProvider'
 
-import { Metadata } from './page'
-import { GET_VIDEO_IMAGES } from './VideoImage/VideoImage'
+import { GET_VIDEO_IMAGES } from './@images/VideoImage'
+import { Metadata } from './layout'
 
 // Mock the VideoImage component to prevent test failures due to query
 jest.mock('./VideoImage', () => ({

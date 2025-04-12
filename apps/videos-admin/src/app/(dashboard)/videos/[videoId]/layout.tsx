@@ -12,12 +12,12 @@ import { useParams, useRouter, useSelectedLayoutSegment } from 'next/navigation'
 import { ReactNode } from 'react'
 
 import { PublishedChip } from '../../../../components/PublishedChip'
+import { DEFAULT_VIDEO_LANGUAGE_ID } from '../constants'
 
-import { DEFAULT_VIDEO_LANGUAGE_ID } from './_VideoView/constants'
-import { LockedVideoView } from './_VideoView/LockedVideoView'
-import { TabLabel } from './_VideoView/Tabs/TabLabel'
-import { getVideoChildrenLabel } from './_VideoView/VideoChildren/getVideoChildrenLabel'
-import { VideoViewFallback } from './_VideoView/VideoViewFallback'
+import { VideoViewFallback } from './_fallback'
+import { LockedVideoView } from './_locked'
+import { TabLabel } from './_tabs/TabLabel'
+import { getVideoChildrenLabel } from './children/VideoChildren/getVideoChildrenLabel'
 
 const GET_TAB_DATA = graphql(`
   query GetTabData($id: ID!, $languageId: ID!) {

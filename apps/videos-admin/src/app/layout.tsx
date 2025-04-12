@@ -4,7 +4,7 @@ import { ReactNode } from 'react'
 import { AuthProvider } from '../libs/auth/AuthProvider'
 import { getUser } from '../libs/auth/getUser'
 import { SnackbarProvider } from '../libs/SnackbarProvider'
-import { UploadVideoVariantProvider } from '../libs/UploadVideoVariantProvider'
+import { UploadVideoVariantProvider } from './(dashboard)/videos/[videoId]/audio/UploadVideoVariantProvider'
 
 import { ApolloProvider } from './_ApolloProvider'
 

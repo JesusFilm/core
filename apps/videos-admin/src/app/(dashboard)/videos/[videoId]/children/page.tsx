@@ -1,8 +1,8 @@
 'use client'
 
 import { useVideo } from '../../../../../libs/VideoProvider'
-import { VideoChildren } from '../_VideoView/VideoChildren'
-import { getVideoChildrenLabel } from '../_VideoView/VideoChildren/getVideoChildrenLabel'
+import { VideoChildren } from './VideoChildren'
+import { getVideoChildrenLabel } from './VideoChildren/getVideoChildrenLabel'
 
 export default function ChildrenPage() {
   const video = useVideo()

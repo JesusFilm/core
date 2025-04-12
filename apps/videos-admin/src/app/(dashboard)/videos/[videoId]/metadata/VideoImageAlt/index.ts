@@ -1,1 +1,0 @@
-export { VideoImageAlt } from './VideoImageAlt'
