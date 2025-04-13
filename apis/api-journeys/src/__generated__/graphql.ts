@@ -892,12 +892,8 @@ export type JourneyEvent = Event & {
   email?: Maybe<Scalars['String']['output']>;
   /** Base event fields from Event interface */
   id: Scalars['ID']['output'];
-  /**
-   * Related fields queried from relevant ids in the events table
-   * @deprecated Use specific fields instead
-   */
-  journey?: Maybe<Journey>;
   journeyId: Scalars['ID']['output'];
+  /** Related fields queried from relevant ids in the events table */
   journeySlug?: Maybe<Scalars['String']['output']>;
   label?: Maybe<Scalars['String']['output']>;
   language?: Maybe<Language>;
@@ -908,8 +904,6 @@ export type JourneyEvent = Event & {
   /** database fields from table, not explicitly surfaced from any other types */
   typename?: Maybe<Scalars['String']['output']>;
   value?: Maybe<Scalars['String']['output']>;
-  /** @deprecated Use specific fields instead */
-  visitor?: Maybe<Visitor>;
   visitorEmail?: Maybe<Scalars['String']['output']>;
   visitorId?: Maybe<Scalars['String']['output']>;
   visitorName?: Maybe<Scalars['String']['output']>;
@@ -4641,6 +4635,7 @@ export type VideoStudyQuestion = {
   __typename?: 'VideoStudyQuestion';
   id: Scalars['ID']['output'];
   language: Language;
+  order: Scalars['Int']['output'];
   primary: Scalars['Boolean']['output'];
   value: Scalars['String']['output'];
 };
