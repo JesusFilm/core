@@ -181,6 +181,7 @@ describe('CardForm', () => {
           integrationId: null,
           type: null,
           routeId: null,
+          required: null,
           __typename: 'TextResponseBlock'
         },
         body: {

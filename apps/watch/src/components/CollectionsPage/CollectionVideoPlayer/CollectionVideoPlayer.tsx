@@ -9,7 +9,9 @@ import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Slider from '@mui/material/Slider'
 import Typography from '@mui/material/Typography'
+import { sendGTMEvent } from '@next/third-parties/google'
 import fscreen from 'fscreen'
+import debounce from 'lodash/debounce'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
@@ -28,12 +30,14 @@ interface VideoPlayerProps {
   title?: string
   mutePage?: boolean
   setMutePage?: (muted: boolean) => void
+  startAt?: number
 }
 
 export function CollectionVideoPlayer({
   contentId,
   mutePage,
-  setMutePage
+  setMutePage,
+  startAt
 }: VideoPlayerProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   const containerRef = useRef<HTMLDivElement>(null)
@@ -52,7 +56,27 @@ export function CollectionVideoPlayer({
 
   const isVisible = useIsInViewport(containerRef)
 
-  // const videoSlugWithoutLanguageSl = useMemo(() => contentId.split('/')[0], [])
+  function evtToDataLayer(
+    eventType,
+    mcId,
+    langId,
+    title,
+    language,
+    seconds,
+    percent
+  ): void {
+    sendGTMEvent({
+      event: eventType,
+      mcId,
+      langId,
+      title,
+      language,
+      percent,
+      seconds,
+      dateTimeUTC: new Date().toISOString()
+    })
+  }
+  const eventToDataLayer = debounce(evtToDataLayer, 500)
 
   const {
     data: videoData,
@@ -91,6 +115,17 @@ export function CollectionVideoPlayer({
 
   const handleSeek = (_event: Event, newValue: number | number[]) => {
     if (player && isPlayerReady && typeof newValue === 'number') {
+      eventToDataLayer(
+        'video_seek',
+        videoData?.content.id,
+        videoData?.content.variant?.language.id,
+        videoData?.content.title[0].value,
+        videoData?.content.variant?.language?.name.find(
+          ({ primary }) => !primary
+        )?.value ?? videoData?.content.variant?.language?.name[0]?.value,
+        Math.round(newValue),
+        Math.round((newValue / (player.duration() ?? 1)) * 100)
+      )
       player.currentTime(newValue)
     }
   }
@@ -145,6 +180,19 @@ export function CollectionVideoPlayer({
 
     if (containerRef.current && player && isPlayerReady) {
       if (!isFullscreen) {
+        eventToDataLayer(
+          'video_enter_full_screen',
+          videoData?.content.id,
+          videoData?.content.variant?.language.id,
+          videoData?.content.title[0].value,
+          videoData?.content.variant?.language?.name.find(
+            ({ primary }) => !primary
+          )?.value ?? videoData?.content.variant?.language?.name[0]?.value,
+          Math.round(player.currentTime() ?? 0),
+          Math.round(
+            ((player.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
+          )
+        )
         if (fscreen.fullscreenEnabled) {
           void fscreen.requestFullscreen(containerRef.current)
         } else {
@@ -164,6 +212,19 @@ export function CollectionVideoPlayer({
           setIsPlaying(true)
         }
       } else {
+        eventToDataLayer(
+          'video_exit_full_screen',
+          videoData?.content.id,
+          videoData?.content.variant?.language.id,
+          videoData?.content.title[0].value,
+          videoData?.content.variant?.language?.name.find(
+            ({ primary }) => !primary
+          )?.value ?? videoData?.content.variant?.language?.name[0]?.value,
+          Math.round(player.currentTime() ?? 0),
+          Math.round(
+            ((player.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
+          )
+        )
         if (fscreen.fullscreenEnabled) {
           void fscreen.exitFullscreen()
         } else {
@@ -176,6 +237,21 @@ export function CollectionVideoPlayer({
   const handleMuteToggle = () => {
     if (player && isPlayerReady) {
       const newMutedState = !isMuted
+
+      eventToDataLayer(
+        `video_mute_toggle_${newMutedState ? 'unmute' : 'mute'}`,
+        videoData?.content.id,
+        videoData?.content.variant?.language.id,
+        videoData?.content.title[0].value,
+        videoData?.content.variant?.language?.name.find(
+          ({ primary }) => !primary
+        )?.value ?? videoData?.content.variant?.language?.name[0]?.value,
+        Math.round(player.currentTime() ?? 0),
+        Math.round(
+          ((player.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
+        )
+      )
+
       player.muted(newMutedState)
       setIsMuted(newMutedState)
       setMutePage?.(newMutedState)
@@ -192,6 +268,19 @@ export function CollectionVideoPlayer({
 
   const handlePlayPause = () => {
     if (player && isPlayerReady) {
+      eventToDataLayer(
+        `video_play_pause_${isPlaying ? 'pause' : 'play'}`,
+        videoData?.content.id,
+        videoData?.content.variant?.language.id,
+        videoData?.content.title[0].value,
+        videoData?.content.variant?.language?.name.find(
+          ({ primary }) => !primary
+        )?.value ?? videoData?.content.variant?.language?.name[0]?.value,
+        Math.round(player.currentTime() ?? 0),
+        Math.round(
+          ((player.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
+        )
+      )
       if (isPlaying) {
         player.pause()
         setIsPlaying(false)
@@ -208,6 +297,19 @@ export function CollectionVideoPlayer({
       if (isVisible) {
         player.muted(mutePage)
         setIsMuted(mutePage)
+        eventToDataLayer(
+          `video_autoplay_starts`,
+          videoData?.content.id,
+          videoData?.content.variant?.language.id,
+          videoData?.content.title[0].value,
+          videoData?.content.variant?.language?.name.find(
+            ({ primary }) => !primary
+          )?.value ?? videoData?.content.variant?.language?.name[0]?.value,
+          Math.round(player.currentTime() ?? 0),
+          Math.round(
+            ((player.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
+          )
+        )
         void player.play()
         setIsPlaying(true)
       } else {
@@ -230,6 +332,29 @@ export function CollectionVideoPlayer({
       player.on('pause', handlePause)
     }
   }, [player, isPlayerReady])
+
+  // send event when video is ended but the video is not muted (meaning they are actively watching the video)
+  useEffect(() => {
+    if (player && isPlayerReady) {
+      player.on('ended', () => {
+        if (!isMuted) {
+          eventToDataLayer(
+            'video_ended',
+            videoData?.content.id,
+            videoData?.content.variant?.language.id,
+            videoData?.content.title[0].value,
+            videoData?.content.variant?.language?.name.find(
+              ({ primary }) => !primary
+            )?.value ?? videoData?.content.variant?.language?.name[0]?.value,
+            Math.round(player.currentTime() ?? 0),
+            Math.round(
+              ((player.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
+            )
+          )
+        }
+      })
+    }
+  }, [player, isPlayerReady, videoData])
 
   // Initialize player
   useEffect(() => {
@@ -265,6 +390,13 @@ export function CollectionVideoPlayer({
             src: videoData.content.variant.hls,
             type: 'application/x-mpegURL'
           })
+
+          if (startAt != null)
+            newPlayer.one('loadedmetadata', () => {
+              if (startAt > 0) {
+                newPlayer.currentTime(startAt / 1000)
+              }
+            })
         }
       })
 
@@ -273,14 +405,13 @@ export function CollectionVideoPlayer({
   }, [videoData, contentId, player, isPlayerReady])
 
   return (
-    <div
-      className="relative mb-4 padded cursor-pointer"
-      ref={containerRef}
-      onClick={handlePlayPause}
-    >
+    <div className="relative mb-4 padded cursor-pointer" ref={containerRef}>
       <div className="beveled block relative aspect-video rounded-lg overflow-hidden bg-black shadow-2xl shadow-stone-950/70">
         {/* Video container */}
-        <div className="absolute inset-0 w-full h-full">
+        <div
+          className="absolute inset-0 w-full h-full"
+          onClick={handlePlayPause}
+        >
           <video
             className="video-js vjs-fluid vjs-default-skin absolute inset-0 w-full h-full object-cover"
             ref={videoRef}

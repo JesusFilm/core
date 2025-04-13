@@ -10,15 +10,12 @@ import RadioGroup from '@mui/material/RadioGroup'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 
 import X2Icon from '@core/shared/ui/icons/X2'
 
-import { GetJourneyEventsVariables } from '../../../../__generated__/GetJourneyEvents'
-import { useJourneyEventsExport } from '../../../libs/useJourneyEventsExport'
-
 import { ClearAllButton } from './ClearAllButton'
+import { ExportDialog } from './ExportDialog'
 
 interface FilterDrawerProps {
   handleClose?: () => void
@@ -29,7 +26,7 @@ interface FilterDrawerProps {
   withSubmittedText: boolean
   withIcon: boolean
   hideInteractive: boolean
-  handleClearAll?: () => void
+  handleClearAll: () => void
   journeyId?: string
 }
 
@@ -46,20 +43,7 @@ export function FilterDrawer({
   handleClearAll
 }: FilterDrawerProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { enqueueSnackbar } = useSnackbar()
-  const { exportJourneyEvents } = useJourneyEventsExport()
-
-  const handleExport = async (
-    input: Pick<GetJourneyEventsVariables, 'journeyId' | 'filter'>
-  ): Promise<void> => {
-    try {
-      await exportJourneyEvents(input)
-    } catch (error) {
-      enqueueSnackbar(error.message, {
-        variant: 'error'
-      })
-    }
-  }
+  const [showExportDialog, setShowExportDialog] = useState(false)
 
   return (
     <Stack sx={{ height: '100vh' }} data-testid="FilterDrawer">
@@ -148,16 +132,23 @@ export function FilterDrawer({
       </Box>
 
       {journeyId != null && (
-        <Box sx={{ px: 6, py: 5, mt: 'auto' }}>
-          <Button
-            variant="contained"
-            color="secondary"
-            fullWidth
-            onClick={() => handleExport({ journeyId })}
-          >
-            {t('Export Data')}
-          </Button>
-        </Box>
+        <>
+          <Box sx={{ px: 6, py: 5, mt: 'auto' }}>
+            <Button
+              variant="contained"
+              color="secondary"
+              sx={{ width: '100%' }}
+              onClick={() => setShowExportDialog(true)}
+            >
+              {t('Export Data')}
+            </Button>
+          </Box>
+          <ExportDialog
+            open={showExportDialog}
+            onClose={() => setShowExportDialog(false)}
+            journeyId={journeyId}
+          />
+        </>
       )}
     </Stack>
   )

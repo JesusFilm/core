@@ -39,6 +39,7 @@ const button: TreeBlock<ButtonBlock> = {
   size: null,
   startIconId: null,
   endIconId: null,
+  submitEnabled: null,
   action: null,
   children: []
 }
@@ -90,6 +91,7 @@ const textResponse: TreeBlock<TextResponseBlock> = {
   integrationId: null,
   type: null,
   routeId: null,
+  required: null,
   children: []
 }
 

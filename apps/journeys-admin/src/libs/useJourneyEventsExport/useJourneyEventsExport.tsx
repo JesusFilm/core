@@ -1,6 +1,4 @@
 import { gql, useLazyQuery, useMutation } from '@apollo/client'
-import { stringify } from 'csv-stringify/sync'
-import { format } from 'date-fns'
 import isNil from 'lodash/isNil'
 import omitBy from 'lodash/omitBy'
 import { useTranslation } from 'next-i18next'
@@ -10,6 +8,10 @@ import {
   GetJourneyEvents_journeyEventsConnection_edges as JourneyEventEdge,
   GetJourneyEvents_journeyEventsConnection_edges_node as JourneyEventNode
 } from '../../../__generated__/GetJourneyEvents'
+
+import { FILTERED_EVENTS } from './utils/constants'
+import { processCsv } from './utils/processCsv'
+import { transformEvents } from './utils/transformEvents'
 
 export const GET_JOURNEY_EVENTS_EXPORT = gql`
   query GetJourneyEvents(
@@ -33,13 +35,11 @@ export const GET_JOURNEY_EVENTS_EXPORT = gql`
           value
           typename
           progress
-          journey {
-            slug
-          }
-          visitor {
-            email
-            name
-          }
+          journeySlug
+          visitorName
+          visitorEmail
+          visitorPhone
+          createdAt
         }
       }
       pageInfo {
@@ -60,57 +60,11 @@ export const CREATE_EVENTS_EXPORT_LOG = gql`
   }
 `
 
-const EVENT_CSV_OPTIONS = {
-  header: true,
-  columns: [
-    { key: 'typename', header: 'Event Type' },
-    { key: 'label', header: 'Label' },
-    { key: 'value', header: 'Value' },
-    { key: 'progress', header: 'Video Progress' },
-    { key: 'journeyId', header: 'Journey ID' },
-    { key: 'slug', header: 'Slug' },
-    { key: 'visitorId', header: 'Visitor ID' },
-    { key: 'name', header: 'Name' },
-    { key: 'email', header: 'Email' }
-    //TODO: visitor phone
-  ]
-}
-
-const ALL_EVENT_TYPES = [
-  'ButtonClickEvent',
-  'ChatOpenEvent',
-  'JourneyViewEvent',
-  'RadioQuestionSubmissionEvent',
-  'SignUpSubmissionEvent',
-  'StepViewEvent',
-  'StepNextEvent',
-  'StepPreviousEvent',
-  'TextResponseSubmissionEvent',
-  'VideoStartEvent',
-  'VideoPlayEvent',
-  'VideoPauseEvent',
-  'VideoCompleteEvent',
-  'VideoExpandEvent',
-  'VideoCollapseEvent',
-  'VideoProgressEvent'
-]
-
-export const FILTERED_EVENTS = ALL_EVENT_TYPES.filter((event) => {
-  if (
-    event === 'StepViewEvent' ||
-    event === 'StepNextEvent' ||
-    event === 'StepPreviousEvent' ||
-    event === 'VideoExpandEvent' ||
-    event === 'VideoCollapseEvent'
-  ) {
-    return false
-  } else {
-    return true
-  }
-})
-
-interface JourneyEvent
-  extends Omit<JourneyEventNode, '__typename' | 'journey' | 'visitor'> {
+export interface JourneyEvent
+  extends Omit<
+    JourneyEventNode,
+    '__typename' | 'journey' | 'visitor' | 'progress'
+  > {
   slug?: string | null
   name?: string | null
   email?: string | null
@@ -125,27 +79,6 @@ export function useJourneyEventsExport(): {
   const { t } = useTranslation('apps-journeys-admin')
   const [getJourneyEvents] = useLazyQuery(GET_JOURNEY_EVENTS_EXPORT)
   const [createEventsExportLog] = useMutation(CREATE_EVENTS_EXPORT_LOG)
-
-  function handleCsvProcessing(
-    eventData: JourneyEvent[],
-    journeySlug: string
-  ): void {
-    const csv = stringify(eventData, EVENT_CSV_OPTIONS)
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
-    const url = window.URL.createObjectURL(blob)
-    const today = format(new Date(), 'yyyy-MM-dd')
-    const fileName = `[${today}] ${journeySlug}.csv`
-    const link = document.createElement('a')
-
-    link.target = '_blank'
-    link.href = url
-    link.setAttribute('download', fileName)
-    document.body.appendChild(link)
-    link.click()
-
-    document.body.removeChild(link)
-    window.URL.revokeObjectURL(url)
-  }
 
   async function exportJourneyEvents({
     journeyId,
@@ -196,17 +129,10 @@ export function useJourneyEventsExport(): {
         hasNextPage = data?.journeyEventsConnection.pageInfo.hasNextPage
       } while (hasNextPage)
 
-      const eventData: JourneyEvent[] = events.map((edge) => {
-        return {
-          ...edge.node,
-          slug: edge.node.journey?.slug,
-          name: edge.node.visitor?.name,
-          email: edge.node.visitor?.email
-        }
-      })
+      const eventData = transformEvents(events)
 
-      const journeySlug = events[0]?.node.journey?.slug ?? ''
-      handleCsvProcessing(eventData, journeySlug)
+      const journeySlug = events[0]?.node.journeySlug ?? ''
+      processCsv(eventData, journeySlug, t)
 
       void createEventsExportLog({
         variables: {
