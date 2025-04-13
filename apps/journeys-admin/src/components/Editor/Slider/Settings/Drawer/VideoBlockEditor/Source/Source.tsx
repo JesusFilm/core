@@ -38,14 +38,6 @@ const SourceEmpty = dynamic(
   { ssr: false }
 )
 
-const SourceFromCloudflare = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "Editor/VideoBlockEditor/Source/SourceFromCloudflare/SourceFromCloudflare" */ './SourceFromCloudflare'
-    ).then((mod) => mod.SourceFromCloudflare),
-  { ssr: false }
-)
-
 const SourceFromLocal = dynamic(
   async () =>
     await import(
@@ -57,7 +49,7 @@ const SourceFromLocal = dynamic(
 const SourceFromMux = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/VideoBlockEditor/Source/SourceFromCloudflare/SourceFromMux" */ './SourceFromMux'
+      /* webpackChunkName: "Editor/VideoBlockEditor/Source/SourceFroMux/SourceFromMux" */ './SourceFromMux'
     ).then((mod) => mod.SourceFromMux),
   { ssr: false }
 )
@@ -86,9 +78,6 @@ export function Source({ selectedBlock, onChange }: SourceProps): ReactElement {
       break
     case VideoBlockSource.youTube:
       SourceContent = SourceFromYouTube
-      break
-    case VideoBlockSource.cloudflare:
-      SourceContent = SourceFromCloudflare
       break
     case VideoBlockSource.mux:
       SourceContent = SourceFromMux

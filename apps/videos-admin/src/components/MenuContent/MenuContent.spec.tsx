@@ -1,15 +1,10 @@
 import { render, screen } from '@testing-library/react'
-import { NextIntlClientProvider } from 'next-intl'
 
 import { MenuContent } from './MenuContent'
 
 describe('MenuContent', () => {
   it('should show menu content items', () => {
-    render(
-      <NextIntlClientProvider locale="en">
-        <MenuContent />
-      </NextIntlClientProvider>
-    )
+    render(<MenuContent />)
 
     expect(screen.getByRole('link', { name: 'Home' })).toBeInTheDocument()
     expect(

@@ -5,7 +5,7 @@ const definitionsFactory = new GraphQLFederationDefinitionsFactory()
 definitionsFactory
   .generate({
     typePaths: [
-      join(process.cwd(), `apps/${process.argv[2]}/src/app/**/*.graphql`),
+      join(process.cwd(), `apis/${process.argv[2]}/src/app/**/*.graphql`),
       join(
         process.cwd(),
         'libs/nest/common/src/lib/TranslationModule/translation.graphql'
@@ -13,7 +13,7 @@ definitionsFactory
     ],
     path: join(
       process.cwd(),
-      `apps/${process.argv[2]}/src/app/__generated__/graphql.ts`
+      `apis/${process.argv[2]}/src/app/__generated__/graphql.ts`
     ),
     outputAs: 'class',
     watch: true,

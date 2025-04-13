@@ -74,6 +74,7 @@ export const defaultJourney: Journey = {
       }
     ]
   },
+  updatedAt: formatISO(startOfYear(new Date(fakeDate))),
   createdAt: formatISO(startOfYear(new Date(fakeDate))),
   publishedAt: null,
   status: JourneyStatus.draft,
@@ -91,6 +92,7 @@ export const oldJourney: Journey = {
   title: 'An Old Journey Heading',
   description:
     'Journey created before the current year should also show the year in the date',
+  updatedAt: '2020-11-19T12:34:56.647Z',
   createdAt: '2020-11-19T12:34:56.647Z',
   publishedAt: '2020-12-19T12:34:56.647Z',
   status: JourneyStatus.published

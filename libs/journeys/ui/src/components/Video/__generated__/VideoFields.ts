@@ -53,17 +53,12 @@ export interface VideoFields_mediaVideo_MuxVideo {
   playbackId: string | null;
 }
 
-export interface VideoFields_mediaVideo_CloudflareVideo {
-  __typename: "CloudflareVideo";
-  id: string;
-}
-
 export interface VideoFields_mediaVideo_YouTube {
   __typename: "YouTube";
   id: string;
 }
 
-export type VideoFields_mediaVideo = VideoFields_mediaVideo_Video | VideoFields_mediaVideo_MuxVideo | VideoFields_mediaVideo_CloudflareVideo | VideoFields_mediaVideo_YouTube;
+export type VideoFields_mediaVideo = VideoFields_mediaVideo_Video | VideoFields_mediaVideo_MuxVideo | VideoFields_mediaVideo_YouTube;
 
 export interface VideoFields_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";

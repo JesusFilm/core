@@ -145,7 +145,7 @@ export function OrderedItem({
             alt={img.alt}
             loading="lazy"
             layout="fill"
-            objectFit="cover"
+            style={{ objectFit: 'cover' }}
           />
         </Box>
       )}

@@ -48,9 +48,6 @@ export const VIDEO_FIELDS = gql`
         assetId
         playbackId
       }
-      ... on CloudflareVideo {
-        id
-      }
       ... on YouTube {
         id
       }

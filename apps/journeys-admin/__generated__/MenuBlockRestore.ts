@@ -50,6 +50,7 @@ export interface MenuBlockRestore_stepRestore_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: MenuBlockRestore_stepRestore_ButtonBlock_action | null;
 }
 
@@ -187,6 +188,14 @@ export interface MenuBlockRestore_stepRestore_SignUpBlock {
   action: MenuBlockRestore_stepRestore_SignUpBlock_action | null;
 }
 
+export interface MenuBlockRestore_stepRestore_SpacerBlock {
+  __typename: "SpacerBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  spacing: number | null;
+}
+
 export interface MenuBlockRestore_stepRestore_StepBlock {
   __typename: "StepBlock";
   id: string;
@@ -227,7 +236,9 @@ export interface MenuBlockRestore_stepRestore_TextResponseBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;
@@ -290,17 +301,12 @@ export interface MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_MuxVideo {
   playbackId: string | null;
 }
 
-export interface MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_CloudflareVideo {
-  __typename: "CloudflareVideo";
-  id: string;
-}
-
 export interface MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_YouTube {
   __typename: "YouTube";
   id: string;
 }
 
-export type MenuBlockRestore_stepRestore_VideoBlock_mediaVideo = MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_Video | MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_MuxVideo | MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_CloudflareVideo | MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_YouTube;
+export type MenuBlockRestore_stepRestore_VideoBlock_mediaVideo = MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_Video | MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_MuxVideo | MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_YouTube;
 
 export interface MenuBlockRestore_stepRestore_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
@@ -436,7 +442,7 @@ export interface MenuBlockRestore_stepRestore_VideoTriggerBlock {
   triggerAction: MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction;
 }
 
-export type MenuBlockRestore_stepRestore = MenuBlockRestore_stepRestore_GridContainerBlock | MenuBlockRestore_stepRestore_ButtonBlock | MenuBlockRestore_stepRestore_CardBlock | MenuBlockRestore_stepRestore_IconBlock | MenuBlockRestore_stepRestore_ImageBlock | MenuBlockRestore_stepRestore_RadioOptionBlock | MenuBlockRestore_stepRestore_RadioQuestionBlock | MenuBlockRestore_stepRestore_SignUpBlock | MenuBlockRestore_stepRestore_StepBlock | MenuBlockRestore_stepRestore_TextResponseBlock | MenuBlockRestore_stepRestore_TypographyBlock | MenuBlockRestore_stepRestore_VideoBlock | MenuBlockRestore_stepRestore_VideoTriggerBlock;
+export type MenuBlockRestore_stepRestore = MenuBlockRestore_stepRestore_GridContainerBlock | MenuBlockRestore_stepRestore_ButtonBlock | MenuBlockRestore_stepRestore_CardBlock | MenuBlockRestore_stepRestore_IconBlock | MenuBlockRestore_stepRestore_ImageBlock | MenuBlockRestore_stepRestore_RadioOptionBlock | MenuBlockRestore_stepRestore_RadioQuestionBlock | MenuBlockRestore_stepRestore_SignUpBlock | MenuBlockRestore_stepRestore_SpacerBlock | MenuBlockRestore_stepRestore_StepBlock | MenuBlockRestore_stepRestore_TextResponseBlock | MenuBlockRestore_stepRestore_TypographyBlock | MenuBlockRestore_stepRestore_VideoBlock | MenuBlockRestore_stepRestore_VideoTriggerBlock;
 
 export interface MenuBlockRestore_journeyUpdate_menuStepBlock {
   __typename: "StepBlock";

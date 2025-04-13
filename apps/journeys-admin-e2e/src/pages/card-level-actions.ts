@@ -300,16 +300,16 @@ export class CardLevelActionPage {
 
   async uploadVideoInUploadTabOfVideoLibrary() {
     await this.page
-      .locator('div[data-testid="VideoFromCloudflare"] input')
+      .locator('div[data-testid="VideoFromMux"] input')
       .setInputFiles(testData.cardLevelAction.videoUploadPath)
     await expect(
       this.page.locator(
-        'div[data-testid="VideoFromCloudflare"] span[role="progressbar"]'
+        'div[data-testid="VideoFromMux"] span[role="progressbar"]'
       )
     ).toBeVisible({ timeout: sixtySecondsTimeout })
     await expect(
       this.page.locator(
-        'div[data-testid="VideoFromCloudflare"] span[role="progressbar"]'
+        'div[data-testid="VideoFromMux"] span[role="progressbar"]'
       )
     ).toBeHidden({ timeout: sixtySecondsTimeout })
   }
@@ -1209,7 +1209,7 @@ export class CardLevelActionPage {
     }
   }
 
-  async updateMinimumRowsOptionFortextInput() {
+  async updateMinimumRowsOptionForResponseField() {
     const textAreaPath = 'textarea#textResponse-field'
     await expect(
       this.page.frameLocator(this.journeyCardFrame).locator(textAreaPath)

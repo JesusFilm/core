@@ -10,7 +10,7 @@ import { VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 // ====================================================
 
 export interface CardVideoDelete_video_ImageBlock {
-  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
 }
 
 export interface CardVideoDelete_video_VideoBlock_mediaVideo_Video_title {
@@ -57,17 +57,12 @@ export interface CardVideoDelete_video_VideoBlock_mediaVideo_MuxVideo {
   playbackId: string | null;
 }
 
-export interface CardVideoDelete_video_VideoBlock_mediaVideo_CloudflareVideo {
-  __typename: "CloudflareVideo";
-  id: string;
-}
-
 export interface CardVideoDelete_video_VideoBlock_mediaVideo_YouTube {
   __typename: "YouTube";
   id: string;
 }
 
-export type CardVideoDelete_video_VideoBlock_mediaVideo = CardVideoDelete_video_VideoBlock_mediaVideo_Video | CardVideoDelete_video_VideoBlock_mediaVideo_MuxVideo | CardVideoDelete_video_VideoBlock_mediaVideo_CloudflareVideo | CardVideoDelete_video_VideoBlock_mediaVideo_YouTube;
+export type CardVideoDelete_video_VideoBlock_mediaVideo = CardVideoDelete_video_VideoBlock_mediaVideo_Video | CardVideoDelete_video_VideoBlock_mediaVideo_MuxVideo | CardVideoDelete_video_VideoBlock_mediaVideo_YouTube;
 
 export interface CardVideoDelete_video_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";

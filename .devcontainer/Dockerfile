@@ -1,6 +1,6 @@
 # Update the VARIANT arg in docker-compose.yml to pick a Node version
-ARG VARIANT=20 
-FROM mcr.microsoft.com/vscode/devcontainers/typescript-node:${VARIANT}-bullseye AS base
+ARG VARIANT=22
+FROM mcr.microsoft.com/vscode/devcontainers/typescript-node:${VARIANT} AS base
 
 # Update args in docker-compose.yaml to set the UID/GID of the "node" user.
 ARG USER_UID=1000
@@ -27,7 +27,7 @@ RUN echo "deb https://packages.doppler.com/public/cli/deb/debian any-version mai
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends gnupg2 libpixman-1-dev libcairo2-dev \
     libpango1.0-dev postgresql-client-13 chromium apt-transport-https ca-certificates curl \
-    gnupg doppler
+    gnupg doppler ffmpeg
 
 # [Optional] Uncomment if you want to install an additional version of node using nvm
 # ARG EXTRA_NODE_VERSION=20

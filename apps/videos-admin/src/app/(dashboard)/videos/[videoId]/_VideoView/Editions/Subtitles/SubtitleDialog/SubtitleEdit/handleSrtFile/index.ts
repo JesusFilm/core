@@ -1,0 +1,1 @@
+export { handleSrtFile } from './handleSrtFile'

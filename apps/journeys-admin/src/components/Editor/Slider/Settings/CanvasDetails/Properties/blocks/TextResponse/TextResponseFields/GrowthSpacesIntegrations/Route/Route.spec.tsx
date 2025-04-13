@@ -55,11 +55,13 @@ describe('Route', () => {
     parentBlockId: '0',
     parentOrder: 0,
     label: 'Your answer here',
+    placeholder: null,
     hint: null,
     minRows: null,
     integrationId: 'integration.id',
     routeId: null,
     type: TextResponseType.freeForm,
+    required: null,
     children: []
   }
 

@@ -91,7 +91,7 @@ export function DownloadDialog({
           alignItems="flex-start"
           sx={{ mt: { xs: 0, sm: 1 }, mb: { xs: 0, sm: 5 } }}
         >
-          {images[0].mobileCinematicHigh != null && (
+          {images[0]?.mobileCinematicHigh != null && (
             <>
               <Box
                 sx={{

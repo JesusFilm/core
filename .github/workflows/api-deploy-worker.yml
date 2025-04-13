@@ -37,29 +37,34 @@ jobs:
       ECS_SERVICE: ${{ inputs.name}}-${{ inputs.env }}-service
       ECR_REPOSITORY: jfp-${{ inputs.name }}-${{ inputs.env }}
       IMAGE_TAG: ${{ github.sha }}
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     strategy:
       matrix:
-        node-version: [20]
+        node-version: [22]
     steps:
       - name: Checkout current branch
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - uses: nrwl/nx-set-shas@v4
-      - uses: actions/setup-node@v4
+      - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
 
-      - name: Cache Node Modules
-        id: cache-node-modules
-        uses: actions/cache@v4
+      - name: Get Node Version
+        id: node-version
+        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
+
+      - name: Mount NPM Cache
+        uses: useblacksmith/stickydisk@v1
         with:
-          path: node_modules
-          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-${{ matrix.node-version }}-
-
+          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache
+          path: ~/.npm
+      - name: Mount node_modules
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
+          path: ./node_modules
       - name: NPM Install
         run: npm install --silent
 
@@ -68,7 +73,7 @@ jobs:
 
       - name: Get affected apps
         run: |
-          echo "apps=$(npx ts-node tools/scripts/affected-apps.ts --projects apps/api-*)" >> $GITHUB_OUTPUT
+          echo "apps=$(npx ts-node tools/scripts/affected-apps.ts --projects apis/api-*)" >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT
         id: affected-apps
 
@@ -76,7 +81,7 @@ jobs:
         id: has_prisma
         uses: andstor/file-existence-action@v3
         with:
-          files: 'apps/${{inputs.name}}/db/schema.prisma'
+          files: 'apis/${{inputs.name}}/db/schema.prisma'
 
       - name: Prisma Migrate
         if: steps.has_prisma.outputs.files_exists == 'true' && contains(steps.affected-apps.outputs.apps, inputs.name)
@@ -114,7 +119,7 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr-ecs.outputs.registry }}
         run: |
           # Build a docker container and push it to ECR 
-          docker build --build-arg SERVICE_VERSION=$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest . -f apps/${{ inputs.name }}/Dockerfile
+          docker build --build-arg SERVICE_VERSION=$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest . -f apis/${{ inputs.name }}/Dockerfile
           echo "Pushing image to ECR..."
           docker push -a $ECR_REGISTRY/$ECR_REPOSITORY
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
@@ -126,4 +131,4 @@ jobs:
 
       - name: Update Hive managed subgraph
         run: |
-          npx hive schema:publish apps/${{ inputs.name }}/schema.graphql --service ${{ inputs.name }} --url ${{ inputs.endpoint_url }} --github
+          npx hive schema:publish apis/${{ inputs.name }}/schema.graphql --service ${{ inputs.name }} --url ${{ inputs.endpoint_url }} --github

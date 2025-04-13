@@ -49,17 +49,17 @@ export function OverlayContent({
     variant === 'default'
       ? {
           pl: {
-            xs: 'calc(24px + env(safe-area-inset-left))',
+            xs: 'calc(16px + env(safe-area-inset-left))',
             lg: 'calc(40px + env(safe-area-inset-left))'
           },
           pr: {
-            xs: 'calc(24px + env(safe-area-inset-right))',
+            xs: 'calc(16px + env(safe-area-inset-right))',
             lg: 'calc(40px + env(safe-area-inset-right))'
           }
         }
       : {
-          pl: { xs: 6, sm: 10 },
-          pr: { xs: 6, sm: 10 }
+          pl: { xs: 4, sm: 10 },
+          pr: { xs: 4, sm: 10 }
         }
 
   const footerMobileSpacing = getFooterMobileSpacing({ journey, variant })

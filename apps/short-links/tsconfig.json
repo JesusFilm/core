@@ -18,7 +18,7 @@
       },
       {
         "name": "gql.tada/ts-plugin",
-        "schema": "../api-gateway/schema.graphql",
+        "schema": "../../apis/api-gateway/schema.graphql",
         "tadaOutputLocation": "./apps/short-links/src/__generated__/graphql-env.d.ts"
       }
     ],
@@ -32,7 +32,8 @@
     ".next/types/**/*.ts",
     "../../dist/apps/short-links/.next/types/**/*.ts",
     "next-env.d.ts",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "eslint.config.mjs"
   ],
   "exclude": ["node_modules", "jest.config.ts", "**/*.spec.ts"]
 }

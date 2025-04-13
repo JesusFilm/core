@@ -16,22 +16,39 @@ describe('Header', () => {
   })
 
   it('should open navigation panel on menu icon click', async () => {
-    const { getByText, getByRole } = render(<Header />)
-    fireEvent.click(getByRole('button', { name: 'open header menu' }))
-    const button = getByText('About')
-    expect(button.getAttribute('href')).toBe('https://www.jesusfilm.org/about/')
+    render(<Header />)
+    fireEvent.click(screen.getByRole('button', { name: 'open header menu' }))
+    expect(screen.getByRole('button', { name: 'Give' })).toBeInTheDocument()
   })
 
-  it('should hide absolute app bar', () => {
-    const { queryByRole } = render(<Header hideAbsoluteAppBar />)
+  it('should set menuOpen prop on LocalAppBar when menu is clicked', () => {
+    render(<Header />)
 
     expect(
-      queryByRole('button', { name: 'open header menu' })
+      screen.queryByRole('button', { name: 'Give' })
     ).not.toBeInTheDocument()
+    const menuButton = screen.getByRole('button', { name: 'open header menu' })
+    expect(menuButton).not.toHaveClass('expanded')
+    expect(menuButton).toHaveAttribute('aria-expanded', 'false')
+
+    fireEvent.click(menuButton)
+    expect(menuButton).toHaveClass('expanded')
+    expect(menuButton).toHaveAttribute('aria-expanded', 'true')
+    expect(screen.getByRole('button', { name: 'Give' })).toBeInTheDocument()
+  })
+
+  it('should hide bottom app bar', () => {
+    render(<Header hideBottomAppBar />)
+    expect(screen.queryByTestId('BottomAppBar')).not.toBeInTheDocument()
   })
 
   it('should hide spacer', () => {
-    render(<Header hideAbsoluteAppBar hideSpacer />)
+    render(<Header hideSpacer />)
     expect(screen.queryByTestId('HeaderSpacer')).not.toBeInTheDocument()
+  })
+
+  it('should hide top app bar', () => {
+    render(<Header hideTopAppBar />)
+    expect(screen.queryByTestId('TopAppBar')).not.toBeInTheDocument()
   })
 })

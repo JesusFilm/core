@@ -1,0 +1,37 @@
+name = "jf-proxy-dev"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+main = "src/index.ts"
+
+[vars]
+PROXY_DEST = "localhost:4300"
+
+[env.stage]
+name = "jf-proxy-stage"
+routes = [
+  { pattern = "develop.jesusfilm.org/watch*", zone_name = "jesusfilm.org" },
+  { pattern = "develop.jesusfilm.org/journeys*", zone_name = "jesusfilm.org" },
+  { pattern = "develop.jesusfilm.org/resources", zone_name = "jesusfilm.org" },
+  { pattern = "develop.jesusfilm.org/resources/", zone_name = "jesusfilm.org" },
+  { pattern = "develop.jesusfilm.org/bin/*", zone_name = "jesusfilm.org" },
+  { pattern = "develop.jesusfilm.org/api/*", zone_name = "jesusfilm.org" },
+  { pattern = "develop.jesusfilm.org/_next/*", zone_name = "jesusfilm.org" }
+]
+
+[env.stage.vars]
+PROXY_DEST = "c89a34d4-4b06-4219-ad8b-c7289106424d.jesusfilm.org"
+
+[env.prod]
+name = "jf-proxy-prod"
+routes = [
+  { pattern = "www.jesusfilm.org/watch*", zone_name = "jesusfilm.org" },
+  { pattern = "www.jesusfilm.org/journeys*", zone_name = "jesusfilm.org" },
+  { pattern = "www.jesusfilm.org/resources", zone_name = "jesusfilm.org" },
+  { pattern = "www.jesusfilm.org/resources/", zone_name = "jesusfilm.org" },
+  { pattern = "www.jesusfilm.org/bin/*", zone_name = "jesusfilm.org" },
+  { pattern = "www.jesusfilm.org/api/*", zone_name = "jesusfilm.org" },
+  { pattern = "www.jesusfilm.org/_next/*", zone_name = "jesusfilm.org" }
+]
+
+[env.prod.vars]
+PROXY_DEST = "1ee8fdb1-3cb5-40fd-9258-35d589917b4a.jesusfilm.org"

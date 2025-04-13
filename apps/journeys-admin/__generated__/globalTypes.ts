@@ -31,6 +31,25 @@ export enum ButtonVariant {
   text = "text",
 }
 
+export enum EventType {
+  ButtonClickEvent = "ButtonClickEvent",
+  ChatOpenEvent = "ChatOpenEvent",
+  JourneyViewEvent = "JourneyViewEvent",
+  RadioQuestionSubmissionEvent = "RadioQuestionSubmissionEvent",
+  SignUpSubmissionEvent = "SignUpSubmissionEvent",
+  StepNextEvent = "StepNextEvent",
+  StepPreviousEvent = "StepPreviousEvent",
+  StepViewEvent = "StepViewEvent",
+  TextResponseSubmissionEvent = "TextResponseSubmissionEvent",
+  VideoCollapseEvent = "VideoCollapseEvent",
+  VideoCompleteEvent = "VideoCompleteEvent",
+  VideoExpandEvent = "VideoExpandEvent",
+  VideoPauseEvent = "VideoPauseEvent",
+  VideoPlayEvent = "VideoPlayEvent",
+  VideoProgressEvent = "VideoProgressEvent",
+  VideoStartEvent = "VideoStartEvent",
+}
+
 export enum IconColor {
   action = "action",
   disabled = "disabled",
@@ -175,6 +194,7 @@ export enum TextResponseType {
   email = "email",
   freeForm = "freeForm",
   name = "name",
+  phone = "phone",
 }
 
 export enum ThemeMode {
@@ -276,6 +296,7 @@ export interface ButtonBlockCreateInput {
   variant?: ButtonVariant | null;
   color?: ButtonColor | null;
   size?: ButtonSize | null;
+  submitEnabled?: boolean | null;
 }
 
 export interface ButtonBlockUpdateInput {
@@ -286,6 +307,7 @@ export interface ButtonBlockUpdateInput {
   size?: ButtonSize | null;
   startIconId?: string | null;
   endIconId?: string | null;
+  submitEnabled?: boolean | null;
 }
 
 export interface ButtonClickEventCreateInput {
@@ -429,6 +451,19 @@ export interface JourneyCollectionUpdateInput {
   journeyIds?: string[] | null;
 }
 
+export interface JourneyEventsExportLogInput {
+  journeyId: string;
+  eventsFilter: EventType[];
+  dateRangeStart?: any | null;
+  dateRangeEnd?: any | null;
+}
+
+export interface JourneyEventsFilter {
+  typenames?: string[] | null;
+  periodRangeStart?: any | null;
+  periodRangeEnd?: any | null;
+}
+
 export interface JourneyNotificationUpdateInput {
   journeyId: string;
   visitorInteractionEmail: boolean;
@@ -524,6 +559,16 @@ export interface MeInput {
   redirect?: string | null;
 }
 
+export interface QrCodeCreateInput {
+  teamId: string;
+  journeyId: string;
+}
+
+export interface QrCodesFilter {
+  journeyId?: string | null;
+  teamId?: string | null;
+}
+
 export interface RadioOptionBlockCreateInput {
   id?: string | null;
   journeyId: string;
@@ -570,6 +615,13 @@ export interface SignUpSubmissionEventCreateInput {
   stepId?: string | null;
   name: string;
   email: string;
+}
+
+export interface SpacerBlockCreateInput {
+  id?: string | null;
+  journeyId: string;
+  parentBlockId: string;
+  spacing?: number | null;
 }
 
 export interface StepBlockCreateInput {
@@ -637,6 +689,8 @@ export interface TextResponseBlockCreateInput {
 export interface TextResponseBlockUpdateInput {
   parentBlockId?: string | null;
   label?: string | null;
+  placeholder?: string | null;
+  required?: boolean | null;
   hint?: string | null;
   minRows?: number | null;
   routeId?: string | null;
@@ -795,6 +849,7 @@ export interface VisitorUpdateInput {
   status?: VisitorStatus | null;
   countryCode?: string | null;
   referrer?: string | null;
+  phone?: string | null;
 }
 
 //==============================================================

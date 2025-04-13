@@ -467,6 +467,7 @@ export const imageBlocks: TreeBlock[] = [
             size: ButtonSize.large,
             startIconId: 'icon',
             endIconId: null,
+            submitEnabled: null,
             action: null,
             children: [
               {
@@ -553,6 +554,7 @@ export const imageBlocks: TreeBlock[] = [
             size: ButtonSize.large,
             startIconId: 'icon',
             endIconId: null,
+            submitEnabled: null,
             action: null,
             children: [
               {
@@ -634,11 +636,13 @@ export const imageBlocks: TreeBlock[] = [
             parentBlockId: 'card2.id',
             parentOrder: 2,
             label: 'Your answer here',
+            placeholder: null,
             hint: null,
             minRows: null,
             integrationId: null,
             type: null,
             routeId: null,
+            required: null,
             children: []
           },
           {
@@ -828,6 +832,7 @@ export const imageBlocks: TreeBlock[] = [
             size: ButtonSize.large,
             startIconId: 'icon',
             endIconId: null,
+            submitEnabled: null,
             action: {
               __typename: 'NavigateToBlockAction',
               parentBlockId: 'button',
@@ -1730,6 +1735,7 @@ export const videoLoop: TreeBlock[] = [
             size: ButtonSize.large,
             startIconId: 'icon',
             endIconId: null,
+            submitEnabled: null,
             action: null,
             children: [
               {

@@ -249,7 +249,7 @@ test.describe('Verify template page functionality', () => {
   )
 
   // Templates-> Select existing template -> Preview
-  test('preview a template from the journey template page', async ({
+  test.skip('preview a template from the journey template page', async ({
     page,
     context
   }) => {

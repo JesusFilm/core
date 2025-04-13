@@ -3,12 +3,13 @@ import Badge from '@mui/material/Badge'
 import { styled } from '@mui/material/styles'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
-import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../../__generated__/GetAdminJourneys'
 import { JourneyCardVariant } from '../journeyCardVariant'
+
+import { LastModifiedDate } from './LastModifiedDate'
 
 interface JourneyCardTextProps {
   journey: Journey
@@ -63,13 +64,7 @@ export function JourneyCardText({
         }}
         suppressHydrationWarning
       >
-        {intlFormat(parseISO(journey.createdAt as string), {
-          day: 'numeric',
-          month: 'long',
-          year: isThisYear(parseISO(String(journey.createdAt)))
-            ? undefined
-            : 'numeric'
-        })}
+        <LastModifiedDate modifiedDate={journey.updatedAt} />
         {journey.description != null && ` - ${journey.description}`}
       </Typography>
     </>

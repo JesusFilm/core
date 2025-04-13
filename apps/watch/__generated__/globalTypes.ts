@@ -151,6 +151,7 @@ export enum TextResponseType {
   email = "email",
   freeForm = "freeForm",
   name = "name",
+  phone = "phone",
 }
 
 export enum ThemeMode {
@@ -393,6 +394,7 @@ export interface VideosFilter {
   ids?: string[] | null;
   subtitleLanguageIds?: string[] | null;
   published?: boolean | null;
+  locked?: boolean | null;
 }
 
 //==============================================================

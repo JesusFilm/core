@@ -273,33 +273,4 @@ describe('VideoLibrary', () => {
       )
     })
   })
-
-  it('should render Cloudflare', async () => {
-    mockedUseRouter.mockReturnValue({
-      query: { param: null },
-      push,
-      events: {
-        on
-      }
-    } as unknown as NextRouter)
-
-    render(
-      <MockedProvider>
-        <VideoLibrary open />
-      </MockedProvider>
-    )
-    fireEvent.click(screen.getByRole('tab', { name: 'Upload' }))
-    await waitFor(() => {
-      expect(screen.getByText('Drop a video here')).toBeInTheDocument()
-    })
-    await waitFor(() => {
-      expect(push).toHaveBeenCalledWith(
-        {
-          query: { param: 'video-upload' }
-        },
-        undefined,
-        { shallow: true }
-      )
-    })
-  })
 })

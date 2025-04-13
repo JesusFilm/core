@@ -49,6 +49,7 @@ export function ExpandedCover({
           data-testid="CardExpandedImageCover"
           src={imageBlock.src ?? backgroundBlur}
           alt={imageBlock.alt}
+          loading="eager"
           placeholder="blur"
           blurDataURL={backgroundBlur}
           layout="fill"
@@ -84,8 +85,8 @@ export function ExpandedCover({
               width: {
                 xs:
                   variant === 'default'
-                    ? 'calc(100% - 48px - env(safe-area-inset-left) - env(safe-area-inset-right))'
-                    : 'calc(100% - 48px)',
+                    ? 'calc(100% - 32px - env(safe-area-inset-left) - env(safe-area-inset-right))'
+                    : 'calc(100% - 32px)',
                 sm: 360,
                 md: 500
               }
