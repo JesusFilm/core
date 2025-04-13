@@ -2,19 +2,19 @@
 
 import { useSuspenseQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
+import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { graphql } from 'gql.tada'
-import { useParams } from 'next/navigation'
+import { useSelectedLayoutSegment } from 'next/navigation'
 import { ReactNode } from 'react'
 
 import { PublishedChip } from '../../../../components/PublishedChip'
-import { getVideoChildrenLabel } from '../../../../libs/getVideoChildrenLabel'
+import { Section } from '../../../../components/Section'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../constants'
 
 import { VideoViewFallback } from './_fallback'
 import { LockedVideoView } from './_locked'
-import { VideoTabView } from './_tabs/TabView'
 
 const GET_TAB_DATA = graphql(`
   query GetTabData($id: ID!, $languageId: ID!) {
@@ -34,11 +34,36 @@ const GET_TAB_DATA = graphql(`
   }
 `)
 
-export default function VideoViewLayout({ children }): ReactNode {
-  const params = useParams<{ videoId: string }>()
+interface VideoViewLayoutProps {
+  children: ReactNode
+  tabs: ReactNode
+  description: ReactNode
+  snippet: ReactNode
+  imageAlt: ReactNode
+  images: ReactNode
+  information: ReactNode
+  studyQuestions: ReactNode
+  params: {
+    videoId: string
+  }
+}
+
+export default function VideoViewLayout({
+  children,
+  tabs,
+  description,
+  imageAlt,
+  snippet,
+  images,
+  information,
+  studyQuestions,
+  params: { videoId }
+}: VideoViewLayoutProps): ReactNode {
+  const currentTab = useSelectedLayoutSegment() || 'metadata'
+
   const { data } = useSuspenseQuery(GET_TAB_DATA, {
     variables: {
-      id: params?.videoId as string,
+      id: videoId,
       languageId: DEFAULT_VIDEO_LANGUAGE_ID
     }
   })
@@ -53,42 +78,6 @@ export default function VideoViewLayout({ children }): ReactNode {
     return <LockedVideoView />
   }
   const videoTitle = video?.title?.[0]?.value ?? ''
-
-  const showVideoChildren: boolean =
-    video.label === 'collection' ||
-    video.label === 'featureFilm' ||
-    video.label === 'series'
-
-  const videoLabel = getVideoChildrenLabel(video.label)
-
-  const tabs = [
-    {
-      label: 'Metadata',
-      value: 'metadata',
-      count: null,
-      href: `/videos/${params?.videoId}`
-    },
-    {
-      label: 'Audio Languages',
-      value: 'audio',
-      count: video.variantLanguagesCount,
-      href: `/videos/${params?.videoId}/audio`
-    },
-    {
-      label: 'Editions',
-      value: 'editions',
-      count: video.editionsCount,
-      href: `/videos/${params?.videoId}/editions`
-    }
-  ]
-  if (showVideoChildren && videoLabel != null) {
-    tabs.splice(1, 0, {
-      label: 'Children',
-      value: 'children',
-      count: video.childrenCount,
-      href: `/videos/${params?.videoId}/children`
-    })
-  }
 
   return (
     <Stack
@@ -110,7 +99,32 @@ export default function VideoViewLayout({ children }): ReactNode {
 
       <Stack gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
         <Box width="100%">
-          <VideoTabView tabs={tabs} children={children} />
+          {tabs}
+          {currentTab !== 'metadata' ? (
+            children
+          ) : (
+            <>
+              <Divider sx={{ mb: 4 }} />
+              <Stack gap={2} data-testid="VideoMetadata">
+                <Section title="Information" variant="outlined">
+                  {information}
+                </Section>
+                <Section title="Images" variant="outlined">
+                  <Stack gap={4}>
+                    {images}
+                    {imageAlt}
+                  </Stack>
+                </Section>
+                <Section title="Short Description" variant="outlined">
+                  {snippet}
+                </Section>
+                <Section title="Description" variant="outlined">
+                  {description}
+                </Section>
+                {studyQuestions}
+              </Stack>
+            </>
+          )}
         </Box>
       </Stack>
     </Stack>
