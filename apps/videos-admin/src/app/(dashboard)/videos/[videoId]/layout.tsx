@@ -9,12 +9,12 @@ import { useParams } from 'next/navigation'
 import { ReactNode } from 'react'
 
 import { PublishedChip } from '../../../../components/PublishedChip'
+import { getVideoChildrenLabel } from '../../../../libs/getVideoChildrenLabel'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../constants'
 
 import { VideoViewFallback } from './_fallback'
 import { LockedVideoView } from './_locked'
 import { VideoTabView } from './_tabs/TabView'
-import { getVideoChildrenLabel } from './children/VideoChildren/getVideoChildrenLabel'
 
 const GET_TAB_DATA = graphql(`
   query GetTabData($id: ID!, $languageId: ID!) {

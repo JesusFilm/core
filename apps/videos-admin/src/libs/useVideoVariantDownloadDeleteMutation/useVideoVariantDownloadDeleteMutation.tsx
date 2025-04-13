@@ -1,14 +1,6 @@
 import { MutationHookOptions, useMutation } from '@apollo/client'
 import { ResultOf, VariablesOf, graphql } from 'gql.tada'
 
-export const VIDEO_VARIANT_DOWNLOAD_DELETE = graphql(`
-  mutation VideoVariantDownloadDelete($id: ID!) {
-    videoVariantDownloadDelete(id: $id) {
-      id
-    }
-  }
-`)
-
 export type VideoVariantDownloadDelete = ResultOf<
   typeof VIDEO_VARIANT_DOWNLOAD_DELETE
 >

@@ -20,7 +20,8 @@ interface SectionProps {
   action?: {
     label: string
     startIcon?: MuiButtonProps['startIcon']
-    onClick: (e: MouseEvent<HTMLButtonElement>) => void
+    onClick?: (e: MouseEvent<HTMLButtonElement>) => void
+    href?: string
   }
   children: ReactNode
   sx?: SxProps
@@ -72,6 +73,7 @@ export function Section({
             variant="outlined"
             onClick={action.onClick}
             startIcon={action.startIcon}
+            href={action.href}
           >
             {action.label}
           </Button>

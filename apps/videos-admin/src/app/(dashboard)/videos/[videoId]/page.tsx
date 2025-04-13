@@ -12,7 +12,7 @@ import VideoImageAlt from './_imageAlt/VideoImageAlt'
 import VideoImage from './_images/VideoImage'
 import VideoInformation from './_information/VideoInformation'
 import { VideoSnippet } from './_snippet/VideoSnippet'
-import StudyQuestionsList from './_studyQuestions/StudyQuestionsList'
+import StudyQuestionsList from './studyQuestions/StudyQuestionsList'
 
 export default function VideoViewPage(): ReactElement {
   const params = useParams<{ videoId: string }>()

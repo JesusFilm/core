@@ -4,7 +4,7 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { GetAdminVideoVariant } from '../../../../../../libs/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 
-import { VariantDialog } from './VariantDialog'
+import { VariantDialog } from './page'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,

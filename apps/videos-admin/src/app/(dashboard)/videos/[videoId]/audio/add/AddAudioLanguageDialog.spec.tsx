@@ -12,7 +12,7 @@ import {
   UploadVideoVariantProvider
 } from '../../../../../_uploadVideoVariantProvider'
 
-import { AddAudioLanguageDialog } from './AddAudioLanguageDialog'
+import { AddAudioLanguageDialog } from './page'
 
 jest.mock('next/navigation', () => ({
   useParams: () => ({ videoId: 'video123' })

@@ -7,7 +7,7 @@ import { useSnackbar } from 'notistack'
 import { ReactNode, createContext, useContext, useReducer } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
-import { getExtension } from '../(dashboard)/videos/[videoId]/audio/add/utils/getExtension'
+import { getExtension } from '../(dashboard)/videos/[videoId]/audio/add/_utils/getExtension'
 
 export const CLOUDFLARE_R2_CREATE = graphql(`
   mutation CloudflareR2Create($input: CloudflareR2CreateInput!) {
