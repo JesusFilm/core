@@ -118,7 +118,7 @@ export const TextResponse = ({
           helperText={hint != null ? hint : ''}
           multiline
           disabled={isSubmitting}
-          minRows={minRows ?? 3}
+          minRows={minRows ?? 1}
           onClick={(e) => e.stopPropagation()}
           onChange={handleInputChange}
           onBlur={handleInputBlur}
