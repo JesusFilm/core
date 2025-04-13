@@ -71,7 +71,8 @@ export const TextResponse = ({
   const handleBlur = formikContext?.handleBlur
 
   const currentValue = formikValue ?? value
-  const trimmedPlaceholder = placeholder != null ? placeholder.trim().replace(/\s+/g, ' ') : ''
+  const trimmedPlaceholder =
+    placeholder != null ? placeholder.trim().replace(/\s+/g, ' ') : ''
 
   useEffect(() => {
     if (formikContext != null && formikValue !== value) {
