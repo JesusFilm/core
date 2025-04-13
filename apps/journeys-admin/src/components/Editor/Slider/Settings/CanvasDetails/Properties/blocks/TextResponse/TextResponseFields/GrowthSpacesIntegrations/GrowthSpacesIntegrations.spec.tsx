@@ -52,6 +52,7 @@ describe('GrowthSpacesIntegrations', () => {
     integrationId: null,
     routeId: null,
     type: TextResponseType.email,
+    required: null,
     children: []
   }
 
