@@ -28,6 +28,7 @@ describe('TextResponse', () => {
     integrationId: null,
     type: null,
     routeId: null,
+    required: null,
     children: []
   }
 
@@ -43,6 +44,7 @@ describe('TextResponse', () => {
     integrationId: null,
     type: null,
     routeId: null,
+    required: null,
     children: [
       {
         id: 'icon.id',
