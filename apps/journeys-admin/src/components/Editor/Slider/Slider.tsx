@@ -52,10 +52,10 @@ const StyledSwiperSlide = styled(SwiperSlide)(({ theme }) => ({
 }))
 
 interface SliderProps {
-  flowType: 'mobile' | 'desktop'
+  flowType?: 'mobile' | 'desktop'
 }
 
-export function Slider({ flowType }: SliderProps): ReactElement {
+export function Slider({ flowType = 'desktop' }: SliderProps): ReactElement {
   const { breakpoints } = useTheme()
   const swiperRef = useRef<SwiperRef>(null)
   const [showBackButtonHelp, setShowBackButtonHelp] = useState<
