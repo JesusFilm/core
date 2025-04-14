@@ -24,10 +24,27 @@ describe('getFooterElements', () => {
       ).toBe(false)
     })
 
+    it('should return false if showReactionButtons is false', () => {
+      expect(
+        hasReactions({
+          journey: {
+            ...defaultJourney,
+            showShareButton: true,
+            showReactionButtons: false
+          },
+          variant: undefined
+        })
+      ).toBe(false)
+    })
+
     it('should return true if journey has share button', () => {
       expect(
         hasReactions({
-          journey: { ...defaultJourney, showShareButton: true },
+          journey: {
+            ...defaultJourney,
+            showShareButton: true,
+            showReactionButtons: true
+          },
           variant: undefined
         })
       ).toBe(true)
@@ -36,7 +53,11 @@ describe('getFooterElements', () => {
     it('should return true if journey has like button', () => {
       expect(
         hasReactions({
-          journey: { ...defaultJourney, showLikeButton: true },
+          journey: {
+            ...defaultJourney,
+            showLikeButton: true,
+            showReactionButtons: true
+          },
           variant: undefined
         })
       ).toBe(true)
@@ -45,7 +66,11 @@ describe('getFooterElements', () => {
     it('should return true if journey has dislike button', () => {
       expect(
         hasReactions({
-          journey: { ...defaultJourney, showDislikeButton: true },
+          journey: {
+            ...defaultJourney,
+            showDislikeButton: true,
+            showReactionButtons: true
+          },
           variant: undefined
         })
       ).toBe(true)
@@ -212,7 +237,8 @@ describe('getFooterElements', () => {
             seoTitle: null,
             displayTitle: '',
             host: null,
-            showShareButton: true
+            showShareButton: true,
+            showReactionButtons: true
           }
         })
       ).toBe(true)
@@ -265,7 +291,8 @@ describe('getFooterElements', () => {
         getFooterMobileSpacing({
           journey: {
             ...defaultJourney,
-            showShareButton: true
+            showShareButton: true,
+            showReactionButtons: true
           }
         })
       ).toBe(HALF_HEIGHT)
@@ -290,6 +317,7 @@ describe('getFooterElements', () => {
             showShareButton: true,
             showLikeButton: true,
             showDislikeButton: true,
+            showReactionButtons: true,
             displayTitle: 'title',
             host: {
               id: 'hostId',
