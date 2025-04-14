@@ -1,16 +1,40 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { SnackbarProvider } from 'notistack'
 
+import {
+  GetJourneyCreatedAt,
+  GetJourneyCreatedAtVariables
+} from '../../../../__generated__/GetJourneyCreatedAt'
 import {
   getMockGetJourneyEventsCountQuery,
   mockCreateEventsExportLogMutation,
   mockGetJourneyEventsQuery
 } from '../../../libs/useJourneyEventsExport/useJourneyEventsExport.mock'
+import { GET_JOURNEY_CREATED_AT } from '../FilterDrawer/ExportDialog/ExportDialog'
 
 import { ExportEventsButton } from './ExportEventsButton'
 
-const mockGetJourneyEventsCountQuery = getMockGetJourneyEventsCountQuery()
+const journeyCreatedAt = '2023-01-01T00:00:00.000Z'
+const mockJourneyCreatedAt: MockedResponse<
+  GetJourneyCreatedAt,
+  GetJourneyCreatedAtVariables
+> = {
+  request: {
+    query: GET_JOURNEY_CREATED_AT,
+    variables: { id: 'journey1' }
+  },
+  result: {
+    data: {
+      journey: {
+        id: 'journey1',
+        createdAt: journeyCreatedAt,
+        __typename: 'Journey'
+      }
+    }
+  }
+}
 
 describe('ExportEventsButton', () => {
   it('should render download button when not downloading', () => {
@@ -24,33 +48,30 @@ describe('ExportEventsButton', () => {
     expect(screen.getByRole('button')).toBeVisible()
   })
 
-  it('should download events when button is clicked', async () => {
-    const getJourneyEventsMockResult = jest.fn(() => ({
-      ...mockGetJourneyEventsQuery.result
-    }))
-    const mutationResult = jest.fn(() => ({
-      ...mockCreateEventsExportLogMutation.result
-    }))
+  it('should show the export dialog when button is clicked', async () => {
     render(
-      <MockedProvider
-        mocks={[
-          mockGetJourneyEventsCountQuery,
-          { ...mockGetJourneyEventsQuery, result: getJourneyEventsMockResult },
-          { ...mockCreateEventsExportLogMutation, result: mutationResult }
-        ]}
-      >
-        <ExportEventsButton journeyId="journey1" />
-      </MockedProvider>
+      <SnackbarProvider>
+        <MockedProvider mocks={[mockJourneyCreatedAt]}>
+          <ExportEventsButton journeyId="journey1" />
+        </MockedProvider>
+      </SnackbarProvider>
     )
 
     const user = userEvent.setup()
-    await user.click(screen.getByRole('button'))
+
+    const exportButton = screen.getByRole('button')
+    expect(exportButton).toBeInTheDocument()
+
+    await user.click(exportButton)
 
     await waitFor(() => {
-      expect(mockGetJourneyEventsCountQuery.result).toHaveBeenCalled()
+      expect(screen.getByText('Export Analytics')).toBeInTheDocument()
     })
 
-    expect(getJourneyEventsMockResult).toHaveBeenCalled()
-    expect(mutationResult).toHaveBeenCalled()
+    await user.click(screen.getByTestId('dialog-close-button'))
+
+    await waitFor(() => {
+      expect(screen.queryByText('Export Analytics')).not.toBeInTheDocument()
+    })
   })
 })

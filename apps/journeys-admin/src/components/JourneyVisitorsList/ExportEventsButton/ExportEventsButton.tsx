@@ -1,12 +1,10 @@
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
-import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 
 import Download2 from '@core/shared/ui/icons/Download2'
 
-import { GetJourneyEventsVariables } from '../../../../__generated__/GetJourneyEvents'
-import { useJourneyEventsExport } from '../../../libs/useJourneyEventsExport'
+import { ExportDialog } from '../FilterDrawer/ExportDialog'
 
 interface ExportEventsButtonProps {
   journeyId: string
@@ -15,29 +13,18 @@ interface ExportEventsButtonProps {
 export function ExportEventsButton({
   journeyId
 }: ExportEventsButtonProps): ReactElement {
-  const { enqueueSnackbar } = useSnackbar()
-  const [exportJourneyEvents, { downloading }] = useJourneyEventsExport()
-
-  const handleExport = async (
-    input: Pick<GetJourneyEventsVariables, 'journeyId' | 'filter'>
-  ): Promise<void> => {
-    try {
-      await exportJourneyEvents(input)
-    } catch (error) {
-      enqueueSnackbar(error.message, {
-        variant: 'error'
-      })
-    }
-  }
+  const [showExportDialog, setShowExportDialog] = useState(false)
 
   return (
     <Box sx={{ display: { sm: 'block', md: 'none' } }}>
-      <IconButton
-        onClick={() => handleExport({ journeyId })}
-        disabled={downloading}
-      >
+      <IconButton onClick={() => setShowExportDialog(true)}>
         <Download2 />
       </IconButton>
+      <ExportDialog
+        open={showExportDialog}
+        onClose={() => setShowExportDialog(false)}
+        journeyId={journeyId}
+      />
     </Box>
   )
 }
