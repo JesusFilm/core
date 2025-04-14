@@ -1,12 +1,14 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { Response } from 'node-fetch'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
+import { revalidateJourney } from '../../../../../../libs/revalidateJourney'
 import { createCloudflareUploadByUrlMock } from '../ImageBlockEditor/CustomImage/CustomUrl/data'
 import { listUnsplashCollectionPhotosMock } from '../ImageBlockEditor/UnsplashGallery/data'
 
@@ -22,6 +24,12 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: jest.fn()
 }))
+
+jest.mock('../../../../../../libs/revalidateJourney')
+
+const mockRevalidateJourney = revalidateJourney as jest.MockedFunction<
+  typeof revalidateJourney
+>
 
 describe('ImageEdit', () => {
   let originalEnv
@@ -95,6 +103,7 @@ describe('ImageEdit', () => {
   })
 
   it('creates the primaryImage', async () => {
+    mockRevalidateJourney.mockResolvedValue({ ok: true } as Response)
     const cache = new InMemoryCache()
     cache.restore({
       ['Journey:' + 'journey.id']: {
@@ -167,7 +176,11 @@ describe('ImageEdit', () => {
         <SnackbarProvider>
           <JourneyProvider
             value={{
-              journey: { id: 'journey.id' } as unknown as Journey,
+              journey: {
+                id: 'journey.id',
+                hostname: null,
+                slug: 'journey-id'
+              } as unknown as Journey,
               variant: 'admin'
             }}
           >
@@ -194,6 +207,12 @@ describe('ImageEdit', () => {
     )
     await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
     await waitFor(() => expect(journeyResult).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(mockRevalidateJourney).toHaveBeenCalledWith({
+        slug: 'journey-id',
+        hostname: undefined
+      })
+    )
   })
 
   it('creates the creator image', async () => {
@@ -299,6 +318,7 @@ describe('ImageEdit', () => {
   })
 
   it('delete the primaryImage', async () => {
+    mockRevalidateJourney.mockResolvedValue({ ok: true } as Response)
     const cache = new InMemoryCache()
     cache.restore({
       ['Journey:' + 'journey.id']: {
@@ -366,6 +386,8 @@ describe('ImageEdit', () => {
             value={{
               journey: {
                 id: 'journey.id',
+                hostname: null,
+                slug: 'journey-id',
                 primaryImageBlock: { ...image }
               } as unknown as Journey,
               variant: 'admin'
@@ -381,9 +403,16 @@ describe('ImageEdit', () => {
     await waitFor(() => expect(imageDeleteResult).toHaveBeenCalled())
     await waitFor(() => expect(journeyUpdateResult).toHaveBeenCalled())
     expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([])
+    await waitFor(() =>
+      expect(mockRevalidateJourney).toHaveBeenCalledWith({
+        slug: 'journey-id',
+        hostname: undefined
+      })
+    )
   })
 
   it('delete the creator image', async () => {
+    mockRevalidateJourney.mockResolvedValue({ ok: true } as Response)
     const cache = new InMemoryCache()
     cache.restore({
       ['Journey:' + 'journey.id']: {
@@ -410,6 +439,8 @@ describe('ImageEdit', () => {
         journeyUpdate: {
           __typename: 'Journey',
           id: 'journey.id',
+          hostname: null,
+          slug: 'journey-id',
           primaryImageBlock: {
             id: image.id
           }
@@ -468,9 +499,16 @@ describe('ImageEdit', () => {
     await waitFor(() => expect(imageDeleteResult).toHaveBeenCalled())
     await waitFor(() => expect(journeyUpdateResult).toHaveBeenCalled())
     expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([])
+    await waitFor(() =>
+      expect(mockRevalidateJourney).toHaveBeenCalledWith({
+        slug: 'journey-id',
+        hostname: undefined
+      })
+    )
   })
 
   it('updates the image', async () => {
+    mockRevalidateJourney.mockResolvedValue({ ok: true } as Response)
     const imageBlockResultForUpdateMock = jest.fn(() => ({
       data: {
         imageBlockCreate: {
@@ -512,6 +550,8 @@ describe('ImageEdit', () => {
             value={{
               journey: {
                 id: 'journey.id',
+                hostname: null,
+                slug: 'journey-id',
                 primaryImageBlock: {
                   ...image,
                   src: 'https://imagedelivery.net/cloudflare-key/uploadId/public2'
@@ -542,6 +582,12 @@ describe('ImageEdit', () => {
     )
     await waitFor(() =>
       expect(imageBlockResultForUpdateMock).toHaveBeenCalled()
+    )
+    await waitFor(() =>
+      expect(mockRevalidateJourney).toHaveBeenCalledWith({
+        slug: 'journey-id',
+        hostname: undefined
+      })
     )
   })
 })
