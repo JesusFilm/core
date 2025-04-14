@@ -46,12 +46,13 @@ export default function StudyQuestionsAddPage({
   })
   const order =
     Math.max(...data.adminVideo.studyQuestions.map(({ order }) => order)) + 1
+  const returnUrl = `/videos/${videoId}`
   const [createStudyQuestion, { loading }] = useMutation(
     CREATE_STUDY_QUESTION,
     {
       onCompleted: () => {
         enqueueSnackbar('Study question created', { variant: 'success' })
-        router.back()
+        router.push(returnUrl)
       },
       onError: (error) => {
         enqueueSnackbar(error.message, { variant: 'error' })
@@ -78,7 +79,7 @@ export default function StudyQuestionsAddPage({
   return (
     <Dialog
       open={true}
-      onClose={() => router.back()}
+      onClose={() => router.push(returnUrl)}
       maxWidth="sm"
       fullWidth
       PaperProps={{

@@ -34,6 +34,7 @@ export default function ConfirmDeleteDialog({
   const [deleteVideoVariantDownload] = useMutation(
     VIDEO_VARIANT_DOWNLOAD_DELETE
   )
+  const returnUrl = `/videos/${videoId}/audio/${variantId}/downloads`
   async function handleConfirm(): Promise<void> {
     await deleteVideoVariantDownload({
       variables: {
@@ -43,14 +44,14 @@ export default function ConfirmDeleteDialog({
         enqueueSnackbar('Download deleted', {
           variant: 'success'
         })
-        router.back()
+        router.push(returnUrl)
       }
     })
   }
   return (
     <Dialog
       open={true}
-      onClose={() => router.back()}
+      onClose={() => router.push(returnUrl)}
       aria-labelledby="confirm-delete-dialog-title"
     >
       <DialogTitle id="confirm-delete-dialog-title">
@@ -62,7 +63,7 @@ export default function ConfirmDeleteDialog({
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => router.back()} color="primary">
+        <Button onClick={() => router.push(returnUrl)} color="primary">
           Cancel
         </Button>
         <Button onClick={handleConfirm} color="error" autoFocus>

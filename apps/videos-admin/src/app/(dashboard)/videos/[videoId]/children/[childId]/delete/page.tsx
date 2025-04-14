@@ -55,12 +55,13 @@ export default function DeleteChild({
   const { data } = useSuspenseQuery(GET_VIDEO_CHILDREN, {
     variables: { id: videoId }
   })
+  const returnUrl = `/videos/${videoId}/children`
   const [removeVideoChild, { loading }] = useMutation(REMOVE_VIDEO_CHILD, {
     onCompleted: () => {
       enqueueSnackbar('Successfully removed child video.', {
         variant: 'success'
       })
-      router.back()
+      router.push(returnUrl)
     },
     onError: () => {
       enqueueSnackbar('Failed to remove child video.', {
@@ -87,7 +88,7 @@ export default function DeleteChild({
   return (
     <Dialog
       open={true}
-      onClose={() => router.back()}
+      onClose={() => router.push(returnUrl)}
       dialogTitle={{
         title: 'Delete Child Video',
         closeButton: true

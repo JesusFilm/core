@@ -13,9 +13,13 @@ import { PublishedChip } from '../../../../components/PublishedChip'
 import { Section } from '../../../../components/Section'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../constants'
 
+import { VideoDescription } from './_description'
 import { VideoViewFallback } from './_fallback'
+import { VideoImageAlt } from './_imageAlt'
+import { VideoInformation } from './_information'
 import { LockedVideoView } from './_locked'
-import VideoTabView from './_tabs/VideoTabView'
+import { VideoSnippet } from './_snippet'
+import { VideoTabView } from './_tabs'
 
 const GET_TAB_DATA = graphql(`
   query GetTabData($id: ID!, $languageId: ID!) {
@@ -33,11 +37,7 @@ const GET_TAB_DATA = graphql(`
 
 interface VideoViewLayoutProps {
   children: ReactNode
-  description: ReactNode
-  snippet: ReactNode
-  imageAlt: ReactNode
   images: ReactNode
-  information: ReactNode
   studyQuestions: ReactNode
   params: {
     videoId: string
@@ -46,11 +46,7 @@ interface VideoViewLayoutProps {
 
 export default function VideoViewLayout({
   children,
-  description,
-  imageAlt,
-  snippet,
   images,
-  information,
   studyQuestions,
   params: { videoId }
 }: VideoViewLayoutProps): ReactNode {
@@ -107,19 +103,19 @@ export default function VideoViewLayout({
               <Divider sx={{ mb: 4 }} />
               <Stack gap={2} data-testid="VideoMetadata">
                 <Section title="Information" variant="outlined">
-                  {information}
+                  <VideoInformation videoId={videoId} />
                 </Section>
                 <Section title="Images" variant="outlined">
                   <Stack gap={4}>
                     {images}
-                    {imageAlt}
+                    <VideoImageAlt videoId={videoId} />
                   </Stack>
                 </Section>
                 <Section title="Short Description" variant="outlined">
-                  {snippet}
+                  <VideoSnippet videoId={videoId} />
                 </Section>
                 <Section title="Description" variant="outlined">
-                  {description}
+                  <VideoDescription videoId={videoId} />
                 </Section>
                 {studyQuestions}
               </Stack>

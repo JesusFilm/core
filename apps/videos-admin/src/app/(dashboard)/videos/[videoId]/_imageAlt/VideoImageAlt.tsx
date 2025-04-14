@@ -13,7 +13,7 @@ import { CancelButton } from '../../../../../components/CancelButton'
 import { SaveButton } from '../../../../../components/SaveButton'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
 
-const GET_VIDEO_IMAGE_ALT = graphql(`
+export const GET_VIDEO_IMAGE_ALT = graphql(`
   query GetVideoImageAlt($id: ID!, $languageId: ID!) {
     adminVideo(id: $id) {
       id
@@ -25,7 +25,7 @@ const GET_VIDEO_IMAGE_ALT = graphql(`
   }
 `)
 
-const CREATE_VIDEO_IMAGE_ALT = graphql(`
+export const CREATE_VIDEO_IMAGE_ALT = graphql(`
   mutation CreateVideoImageAlt($input: VideoTranslationCreateInput!) {
     videoImageAltCreate(input: $input) {
       id
@@ -34,7 +34,7 @@ const CREATE_VIDEO_IMAGE_ALT = graphql(`
   }
 `)
 
-const UPDATE_VIDEO_IMAGE_ALT = graphql(`
+export const UPDATE_VIDEO_IMAGE_ALT = graphql(`
   mutation UpdateVideoImageAlt($input: VideoTranslationUpdateInput!) {
     videoImageAltUpdate(input: $input) {
       id
@@ -44,14 +44,10 @@ const UPDATE_VIDEO_IMAGE_ALT = graphql(`
 `)
 
 interface VideoImageAltProps {
-  params: {
-    videoId: string
-  }
+  videoId: string
 }
 
-export default function VideoImageAlt({
-  params: { videoId }
-}: VideoImageAltProps): ReactElement {
+export function VideoImageAlt({ videoId }: VideoImageAltProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
 
   const [createVideoImageAlt] = useMutation(CREATE_VIDEO_IMAGE_ALT)

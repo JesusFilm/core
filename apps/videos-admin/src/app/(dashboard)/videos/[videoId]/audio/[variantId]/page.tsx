@@ -87,7 +87,7 @@ export default function VariantDialog({
     <Dialog
       data-testid="VariantDialog"
       open={true}
-      onClose={() => router.back()}
+      onClose={() => router.push(`/videos/${videoId}/audio`)}
       fullscreen={!smUp}
       dialogTitle={{ title: 'Audio Language', closeButton: true }}
       divider

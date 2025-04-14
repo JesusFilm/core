@@ -1,5 +1,4 @@
 'use client'
-
 import { useMutation, useSuspenseQuery } from '@apollo/client'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
@@ -15,19 +14,10 @@ import { ResizableTextField } from '../../../../../components/ResizableTextField
 import { SaveButton } from '../../../../../components/SaveButton'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
 
-const CREATE_VIDEO_DESCRIPTION = graphql(`
-  mutation CreateVideoDescription($input: VideoTranslationCreateInput!) {
-    videoDescriptionCreate(input: $input) {
-      id
-      value
-    }
-  }
-`)
-
-const GET_VIDEO_DESCRIPTION = graphql(`
-  query GetVideoDescription($videoId: ID!, $languageId: ID!) {
+export const GET_VIDEO_SNIPPET = graphql(`
+  query GetVideoSnippet($videoId: ID!, $languageId: ID!) {
     adminVideo(id: $videoId) {
-      description(languageId: $languageId) {
+      snippet(languageId: $languageId) {
         id
         value
       }
@@ -35,84 +25,86 @@ const GET_VIDEO_DESCRIPTION = graphql(`
   }
 `)
 
-const UPDATE_VIDEO_DESCRIPTION = graphql(`
-  mutation UpdateVideoDescription($input: VideoTranslationUpdateInput!) {
-    videoDescriptionUpdate(input: $input) {
+export const CREATE_VIDEO_SNIPPET = graphql(`
+  mutation CreateVideoSnippet($input: VideoTranslationCreateInput!) {
+    videoSnippetCreate(input: $input) {
       id
       value
     }
   }
 `)
 
-interface VideoDescriptionProps {
-  params: {
-    videoId: string
+export const UPDATE_VIDEO_SNIPPET = graphql(`
+  mutation UpdateVideoSnippet($input: VideoTranslationUpdateInput!) {
+    videoSnippetUpdate(input: $input) {
+      id
+      value
+    }
   }
+`)
+
+interface VideoSnippetProps {
+  videoId: string
 }
 
-export default function VideoDescription({
-  params: { videoId }
-}: VideoDescriptionProps): ReactElement {
+export function VideoSnippet({ videoId }: VideoSnippetProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
-  const [createVideoDescription] = useMutation(CREATE_VIDEO_DESCRIPTION)
-  const [updateVideoDescription] = useMutation(UPDATE_VIDEO_DESCRIPTION)
+  const [createVideoSnippet] = useMutation(CREATE_VIDEO_SNIPPET)
+  const [updateVideoSnippet] = useMutation(UPDATE_VIDEO_SNIPPET)
 
   const validationSchema = object().shape({
-    description: string().required('Description is required')
+    snippet: string().required('Snippet is required')
   })
 
-  const { data } = useSuspenseQuery(GET_VIDEO_DESCRIPTION, {
+  const { data } = useSuspenseQuery(GET_VIDEO_SNIPPET, {
     variables: { videoId, languageId: DEFAULT_VIDEO_LANGUAGE_ID }
   })
 
-  const videoDescriptions = data?.adminVideo.description
-
-  async function handleUpdateVideoDescription(
-    values: FormikValues
-  ): Promise<void> {
-    if (videoDescriptions.length === 0) {
-      await createVideoDescription({
+  async function handleUpdateVideoSnippet(values: FormikValues): Promise<void> {
+    if (data?.adminVideo.snippet.length === 0) {
+      await createVideoSnippet({
         variables: {
           input: {
             videoId: videoId,
-            value: values.description,
+            value: values.snippet,
             primary: true,
             languageId: DEFAULT_VIDEO_LANGUAGE_ID
           }
         },
         onCompleted: () => {
-          enqueueSnackbar('Video description created', {
+          enqueueSnackbar('Video short description created', {
             variant: 'success'
           })
         },
         onError: () => {
-          enqueueSnackbar('Failed to create video description', {
+          enqueueSnackbar('Failed to create video short description', {
             variant: 'error'
           })
         }
       })
     } else {
-      await updateVideoDescription({
+      await updateVideoSnippet({
         variables: {
           input: {
-            id: videoDescriptions[0].id,
-            value: values.description
+            id: data?.adminVideo.snippet[0].id,
+            value: values.snippet
           }
         },
         onCompleted: () => {
-          enqueueSnackbar('Video description updated', {
+          enqueueSnackbar('Video short description updated', {
             variant: 'success'
           })
         },
         onError: () => {
-          enqueueSnackbar('Failed to update video description', {
+          enqueueSnackbar('Failed to update video short description', {
             variant: 'error'
           })
         }
       })
     }
   }
-  const description = _unescape(videoDescriptions?.[0]?.value ?? '').replace(
+
+  const snippet = _unescape(data?.adminVideo.snippet[0]?.value ?? '').replace(
     /&#13;/g,
     '\n'
   )
@@ -120,9 +112,9 @@ export default function VideoDescription({
   return (
     <Formik
       initialValues={{
-        description
+        snippet
       }}
-      onSubmit={handleUpdateVideoDescription}
+      onSubmit={handleUpdateVideoSnippet}
       validationSchema={validationSchema}
       enableReinitialize
     >
@@ -138,12 +130,12 @@ export default function VideoDescription({
         <Form>
           <Stack gap={2}>
             <ResizableTextField
-              name="description"
-              aria-label="description"
-              value={values.description}
+              name="snippet"
+              aria-label="snippet"
+              value={values.snippet}
               onChange={handleChange}
-              error={Boolean(errors.description)}
-              helperText={errors.description as string}
+              error={Boolean(errors.snippet)}
+              helperText={errors.snippet as string}
               minRows={6}
               maxRows={6}
             />

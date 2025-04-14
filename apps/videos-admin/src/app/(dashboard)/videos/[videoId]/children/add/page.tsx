@@ -81,7 +81,7 @@ export default function AddChildren({
   return (
     <Dialog
       open={true}
-      onClose={() => router.back()}
+      onClose={() => router.push(returnUrl)}
       dialogTitle={{
         title: 'Create New Child Video',
         closeButton: true

@@ -90,18 +90,19 @@ export default function AddAudioLanguageDialog({
       values.language.id,
       values.language.slug,
       values.edition,
-      () => router.back()
+      () => router.push(returnUrl)
     )
   }
 
   const isUploadInProgress = uploadState.isUploading || uploadState.isProcessing
 
+  const returnUrl = `/videos/${videoId}/audio`
   const handleDialogClose = (): void => {
     // Don't close the dialog if upload is in progress
     if (isUploadInProgress) {
       return
     }
-    router.back()
+    router.push(returnUrl)
   }
 
   return (

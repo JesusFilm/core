@@ -37,12 +37,10 @@ const videoLabels = [
 ]
 
 interface VideoInformationProps {
-  params: {
-    videoId: string
-  }
+  videoId: string
 }
 
-const GET_VIDEO_INFORMATION = graphql(`
+export const GET_VIDEO_INFORMATION = graphql(`
   query GetVideoInformation($id: ID!, $languageId: ID!) {
     adminVideo(id: $id) {
       id
@@ -57,7 +55,7 @@ const GET_VIDEO_INFORMATION = graphql(`
   }
 `)
 
-const UPDATE_VIDEO_INFORMATION = graphql(`
+export const UPDATE_VIDEO_INFORMATION = graphql(`
   mutation UpdateVideoInformation(
     $titleInput: VideoTranslationUpdateInput!
     $infoInput: VideoUpdateInput!
@@ -75,7 +73,7 @@ const UPDATE_VIDEO_INFORMATION = graphql(`
   }
 `)
 
-const CREATE_VIDEO_TITLE = graphql(`
+export const CREATE_VIDEO_TITLE = graphql(`
   mutation CreateVideoTitle($input: VideoTranslationCreateInput!) {
     videoTitleCreate(input: $input) {
       id
@@ -84,8 +82,8 @@ const CREATE_VIDEO_TITLE = graphql(`
   }
 `)
 
-export default function VideoInformation({
-  params: { videoId }
+export function VideoInformation({
+  videoId
 }: VideoInformationProps): ReactElement {
   const [updateVideoInformation] = useMutation(UPDATE_VIDEO_INFORMATION)
   const [createVideoTitle] = useMutation(CREATE_VIDEO_TITLE)

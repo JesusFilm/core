@@ -29,18 +29,19 @@ export default function DeleteEditionPage({
   const { enqueueSnackbar } = useSnackbar()
   const [deleteEdition, { loading }] = useMutation(DELETE_VIDEO_EDITION)
 
+  const returnUrl = `/videos/${videoId}/editions`
   const handleRemoveChild = async () => {
     await deleteEdition({ variables: { id: editionId } })
     enqueueSnackbar('Edition deleted successfully.', {
       variant: 'success'
     })
-    router.push(`/videos/${videoId}/editions`)
+    router.push(returnUrl)
   }
 
   return (
     <Dialog
       open={true}
-      onClose={() => router.back()}
+      onClose={() => router.push(returnUrl)}
       dialogTitle={{
         title: 'Delete Edition',
         closeButton: true

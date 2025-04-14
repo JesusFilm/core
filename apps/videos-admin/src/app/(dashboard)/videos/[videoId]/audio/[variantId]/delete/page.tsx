@@ -44,6 +44,7 @@ export default function DeleteAudio({
   const { data } = useSuspenseQuery(GET_ADMIN_VIDEO_VARIANT_DELETE, {
     variables: { id: variantId, languageId: DEFAULT_VIDEO_LANGUAGE_ID }
   })
+  const returnUrl = `/videos/${videoId}/audio`
   const [deleteVideoVariant, { loading }] = useMutation(DELETE_VIDEO_VARIANT, {
     variables: {
       id: variantId
@@ -52,13 +53,14 @@ export default function DeleteAudio({
       enqueueSnackbar('Audio language deleted successfully', {
         variant: 'success'
       })
-      router.back()
+      router.push(returnUrl)
     }
   })
+
   return (
     <Dialog
       open={true}
-      onClose={() => router.back()}
+      onClose={() => router.push(returnUrl)}
       dialogTitle={{
         title: 'Delete Audio Language',
         closeButton: true

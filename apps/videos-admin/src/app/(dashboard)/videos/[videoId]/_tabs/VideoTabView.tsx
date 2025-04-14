@@ -29,7 +29,7 @@ type VideoTabViewProps = {
   videoId: string
 }
 
-export default function VideoTabView({
+export function VideoTabView({
   currentTab,
   videoId
 }: VideoTabViewProps): ReactElement {

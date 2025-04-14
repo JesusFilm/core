@@ -81,6 +81,7 @@ export default function AddVideoVariantDownloadDialog({
     variables: { id: variantId }
   })
 
+  const returnUrl = `/videos/${videoId}/audio/${variantId}/downloads`
   const handleUpload = async (file: File): Promise<void> => {
     if (!file) return
     const video = document.createElement('video')
@@ -173,17 +174,17 @@ export default function AddVideoVariantDownloadDialog({
           enqueueSnackbar('Download created', {
             variant: 'success'
           })
-          router.back()
+          router.push(returnUrl)
         }
       })
     }
-    router.back()
+    router.push(returnUrl)
   }
 
   return (
     <Dialog
       open={true}
-      onClose={() => router.back()}
+      onClose={() => router.push(returnUrl)}
       aria-labelledby="add-download-dialog-title"
       maxWidth="sm"
       fullWidth
@@ -248,7 +249,7 @@ export default function AddVideoVariantDownloadDialog({
               </Stack>
             </DialogContent>
             <DialogActions>
-              <Button onClick={() => router.back()}>Cancel</Button>
+              <Button onClick={() => router.push(returnUrl)}>Cancel</Button>
               <Button type="submit" disabled={isSubmitting} variant="contained">
                 Add
               </Button>
