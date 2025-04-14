@@ -11,24 +11,13 @@ import { Register } from '../../pages/register-Page'
 let userEmail = ''
 
 test.describe('verify card level actions', () => {
-  test.beforeAll('Register new account', async ({ browser }) => {
-    const page = await browser.newPage()
-    const landingPage = new LandingPage(page)
-    const register = new Register(page)
-    await landingPage.goToAdminUrl()
-    await register.registerNewAccount()
-    userEmail = await register.getUserEmailId() // storing the registered user email id
-    console.log(`userEamil : ${userEmail}`)
-    await page.close()
-  })
-
   test.beforeEach(async ({ page }) => {
     const landingPage = new LandingPage(page)
     const loginPage = new LoginPage(page)
     const cardLevelActionPage = new CardLevelActionPage(page)
     const journeyPage = new JourneyPage(page)
     await landingPage.goToAdminUrl()
-    await loginPage.logInWithCreatedNewUser(userEmail) // login as registered user
+    await loginPage.login() // login as an existing user
     await journeyPage.clickCreateCustomJourney() //  clicking on the create custom journey button
     await cardLevelActionPage.waitUntilJourneyCardLoaded() // waiting for custom journey page loaded
     await cardLevelActionPage.clickOnJourneyCard() // clicking on the journey card
@@ -36,9 +25,6 @@ test.describe('verify card level actions', () => {
     await journeyPage.clickEditDetailsInThreeDotOptions() // clicking on the title option of the thre dot options
     await journeyPage.enterTitle() // entering title on the title field in the 'edit title' popup
     await journeyPage.clickSaveBtn() // clicking on save button in the 'edit title' popup
-    await journeyPage.backIcon() // clicking back button at top of the left corner in the custom journey page
-    await journeyPage.clickOnTheCreatedCustomJourney() // clicking on created journey in the journey list
-    await cardLevelActionPage.clickOnJourneyCard() // clicking on the journey card
   })
 
   // Text - create, update & delete

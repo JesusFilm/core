@@ -5,8 +5,6 @@
 import { expect } from '@playwright/test'
 import dayjs from 'dayjs'
 import type { Page } from 'playwright-core'
-import * as path from 'path'
-import * as fs from 'fs'
 
 import testData from '../utils/testData.json'
 
@@ -222,7 +220,7 @@ export class CardLevelActionPage {
   async uploadImageInCustomTab() {
     await this.page
       .locator('div[data-testid="ImageUpload"] input')
-      .setInputFiles(testData.cardLevelAction.imgUploadPath)
+      .setInputFiles('apps/journeys-admin-e2e/src/utils/testResource/Flower.jpg')
     await expect(
       this.page.locator(
         'div[data-testid="ImageBlockHeader"] div[data-testid="ImageBlockThumbnail"] span[role="progressbar"]'
@@ -311,7 +309,7 @@ export class CardLevelActionPage {
   async uploadVideoInUploadTabOfVideoLibrary() {
     await this.page
       .locator('div[data-testid="VideoFromMux"] input')
-      .setInputFiles(testData.cardLevelAction.videoUploadPath, {
+      .setInputFiles('apps/journeys-admin-e2e/src/utils/testResource/SampleVideo.mp4', {
         timeout: 30000
       })
     await expect(
