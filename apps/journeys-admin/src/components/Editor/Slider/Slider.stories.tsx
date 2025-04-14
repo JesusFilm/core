@@ -68,6 +68,7 @@ const step1: TreeBlock<StepBlock> = {
           size: null,
           startIconId: null,
           endIconId: null,
+          submitEnabled: null,
           action: {
             __typename: 'NavigateToBlockAction',
             parentBlockId: 'button1.id',

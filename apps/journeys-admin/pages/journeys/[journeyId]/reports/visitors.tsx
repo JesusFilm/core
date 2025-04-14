@@ -20,7 +20,6 @@ import {
 import { UserJourneyOpen } from '../../../../__generated__/UserJourneyOpen'
 import { HelpScoutBeacon } from '../../../../src/components/HelpScoutBeacon'
 import { JourneyVisitorsList } from '../../../../src/components/JourneyVisitorsList'
-import { ClearAllButton } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/ClearAllButton'
 import { FilterDrawer } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/FilterDrawer'
 import { VisitorToolbar } from '../../../../src/components/JourneyVisitorsList/VisitorToolbar/VisitorToolbar'
 import { PageWrapper } from '../../../../src/components/PageWrapper'
@@ -153,13 +152,13 @@ function JourneyVisitorsPage(): ReactElement {
       case 'Chat Started':
         setChatStarted(e.target.checked as boolean)
         break
-      case 'With Poll Answers':
+      case 'Poll Answers':
         setWithPollAnswers(e.target.checked as boolean)
         break
-      case 'With Submitted Text':
+      case 'Submitted Text':
         setWithSubmittedText(e.target.checked as boolean)
         break
-      case 'With Icon':
+      case 'Icon':
         setWithIcon(e.target.checked as boolean)
         break
       case 'Hide Inactive':
@@ -218,20 +217,18 @@ function JourneyVisitorsPage(): ReactElement {
         }
         sidePanelTitle={
           <>
-            <Typography variant="subtitle1">{t('Filters')}</Typography>
-            <Stack direction="row" gap={3} alignItems="center">
-              <ClearAllButton handleClearAll={handleClearAll} />
-              <HelpScoutBeacon
-                userInfo={{
-                  name: user?.displayName ?? '',
-                  email: user?.email ?? ''
-                }}
-              />
-            </Stack>
+            <Typography variant="subtitle1">{t('Refine Results')}</Typography>
+            <HelpScoutBeacon
+              userInfo={{
+                name: user?.displayName ?? '',
+                email: user?.email ?? ''
+              }}
+            />
           </>
         }
         sidePanelChildren={
           <FilterDrawer
+            journeyId={journeyId}
             handleChange={handleChange}
             sortSetting={sortSetting}
             chatStarted={chatStarted}
@@ -239,6 +236,7 @@ function JourneyVisitorsPage(): ReactElement {
             withSubmittedText={withSubmittedText}
             withIcon={withIcon}
             hideInteractive={hideInteractive}
+            handleClearAll={handleClearAll}
           />
         }
       >

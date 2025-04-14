@@ -51,6 +51,7 @@ type CloudflareR2 {
   contentLength: Int!
   contentType: String!
   fileName: String!
+  originalFilename: String
   uploadUrl: String
   userId: ID!
   publicUrl: String
@@ -69,6 +70,9 @@ input CloudflareR2CreateInput {
 
   """the name of the file that is being uploaded"""
   fileName: String!
+
+  """the original name of the file before any renaming"""
+  originalFilename: String
 
   """the id of the Video object this file relates to in the database"""
   videoId: String!
@@ -808,6 +812,7 @@ type VideoStudyQuestion {
   id: ID!
   value: String!
   primary: Boolean!
+  order: Int!
   language: Language!
 }
 
