@@ -1,4 +1,6 @@
 import Box from '@mui/material/Box'
+import { Theme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { User } from 'next-firebase-auth'
 import { ReactElement } from 'react'
 import { HotkeysProvider } from 'react-hotkeys-hook'
@@ -35,6 +37,7 @@ export function Editor({
   initialState,
   user
 }: EditorProps): ReactElement {
+  const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'))
   const steps =
     journey != null
       ? (transformer(journey.blocks ?? []) as Array<TreeBlock<StepBlock>>)
@@ -56,12 +59,11 @@ export function Editor({
         <HotkeysProvider>
           <Hotkeys />
           <Toolbar user={user} />
-          <Box sx={{ display: { xs: 'none', md: 'block' } }}>
-            <SinglePageEditor flowType="desktop" />
-          </Box>
-          <Box sx={{ display: { xs: 'block', md: 'none' } }}>
+          {smDown ? (
             <Slider flowType="mobile" />
-          </Box>
+          ) : (
+            <SinglePageEditor flowType="desktop" />
+          )}
           <Fab variant="mobile" />
         </HotkeysProvider>
       </EditorProvider>
