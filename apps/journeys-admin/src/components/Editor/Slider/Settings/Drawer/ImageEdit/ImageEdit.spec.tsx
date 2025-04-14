@@ -27,6 +27,10 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 jest.mock('../../../../../../libs/revalidateJourney')
 
+jest.mock('./utils/appendTimestamp', () => ({
+  appendTimestamp: jest.fn((url) => `${url}?t=1234567890`)
+}))
+
 const mockRevalidateJourney = revalidateJourney as jest.MockedFunction<
   typeof revalidateJourney
 >
@@ -118,7 +122,7 @@ describe('ImageEdit', () => {
         imageBlockCreate: {
           __typename: 'ImageBlock',
           id: image.id,
-          src: image.src,
+          src: `${image.src}?t=1234567890`,
           alt: image.alt,
           width: image.width,
           height: image.height,
@@ -152,7 +156,7 @@ describe('ImageEdit', () => {
               variables: {
                 input: {
                   journeyId: 'journey.id',
-                  src: image.src,
+                  src: `${image.src}?t=1234567890`,
                   alt: image.alt
                 }
               }
@@ -264,7 +268,7 @@ describe('ImageEdit', () => {
               variables: {
                 input: {
                   journeyId: 'journey.id',
-                  src: image.src,
+                  src: `${image.src}?t=1234567890`,
                   alt: image.alt
                 }
               }
@@ -482,6 +486,8 @@ describe('ImageEdit', () => {
             value={{
               journey: {
                 id: 'journey.id',
+                hostname: null,
+                slug: 'journey-id',
                 creatorImageBlock: { ...image }
               } as unknown as Journey,
               variant: 'admin'
@@ -514,7 +520,7 @@ describe('ImageEdit', () => {
         imageBlockCreate: {
           __typename: 'ImageBlock',
           id: image.id,
-          src: image.src,
+          src: `${image.src}?t=1234567890`,
           alt: image.alt,
           width: image.width,
           height: image.height,
@@ -536,7 +542,7 @@ describe('ImageEdit', () => {
                 id: image.id,
                 journeyId: 'journey.id',
                 input: {
-                  src: image.src,
+                  src: `${image.src}?t=1234567890`,
                   alt: 'public'
                 }
               }

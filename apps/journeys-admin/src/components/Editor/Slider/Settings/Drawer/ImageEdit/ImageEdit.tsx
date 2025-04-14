@@ -27,6 +27,7 @@ import { revalidateJourney } from '../../../../../../libs/revalidateJourney'
 
 import { Large } from './Large'
 import { Small } from './Small'
+import { appendTimestamp } from './utils/appendTimestamp'
 
 const ImageLibrary = dynamic(
   async () =>
@@ -132,6 +133,11 @@ export function ImageEdit({
   async function createImageBlock(input: ImageBlockUpdateInput): Promise<void> {
     if (journey == null) return
 
+    // Append timestamp to the image URL to avoid open graph cache issues
+    if (input.src != null) {
+      input.src = appendTimestamp(input.src)
+    }
+
     const { data } = await journeyImageBlockCreate({
       variables: {
         input: {
@@ -164,6 +170,11 @@ export function ImageEdit({
 
   async function updateImageBlock(input: ImageBlockUpdateInput): Promise<void> {
     if (journey == null || targetImageBlock == null) return
+
+    // Append timestamp to the image URL to avoid open graph cache issues
+    if (input.src != null) {
+      input.src = appendTimestamp(input.src)
+    }
 
     await journeyImageBlockUpdate({
       variables: {
