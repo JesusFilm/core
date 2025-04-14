@@ -56,11 +56,11 @@ export function Editor({
         <HotkeysProvider>
           <Hotkeys />
           <Toolbar user={user} />
-          <Box sx={{ display: { xs: 'block', md: 'none' } }}>
-            <Slider flowType="mobile" />
-          </Box>
           <Box sx={{ display: { xs: 'none', md: 'block' } }}>
             <SinglePageEditor flowType="desktop" />
+          </Box>
+          <Box sx={{ display: { xs: 'block', md: 'none' } }}>
+            <Slider flowType="mobile" />
           </Box>
           <Fab variant="mobile" />
         </HotkeysProvider>
