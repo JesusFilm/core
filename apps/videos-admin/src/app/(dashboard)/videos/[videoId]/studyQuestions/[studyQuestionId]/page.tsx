@@ -1,14 +1,17 @@
-import { useMutation } from '@apollo/client'
+'use client'
+
+import { useMutation, useSuspenseQuery } from '@apollo/client'
 import Dialog from '@mui/material/Dialog'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
-import { ResultOf, VariablesOf, graphql } from 'gql.tada'
+import { graphql } from 'gql.tada'
+import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
 import { StudyQuestionForm } from '../_form/StudyQuestionForm'
 
-export const UPDATE_STUDY_QUESTION = graphql(`
+const UPDATE_STUDY_QUESTION = graphql(`
   mutation UpdateStudyQuestion($input: VideoStudyQuestionUpdateInput!) {
     videoStudyQuestionUpdate(input: $input) {
       id
@@ -17,62 +20,68 @@ export const UPDATE_STUDY_QUESTION = graphql(`
   }
 `)
 
-export type UpdateStudyQuestion = ResultOf<typeof UPDATE_STUDY_QUESTION>
-export type UpdateStudyQuestionVariables = VariablesOf<
-  typeof UPDATE_STUDY_QUESTION
->
-
-interface StudyQuestionDialogProps {
-  open: boolean
-  onClose: () => void
-  studyQuestion: {
-    id: string
-    value: string
+const GET_STUDY_QUESTION = graphql(`
+  query GetStudyQuestion($id: ID!) {
+    adminVideo(id: $id) {
+      id
+      studyQuestions {
+        id
+        value
+      }
+    }
   }
-  onQuestionUpdated?: () => void
+`)
+interface StudyQuestionDialogProps {
+  params: {
+    videoId: string
+    studyQuestionId: string
+  }
 }
 
-export function StudyQuestionDialog({
-  open,
-  onClose,
-  studyQuestion,
-  onQuestionUpdated
+export default function StudyQuestionDialog({
+  params: { videoId, studyQuestionId }
 }: StudyQuestionDialogProps): ReactElement {
+  const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
-
-  const [updateStudyQuestion, { loading }] = useMutation<
-    UpdateStudyQuestion,
-    UpdateStudyQuestionVariables
-  >(UPDATE_STUDY_QUESTION, {
-    onCompleted: () => {
-      enqueueSnackbar('Study question updated', { variant: 'success' })
-      if (onQuestionUpdated) {
-        onQuestionUpdated()
-      }
-      onClose()
-    },
-    onError: (error) => {
-      enqueueSnackbar(error.message, { variant: 'error' })
-    }
+  const [updateStudyQuestion, { loading }] = useMutation(UPDATE_STUDY_QUESTION)
+  const { data } = useSuspenseQuery(GET_STUDY_QUESTION, {
+    variables: { id: videoId }
   })
+  const returnUrl = `/videos/${videoId}`
+  const studyQuestion = data.adminVideo.studyQuestions.find(
+    (question) => question.id === studyQuestionId
+  )
+
+  if (!studyQuestion) {
+    router.push(returnUrl)
+    return <></>
+  }
 
   const handleSubmit = async (values: { value: string }): Promise<void> => {
-    try {
-      await updateStudyQuestion({
-        variables: {
-          input: {
-            id: studyQuestion.id,
-            value: values.value
-          }
+    await updateStudyQuestion({
+      variables: {
+        input: {
+          id: studyQuestionId,
+          value: values.value
         }
-      })
-    } catch (error) {
-      enqueueSnackbar(error.message, { variant: 'error' })
-    }
+      },
+      onCompleted: () => {
+        enqueueSnackbar('Study question updated', { variant: 'success' })
+        router.push(returnUrl)
+      },
+      onError: (error) => {
+        enqueueSnackbar(error.message, { variant: 'error' })
+      }
+    })
   }
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog
+      open={true}
+      onClose={() => router.push(returnUrl)}
+      maxWidth="sm"
+      fullWidth
+    >
       <DialogTitle>Edit Study Question</DialogTitle>
       <DialogContent>
         <StudyQuestionForm

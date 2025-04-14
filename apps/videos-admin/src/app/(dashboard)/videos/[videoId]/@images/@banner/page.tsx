@@ -12,9 +12,7 @@ const GET_BANNER_IMAGE = graphql(`
       id
       images(aspectRatio: banner) {
         id
-        url
-        videoStill
-        aspectRatio
+        mobileCinematicHigh
       }
     }
   }
@@ -34,7 +32,11 @@ export default function VideoBanner({ params: { videoId } }: VideoBannerProps) {
   })
   return (
     <ImageDisplay
-      src={data.adminVideo.images[0].url ?? undefined}
+      src={
+        data.adminVideo.images[0].mobileCinematicHigh
+          ? data.adminVideo.images[0].mobileCinematicHigh
+          : undefined
+      }
       alt="banner image"
       title="banner image"
       aspectRatio={ImageAspectRatio.banner}

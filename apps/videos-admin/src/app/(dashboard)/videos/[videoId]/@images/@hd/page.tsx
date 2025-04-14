@@ -12,9 +12,7 @@ const GET_HD_IMAGE = graphql(`
       id
       images(aspectRatio: hd) {
         id
-        url
         videoStill
-        aspectRatio
       }
     }
   }
@@ -34,7 +32,11 @@ export default function VideoHd({ params: { videoId } }: VideoHdProps) {
   })
   return (
     <ImageDisplay
-      src={data.adminVideo.images[0].url ?? undefined}
+      src={
+        data.adminVideo.images[0]?.videoStill
+          ? data.adminVideo.images[0].videoStill
+          : undefined
+      }
       alt="HD image"
       title="HD image"
       aspectRatio={ImageAspectRatio.hd}

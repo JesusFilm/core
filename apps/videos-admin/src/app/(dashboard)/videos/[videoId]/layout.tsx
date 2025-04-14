@@ -15,13 +15,12 @@ import { DEFAULT_VIDEO_LANGUAGE_ID } from '../constants'
 
 import { VideoViewFallback } from './_fallback'
 import { LockedVideoView } from './_locked'
+import VideoTabView from './_tabs/VideoTabView'
 
 const GET_TAB_DATA = graphql(`
   query GetTabData($id: ID!, $languageId: ID!) {
     adminVideo(id: $id) {
       id
-      childrenCount
-      editionsCount
       locked
       label
       published
@@ -29,14 +28,12 @@ const GET_TAB_DATA = graphql(`
         id
         value
       }
-      variantLanguagesCount
     }
   }
 `)
 
 interface VideoViewLayoutProps {
   children: ReactNode
-  tabs: ReactNode
   description: ReactNode
   snippet: ReactNode
   imageAlt: ReactNode
@@ -50,7 +47,6 @@ interface VideoViewLayoutProps {
 
 export default function VideoViewLayout({
   children,
-  tabs,
   description,
   imageAlt,
   snippet,
@@ -59,7 +55,13 @@ export default function VideoViewLayout({
   studyQuestions,
   params: { videoId }
 }: VideoViewLayoutProps): ReactNode {
-  const currentTab = useSelectedLayoutSegment() || 'metadata'
+  // keep metadata visible when modal is open
+  const availableTabs = ['metadata', 'audio', 'children', 'editions']
+  const segment = useSelectedLayoutSegment()
+  const currentTab = availableTabs.includes(segment ?? '')
+    ? (segment as string)
+    : 'metadata'
+  console.log('currentTab', currentTab)
 
   const { data } = useSuspenseQuery(GET_TAB_DATA, {
     variables: {
@@ -99,7 +101,7 @@ export default function VideoViewLayout({
 
       <Stack gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
         <Box width="100%">
-          {tabs}
+          <VideoTabView currentTab={currentTab} videoId={videoId} />
           {currentTab !== 'metadata' ? (
             children
           ) : (

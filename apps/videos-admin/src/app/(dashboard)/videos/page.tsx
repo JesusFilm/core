@@ -1,8 +1,10 @@
 'use client'
 
 import { useQuery } from '@apollo/client'
+import Button from '@mui/material/Button'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import {
   DataGrid,
   GridCallbackDetails,
@@ -25,11 +27,10 @@ import { usePathname, useRouter } from 'next/navigation'
 import { ReactElement } from 'react'
 
 import Lock1 from '@core/shared/ui/icons/Lock1'
+import Plus2 from '@core/shared/ui/icons/Plus2'
 
 import { PublishedChip } from '../../../components/PublishedChip'
 import { useVideoFilter } from '../../../libs/useVideoFilter'
-
-import { VideoListHeader } from './_header'
 
 function LockedCell(
   params: GridRenderCellParams<GridValidRowModel, boolean>
@@ -221,7 +222,23 @@ export default function VideoList(): ReactElement {
 
   return (
     <Stack sx={{ height: 'calc(100vh - 150px)', width: '100%' }} gap={2}>
-      <VideoListHeader />
+      <Stack
+        sx={{
+          width: '100%',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between'
+        }}
+      >
+        <Typography variant="h4">Video Library</Typography>
+        <Button
+          onClick={() => router.push('/videos/add')}
+          startIcon={<Plus2 />}
+          variant="outlined"
+        >
+          Create
+        </Button>
+      </Stack>
       <DataGrid
         getRowClassName={(params) =>
           params.indexRelativeToCurrentPage % 2 === 0 ? 'even' : 'odd'
