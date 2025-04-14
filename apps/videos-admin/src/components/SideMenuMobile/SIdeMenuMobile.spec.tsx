@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react'
-import { NextIntlClientProvider } from 'next-intl'
 
 import { AuthProvider } from '../../libs/auth/AuthProvider'
 
@@ -23,9 +22,7 @@ describe('SideMenuMobile', () => {
           photoURL: 'url-of-nameinghams-photo'
         }}
       >
-        <NextIntlClientProvider locale="en">
-          <SideMenuMobile toggleDrawer={handleToggle} open />
-        </NextIntlClientProvider>
+        <SideMenuMobile toggleDrawer={handleToggle} open />
       </AuthProvider>
     )
 
@@ -47,9 +44,7 @@ describe('SideMenuMobile', () => {
           photoURL: 'url-of-nameinghams-photo'
         }}
       >
-        <NextIntlClientProvider locale="en">
-          <SideMenuMobile toggleDrawer={handleToggle} open />
-        </NextIntlClientProvider>
+        <SideMenuMobile toggleDrawer={handleToggle} open />
       </AuthProvider>
     )
 

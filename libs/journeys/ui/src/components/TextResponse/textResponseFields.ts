@@ -5,6 +5,7 @@ export const TEXT_RESPONSE_FIELDS = gql`
     id
     parentBlockId
     parentOrder
+    required
     label
     placeholder
     hint

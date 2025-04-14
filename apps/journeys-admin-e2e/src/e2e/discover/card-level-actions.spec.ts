@@ -128,10 +128,14 @@ test.describe('verify card level actions', () => {
 
   // Response Field- create, update & delete
   test('Response Field - create, update & delete', async ({ page }) => {
+  // Response Field- create, update & delete
+  test('Response Field - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
     await cardLevelActionPage.clickBtnInAddBlockDrawer('Response Field') // clicking on Feedback button in add block drawer
+    await cardLevelActionPage.clickBtnInAddBlockDrawer('Response Field') // clicking on Feedback button in add block drawer
     await cardLevelActionPage.verifyFeedBackAddedToCard() // verifing the feedback is added to the card
+    await cardLevelActionPage.clickFeedBackPropertiesDropDown('Response Field') // clicking the feedback property dropdown in the feedback properties drawer
     await cardLevelActionPage.clickFeedBackPropertiesDropDown('Response Field') // clicking the feedback property dropdown in the feedback properties drawer
     await cardLevelActionPage.enterLabelBelowFeedBcakProperty() // entering value in label field of feedback property dropdown
     await cardLevelActionPage.enterHintBelowFeedBcakProperty() // entering value in hint field of feedback property dropdown
@@ -139,7 +143,7 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.verifyLabelUpdatedIncard() // verifying the added label is updated in the card
     await cardLevelActionPage.verifyHintUpdatedInCard() // verifying the added hint is updated in the card
     await cardLevelActionPage.selectWholeFeedBackSection() // selecting the whole feedback section
-    await cardLevelActionPage.updateMinimumRowsOptionFortextInput() // Changing minimum rows value and verifying the style property is getting changed for text input field
+    await cardLevelActionPage.updateMinimumRowsOptionForResponseField() // Changing minimum rows value and verifying the style property is getting changed for response field
     await cardLevelActionPage.selectWholeFeedBackSection() // selecting the whole feedback section
     await cardLevelActionPage.clickDeleteBtnInToolTipBar() // clicking delete button in the tooltip bar
     await cardLevelActionPage.verifyFeedBackDeletedFromCard() // verifying the feedback section is deleted from the card

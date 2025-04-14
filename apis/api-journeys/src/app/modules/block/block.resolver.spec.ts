@@ -153,6 +153,7 @@ describe('BlockResolver', () => {
       ).toEqual([blockWithUserTeam, blockWithUserTeam])
       expect(service.duplicateBlock).toHaveBeenCalledWith(
         blockWithUserTeam,
+        false,
         2,
         undefined,
         3,
@@ -191,6 +192,7 @@ describe('BlockResolver', () => {
       ).toEqual([blockWithUserTeam, blockWithUserTeam])
       expect(service.duplicateBlock).toHaveBeenCalledWith(
         blockWithUserTeam,
+        false,
         2,
         [
           { oldId: 'oldButtonId', newId: 'newButtonId' },

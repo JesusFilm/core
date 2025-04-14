@@ -1219,6 +1219,8 @@ export abstract class IQuery {
 
     abstract journeyEventsConnection(journeyId: string, filter?: Nullable<JourneyEventsFilter>, first?: Nullable<number>, after?: Nullable<string>): JourneyEventsConnection | Promise<JourneyEventsConnection>;
 
+    abstract journeyEventsCount(journeyId: string, filter?: Nullable<JourneyEventsFilter>): number | Promise<number>;
+
     abstract getJourneyProfile(): Nullable<JourneyProfile> | Promise<Nullable<JourneyProfile>>;
 
     abstract journeyVisitorsConnection(filter: JourneyVisitorFilter, first?: Nullable<number>, after?: Nullable<string>, sort?: Nullable<JourneyVisitorSort>): JourneyVisitorsConnection | Promise<JourneyVisitorsConnection>;
@@ -1728,8 +1730,10 @@ export class JourneyEvent implements Event {
     progress?: Nullable<number>;
     typename?: Nullable<string>;
     visitorId?: Nullable<string>;
-    journey?: Nullable<Journey>;
-    visitor?: Nullable<Visitor>;
+    journeySlug?: Nullable<string>;
+    visitorName?: Nullable<string>;
+    visitorEmail?: Nullable<string>;
+    visitorPhone?: Nullable<string>;
 }
 
 export class JourneyEventEdge {
