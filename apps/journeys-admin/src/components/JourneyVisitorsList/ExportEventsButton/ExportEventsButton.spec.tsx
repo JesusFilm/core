@@ -7,11 +7,6 @@ import {
   GetJourneyCreatedAt,
   GetJourneyCreatedAtVariables
 } from '../../../../__generated__/GetJourneyCreatedAt'
-import {
-  getMockGetJourneyEventsCountQuery,
-  mockCreateEventsExportLogMutation,
-  mockGetJourneyEventsQuery
-} from '../../../libs/useJourneyEventsExport/useJourneyEventsExport.mock'
 import { GET_JOURNEY_CREATED_AT } from '../FilterDrawer/ExportDialog/ExportDialog'
 
 import { ExportEventsButton } from './ExportEventsButton'
