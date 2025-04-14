@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
+import fetch from 'node-fetch'
 
 export default async function handler(
   req: NextApiRequest,
@@ -13,13 +14,40 @@ export default async function handler(
   }
 
   try {
-    await res.revalidate(
-      `/${req.query.hostname?.toString() ?? 'home'}/${req.query.slug as string}`
-    )
-    return res.status(200).json({ revalidated: true })
+    const hostname = req.query.hostname?.toString()
+    const path = `/${hostname ?? 'home'}/${req.query.slug as string}`
+    await res.revalidate(path)
+
+    // Trigger Facebook re-scrape
+    const journeyUrl =
+      hostname != null
+        ? `https://${hostname}${path}`
+        : `${process.env.NEXT_PUBLIC_JOURNEYS_URL}${path}`
+
+    try {
+      await fetch('https://graph.facebook.com', {
+        method: 'POST',
+        body: new URLSearchParams({
+          id: journeyUrl,
+          scrape: 'true'
+        })
+      })
+    } catch (fbError) {
+      // Don't fail the whole request if Facebook scrape fails
+      return res.status(200).json({
+        revalidated: true,
+        facebookError: fbError
+      })
+    }
+
+    return res.status(200).json({
+      revalidated: true
+    })
   } catch (err) {
     // If there was an error, Next.js will continue
     // to show the last successfully generated page
-    return res.status(500).send('Error revalidating')
+    return res.status(500).json({
+      error: 'Error revalidating'
+    })
   }
 }
