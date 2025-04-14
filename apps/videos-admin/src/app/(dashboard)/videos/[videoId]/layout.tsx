@@ -22,7 +22,6 @@ const GET_TAB_DATA = graphql(`
     adminVideo(id: $id) {
       id
       locked
-      label
       published
       title(languageId: $languageId) {
         id
@@ -61,7 +60,6 @@ export default function VideoViewLayout({
   const currentTab = availableTabs.includes(segment ?? '')
     ? (segment as string)
     : 'metadata'
-  console.log('currentTab', currentTab)
 
   const { data } = useSuspenseQuery(GET_TAB_DATA, {
     variables: {

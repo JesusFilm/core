@@ -2,13 +2,19 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useField } from 'formik'
 
-import { LinkFile } from '../../../../../../../../../../components/LinkFile'
-import { GetAdminVideo_AdminVideo_VideoEdition_VideoSubtitle as Subtitle } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { FileUpload } from '../../../../../@tabsView/metadata/VideoImage/FileUpload'
+import { FileUpload } from '../../../../../../../../components/FileUpload'
+import { LinkFile } from '../../../../../../../../components/LinkFile'
 
 import { validateSubtitleFile } from './validateSubtitleFile'
 
-export function SubtitleFileUpload({ subtitle }: { subtitle?: Subtitle }) {
+export function SubtitleFileUpload({
+  subtitle
+}: {
+  subtitle?: {
+    vttSrc: string
+    srtSrc: string
+  }
+}) {
   const [vttField, _vttMeta, vttHelpers] = useField<File | null>('vttFile')
   const [srtField, _srtMeta, srtHelpers] = useField<File | null>('srtFile')
 

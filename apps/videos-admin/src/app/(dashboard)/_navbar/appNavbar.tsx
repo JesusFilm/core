@@ -10,10 +10,11 @@ import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import { ReactElement, useState } from 'react'
 
-import minimalLogo from '../../assets/minimal-logo.png'
-import { MenuButton } from '../MenuButton'
-import { SideMenuMobile } from '../SideMenuMobile'
-import { ToggleColorMode } from '../ToggleColorMode'
+import minimalLogo from '../../../assets/minimal-logo.png'
+import { MenuButton } from '../../../components/MenuButton'
+import { ToggleColorMode } from '../../../components/ToggleColorMode'
+
+import { SideMenuMobile } from './_sideMenuMobile'
 
 const Toolbar = styled(MuiToolbar)({
   padding: '12px',

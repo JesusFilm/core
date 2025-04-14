@@ -7,9 +7,9 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
-import { useAuth } from '../../libs/auth/authContext'
-import { useLogout } from '../../libs/useLogout'
-import { MenuContent } from '../MenuContent'
+import { MenuContent } from '../../../../components/MenuContent'
+import { useAuth } from '../../../../libs/auth/authContext'
+import { useLogout } from '../../../../libs/useLogout'
 
 interface SideMenuMobileProps {
   open: boolean | undefined

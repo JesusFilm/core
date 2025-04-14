@@ -7,10 +7,10 @@ import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import { ReactElement } from 'react'
 
-import minimalLogo from '../../assets/minimal-logo.png'
-import { useAuth } from '../../libs/auth/authContext'
-import { MenuContent } from '../MenuContent'
-import { OptionsMenu } from '../OptionsMenu'
+import minimalLogo from '../../../assets/minimal-logo.png'
+import { MenuContent } from '../../../components/MenuContent'
+import { OptionsMenu } from '../../../components/OptionsMenu'
+import { useAuth } from '../../../libs/auth/authContext'
 
 const drawerWidth = 240
 

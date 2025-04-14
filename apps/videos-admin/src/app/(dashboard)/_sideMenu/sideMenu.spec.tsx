@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react'
 
-import { AuthProvider } from '../../libs/auth/AuthProvider'
+import { AuthProvider } from '../../../libs/auth/AuthProvider'
 
-import { SideMenu } from './SideMenu'
+import { SideMenu } from './sideMenu'
 
 jest.mock('next/navigation', () => ({
   ...jest.requireActual('next/navigation'),

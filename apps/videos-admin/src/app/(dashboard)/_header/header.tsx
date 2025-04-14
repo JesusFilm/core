@@ -1,8 +1,9 @@
 import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
 
-import { NavbarBreadcrumbs } from '../NavbarBreadcrumbs'
-import { ToggleColorMode } from '../ToggleColorMode'
+import { ToggleColorMode } from '../../../components/ToggleColorMode'
+
+import { NavbarBreadcrumbs } from './_breadcrumbs'
 
 export function Header(): ReactElement {
   return (

@@ -48,12 +48,14 @@ export default function AddChildren({
     variables: { id: videoId }
   })
 
+  const returnUrl = `/videos/${videoId}`
+
   const [updateVideoChildrenOrder] = useMutation(UPDATE_VIDEO_CHILDREN_ORDER, {
     onCompleted: () => {
       enqueueSnackbar('Successfully added video as child.', {
         variant: 'success'
       })
-      router.back()
+      router.push(returnUrl)
     },
     onError: () => {
       enqueueSnackbar('Failed to add video as child.', {
@@ -89,7 +91,7 @@ export default function AddChildren({
     >
       <VideoCreateForm
         parentId={videoId}
-        close={() => router.back()}
+        close={() => router.push(returnUrl)}
         onCreateSuccess={handleCreateSuccess}
       />
     </Dialog>

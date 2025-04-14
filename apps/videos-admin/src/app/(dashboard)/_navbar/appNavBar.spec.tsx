@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
-import { AppNavbar } from './AppNavbar'
+import { AppNavbar } from './appNavbar'
 
 jest.mock('next/navigation')
 
