@@ -139,7 +139,7 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.verifyLabelUpdatedIncard() // verifying the added label is updated in the card
     await cardLevelActionPage.verifyHintUpdatedInCard() // verifying the added hint is updated in the card
     await cardLevelActionPage.selectWholeFeedBackSection() // selecting the whole Response Field section
-    await cardLevelActionPage.updateMinimumRowsOptionForResponseField() // Changing minimum rows value and verifying the style property is getting changed for response field
+    await cardLevelActionPage.updateMinimumRowsOptionFortextInput() // Changing minimum rows value and verifying the style property is getting changed for text input field
     await cardLevelActionPage.selectWholeFeedBackSection() // selecting the whole Response Field section
     await cardLevelActionPage.clickDeleteBtnInToolTipBar() // clicking delete button in the tooltip bar
     await cardLevelActionPage.verifyFeedBackDeletedFromCard() // verifying the Response Field section is deleted from the card

@@ -18,12 +18,11 @@ Take screenshot (after-video)
 */
 
 test.describe('firefox only', () => {
-  test('Feature film', async ({ page, browser, browserName }) => {
-    if (browserName !== 'firefox') {
-      test.skip()
-      return
-    }
-    
+  // skip the test if mobile as no.of video clips differs based on the device size
+  // eslint-disable-next-line playwright/no-skipped-test
+  test.skip(({ browserName }) => browserName !== 'firefox', 'firefox only!')
+
+  test('Feature film', async ({ page, browser }) => {
     // Set test time out as it has video
     test.setTimeout(5 * 60 * 1000)
 

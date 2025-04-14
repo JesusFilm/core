@@ -92,7 +92,7 @@ export class TeamsPage {
       })
     ).toBeVisible()
     await expect(this.page.locator('div#notistack-snackbar')).toHaveCount(0, {
-      timeout: 30000
+      timeout: thirtySecondsTimeout
     })
   }
 
@@ -148,7 +148,7 @@ export class TeamsPage {
       this.renameTeamName + ' updated.'
     )
     await expect(this.page.locator('div#notistack-snackbar')).toHaveCount(0, {
-      timeout: 30000
+      timeout: thirtySecondsTimeout
     })
   }
 
@@ -182,8 +182,9 @@ export class TeamsPage {
       .click()
   }
 
-  // Custom Domain option in Three dot menu
-  async enterCustomDomainName(domainName: string) {
+  //Custom Domain option in Three dot menu
+
+  async enterCustomDomainName(domainName) {
     await this.page
       .locator('div.MuiDialogContent-root input#name')
       .fill(domainName)
@@ -195,53 +196,45 @@ export class TeamsPage {
       .getByRole('button', { name: 'Connect' })
       .click()
   }
-
   async searchJourneyNameAndChooseFirstSuggestion(journeyNamePartial: string) {
     await this.page
-      .locator('div.MuiDialogContent-root input#name')
-      .fill(journeyNamePartial)
+      .locator('div.MuiDialogContent-root input#defaultJourney')
+      .pressSequentially(journeyNamePartial)
     await this.page
-      .locator('div.MuiDialogContent-root ul[role="listbox"] li')
+      .locator('ul#defaultJourney-listbox')
+      .getByRole('option', { name: journeyNamePartial })
       .first()
       .click()
   }
-
   async getDnsContentAndCopy() {
-    const dnsContent = await this.page
-      .locator('div.MuiDialogContent-root table')
-      .textContent()
-    await this.page
-      .locator('div.MuiDialogContent-root button[aria-label="copy"]')
-      .click()
-    return dnsContent
+    const copyIconPath = this.page.getByRole('button', { name: 'Copy' })
+    await copyIconPath.click()
+    return await this.page
+      .locator('div.MuiStack-root table td', { has: copyIconPath })
+      .innerText()
   }
-
   async clickCustomDomainDialogCloseIcon() {
     await this.page.locator('button[data-testid="dialog-close-button"]').click()
   }
 
-  // Integrations option in Three dot menu
   async clickAddIntegrationButton() {
-    await this.page.locator('button[aria-label="add integration"]').click()
+    await this.page.getByTestId('Add-IntegrationsButton').click()
   }
-
   async clickGrowthSpaceIntegration() {
-    await this.page
-      .locator('div[role="button"]', { hasText: 'Growth Space' })
-      .click()
+    await this.page.getByTestId('growthSpaces-IntegrationsButton').click()
   }
-
   async enterAccessId(accessId: string) {
-    await this.page.locator('input#accessId').fill(accessId)
-  }
-
-  async enterAccessSecret(accessSecret: string) {
-    await this.page.locator('input#accessSecret').fill(accessSecret)
-  }
-
-  async clickSaveBtnForintegration() {
     await this.page
-      .locator('div[data-testid="dialog-action"] button', { hasText: 'Save' })
-      .click()
+      .locator('p.MuiTypography-root:text-is("Access ID") ~ div input')
+      .fill(accessId)
+  }
+  async enterAccessSecret(accessSecret: string) {
+    await this.page
+      .locator('p.MuiTypography-root:text-is("Access Secret") ~ div input')
+      .fill(accessSecret)
+  }
+  async clickSaveBtnForintegration() {
+    //invalid credentials for Growth Spaces integration
+    await this.page.getByRole('button', { name: 'Save' }).click()
   }
 }
