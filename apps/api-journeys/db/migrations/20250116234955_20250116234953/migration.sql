@@ -1,3 +1,0 @@
--- AlterTable
-ALTER TABLE "Journey" ALTER COLUMN "socialNodeX" SET DEFAULT -240,
-ALTER COLUMN "socialNodeY" SET DEFAULT -46;
