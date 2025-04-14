@@ -51,7 +51,7 @@ export function HostAvatars({
   function render(): ReactElement | null {
     if (isEmpty && size === 'large') return null
 
-    return journey?.showHosts !== true && showFallback ? (
+    return journey?.showHosts === true && showFallback ? (
       <>{hasPlaceholder === true && <Placeholder />}</>
     ) : (
       <>
