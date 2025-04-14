@@ -1,3 +1,5 @@
+'use client'
+
 import { useMutation, useSuspenseQuery } from '@apollo/client'
 import Dialog from '@mui/material/Dialog'
 import DialogContent from '@mui/material/DialogContent'

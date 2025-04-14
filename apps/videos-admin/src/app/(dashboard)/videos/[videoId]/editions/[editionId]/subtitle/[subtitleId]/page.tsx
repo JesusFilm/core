@@ -5,7 +5,7 @@ import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
 import { Form, Formik } from 'formik'
-import { graphql } from 'gql.tada'
+import { VariablesOf, graphql } from 'gql.tada'
 import { useSnackbar } from 'notistack'
 import { useEffect, useRef, useState } from 'react'
 import { mixed, object, string } from 'yup'
@@ -129,7 +129,7 @@ export default function SubtitlePage({
     const vttFile = values.vttFile
     const srtFile = values.srtFile
 
-    const input = {
+    const input: VariablesOf<typeof UPDATE_VIDEO_SUBTITLE>['input'] = {
       id: subtitle.id,
       edition: edition.name as string,
       languageId: values.language,

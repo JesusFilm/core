@@ -95,7 +95,7 @@ export default function ChildrenPage({ params: { videoId } }: ChildrenProps) {
   }
   return (
     <Section
-      title={videoLabel}
+      title={videoLabel ?? 'Untitled Video'}
       boxProps={{
         sx: { p: 2, height: 'calc(100vh - 400px)', overflowY: 'scroll' }
       }}

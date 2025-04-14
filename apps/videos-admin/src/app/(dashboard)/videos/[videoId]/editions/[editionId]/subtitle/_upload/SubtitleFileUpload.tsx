@@ -11,8 +11,8 @@ export function SubtitleFileUpload({
   subtitle
 }: {
   subtitle?: {
-    vttSrc: string
-    srtSrc: string
+    vttSrc: string | null
+    srtSrc: string | null
   }
 }) {
   const [vttField, _vttMeta, vttHelpers] = useField<File | null>('vttFile')

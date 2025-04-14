@@ -8,7 +8,7 @@ import Image from 'next/image'
 import { ReactElement, useCallback, useState } from 'react'
 import { useLoadingCallback } from 'react-loading-hook'
 
-import minimalLogo from '../../../../assets/minimal-logo.png'
+import minimalLogo from '../../../assets/minimal-logo.png'
 import { CenterPage } from '../../../components/CenterPage'
 import { getFirebaseAuth, loginWithGoogle } from '../../../libs/auth/firebase'
 import { useRedirectAfterLogin } from '../../../libs/auth/useRedirectAfterLogin'

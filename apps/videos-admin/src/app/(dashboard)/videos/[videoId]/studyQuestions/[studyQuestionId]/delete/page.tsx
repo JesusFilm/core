@@ -56,7 +56,7 @@ export default function StudyQuestionDeletePage({
   return (
     <Dialog
       open={true}
-      onClose={handleCloseDeleteDialog}
+      onClose={() => router.push(`/videos/${videoId}`)}
       aria-labelledby="delete-study-question-dialog-title"
     >
       <DialogTitle id="delete-study-question-dialog-title">

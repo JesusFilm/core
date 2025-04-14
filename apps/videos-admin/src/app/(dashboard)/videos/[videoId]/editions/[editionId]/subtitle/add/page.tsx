@@ -65,7 +65,7 @@ interface SubtitleCreateProps {
   }
 }
 
-export function SubtitleCreate({
+export default function SubtitleCreate({
   params: { editionId, videoId }
 }: SubtitleCreateProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()

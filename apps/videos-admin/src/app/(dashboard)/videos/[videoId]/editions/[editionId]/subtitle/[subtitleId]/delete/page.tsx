@@ -1,3 +1,5 @@
+'use client'
+
 import { useMutation } from '@apollo/client'
 import { graphql } from 'gql.tada'
 import { useRouter } from 'next/navigation'
