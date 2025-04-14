@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 
-import { Header } from './Header'
+import { Header } from './header'
 
 describe('Header', () => {
   it('should have breadcrumbs and theme toggle', async () => {

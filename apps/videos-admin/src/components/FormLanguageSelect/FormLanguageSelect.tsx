@@ -41,12 +41,18 @@ export function FormLanguageSelect({
     }
 
     return data.languages.filter((language) => {
-      if (parentObjectId && existingLanguageIds.includes(language.id)) {
+      // Always include the parent object's language (which is the initial language)
+      if (
+        parentObjectId &&
+        initialLanguage &&
+        language.id === initialLanguage.id
+      ) {
         return true
       }
+      // Exclude other languages that are in existingLanguageIds
       return !existingLanguageIds.includes(language.id)
     })
-  }, [data?.languages, existingLanguageIds, parentObjectId])
+  }, [data?.languages, existingLanguageIds, parentObjectId, initialLanguage])
 
   return (
     <LanguageAutocomplete

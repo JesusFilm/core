@@ -14,7 +14,6 @@ import { InferType, mixed, object, string } from 'yup'
 import { FormSelectField } from '../../../../components/FormSelectField'
 import { FormTextField } from '../../../../components/FormTextField'
 import { videoLabels } from '../../../../constants'
-import { useCreateEditionMutation } from '../../../../libs/useCreateEdition'
 
 enum VideoLabel {
   behindTheScenes = 'behindTheScenes',
@@ -40,6 +39,14 @@ export const GET_PARENT_VIDEO_LABEL = graphql(`
     adminVideo(id: $videoId) {
       id
       label
+    }
+  }
+`)
+
+export const CREATE_EDITION = graphql(`
+  mutation CreateEdition($input: VideoEditionCreateInput!) {
+    videoEditionCreate(input: $input) {
+      id
     }
   }
 `)
@@ -76,7 +83,7 @@ export function VideoCreateForm({
   })
 
   const [createVideo] = useMutation(CREATE_VIDEO)
-  const [createEdition] = useCreateEditionMutation()
+  const [createEdition] = useMutation(CREATE_EDITION)
 
   // Determine the suggested child label based on parent label
   const suggestedLabel = useMemo(() => {

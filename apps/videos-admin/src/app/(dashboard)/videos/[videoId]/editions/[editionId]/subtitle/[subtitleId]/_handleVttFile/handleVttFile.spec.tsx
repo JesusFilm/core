@@ -3,8 +3,6 @@ import { handleVttFile } from './handleVttFile'
 describe('handleVttFile', () => {
   // Mock dependencies
   const mockVideo = { id: 'video-123' } as any
-  const mockEdition = { name: 'edition-name' } as any
-  const mockLanguageId = 'lang-123'
   const mockFile = new File(['test content'], 'test.vtt', { type: 'text/vtt' })
   const mockAbortController = { current: new AbortController() } as any
 
@@ -29,9 +27,9 @@ describe('handleVttFile', () => {
   it('should upload a VTT file and return the public URL, upload URL, and r2AssetId', async () => {
     const result = await handleVttFile({
       vttFile: mockFile,
-      video: mockVideo,
-      edition: mockEdition,
-      languageId: mockLanguageId,
+      videoId: 'video-123',
+      editionId: 'edition-123',
+      languageId: 'language-123',
       createR2Asset: mockCreateR2Asset,
       uploadAssetFile: mockUploadAssetFile,
       abortController: mockAbortController,
@@ -76,9 +74,9 @@ describe('handleVttFile', () => {
     await expect(
       handleVttFile({
         vttFile: mockFile,
-        video: mockVideo,
-        edition: mockEdition,
-        languageId: mockLanguageId,
+        videoId: 'video-123',
+        editionId: 'edition-123',
+        languageId: 'language-123',
         createR2Asset: mockCreateR2Asset,
         uploadAssetFile: mockUploadAssetFile,
         abortController: mockAbortController,
