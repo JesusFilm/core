@@ -33,6 +33,11 @@ export default async function handler(
   // Run the middleware
   await runMiddleware(req, res, cors)
 
+  // Set headers to prevent caching
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
+  res.setHeader('Pragma', 'no-cache')
+  res.setHeader('Expires', '0')
+
   if (req.cookies['journeys-admin.AuthUser'] == null)
     return res.status(400).json({ error: 'Missing Authorization header value' })
 
@@ -60,16 +65,22 @@ export default async function handler(
   }
 
   if (hostname != null) params.hostname = hostname
+
   try {
     const response = await fetch(
       `${process.env.JOURNEYS_URL}/api/revalidate?${new URLSearchParams(
         params
       ).toString()}`
     )
-    if (response.ok) {
-      res.status(response.status).json(await response.text())
-    }
+
+    const responseData = await response.json()
+
+    return res.status(response.status).json({
+      ...responseData
+    })
   } catch (e) {
-    return res.status(500).json({ error: 'Error revalidating' })
+    return res.status(500).json({
+      error: 'Error revalidating'
+    })
   }
 }

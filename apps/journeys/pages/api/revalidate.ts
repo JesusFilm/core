@@ -13,13 +13,16 @@ export default async function handler(
   }
 
   try {
-    await res.revalidate(
-      `/${req.query.hostname?.toString() ?? 'home'}/${req.query.slug as string}`
-    )
-    return res.status(200).json({ revalidated: true })
+    const path = `/${req.query.hostname?.toString() ?? 'home'}/${req.query.slug as string}`
+    await res.revalidate(path)
+    return res.status(200).json({
+      revalidated: true
+    })
   } catch (err) {
     // If there was an error, Next.js will continue
     // to show the last successfully generated page
-    return res.status(500).send('Error revalidating')
+    return res.status(500).json({
+      message: 'Error revalidating'
+    })
   }
 }
