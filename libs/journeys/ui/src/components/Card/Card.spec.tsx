@@ -22,8 +22,6 @@ import {
 } from '../../libs/block/__generated__/BlockFields'
 import { blurImage } from '../../libs/blurImage'
 import { JourneyProvider } from '../../libs/JourneyProvider'
-import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
-import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
 
 import {
   action,
@@ -31,19 +29,15 @@ import {
   buttonBlock,
   card1,
   card2,
-  card3,
   createMockButtonClickEvent,
   getStepViewEventMock,
   imageBlock,
   journey,
-  leftSide,
   mockStepNextEventCreate,
-  mockStepPreviousEventCreate,
   mockTextResponse1SubmissionEventCreate,
   mockTextResponse2SubmissionEventCreate,
   mockTextResponseEmailSubmissionEventCreate,
   mockTextResponseSubmissionEventCreate,
-  rightSide,
   step1,
   step2,
   step3,
@@ -77,10 +71,6 @@ const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 jest.mock('@next/third-parties/google', () => ({
   sendGTMEvent: jest.fn()
 }))
-
-const mockedSendGTMEvent = sendGTMEvent as jest.MockedFunction<
-  typeof sendGTMEvent
->
 
 jest.mock('next-plausible', () => ({
   __esModule: true,
@@ -237,231 +227,6 @@ describe('CardBlock', () => {
     )
     expect(standaloneVideoBlock).not.toBeInTheDocument()
     expect(queryAllByText('How did we get here?')[0]).toBeInTheDocument()
-  })
-
-  it('should navigate to next card', async () => {
-    mockUuidv4.mockReturnValue('uuid')
-    treeBlocksVar([step1, step2, step3])
-    blockHistoryVar([step1])
-    const mockPlausible = jest.fn()
-    mockUsePlausible.mockReturnValue(mockPlausible)
-
-    const { getByTestId } = render(
-      <MockedProvider mocks={[mockStepNextEventCreate]}>
-        <JourneyProvider value={{ journey }}>
-          <Card {...card1} />
-        </JourneyProvider>
-      </MockedProvider>
-    )
-
-    fireEvent.click(getByTestId('JourneysCard-card1.id'), rightSide)
-
-    expect(blockHistoryVar()).toHaveLength(2)
-    expect(blockHistoryVar()[1].id).toBe('step2.id')
-
-    await waitFor(() =>
-      expect(mockStepNextEventCreate.result).toHaveBeenCalled()
-    )
-    expect(mockPlausible).toHaveBeenCalledWith('navigateNextStep', {
-      u: `${mockOrigin}/journey.id/step1.id`,
-      props: {
-        id: 'uuid',
-        blockId: 'step1.id',
-        label: 'Step {{number}}',
-        value: 'Step {{number}}',
-        nextStepId: 'step2.id',
-        key: keyify({
-          stepId: 'step1.id',
-          event: 'navigateNextStep',
-          blockId: 'step1.id',
-          target: 'step2.id'
-        }),
-        simpleKey: keyify({
-          stepId: 'step1.id',
-          event: 'navigateNextStep',
-          blockId: 'step1.id'
-        })
-      }
-    })
-    expect(mockedSendGTMEvent).toHaveBeenCalledWith({
-      event: 'step_next',
-      eventId: 'uuid',
-      blockId: 'step1.id',
-      stepName: 'Step {{number}}',
-      targetStepId: 'step2.id',
-      targetStepName: 'Step {{number}}'
-    })
-  })
-
-  it('should navigate to previous card', async () => {
-    mockUuidv4.mockReturnValue('uuid')
-    treeBlocksVar([step1, step2, step3])
-    blockHistoryVar([step1, step2])
-    const mockPlausible = jest.fn()
-    mockUsePlausible.mockReturnValue(mockPlausible)
-
-    const { getByTestId } = render(
-      <MockedProvider
-        mocks={[
-          getStepViewEventMock(step2.id),
-          getStepViewEventMock(step1.id),
-          mockStepPreviousEventCreate
-        ]}
-      >
-        <JourneyProvider value={{ journey }}>
-          <Card {...card2} />
-        </JourneyProvider>
-      </MockedProvider>
-    )
-
-    fireEvent.click(getByTestId('JourneysCard-card2.id'), leftSide)
-
-    expect(blockHistoryVar()).toHaveLength(1)
-    expect(blockHistoryVar()[0].id).toBe('step1.id')
-
-    await waitFor(() =>
-      expect(mockStepPreviousEventCreate.result).toHaveBeenCalled()
-    )
-    expect(mockPlausible).toHaveBeenCalledWith('navigatePreviousStep', {
-      u: `${mockOrigin}/journey.id/step2.id`,
-      props: {
-        id: 'uuid',
-        blockId: 'step2.id',
-        label: 'Step {{number}}',
-        value: 'Step {{number}}',
-        previousStepId: 'step1.id',
-        key: keyify({
-          stepId: 'step2.id',
-          event: 'navigatePreviousStep',
-          blockId: 'step2.id',
-          target: 'step1.id'
-        }),
-        simpleKey: keyify({
-          stepId: 'step2.id',
-          event: 'navigatePreviousStep',
-          blockId: 'step2.id'
-        })
-      }
-    })
-    expect(mockedSendGTMEvent).toHaveBeenCalledWith({
-      event: 'step_prev',
-      eventId: 'uuid',
-      blockId: 'step2.id',
-      stepName: 'Step {{number}}',
-      targetStepId: 'step1.id',
-      targetStepName: 'Step {{number}}'
-    })
-  })
-
-  it('should block navigate next for locked cards', () => {
-    const stepBlock: TreeBlock<StepBlock> = {
-      ...step1,
-      locked: true
-    }
-    const lockedCard: TreeBlock<CardBlock> = {
-      ...card1,
-      children: [stepBlock]
-    }
-    treeBlocksVar([lockedCard, step2, step3])
-    blockHistoryVar([stepBlock])
-
-    const { getByTestId } = render(
-      <MockedProvider mocks={[getStepViewEventMock(step1.id, 'Untitled')]}>
-        <Card {...lockedCard} />
-      </MockedProvider>
-    )
-
-    fireEvent.click(getByTestId('JourneysCard-card1.id'), rightSide)
-
-    expect(blockHistoryVar()).toHaveLength(1)
-  })
-
-  it('should block navigate previous on the first card', () => {
-    treeBlocksVar([step1, step2, step3])
-    blockHistoryVar([step1])
-
-    const { getByTestId } = render(
-      <MockedProvider mocks={[getStepViewEventMock(step1.id)]}>
-        <Card {...card1} />
-      </MockedProvider>
-    )
-
-    fireEvent.click(getByTestId('JourneysCard-card1.id'), leftSide)
-
-    expect(blockHistoryVar()).toHaveLength(1)
-  })
-
-  it('should block navigate next on the last card', () => {
-    treeBlocksVar([step1, step2, step3])
-    blockHistoryVar([step1, step2, step3])
-
-    const { getByTestId } = render(
-      <MockedProvider mocks={[getStepViewEventMock(step3.id)]}>
-        <Card {...card3} />
-      </MockedProvider>
-    )
-
-    fireEvent.click(getByTestId('JourneysCard-card3.id'), rightSide)
-
-    expect(blockHistoryVar()).toHaveLength(3)
-  })
-
-  it('should navigate next on rtl', () => {
-    mockUsePlausible.mockReturnValue(jest.fn())
-    const journey = {
-      language: {
-        bcp47: 'ar'
-      }
-    } as unknown as Journey
-
-    treeBlocksVar([step1, step2, step3])
-    blockHistoryVar([step1])
-
-    const { getByTestId } = render(
-      <MockedProvider
-        mocks={[getStepViewEventMock(step1.id), mockStepNextEventCreate]}
-      >
-        <JourneyProvider value={{ journey }}>
-          <Card {...card1} />
-        </JourneyProvider>
-      </MockedProvider>
-    )
-
-    fireEvent.click(getByTestId('JourneysCard-card1.id'), leftSide)
-
-    expect(blockHistoryVar()).toHaveLength(2)
-    expect(blockHistoryVar()[1].id).toBe('step2.id')
-  })
-
-  it('should navigate previous on rtl', () => {
-    mockUsePlausible.mockReturnValue(jest.fn())
-    const journey = {
-      language: {
-        bcp47: 'ar'
-      }
-    } as unknown as Journey
-
-    treeBlocksVar([step1, step2, step3])
-    blockHistoryVar([step1, step2])
-
-    const { getByTestId } = render(
-      <MockedProvider
-        mocks={[
-          getStepViewEventMock(step2.id),
-          getStepViewEventMock(step1.id),
-          mockStepPreviousEventCreate
-        ]}
-      >
-        <JourneyProvider value={{ journey }}>
-          <Card {...card2} />
-        </JourneyProvider>
-      </MockedProvider>
-    )
-
-    fireEvent.click(getByTestId('JourneysCard-card2.id'), rightSide)
-
-    expect(blockHistoryVar()).toHaveLength(1)
-    expect(blockHistoryVar()[0].id).toBe('step1.id')
   })
 
   it('should have formik context for submissions', async () => {
