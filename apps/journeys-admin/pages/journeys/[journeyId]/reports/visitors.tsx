@@ -152,13 +152,13 @@ function JourneyVisitorsPage(): ReactElement {
       case 'Chat Started':
         setChatStarted(e.target.checked as boolean)
         break
-      case 'With Poll Answers':
+      case 'Poll Answers':
         setWithPollAnswers(e.target.checked as boolean)
         break
-      case 'With Submitted Text':
+      case 'Submitted Text':
         setWithSubmittedText(e.target.checked as boolean)
         break
-      case 'With Icon':
+      case 'Icon':
         setWithIcon(e.target.checked as boolean)
         break
       case 'Hide Inactive':
@@ -236,6 +236,7 @@ function JourneyVisitorsPage(): ReactElement {
             withSubmittedText={withSubmittedText}
             withIcon={withIcon}
             hideInteractive={hideInteractive}
+            handleClearAll={handleClearAll}
           />
         }
       >

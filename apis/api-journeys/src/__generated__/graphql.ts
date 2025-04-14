@@ -892,9 +892,9 @@ export type JourneyEvent = Event & {
   email?: Maybe<Scalars['String']['output']>;
   /** Base event fields from Event interface */
   id: Scalars['ID']['output'];
-  /** Related fields queried from relevant ids in the events table */
-  journey?: Maybe<Journey>;
   journeyId: Scalars['ID']['output'];
+  /** Related fields queried from relevant ids in the events table */
+  journeySlug?: Maybe<Scalars['String']['output']>;
   label?: Maybe<Scalars['String']['output']>;
   language?: Maybe<Language>;
   messagePlatform?: Maybe<MessagePlatform>;
@@ -904,8 +904,10 @@ export type JourneyEvent = Event & {
   /** database fields from table, not explicitly surfaced from any other types */
   typename?: Maybe<Scalars['String']['output']>;
   value?: Maybe<Scalars['String']['output']>;
-  visitor?: Maybe<Visitor>;
+  visitorEmail?: Maybe<Scalars['String']['output']>;
   visitorId?: Maybe<Scalars['String']['output']>;
+  visitorName?: Maybe<Scalars['String']['output']>;
+  visitorPhone?: Maybe<Scalars['String']['output']>;
 };
 
 export type JourneyEventEdge = {
@@ -2750,6 +2752,7 @@ export type Query = {
   journeyCollection: JourneyCollection;
   journeyCollections: Array<Maybe<JourneyCollection>>;
   journeyEventsConnection: JourneyEventsConnection;
+  journeyEventsCount: Scalars['Int']['output'];
   /** Get a JourneyVisitor count by JourneyVisitorFilter */
   journeyVisitorCount: Scalars['Int']['output'];
   /** Get a list of Visitor Information by Journey */
@@ -2952,6 +2955,12 @@ export type QueryJourneyEventsConnectionArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   filter?: InputMaybe<JourneyEventsFilter>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  journeyId: Scalars['ID']['input'];
+};
+
+
+export type QueryJourneyEventsCountArgs = {
+  filter?: InputMaybe<JourneyEventsFilter>;
   journeyId: Scalars['ID']['input'];
 };
 
@@ -4626,6 +4635,7 @@ export type VideoStudyQuestion = {
   __typename?: 'VideoStudyQuestion';
   id: Scalars['ID']['output'];
   language: Language;
+  order: Scalars['Int']['output'];
   primary: Scalars['Boolean']['output'];
   value: Scalars['String']['output'];
 };

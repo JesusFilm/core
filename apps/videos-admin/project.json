@@ -4,23 +4,16 @@
   "sourceRoot": "apps/videos-admin",
   "projectType": "application",
   "tags": ["doppler_config:stg_dev"],
-  "implicitDependencies": ["locales"],
   "targets": {
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": [
-          "cp -r libs/locales apps/videos-admin/src",
-          "nx _build videos-admin"
-        ],
+        "commands": ["nx _build videos-admin"],
         "parallel": false
       },
       "configurations": {
         "production": {
-          "commands": [
-            "cp -r libs/locales apps/videos-admin/src",
-            "CI=true nx _build videos-admin --prod"
-          ],
+          "commands": ["CI=true nx _build videos-admin --prod"],
           "parallel": false
         }
       }
@@ -84,7 +77,8 @@
         "buildTarget": "videos-admin:_build",
         "dev": true,
         "hostname": "0.0.0.0",
-        "port": 4500
+        "port": 4500,
+        "turbo": true
       },
       "configurations": {
         "production": {
@@ -101,10 +95,7 @@
     "serve": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": [
-          "cp -r libs/locales apps/videos-admin/src",
-          "nx _serve videos-admin"
-        ],
+        "commands": ["nx _serve videos-admin"],
         "parallel": false
       },
       "configurations": {
@@ -179,16 +170,6 @@
         "commands": [
           {
             "command": "DOPPLER_TOKEN=$DOPPLER_VIDEOS_ADMIN_TOKEN doppler secrets download --no-file --format=env --project videos-admin > apps/videos-admin/.env"
-          }
-        ]
-      }
-    },
-    "extract-translations": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          {
-            "command": "npx i18next --config apps/videos-admin/i18next-parser.config.js"
           }
         ]
       }
