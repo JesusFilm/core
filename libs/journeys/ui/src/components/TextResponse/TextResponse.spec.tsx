@@ -125,6 +125,38 @@ describe('TextResponse', () => {
     expect(screen.getByLabelText('Label')).toBeInTheDocument()
   })
 
+  it('should show placeholder text with only one whitespace inbetween words', () => {
+    const blockWithPlaceholder: TreeBlock<TextResponseFields> = {
+      ...block,
+      placeholder: '     Enter      your      thoughts      here     '
+    }
+
+    render(
+      <JourneyProvider>
+        <SnackbarProvider>
+          <TextResponse {...blockWithPlaceholder} />
+        </SnackbarProvider>
+      </JourneyProvider>
+    )
+
+    expect(screen.getByRole('textbox')).toHaveAttribute(
+      'placeholder',
+      'Enter your thoughts here'
+    )
+  })
+
+  it('should show empty placeholder text if placeholder is null', () => {
+    render(
+      <JourneyProvider>
+        <SnackbarProvider>
+          <TextResponse {...block} />
+        </SnackbarProvider>
+      </JourneyProvider>
+    )
+
+    expect(screen.getByRole('textbox')).toHaveAttribute('placeholder', '')
+  })
+
   it('should be in a loading state when waiting for response', async () => {
     const { getByRole } = render(
       <Formik initialValues={{}} onSubmit={noop}>
