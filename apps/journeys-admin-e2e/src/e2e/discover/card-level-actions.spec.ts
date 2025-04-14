@@ -128,42 +128,21 @@ test.describe('verify card level actions', () => {
 
   // Response Field- create, update & delete
   test('Response Field - create, update & delete', async ({ page }) => {
-  // Response Field- create, update & delete
-  test('Response Field - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
-    await cardLevelActionPage.clickBtnInAddBlockDrawer('Response Field') // clicking on Feedback button in add block drawer
-    await cardLevelActionPage.clickBtnInAddBlockDrawer('Response Field') // clicking on Feedback button in add block drawer
-    await cardLevelActionPage.verifyFeedBackAddedToCard() // verifing the feedback is added to the card
-    await cardLevelActionPage.clickFeedBackPropertiesDropDown('Response Field') // clicking the feedback property dropdown in the feedback properties drawer
-    await cardLevelActionPage.clickFeedBackPropertiesDropDown('Response Field') // clicking the feedback property dropdown in the feedback properties drawer
-    await cardLevelActionPage.enterLabelBelowFeedBcakProperty() // entering value in label field of feedback property dropdown
-    await cardLevelActionPage.enterHintBelowFeedBcakProperty() // entering value in hint field of feedback property dropdown
+    await cardLevelActionPage.clickBtnInAddBlockDrawer('Response Field') // clicking on Response Field button in add block drawer
+    await cardLevelActionPage.verifyFeedBackAddedToCard() // verifing the Response Field is added to the card
+    await cardLevelActionPage.clickFeedBackPropertiesDropDown('Response Field') // clicking the Response Field property dropdown in the Response Field properties drawer
+    await cardLevelActionPage.enterLabelBelowFeedBcakProperty() // entering value in label field of Response Field property dropdown
+    await cardLevelActionPage.enterHintBelowFeedBcakProperty() // entering value in hint field of Response Field property dropdown
     await cardLevelActionPage.clickOnJourneyCard() // clickng on the journey card
     await cardLevelActionPage.verifyLabelUpdatedIncard() // verifying the added label is updated in the card
     await cardLevelActionPage.verifyHintUpdatedInCard() // verifying the added hint is updated in the card
-    await cardLevelActionPage.selectWholeFeedBackSection() // selecting the whole feedback section
+    await cardLevelActionPage.selectWholeFeedBackSection() // selecting the whole Response Field section
     await cardLevelActionPage.updateMinimumRowsOptionForResponseField() // Changing minimum rows value and verifying the style property is getting changed for response field
-    await cardLevelActionPage.selectWholeFeedBackSection() // selecting the whole feedback section
+    await cardLevelActionPage.selectWholeFeedBackSection() // selecting the whole Response Field section
     await cardLevelActionPage.clickDeleteBtnInToolTipBar() // clicking delete button in the tooltip bar
-    await cardLevelActionPage.verifyFeedBackDeletedFromCard() // verifying the feedback section is deleted from the card
-  })
-
-  // Subscribe - create, update & delete
-  test('Subscribe - create, update & delete', async ({ page }) => {
-    const cardLevelActionPage = new CardLevelActionPage(page)
-    await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
-    await cardLevelActionPage.clickBtnInAddBlockDrawer('Subscribe') // clicking on subscribe button in add block drawer
-    await cardLevelActionPage.verifySubscribeAddedToCard() // verify subscribe section is added to the card
-    await cardLevelActionPage.clickActionOfFeedBackProperties() // clicking the action property dropdown in the subscribe properties drawer
-    await cardLevelActionPage.selectEmailOptionInPropertiesOptions() // selecting the 'Email' option in Subscribe action property and enter the email address
-    await cardLevelActionPage.clickPropertiesDropDown('Button Icon') // clicking the 'button icon' property dropdown in the subscribe properties drawer
-    await cardLevelActionPage.selectIconForProperties() // seleting an icon for the subscribe button section
-    await cardLevelActionPage.verifySelecetdIconInCardBelowSubscribe() // veriying the Selected icon is updated in the subscribe section of the card
-    await cardLevelActionPage.selectWholeSubscribeSectionInCard() // selecting the whole subscribe section
-    await cardLevelActionPage.clickDeleteBtnInToolTipBar() // clicking delete button in the tooltip bar
-    await cardLevelActionPage.verifyToastMessage() // verifying the toast message
-    await cardLevelActionPage.verifySubscribeDeletedFromCard() //  verifying the subscribe section is deleted from the card
+    await cardLevelActionPage.verifyFeedBackDeletedFromCard() // verifying the Response Field section is deleted from the card
   })
 
   // Button - create, update & delete

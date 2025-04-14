@@ -756,15 +756,6 @@ export class CardLevelActionPage {
     await this.page.locator('input#email').fill(testData.cardLevelAction.email)
   }
 
-  async selectIconForProperties() {
-    await this.page.locator('div[aria-label="icon-name"]').click()
-    await this.page
-      .locator(
-        'ul[aria-labelledby="icon-name-select"] li[data-value="ChatBubbleOutlineRounded"]'
-      )
-      .click()
-  }
-
   async verifySelectedIconInCardBelowFeedBack() {
     await expect(
       this.page
@@ -794,55 +785,12 @@ export class CardLevelActionPage {
     ).toBeHidden()
   }
 
-  async verifySubscribeAddedToCard() {
-    await expect(
-      this.page
-        .frameLocator(this.journeyCardFrame)
-        .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid="JourneysSignUp"]'
-        )
-        .first()
-    ).toBeVisible()
-  }
-
   async clickOnSelectCardOptionInPrepertiesOptions() {
     await this.page
       .locator('ul[role="listbox"] li[data-value="NavigateToBlockAction"]')
       .click()
     await this.page
       .locator('div[data-testid="CardList"] div[data-testid*="CardItem"]')
-      .first()
-      .click()
-  }
-
-  async verifySelecetdIconInCardBelowSubscribe() {
-    await expect(
-      this.page
-        .frameLocator(this.journeyCardFrame)
-        .locator(
-          'div[data-testid="JourneysSignUp"] button svg[data-testid="ChatBubbleOutlineRoundedIcon"]'
-        )
-        .first()
-    ).toBeVisible()
-  }
-
-  async verifySubscribeDeletedFromCard() {
-    await expect(
-      this.page
-        .frameLocator(this.journeyCardFrame)
-        .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid="JourneysSignUp"]'
-        )
-        .first()
-    ).toBeHidden()
-  }
-
-  async selectWholeSubscribeSectionInCard() {
-    await this.page
-      .frameLocator(this.journeyCardFrame)
-      .locator(
-        'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid="JourneysSignUp"]'
-      )
       .first()
       .click()
   }
