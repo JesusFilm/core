@@ -71,6 +71,8 @@ export const TextResponse = ({
   const handleBlur = formikContext?.handleBlur
 
   const currentValue = formikValue ?? value
+  const trimmedPlaceholder =
+    placeholder != null ? placeholder.trim().replace(/\s+/g, ' ') : ''
 
   useEffect(() => {
     if (formikContext != null && formikValue !== value) {
@@ -111,12 +113,12 @@ export const TextResponse = ({
         <TextField
           id={`textResponse-field`}
           name={blockId}
-          placeholder={placeholder != null ? placeholder : ''}
+          placeholder={trimmedPlaceholder}
           value={currentValue}
           helperText={hint != null ? hint : ''}
           multiline
           disabled={isSubmitting}
-          minRows={minRows ?? 3}
+          minRows={minRows ?? 1}
           onClick={(e) => e.stopPropagation()}
           onChange={handleInputChange}
           onBlur={handleInputBlur}
