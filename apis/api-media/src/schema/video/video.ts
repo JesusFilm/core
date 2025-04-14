@@ -65,10 +65,6 @@ const Video = builder.prismaObject('Video', {
       shareable: true,
       resolve: () => VideoSourceShape.internal
     }),
-    editionsCount: t.int({
-      nullable: false,
-      resolve: ({ id }) => prisma.videoEdition.count({ where: { videoId: id } })
-    }),
     keywords: t.relation('keywords', {
       nullable: false,
       args: { languageId: t.arg.id({ required: false }) },

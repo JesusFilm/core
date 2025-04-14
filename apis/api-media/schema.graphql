@@ -709,7 +709,6 @@ type Video
 {
   bibleCitations: [BibleCitation!]!
   source: VideoBlockSource @shareable
-  editionsCount: Int!
   keywords(languageId: ID): [Keyword!]!
   id: ID!
   label: VideoLabel!

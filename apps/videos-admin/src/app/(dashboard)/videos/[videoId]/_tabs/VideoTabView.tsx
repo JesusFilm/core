@@ -16,7 +16,9 @@ const GET_TAB_DATA = graphql(`
     adminVideo(id: $id) {
       label
       variantLanguagesCount
-      editionsCount
+      videoEditions {
+        id
+      }
       childrenCount
     }
   }
@@ -60,7 +62,7 @@ export default function VideoTabView({
     {
       label: 'Editions',
       value: 'editions',
-      count: data.adminVideo.editionsCount,
+      count: data.adminVideo.videoEditions.length,
       href: `/videos/${videoId}/editions`
     }
   ]
