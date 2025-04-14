@@ -31,6 +31,25 @@ export enum ButtonVariant {
   text = "text",
 }
 
+export enum EventType {
+  ButtonClickEvent = "ButtonClickEvent",
+  ChatOpenEvent = "ChatOpenEvent",
+  JourneyViewEvent = "JourneyViewEvent",
+  RadioQuestionSubmissionEvent = "RadioQuestionSubmissionEvent",
+  SignUpSubmissionEvent = "SignUpSubmissionEvent",
+  StepNextEvent = "StepNextEvent",
+  StepPreviousEvent = "StepPreviousEvent",
+  StepViewEvent = "StepViewEvent",
+  TextResponseSubmissionEvent = "TextResponseSubmissionEvent",
+  VideoCollapseEvent = "VideoCollapseEvent",
+  VideoCompleteEvent = "VideoCompleteEvent",
+  VideoExpandEvent = "VideoExpandEvent",
+  VideoPauseEvent = "VideoPauseEvent",
+  VideoPlayEvent = "VideoPlayEvent",
+  VideoProgressEvent = "VideoProgressEvent",
+  VideoStartEvent = "VideoStartEvent",
+}
+
 export enum IconColor {
   action = "action",
   disabled = "disabled",
@@ -175,6 +194,7 @@ export enum TextResponseType {
   email = "email",
   freeForm = "freeForm",
   name = "name",
+  phone = "phone",
 }
 
 export enum ThemeMode {
@@ -276,6 +296,7 @@ export interface ButtonBlockCreateInput {
   variant?: ButtonVariant | null;
   color?: ButtonColor | null;
   size?: ButtonSize | null;
+  submitEnabled?: boolean | null;
 }
 
 export interface ButtonBlockUpdateInput {
@@ -428,6 +449,19 @@ export interface JourneyCollectionCreateInput {
 export interface JourneyCollectionUpdateInput {
   title?: string | null;
   journeyIds?: string[] | null;
+}
+
+export interface JourneyEventsExportLogInput {
+  journeyId: string;
+  eventsFilter: EventType[];
+  dateRangeStart?: any | null;
+  dateRangeEnd?: any | null;
+}
+
+export interface JourneyEventsFilter {
+  typenames?: string[] | null;
+  periodRangeStart?: any | null;
+  periodRangeEnd?: any | null;
 }
 
 export interface JourneyNotificationUpdateInput {
@@ -657,6 +691,8 @@ export interface TextResponseBlockCreateInput {
 export interface TextResponseBlockUpdateInput {
   parentBlockId?: string | null;
   label?: string | null;
+  placeholder?: string | null;
+  required?: boolean | null;
   hint?: string | null;
   minRows?: number | null;
   routeId?: string | null;
@@ -815,6 +851,7 @@ export interface VisitorUpdateInput {
   status?: VisitorStatus | null;
   countryCode?: string | null;
   referrer?: string | null;
+  phone?: string | null;
 }
 
 //==============================================================

@@ -186,6 +186,7 @@ export const publishedJourney: Journey = {
       size: ButtonSize.large,
       startIconId: 'icon',
       endIconId: null,
+      submitEnabled: null,
       action: null
     },
     {
@@ -265,6 +266,7 @@ export const blocks: Block[] = [
     size: ButtonSize.large,
     startIconId: 'icon0-1.id',
     endIconId: null,
+    submitEnabled: null,
     action: {
       __typename: 'NavigateToBlockAction',
       parentBlockId: 'button0.id',
@@ -390,6 +392,7 @@ export const blocks: Block[] = [
     size: ButtonSize.large,
     startIconId: 'icon1-1.id',
     endIconId: null,
+    submitEnabled: null,
     action: {
       __typename: 'NavigateToBlockAction',
       parentBlockId: 'button1.id',
@@ -801,6 +804,7 @@ export const blocks: Block[] = [
     size: ButtonSize.large,
     startIconId: 'icon6-1.id',
     endIconId: null,
+    submitEnabled: null,
     action: {
       __typename: 'NavigateToBlockAction',
       parentBlockId: 'button3.id',

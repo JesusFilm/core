@@ -5,7 +5,6 @@ import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
-import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
 import minimalLogo from '../../assets/minimal-logo.png'
@@ -27,7 +26,6 @@ const Drawer = styled(MuiDrawer)({
 })
 
 export function SideMenu(): ReactElement {
-  const t = useTranslations()
   const auth = useAuth()
 
   return (
@@ -48,12 +46,12 @@ export function SideMenu(): ReactElement {
       >
         <Image
           src={minimalLogo}
-          alt={t('Jesus Film Project')}
+          alt="Jesus Film Project"
           width={37}
           height={37}
         />
         <Typography component="h1" variant="h6">
-          {t('Nexus')}
+          Nexus
         </Typography>
       </Stack>
       <MenuContent />

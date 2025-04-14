@@ -42,6 +42,10 @@ import {
 
 import cardFormImage from './cardForm.svg'
 
+/**
+ * GraphQL mutation for creating a card form template with multiple blocks.
+ * Creates an image, subtitle, title, text response, and body blocks within a card.
+ */
 export const CARD_FORM_CREATE = gql`
   ${IMAGE_FIELDS}
   ${TYPOGRAPHY_FIELDS}
@@ -78,6 +82,9 @@ export const CARD_FORM_CREATE = gql`
   }
 `
 
+/**
+ * GraphQL mutation for deleting all blocks in a card form template.
+ */
 export const CARD_FORM_DELETE = gql`
   ${CARD_FIELDS}
   mutation CardFormDelete(
@@ -116,6 +123,9 @@ export const CARD_FORM_DELETE = gql`
   }
 `
 
+/**
+ * GraphQL mutation for restoring all blocks in a card form template.
+ */
 export const CARD_FORM_RESTORE = gql`
   ${BLOCK_FIELDS}
   mutation CardFormRestore(
@@ -149,6 +159,12 @@ export const CARD_FORM_RESTORE = gql`
   }
 `
 
+/**
+ * A component that renders a button with a card form template image.
+ * When clicked, creates a predefined form card layout with text response input.
+ *
+ * @returns {ReactElement} The CardForm component.
+ */
 export function CardForm(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
@@ -216,12 +232,14 @@ export function CardForm(): ReactElement {
       id: uuidv4(),
       parentBlockId: cardId,
       parentOrder: 2,
-      label: t('Your answer here'),
+      label: t('My Prayer:'),
+      placeholder: null,
       hint: null,
       minRows: null,
       type: null,
       routeId: null,
       integrationId: null,
+      required: null,
       __typename: 'TextResponseBlock'
     } satisfies TextResponseBlock
 
@@ -274,11 +292,13 @@ export function CardForm(): ReactElement {
               ...omit(textResponseBlock, [
                 '__typename',
                 'parentOrder',
+                'placeholder',
                 'hint',
                 'minRows',
                 'type',
                 'routeId',
-                'integrationId'
+                'integrationId',
+                'required'
               ]),
               journeyId: journey.id
             },
