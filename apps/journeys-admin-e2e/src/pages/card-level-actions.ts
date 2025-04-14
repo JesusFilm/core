@@ -220,7 +220,7 @@ export class CardLevelActionPage {
   async uploadImageInCustomTab() {
     await this.page
       .locator('div[data-testid="ImageUpload"] input')
-      .setInputFiles('apps/journeys-admin-e2e/src/utils/testResource/Flower.jpg')
+      .setInputFiles(require('path').join(__dirname, '../utils/testResource/Flower.jpg'))
     await expect(
       this.page.locator(
         'div[data-testid="ImageBlockHeader"] div[data-testid="ImageBlockThumbnail"] span[role="progressbar"]'
@@ -309,7 +309,7 @@ export class CardLevelActionPage {
   async uploadVideoInUploadTabOfVideoLibrary() {
     await this.page
       .locator('div[data-testid="VideoFromMux"] input')
-      .setInputFiles('apps/journeys-admin-e2e/src/utils/testResource/SampleVideo.mp4', {
+      .setInputFiles(require('path').join(__dirname, '../utils/testResource/SampleVideo.mp4'), {
         timeout: 30000
       })
     await expect(
