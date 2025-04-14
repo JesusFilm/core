@@ -1,6 +1,8 @@
 import { spawn } from 'child_process'
-import { promises as fs } from 'fs'
+import { createReadStream, createWriteStream, promises as fs } from 'fs'
 import { join } from 'path'
+import { pipeline } from 'stream/promises'
+import { createGzip } from 'zlib'
 
 import {
   CopyObjectCommand,
@@ -12,7 +14,8 @@ import { Logger } from 'pino'
 
 import { logger as baseLogger } from '../../../logger'
 
-const BACKUP_FILE_NAME = 'languages-backup.pgdump'
+const BACKUP_FILE_NAME = 'languages-backup.sql'
+const GZIPPED_BACKUP_FILE_NAME = `${BACKUP_FILE_NAME}.gz`
 
 function getS3Client(): S3Client {
   if (process.env.CLOUDFLARE_R2_ENDPOINT == null)
@@ -40,7 +43,7 @@ async function backupExistingFile(
   bucket: string,
   logger: Logger
 ): Promise<void> {
-  const key = `backups/${BACKUP_FILE_NAME}`
+  const key = `backups/${GZIPPED_BACKUP_FILE_NAME}`
 
   try {
     // Check if file exists
@@ -68,6 +71,30 @@ async function backupExistingFile(
 }
 
 /**
+ * Compresses a file using gzip
+ */
+async function compressFile(
+  inputFile: string,
+  outputFile: string,
+  logger: Logger
+): Promise<void> {
+  logger.info('Compressing file with gzip')
+
+  try {
+    const source = createReadStream(inputFile)
+    const destination = createWriteStream(outputFile)
+    const gzip = createGzip()
+
+    await pipeline(source, gzip, destination)
+
+    logger.info('File compression completed')
+  } catch (error) {
+    logger.error({ error }, 'Error compressing file')
+    throw error
+  }
+}
+
+/**
  * Uploads a file to R2
  */
 async function uploadToR2(filePath: string, logger: Logger): Promise<void> {
@@ -84,9 +111,9 @@ async function uploadToR2(filePath: string, logger: Logger): Promise<void> {
   await client.send(
     new PutObjectCommand({
       Bucket: process.env.CLOUDFLARE_R2_BUCKET,
-      Key: `backups/${BACKUP_FILE_NAME}`,
+      Key: `backups/${GZIPPED_BACKUP_FILE_NAME}`,
       Body: fileContent,
-      ContentType: 'application/x-gzip'
+      ContentType: 'application/gzip'
     })
   )
 
@@ -94,7 +121,7 @@ async function uploadToR2(filePath: string, logger: Logger): Promise<void> {
 }
 
 /**
- * Executes pg_dump command to create a database backup
+ * Executes pg_dump command to create a database backup as SQL
  */
 async function executePgDump(
   outputFile: string,
@@ -112,6 +139,7 @@ async function executePgDump(
       PGPASSWORD: decodeURIComponent(databaseUrl.password)
     }
 
+    // Use plain SQL format instead of custom format
     const args = [
       '-h',
       host,
@@ -121,12 +149,10 @@ async function executePgDump(
       username,
       '-d',
       database,
-      '-F',
-      'c',
-      '-Z',
-      '9',
       '--no-owner',
       '--no-privileges',
+      '--no-publications',
+      '--no-subscriptions',
       '-f',
       outputFile
     ]
@@ -157,7 +183,7 @@ async function executePgDump(
 }
 
 /**
- * Exports database to a pgdump file and uploads it to R2
+ * Exports database to an SQL file, compresses it with gzip, and uploads it to R2
  */
 export const service = async (customLogger?: Logger): Promise<void> => {
   const logger = customLogger ?? baseLogger.child({ worker: 'dataExport' })
@@ -167,14 +193,19 @@ export const service = async (customLogger?: Logger): Promise<void> => {
     await fs.mkdir(outputDir, { recursive: true })
 
     const outputFile = join(outputDir, BACKUP_FILE_NAME)
+    const gzippedOutputFile = join(outputDir, GZIPPED_BACKUP_FILE_NAME)
 
     await executePgDump(outputFile, logger)
-    await uploadToR2(outputFile, logger)
+    await compressFile(outputFile, gzippedOutputFile, logger)
+    await uploadToR2(gzippedOutputFile, logger)
 
-    // Clean up local file
+    // Clean up local files
     await fs.unlink(outputFile)
+    await fs.unlink(gzippedOutputFile)
 
-    logger.info('Database export and upload completed successfully')
+    logger.info(
+      'Database export, compression, and upload completed successfully'
+    )
   } catch (error) {
     logger.error({ error }, 'Error during database export')
     throw error

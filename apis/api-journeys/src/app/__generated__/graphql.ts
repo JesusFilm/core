@@ -97,7 +97,8 @@ export enum IconSize {
 export enum TextResponseType {
     freeForm = "freeForm",
     name = "name",
-    email = "email"
+    email = "email",
+    phone = "phone"
 }
 
 export enum TypographyVariant {
@@ -454,6 +455,8 @@ export class TextResponseBlockCreateInput {
 export class TextResponseBlockUpdateInput {
     parentBlockId?: Nullable<string>;
     label?: Nullable<string>;
+    placeholder?: Nullable<string>;
+    required?: Nullable<boolean>;
     hint?: Nullable<string>;
     minRows?: Nullable<number>;
     routeId?: Nullable<string>;
@@ -768,6 +771,12 @@ export class JourneyCollectionUpdateInput {
     journeyIds?: Nullable<string[]>;
 }
 
+export class JourneyEventsFilter {
+    typenames?: Nullable<string[]>;
+    periodRangeStart?: Nullable<DateTime>;
+    periodRangeEnd?: Nullable<DateTime>;
+}
+
 export class JourneyNotificationUpdateInput {
     journeyId: string;
     visitorInteractionEmail: boolean;
@@ -870,6 +879,7 @@ export class VisitorUpdateInput {
     status?: Nullable<VisitorStatus>;
     countryCode?: Nullable<string>;
     referrer?: Nullable<string>;
+    phone?: Nullable<string>;
 }
 
 export interface Action {
@@ -1207,6 +1217,10 @@ export abstract class IQuery {
 
     abstract journeyCollections(teamId: string): Nullable<JourneyCollection>[] | Promise<Nullable<JourneyCollection>[]>;
 
+    abstract journeyEventsConnection(journeyId: string, filter?: Nullable<JourneyEventsFilter>, first?: Nullable<number>, after?: Nullable<string>): JourneyEventsConnection | Promise<JourneyEventsConnection>;
+
+    abstract journeyEventsCount(journeyId: string, filter?: Nullable<JourneyEventsFilter>): number | Promise<number>;
+
     abstract getJourneyProfile(): Nullable<JourneyProfile> | Promise<Nullable<JourneyProfile>>;
 
     abstract journeyVisitorsConnection(filter: JourneyVisitorFilter, first?: Nullable<number>, after?: Nullable<string>, sort?: Nullable<JourneyVisitorSort>): JourneyVisitorsConnection | Promise<JourneyVisitorsConnection>;
@@ -1383,6 +1397,8 @@ export class TextResponseBlock implements Block {
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
     label: string;
+    placeholder?: Nullable<string>;
+    required?: Nullable<boolean>;
     hint?: Nullable<string>;
     minRows?: Nullable<number>;
     type?: Nullable<TextResponseType>;
@@ -1694,6 +1710,42 @@ export class JourneyCollection {
     title?: Nullable<string>;
     customDomains?: Nullable<CustomDomain[]>;
     journeys?: Nullable<Journey[]>;
+}
+
+export class JourneyEvent implements Event {
+    __typename?: 'JourneyEvent';
+    id: string;
+    journeyId: string;
+    createdAt: DateTime;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
+    action?: Nullable<ButtonAction>;
+    actionValue?: Nullable<string>;
+    messagePlatform?: Nullable<MessagePlatform>;
+    language?: Nullable<Language>;
+    email?: Nullable<string>;
+    blockId?: Nullable<string>;
+    position?: Nullable<number>;
+    source?: Nullable<VideoBlockSource>;
+    progress?: Nullable<number>;
+    typename?: Nullable<string>;
+    visitorId?: Nullable<string>;
+    journeySlug?: Nullable<string>;
+    visitorName?: Nullable<string>;
+    visitorEmail?: Nullable<string>;
+    visitorPhone?: Nullable<string>;
+}
+
+export class JourneyEventEdge {
+    __typename?: 'JourneyEventEdge';
+    cursor: string;
+    node: JourneyEvent;
+}
+
+export class JourneyEventsConnection {
+    __typename?: 'JourneyEventsConnection';
+    edges: JourneyEventEdge[];
+    pageInfo: PageInfo;
 }
 
 export class JourneyNotification {

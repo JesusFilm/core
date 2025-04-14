@@ -17,6 +17,8 @@ export type Scalars = {
   /** A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
   Date: { input: any; output: any; }
   DateTime: { input: any; output: any; }
+  /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.This scalar is serialized to a string in ISO 8601 format and parsed from a string in ISO 8601 format. */
+  DateTimeISO: { input: any; output: any; }
   Json: { input: any; output: any; }
   join__FieldSet: { input: any; output: any; }
   link__Import: { input: any; output: any; }
@@ -138,6 +140,7 @@ export type ButtonBlockCreateInput = {
   label: Scalars['String']['input'];
   parentBlockId: Scalars['ID']['input'];
   size?: InputMaybe<ButtonSize>;
+  submitEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   variant?: InputMaybe<ButtonVariant>;
 };
 
@@ -326,6 +329,7 @@ export type CloudflareR2 = {
   createdAt: Scalars['Date']['output'];
   fileName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  originalFilename?: Maybe<Scalars['String']['output']>;
   publicUrl?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['Date']['output'];
   uploadUrl?: Maybe<Scalars['String']['output']>;
@@ -340,6 +344,8 @@ export type CloudflareR2CreateInput = {
   /** the name of the file that is being uploaded */
   fileName: Scalars['String']['input'];
   id?: InputMaybe<Scalars['String']['input']>;
+  /** the original name of the file before any renaming */
+  originalFilename?: InputMaybe<Scalars['String']['input']>;
   /** the id of the Video object this file relates to in the database */
   videoId: Scalars['String']['input'];
 };
@@ -505,6 +511,25 @@ export type Event = {
   label?: Maybe<Scalars['String']['output']>;
   value?: Maybe<Scalars['String']['output']>;
 };
+
+export enum EventType {
+  ButtonClickEvent = 'ButtonClickEvent',
+  ChatOpenEvent = 'ChatOpenEvent',
+  JourneyViewEvent = 'JourneyViewEvent',
+  RadioQuestionSubmissionEvent = 'RadioQuestionSubmissionEvent',
+  SignUpSubmissionEvent = 'SignUpSubmissionEvent',
+  StepNextEvent = 'StepNextEvent',
+  StepPreviousEvent = 'StepPreviousEvent',
+  StepViewEvent = 'StepViewEvent',
+  TextResponseSubmissionEvent = 'TextResponseSubmissionEvent',
+  VideoCollapseEvent = 'VideoCollapseEvent',
+  VideoCompleteEvent = 'VideoCompleteEvent',
+  VideoExpandEvent = 'VideoExpandEvent',
+  VideoPauseEvent = 'VideoPauseEvent',
+  VideoPlayEvent = 'VideoPlayEvent',
+  VideoProgressEvent = 'VideoProgressEvent',
+  VideoStartEvent = 'VideoStartEvent'
+}
 
 export type ForeignKeyConstraintError = BaseError & {
   __typename?: 'ForeignKeyConstraintError';
@@ -853,6 +878,74 @@ export type JourneyCreateInput = {
   themeMode?: InputMaybe<ThemeMode>;
   themeName?: InputMaybe<ThemeName>;
   title: Scalars['String']['input'];
+};
+
+/**
+ * JourneyEvent aggregates all event types. For detailed event type definitions,
+ * see the specific event files in the event module
+ */
+export type JourneyEvent = Event & {
+  __typename?: 'JourneyEvent';
+  /** Additional specific event fields */
+  action?: Maybe<ButtonAction>;
+  actionValue?: Maybe<Scalars['String']['output']>;
+  blockId?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  email?: Maybe<Scalars['String']['output']>;
+  /** Base event fields from Event interface */
+  id: Scalars['ID']['output'];
+  journeyId: Scalars['ID']['output'];
+  /** Related fields queried from relevant ids in the events table */
+  journeySlug?: Maybe<Scalars['String']['output']>;
+  label?: Maybe<Scalars['String']['output']>;
+  language?: Maybe<Language>;
+  messagePlatform?: Maybe<MessagePlatform>;
+  position?: Maybe<Scalars['Float']['output']>;
+  progress?: Maybe<Scalars['Int']['output']>;
+  source?: Maybe<VideoBlockSource>;
+  /** database fields from table, not explicitly surfaced from any other types */
+  typename?: Maybe<Scalars['String']['output']>;
+  value?: Maybe<Scalars['String']['output']>;
+  visitorEmail?: Maybe<Scalars['String']['output']>;
+  visitorId?: Maybe<Scalars['String']['output']>;
+  visitorName?: Maybe<Scalars['String']['output']>;
+  visitorPhone?: Maybe<Scalars['String']['output']>;
+};
+
+export type JourneyEventEdge = {
+  __typename?: 'JourneyEventEdge';
+  cursor: Scalars['String']['output'];
+  node: JourneyEvent;
+};
+
+export type JourneyEventsConnection = {
+  __typename?: 'JourneyEventsConnection';
+  edges: Array<JourneyEventEdge>;
+  pageInfo: PageInfo;
+};
+
+export type JourneyEventsExportLog = {
+  __typename?: 'JourneyEventsExportLog';
+  createdAt: Scalars['DateTimeISO']['output'];
+  dateRangeEnd?: Maybe<Scalars['DateTimeISO']['output']>;
+  dateRangeStart?: Maybe<Scalars['DateTimeISO']['output']>;
+  eventsFilter: Array<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  journeyId: Scalars['ID']['output'];
+  userId: Scalars['ID']['output'];
+};
+
+export type JourneyEventsExportLogInput = {
+  dateRangeEnd?: InputMaybe<Scalars['DateTimeISO']['input']>;
+  dateRangeStart?: InputMaybe<Scalars['DateTimeISO']['input']>;
+  eventsFilter: Array<EventType>;
+  journeyId: Scalars['ID']['input'];
+};
+
+export type JourneyEventsFilter = {
+  periodRangeEnd?: InputMaybe<Scalars['DateTime']['input']>;
+  periodRangeStart?: InputMaybe<Scalars['DateTime']['input']>;
+  typenames?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 export enum JourneyMenuButtonIcon {
@@ -1262,6 +1355,7 @@ export type Mutation = {
   createCloudflareUploadByUrl: CloudflareImage;
   /** @deprecated use createCloudflareImageFromPrompt */
   createImageBySegmindPrompt: CloudflareImage;
+  createJourneyEventsExportLog: JourneyEventsExportLog;
   createMuxVideoUploadByFile: MuxVideo;
   createMuxVideoUploadByUrl: MuxVideo;
   createVerificationRequest?: Maybe<Scalars['Boolean']['output']>;
@@ -1566,6 +1660,11 @@ export type MutationCreateCloudflareUploadByUrlArgs = {
 export type MutationCreateImageBySegmindPromptArgs = {
   model: SegmindModel;
   prompt: Scalars['String']['input'];
+};
+
+
+export type MutationCreateJourneyEventsExportLogArgs = {
+  input: JourneyEventsExportLogInput;
 };
 
 
@@ -2656,6 +2755,8 @@ export type Query = {
   journey: Journey;
   journeyCollection: JourneyCollection;
   journeyCollections: Array<Maybe<JourneyCollection>>;
+  journeyEventsConnection: JourneyEventsConnection;
+  journeyEventsCount: Scalars['Int']['output'];
   /** Get a JourneyVisitor count by JourneyVisitorFilter */
   journeyVisitorCount: Scalars['Int']['output'];
   /** Get a list of Visitor Information by Journey */
@@ -2851,6 +2952,20 @@ export type QueryJourneyCollectionArgs = {
 
 export type QueryJourneyCollectionsArgs = {
   teamId: Scalars['ID']['input'];
+};
+
+
+export type QueryJourneyEventsConnectionArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<JourneyEventsFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  journeyId: Scalars['ID']['input'];
+};
+
+
+export type QueryJourneyEventsCountArgs = {
+  filter?: InputMaybe<JourneyEventsFilter>;
+  journeyId: Scalars['ID']['input'];
 };
 
 
@@ -3600,6 +3715,8 @@ export type TextResponseBlock = Block & {
   minRows?: Maybe<Scalars['Int']['output']>;
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
+  placeholder?: Maybe<Scalars['String']['output']>;
+  required?: Maybe<Scalars['Boolean']['output']>;
   routeId?: Maybe<Scalars['String']['output']>;
   type?: Maybe<TextResponseType>;
 };
@@ -3617,6 +3734,8 @@ export type TextResponseBlockUpdateInput = {
   label?: InputMaybe<Scalars['String']['input']>;
   minRows?: InputMaybe<Scalars['Int']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
+  placeholder?: InputMaybe<Scalars['String']['input']>;
+  required?: InputMaybe<Scalars['Boolean']['input']>;
   routeId?: InputMaybe<Scalars['String']['input']>;
   type?: InputMaybe<TextResponseType>;
 };
@@ -3651,7 +3770,8 @@ export type TextResponseSubmissionEventCreateInput = {
 export enum TextResponseType {
   Email = 'email',
   FreeForm = 'freeForm',
-  Name = 'name'
+  Name = 'name',
+  Phone = 'phone'
 }
 
 export enum ThemeMode {
@@ -4519,6 +4639,7 @@ export type VideoStudyQuestion = {
   __typename?: 'VideoStudyQuestion';
   id: Scalars['ID']['output'];
   language: Language;
+  order: Scalars['Int']['output'];
   primary: Scalars['Boolean']['output'];
   value: Scalars['String']['output'];
 };
@@ -4914,6 +5035,8 @@ export type VisitorUpdateInput = {
    * and only accessible by team members.
    */
   notes?: InputMaybe<Scalars['String']['input']>;
+  /** The phone number of the visitor */
+  phone?: InputMaybe<Scalars['String']['input']>;
   /** The referring url of the visitor */
   referrer?: InputMaybe<Scalars['String']['input']>;
   /** Status of the visitor. */

@@ -1,5 +1,7 @@
 import { spawn } from 'child_process'
-import { promises as fsPromises } from 'fs'
+import { createReadStream, createWriteStream, promises as fsPromises } from 'fs'
+import { pipeline } from 'stream/promises'
+import { createGzip } from 'zlib'
 
 import {
   CopyObjectCommand,
@@ -12,11 +14,30 @@ import { service } from './service'
 
 // Mock fs functions
 jest.mock('fs', () => ({
+  createReadStream: jest.fn().mockReturnValue({
+    pipe: jest.fn().mockReturnThis()
+  }),
+  createWriteStream: jest.fn().mockReturnValue({
+    on: jest.fn(),
+    once: jest.fn()
+  }),
   promises: {
     mkdir: jest.fn().mockResolvedValue(undefined),
     unlink: jest.fn().mockResolvedValue(undefined),
     readFile: jest.fn().mockResolvedValue(Buffer.from('test'))
   }
+}))
+
+// Mock zlib
+jest.mock('zlib', () => ({
+  createGzip: jest.fn().mockReturnValue({
+    pipe: jest.fn().mockReturnThis()
+  })
+}))
+
+// Mock stream/promises
+jest.mock('stream/promises', () => ({
+  pipeline: jest.fn().mockResolvedValue(undefined)
 }))
 
 // Mock child_process
@@ -120,14 +141,12 @@ describe('Database Export Service', () => {
         'postgres',
         '-d',
         'languages',
-        '-F',
-        'c',
-        '-Z',
-        '9',
         '--no-owner',
         '--no-privileges',
+        '--no-publications',
+        '--no-subscriptions',
         '-f',
-        expect.stringContaining('languages-backup.pgdump')
+        expect.stringContaining('languages-backup.sql')
       ]),
       expect.objectContaining({
         env: expect.objectContaining({
@@ -135,6 +154,16 @@ describe('Database Export Service', () => {
         })
       })
     )
+
+    // Verify compression was performed
+    expect(createReadStream).toHaveBeenCalledWith(
+      expect.stringContaining('languages-backup.sql')
+    )
+    expect(createWriteStream).toHaveBeenCalledWith(
+      expect.stringContaining('languages-backup.sql.gz')
+    )
+    expect(createGzip).toHaveBeenCalled()
+    expect(pipeline).toHaveBeenCalled()
 
     // Verify S3 client was initialized with correct config
     expect(S3Client).toHaveBeenCalledWith({
@@ -146,24 +175,29 @@ describe('Database Export Service', () => {
       }
     })
 
-    // Verify file was read and uploaded
+    // Verify compressed file was read and uploaded
     expect(fsPromises.readFile).toHaveBeenCalledWith(
-      expect.stringContaining('languages-backup.pgdump')
+      expect.stringContaining('languages-backup.sql.gz')
     )
     expect(PutObjectCommand).toHaveBeenCalledWith({
       Bucket: process.env.CLOUDFLARE_R2_BUCKET,
-      Key: 'backups/languages-backup.pgdump',
+      Key: 'backups/languages-backup.sql.gz',
       Body: expect.any(Buffer),
-      ContentType: 'application/x-gzip'
+      ContentType: 'application/gzip'
     })
 
-    // Verify file was cleaned up
+    // Verify files were cleaned up
     expect(fsPromises.unlink).toHaveBeenCalledWith(
-      expect.stringContaining('languages-backup.pgdump')
+      expect.stringContaining('languages-backup.sql')
+    )
+    expect(fsPromises.unlink).toHaveBeenCalledWith(
+      expect.stringContaining('languages-backup.sql.gz')
     )
 
     // Verify logger was used
     expect(mockLogger.info).toHaveBeenCalledWith('Starting database export')
+    expect(mockLogger.info).toHaveBeenCalledWith('Compressing file with gzip')
+    expect(mockLogger.info).toHaveBeenCalledWith('File compression completed')
     expect(mockLogger.info).toHaveBeenCalledWith(
       'Checking for existing backup file'
     )
@@ -173,7 +207,7 @@ describe('Database Export Service', () => {
     expect(mockLogger.info).toHaveBeenCalledWith('Uploading to R2')
     expect(mockLogger.info).toHaveBeenCalledWith('Upload to R2 completed')
     expect(mockLogger.info).toHaveBeenCalledWith(
-      'Database export and upload completed successfully'
+      'Database export, compression, and upload completed successfully'
     )
   })
 
@@ -201,8 +235,8 @@ describe('Database Export Service', () => {
     // Verify backup was created
     expect(CopyObjectCommand).toHaveBeenCalledWith({
       Bucket: process.env.CLOUDFLARE_R2_BUCKET,
-      CopySource: `${process.env.CLOUDFLARE_R2_BUCKET}/backups/languages-backup.pgdump`,
-      Key: 'backups/languages-backup.pgdump.bak'
+      CopySource: `${process.env.CLOUDFLARE_R2_BUCKET}/backups/languages-backup.sql.gz`,
+      Key: 'backups/languages-backup.sql.gz.bak'
     })
 
     expect(mockLogger.info).toHaveBeenCalledWith(

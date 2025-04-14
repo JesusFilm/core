@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { NextIntlClientProvider } from 'next-intl'
 import { ComponentProps } from 'react'
 
 import { videosAdminConfig } from '../../libs/storybookConfig'
@@ -21,17 +20,8 @@ const meta: Meta<typeof ToggleColorMode> = {
 }
 
 export default meta
-type Story = StoryObj<
-  ComponentProps<typeof ToggleColorMode> & { locale: string }
->
+type Story = StoryObj<ComponentProps<typeof ToggleColorMode>>
 
 export const Default: Story = {
-  render: ({ locale }) => (
-    <NextIntlClientProvider locale={locale}>
-      <ToggleColorMode />
-    </NextIntlClientProvider>
-  ),
-  args: {
-    locale: 'en'
-  }
+  render: () => <ToggleColorMode />
 }
