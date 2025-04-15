@@ -14,13 +14,13 @@ interface CacheOptions {
   staleWhileRevalidate?: boolean
 }
 
-export async function getFromCache<T>(key: string): Promise<T | null> {
+async function getFromCache<T>(key: string): Promise<T | null> {
   const data = await redis.get(key)
   if (!data) return null
   return JSON.parse(data)
 }
 
-export async function setInCache<T>(
+async function setInCache<T>(
   key: string,
   data: T,
   options: CacheOptions = {}
@@ -39,27 +39,19 @@ export async function getWithStaleCache<T>(
   fetchFn: () => Promise<T>,
   options: CacheOptions = {}
 ): Promise<T> {
-  // Try to get fresh data
   const cached = await getFromCache<T>(key)
   if (cached) return cached
 
-  // Try to get stale data
   const stale = await getFromCache<T>(`${key}:stale`)
 
-  // If we have stale data, return it and refresh in background
   if (stale) {
     void fetchFn().then((newData) => setInCache(key, newData, options))
     return stale
   }
 
-  // If no cached data, fetch fresh
   const fresh = await fetchFn()
   void setInCache(key, fresh, options)
   return fresh
-}
-
-export async function invalidateCache(key: string): Promise<void> {
-  await Promise.all([redis.del(key), redis.del(`${key}:stale`)])
 }
 
 export function generateCacheKey(parts: (string | number)[]): string {
