@@ -1,10 +1,11 @@
 import { Redis } from 'ioredis'
 
-if (process.env.REDIS_URL == null) {
-  throw new Error('REDIS_URL is not set')
+export const connection = {
+  host: process.env.REDIS_URL ?? 'redis',
+  port: process.env.REDIS_PORT != null ? Number(process.env.REDIS_PORT) : 6379
 }
 
-const redis = new Redis(process.env.REDIS_URL)
+const redis = new Redis(connection)
 
 const DEFAULT_TTL = 3600 * 24 // 1 day
 const STALE_TTL = 3600 * 4 // 4 hours
