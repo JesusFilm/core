@@ -17,6 +17,7 @@ import {
   useJourneyEventsExport
 } from './useJourneyEventsExport'
 import {
+  getMockGetJourneyEventsCountQuery,
   mockCreateEventsExportLogMutation,
   mockGetJourneyEventsQuery
 } from './useJourneyEventsExport.mock'
@@ -27,6 +28,8 @@ jest.mock('./utils/processCsv/processCsv', () => ({
   processCsv: jest.fn()
 }))
 const mockProcessCsv = processCsv as jest.MockedFunction<typeof processCsv>
+
+const mockGetJourneyEventsCountQuery = getMockGetJourneyEventsCountQuery()
 
 describe('useJourneyEventsExport', () => {
   beforeEach(() => {
@@ -43,6 +46,7 @@ describe('useJourneyEventsExport', () => {
       wrapper: ({ children }) => (
         <MockedProvider
           mocks={[
+            mockGetJourneyEventsCountQuery,
             { ...mockGetJourneyEventsQuery, result: queryResult },
             { ...mockCreateEventsExportLogMutation, result: mutationResult }
           ]}
@@ -60,11 +64,23 @@ describe('useJourneyEventsExport', () => {
     })
 
     expect(queryResult).toHaveBeenCalled()
+    await waitFor(() =>
+      expect(mockGetJourneyEventsCountQuery.result).toHaveBeenCalled()
+    )
     await waitFor(() => expect(mutationResult).toHaveBeenCalled())
     expect(mockProcessCsv).toHaveBeenCalled()
   })
 
   it('should fetch journey events with pagination', async () => {
+    const mockJourneyEventsCountQueryAll = getMockGetJourneyEventsCountQuery({
+      journeyId: 'journey1',
+      filter: {
+        typenames: ['ButtonClickEvent'],
+        periodRangeStart: '2023-01-15T12:00:00Z',
+        periodRangeEnd: '2024-01-15T12:00:00Z'
+      }
+    })
+
     const mockGetJourneyEventsQueryPage1: MockedResponse<
       GetJourneyEvents,
       GetJourneyEventsVariables
@@ -200,6 +216,7 @@ describe('useJourneyEventsExport', () => {
       wrapper: ({ children }) => (
         <MockedProvider
           mocks={[
+            mockJourneyEventsCountQueryAll,
             mockGetJourneyEventsQueryPage1,
             mockGetJourneyEventsQueryPage2,
             mockCreateEventsExportLogMutation
