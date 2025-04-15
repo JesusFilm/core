@@ -2,8 +2,10 @@ import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { ResultOf, graphql } from 'gql.tada'
 import { HTTPException } from 'hono/http-exception'
 import { timeout } from 'hono/timeout'
+import { headers } from 'next/headers'
 
 import { getApolloClient } from '../../../../lib/apolloClient'
+import { generateCacheKey, getWithStaleCache } from '../../../../lib/cache'
 import { getLanguageIdsFromTags } from '../../../../lib/getLanguageIdsFromTags'
 
 import { mediaLanguage } from './[languageId]'
@@ -88,7 +90,11 @@ const QuerySchema = z.object({
     .string()
     .optional()
     .describe('Filter by metadata language tags'),
-  term: z.string().optional().describe('Search term')
+  term: z.string().optional().describe('Search term'),
+  expand: z
+    .string()
+    .optional()
+    .describe('Comma-separated list of fields to expand')
 })
 
 const ResponseSchema = z.object({
@@ -144,20 +150,35 @@ const route = createRoute({
 export const mediaLanguages = new OpenAPIHono()
 mediaLanguages.route('/:languageId', mediaLanguage)
 
+const DEFAULT_LIMIT = 100 // More reasonable default limit
+const MAX_LIMIT = 5000 // Maximum allowed limit
+
 mediaLanguages.openapi(route, async (c) => {
-  const apiKey = c.req.query('apiKey')
-  const page = Number(c.req.query('page') ?? 1)
-  const bcp47 = c.req.query('bcp47')?.split(',')
-  const ids = c.req.query('ids')?.split(',')
-  const iso3 = c.req.query('iso3')?.split(',')
-  const metadataLanguageTags =
-    c.req.query('metadataLanguageTags')?.split(',') ?? []
-  const term = c.req.query('term')
-  let limit = Number(c.req.query('limit') ?? 10)
-  if (!limit || limit < 1) {
-    limit = 1
-  }
+  // Disable Next.js cache for this route
+  headers()
+  const dynamic = 'force-dynamic'
+
+  const page = c.req.query('page') == null ? 1 : Number(c.req.query('page'))
+  const requestedLimit =
+    c.req.query('limit') == null ? DEFAULT_LIMIT : Number(c.req.query('limit'))
+  const limit = Math.min(requestedLimit, MAX_LIMIT) // Ensure limit doesn't exceed maximum
   const offset = (page - 1) * limit
+  const ids =
+    c.req.query('ids')?.split(',').filter(Boolean).length === 0
+      ? undefined
+      : c.req.query('ids')?.split(',').filter(Boolean)
+  const bcp47 =
+    c.req.query('bcp47')?.split(',').filter(Boolean).length === 0
+      ? undefined
+      : c.req.query('bcp47')?.split(',').filter(Boolean)
+  const iso3 =
+    c.req.query('iso3')?.split(',').filter(Boolean).length === 0
+      ? undefined
+      : c.req.query('iso3')?.split(',').filter(Boolean)
+  const term = c.req.query('term')
+  const metadataLanguageTags =
+    c.req.query('metadataLanguageTags')?.split(',').filter(Boolean) ?? []
+  const expand = c.req.query('expand')?.split(',') ?? []
 
   const languageResult = await getLanguageIdsFromTags(metadataLanguageTags)
   if (languageResult instanceof HTTPException) {
@@ -166,191 +187,212 @@ mediaLanguages.openapi(route, async (c) => {
 
   const { metadataLanguageId, fallbackLanguageId } = languageResult
 
-  const countResult = await getApolloClient().query<
-    ResultOf<typeof GET_LANGUAGES_COUNT>
-  >({
-    query: GET_LANGUAGES_COUNT,
-    variables: {
-      ids,
-      bcp47,
-      iso3,
-      term
-    },
-    fetchPolicy: 'cache-first'
-  })
+  const cacheKey = generateCacheKey([
+    'media-languages',
+    page.toString(),
+    limit.toString(),
+    ...(ids ?? []),
+    ...(bcp47 ?? []),
+    ...(iso3 ?? []),
+    term ?? '',
+    ...metadataLanguageTags
+  ])
 
-  const totalCount = countResult.data.languagesCount
-
-  const { data } = await getApolloClient().query<
-    ResultOf<typeof GET_LANGUAGES_DATA>
-  >({
-    query: GET_LANGUAGES_DATA,
-    variables: {
-      limit,
-      offset,
-      ids,
-      bcp47,
-      iso3,
-      metadataLanguageId,
-      fallbackLanguageId,
-      term
-    },
-    fetchPolicy: 'cache-first'
-  })
-
-  const languages = data.languages
-
-  const queryObject = {
-    ...c.req.query(),
-    page: page.toString(),
-    limit: limit.toString()
-  }
-
-  const totalPages = Math.ceil(Number(totalCount) / limit)
-  const queryString = new URLSearchParams(queryObject).toString()
-  const firstQueryString = new URLSearchParams({
-    ...queryObject,
-    page: '1'
-  }).toString()
-  const lastQueryString = new URLSearchParams({
-    ...queryObject,
-    page: totalPages.toString()
-  }).toString()
-  const nextQueryString = new URLSearchParams({
-    ...queryObject,
-    page: (page + 1).toString()
-  }).toString()
-  const previousQueryString = new URLSearchParams({
-    ...queryObject,
-    page: (page - 1).toString()
-  }).toString()
-
-  const mediaLanguages = languages
-    .filter(
-      (language) =>
-        language.name[0]?.value != null ||
-        language.fallbackName[0]?.value != null
-    )
-    .map((language) => {
-      const nonSuggestedCountryLanguages = language.countryLanguages.filter(
-        ({ suggested }) => !suggested
-      )
-
-      const speakerCount = nonSuggestedCountryLanguages.reduce(
-        (acc, { speakers }) => acc + speakers,
-        0
-      )
-
-      const countriesCount = nonSuggestedCountryLanguages.length
-
-      type CountsType = {
-        speakerCount: { value: number; description: string }
-        countriesCount: { value: number; description: string }
-        [key: string]: { value: number; description: string }
-      }
-
-      const counts: CountsType = {
-        speakerCount: {
-          value: speakerCount,
-          description: 'Number of speakers'
-        },
-        countriesCount: {
-          value: countriesCount,
-          description: 'Number of countries'
+  const response = await getWithStaleCache(
+    cacheKey,
+    async () => {
+      // Get total count first
+      const countResult = await getApolloClient().query<
+        ResultOf<typeof GET_LANGUAGES_COUNT>
+      >({
+        query: GET_LANGUAGES_COUNT,
+        variables: {
+          ids,
+          bcp47,
+          iso3,
+          term
         }
-      }
+      })
 
-      const { seriesCount, featureFilmCount, shortFilmCount } =
-        language.labeledVideoCounts
+      const totalCount = countResult.data.languagesCount
 
-      if (seriesCount > 0) {
-        counts['series'] = {
-          value: seriesCount,
-          description: 'Series'
+      // Then get paginated data
+      const { data } = await getApolloClient().query<
+        ResultOf<typeof GET_LANGUAGES_DATA>
+      >({
+        query: GET_LANGUAGES_DATA,
+        variables: {
+          limit,
+          offset,
+          ids,
+          bcp47,
+          iso3,
+          metadataLanguageId,
+          fallbackLanguageId,
+          term
         }
+      })
+
+      const languages = data.languages
+
+      const queryObject = {
+        ...c.req.query(),
+        page: page.toString(),
+        limit: limit.toString()
       }
 
-      if (featureFilmCount > 0) {
-        counts['featureFilm'] = {
-          value: featureFilmCount,
-          description: 'Feature Film'
-        }
-      }
+      const totalPages = Math.ceil(Number(totalCount) / limit)
+      const queryString = new URLSearchParams(queryObject).toString()
+      const firstQueryString = new URLSearchParams({
+        ...queryObject,
+        page: '1'
+      }).toString()
+      const lastQueryString = new URLSearchParams({
+        ...queryObject,
+        page: totalPages.toString()
+      }).toString()
+      const nextQueryString = new URLSearchParams({
+        ...queryObject,
+        page: (page + 1).toString()
+      }).toString()
+      const previousQueryString = new URLSearchParams({
+        ...queryObject,
+        page: (page - 1).toString()
+      }).toString()
 
-      if (shortFilmCount > 0) {
-        counts['shortFilm'] = {
-          value: shortFilmCount,
-          description: 'Short Film'
-        }
-      }
+      const mediaLanguages = languages
+        .filter(
+          (language) =>
+            language.name[0]?.value != null ||
+            language.fallbackName[0]?.value != null
+        )
+        .map((language) => {
+          const nonSuggestedCountryLanguages = language.countryLanguages.filter(
+            ({ suggested }) => !suggested
+          )
 
-      return {
-        languageId: Number(language.id),
-        iso3: language.iso3 ?? '',
-        bcp47: language.bcp47 ?? '',
-        counts,
-        ...(language.audioPreview != null
-          ? {
+          const speakerCount = nonSuggestedCountryLanguages.reduce(
+            (acc, { speakers }) => acc + speakers,
+            0
+          )
+
+          const countriesCount = nonSuggestedCountryLanguages.length
+
+          const primaryCountry = nonSuggestedCountryLanguages.find(
+            ({ primary }) => primary
+          )
+
+          // Base response with required fields
+          const baseResponse = {
+            languageId: Number(language.id),
+            iso3: language.iso3,
+            bcp47: language.bcp47,
+            name:
+              language.name[0]?.value ?? language.fallbackName[0]?.value ?? '',
+            nameNative: language.nameNative[0]?.value ?? '',
+            metadataLanguageTag:
+              language.name[0]?.language?.bcp47 ??
+              language.fallbackName[0]?.language?.bcp47 ??
+              'en',
+            _links: {
+              self: {
+                href: `http://api.arclight.org/v2/media-languages/${language.id}`
+              }
+            }
+          }
+
+          // Add optional fields based on expand parameter
+          if (expand.includes('counts')) {
+            Object.assign(baseResponse, {
+              counts: {
+                speakerCount: {
+                  value: speakerCount,
+                  description: `${speakerCount.toLocaleString()} speakers`
+                },
+                countriesCount: {
+                  value: countriesCount,
+                  description: `${countriesCount} ${
+                    countriesCount === 1 ? 'country' : 'countries'
+                  }`
+                },
+                series: {
+                  value: language.labeledVideoCounts?.seriesCount ?? 0,
+                  description: `${
+                    language.labeledVideoCounts?.seriesCount ?? 0
+                  } series`
+                },
+                featureFilm: {
+                  value: language.labeledVideoCounts?.featureFilmCount ?? 0,
+                  description: `${
+                    language.labeledVideoCounts?.featureFilmCount ?? 0
+                  } feature films`
+                },
+                shortFilm: {
+                  value: language.labeledVideoCounts?.shortFilmCount ?? 0,
+                  description: `${
+                    language.labeledVideoCounts?.shortFilmCount ?? 0
+                  } short films`
+                }
+              }
+            })
+          }
+
+          if (expand.includes('audioPreview') && language.audioPreview) {
+            Object.assign(baseResponse, {
               audioPreview: {
                 url: language.audioPreview.value,
                 audioBitrate: language.audioPreview.bitrate,
                 audioContainer: language.audioPreview.codec,
                 sizeInBytes: language.audioPreview.size
               }
-            }
-          : {}),
-        primaryCountryId:
-          language.countryLanguages.find(({ primary }) => primary)?.country
-            .id ?? '',
-        name: language.name[0]?.value ?? language.fallbackName[0]?.value ?? '',
-        nameNative:
-          language.nameNative[0]?.value ??
-          language.name[0]?.value ??
-          language.fallbackName[0]?.value ??
-          '',
-        metadataLanguageTag: metadataLanguageTags[0] ?? 'en',
+            })
+          }
+
+          if (expand.includes('primaryCountry')) {
+            Object.assign(baseResponse, {
+              primaryCountryId: primaryCountry?.country.id
+            })
+          }
+
+          return baseResponse
+        })
+
+      return {
+        page,
+        limit,
+        pages: totalPages,
+        total: Number(totalCount),
         _links: {
           self: {
-            href: `http://api.arclight.org/v2/media-languages/${language.id}?apiKey=${apiKey}`
-          }
-        }
-      }
-    })
-
-  const response = {
-    page,
-    limit,
-    pages: totalPages,
-    total: totalCount,
-    _links: {
-      self: {
-        href: `http://api.arclight.org/v2/media-languages?${queryString}`
-      },
-      first: {
-        href: `http://api.arclight.org/v2/media-languages?${firstQueryString}`
-      },
-      last: {
-        href: `http://api.arclight.org/v2/media-languages?${lastQueryString}`
-      },
-      ...(page < totalPages
-        ? {
+            href: `http://api.arclight.org/v2/media-languages?${queryString}`
+          },
+          first: {
+            href: `http://api.arclight.org/v2/media-languages?${firstQueryString}`
+          },
+          last: {
+            href: `http://api.arclight.org/v2/media-languages?${lastQueryString}`
+          },
+          ...(page < totalPages && {
             next: {
               href: `http://api.arclight.org/v2/media-languages?${nextQueryString}`
             }
-          }
-        : {}),
-      ...(page > 1
-        ? {
+          }),
+          ...(page > 1 && {
             previous: {
               href: `http://api.arclight.org/v2/media-languages?${previousQueryString}`
             }
-          }
-        : {})
+          })
+        },
+        _embedded: {
+          mediaLanguages
+        }
+      }
     },
-    _embedded: {
-      mediaLanguages
+    {
+      ttl: 24 * 3600, // 24 hours
+      staleWhileRevalidate: true
     }
-  }
+  )
 
   return c.json(response)
 })
