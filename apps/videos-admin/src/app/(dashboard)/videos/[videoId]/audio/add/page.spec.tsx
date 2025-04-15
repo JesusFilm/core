@@ -346,7 +346,10 @@ describe('AddAudioLanguageDialog', () => {
     fireEvent.click(screen.getByTestId('close-button'))
 
     // Should redirect to audio page
-    expect(mockRouterPush).toHaveBeenCalledWith(`/videos/${mockVideoId}/audio`)
+    expect(mockRouterPush).toHaveBeenCalledWith(
+      `/videos/${mockVideoId}/audio`,
+      { scroll: false }
+    )
   })
 
   it('prevents dialog close during upload', async () => {

@@ -124,7 +124,7 @@ describe('VideoCreateForm', () => {
 
     it('navigates to videos list when Cancel button is clicked', () => {
       fireEvent.click(screen.getByText('Cancel'))
-      expect(mockRouterPush).toHaveBeenCalledWith('/videos')
+      expect(mockRouterPush).toHaveBeenCalledWith('/videos', { scroll: false })
     })
   })
 
@@ -160,7 +160,9 @@ describe('VideoCreateForm', () => {
 
     it('navigates to parent video when Cancel button is clicked', () => {
       fireEvent.click(screen.getByText('Cancel'))
-      expect(mockRouterPush).toHaveBeenCalledWith(`/videos/${mockParentId}`)
+      expect(mockRouterPush).toHaveBeenCalledWith(`/videos/${mockParentId}`, {
+        scroll: false
+      })
     })
   })
 
@@ -215,7 +217,9 @@ describe('VideoCreateForm', () => {
 
       // Check router was called with correct path
       await waitFor(() => {
-        expect(mockRouterPush).toHaveBeenCalledWith('/videos/test-id')
+        expect(mockRouterPush).toHaveBeenCalledWith('/videos/test-id', {
+          scroll: false
+        })
       })
     })
   })

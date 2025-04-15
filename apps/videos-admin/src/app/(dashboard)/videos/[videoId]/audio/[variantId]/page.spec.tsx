@@ -257,7 +257,10 @@ describe('VariantDialog', () => {
     fireEvent.click(screen.getByTestId('close-button'))
 
     // Check if router.push was called with the correct path
-    expect(mockRouterPush).toHaveBeenCalledWith(`/videos/${mockVideoId}/audio`)
+    expect(mockRouterPush).toHaveBeenCalledWith(
+      `/videos/${mockVideoId}/audio`,
+      { scroll: false }
+    )
   })
 
   it('navigates to add download page when add download button is clicked', () => {
@@ -274,7 +277,8 @@ describe('VariantDialog', () => {
 
     // Check if router.push was called with the correct path
     expect(mockRouterPush).toHaveBeenCalledWith(
-      `/videos/${mockVideoId}/audio/${mockVariantId}/download/lang-123/add`
+      `/videos/${mockVideoId}/audio/${mockVariantId}/download/lang-123/add`,
+      { scroll: false }
     )
   })
 
@@ -293,7 +297,8 @@ describe('VariantDialog', () => {
 
     // Check if router.push was called with the correct path
     expect(mockRouterPush).toHaveBeenCalledWith(
-      `/videos/${mockVideoId}/audio/${mockVariantId}/download/download-1/delete`
+      `/videos/${mockVideoId}/audio/${mockVariantId}/download/download-1/delete`,
+      { scroll: false }
     )
   })
 

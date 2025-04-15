@@ -38,7 +38,8 @@ describe('DownloadPage', () => {
 
     // Check if router.push was called with the correct path
     expect(mockRouterPush).toHaveBeenCalledWith(
-      `/videos/${mockVideoId}/audio/${mockVariantId}`
+      `/videos/${mockVideoId}/audio/${mockVariantId}`,
+      { scroll: false }
     )
   })
 

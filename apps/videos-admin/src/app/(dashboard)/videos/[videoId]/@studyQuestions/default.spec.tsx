@@ -103,7 +103,8 @@ jest.mock('@mui/material/Button', () => ({
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
     push: jest.fn()
-  })
+  }),
+  usePathname: () => '/videos/video-123/studyQuestions'
 }))
 
 // Mock notistack
@@ -240,7 +241,8 @@ describe('StudyQuestionsList', () => {
 
     // Check if router.push was called with the correct path
     expect(mockRouterPush).toHaveBeenCalledWith(
-      `/videos/${mockVideoId}/studyQuestions/add`
+      `/videos/${mockVideoId}/studyQuestion/add`,
+      { scroll: false }
     )
   })
 
@@ -258,7 +260,8 @@ describe('StudyQuestionsList', () => {
 
     // Check if router.push was called with the correct path
     expect(mockRouterPush).toHaveBeenCalledWith(
-      `/videos/${mockVideoId}/studyQuestions/q1`
+      `/videos/${mockVideoId}/studyQuestion/q1`,
+      { scroll: false }
     )
   })
 
@@ -276,7 +279,8 @@ describe('StudyQuestionsList', () => {
 
     // Check if router.push was called with the correct path
     expect(mockRouterPush).toHaveBeenCalledWith(
-      `/videos/${mockVideoId}/studyQuestions/q2/delete`
+      `/videos/${mockVideoId}/studyQuestion/q2/delete`,
+      { scroll: false }
     )
   })
 })

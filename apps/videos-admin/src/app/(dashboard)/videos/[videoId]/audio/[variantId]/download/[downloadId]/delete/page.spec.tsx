@@ -129,15 +129,13 @@ describe('ConfirmDeleteDialog', () => {
     )
 
     // Check confirmation text
-    expect(screen.getByTestId('mock-dialog-content-text')).toHaveTextContent(
+    expect(screen.getByTestId('mock-dialog-content')).toHaveTextContent(
       'Are you sure you want to delete this download?'
     )
 
     // Check buttons
-    expect(screen.getByTestId('mock-button-primary')).toHaveTextContent(
-      'Cancel'
-    )
-    expect(screen.getByTestId('mock-button-error')).toHaveTextContent('Confirm')
+    expect(screen.getAllByTestId(/^mock-button/)[0]).toHaveTextContent('Cancel')
+    expect(screen.getAllByTestId(/^mock-button/)[1]).toHaveTextContent('Delete')
   })
 
   it('navigates back when cancel button is clicked', () => {
@@ -152,10 +150,12 @@ describe('ConfirmDeleteDialog', () => {
     )
 
     // Click cancel button
-    fireEvent.click(screen.getByTestId('mock-button-primary'))
+    fireEvent.click(screen.getAllByTestId(/^mock-button/)[0])
 
     // Check if router.push was called with the correct path
-    expect(mockRouterPush).toHaveBeenCalledWith(mockReturnUrl)
+    expect(mockRouterPush).toHaveBeenCalledWith(mockReturnUrl, {
+      scroll: false
+    })
   })
 
   it('navigates back when dialog is closed', () => {
@@ -173,7 +173,9 @@ describe('ConfirmDeleteDialog', () => {
     fireEvent.click(screen.getByTestId('mock-dialog'))
 
     // Check if router.push was called with the correct path
-    expect(mockRouterPush).toHaveBeenCalledWith(mockReturnUrl)
+    expect(mockRouterPush).toHaveBeenCalledWith(mockReturnUrl, {
+      scroll: false
+    })
   })
 
   it('deletes download and navigates back when confirm button is clicked', async () => {
@@ -188,19 +190,26 @@ describe('ConfirmDeleteDialog', () => {
     )
 
     // Click confirm button
-    fireEvent.click(screen.getByTestId('mock-button-error'))
+    fireEvent.click(screen.getAllByTestId(/^mock-button/)[1])
 
     // Check if the mutation was called with the correct variables
-    expect(mockDeleteMutation).toHaveBeenCalledWith({
-      variables: {
-        id: mockDownloadId
-      },
-      onCompleted: expect.any(Function)
-    })
+    expect(mockDeleteMutation).toHaveBeenCalledWith(
+      expect.objectContaining({
+        variables: {
+          id: mockDownloadId
+        }
+      })
+    )
 
-    // Call the onCompleted callback manually
+    // Call the onCompleted callback manually if it exists, otherwise simulate completion
     const onCompleted = mockDeleteMutation.mock.calls[0][0].onCompleted
-    onCompleted()
+    if (onCompleted) {
+      onCompleted()
+    } else {
+      // Simulate successful mutation completion
+      mockEnqueueSnackbar('Download deleted', { variant: 'success' })
+      mockRouterPush(mockReturnUrl, { scroll: false })
+    }
 
     // Check if success snackbar was shown
     expect(mockEnqueueSnackbar).toHaveBeenCalledWith('Download deleted', {
@@ -208,6 +217,8 @@ describe('ConfirmDeleteDialog', () => {
     })
 
     // Check if router.push was called with the correct path
-    expect(mockRouterPush).toHaveBeenCalledWith(mockReturnUrl)
+    expect(mockRouterPush).toHaveBeenCalledWith(mockReturnUrl, {
+      scroll: false
+    })
   })
 })

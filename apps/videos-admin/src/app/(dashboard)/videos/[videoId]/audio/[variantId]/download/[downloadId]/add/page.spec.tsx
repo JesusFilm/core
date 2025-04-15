@@ -176,6 +176,8 @@ describe('AddVideoVariantDownloadDialog', () => {
     fireEvent.click(screen.getByTestId('mock-dialog'))
 
     // Check if router.push was called with the correct path
-    expect(mockRouterPush).toHaveBeenCalledWith(mockReturnUrl)
+    expect(mockRouterPush).toHaveBeenCalledWith(mockReturnUrl, {
+      scroll: false
+    })
   })
 })

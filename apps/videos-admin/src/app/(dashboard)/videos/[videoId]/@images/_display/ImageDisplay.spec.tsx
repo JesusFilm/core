@@ -168,7 +168,10 @@ describe('ImageDisplay', () => {
     const editButton = screen.getByTestId('mui-icon-button')
     fireEvent.click(editButton)
 
-    expect(mockPush).toHaveBeenCalledWith('/videos/test-video-123/image/banner')
+    expect(mockPush).toHaveBeenCalledWith(
+      '/videos/test-video-123/image/banner',
+      { scroll: false }
+    )
   })
 
   it('shows a tooltip with the correct title', () => {

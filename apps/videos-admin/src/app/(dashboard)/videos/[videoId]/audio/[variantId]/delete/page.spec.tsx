@@ -125,7 +125,9 @@ describe('DeleteAudio', () => {
     fireEvent.click(screen.getByTestId('close-button'))
 
     // Check if router.push was called with the correct path
-    expect(mockRouterPush).toHaveBeenCalledWith(mockReturnUrl)
+    expect(mockRouterPush).toHaveBeenCalledWith(mockReturnUrl, {
+      scroll: false
+    })
   })
 
   it('calls delete mutation when delete button is clicked', () => {

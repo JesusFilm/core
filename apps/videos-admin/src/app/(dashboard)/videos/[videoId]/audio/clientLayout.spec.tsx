@@ -96,7 +96,9 @@ describe('ClientLayout', () => {
     )
 
     fireEvent.click(screen.getAllByRole('listitem')[0])
-    expect(mockPush).toHaveBeenCalledWith('/videos/video123/audio/variant1')
+    expect(mockPush).toHaveBeenCalledWith('/videos/video123/audio/variant1', {
+      scroll: false
+    })
   })
 
   it('should have correct id for the Section element so correct virtualization dimensions can be calculated', async () => {
@@ -127,7 +129,8 @@ describe('ClientLayout', () => {
     fireEvent.click(deleteButtons[0])
 
     expect(mockPush).toHaveBeenCalledWith(
-      '/videos/video123/audio/variant1/delete'
+      '/videos/video123/audio/variant1/delete',
+      { scroll: false }
     )
   })
 
@@ -141,7 +144,9 @@ describe('ClientLayout', () => {
     )
 
     fireEvent.click(screen.getByText('Add Audio Language'))
-    expect(mockPush).toHaveBeenCalledWith('/videos/video123/audio/add')
+    expect(mockPush).toHaveBeenCalledWith('/videos/video123/audio/add', {
+      scroll: false
+    })
   })
 
   it('should render children', async () => {
