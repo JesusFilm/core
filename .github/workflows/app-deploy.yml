@@ -46,7 +46,7 @@ jobs:
           echo "matrix=$(npx ts-node tools/scripts/deploy-apps.ts --projects apps/* --exclude api-*)" >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT
   deploy-preview:
-    name: Deploy Preview and Test
+    name: Deploy Preview
     needs: affected
     # if branch is not main or is a pull request
     if: |
@@ -174,17 +174,22 @@ jobs:
           state: ${{ job.status }}
           environment-url: ${{ steps.deployment-url.outputs.deployment-url }}
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
-      - name: Find test files
-        id: set-test-files
-        run: |
-          APP_NAME="${{ matrix.app }}"
-          SPEC_FILES=$(find apps/${APP_NAME}-e2e/src/e2e -name "*.spec.ts" -type f | jq -R -s -c 'split("\n")[:-1]')
-          echo "spec_files=${SPEC_FILES}" >> $GITHUB_OUTPUT
+  playwright-tests:
+    needs: [affected, deploy-preview]
+    if: success()
+    runs-on: blacksmith-2vcpu-ubuntu-2204
+    strategy:
+      fail-fast: false
+      matrix:
+        app: ${{fromJson(needs.affected.outputs.matrix)}}
+        shard: [1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@v4
       - run: npx playwright install --with-deps
-      - name: Run Playwright tests in parallel
+      - name: Run Playwright tests shard
         run: npx nx run ${{ matrix.app }}-e2e:e2e --shard=${{ matrix.shard }}/4
         env:
-          DEPLOYMENT_URL: ${{ steps.deployment-url.outputs.deployment-url }}
+          DEPLOYMENT_URL: ${{ needs.deploy-preview.outputs.url }}
           PLAYWRIGHT_EMAIL: ${{ secrets.PLAYWRIGHT_EMAIL }}
           PLAYWRIGHT_PASSWORD: ${{ secrets.PLAYWRIGHT_PASSWORD }}
           PLAYWRIGHT_USER: ${{ secrets.PLAYWRIGHT_USER }}
@@ -197,6 +202,7 @@ jobs:
           path: |
             playwright-report/
           retention-days: 30
+
   deploy-status:
     runs-on: blacksmith-2vcpu-ubuntu-2204
     needs: [affected, deploy-preview]
