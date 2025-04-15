@@ -133,7 +133,7 @@ export function ImageEdit({
   async function createImageBlock(input: ImageBlockUpdateInput): Promise<void> {
     if (journey == null) return
 
-    // Append timestamp to the image URL to avoid open graph cache issues
+    // Append timestamp to the image URL to avoid open graph cache issues - https://developers.facebook.com/docs/sharing/opengraph/using-objects#update
     if (input.src != null) {
       input.src = appendTimestamp(input.src)
     }
@@ -171,7 +171,7 @@ export function ImageEdit({
   async function updateImageBlock(input: ImageBlockUpdateInput): Promise<void> {
     if (journey == null || targetImageBlock == null) return
 
-    // Append timestamp to the image URL to avoid open graph cache issues
+    // Append timestamp to the image URL to avoid open graph cache issues - https://developers.facebook.com/docs/sharing/opengraph/using-objects#update
     if (input.src != null) {
       input.src = appendTimestamp(input.src)
     }
