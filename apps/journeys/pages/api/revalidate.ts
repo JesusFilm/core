@@ -1,6 +1,26 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import fetch from 'node-fetch'
 
+async function generateFacebookAppAccessToken(): Promise<string> {
+  const appId = process.env.FACEBOOK_APP_ID
+  const appSecret = process.env.FACEBOOK_APP_SECRET
+
+  if (!appId || !appSecret) {
+    throw new Error('Facebook App ID or App Secret not configured')
+  }
+
+  const response = await fetch(
+    `https://graph.facebook.com/oauth/access_token?client_id=${appId}&client_secret=${appSecret}&grant_type=client_credentials`
+  )
+
+  if (!response.ok) {
+    throw new Error(`Failed to generate access token: ${response.statusText}`)
+  }
+
+  const data = await response.json()
+  return data.access_token
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -25,18 +45,24 @@ export default async function handler(
         : `${process.env.NEXT_PUBLIC_JOURNEYS_URL}${path}`
 
     try {
-      await fetch('https://graph.facebook.com', {
-        method: 'POST',
-        body: new URLSearchParams({
-          id: journeyUrl,
-          scrape: 'true'
-        })
-      })
+      const fbAccessToken = await generateFacebookAppAccessToken()
+      await fetch(
+        `https://graph.facebook.com/v22.0/?access_token=${fbAccessToken}`,
+        {
+          method: 'POST',
+          body: new URLSearchParams({
+            id: journeyUrl,
+            scrape: 'true'
+          })
+        }
+      )
     } catch (fbError) {
-      // Don't fail the whole request if Facebook scrape fails
-      return res.status(200).json({
+      return res.status(503).json({
         revalidated: true,
-        facebookError: fbError
+        facebookError: {
+          message: fbError.message,
+          timestamp: new Date().toISOString()
+        }
       })
     }
 
