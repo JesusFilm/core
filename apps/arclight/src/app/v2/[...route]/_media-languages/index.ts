@@ -93,11 +93,7 @@ const QuerySchema = z.object({
     .string()
     .optional()
     .describe('Filter by metadata language tags'),
-  term: z.string().optional().describe('Search term'),
-  expand: z
-    .string()
-    .optional()
-    .describe('Comma-separated list of fields to expand')
+  term: z.string().optional().describe('Search term')
 })
 
 const ResponseSchema = z.object({
@@ -153,14 +149,9 @@ const route = createRoute({
 export const mediaLanguages = new OpenAPIHono()
 mediaLanguages.route('/:languageId', mediaLanguage)
 
-const DEFAULT_LIMIT = 100 // More reasonable default limit
-const MAX_LIMIT = 5000 // Maximum allowed limit
-
 mediaLanguages.openapi(route, async (c) => {
   const page = c.req.query('page') == null ? 1 : Number(c.req.query('page'))
-  const requestedLimit =
-    c.req.query('limit') == null ? DEFAULT_LIMIT : Number(c.req.query('limit'))
-  const limit = Math.min(requestedLimit, MAX_LIMIT) // Ensure limit doesn't exceed maximum
+  const limit = c.req.query('limit') == null ? 10 : Number(c.req.query('limit'))
   const offset = (page - 1) * limit
   const ids =
     c.req.query('ids')?.split(',').filter(Boolean).length === 0
@@ -177,7 +168,6 @@ mediaLanguages.openapi(route, async (c) => {
   const term = c.req.query('term')
   const metadataLanguageTags =
     c.req.query('metadataLanguageTags')?.split(',').filter(Boolean) ?? []
-  const expand = c.req.query('expand')?.split(',') ?? []
 
   const languageResult = await getLanguageIdsFromTags(metadataLanguageTags)
   if (languageResult instanceof HTTPException) {
@@ -215,7 +205,6 @@ mediaLanguages.openapi(route, async (c) => {
 
       const totalCount = countResult.data.languagesCount
 
-      // Then get paginated data
       const { data } = await getApolloClient().query<
         ResultOf<typeof GET_LANGUAGES_DATA>
       >({
@@ -277,90 +266,86 @@ mediaLanguages.openapi(route, async (c) => {
 
           const countriesCount = nonSuggestedCountryLanguages.length
 
-          const primaryCountry = nonSuggestedCountryLanguages.find(
-            ({ primary }) => primary
-          )
+          type CountsType = {
+            speakerCount: { value: number; description: string }
+            countriesCount: { value: number; description: string }
+            [key: string]: { value: number; description: string }
+          }
 
-          // Base response with required fields
-          const baseResponse = {
-            languageId: Number(language.id),
-            iso3: language.iso3,
-            bcp47: language.bcp47,
-            name:
-              language.name[0]?.value ?? language.fallbackName[0]?.value ?? '',
-            nameNative: language.nameNative[0]?.value ?? '',
-            metadataLanguageTag:
-              language.name[0]?.language?.bcp47 ??
-              language.fallbackName[0]?.language?.bcp47 ??
-              'en',
-            _links: {
-              self: {
-                href: `http://api.arclight.org/v2/media-languages/${language.id}`
-              }
+          const counts: CountsType = {
+            speakerCount: {
+              value: speakerCount,
+              description: 'Number of speakers'
+            },
+            countriesCount: {
+              value: countriesCount,
+              description: 'Number of countries'
             }
           }
 
-          // Add optional fields based on expand parameter
-          if (expand.includes('counts')) {
-            Object.assign(baseResponse, {
-              counts: {
-                speakerCount: {
-                  value: speakerCount,
-                  description: `${speakerCount.toLocaleString()} speakers`
-                },
-                countriesCount: {
-                  value: countriesCount,
-                  description: `${countriesCount} ${
-                    countriesCount === 1 ? 'country' : 'countries'
-                  }`
-                },
-                series: {
-                  value: language.labeledVideoCounts?.seriesCount ?? 0,
-                  description: `${
-                    language.labeledVideoCounts?.seriesCount ?? 0
-                  } series`
-                },
-                featureFilm: {
-                  value: language.labeledVideoCounts?.featureFilmCount ?? 0,
-                  description: `${
-                    language.labeledVideoCounts?.featureFilmCount ?? 0
-                  } feature films`
-                },
-                shortFilm: {
-                  value: language.labeledVideoCounts?.shortFilmCount ?? 0,
-                  description: `${
-                    language.labeledVideoCounts?.shortFilmCount ?? 0
-                  } short films`
+          const { seriesCount, featureFilmCount, shortFilmCount } =
+            language.labeledVideoCounts
+
+          if (seriesCount > 0) {
+            counts['series'] = {
+              value: seriesCount,
+              description: 'Series'
+            }
+          }
+
+          if (featureFilmCount > 0) {
+            counts['featureFilm'] = {
+              value: featureFilmCount,
+              description: 'Feature Film'
+            }
+          }
+
+          if (shortFilmCount > 0) {
+            counts['shortFilm'] = {
+              value: shortFilmCount,
+              description: 'Short Film'
+            }
+          }
+
+          return {
+            languageId: Number(language.id),
+            iso3: language.iso3 ?? '',
+            bcp47: language.bcp47 ?? '',
+            counts,
+            ...(language.audioPreview != null
+              ? {
+                  audioPreview: {
+                    url: language.audioPreview.value,
+                    audioBitrate: language.audioPreview.bitrate,
+                    audioContainer: language.audioPreview.codec,
+                    sizeInBytes: language.audioPreview.size
+                  }
                 }
+              : {}),
+            primaryCountryId:
+              language.countryLanguages.find(({ primary }) => primary)?.country
+                .id ?? '',
+            name:
+              language.name[0]?.value ?? language.fallbackName[0]?.value ?? '',
+            nameNative:
+              language.nameNative[0]?.value ??
+              language.name[0]?.value ??
+              language.fallbackName[0]?.value ??
+              '',
+            metadataLanguageTag: metadataLanguageTags[0] ?? 'en',
+            _links: {
+              self: {
+                href: `http://api.arclight.org/v2/media-languages/${language.id}?apiKey=${apiKey}`
               }
-            })
+            }
           }
-
-          if (expand.includes('audioPreview') && language.audioPreview) {
-            Object.assign(baseResponse, {
-              audioPreview: {
-                url: language.audioPreview.value,
-                audioBitrate: language.audioPreview.bitrate,
-                audioContainer: language.audioPreview.codec,
-                sizeInBytes: language.audioPreview.size
-              }
-            })
-          }
-
-          if (expand.includes('primaryCountry')) {
-            Object.assign(baseResponse, {
-              primaryCountryId: primaryCountry?.country.id
-            })
-          }
-
-          return baseResponse
         })
 
-      return {
+      const response = {
         page,
         limit,
         pages: totalPages,
-        total: Number(totalCount),
+        total: totalCount,
         _links: {
           self: {
             href: `http://api.arclight.org/v2/media-languages?${queryString}`
