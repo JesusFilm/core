@@ -253,10 +253,10 @@ const VideoSchema = z.object({
     .array(
       z.object({
         osisBibleBook: z.string(),
-        chapterStart: z.number(),
-        verseStart: z.number(),
-        chapterEnd: z.number().nullable(),
-        verseEnd: z.number().nullable()
+        chapterStart: z.number().transform((val) => (val === -1 ? null : val)),
+        verseStart: z.number().transform((val) => (val === -1 ? null : val)),
+        chapterEnd: z.number().transform((val) => (val === -1 ? null : val)),
+        verseEnd: z.number().transform((val) => (val === -1 ? null : val))
       })
     )
     .optional()
