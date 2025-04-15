@@ -120,22 +120,7 @@ describe('Editor', () => {
     expect(screen.getByTestId('Toolbar')).toBeInTheDocument()
   })
 
-  it('should render the Slider', async () => {
-    render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <ThemeProvider>
-            <Editor journey={journey} />
-          </ThemeProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-    expect(screen.getByTestId('Slider')).toBeInTheDocument()
-  })
-
   it('should render the Fab', async () => {
-    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
-
     render(
       <MockedProvider>
         <SnackbarProvider>
@@ -146,7 +131,7 @@ describe('Editor', () => {
       </MockedProvider>
     )
 
-    expect(screen.getAllByTestId('Fab')).toHaveLength(2)
+    expect(screen.getByTestId('Fab')).toBeInTheDocument()
   })
 
   it('should set the selected step', async () => {
@@ -218,7 +203,24 @@ describe('Editor', () => {
     )
 
     await waitFor(() =>
-      expect(screen.getAllByText('Test selected step')).toHaveLength(2)
+      expect(screen.getByText('Test selected step')).toBeInTheDocument()
     )
+  })
+
+  describe('smDown', () => {
+    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
+
+    it('should render the Slider', async () => {
+      render(
+        <MockedProvider>
+          <SnackbarProvider>
+            <ThemeProvider>
+              <Editor journey={journey} />
+            </ThemeProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+      expect(screen.getByTestId('Slider')).toBeInTheDocument()
+    })
   })
 })
