@@ -193,23 +193,31 @@ mediaComponents.openapi(route, async (c) => {
   ])
 
   const response = await getWithStaleCache(cacheKey, async () => {
-    const { data } = await getApolloClient().query<
-      ResultOf<typeof GET_VIDEOS_WITH_FALLBACK>
-    >({
-      query: GET_VIDEOS_WITH_FALLBACK,
-      variables: {
-        metadataLanguageId,
-        fallbackLanguageId,
-        languageIds,
-        limit,
-        offset,
-        labels: subTypes,
-        ...(ids != null ? { ids } : {})
-      }
-    })
+    let videos: { data: { videos: { id: string }[] } }
+    let total: number
 
-    const videos = data.videos
-    const total = data.videosCount
+    try {
+      const { data } = await getApolloClient().query<
+        ResultOf<typeof GET_VIDEOS_WITH_FALLBACK>
+      >({
+        query: GET_VIDEOS_WITH_FALLBACK,
+        variables: {
+          metadataLanguageId,
+          fallbackLanguageId,
+          languageIds,
+          limit,
+          offset,
+          labels: subTypes,
+          ...(ids != null ? { ids } : {})
+        }
+      })
+      videos = data.videos
+      total = data.videosCount
+    } catch (err) {
+      console.error('Failed to get videos with fallback', err)
+      return null
+    }
+
     const queryObject = {
       ...c.req.query(),
       page: page.toString(),

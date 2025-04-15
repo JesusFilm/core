@@ -188,37 +188,48 @@ mediaLanguages.openapi(route, async (c) => {
   ])
 
   const response = await getWithStaleCache(cacheKey, async () => {
-    const countResult = await getApolloClient().query<
-      ResultOf<typeof GET_LANGUAGES_COUNT>
-    >({
-      query: GET_LANGUAGES_COUNT,
-      variables: {
-        ids,
-        bcp47,
-        iso3,
-        term
-      }
-    })
+    let totalCount: number
+    let languages: { data: { languages: { id: string }[] } }
 
-    const totalCount = countResult.data.languagesCount
+    try {
+      const { data } = await getApolloClient().query<
+        ResultOf<typeof GET_LANGUAGES_COUNT>
+      >({
+        query: GET_LANGUAGES_COUNT,
+        variables: {
+          ids,
+          bcp47,
+          iso3,
+          term
+        }
+      })
+      totalCount = data.languagesCount
+    } catch (err) {
+      console.error('Failed to get languages count', err)
+      return null
+    }
 
-    const { data } = await getApolloClient().query<
-      ResultOf<typeof GET_LANGUAGES_DATA>
-    >({
-      query: GET_LANGUAGES_DATA,
-      variables: {
-        limit,
-        offset,
-        ids,
-        bcp47,
-        iso3,
-        metadataLanguageId,
-        fallbackLanguageId,
-        term
-      }
-    })
-
-    const languages = data.languages
+    try {
+      const { data } = await getApolloClient().query<
+        ResultOf<typeof GET_LANGUAGES_DATA>
+      >({
+        query: GET_LANGUAGES_DATA,
+        variables: {
+          limit,
+          offset,
+          ids,
+          bcp47,
+          iso3,
+          metadataLanguageId,
+          fallbackLanguageId,
+          term
+        }
+      })
+      languages = data.languages
+    } catch (err) {
+      console.error('Failed to get languages data', err)
+      return null
+    }
 
     const queryObject = {
       ...c.req.query(),
