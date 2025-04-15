@@ -12,7 +12,6 @@ import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useState } from 'react'
 
-import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { useUserRoleQuery } from '@core/journeys/ui/useUserRoleQuery'
 
 import {
@@ -37,6 +36,7 @@ import { VisitorToolbar } from '../../../../src/components/JourneyVisitorsList/V
 import { PageWrapper } from '../../../../src/components/PageWrapper'
 import { ReportsNavigation } from '../../../../src/components/ReportsNavigation'
 import { initAndAuthApp } from '../../../../src/libs/initAndAuthApp'
+import { useUserTeamsAndInvitesQuery } from '../../../../src/libs/useUserTeamsAndInvitesQuery'
 import { GET_ADMIN_JOURNEY, USER_JOURNEY_OPEN } from '../../[journeyId]'
 
 export const GET_JOURNEY_VISITORS = gql`
@@ -126,7 +126,6 @@ function JourneyVisitorsPage({
   const [sortSetting, setSortSetting] = useState<'date' | 'duration'>('date')
 
   const { data: userRoleData } = useUserRoleQuery()
-  const { activeTeam } = useTeam()
   const { fetchMore, loading } = useQuery<GetJourneyVisitors>(
     GET_JOURNEY_VISITORS,
     {
@@ -174,17 +173,21 @@ function JourneyVisitorsPage({
 
   const isPublisher = userRoleData?.getUserRole?.roles?.includes(Role.publisher)
 
-  const currentUserTeamRole = activeTeam?.userTeams?.find(
-    ({ user: { email } }) => email === user?.email
-  )?.role
-
-  const hasValidTeamRole =
-    currentUserTeamRole != null &&
-    [UserTeamRole.manager, UserTeamRole.member].includes(currentUserTeamRole)
+  const { data } = useUserTeamsAndInvitesQuery(
+    journey?.team != null
+      ? {
+          teamId: journey?.team.id,
+          where: { role: [UserTeamRole.manager, UserTeamRole.member] }
+        }
+      : undefined
+  )
+  const userInTeam =
+    !!journey?.team &&
+    !!data?.userTeams?.some((userTeam) => userTeam.user.email === user.email)
 
   const enableExportButton = journey.template
     ? isPublisher
-    : hasValidTeamRole || isOwner
+    : userInTeam || isOwner
 
   const handleChange = async (e): Promise<void> => {
     switch (e.target.value) {
