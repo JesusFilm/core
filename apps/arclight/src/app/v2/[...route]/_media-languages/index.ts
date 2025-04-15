@@ -149,6 +149,7 @@ export const mediaLanguages = new OpenAPIHono()
 mediaLanguages.route('/:languageId', mediaLanguage)
 
 mediaLanguages.openapi(route, async (c) => {
+  const apiKey = c.req.query('apiKey')
   const page = c.req.query('page') == null ? 1 : Number(c.req.query('page'))
   const limit = c.req.query('limit') == null ? 10 : Number(c.req.query('limit'))
   const offset = (page - 1) * limit
