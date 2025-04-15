@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
-import { StudyQuestionForm } from '../_form/StudyQuestionForm'
+import { StudyQuestionForm } from '../_StudyQuestionForm/StudyQuestionForm'
 
 const UPDATE_STUDY_QUESTION = graphql(`
   mutation UpdateStudyQuestion($input: VideoStudyQuestionUpdateInput!) {

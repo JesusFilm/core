@@ -23,10 +23,10 @@ import { ReactElement } from 'react'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../../constants'
-import { VariantVideo } from '../_video'
+import { VariantVideo } from '../_VariantVideo'
 
-import { VideoEditionChip } from './_editionChip'
-import { bytesToSize } from './download/utils/bytesToSize'
+import { VideoEditionChip } from './_VideoEditionChip'
+import { bytesToSize } from './download/_utils/bytesToSize'
 
 interface VariantDialogProps {
   params: {

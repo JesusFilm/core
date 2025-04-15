@@ -14,7 +14,7 @@ import { getFirebaseAuth, loginWithGoogle } from '../../../libs/auth/firebase'
 import { useRedirectAfterLogin } from '../../../libs/auth/useRedirectAfterLogin'
 import { loginWithCredential } from '../../api'
 
-import { GoogleIcon } from './_googleIcon/googleIcon'
+import { GoogleIcon } from './_googleIcon/GoogleIcon'
 import { PasswordForm, PasswordFormValue } from './_passwordForm'
 
 export default function SignIn(): ReactElement {

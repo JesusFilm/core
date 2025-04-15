@@ -9,7 +9,7 @@ import { ReactElement } from 'react'
 
 import { getVideoChildrenLabel } from '../../../../../libs/getVideoChildrenLabel'
 
-import { TabLabel } from './_label'
+import { TabLabel } from './_TabLabel'
 
 const GET_TAB_DATA = graphql(`
   query GetTabData($id: ID!) {

@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
-import { StudyQuestionForm } from '../_form/StudyQuestionForm'
+import { StudyQuestionForm } from '../_StudyQuestionForm/StudyQuestionForm'
 
 const GET_STUDY_QUESTIONS = graphql(`
   query GetStudyQuestions($videoId: ID!) {

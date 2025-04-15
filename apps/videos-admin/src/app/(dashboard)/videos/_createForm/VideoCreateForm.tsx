@@ -6,7 +6,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { Form, Formik } from 'formik'
 import { ResultOf, VariablesOf, graphql } from 'gql.tada'
-import { usePathname, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useMemo } from 'react'
 import { InferType, mixed, object, string } from 'yup'
@@ -55,13 +55,11 @@ export type CreateVideoVariables = VariablesOf<typeof CREATE_VIDEO>
 export type CreateVideo = ResultOf<typeof CREATE_VIDEO>
 
 interface VideoCreateFormProps {
-  close: () => void
   parentId?: string
   onCreateSuccess?: (videoId: string) => void
 }
 
 export function VideoCreateForm({
-  close,
   parentId,
   onCreateSuccess
 }: VideoCreateFormProps): ReactElement {
@@ -75,7 +73,6 @@ export function VideoCreateForm({
   })
 
   const router = useRouter()
-  const pathname = usePathname()
 
   const { data: parentData } = useQuery(GET_PARENT_VIDEO_LABEL, {
     variables: { videoId: parentId || '' },
@@ -134,8 +131,7 @@ export function VideoCreateForm({
             if (onCreateSuccess != null) {
               onCreateSuccess(videoId)
             } else {
-              close()
-              router.push(`${pathname}/${values.id}`)
+              router.push(`/videos/${videoId}`)
             }
           },
           onError: () => {
@@ -201,7 +197,13 @@ export function VideoCreateForm({
             </Typography>
           )}
           <Stack direction="row" sx={{ gap: 1, mt: 2 }}>
-            <Button variant="outlined" onClick={close} fullWidth>
+            <Button
+              variant="outlined"
+              onClick={() =>
+                router.push(parentId ? `/videos/${parentId}` : '/videos')
+              }
+              fullWidth
+            >
               <Typography>Cancel</Typography>
             </Button>
             <Button variant="contained" type="submit" fullWidth>

@@ -1,1 +1,1 @@
-export { SideMenu } from './sideMenu'
+export { SideMenu } from './SideMenu'

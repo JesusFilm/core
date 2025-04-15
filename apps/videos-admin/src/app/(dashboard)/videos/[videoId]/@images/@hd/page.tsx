@@ -30,13 +30,13 @@ export default function VideoHd({ params: { videoId } }: VideoHdProps) {
       id: videoId
     }
   })
+
+  // Handle potential null/undefined values
+  const imageUrl = data?.adminVideo?.images?.[0]?.videoStill ?? undefined
+
   return (
     <ImageDisplay
-      src={
-        data.adminVideo.images[0]?.videoStill
-          ? data.adminVideo.images[0].videoStill
-          : undefined
-      }
+      src={imageUrl}
       alt="HD image"
       title="HD image"
       aspectRatio={ImageAspectRatio.hd}

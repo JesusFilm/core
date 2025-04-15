@@ -5,7 +5,7 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import VariantDialog from './page'
 
 // Mock VariantVideo component
-jest.mock('../_video', () => ({
+jest.mock('../_VariantVideo', () => ({
   VariantVideo: ({ hlsSrc }) => (
     <div data-testid="mock-variant-video">
       {hlsSrc ? <div data-testid="hls-source">{hlsSrc}</div> : 'No HLS stream'}
@@ -25,7 +25,7 @@ jest.mock('@core/shared/ui/Dialog', () => ({
 }))
 
 // Mock VideoEditionChip component
-jest.mock('./_editionChip', () => ({
+jest.mock('./_VideoEditionChip', () => ({
   VideoEditionChip: ({ editionName }) => (
     <div data-testid="mock-video-edition-chip">{editionName}</div>
   )

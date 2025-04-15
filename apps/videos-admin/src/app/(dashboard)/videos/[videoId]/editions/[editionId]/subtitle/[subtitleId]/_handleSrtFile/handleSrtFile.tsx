@@ -4,7 +4,7 @@ import {
   CreateCloudflareR2Asset,
   CreateCloudflareR2AssetVariables
 } from '../../../../../../../../../libs/useCreateR2Asset/useCreateR2Asset'
-import { getSubtitleR2Path } from '../../_getR2Path/getSubtitleR2Path'
+import { getSubtitleR2Path } from '../../_getSubtitleR2Path/getSubtitleR2Path'
 
 /**
  * Handles the upload of an SRT file for a subtitle

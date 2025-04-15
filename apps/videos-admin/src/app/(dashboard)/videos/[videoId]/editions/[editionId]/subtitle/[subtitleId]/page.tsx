@@ -13,7 +13,7 @@ import { mixed, object, string } from 'yup'
 import { FormLanguageSelect } from '../../../../../../../../components/FormLanguageSelect'
 import { useCreateR2AssetMutation } from '../../../../../../../../libs/useCreateR2Asset/useCreateR2Asset'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../../../../constants'
-import { SubtitleFileUpload } from '../_upload'
+import { SubtitleFileUpload } from '../_SubtitleFileUpload'
 import { subtitleValidationSchema } from '../constants'
 
 import { handleSrtFile } from './_handleSrtFile'

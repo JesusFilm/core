@@ -30,13 +30,14 @@ export default function VideoBanner({ params: { videoId } }: VideoBannerProps) {
       id: videoId
     }
   })
+
+  // Handle potential null/undefined values
+  const imageUrl =
+    data?.adminVideo?.images?.[0]?.mobileCinematicHigh ?? undefined
+
   return (
     <ImageDisplay
-      src={
-        data.adminVideo.images[0].mobileCinematicHigh
-          ? data.adminVideo.images[0].mobileCinematicHigh
-          : undefined
-      }
+      src={imageUrl}
       alt="banner image"
       title="banner image"
       aspectRatio={ImageAspectRatio.banner}

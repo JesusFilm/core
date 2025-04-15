@@ -15,8 +15,8 @@ import { Dialog } from '@core/shared/ui/Dialog'
 import { FormLanguageSelect } from '../../../../../../../../components/FormLanguageSelect'
 import { useCreateR2AssetMutation } from '../../../../../../../../libs/useCreateR2Asset'
 import { uploadAssetFile } from '../../../../../../../../libs/useCreateR2Asset/uploadAssetFile/uploadAssetFile'
-import { getSubtitleR2Path } from '../_getR2Path/getSubtitleR2Path'
-import { SubtitleFileUpload } from '../_upload'
+import { getSubtitleR2Path } from '../_getSubtitleR2Path/getSubtitleR2Path'
+import { SubtitleFileUpload } from '../_SubtitleFileUpload'
 import { subtitleValidationSchema } from '../constants'
 
 const CREATE_VIDEO_SUBTITLE = graphql(`

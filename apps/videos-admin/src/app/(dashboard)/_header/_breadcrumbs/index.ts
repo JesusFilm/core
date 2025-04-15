@@ -1,1 +1,1 @@
-export { NavbarBreadcrumbs } from './breadcrumbs'
+export { NavbarBreadcrumbs } from './Breadcrumbs'
