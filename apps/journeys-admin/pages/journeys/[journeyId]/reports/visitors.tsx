@@ -39,14 +39,6 @@ import { ReportsNavigation } from '../../../../src/components/ReportsNavigation'
 import { initAndAuthApp } from '../../../../src/libs/initAndAuthApp'
 import { GET_ADMIN_JOURNEY, USER_JOURNEY_OPEN } from '../../[journeyId]'
 
-export const GET_ROLE = gql`
-  query GetRole {
-    getUserRole {
-      roles
-    }
-  }
-`
-
 export const GET_JOURNEY_VISITORS = gql`
   query GetJourneyVisitors(
     $filter: JourneyVisitorFilter!
@@ -99,7 +91,13 @@ export const GET_JOURNEY_VISITORS_COUNT = gql`
   }
 `
 
-function JourneyVisitorsPage({ journey }: { journey: Journey }): ReactElement {
+interface JourneyVisitorsPageProps {
+  journey: Journey
+}
+
+function JourneyVisitorsPage({
+  journey
+}: JourneyVisitorsPageProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const user = useUser()
   const router = useRouter()
