@@ -61,6 +61,7 @@ jobs:
         github-ref-name: ['${{ github.ref_name }}']
         github-event-name: ['${{ github.event_name }}']
         node-version: [22]
+        shard: [1, 2, 3, 4]
         exclude:
           # handled by production job below
           - app: journeys
@@ -173,9 +174,15 @@ jobs:
           state: ${{ job.status }}
           environment-url: ${{ steps.deployment-url.outputs.deployment-url }}
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
+      - name: Find test files
+        id: set-test-files
+        run: |
+          APP_NAME="${{ matrix.app }}"
+          SPEC_FILES=$(find apps/${APP_NAME}-e2e/src/e2e -name "*.spec.ts" -type f | jq -R -s -c 'split("\n")[:-1]')
+          echo "spec_files=${SPEC_FILES}" >> $GITHUB_OUTPUT
       - run: npx playwright install --with-deps
-      - name: Run Playwright tests
-        run: npx nx run ${{ matrix.app }}-e2e:e2e
+      - name: Run Playwright tests in parallel
+        run: npx nx run ${{ matrix.app }}-e2e:e2e --shard=${{ matrix.shard }}/4
         env:
           DEPLOYMENT_URL: ${{ steps.deployment-url.outputs.deployment-url }}
           PLAYWRIGHT_EMAIL: ${{ secrets.PLAYWRIGHT_EMAIL }}
@@ -186,7 +193,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: ${{ matrix.app }}-playwright-report
+          name: ${{ matrix.app }}-playwright-report-shard-${{ matrix.shard }}
           path: |
             playwright-report/
           retention-days: 30

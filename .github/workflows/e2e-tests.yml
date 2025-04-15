@@ -25,9 +25,25 @@ on:
         type: string
         required: true
 jobs:
+  test-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: set-matrix
+        run: |
+          SPEC_FILES=$(find apps/${{ inputs.TargetTests }}/src/e2e -name "*.spec.ts" -type f | jq -R -s -c 'split("\n")[:-1]')
+          echo "matrix=${SPEC_FILES}" >> $GITHUB_OUTPUT
+
   E2E_Tests:
+    needs: test-matrix
     timeout-minutes: 60
     runs-on: blacksmith-2vcpu-ubuntu-2204
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
     steps:
       - uses: actions/checkout@v4
       - uses: useblacksmith/setup-node@v5
@@ -56,7 +72,7 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - name: Run Playwright tests
-        run: npx nx run ${{ inputs.TargetTests }}:${{ inputs.TargetAction }}
+        run: npx nx run ${{ inputs.TargetTests }}:${{ inputs.TargetAction }} --shard=${{ matrix.shard }}/${{ strategy.job-total }}
         env:
           DEPLOYMENT_URL: ${{ inputs.TargetAppUrl }}
           PLAYWRIGHT_EMAIL: ${{ secrets.PLAYWRIGHT_EMAIL }}
@@ -67,7 +83,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: ${{ inputs.TargetTests }}-playwright-report
+          name: ${{ inputs.TargetTests }}-playwright-report-shard-${{ matrix.shard }}
           path: |
             playwright-report/
             apps/${{ inputs.TargetTests }}/src/e2e/
