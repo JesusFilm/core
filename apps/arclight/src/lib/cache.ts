@@ -48,23 +48,30 @@ export async function getWithStaleCache<T>(
   fetchFn: () => Promise<T>,
   options: CacheOptions = {}
 ): Promise<T> {
-  const cached = await getFromCache<T>(key)
-  if (cached) return cached
+  try {
+    const cached = await getFromCache<T>(key)
+    if (cached) return cached
 
-  const stale = await getFromCache<T>(`${key}:stale`)
+    const stale = await getFromCache<T>(`${key}:stale`)
 
-  if (stale) {
-    void fetchFn()
-      .then((newData) => setInCache(key, newData, options))
-      .catch((err) => {
-        console.error('Failed to set stale cache for key', key, err)
-      })
-    return stale
+    if (stale) {
+      void fetchFn()
+        .then((newData) => setInCache(key, newData, options))
+        .catch((error) =>
+          console.error(`Background refresh failed for key ${key}:`, error)
+        )
+      return stale
+    }
+
+    const fresh = await fetchFn()
+    void setInCache(key, fresh, options).catch((error) =>
+      console.error(`Failed to cache fresh data for key ${key}:`, error)
+    )
+    return fresh
+  } catch (error) {
+    console.error(`Error retrieving from cache for key ${key}:`, error)
+    return await fetchFn()
   }
-
-  const fresh = await fetchFn()
-  void setInCache(key, fresh, options)
-  return fresh
 }
 
 export function generateCacheKey(parts: (string | number)[]): string {
