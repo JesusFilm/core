@@ -82,6 +82,7 @@ export class BlockResolver {
         ...INCLUDE_JOURNEY_ACL
       }
     })
+    const isStepBlock = block?.typename === 'StepBlock'
 
     if (block == null)
       throw new GraphQLError('block not found', {
@@ -95,6 +96,7 @@ export class BlockResolver {
     return await this.prismaService.$transaction(async (tx) => {
       const duplicatedBlocks = await this.blockService.duplicateBlock(
         block,
+        isStepBlock,
         parentOrder,
         idMap,
         x,

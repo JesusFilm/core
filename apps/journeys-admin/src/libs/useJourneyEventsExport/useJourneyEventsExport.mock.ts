@@ -8,12 +8,17 @@ import {
   GetJourneyEvents,
   GetJourneyEventsVariables
 } from '../../../__generated__/GetJourneyEvents'
+import {
+  GetJourneyEventsCount,
+  GetJourneyEventsCountVariables
+} from '../../../__generated__/GetJourneyEventsCount'
 
 import {
   CREATE_EVENTS_EXPORT_LOG,
-  FILTERED_EVENTS,
+  GET_JOURNEY_EVENTS_COUNT,
   GET_JOURNEY_EVENTS_EXPORT
 } from './useJourneyEventsExport'
+import { FILTERED_EVENTS } from './utils/constants'
 
 export const mockGetJourneyEventsQuery: MockedResponse<
   GetJourneyEvents,
@@ -49,7 +54,8 @@ export const mockGetJourneyEventsQuery: MockedResponse<
               journeySlug: 'test-journey',
               visitorName: 'Test User',
               visitorEmail: 'test@example.com',
-              visitorPhone: '1234567890'
+              visitorPhone: '1234567890',
+              createdAt: '2024-01-01T12:00:00Z'
             }
           }
         ],
@@ -87,3 +93,23 @@ export const mockCreateEventsExportLogMutation: MockedResponse<
     }
   }
 }
+
+export const getMockGetJourneyEventsCountQuery = (
+  variables?: GetJourneyEventsCountVariables
+): MockedResponse<GetJourneyEventsCount, GetJourneyEventsCountVariables> => ({
+  request: {
+    query: GET_JOURNEY_EVENTS_COUNT,
+    variables: {
+      journeyId: 'journey1',
+      filter: {
+        typenames: FILTERED_EVENTS
+      },
+      ...variables
+    }
+  },
+  result: jest.fn(() => ({
+    data: {
+      journeyEventsCount: 2
+    }
+  }))
+})

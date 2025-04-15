@@ -50,6 +50,7 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock_action | null;
 }
 
@@ -235,6 +236,7 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_TextResponseBloc
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
   placeholder: string | null;
   hint: string | null;
