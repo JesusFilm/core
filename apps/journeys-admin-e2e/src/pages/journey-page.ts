@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
+import fs from 'fs'
+import path from 'path'
+
 import { expect } from '@playwright/test'
 import dayjs from 'dayjs'
 import type { Page } from 'playwright-core'
-import path from 'path'
-import fs from 'fs'
 
 import testData from '../utils/testData.json'
 

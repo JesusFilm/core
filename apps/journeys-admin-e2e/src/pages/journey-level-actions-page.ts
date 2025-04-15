@@ -289,7 +289,7 @@ export class JourneyLevelActions {
       timeout: thirtySecondsTimeout
     })
     for (let scroll = 0; scroll < 300; scroll++) {
-      let lang = await this.page
+      const lang = await this.page
         .locator("div[class *='MuiAutocomplete-popper'] li p")
         .allTextContents()
       if (

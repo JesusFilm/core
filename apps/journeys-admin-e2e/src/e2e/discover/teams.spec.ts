@@ -1,13 +1,13 @@
 /* eslint-disable playwright/expect-expect */
 import { test } from '@playwright/test'
 
+import { generateRandomString } from '../../framework/helpers'
+import { JourneyLevelActions } from '../../pages/journey-level-actions-page'
 import { JourneyPage } from '../../pages/journey-page'
 import { LandingPage } from '../../pages/landing-page'
 import { LoginPage } from '../../pages/login-page'
 import { Register } from '../../pages/register-Page'
 import { TeamsPage } from '../../pages/teams-page'
-import { JourneyLevelActions } from '../../pages/journey-level-actions-page'
-import { generateRandomString } from '../../framework/helpers'
 
 let userEmail = ''
 

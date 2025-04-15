@@ -8,7 +8,7 @@ import { LandingPage } from '../../pages/landing-page'
 import { LoginPage } from '../../pages/login-page'
 import { Register } from '../../pages/register-Page'
 
-let userEmail = ''
+const userEmail = ''
 
 test.describe('verify card level actions', () => {
   test.beforeEach(async ({ page }) => {

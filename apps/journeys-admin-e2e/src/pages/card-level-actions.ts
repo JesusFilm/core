@@ -1278,7 +1278,7 @@ export class CardLevelActionPage {
     ).toHaveCount(0)
   }
   async enterButtonNameInCard(buttonName: string) {
-    this.page
+    await this.page
       .frameLocator(this.journeyCardFrame)
       .locator(
         'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid *="JourneysButton"] button textarea[name="buttonLabel"]'
