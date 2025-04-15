@@ -28,7 +28,7 @@ interface FilterDrawerProps {
   hideInteractive: boolean
   handleClearAll: () => void
   journeyId?: string
-  showExportButton?: boolean
+  disableExportButton?: boolean
 }
 
 export function FilterDrawer({
@@ -42,7 +42,7 @@ export function FilterDrawer({
   withIcon,
   hideInteractive,
   handleClearAll,
-  showExportButton = false
+  disableExportButton = false
 }: FilterDrawerProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [showExportDialog, setShowExportDialog] = useState(false)
@@ -133,7 +133,7 @@ export function FilterDrawer({
         </RadioGroup>
       </Box>
 
-      {journeyId != null && showExportButton && (
+      {journeyId != null && (
         <>
           <Box sx={{ px: 6, py: 5, mt: 'auto' }}>
             <Button
@@ -141,6 +141,7 @@ export function FilterDrawer({
               color="secondary"
               sx={{ width: '100%' }}
               onClick={() => setShowExportDialog(true)}
+              disabled={disableExportButton}
             >
               {t('Export Data')}
             </Button>

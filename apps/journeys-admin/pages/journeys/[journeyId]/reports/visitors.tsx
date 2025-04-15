@@ -182,7 +182,7 @@ function JourneyVisitorsPage({
     currentUserTeamRole != null &&
     [UserTeamRole.manager, UserTeamRole.member].includes(currentUserTeamRole)
 
-  const showExportButton = journey.template
+  const enableExportButton = journey.template
     ? isPublisher
     : hasValidTeamRole || isOwner
 
@@ -252,7 +252,12 @@ function JourneyVisitorsPage({
               hideInteractive={hideInteractive}
               handleClearAll={handleClearAll}
             />
-            {showExportButton && <ExportEventsButton journeyId={journeyId} />}
+            {
+              <ExportEventsButton
+                journeyId={journeyId}
+                disabled={!enableExportButton}
+              />
+            }
           </Stack>
         }
         sidePanelTitle={
@@ -277,7 +282,7 @@ function JourneyVisitorsPage({
             withIcon={withIcon}
             hideInteractive={hideInteractive}
             handleClearAll={handleClearAll}
-            showExportButton={showExportButton}
+            disableExportButton={!enableExportButton}
           />
         }
       >
