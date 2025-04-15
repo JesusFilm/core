@@ -36,10 +36,19 @@ async function setInCache<T>(
 ): Promise<void> {
   const { ttl = DEFAULT_TTL, staleWhileRevalidate = true } = options
 
-  await redis.set(key, JSON.stringify(data), 'EX', ttl)
+  try {
+    await redis.set(key, JSON.stringify(data), 'EX', ttl)
 
-  if (staleWhileRevalidate) {
-    await redis.set(`${key}:stale`, JSON.stringify(data), 'EX', ttl + STALE_TTL)
+    if (staleWhileRevalidate) {
+      await redis.set(
+        `${key}:stale`,
+        JSON.stringify(data),
+        'EX',
+        ttl + STALE_TTL
+      )
+    }
+  } catch (error) {
+    console.error(`Failed to set cache for key ${key}:`, error)
   }
 }
 
