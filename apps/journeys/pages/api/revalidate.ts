@@ -1,3 +1,4 @@
+import FormData from 'form-data'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import fetch from 'node-fetch'
 
@@ -38,7 +39,15 @@ export default async function handler(
     const path = `/${hostname ?? 'home'}/${req.query.slug as string}`
     await res.revalidate(path)
 
-    // Trigger Facebook re-scrape
+    // Skip Facebook re-scrape in development environment
+    if (process.env.NODE_ENV === 'development')
+      return res.status(200).json({
+        revalidated: true,
+        environment: 'development',
+        message: 'Facebook re-scrape skipped in development'
+      })
+
+    // Trigger Facebook re-scrape for staging and production
     const journeyUrl =
       hostname != null
         ? `https://${hostname}${path}`
@@ -46,14 +55,15 @@ export default async function handler(
 
     try {
       const fbAccessToken = await generateFacebookAppAccessToken()
+      const formData = new FormData()
+      formData.append('id', journeyUrl)
+      formData.append('scrape', 'true')
+
       await fetch(
-        `https://graph.facebook.com/v22.0/?access_token=${fbAccessToken}`,
+        `https://graph.facebook.com/v19.0/?access_token=${fbAccessToken}`,
         {
           method: 'POST',
-          body: new URLSearchParams({
-            id: journeyUrl,
-            scrape: 'true'
-          })
+          body: formData
         }
       )
     } catch (fbError) {
