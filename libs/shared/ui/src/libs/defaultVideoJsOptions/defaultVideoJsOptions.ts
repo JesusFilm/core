@@ -32,7 +32,7 @@ export const defaultBackgroundVideoJsOptions = {
       limitRenditionByPlayerDimensions: false,
       useBandwidthFromLocalStorage: true,
       useNetworkInformationApi: true,
-      useDevicePixelRatio: true,
+      useDevicePixelRatio: true
     },
     hls: {
       limitRenditionByPlayerDimensions: false,

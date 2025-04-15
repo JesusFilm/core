@@ -1,1 +1,4 @@
-export { defaultBackgroundVideoJsOptions, defaultVideoJsOptions } from './defaultVideoJsOptions'
+export {
+  defaultBackgroundVideoJsOptions,
+  defaultVideoJsOptions
+} from './defaultVideoJsOptions'
