@@ -10,6 +10,9 @@ import { getLanguageIdsFromTags } from '../../../../lib/getLanguageIdsFromTags'
 
 import { mediaLanguage } from './[languageId]'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 const GET_LANGUAGES_COUNT = graphql(`
   query GetLanguagesCount(
     $ids: [ID!]
@@ -154,10 +157,6 @@ const DEFAULT_LIMIT = 100 // More reasonable default limit
 const MAX_LIMIT = 5000 // Maximum allowed limit
 
 mediaLanguages.openapi(route, async (c) => {
-  // Disable Next.js cache for this route
-  headers()
-  const dynamic = 'force-dynamic'
-
   const page = c.req.query('page') == null ? 1 : Number(c.req.query('page'))
   const requestedLimit =
     c.req.query('limit') == null ? DEFAULT_LIMIT : Number(c.req.query('limit'))

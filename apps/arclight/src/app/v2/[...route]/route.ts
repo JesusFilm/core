@@ -14,9 +14,6 @@ import { metadataLanguageTags } from './_metadata-language-tags'
 import { resources } from './_resources'
 import { taxonomies } from './_taxonomies'
 
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
-
 const app = new OpenAPIHono().basePath('/v2')
 
 // Apply compression for responses larger than 1KB
