@@ -337,7 +337,7 @@ mediaLanguages.openapi(route, async (c) => {
         }
       })
 
-    const response = {
+    return {
       page,
       limit,
       pages: totalPages,
@@ -363,9 +363,7 @@ mediaLanguages.openapi(route, async (c) => {
           }
         })
       },
-      _embedded: {
-        mediaLanguages
-      }
+      _embedded: { mediaLanguages }
     }
   })
 
