@@ -6,6 +6,9 @@ export const connection = {
 }
 
 const redis = new Redis(connection)
+redis.on('error', (err) => {
+  console.error('Redis error', err)
+})
 
 const DEFAULT_TTL = 3600 * 24 // 1 day
 const STALE_TTL = 3600 * 4 // 4 hours
@@ -18,7 +21,12 @@ interface CacheOptions {
 async function getFromCache<T>(key: string): Promise<T | null> {
   const data = await redis.get(key)
   if (!data) return null
-  return JSON.parse(data)
+  try {
+    return JSON.parse(data)
+  } catch (err) {
+    console.error('Failed to parse cache data for key', key, err)
+    return null
+  }
 }
 
 async function setInCache<T>(
@@ -46,7 +54,11 @@ export async function getWithStaleCache<T>(
   const stale = await getFromCache<T>(`${key}:stale`)
 
   if (stale) {
-    void fetchFn().then((newData) => setInCache(key, newData, options))
+    void fetchFn()
+      .then((newData) => setInCache(key, newData, options))
+      .catch((err) => {
+        console.error('Failed to set stale cache for key', key, err)
+      })
     return stale
   }
 
