@@ -1,11 +1,6 @@
 'use client'
 
 import { useMutation, useSuspenseQuery } from '@apollo/client'
-import Button from '@mui/material/Button'
-import Dialog from '@mui/material/Dialog'
-import DialogActions from '@mui/material/DialogActions'
-import DialogContent from '@mui/material/DialogContent'
-import DialogTitle from '@mui/material/DialogTitle'
 import FormControl from '@mui/material/FormControl'
 import FormHelperText from '@mui/material/FormHelperText'
 import InputLabel from '@mui/material/InputLabel'
@@ -18,6 +13,8 @@ import { useRouter } from 'next/navigation'
 import { enqueueSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 import { object, string } from 'yup'
+
+import { Dialog } from '@core/shared/ui/Dialog'
 
 import { FileUpload } from '../../../../../../../../../components/FileUpload'
 import { LinkFile } from '../../../../../../../../../components/LinkFile'
@@ -76,6 +73,7 @@ export default function AddVideoVariantDownloadDialog({
     width: number
     height: number
   } | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
 
   const { data } = useSuspenseQuery(GET_ADMIN_VIDEO_VARIANT, {
     variables: { id: variantId }
@@ -128,57 +126,48 @@ export default function AddVideoVariantDownloadDialog({
   const handleSubmit = async (values: FormikValues): Promise<void> => {
     if (uploadedFile == null || videoDimensions == null || videoId == null)
       return
-    const extension = getExtension(values.file.name)
-    const r2Asset = await createR2Asset({
-      variables: {
-        input: {
-          videoId: videoId,
-          fileName: `${videoId}/variants/${languageId}/downloads/${variantId}_${values.quality}${extension}`,
-          contentType: uploadedFile.type,
-          contentLength: uploadedFile.size
-        }
-      }
-    })
-    const uploadUrl = r2Asset.data?.cloudflareR2Create?.uploadUrl
+    setIsLoading(true)
     try {
-      if (uploadUrl == null) throw new Error('Upload URL is null')
-      await uploadAssetFile(uploadedFile, uploadUrl)
-    } catch (error) {
-      enqueueSnackbar('Failed to upload file', {
-        variant: 'error'
-      })
-      return
-    }
-    const publicUrl = r2Asset.data?.cloudflareR2Create?.publicUrl
-
-    if (publicUrl != null) {
-      await createVideoVariantDownload({
+      const extension = getExtension(values.file.name)
+      const r2Asset = await createR2Asset({
         variables: {
           input: {
-            videoVariantId: variantId,
-            quality: values.quality,
-            size: uploadedFile.size,
-            height: videoDimensions.height,
-            width: videoDimensions.width,
-            url: publicUrl,
-            version: 0,
-            assetId: r2Asset.data?.cloudflareR2Create?.id
+            videoId: videoId,
+            fileName: `${videoId}/variants/${languageId}/downloads/${variantId}_${values.quality}${extension}`,
+            contentType: uploadedFile.type,
+            contentLength: uploadedFile.size
           }
-        },
-        onError: () => {
-          enqueueSnackbar('Failed to create download', {
-            variant: 'error'
-          })
-        },
-        onCompleted: () => {
-          enqueueSnackbar('Download created', {
-            variant: 'success'
-          })
-          router.push(returnUrl, {
-            scroll: false
-          })
         }
       })
+      const uploadUrl = r2Asset.data?.cloudflareR2Create?.uploadUrl
+      if (uploadUrl == null) throw new Error('Upload URL is null')
+      await uploadAssetFile(uploadedFile, uploadUrl)
+      const publicUrl = r2Asset.data?.cloudflareR2Create?.publicUrl
+
+      if (publicUrl != null) {
+        await createVideoVariantDownload({
+          variables: {
+            input: {
+              videoVariantId: variantId,
+              quality: values.quality,
+              size: uploadedFile.size,
+              height: videoDimensions.height,
+              width: videoDimensions.width,
+              url: publicUrl,
+              version: 0,
+              assetId: r2Asset.data?.cloudflareR2Create?.id
+            }
+          }
+        })
+        enqueueSnackbar('Download created', { variant: 'success' })
+        router.push(returnUrl, { scroll: false })
+      }
+    } catch (error) {
+      enqueueSnackbar(error.message ?? 'Failed to create download', {
+        variant: 'error'
+      })
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -190,77 +179,68 @@ export default function AddVideoVariantDownloadDialog({
           scroll: false
         })
       }
-      aria-labelledby="add-download-dialog-title"
-      maxWidth="sm"
-      fullWidth
+      dialogTitle={{
+        title: 'Add Download',
+        closeButton: true
+      }}
+      dialogAction={{
+        onSubmit: () => {
+          const form = document.querySelector('form')
+          if (form) form.requestSubmit()
+        },
+        submitLabel: 'Add',
+        closeLabel: 'Cancel'
+      }}
+      loading={isLoading}
     >
-      <DialogTitle id="add-download-dialog-title">Add Download</DialogTitle>
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
-        {({
-          errors,
-          touched,
-          isSubmitting,
-          setFieldValue,
-          handleSubmit,
-          handleChange,
-          values
-        }) => (
-          <Form onSubmit={handleSubmit}>
-            <DialogContent>
-              <Stack gap={2}>
-                <FormControl
-                  fullWidth
-                  margin="normal"
+        {({ errors, touched, setFieldValue, handleChange, values }) => (
+          <Form>
+            <Stack gap={2}>
+              <FormControl
+                fullWidth
+                margin="normal"
+                error={touched.quality && Boolean(errors.quality)}
+              >
+                <InputLabel id="quality-label">Quality</InputLabel>
+                <Select
+                  name="quality"
+                  value={values.quality}
+                  labelId="quality-label"
+                  label="Quality"
                   error={touched.quality && Boolean(errors.quality)}
+                  onChange={handleChange}
                 >
-                  <InputLabel id="quality-label">Quality</InputLabel>
-                  <Select
-                    name="quality"
-                    value={values.quality}
-                    labelId="quality-label"
-                    label="Quality"
-                    error={touched.quality && Boolean(errors.quality)}
-                    onChange={handleChange}
-                  >
-                    <MenuItem value="high">high</MenuItem>
-                    <MenuItem value="low">low</MenuItem>
-                  </Select>
-                  <FormHelperText sx={{ minHeight: 20 }}>
-                    {errors.quality != null &&
-                      typeof errors.quality === 'string' &&
-                      errors.quality}
-                  </FormHelperText>
-                </FormControl>
+                  <MenuItem value="high">high</MenuItem>
+                  <MenuItem value="low">low</MenuItem>
+                </Select>
+                <FormHelperText sx={{ minHeight: 20 }}>
+                  {errors.quality != null &&
+                    typeof errors.quality === 'string' &&
+                    errors.quality}
+                </FormHelperText>
+              </FormControl>
 
-                <FileUpload
-                  accept={{ 'video/*': [] }}
-                  loading={false}
-                  onDrop={async (file) => {
-                    await setFieldValue('file', file)
-                    await handleUpload(file)
-                  }}
+              <FileUpload
+                accept={{ 'video/*': [] }}
+                loading={false}
+                onDrop={async (file) => {
+                  await setFieldValue('file', file)
+                  await handleUpload(file)
+                }}
+              />
+
+              {uploadedFile != null && (
+                <LinkFile
+                  name={uploadedFile.name}
+                  link={URL.createObjectURL(uploadedFile)}
                 />
-
-                {uploadedFile != null && (
-                  <LinkFile
-                    name={uploadedFile.name}
-                    link={URL.createObjectURL(uploadedFile)}
-                  />
-                )}
-              </Stack>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={() => router.push(returnUrl, { scroll: false })}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={isSubmitting} variant="contained">
-                Add
-              </Button>
-            </DialogActions>
+              )}
+            </Stack>
           </Form>
         )}
       </Formik>
