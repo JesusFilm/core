@@ -52,8 +52,6 @@ test.describe('Journey level actions', () => {
     const journeyLevelActions = new JourneyLevelActions(page)
     const journeyPage = new JourneyPage(page)
     const journeyName = await journeyPage.getJourneyName()
-    await journeyPage.clickCreateCustomJourney() // click the create custom journey button
-    await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
     await journeyLevelActions.clickThreeDotOfCreatedJourney(journeyName) // clicking on the three dot of created journey in the journey list
     await journeyLevelActions.clickThreeDotOptions('Edit Details') // clicking on Edit details option of the three dot options
     await journeyLevelActions.enterTitle() // renaming the title on the title field in the 'edit title' popup
