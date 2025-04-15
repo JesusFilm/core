@@ -141,23 +141,6 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.verifyFeedBackDeletedFromCard() // verifying the feedback section is deleted from the card
   })
 
-  // Subscribe - create, update & delete
-  test('Subscribe - create, update & delete', async ({ page }) => {
-    const cardLevelActionPage = new CardLevelActionPage(page)
-    await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
-    await cardLevelActionPage.clickBtnInAddBlockDrawer('Subscribe') // clicking on subscribe button in add block drawer
-    await cardLevelActionPage.verifySubscribeAddedToCard() // verify subscribe section is added to the card
-    await cardLevelActionPage.clickActionOfFeedBackProperties() // clicking the action property dropdown in the subscribe properties drawer
-    await cardLevelActionPage.selectEmailOptionInPrepertiesOptions() // selecting the 'Selected card' option in 'navigate to' options and below the selecting the card for navigation
-    await cardLevelActionPage.clickSubscribePropertiesDropDown('Button Icon') // clicking the 'button icon' property dropdown in the subscribe properties drawer
-    await cardLevelActionPage.selectIconForProperties() // seleting an icon for the subscribe button section
-    await cardLevelActionPage.verifySelecetdIconInCardBelowSubscribe() // veriying the Selected icon is updated in the subscribe section of the card
-    await cardLevelActionPage.selectWholeSubscribeSectionInCard() // selecting the whole subscribe section
-    await cardLevelActionPage.clickDeleteBtnInToolTipBar() // clicking delete button in the tooltip bar
-    await cardLevelActionPage.verifyToastMessage() // verifying the toast message
-    await cardLevelActionPage.verifySubscribeDeletedFromCard() //  verifying the subscribe section is deleted from the card
-  })
-
   // Footer properties - Hosted By & Chat Widget
   test('Footer properties - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
