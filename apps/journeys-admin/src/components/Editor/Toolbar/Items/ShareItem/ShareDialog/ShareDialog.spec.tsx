@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
@@ -23,7 +23,6 @@ describe('ShareDialog', () => {
   const push = jest.fn()
   const on = jest.fn()
 
-  // Mock clipboard API
   const originalClipboard = { ...global.navigator.clipboard }
   const mockClipboard = {
     writeText: jest.fn()
@@ -37,23 +36,26 @@ describe('ShareDialog', () => {
       events: { on }
     } as unknown as NextRouter)
 
-    // Setup clipboard mock
     Object.assign(navigator, {
       clipboard: mockClipboard
     })
   })
 
   afterEach(() => {
-    // Restore clipboard
     Object.assign(navigator, {
       clipboard: originalClipboard
     })
   })
 
+  interface ComponentProps {
+    open?: boolean
+    hostname?: string
+  }
+
   const Component = ({
     open = true,
     hostname = 'my.custom.domain'
-  }): ReactElement => (
+  }: ComponentProps): ReactElement => (
     <SnackbarProvider>
       <JourneyProvider value={{ journey: defaultJourney, variant: 'admin' }}>
         <ShareDialog
@@ -91,35 +93,22 @@ describe('ShareDialog', () => {
     ).toBeInTheDocument()
   })
 
-  it('should copy the URL to clipboard when copy button is clicked', async () => {
-    render(<Component />)
-
-    // Find the copy button and click it
-    const copyButton = screen.getByRole('button', { name: 'Copy' })
-    fireEvent.click(copyButton)
-
-    // Verify the clipboard API was called with the correct URL
-    expect(mockClipboard.writeText).toHaveBeenCalledWith(
-      'https://my.custom.domain/default'
-    )
-  })
-
-  describe('with default domain', () => {
-    // Save the original environment variable
+  describe('clipboard functionality', () => {
     const originalEnv = process.env.NEXT_PUBLIC_JOURNEYS_URL
 
     beforeEach(() => {
-      // Set the environment variable for this test suite
       process.env.NEXT_PUBLIC_JOURNEYS_URL = 'https://test.nextstep.is'
     })
 
     afterEach(() => {
-      // Restore the original environment variable after each test
       process.env.NEXT_PUBLIC_JOURNEYS_URL = originalEnv
     })
 
-    it('should copy the URL with default domain when hostname is undefined', async () => {
-      render(
+    it.each([
+      ['custom domain', 'my.custom.domain', 'https://my.custom.domain/default'],
+      ['default domain', undefined, 'https://test.nextstep.is/default']
+    ])('should copy URL with %s', async (_, hostname, expectedUrl) => {
+      const { getByRole } = render(
         <SnackbarProvider>
           <JourneyProvider
             value={{ journey: defaultJourney, variant: 'admin' }}
@@ -127,7 +116,7 @@ describe('ShareDialog', () => {
             <ShareDialog
               open
               onClose={handleClose}
-              hostname={undefined}
+              hostname={hostname}
               onSlugDialogOpen={handleSlugDialogOpen}
               onEmbedDialogOpen={handleEmbedDialogOpen}
               onQrCodeDialogOpen={handleQrCodeDialogOpen}
@@ -136,14 +125,12 @@ describe('ShareDialog', () => {
         </SnackbarProvider>
       )
 
-      // Find the copy button and click it
-      const copyButton = screen.getByRole('button', { name: 'Copy' })
-      fireEvent.click(copyButton)
+      await act(async () => {
+        fireEvent.click(getByRole('button', { name: 'Copy' }))
+        await Promise.resolve()
+      })
 
-      // Verify the clipboard API was called with the correct URL using the default domain
-      expect(mockClipboard.writeText).toHaveBeenCalledWith(
-        'https://test.nextstep.is/default'
-      )
+      expect(mockClipboard.writeText).toHaveBeenCalledWith(expectedUrl)
     })
   })
 
@@ -188,7 +175,7 @@ describe('ShareDialog', () => {
     callback()
   })
 
-  it('should disable buttons when journey is undefined', () => {
+  it('should disable all buttons and prevent clipboard access when journey is undefined', () => {
     render(
       <SnackbarProvider>
         <JourneyProvider value={{ journey: undefined, variant: 'admin' }}>
@@ -207,29 +194,11 @@ describe('ShareDialog', () => {
     expect(screen.getByRole('button', { name: 'Edit URL' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'Embed Journey' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'QR Code' })).toBeDisabled()
-  })
+    expect(screen.getByRole('button', { name: 'Copy' })).toBeDisabled()
 
-  it('should disable the copy button when journey is undefined', () => {
-    render(
-      <SnackbarProvider>
-        <JourneyProvider value={{ journey: undefined, variant: 'admin' }}>
-          <ShareDialog
-            open
-            onClose={handleClose}
-            hostname={undefined}
-            onSlugDialogOpen={handleSlugDialogOpen}
-            onEmbedDialogOpen={handleEmbedDialogOpen}
-            onQrCodeDialogOpen={handleQrCodeDialogOpen}
-          />
-        </JourneyProvider>
-      </SnackbarProvider>
-    )
-
-    const copyButton = screen.getByRole('button', { name: 'Copy' })
-    expect(copyButton).toBeDisabled()
-
-    // Verify clicking the disabled button doesn't call clipboard API
-    fireEvent.click(copyButton)
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'Copy' }))
+    })
     expect(mockClipboard.writeText).not.toHaveBeenCalled()
   })
 })
