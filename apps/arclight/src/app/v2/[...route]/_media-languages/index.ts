@@ -180,9 +180,9 @@ mediaLanguages.openapi(route, async (c) => {
     'media-languages',
     page.toString(),
     limit.toString(),
-    ...(ids ?? []),
-    ...(bcp47 ?? []),
-    ...(iso3 ?? []),
+    ...(ids ?? []).slice(0, 20),
+    ...(bcp47 ?? []).slice(0, 20),
+    ...(iso3 ?? []).slice(0, 20),
     term ?? '',
     ...metadataLanguageTags
   ])

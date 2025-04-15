@@ -185,9 +185,11 @@ mediaComponents.openapi(route, async (c) => {
     'media-components',
     page.toString(),
     limit.toString(),
-    ...(ids ?? []),
-    ...(languageIds ?? []),
-    ...metadataLanguageTags
+    expand,
+    ...(subTypes ?? []).slice(0, 20),
+    ...(languageIds ?? []).slice(0, 20),
+    ...(ids ?? []).slice(0, 20),
+    ...metadataLanguageTags.slice(0, 20)
   ])
 
   const response = await getWithStaleCache(cacheKey, async () => {
