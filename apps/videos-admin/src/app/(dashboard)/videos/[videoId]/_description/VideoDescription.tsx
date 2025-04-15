@@ -27,6 +27,7 @@ export const CREATE_VIDEO_DESCRIPTION = graphql(`
 export const GET_VIDEO_DESCRIPTION = graphql(`
   query GetVideoDescription($videoId: ID!, $languageId: ID!) {
     adminVideo(id: $videoId) {
+      id
       description(languageId: $languageId) {
         id
         value

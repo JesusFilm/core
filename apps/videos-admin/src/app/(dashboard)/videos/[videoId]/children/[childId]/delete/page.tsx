@@ -61,7 +61,9 @@ export default function DeleteChild({
       enqueueSnackbar('Successfully removed child video.', {
         variant: 'success'
       })
-      router.push(returnUrl)
+      router.push(returnUrl, {
+        scroll: false
+      })
     },
     onError: () => {
       enqueueSnackbar('Failed to remove child video.', {
@@ -88,7 +90,11 @@ export default function DeleteChild({
   return (
     <Dialog
       open={true}
-      onClose={() => router.push(returnUrl)}
+      onClose={() =>
+        router.push(returnUrl, {
+          scroll: false
+        })
+      }
       dialogTitle={{
         title: 'Delete Child Video',
         closeButton: true

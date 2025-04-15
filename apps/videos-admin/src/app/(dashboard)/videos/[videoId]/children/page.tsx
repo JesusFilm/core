@@ -103,7 +103,10 @@ export default function ChildrenPage({ params: { videoId } }: ChildrenProps) {
       action={{
         label: 'Add',
         startIcon: <Plus2 />,
-        onClick: () => router.push(`/videos/${videoId}/children/add`)
+        onClick: () =>
+          router.push(`/videos/${videoId}/children/add`, {
+            scroll: false
+          })
       }}
     >
       {!childVideos || childVideos.length === 0 ? (
@@ -128,11 +131,18 @@ export default function ChildrenPage({ params: { videoId } }: ChildrenProps) {
                 sx={{
                   cursor: 'pointer'
                 }}
-                onClick={() => router.push(`/videos/${id}`)}
+                onClick={() =>
+                  router.push(`/videos/${id}`, {
+                    scroll: false
+                  })
+                }
                 menuActions={[
                   {
                     label: 'Edit',
-                    handler: () => router.push(`/videos/${id}`)
+                    handler: () =>
+                      router.push(`/videos/${id}`, {
+                        scroll: false
+                      })
                   }
                 ]}
               />

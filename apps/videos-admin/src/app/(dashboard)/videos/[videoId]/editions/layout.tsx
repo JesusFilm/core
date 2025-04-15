@@ -23,6 +23,7 @@ interface EditionsPageProps {
 const GET_EDITIONS = graphql(`
   query GetEditions($videoId: ID!) {
     adminVideo(id: $videoId) {
+      id
       videoEditions {
         id
         name
@@ -49,7 +50,10 @@ export default function EditionsPage({
         title="Editions"
         action={{
           label: 'New Edition',
-          onClick: () => router.push(`/videos/${videoId}/editions/add`),
+          onClick: () =>
+            router.push(`/videos/${videoId}/editions/add`, {
+              scroll: false
+            }),
           startIcon: <Plus2 />
         }}
       >
@@ -75,7 +79,9 @@ export default function EditionsPage({
                   }
                 }}
                 onClick={() =>
-                  router.push(`/videos/${videoId}/editions/${edition.id}`)
+                  router.push(`/videos/${videoId}/editions/${edition.id}`, {
+                    scroll: false
+                  })
                 }
                 data-testid="EditionCard"
               >
@@ -94,13 +100,19 @@ export default function EditionsPage({
                     actions={{
                       edit: () =>
                         router.push(
-                          `/videos/${videoId}/editions/${edition.id}`
+                          `/videos/${videoId}/editions/${edition.id}`,
+                          {
+                            scroll: false
+                          }
                         ),
                       delete: () =>
                         edition.name === 'base'
                           ? undefined
                           : router.push(
-                              `/videos/${videoId}/editions/${edition.id}/delete`
+                              `/videos/${videoId}/editions/${edition.id}/delete`,
+                              {
+                                scroll: false
+                              }
                             )
                     }}
                   />

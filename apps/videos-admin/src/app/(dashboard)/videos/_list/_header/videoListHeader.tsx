@@ -22,7 +22,11 @@ export function VideoListHeader(): ReactElement {
     >
       <Typography variant="h4">Video Library</Typography>
       <Button
-        onClick={() => router.push('/videos/create')}
+        onClick={() =>
+          router.push('/videos/create', {
+            scroll: false
+          })
+        }
         startIcon={<Plus2 />}
         variant="outlined"
       >

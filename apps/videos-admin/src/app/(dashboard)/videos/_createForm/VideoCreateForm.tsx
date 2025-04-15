@@ -131,7 +131,9 @@ export function VideoCreateForm({
             if (onCreateSuccess != null) {
               onCreateSuccess(videoId)
             } else {
-              router.push(`/videos/${videoId}`)
+              router.push(`/videos/${videoId}`, {
+                scroll: false
+              })
             }
           },
           onError: () => {
@@ -200,7 +202,9 @@ export function VideoCreateForm({
             <Button
               variant="outlined"
               onClick={() =>
-                router.push(parentId ? `/videos/${parentId}` : '/videos')
+                router.push(parentId ? `/videos/${parentId}` : '/videos', {
+                  scroll: false
+                })
               }
               fullWidth
             >

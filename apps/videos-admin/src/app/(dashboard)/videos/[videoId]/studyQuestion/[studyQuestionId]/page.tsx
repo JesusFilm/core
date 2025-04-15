@@ -1,13 +1,12 @@
 'use client'
 
 import { useMutation, useSuspenseQuery } from '@apollo/client'
-import Dialog from '@mui/material/Dialog'
-import DialogContent from '@mui/material/DialogContent'
-import DialogTitle from '@mui/material/DialogTitle'
 import { graphql } from 'gql.tada'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
+
+import { Dialog } from '@core/shared/ui/Dialog'
 
 import { StudyQuestionForm } from '../_StudyQuestionForm/StudyQuestionForm'
 
@@ -53,7 +52,9 @@ export default function StudyQuestionDialog({
   )
 
   if (!studyQuestion) {
-    router.push(returnUrl)
+    router.push(returnUrl, {
+      scroll: false
+    })
     return <></>
   }
 
@@ -67,7 +68,9 @@ export default function StudyQuestionDialog({
       },
       onCompleted: () => {
         enqueueSnackbar('Study question updated', { variant: 'success' })
-        router.push(returnUrl)
+        router.push(returnUrl, {
+          scroll: false
+        })
       },
       onError: (error) => {
         enqueueSnackbar(error.message, { variant: 'error' })
@@ -79,18 +82,17 @@ export default function StudyQuestionDialog({
     <Dialog
       open={true}
       onClose={() => router.push(returnUrl)}
-      maxWidth="sm"
-      fullWidth
+      dialogTitle={{
+        title: 'Edit Study Question',
+        closeButton: true
+      }}
     >
-      <DialogTitle>Edit Study Question</DialogTitle>
-      <DialogContent>
-        <StudyQuestionForm
-          variant="edit"
-          initialValues={{ value: studyQuestion.value }}
-          onSubmit={handleSubmit}
-          loading={loading}
-        />
-      </DialogContent>
+      <StudyQuestionForm
+        variant="edit"
+        initialValues={{ value: studyQuestion.value }}
+        onSubmit={handleSubmit}
+        loading={loading}
+      />
     </Dialog>
   )
 }

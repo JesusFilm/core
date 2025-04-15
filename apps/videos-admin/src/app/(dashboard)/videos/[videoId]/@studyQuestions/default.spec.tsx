@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 // Import the component under test
-import StudyQuestionsList from './page'
+import StudyQuestionsList from './default'
 
 // Mock Apollo client
 jest.mock('@apollo/client', () => {

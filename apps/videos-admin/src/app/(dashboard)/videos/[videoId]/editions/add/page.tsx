@@ -51,7 +51,9 @@ export default function AddEditionPage({
         enqueueSnackbar('Successfully created edition.', {
           variant: 'success'
         })
-        router.push(`/videos/${videoId}/editions`)
+        router.push(`/videos/${videoId}/editions`, {
+          scroll: false
+        })
       },
       onError: () => {
         enqueueSnackbar('Failed to create edition.', { variant: 'error' })
@@ -63,7 +65,11 @@ export default function AddEditionPage({
   return (
     <Dialog
       open={true}
-      onClose={() => router.push(`/videos/${videoId}/editions`)}
+      onClose={() =>
+        router.push(`/videos/${videoId}/editions`, {
+          scroll: false
+        })
+      }
       dialogTitle={{
         title: 'Add Edition',
         closeButton: true

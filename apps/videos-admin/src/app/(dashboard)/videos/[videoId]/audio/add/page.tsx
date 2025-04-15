@@ -82,6 +82,7 @@ export default function AddAudioLanguageDialog({
       )
   )
 
+  const returnUrl = `/videos/${videoId}/audio`
   const handleSubmit = async (values: FormikValues): Promise<void> => {
     if (values.language == null || values.file == null) return
     await startUpload(
@@ -90,19 +91,22 @@ export default function AddAudioLanguageDialog({
       values.language.id,
       values.language.slug,
       values.edition,
-      () => router.push(returnUrl)
+      () =>
+        router.push(returnUrl, {
+          scroll: false
+        })
     )
   }
 
-  const isUploadInProgress = uploadState.isUploading || uploadState.isProcessing
-
-  const returnUrl = `/videos/${videoId}/audio`
+  const isUploadInProgress = uploadState.isUploading || uploadState.isProcessing  
   const handleDialogClose = (): void => {
     // Don't close the dialog if upload is in progress
     if (isUploadInProgress) {
       return
     }
-    router.push(returnUrl)
+    router.push(returnUrl, {
+      scroll: false
+    })
   }
 
   return (

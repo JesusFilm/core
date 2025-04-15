@@ -201,7 +201,9 @@ export default function SubtitleCreate({
           enqueueSnackbar('Successfully created subtitle.', {
             variant: 'success'
           })
-          router.push(returnUrl)
+          router.push(returnUrl, {
+            scroll: false
+          })
         },
         context: {
           fetchOptions: {
@@ -242,7 +244,11 @@ export default function SubtitleCreate({
   return (
     <Dialog
       open={true}
-      onClose={() => router.push(returnUrl)}
+      onClose={() =>
+        router.push(returnUrl, {
+          scroll: false
+        })
+      }
       dialogTitle={{
         title: 'Add Subtitle',
         closeButton: true

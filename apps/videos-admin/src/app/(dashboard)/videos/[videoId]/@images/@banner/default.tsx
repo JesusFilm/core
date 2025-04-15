@@ -2,6 +2,8 @@
 
 import { useSuspenseQuery } from '@apollo/client'
 import { graphql } from 'gql.tada'
+import { usePathname } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 import { ImageAspectRatio } from '../../../constants'
 import { ImageDisplay } from '../_display/ImageDisplay'
@@ -25,7 +27,10 @@ interface VideoBannerProps {
 }
 
 export default function VideoBanner({ params: { videoId } }: VideoBannerProps) {
-  const { data } = useSuspenseQuery(GET_BANNER_IMAGE, {
+  const pathname = usePathname()
+  const [reloadOnPathChange, setReloadOnPathChange] = useState(false)
+
+  const { data, refetch } = useSuspenseQuery(GET_BANNER_IMAGE, {
     variables: {
       id: videoId
     }
@@ -34,6 +39,12 @@ export default function VideoBanner({ params: { videoId } }: VideoBannerProps) {
   // Handle potential null/undefined values
   const imageUrl =
     data?.adminVideo?.images?.[0]?.mobileCinematicHigh ?? undefined
+
+  // refresh image if banner image may have changed
+  useEffect(() => {
+    if (reloadOnPathChange) void refetch()
+    setReloadOnPathChange(pathname?.includes('image/banner') ?? false)
+  }, [pathname])
 
   return (
     <ImageDisplay

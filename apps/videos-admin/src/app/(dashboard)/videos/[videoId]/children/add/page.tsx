@@ -55,7 +55,9 @@ export default function AddChildren({
       enqueueSnackbar('Successfully added video as child.', {
         variant: 'success'
       })
-      router.push(returnUrl)
+      router.push(returnUrl, {
+        scroll: false
+      })
     },
     onError: () => {
       enqueueSnackbar('Failed to add video as child.', {
@@ -81,7 +83,11 @@ export default function AddChildren({
   return (
     <Dialog
       open={true}
-      onClose={() => router.push(returnUrl)}
+      onClose={() =>
+        router.push(returnUrl, {
+          scroll: false
+        })
+      }
       dialogTitle={{
         title: 'Create New Child Video',
         closeButton: true
@@ -91,7 +97,6 @@ export default function AddChildren({
     >
       <VideoCreateForm
         parentId={videoId}
-        close={() => router.push(returnUrl)}
         onCreateSuccess={handleCreateSuccess}
       />
     </Dialog>

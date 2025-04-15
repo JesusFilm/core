@@ -87,7 +87,11 @@ export default function VariantDialog({
     <Dialog
       data-testid="VariantDialog"
       open={true}
-      onClose={() => router.push(`/videos/${videoId}/audio`)}
+      onClose={() =>
+        router.push(`/videos/${videoId}/audio`, {
+          scroll: false
+        })
+      }
       fullscreen={!smUp}
       dialogTitle={{ title: 'Audio Language', closeButton: true }}
       divider
@@ -122,7 +126,10 @@ export default function VariantDialog({
             color="primary"
             onClick={() =>
               router.push(
-                `/videos/${videoId}/audio/${variantId}/download/${data.videoVariant.language.id}/add`
+                `/videos/${videoId}/audio/${variantId}/download/${data.videoVariant.language.id}/add`,
+                {
+                  scroll: false
+                }
               )
             }
             sx={{ my: 2 }}
@@ -158,7 +165,10 @@ export default function VariantDialog({
                             aria-label="Delete"
                             onClick={() =>
                               router.push(
-                                `/videos/${videoId}/audio/${variantId}/download/${id}/delete`
+                                `/videos/${videoId}/audio/${variantId}/download/${id}/delete`,
+                                {
+                                  scroll: false
+                                }
                               )
                             }
                           >

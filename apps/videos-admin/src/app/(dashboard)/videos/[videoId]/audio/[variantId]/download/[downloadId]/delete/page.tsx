@@ -44,14 +44,20 @@ export default function ConfirmDeleteDialog({
         enqueueSnackbar('Download deleted', {
           variant: 'success'
         })
-        router.push(returnUrl)
+        router.push(returnUrl, {
+          scroll: false
+        })
       }
     })
   }
   return (
     <Dialog
       open={true}
-      onClose={() => router.push(returnUrl)}
+      onClose={() =>
+        router.push(returnUrl, {
+          scroll: false
+        })
+      }
       aria-labelledby="confirm-delete-dialog-title"
     >
       <DialogTitle id="confirm-delete-dialog-title">
@@ -63,7 +69,14 @@ export default function ConfirmDeleteDialog({
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => router.push(returnUrl)} color="primary">
+        <Button
+          onClick={() =>
+            router.push(returnUrl, {
+              scroll: false
+            })
+          }
+          color="primary"
+        >
           Cancel
         </Button>
         <Button onClick={handleConfirm} color="error" autoFocus>

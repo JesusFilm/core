@@ -5,9 +5,9 @@ import { DragEndEvent } from '@dnd-kit/core'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import { graphql } from 'gql.tada'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import { OrderedList } from '../../../../../components/OrderedList'
 import { OrderedItem } from '../../../../../components/OrderedList/OrderedItem'
@@ -46,6 +46,9 @@ export default function StudyQuestionsList({
   params: { videoId }
 }: StudyQuestionsListProps): ReactElement {
   const router = useRouter()
+  const pathname = usePathname()
+  const [reloadOnPathChange, setReloadOnPathChange] = useState(false)
+
   const { enqueueSnackbar } = useSnackbar()
 
   // Use regular useQuery to handle loading states
@@ -58,6 +61,12 @@ export default function StudyQuestionsList({
       enqueueSnackbar(error.message, { variant: 'error' })
     }
   })
+
+  // refresh questions if studyQuestions may have changed
+  useEffect(() => {
+    if (reloadOnPathChange) void refetch()
+    setReloadOnPathChange(pathname?.includes('studyQuestion') ?? false)
+  }, [pathname])
 
   async function updateOrderOnDrag(e: DragEndEvent): Promise<void> {
     const { active, over } = e
@@ -117,13 +126,18 @@ export default function StudyQuestionsList({
                   {
                     label: 'Edit',
                     handler: () =>
-                      router.push(`/videos/${videoId}/studyQuestions/${id}`)
+                      router.push(`/videos/${videoId}/studyQuestion/${id}`, {
+                        scroll: false
+                      })
                   },
                   {
                     label: 'Delete',
                     handler: () =>
                       router.push(
-                        `/videos/${videoId}/studyQuestions/${id}/delete`
+                        `/videos/${videoId}/studyQuestion/${id}/delete`,
+                        {
+                          scroll: false
+                        }
                       )
                   }
                 ]}
@@ -136,7 +150,11 @@ export default function StudyQuestionsList({
         <Stack direction="row" justifyContent="flex-end">
           <Button
             variant="outlined"
-            onClick={() => router.push(`/videos/${videoId}/studyQuestions/add`)}
+            onClick={() =>
+              router.push(`/videos/${videoId}/studyQuestion/add`, {
+                scroll: false
+              })
+            }
             size="small"
             color="secondary"
           >

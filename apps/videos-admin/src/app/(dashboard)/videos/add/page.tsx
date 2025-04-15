@@ -13,7 +13,11 @@ export default function AddVideoPage(): ReactElement {
   return (
     <Dialog
       open={true}
-      onClose={() => router.push('/videos')}
+      onClose={() =>
+        router.push('/videos', {
+          scroll: false
+        })
+      }
       dialogTitle={{
         title: 'Create Video',
         closeButton: true
@@ -21,7 +25,7 @@ export default function AddVideoPage(): ReactElement {
       divider
       sx={{ '& .MuiDialog-paperFullWidth': { maxWidth: 480 } }}
     >
-      <VideoCreateForm close={() => router.push('/videos')} />
+      <VideoCreateForm />
     </Dialog>
   )
 }

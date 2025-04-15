@@ -35,7 +35,9 @@ export default function SubtitleDeletePage({
         enqueueSnackbar('Subtitle deleted successfully.', {
           variant: 'success'
         })
-        router.push(`/videos/${videoId}/editions/${editionId}`)
+        router.push(`/videos/${videoId}/editions/${editionId}`, {
+          scroll: false
+        })
       },
       onError: () => {
         enqueueSnackbar('Something went wrong.', { variant: 'error' })
@@ -45,7 +47,11 @@ export default function SubtitleDeletePage({
   return (
     <Dialog
       open={true}
-      onClose={() => router.push(`/videos/${videoId}/editions/${editionId}`)}
+      onClose={() =>
+        router.push(`/videos/${videoId}/editions/${editionId}`, {
+          scroll: false
+        })
+      }
       dialogTitle={{
         title: 'Delete Subtitle',
         closeButton: true

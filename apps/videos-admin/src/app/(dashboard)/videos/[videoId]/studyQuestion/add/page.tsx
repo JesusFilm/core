@@ -1,20 +1,21 @@
 'use client'
 
 import { useMutation, useSuspenseQuery } from '@apollo/client'
-import Dialog from '@mui/material/Dialog'
-import DialogContent from '@mui/material/DialogContent'
-import DialogTitle from '@mui/material/DialogTitle'
 import { graphql } from 'gql.tada'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
+
+import { Dialog } from '@core/shared/ui/Dialog'
 
 import { StudyQuestionForm } from '../_StudyQuestionForm/StudyQuestionForm'
 
 const GET_STUDY_QUESTIONS = graphql(`
   query GetStudyQuestions($videoId: ID!) {
     adminVideo(id: $videoId) {
+      id
       studyQuestions {
+        id
         order
       }
     }
@@ -52,7 +53,9 @@ export default function StudyQuestionsAddPage({
     {
       onCompleted: () => {
         enqueueSnackbar('Study question created', { variant: 'success' })
-        router.push(returnUrl)
+        router.push(returnUrl, {
+          scroll: false
+        })
       },
       onError: (error) => {
         enqueueSnackbar(error.message, { variant: 'error' })
@@ -79,27 +82,22 @@ export default function StudyQuestionsAddPage({
   return (
     <Dialog
       open={true}
-      onClose={() => router.push(returnUrl)}
-      maxWidth="sm"
-      fullWidth
-      PaperProps={{
-        sx: {
-          '& .MuiDialogTitle-root': {
-            borderBottom: '1px solid',
-            borderColor: 'divider'
-          }
-        }
+      onClose={() =>
+        router.push(returnUrl, {
+          scroll: false
+        })
+      }
+      dialogTitle={{
+        title: 'Add Study Question',
+        closeButton: true
       }}
     >
-      <DialogTitle>Add Study Question</DialogTitle>
-      <DialogContent sx={{ mt: 2 }}>
-        <StudyQuestionForm
-          variant="create"
-          initialValues={{ value: '' }}
-          onSubmit={handleSubmit}
-          loading={loading}
-        />
-      </DialogContent>
+      <StudyQuestionForm
+        variant="create"
+        initialValues={{ value: '' }}
+        onSubmit={handleSubmit}
+        loading={loading}
+      />
     </Dialog>
   )
 }

@@ -174,17 +174,22 @@ export default function AddVideoVariantDownloadDialog({
           enqueueSnackbar('Download created', {
             variant: 'success'
           })
-          router.push(returnUrl)
+          router.push(returnUrl, {
+            scroll: false
+          })
         }
       })
     }
-    router.push(returnUrl)
   }
 
   return (
     <Dialog
       open={true}
-      onClose={() => router.push(returnUrl)}
+      onClose={() =>
+        router.push(returnUrl, {
+          scroll: false
+        })
+      }
       aria-labelledby="add-download-dialog-title"
       maxWidth="sm"
       fullWidth
@@ -249,7 +254,9 @@ export default function AddVideoVariantDownloadDialog({
               </Stack>
             </DialogContent>
             <DialogActions>
-              <Button onClick={() => router.push(returnUrl)}>Cancel</Button>
+              <Button onClick={() => router.push(returnUrl, { scroll: false })}>
+                Cancel
+              </Button>
               <Button type="submit" disabled={isSubmitting} variant="contained">
                 Add
               </Button>

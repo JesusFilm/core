@@ -17,6 +17,7 @@ import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
 export const GET_VIDEO_SNIPPET = graphql(`
   query GetVideoSnippet($videoId: ID!, $languageId: ID!) {
     adminVideo(id: $videoId) {
+      id
       snippet(languageId: $languageId) {
         id
         value

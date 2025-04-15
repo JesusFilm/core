@@ -14,7 +14,9 @@ export default function DownloadPage({
   params
 }: DownloadPageProps): ReactElement {
   const router = useRouter()
-  router.push(`/videos/${params.videoId}/audio/${params.variantId}`)
+  router.push(`/videos/${params.videoId}/audio/${params.variantId}`, {
+    scroll: false
+  })
 
   return <></>
 }

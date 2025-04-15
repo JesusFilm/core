@@ -84,7 +84,9 @@ export default function EditEditionPage({
         enqueueSnackbar('Edition updated successfully.', {
           variant: 'success'
         })
-        router.push(`/videos/${videoId}/editions`)
+        router.push(`/videos/${videoId}/editions`, {
+          scroll: false
+        })
       },
       onError: () => {
         enqueueSnackbar('Something went wrong.', { variant: 'error' })
@@ -96,7 +98,11 @@ export default function EditEditionPage({
   return (
     <Dialog
       open={true}
-      onClose={() => router.push(`/videos/${videoId}/editions`)}
+      onClose={() =>
+        router.push(`/videos/${videoId}/editions`, {
+          scroll: false
+        })
+      }
       dialogTitle={{
         title: 'Edit Edition',
         closeButton: true
@@ -138,7 +144,10 @@ export default function EditEditionPage({
           label: 'New Subtitle',
           onClick: () =>
             router.push(
-              `/videos/${videoId}/editions/${editionId}/subtitle/add`
+              `/videos/${videoId}/editions/${editionId}/subtitle/add`,
+              {
+                scroll: false
+              }
             ),
           startIcon: <Plus2 />
         }}
@@ -169,7 +178,10 @@ export default function EditEditionPage({
                 }}
                 onClick={() =>
                   router.push(
-                    `/videos/${videoId}/editions/${editionId}/subtitles/${subtitle.id}`
+                    `/videos/${videoId}/editions/${editionId}/subtitles/${subtitle.id}`,
+                    {
+                      scroll: false
+                    }
                   )
                 }
               >
@@ -187,11 +199,17 @@ export default function EditEditionPage({
                     actions={{
                       edit: () =>
                         router.push(
-                          `/videos/${videoId}/editions/${editionId}/subtitles/${subtitle.id}`
+                          `/videos/${videoId}/editions/${editionId}/subtitles/${subtitle.id}`,
+                          {
+                            scroll: false
+                          }
                         ),
                       delete: () =>
                         router.push(
-                          `/videos/${videoId}/editions/${editionId}/subtitles/${subtitle.id}/delete`
+                          `/videos/${videoId}/editions/${editionId}/subtitles/${subtitle.id}/delete`,
+                          {
+                            scroll: false
+                          }
                         )
                     }}
                   />

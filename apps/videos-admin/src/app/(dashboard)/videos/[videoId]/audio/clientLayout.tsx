@@ -19,6 +19,7 @@ const ITEM_SIZE = 75
 export const GET_ADMIN_VIDEO_VARIANTS = graphql(`
   query GetAdminVideoVariants($id: ID!, $languageId: ID) {
     adminVideo(id: $id) {
+      id
       variants {
         id
         language {
@@ -82,7 +83,10 @@ export default function ClientLayout({
         action={{
           label: 'Add Audio Language',
           startIcon: <AddIcon />,
-          onClick: () => router.push(`/videos/${videoId}/audio/add`)
+          onClick: () =>
+            router.push(`/videos/${videoId}/audio/add`, {
+              scroll: false
+            })
         }}
       >
         <FixedSizeList
@@ -97,13 +101,15 @@ export default function ClientLayout({
             marginTop: 8
           }}
         >
-          {({ index, style, data }) => {
+          {({ index, data }) => {
             const variant = data[index]
             return (
               <ListItem
                 key={variant.id}
                 onClick={() =>
-                  router.push(`/videos/${videoId}/audio/${variant.id}`)
+                  router.push(`/videos/${videoId}/audio/${variant.id}`, {
+                    scroll: false
+                  })
                 }
                 sx={{
                   border: '1px solid',
@@ -133,7 +139,12 @@ export default function ClientLayout({
                 <IconButton
                   size="small"
                   onClick={() =>
-                    router.push(`/videos/${videoId}/audio/${variant.id}/delete`)
+                    router.push(
+                      `/videos/${videoId}/audio/${variant.id}/delete`,
+                      {
+                        scroll: false
+                      }
+                    )
                   }
                   aria-label="delete variant"
                   sx={{

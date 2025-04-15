@@ -14,6 +14,7 @@ import { TabLabel } from './_TabLabel'
 const GET_TAB_DATA = graphql(`
   query GetTabData($id: ID!) {
     adminVideo(id: $id) {
+      id
       label
       variantLanguagesCount
       videoEditions {

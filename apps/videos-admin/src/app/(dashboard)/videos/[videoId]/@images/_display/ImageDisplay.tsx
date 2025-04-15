@@ -72,7 +72,11 @@ export function ImageDisplay({
       )}
       <Tooltip title={`Change ${title}`}>
         <IconButton
-          onClick={() => router.push(`/videos/${videoId}/image/${aspectRatio}`)}
+          onClick={() =>
+            router.push(`/videos/${videoId}/image/${aspectRatio}`, {
+              scroll: false
+            })
+          }
           size="small"
           sx={{ position: 'absolute', top: 4, right: 4 }}
         >

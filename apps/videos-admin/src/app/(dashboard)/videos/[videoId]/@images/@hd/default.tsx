@@ -2,6 +2,8 @@
 
 import { useSuspenseQuery } from '@apollo/client'
 import { graphql } from 'gql.tada'
+import { usePathname } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 import { ImageAspectRatio } from '../../../constants'
 import { ImageDisplay } from '../_display/ImageDisplay'
@@ -25,7 +27,10 @@ interface VideoHdProps {
 }
 
 export default function VideoHd({ params: { videoId } }: VideoHdProps) {
-  const { data } = useSuspenseQuery(GET_HD_IMAGE, {
+  const pathname = usePathname()
+  const [reloadOnPathChange, setReloadOnPathChange] = useState(false)
+
+  const { data, refetch } = useSuspenseQuery(GET_HD_IMAGE, {
     variables: {
       id: videoId
     }
@@ -34,6 +39,11 @@ export default function VideoHd({ params: { videoId } }: VideoHdProps) {
   // Handle potential null/undefined values
   const imageUrl = data?.adminVideo?.images?.[0]?.videoStill ?? undefined
 
+  // refresh image if banner image may have changed
+  useEffect(() => {
+    if (reloadOnPathChange) void refetch()
+    setReloadOnPathChange(pathname?.includes('image/hd') ?? false)
+  }, [pathname])
   return (
     <ImageDisplay
       src={imageUrl}

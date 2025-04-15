@@ -53,14 +53,20 @@ export default function DeleteAudio({
       enqueueSnackbar('Audio language deleted successfully', {
         variant: 'success'
       })
-      router.push(returnUrl)
+      router.push(returnUrl, {
+        scroll: false
+      })
     }
   })
 
   return (
     <Dialog
       open={true}
-      onClose={() => router.push(returnUrl)}
+      onClose={() =>
+        router.push(returnUrl, {
+          scroll: false
+        })
+      }
       dialogTitle={{
         title: 'Delete Audio Language',
         closeButton: true

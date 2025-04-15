@@ -10,6 +10,8 @@ interface DeleteChildProps {
 
 export default function DeleteChild({ params: { videoId } }: DeleteChildProps) {
   const router = useRouter()
-  router.push(`/videos/${videoId}/children`)
+  router.push(`/videos/${videoId}/children`, {
+    scroll: false
+  })
   return <></>
 }
