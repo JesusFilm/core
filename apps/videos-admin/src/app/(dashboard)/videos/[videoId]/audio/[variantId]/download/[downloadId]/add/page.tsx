@@ -81,7 +81,7 @@ export default function AddVideoVariantDownloadDialog({
     variables: { id: variantId }
   })
 
-  const returnUrl = `/videos/${videoId}/audio/${variantId}/downloads`
+  const returnUrl = `/videos/${videoId}/audio/${variantId}`
   const handleUpload = async (file: File): Promise<void> => {
     if (!file) return
     const video = document.createElement('video')

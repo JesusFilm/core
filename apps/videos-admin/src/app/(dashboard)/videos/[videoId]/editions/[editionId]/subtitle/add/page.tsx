@@ -6,15 +6,18 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
 import { Form, Formik } from 'formik'
 import { VariablesOf, graphql } from 'gql.tada'
+import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useRef, useState } from 'react'
+
+import { Dialog } from '@core/shared/ui/Dialog'
 
 import { FormLanguageSelect } from '../../../../../../../../components/FormLanguageSelect'
 import { useCreateR2AssetMutation } from '../../../../../../../../libs/useCreateR2Asset'
 import { uploadAssetFile } from '../../../../../../../../libs/useCreateR2Asset/uploadAssetFile/uploadAssetFile'
+import { getSubtitleR2Path } from '../_getR2Path/getSubtitleR2Path'
 import { SubtitleFileUpload } from '../_upload'
 import { subtitleValidationSchema } from '../constants'
-import { getSubtitleR2Path } from '../getSubtitleR2Path'
 
 const CREATE_VIDEO_SUBTITLE = graphql(`
   mutation CreateVideoSubtitle($input: VideoSubtitleCreateInput!) {
@@ -68,6 +71,7 @@ interface SubtitleCreateProps {
 export default function SubtitleCreate({
   params: { editionId, videoId }
 }: SubtitleCreateProps): ReactElement {
+  const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
   const abortController = useRef<AbortController | null>(null)
   const [loading, setLoading] = useState(false)
@@ -80,6 +84,8 @@ export default function SubtitleCreate({
 
   const [createR2Asset] = useCreateR2AssetMutation()
   const [createVideoSubtitle] = useMutation(CREATE_VIDEO_SUBTITLE)
+
+  const returnUrl = `/videos/${videoId}/editions/${editionId}`
 
   const handleSubmit = async (values: {
     language: string
@@ -195,6 +201,7 @@ export default function SubtitleCreate({
           enqueueSnackbar('Successfully created subtitle.', {
             variant: 'success'
           })
+          router.push(returnUrl)
         },
         context: {
           fetchOptions: {
@@ -202,8 +209,6 @@ export default function SubtitleCreate({
           }
         }
       })
-
-      close()
     } catch (e) {
       if (e.name === 'AbortError' || e.message.includes('aborted')) {
         enqueueSnackbar('Subtitle create cancelled.')
@@ -235,30 +240,40 @@ export default function SubtitleCreate({
   }
 
   return (
-    <Formik
-      initialValues={{ language: '', vttFile: null, srtFile: null }}
-      validationSchema={subtitleValidationSchema}
-      onSubmit={handleSubmit}
+    <Dialog
+      open={true}
+      onClose={() => router.push(returnUrl)}
+      dialogTitle={{
+        title: 'Add Subtitle',
+        closeButton: true
+      }}
+      testId="add-subtitle-dialog"
     >
-      <Form data-testid="SubtitleForm">
-        <Stack gap={2}>
-          <FormLanguageSelect
-            name="language"
-            label="Language"
-            initialLanguage={initialLanguage}
-            existingLanguageIds={subtitleLanguagesMap}
-          />
-          <SubtitleFileUpload />
-          <Button
-            variant="contained"
-            type="submit"
-            fullWidth
-            disabled={loading}
-          >
-            {loading ? <CircularProgress size={20} /> : 'Upload'}
-          </Button>
-        </Stack>
-      </Form>
-    </Formik>
+      <Formik
+        initialValues={{ language: '', vttFile: null, srtFile: null }}
+        validationSchema={subtitleValidationSchema}
+        onSubmit={handleSubmit}
+      >
+        <Form data-testid="SubtitleForm">
+          <Stack gap={2}>
+            <FormLanguageSelect
+              name="language"
+              label="Language"
+              initialLanguage={initialLanguage}
+              existingLanguageIds={subtitleLanguagesMap}
+            />
+            <SubtitleFileUpload />
+            <Button
+              variant="contained"
+              type="submit"
+              fullWidth
+              disabled={loading}
+            >
+              {loading ? <CircularProgress size={20} /> : 'Upload'}
+            </Button>
+          </Stack>
+        </Form>
+      </Formik>
+    </Dialog>
   )
 }

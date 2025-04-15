@@ -2,15 +2,14 @@
 
 import { useMutation } from '@apollo/client'
 import Button from '@mui/material/Button'
-import Dialog from '@mui/material/Dialog'
-import DialogContent from '@mui/material/DialogContent'
-import DialogTitle from '@mui/material/DialogTitle'
 import Stack from '@mui/material/Stack'
 import { Form, Formik } from 'formik'
 import { graphql } from 'gql.tada'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { object, string } from 'yup'
+
+import { Dialog } from '@core/shared/ui/Dialog'
 
 import { FormTextField } from '../../../../../../components/FormTextField'
 
@@ -65,36 +64,26 @@ export default function AddEditionPage({
     <Dialog
       open={true}
       onClose={() => router.push(`/videos/${videoId}/editions`)}
-      maxWidth="sm"
-      fullWidth
-      PaperProps={{
-        sx: {
-          '& .MuiDialogTitle-root': {
-            borderBottom: '1px solid',
-            borderColor: 'divider'
-          }
-        }
+      dialogTitle={{
+        title: 'Add Edition',
+        closeButton: true
       }}
+      testId="add-edition-dialog"
     >
-      <DialogTitle>Add Edition</DialogTitle>
-      <DialogContent>
-        <Formik
-          initialValues={initialValues}
-          onSubmit={handleSubmit}
-          validationSchema={validationSchema}
-        >
-          <Form data-testId="EditionForm">
-            <Stack gap={2}>
-              <FormTextField name="name" label="Name" fullWidth />
-              <Stack direction="row" gap={1}>
-                <Button variant="contained" type="submit" fullWidth>
-                  Create
-                </Button>
-              </Stack>
-            </Stack>
-          </Form>
-        </Formik>
-      </DialogContent>
+      <Formik
+        initialValues={initialValues}
+        onSubmit={handleSubmit}
+        validationSchema={validationSchema}
+      >
+        <Form data-testId="EditionForm">
+          <Stack gap={2}>
+            <FormTextField name="name" label="Name" fullWidth />
+            <Button variant="contained" type="submit" fullWidth>
+              Create
+            </Button>
+          </Stack>
+        </Form>
+      </Formik>
     </Dialog>
   )
 }

@@ -5,6 +5,7 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
+import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, Formik } from 'formik'
 import { graphql } from 'gql.tada'
@@ -17,6 +18,7 @@ import Plus2 from '@core/shared/ui/icons/Plus2'
 
 import { ActionButton } from '../../../../../../components/ActionButton'
 import { FormTextField } from '../../../../../../components/FormTextField'
+import { SaveButton } from '../../../../../../components/SaveButton'
 import { Section } from '../../../../../../components/Section'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../../constants'
 
@@ -105,16 +107,30 @@ export default function EditEditionPage({
         onSubmit={handleSubmit}
         validationSchema={validationSchema}
       >
-        <Form data-testId="EditionForm">
-          <Stack gap={2}>
-            <FormTextField name="name" label="Name" fullWidth />
-            <Stack direction="row" gap={1}>
-              <Button variant="contained" type="submit" fullWidth>
-                Update
-              </Button>
+        {({ values, errors, handleChange, isValid, isSubmitting, dirty }) => (
+          <Form data-testId="EditionForm" style={{ marginBottom: 16 }}>
+            <Stack gap={2}>
+              <TextField
+                id="name"
+                name="name"
+                label="Name"
+                fullWidth
+                value={values.name}
+                variant="outlined"
+                error={Boolean(errors.name)}
+                onChange={handleChange}
+                helperText={errors.name as string}
+                sx={{ flexGrow: 1, mt: 1 }}
+                disabled={values.name === 'base'}
+              />
+              <Stack direction="row" justifyContent="end">
+                <SaveButton
+                  disabled={!isValid || isSubmitting || !dirty || !values.name}
+                />
+              </Stack>
             </Stack>
-          </Stack>
-        </Form>
+          </Form>
+        )}
       </Formik>
       <Section
         title="Subtitles"
