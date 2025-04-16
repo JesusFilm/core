@@ -1,8 +1,10 @@
 import { ApolloQueryResult } from '@apollo/client'
+import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
+import Image from 'next/image'
 import NextLink from 'next/link'
 import { ReactElement, useEffect, useRef } from 'react'
 
@@ -76,12 +78,36 @@ export function JourneyCard({
             disabled={isNavigating}
             sx={{ borderRadius: 0, opacity: isNavigating ? 0.5 : 1 }}
           >
-            <CardContent sx={{ px: 6, py: 4 }}>
+            <Box
+              sx={{
+                position: 'relative',
+                width: 'auto',
+                paddingTop: `${(158 / 208) * 100}%`,
+                mx: 3,
+                mt: 3,
+                borderRadius: '5px',
+                bgcolor: 'rgba(0, 0, 0, 0.1)'
+              }}
+            >
+              {journey.primaryImageBlock?.src != null && (
+                <Image
+                  data-testid="JourneyCard-Image"
+                  src={journey.primaryImageBlock.src}
+                  alt={journey.primaryImageBlock.alt ?? ''}
+                  fill
+                  style={{
+                    borderRadius: '5px',
+                    objectFit: 'cover'
+                  }}
+                />
+              )}
+            </Box>
+            <CardContent sx={{ px: 3, py: 3 }}>
               <JourneyCardText journey={journey} variant={variant} />
             </CardContent>
           </CardActionArea>
         </NextLink>
-        <CardActions sx={{ px: 6, pb: 4 }}>
+        <CardActions sx={{ px: 3, pb: 3 }}>
           <JourneyCardInfo journey={journey} variant={variant} />
           <JourneyCardMenu
             id={journey.id}
