@@ -14,7 +14,7 @@ import minimalLogo from '../../../assets/minimal-logo.png'
 import { MenuButton } from '../../../components/MenuButton'
 import { ToggleColorMode } from '../../../components/ToggleColorMode'
 
-import { SideMenuMobile } from './_sideMenuMobile'
+import { SideMenuMobile } from './_SideMenuMobile'
 
 const Toolbar = styled(MuiToolbar)({
   padding: '12px',
