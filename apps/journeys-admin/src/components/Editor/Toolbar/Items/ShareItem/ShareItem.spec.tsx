@@ -112,16 +112,12 @@ describe('ShareItem', () => {
       )
     })
 
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'Share' }))
-    })
+    fireEvent.click(screen.getByRole('button', { name: 'Share' }))
     expect(screen.getByText('Share This Journey')).toBeInTheDocument()
 
-    await act(async () => {
-      fireEvent.keyDown(screen.getByRole('dialog'), {
-        key: 'Escape',
-        code: 'Escape'
-      })
+    fireEvent.keyDown(screen.getByRole('dialog'), {
+      key: 'Escape',
+      code: 'Escape'
     })
     await waitFor(() => {
       expect(screen.queryByText('Share This Journey')).not.toBeInTheDocument()
@@ -129,65 +125,50 @@ describe('ShareItem', () => {
   })
 
   it('should pass custom domain hostname to ShareDialog', async () => {
-    await act(async () => {
-      render(
-        <MockedProvider
-          mocks={[customDomainShareDataQueryMock, qrCodesQueryMock]}
+    render(
+      <MockedProvider
+        mocks={[customDomainShareDataQueryMock, qrCodesQueryMock]}
+      >
+        <JourneyProvider
+          value={{
+            journey: {
+              ...defaultJourney,
+              team: {
+                id: 'teamId',
+                __typename: 'Team',
+                title: 'Team Title',
+                publicTitle: 'Team Title'
+              }
+            },
+            variant: 'admin'
+          }}
         >
-          <JourneyProvider
-            value={{
-              journey: {
-                ...defaultJourney,
-                team: {
-                  id: 'teamId',
-                  __typename: 'Team',
-                  title: 'Team Title',
-                  publicTitle: 'Team Title'
-                }
-              },
-              variant: 'admin'
-            }}
-          >
-            <ShareItem variant="button" />
-          </JourneyProvider>
-        </MockedProvider>
-      )
-    })
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'Share' }))
-    })
+          <ShareItem variant="button" />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Share' }))
     await waitFor(() => {
-      expect(
-        screen.getByDisplayValue('https://example.com/default')
-      ).toBeInTheDocument()
+      expect(screen.getByRole('textbox')).toHaveValue(
+        'https://example.com/default'
+      )
     })
   })
 
   it('should call closeMenu when dialog is closed', async () => {
     const closeMenu = jest.fn()
-    await act(async () => {
-      render(
-        <MockedProvider mocks={[defaultShareDataQueryMock, qrCodesQueryMock]}>
-          <JourneyProvider
-            value={{ journey: defaultJourney, variant: 'admin' }}
-          >
-            <ShareItem variant="button" closeMenu={closeMenu} />
-          </JourneyProvider>
-        </MockedProvider>
-      )
+    render(
+      <MockedProvider mocks={[defaultShareDataQueryMock, qrCodesQueryMock]}>
+        <JourneyProvider value={{ journey: defaultJourney, variant: 'admin' }}>
+          <ShareItem variant="button" closeMenu={closeMenu} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Share' }))
+    fireEvent.keyDown(screen.getByRole('dialog'), {
+      key: 'Escape',
+      code: 'Escape'
     })
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'Share' }))
-    })
-
-    await act(async () => {
-      fireEvent.keyDown(screen.getByRole('dialog'), {
-        key: 'Escape',
-        code: 'Escape'
-      })
-    })
-    await waitFor(() => {
-      expect(closeMenu).toHaveBeenCalled()
-    })
+    expect(closeMenu).toHaveBeenCalled()
   })
 })
