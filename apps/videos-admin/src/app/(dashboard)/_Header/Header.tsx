@@ -3,7 +3,7 @@ import { ReactElement } from 'react'
 
 import { ToggleColorMode } from '../../../components/ToggleColorMode'
 
-import { NavbarBreadcrumbs } from './_breadcrumbs'
+import { NavbarBreadcrumbs } from './_Breadcrumbs'
 
 export function Header(): ReactElement {
   return (
