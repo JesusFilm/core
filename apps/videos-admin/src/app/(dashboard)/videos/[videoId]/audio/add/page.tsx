@@ -21,6 +21,7 @@ import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
+import { videoStatuses } from '../../../../../../constants'
 import { useUploadVideoVariant } from '../../../../../_UploadVideoVariantProvider'
 
 import { AudioLanguageFileUpload } from './_AudioLanguageFileUpload'
@@ -112,6 +113,7 @@ export default function AddAudioLanguageDialog({
       values.language.id,
       values.language.slug,
       values.edition,
+      values.published === 'published',
       async () => {
         await createVideoVariantDownload({
           variables: {
@@ -232,6 +234,26 @@ export default function AddAudioLanguageDialog({
                     )}
                   />
                 </Box>
+                <FormControl variant="standard">
+                  <InputLabel id="status-select-label">Status</InputLabel>
+                  <Select
+                    labelId="status-select-label"
+                    id="status"
+                    name="published"
+                    label="Status"
+                    value={values.published}
+                    onChange={async (event) => {
+                      await setFieldValue('published', event.target.value)
+                    }}
+                    disabled={isUploadInProgress}
+                  >
+                    {videoStatuses.map(({ label, value }) => (
+                      <MenuItem key={value} value={value}>
+                        {label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
                 <AudioLanguageFileUpload
                   disabled={isUploadInProgress}
                   onFileSelect={async (file) => {

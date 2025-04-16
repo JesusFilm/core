@@ -29,6 +29,7 @@ export const CREATE_VIDEO_VARIANT = graphql(`
       videoId
       slug
       hls
+      published
       language {
         id
         name {
@@ -61,6 +62,7 @@ interface UploadVideoVariantState {
   languageId: string | null
   languageSlug: string | null
   videoId: string | null
+  published: boolean | null
   onComplete?: () => void
 }
 
@@ -72,6 +74,7 @@ interface UploadVideoVariantContextType {
     languageId: string,
     languageSlug: string,
     edition: string,
+    published: boolean,
     onComplete?: () => void
   ) => Promise<void>
   clearUploadState: () => void
@@ -87,6 +90,7 @@ const initialState: UploadVideoVariantState = {
   languageId: null,
   languageSlug: null,
   videoId: null,
+  published: null,
   onComplete: undefined
 }
 
@@ -101,6 +105,7 @@ type UploadAction =
       languageId: string
       languageSlug: string
       edition: string
+      published: boolean
       onComplete?: () => void
     }
   | { type: 'SET_PROGRESS'; progress: number }
@@ -260,6 +265,7 @@ export function UploadVideoVariantProvider({
     languageId: string,
     languageSlug: string,
     edition: string,
+    published: boolean,
     onComplete?: () => void
   ) => {
     try {
@@ -269,6 +275,7 @@ export function UploadVideoVariantProvider({
         languageId,
         languageSlug,
         edition,
+        published,
         onComplete
       })
 

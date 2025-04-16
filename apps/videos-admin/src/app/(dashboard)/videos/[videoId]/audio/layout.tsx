@@ -3,6 +3,7 @@
 import { useQuery } from '@apollo/client'
 import AddIcon from '@mui/icons-material/Add'
 import DeleteIcon from '@mui/icons-material/Delete'
+import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
@@ -11,6 +12,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { FixedSizeList } from 'react-window'
 
+import { PublishedChip } from '../../../../../components/PublishedChip'
 import { Section } from '../../../../../components/Section'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
 
@@ -20,8 +22,9 @@ const GET_ADMIN_VIDEO_VARIANTS = graphql(`
   query GetAdminVideoVariants($id: ID!, $languageId: ID) {
     adminVideo(id: $id) {
       id
-      variants {
+      variants(input: { onlyPublished: false }) {
         id
+        published
         language {
           id
           name(languageId: $languageId) {
@@ -137,10 +140,13 @@ export default function ClientLayout({
                   justifyContent: 'space-between'
                 }}
               >
-                <ListItemText
-                  primary={variant.language.name[0].value}
-                  secondary={variant.language.id}
-                />
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <ListItemText
+                    primary={variant.language.name[0].value}
+                    secondary={variant.language.id}
+                  />
+                  <PublishedChip published={variant.published} />
+                </Box>
                 <IconButton
                   size="small"
                   onClick={(event) => {
