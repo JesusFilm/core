@@ -47,15 +47,15 @@ describe('ShareDialog', () => {
     })
   })
 
-  interface ComponentProps {
+  interface TestShareDialogProps {
     open?: boolean
     hostname?: string
   }
 
-  const Component = ({
+  const TestShareDialog = ({
     open = true,
     hostname = 'my.custom.domain'
-  }: ComponentProps): ReactElement => (
+  }: TestShareDialogProps): ReactElement => (
     <SnackbarProvider>
       <JourneyProvider value={{ journey: defaultJourney, variant: 'admin' }}>
         <ShareDialog
@@ -71,23 +71,23 @@ describe('ShareDialog', () => {
   )
 
   it('should render the dialog when open is true', () => {
-    render(<Component />)
+    render(<TestShareDialog />)
     expect(screen.getByText('Share This Journey')).toBeInTheDocument()
   })
 
   it('should not render the dialog when open is false', () => {
-    render(<Component open={false} />)
+    render(<TestShareDialog open={false} />)
     expect(screen.queryByText('Share This Journey')).not.toBeInTheDocument()
   })
 
   it('should call onClose when dialog is closed', () => {
-    render(<Component />)
+    render(<TestShareDialog />)
     fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' })
     expect(handleClose).toHaveBeenCalled()
   })
 
   it('should display the journey URL with custom domain', () => {
-    render(<Component />)
+    render(<TestShareDialog />)
     expect(
       screen.getByDisplayValue('https://my.custom.domain/default')
     ).toBeInTheDocument()
@@ -135,7 +135,7 @@ describe('ShareDialog', () => {
   })
 
   it('should call onSlugDialogOpen and set route when Edit URL button is clicked', () => {
-    render(<Component />)
+    render(<TestShareDialog />)
     fireEvent.click(screen.getByRole('button', { name: 'Edit URL' }))
     expect(handleSlugDialogOpen).toHaveBeenCalled()
     expect(push).toHaveBeenCalledWith(
@@ -146,7 +146,7 @@ describe('ShareDialog', () => {
   })
 
   it('should call onEmbedDialogOpen and set route when Embed Journey button is clicked', () => {
-    render(<Component />)
+    render(<TestShareDialog />)
     fireEvent.click(screen.getByRole('button', { name: 'Embed Journey' }))
     expect(handleEmbedDialogOpen).toHaveBeenCalled()
     expect(push).toHaveBeenCalledWith(
@@ -157,7 +157,7 @@ describe('ShareDialog', () => {
   })
 
   it('should call onQrCodeDialogOpen and set route when QR Code button is clicked', () => {
-    render(<Component />)
+    render(<TestShareDialog />)
     fireEvent.click(screen.getByRole('button', { name: 'QR Code' }))
     expect(handleQrCodeDialogOpen).toHaveBeenCalled()
     expect(push).toHaveBeenCalledWith(
@@ -168,7 +168,7 @@ describe('ShareDialog', () => {
   })
 
   it('should set beacon page viewed on route change', () => {
-    render(<Component />)
+    render(<TestShareDialog />)
     fireEvent.click(screen.getByRole('button', { name: 'QR Code' }))
     expect(on).toHaveBeenCalledWith('routeChangeComplete', expect.any(Function))
     const callback = on.mock.calls[0][1]
