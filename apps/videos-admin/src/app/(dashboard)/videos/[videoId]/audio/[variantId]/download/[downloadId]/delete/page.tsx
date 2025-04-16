@@ -32,7 +32,7 @@ export default function ConfirmDeleteDialog({
   const [deleteVideoVariantDownload] = useMutation(
     VIDEO_VARIANT_DOWNLOAD_DELETE
   )
-  const returnUrl = `/videos/${videoId}/audio/${variantId}/downloads`
+  const returnUrl = `/videos/${videoId}/audio/${variantId}`
 
   async function handleConfirm(): Promise<void> {
     setIsLoading(true)

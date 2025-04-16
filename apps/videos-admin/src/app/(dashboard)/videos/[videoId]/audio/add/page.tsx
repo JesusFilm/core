@@ -1,6 +1,6 @@
 'use client'
 
-import { useSuspenseQuery } from '@apollo/client'
+import { useMutation, useSuspenseQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import FormControl from '@mui/material/FormControl'
@@ -13,6 +13,7 @@ import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikProps, FormikValues } from 'formik'
 import { graphql } from 'gql.tada'
 import { useRouter } from 'next/navigation'
+import { useSnackbar } from 'notistack'
 import { ReactElement, useRef } from 'react'
 import { mixed, object, string } from 'yup'
 
@@ -20,9 +21,25 @@ import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
-import { useUploadVideoVariant } from '../../../../../_uploadVideoVariantProvider'
+import { useUploadVideoVariant } from '../../../../../_UploadVideoVariantProvider'
 
-import { AudioLanguageFileUpload } from './_upload'
+import { AudioLanguageFileUpload } from './_AudioLanguageFileUpload'
+
+const VIDEO_VARIANT_DOWNLOAD_CREATE = graphql(`
+  mutation VideoVariantDownloadCreate(
+    $input: VideoVariantDownloadCreateInput!
+  ) {
+    videoVariantDownloadCreate(input: $input) {
+      id
+      quality
+      size
+      height
+      width
+      url
+      version
+    }
+  }
+`)
 
 interface AddAudioLanguageDialogProps {
   params: {
@@ -63,6 +80,7 @@ export default function AddAudioLanguageDialog({
   params: { videoId }
 }: AddAudioLanguageDialogProps): ReactElement {
   const router = useRouter()
+  const { enqueueSnackbar } = useSnackbar()
   const { uploadState, startUpload } = useUploadVideoVariant()
 
   const formikRef = useRef<FormikProps<FormikValues>>(null)
@@ -75,6 +93,9 @@ export default function AddAudioLanguageDialog({
     variables: { id: videoId }
   })
 
+  const [createVideoVariantDownload] = useMutation(
+    VIDEO_VARIANT_DOWNLOAD_CREATE
+  )
   const availableLanguages = data?.languages?.filter(
     (language) =>
       !variantsData.adminVideo.variants.some(
@@ -91,14 +112,34 @@ export default function AddAudioLanguageDialog({
       values.language.id,
       values.language.slug,
       values.edition,
-      () =>
-        router.push(returnUrl, {
-          scroll: false
+      async () => {
+        await createVideoVariantDownload({
+          variables: {
+            input: {
+              videoVariantId: videoId,
+              url: values.file.name,
+              quality: 'high'
+            }
+          },
+          onCompleted: () => {
+            enqueueSnackbar('Audio language added successfully', {
+              variant: 'success'
+            })
+            router.push(returnUrl, {
+              scroll: false
+            })
+          },
+          onError: (error) => {
+            enqueueSnackbar('Error adding audio language', {
+              variant: 'error'
+            })
+          }
         })
+      }
     )
   }
 
-  const isUploadInProgress = uploadState.isUploading || uploadState.isProcessing  
+  const isUploadInProgress = uploadState.isUploading || uploadState.isProcessing
   const handleDialogClose = (): void => {
     // Don't close the dialog if upload is in progress
     if (isUploadInProgress) {

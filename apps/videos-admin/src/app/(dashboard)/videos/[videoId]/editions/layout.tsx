@@ -1,12 +1,12 @@
 'use client'
 
-import { useSuspenseQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { graphql } from 'gql.tada'
-import { useRouter } from 'next/navigation'
-import { ReactNode } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
+import { ReactNode, useEffect, useState } from 'react'
 
 import Plus2 from '@core/shared/ui/icons/Plus2'
 
@@ -40,10 +40,17 @@ export default function EditionsPage({
   children
 }: EditionsPageProps) {
   const router = useRouter()
-  const { data } = useSuspenseQuery(GET_EDITIONS, {
+  const pathname = usePathname()
+  const [reloadOnPathChange, setReloadOnPathChange] = useState(false)
+  const { data, refetch } = useQuery(GET_EDITIONS, {
     variables: { videoId }
   })
-  const editions = data?.adminVideo.videoEditions
+  useEffect(() => {
+    if (reloadOnPathChange) void refetch()
+    setReloadOnPathChange(
+      (pathname?.includes('add') || pathname?.includes('delete')) ?? false
+    )
+  }, [pathname])
   return (
     <>
       <Section
@@ -57,7 +64,7 @@ export default function EditionsPage({
           startIcon: <Plus2 />
         }}
       >
-        {editions.length > 0 ? (
+        {(data?.adminVideo.videoEditions.length ?? 0) > 0 ? (
           <Box
             sx={{
               display: 'grid',
@@ -65,7 +72,7 @@ export default function EditionsPage({
               gap: 2
             }}
           >
-            {editions.map((edition) => (
+            {data?.adminVideo.videoEditions.map((edition) => (
               <Box
                 sx={{
                   border: '1px solid',

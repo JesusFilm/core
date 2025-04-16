@@ -83,7 +83,7 @@ export default function AddEditionPage({
       >
         <Form data-testId="EditionForm">
           <Stack gap={2}>
-            <FormTextField name="name" label="Name" fullWidth />
+            <FormTextField name="name" label="Name" fullWidth sx={{ mt: 1 }} />
             <Button variant="contained" type="submit" fullWidth>
               Create
             </Button>

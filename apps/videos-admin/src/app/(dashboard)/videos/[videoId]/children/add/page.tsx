@@ -8,7 +8,7 @@ import { ReactElement } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
-import { VideoCreateForm } from '../../../_createForm'
+import { VideoCreateForm } from '../../../_VideoCreateForm'
 
 const GET_VIDEO_CHILDREN = graphql(`
   query GetVideoChildren($id: ID!) {

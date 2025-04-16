@@ -6,9 +6,12 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
 import { Form, Formik } from 'formik'
 import { VariablesOf, graphql } from 'gql.tada'
+import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { useEffect, useRef, useState } from 'react'
 import { mixed, object, string } from 'yup'
+
+import { Dialog } from '@core/shared/ui/Dialog'
 
 import { FormLanguageSelect } from '../../../../../../../../components/FormLanguageSelect'
 import { useCreateR2AssetMutation } from '../../../../../../../../libs/useCreateR2Asset/useCreateR2Asset'
@@ -87,6 +90,7 @@ interface SubtitlePageProps {
 export default function SubtitlePage({
   params: { videoId, editionId, subtitleId }
 }: SubtitlePageProps) {
+  const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
   const [loading, setLoading] = useState(false)
   const abortController = useRef<AbortController | null>(null)
@@ -224,35 +228,48 @@ export default function SubtitlePage({
   }
 
   return (
-    <Formik
-      initialValues={{
-        language: subtitle.language.id,
-        vttFile: null,
-        srtFile: null
+    <Dialog
+      open={true}
+      onClose={() =>
+        router.push(`/videos/${videoId}/editions/${editionId}`, {
+          scroll: false
+        })
+      }
+      dialogTitle={{
+        title: 'Edit Edition',
+        closeButton: true
       }}
-      validationSchema={subtitleValidationSchema}
-      onSubmit={handleSubmit}
     >
-      <Form data-testid="SubtitleForm">
-        <Stack gap={2}>
-          <FormLanguageSelect
-            name="language"
-            label="Language"
-            initialLanguage={initialLanguage}
-            existingLanguageIds={subtitleLanguagesMap}
-            parentObjectId={subtitle?.id}
-          />
-          <SubtitleFileUpload subtitle={subtitle} />
-          <Button
-            variant="contained"
-            type="submit"
-            fullWidth
-            disabled={loading}
-          >
-            {loading ? <CircularProgress size={20} /> : 'Update'}
-          </Button>
-        </Stack>
-      </Form>
-    </Formik>
+      <Formik
+        initialValues={{
+          language: subtitle.language.id,
+          vttFile: null,
+          srtFile: null
+        }}
+        validationSchema={subtitleValidationSchema}
+        onSubmit={handleSubmit}
+      >
+        <Form data-testid="SubtitleForm">
+          <Stack gap={2}>
+            <FormLanguageSelect
+              name="language"
+              label="Language"
+              initialLanguage={initialLanguage}
+              existingLanguageIds={subtitleLanguagesMap}
+              parentObjectId={subtitle?.id}
+            />
+            <SubtitleFileUpload subtitle={subtitle} />
+            <Button
+              variant="contained"
+              type="submit"
+              fullWidth
+              disabled={loading}
+            >
+              {loading ? <CircularProgress size={20} /> : 'Update'}
+            </Button>
+          </Stack>
+        </Form>
+      </Formik>
+    </Dialog>
   )
 }

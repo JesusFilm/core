@@ -77,7 +77,7 @@ describe('ConfirmDeleteDialog', () => {
   const mockVideoId = 'video-123'
   const mockVariantId = 'variant-456'
   const mockDownloadId = 'download-789'
-  const mockReturnUrl = `/videos/${mockVideoId}/audio/${mockVariantId}/downloads`
+  const mockReturnUrl = `/videos/${mockVideoId}/audio/${mockVariantId}`
 
   // Mock mutation function and router push function
   const mockDeleteMutation = jest.fn().mockResolvedValue({

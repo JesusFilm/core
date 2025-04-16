@@ -13,14 +13,13 @@ import { PublishedChip } from '../../../../components/PublishedChip'
 import { Section } from '../../../../components/Section'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../constants'
 
-import { VideoDescription } from './_description'
-import { VideoViewFallback } from './_fallback'
-import { VideoImageAlt } from './_imageAlt'
-import { VideoInformation } from './_information'
-import { LockedVideoView } from './_locked'
-import { VideoSnippet } from './_snippet'
-import { VideoTabView } from './_tabs'
-import ClientLayout from './clientLayout'
+import { LockedVideoView } from './_LockedVideo'
+import { VideoDescription } from './_VideoDescription'
+import { VideoViewFallback } from './_VideoFallback'
+import { VideoImageAlt } from './_VideoImageAlt'
+import { VideoInformation } from './_VideoInformation'
+import { VideoSnippet } from './_VideoSnippet'
+import { VideoTabView } from './_VideoTabs'
 
 const GET_TAB_DATA = graphql(`
   query GetTabData($id: ID!, $languageId: ID!) {

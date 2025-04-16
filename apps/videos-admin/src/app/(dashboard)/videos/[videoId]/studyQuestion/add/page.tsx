@@ -1,14 +1,17 @@
 'use client'
 
 import { useMutation, useSuspenseQuery } from '@apollo/client'
+import Button from '@mui/material/Button'
+import Stack from '@mui/material/Stack'
+import TextField from '@mui/material/TextField'
+import { Form, Formik } from 'formik'
 import { graphql } from 'gql.tada'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
+import { object, string } from 'yup'
 
 import { Dialog } from '@core/shared/ui/Dialog'
-
-import { StudyQuestionForm } from '../_StudyQuestionForm/StudyQuestionForm'
 
 const GET_STUDY_QUESTIONS = graphql(`
   query GetStudyQuestions($videoId: ID!) {
@@ -45,23 +48,15 @@ export default function StudyQuestionsAddPage({
   const { data } = useSuspenseQuery(GET_STUDY_QUESTIONS, {
     variables: { videoId }
   })
+  const validationSchema = object().shape({
+    value: string().required('Study question is required')
+  })
   const order =
-    Math.max(...data.adminVideo.studyQuestions.map(({ order }) => order)) + 1
+    (data.adminVideo.studyQuestions.length > 1
+      ? Math.max(...data.adminVideo.studyQuestions.map(({ order }) => order))
+      : 0) + 1
   const returnUrl = `/videos/${videoId}`
-  const [createStudyQuestion, { loading }] = useMutation(
-    CREATE_STUDY_QUESTION,
-    {
-      onCompleted: () => {
-        enqueueSnackbar('Study question created', { variant: 'success' })
-        router.push(returnUrl, {
-          scroll: false
-        })
-      },
-      onError: (error) => {
-        enqueueSnackbar(error.message, { variant: 'error' })
-      }
-    }
-  )
+  const [createStudyQuestion, { loading }] = useMutation(CREATE_STUDY_QUESTION)
   const handleSubmit = async (values: { value: string }): Promise<void> => {
     try {
       await createStudyQuestion({
@@ -73,6 +68,15 @@ export default function StudyQuestionsAddPage({
             primary: true,
             order
           }
+        },
+        onCompleted: () => {
+          enqueueSnackbar('Study question created', { variant: 'success' })
+          router.push(returnUrl, {
+            scroll: false
+          })
+        },
+        onError: (error) => {
+          enqueueSnackbar(error.message, { variant: 'error' })
         }
       })
     } catch (error) {
@@ -92,12 +96,54 @@ export default function StudyQuestionsAddPage({
         closeButton: true
       }}
     >
-      <StudyQuestionForm
+      {/* <StudyQuestionForm
         variant="create"
+        initialValues={}
+        onSubmit={}
+        loading={loading}
+      /> */}
+      <Formik
         initialValues={{ value: '' }}
         onSubmit={handleSubmit}
-        loading={loading}
-      />
+        validationSchema={validationSchema}
+      >
+        {({ values, errors, handleChange, isValid, isSubmitting, dirty }) => (
+          <Form>
+            <Stack gap={3}>
+              <TextField
+                id="value"
+                name="value"
+                placeholder="Enter study question"
+                fullWidth
+                multiline
+                minRows={3}
+                maxRows={10}
+                value={values.value}
+                variant="outlined"
+                error={Boolean(errors.value)}
+                onChange={handleChange}
+                helperText={errors.value}
+                autoFocus
+                sx={{
+                  '& .MuiInputBase-root': {
+                    height: 'auto'
+                  }
+                }}
+              />
+              <Stack direction="row" gap={2} justifyContent="flex-end">
+                <Button
+                  type="submit"
+                  variant="outlined"
+                  color="secondary"
+                  disabled={!isValid || !dirty || isSubmitting || loading}
+                >
+                  Add
+                </Button>
+              </Stack>
+            </Stack>
+          </Form>
+        )}
+      </Formik>
     </Dialog>
   )
 }

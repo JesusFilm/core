@@ -178,7 +178,7 @@ export default function EditEditionPage({
                 }}
                 onClick={() =>
                   router.push(
-                    `/videos/${videoId}/editions/${editionId}/subtitles/${subtitle.id}`,
+                    `/videos/${videoId}/editions/${editionId}/subtitle/${subtitle.id}`,
                     {
                       scroll: false
                     }

@@ -2,8 +2,6 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useField } from 'formik'
 
-import { GetAdminVideo_AdminVideo_VideoEdition_VideoSubtitle as Subtitle } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo'
-
 import { SubtitleFileUpload } from './SubtitleFileUpload'
 
 const fieldMockVtt = { value: null, name: 'vttFile' }
@@ -22,6 +20,11 @@ jest.mock('formik', () => ({
   __esModule: true,
   useField: jest.fn()
 }))
+
+interface Subtitle {
+  vttSrc: string
+  srtSrc: string
+}
 
 const originalCreateObjectURL = global.URL.createObjectURL
 const useFieldMock = useField as jest.Mock

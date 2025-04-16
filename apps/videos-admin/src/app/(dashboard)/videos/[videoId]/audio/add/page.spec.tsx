@@ -5,7 +5,7 @@ import { act } from 'react'
 
 import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
 
-import { useUploadVideoVariant } from '../../../../../_uploadVideoVariantProvider'
+import { useUploadVideoVariant } from '../../../../../_UploadVideoVariantProvider'
 
 import AddAudioLanguageDialog from './page'
 
@@ -80,7 +80,7 @@ jest.mock('@core/shared/ui/LanguageAutocomplete', () => ({
 }))
 
 // Mock the audio language file upload component
-jest.mock('./_upload', () => ({
+jest.mock('./_AudioLanguageFileUpload', () => ({
   AudioLanguageFileUpload: ({ disabled, onFileSelect, error }) => (
     <div data-testid="AudioLanguageFileUpload">
       <input
@@ -150,7 +150,7 @@ jest.mock('next/navigation', () => ({
 }))
 
 // Mock providers and hooks
-jest.mock('../../../../../_uploadVideoVariantProvider', () => ({
+jest.mock('../../../../../_UploadVideoVariantProvider', () => ({
   useUploadVideoVariant: jest.fn()
 }))
 

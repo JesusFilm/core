@@ -7,9 +7,9 @@ import { ReactElement, ReactNode } from 'react'
 
 import { theme } from '../../theme'
 
-import { Header } from './_header'
-import { AppNavbar } from './_navbar'
-import { SideMenu } from './_sideMenu'
+import { AppNavbar } from './_AppNavbar'
+import { Header } from './_Header'
+import { SideMenu } from './_SideMenu'
 
 interface DashboardLayoutProps {
   children?: ReactNode

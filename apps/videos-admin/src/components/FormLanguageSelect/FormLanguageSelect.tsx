@@ -68,6 +68,7 @@ export function FormLanguageSelect({
           variant="outlined"
           helperText={hasError ? meta.error : ''}
           error={hasError}
+          sx={{ mt: 1 }}
         />
       )}
     />
