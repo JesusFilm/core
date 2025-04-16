@@ -47,10 +47,14 @@ export const cache = {
     },
     AdminVideo: {
       fields: {
-        // Don't merge study questions, always use the incoming data
         studyQuestions: {
-          merge(_, incoming) {
-            return incoming
+          merge(existing, incoming, { mergeObjects }) {
+            return mergeObjects(existing, incoming)
+          }
+        },
+        images: {
+          merge(existing, incoming, { mergeObjects }) {
+            return mergeObjects(existing, incoming)
           }
         }
       }

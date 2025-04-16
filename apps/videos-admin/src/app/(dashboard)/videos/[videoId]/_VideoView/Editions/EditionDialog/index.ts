@@ -1,1 +1,0 @@
-export { EditionDialog } from './EditionDialog'

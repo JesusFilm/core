@@ -1,11 +1,5 @@
-'use client'
+import { ReactElement } from 'react'
 
-import { useVideo } from '../../../../libs/VideoProvider'
-
-import { Metadata } from './_VideoView/Metadata'
-
-export default function VideoPage() {
-  const video = useVideo()
-
-  return <Metadata video={video} />
+export default function VideoViewPage(): ReactElement {
+  return <></>
 }

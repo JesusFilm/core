@@ -13,7 +13,7 @@ import { CenterPage } from '../../../components/CenterPage'
 import { makeClient } from '../../../libs/apollo/makeClient'
 import { getUser } from '../../../libs/auth/getUser'
 
-import { Logout } from './_Logout'
+import { Logout } from './_logout'
 
 const GET_AUTH = graphql(`
   query me {
