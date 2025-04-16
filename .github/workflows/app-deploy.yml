@@ -61,6 +61,7 @@ jobs:
         github-ref-name: ['${{ github.ref_name }}']
         github-event-name: ['${{ github.event_name }}']
         node-version: [22]
+        shard: [1, 2, 3, 4, 5, 6]
         exclude:
           # handled by production job below
           - app: journeys
@@ -173,23 +174,6 @@ jobs:
           state: ${{ job.status }}
           environment-url: ${{ steps.deployment-url.outputs.deployment-url }}
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
-      - run: npx playwright install --with-deps
-      - name: Run Playwright tests
-        run: npx nx run ${{ matrix.app }}-e2e:e2e
-        env:
-          DEPLOYMENT_URL: ${{ steps.deployment-url.outputs.deployment-url }}
-          PLAYWRIGHT_EMAIL: ${{ secrets.PLAYWRIGHT_EMAIL }}
-          PLAYWRIGHT_PASSWORD: ${{ secrets.PLAYWRIGHT_PASSWORD }}
-          PLAYWRIGHT_USER: ${{ secrets.PLAYWRIGHT_USER }}
-          PLAYWRIGHT_TEAM_NAME: ${{ secrets.PLAYWRIGHT_TEAM_NAME }}
-          EXAMPLE_EMAIL_TOKEN: ${{ secrets.EXAMPLE_EMAIL_TOKEN }}
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: ${{ matrix.app }}-playwright-report
-          path: |
-            playwright-report/
-          retention-days: 30
   deploy-status:
     runs-on: blacksmith-2vcpu-ubuntu-2204
     needs: [affected, deploy-preview]
@@ -311,3 +295,53 @@ jobs:
           state: ${{ job.status }}
           environment-url: ${{ steps.deployment-url.outputs.deployment-url }}
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
+
+  playwright-tests:
+    name: Run Playwright Tests
+    needs: deploy-preview
+    if: success()
+    runs-on: blacksmith-2vcpu-ubuntu-2204
+    strategy:
+      fail-fast: false
+      matrix:
+        app: ${{fromJson(needs.affected.outputs.matrix)}}
+        shard: [1, 2, 3, 4, 5, 6]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: useblacksmith/setup-node@v5
+        with:
+          node-version: 22
+      - name: Mount NPM Cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-node22-npm-cache
+          path: ~/.npm
+      - name: Mount node_modules
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-node22-node-modules
+          path: ./node_modules
+      - name: Mount playwright cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-playwright-cache
+          path: ~/.cache/ms-playwright
+      - name: NPM Install
+        run: npm install --silent
+      - run: npx playwright install --with-deps
+      - name: Run Playwright tests
+        run: npx nx run ${{ matrix.app }}-e2e:e2e --shard=${{ matrix.shard }}/6
+        env:
+          DEPLOYMENT_URL: ${{ needs.deploy-preview.outputs.url }}
+          PLAYWRIGHT_EMAIL: ${{ secrets.PLAYWRIGHT_EMAIL }}
+          PLAYWRIGHT_PASSWORD: ${{ secrets.PLAYWRIGHT_PASSWORD }}
+          PLAYWRIGHT_USER: ${{ secrets.PLAYWRIGHT_USER }}
+          PLAYWRIGHT_TEAM_NAME: ${{ secrets.PLAYWRIGHT_TEAM_NAME }}
+          EXAMPLE_EMAIL_TOKEN: ${{ secrets.EXAMPLE_EMAIL_TOKEN }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ${{ matrix.app }}-playwright-report-shard-${{ matrix.shard }}
+          path: |
+            playwright-report/
+          retention-days: 30
