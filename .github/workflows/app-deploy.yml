@@ -61,7 +61,6 @@ jobs:
         github-ref-name: ['${{ github.ref_name }}']
         github-event-name: ['${{ github.event_name }}']
         node-version: [22]
-        shard: [1, 2, 3, 4, 5, 6]
         exclude:
           # handled by production job below
           - app: journeys
@@ -298,7 +297,7 @@ jobs:
 
   playwright-tests:
     name: Run Playwright Tests
-    needs: deploy-preview
+    needs: [affected, deploy-preview]
     if: success()
     runs-on: blacksmith-2vcpu-ubuntu-2204
     strategy:
