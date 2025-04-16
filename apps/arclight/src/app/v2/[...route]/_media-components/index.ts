@@ -331,10 +331,11 @@ mediaComponents.openapi(route, async (c) => {
           },
           bibleCitations: video.bibleCitations.map((citation) => ({
             osisBibleBook: citation.osisId,
-            chapterStart: citation.chapterStart,
-            verseStart: citation.verseStart,
-            chapterEnd: citation.chapterEnd,
-            verseEnd: citation.verseEnd
+            chapterStart:
+              citation.chapterStart === -1 ? null : citation.chapterStart,
+            verseStart: citation.verseStart === -1 ? null : citation.verseStart,
+            chapterEnd: citation.chapterEnd === -1 ? null : citation.chapterEnd,
+            verseEnd: citation.verseEnd === -1 ? null : citation.verseEnd
           })),
           primaryLanguageId: Number(video.primaryLanguageId),
           title: video.title[0]?.value ?? video.fallbackTitle[0]?.value ?? '',

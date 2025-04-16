@@ -37,8 +37,8 @@ type AlgoliaVideoHit = {
   }
   bibleCitations?: Array<{
     osisBibleBook: string
-    chapterStart: number
-    verseStart: number
+    chapterStart: number | null
+    verseStart: number | null
     chapterEnd: number | null
     verseEnd: number | null
   }>
@@ -253,10 +253,10 @@ const VideoSchema = z.object({
     .array(
       z.object({
         osisBibleBook: z.string(),
-        chapterStart: z.number(),
-        verseStart: z.number(),
-        chapterEnd: z.number(),
-        verseEnd: z.number()
+        chapterStart: z.number().nullable(),
+        verseStart: z.number().nullable(),
+        chapterEnd: z.number().nullable(),
+        verseEnd: z.number().nullable()
       })
     )
     .optional()
