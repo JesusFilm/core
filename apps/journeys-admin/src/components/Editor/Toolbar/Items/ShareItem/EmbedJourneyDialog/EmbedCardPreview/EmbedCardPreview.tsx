@@ -41,26 +41,6 @@ export function EmbedCardPreview(): ReactElement {
             transformOrigin: smUp ? 'top left' : '22.5% top'
           }}
         >
-          <Box
-            sx={{
-              ml: 7,
-              mb: '-3.5px',
-              height: 12,
-              width: CARD_WIDTH - 55,
-              backgroundColor: '#DCDDE5',
-              borderRadius: '16px 16px 0 0'
-            }}
-          />
-          <Box
-            sx={{
-              ml: 3.5,
-              mb: '-3.5px',
-              height: 12,
-              width: CARD_WIDTH - 30,
-              backgroundColor: '#AAACBB',
-              borderRadius: '16px 16px 0 0'
-            }}
-          />
           <FramePortal
             width={340}
             height={520}
@@ -71,7 +51,7 @@ export function EmbedCardPreview(): ReactElement {
               themeName={journey?.themeName ?? ThemeName.base}
               themeMode={journey?.themeMode ?? ThemeMode.light}
             >
-              <Box sx={{ height: '100%' }}>
+              <Box sx={{ height: '100%', borderRadius: 4 }}>
                 <BlockRenderer
                   block={block}
                   wrappers={{

@@ -54,3 +54,11 @@ export async function getOTP(): Promise<string> {
   }
   return otp
 }
+export async function generateRandomString(length: number): Promise<string> {
+  let result = ''
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+  for (let counter = 0; counter < length; counter++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length))
+  }
+  return result
+}

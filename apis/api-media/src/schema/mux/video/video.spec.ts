@@ -90,7 +90,10 @@ describe('mux/video', () => {
           } as unknown as MuxVideo
         ])
         const data = await authClient({
-          document: GET_MY_MUX_VIDEOS
+          document: GET_MY_MUX_VIDEOS,
+          variables: {
+            userGenerated: false
+          }
         })
         expect(data).toHaveProperty('data.getMyMuxVideos', [
           {
@@ -106,7 +109,10 @@ describe('mux/video', () => {
 
       it('should return null when not authorized', async () => {
         const data = await client({
-          document: GET_MY_MUX_VIDEOS
+          document: GET_MY_MUX_VIDEOS,
+          variables: {
+            userGenerated: false
+          }
         })
         expect(data).toHaveProperty('data', null)
       })
@@ -114,8 +120,8 @@ describe('mux/video', () => {
 
     describe('getMyMuxVideo', () => {
       const GET_MY_MUX_VIDEO = graphql(`
-        query GetMyMuxVideo($id: ID!) {
-          getMyMuxVideo(id: $id) {
+        query GetMyMuxVideo($id: ID!, $userGenerated: Boolean) {
+          getMyMuxVideo(id: $id, userGenerated: $userGenerated) {
             id
             playbackId
             uploadUrl
@@ -469,7 +475,7 @@ describe('mux/video', () => {
           }
         })
 
-        expect(enableDownload).toHaveBeenCalledWith('videoId')
+        expect(enableDownload).toHaveBeenCalledWith('videoId', false)
 
         // Check that the database was updated
         expect(prismaMock.muxVideo.update).toHaveBeenCalledWith({
