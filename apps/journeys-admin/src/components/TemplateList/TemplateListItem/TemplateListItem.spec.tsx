@@ -1,6 +1,13 @@
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
 
+import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'
+
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
+import { Role } from '../../../../__generated__/globalTypes'
+import { GET_CURRENT_USER } from '../../../libs/useCurrentUserLazyQuery'
+import { GET_JOURNEY_WITH_USER_ROLES } from '../../JourneyList/JourneyCard/JourneyCardMenu/DefaultMenu/DefaultMenu'
+import { GET_JOURNEY_WITH_BLOCKS } from '../../JourneyList/JourneyCard/JourneyCardMenu/JourneyCardMenu'
 import {
   defaultTemplate,
   descriptiveTemplate,
@@ -20,8 +27,73 @@ describe('TemplateListItem', () => {
     jest.useRealTimers()
   })
 
+  // Define common mocks for all tests
+  const mocks: MockedResponse[] = [
+    {
+      request: {
+        query: GET_USER_ROLE
+      },
+      result: {
+        data: {
+          getUserRole: {
+            __typename: 'UserRole',
+            id: 'user-role-id',
+            userId: 'current-user-id',
+            roles: [Role.publisher]
+          }
+        }
+      }
+    },
+    {
+      request: {
+        query: GET_CURRENT_USER
+      },
+      result: {
+        data: {
+          me: {
+            __typename: 'User',
+            id: 'current-user-id',
+            email: 'current@example.com'
+          }
+        }
+      }
+    },
+    {
+      request: {
+        query: GET_JOURNEY_WITH_USER_ROLES,
+        variables: { id: 'template-id' }
+      },
+      result: {
+        data: {
+          journey: {
+            id: 'template-id',
+            userJourneys: []
+          }
+        }
+      }
+    },
+    {
+      request: {
+        query: GET_JOURNEY_WITH_BLOCKS,
+        variables: { id: 'template-id' }
+      },
+      result: {
+        data: {
+          journey: {
+            ...defaultTemplate,
+            blocks: []
+          }
+        }
+      }
+    }
+  ]
+
   it('should render', () => {
-    const { getByText } = render(<TemplateListItem journey={oldTemplate} />)
+    const { getByText } = render(
+      <MockedProvider mocks={mocks}>
+        <TemplateListItem journey={oldTemplate} />
+      </MockedProvider>
+    )
     expect(getByText('An Old Template Heading')).toBeInTheDocument()
     expect(getByText('1 year ago')).toBeInTheDocument()
     expect(
@@ -34,7 +106,9 @@ describe('TemplateListItem', () => {
 
   it('should show native and local language', () => {
     const { getByText } = render(
-      <TemplateListItem journey={descriptiveTemplate} />
+      <MockedProvider mocks={mocks}>
+        <TemplateListItem journey={descriptiveTemplate} />
+      </MockedProvider>
     )
     expect(getByText('普通話 (Chinese, Mandarin)')).toBeInTheDocument()
   })
@@ -59,12 +133,20 @@ describe('TemplateListItem', () => {
         ]
       }
     }
-    const { getByText } = render(<TemplateListItem journey={template} />)
+    const { getByText } = render(
+      <MockedProvider mocks={mocks}>
+        <TemplateListItem journey={template} />
+      </MockedProvider>
+    )
     expect(getByText('English')).toBeInTheDocument()
   })
 
   it('should link to template details', () => {
-    const { getByRole } = render(<TemplateListItem journey={defaultTemplate} />)
+    const { getByRole } = render(
+      <MockedProvider mocks={mocks}>
+        <TemplateListItem journey={defaultTemplate} />
+      </MockedProvider>
+    )
     expect(getByRole('link')).toHaveAttribute('href', '/publisher/template-id')
   })
 })

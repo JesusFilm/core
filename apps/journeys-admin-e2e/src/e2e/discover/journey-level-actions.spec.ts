@@ -30,20 +30,34 @@ test.describe('Journey level actions', () => {
     await loginPage.logInWithCreatedNewUser(userEmail) // login as registered user
   })
 
-  // Discover page -> Existing journey -> Edit
-  test('Edit existing journey', async ({ page }) => {
+  // Discover page -> Existing journey -> Edit Details
+  test('Edit existing journey from inside journey', async ({ page }) => {
+    const journeyLevelActions = new JourneyLevelActions(page)
+    const journeyPage = new JourneyPage(page)
+    const journeyName = await journeyPage.getJourneyName()
+
+    await journeyPage.clickCreateCustomJourney() // click the create custom journey button
+    await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
+    await journeyLevelActions.selectCreatedJourney(journeyName) // clicking on the created journey in the journey list
+    await journeyPage.clickThreeDotBtnOfCustomJourney() // clicking on the three dot at top right corner of the custom journey page
+    await journeyPage.clickEditDetailsInThreeDotOptions() // clicking on the title option of the three dot options
+    await journeyLevelActions.enterTitle() // renaming the title on the title field in the 'edit title' popup
+    await journeyPage.clickSaveBtn() // clicking on save button in the 'edit title' popup
+    await journeyPage.backIcon() // clicking on the back icon in the custom jouney page
+    await journeyLevelActions.verifyJourneyRenamedInActiveList() // verifying the journey is renamed and upadted in the journey list
+  })
+
+  // Discover page -> Edit Details
+  test('Edit existing journey from journey list', async ({ page }) => {
     const journeyLevelActions = new JourneyLevelActions(page)
     const journeyPage = new JourneyPage(page)
     const journeyName = await journeyPage.getJourneyName()
     await journeyPage.clickCreateCustomJourney() // click the create custom journey button
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
     await journeyLevelActions.clickThreeDotOfCreatedJourney(journeyName) // clicking on the three dot of created journey in the journey list
-    await journeyLevelActions.clickThreeDotOptions('Edit') // clicking on Edit option of the three dot options
-    await journeyPage.clickThreeDotBtnOfCustomJourney() // clicking on the three dot at top right corner of the custom journey page
-    await journeyPage.clickEditDetailsInThreeDotOptions() // clicking on the title option of the three dot options
+    await journeyLevelActions.clickThreeDotOptions('Edit Details') // clicking on Edit details option of the three dot options
     await journeyLevelActions.enterTitle() // renaming the title on the title field in the 'edit title' popup
     await journeyPage.clickSaveBtn() // clicking on save button in the 'edit title' popup
-    await journeyPage.backIcon() // clicking on the back icon in the custom jouney page
     await journeyLevelActions.verifyJourneyRenamedInActiveList() // verifying the journey is renamed and upadted in the journey list
   })
 
