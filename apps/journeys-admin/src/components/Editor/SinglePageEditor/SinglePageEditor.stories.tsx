@@ -94,7 +94,6 @@ const Template: StoryObj<
 export const Default = {
   ...Template,
   args: {
-    flowType: 'desktop',
     state: {
       activeSlide: ActiveSlide.JourneyFlow,
       activeContent: ActiveContent.Canvas,
@@ -106,7 +105,6 @@ export const Default = {
 export const Settings = {
   ...Template,
   args: {
-    flowType: 'desktop',
     state: {
       activeSlide: ActiveSlide.Content,
       activeContent: ActiveContent.Canvas,

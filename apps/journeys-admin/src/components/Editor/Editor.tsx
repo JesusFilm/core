@@ -58,11 +58,7 @@ export function Editor({
         <HotkeysProvider>
           <Hotkeys />
           <Toolbar user={user} />
-          {smDown ? (
-            <Slider flowType="mobile" />
-          ) : (
-            <SinglePageEditor flowType="desktop" />
-          )}
+          {smDown ? <Slider /> : <SinglePageEditor />}
           <Fab variant="mobile" />
         </HotkeysProvider>
       </EditorProvider>

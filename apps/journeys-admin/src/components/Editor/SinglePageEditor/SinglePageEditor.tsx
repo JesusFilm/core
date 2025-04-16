@@ -33,13 +33,7 @@ import {
   UPDATE_JOURNEY_FLOW_BACK_BUTTON_CLICKED
 } from '../Slider/Slider'
 
-interface SinglePageEditorProps {
-  flowType: 'mobile' | 'desktop'
-}
-
-export function SinglePageEditor({
-  flowType
-}: SinglePageEditorProps): ReactElement {
+export function SinglePageEditor(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
     state: { activeContent, activeSlide, selectedStep, steps },
@@ -75,6 +69,7 @@ export function SinglePageEditor({
 
   const showBackButtonHelp =
     data?.getJourneyProfile?.journeyFlowBackButtonClicked !== true
+
   function handleBack(): void {
     if (showBackButtonHelp === true) void updateBackButtonClick()
 
@@ -195,7 +190,7 @@ export function SinglePageEditor({
             })
         }}
       >
-        <JourneyFlow flowType={flowType} />
+        <JourneyFlow flowType="desktop" />
       </Box>
 
       <TransitionGroup
