@@ -1,6 +1,8 @@
 import Cors from 'cors'
+import FormData from 'form-data'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { verifyIdToken } from 'next-firebase-auth'
+import fetch from 'node-fetch'
 
 import { initAuth } from '../../src/libs/firebaseClient/initAuth'
 
@@ -9,30 +11,36 @@ const cors = Cors({
   methods: ['POST', 'GET', 'HEAD']
 })
 
-// cors example taken from: https://github.com/vercel/next.js/blob/canary/examples/api-routes-cors/pages/api/cors.ts
-function runMiddleware(
-  req: NextApiRequest,
-  res: NextApiResponse,
-  fn: typeof cors
-) {
-  return new Promise((resolve, reject) => {
-    fn(req, res, (result: any) => {
-      if (result instanceof Error) {
-        return reject(result)
-      }
-
-      return resolve(result)
-    })
+async function sleep(ms: number | undefined): Promise<void> {
+  return await new Promise((resolve) => {
+    setTimeout(resolve, ms)
   })
+}
+
+async function generateFacebookAppAccessToken(): Promise<string> {
+  const appId = process.env.FACEBOOK_APP_ID
+  const appSecret = process.env.FACEBOOK_APP_SECRET
+
+  if (!appId || !appSecret) {
+    throw new Error('Facebook App ID or App Secret not configured')
+  }
+
+  const response = await fetch(
+    `https://graph.facebook.com/oauth/access_token?client_id=${appId}&client_secret=${appSecret}&grant_type=client_credentials`
+  )
+
+  if (!response.ok) {
+    throw new Error(`Failed to generate access token: ${response.statusText}`)
+  }
+
+  const data = await response.json()
+  return data.access_token
 }
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> {
-  // Run the middleware
-  await runMiddleware(req, res, cors)
-
   // Set headers to prevent caching
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
   res.setHeader('Pragma', 'no-cache')
@@ -73,11 +81,52 @@ export default async function handler(
       ).toString()}`
     )
 
+    // 300ms required to invalidate edge caches
+    await sleep(300)
+
     const responseData = await response.json()
 
-    return res.status(response.status).json({
-      ...responseData
-    })
+    // Skip Facebook re-scrape in development environment
+    if (process.env.NODE_ENV === 'development')
+      return res.status(200).json({
+        ...responseData,
+        environment: 'development',
+        message: 'Facebook re-scrape skipped in development'
+      })
+
+    // Trigger Facebook re-scrape for staging and production
+    const journeyUrl =
+      hostname != null
+        ? `https://${hostname}/${hostname}/${slug}`
+        : `${process.env.NEXT_PUBLIC_JOURNEYS_URL}/home/${slug}`
+
+    try {
+      const fbAccessToken = await generateFacebookAppAccessToken()
+      const formData = new FormData()
+      formData.append('id', journeyUrl)
+      formData.append('scrape', 'true')
+
+      await fetch(
+        `https://graph.facebook.com/v19.0/?access_token=${fbAccessToken}`,
+        {
+          method: 'POST',
+          body: formData
+        }
+      )
+
+      return res.status(response.status).json({
+        ...responseData,
+        facebookScrape: true
+      })
+    } catch (fbError) {
+      return res.status(response.status).json({
+        ...responseData,
+        facebookError: {
+          message: fbError.message,
+          timestamp: new Date().toISOString()
+        }
+      })
+    }
   } catch (e) {
     return res.status(500).json({
       error: 'Error revalidating'
