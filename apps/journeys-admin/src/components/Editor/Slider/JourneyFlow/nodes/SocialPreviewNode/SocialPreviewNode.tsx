@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography'
 import isEmpty from 'lodash/isEmpty'
 import Image from 'next/image'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { OnConnect, ReactFlowStore, useStore } from 'reactflow'
 
 import {
@@ -38,6 +38,8 @@ const getOffset = (store: ReactFlowStore): number => {
   return slope + ORIGINAL_TOOLTIP_MARGIN - ARROW_OFFSET
 }
 
+const TOOLTIP_DURATION = 1500
+
 export function SocialPreviewNode(): ReactElement {
   const { journey } = useJourney()
   const updateEdge = useUpdateEdge()
@@ -49,6 +51,16 @@ export function SocialPreviewNode(): ReactElement {
     dispatch,
     state: { activeContent, activeSlide, showAnalytics }
   } = useEditor()
+
+  useEffect(() => {
+    const timeout = showTooltip
+      ? setTimeout(() => setShowTooltip(false), TOOLTIP_DURATION)
+      : undefined
+
+    return () => {
+      if (timeout != null) clearTimeout(timeout)
+    }
+  }, [showTooltip])
 
   function handleClick(): void {
     if (activeContent !== ActiveContent.Social) {
