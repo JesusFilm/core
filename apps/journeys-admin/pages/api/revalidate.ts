@@ -64,6 +64,7 @@ export default async function handler(
 
   const slug = req.query.slug?.toString()
   const hostname = req?.query?.hostname?.toString()
+  const path = `/${hostname ?? 'home'}/${req.query.slug as string}`
 
   if (slug == null) return res.status(400).json({ error: 'Missing Slug' })
 
@@ -97,8 +98,8 @@ export default async function handler(
     // Trigger Facebook re-scrape for staging and production
     const journeyUrl =
       hostname != null
-        ? `https://${hostname}/${hostname}/${slug}`
-        : `${process.env.NEXT_PUBLIC_JOURNEYS_URL}/home/${slug}`
+        ? `https://${hostname}${path}`
+        : `${process.env.JOURNEYS_URL}${path}`
 
     try {
       const fbAccessToken = await generateFacebookAppAccessToken()
