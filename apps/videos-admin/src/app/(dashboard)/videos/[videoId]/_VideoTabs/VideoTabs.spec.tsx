@@ -21,7 +21,8 @@ jest.mock('next/link', () => {
 jest.mock('next/navigation', () => ({
   useSearchParams: () => ({
     get: jest.fn()
-  })
+  }),
+  usePathname: () => '/videos/video-123'
 }))
 
 // Mock getVideoChildrenLabel
@@ -50,6 +51,13 @@ const mockFeatureFilmData = {
     label: 'featureFilm',
     variantLanguagesCount: 3,
     videoEditions: [{ id: 'edition-1' }, { id: 'edition-2' }],
+    children: [
+      { id: 'child-1' },
+      { id: 'child-2' },
+      { id: 'child-3' },
+      { id: 'child-4' },
+      { id: 'child-5' }
+    ],
     childrenCount: 5
   }
 }
@@ -60,6 +68,18 @@ const mockCollectionData = {
     label: 'collection',
     variantLanguagesCount: 2,
     videoEditions: [{ id: 'edition-1' }],
+    children: [
+      { id: 'child-1' },
+      { id: 'child-2' },
+      { id: 'child-3' },
+      { id: 'child-4' },
+      { id: 'child-5' },
+      { id: 'child-6' },
+      { id: 'child-7' },
+      { id: 'child-8' },
+      { id: 'child-9' },
+      { id: 'child-10' }
+    ],
     childrenCount: 10
   }
 }
@@ -70,6 +90,7 @@ const mockOtherTypeData = {
     label: 'other',
     variantLanguagesCount: 1,
     videoEditions: [],
+    children: [],
     childrenCount: 0
   }
 }

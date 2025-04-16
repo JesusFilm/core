@@ -56,21 +56,7 @@ export default function DeleteChild({
     variables: { id: videoId }
   })
   const returnUrl = `/videos/${videoId}/children`
-  const [removeVideoChild, { loading }] = useMutation(REMOVE_VIDEO_CHILD, {
-    onCompleted: () => {
-      enqueueSnackbar('Successfully removed child video.', {
-        variant: 'success'
-      })
-      router.push(returnUrl, {
-        scroll: false
-      })
-    },
-    onError: () => {
-      enqueueSnackbar('Failed to remove child video.', {
-        variant: 'error'
-      })
-    }
-  })
+  const [removeVideoChild, { loading }] = useMutation(REMOVE_VIDEO_CHILD)
 
   const handleRemoveChild = async (): Promise<void> => {
     // Remove child by updating the childIds array without the removed child
@@ -84,6 +70,19 @@ export default function DeleteChild({
           id: videoId,
           childIds: updatedChildIds
         }
+      },
+      onCompleted: () => {
+        enqueueSnackbar('Successfully removed child video.', {
+          variant: 'success'
+        })
+        router.push(returnUrl, {
+          scroll: false
+        })
+      },
+      onError: () => {
+        enqueueSnackbar('Failed to remove child video.', {
+          variant: 'error'
+        })
       }
     })
   }

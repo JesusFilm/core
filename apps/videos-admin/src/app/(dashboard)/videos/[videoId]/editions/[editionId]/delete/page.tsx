@@ -31,15 +31,23 @@ export default function DeleteEditionPage({
 
   const returnUrl = `/videos/${videoId}/editions`
   const handleRemoveEdition = async () => {
-    await deleteEdition({ variables: { id: editionId } })
-    enqueueSnackbar('Edition deleted successfully.', {
-      variant: 'success'
-    })
-    router.push(returnUrl, {
-      scroll: false
+    await deleteEdition({
+      variables: { id: editionId },
+      onCompleted: () => {
+        enqueueSnackbar('Edition deleted successfully.', {
+          variant: 'success'
+        })
+        router.push(returnUrl, {
+          scroll: false
+        })
+      },
+      onError: () => {
+        enqueueSnackbar('Failed to delete edition.', {
+          variant: 'error'
+        })
+      }
     })
   }
-
   return (
     <Dialog
       open={true}

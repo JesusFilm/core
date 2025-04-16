@@ -5,8 +5,8 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import { graphql } from 'gql.tada'
 import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
-import { ReactElement, useEffect, useState } from 'react'
+import { usePathname, useSearchParams } from 'next/navigation'
+import { ReactElement, useEffect } from 'react'
 
 import { getVideoChildrenLabel } from '../../../../../libs/getVideoChildrenLabel'
 
@@ -21,7 +21,9 @@ const GET_TAB_DATA = graphql(`
       videoEditions {
         id
       }
-      childrenCount
+      children {
+        id
+      }
     }
   }
 `)
@@ -36,7 +38,7 @@ export function VideoTabView({
   videoId
 }: VideoTabViewProps): ReactElement {
   const params = useSearchParams()
-  const [reloadOnParamChange, setReloadOnParamChange] = useState(false)
+  const pathname = usePathname()
   const { data, refetch } = useQuery(GET_TAB_DATA, {
     variables: {
       id: videoId
@@ -74,14 +76,17 @@ export function VideoTabView({
     tabs.splice(1, 0, {
       label: 'Children',
       value: 'children',
-      count: data?.adminVideo.childrenCount,
+      count: data?.adminVideo.children.length ?? 0,
       href: `/videos/${videoId}/children`
     })
   }
   useEffect(() => {
-    if (reloadOnParamChange) void refetch()
-    setReloadOnParamChange(params?.get('update') === 'information')
+    if (params?.get('update') === 'information') void refetch()
   }, [params])
+
+  useEffect(() => {
+    void refetch()
+  }, [pathname])
   return (
     <Tabs value={currentTab} aria-label="video-edit-tabs">
       {tabs.map((tab) => (

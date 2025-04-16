@@ -62,7 +62,12 @@ describe('DeleteEditionPage', () => {
   })
 
   it('calls the mutation and redirects when confirmed', async () => {
-    const mockDeleteMutation = jest.fn()
+    const mockDeleteMutation = jest.fn().mockImplementation((options) => {
+      // Call onCompleted callback immediately to simulate successful deletion
+      if (options.onCompleted) {
+        options.onCompleted()
+      }
+    })
     const mockRouter = { push: jest.fn() }
 
     require('@apollo/client').useMutation.mockReturnValue([
@@ -84,9 +89,11 @@ describe('DeleteEditionPage', () => {
     await user.click(screen.getByTestId('submit-button'))
 
     await waitFor(() => {
-      expect(mockDeleteMutation).toHaveBeenCalledWith({
-        variables: { id: 'edition-123' }
-      })
+      expect(mockDeleteMutation).toHaveBeenCalledWith(
+        expect.objectContaining({
+          variables: { id: 'edition-123' }
+        })
+      )
       expect(mockRouter.push).toHaveBeenCalledWith(
         '/videos/video-123/editions',
         {

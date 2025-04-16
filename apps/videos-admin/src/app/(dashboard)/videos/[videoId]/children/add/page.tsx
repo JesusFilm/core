@@ -48,7 +48,7 @@ export default function AddChildren({
     variables: { id: videoId }
   })
 
-  const returnUrl = `/videos/${videoId}`
+  const returnUrl = `/videos/${videoId}/children`
 
   const [updateVideoChildrenOrder] = useMutation(UPDATE_VIDEO_CHILDREN_ORDER, {
     onCompleted: () => {
