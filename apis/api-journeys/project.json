@@ -185,6 +185,18 @@
       "options": {
         "command": "codecov -f coverage/apis/api-journeys/cobertura-coverage.xml -F apps.api-journeys"
       }
+    },
+    "update-submit-buttons": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-journeys/src/scripts/updateSubmitButtons.ts"
+      }
+    },
+    "add-submit-buttons": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-journeys/src/scripts/addSubmitButtons.ts"
+      }
     }
   }
 }
