@@ -1,7 +1,7 @@
 import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
 import { alpha } from '@mui/material/styles'
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 import { NodeProps, useUpdateNodeInternals } from 'reactflow'
 
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
@@ -23,10 +23,10 @@ export function StepBlockNode({
   dragging
 }: NodeProps): ReactElement {
   const {
-    state: { steps, selectedStep, activeContent, showAnalytics }
+    state: { steps, selectedStep, activeContent, showAnalytics, hoveredStep },
+    dispatch
   } = useEditor()
   const { journey } = useJourney()
-  const [hovered, setHovered] = useState(false)
 
   const updateNodeInternals = useUpdateNodeInternals()
 
@@ -37,6 +37,8 @@ export function StepBlockNode({
   const isSelected =
     activeContent === ActiveContent.Canvas && selectedStep?.id === step?.id
 
+  const isHovered = hoveredStep?.id === step?.id
+
   const isMenuCard = journey?.menuStepBlock?.id === id
 
   const targetHandleVariant = isMenuCard
@@ -45,8 +47,18 @@ export function StepBlockNode({
       ? HandleVariant.Disabled
       : HandleVariant.Shown
 
-  const handleMouseEnter = () => setHovered(true)
-  const handleMouseLeave = () => setHovered(false)
+  const handleMouseEnter = () => {
+    dispatch({
+      type: 'SetHoveredStepAction',
+      hoveredStep: step
+    })
+  }
+  const handleMouseLeave = () => {
+    dispatch({
+      type: 'SetHoveredStepAction',
+      hoveredStep: undefined
+    })
+  }
 
   return step != null ? (
     <Stack sx={{ position: 'relative' }}>
@@ -75,7 +87,7 @@ export function StepBlockNode({
       >
         {showAnalytics !== true && (
           <StepBlockNodeMenu
-            in={isSelected || hovered}
+            in={isSelected || isHovered}
             className="fab"
             step={step}
             xPos={xPos}
