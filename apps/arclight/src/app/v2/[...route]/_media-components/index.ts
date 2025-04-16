@@ -120,12 +120,72 @@ const QuerySchema = z.object({
   ids: z.string().optional()
 })
 
+export const MediaComponentSchema = z.object({
+  mediaComponentId: z.string(),
+  componentType: z.string(),
+  subType: z.string(),
+  contentType: z.string(),
+  imageUrls: z.object({
+    thumbnail: z.string(),
+    videoStill: z.string(),
+    mobileCinematicHigh: z.string(),
+    mobileCinematicLow: z.string(),
+    mobileCinematicVeryLow: z.string()
+  }),
+  lengthInMilliseconds: z.number(),
+  containsCount: z.number(),
+  isDownloadable: z.boolean(),
+  downloadSizes: z.object({
+    approximateSmallDownloadSizeInBytes: z.number(),
+    approximateLargeDownloadSizeInBytes: z.number()
+  }),
+  bibleCitations: z.array(
+    z.object({
+      osisBibleBook: z.string(),
+      chapterStart: z.number().nullable(),
+      verseStart: z.number().nullable(),
+      chapterEnd: z.number().nullable(),
+      verseEnd: z.number().nullable()
+    })
+  ),
+  primaryLanguageId: z.number(),
+  title: z.string(),
+  shortDescription: z.string(),
+  longDescription: z.string(),
+  studyQuestions: z.array(z.string()),
+  metadataLanguageTag: z.string()
+})
+
 const ResponseSchema = z.object({
   page: z.number(),
   limit: z.number(),
   pages: z.number(),
   total: z.number(),
-  apiSessionId: z.string()
+  apiSessionId: z.string(),
+  _links: z.object({
+    self: z.object({
+      href: z.string()
+    }),
+    first: z.object({
+      href: z.string()
+    }),
+    last: z.object({
+      href: z.string()
+    }),
+    next: z
+      .object({
+        href: z.string()
+      })
+      .optional(),
+    previous: z
+      .object({
+        href: z.string()
+      })
+      .optional()
+  }),
+  _embedded: z.object({
+    mediaComponents: z.array(MediaComponentSchema)
+  })
 })
 
 const route = createRoute({
@@ -193,9 +253,6 @@ mediaComponents.openapi(route, async (c) => {
   ])
 
   const response = await getWithStaleCache(cacheKey, async () => {
-    let videos: { data: { videos: { id: string }[] } }
-    let total: number
-
     try {
       const { data } = await getApolloClient().query<
         ResultOf<typeof GET_VIDEOS_WITH_FALLBACK>
@@ -211,142 +268,151 @@ mediaComponents.openapi(route, async (c) => {
           ...(ids != null ? { ids } : {})
         }
       })
-      videos = data.videos
-      total = data.videosCount
-    } catch (err) {
-      console.error('Failed to get videos with fallback', err)
-      return null
-    }
+      const videos = data.videos
+      const total = data.videosCount
 
-    const queryObject = {
-      ...c.req.query(),
-      page: page.toString(),
-      limit: limit.toString()
-    }
+      const queryObject = {
+        ...c.req.query(),
+        page: page.toString(),
+        limit: limit.toString()
+      }
 
-    const filteredVideos = videos.filter(
-      (video) =>
-        video.title[0]?.value != null ||
-        video.fallbackTitle[0]?.value != null ||
-        video.snippet[0]?.value != null ||
-        video.description[0]?.value != null
-    )
-    const lastPage =
-      Math.ceil(total / limit) === 0 ? 1 : Math.ceil(total / limit)
+      const filteredVideos = videos.filter(
+        (video) =>
+          video.title[0]?.value != null ||
+          video.fallbackTitle[0]?.value != null ||
+          video.snippet[0]?.value != null ||
+          video.description[0]?.value != null
+      )
+      const lastPage =
+        Math.ceil(total / limit) === 0 ? 1 : Math.ceil(total / limit)
 
-    const mediaComponents = filteredVideos.map((video) => {
-      const isDownloadable =
-        video.label === 'collection' || video.label === 'series'
-          ? false
-          : (video.variant?.downloadable ?? false)
-      return {
-        mediaComponentId: video.id,
-        componentType: video.variant?.hls != null ? 'content' : 'container',
-        subType: video.label,
-        contentType: video.variant?.hls != null ? 'video' : 'none',
-        imageUrls: {
-          thumbnail:
-            video.images.find((image) => image.thumbnail != null)?.thumbnail ??
-            '',
-          videoStill:
-            video.images.find((image) => image.videoStill != null)
-              ?.videoStill ?? '',
-          mobileCinematicHigh:
-            video.images.find((image) => image.mobileCinematicHigh != null)
-              ?.mobileCinematicHigh ?? '',
-          mobileCinematicLow:
-            video.images.find((image) => image.mobileCinematicLow != null)
-              ?.mobileCinematicLow ?? '',
-          mobileCinematicVeryLow:
-            video.images.find((image) => image.mobileCinematicVeryLow != null)
-              ?.mobileCinematicVeryLow ?? ''
-        },
-        lengthInMilliseconds: video.variant?.lengthInMilliseconds ?? 0,
-        containsCount: video.childrenCount,
-        isDownloadable,
-        downloadSizes: isDownloadable
-          ? {
-              approximateSmallDownloadSizeInBytes:
-                video.variant?.downloads?.find(
+      const mediaComponents = filteredVideos.map((video) => {
+        const isDownloadable =
+          video.label === 'collection' || video.label === 'series'
+            ? false
+            : (video.variant?.downloadable ?? false)
+        return {
+          mediaComponentId: video.id,
+          componentType: video.variant?.hls != null ? 'content' : 'container',
+          subType: video.label,
+          contentType: video.variant?.hls != null ? 'video' : 'none',
+          imageUrls: {
+            thumbnail:
+              video.images.find((image) => image.thumbnail != null)
+                ?.thumbnail ?? '',
+            videoStill:
+              video.images.find((image) => image.videoStill != null)
+                ?.videoStill ?? '',
+            mobileCinematicHigh:
+              video.images.find((image) => image.mobileCinematicHigh != null)
+                ?.mobileCinematicHigh ?? '',
+            mobileCinematicLow:
+              video.images.find((image) => image.mobileCinematicLow != null)
+                ?.mobileCinematicLow ?? '',
+            mobileCinematicVeryLow:
+              video.images.find((image) => image.mobileCinematicVeryLow != null)
+                ?.mobileCinematicVeryLow ?? ''
+          },
+          lengthInMilliseconds: video.variant?.lengthInMilliseconds ?? 0,
+          containsCount: video.childrenCount,
+          isDownloadable,
+          downloadSizes: {
+            approximateSmallDownloadSizeInBytes: isDownloadable
+              ? (video.variant?.downloads?.find(
                   ({ quality }) => quality === 'low'
-                )?.size ?? 0,
-              approximateLargeDownloadSizeInBytes:
-                video.variant?.downloads?.find(
+                )?.size ?? 0)
+              : 0,
+            approximateLargeDownloadSizeInBytes: isDownloadable
+              ? (video.variant?.downloads?.find(
                   ({ quality }) => quality === 'high'
-                )?.size ?? 0
+                )?.size ?? 0)
+              : 0
+          },
+          bibleCitations: video.bibleCitations.map((citation) => ({
+            osisBibleBook: citation.osisId,
+            chapterStart: citation.chapterStart,
+            verseStart: citation.verseStart,
+            chapterEnd: citation.chapterEnd,
+            verseEnd: citation.verseEnd
+          })),
+          primaryLanguageId: Number(video.primaryLanguageId),
+          title: video.title[0]?.value ?? video.fallbackTitle[0]?.value ?? '',
+          shortDescription:
+            video.snippet[0]?.value ?? video.fallbackSnippet[0]?.value ?? '',
+          longDescription:
+            video.description[0]?.value ??
+            video.fallbackDescription[0]?.value ??
+            '',
+          studyQuestions: video.studyQuestions.map(
+            (question) => question.value
+          ),
+          metadataLanguageTag: video.title[0]?.language.bcp47 ?? 'en',
+          ...(expand.includes('languageIds')
+            ? {
+                languageIds: video.availableLanguages.map((languageId) =>
+                  typeof languageId === 'string'
+                    ? Number(languageId)
+                    : languageId
+                )
+              }
+            : {})
+        }
+      })
+
+      const queryString = new URLSearchParams(queryObject).toString()
+      const firstQueryString = new URLSearchParams({
+        ...queryObject,
+        page: '1'
+      }).toString()
+      const lastQueryString = new URLSearchParams({
+        ...queryObject,
+        page: lastPage.toString()
+      }).toString()
+      const nextQueryString = new URLSearchParams({
+        ...queryObject,
+        page: (page + 1).toString()
+      }).toString()
+      const previousQueryString = new URLSearchParams({
+        ...queryObject,
+        page: (page - 1).toString()
+      }).toString()
+
+      return {
+        page,
+        limit,
+        pages: lastPage,
+        total,
+        apiSessionId: '',
+        _links: {
+          self: {
+            href: `http://api.arclight.org/v2/media-components?${queryString}`
+          },
+          first: {
+            href: `http://api.arclight.org/v2/media-components?${firstQueryString}`
+          },
+          last: {
+            href: `http://api.arclight.org/v2/media-components?${lastQueryString}`
+          },
+          ...(page < lastPage && {
+            next: {
+              href: `http://api.arclight.org/v2/media-components?${nextQueryString}`
             }
-          : {},
-        bibleCitations: video.bibleCitations.map((citation) => ({
-          osisBibleBook: citation.osisId,
-          chapterStart: citation.chapterStart,
-          verseStart: citation.verseStart,
-          chapterEnd: citation.chapterEnd,
-          verseEnd: citation.verseEnd
-        })),
-        primaryLanguageId: Number(video.primaryLanguageId),
-        title: video.title[0]?.value ?? video.fallbackTitle[0]?.value ?? '',
-        shortDescription:
-          video.snippet[0]?.value ?? video.fallbackSnippet[0]?.value ?? '',
-        longDescription:
-          video.description[0]?.value ??
-          video.fallbackDescription[0]?.value ??
-          '',
-        studyQuestions: video.studyQuestions.map((question) => question.value),
-        metadataLanguageTag: video.title[0]?.language.bcp47 ?? 'en',
-        ...(expand.includes('languageIds')
-          ? { languageIds: video.availableLanguages.map((id) => Number(id)) }
-          : {})
+          }),
+          ...(page > 1 && {
+            previous: {
+              href: `http://api.arclight.org/v2/media-components?${previousQueryString}`
+            }
+          })
+        },
+        _embedded: {
+          mediaComponents
+        }
       }
-    })
-
-    const queryString = new URLSearchParams(queryObject).toString()
-    const firstQueryString = new URLSearchParams({
-      ...queryObject,
-      page: '1'
-    }).toString()
-    const lastQueryString = new URLSearchParams({
-      ...queryObject,
-      page: lastPage.toString()
-    }).toString()
-    const nextQueryString = new URLSearchParams({
-      ...queryObject,
-      page: (page + 1).toString()
-    }).toString()
-    const previousQueryString = new URLSearchParams({
-      ...queryObject,
-      page: (page - 1).toString()
-    }).toString()
-
-    return {
-      page,
-      limit,
-      pages: lastPage,
-      total,
-      apiSessionId: '',
-      _links: {
-        self: {
-          href: `http://api.arclight.org/v2/media-components?${queryString}`
-        },
-        first: {
-          href: `http://api.arclight.org/v2/media-components?${firstQueryString}`
-        },
-        last: {
-          href: `http://api.arclight.org/v2/media-components?${lastQueryString}`
-        },
-        ...(page < lastPage && {
-          next: {
-            href: `http://api.arclight.org/v2/media-components?${nextQueryString}`
-          }
-        }),
-        ...(page > 1 && {
-          previous: {
-            href: `http://api.arclight.org/v2/media-components?${previousQueryString}`
-          }
-        })
-      },
-      _embedded: {
-        mediaComponents
-      }
+    } catch (err) {
+      throw new HTTPException(500, {
+        message: `Failed to get videos with fallback: ${err instanceof Error ? err.message : String(err)}`
+      })
     }
   })
 
