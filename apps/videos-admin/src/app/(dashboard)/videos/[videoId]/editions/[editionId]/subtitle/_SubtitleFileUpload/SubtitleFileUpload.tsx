@@ -13,11 +13,11 @@ export function SubtitleFileUpload({
   subtitle?: {
     vttSrc: string | null
     srtSrc: string | null
-    vttAsset: {
+    vttAsset?: {
       id: string
       originalFilename: string | null
     } | null
-    srtAsset: {
+    srtAsset?: {
       id: string
       originalFilename: string | null
     } | null
