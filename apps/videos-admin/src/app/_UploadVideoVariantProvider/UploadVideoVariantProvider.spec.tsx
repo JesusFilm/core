@@ -181,7 +181,9 @@ const initialStateForTests = {
   edition: null,
   languageId: null,
   languageSlug: null,
-  videoId: null
+  videoId: null,
+  published: null,
+  onComplete: undefined
 }
 
 const mockEnqueueSnackbar = jest.fn()
@@ -248,7 +250,8 @@ describe('UploadVideoVariantContext', () => {
           'video-id',
           'language-id',
           'en',
-          'base'
+          'base',
+          true
         )
       })
 
@@ -322,7 +325,8 @@ describe('UploadVideoVariantContext', () => {
           'video-id',
           'language-id',
           'en',
-          'base'
+          'base',
+          true
         )
       })
 
@@ -362,7 +366,8 @@ describe('UploadVideoVariantContext', () => {
           'video-id',
           'language-id',
           'en',
-          'base'
+          'base',
+          true
         )
       })
 
@@ -399,7 +404,8 @@ describe('UploadVideoVariantContext', () => {
           'video-id',
           'language-id',
           'en',
-          'base'
+          'base',
+          true
         )
       })
 
@@ -413,6 +419,7 @@ describe('UploadVideoVariantContext', () => {
           languageSlug: null,
           muxVideoId: null,
           onComplete: undefined,
+          published: null,
           uploadProgress: 0,
           videoId: null
         })
@@ -462,7 +469,8 @@ describe('UploadVideoVariantContext', () => {
           'video-id',
           'language-id',
           'en',
-          'base'
+          'base',
+          true
         )
       })
 
@@ -525,7 +533,8 @@ describe('UploadVideoVariantContext', () => {
           'video-id',
           'language-id',
           'en',
-          'base'
+          'base',
+          true
         )
       })
 

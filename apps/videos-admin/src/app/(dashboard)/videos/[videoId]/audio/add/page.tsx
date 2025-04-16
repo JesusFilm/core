@@ -57,7 +57,8 @@ const validationSchema = object().shape({
 const initialValues: FormikValues = {
   edition: '',
   language: null,
-  file: null
+  file: null,
+  published: 'unpublished'
 }
 
 const GET_ADMIN_VIDEO_VARIANTS = graphql(`

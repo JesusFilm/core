@@ -112,6 +112,46 @@ jest.mock('@mui/material/IconButton', () => ({
   )
 }))
 
+// Mock FormSelectField component
+jest.mock('../../../../../../components/FormSelectField', () => ({
+  FormSelectField: ({ children, name, label, options, onChange, sx }) => (
+    <div data-testid="mock-form-select-field" data-name={name}>
+      <label data-testid="mock-form-select-label">{label}</label>
+      <select data-testid="mock-form-select" onChange={onChange}>
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+      {children}
+    </div>
+  )
+}))
+
+// Mock MenuItem
+jest.mock('@mui/material/MenuItem', () => ({
+  __esModule: true,
+  default: ({ children, value }) => (
+    <option data-testid="mock-menu-item" value={value}>
+      {children}
+    </option>
+  )
+}))
+
+// Mock CancelButton
+jest.mock('../../../../../../components/CancelButton', () => ({
+  CancelButton: ({ show, handleCancel }) => (
+    <button
+      data-testid="mock-cancel-button"
+      onClick={handleCancel}
+      style={{ display: show ? 'block' : 'none' }}
+    >
+      Cancel
+    </button>
+  )
+}))
+
 // Mock useMediaQuery
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,

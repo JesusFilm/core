@@ -207,7 +207,7 @@ describe('AddAudioLanguageDialog', () => {
     })
   })
 
-  it('renders the dialog with form elements', async () => {
+  it('should render the dialog with form elements', async () => {
     render(
       <SnackbarProvider>
         <MockedProvider>
@@ -222,13 +222,14 @@ describe('AddAudioLanguageDialog', () => {
     )
 
     // Form elements should be visible
-    expect(screen.getByTestId('mui-select')).toBeInTheDocument()
+    expect(screen.getAllByTestId('mui-select')[0]).toBeInTheDocument()
     expect(screen.getByTestId('language-input')).toBeInTheDocument()
+    expect(screen.getByLabelText('Status')).toBeInTheDocument()
     expect(screen.getByTestId('AudioLanguageFileUpload')).toBeInTheDocument()
     expect(screen.getByTestId('submit-button')).toBeDisabled()
   })
 
-  it('displays available editions from the query', async () => {
+  it('should display available editions from the query', async () => {
     render(
       <SnackbarProvider>
         <MockedProvider>
@@ -238,13 +239,14 @@ describe('AddAudioLanguageDialog', () => {
     )
 
     // Edition options should be displayed in the select
-    expect(screen.getByTestId('select-options')).toHaveTextContent('Standard')
-    expect(screen.getByTestId('select-options')).toHaveTextContent(
-      "Director's Cut"
-    )
+    const selectOptions = screen.getAllByTestId('select-options')
+    const editionSelect = selectOptions[0]
+
+    expect(editionSelect).toHaveTextContent('Standard')
+    expect(editionSelect).toHaveTextContent("Director's Cut")
   })
 
-  it('handles form interaction', async () => {
+  it('should handle form interaction', async () => {
     render(
       <SnackbarProvider>
         <MockedProvider>
@@ -256,7 +258,9 @@ describe('AddAudioLanguageDialog', () => {
     // Fill out the form
     // First set the edition
     await act(async () => {
-      fireEvent.change(screen.getByTestId('mui-select'), {
+      const selects = screen.getAllByTestId('mui-select')
+      const editionSelect = selects[0]
+      fireEvent.change(editionSelect, {
         target: { value: 'Standard' }
       })
     })
@@ -266,13 +270,22 @@ describe('AddAudioLanguageDialog', () => {
       fireEvent.change(screen.getByTestId('language-input'))
     })
 
+    // Set the status
+    await act(async () => {
+      const selects = screen.getAllByTestId('mui-select')
+      const statusSelect = selects[1]
+      fireEvent.change(statusSelect, {
+        target: { value: 'published' }
+      })
+    })
+
     // Finally upload a file
     await act(async () => {
       fireEvent.change(screen.getByTestId('file-input'))
     })
   })
 
-  it('disables form controls during upload', async () => {
+  it('should disable form controls during upload', async () => {
     ;(useUploadVideoVariant as jest.Mock).mockReturnValue({
       uploadState: {
         isUploading: true,
@@ -293,14 +306,18 @@ describe('AddAudioLanguageDialog', () => {
     )
 
     // Form elements should be disabled
-    expect(screen.getByTestId('mui-select')).toBeDisabled()
+    const selects = screen.getAllByTestId('mui-select')
+    const editionSelect = selects[0]
+
+    expect(editionSelect).toBeDisabled()
     expect(screen.getByTestId('language-input')).toBeDisabled()
+    expect(screen.getByLabelText('Status')).toBeDisabled()
     expect(screen.getByTestId('submit-button')).toBeDisabled()
     // Close button should be disabled
     expect(screen.getByTestId('close-button')).toBeDisabled()
   })
 
-  it('handles upload errors', async () => {
+  it('should handle upload errors', async () => {
     ;(useUploadVideoVariant as jest.Mock).mockReturnValue({
       uploadState: {
         isUploading: false,
@@ -326,7 +343,7 @@ describe('AddAudioLanguageDialog', () => {
     )
   })
 
-  it('navigates back on dialog close', async () => {
+  it('should navigate back on dialog close', async () => {
     const mockRouterPush = jest.fn()
     jest
       .spyOn(require('next/navigation'), 'useRouter')
@@ -352,7 +369,7 @@ describe('AddAudioLanguageDialog', () => {
     )
   })
 
-  it('prevents dialog close during upload', async () => {
+  it('should prevent dialog close during upload', async () => {
     const mockRouterPush = jest.fn()
     jest
       .spyOn(require('next/navigation'), 'useRouter')
