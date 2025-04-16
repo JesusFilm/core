@@ -34,6 +34,7 @@ const createR2AssetMock = getCreateR2AssetMock({
   fileName: `video-id/variants/language-id/videos/uuidv4/language-id_video-id.mp4`,
   contentType: 'video/mp4',
   contentLength: 4,
+  originalFilename: 'test.mp4',
   videoId: 'video-id'
 })
 
@@ -118,6 +119,7 @@ const createR2AssetErrorMock = {
       fileName: `video-id/variants/language-id/videos/uuidv4/language-id_video-id.mp4`,
       contentType: 'video/mp4',
       contentLength: 4,
+      originalFilename: 'test.mp4',
       videoId: 'video-id'
     }).request.query,
     variables: {
@@ -125,6 +127,7 @@ const createR2AssetErrorMock = {
         fileName: `video-id/variants/language-id/videos/uuidv4/language-id_video-id.mp4`,
         contentType: 'video/mp4',
         contentLength: 4,
+        originalFilename: 'test.mp4',
         videoId: 'video-id'
       }
     }
@@ -134,6 +137,7 @@ const createR2AssetErrorMock = {
       cloudflareR2Create: {
         id: 'r2-id',
         fileName: 'test.mp4',
+        originalFilename: 'test.mp4',
         uploadUrl: null,
         publicUrl: null
       }

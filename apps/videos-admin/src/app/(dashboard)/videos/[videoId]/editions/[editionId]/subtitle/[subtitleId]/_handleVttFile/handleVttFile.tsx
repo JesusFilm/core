@@ -44,6 +44,7 @@ export async function handleVttFile({
       input: {
         videoId: videoId,
         fileName: fileName,
+        originalFilename: vttFile.name,
         contentType: vttFile.type,
         contentLength: vttFile.size
       }

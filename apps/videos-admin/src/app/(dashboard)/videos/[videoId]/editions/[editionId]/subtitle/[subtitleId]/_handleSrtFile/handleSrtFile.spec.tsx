@@ -40,6 +40,7 @@ describe('handleSrtFile', () => {
         input: {
           videoId: mockVideo.id,
           fileName: expect.any(String),
+          originalFilename: mockFile.name,
           contentType: mockFile.type,
           contentLength: mockFile.size
         }

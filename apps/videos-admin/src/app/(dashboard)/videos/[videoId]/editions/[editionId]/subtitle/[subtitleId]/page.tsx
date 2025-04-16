@@ -31,9 +31,11 @@ const GET_SUBTITLE = graphql(`
         srtSrc
         vttAsset {
           id
+          originalFilename
         }
         srtAsset {
           id
+          originalFilename
         }
         vttVersion
         srtVersion
@@ -68,9 +70,11 @@ const UPDATE_VIDEO_SUBTITLE = graphql(`
       }
       vttAsset {
         id
+        originalFilename
       }
       srtAsset {
         id
+        originalFilename
       }
       vttVersion
       srtVersion

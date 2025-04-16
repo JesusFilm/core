@@ -44,6 +44,7 @@ export async function handleSrtFile({
       input: {
         videoId: videoId,
         fileName: fileName,
+        originalFilename: srtFile.name,
         contentType: srtFile.type,
         contentLength: srtFile.size
       }

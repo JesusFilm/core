@@ -13,6 +13,14 @@ export function SubtitleFileUpload({
   subtitle?: {
     vttSrc: string | null
     srtSrc: string | null
+    vttAsset: {
+      id: string
+      originalFilename: string | null
+    } | null
+    srtAsset: {
+      id: string
+      originalFilename: string | null
+    } | null
   }
 }) {
   const [vttField, _vttMeta, vttHelpers] = useField<File | null>('vttFile')
@@ -83,14 +91,22 @@ export function SubtitleFileUpload({
 
       {vttField.value == null && subtitle?.vttSrc && (
         <LinkFile
-          name={subtitle.vttSrc.split('/').pop() ?? ''}
+          name={
+            subtitle.vttAsset?.originalFilename ??
+            subtitle.vttSrc.split('/').pop() ??
+            ''
+          }
           link={subtitle.vttSrc}
         />
       )}
 
       {srtField.value == null && subtitle?.srtSrc && (
         <LinkFile
-          name={subtitle.srtSrc.split('/').pop() ?? ''}
+          name={
+            subtitle.srtAsset?.originalFilename ??
+            subtitle.srtSrc.split('/').pop() ??
+            ''
+          }
           link={subtitle.srtSrc}
         />
       )}
