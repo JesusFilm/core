@@ -6,39 +6,19 @@ export const connection = {
   connectTimeout: 5000, // 5 second connection timeout
   maxRetriesPerRequest: 2,
   retryStrategy(times: number) {
-    console.log(`[Redis] Retry attempt ${times}`)
     if (times > 3) {
-      console.log('[Redis] Max retries reached, giving up')
+      console.error('[Redis] Max retries reached, giving up')
       return null // stop retrying after 3 attempts
     }
     const delay = Math.min(times * 200, 1000)
-    console.log(`[Redis] Retrying in ${delay}ms`)
     return delay // exponential backoff with max 1s
   }
 }
 
-console.log('[Redis] Initializing with config:', {
-  ...connection,
-  // Don't log any sensitive info that might be in the URL
-  host: connection.host === 'redis' ? 'redis' : 'custom-host'
-})
-
 const redis = new Redis(connection)
-
-redis.on('connect', () => {
-  console.log('[Redis] Connected successfully')
-})
 
 redis.on('error', (err) => {
   console.error('[Redis] Connection error:', err)
-})
-
-redis.on('close', () => {
-  console.log('[Redis] Connection closed')
-})
-
-redis.on('reconnecting', (ms: number) => {
-  console.log(`[Redis] Reconnecting in ${ms}ms`)
 })
 
 const DEFAULT_TTL = 3600 * 24 // 1 day
@@ -51,9 +31,7 @@ interface CacheOptions {
 }
 
 async function getFromCache<T>(key: string): Promise<T | null> {
-  const startTime = Date.now()
   try {
-    console.log(`[Redis] Getting key: ${key}`)
     const data = await Promise.race([
       redis.get(key),
       new Promise<null>((_, reject) =>
@@ -63,16 +41,12 @@ async function getFromCache<T>(key: string): Promise<T | null> {
         )
       )
     ])
-    const duration = Date.now() - startTime
     if (!data) {
-      console.log(`[Redis] Key ${key} not found (${duration}ms)`)
       return null
     }
-    console.log(`[Redis] Got key ${key} (${duration}ms)`)
     return JSON.parse(data)
   } catch (err) {
-    const duration = Date.now() - startTime
-    console.error(`[Redis] Failed to get key ${key} (${duration}ms):`, err)
+    console.error(`[Redis] Failed to get key ${key}:`, err)
     return null
   }
 }
@@ -83,10 +57,8 @@ async function setInCache<T>(
   options: CacheOptions = {}
 ): Promise<void> {
   const { ttl = DEFAULT_TTL, staleWhileRevalidate = true } = options
-  const startTime = Date.now()
 
   try {
-    console.log(`[Redis] Setting key: ${key}`)
     const setPromise = redis.set(key, JSON.stringify(data), 'EX', ttl)
     await Promise.race([
       setPromise,
@@ -97,12 +69,8 @@ async function setInCache<T>(
         )
       )
     ])
-    const duration = Date.now() - startTime
-    console.log(`[Redis] Set key ${key} (${duration}ms)`)
 
     if (staleWhileRevalidate) {
-      console.log(`[Redis] Setting stale key: ${key}:stale`)
-      const staleStartTime = Date.now()
       const stalePromise = redis.set(
         `${key}:stale`,
         JSON.stringify(data),
@@ -118,12 +86,9 @@ async function setInCache<T>(
           )
         )
       ])
-      const staleDuration = Date.now() - staleStartTime
-      console.log(`[Redis] Set stale key ${key}:stale (${staleDuration}ms)`)
     }
   } catch (error) {
-    const duration = Date.now() - startTime
-    console.error(`[Redis] Failed to set key ${key} (${duration}ms):`, error)
+    console.error(`[Redis] Failed to set key ${key}:`, error)
   }
 }
 
@@ -132,26 +97,18 @@ export async function getWithStaleCache<T>(
   fetchFn: () => Promise<T>,
   options: CacheOptions = {}
 ): Promise<T> {
-  const startTime = Date.now()
   try {
-    console.log(`[Redis] Attempting to get cached data for key: ${key}`)
     const cached = await getFromCache<T>(key)
     if (cached) {
-      console.log(`[Redis] Cache hit for key: ${key}`)
       return cached
     }
 
-    console.log(`[Redis] Cache miss, checking stale data for key: ${key}`)
     const stale = await getFromCache<T>(`${key}:stale`)
 
     if (stale) {
-      console.log(`[Redis] Using stale data for key: ${key}`)
       // Background refresh without waiting
       void fetchFn()
-        .then((newData) => {
-          console.log(`[Redis] Background refresh successful for key: ${key}`)
-          return setInCache(key, newData, options)
-        })
+        .then((newData) => setInCache(key, newData, options))
         .catch((error) =>
           console.error(
             `[Redis] Background refresh failed for key ${key}:`,
@@ -161,29 +118,17 @@ export async function getWithStaleCache<T>(
       return stale
     }
 
-    console.log(
-      `[Redis] No cached or stale data, fetching fresh for key: ${key}`
-    )
     const fresh = await fetchFn()
-    const duration = Date.now() - startTime
-    console.log(`[Redis] Got fresh data for key ${key} (${duration}ms)`)
-
     void setInCache(key, fresh, options).catch((error) =>
       console.error(`[Redis] Failed to cache fresh data for key ${key}:`, error)
     )
     return fresh
   } catch (error) {
-    const duration = Date.now() - startTime
-    console.error(
-      `[Redis] Error retrieving from cache for key ${key} (${duration}ms):`,
-      error
-    )
+    console.error(`[Redis] Error retrieving from cache for key ${key}:`, error)
     return await fetchFn()
   }
 }
 
 export function generateCacheKey(parts: (string | number)[]): string {
-  const key = parts.join(':')
-  console.log(`[Redis] Generated cache key: ${key}`)
-  return key
+  return parts.join(':')
 }
