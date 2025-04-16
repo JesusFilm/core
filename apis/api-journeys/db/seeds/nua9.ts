@@ -4,6 +4,7 @@ import { PrismaClient } from '.prisma/api-journeys-client'
 
 import {
   JourneyStatus,
+  TextResponseType,
   ThemeMode,
   ThemeName
 } from '../../src/app/__generated__/graphql'
@@ -922,7 +923,7 @@ export async function nua9(): Promise<void> {
     }
   })
   await prisma.block.update({
-    where: { id: button4.id },
+    where: { id: button5.id },
     data: { startIconId: icon5a.id, endIconId: icon5b.id }
   })
 
@@ -1359,124 +1360,280 @@ export async function nua9(): Promise<void> {
   })
 
   // Very last card
-  const signUp1 = await prisma.block.create({
+  await prisma.block.create({
     data: {
       journeyId: journey.id,
-      typename: 'SignUpBlock',
+      typename: 'TextResponseBlock',
       parentBlockId: prayerCard4.id,
-      submitLabel: 'Submit',
+      parentOrder: 2,
+      label: 'Name',
+      minRows: 1,
+      type: TextResponseType.name,
+      required: true
+    }
+  })
+
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'TextResponseBlock',
+      parentBlockId: prayerCard4.id,
+      parentOrder: 3,
+      label: 'Email',
+      minRows: 1,
+      type: TextResponseType.email,
+      required: true
+    }
+  })
+
+  const button8 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'ButtonBlock',
+      parentBlockId: prayerCard4.id,
+      parentOrder: 4,
+      label: 'Submit',
+      variant: 'contained',
+      color: 'primary',
+      size: 'medium',
+      submitEnabled: true,
       action: {
         create: {
           gtmEventName: 'click',
           blockId: lastStep.id
         }
-      },
-      parentOrder: 2
+      }
     }
   })
-  const icon8 = await prisma.block.create({
+
+  const icon8a = await prisma.block.create({
     data: {
       journeyId: journey.id,
       typename: 'IconBlock',
-      parentBlockId: signUp1.id,
+      parentBlockId: button8.id,
       name: 'SendRounded',
       size: 'md',
       parentOrder: 0
     }
   })
-  await prisma.block.update({
-    where: { id: signUp1.id },
-    data: { submitIconId: icon8.id }
-  })
-
-  const signUp2 = await prisma.block.create({
+  const icon8b = await prisma.block.create({
     data: {
       journeyId: journey.id,
-      typename: 'SignUpBlock',
+      typename: 'IconBlock',
+      parentBlockId: button8.id,
+      name: null
+    }
+  })
+  await prisma.block.update({
+    where: { id: button8.id },
+    data: { startIconId: icon8a.id, endIconId: icon8b.id }
+  })
+
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'TextResponseBlock',
       parentBlockId: noThanksCard2.id,
-      submitLabel: 'Submit',
+      parentOrder: 2,
+      label: 'Name',
+      minRows: 1,
+      type: TextResponseType.name,
+      required: true
+    }
+  })
+
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'TextResponseBlock',
+      parentBlockId: noThanksCard2.id,
+      parentOrder: 3,
+      label: 'Email',
+      minRows: 1,
+      type: TextResponseType.email,
+      required: true
+    }
+  })
+
+  const button9 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'ButtonBlock',
+      parentBlockId: noThanksCard2.id,
+      parentOrder: 4,
+      label: 'Submit',
+      variant: 'contained',
+      color: 'primary',
+      size: 'medium',
+      submitEnabled: true,
       action: {
         create: {
           gtmEventName: 'click',
           blockId: lastStep.id
         }
-      },
-      parentOrder: 2
+      }
     }
   })
-  const icon9 = await prisma.block.create({
+
+  const icon9a = await prisma.block.create({
     data: {
       journeyId: journey.id,
       typename: 'IconBlock',
-      parentBlockId: signUp2.id,
+      parentBlockId: button9.id,
       name: 'SendRounded',
       size: 'md',
       parentOrder: 0
     }
   })
-  await prisma.block.update({
-    where: { id: signUp2.id },
-    data: { submitIconId: icon9.id }
-  })
-
-  const signUp3 = await prisma.block.create({
+  const icon9b = await prisma.block.create({
     data: {
       journeyId: journey.id,
-      typename: 'SignUpBlock',
+      typename: 'IconBlock',
+      parentBlockId: button9.id,
+      name: null
+    }
+  })
+  await prisma.block.update({
+    where: { id: button9.id },
+    data: { startIconId: icon9a.id, endIconId: icon9b.id }
+  })
+
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'TextResponseBlock',
       parentBlockId: alreadyCard4.id,
-      submitLabel: 'Submit',
-      action: {
-        create: {
-          gtmEventName: 'click',
-          blockId: lastStep.id
-        }
-      },
-      parentOrder: 2
+      parentOrder: 2,
+      label: 'Name',
+      minRows: 1,
+      type: TextResponseType.name,
+      required: true
     }
-  })
-  const icon10 = await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      typename: 'IconBlock',
-      parentBlockId: signUp3.id,
-      name: 'SendRounded',
-      size: 'md',
-      parentOrder: 0
-    }
-  })
-  await prisma.block.update({
-    where: { id: signUp3.id },
-    data: { submitIconId: icon10.id }
   })
 
-  const signUp4 = await prisma.block.create({
+  await prisma.block.create({
     data: {
       journeyId: journey.id,
-      typename: 'SignUpBlock',
-      parentBlockId: notSureCard2.id,
-      submitLabel: 'Submit',
+      typename: 'TextResponseBlock',
+      parentBlockId: alreadyCard4.id,
+      parentOrder: 3,
+      label: 'Email',
+      minRows: 1,
+      type: TextResponseType.email,
+      required: true
+    }
+  })
+
+  const button10 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'ButtonBlock',
+      parentBlockId: alreadyCard4.id,
+      parentOrder: 4,
+      label: 'Submit',
+      variant: 'contained',
+      color: 'primary',
+      size: 'medium',
+      submitEnabled: true,
       action: {
         create: {
           gtmEventName: 'click',
           blockId: lastStep.id
         }
-      },
-      parentOrder: 2
+      }
     }
   })
-  const icon11 = await prisma.block.create({
+
+  const icon10a = await prisma.block.create({
     data: {
       journeyId: journey.id,
       typename: 'IconBlock',
-      parentBlockId: signUp4.id,
+      parentBlockId: button10.id,
       name: 'SendRounded',
       size: 'md',
       parentOrder: 0
     }
   })
+  const icon10b = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'IconBlock',
+      parentBlockId: button10.id,
+      name: null
+    }
+  })
   await prisma.block.update({
-    where: { id: signUp4.id },
-    data: { submitIconId: icon11.id }
+    where: { id: button10.id },
+    data: { startIconId: icon10a.id, endIconId: icon10b.id }
+  })
+
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'TextResponseBlock',
+      parentBlockId: notSureCard2.id,
+      parentOrder: 2,
+      label: 'Name',
+      minRows: 1,
+      type: TextResponseType.name,
+      required: true
+    }
+  })
+
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'TextResponseBlock',
+      parentBlockId: notSureCard2.id,
+      parentOrder: 3,
+      label: 'Email',
+      minRows: 1,
+      type: TextResponseType.email,
+      required: true
+    }
+  })
+
+  const button11 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'ButtonBlock',
+      parentBlockId: notSureCard2.id,
+      parentOrder: 4,
+      label: 'Submit',
+      variant: 'contained',
+      color: 'primary',
+      size: 'medium',
+      submitEnabled: true,
+      action: {
+        create: {
+          gtmEventName: 'click',
+          blockId: lastStep.id
+        }
+      }
+    }
+  })
+
+  const icon11a = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'IconBlock',
+      parentBlockId: button11.id,
+      name: 'SendRounded',
+      size: 'md',
+      parentOrder: 0
+    }
+  })
+  const icon11b = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'IconBlock',
+      parentBlockId: button11.id,
+      name: null
+    }
+  })
+  await prisma.block.update({
+    where: { id: button11.id },
+    data: { startIconId: icon11a.id, endIconId: icon11b.id }
   })
 
   const lastImageId = uuidv4()
@@ -1537,7 +1694,7 @@ export async function nua9(): Promise<void> {
     data: { coverBlockId: lastImageId }
   })
 
-  const button8 = await prisma.block.create({
+  const button12 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       typename: 'ButtonBlock',
@@ -1559,7 +1716,7 @@ export async function nua9(): Promise<void> {
     data: {
       journeyId: journey.id,
       typename: 'IconBlock',
-      parentBlockId: button8.id,
+      parentBlockId: button12.id,
       name: 'SubscriptionsRounded',
       size: 'md',
       parentOrder: 0
@@ -1569,12 +1726,12 @@ export async function nua9(): Promise<void> {
     data: {
       journeyId: journey.id,
       typename: 'IconBlock',
-      parentBlockId: button8.id,
+      parentBlockId: button12.id,
       name: null
     }
   })
   await prisma.block.update({
-    where: { id: button8.id },
+    where: { id: button12.id },
     data: {
       startIconId: icon12a.id,
       endIconId: icon12b.id

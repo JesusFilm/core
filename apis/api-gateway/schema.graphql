@@ -414,10 +414,10 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   cloudflareR2Delete(id: ID!) : CloudflareR2! @join__field(graph: API_MEDIA) 
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!) : CloudflareImage! @join__field(graph: API_MEDIA)  @deprecated(reason: "use createCloudflareImageFromPrompt") 
   triggerUnsplashDownload(url: String!) : Boolean! @join__field(graph: API_MEDIA) 
-  createMuxVideoUploadByFile(name: String!) : MuxVideo! @join__field(graph: API_MEDIA) 
-  createMuxVideoUploadByUrl(url: String!) : MuxVideo! @join__field(graph: API_MEDIA) 
+  createMuxVideoUploadByFile(name: String!, userGenerated: Boolean) : MuxVideo! @join__field(graph: API_MEDIA) 
+  createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean) : MuxVideo! @join__field(graph: API_MEDIA) 
   enableMuxDownload(id: ID!) : MuxVideo @join__field(graph: API_MEDIA) 
-  deleteMuxVideo(id: ID!) : Boolean! @join__field(graph: API_MEDIA) 
+  deleteMuxVideo(id: ID!, userGenerated: Boolean) : Boolean! @join__field(graph: API_MEDIA) 
   """
   Create a new short link domain that can be used for short links (this domain must have a CNAME record pointing to the short link service)
   """
@@ -725,8 +725,8 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   bibleCitations: [BibleCitation!]! @join__field(graph: API_MEDIA) 
   keywords: [Keyword!]! @join__field(graph: API_MEDIA) 
   getMyMuxVideos(offset: Int, limit: Int) : [MuxVideo!]! @join__field(graph: API_MEDIA) 
-  getMyMuxVideo(id: ID!) : MuxVideo! @join__field(graph: API_MEDIA) 
-  getMuxVideo(id: ID!) : MuxVideo @join__field(graph: API_MEDIA) 
+  getMyMuxVideo(id: ID!, userGenerated: Boolean) : MuxVideo! @join__field(graph: API_MEDIA) 
+  getMuxVideo(id: ID!, userGenerated: Boolean) : MuxVideo @join__field(graph: API_MEDIA) 
   """
   List of short link domains that can be used for short links
   """
@@ -1695,8 +1695,6 @@ type JourneyEvent implements Event @join__type(graph: API_JOURNEYS)  @join__impl
   """
   Related fields queried from relevant ids in the events table
   """
-  journey: Journey @deprecated(reason: "Use specific fields instead") 
-  visitor: Visitor @deprecated(reason: "Use specific fields instead") 
   journeySlug: String
   visitorName: String
   visitorEmail: String
@@ -2659,6 +2657,7 @@ type VideoStudyQuestion @join__type(graph: API_MEDIA)  {
   id: ID!
   value: String!
   primary: Boolean!
+  order: Int!
   language: Language!
 }
 
