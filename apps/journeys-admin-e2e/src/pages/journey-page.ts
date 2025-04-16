@@ -1,4 +1,7 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
+import fs from 'fs'
+import path from 'path'
+
 import { expect } from '@playwright/test'
 import dayjs from 'dayjs'
 import type { Page } from 'playwright-core'
@@ -9,6 +12,8 @@ let journeyName = ''
 let randomNumber = ''
 const thirtySecondsTimeout = 30000
 const sixtySecondsTimeout = 60000
+// eslint-disable-next-line no-undef
+const downloadFolderPath = path.join(__dirname, '../utils/download/')
 
 export class JourneyPage {
   existingJourneyName = ''
@@ -17,6 +22,7 @@ export class JourneyPage {
   context
   journeyCardFrame =
     'div[data-testid="EditorCanvas"] div[data-testid="CanvasContainer"] iframe'
+  downloadedQrFile: string
 
   constructor(page: Page) {
     this.page = page
@@ -209,24 +215,23 @@ export class JourneyPage {
   }
 
   async clickCreateCustomJourney(): Promise<void> {
+    const createJourneyLoaderPath = this.page.locator(
+      'div[data-testid="JourneysAdminImageThumbnail"] span[class*="MuiCircularProgress"]'
+    )
+    await this.page.waitForLoadState('load')
     await expect(
       this.page.locator(
         'div[data-testid="JourneysAdminContainedIconButton"] button'
       )
     ).toBeVisible({ timeout: 150000 })
-    await expect(
-      this.page.locator(
-        'div[data-testid="JourneysAdminImageThumbnail"] span[class*="MuiCircularProgress"]'
-      )
-    ).toBeHidden({ timeout: 18000 })
+    await expect(createJourneyLoaderPath).toBeHidden({ timeout: 18000 })
     await this.page
       .locator('div[data-testid="JourneysAdminContainedIconButton"] button')
       .click()
-    await expect(
-      this.page.locator(
-        'div[data-testid="JourneysAdminImageThumbnail"] span[class*="MuiCircularProgress"]'
-      )
-    ).toBeHidden({ timeout: sixtySecondsTimeout })
+    await expect(createJourneyLoaderPath).toBeVisible({ timeout: 5000 })
+    await expect(createJourneyLoaderPath).toBeHidden({
+      timeout: sixtySecondsTimeout
+    })
   }
 
   async setJourneyName(journey: string) {
@@ -1096,5 +1101,140 @@ export class JourneyPage {
       .locator(textareaPath)
       .first()
       .fill(journeyName)
+  }
+
+  async clickShareButtonInJourneyPage() {
+    await this.page
+      .locator('div[data-testid="ShareItem"]')
+      .getByRole('button', { name: 'Share' })
+      .click()
+  }
+
+  async clickCopyIconInShareDialog() {
+    await this.page
+      .locator('div.MuiDialogContent-root button[aria-label="Copy"]')
+      .click()
+  }
+
+  async clickButtonInShareDialog(buttonName: string) {
+    //Edit URL, Embed Journey,  QR Code, Generate Code, Download PNG
+    await this.page
+      .locator('div.MuiDialogContent-root')
+      .getByRole('button', { name: buttonName })
+      .click()
+  }
+  async UpdateUrlSlug() {
+    const slugNameToInclude = 'edited-slug'
+    const slugField_path = this.page.locator(
+      'div.MuiDialogContent-root input#slug'
+    )
+    await slugField_path.pressSequentially(slugNameToInclude, { delay: 200 })
+    await expect(slugField_path).toHaveValue(new RegExp(slugNameToInclude))
+    return slugNameToInclude
+  }
+  async clickDialogActionBtnsInShareDialog(buttonName: string) {
+    //Copy Code, Save, Cancel
+    await this.page
+      .locator('div.MuiDialogActions-root')
+      .getByRole('button', { name: buttonName })
+      .click()
+  }
+  async verifyUpdatedUrlSlugIsLoaded(linkToCheck: string) {
+    const copiedLinkPage = await this.context.newPage()
+    const clipBoardText = await this.page.evaluate(
+      'navigator.clipboard.readText()'
+    )
+    await copiedLinkPage.goto(clipBoardText)
+    await copiedLinkPage.waitForLoadState()
+    const tabName: string = await copiedLinkPage.title()
+    expect(tabName.includes(this.existingJourneyName)).toBeTruthy()
+    const loadedLink: string = copiedLinkPage.url()
+    expect(loadedLink).toStrictEqual(linkToCheck)
+  }
+
+  async getUrlfromShareDialogPopup() {
+    return await this.page
+      .locator('div.MuiDialogContent-root input:not(#slug)')
+      .inputValue()
+  }
+  async validateUrlInEmbedCodeFieldAndReturnEmbedCode() {
+    const embedUrlFieldValue = await this.page
+      .locator('div.MuiDialogContent-root textarea#embed-url')
+      .inputValue()
+    return embedUrlFieldValue
+  }
+  async validateCopiedValues(actualValue: string) {
+    const clipBoardText = await this.page.evaluate(
+      'navigator.clipboard.readText()'
+    )
+    expect(actualValue).toStrictEqual(clipBoardText)
+  }
+  async validateCopiedValueContainsExpectedValue(actualValue: string) {
+    const clipBoardText = await this.page.evaluate(
+      'navigator.clipboard.readText()'
+    )
+    expect(clipBoardText).toContain(actualValue)
+  }
+  async editUrlAndSave() {
+    await this.clickButtonInShareDialog('Edit URL')
+    const updatedSlugName = await this.UpdateUrlSlug()
+    await this.clickDialogActionBtnsInShareDialog('Save')
+    await this.validateUrlUpdatedUrl(updatedSlugName)
+    const updatedUrlSlug = await this.getUrlfromShareDialogPopup()
+    return updatedUrlSlug
+  }
+  async validateUrlUpdatedUrl(valueToCheck: string) {
+    await expect(
+      this.page.locator('div.MuiDialogContent-root input:not(#slug)')
+    ).toHaveValue(new RegExp(valueToCheck))
+  }
+
+  async validateQRCodeGenerated() {
+    await expect(
+      this.page.locator('div.MuiDialogContent-root canvas#qr-code-download')
+    ).toBeVisible()
+  }
+  async clickDownloadDropDownAndSelectCopyShortLink() {
+    await this.page
+      .locator(
+        'div.MuiDialogContent-root button[data-testid="DownloadDropdown"]'
+      )
+      .click()
+    await this.page
+      .locator('div.MuiDialogContent-root div[role="tooltip"]')
+      .getByRole('menuitem', { name: 'Copy Short Link' })
+      .click()
+  }
+  async downloadQRCodeAsPng() {
+    const qrDownload = this.page.waitForEvent('download', { timeout: 60000 })
+    await this.clickButtonInShareDialog('Download PNG')
+    const downloadFile = await qrDownload
+    this.downloadedQrFile = downloadFile.suggestedFilename()
+
+    if (!fs.existsSync(downloadFolderPath)) {
+      fs.mkdirSync(downloadFolderPath)
+    }
+
+    await downloadFile.saveAs(
+      path.join(downloadFolderPath, this.downloadedQrFile)
+    )
+  }
+  async validateDownloadedQrPngFile() {
+    const isFileExist = fs.existsSync(
+      path.join(downloadFolderPath, this.downloadedQrFile)
+    )
+    expect(isFileExist && this.downloadedQrFile.includes('.png'), {
+      message: `Downloaded QR COde png file(${this.downloadedQrFile}) should be exist`
+    }).toBeTruthy()
+  }
+  async clickCloseIconForQrCodeDialog() {
+    await this.page
+      .locator('div.MuiDialog-paper button[data-testid="dialog-close-button"]')
+      .click()
+  }
+  async validateUrlFieldInShareDialog(expectedValue: string) {
+    await expect(
+      this.page.locator('div.MuiDialogContent-root input')
+    ).toHaveValue(new RegExp(expectedValue))
   }
 }
