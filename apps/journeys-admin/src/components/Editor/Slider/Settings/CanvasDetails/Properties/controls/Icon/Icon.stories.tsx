@@ -34,6 +34,7 @@ export const Default: StoryObj<typeof Icon> = {
       size: null,
       startIconId: null,
       endIconId: null,
+      submitEnabled: null,
       action: null,
       children: [
         {
@@ -76,6 +77,7 @@ export const Filled: StoryObj<typeof Icon> = {
       size: null,
       startIconId: null,
       endIconId: null,
+      submitEnabled: null,
       action: null,
       children: [
         {

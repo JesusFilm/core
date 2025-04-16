@@ -20,6 +20,7 @@ import {
 import { UserJourneyOpen } from '../../../../__generated__/UserJourneyOpen'
 import { HelpScoutBeacon } from '../../../../src/components/HelpScoutBeacon'
 import { JourneyVisitorsList } from '../../../../src/components/JourneyVisitorsList'
+import { ExportEventsButton } from '../../../../src/components/JourneyVisitorsList/ExportEventsButton'
 import { FilterDrawer } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/FilterDrawer'
 import { VisitorToolbar } from '../../../../src/components/JourneyVisitorsList/VisitorToolbar/VisitorToolbar'
 import { PageWrapper } from '../../../../src/components/PageWrapper'
@@ -213,6 +214,7 @@ function JourneyVisitorsPage(): ReactElement {
               hideInteractive={hideInteractive}
               handleClearAll={handleClearAll}
             />
+            <ExportEventsButton journeyId={journeyId} />
           </Stack>
         }
         sidePanelTitle={
@@ -236,6 +238,7 @@ function JourneyVisitorsPage(): ReactElement {
             withSubmittedText={withSubmittedText}
             withIcon={withIcon}
             hideInteractive={hideInteractive}
+            handleClearAll={handleClearAll}
           />
         }
       >

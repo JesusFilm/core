@@ -159,6 +159,10 @@ export function VideoChildren({
     router.push(`/${locale}/${entity}/${id}`)
   }
 
+  function handleEditClick(id: string): void {
+    router.push(`/videos/${id}`)
+  }
+
   async function updateOrderOnDrag(e: DragEndEvent): Promise<void> {
     const { active, over } = e
     if (over == null) return
@@ -208,6 +212,12 @@ export function VideoChildren({
                 cursor: 'pointer'
               }}
               onClick={() => handleClick(id)}
+              menuActions={[
+                {
+                  label: 'Edit',
+                  handler: handleEditClick
+                }
+              ]}
             />
           ))}
         </OrderedList>

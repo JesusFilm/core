@@ -13,43 +13,40 @@ import { EventType } from '../../../__generated__/globalTypes'
 
 import {
   CREATE_EVENTS_EXPORT_LOG,
-  FILTERED_EVENTS,
   GET_JOURNEY_EVENTS_EXPORT,
   useJourneyEventsExport
 } from './useJourneyEventsExport'
 import {
+  getMockGetJourneyEventsCountQuery,
   mockCreateEventsExportLogMutation,
   mockGetJourneyEventsQuery
 } from './useJourneyEventsExport.mock'
+import { FILTERED_EVENTS } from './utils/constants'
+import { processCsv } from './utils/processCsv/processCsv'
+
+jest.mock('./utils/processCsv/processCsv', () => ({
+  processCsv: jest.fn()
+}))
+const mockProcessCsv = processCsv as jest.MockedFunction<typeof processCsv>
+
+const mockGetJourneyEventsCountQuery = getMockGetJourneyEventsCountQuery()
 
 describe('useJourneyEventsExport', () => {
-  const originalCreateElement = document.createElement
-  const originalAppendChild = document.body.appendChild
-
   beforeEach(() => {
     jest.clearAllMocks()
-
-    document.createElement = originalCreateElement
-    document.body.appendChild = originalAppendChild
   })
 
-  it('should export journey events to a CSV file when called', async () => {
+  it('should fetch journey events', async () => {
     const queryResult = jest.fn(() => ({ ...mockGetJourneyEventsQuery.result }))
     const mutationResult = jest.fn(() => ({
       ...mockCreateEventsExportLogMutation.result
     }))
 
-    const createElementSpy = jest.spyOn(document, 'createElement')
-    const appendChildSpy = jest.spyOn(document.body, 'appendChild')
-    const setAttributeSpy = jest.spyOn(
-      HTMLAnchorElement.prototype,
-      'setAttribute'
-    )
-
     const { result } = renderHook(() => useJourneyEventsExport(), {
       wrapper: ({ children }) => (
         <MockedProvider
           mocks={[
+            mockGetJourneyEventsCountQuery,
             { ...mockGetJourneyEventsQuery, result: queryResult },
             { ...mockCreateEventsExportLogMutation, result: mutationResult }
           ]}
@@ -67,25 +64,22 @@ describe('useJourneyEventsExport', () => {
     })
 
     expect(queryResult).toHaveBeenCalled()
-    await waitFor(() => expect(mutationResult).toHaveBeenCalled())
-
-    // await waitFor(() =>
-    expect(createElementSpy).toHaveBeenCalledWith('a')
-    // )
-    expect(setAttributeSpy).toHaveBeenCalledWith(
-      'download',
-      expect.stringMatching(/\[\d{4}-\d{2}-\d{2}\] test-journey\.csv/)
+    await waitFor(() =>
+      expect(mockGetJourneyEventsCountQuery.result).toHaveBeenCalled()
     )
-    expect(appendChildSpy).toHaveBeenCalled()
+    await waitFor(() => expect(mutationResult).toHaveBeenCalled())
+    expect(mockProcessCsv).toHaveBeenCalled()
   })
 
-  it('should handle pagination when multiple pages of data exist', async () => {
-    const createElementSpy = jest.spyOn(document, 'createElement')
-    const appendChildSpy = jest.spyOn(document.body, 'appendChild')
-    const setAttributeSpy = jest.spyOn(
-      HTMLAnchorElement.prototype,
-      'setAttribute'
-    )
+  it('should fetch journey events with pagination', async () => {
+    const mockJourneyEventsCountQueryAll = getMockGetJourneyEventsCountQuery({
+      journeyId: 'journey1',
+      filter: {
+        typenames: ['ButtonClickEvent'],
+        periodRangeStart: '2023-01-15T12:00:00Z',
+        periodRangeEnd: '2024-01-15T12:00:00Z'
+      }
+    })
 
     const mockGetJourneyEventsQueryPage1: MockedResponse<
       GetJourneyEvents,
@@ -120,15 +114,11 @@ describe('useJourneyEventsExport', () => {
                   value: 'Value 1',
                   typename: 'ButtonClickEvent',
                   progress: null,
-                  journey: {
-                    __typename: 'Journey',
-                    slug: 'test-journey'
-                  },
-                  visitor: {
-                    __typename: 'Visitor',
-                    email: 'test1@example.com',
-                    name: 'User 1'
-                  }
+                  journeySlug: 'test-journey',
+                  visitorName: 'Test User',
+                  visitorEmail: 'test@example.com',
+                  visitorPhone: '1234567890',
+                  createdAt: '2024-01-01T12:00:00Z'
                 }
               }
             ],
@@ -177,15 +167,11 @@ describe('useJourneyEventsExport', () => {
                   value: 'Value 2',
                   typename: 'ButtonClickEvent',
                   progress: null,
-                  journey: {
-                    __typename: 'Journey',
-                    slug: 'test-journey'
-                  },
-                  visitor: {
-                    __typename: 'Visitor',
-                    email: 'test2@example.com',
-                    name: 'User 2'
-                  }
+                  journeySlug: 'test-journey',
+                  visitorName: 'Test User 2',
+                  visitorEmail: 'test2@example.com',
+                  visitorPhone: '1234567890',
+                  createdAt: '2024-01-01T12:00:00Z'
                 }
               }
             ],
@@ -230,6 +216,7 @@ describe('useJourneyEventsExport', () => {
       wrapper: ({ children }) => (
         <MockedProvider
           mocks={[
+            mockJourneyEventsCountQueryAll,
             mockGetJourneyEventsQueryPage1,
             mockGetJourneyEventsQueryPage2,
             mockCreateEventsExportLogMutation
@@ -253,13 +240,7 @@ describe('useJourneyEventsExport', () => {
 
     expect(mockGetJourneyEventsQueryPage1.result).toHaveBeenCalled()
     expect(mockGetJourneyEventsQueryPage2.result).toHaveBeenCalled()
-
-    await waitFor(() => expect(createElementSpy).toHaveBeenCalledWith('a'))
-    expect(setAttributeSpy).toHaveBeenCalledWith(
-      'download',
-      expect.stringMatching(/\[\d{4}-\d{2}-\d{2}\] test-journey\.csv/)
-    )
-    expect(appendChildSpy).toHaveBeenCalled()
+    expect(mockProcessCsv).toHaveBeenCalled()
   })
 
   it('should throw an error when data retrieval fails', async () => {
