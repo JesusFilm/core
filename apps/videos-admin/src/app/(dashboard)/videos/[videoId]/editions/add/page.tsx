@@ -81,7 +81,7 @@ export default function AddEditionPage({
         onSubmit={handleSubmit}
         validationSchema={validationSchema}
       >
-        <Form data-testId="EditionForm">
+        <Form data-testid="EditionForm">
           <Stack gap={2}>
             <FormTextField name="name" label="Name" fullWidth sx={{ mt: 1 }} />
             <Button variant="contained" type="submit" fullWidth>

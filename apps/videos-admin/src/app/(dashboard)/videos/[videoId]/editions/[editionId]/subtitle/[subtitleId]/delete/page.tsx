@@ -22,12 +22,14 @@ interface SubtitleDeletePageProps {
     subtitleId: string
   }
 }
+
 export default function SubtitleDeletePage({
   params: { videoId, editionId, subtitleId }
 }: SubtitleDeletePageProps) {
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
   const [deleteSubtitle, { loading }] = useMutation(DELETE_VIDEO_SUBTITLE)
+
   const handleDelete = async () => {
     await deleteSubtitle({
       variables: { id: subtitleId },
@@ -44,6 +46,7 @@ export default function SubtitleDeletePage({
       }
     })
   }
+
   return (
     <Dialog
       open={true}

@@ -9,6 +9,8 @@ import fetch from 'node-fetch'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
+import { Dialog } from '@core/shared/ui/Dialog'
+
 import { FileUpload } from '../../../../../../components/FileUpload'
 import { ImageAspectRatio } from '../../../constants'
 
@@ -148,7 +150,20 @@ export default function VideoImage({
     setLoading(false)
   }
   return (
-    <>
+    <Dialog
+      testId="VideoImageUploadDialog-Banner"
+      open={true}
+      onClose={() =>
+        router.push(`/videos/${videoId}`, {
+          scroll: false
+        })
+      }
+      dialogTitle={{ title: 'Edit Image', closeButton: true }}
+      slotProps={{ titleButton: { size: 'small' } }}
+      sx={{
+        '& .MuiPaper-root': { maxWidth: 400 }
+      }}
+    >
       <Typography color="error" sx={{ mb: 2 }}>
         Warning: this change will apply immediately
       </Typography>
@@ -167,6 +182,6 @@ export default function VideoImage({
         }}
         loading={loading}
       />
-    </>
+    </Dialog>
   )
 }

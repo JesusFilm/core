@@ -143,14 +143,15 @@ export default function ClientLayout({
                 />
                 <IconButton
                   size="small"
-                  onClick={() =>
+                  onClick={(event) => {
+                    event.stopPropagation()
                     router.push(
                       `/videos/${videoId}/audio/${variant.id}/delete`,
                       {
                         scroll: false
                       }
                     )
-                  }
+                  }}
                   aria-label="delete variant"
                   sx={{
                     color: 'error.main',
@@ -161,18 +162,7 @@ export default function ClientLayout({
                     }
                   }}
                 >
-                  <DeleteIcon
-                    fontSize="small"
-                    onClick={(event) => {
-                      event.stopPropagation()
-                      router.push(
-                        `/videos/${videoId}/audio/${variant.id}/delete`,
-                        {
-                          scroll: false
-                        }
-                      )
-                    }}
-                  />
+                  <DeleteIcon fontSize="small" />
                 </IconButton>
               </ListItem>
             )

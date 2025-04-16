@@ -8,6 +8,22 @@ import {
   VideoInformation
 } from './VideoInformation'
 
+// Mock Next's navigation hooks
+const mockPush = jest.fn()
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: mockPush
+  })
+}))
+
+// Mock the notistack hook
+const mockEnqueueSnackbar = jest.fn()
+jest.mock('notistack', () => ({
+  useSnackbar: () => ({
+    enqueueSnackbar: mockEnqueueSnackbar
+  })
+}))
+
 // Mock the useSuspenseQuery hook
 jest.mock('@apollo/client', () => {
   const originalModule = jest.requireActual('@apollo/client')
@@ -250,6 +266,12 @@ describe('VideoInformation', () => {
       expect(mockCreateVideoTitle.result).toHaveBeenCalled()
     })
     expect(mockUpdateVideoInformation.result).toHaveBeenCalled()
+
+    // Verify the router was called with the appropriate parameters during form submission
+    expect(mockPush).toHaveBeenCalledWith('?update=information', {
+      scroll: false
+    })
+    expect(mockPush).toHaveBeenLastCalledWith('?', { scroll: false })
   })
 
   it('should update video information on submit', async () => {
@@ -272,6 +294,18 @@ describe('VideoInformation', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save' }))
     await waitFor(() =>
       expect(mockUpdateVideoInformation.result).toHaveBeenCalled()
+    )
+
+    // Verify router was called correctly
+    expect(mockPush).toHaveBeenCalledWith('?update=information', {
+      scroll: false
+    })
+    expect(mockPush).toHaveBeenLastCalledWith('?', { scroll: false })
+
+    // Verify snackbar was called on success
+    expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+      'Successfully updated video information',
+      { variant: 'success' }
     )
   })
 

@@ -30,7 +30,7 @@ export default function DeleteEditionPage({
   const [deleteEdition, { loading }] = useMutation(DELETE_VIDEO_EDITION)
 
   const returnUrl = `/videos/${videoId}/editions`
-  const handleRemoveChild = async () => {
+  const handleRemoveEdition = async () => {
     await deleteEdition({ variables: { id: editionId } })
     enqueueSnackbar('Edition deleted successfully.', {
       variant: 'success'
@@ -53,7 +53,7 @@ export default function DeleteEditionPage({
         closeButton: true
       }}
       dialogAction={{
-        onSubmit: handleRemoveChild,
+        onSubmit: handleRemoveEdition,
         submitLabel: 'Delete',
         closeLabel: 'Cancel'
       }}

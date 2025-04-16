@@ -1,11 +1,12 @@
 'use client'
 
-import { useSuspenseQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import { graphql } from 'gql.tada'
 import Link from 'next/link'
-import { ReactElement } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { ReactElement, useEffect, useState } from 'react'
 
 import { getVideoChildrenLabel } from '../../../../../libs/getVideoChildrenLabel'
 
@@ -34,18 +35,20 @@ export function VideoTabView({
   currentTab,
   videoId
 }: VideoTabViewProps): ReactElement {
-  const { data } = useSuspenseQuery(GET_TAB_DATA, {
+  const params = useSearchParams()
+  const [reloadOnParamChange, setReloadOnParamChange] = useState(false)
+  const { data, refetch } = useQuery(GET_TAB_DATA, {
     variables: {
       id: videoId
     }
   })
 
   const showVideoChildren: boolean =
-    data.adminVideo.label === 'collection' ||
-    data.adminVideo.label === 'featureFilm' ||
-    data.adminVideo.label === 'series'
+    data?.adminVideo.label === 'collection' ||
+    data?.adminVideo.label === 'featureFilm' ||
+    data?.adminVideo.label === 'series'
 
-  const videoLabel = getVideoChildrenLabel(data.adminVideo.label)
+  const videoLabel = getVideoChildrenLabel(data?.adminVideo.label)
 
   const tabs = [
     {
@@ -57,13 +60,13 @@ export function VideoTabView({
     {
       label: 'Audio Languages',
       value: 'audio',
-      count: data.adminVideo.variantLanguagesCount,
+      count: data?.adminVideo.variantLanguagesCount,
       href: `/videos/${videoId}/audio`
     },
     {
       label: 'Editions',
       value: 'editions',
-      count: data.adminVideo.videoEditions.length,
+      count: data?.adminVideo.videoEditions.length,
       href: `/videos/${videoId}/editions`
     }
   ]
@@ -71,11 +74,14 @@ export function VideoTabView({
     tabs.splice(1, 0, {
       label: 'Children',
       value: 'children',
-      count: data.adminVideo.childrenCount,
+      count: data?.adminVideo.childrenCount,
       href: `/videos/${videoId}/children`
     })
   }
-
+  useEffect(() => {
+    if (reloadOnParamChange) void refetch()
+    setReloadOnParamChange(params?.get('update') === 'information')
+  }, [params])
   return (
     <Tabs value={currentTab} aria-label="video-edit-tabs">
       {tabs.map((tab) => (

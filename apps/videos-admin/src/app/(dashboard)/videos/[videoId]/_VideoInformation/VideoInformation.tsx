@@ -12,6 +12,7 @@ import { useTheme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikProps, FormikValues } from 'formik'
 import { graphql } from 'gql.tada'
+import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
@@ -85,6 +86,7 @@ export const CREATE_VIDEO_TITLE = graphql(`
 export function VideoInformation({
   videoId
 }: VideoInformationProps): ReactElement {
+  const router = useRouter()
   const [updateVideoInformation] = useMutation(UPDATE_VIDEO_INFORMATION)
   const [createVideoTitle] = useMutation(CREATE_VIDEO_TITLE)
   const theme = useTheme()
@@ -110,6 +112,9 @@ export function VideoInformation({
     { resetForm }: FormikProps<FormikValues>
   ): Promise<void> {
     let titleId = data.adminVideo.title[0]?.id ?? null
+    const params = new URLSearchParams('')
+    params.append('update', 'information')
+    router.push(`?${params.toString()}`, { scroll: false })
 
     if (titleId == null) {
       const res = await createVideoTitle({
@@ -156,6 +161,7 @@ export function VideoInformation({
           variant: 'success'
         })
         resetForm({ values })
+        router.push('?', { scroll: false })
       },
       onError: () => {
         enqueueSnackbar('Failed to update video information', {
