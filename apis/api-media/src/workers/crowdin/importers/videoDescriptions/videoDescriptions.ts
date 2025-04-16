@@ -20,8 +20,18 @@ export async function importVideoDescriptions(
   const logger = parentLogger?.child({ importer: 'videoDescriptions' })
   logger?.info('Starting video descriptions import')
 
+  // Process media metadata descriptions
   await processFile(
     CROWDIN_CONFIG.files.media_metadata_description,
+    async (data: ProcessedTranslation) => {
+      await upsertVideoDescriptionTranslation(data, logger)
+    },
+    logger
+  )
+
+  // Process collection descriptions
+  await processFile(
+    CROWDIN_CONFIG.files.collection_long_description,
     async (data: ProcessedTranslation) => {
       await upsertVideoDescriptionTranslation(data, logger)
     },
