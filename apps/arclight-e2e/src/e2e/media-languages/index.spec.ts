@@ -8,73 +8,14 @@ async function getMediaLanguages(
   params: Record<string, any>
 ) {
   const queryParams = createQueryParams(params)
-  const startTime = Date.now()
-  try {
-    console.log(
-      '[Test] Making request to /v2/media-languages with params:',
-      params
-    )
-    const response = await request.get(
-      `${await getBaseUrl()}/v2/media-languages?${queryParams}`,
-      {
-        timeout: 45000 // 45 second timeout for individual requests
-      }
-    )
-    const duration = Date.now() - startTime
-    console.log('[Test] Request completed in', duration, 'ms')
-
-    if (!response.ok()) {
-      const text = await response.text()
-      console.error(
-        '[Test] Request failed with status',
-        response.status,
-        ':',
-        text
-      )
-    }
-
-    return response
-  } catch (error) {
-    const duration = Date.now() - startTime
-    console.error('[Test] Request failed after', duration, 'ms:', error)
-    throw error
-  }
+  const response = await request.get(
+    `${await getBaseUrl()}/v2/media-languages?${queryParams}`
+  )
+  return response
 }
 
 test.describe('GET /v2/media-languages', () => {
-  test.setTimeout(60000) // 60 second timeout for all tests
-
-  // Verify API health before running tests
-  test.beforeAll(async ({ request }) => {
-    console.log('[Test] Starting media-languages test suite')
-    try {
-      const healthCheck = await request.get(`${await getBaseUrl()}/health`, {
-        timeout: 10000
-      })
-      if (!healthCheck.ok()) {
-        console.error('[Test] Health check failed:', await healthCheck.text())
-      } else {
-        console.log('[Test] Health check passed')
-      }
-    } catch (error) {
-      console.error('[Test] Health check failed with error:', error)
-    }
-
-    // Warmup request
-    try {
-      console.log('[Test] Making warmup request')
-      const warmupStart = Date.now()
-      await getMediaLanguages(request, { ids: ['529'] })
-      const warmupDuration = Date.now() - warmupStart
-      console.log(`[Test] Warmup request completed in ${warmupDuration}ms`)
-    } catch (error) {
-      console.warn('[Test] Warmup request failed:', error)
-    }
-  })
-
   test('returns basic media languages list', async ({ request }) => {
-    test.slow() // Mark as potentially slow test
-
     const response = await getMediaLanguages(request, {
       ids: ['529']
     })
@@ -140,8 +81,6 @@ test.describe('GET /v2/media-languages', () => {
   })
 
   test('filters by language IDs', async ({ request }) => {
-    test.slow() // Mark as potentially slow test
-
     const response = await getMediaLanguages(request, {
       ids: ['529', '496']
     })
