@@ -1,10 +1,12 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
+import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../../../../../../__generated__/GetJourney'
 import { BLOCK_ACTION_DELETE } from '../../../../../../../../libs/useBlockActionDeleteMutation/useBlockActionDeleteMutation'
 
@@ -55,6 +57,31 @@ describe('Action', () => {
     await waitFor(() =>
       expect(getByText('Paste URL here...')).toBeInTheDocument()
     )
+  })
+
+  it('should filter out LinkAction and EmailAction options for submit buttons', async () => {
+    const submitButtonBlock = {
+      ...selectedBlock,
+      submitEnabled: true
+    } as TreeBlock<ButtonBlock>
+
+    render(
+      <MockedProvider>
+        <EditorProvider initialState={{ selectedBlock: submitButtonBlock }}>
+          <Action />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.mouseDown(screen.getByRole('combobox'))
+
+    expect(screen.queryByText('URL/Website')).not.toBeInTheDocument()
+    expect(screen.queryByText('Send Email')).not.toBeInTheDocument()
+
+    expect(screen.getByRole('option', { name: 'None' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('option', { name: 'Selected Card' })
+    ).toBeInTheDocument()
   })
 
   it('deletes action from block, when no action selected', async () => {
