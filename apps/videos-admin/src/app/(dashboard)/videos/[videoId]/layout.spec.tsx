@@ -1,5 +1,5 @@
 // Mock the Apollo Client hooks before imports
-import { gql, useSuspenseQuery } from '@apollo/client'
+import { useSuspenseQuery } from '@apollo/client'
 import { render, screen } from '@testing-library/react'
 import { useSelectedLayoutSegment } from 'next/navigation'
 import React from 'react'
@@ -15,22 +15,6 @@ jest.mock('@apollo/client', () => {
 })
 
 const mockUseSuspenseQuery = useSuspenseQuery as jest.Mock
-
-// Create the query directly here instead of importing from layout
-// to avoid dual imports and type errors
-const GET_TAB_DATA = gql`
-  query GetTabData($id: ID!, $languageId: ID!) {
-    adminVideo(id: $id) {
-      id
-      locked
-      published
-      title(languageId: $languageId) {
-        id
-        value
-      }
-    }
-  }
-`
 
 // Mock the next/navigation module
 jest.mock('next/navigation', () => ({

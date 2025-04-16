@@ -1,6 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { Form, Formik } from 'formik'
 import { SnackbarProvider } from 'notistack'
 
 import StudyQuestionsAddPage from './page'

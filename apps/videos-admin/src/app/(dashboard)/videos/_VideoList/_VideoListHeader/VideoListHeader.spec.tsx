@@ -1,6 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
 import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 
 import { VideoListHeader } from './VideoListHeader'
 

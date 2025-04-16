@@ -9,7 +9,6 @@ import { VariablesOf, graphql } from 'gql.tada'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { useEffect, useRef, useState } from 'react'
-import { mixed, object, string } from 'yup'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 

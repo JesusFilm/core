@@ -2,7 +2,6 @@
 
 import { useMutation, useSuspenseQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
@@ -17,7 +16,6 @@ import { Dialog } from '@core/shared/ui/Dialog'
 import Plus2 from '@core/shared/ui/icons/Plus2'
 
 import { ActionButton } from '../../../../../../components/ActionButton'
-import { FormTextField } from '../../../../../../components/FormTextField'
 import { SaveButton } from '../../../../../../components/SaveButton'
 import { Section } from '../../../../../../components/Section'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../../constants'

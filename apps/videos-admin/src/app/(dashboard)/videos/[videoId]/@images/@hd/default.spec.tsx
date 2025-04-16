@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react'
-import { graphql } from 'gql.tada'
 import React from 'react'
 
 import { ImageAspectRatio } from '../../../constants'
@@ -16,7 +15,7 @@ jest.mock('@apollo/client', () => {
 })
 
 // Mock the ImageDisplay component
-jest.mock('../_display/ImageDisplay', () => ({
+jest.mock('../_ImageDisplay/ImageDisplay', () => ({
   ImageDisplay: ({ src, alt, title, aspectRatio, videoId }) => (
     <div data-testid="image-display-mock">
       <div data-testid="src">{String(src || '')}</div>

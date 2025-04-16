@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 
 import EditEditionPage from './page'
 
@@ -26,38 +26,6 @@ jest.mock('./page', () => ({
 describe('EditEditionPage', () => {
   const mockVideoId = 'video-123'
   const mockEditionId = 'edition-456'
-
-  const mockGetEditionData = {
-    videoEdition: {
-      id: mockEditionId,
-      name: 'Test Edition',
-      videoSubtitles: [
-        {
-          id: 'sub-123',
-          primary: true,
-          language: {
-            id: 'lang-1',
-            name: [{ value: 'English' }]
-          }
-        },
-        {
-          id: 'sub-456',
-          primary: false,
-          language: {
-            id: 'lang-2',
-            name: [{ value: 'Spanish' }]
-          }
-        }
-      ]
-    }
-  }
-
-  const mockUpdateEditionData = {
-    videoEditionUpdate: {
-      id: mockEditionId,
-      name: 'Updated Edition'
-    }
-  }
 
   const setup = () => {
     // Mock implementation for the component

@@ -8,7 +8,6 @@ import { SnackbarProvider } from 'notistack'
 
 import {
   CREATE_VIDEO_SNIPPET,
-  GET_VIDEO_SNIPPET,
   UPDATE_VIDEO_SNIPPET,
   VideoSnippet
 } from './VideoSnippet'
@@ -36,20 +35,6 @@ const mockVideoSnippetResult = {
       ]
     }
   }
-}
-
-const mockGetVideoSnippet: MockedResponse<
-  ResultOf<typeof GET_VIDEO_SNIPPET>,
-  VariablesOf<typeof GET_VIDEO_SNIPPET>
-> = {
-  request: {
-    query: GET_VIDEO_SNIPPET,
-    variables: {
-      videoId: mockVideoId,
-      languageId: '529'
-    }
-  },
-  result: mockVideoSnippetResult
 }
 
 const mockCreateVideoSnippet: MockedResponse<

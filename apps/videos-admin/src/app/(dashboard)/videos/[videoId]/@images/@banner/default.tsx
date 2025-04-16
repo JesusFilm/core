@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 import { ImageAspectRatio } from '../../../constants'
-import { ImageDisplay } from '../_display/ImageDisplay'
+import { ImageDisplay } from '../_ImageDisplay/ImageDisplay'
 
 const GET_BANNER_IMAGE = graphql(`
   query GetBannerImage($id: ID!) {

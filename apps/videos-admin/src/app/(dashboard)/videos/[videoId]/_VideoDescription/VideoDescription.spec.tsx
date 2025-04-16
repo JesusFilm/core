@@ -7,7 +7,6 @@ import _unescape from 'lodash/unescape'
 
 import {
   CREATE_VIDEO_DESCRIPTION,
-  GET_VIDEO_DESCRIPTION,
   UPDATE_VIDEO_DESCRIPTION,
   VideoDescription
 } from './VideoDescription'
@@ -34,20 +33,6 @@ const mockVideoDescriptionResult = {
       ]
     }
   }
-}
-
-const mockGetVideoDescription: MockedResponse<
-  ResultOf<typeof GET_VIDEO_DESCRIPTION>,
-  VariablesOf<typeof GET_VIDEO_DESCRIPTION>
-> = {
-  request: {
-    query: GET_VIDEO_DESCRIPTION,
-    variables: {
-      videoId: mockVideoId,
-      languageId: '529'
-    }
-  },
-  result: mockVideoDescriptionResult
 }
 
 const mockCreateVideoDescription: MockedResponse<

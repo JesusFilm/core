@@ -5,7 +5,6 @@ import userEvent from '@testing-library/user-event'
 
 import {
   CREATE_VIDEO_IMAGE_ALT,
-  GET_VIDEO_IMAGE_ALT,
   UPDATE_VIDEO_IMAGE_ALT,
   VideoImageAlt
 } from './VideoImageAlt'
@@ -53,17 +52,6 @@ const mockVideoImageAltResult = {
       imageAlt: [mockImageAlt]
     }
   }
-}
-
-const mockGetVideoImageAlt = {
-  request: {
-    query: GET_VIDEO_IMAGE_ALT,
-    variables: {
-      id: mockVideoId,
-      languageId: '529'
-    }
-  },
-  result: mockVideoImageAltResult
 }
 
 const mockCreateVideoImageAlt = {
