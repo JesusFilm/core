@@ -1,6 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
+import Grid from '@mui/material/Grid2'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
@@ -164,22 +165,29 @@ export function TrashedJourneyList({
       {sortedJourneys == null ? (
         <LoadingJourneyList hideHelperText />
       ) : (
-        <Box>
-          {sortedJourneys.map((journey) => (
-            <JourneyProvider
-              key={journey.id}
-              value={{
-                journey: journey as unknown as JourneyFields,
-                variant: 'admin'
-              }}
-            >
-              <JourneyCard
-                key={journey.id}
-                journey={journey}
-                refetch={refetch}
-              />
-            </JourneyProvider>
-          ))}
+        <Box sx={{ mt: 5 }}>
+          <Grid 
+            container 
+            spacing={5}
+            rowSpacing={5}
+          >
+            {sortedJourneys.map((journey) => (
+              <Grid key={journey.id} size={{ xs: 12, sm: 6, md: 3 }}>
+                <JourneyProvider
+                  value={{
+                    journey: journey as unknown as JourneyFields,
+                    variant: 'admin'
+                  }}
+                >
+                  <JourneyCard
+                    key={journey.id}
+                    journey={journey}
+                    refetch={refetch}
+                  />
+                </JourneyProvider>
+              </Grid>
+            ))}
+          </Grid>
           {sortedJourneys.length === 0 && (
             <>
               <Card

@@ -1,5 +1,6 @@
 import { ApolloQueryResult, OperationVariables } from '@apollo/client'
 import Box from '@mui/material/Box'
+import Grid from '@mui/material/Grid2'
 import { User } from 'next-firebase-auth'
 import { ReactElement, useMemo } from 'react'
 
@@ -72,41 +73,42 @@ export function ActivePriorityList({
   }, [activeJourneys, sortOrder])
 
   return (
-    <>
-      {sortedActionRequiredJourneys.map((journey) => (
-        <JourneyCard
-          key={journey.id}
-          journey={journey}
-          refetch={refetch}
-          variant={JourneyCardVariant.actionRequired}
-        />
-      ))}
-      {sortedNewJourneys.map((journey) => (
-        <JourneyCard
-          key={journey.id}
-          journey={journey}
-          refetch={refetch}
-          variant={JourneyCardVariant.new}
-        />
-      ))}
-      {(sortedActionRequiredJourneys.length > 0 ||
-        sortedNewJourneys.length > 0) &&
-        sortedJourneys.length > 0 && (
-          <Box
-            aria-label="big-divider"
-            sx={{
-              height: 8,
-              width: '100%',
-              borderTop: '1px solid',
-              borderLeft: '1px solid',
-              borderRight: '1px solid',
-              borderColor: 'divider'
-            }}
-          />
-        )}
-      {sortedJourneys.map((journey) => (
-        <JourneyCard key={journey.id} journey={journey} refetch={refetch} />
-      ))}
-    </>
+    <Box sx={{ mt: 5 }}>
+      <Grid 
+        container 
+        spacing={5}
+        rowSpacing={5}
+      >
+        {sortedActionRequiredJourneys.map((journey) => (
+          <Grid key={journey.id} size={{ xs: 12, sm: 6, md: 3 }}>
+            <JourneyCard
+              key={journey.id}
+              journey={journey}
+              refetch={refetch}
+              variant={JourneyCardVariant.actionRequired}
+            />
+          </Grid>
+        ))}
+        {sortedNewJourneys.map((journey) => (
+          <Grid key={journey.id} size={{ xs: 12, sm: 6, md: 3 }}>
+            <JourneyCard
+              key={journey.id}
+              journey={journey}
+              refetch={refetch}
+              variant={JourneyCardVariant.new}
+            />
+          </Grid>
+        ))}
+        {sortedJourneys.map((journey) => (
+          <Grid key={journey.id} size={{ xs: 12, sm: 6, md: 3 }}>
+            <JourneyCard
+              key={journey.id}
+              journey={journey}
+              refetch={refetch}
+            />
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
   )
 }
