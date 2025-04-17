@@ -22,6 +22,14 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
-    journeyId: 'journey1'
+    journeyId: 'journey1',
+    disabled: false
+  }
+}
+
+export const Disabled: Story = {
+  args: {
+    journeyId: 'journey1',
+    disabled: true
   }
 }
