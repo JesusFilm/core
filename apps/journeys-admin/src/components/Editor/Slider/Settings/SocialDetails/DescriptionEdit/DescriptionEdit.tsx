@@ -55,7 +55,7 @@ export function DescriptionEdit(): ReactElement {
   const initialValues =
     journey != null
       ? {
-          seoDescription: journey.seoDescription ?? journey.description ?? ''
+          seoDescription: journey.seoDescription ?? ''
         }
       : null
 
@@ -77,7 +77,7 @@ export function DescriptionEdit(): ReactElement {
                 id="seoDescription"
                 name="seoDescription"
                 variant="filled"
-                label={t('Description')}
+                label={t('Secondary Text')}
                 fullWidth
                 multiline
                 maxRows={5}
@@ -107,7 +107,7 @@ export function DescriptionEdit(): ReactElement {
       ) : (
         <TextField
           variant="filled"
-          label={t('Description')}
+          label={t('Secondary Text')}
           fullWidth
           disabled
           helperText={t('Recommended length: up to 18 words')}

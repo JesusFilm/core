@@ -77,7 +77,7 @@ export function TitleEdit(): ReactElement {
                 id="seoTitle"
                 name="seoTitle"
                 variant="filled"
-                label={t('Title')}
+                label={t('Headline')}
                 fullWidth
                 multiline
                 maxRows={2}
@@ -104,7 +104,7 @@ export function TitleEdit(): ReactElement {
       ) : (
         <TextField
           variant="filled"
-          label={t('Title')}
+          label={t('Headline')}
           fullWidth
           disabled
           helperText={t('Recommended length: 5 words')}
