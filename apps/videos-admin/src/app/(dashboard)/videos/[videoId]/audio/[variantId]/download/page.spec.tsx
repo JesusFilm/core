@@ -10,7 +10,7 @@ jest.mock('next/navigation', () => ({
   })
 }))
 
-describe('DownloadPage', () => {
+describe('Audio Variant Download Page', () => {
   const mockVideoId = 'video-123'
   const mockVariantId = 'variant-456'
 
@@ -29,7 +29,7 @@ describe('DownloadPage', () => {
       }))
   })
 
-  it('redirects to the variant page', () => {
+  it('should redirect to the variant page with correct path', () => {
     render(
       <DownloadPage
         params={{ videoId: mockVideoId, variantId: mockVariantId }}
@@ -43,7 +43,7 @@ describe('DownloadPage', () => {
     )
   })
 
-  it('renders an empty fragment', () => {
+  it('should render an empty fragment (no visible UI)', () => {
     const { container } = render(
       <DownloadPage
         params={{ videoId: mockVideoId, variantId: mockVariantId }}
