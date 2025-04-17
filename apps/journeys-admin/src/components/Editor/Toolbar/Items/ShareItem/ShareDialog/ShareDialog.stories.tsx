@@ -1,8 +1,6 @@
-import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { action } from '@storybook/addon-actions'
 import { Meta, StoryObj } from '@storybook/react'
-import { ComponentProps } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { publishedJourney } from '@core/journeys/ui/TemplateView/data'
@@ -12,13 +10,13 @@ import { ApolloLoadingProvider } from '../../../../../../../test/ApolloLoadingPr
 
 import { ShareDialog } from './ShareDialog'
 
-const Demo: Meta<typeof ShareDialog> = {
+const ShareDialogStory: Meta<typeof ShareDialog> = {
   ...simpleComponentConfig,
   component: ShareDialog,
   title: 'Journeys-Admin/Editor/Toolbar/Items/ShareItem/ShareDialog'
 }
 
-const Template: StoryObj<ComponentProps<typeof ShareDialog>> = {
+const Template: StoryObj<typeof ShareDialog> = {
   render: (args) => (
     <ApolloLoadingProvider>
       <JourneyProvider value={{ journey: publishedJourney, variant: 'admin' }}>
@@ -30,7 +28,7 @@ const Template: StoryObj<ComponentProps<typeof ShareDialog>> = {
   )
 }
 
-export const Default = {
+export const Default: StoryObj<typeof ShareDialog> = {
   ...Template,
   args: {
     open: true,
@@ -42,7 +40,7 @@ export const Default = {
   }
 }
 
-export const WithoutCustomDomain = {
+export const WithoutCustomDomain: StoryObj<typeof ShareDialog> = {
   ...Template,
   args: {
     ...Default.args,
@@ -50,7 +48,8 @@ export const WithoutCustomDomain = {
   }
 }
 
-export const WithNullJourney = {
+export const WithNullJourney: StoryObj<typeof ShareDialog> = {
+  ...Template,
   render: (args) => (
     <ApolloLoadingProvider>
       <JourneyProvider value={{ journey: undefined, variant: 'admin' }}>
@@ -65,4 +64,4 @@ export const WithNullJourney = {
   }
 }
 
-export default Demo
+export default ShareDialogStory
