@@ -3,7 +3,7 @@ import React from 'react'
 
 import { ImageAspectRatio } from '../../../constants'
 
-import VideoHd from './default'
+import { BannerImage } from './BannerImage'
 
 // Mock Apollo Client
 jest.mock('@apollo/client', () => {
@@ -27,7 +27,7 @@ jest.mock('../_ImageDisplay/ImageDisplay', () => ({
   )
 }))
 
-describe('VideoHd', () => {
+describe('VideoBanner', () => {
   const mockVideoId = 'video-123'
 
   // Setup useSuspenseQuery mock for each test
@@ -36,7 +36,7 @@ describe('VideoHd', () => {
   })
 
   it('renders the ImageDisplay with the correct props when image URL is available', () => {
-    const mockImageUrl = 'https://example.com/hd-image.jpg'
+    const mockImageUrl = 'https://example.com/banner-image.jpg'
 
     // Setup mock data
     const mockData = {
@@ -45,7 +45,7 @@ describe('VideoHd', () => {
         images: [
           {
             id: 'image-123',
-            videoStill: mockImageUrl
+            mobileCinematicHigh: mockImageUrl
           }
         ]
       }
@@ -55,14 +55,14 @@ describe('VideoHd', () => {
     const { useSuspenseQuery } = require('@apollo/client')
     useSuspenseQuery.mockReturnValue({ data: mockData })
 
-    render(<VideoHd params={{ videoId: mockVideoId }} />)
+    render(<BannerImage videoId={mockVideoId} />)
 
     expect(screen.getByTestId('image-display-mock')).toBeInTheDocument()
     expect(screen.getByTestId('src')).toHaveTextContent(mockImageUrl)
-    expect(screen.getByTestId('alt')).toHaveTextContent('HD image')
-    expect(screen.getByTestId('title')).toHaveTextContent('HD image')
+    expect(screen.getByTestId('alt')).toHaveTextContent('banner image')
+    expect(screen.getByTestId('title')).toHaveTextContent('banner image')
     expect(screen.getByTestId('aspect-ratio')).toHaveTextContent(
-      ImageAspectRatio.hd
+      ImageAspectRatio.banner
     )
     expect(screen.getByTestId('video-id')).toHaveTextContent(mockVideoId)
   })
@@ -75,7 +75,7 @@ describe('VideoHd', () => {
         images: [
           {
             id: 'image-123',
-            videoStill: null
+            mobileCinematicHigh: null
           }
         ]
       }
@@ -85,14 +85,14 @@ describe('VideoHd', () => {
     const { useSuspenseQuery } = require('@apollo/client')
     useSuspenseQuery.mockReturnValue({ data: mockData })
 
-    render(<VideoHd params={{ videoId: mockVideoId }} />)
+    render(<BannerImage videoId={mockVideoId} />)
 
     expect(screen.getByTestId('image-display-mock')).toBeInTheDocument()
     expect(screen.getByTestId('src')).toHaveTextContent('')
-    expect(screen.getByTestId('alt')).toHaveTextContent('HD image')
-    expect(screen.getByTestId('title')).toHaveTextContent('HD image')
+    expect(screen.getByTestId('alt')).toHaveTextContent('banner image')
+    expect(screen.getByTestId('title')).toHaveTextContent('banner image')
     expect(screen.getByTestId('aspect-ratio')).toHaveTextContent(
-      ImageAspectRatio.hd
+      ImageAspectRatio.banner
     )
     expect(screen.getByTestId('video-id')).toHaveTextContent(mockVideoId)
   })
@@ -110,14 +110,14 @@ describe('VideoHd', () => {
     const { useSuspenseQuery } = require('@apollo/client')
     useSuspenseQuery.mockReturnValue({ data: mockData })
 
-    render(<VideoHd params={{ videoId: mockVideoId }} />)
+    render(<BannerImage videoId={mockVideoId} />)
 
     expect(screen.getByTestId('image-display-mock')).toBeInTheDocument()
     expect(screen.getByTestId('src')).toHaveTextContent('')
-    expect(screen.getByTestId('alt')).toHaveTextContent('HD image')
-    expect(screen.getByTestId('title')).toHaveTextContent('HD image')
+    expect(screen.getByTestId('alt')).toHaveTextContent('banner image')
+    expect(screen.getByTestId('title')).toHaveTextContent('banner image')
     expect(screen.getByTestId('aspect-ratio')).toHaveTextContent(
-      ImageAspectRatio.hd
+      ImageAspectRatio.banner
     )
     expect(screen.getByTestId('video-id')).toHaveTextContent(mockVideoId)
   })

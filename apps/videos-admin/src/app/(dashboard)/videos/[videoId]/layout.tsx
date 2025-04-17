@@ -17,6 +17,7 @@ import { LockedVideoView } from './_LockedVideo'
 import { VideoDescription } from './_VideoDescription'
 import { VideoViewFallback } from './_VideoFallback'
 import { VideoImageAlt } from './_VideoImageAlt'
+import { VideoImages } from './_VideoImages'
 import { VideoInformation } from './_VideoInformation'
 import { VideoSnippet } from './_VideoSnippet'
 import { VideoTabView } from './_VideoTabs'
@@ -37,7 +38,6 @@ const GET_TAB_DATA = graphql(`
 
 interface VideoViewLayoutProps {
   children: ReactNode
-  images: ReactNode
   studyQuestions: ReactNode
   params: {
     videoId: string
@@ -46,7 +46,6 @@ interface VideoViewLayoutProps {
 
 export default function VideoViewLayout({
   children,
-  images,
   studyQuestions,
   params: { videoId }
 }: VideoViewLayoutProps): ReactNode {
@@ -105,7 +104,7 @@ export default function VideoViewLayout({
                 </Section>
                 <Section title="Images" variant="outlined">
                   <Stack gap={4}>
-                    {images}
+                    <VideoImages videoId={videoId} />
                     <VideoImageAlt videoId={videoId} />
                   </Stack>
                 </Section>
