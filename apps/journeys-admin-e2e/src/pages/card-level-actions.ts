@@ -428,9 +428,11 @@ export class CardLevelActionPage {
     ).toBeHidden({ timeout: sixtySecondsTimeout })
   }
 
-  async clickleftSideArrowIcon() {
+  async clickRightSideArrowIcon() {
     await this.page
-      .locator('div[slot="container-start"] svg[data-testid="ChevronLeftIcon"]')
+      .locator(
+        'div[slot="container-start"] svg[data-testid="ChevronRightIcon"]'
+      )
       .click()
   }
 
