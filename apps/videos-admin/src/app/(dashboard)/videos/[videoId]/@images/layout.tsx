@@ -3,11 +3,13 @@ import Typography from '@mui/material/Typography'
 import { ReactElement, ReactNode } from 'react'
 
 interface VideoImagesLayoutProps {
+  children: ReactNode
   banner: ReactNode
   hd: ReactNode
 }
 
 export default function VideoImagesLayout({
+  children,
   banner,
   hd
 }: VideoImagesLayoutProps): ReactElement {
@@ -25,6 +27,7 @@ export default function VideoImagesLayout({
         </Typography>
         {hd}
       </Grid>
+      {children}
     </Grid>
   )
 }
