@@ -132,7 +132,7 @@ export default function AddAudioLanguageDialog({
               scroll: false
             })
           },
-          onError: (error) => {
+          onError: (_error) => {
             enqueueSnackbar('Error adding audio language', {
               variant: 'error'
             })
