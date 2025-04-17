@@ -8,48 +8,48 @@ import { useEffect, useState } from 'react'
 import { ImageAspectRatio } from '../../../constants'
 import { ImageDisplay } from '../_ImageDisplay/ImageDisplay'
 
-const GET_HD_IMAGE = graphql(`
+const GET_BANNER_IMAGE = graphql(`
   query GetBannerImage($id: ID!) {
     adminVideo(id: $id) {
       id
-      images(aspectRatio: hd) {
+      images(aspectRatio: banner) {
         id
-        videoStill
+        mobileCinematicHigh
       }
     }
   }
 `)
 
-interface VideoHdProps {
-  params: {
-    videoId: string
-  }
+interface VideoBannerProps {
+  videoId: string
 }
 
-export default function VideoHd({ params: { videoId } }: VideoHdProps) {
+export function BannerImage({ videoId }: VideoBannerProps) {
   const pathname = usePathname()
   const [reloadOnPathChange, setReloadOnPathChange] = useState(false)
 
-  const { data, refetch } = useSuspenseQuery(GET_HD_IMAGE, {
+  const { data, refetch } = useSuspenseQuery(GET_BANNER_IMAGE, {
     variables: {
       id: videoId
     }
   })
 
   // Handle potential null/undefined values
-  const imageUrl = data?.adminVideo?.images?.[0]?.videoStill ?? undefined
+  const imageUrl =
+    data?.adminVideo?.images?.[0]?.mobileCinematicHigh ?? undefined
 
   // refresh image if banner image may have changed
   useEffect(() => {
     if (reloadOnPathChange) void refetch()
-    setReloadOnPathChange(pathname?.includes('image/hd') ?? false)
+    setReloadOnPathChange(pathname?.includes('image/banner') ?? false)
   }, [pathname])
+
   return (
     <ImageDisplay
       src={imageUrl}
-      alt="HD image"
-      title="HD image"
-      aspectRatio={ImageAspectRatio.hd}
+      alt="banner image"
+      title="banner image"
+      aspectRatio={ImageAspectRatio.banner}
       videoId={videoId}
     />
   )
