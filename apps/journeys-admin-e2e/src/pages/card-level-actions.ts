@@ -430,9 +430,7 @@ export class CardLevelActionPage {
 
   async clickRightSideArrowIcon() {
     await this.page
-      .locator(
-        'div[slot="container-start"] svg[data-testid="ChevronRightIcon"]'
-      )
+      .locator('div[slot="container-end"] svg[data-testid="ChevronRightIcon"]')
       .click()
   }
 
