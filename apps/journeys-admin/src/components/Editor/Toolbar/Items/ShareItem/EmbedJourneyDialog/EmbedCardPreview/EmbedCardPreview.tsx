@@ -81,7 +81,7 @@ export function EmbedCardPreview(): ReactElement {
             themeMode={journey?.themeMode ?? ThemeMode.light}
           >
             {block != null ? (
-              <Box sx={{ height: '100%' }}>
+              <Box sx={{ height: '100%', borderRadius: 4 }}>
                 <BlockRenderer
                   block={block}
                   wrappers={{
