@@ -164,7 +164,7 @@ export default function AddVideoVariantDownloadDialog({
       if (transcodeData?.transcodeAsset) {
         setTranscodeJobId(transcodeData.transcodeAsset)
       }
-    } catch (error) {
+    } catch (_error) {
       enqueueSnackbar('Failed to start transcoding', {
         variant: 'error'
       })

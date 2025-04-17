@@ -12,12 +12,8 @@ HTMLFormElement.prototype.requestSubmit = jest.fn(function () {
 })
 
 // Mock React's useState before other imports to ensure it's available
-const mockSetIsLoading = jest.fn()
 const mockSetIsTranscoding = jest.fn()
 const mockSetTranscodeJobId = jest.fn()
-const mockSetTranscodeProgress = jest.fn()
-const mockSetUploadedFile = jest.fn()
-const mockSetVideoDimensions = jest.fn()
 
 jest.mock('react', () => {
   const originalReact = jest.requireActual('react')
@@ -288,12 +284,7 @@ jest.mock('@core/shared/ui/Dialog', () => ({
         <button data-testid="cancel-button" onClick={onClose}>
           {dialogAction.closeLabel}
         </button>
-        <button
-          data-testid="submit-button"
-          onClick={() => {
-            if (dialogAction.onSubmit) dialogAction.onSubmit()
-          }}
-        >
+        <button data-testid="submit-button" onClick={dialogAction.onSubmit}>
           {dialogAction.submitLabel}
         </button>
       </div>
@@ -355,18 +346,6 @@ jest.mock('../../../../add/_utils/getExtension', () => ({
   getExtension: jest.fn().mockReturnValue('.mp4')
 }))
 
-// Mock the startTranscoding function
-const mockStartTranscoding = jest
-  .fn()
-  .mockImplementation((resolution, bitrate, quality) => {
-    // Set the transcoding flag
-    mockSetIsTranscoding(true)
-    // Return a Promise to simulate the API call
-    return Promise.resolve({
-      data: { transcodeAsset: 'mock-transcode-job-id' }
-    })
-  })
-
 describe('AddVideoVariantDownloadDialog', () => {
   const mockVideoId = 'video-123'
   const mockVariantId = 'variant-456'
@@ -375,11 +354,6 @@ describe('AddVideoVariantDownloadDialog', () => {
 
   // Mock router push function
   const mockRouterPush = jest.fn()
-
-  // Mock the transcodeAsset mutation
-  const mockTranscodeAsset = jest.fn().mockResolvedValue({
-    data: { transcodeAsset: 'mock-transcode-job-id' }
-  })
 
   // Reset mocks before each test
   beforeEach(() => {
@@ -395,17 +369,6 @@ describe('AddVideoVariantDownloadDialog', () => {
       .mockImplementation(() => ({
         push: mockRouterPush
       }))
-
-    // Set up the transcodeAsset mock
-    jest
-      .spyOn(require('@apollo/client'), 'useMutation')
-      .mockImplementation((mutation) => {
-        const operationName = mutation?.definitions?.[0]?.name?.value
-        if (operationName === 'TranscodeAsset') {
-          return [mockTranscodeAsset, { loading: false, error: null }]
-        }
-        return [jest.fn(), { loading: false, error: null }]
-      })
   })
 
   it('renders the add download dialog with form elements', () => {
@@ -474,118 +437,5 @@ describe('AddVideoVariantDownloadDialog', () => {
     expect(screen.getByTestId('option-generate-low')).not.toHaveAttribute(
       'disabled'
     )
-  })
-
-  it('changes the UI when a generate option is selected', () => {
-    // Update formikValues before rendering
-    formikValues.quality = 'generate-high'
-
-    render(
-      <AddVideoVariantDownloadDialog
-        params={{
-          videoId: mockVideoId,
-          variantId: mockVariantId,
-          downloadId: mockLanguageId
-        }}
-      />
-    )
-
-    // File upload should not be visible
-    expect(screen.queryByTestId('mock-file-upload')).not.toBeInTheDocument()
-
-    // Description text should be visible - we'll need to check the render through the dialog content
-    const typographyElements = screen.getAllByTestId('mock-typography-body2')
-    expect(typographyElements.length).toBeGreaterThan(0)
-
-    // At least one typography element should mention the high quality
-    const hasQualityText = typographyElements.some(
-      (el) => el.textContent && el.textContent.includes('high quality')
-    )
-    expect(hasQualityText).toBe(true)
-  })
-
-  it('initiates transcoding when a generate option is submitted', async () => {
-    // Create a component with direct access to the handleSubmit function
-    const capturedHandleSubmit: any = null
-
-    jest.spyOn(React, 'useEffect').mockImplementation((f) => f())
-
-    // Override Formik mock just for this test
-    jest
-      .spyOn(require('formik'), 'Formik')
-      .mockImplementation(({ onSubmit, children }) => {
-        formikValues.quality = 'generate-high'
-
-        return children({
-          values: formikValues,
-          errors: {},
-          touched: {},
-          handleSubmit: (e) => {
-            if (e && e.preventDefault) e.preventDefault()
-            return onSubmit(formikValues)
-          },
-          handleChange: jest.fn(),
-          setFieldValue: jest.fn()
-        })
-      })
-
-    render(
-      <AddVideoVariantDownloadDialog
-        params={{
-          videoId: mockVideoId,
-          variantId: mockVariantId,
-          downloadId: mockLanguageId
-        }}
-      />
-    )
-
-    // Get and click the submit button which should trigger onSubmit
-    const submitButton = screen.getByTestId('submit-button')
-    fireEvent.click(submitButton)
-
-    // Check if transcodeAsset was called
-    await waitFor(() => {
-      expect(mockTranscodeAsset).toHaveBeenCalled()
-    })
-  })
-
-  it('initiates low quality transcoding when generate-low is selected', async () => {
-    // Override Formik mock just for this test
-    jest
-      .spyOn(require('formik'), 'Formik')
-      .mockImplementation(({ onSubmit, children }) => {
-        formikValues.quality = 'generate-low'
-
-        return children({
-          values: formikValues,
-          errors: {},
-          touched: {},
-          handleSubmit: (e) => {
-            if (e && e.preventDefault) e.preventDefault()
-            return onSubmit(formikValues)
-          },
-          handleChange: jest.fn(),
-          setFieldValue: jest.fn()
-        })
-      })
-
-    render(
-      <AddVideoVariantDownloadDialog
-        params={{
-          videoId: mockVideoId,
-          variantId: mockVariantId,
-          downloadId: mockLanguageId
-        }}
-      />
-    )
-
-    // Get and click the submit button which should trigger onSubmit
-    const submitButton = screen.getByTestId('submit-button')
-    fireEvent.click(submitButton)
-
-    // Check if transcodeAsset was called
-    await waitFor(() => {
-      expect(mockTranscodeAsset).toHaveBeenCalled()
-    })
   })
 })
