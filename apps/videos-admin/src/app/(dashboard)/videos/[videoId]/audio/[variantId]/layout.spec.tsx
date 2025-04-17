@@ -15,7 +15,7 @@ jest.mock('../_VariantVideo', () => ({
 
 // Mock the Dialog component
 jest.mock('@core/shared/ui/Dialog', () => ({
-  Dialog: ({ children, dialogTitle, onClose, fullscreen, divider }) => (
+  Dialog: ({ children, dialogTitle, onClose }) => (
     <div data-testid="mock-dialog">
       <div data-testid="dialog-title">{dialogTitle.title}</div>
       <button data-testid="close-button" onClick={onClose} />
@@ -43,7 +43,7 @@ jest.mock('@mui/material/Stack', () => ({
 
 jest.mock('@mui/material/Box', () => ({
   __esModule: true,
-  default: ({ children, sx }) => <div data-testid="mock-box">{children}</div>
+  default: ({ children }) => <div data-testid="mock-box">{children}</div>
 }))
 
 jest.mock('@mui/material/Typography', () => ({
@@ -114,7 +114,7 @@ jest.mock('@mui/material/IconButton', () => ({
 
 // Mock FormSelectField component
 jest.mock('../../../../../../components/FormSelectField', () => ({
-  FormSelectField: ({ children, name, label, options, onChange, sx }) => (
+  FormSelectField: ({ children, name, label, options, onChange }) => (
     <div data-testid="mock-form-select-field" data-name={name}>
       <label data-testid="mock-form-select-label">{label}</label>
       <select data-testid="mock-form-select" onChange={onChange}>

@@ -14,7 +14,7 @@ jest.mock('@apollo/client', () => {
   const originalModule = jest.requireActual('@apollo/client')
   return {
     ...originalModule,
-    useSuspenseQuery: jest.fn((query) => {
+    useSuspenseQuery: jest.fn((_query) => {
       return {
         data: {
           adminVideo: {
@@ -61,12 +61,12 @@ jest.mock('@core/shared/ui/Dialog', () => ({
 
 // Mock LanguageAutocomplete component
 jest.mock('@core/shared/ui/LanguageAutocomplete', () => ({
-  LanguageAutocomplete: ({ onChange, value, renderInput, disabled }) => (
+  LanguageAutocomplete: ({ onChange, disabled }) => (
     <div>
       <input
         aria-label="Language"
         data-testid="language-input"
-        onChange={(e) =>
+        onChange={(_e) =>
           onChange({
             id: 'lang-2',
             slug: 'spanish',
@@ -100,7 +100,7 @@ jest.mock('./_AudioLanguageFileUpload', () => ({
 jest.mock('@mui/material/Select', () => {
   return {
     __esModule: true,
-    default: ({ children, onChange, disabled, value, label, ...props }) => (
+    default: ({ children, onChange, disabled, value, label }) => (
       <div>
         <select
           aria-label={label}

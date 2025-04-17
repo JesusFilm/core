@@ -6,9 +6,7 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import FormControl from '@mui/material/FormControl'
 import IconButton from '@mui/material/IconButton'
-import MenuItem from '@mui/material/MenuItem'
 import Paper from '@mui/material/Paper'
-import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import Table from '@mui/material/Table'
@@ -145,7 +143,7 @@ export default function VariantDialog({
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
         >
-          {({ values, handleChange, dirty, resetForm }) => (
+          {({ handleChange, dirty, resetForm }) => (
             <Form>
               <Stack gap={4}>
                 <Box

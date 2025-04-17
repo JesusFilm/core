@@ -28,7 +28,7 @@ jest.mock('@apollo/client', () => {
 
 // Mock OrderedList component
 jest.mock('../../../../../components/OrderedList', () => ({
-  OrderedList: ({ children, onOrderUpdate, items }) => (
+  OrderedList: ({ children, items }) => (
     <div data-testid="mock-ordered-list" data-items-count={items.length}>
       {children}
     </div>

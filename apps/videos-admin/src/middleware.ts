@@ -63,7 +63,7 @@ export default async function middleware(
 
       return NextResponse.next({ request: { headers } })
     },
-    handleInvalidToken: async (reason) => {
+    handleInvalidToken: async (_reason) => {
       if (!testPathnameRegex(publicPaths, req.nextUrl.pathname)) {
         req.nextUrl.pathname = authPage
         return NextResponse.redirect(req.nextUrl)
