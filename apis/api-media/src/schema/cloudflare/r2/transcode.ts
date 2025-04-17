@@ -51,6 +51,19 @@ const completeJob = async (jobId: string) => {
   }
 }
 
+builder.queryFields((t) => ({
+  getTranscodeAssetProgress: t.withAuth({ isPublisher: true }).field({
+    type: 'Int',
+    args: {
+      jobId: t.arg({ type: 'String', required: true })
+    },
+    resolve: async (_parent, { jobId }) => {
+      const job = await queue.getJob(jobId)
+      if (!job) throw new Error('Job not found')
+      return Number(job.progress)
+    }
+  })
+}))
 builder.mutationFields((t) => ({
   transcodeAsset: t.withAuth({ isPublisher: true }).field({
     type: 'String',
@@ -86,17 +99,6 @@ builder.mutationFields((t) => ({
       })
 
       return job.id
-    }
-  }),
-  getTranscodeAssetProgress: t.withAuth({ isPublisher: true }).field({
-    type: 'Int',
-    args: {
-      jobId: t.arg({ type: 'String', required: true })
-    },
-    resolve: async (_parent, { jobId }) => {
-      const job = await queue.getJob(jobId)
-      if (!job) throw new Error('Job not found')
-      return Number(job.progress)
     }
   })
 }))
