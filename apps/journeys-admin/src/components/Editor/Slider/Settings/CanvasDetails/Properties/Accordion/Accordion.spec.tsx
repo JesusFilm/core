@@ -106,4 +106,56 @@ describe('accordion', () => {
     expect(within(summary).getByText('name')).toBeInTheDocument()
     expect(within(summary).queryAllByRole('heading')).toHaveLength(1)
   })
+
+  it('should render switch', () => {
+    const mockToggle = jest.fn()
+    render(
+      <ThemeProvider>
+        <EditorProvider initialState={{}}>
+          <Accordion
+            id="custom-id"
+            icon={<>test</>}
+            name="name"
+            param="test-params"
+            switchProps={{
+              handleToggle: mockToggle,
+              checked: true
+            }}
+          >
+            test
+          </Accordion>
+          <TestEditorState />
+        </EditorProvider>
+      </ThemeProvider>
+    )
+
+    expect(screen.getByRole('checkbox')).toBeInTheDocument()
+  })
+
+  it('should emit toggle event when switch is clicked', () => {
+    const mockToggle = jest.fn()
+    render(
+      <ThemeProvider>
+        <EditorProvider initialState={{}}>
+          <Accordion
+            id="custom-id"
+            icon={<>test</>}
+            name="name"
+            param="test-params"
+            switchProps={{
+              handleToggle: mockToggle,
+              checked: true
+            }}
+          >
+            test
+          </Accordion>
+          <TestEditorState />
+        </EditorProvider>
+      </ThemeProvider>
+    )
+
+    fireEvent.click(screen.getByRole('checkbox'))
+
+    expect(mockToggle).toHaveBeenCalled()
+  })
 })
