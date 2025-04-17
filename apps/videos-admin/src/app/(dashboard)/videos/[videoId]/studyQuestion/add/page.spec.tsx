@@ -51,7 +51,7 @@ jest.mock('formik', () => {
   const originalModule = jest.requireActual('formik')
   return {
     ...originalModule,
-    Formik: ({ initialValues, onSubmit, validationSchema, children }) => {
+    Formik: ({ initialValues, onSubmit, children }) => {
       // Create mock Formik context values
       const formikBag = {
         values: { value: 'New study question' },

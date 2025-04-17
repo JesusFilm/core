@@ -16,6 +16,7 @@ jest.mock('next/navigation', () => ({
 jest.mock('next/image', () => ({
   __esModule: true,
   default: ({ src, alt, fill, style, priority }: any) => (
+    // eslint-disable-next-line @next/next/no-img-element
     <img
       src={src}
       alt={alt}
@@ -82,7 +83,7 @@ jest.mock('@mui/material/Stack', () => ({
 
 jest.mock('@mui/material/IconButton', () => ({
   __esModule: true,
-  default: ({ children, onClick, size, sx, ...props }: any) => (
+  default: ({ children, onClick, ...props }: any) => (
     <button data-testid="mui-icon-button" onClick={onClick} {...props}>
       {children}
     </button>
@@ -100,7 +101,7 @@ jest.mock('@mui/material/Tooltip', () => ({
 
 jest.mock('@mui/material/Typography', () => ({
   __esModule: true,
-  default: ({ children, variant, fontSize, ...props }: any) => (
+  default: ({ children, ...props }: any) => (
     <div data-testid="mui-typography" {...props}>
       {children}
     </div>

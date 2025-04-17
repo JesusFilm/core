@@ -152,7 +152,7 @@ jest.mock('../../../../../../../../../components/FileUpload', () => ({
 // Mock Material UI components
 jest.mock('@mui/material/Dialog', () => ({
   __esModule: true,
-  default: ({ children, open, onClose }) => (
+  default: ({ children, onClose }) => (
     <div data-testid="mock-dialog" onClick={onClose}>
       {children}
     </div>
