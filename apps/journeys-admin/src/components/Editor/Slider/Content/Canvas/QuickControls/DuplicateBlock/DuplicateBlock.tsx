@@ -165,6 +165,9 @@ export function DuplicateBlock({
       disabled={disableAction}
       onMouseUp={handleDuplicateBlock}
       data-testid="duplicate-block"
+      sx={{
+        p: 1
+      }}
     >
       <CopyLeftIcon />
     </IconButton>
