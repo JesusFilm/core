@@ -75,11 +75,15 @@ export function ShareDialog({
   const buttonsDisabled = journey == null
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      dialogTitle={{
+        title: t('Share This Journey'),
+        closeButton: true
+      }}
+    >
       <Stack direction="column" spacing={4}>
-        <Typography variant="subtitle2" gutterBottom>
-          {t('Share This Journey')}
-        </Typography>
         <CopyTextField value={shareUrl} />
         <Stack
           direction={{ xs: 'column', sm: 'row' }}

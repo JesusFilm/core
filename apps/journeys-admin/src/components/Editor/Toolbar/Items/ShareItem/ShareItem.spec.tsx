@@ -164,7 +164,9 @@ describe('ShareItem', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(screen.getByRole('button', { name: 'Share' }))
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Share' }))
+    })
     fireEvent.keyDown(screen.getByRole('dialog'), {
       key: 'Escape',
       code: 'Escape'
