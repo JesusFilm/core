@@ -1,1 +1,0 @@
-export { EditionView } from './EditionView'

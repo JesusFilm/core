@@ -29,7 +29,7 @@ import Lock1 from '@core/shared/ui/icons/Lock1'
 import { PublishedChip } from '../../../../components/PublishedChip'
 import { useVideoFilter } from '../../../../libs/useVideoFilter'
 
-import { VideoListHeader } from './VideoListHeader'
+import { VideoListHeader } from './_VideoListHeader'
 
 function LockedCell(
   params: GridRenderCellParams<GridValidRowModel, boolean>

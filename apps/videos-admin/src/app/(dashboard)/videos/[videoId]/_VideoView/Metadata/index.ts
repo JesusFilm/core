@@ -1,1 +1,0 @@
-export { Metadata } from './Metadata'
