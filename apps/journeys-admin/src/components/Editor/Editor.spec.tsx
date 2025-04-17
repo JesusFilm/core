@@ -107,6 +107,10 @@ describe('Editor', () => {
     } as unknown as NextRouter)
   })
 
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
+
   it('should render the Toolbar', () => {
     render(
       <MockedProvider>
@@ -121,6 +125,7 @@ describe('Editor', () => {
   })
 
   it('should render the Fab', async () => {
+    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
     render(
       <MockedProvider>
         <SnackbarProvider>
@@ -207,10 +212,9 @@ describe('Editor', () => {
     )
   })
 
-  describe('smDown', () => {
-    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
-
+  describe('mdDown', () => {
     it('should render the Slider', async () => {
+      ;(useMediaQuery as jest.Mock).mockImplementation(() => false)
       render(
         <MockedProvider>
           <SnackbarProvider>

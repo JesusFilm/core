@@ -36,7 +36,7 @@ export function Editor({
   initialState,
   user
 }: EditorProps): ReactElement {
-  const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'))
+  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
   const steps =
     journey != null
       ? (transformer(journey.blocks ?? []) as Array<TreeBlock<StepBlock>>)
@@ -58,7 +58,7 @@ export function Editor({
         <HotkeysProvider>
           <Hotkeys />
           <Toolbar user={user} />
-          {smDown ? <Slider /> : <SinglePageEditor />}
+          {mdUp ? <SinglePageEditor /> : <Slider />}
           <Fab variant="mobile" />
         </HotkeysProvider>
       </EditorProvider>
