@@ -98,12 +98,24 @@ export async function deleteVideo(
 }
 
 export async function enableDownload(
-  videoId: string,
+  assetId: string,
   userGenerated: boolean,
   resolution: string
 ): Promise<void> {
+  // get existing static renditions
+  const existingAsset =
+    await getClient(userGenerated).video.assets.retrieve(assetId)
+
+  // skip if the resolution already exists
+  if (
+    existingAsset.static_renditions?.files?.some(
+      (file) => file.resolution === resolution
+    )
+  )
+    return
+
   await getClient(userGenerated).post(
-    `/video/v1/assets/${videoId}/static_renditions`,
+    `/video/v1/assets/${assetId}/static-renditions`,
     {
       body: {
         resolution
