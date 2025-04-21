@@ -271,7 +271,15 @@ builder.mutationFields((t) => ({
           extensions: { code: 'BAD_REQUEST' }
         })
       }
-      await enableDownload(id, false, res)
+      const video = await prisma.muxVideo.findUniqueOrThrow({
+        where: { id }
+      })
+      if (video.assetId == null) {
+        throw new GraphQLError('Asset not found', {
+          extensions: { code: 'NOT_FOUND' }
+        })
+      }
+      await enableDownload(video.assetId, false, res)
       return await prisma.muxVideo.update({
         ...query,
         where: { id },
