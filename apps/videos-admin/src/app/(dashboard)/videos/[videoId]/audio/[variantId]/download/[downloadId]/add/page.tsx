@@ -45,6 +45,9 @@ const GET_ADMIN_VIDEO_VARIANT = graphql(`
       downloads {
         id
         quality
+        asset {
+          id
+        }
       }
     }
   }
@@ -136,7 +139,8 @@ export default function AddVideoVariantDownloadDialog({
   const startTranscoding = async (
     resolution: string,
     bitrate: string,
-    quality: string
+    quality: string,
+    assetId: string
   ): Promise<void> => {
     if (data.videoVariant.asset?.id == null) {
       return
@@ -152,7 +156,7 @@ export default function AddVideoVariantDownloadDialog({
       const { data: transcodeData } = await transcodeAsset({
         variables: {
           input: {
-            r2AssetId: data.videoVariant.asset.id,
+            r2AssetId: assetId,
             resolution,
             videoBitrate: bitrate,
             outputFilename,
@@ -201,14 +205,24 @@ export default function AddVideoVariantDownloadDialog({
   })
 
   const handleSubmit = async (values: FormikValues): Promise<void> => {
+    const assetId =
+      values.quality === 'generate-low-from-high'
+        ? data.videoVariant.downloads.find(
+            (download) => download.quality === 'high'
+          )?.asset?.id
+        : data.videoVariant.asset?.id
+
+    if (assetId == null) {
+      return
+    }
     // Handle generate qualities
     if (values.quality.startsWith('generate-')) {
       const quality = values.quality.replace('generate-', '')
 
       if (quality === 'high') {
-        await startTranscoding('720p', '2500', 'high')
+        await startTranscoding('720p', '2500', 'high', assetId)
       } else if (quality === 'low') {
-        await startTranscoding('270p', '500', 'low')
+        await startTranscoding('270p', '500', 'low', assetId)
       }
 
       return
@@ -369,6 +383,21 @@ export default function AddVideoVariantDownloadDialog({
                     Generate low
                     {!data.videoVariant.asset?.id
                       ? ' (master unavailable)'
+                      : ''}
+                  </MenuItem>
+                  <MenuItem
+                    value="generate-low-from-high"
+                    disabled={
+                      !data.videoVariant.downloads.some(
+                        (download) => download.quality === 'high'
+                      )
+                    }
+                  >
+                    Generate low from high
+                    {!data.videoVariant.downloads.some(
+                      (download) => download.quality === 'high'
+                    )
+                      ? ' (no high quality download available)'
                       : ''}
                   </MenuItem>
                 </Select>
