@@ -22,7 +22,10 @@ jest.mock('./service', () => ({
   deleteVideo: jest.fn().mockResolvedValue({
     id: 'assetId'
   }),
-  enableDownload: jest.fn().mockResolvedValue(undefined)
+  enableDownload: jest.fn().mockResolvedValue(undefined),
+  getUpload: jest.fn().mockResolvedValue({
+    asset_id: 'assetId'
+  })
 }))
 
 describe('mux/video', () => {
@@ -440,15 +443,15 @@ describe('mux/video', () => {
 
     describe('enableMuxDownload', () => {
       const ENABLE_MUX_DOWNLOAD = graphql(`
-        mutation EnableMuxDownload($id: ID!) {
-          enableMuxDownload(id: $id) {
+        mutation EnableMuxDownload($id: ID!, $resolution: String) {
+          enableMuxDownload(id: $id, resolution: $resolution) {
             id
             downloadable
           }
         }
       `)
 
-      it('should enable download for a video', async () => {
+      it('should enable download for a video with default resolution', async () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
@@ -475,7 +478,52 @@ describe('mux/video', () => {
           }
         })
 
-        expect(enableDownload).toHaveBeenCalledWith('videoId', false)
+        expect(enableDownload).toHaveBeenCalledWith('videoId', false, '1080p')
+
+        // Check that the database was updated
+        expect(prismaMock.muxVideo.update).toHaveBeenCalledWith({
+          where: { id: 'videoId' },
+          data: {
+            downloadable: true
+          }
+        })
+
+        // Check the response
+        expect(result).toHaveProperty('data.enableMuxDownload', {
+          id: 'videoId',
+          downloadable: true
+        })
+      })
+
+      it('should enable download for a video with custom resolution', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        prismaMock.muxVideo.update.mockResolvedValue({
+          id: 'videoId',
+          playbackId: 'playbackId',
+          uploadId: 'uploadId',
+          assetId: 'assetId',
+          duration: 10,
+          name: 'videoName',
+          uploadUrl: null,
+          userId: 'testUserId',
+          createdAt: new Date(),
+          readyToStream: true,
+          downloadable: true,
+          updatedAt: new Date()
+        })
+        const result = await publisherClient({
+          document: ENABLE_MUX_DOWNLOAD,
+          variables: {
+            id: 'videoId',
+            resolution: '720p'
+          }
+        })
+
+        expect(enableDownload).toHaveBeenCalledWith('videoId', false, '720p')
 
         // Check that the database was updated
         expect(prismaMock.muxVideo.update).toHaveBeenCalledWith({
