@@ -81,6 +81,7 @@ enum ButtonAction {
   NavigateToBlockAction
   LinkAction
   EmailAction
+  ChatAction
 }
 
 enum VideoBlockSource {
@@ -160,6 +161,7 @@ model Visitor {
   lastChatPlatform          MessagePlatform?
   lastStepViewedAt          DateTime?
   lastLinkAction            String?
+  lastChatAction            String?
   lastTextResponse          String?
   lastRadioQuestion         String?
   lastRadioOptionSubmission String?
@@ -209,6 +211,7 @@ model JourneyVisitor {
   lastChatPlatform          MessagePlatform?
   lastStepViewedAt          DateTime?
   lastLinkAction            String?
+  lastChatAction            String?
   lastTextResponse          String?
   lastRadioQuestion         String?
   lastRadioOptionSubmission String?

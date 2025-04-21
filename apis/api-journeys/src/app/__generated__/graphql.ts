@@ -926,6 +926,15 @@ export class LinkAction implements Action {
     target?: Nullable<string>;
 }
 
+export class ChatAction implements Action {
+    __typename?: 'ChatAction';
+    parentBlockId: string;
+    parentBlock: Block;
+    gtmEventName?: Nullable<string>;
+    url: string;
+    target?: Nullable<string>;
+}
+
 export class EmailAction implements Action {
     __typename?: 'EmailAction';
     parentBlockId: string;
