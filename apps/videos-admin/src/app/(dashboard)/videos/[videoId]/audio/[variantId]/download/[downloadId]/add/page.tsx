@@ -309,7 +309,14 @@ export default function AddVideoVariantDownloadDialog({
       validationSchema={validationSchema}
       onSubmit={handleSubmit}
     >
-      {({ errors, touched, setFieldValue, handleChange, values }) => (
+      {({
+        errors,
+        touched,
+        setFieldValue,
+        handleChange,
+        values,
+        submitForm
+      }) => (
         <Dialog
           open={true}
           onClose={() =>
@@ -322,10 +329,7 @@ export default function AddVideoVariantDownloadDialog({
             closeButton: true
           }}
           dialogAction={{
-            onSubmit: () => {
-              const form = document.querySelector('form')
-              if (form) form.requestSubmit()
-            },
+            onSubmit: submitForm,
             submitLabel: getButtonText(values.quality),
             closeLabel: 'Cancel'
           }}
