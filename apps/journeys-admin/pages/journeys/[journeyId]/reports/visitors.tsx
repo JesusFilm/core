@@ -10,7 +10,7 @@ import {
 } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useMemo, useState } from 'react'
 
 import { useUserRoleQuery } from '@core/journeys/ui/useUserRoleQuery'
 
@@ -148,6 +148,14 @@ function JourneyVisitorsPage({
       }
     }
   )
+  const { data: userTeamsData } = useUserTeamsAndInvitesQuery(
+    journey?.team != null
+      ? {
+          teamId: journey?.team.id,
+          where: { role: [UserTeamRole.manager, UserTeamRole.member] }
+        }
+      : undefined
+  )
 
   async function handleFetchNext(): Promise<void> {
     if (visitorEdges != null && hasNextPage) {
@@ -166,24 +174,31 @@ function JourneyVisitorsPage({
     }
   }
 
-  const owner = journey.userJourneys?.find(
-    (userJourney) => userJourney.role === UserJourneyRole.owner
+  const owner = useMemo(
+    () =>
+      journey.userJourneys?.find(
+        (userJourney) => userJourney.role === UserJourneyRole.owner
+      ),
+    [journey.userJourneys]
   )
-  const isOwner = owner?.user?.id === user?.id
-
-  const isPublisher = userRoleData?.getUserRole?.roles?.includes(Role.publisher)
-
-  const { data } = useUserTeamsAndInvitesQuery(
-    journey?.team != null
-      ? {
-          teamId: journey?.team.id,
-          where: { role: [UserTeamRole.manager, UserTeamRole.member] }
-        }
-      : undefined
+  const isOwner = useMemo(
+    () => owner?.user?.id === user?.id,
+    [owner?.user?.id, user?.id]
   )
-  const userInTeam =
-    !!journey?.team &&
-    !!data?.userTeams?.some((userTeam) => userTeam.user.email === user.email)
+
+  const isPublisher = useMemo(
+    () => userRoleData?.getUserRole?.roles?.includes(Role.publisher),
+    [userRoleData?.getUserRole?.roles]
+  )
+
+  const userInTeam = useMemo(
+    () =>
+      !!journey?.team &&
+      !!userTeamsData?.userTeams?.some(
+        (userTeam) => userTeam.user.email === user.email
+      ),
+    [journey?.team, userTeamsData?.userTeams, user.email]
+  )
 
   const enableExportButton = journey.template
     ? isPublisher
