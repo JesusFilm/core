@@ -166,7 +166,7 @@ type Mutation {
   triggerUnsplashDownload(url: String!): Boolean!
   createMuxVideoUploadByFile(name: String!, userGenerated: Boolean): MuxVideo!
   createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean): MuxVideo!
-  enableMuxDownload(id: ID!): MuxVideo
+  enableMuxDownload(id: ID!, resolution: String): MuxVideo
   deleteMuxVideo(id: ID!, userGenerated: Boolean): Boolean!
 
   """

@@ -1714,6 +1714,7 @@ export type MutationDeleteMuxVideoArgs = {
 
 export type MutationEnableMuxDownloadArgs = {
   id: Scalars['ID']['input'];
+  resolution?: InputMaybe<Scalars['String']['input']>;
 };
 
 
