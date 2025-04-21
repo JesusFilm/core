@@ -173,33 +173,37 @@ export default function AddVideoVariantDownloadDialog({
   }
 
   return (
-    <Dialog
-      open={true}
-      onClose={() =>
-        router.push(returnUrl, {
-          scroll: false
-        })
-      }
-      dialogTitle={{
-        title: 'Add Download',
-        closeButton: true
-      }}
-      dialogAction={{
-        onSubmit: () => {
-          const form = document.querySelector('form')
-          if (form) form.requestSubmit()
-        },
-        submitLabel: 'Add',
-        closeLabel: 'Cancel'
-      }}
-      loading={isLoading}
+    <Formik
+      initialValues={initialValues}
+      validationSchema={validationSchema}
+      onSubmit={handleSubmit}
     >
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={handleSubmit}
-      >
-        {({ errors, touched, setFieldValue, handleChange, values }) => (
+      {({
+        errors,
+        touched,
+        setFieldValue,
+        handleChange,
+        values,
+        submitForm
+      }) => (
+        <Dialog
+          open={true}
+          onClose={() =>
+            router.push(returnUrl, {
+              scroll: false
+            })
+          }
+          dialogTitle={{
+            title: 'Add Download',
+            closeButton: true
+          }}
+          dialogAction={{
+            onSubmit: submitForm,
+            submitLabel: 'Add',
+            closeLabel: 'Cancel'
+          }}
+          loading={isLoading}
+        >
           <Form>
             <Stack gap={2}>
               <FormControl
@@ -243,8 +247,8 @@ export default function AddVideoVariantDownloadDialog({
               )}
             </Stack>
           </Form>
-        )}
-      </Formik>
-    </Dialog>
+        </Dialog>
+      )}
+    </Formik>
   )
 }
