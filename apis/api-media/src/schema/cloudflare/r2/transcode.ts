@@ -64,6 +64,7 @@ builder.queryFields((t) => ({
     }
   })
 }))
+
 builder.mutationFields((t) => ({
   transcodeAsset: t.withAuth({ isPublisher: true }).field({
     type: 'String',
