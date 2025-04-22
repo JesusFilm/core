@@ -29,6 +29,16 @@ interface JourneyLanguage {
   nativeName?: string
 }
 
+/**
+ * JourneyDetailsDialog component provides a dialog for editing journey details.
+ * It allows users to update the title, description, and language of a journey.
+ *
+ * @param {JourneyDetailsDialogProps} props - The component props
+ * @param {boolean} props.open - Controls the visibility of the dialog
+ * @param {() => void} props.onClose - Callback function to handle dialog close
+ * @param {Journey} [props.journey] - Optional journey data object. If not provided, uses journey from context
+ * @returns {ReactElement} A dialog component with form fields for journey details
+ */
 export function JourneyDetailsDialog({
   open,
   onClose,

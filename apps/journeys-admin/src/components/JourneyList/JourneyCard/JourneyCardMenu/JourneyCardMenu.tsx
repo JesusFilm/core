@@ -85,6 +85,20 @@ export interface JourneyCardMenuProps {
   journey?: Journey
 }
 
+/**
+ * JourneyCardMenu component provides a menu for managing journey actions.
+ * It includes options for accessing, deleting, restoring, and editing journey details.
+ *
+ * @param {JourneyCardMenuProps} props - The component props
+ * @param {string} props.id - The unique identifier for the journey
+ * @param {JourneyStatus} props.status - The status of the journey
+ * @param {string} props.slug - The slug of the journey
+ * @param {boolean} props.published - Whether the journey is published
+ * @param {boolean} [props.template] - Whether the journey is a template
+ * @param {() => Promise<ApolloQueryResult<GetAdminJourneys>>} [props.refetch] - Function to refetch journey data
+ * @param {Journey} [props.journey] - The journey data object
+ */
+
 export function JourneyCardMenu({
   id,
   status,

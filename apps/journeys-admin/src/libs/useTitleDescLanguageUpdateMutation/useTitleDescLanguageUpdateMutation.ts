@@ -29,6 +29,13 @@ export const TITLE_DESC_LANGUAGE_UPDATE = gql`
   }
 `
 
+/**
+ * useTitleDescLanguageUpdateMutation is a custom hook that provides a mutation function for updating the title, description, and language of a journey.
+ * It uses the TITLE_DESC_LANGUAGE_UPDATE mutation from the Apollo Client.
+ *
+ * @param {MutationHookOptions<TitleDescLanguageUpdate, TitleDescLanguageUpdateVariables>} [options] - Optional mutation options
+ * @returns {MutationTuple<TitleDescLanguageUpdate, TitleDescLanguageUpdateVariables>} A tuple containing the mutation function and loading state
+ */
 export function useTitleDescLanguageUpdateMutation(
   options?: MutationHookOptions<
     TitleDescLanguageUpdate,
