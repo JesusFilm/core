@@ -186,7 +186,7 @@ describe('DefaultMenu', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    expect(getByRole('menuitem', { name: 'Edit' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Edit Details' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Access' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Copy to ...' })).toBeInTheDocument()
@@ -213,7 +213,7 @@ describe('DefaultMenu', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    expect(getByRole('menuitem', { name: 'Edit' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Edit Details' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Archive' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Trash' })).toBeInTheDocument()
@@ -398,6 +398,7 @@ describe('DefaultMenu', () => {
               setOpenAccessDialog={noop}
               handleCloseMenu={noop}
               setOpenTrashDialog={noop}
+              setOpenDetailsDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -459,6 +460,7 @@ describe('DefaultMenu', () => {
               setOpenAccessDialog={noop}
               handleCloseMenu={noop}
               setOpenTrashDialog={noop}
+              setOpenDetailsDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -520,6 +522,7 @@ describe('DefaultMenu', () => {
               setOpenAccessDialog={noop}
               handleCloseMenu={noop}
               setOpenTrashDialog={noop}
+              setOpenDetailsDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -583,6 +586,7 @@ describe('DefaultMenu', () => {
               setOpenAccessDialog={noop}
               handleCloseMenu={noop}
               setOpenTrashDialog={noop}
+              setOpenDetailsDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -590,9 +594,9 @@ describe('DefaultMenu', () => {
     )
 
     await waitFor(() => {
-      expect(getByRole('menuitem', { name: 'Edit' })).not.toHaveAttribute(
-        'aria-disabled'
-      )
+      expect(
+        getByRole('menuitem', { name: 'Edit Details' })
+      ).not.toHaveAttribute('aria-disabled')
       expect(getByRole('menuitem', { name: 'Access' })).not.toHaveAttribute(
         'aria-disabled'
       )
@@ -637,6 +641,7 @@ describe('DefaultMenu', () => {
             handleCloseMenu={noop}
             template
             setOpenTrashDialog={noop}
+            setOpenDetailsDialog={noop}
           />
         </SnackbarProvider>
       </MockedProvider>
@@ -687,6 +692,7 @@ describe('DefaultMenu', () => {
             handleCloseMenu={noop}
             template={false}
             setOpenTrashDialog={noop}
+            setOpenDetailsDialog={noop}
           />
         </SnackbarProvider>
       </MockedProvider>
@@ -739,6 +745,7 @@ describe('DefaultMenu', () => {
             handleCloseMenu={noop}
             template
             setOpenTrashDialog={noop}
+            setOpenDetailsDialog={noop}
           />
         </SnackbarProvider>
       </MockedProvider>
@@ -806,6 +813,7 @@ describe('DefaultMenu', () => {
               setOpenAccessDialog={noop}
               handleCloseMenu={noop}
               setOpenTrashDialog={noop}
+              setOpenDetailsDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
