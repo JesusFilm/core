@@ -127,7 +127,6 @@ export function DefaultMenu({
         label={t('Edit Details')}
         icon={<Edit2Icon color="secondary" />}
         onClick={() => {
-          console.log('clicked')
           setOpenDetailsDialog()
           handleCloseMenu()
         }}
