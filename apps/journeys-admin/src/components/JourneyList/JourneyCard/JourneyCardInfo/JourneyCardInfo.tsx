@@ -12,6 +12,8 @@ import {
 } from '../../../../../__generated__/GetAdminJourneys'
 import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
 import { AccessAvatars } from '../../../AccessAvatars'
+import { AnalyticsItem } from '../../../Editor/Toolbar/Items/AnalyticsItem'
+import { ResponsesItem } from '../../../Editor/Toolbar/Items/ResponsesItem'
 import { JourneyCardVariant } from '../journeyCardVariant'
 
 interface JourneyCardInfoProps {
@@ -52,6 +54,10 @@ export function JourneyCardInfo({
       sx={{ width: '95%' }}
       data-testid="JourneyCardInfo"
     >
+      <Stack flexDirection="row" gap={2}>
+        <ResponsesItem variant="icon-button" />
+        <AnalyticsItem variant="icon-button" />
+      </Stack>
       <AccessAvatars
         journeyId={journey.id}
         userJourneys={inviteRequested ?? journey.userJourneys ?? undefined}

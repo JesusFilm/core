@@ -113,4 +113,20 @@ describe('JourneyCardInfo', () => {
     expect(getAllByTestId('avatar')).toHaveLength(4)
     expect(getByText('2 users')).toBeInTheDocument()
   })
+
+  it('should render the response and analytics items', () => {
+    const { getByTestId } = render(
+      <MockedProvider>
+        <ThemeProvider>
+        <JourneyCardInfo
+            journey={publishedJourney}
+            variant={JourneyCardVariant.default}
+          />
+        </ThemeProvider>
+      </MockedProvider>
+    )
+
+    expect(getByTestId('AnalyticsItem')).toBeInTheDocument()
+    expect(getByTestId('ResponsesItem')).toBeInTheDocument()
+  })
 })

@@ -9,7 +9,10 @@ import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
 
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { JourneyFields } from '../../../../__generated__/JourneyFields'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import { JourneyCard } from '../JourneyCard'
 import type { JourneyListProps } from '../JourneyList'
@@ -152,18 +155,21 @@ export function ArchivedJourneyList({
         <LoadingJourneyList hideHelperText />
       ) : (
         <Box sx={{ mt: 5 }}>
-          <Grid 
-            container 
-            spacing={5}
-            rowSpacing={5}
-          >
+          <Grid container spacing={5} rowSpacing={5}>
             {sortedJourneys.map((journey) => (
               <Grid key={journey.id} size={{ xs: 12, sm: 6, md: 3 }}>
-                <JourneyCard
-                  key={journey.id}
-                  journey={journey}
-                  refetch={refetch}
-                />
+                <JourneyProvider
+                  value={{
+                    journey: journey as unknown as JourneyFields,
+                    variant: 'admin'
+                  }}
+                >
+                  <JourneyCard
+                    key={journey.id}
+                    journey={journey}
+                    refetch={refetch}
+                  />
+                </JourneyProvider>
               </Grid>
             ))}
           </Grid>
