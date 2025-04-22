@@ -38,10 +38,10 @@ test.describe('Journey level actions', () => {
     await journeyPage.clickCreateCustomJourney() // click the create custom journey button
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
     await journeyLevelActions.clickThreeDotOfCreatedJourney(journeyName) // clicking on the three dot of created journey in the journey list
-    await journeyLevelActions.clickThreeDotOptions('Edit Details') // clicking on Edit option of the three dot options
+    await journeyLevelActions.clickThreeDotOptions('Edit Details') // clicking on Edit Details option of the three dot button
     await journeyLevelActions.enterTitle() // renaming the title on the title field in the 'edit title' popup
     await journeyPage.clickSaveBtn() // clicking on save button in the 'edit title' popup
-    await journeyLevelActions.verifyJourneyRenamedInActiveList() // verifying the journey is renamed and upadted in the journey list
+    await journeyLevelActions.verifyJourneyRenamedInActiveList() // verifying the journey is renamed and updated in the journey list
   })
 
   // Discover page -> Existing journey -> Custom Journey -> Edit details
@@ -57,7 +57,7 @@ test.describe('Journey level actions', () => {
     await journeyLevelActions.enterTitle() // renaming the title on the title field in the 'edit title' popup
     await journeyPage.clickSaveBtn() // clicking on save button in the 'edit title' popup
     await journeyPage.backIcon() // clicking on the back icon in the custom jouney page
-    await journeyLevelActions.verifyJourneyRenamedInActiveList() // verifying the journey is renamed and upadted in the journey list
+    await journeyLevelActions.verifyJourneyRenamedInActiveList() // verifying the journey is renamed and updated in the journey list
   })
 
   // Discover page -> Existing journey -> Access
@@ -158,7 +158,7 @@ test.describe('Journey level actions', () => {
     await journeyLevelActions.clickThreeDotOptionsOfJourneyCreationPage(
       'Edit Details'
     ) // clicking on the language option of the three dot options
-    await journeyLevelActions.verifySelectedLanguageInLanguagePopup() // verify selecetd language is upadetd in the edit language popup
+    await journeyLevelActions.verifySelectedLanguageInLanguagePopup() // verify selecetd language is updated in the edit language popup
     await journeyLevelActions.enterLanguage('English') //  clicking on save button in the 'edit language' popup
     await journeyPage.clickSaveBtn() // clicking on save button in the 'edit language' popup
   })
