@@ -110,6 +110,12 @@ export function JourneyCardMenu({
         aria-expanded={open ? 'true' : 'false'}
         onClick={handleOpenMenu}
         edge="end"
+        sx={{
+          color: 'white',
+          '& svg': {
+            filter: 'drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.4))'
+          }
+        }}
       >
         <MoreIcon />
       </IconButton>

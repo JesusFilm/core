@@ -56,6 +56,7 @@ export function JourneyCard({
         borderRadius: 0,
         borderColor: 'divider',
         borderBottom: 'none',
+        position: 'relative',
         '&:last-of-type': {
           borderBottomLeftRadius: { xs: 0, sm: 12 },
           borderBottomRightRadius: { xs: 0, sm: 12 },
@@ -68,6 +69,15 @@ export function JourneyCard({
       data-testid={`JourneyCard-${journey.id}`}
     >
       <>
+        <Box sx={{ position: 'absolute', top: 12, right: 18, zIndex: 1 }}>
+          <JourneyCardMenu
+            id={journey.id}
+            status={journey.status}
+            slug={journey.slug}
+            published={journey.publishedAt != null}
+            refetch={refetch}
+          />
+        </Box>
         <NextLink
           href={`/journeys/${journey.id}`}
           passHref
@@ -107,15 +117,8 @@ export function JourneyCard({
             </CardContent>
           </CardActionArea>
         </NextLink>
-        <CardActions sx={{ px: 3, pb: 3 }}>
+        <CardActions sx={{ pr: 3, pb: 3 }}>
           <JourneyCardInfo journey={journey} variant={variant} />
-          <JourneyCardMenu
-            id={journey.id}
-            status={journey.status}
-            slug={journey.slug}
-            published={journey.publishedAt != null}
-            refetch={refetch}
-          />
         </CardActions>
       </>
     </Card>

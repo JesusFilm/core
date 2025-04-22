@@ -14,20 +14,6 @@ import { JourneyCardInfo } from '.'
 import '../../../../../test/i18n'
 
 describe('JourneyCardInfo', () => {
-  it('should show the langauge name', () => {
-    const { getByText } = render(
-      <MockedProvider>
-        <ThemeProvider>
-          <JourneyCardInfo
-            journey={publishedJourney}
-            variant={JourneyCardVariant.default}
-          />
-        </ThemeProvider>
-      </MockedProvider>
-    )
-    expect(getByText('English')).toBeInTheDocument()
-  })
-
   it('should should show user requesting access', () => {
     const uj = publishedJourney.userJourneys as unknown as UserJourney[]
     const actionRequiredJourney = {

@@ -4,8 +4,6 @@ import Typography from '@mui/material/Typography'
 import { Trans, useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import Globe1Icon from '@core/shared/ui/icons/Globe1'
-
 import {
   GetAdminJourneys_journeys as Journey,
   GetAdminJourneys_journeys_userJourneys as UserJourney
@@ -48,15 +46,15 @@ export function JourneyCardInfo({
   return (
     <Stack
       direction="row"
-      alignItems="center"
+      justifyContent="space-between"
       spacing={4}
       flexGrow={1}
       sx={{ width: '95%' }}
       data-testid="JourneyCardInfo"
     >
       <Stack flexDirection="row" gap={2}>
-        <ResponsesItem variant="icon-button" />
         <AnalyticsItem variant="icon-button" />
+        <ResponsesItem variant="icon-button" />
       </Stack>
       <AccessAvatars
         journeyId={journey.id}
@@ -86,14 +84,7 @@ export function JourneyCardInfo({
             <Skeleton variant="text" width={60} />
           )}
         </>
-      ) : (
-        <Stack direction="row" alignItems="center" spacing={1.5}>
-          <Globe1Icon sx={{ fontSize: 13 }} />
-          <Typography variant="caption">
-            {journey.language.name.find(({ primary }) => primary)?.value}
-          </Typography>
-        </Stack>
-      )}
+      ) : null}
     </Stack>
   )
 }

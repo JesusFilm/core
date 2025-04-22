@@ -40,7 +40,7 @@ describe('JourneyCard', () => {
 
     expect(
       screen.getByRole('link', {
-        name: 'Default Journey Heading 11 months ago'
+        name: 'Default Journey Heading English • 11 months ago'
       })
     ).toHaveAttribute('href', '/journeys/journey-id')
   })
@@ -59,7 +59,7 @@ describe('JourneyCard', () => {
     )
 
     const link = screen.getByRole('link', {
-      name: 'Default Journey Heading 11 months ago'
+      name: 'Default Journey Heading English • 11 months ago'
     })
     expect(link).toHaveClass('Mui-disabled')
   })

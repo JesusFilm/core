@@ -29,14 +29,14 @@ describe('JourneyCardText', () => {
     expect(getByText('Published Journey Heading')).toBeInTheDocument()
   })
 
-  it('should show description with a dash', () => {
+  it('should show the langauge name', () => {
     const { getByText } = render(
       <JourneyCardText
         journey={publishedJourney}
         variant={JourneyCardVariant.default}
       />
     )
-    expect(getByText('- a published journey')).toBeInTheDocument()
+    expect(getByText('English')).toBeInTheDocument()
   })
 
   it('should show formatted date', () => {

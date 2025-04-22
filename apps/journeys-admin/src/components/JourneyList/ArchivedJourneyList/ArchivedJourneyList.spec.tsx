@@ -130,11 +130,11 @@ describe('ArchivedJourneyList', () => {
 
     await waitFor(() =>
       expect(getAllByLabelText('journey-card')[0].textContent).toContain(
-        'a lower case title11 months ago00English'
+        'a lower case titleEnglish•11 months ago00'
       )
     )
     expect(getAllByLabelText('journey-card')[1].textContent).toContain(
-      'An Old Journey Heading1 year ago - Journey created before the current year should also show the year in the date00English'
+      'An Old Journey HeadingEnglish•1 year ago00'
     )
   })
 
