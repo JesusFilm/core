@@ -64,7 +64,7 @@ export async function createVideoFromUrl(
   downloadable = false
 ): Promise<Mux.Video.Asset> {
   return await getClient(userGenerated).video.assets.create({
-    input: [
+    inputs: [
       {
         url
       }
