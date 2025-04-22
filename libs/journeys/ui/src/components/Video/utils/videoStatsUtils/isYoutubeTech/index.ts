@@ -1,0 +1,1 @@
+export { isYoutubeTech } from './isYoutubeTech'

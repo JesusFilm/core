@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
+import noop from 'lodash/noop'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
@@ -39,12 +40,14 @@ export const Default = {
     titleAction: <ClearAllButton />,
     sidePanelChildren: (
       <FilterDrawer
+        journeyId="123"
         sortSetting="date"
         chatStarted={false}
         withPollAnswers={false}
         withSubmittedText={false}
         withIcon={false}
         hideInteractive={false}
+        handleClearAll={noop}
       />
     )
   }
@@ -56,12 +59,14 @@ export const Complete = {
     ...Default.args,
     sidePanelChildren: (
       <FilterDrawer
+        journeyId="123"
         sortSetting="date"
         chatStarted
         withPollAnswers
         withSubmittedText
         withIcon
         hideInteractive
+        handleClearAll={noop}
       />
     )
   }

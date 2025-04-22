@@ -41,7 +41,8 @@ export interface LanguageAutocompleteProps {
   onChange: (value?: LanguageOption) => void
   value?: LanguageOption
   languages?: Language[]
-  loading: boolean
+  loading?: boolean
+  disabled?: boolean
   helperText?: string
   renderInput?: (params: AutocompleteRenderInputParams) => ReactNode
   renderOption?: (params: HTMLAttributes<HTMLLIElement>) => ReactNode
@@ -53,6 +54,7 @@ export function LanguageAutocomplete({
   value,
   languages,
   loading,
+  disabled = false,
   renderInput,
   renderOption,
   helperText,
@@ -164,6 +166,7 @@ export function LanguageAutocomplete({
       }}
       options={sortedOptions}
       loading={loading}
+      disabled={disabled}
       disablePortal={process.env.NODE_ENV === 'test'}
       renderInput={renderInput != null ? renderInput : defaultRenderInput}
       renderOption={(props, option, state) => {

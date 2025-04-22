@@ -37,8 +37,8 @@ type AlgoliaVideoHit = {
   }
   bibleCitations?: Array<{
     osisBibleBook: string
-    chapterStart: number
-    verseStart: number
+    chapterStart: number | null
+    verseStart: number | null
     chapterEnd: number | null
     verseEnd: number | null
   }>
@@ -253,8 +253,8 @@ const VideoSchema = z.object({
     .array(
       z.object({
         osisBibleBook: z.string(),
-        chapterStart: z.number(),
-        verseStart: z.number(),
+        chapterStart: z.number().nullable(),
+        verseStart: z.number().nullable(),
         chapterEnd: z.number().nullable(),
         verseEnd: z.number().nullable()
       })
@@ -403,10 +403,11 @@ resources.openapi(searchRoute, async (c) => {
       bibleCitations:
         hit.bibleCitations?.map((citation) => ({
           osisBibleBook: citation.osisBibleBook,
-          chapterStart: citation.chapterStart,
-          verseStart: citation.verseStart,
-          chapterEnd: citation.chapterEnd,
-          verseEnd: citation.verseEnd
+          chapterStart:
+            citation.chapterStart === -1 ? null : citation.chapterStart,
+          verseStart: citation.verseStart === -1 ? null : citation.verseStart,
+          chapterEnd: citation.chapterEnd === -1 ? null : citation.chapterEnd,
+          verseEnd: citation.verseEnd === -1 ? null : citation.verseEnd
         })) ?? [],
       primaryLanguageId: hit.primaryLanguageId,
       title:

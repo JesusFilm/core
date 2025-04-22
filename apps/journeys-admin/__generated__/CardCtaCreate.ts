@@ -84,6 +84,7 @@ export interface CardCtaCreate_button1 {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardCtaCreate_button1_action | null;
 }
 
@@ -141,6 +142,7 @@ export interface CardCtaCreate_button1Update {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardCtaCreate_button1Update_action | null;
 }
 
@@ -178,6 +180,7 @@ export interface CardCtaCreate_button2 {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardCtaCreate_button2_action | null;
 }
 
@@ -235,6 +238,7 @@ export interface CardCtaCreate_button2Update {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardCtaCreate_button2Update_action | null;
 }
 
@@ -272,6 +276,7 @@ export interface CardCtaCreate_button3 {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardCtaCreate_button3_action | null;
 }
 
@@ -329,6 +334,7 @@ export interface CardCtaCreate_button3Update {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardCtaCreate_button3Update_action | null;
 }
 
