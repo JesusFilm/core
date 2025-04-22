@@ -273,29 +273,23 @@ export function JourneyCardMenu({
           <ShareDialog
             open={openShareDialog}
             onClose={() => setOpenShareDialog(false)}
-            onSlugDialogOpen={() => setOpenSlugDialog(true)}
-            onEmbedDialogOpen={() => setOpenEmbedDialog(true)}
-            onQrCodeDialogOpen={() => setOpenQrCodeDialog(true)}
           />
           {openSlugDialog != null && (
             <SlugDialog
               open={openSlugDialog}
               onClose={() => setOpenSlugDialog(false)}
-              journey={journeyWithBlocks}
             />
           )}
           {openEmbedDialog != null && (
             <EmbedJourneyDialog
               open={openEmbedDialog}
               onClose={() => setOpenEmbedDialog(false)}
-              journey={journeyWithBlocks}
             />
           )}
           {openQrCodeDialog != null && (
             <QrCodeDialog
               open={openQrCodeDialog}
               onClose={() => setOpenQrCodeDialog(false)}
-              journey={journeyWithBlocks}
             />
           )}
         </JourneyProvider>

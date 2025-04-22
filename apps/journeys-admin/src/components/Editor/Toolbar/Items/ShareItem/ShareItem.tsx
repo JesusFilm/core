@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import { useTranslation } from 'next-i18next'
-import { ComponentProps, MouseEvent, ReactElement, useState } from 'react'
+import { ComponentProps, ReactElement, useState } from 'react'
 
 import ShareIcon from '@core/shared/ui/icons/Share'
 
@@ -19,15 +19,15 @@ export function ShareItem({
 }: ShareItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
+  const [openShareDialog, setOpenShareDialog] = useState(false)
 
-  function handleShowMenu(event: MouseEvent<HTMLElement>): void {
-    setAnchorEl(event.currentTarget)
+  function handleShowMenu(): void {
+    setOpenShareDialog(true)
   }
 
   function handleCloseMenu(): void {
-    setAnchorEl(null)
-    closeMenu?.()
+    setOpenShareDialog(false)
+    closeMenu?.() // test e2e
   }
 
   return (
@@ -39,7 +39,7 @@ export function ShareItem({
         onClick={handleShowMenu}
         ButtonProps={{ variant: 'contained' }}
       />
-      <ShareDialog open={Boolean(anchorEl)} onClose={handleCloseMenu} />
+      <ShareDialog open={openShareDialog} onClose={handleCloseMenu} />
     </Box>
   )
 }
