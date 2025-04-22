@@ -44,25 +44,16 @@ export const QR_CODE_CREATE = gql`
 interface QrCodeDialogProps {
   open: boolean
   onClose: () => void
-  journey?: {
-    id: string
-    slug?: string | null
-    team?: {
-      id: string
-    } | null
-  }
   qrCode?: QrCode
 }
 
 export function QrCodeDialog({
   open,
   onClose,
-  journey: journeyProp,
   qrCode: qrCodeProp
 }: QrCodeDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { journey: journeyContext } = useJourney()
-  const journey = journeyProp ?? journeyContext
+  const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
   const [qrCodeCreate, { loading: createLoading }] = useMutation<
     QrCodeCreate,
@@ -82,8 +73,7 @@ export function QrCodeDialog({
         where: {
           journeyId: journey?.id
         }
-      },
-      skip: qrCodeProp != null // Skip the query if we already have the QR code from props
+      }
     }
   )
 

@@ -6,78 +6,7 @@ import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
 import { SHARE_DATA_QUERY } from '../../../../../libs/useShareDataQuery/useShareDataQuery'
 
-import { GET_JOURNEY_QR_CODES } from './QrCodeDialog/QrCodeDialog'
 import { ShareItem } from './ShareItem'
-
-const defaultShareDataQueryMock: MockedResponse = {
-  request: {
-    query: SHARE_DATA_QUERY,
-    variables: {
-      id: defaultJourney.id,
-      qrCodeWhere: { journeyId: defaultJourney.id }
-    }
-  },
-  result: {
-    data: {
-      journey: {
-        id: defaultJourney.id,
-        slug: defaultJourney.slug,
-        title: defaultJourney.title,
-        team: null,
-        __typename: 'Journey'
-      },
-      qrCodes: []
-    }
-  }
-}
-
-const customDomainShareDataQueryMock: MockedResponse = {
-  request: {
-    query: SHARE_DATA_QUERY,
-    variables: {
-      id: defaultJourney.id,
-      qrCodeWhere: { journeyId: defaultJourney.id }
-    }
-  },
-  result: {
-    data: {
-      journey: {
-        id: defaultJourney.id,
-        slug: 'default',
-        title: 'Journey Heading',
-        team: {
-          id: 'teamId',
-          customDomains: [
-            {
-              id: 'customDomainId',
-              name: 'example.com',
-              apexName: 'example.com',
-              routeAllTeamJourneys: false,
-              __typename: 'CustomDomain'
-            }
-          ],
-          __typename: 'Team'
-        },
-        __typename: 'Journey'
-      },
-      qrCodes: []
-    }
-  }
-}
-
-const qrCodesQueryMock: MockedResponse = {
-  request: {
-    query: GET_JOURNEY_QR_CODES,
-    variables: {
-      where: { journeyId: defaultJourney.id }
-    }
-  },
-  result: {
-    data: {
-      qrCodes: []
-    }
-  }
-}
 
 describe('ShareItem', () => {
   beforeEach(() => {
@@ -87,7 +16,7 @@ describe('ShareItem', () => {
   it('should render the share button', async () => {
     await act(async () => {
       render(
-        <MockedProvider mocks={[defaultShareDataQueryMock, qrCodesQueryMock]}>
+        <MockedProvider>
           <JourneyProvider
             value={{ journey: defaultJourney, variant: 'admin' }}
           >
@@ -102,7 +31,7 @@ describe('ShareItem', () => {
   it('should open and close the ShareDialog', async () => {
     await act(async () => {
       render(
-        <MockedProvider mocks={[defaultShareDataQueryMock, qrCodesQueryMock]}>
+        <MockedProvider>
           <JourneyProvider
             value={{ journey: defaultJourney, variant: 'admin' }}
           >
@@ -124,41 +53,10 @@ describe('ShareItem', () => {
     })
   })
 
-  it('should pass custom domain hostname to ShareDialog', async () => {
-    render(
-      <MockedProvider
-        mocks={[customDomainShareDataQueryMock, qrCodesQueryMock]}
-      >
-        <JourneyProvider
-          value={{
-            journey: {
-              ...defaultJourney,
-              team: {
-                id: 'teamId',
-                __typename: 'Team',
-                title: 'Team Title',
-                publicTitle: 'Team Title'
-              }
-            },
-            variant: 'admin'
-          }}
-        >
-          <ShareItem variant="button" />
-        </JourneyProvider>
-      </MockedProvider>
-    )
-    fireEvent.click(screen.getByRole('button', { name: 'Share' }))
-    await waitFor(() => {
-      expect(screen.getByRole('textbox')).toHaveValue(
-        'https://example.com/default'
-      )
-    })
-  })
-
   it('should call closeMenu when dialog is closed', async () => {
     const closeMenu = jest.fn()
     render(
-      <MockedProvider mocks={[defaultShareDataQueryMock, qrCodesQueryMock]}>
+      <MockedProvider>
         <JourneyProvider value={{ journey: defaultJourney, variant: 'admin' }}>
           <ShareItem variant="button" closeMenu={closeMenu} />
         </JourneyProvider>

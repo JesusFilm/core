@@ -1,5 +1,6 @@
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
+import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
@@ -12,27 +13,53 @@ import Code1Icon from '@core/shared/ui/icons/Code1'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import TransformIcon from '@core/shared/ui/icons/Transform'
 
+import { useCustomDomainsQuery } from '../../../../../../libs/useCustomDomainsQuery'
+
+const EmbedJourneyDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/EditorToolbar/ShareButton/EmbedJourneyDialog" */
+      '../EmbedJourneyDialog'
+    ).then((mod) => mod.EmbedJourneyDialog),
+  { ssr: false }
+)
+const SlugDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/EditorToolbar/ShareButton/SlugDialog" */
+      '../SlugDialog'
+    ).then((mod) => mod.SlugDialog),
+  { ssr: false }
+)
+
+const QrCodeDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/EditorToolbar/ShareButton/QrCodeDialog" */
+      '../QrCodeDialog'
+    ).then((mod) => mod.QrCodeDialog),
+  { ssr: false }
+)
+
 interface ShareDialogProps {
   open: boolean
   onClose: () => void
-  hostname?: string
-  onSlugDialogOpen: () => void
-  onEmbedDialogOpen: () => void
-  onQrCodeDialogOpen: () => void
 }
 
-export function ShareDialog({
-  open,
-  onClose,
-  hostname,
-  onSlugDialogOpen,
-  onEmbedDialogOpen,
-  onQrCodeDialogOpen
-}: ShareDialogProps): ReactElement {
+export function ShareDialog({ open, onClose }: ShareDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const router = useRouter()
   const [currentParam, setCurrentParam] = useState<string | null>(null)
+
+  const [showSlugDialog, setShowSlugDialog] = useState<boolean | undefined>()
+  const [showEmbedDialog, setShowEmbedDialog] = useState<boolean | undefined>()
+  const [showQrCodeDialog, setShowQrCodeDialog] = useState<boolean>(false)
+
+  const { hostname } = useCustomDomainsQuery({
+    variables: { teamId: journey?.team?.id ?? '' },
+    skip: journey?.team?.id == null
+  })
 
   // Handle route change with proper cleanup
   useEffect(() => {
@@ -73,6 +100,18 @@ export function ShareDialog({
 
   const buttonsDisabled = journey == null
 
+  function handleSlugDialogOpen(): void {
+    setShowSlugDialog(true)
+  }
+
+  function handleEmbedDialogOpen(): void {
+    setShowEmbedDialog(true)
+  }
+
+  function handleQrCodeDialogOpen(): void {
+    setShowQrCodeDialog(true)
+  }
+
   return (
     <Dialog
       open={open}
@@ -91,7 +130,7 @@ export function ShareDialog({
         >
           <Button
             onClick={() => {
-              onSlugDialogOpen()
+              handleSlugDialogOpen()
               setRoute('edit-url')
             }}
             size="small"
@@ -103,7 +142,7 @@ export function ShareDialog({
           </Button>
           <Button
             onClick={() => {
-              onEmbedDialogOpen()
+              handleEmbedDialogOpen()
               setRoute('embed-journey')
             }}
             size="small"
@@ -115,7 +154,7 @@ export function ShareDialog({
           </Button>
           <Button
             onClick={() => {
-              onQrCodeDialogOpen()
+              handleQrCodeDialogOpen()
               setRoute('qr-code')
             }}
             size="small"
@@ -127,6 +166,29 @@ export function ShareDialog({
           </Button>
         </Stack>
       </Stack>
+
+      {showSlugDialog != null && (
+        <SlugDialog
+          open={showSlugDialog}
+          onClose={() => setShowSlugDialog(false)}
+          hostname={hostname}
+          journey={journey}
+        />
+      )}
+      {showEmbedDialog != null && (
+        <EmbedJourneyDialog
+          open={showEmbedDialog}
+          onClose={() => setShowEmbedDialog(false)}
+          hostname={hostname}
+          journey={journey}
+        />
+      )}
+      {showQrCodeDialog != null && (
+        <QrCodeDialog
+          open={showQrCodeDialog}
+          onClose={() => setShowQrCodeDialog(false)}
+        />
+      )}
     </Dialog>
   )
 }
