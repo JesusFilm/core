@@ -45,7 +45,7 @@ test.describe('Journey level actions', () => {
   })
 
   // Discover page -> Existing journey -> Custom Journey -> Edit details
-  test('Edit existing journey', async ({ page }) => {
+  test('Edit existing journey from custom journey page', async ({ page }) => {
     const journeyLevelActions = new JourneyLevelActions(page)
     const journeyPage = new JourneyPage(page)
     const journeyName = await journeyPage.getJourneyName()
