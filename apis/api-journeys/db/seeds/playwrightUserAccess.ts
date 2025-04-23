@@ -8,7 +8,7 @@ import {
   UserTeamRole
 } from '../../src/app/__generated__/graphql'
 
-import { createPlayWrightUserAccess } from './lib/createPlayWrightUserAccess'
+import { createPlayWrightUserAccess } from './libs/createPlayWrightUserAccess'
 
 const TEAM_ID = 'playwright-team'
 const JOURNEY_SLUG = 'playwright-testing-journey'
