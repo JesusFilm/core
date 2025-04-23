@@ -1,5 +1,18 @@
 import { Redis } from 'ioredis'
 
+/**
+ * Cache Flow
+ * 1. Try fresh cache
+ * 2. If missing, try stale cache
+ * 3. If stale cache hit:
+ *    - Return stale data immediately
+ *    - Refresh in background
+ * 4. If no cache:
+ *    - Fetch fresh data
+ *    - Cache both fresh and stale copies
+ *    - Return fresh data
+ */
+
 export const connection = {
   host: process.env.REDIS_URL ?? 'redis',
   port: process.env.REDIS_PORT != null ? Number(process.env.REDIS_PORT) : 6379,
@@ -21,14 +34,10 @@ redis.on('error', (err) => {
   console.error('[Redis] Connection error:', err)
 })
 
-const DEFAULT_TTL = 3600 * 24 // 1 day
-const STALE_TTL = 3600 * 4 // 4 hours
-const REDIS_OP_TIMEOUT = 3000 // 3 second timeout for Redis operations
-
-interface CacheOptions {
-  ttl?: number
-  staleWhileRevalidate?: boolean
-}
+// Production cache configuration
+const DEFAULT_TTL = 3600 * 4 // 4 hours for main cache
+const STALE_TTL = 3600 * 72 // 3 days for stale
+const REDIS_OP_TIMEOUT = 3000
 
 async function getFromCache<T>(key: string): Promise<T | null> {
   try {
@@ -51,42 +60,23 @@ async function getFromCache<T>(key: string): Promise<T | null> {
   }
 }
 
-async function setInCache<T>(
-  key: string,
-  data: T,
-  options: CacheOptions = {}
-): Promise<void> {
-  const { ttl = DEFAULT_TTL, staleWhileRevalidate = true } = options
-
+async function setInCache<T>(key: string, data: T): Promise<void> {
   try {
-    const setPromise = redis.set(key, JSON.stringify(data), 'EX', ttl)
-    await Promise.race([
-      setPromise,
-      new Promise((_, reject) =>
-        setTimeout(
-          () => reject(new Error('Redis set timeout')),
-          REDIS_OP_TIMEOUT
-        )
-      )
-    ])
+    // Check if data has changed
+    const currentData = await getFromCache<T>(key)
+    const dataUnchanged =
+      currentData && JSON.stringify(currentData) === JSON.stringify(data)
 
-    if (staleWhileRevalidate) {
-      const stalePromise = redis.set(
-        `${key}:stale`,
-        JSON.stringify(data),
-        'EX',
-        ttl + STALE_TTL
-      )
-      await Promise.race([
-        stalePromise,
-        new Promise((_, reject) =>
-          setTimeout(
-            () => reject(new Error('Redis stale set timeout')),
-            REDIS_OP_TIMEOUT
-          )
-        )
-      ])
+    if (dataUnchanged) {
+      // Even if data hasn't changed, refresh TTLs
+      await redis.expire(key, DEFAULT_TTL)
+      await redis.expire(`${key}:stale`, STALE_TTL)
+      return
     }
+
+    // Set fresh cache
+    await redis.set(key, JSON.stringify(data), 'EX', DEFAULT_TTL)
+    await redis.set(`${key}:stale`, JSON.stringify(data), 'EX', STALE_TTL)
   } catch (error) {
     console.error(`[Redis] Failed to set key ${key}:`, error)
   }
@@ -94,32 +84,33 @@ async function setInCache<T>(
 
 export async function getWithStaleCache<T>(
   key: string,
-  fetchFn: () => Promise<T>,
-  options: CacheOptions = {}
+  fetchFn: () => Promise<T>
 ): Promise<T> {
   try {
+    // Try fresh cache first
     const cached = await getFromCache<T>(key)
     if (cached) {
       return cached
     }
 
+    // Try stale cache
     const stale = await getFromCache<T>(`${key}:stale`)
-
     if (stale) {
       // Background refresh without waiting
       void fetchFn()
-        .then((newData) => setInCache(key, newData, options))
+        .then((newData) => setInCache(key, newData))
         .catch((error) =>
           console.error(
-            `[Redis] Background refresh failed for key ${key}:`,
+            `[Redis] Background refresh failed for key: ${key}`,
             error
           )
         )
       return stale
     }
 
+    // No cache hit - fetch fresh data
     const fresh = await fetchFn()
-    void setInCache(key, fresh, options).catch((error) =>
+    void setInCache(key, fresh).catch((error) =>
       console.error(`[Redis] Failed to cache fresh data for key ${key}:`, error)
     )
     return fresh
