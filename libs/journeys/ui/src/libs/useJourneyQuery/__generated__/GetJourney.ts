@@ -522,11 +522,17 @@ export interface GetJourney_journey_host {
   src2: string | null;
 }
 
+export interface GetJourney_journey_team_customDomains {
+  __typename: "CustomDomain";
+  name: string;
+}
+
 export interface GetJourney_journey_team {
   __typename: "Team";
   id: string;
   title: string;
   publicTitle: string | null;
+  customDomains: GetJourney_journey_team_customDomains[];
 }
 
 export interface GetJourney_journey_tags_name_language {

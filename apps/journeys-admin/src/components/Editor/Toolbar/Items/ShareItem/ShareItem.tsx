@@ -16,7 +16,7 @@ import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import ShareIcon from '@core/shared/ui/icons/Share'
 import TransformIcon from '@core/shared/ui/icons/Transform'
 
-import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
+import { GetAdminJourneys_journeys as Journey } from '../../../../../../__generated__/GetAdminJourneys'
 import { Item } from '../Item/Item'
 
 const EmbedJourneyDialog = dynamic(
@@ -48,21 +48,27 @@ const QrCodeDialog = dynamic(
 interface ShareItemProps {
   variant: ComponentProps<typeof Item>['variant']
   closeMenu?: () => void
+  journey?: Journey
 }
 
 export function ShareItem({
   variant,
-  closeMenu
+  closeMenu,
+  journey
 }: ShareItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { journey } = useJourney()
-  const { hostname } = useCustomDomainsQuery({
-    variables: { teamId: journey?.team?.id ?? '' },
-    skip: journey?.team?.id == null
-  })
+  const { journey: journeyContext } = useJourney()
+  const journeyData = journeyContext ?? journey
+
+  const journeySlug = journeyData?.slug
+
+  const hostname =
+    journeyContext?.team?.customDomains[0]?.name ??
+    journeyData?.team?.customDomains[0]?.name
+
   const router = useRouter()
-  const [showSlugDialog, setShowSlugDialog] = useState<boolean | undefined>()
-  const [showEmbedDialog, setShowEmbedDialog] = useState<boolean | undefined>()
+  const [showSlugDialog, setShowSlugDialog] = useState<boolean>(false)
+  const [showEmbedDialog, setShowEmbedDialog] = useState<boolean>(false)
   const [showQrCodeDialog, setShowQrCodeDialog] = useState<boolean>(false)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
 
@@ -98,25 +104,26 @@ export function ShareItem({
           </Typography>
           <CopyTextField
             value={
-              journey?.slug != null
+              journeySlug != null
                 ? `${
                     hostname != null
                       ? `https://${hostname}`
                       : (process.env.NEXT_PUBLIC_JOURNEYS_URL ??
                         'https://your.nextstep.is')
-                  }/${journey.slug}`
+                  }/${journeySlug}`
                 : undefined
             }
           />
           <Stack direction="row" spacing={6}>
             <Button
               onClick={() => {
+                console.log('clicked')
                 setShowSlugDialog(true)
                 setRoute('edit-url')
               }}
               size="small"
               startIcon={<Edit2Icon />}
-              disabled={journey == null}
+              disabled={journeyData == null}
               style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
             >
               {t('Edit URL')}
@@ -128,7 +135,7 @@ export function ShareItem({
               }}
               size="small"
               startIcon={<Code1Icon />}
-              disabled={journey == null}
+              disabled={journeyData == null}
               style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
             >
               {t('Embed Journey')}
@@ -140,7 +147,7 @@ export function ShareItem({
               }}
               size="small"
               startIcon={<TransformIcon />}
-              disabled={journey == null}
+              disabled={journeyData == null}
               style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
             >
               {t('QR Code')}
@@ -153,6 +160,7 @@ export function ShareItem({
           open={showSlugDialog}
           onClose={() => setShowSlugDialog(false)}
           hostname={hostname}
+          journeySlug={journeySlug}
         />
       )}
       {showEmbedDialog != null && (

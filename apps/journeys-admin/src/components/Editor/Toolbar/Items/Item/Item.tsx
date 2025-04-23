@@ -106,11 +106,14 @@ export function Item({
           target={href != null ? '_blank' : undefined}
           href={href}
           onClick={onClick}
-          sx={{
-            gap: 2
-          }}
         >
-          <ListItemIcon>{icon}</ListItemIcon>
+          <ListItemIcon
+            sx={{
+              color: 'secondary.main'
+            }}
+          >
+            {icon}
+          </ListItemIcon>
           <ListItemText secondary={countLabel ?? count?.toLocaleString()}>
             {label}
           </ListItemText>

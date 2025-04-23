@@ -24,12 +24,14 @@ interface SlugDialogProps {
   open?: boolean
   onClose?: () => void
   hostname?: string
+  journeySlug?: string
 }
 
 export function SlugDialog({
   open,
   onClose,
-  hostname
+  hostname,
+  journeySlug
 }: SlugDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [journeyUpdate] = useMutation<JourneySlugUpdate>(JOURNEY_SLUG_UPDATE)
@@ -83,9 +85,9 @@ export function SlugDialog({
 
   return (
     <>
-      {journey != null && (
+      {journeySlug != null && (
         <Formik
-          initialValues={{ slug: journey.slug }}
+          initialValues={{ slug: journeySlug }}
           onSubmit={handleUpdateSlug}
           validationSchema={slugSchema}
         >

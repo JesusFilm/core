@@ -11,7 +11,10 @@ import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
-import { GetAdminJourneys } from '../../../../../../__generated__/GetAdminJourneys'
+import {
+  GetAdminJourneys,
+  GetAdminJourneys_journeys as Journey
+} from '../../../../../../__generated__/GetAdminJourneys'
 import {
   JourneyStatus,
   Role,
@@ -20,6 +23,7 @@ import {
 } from '../../../../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
 import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
+import { ShareItem } from '../../../../Editor/Toolbar/Items/ShareItem/ShareItem'
 import { MenuItem } from '../../../../MenuItem'
 import { CopyToTeamMenuItem } from '../../../../Team/CopyToTeamMenuItem/CopyToTeamMenuItem'
 import { DuplicateJourneyMenuItem } from '../DuplicateJourneyMenuItem'
@@ -53,12 +57,14 @@ interface DefaultMenuProps {
   setOpenDetailsDialog: () => void
   template?: boolean
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
+  journey?: Journey
 }
 
 /**
- * DefaultMenu component provides a menu interface for journey management actions.
- * It includes options for editing details, managing access, previewing, duplicating,
- * copying to team, archiving, and deleting journeys.
+ * DefaultMenu component provides a menu interface for journey management actions with role-based access control.
+ * It includes options for editing details, managing access, sharing, previewing, duplicating,
+ * copying to team, archiving, and deleting journeys. Some actions are restricted based on user roles
+ * and whether the journey is a template.
  *
  * @param {Object} props - Component props
  * @param {string} props.id - The unique identifier for the journey
@@ -70,9 +76,10 @@ interface DefaultMenuProps {
  * @param {() => void} props.handleCloseMenu - Function to close the menu
  * @param {() => void} props.setOpenTrashDialog - Function to open the trash confirmation dialog
  * @param {() => void} props.setOpenDetailsDialog - Function to open the journey details dialog
- * @param {boolean} [props.template] - Whether the journey is a template
+ * @param {boolean} [props.template] - Whether the journey is a template. Affects available actions and permissions
  * @param {() => Promise<ApolloQueryResult<GetAdminJourneys>>} [props.refetch] - Function to refetch journey data
- * @returns {ReactElement} The rendered menu component
+ * @param {Journey} [props.journey] - The journey object containing additional data needed for sharing
+ * @returns {ReactElement} The rendered menu component with conditionally available actions based on user roles
  */
 export function DefaultMenu({
   id,
@@ -85,7 +92,8 @@ export function DefaultMenu({
   setOpenTrashDialog,
   setOpenDetailsDialog,
   template,
-  refetch
+  refetch,
+  journey
 }: DefaultMenuProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
@@ -150,6 +158,7 @@ export function DefaultMenu({
           handleCloseMenu()
         }}
       />
+      <Divider />
       {template !== true && (
         <MenuItem
           label={t('Access')}
@@ -174,10 +183,11 @@ export function DefaultMenu({
           openInNew
         />
       </NextLink>
+      <ShareItem variant="menu-item" journey={journey} />
+      <Divider />
       {template !== true && (
         <DuplicateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />
       )}
-      <Divider />
       <CopyToTeamMenuItem id={id} handleCloseMenu={handleCloseMenu} />
       <ArchiveJourney
         status={status}

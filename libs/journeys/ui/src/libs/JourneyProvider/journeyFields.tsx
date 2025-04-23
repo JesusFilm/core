@@ -75,6 +75,9 @@ export const JOURNEY_FIELDS = gql`
       id
       title
       publicTitle
+      customDomains {
+        name
+      }
     }
     tags {
       id

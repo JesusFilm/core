@@ -174,6 +174,7 @@ export function JourneyCardMenu({
             status={status}
             slug={slug}
             journeyId={id}
+            journey={journey}
             published={published}
             setOpenAccessDialog={() => setOpenAccessDialog(true)}
             handleCloseMenu={handleCloseMenu}

@@ -56,6 +56,17 @@ export interface GetAdminJourneys_journeys_primaryImageBlock {
   blurhash: string;
 }
 
+export interface GetAdminJourneys_journeys_team_customDomains {
+  __typename: "CustomDomain";
+  name: string;
+}
+
+export interface GetAdminJourneys_journeys_team {
+  __typename: "Team";
+  id: string;
+  customDomains: GetAdminJourneys_journeys_team_customDomains[];
+}
+
 export interface GetAdminJourneys_journeys {
   __typename: "Journey";
   id: string;
@@ -81,6 +92,7 @@ export interface GetAdminJourneys_journeys {
   template: boolean | null;
   userJourneys: GetAdminJourneys_journeys_userJourneys[] | null;
   primaryImageBlock: GetAdminJourneys_journeys_primaryImageBlock | null;
+  team: GetAdminJourneys_journeys_team | null;
 }
 
 export interface GetAdminJourneys {
