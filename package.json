@@ -71,7 +71,7 @@
     "@mui/x-data-grid": "^7.27.1",
     "@mui/x-date-pickers": "^7.27.1",
     "@mui/x-tree-view": "^7.26.0",
-    "@mux/mux-node": "^10.0.0",
+    "@mux/mux-node": "^11.0.0",
     "@mux/upchunk": "^3.4.0",
     "@nestjs/apollo": "^13.0.0",
     "@nestjs/bullmq": "^11.0.0",
