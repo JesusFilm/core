@@ -40,7 +40,9 @@ describe('JourneyCardMenu', () => {
       'journey-actions'
     )
     await waitFor(() =>
-      expect(getByRole('menuitem', { name: 'Edit' })).toBeInTheDocument()
+      expect(
+        getByRole('menuitem', { name: 'Edit Details' })
+      ).toBeInTheDocument()
     )
     expect(getByRole('menuitem', { name: 'Access' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()

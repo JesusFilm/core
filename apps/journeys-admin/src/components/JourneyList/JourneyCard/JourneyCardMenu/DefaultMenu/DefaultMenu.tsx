@@ -50,10 +50,30 @@ interface DefaultMenuProps {
   setOpenAccessDialog: () => void
   handleCloseMenu: () => void
   setOpenTrashDialog: () => void
+  setOpenDetailsDialog: () => void
   template?: boolean
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
 }
 
+/**
+ * DefaultMenu component provides a menu interface for journey management actions.
+ * It includes options for editing details, managing access, previewing, duplicating,
+ * copying to team, archiving, and deleting journeys.
+ *
+ * @param {Object} props - Component props
+ * @param {string} props.id - The unique identifier for the journey
+ * @param {string} props.slug - The URL slug for the journey
+ * @param {JourneyStatus} props.status - Current status of the journey
+ * @param {string} props.journeyId - Database ID of the journey
+ * @param {boolean} props.published - Whether the journey is published
+ * @param {() => void} props.setOpenAccessDialog - Function to open the access management dialog
+ * @param {() => void} props.handleCloseMenu - Function to close the menu
+ * @param {() => void} props.setOpenTrashDialog - Function to open the trash confirmation dialog
+ * @param {() => void} props.setOpenDetailsDialog - Function to open the journey details dialog
+ * @param {boolean} [props.template] - Whether the journey is a template
+ * @param {() => Promise<ApolloQueryResult<GetAdminJourneys>>} [props.refetch] - Function to refetch journey data
+ * @returns {ReactElement} The rendered menu component
+ */
 export function DefaultMenu({
   id,
   slug,
@@ -63,6 +83,7 @@ export function DefaultMenu({
   setOpenAccessDialog,
   handleCloseMenu,
   setOpenTrashDialog,
+  setOpenDetailsDialog,
   template,
   refetch
 }: DefaultMenuProps): ReactElement {
@@ -121,18 +142,14 @@ export function DefaultMenu({
 
   return (
     <>
-      <NextLink
-        href={
-          template === true
-            ? `/templates/${journeyId}`
-            : `/journeys/${journeyId}`
-        }
-        passHref
-        legacyBehavior
-        prefetch={false}
-      >
-        <MenuItem label={t('Edit')} icon={<Edit2Icon color="secondary" />} />
-      </NextLink>
+      <MenuItem
+        label={t('Edit Details')}
+        icon={<Edit2Icon color="secondary" />}
+        onClick={() => {
+          setOpenDetailsDialog()
+          handleCloseMenu()
+        }}
+      />
       {template !== true && (
         <MenuItem
           label={t('Access')}
