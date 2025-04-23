@@ -13,43 +13,6 @@ import { createPlayWrightUserAccess } from './lib/createPlayWrightUserAccess'
 const TEAM_ID = 'playwright-team'
 const JOURNEY_SLUG = 'playwright-testing-journey'
 
-interface UserAccessData {
-  journeyData: {
-    id: string
-    title: string
-    seoTitle: string
-    languageId: string
-    themeMode: ThemeMode
-    themeName: ThemeName
-    slug: string
-    status: JourneyStatus
-    teamId: string
-    createdAt: Date
-    publishedAt: Date
-  }
-  teamData: {
-    id: string
-    title: string
-  }
-  userTeamData: {
-    id: string
-    userId: string
-    role: UserTeamRole
-    createdAt?: Date
-    updatedAt?: Date
-  }
-  journeyProfileData: {
-    id: string
-    userId: string
-    acceptedTermsAt: Date
-    lastActiveTeamId: string
-  }
-  userRoleData: {
-    userId: string
-    roles: Role[]
-  }
-}
-
 const PLAYWRIGHT_USER_DATA = [
   {
     journeyId: '9161c4ef-204d-4be9-8fdf-5bf514c13b9d',
@@ -88,6 +51,43 @@ const PLAYWRIGHT_USER_DATA = [
     journeySlug: `${JOURNEY_SLUG}-6`
   }
 ]
+
+interface UserAccessData {
+  journeyData: {
+    id: string
+    title: string
+    seoTitle: string
+    languageId: string
+    themeMode: ThemeMode
+    themeName: ThemeName
+    slug: string
+    status: JourneyStatus
+    teamId: string
+    createdAt: Date
+    publishedAt: Date
+  }
+  teamData: {
+    id: string
+    title: string
+  }
+  userTeamData: {
+    id: string
+    userId: string
+    role: UserTeamRole
+    createdAt?: Date
+    updatedAt?: Date
+  }
+  journeyProfileData: {
+    id: string
+    userId: string
+    acceptedTermsAt: Date
+    lastActiveTeamId: string
+  }
+  userRoleData: {
+    userId: string
+    roles: Role[]
+  }
+}
 
 export async function playwrightUserAccess(): Promise<void> {
   function createUserAccessData(
