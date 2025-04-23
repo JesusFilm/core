@@ -7,7 +7,11 @@ import {
   useSensor,
   useSensors
 } from '@dnd-kit/core'
-import { SortableContext, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy
+} from '@dnd-kit/sortable'
 import List from '@mui/material/List'
 import { ReactElement, ReactNode } from 'react'
 
@@ -40,7 +44,7 @@ export function OrderedList<T extends BaseItem>({
 
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-      <SortableContext items={items}>
+      <SortableContext items={items} strategy={verticalListSortingStrategy}>
         <List sx={{ gap: 1, px: 0 }}>{children}</List>
       </SortableContext>
     </DndContext>

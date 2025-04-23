@@ -51,7 +51,14 @@ export default [
   {
     files: ['**/*.ts', '**/*.tsx'],
     rules: {
-      'no-void': ['error', { allowAsStatement: true }],
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_'
+        }
+      ],
       '@typescript-eslint/no-misused-promises': 'off'
     },
     languageOptions: {
