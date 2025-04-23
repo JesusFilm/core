@@ -1,5 +1,7 @@
+'use client'
+
 import { MockedProvider } from '@apollo/client/testing'
-import { render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
 
@@ -31,7 +33,7 @@ describe('FormLanguageSelect', () => {
 
     // Select a language
     await user.click(languageSelect)
-    await waitFor(async () => {
+    await act(async () => {
       await user.click(screen.getByRole('option', { name: 'English' }))
     })
 
@@ -74,9 +76,7 @@ describe('FormLanguageSelect', () => {
 
   it('should filter out existing languages', async () => {
     // Create a mock of existing languages
-    const existingLanguages = new Map([
-      ['528', { id: 'subtitle1' }] // Spanish
-    ])
+    const existingLanguages = ['528'] // Spanish
 
     render(
       <MockedProvider mocks={[getLanguagesMock]}>
@@ -85,7 +85,7 @@ describe('FormLanguageSelect', () => {
             <FormLanguageSelect
               name="language"
               label="Language"
-              existingLanguages={existingLanguages}
+              existingLanguageIds={existingLanguages}
             />
           </Form>
         </Formik>
@@ -99,7 +99,7 @@ describe('FormLanguageSelect', () => {
     await user.click(languageSelect)
 
     // Wait for the dropdown to load
-    await waitFor(() => {
+    await act(async () => {
       // English should be in the dropdown
       expect(
         screen.getByRole('option', { name: 'English' })
@@ -117,10 +117,7 @@ describe('FormLanguageSelect', () => {
 
   it('should include parent object language when filtering', async () => {
     // Create a mock of existing languages
-    const existingLanguages = new Map([
-      ['529', { id: 'subtitle1' }], // English
-      ['528', { id: 'subtitle2' }] // Spanish
-    ])
+    const existingLanguages = ['529', '528'] // English, Spanish
 
     render(
       <MockedProvider mocks={[getLanguagesMock]}>
@@ -129,7 +126,7 @@ describe('FormLanguageSelect', () => {
             <FormLanguageSelect
               name="language"
               label="Language"
-              existingLanguages={existingLanguages}
+              existingLanguageIds={existingLanguages}
               parentObjectId="subtitle1"
               initialLanguage={{
                 id: '529',
@@ -150,7 +147,7 @@ describe('FormLanguageSelect', () => {
     await user.click(languageSelect)
 
     // Wait for the dropdown to load
-    await waitFor(() => {
+    await act(async () => {
       // English should be in the dropdown because it's the parent object's language
       expect(
         screen.getByRole('option', { name: 'English' })
@@ -194,7 +191,7 @@ describe('FormLanguageSelect', () => {
     await user.click(screen.getByRole('button', { name: 'Submit' }))
 
     // Check that the error message is displayed
-    await waitFor(() => {
+    await act(async () => {
       expect(screen.getByText('Language is required')).toBeInTheDocument()
     })
   })
