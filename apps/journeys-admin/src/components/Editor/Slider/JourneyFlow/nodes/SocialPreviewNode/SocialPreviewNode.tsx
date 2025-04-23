@@ -8,7 +8,7 @@ import isEmpty from 'lodash/isEmpty'
 import Image from 'next/image'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
-import { OnConnect, ReactFlowStore, useStore } from 'reactflow'
+import { OnConnect, useStore } from 'reactflow'
 
 import {
   ActiveContent,
@@ -18,25 +18,9 @@ import {
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { Tooltip } from '../../../../../Tooltip'
-import {
-  ARROW_OFFSET,
-  ORIGINAL_TOOLTIP_MARGIN
-} from '../../../../../Tooltip/Tooltip'
+import { getReactflowTooltipOffset } from '../../../../../Tooltip/utils/getReactflowTooltipOffset'
 import { useUpdateEdge } from '../../libs/useUpdateEdge'
 import { BaseNode, HandleVariant } from '../BaseNode'
-
-// Calculates the tooltip offset to work with react flow zoom
-const getOffset = (store: ReactFlowStore): number => {
-  const zoom = store.transform[2]
-
-  // (react flow zoom min/max, tooltip offset to match zoom) used to calculate slope-intercept:
-  // (0.5, -4)
-  // (2.0, 5)
-  const slope = 6 * zoom - 7
-
-  // Needed to 're-add' the original tooltip placement margin so the tooltip placement will scale correctly
-  return slope + ORIGINAL_TOOLTIP_MARGIN - ARROW_OFFSET
-}
 
 const TOOLTIP_DURATION = 1500
 
@@ -45,7 +29,7 @@ export function SocialPreviewNode(): ReactElement {
   const updateEdge = useUpdateEdge()
   const { t } = useTranslation('apps-journeys-admin')
   const [showTooltip, setShowTooltip] = useState(false)
-  const scaledOffset = useStore(getOffset)
+  const scaledOffset = useStore(getReactflowTooltipOffset)
 
   const {
     dispatch,

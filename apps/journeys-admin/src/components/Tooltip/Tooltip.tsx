@@ -5,8 +5,7 @@ import MuiTooltip, {
 } from '@mui/material/Tooltip'
 import { ReactElement } from 'react'
 
-export const ARROW_OFFSET = 6
-export const ORIGINAL_TOOLTIP_MARGIN = 14
+import { ARROW_OFFSET } from './constants'
 
 const StyledTooltip = styled(({ className, ...props }: MuiTooltipProps) => (
   <MuiTooltip {...props} classes={{ popper: className }} />
