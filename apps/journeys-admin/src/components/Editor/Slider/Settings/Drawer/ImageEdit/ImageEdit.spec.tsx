@@ -23,6 +23,10 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: jest.fn()
 }))
 
+jest.mock('./utils/appendTimestamp', () => ({
+  appendTimestamp: jest.fn((url) => `${url}?t=1234567890`)
+}))
+
 describe('ImageEdit', () => {
   let originalEnv
 
