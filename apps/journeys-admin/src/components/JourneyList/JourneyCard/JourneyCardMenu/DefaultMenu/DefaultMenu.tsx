@@ -61,10 +61,9 @@ interface DefaultMenuProps {
 }
 
 /**
- * DefaultMenu component provides a menu interface for journey management actions with role-based access control.
- * It includes options for editing details, managing access, sharing, previewing, duplicating,
- * copying to team, archiving, and deleting journeys. Some actions are restricted based on user roles
- * and whether the journey is a template.
+ * DefaultMenu component provides a menu interface for journey management actions.
+ * It includes options for editing details, managing access, previewing, duplicating,
+ * copying to team, archiving, and deleting journeys.
  *
  * @param {Object} props - Component props
  * @param {string} props.id - The unique identifier for the journey
@@ -76,10 +75,9 @@ interface DefaultMenuProps {
  * @param {() => void} props.handleCloseMenu - Function to close the menu
  * @param {() => void} props.setOpenTrashDialog - Function to open the trash confirmation dialog
  * @param {() => void} props.setOpenDetailsDialog - Function to open the journey details dialog
- * @param {boolean} [props.template] - Whether the journey is a template. Affects available actions and permissions
+ * @param {boolean} [props.template] - Whether the journey is a template
  * @param {() => Promise<ApolloQueryResult<GetAdminJourneys>>} [props.refetch] - Function to refetch journey data
- * @param {Journey} [props.journey] - The journey object containing additional data needed for sharing
- * @returns {ReactElement} The rendered menu component with conditionally available actions based on user roles
+ * @returns {ReactElement} The rendered menu component
  */
 export function DefaultMenu({
   id,

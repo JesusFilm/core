@@ -42,13 +42,13 @@ interface JourneyLanguage {
 export function JourneyDetailsDialog({
   open,
   onClose,
-  journey: journeyProp
+  journey
 }: JourneyDetailsDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [titleDescLanguageUpdate] = useTitleDescLanguageUpdateMutation()
   const { journey: journeyFromContext } = useJourney()
-  const journeyData = journeyProp ?? journeyFromContext
+  const journeyData = journey ?? journeyFromContext
   const { enqueueSnackbar } = useSnackbar()
   const { data, loading } = useLanguagesQuery({ languageId: '529' })
   const titleSchema = object().shape({
