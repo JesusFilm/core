@@ -8,6 +8,7 @@ import { ThemeProvider } from '../../ThemeProvider'
 import { defaultJourney, fakeDate, journeyWithImage } from '../journeyListData'
 
 import { JourneyCard } from './JourneyCard'
+import { JourneyCardVariant } from './journeyCardVariant'
 
 jest.mock('@core/journeys/ui/useNavigationState', () => ({
   useNavigationState: jest.fn(() => false)
@@ -90,5 +91,20 @@ describe('JourneyCard', () => {
     )
 
     expect(screen.queryByTestId('JourneyCard-Image')).not.toBeInTheDocument()
+  })
+
+  it('should show "New" chip for new journey card variant', () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyCard journey={defaultJourney} variant={JourneyCardVariant.new} />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    expect(screen.getByTestId('new-journey-badge')).toBeInTheDocument()
+    expect(screen.getByText('New')).toBeInTheDocument()
   })
 })

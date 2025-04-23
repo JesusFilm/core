@@ -4,9 +4,11 @@ import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
+import Chip from '@mui/material/Chip'
 import { useTheme } from '@mui/material/styles'
 import Image from 'next/image'
 import NextLink from 'next/link'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useRef } from 'react'
 
 import { useNavigationState } from '@core/journeys/ui/useNavigationState'
@@ -37,6 +39,7 @@ export function JourneyCard({
   const theme = useTheme()
   const duplicatedJourneyRef = useRef<HTMLDivElement>(null)
   const isNavigating = useNavigationState()
+  const { t } = useTranslation('apps-journeys-admin')
 
   useEffect(() => {
     if (duplicatedJourneyId != null && duplicatedJourneyRef.current != null) {
@@ -90,6 +93,24 @@ export function JourneyCard({
             disabled={isNavigating}
             sx={{ borderRadius: 0, opacity: isNavigating ? 0.5 : 1 }}
           >
+            {variant === JourneyCardVariant.new && (
+              <Box sx={{ position: 'absolute', top: 7, left: 20, zIndex: 1 }}>
+                <Chip
+                  label={t('New')}
+                  size="small"
+                  data-testid="new-journey-badge"
+                  sx={{
+                    backgroundColor: 'warning.main',
+                    color: 'warning.contrastText',
+                    borderRadius: 12.5,
+                    height: 25,
+                    px: 0.5,
+                    border: 1.5,
+                    borderColor: '#eb5b3b'
+                  }}
+                />
+              </Box>
+            )}
             <Box
               sx={{
                 position: 'relative',
@@ -121,7 +142,7 @@ export function JourneyCard({
               )}
             </Box>
             <CardContent sx={{ px: 3, py: 3 }}>
-              <JourneyCardText journey={journey} variant={variant} />
+              <JourneyCardText journey={journey} />
             </CardContent>
           </CardActionArea>
         </NextLink>
