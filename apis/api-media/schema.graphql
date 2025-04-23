@@ -153,7 +153,6 @@ enum MediaRole {
 type Mutation {
   """Transcode an asset. Returns the bullmq job ID."""
   transcodeAsset(input: TranscodeVideoInput!): String
-  getTranscodeAssetProgress(jobId: String!): Int
   createCloudflareUploadByFile(input: ImageInput): CloudflareImage!
   createCloudflareUploadByUrl(url: String!, input: ImageInput): CloudflareImage!
   createCloudflareImageFromPrompt(prompt: String!, input: ImageInput): CloudflareImage!
@@ -167,7 +166,7 @@ type Mutation {
   triggerUnsplashDownload(url: String!): Boolean!
   createMuxVideoUploadByFile(name: String!, userGenerated: Boolean): MuxVideo!
   createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean): MuxVideo!
-  enableMuxDownload(id: ID!): MuxVideo
+  enableMuxDownload(id: ID!, resolution: String): MuxVideo
   deleteMuxVideo(id: ID!, userGenerated: Boolean): Boolean!
 
   """
@@ -372,6 +371,7 @@ type PageInfo
 }
 
 type Query {
+  getTranscodeAssetProgress(jobId: String!): Int
   getMyCloudflareImages(offset: Int, limit: Int): [CloudflareImage!]!
   getMyCloudflareImage(id: ID!): CloudflareImage!
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]!

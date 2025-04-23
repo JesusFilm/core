@@ -10,13 +10,23 @@ import {
 } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useMemo, useState } from 'react'
 
-import { GetAdminJourney } from '../../../../__generated__/GetAdminJourney'
+import { useUserRoleQuery } from '@core/journeys/ui/useUserRoleQuery'
+
+import {
+  GetAdminJourney,
+  GetAdminJourney_journey as Journey
+} from '../../../../__generated__/GetAdminJourney'
 import {
   GetJourneyVisitors,
   GetJourneyVisitors_visitors_edges as VisitorEdge
 } from '../../../../__generated__/GetJourneyVisitors'
+import {
+  Role,
+  UserJourneyRole,
+  UserTeamRole
+} from '../../../../__generated__/globalTypes'
 import { UserJourneyOpen } from '../../../../__generated__/UserJourneyOpen'
 import { HelpScoutBeacon } from '../../../../src/components/HelpScoutBeacon'
 import { JourneyVisitorsList } from '../../../../src/components/JourneyVisitorsList'
@@ -26,6 +36,7 @@ import { VisitorToolbar } from '../../../../src/components/JourneyVisitorsList/V
 import { PageWrapper } from '../../../../src/components/PageWrapper'
 import { ReportsNavigation } from '../../../../src/components/ReportsNavigation'
 import { initAndAuthApp } from '../../../../src/libs/initAndAuthApp'
+import { useUserTeamsAndInvitesQuery } from '../../../../src/libs/useUserTeamsAndInvitesQuery'
 import { GET_ADMIN_JOURNEY, USER_JOURNEY_OPEN } from '../../[journeyId]'
 
 export const GET_JOURNEY_VISITORS = gql`
@@ -80,7 +91,13 @@ export const GET_JOURNEY_VISITORS_COUNT = gql`
   }
 `
 
-function JourneyVisitorsPage(): ReactElement {
+interface JourneyVisitorsPageProps {
+  journey: Journey
+}
+
+function JourneyVisitorsPage({
+  journey
+}: JourneyVisitorsPageProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const user = useUser()
   const router = useRouter()
@@ -108,6 +125,7 @@ function JourneyVisitorsPage(): ReactElement {
   const [hideInteractive, setHideInterActive] = useState(false)
   const [sortSetting, setSortSetting] = useState<'date' | 'duration'>('date')
 
+  const { data: userRoleData } = useUserRoleQuery()
   const { fetchMore, loading } = useQuery<GetJourneyVisitors>(
     GET_JOURNEY_VISITORS,
     {
@@ -130,6 +148,14 @@ function JourneyVisitorsPage(): ReactElement {
       }
     }
   )
+  const { data: userTeamsData } = useUserTeamsAndInvitesQuery(
+    journey?.team != null
+      ? {
+          teamId: journey?.team.id,
+          where: { role: [UserTeamRole.manager, UserTeamRole.member] }
+        }
+      : undefined
+  )
 
   async function handleFetchNext(): Promise<void> {
     if (visitorEdges != null && hasNextPage) {
@@ -147,6 +173,36 @@ function JourneyVisitorsPage(): ReactElement {
       }
     }
   }
+
+  const owner = useMemo(
+    () =>
+      journey.userJourneys?.find(
+        (userJourney) => userJourney.role === UserJourneyRole.owner
+      ),
+    [journey.userJourneys]
+  )
+  const isOwner = useMemo(
+    () => owner?.user?.id === user?.id,
+    [owner?.user?.id, user?.id]
+  )
+
+  const isPublisher = useMemo(
+    () => userRoleData?.getUserRole?.roles?.includes(Role.publisher),
+    [userRoleData?.getUserRole?.roles]
+  )
+
+  const userInTeam = useMemo(
+    () =>
+      !!journey?.team &&
+      !!userTeamsData?.userTeams?.some(
+        (userTeam) => userTeam.user.email === user.email
+      ),
+    [journey?.team, userTeamsData?.userTeams, user.email]
+  )
+
+  const enableExportButton = journey.template
+    ? isPublisher
+    : userInTeam || isOwner
 
   const handleChange = async (e): Promise<void> => {
     switch (e.target.value) {
@@ -214,7 +270,12 @@ function JourneyVisitorsPage(): ReactElement {
               hideInteractive={hideInteractive}
               handleClearAll={handleClearAll}
             />
-            <ExportEventsButton journeyId={journeyId} />
+            {
+              <ExportEventsButton
+                journeyId={journeyId}
+                disabled={!enableExportButton}
+              />
+            }
           </Stack>
         }
         sidePanelTitle={
@@ -239,6 +300,7 @@ function JourneyVisitorsPage(): ReactElement {
             withIcon={withIcon}
             hideInteractive={hideInteractive}
             handleClearAll={handleClearAll}
+            disableExportButton={!enableExportButton}
           />
         }
       >
@@ -268,13 +330,17 @@ export const getServerSideProps = withUserTokenSSR({
 
   if (redirect != null) return { redirect }
 
+  let journey: Journey | null = null
+
   try {
-    await apolloClient.query<GetAdminJourney>({
+    const { data } = await apolloClient.query<GetAdminJourney>({
       query: GET_ADMIN_JOURNEY,
       variables: {
         id: query?.journeyId
       }
     })
+
+    journey = data?.journey
   } catch (_) {
     return {
       redirect: {
@@ -291,7 +357,8 @@ export const getServerSideProps = withUserTokenSSR({
 
   return {
     props: {
-      ...translations
+      ...translations,
+      journey
     }
   }
 })
