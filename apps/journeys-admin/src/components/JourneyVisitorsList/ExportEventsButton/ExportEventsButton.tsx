@@ -8,16 +8,18 @@ import { ExportDialog } from '../FilterDrawer/ExportDialog'
 
 interface ExportEventsButtonProps {
   journeyId: string
+  disabled: boolean
 }
 
 export function ExportEventsButton({
-  journeyId
+  journeyId,
+  disabled
 }: ExportEventsButtonProps): ReactElement {
   const [showExportDialog, setShowExportDialog] = useState(false)
 
   return (
     <Box sx={{ display: { sm: 'block', md: 'none' } }}>
-      <IconButton onClick={() => setShowExportDialog(true)}>
+      <IconButton onClick={() => setShowExportDialog(true)} disabled={disabled}>
         <Download2 />
       </IconButton>
       <ExportDialog

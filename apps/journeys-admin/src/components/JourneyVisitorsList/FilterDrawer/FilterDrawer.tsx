@@ -28,6 +28,7 @@ interface FilterDrawerProps {
   hideInteractive: boolean
   handleClearAll: () => void
   journeyId?: string
+  disableExportButton?: boolean
 }
 
 export function FilterDrawer({
@@ -40,7 +41,8 @@ export function FilterDrawer({
   withSubmittedText,
   withIcon,
   hideInteractive,
-  handleClearAll
+  handleClearAll,
+  disableExportButton = false
 }: FilterDrawerProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [showExportDialog, setShowExportDialog] = useState(false)
@@ -139,6 +141,7 @@ export function FilterDrawer({
               color="secondary"
               sx={{ width: '100%' }}
               onClick={() => setShowExportDialog(true)}
+              disabled={disableExportButton}
             >
               {t('Export Data')}
             </Button>

@@ -35,7 +35,7 @@ describe('ExportEventsButton', () => {
   it('should render download button when not downloading', () => {
     render(
       <MockedProvider mocks={[]}>
-        <ExportEventsButton journeyId="journey1" />
+        <ExportEventsButton journeyId="journey1" disabled={false} />
       </MockedProvider>
     )
 
@@ -47,7 +47,7 @@ describe('ExportEventsButton', () => {
     render(
       <SnackbarProvider>
         <MockedProvider mocks={[mockJourneyCreatedAt]}>
-          <ExportEventsButton journeyId="journey1" />
+          <ExportEventsButton journeyId="journey1" disabled={false} />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -68,5 +68,15 @@ describe('ExportEventsButton', () => {
     await waitFor(() => {
       expect(screen.queryByText('Export Analytics')).not.toBeInTheDocument()
     })
+  })
+
+  it('should disable button when disabled is true', () => {
+    render(
+      <MockedProvider mocks={[]}>
+        <ExportEventsButton journeyId="journey1" disabled={true} />
+      </MockedProvider>
+    )
+
+    expect(screen.getByRole('button')).toBeDisabled()
   })
 })
