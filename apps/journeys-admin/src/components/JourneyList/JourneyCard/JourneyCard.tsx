@@ -4,6 +4,7 @@ import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
+import { useTheme } from '@mui/material/styles'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { ReactElement, useEffect, useRef } from 'react'
@@ -33,6 +34,7 @@ export function JourneyCard({
   variant = JourneyCardVariant.default,
   refetch
 }: JourneyCardProps): ReactElement {
+  const theme = useTheme()
   const duplicatedJourneyRef = useRef<HTMLDivElement>(null)
   const isNavigating = useNavigationState()
 
@@ -109,6 +111,12 @@ export function JourneyCard({
                     borderRadius: '5px',
                     objectFit: 'cover'
                   }}
+                  // Define appropriate image sizes for different screen sizes
+                  sizes={`
+                    (max-width: ${theme.breakpoints.values.sm}px) calc(100vw - ${theme.spacing(6)})px,
+                    (max-width: ${theme.breakpoints.values.md}px) calc(40vw - ${theme.spacing(6)})px,
+                    calc(20vw - ${theme.spacing(6)})px
+                  `}
                 />
               )}
             </Box>
