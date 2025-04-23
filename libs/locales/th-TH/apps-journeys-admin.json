@@ -550,7 +550,6 @@
   "<0>{usersRequestingAccess}</0><1>requested editing rights for your journey</1>": "<0>{usersRequestingAccess}</0><1>ขอสิทธิ์การแก้ไขสำหรับการเดินทางของคุณ</1>",
   "Journey Archived": "การเดินทางถูกเก็บถาวร",
   "Journey Unarchived": "การเดินทางถูกยกเลิกการเก็บถาวร",
-  "Edit": "แก้ไข",
   "Access": "เข้าถึง",
   "Journey Deleted": "การเดินทางถูกลบ",
   "Delete Forever?": "ลบตลอดกาล?",
