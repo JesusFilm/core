@@ -19,7 +19,7 @@ describe('JourneyView/Properties/SlugDialog', () => {
               variant: 'admin'
             }}
           >
-            <SlugDialog open onClose={onClose} />
+            <SlugDialog open onClose={onClose} journeySlug="default" />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -68,7 +68,7 @@ describe('JourneyView/Properties/SlugDialog', () => {
               variant: 'admin'
             }}
           >
-            <SlugDialog open />
+            <SlugDialog open journeySlug="default" />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -104,7 +104,7 @@ describe('JourneyView/Properties/SlugDialog', () => {
               variant: 'admin'
             }}
           >
-            <SlugDialog open />
+            <SlugDialog open journeySlug="default" />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -154,7 +154,7 @@ describe('JourneyView/Properties/SlugDialog', () => {
               variant: 'admin'
             }}
           >
-            <SlugDialog open />
+            <SlugDialog open journeySlug="default" />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -178,13 +178,23 @@ describe('JourneyView/Properties/SlugDialog', () => {
                   id: 'teamId',
                   __typename: 'Team',
                   title: 'Team',
-                  publicTitle: 'Team'
+                  publicTitle: 'Team',
+                  customDomains: [
+                    {
+                      __typename: 'CustomDomain',
+                      name: 'www.customdomain.com'
+                    }
+                  ]
                 }
               },
               variant: 'admin'
             }}
           >
-            <SlugDialog open hostname="www.customdomain.com" />
+            <SlugDialog
+              open
+              hostname="www.customdomain.com"
+              journeySlug="default"
+            />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>

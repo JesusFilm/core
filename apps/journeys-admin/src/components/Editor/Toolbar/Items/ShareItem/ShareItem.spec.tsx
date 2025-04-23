@@ -1,5 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 import { Suspense } from 'react'
@@ -214,22 +214,29 @@ describe('ShareItem', () => {
       push,
       events: { on }
     } as unknown as NextRouter)
-    render(
-      <SnackbarProvider>
-        <MockedProvider>
-          <JourneyProvider
-            value={{ journey: defaultJourney, variant: 'admin' }}
-          >
-            <ShareItem variant="button" />
-          </JourneyProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
+    await act(async () => {
+      render(
+        <SnackbarProvider>
+          <MockedProvider>
+            <JourneyProvider
+              value={{ journey: defaultJourney, variant: 'admin' }}
+            >
+              <ShareItem variant="button" />
+            </JourneyProvider>
+          </MockedProvider>
+        </SnackbarProvider>
+      )
+    })
     fireEvent.click(screen.getByRole('button', { name: 'Share' }))
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+    })
     fireEvent.click(screen.getByRole('button', { name: 'Copy' }))
-    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-      'https://my.custom.domain/default'
-    )
+    await waitFor(() => {
+      expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
+        'https://my.custom.domain/default'
+      )
+    })
   })
 
   it('should copy journey link with custom domain', async () => {
@@ -239,33 +246,49 @@ describe('ShareItem', () => {
       push,
       events: { on }
     } as unknown as NextRouter)
-    render(
-      <SnackbarProvider>
-        <MockedProvider mocks={[{ ...getCustomDomainMock, result }]}>
-          <JourneyProvider
-            value={{
-              journey: {
-                ...defaultJourney,
-                team: {
-                  id: 'teamId',
-                  __typename: 'Team',
-                  title: 'Team Title',
-                  publicTitle: 'Team Title'
-                }
-              },
-              variant: 'admin'
-            }}
-          >
-            <ShareItem variant="button" />
-          </JourneyProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
+    await act(async () => {
+      render(
+        <SnackbarProvider>
+          <MockedProvider mocks={[{ ...getCustomDomainMock, result }]}>
+            <JourneyProvider
+              value={{
+                journey: {
+                  ...defaultJourney,
+                  team: {
+                    id: 'teamId',
+                    __typename: 'Team',
+                    title: 'Team Title',
+                    publicTitle: 'Team Title',
+                    customDomains: [
+                      {
+                        name: 'www.customdomain.com',
+                        __typename: 'CustomDomain'
+                      }
+                    ]
+                  }
+                },
+                variant: 'admin'
+              }}
+            >
+              <ShareItem variant="button" />
+            </JourneyProvider>
+          </MockedProvider>
+        </SnackbarProvider>
+      )
+    })
+
     await waitFor(() => expect(result).toHaveBeenCalled())
+
     fireEvent.click(screen.getByRole('button', { name: 'Share' }))
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+    })
+
     fireEvent.click(screen.getByRole('button', { name: 'Copy' }))
-    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-      'https://example.com/default'
-    )
+    await waitFor(() => {
+      expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
+        'https://www.customdomain.com/default'
+      )
+    })
   })
 })
