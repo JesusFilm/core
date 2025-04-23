@@ -9,7 +9,6 @@ import { object, string } from 'yup'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { JourneySeoTitleUpdate } from '../../../../../../../__generated__/JourneySeoTitleUpdate'
-import { revalidateJourney } from '../../../../../../libs/revalidateJourney'
 
 export const JOURNEY_SEO_TITLE_UPDATE = gql`
   mutation JourneySeoTitleUpdate($id: ID!, $input: JourneyUpdateInput!) {
@@ -45,10 +44,6 @@ export function TitleEdit(): ReactElement {
           seoTitle: target.value
         }
       }
-    })
-    void revalidateJourney({
-      slug: journey.slug,
-      hostname: journey.host?.title
     })
   }
 

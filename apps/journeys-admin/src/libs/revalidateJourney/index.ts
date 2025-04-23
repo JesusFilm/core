@@ -1,1 +1,0 @@
-export { revalidateJourney } from './revalidateJourney'
