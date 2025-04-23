@@ -23,10 +23,6 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: jest.fn()
 }))
 
-jest.mock('./utils/appendTimestamp', () => ({
-  appendTimestamp: jest.fn((url) => `${url}?t=1234567890`)
-}))
-
 describe('ImageEdit', () => {
   let originalEnv
 
@@ -113,7 +109,7 @@ describe('ImageEdit', () => {
         imageBlockCreate: {
           __typename: 'ImageBlock',
           id: image.id,
-          src: `${image.src}?t=1234567890`,
+          src: image.src,
           alt: image.alt,
           width: image.width,
           height: image.height,
@@ -147,7 +143,7 @@ describe('ImageEdit', () => {
               variables: {
                 input: {
                   journeyId: 'journey.id',
-                  src: `${image.src}?t=1234567890`,
+                  src: image.src,
                   alt: image.alt
                 }
               }
@@ -253,7 +249,7 @@ describe('ImageEdit', () => {
               variables: {
                 input: {
                   journeyId: 'journey.id',
-                  src: `${image.src}?t=1234567890`,
+                  src: image.src,
                   alt: image.alt
                 }
               }
@@ -490,7 +486,7 @@ describe('ImageEdit', () => {
         imageBlockCreate: {
           __typename: 'ImageBlock',
           id: image.id,
-          src: `${image.src}?t=1234567890`,
+          src: image.src,
           alt: image.alt,
           width: image.width,
           height: image.height,
@@ -512,7 +508,7 @@ describe('ImageEdit', () => {
                 id: image.id,
                 journeyId: 'journey.id',
                 input: {
-                  src: `${image.src}?t=1234567890`,
+                  src: image.src,
                   alt: 'public'
                 }
               }
