@@ -27,8 +27,7 @@ export interface AccessAvatarsProps {
   journeyId?: string
   userJourneys?: UserJourney[]
   size?: 'small' | 'medium' | 'large'
-  xsMax?: number
-  smMax?: number
+  max?: number
   showManageButton?: boolean
 }
 
@@ -44,22 +43,16 @@ export function AccessAvatars({
   journeyId,
   userJourneys,
   size = 'small',
-  xsMax = 3,
-  smMax = 5,
+  max = 3,
   showManageButton = false
 }: AccessAvatarsProps): ReactElement {
   const [open, setOpen] = useState<boolean | undefined>()
-  const min = withRenderLogic({ size, max: xsMax, setOpen, showManageButton })
-  const max = withRenderLogic({ size, max: smMax, setOpen, showManageButton })
+  const renderMax = withRenderLogic({ size, max: max, setOpen, showManageButton })
 
   return (
     <Box>
-      <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
-        {min(userJourneys)}
-      </Box>
-
-      <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-        {max(userJourneys)}
+      <Box>
+        {renderMax(userJourneys)}
       </Box>
 
       {journeyId != null && open != null && (
@@ -149,6 +142,7 @@ const withRenderLogic = ({
                 apiUser={user}
                 notification={role === UserJourneyRole.inviteRequested}
                 key={user.id}
+                role={role}
               />
             )
           )

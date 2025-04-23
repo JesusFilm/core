@@ -6,22 +6,41 @@ import compact from 'lodash/compact'
 import { ReactElement } from 'react'
 
 import { GetAdminJourneys_journeys_userJourneys_user as ApiUser } from '../../../__generated__/GetAdminJourneys'
+import { UserJourneyRole } from '../../../__generated__/globalTypes'
 
 export interface AvatarProps {
   apiUser: ApiUser
   notification?: boolean
   sx?: SxProps
+  role?: UserJourneyRole
 }
 
 export function Avatar({
   apiUser,
   notification = false,
-  sx
+  sx,
+  role
 }: AvatarProps): ReactElement {
   const displayName = compact([apiUser.firstName, apiUser.lastName]).join(' ')
 
   return (
-    <Tooltip title={displayName} data-testid="JourneysAdminAvatar">
+    <Tooltip 
+      title={role !== UserJourneyRole.inviteRequested ? displayName : 'User with Requested Access'} 
+      data-testid="JourneysAdminAvatar" 
+      arrow
+      slotProps={{
+        popper: {
+          modifiers: [
+            {
+              name: 'offset',
+              options: {
+                offset: [0, -8],
+              },
+            },
+          ],
+        }
+      }}
+    >
       <Badge
         invisible={!notification}
         color="warning"
