@@ -43,6 +43,12 @@ async function main(): Promise<void> {
       './emailEvents'
     )
   )
+  run(
+    await import(
+      /* webpackChunkName: "revalidate" */
+      './revalidate'
+    )
+  )
 }
 
 // avoid running on test environment

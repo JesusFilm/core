@@ -8,6 +8,7 @@ import {
   Action,
   Block,
   ChatButton,
+  CustomDomain,
   Host,
   Journey,
   JourneyCollection,
@@ -61,7 +62,8 @@ describe('JourneyResolver', () => {
     prismaService: DeepMockProxy<PrismaService>,
     ability: AppAbility,
     abilityWithPublisher: AppAbility,
-    plausibleQueue: { add: jest.Mock }
+    plausibleQueue: { add: jest.Mock },
+    revalidateQueue: { add: jest.Mock }
 
   const journey: Journey = {
     id: 'journeyId',
@@ -135,11 +137,15 @@ describe('JourneyResolver', () => {
     plausibleQueue = {
       add: jest.fn()
     }
+    revalidateQueue = {
+      add: jest.fn()
+    }
 
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         CaslAuthModule.register(AppCaslFactory),
-        BullModule.registerQueue({ name: 'api-journeys-plausible' })
+        BullModule.registerQueue({ name: 'api-journeys-plausible' }),
+        BullModule.registerQueue({ name: 'api-journeys-revalidate' })
       ],
       providers: [
         JourneyResolver,
@@ -162,6 +168,8 @@ describe('JourneyResolver', () => {
     })
       .overrideProvider(getQueueToken('api-journeys-plausible'))
       .useValue(plausibleQueue)
+      .overrideProvider(getQueueToken('api-journeys-revalidate'))
+      .useValue(revalidateQueue)
       .compile()
     resolver = module.get<JourneyResolver>(JourneyResolver)
     blockService = module.get<BlockService>(
@@ -1798,6 +1806,13 @@ describe('JourneyResolver', () => {
 
       expect(prismaService.journey.update).toHaveBeenCalledWith({
         where: { id: 'journeyId' },
+        include: {
+          team: {
+            include: {
+              customDomains: true
+            }
+          }
+        },
         data: {
           title: 'new title',
           languageId: '529',
@@ -1821,12 +1836,59 @@ describe('JourneyResolver', () => {
       })
       expect(prismaService.journey.update).toHaveBeenCalledWith({
         where: { id: 'journeyId' },
+        include: {
+          team: {
+            include: {
+              customDomains: true
+            }
+          }
+        },
         data: {
           title: undefined,
           languageId: undefined,
           slug: undefined,
           journeyTags: undefined
         }
+      })
+    })
+
+    it('revalidates a journey when SEO fields are updated', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(
+        journeyWithUserTeam
+      )
+
+      prismaService.journey.update.mockResolvedValueOnce({
+        ...journeyWithUserTeam,
+        team: {
+          ...journeyWithUserTeam.team,
+          customDomains: [{ name: 'teamId.joinslash.com' }] as CustomDomain[]
+        }
+      } as unknown as Journey)
+      await resolver.journeyUpdate(ability, 'journeyId', {
+        seoTitle: 'new seo title',
+        seoDescription: 'new seo description',
+        primaryImageBlockId: 'primaryImageBlockId'
+      })
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
+        where: { id: 'journeyId' },
+        include: {
+          team: {
+            include: {
+              customDomains: true
+            }
+          }
+        },
+        data: {
+          seoTitle: 'new seo title',
+          seoDescription: 'new seo description',
+          primaryImageBlockId: 'primaryImageBlockId'
+        }
+      })
+
+      expect(revalidateQueue.add).toHaveBeenCalledWith('revalidate', {
+        slug: 'journey-slug',
+        hostname: 'teamId.joinslash.com',
+        fbReScrape: true
       })
     })
 
