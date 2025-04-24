@@ -34,14 +34,6 @@ export function JourneyCardInfo({
       (uj) => uj.role === UserJourneyRole.inviteRequested
     )
   }
-  const usersRequestingAccess =
-    inviteRequested != null
-      ? inviteRequested.length === 1
-        ? t('1 user')
-        : t('{{ numberOfUsers }} users', {
-            numberOfUsers: inviteRequested.length
-          })
-      : ''
 
   return (
     <Stack
@@ -61,29 +53,7 @@ export function JourneyCardInfo({
         userJourneys={inviteRequested ?? journey.userJourneys ?? undefined}
       />
       {variant === JourneyCardVariant.actionRequired ? (
-        <>
-          {inviteRequested != null ? (
-            <Stack direction="row" sx={{ width: '70%' }}>
-              <Trans t={t} usersRequestingAccess={usersRequestingAccess}>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    color: 'warning.main',
-                    fontWeight: 700,
-                    minWidth: '56px'
-                  }}
-                >
-                  {usersRequestingAccess}
-                </Typography>
-                <Typography variant="body2" noWrap>
-                  requested editing rights for your journey
-                </Typography>
-              </Trans>
-            </Stack>
-          ) : (
-            <Skeleton variant="text" width={60} />
-          )}
-        </>
+        <Skeleton variant="text" width={60} />
       ) : null}
     </Stack>
   )

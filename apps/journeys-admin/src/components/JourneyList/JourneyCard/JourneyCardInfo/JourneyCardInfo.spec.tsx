@@ -35,7 +35,7 @@ describe('JourneyCardInfo', () => {
       ]
     } as unknown as Journey
 
-    const { getAllByTestId, getByText, getAllByRole } = render(
+    const { getAllByTestId, getAllByRole } = render(
       <MockedProvider>
         <ThemeProvider>
           <JourneyCardInfo
@@ -45,12 +45,8 @@ describe('JourneyCardInfo', () => {
         </ThemeProvider>
       </MockedProvider>
     )
-    expect(getAllByTestId('avatar')).toHaveLength(2)
-    expect(getAllByRole('button')).toHaveLength(2)
-    expect(getByText('1 user')).toBeInTheDocument()
-    expect(
-      getByText('requested editing rights for your journey')
-    ).toBeInTheDocument()
+    expect(getAllByTestId('avatar')).toHaveLength(1)
+    expect(getAllByRole('button')).toHaveLength(1)
   })
 
   it('should should show many users requesting access', () => {
@@ -86,7 +82,7 @@ describe('JourneyCardInfo', () => {
       ]
     } as unknown as Journey
 
-    const { getAllByTestId, getByText } = render(
+    const { getAllByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
           <JourneyCardInfo
@@ -96,8 +92,7 @@ describe('JourneyCardInfo', () => {
         </ThemeProvider>
       </MockedProvider>
     )
-    expect(getAllByTestId('avatar')).toHaveLength(4)
-    expect(getByText('2 users')).toBeInTheDocument()
+    expect(getAllByTestId('avatar')).toHaveLength(2)
   })
 
   it('should render the response and analytics items', () => {

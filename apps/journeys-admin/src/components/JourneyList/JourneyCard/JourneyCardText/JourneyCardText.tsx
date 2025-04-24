@@ -15,15 +15,21 @@ interface JourneyCardTextProps {
 export function JourneyCardText({
   journey
 }: JourneyCardTextProps): ReactElement {
-
   return (
     <>
       <Typography
         variant="subtitle1"
         component="div"
-        noWrap
+        // noWrap
         gutterBottom
-        sx={{ color: 'secondary.main' }}
+        sx={{
+          color: 'secondary.main',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          display: '-webkit-box',
+          WebkitLineClamp: '2',
+          WebkitBoxOrient: 'vertical'
+        }}
       >
         {journey.title}
       </Typography>

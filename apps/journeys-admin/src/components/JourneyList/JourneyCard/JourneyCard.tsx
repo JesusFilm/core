@@ -62,14 +62,17 @@ export function JourneyCard({
         borderColor: 'divider',
         borderBottom: 'none',
         position: 'relative',
+        display: 'flex',
+        flexDirection: 'column',
         '&:last-of-type': {
-          borderBottomLeftRadius: { xs: 0, sm: 12 },
-          borderBottomRightRadius: { xs: 0, sm: 12 },
-          borderTopLeftRadius: { xs: 0, sm: 12 },
-          borderTopRightRadius: { xs: 0, sm: 12 },
+          borderBottomLeftRadius: 12,
+          borderBottomRightRadius: 12,
+          borderTopLeftRadius: 12,
+          borderTopRightRadius: 12,
           borderBottom: '1px solid',
           borderColor: 'divider'
-        }
+        },
+        height: '100%'
       }}
       data-testid={`JourneyCard-${journey.id}`}
     >
@@ -91,10 +94,14 @@ export function JourneyCard({
         >
           <CardActionArea
             disabled={isNavigating}
-            sx={{ borderRadius: 0, opacity: isNavigating ? 0.5 : 1 }}
+            sx={{
+              borderRadius: 0,
+              opacity: isNavigating ? 0.5 : 1,
+              flex: 1
+            }}
           >
             {variant === JourneyCardVariant.new && (
-              <Box sx={{ position: 'absolute', top: 7, left: 20, zIndex: 1 }}>
+              <Box sx={{ position: 'absolute', top: 20, left: 20, zIndex: 1 }}>
                 <Chip
                   label={t('New')}
                   size="small"
@@ -115,7 +122,10 @@ export function JourneyCard({
               sx={{
                 position: 'relative',
                 width: 'auto',
-                paddingTop: `${(158 / 208) * 100}%`,
+                paddingTop: {
+                  xs: `${(1 / 2) * 100}%`,
+                  sm: `${(4 / 6) * 100}%`
+                },
                 mx: 3,
                 mt: 3,
                 borderRadius: '5px',
@@ -146,7 +156,7 @@ export function JourneyCard({
             </CardContent>
           </CardActionArea>
         </NextLink>
-        <CardActions sx={{ pr: 3, pb: 3 }}>
+        <CardActions sx={{ pr: 3, pb: 2 }}>
           <JourneyCardInfo journey={journey} variant={variant} />
         </CardActions>
       </>

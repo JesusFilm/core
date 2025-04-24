@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box'
-import Paper from '@mui/material/Paper'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import { useRouter } from 'next/router'
@@ -99,19 +98,6 @@ export function StatusTabPanel({
 
   return (
     <>
-      <Box sx={{ mx: 6, mb: 4, mt: -2, display: { xs: 'block', sm: 'none' } }}>
-        <JourneySort sortOrder={sortOrder} onChange={setSortOrder} />
-      </Box>
-
-      <Paper
-        variant="outlined"
-        sx={{
-          borderColor: 'divider',
-          borderBottom: 0,
-          borderTopLeftRadius: { xs: 0, sm: 12 },
-          borderTopRightRadius: { xs: 0, sm: 12 }
-        }}
-      >
         <Tabs
           value={activeTab}
           onChange={handleChange}
@@ -157,7 +143,6 @@ export function StatusTabPanel({
             <JourneyListMenu onClick={setActiveEvent} />
           </Box>
         </Tabs>
-      </Paper>
       <TabPanel
         name="active-status-panel"
         value={activeTab}

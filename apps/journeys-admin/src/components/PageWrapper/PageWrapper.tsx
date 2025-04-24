@@ -121,10 +121,7 @@ export function PageWrapper({
               sx={{
                 width: {
                   xs: 'inherit',
-                  md:
-                    sidePanelChildren != null || customSidePanel != null
-                      ? `calc(100vw - ${navbar.width} - ${sidePanel.width})`
-                      : 'inherit'
+                  md: `calc(100vw - ${navbar.width})`
                 }
               }}
             >
