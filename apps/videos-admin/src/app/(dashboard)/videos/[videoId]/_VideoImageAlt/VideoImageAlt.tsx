@@ -135,7 +135,7 @@ export function VideoImageAlt({ videoId }: VideoImageAltProps): ReactElement {
               <TextField
                 id="imageAlt"
                 name="imageAlt"
-                label="Image Alt"
+                label="Image Accessibility Text"
                 fullWidth
                 value={values.imageAlt}
                 variant="outlined"
