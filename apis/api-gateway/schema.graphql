@@ -401,7 +401,6 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   Transcode an asset. Returns the bullmq job ID.
   """
   transcodeAsset(input: TranscodeVideoInput!) : String @join__field(graph: API_MEDIA) 
-  getTranscodeAssetProgress(jobId: String!) : Int @join__field(graph: API_MEDIA) 
   createCloudflareUploadByFile(input: ImageInput) : CloudflareImage! @join__field(graph: API_MEDIA) 
   createCloudflareUploadByUrl(url: String!, input: ImageInput) : CloudflareImage! @join__field(graph: API_MEDIA) 
   createCloudflareImageFromPrompt(prompt: String!, input: ImageInput) : CloudflareImage! @join__field(graph: API_MEDIA) 
@@ -414,10 +413,10 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   cloudflareR2Delete(id: ID!) : CloudflareR2! @join__field(graph: API_MEDIA) 
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!) : CloudflareImage! @join__field(graph: API_MEDIA)  @deprecated(reason: "use createCloudflareImageFromPrompt") 
   triggerUnsplashDownload(url: String!) : Boolean! @join__field(graph: API_MEDIA) 
-  createMuxVideoUploadByFile(name: String!) : MuxVideo! @join__field(graph: API_MEDIA) 
-  createMuxVideoUploadByUrl(url: String!) : MuxVideo! @join__field(graph: API_MEDIA) 
-  enableMuxDownload(id: ID!) : MuxVideo @join__field(graph: API_MEDIA) 
-  deleteMuxVideo(id: ID!) : Boolean! @join__field(graph: API_MEDIA) 
+  createMuxVideoUploadByFile(name: String!, userGenerated: Boolean) : MuxVideo! @join__field(graph: API_MEDIA) 
+  createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean) : MuxVideo! @join__field(graph: API_MEDIA) 
+  enableMuxDownload(id: ID!, resolution: String) : MuxVideo @join__field(graph: API_MEDIA) 
+  deleteMuxVideo(id: ID!, userGenerated: Boolean) : Boolean! @join__field(graph: API_MEDIA) 
   """
   Create a new short link domain that can be used for short links (this domain must have a CNAME record pointing to the short link service)
   """
@@ -703,6 +702,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   languagesCount(where: LanguagesFilter, term: String) : Int! @join__field(graph: API_LANGUAGES) 
   country(id: ID!) : Country @join__field(graph: API_LANGUAGES) 
   countries(term: String, ids: [ID!]) : [Country!]! @join__field(graph: API_LANGUAGES) 
+  getTranscodeAssetProgress(jobId: String!) : Int @join__field(graph: API_MEDIA) 
   getMyCloudflareImages(offset: Int, limit: Int) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
   getMyCloudflareImage(id: ID!) : CloudflareImage! @join__field(graph: API_MEDIA) 
   listUnsplashCollectionPhotos(
@@ -725,8 +725,8 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   bibleCitations: [BibleCitation!]! @join__field(graph: API_MEDIA) 
   keywords: [Keyword!]! @join__field(graph: API_MEDIA) 
   getMyMuxVideos(offset: Int, limit: Int) : [MuxVideo!]! @join__field(graph: API_MEDIA) 
-  getMyMuxVideo(id: ID!) : MuxVideo! @join__field(graph: API_MEDIA) 
-  getMuxVideo(id: ID!) : MuxVideo @join__field(graph: API_MEDIA) 
+  getMyMuxVideo(id: ID!, userGenerated: Boolean) : MuxVideo! @join__field(graph: API_MEDIA) 
+  getMuxVideo(id: ID!, userGenerated: Boolean) : MuxVideo @join__field(graph: API_MEDIA) 
   """
   List of short link domains that can be used for short links
   """

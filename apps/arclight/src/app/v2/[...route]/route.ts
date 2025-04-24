@@ -1,5 +1,6 @@
 import { swaggerUI } from '@hono/swagger-ui'
 import { OpenAPIHono } from '@hono/zod-openapi'
+import { compress } from 'hono/compress'
 import { etag } from 'hono/etag'
 import { HTTPException } from 'hono/http-exception'
 import { handle } from 'hono/vercel'
@@ -13,9 +14,16 @@ import { metadataLanguageTags } from './_metadata-language-tags'
 import { resources } from './_resources'
 import { taxonomies } from './_taxonomies'
 
-export const dynamic = 'force-dynamic'
-
 const app = new OpenAPIHono().basePath('/v2')
+
+// Apply compression for responses larger than 1KB
+app.use(
+  '*',
+  compress({
+    threshold: 1024 // Only compress responses > 1KB
+  })
+)
+
 app.use(etag())
 
 app.onError((err, c) => {

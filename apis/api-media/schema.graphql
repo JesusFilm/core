@@ -153,7 +153,6 @@ enum MediaRole {
 type Mutation {
   """Transcode an asset. Returns the bullmq job ID."""
   transcodeAsset(input: TranscodeVideoInput!): String
-  getTranscodeAssetProgress(jobId: String!): Int
   createCloudflareUploadByFile(input: ImageInput): CloudflareImage!
   createCloudflareUploadByUrl(url: String!, input: ImageInput): CloudflareImage!
   createCloudflareImageFromPrompt(prompt: String!, input: ImageInput): CloudflareImage!
@@ -165,10 +164,10 @@ type Mutation {
   cloudflareR2Delete(id: ID!): CloudflareR2!
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!): CloudflareImage! @deprecated(reason: "use createCloudflareImageFromPrompt")
   triggerUnsplashDownload(url: String!): Boolean!
-  createMuxVideoUploadByFile(name: String!): MuxVideo!
-  createMuxVideoUploadByUrl(url: String!): MuxVideo!
-  enableMuxDownload(id: ID!): MuxVideo
-  deleteMuxVideo(id: ID!): Boolean!
+  createMuxVideoUploadByFile(name: String!, userGenerated: Boolean): MuxVideo!
+  createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean): MuxVideo!
+  enableMuxDownload(id: ID!, resolution: String): MuxVideo
+  deleteMuxVideo(id: ID!, userGenerated: Boolean): Boolean!
 
   """
   Create a new short link domain that can be used for short links (this domain must have a CNAME record pointing to the short link service)
@@ -372,6 +371,7 @@ type PageInfo
 }
 
 type Query {
+  getTranscodeAssetProgress(jobId: String!): Int
   getMyCloudflareImages(offset: Int, limit: Int): [CloudflareImage!]!
   getMyCloudflareImage(id: ID!): CloudflareImage!
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]!
@@ -380,8 +380,8 @@ type Query {
   bibleCitations: [BibleCitation!]!
   keywords: [Keyword!]!
   getMyMuxVideos(offset: Int, limit: Int): [MuxVideo!]!
-  getMyMuxVideo(id: ID!): MuxVideo!
-  getMuxVideo(id: ID!): MuxVideo
+  getMyMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo!
+  getMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo
 
   """List of short link domains that can be used for short links"""
   shortLinkDomains(

@@ -27,6 +27,7 @@ export const getCreateR2AssetMock = <
       cloudflareR2Create: {
         id: 'r2-asset.id',
         fileName: input.fileName,
+        originalFilename: input.originalFilename ?? null,
         uploadUrl: `${ASSET_DOMAIN}/${input.fileName}`,
         publicUrl: `${ASSET_DOMAIN}/${input.fileName}`
       }

@@ -30,6 +30,18 @@ interface JourneyCardProps {
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
 }
 
+/**
+ * JourneyCard component displays a journey card with information and actions.
+ * It allows users to navigate to the journey details page and view the journey card.
+ *
+ * @param {JourneyCardProps} props - The component props
+ * @param {Journey} props.journey - The journey data object
+ * @param {string} [props.duplicatedJourneyId] - The ID of the duplicated journey
+ * @param {JourneyCardVariant} [props.variant] - The variant of the journey card
+ * @param {() => Promise<ApolloQueryResult<GetAdminJourneys>>} [props.refetch] - Function to refetch journey data
+ * @returns {ReactElement} A journey card component
+ */
+
 export function JourneyCard({
   journey,
   duplicatedJourneyId,

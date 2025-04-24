@@ -23,7 +23,7 @@ export function ExpandedCover({
   backgroundBlur,
   hasFullscreenVideo = false
 }: ExpandedCoverProps): ReactElement {
-  const { variant } = useJourney()
+  const { journey, variant } = useJourney()
   const enableVerticalScroll = {
     overflowY: 'scroll',
     // Hide on Firefox https://caniuse.com/?search=scrollbar-width
@@ -74,7 +74,7 @@ export function ExpandedCover({
           justifyContent="center"
           sx={{
             flexGrow: 1,
-            pt: { xs: 10, sm: 8 },
+            pt: journey?.website === true ? 0 : { xs: 10, sm: 8 },
             ...enableVerticalScroll
           }}
         >
