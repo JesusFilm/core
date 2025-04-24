@@ -96,6 +96,7 @@ export function JourneyCard({
             slug={journey.slug}
             published={journey.publishedAt != null}
             refetch={refetch}
+            journey={journey}
           />
         </Box>
         <NextLink
