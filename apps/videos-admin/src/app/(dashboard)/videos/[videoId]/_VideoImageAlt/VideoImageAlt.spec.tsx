@@ -139,13 +139,17 @@ describe('VideoImageAlt', () => {
     expect(
       screen.queryByRole('button', { name: 'Cancel' })
     ).not.toBeInTheDocument()
-    expect(screen.getByLabelText('Image Alt')).toHaveValue(mockImageAlt.value)
+    expect(screen.getByLabelText('Image Accessibility Text')).toHaveValue(
+      mockImageAlt.value
+    )
 
-    fireEvent.change(screen.getByLabelText('Image Alt'), {
+    fireEvent.change(screen.getByLabelText('Image Accessibility Text'), {
       target: { value: 'Hello' }
     })
 
-    expect(screen.getByLabelText('Image Alt')).toHaveValue('Hello')
+    expect(screen.getByLabelText('Image Accessibility Text')).toHaveValue(
+      'Hello'
+    )
     expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
   })
@@ -174,7 +178,7 @@ describe('VideoImageAlt', () => {
     )
 
     const user = userEvent.setup()
-    const textbox = screen.getByLabelText('Image Alt')
+    const textbox = screen.getByLabelText('Image Accessibility Text')
     expect(textbox).toHaveValue('')
 
     await user.type(textbox, 'new image alt text')
@@ -191,13 +195,17 @@ describe('VideoImageAlt', () => {
     )
 
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
-    expect(screen.getByLabelText('Image Alt')).toHaveValue(mockImageAlt.value)
+    expect(screen.getByLabelText('Image Accessibility Text')).toHaveValue(
+      mockImageAlt.value
+    )
 
-    fireEvent.change(screen.getByLabelText('Image Alt'), {
+    fireEvent.change(screen.getByLabelText('Image Accessibility Text'), {
       target: { value: 'new image alt text' }
     })
 
-    expect(screen.getByLabelText('Image Alt')).toHaveValue('new image alt text')
+    expect(screen.getByLabelText('Image Accessibility Text')).toHaveValue(
+      'new image alt text'
+    )
     expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
 
     fireEvent.click(screen.getByRole('button', { name: 'Save' }))
@@ -215,9 +223,11 @@ describe('VideoImageAlt', () => {
     )
 
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
-    expect(screen.getByLabelText('Image Alt')).toHaveValue(mockImageAlt.value)
+    expect(screen.getByLabelText('Image Accessibility Text')).toHaveValue(
+      mockImageAlt.value
+    )
 
-    fireEvent.change(screen.getByLabelText('Image Alt'), {
+    fireEvent.change(screen.getByLabelText('Image Accessibility Text'), {
       target: { value: '' }
     })
 
@@ -235,16 +245,20 @@ describe('VideoImageAlt', () => {
     )
 
     const user = userEvent.setup()
-    const textbox = screen.getByLabelText('Image Alt')
+    const textbox = screen.getByLabelText('Image Accessibility Text')
     expect(textbox).toHaveValue(mockImageAlt.value)
 
     await user.clear(textbox)
     await user.type(textbox, 'Hello')
 
-    expect(screen.getByLabelText('Image Alt')).toHaveValue('Hello')
+    expect(screen.getByLabelText('Image Accessibility Text')).toHaveValue(
+      'Hello'
+    )
 
     await user.click(screen.getByRole('button', { name: 'Cancel' }))
 
-    expect(screen.getByLabelText('Image Alt')).toHaveValue(mockImageAlt.value)
+    expect(screen.getByLabelText('Image Accessibility Text')).toHaveValue(
+      mockImageAlt.value
+    )
   })
 })

@@ -995,6 +995,7 @@ input VideoVariantDownloadCreateInput {
 
 enum VideoVariantDownloadQuality {
   low
+  sd
   high
 }
 

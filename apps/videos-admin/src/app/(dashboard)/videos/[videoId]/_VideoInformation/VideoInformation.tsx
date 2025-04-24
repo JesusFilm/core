@@ -211,6 +211,7 @@ export function VideoInformation({
                 onChange={handleChange}
                 helperText={errors.title as string}
                 sx={{ flexGrow: 1 }}
+                spellCheck={true}
               />
               <TextField
                 id="url"

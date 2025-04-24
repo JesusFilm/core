@@ -143,7 +143,7 @@ function uploadReducer(
     case 'SET_ERROR':
       return { ...initialState, error: action.error }
     case 'CLEAR':
-      return initialState
+      return { ...state, error: null }
     default:
       return state
   }

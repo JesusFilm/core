@@ -4842,7 +4842,8 @@ export type VideoVariantDownloadCreateInput = {
 
 export enum VideoVariantDownloadQuality {
   High = 'high',
-  Low = 'low'
+  Low = 'low',
+  Sd = 'sd'
 }
 
 export type VideoVariantDownloadUpdateInput = {
