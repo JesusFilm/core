@@ -124,7 +124,7 @@ describe('CopyLinkItem', () => {
                     customDomains: [
                       {
                         name: 'example.com',
-                        __typename: 'CustomDomain'  
+                        __typename: 'CustomDomain'
                       }
                     ]
                   }
