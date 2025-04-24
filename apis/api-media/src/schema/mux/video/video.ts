@@ -266,7 +266,7 @@ builder.mutationFields((t) => ({
           extensions: { code: 'NOT_FOUND' }
         })
       const res = resolution ?? '1080p'
-      if (!['1080p', '720p', '270p'].includes(res)) {
+      if (!['1080p', '720p', '360p', '270p'].includes(res)) {
         throw new GraphQLError('Invalid resolution', {
           extensions: { code: 'BAD_REQUEST' }
         })
