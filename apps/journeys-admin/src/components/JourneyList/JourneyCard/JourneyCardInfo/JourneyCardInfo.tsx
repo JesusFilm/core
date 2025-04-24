@@ -44,7 +44,7 @@ export function JourneyCardInfo({
       sx={{ width: '95%' }}
       data-testid="JourneyCardInfo"
     >
-      <Stack flexDirection="row" gap={2}>
+      <Stack flexDirection="row">
         <AnalyticsItem variant="icon-button" />
         <ResponsesItem variant="icon-button" />
       </Stack>
