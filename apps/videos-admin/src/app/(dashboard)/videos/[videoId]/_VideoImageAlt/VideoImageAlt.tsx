@@ -142,6 +142,7 @@ export function VideoImageAlt({ videoId }: VideoImageAltProps): ReactElement {
                 error={Boolean(errors.imageAlt)}
                 onChange={handleChange}
                 helperText={errors.imageAlt as string}
+                spellCheck={true}
               />
             </Stack>
             <Divider sx={{ mx: -4 }} />
