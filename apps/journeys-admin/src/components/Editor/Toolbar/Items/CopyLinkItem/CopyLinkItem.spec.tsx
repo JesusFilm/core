@@ -120,7 +120,13 @@ describe('CopyLinkItem', () => {
                     id: 'teamId',
                     __typename: 'Team',
                     title: 'Team Title',
-                    publicTitle: 'Team Title'
+                    publicTitle: 'Team Title',
+                    customDomains: [
+                      {
+                        name: 'example.com',
+                        __typename: 'CustomDomain'  
+                      }
+                    ]
                   }
                 },
                 variant: 'admin'

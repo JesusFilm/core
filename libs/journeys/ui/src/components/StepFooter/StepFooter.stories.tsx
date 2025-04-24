@@ -67,7 +67,13 @@ const journey: Journey = {
   seoDescription: null,
   chatButtons: [],
   host: null,
-  team: { __typename: 'Team', id: 'teamId', title: 'My Team', publicTitle: '' },
+  team: {
+    __typename: 'Team',
+    id: 'teamId',
+    title: 'My Team',
+    publicTitle: '',
+    customDomains: []
+  },
   tags: [],
   website: null,
   showShareButton: null,

@@ -83,7 +83,8 @@ export const defaultJourney: Journey = {
   userJourneys,
   trashedAt: null,
   template: false,
-  primaryImageBlock: null
+  primaryImageBlock: null,
+  team: null
 }
 
 export const oldJourney: Journey = {
