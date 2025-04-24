@@ -102,8 +102,8 @@ export function JourneyList({
     <>
       <Box
         sx={{
-          pr: { xs: 0, md: 4 }, 
-          mx: 0, 
+          pr: { xs: 0, md: 4 },
+          mx: 0,
           mt: -5,
           width: {
             xs: '100%',

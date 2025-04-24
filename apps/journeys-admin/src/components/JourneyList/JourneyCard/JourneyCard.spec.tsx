@@ -76,7 +76,9 @@ describe('JourneyCard', () => {
       </SnackbarProvider>
     )
 
-    expect(screen.getByRole('img', { name: 'Test Social Media Image' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('img', { name: 'Test Social Media Image' })
+    ).toBeInTheDocument()
   })
 
   it('should not show Image element when primaryImageBlock.src is null', () => {
@@ -98,7 +100,10 @@ describe('JourneyCard', () => {
       <SnackbarProvider>
         <MockedProvider>
           <ThemeProvider>
-            <JourneyCard journey={defaultJourney} variant={JourneyCardVariant.new} />
+            <JourneyCard
+              journey={defaultJourney}
+              variant={JourneyCardVariant.new}
+            />
           </ThemeProvider>
         </MockedProvider>
       </SnackbarProvider>

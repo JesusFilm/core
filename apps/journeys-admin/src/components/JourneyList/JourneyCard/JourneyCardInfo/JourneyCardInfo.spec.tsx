@@ -99,7 +99,7 @@ describe('JourneyCardInfo', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-        <JourneyCardInfo
+          <JourneyCardInfo
             journey={publishedJourney}
             variant={JourneyCardVariant.default}
           />

@@ -47,13 +47,16 @@ export function AccessAvatars({
   showManageButton = false
 }: AccessAvatarsProps): ReactElement {
   const [open, setOpen] = useState<boolean | undefined>()
-  const renderMax = withRenderLogic({ size, max: max, setOpen, showManageButton })
+  const renderMax = withRenderLogic({
+    size,
+    max: max,
+    setOpen,
+    showManageButton
+  })
 
   return (
     <Box>
-      <Box>
-        {renderMax(userJourneys)}
-      </Box>
+      <Box>{renderMax(userJourneys)}</Box>
 
       {journeyId != null && open != null && (
         <AccessDialog

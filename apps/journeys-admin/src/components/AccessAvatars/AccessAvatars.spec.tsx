@@ -71,11 +71,7 @@ describe('AccessAvatars', () => {
           <ThemeProvider>
             <AccessAvatars
               journeyId="journeyId"
-              userJourneys={[
-                userJourney1,
-                userJourney2,
-                userJourney3
-              ]}
+              userJourneys={[userJourney1, userJourney2, userJourney3]}
             />
           </ThemeProvider>
         </MockedProvider>
@@ -83,11 +79,7 @@ describe('AccessAvatars', () => {
     )
     expect(
       getAllByRole('img').map((element) => element.getAttribute('alt'))
-    ).toEqual([
-      'Coral Three',
-      'Horace Two',
-      'Amin One',
-    ])
+    ).toEqual(['Coral Three', 'Horace Two', 'Amin One'])
   })
 
   it('should display 2 valid avatars max when >3 avatars exist for journey', () => {
@@ -111,10 +103,7 @@ describe('AccessAvatars', () => {
     )
     expect(
       getAllByRole('img').map((element) => element.getAttribute('alt'))
-    ).toEqual([
-      'Horace Two',
-      'Amin One',
-    ])
+    ).toEqual(['Horace Two', 'Amin One'])
   })
 
   it('should show access dialog on click', async () => {
@@ -163,7 +152,9 @@ describe('AccessAvatars', () => {
     )
     fireEvent.mouseOver(getByRole('img', { name: 'Drake Six' }))
     await waitFor(() =>
-      expect(getByRole('tooltip', { name: 'User with Requested Access' })).toBeInTheDocument()
+      expect(
+        getByRole('tooltip', { name: 'User with Requested Access' })
+      ).toBeInTheDocument()
     )
   })
 
@@ -223,10 +214,7 @@ describe('AccessAvatars', () => {
     // expect the owner, Horace Two, to be at the final index as it is the first index displayed to the user
     expect(
       getAllByRole('img').map((element) => element.getAttribute('alt'))
-    ).toEqual([
-      'Amin One',
-      'Horace Two'
-    ])
+    ).toEqual(['Amin One', 'Horace Two'])
   })
 
   it('should show +N on the third avatar when there are more than 3 users', () => {

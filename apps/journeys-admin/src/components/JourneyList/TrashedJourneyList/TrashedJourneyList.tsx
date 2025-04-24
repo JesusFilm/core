@@ -166,11 +166,7 @@ export function TrashedJourneyList({
         <LoadingJourneyList hideHelperText />
       ) : (
         <Box sx={{ mt: 5 }}>
-          <Grid 
-            container 
-            spacing={5}
-            rowSpacing={5}
-          >
+          <Grid container spacing={5} rowSpacing={5}>
             {sortedJourneys.map((journey) => (
               <Grid key={journey.id} size={{ xs: 12, sm: 6, md: 3 }}>
                 <JourneyProvider

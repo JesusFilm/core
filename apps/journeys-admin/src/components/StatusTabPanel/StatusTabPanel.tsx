@@ -98,51 +98,51 @@ export function StatusTabPanel({
 
   return (
     <>
-        <Tabs
-          value={activeTab}
-          onChange={handleChange}
-          aria-label="journey status tabs"
-          data-testid="journey-list"
+      <Tabs
+        value={activeTab}
+        onChange={handleChange}
+        aria-label="journey status tabs"
+        data-testid="journey-list"
+      >
+        <Tab
+          label={journeyStatusTabs[0].displayValue}
+          {...tabA11yProps(
+            'active-status-panel',
+            journeyStatusTabs[0].tabIndex
+          )}
+        />
+        <Tab
+          label={journeyStatusTabs[1].displayValue}
+          {...tabA11yProps(
+            'archived-status-panel',
+            journeyStatusTabs[1].tabIndex
+          )}
+        />
+        <Tab
+          label={journeyStatusTabs[2].displayValue}
+          {...tabA11yProps(
+            'trashed-status-panel',
+            journeyStatusTabs[2].tabIndex
+          )}
+        />
+        <Box sx={{ flexGrow: 1 }} />
+        <Box
+          sx={{
+            display: { xs: 'none', sm: 'flex' },
+            alignItems: 'center'
+          }}
         >
-          <Tab
-            label={journeyStatusTabs[0].displayValue}
-            {...tabA11yProps(
-              'active-status-panel',
-              journeyStatusTabs[0].tabIndex
-            )}
-          />
-          <Tab
-            label={journeyStatusTabs[1].displayValue}
-            {...tabA11yProps(
-              'archived-status-panel',
-              journeyStatusTabs[1].tabIndex
-            )}
-          />
-          <Tab
-            label={journeyStatusTabs[2].displayValue}
-            {...tabA11yProps(
-              'trashed-status-panel',
-              journeyStatusTabs[2].tabIndex
-            )}
-          />
-          <Box sx={{ flexGrow: 1 }} />
-          <Box
-            sx={{
-              display: { xs: 'none', sm: 'flex' },
-              alignItems: 'center'
-            }}
-          >
-            <JourneySort sortOrder={sortOrder} onChange={setSortOrder} />
-          </Box>
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center'
-            }}
-          >
-            <JourneyListMenu onClick={setActiveEvent} />
-          </Box>
-        </Tabs>
+          <JourneySort sortOrder={sortOrder} onChange={setSortOrder} />
+        </Box>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center'
+          }}
+        >
+          <JourneyListMenu onClick={setActiveEvent} />
+        </Box>
+      </Tabs>
       <TabPanel
         name="active-status-panel"
         value={activeTab}

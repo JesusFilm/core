@@ -24,9 +24,13 @@ export function Avatar({
   const displayName = compact([apiUser.firstName, apiUser.lastName]).join(' ')
 
   return (
-    <Tooltip 
-      title={role !== UserJourneyRole.inviteRequested ? displayName : 'User with Requested Access'} 
-      data-testid="JourneysAdminAvatar" 
+    <Tooltip
+      title={
+        role !== UserJourneyRole.inviteRequested
+          ? displayName
+          : 'User with Requested Access'
+      }
+      data-testid="JourneysAdminAvatar"
       arrow
       slotProps={{
         popper: {
@@ -34,10 +38,10 @@ export function Avatar({
             {
               name: 'offset',
               options: {
-                offset: [0, -8],
-              },
-            },
-          ],
+                offset: [0, -8]
+              }
+            }
+          ]
         }
       }}
     >
