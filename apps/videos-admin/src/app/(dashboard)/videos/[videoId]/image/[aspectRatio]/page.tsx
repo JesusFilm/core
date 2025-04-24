@@ -62,7 +62,6 @@ export default function VideoImage({
   params: { videoId, aspectRatio: aspectRatioParam }
 }: VideoImageProps): ReactElement {
   const aspectRatio = ImageAspectRatio[aspectRatioParam]
-  console.log('aspectRatio', aspectRatio)
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
   const [loading, setLoading] = useState(false)
