@@ -27,6 +27,7 @@ type BibleCitation {
   bibleBook: BibleBook!
   chapterStart: Int!
   chapterEnd: Int
+  order: Int!
   verseStart: Int
   verseEnd: Int
   video: Video!
@@ -995,6 +996,7 @@ input VideoVariantDownloadCreateInput {
 
 enum VideoVariantDownloadQuality {
   low
+  sd
   high
 }
 

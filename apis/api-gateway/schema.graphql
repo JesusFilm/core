@@ -2313,6 +2313,7 @@ type BibleCitation @join__type(graph: API_MEDIA)  {
   bibleBook: BibleBook!
   chapterStart: Int!
   chapterEnd: Int
+  order: Int!
   verseStart: Int
   verseEnd: Int
   video: Video!
@@ -3190,6 +3191,7 @@ enum VideoLabel @join__type(graph: API_MEDIA)  {
 
 enum VideoVariantDownloadQuality @join__type(graph: API_MEDIA)  {
   low @join__enumValue(graph: API_MEDIA) 
+  sd @join__enumValue(graph: API_MEDIA) 
   high @join__enumValue(graph: API_MEDIA) 
 }
 
