@@ -145,6 +145,7 @@ export function VideoDescription({
               helperText={errors.description as string}
               minRows={6}
               maxRows={6}
+              spellCheck={true}
             />
             <Divider sx={{ mx: -4 }} />
             <Stack direction="row" justifyContent="flex-end" gap={1}>
