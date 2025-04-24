@@ -212,7 +212,12 @@ export default function AddVideoVariantDownloadDialog({
             if (baseQuality === 'low-from-high') {
               return !existingQualities.includes('low')
             }
-            return !existingQualities.includes(baseQuality as 'high' | 'low')
+            if (baseQuality === 'sd-from-high') {
+              return !existingQualities.includes('sd')
+            }
+            return !existingQualities.includes(
+              baseQuality as 'high' | 'low' | 'sd'
+            )
           }
 
           // For auto option, which creates both high and low
@@ -220,11 +225,12 @@ export default function AddVideoVariantDownloadDialog({
             // Only disallow if both high and low already exist
             const hasHigh = existingQualities.includes('high')
             const hasLow = existingQualities.includes('low')
-            return !(hasHigh && hasLow)
+            const hasSd = existingQualities.includes('sd')
+            return !(hasHigh && hasLow && hasSd)
           }
 
           // For direct upload options
-          return !existingQualities.includes(value as 'high' | 'low')
+          return !existingQualities.includes(value as 'high' | 'low' | 'sd')
         }
       ),
     // Accept any value for file for generate options
@@ -236,14 +242,14 @@ export default function AddVideoVariantDownloadDialog({
   })
 
   const handleSubmit = async (values: FormikValues): Promise<void> => {
-    console.log('handleSubmit called with', values)
     setIsLoading(true)
 
     // Handle generate qualities
     if (values.quality.startsWith('generate-')) {
       const quality = values.quality.replace('generate-', '')
       const assetId =
-        values.quality === 'generate-low-from-high'
+        values.quality === 'generate-low-from-high' ||
+        values.quality === 'generate-sd-from-high'
           ? data.videoVariant.downloads.find(
               (download) => download.quality === 'high'
             )?.asset?.id
@@ -259,10 +265,10 @@ export default function AddVideoVariantDownloadDialog({
 
       if (quality === 'high') {
         await startTranscoding('720p', '2500', 'high', assetId)
-      } else if (quality === 'low') {
+      } else if (quality === 'low' || quality === 'low-from-high') {
         await startTranscoding('270p', '500', 'low', assetId)
-      } else if (quality === 'low-from-high') {
-        await startTranscoding('270p', '500', 'low', assetId)
+      } else if (quality === 'sd' || quality === 'sd-from-high') {
+        await startTranscoding('360p', '1000', 'sd', assetId)
       }
 
       setIsLoading(false)
@@ -285,6 +291,12 @@ export default function AddVideoVariantDownloadDialog({
           await enableMuxDownload({
             variables: {
               id: data.videoVariant.muxVideo.id,
+              resolution: '360p'
+            }
+          })
+          await enableMuxDownload({
+            variables: {
+              id: data.videoVariant.muxVideo.id,
               resolution: '270p'
             }
           })
@@ -297,6 +309,20 @@ export default function AddVideoVariantDownloadDialog({
                 height: 720,
                 width: 1280,
                 url: `https://stream.mux.com/${data.videoVariant.muxVideo.playbackId}/720p.mp4`,
+                version: 0,
+                assetId: null
+              }
+            }
+          })
+          await createVideoVariantDownload({
+            variables: {
+              input: {
+                videoVariantId: variantId,
+                quality: 'sd',
+                size: 0,
+                height: 360,
+                width: 640,
+                url: `https://stream.mux.com/${data.videoVariant.muxVideo.playbackId}/360p.mp4`,
                 version: 0,
                 assetId: null
               }
@@ -430,10 +456,7 @@ export default function AddVideoVariantDownloadDialog({
     <Formik
       initialValues={initialValues}
       validationSchema={validationSchema}
-      onSubmit={(values) => {
-        console.log('Form submitted with values:', values)
-        return handleSubmit(values)
-      }}
+      onSubmit={handleSubmit}
       validateOnChange={false}
       validateOnBlur={true}
     >
@@ -445,190 +468,204 @@ export default function AddVideoVariantDownloadDialog({
         values,
         submitForm,
         isSubmitting,
-        isValid,
         validateForm
-      }) => {
-        console.log('Formik render - errors:', errors, 'isValid:', isValid)
+      }) => (
+        <Dialog
+          open={true}
+          onClose={() =>
+            router.push(returnUrl, {
+              scroll: false
+            })
+          }
+          dialogTitle={{
+            title: 'Add Download',
+            closeButton: true
+          }}
+          dialogAction={{
+            onSubmit: async () => {
+              // For auto and generate options, manually validate to bypass file validation
+              if (isGenerateOption(values.quality)) {
+                const errors = await validateForm()
 
-        return (
-          <Dialog
-            open={true}
-            onClose={() =>
-              router.push(returnUrl, {
-                scroll: false
-              })
-            }
-            dialogTitle={{
-              title: 'Add Download',
-              closeButton: true
-            }}
-            dialogAction={{
-              onSubmit: async () => {
-                console.log('Dialog submit button clicked', values)
-
-                // For auto and generate options, manually validate to bypass file validation
-                if (isGenerateOption(values.quality)) {
-                  const errors = await validateForm()
-                  console.log('Validation errors:', errors)
-
-                  // If there are no errors or only file errors when using generate options
-                  if (
-                    Object.keys(errors).length === 0 ||
-                    (Object.keys(errors).length === 1 && errors.file)
-                  ) {
-                    void submitForm()
-                  }
-                } else {
+                // If there are no errors or only file errors when using generate options
+                if (
+                  Object.keys(errors).length === 0 ||
+                  (Object.keys(errors).length === 1 && errors.file)
+                ) {
                   void submitForm()
                 }
-              },
-              submitLabel: getButtonText(values.quality),
-              closeLabel: 'Cancel'
-            }}
-            loading={isLoading || isSubmitting}
-          >
-            <Form>
-              <Stack gap={2}>
-                <FormControl
-                  fullWidth
-                  margin="normal"
+              } else {
+                void submitForm()
+              }
+            },
+            submitLabel: getButtonText(values.quality),
+            closeLabel: 'Cancel'
+          }}
+          loading={isLoading || isSubmitting}
+        >
+          <Form>
+            <Stack gap={2}>
+              <FormControl
+                fullWidth
+                margin="normal"
+                error={touched.quality && Boolean(errors.quality)}
+              >
+                <InputLabel id="quality-label">Quality</InputLabel>
+                <Select
+                  name="quality"
+                  value={values.quality}
+                  labelId="quality-label"
+                  label="Quality"
                   error={touched.quality && Boolean(errors.quality)}
+                  onChange={handleChange}
                 >
-                  <InputLabel id="quality-label">Quality</InputLabel>
-                  <Select
-                    name="quality"
-                    value={values.quality}
-                    labelId="quality-label"
-                    label="Quality"
-                    error={touched.quality && Boolean(errors.quality)}
-                    onChange={handleChange}
+                  <MenuItem
+                    value="auto"
+                    disabled={!data.videoVariant.muxVideo?.playbackId}
                   >
-                    <MenuItem
-                      value="auto"
-                      disabled={!data.videoVariant.muxVideo?.playbackId}
-                    >
-                      Auto generate from Mux{' '}
-                      {!data.videoVariant.muxVideo?.playbackId
-                        ? ' (Mux asset unavailable)'
-                        : ''}
-                    </MenuItem>
-                    <MenuItem value="high">
-                      Upload high 720p (2500kbps)
-                    </MenuItem>
-                    <MenuItem value="low">Upload low 270p (500kbps)</MenuItem>
-                    <MenuItem
-                      value="generate-high"
-                      disabled={!data.videoVariant.asset?.id}
-                    >
-                      Generate high
-                      {!data.videoVariant.asset?.id
-                        ? ' (master unavailable)'
-                        : ''}
-                    </MenuItem>
-                    <MenuItem
-                      value="generate-low"
-                      disabled={!data.videoVariant.asset?.id}
-                    >
-                      Generate low
-                      {!data.videoVariant.asset?.id
-                        ? ' (master unavailable)'
-                        : ''}
-                    </MenuItem>
-                    <MenuItem
-                      value="generate-low-from-high"
-                      disabled={
-                        !data.videoVariant.downloads.some(
-                          (download) => download.quality === 'high'
-                        )
-                      }
-                    >
-                      Generate low from high
-                      {!data.videoVariant.downloads.some(
+                    Auto generate from Mux{' '}
+                    {!data.videoVariant.muxVideo?.playbackId
+                      ? ' (Mux asset unavailable)'
+                      : ''}
+                  </MenuItem>
+                  <MenuItem value="high">Upload high 720p (2500kbps)</MenuItem>
+                  <MenuItem value="sd">Upload SD 360p (1000kbps)</MenuItem>
+                  <MenuItem value="low">Upload low 270p (500kbps)</MenuItem>
+                  <MenuItem
+                    value="generate-high"
+                    disabled={!data.videoVariant.asset?.id}
+                  >
+                    Generate high
+                    {!data.videoVariant.asset?.id
+                      ? ' (master unavailable)'
+                      : ''}
+                  </MenuItem>
+                  <MenuItem
+                    value="generate-sd"
+                    disabled={!data.videoVariant.asset?.id}
+                  >
+                    Generate SD
+                    {!data.videoVariant.asset?.id
+                      ? ' (master unavailable)'
+                      : ''}
+                  </MenuItem>
+                  <MenuItem
+                    value="generate-low"
+                    disabled={!data.videoVariant.asset?.id}
+                  >
+                    Generate low
+                    {!data.videoVariant.asset?.id
+                      ? ' (master unavailable)'
+                      : ''}
+                  </MenuItem>
+                  <MenuItem
+                    value="generate-sd-from-high"
+                    disabled={
+                      !data.videoVariant.downloads.some(
                         (download) => download.quality === 'high'
                       )
-                        ? ' (no high quality download available)'
-                        : ''}
-                    </MenuItem>
-                  </Select>
-                  <FormHelperText sx={{ minHeight: 20 }}>
-                    {errors.quality != null &&
-                      typeof errors.quality === 'string' &&
-                      errors.quality}
-                  </FormHelperText>
-                </FormControl>
-                {!isGenerateOption(values.quality) ? (
-                  <>
-                    <FileUpload
-                      accept={{ 'video/*': [] }}
-                      loading={false}
-                      onDrop={async (file) => {
-                        console.log('File dropped:', file)
-                        await setFieldValue('file', file)
-                        await handleUpload(file)
-                      }}
-                    />
-
-                    {uploadedFile != null && (
-                      <LinkFile
-                        name={uploadedFile.name}
-                        link={URL.createObjectURL(uploadedFile)}
-                      />
-                    )}
-                  </>
-                ) : (
-                  <>
-                    {values.quality === 'auto' ? (
-                      <Typography variant="body2" color="text.secondary">
-                        This will generate high (720p) and low (270p) quality
-                        downloads from Mux.
-                      </Typography>
-                    ) : (
-                      data.videoVariant.asset?.id && (
-                        <Typography variant="body2" color="text.secondary">
-                          This will generate a{' '}
-                          {values.quality === 'generate-high'
-                            ? 'high quality (720p, 2500kbps)'
-                            : 'low quality (270p, 500kbps)'}{' '}
-                          download from the existing asset.
-                        </Typography>
+                    }
+                  >
+                    Generate SD from high
+                    {!data.videoVariant.downloads.some(
+                      (download) => download.quality === 'high'
+                    )
+                      ? ' (no high quality download available)'
+                      : ''}
+                  </MenuItem>
+                  <MenuItem
+                    value="generate-low-from-high"
+                    disabled={
+                      !data.videoVariant.downloads.some(
+                        (download) => download.quality === 'high'
                       )
-                    )}
-                  </>
-                )}
+                    }
+                  >
+                    Generate low from high
+                    {!data.videoVariant.downloads.some(
+                      (download) => download.quality === 'high'
+                    )
+                      ? ' (no high quality download available)'
+                      : ''}
+                  </MenuItem>
+                </Select>
+                <FormHelperText sx={{ minHeight: 20 }}>
+                  {errors.quality != null &&
+                    typeof errors.quality === 'string' &&
+                    errors.quality}
+                </FormHelperText>
+              </FormControl>
+              {!isGenerateOption(values.quality) ? (
+                <>
+                  <FileUpload
+                    accept={{ 'video/*': [] }}
+                    loading={false}
+                    onDrop={async (file) => {
+                      await setFieldValue('file', file)
+                      await handleUpload(file)
+                    }}
+                  />
 
-                {isTranscoding && (
-                  <Box sx={{ width: '100%', mt: 2 }}>
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      gutterBottom
-                    >
-                      Transcoding{' '}
-                      {values.quality === 'generate-high'
-                        ? 'to 720p (2500kbps)'
-                        : 'to 270p (500kbps)'}
-                      ...
-                    </Typography>
-                    <LinearProgress
-                      variant="determinate"
-                      value={transcodeProgress ?? 0}
-                      sx={{ height: 10, borderRadius: 1 }}
+                  {uploadedFile != null && (
+                    <LinkFile
+                      name={uploadedFile.name}
+                      link={URL.createObjectURL(uploadedFile)}
                     />
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      align="right"
-                      sx={{ mt: 0.5 }}
-                    >
-                      {transcodeProgress}%
+                  )}
+                </>
+              ) : (
+                <>
+                  {values.quality === 'auto' ? (
+                    <Typography variant="body2" color="text.secondary">
+                      This will generate high (720p), SD (360p) and low (270p)
+                      quality downloads from Mux.
                     </Typography>
-                  </Box>
-                )}
-              </Stack>
-            </Form>
-          </Dialog>
-        )
-      }}
+                  ) : (
+                    data.videoVariant.asset?.id && (
+                      <Typography variant="body2" color="text.secondary">
+                        This will generate a{' '}
+                        {values.quality === 'generate-high'
+                          ? 'high quality (720p, 2500kbps)'
+                          : 'low quality (270p, 500kbps)'}{' '}
+                        download from the existing asset.
+                      </Typography>
+                    )
+                  )}
+                </>
+              )}
+
+              {isTranscoding && (
+                <Box sx={{ width: '100%', mt: 2 }}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    gutterBottom
+                  >
+                    Transcoding{' '}
+                    {values.quality === 'generate-high'
+                      ? 'to 720p (2500kbps)'
+                      : 'to 270p (500kbps)'}
+                    ...
+                  </Typography>
+                  <LinearProgress
+                    variant="determinate"
+                    value={transcodeProgress ?? 0}
+                    sx={{ height: 10, borderRadius: 1 }}
+                  />
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    align="right"
+                    sx={{ mt: 0.5 }}
+                  >
+                    {transcodeProgress}%
+                  </Typography>
+                </Box>
+              )}
+            </Stack>
+          </Form>
+        </Dialog>
+      )}
     </Formik>
   )
 }
