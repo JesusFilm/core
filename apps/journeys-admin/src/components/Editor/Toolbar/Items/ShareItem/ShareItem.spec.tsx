@@ -214,19 +214,17 @@ describe('ShareItem', () => {
       push,
       events: { on }
     } as unknown as NextRouter)
-    await act(async () => {
-      render(
-        <SnackbarProvider>
-          <MockedProvider>
-            <JourneyProvider
-              value={{ journey: defaultJourney, variant: 'admin' }}
-            >
-              <ShareItem variant="button" />
-            </JourneyProvider>
-          </MockedProvider>
-        </SnackbarProvider>
-      )
-    })
+    render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <JourneyProvider
+            value={{ journey: defaultJourney, variant: 'admin' }}
+          >
+            <ShareItem variant="button" />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
     fireEvent.click(screen.getByRole('button', { name: 'Share' }))
     await waitFor(() => {
       expect(screen.getByRole('dialog')).toBeInTheDocument()
@@ -246,36 +244,34 @@ describe('ShareItem', () => {
       push,
       events: { on }
     } as unknown as NextRouter)
-    await act(async () => {
-      render(
-        <SnackbarProvider>
-          <MockedProvider mocks={[{ ...getCustomDomainMock, result }]}>
-            <JourneyProvider
-              value={{
-                journey: {
-                  ...defaultJourney,
-                  team: {
-                    id: 'teamId',
-                    __typename: 'Team',
-                    title: 'Team Title',
-                    publicTitle: 'Team Title',
-                    customDomains: [
-                      {
-                        name: 'www.customdomain.com',
-                        __typename: 'CustomDomain'
-                      }
-                    ]
-                  }
-                },
-                variant: 'admin'
-              }}
-            >
-              <ShareItem variant="button" />
-            </JourneyProvider>
-          </MockedProvider>
-        </SnackbarProvider>
-      )
-    })
+    render(
+      <SnackbarProvider>
+        <MockedProvider mocks={[{ ...getCustomDomainMock, result }]}>
+          <JourneyProvider
+            value={{
+              journey: {
+                ...defaultJourney,
+                team: {
+                  id: 'teamId',
+                  __typename: 'Team',
+                  title: 'Team Title',
+                  publicTitle: 'Team Title',
+                  customDomains: [
+                    {
+                      name: 'www.customdomain.com',
+                      __typename: 'CustomDomain'
+                    }
+                  ]
+                }
+              },
+              variant: 'admin'
+            }}
+          >
+            <ShareItem variant="button" />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
 

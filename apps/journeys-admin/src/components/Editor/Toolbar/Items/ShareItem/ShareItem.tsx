@@ -59,7 +59,6 @@ export function ShareItem({
   const { t } = useTranslation('apps-journeys-admin')
   const { journey: journeyContext } = useJourney()
   const journeyData = journeyContext ?? journey
-
   const journeySlug = journeyData?.slug
 
   const hostname =
@@ -117,7 +116,6 @@ export function ShareItem({
           <Stack direction="row" spacing={6}>
             <Button
               onClick={() => {
-                console.log('clicked')
                 setShowSlugDialog(true)
                 setRoute('edit-url')
               }}
