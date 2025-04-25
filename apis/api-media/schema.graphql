@@ -975,6 +975,7 @@ type VideoVariantDownload {
   size: Float!
   height: Int!
   width: Int!
+  bitrate: Int!
   url: String!
 
   """master video file version"""
@@ -989,6 +990,7 @@ input VideoVariantDownloadCreateInput {
   size: Float
   height: Int
   width: Int
+  bitrate: Int
   url: String!
   version: Int
 }
@@ -1007,6 +1009,7 @@ input VideoVariantDownloadUpdateInput {
   size: Float
   height: Int
   width: Int
+  bitrate: Int
   url: String
   version: Int
 }
