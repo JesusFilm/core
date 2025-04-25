@@ -1323,6 +1323,7 @@ export enum MessagePlatform {
 export type Mutation = {
   __typename?: 'Mutation';
   bibleCitationCreate?: Maybe<BibleCitation>;
+  bibleCitationDelete?: Maybe<Scalars['Boolean']['output']>;
   bibleCitationUpdate?: Maybe<BibleCitation>;
   /** blockDelete returns the updated sibling blocks on successful delete */
   blockDelete: Array<Block>;
@@ -1511,6 +1512,11 @@ export type Mutation = {
 
 export type MutationBibleCitationCreateArgs = {
   input: MutationBibleCitationCreateInput;
+};
+
+
+export type MutationBibleCitationDeleteArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -2766,6 +2772,7 @@ export type Query = {
   adminVideos: Array<Video>;
   adminVideosCount: Scalars['Int']['output'];
   bibleBooks: Array<BibleBook>;
+  bibleCitation: BibleCitation;
   bibleCitations: Array<BibleCitation>;
   block: Block;
   blocks: Array<Block>;
@@ -2898,6 +2905,16 @@ export type QueryAdminVideosArgs = {
 
 export type QueryAdminVideosCountArgs = {
   where?: InputMaybe<VideosFilter>;
+};
+
+
+export type QueryBibleCitationArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryBibleCitationsArgs = {
+  videoId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
