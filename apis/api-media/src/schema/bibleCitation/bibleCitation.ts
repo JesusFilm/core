@@ -25,26 +25,38 @@ builder.queryFields((t) => ({
   bibleCitations: t.prismaField({
     type: ['BibleCitation'],
     nullable: false,
-    resolve: async (query) =>
+    args: {
+      videoId: t.arg({ type: 'ID', required: false })
+    },
+    resolve: async (query, _parent, { videoId }) =>
       await prisma.bibleCitation.findMany({
-        ...query
+        ...query,
+        where: { videoId: videoId ?? undefined },
+        orderBy: { order: 'asc' }
       })
+  }),
+  bibleCitation: t.prismaField({
+    type: 'BibleCitation',
+    nullable: false,
+    args: { id: t.arg({ type: 'ID', required: true }) },
+    resolve: async (query, _parent, { id }) =>
+      await prisma.bibleCitation.findUniqueOrThrow({ ...query, where: { id } })
   })
 }))
 
 builder.mutationFields((t) => ({
-  bibleCitationCreate: t.prismaFieldWithInput({
+  bibleCitationCreate: t.withAuth({ isPublisher: true }).prismaFieldWithInput({
     type: 'BibleCitation',
     input: {
-      id: t.arg.id({ required: false }),
-      osisId: t.arg.string({ required: true }),
-      videoId: t.arg.id({ required: true }),
-      bibleBookId: t.arg.id({ required: true }),
-      chapterStart: t.arg.int({ required: true }),
-      chapterEnd: t.arg.int({ required: false }),
-      verseStart: t.arg.int({ required: false }),
-      verseEnd: t.arg.int({ required: false }),
-      order: t.arg.int({ required: true })
+      id: t.input.id({ required: false }),
+      osisId: t.input.string({ required: true }),
+      videoId: t.input.id({ required: true }),
+      bibleBookId: t.input.id({ required: true }),
+      chapterStart: t.input.int({ required: true }),
+      chapterEnd: t.input.int({ required: false }),
+      verseStart: t.input.int({ required: false }),
+      verseEnd: t.input.int({ required: false }),
+      order: t.input.int({ required: true })
     },
     resolve: async (query, _parent, { input }) => {
       return await prisma.bibleCitation.create({
@@ -59,17 +71,17 @@ builder.mutationFields((t) => ({
       })
     }
   }),
-  bibleCitationUpdate: t.prismaFieldWithInput({
+  bibleCitationUpdate: t.withAuth({ isPublisher: true }).prismaFieldWithInput({
     type: 'BibleCitation',
     input: {
-      id: t.arg.id({ required: true }),
-      osisId: t.arg.string({ required: false }),
-      bibleBookId: t.arg.id({ required: false }),
-      chapterStart: t.arg.int({ required: false }),
-      chapterEnd: t.arg.int({ required: false }),
-      verseStart: t.arg.int({ required: false }),
-      verseEnd: t.arg.int({ required: false }),
-      order: t.arg.int({ required: false })
+      id: t.input.id({ required: true }),
+      osisId: t.input.string({ required: false }),
+      bibleBookId: t.input.id({ required: false }),
+      chapterStart: t.input.int({ required: false }),
+      chapterEnd: t.input.int({ required: false }),
+      verseStart: t.input.int({ required: false }),
+      verseEnd: t.input.int({ required: false }),
+      order: t.input.int({ required: false })
     },
     resolve: async (query, _parent, { input }) => {
       return await prisma.bibleCitation.update({
@@ -86,6 +98,15 @@ builder.mutationFields((t) => ({
           order: input.order ?? undefined
         }
       })
+    }
+  }),
+  bibleCitationDelete: t.withAuth({ isPublisher: true }).boolean({
+    args: {
+      id: t.arg({ type: 'ID', required: true })
+    },
+    resolve: async (_parent, { id }) => {
+      await prisma.bibleCitation.delete({ where: { id: id } })
+      return true
     }
   })
 }))

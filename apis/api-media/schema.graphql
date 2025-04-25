@@ -165,6 +165,9 @@ type Mutation {
   cloudflareR2Delete(id: ID!): CloudflareR2!
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!): CloudflareImage! @deprecated(reason: "use createCloudflareImageFromPrompt")
   triggerUnsplashDownload(url: String!): Boolean!
+  bibleCitationCreate(input: MutationBibleCitationCreateInput!): BibleCitation
+  bibleCitationUpdate(input: MutationBibleCitationUpdateInput!): BibleCitation
+  bibleCitationDelete(id: ID!): Boolean
   createMuxVideoUploadByFile(name: String!, userGenerated: Boolean): MuxVideo!
   createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean): MuxVideo!
   enableMuxDownload(id: ID!, resolution: String): MuxVideo
@@ -220,6 +223,29 @@ type Mutation {
   videoVariantDownloadCreate(input: VideoVariantDownloadCreateInput!): VideoVariantDownload!
   videoVariantDownloadUpdate(input: VideoVariantDownloadUpdateInput!): VideoVariantDownload!
   videoVariantDownloadDelete(id: ID!): VideoVariantDownload!
+}
+
+input MutationBibleCitationCreateInput {
+  id: ID
+  osisId: String!
+  videoId: ID!
+  bibleBookId: ID!
+  chapterStart: Int!
+  chapterEnd: Int
+  verseStart: Int
+  verseEnd: Int
+  order: Int!
+}
+
+input MutationBibleCitationUpdateInput {
+  id: ID!
+  osisId: String
+  bibleBookId: ID
+  chapterStart: Int
+  chapterEnd: Int
+  verseStart: Int
+  verseEnd: Int
+  order: Int
 }
 
 input MutationShortLinkCreateInput {
@@ -378,7 +404,8 @@ type Query {
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]!
   searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String!], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse!
   bibleBooks: [BibleBook!]!
-  bibleCitations: [BibleCitation!]!
+  bibleCitations(videoId: ID): [BibleCitation!]!
+  bibleCitation(id: ID!): BibleCitation!
   keywords: [Keyword!]!
   getMyMuxVideos(offset: Int, limit: Int): [MuxVideo!]!
   getMyMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo!

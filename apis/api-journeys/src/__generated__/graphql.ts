@@ -74,6 +74,7 @@ export type BibleCitation = {
   chapterEnd?: Maybe<Scalars['Int']['output']>;
   chapterStart: Scalars['Int']['output'];
   id: Scalars['ID']['output'];
+  order: Scalars['Int']['output'];
   osisId: Scalars['String']['output'];
   verseEnd?: Maybe<Scalars['Int']['output']>;
   verseStart?: Maybe<Scalars['Int']['output']>;
@@ -1321,6 +1322,8 @@ export enum MessagePlatform {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  bibleCitationCreate?: Maybe<BibleCitation>;
+  bibleCitationUpdate?: Maybe<BibleCitation>;
   /** blockDelete returns the updated sibling blocks on successful delete */
   blockDelete: Array<Block>;
   blockDeleteAction: Block;
@@ -1503,6 +1506,16 @@ export type Mutation = {
   visitorUpdate: Visitor;
   /** Allow current user to update specific allowable fields of their visitor record */
   visitorUpdateForCurrentUser: Visitor;
+};
+
+
+export type MutationBibleCitationCreateArgs = {
+  input: MutationBibleCitationCreateInput;
+};
+
+
+export type MutationBibleCitationUpdateArgs = {
+  input: MutationBibleCitationUpdateInput;
 };
 
 
@@ -2334,6 +2347,29 @@ export type MutationVisitorUpdateArgs = {
 
 export type MutationVisitorUpdateForCurrentUserArgs = {
   input: VisitorUpdateInput;
+};
+
+export type MutationBibleCitationCreateInput = {
+  bibleBookId: Scalars['ID']['input'];
+  chapterEnd?: InputMaybe<Scalars['Int']['input']>;
+  chapterStart: Scalars['Int']['input'];
+  id?: InputMaybe<Scalars['ID']['input']>;
+  order: Scalars['Int']['input'];
+  osisId: Scalars['String']['input'];
+  verseEnd?: InputMaybe<Scalars['Int']['input']>;
+  verseStart?: InputMaybe<Scalars['Int']['input']>;
+  videoId: Scalars['ID']['input'];
+};
+
+export type MutationBibleCitationUpdateInput = {
+  bibleBookId?: InputMaybe<Scalars['ID']['input']>;
+  chapterEnd?: InputMaybe<Scalars['Int']['input']>;
+  chapterStart?: InputMaybe<Scalars['Int']['input']>;
+  id: Scalars['ID']['input'];
+  order?: InputMaybe<Scalars['Int']['input']>;
+  osisId?: InputMaybe<Scalars['String']['input']>;
+  verseEnd?: InputMaybe<Scalars['Int']['input']>;
+  verseStart?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type MutationShortLinkCreateInput = {

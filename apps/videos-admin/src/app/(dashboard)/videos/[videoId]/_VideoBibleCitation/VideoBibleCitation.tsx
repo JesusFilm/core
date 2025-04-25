@@ -1,54 +1,44 @@
 'use client'
 
-import { useMutation, useSuspenseQuery } from '@apollo/client'
-import AddIcon from '@mui/icons-material/Add'
-import DeleteIcon from '@mui/icons-material/Delete'
-import Box from '@mui/material/Box'
+import { useMutation, useQuery } from '@apollo/client'
+import { DragEndEvent } from '@dnd-kit/core'
 import Button from '@mui/material/Button'
-import Divider from '@mui/material/Divider'
-import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
-import Table from '@mui/material/Table'
-import TableBody from '@mui/material/TableBody'
-import TableCell from '@mui/material/TableCell'
-import TableContainer from '@mui/material/TableContainer'
-import TableHead from '@mui/material/TableHead'
-import TableRow from '@mui/material/TableRow'
-import Typography from '@mui/material/Typography'
 import { graphql } from 'gql.tada'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
+import { OrderedList } from '../../../../../components/OrderedList'
+import { OrderedItem } from '../../../../../components/OrderedList/OrderedItem'
+import { Section } from '../../../../../components/Section'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
 
 export const GET_VIDEO_BIBLE_CITATIONS = graphql(`
   query GetVideoBibleCitations($videoId: ID!, $languageId: ID!) {
-    adminVideo(id: $videoId) {
+    bibleCitations(videoId: $videoId) {
       id
-      bibleCitations {
+      osisId
+      chapterStart
+      chapterEnd
+      verseStart
+      verseEnd
+      order
+      bibleBook {
         id
-        osisId
-        chapterStart
-        chapterEnd
-        verseStart
-        verseEnd
-        order
-        bibleBook {
-          id
-          name(languageId: $languageId) {
-            value
-          }
+        name(languageId: $languageId) {
+          value
         }
       }
     }
   }
 `)
 
-export const DELETE_BIBLE_CITATION = graphql(`
-  mutation DeleteBibleCitation($id: ID!) {
-    bibleCitationDelete(id: $id) {
+export const UPDATE_BIBLE_CITATION_ORDER = graphql(`
+  mutation UpdateBibleCitationOrder($input: MutationBibleCitationUpdateInput!) {
+    bibleCitationUpdate(input: $input) {
       id
+      order
     }
   }
 `)
@@ -62,52 +52,15 @@ export function VideoBibleCitation({
 }: VideoBibleCitationProps): ReactElement {
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
-  const [deleteBibleCitation] = useMutation(DELETE_BIBLE_CITATION)
-
-  const { data } = useSuspenseQuery(GET_VIDEO_BIBLE_CITATIONS, {
-    variables: { videoId, languageId: DEFAULT_VIDEO_LANGUAGE_ID }
+  const [updateBibleCitationOrder] = useMutation(UPDATE_BIBLE_CITATION_ORDER, {
+    onError: (error) => {
+      enqueueSnackbar(error.message, { variant: 'error' })
+    }
   })
 
-  const bibleCitations = data?.adminVideo.bibleCitations ?? []
-
-  const handleDelete = async (id: string): Promise<void> => {
-    await deleteBibleCitation({
-      variables: { id },
-      update: (cache, { data }) => {
-        if (data?.bibleCitationDelete == null) return
-
-        cache.modify({
-          id: cache.identify({
-            __typename: 'Video',
-            id: videoId
-          }),
-          fields: {
-            bibleCitations(existingCitations = [], { readField }) {
-              return existingCitations.filter(
-                (citationRef) => readField('id', citationRef) !== id
-              )
-            }
-          }
-        })
-      },
-      onCompleted: () => {
-        enqueueSnackbar('Bible citation deleted successfully', {
-          variant: 'success'
-        })
-      },
-      onError: () => {
-        enqueueSnackbar('Failed to delete Bible citation', {
-          variant: 'error'
-        })
-      }
-    })
-  }
-
-  const handleAdd = (): void => {
-    router.push(`/videos/${videoId}/bible-citations/add`, {
-      scroll: false
-    })
-  }
+  const { data, refetch } = useQuery(GET_VIDEO_BIBLE_CITATIONS, {
+    variables: { videoId, languageId: DEFAULT_VIDEO_LANGUAGE_ID }
+  })
 
   const formatVerse = (citation: {
     chapterStart: number
@@ -138,63 +91,95 @@ export function VideoBibleCitation({
     return `${chapterStart}:${verseStart}-${chapterEnd}:${verseEnd}`
   }
 
+  async function updateOrderOnDrag(e: DragEndEvent): Promise<void> {
+    const { active, over } = e
+    if (over == null || data == null) return
+    if (e.active.id !== over.id) {
+      const oldIndex = data.bibleCitations.findIndex(
+        (item) => item.id === active.id
+      )
+      const newIndex = data.bibleCitations.findIndex(
+        (item) => item.id === over.id
+      )
+
+      const citationToMove = data.bibleCitations.find((q) => q.id === active.id)
+      if (!citationToMove) return
+
+      // Create a new array with the reordered items
+      const updatedCitations = [...data.bibleCitations]
+      const [movedItem] = updatedCitations.splice(oldIndex, 1)
+      updatedCitations.splice(newIndex, 0, movedItem)
+
+      try {
+        // Update all citations in sequence
+        for (let i = 0; i < updatedCitations.length; i++) {
+          const citation = updatedCitations[i]
+          await updateBibleCitationOrder({
+            variables: {
+              input: { id: citation.id, order: i + 1 }
+            }
+          })
+        }
+        enqueueSnackbar('Citation order updated', { variant: 'success' })
+        void refetch()
+      } catch (_error) {
+        enqueueSnackbar('Error updating bible citation order:', {
+          variant: 'error'
+        })
+        void refetch()
+      }
+    }
+  }
+
   return (
-    <Stack gap={2}>
-      <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Typography variant="h6">Bible Citations</Typography>
+    <Section title="Bible Citations" variant="outlined">
+      {data == null || data.bibleCitations.length === 0 ? (
+        <Section.Fallback>No Bible citations</Section.Fallback>
+      ) : (
+        <OrderedList
+          onOrderUpdate={updateOrderOnDrag}
+          items={data.bibleCitations}
+        >
+          {data.bibleCitations.map((citation) => (
+            <OrderedItem
+              key={citation.id}
+              id={citation.id}
+              label={`${citation.bibleBook.name[0]?.value ?? citation.osisId} ${formatVerse(citation)}`}
+              idx={citation.order - 1}
+              menuActions={[
+                {
+                  label: 'Edit',
+                  handler: (id) =>
+                    router.push(`/videos/${videoId}/citation/${id}`, {
+                      scroll: false
+                    })
+                },
+                {
+                  label: 'Delete',
+                  handler: (id) =>
+                    router.push(`/videos/${videoId}/citation/${id}/delete`, {
+                      scroll: false
+                    })
+                }
+              ]}
+            />
+          ))}
+        </OrderedList>
+      )}
+      <Stack direction="row" justifyContent="flex-end">
         <Button
           variant="outlined"
-          startIcon={<AddIcon />}
-          onClick={handleAdd}
-          data-testid="AddBibleCitationButton"
+          onClick={() =>
+            router.push(`/videos/${videoId}/citation/add`, {
+              scroll: false
+            })
+          }
+          size="small"
+          color="secondary"
         >
-          Add Bible Citation
+          Add
         </Button>
-      </Box>
-
-      {bibleCitations.length === 0 ? (
-        <Typography variant="body2" color="text.secondary">
-          No Bible citations added yet
-        </Typography>
-      ) : (
-        <TableContainer>
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell>Order</TableCell>
-                <TableCell>Bible Book</TableCell>
-                <TableCell>Reference</TableCell>
-                <TableCell align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {bibleCitations
-                .sort((a, b) => a.order - b.order)
-                .map((citation) => (
-                  <TableRow key={citation.id}>
-                    <TableCell>{citation.order}</TableCell>
-                    <TableCell>
-                      {citation.bibleBook.name[0]?.value ?? citation.osisId}
-                    </TableCell>
-                    <TableCell>{formatVerse(citation)}</TableCell>
-                    <TableCell align="right">
-                      <IconButton
-                        onClick={() => handleDelete(citation.id)}
-                        size="small"
-                        aria-label="delete"
-                        data-testid={`DeleteBibleCitation-${citation.id}`}
-                      >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
-
-      <Divider sx={{ mx: -4 }} />
-    </Stack>
+      </Stack>
+    </Section>
   )
 }
