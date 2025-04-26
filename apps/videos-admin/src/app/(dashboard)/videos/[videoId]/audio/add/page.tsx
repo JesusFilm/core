@@ -38,7 +38,7 @@ const validationSchema = object().shape({
 })
 
 const initialValues: FormikValues = {
-  edition: '',
+  edition: 'base',
   language: null,
   file: null,
   published: 'unpublished'

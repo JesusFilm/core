@@ -212,7 +212,12 @@ export default function AddVideoVariantDownloadDialog({
             if (baseQuality === 'low-from-high') {
               return !existingQualities.includes('low')
             }
-            return !existingQualities.includes(baseQuality as 'high' | 'low')
+            if (baseQuality === 'sd-from-high') {
+              return !existingQualities.includes('sd')
+            }
+            return !existingQualities.includes(
+              baseQuality as 'high' | 'low' | 'sd'
+            )
           }
 
           // For auto option, which creates both high and low
@@ -220,11 +225,12 @@ export default function AddVideoVariantDownloadDialog({
             // Only disallow if both high and low already exist
             const hasHigh = existingQualities.includes('high')
             const hasLow = existingQualities.includes('low')
-            return !(hasHigh && hasLow)
+            const hasSd = existingQualities.includes('sd')
+            return !(hasHigh && hasLow && hasSd)
           }
 
           // For direct upload options
-          return !existingQualities.includes(value as 'high' | 'low')
+          return !existingQualities.includes(value as 'high' | 'low' | 'sd')
         }
       ),
     // Accept any value for file for generate options
@@ -242,7 +248,8 @@ export default function AddVideoVariantDownloadDialog({
     if (values.quality.startsWith('generate-')) {
       const quality = values.quality.replace('generate-', '')
       const assetId =
-        values.quality === 'generate-low-from-high'
+        values.quality === 'generate-low-from-high' ||
+        values.quality === 'generate-sd-from-high'
           ? data.videoVariant.downloads.find(
               (download) => download.quality === 'high'
             )?.asset?.id
@@ -258,10 +265,10 @@ export default function AddVideoVariantDownloadDialog({
 
       if (quality === 'high') {
         await startTranscoding('720p', '2500', 'high', assetId)
-      } else if (quality === 'low') {
+      } else if (quality === 'low' || quality === 'low-from-high') {
         await startTranscoding('270p', '500', 'low', assetId)
-      } else if (quality === 'low-from-high') {
-        await startTranscoding('270p', '500', 'low', assetId)
+      } else if (quality === 'sd' || quality === 'sd-from-high') {
+        await startTranscoding('360p', '1000', 'sd', assetId)
       }
 
       setIsLoading(false)
@@ -284,6 +291,12 @@ export default function AddVideoVariantDownloadDialog({
           await enableMuxDownload({
             variables: {
               id: data.videoVariant.muxVideo.id,
+              resolution: '360p'
+            }
+          })
+          await enableMuxDownload({
+            variables: {
+              id: data.videoVariant.muxVideo.id,
               resolution: '270p'
             }
           })
@@ -296,6 +309,20 @@ export default function AddVideoVariantDownloadDialog({
                 height: 720,
                 width: 1280,
                 url: `https://stream.mux.com/${data.videoVariant.muxVideo.playbackId}/720p.mp4`,
+                version: 0,
+                assetId: null
+              }
+            }
+          })
+          await createVideoVariantDownload({
+            variables: {
+              input: {
+                videoVariantId: variantId,
+                quality: 'sd',
+                size: 0,
+                height: 360,
+                width: 640,
+                url: `https://stream.mux.com/${data.videoVariant.muxVideo.playbackId}/360p.mp4`,
                 version: 0,
                 assetId: null
               }
@@ -441,7 +468,6 @@ export default function AddVideoVariantDownloadDialog({
         values,
         submitForm,
         isSubmitting,
-        isValid,
         validateForm
       }) => (
         <Dialog
@@ -503,6 +529,7 @@ export default function AddVideoVariantDownloadDialog({
                       : ''}
                   </MenuItem>
                   <MenuItem value="high">Upload high 720p (2500kbps)</MenuItem>
+                  <MenuItem value="sd">Upload SD 360p (1000kbps)</MenuItem>
                   <MenuItem value="low">Upload low 270p (500kbps)</MenuItem>
                   <MenuItem
                     value="generate-high"
@@ -514,12 +541,36 @@ export default function AddVideoVariantDownloadDialog({
                       : ''}
                   </MenuItem>
                   <MenuItem
+                    value="generate-sd"
+                    disabled={!data.videoVariant.asset?.id}
+                  >
+                    Generate SD
+                    {!data.videoVariant.asset?.id
+                      ? ' (master unavailable)'
+                      : ''}
+                  </MenuItem>
+                  <MenuItem
                     value="generate-low"
                     disabled={!data.videoVariant.asset?.id}
                   >
                     Generate low
                     {!data.videoVariant.asset?.id
                       ? ' (master unavailable)'
+                      : ''}
+                  </MenuItem>
+                  <MenuItem
+                    value="generate-sd-from-high"
+                    disabled={
+                      !data.videoVariant.downloads.some(
+                        (download) => download.quality === 'high'
+                      )
+                    }
+                  >
+                    Generate SD from high
+                    {!data.videoVariant.downloads.some(
+                      (download) => download.quality === 'high'
+                    )
+                      ? ' (no high quality download available)'
                       : ''}
                   </MenuItem>
                   <MenuItem
@@ -566,8 +617,8 @@ export default function AddVideoVariantDownloadDialog({
                 <>
                   {values.quality === 'auto' ? (
                     <Typography variant="body2" color="text.secondary">
-                      This will generate high (720p) and low (270p) quality
-                      downloads from Mux.
+                      This will generate high (720p), SD (360p) and low (270p)
+                      quality downloads from Mux.
                     </Typography>
                   ) : (
                     data.videoVariant.asset?.id && (

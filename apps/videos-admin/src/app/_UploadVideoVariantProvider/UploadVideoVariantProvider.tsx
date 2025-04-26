@@ -11,8 +11,8 @@ import { getExtension } from '../(dashboard)/videos/[videoId]/audio/add/_utils/g
 import { useCreateR2AssetMutation } from '../../libs/useCreateR2Asset/useCreateR2Asset'
 
 export const CREATE_MUX_VIDEO_UPLOAD_BY_URL = graphql(`
-  mutation CreateMuxVideoUploadByUrl($url: String!) {
-    createMuxVideoUploadByUrl(url: $url) {
+  mutation CreateMuxVideoUploadByUrl($url: String!, $userGenerated: Boolean) {
+    createMuxVideoUploadByUrl(url: $url, userGenerated: $userGenerated) {
       id
       assetId
       playbackId
@@ -42,8 +42,8 @@ export const CREATE_VIDEO_VARIANT = graphql(`
 `)
 
 export const GET_MY_MUX_VIDEO = graphql(`
-  query GetMyMuxVideo($id: ID!) {
-    getMyMuxVideo(id: $id) {
+  query GetMyMuxVideo($id: ID!, $userGenerated: Boolean) {
+    getMyMuxVideo(id: $id, userGenerated: $userGenerated) {
       id
       assetId
       playbackId
@@ -320,7 +320,8 @@ export function UploadVideoVariantProvider({
       // Create Mux video
       const muxResponse = await createMuxVideo({
         variables: {
-          url: r2Response.data.cloudflareR2Create.publicUrl
+          url: r2Response.data.cloudflareR2Create.publicUrl,
+          userGenerated: false
         }
       })
 
@@ -338,7 +339,10 @@ export function UploadVideoVariantProvider({
 
       // Start polling for Mux video status
       void getMyMuxVideo({
-        variables: { id: muxResponse.data.createMuxVideoUploadByUrl.id }
+        variables: {
+          id: muxResponse.data.createMuxVideoUploadByUrl.id,
+          userGenerated: false
+        }
       })
     } catch (error) {
       let errorMessage: string
