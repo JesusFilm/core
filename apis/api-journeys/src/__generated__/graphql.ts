@@ -4818,6 +4818,7 @@ export type VideoVariantDownload = {
   __typename?: 'VideoVariantDownload';
   /** master video file */
   asset?: Maybe<CloudflareR2>;
+  bitrate: Scalars['Int']['output'];
   height: Scalars['Int']['output'];
   id: Scalars['ID']['output'];
   quality: VideoVariantDownloadQuality;
@@ -4830,6 +4831,7 @@ export type VideoVariantDownload = {
 
 export type VideoVariantDownloadCreateInput = {
   assetId?: InputMaybe<Scalars['String']['input']>;
+  bitrate?: InputMaybe<Scalars['Int']['input']>;
   height?: InputMaybe<Scalars['Int']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   quality: VideoVariantDownloadQuality;
@@ -4848,6 +4850,7 @@ export enum VideoVariantDownloadQuality {
 
 export type VideoVariantDownloadUpdateInput = {
   assetId?: InputMaybe<Scalars['String']['input']>;
+  bitrate?: InputMaybe<Scalars['Int']['input']>;
   height?: InputMaybe<Scalars['Int']['input']>;
   id: Scalars['String']['input'];
   quality?: InputMaybe<VideoVariantDownloadQuality>;
