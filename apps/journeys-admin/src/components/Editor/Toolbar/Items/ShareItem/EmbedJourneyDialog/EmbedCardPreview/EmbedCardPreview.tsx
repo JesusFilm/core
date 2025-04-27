@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import { Theme } from '@mui/material/styles'
+import { Theme, styled } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement } from 'react'
 
@@ -18,11 +18,25 @@ import {
 
 const CARD_WIDTH = 340
 
-export function EmbedCardPreview(): ReactElement {
+const StyledIframe = styled('iframe')(() => ({}))
+
+interface EmbedCardPreviewProps {
+  journeySlug?: string
+}
+
+export function EmbedCardPreview({
+  journeySlug
+}: EmbedCardPreviewProps): ReactElement {
   const { journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
   const block = transformer(journey?.blocks as TreeBlock[])?.[0]
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+
+  const iframeSlug = journeySlug ?? (journey?.slug as string)
+  const embedBaseUrl =
+    process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'https://your.nextstep.is'
+
+  console.log('iframeSlug', iframeSlug)
 
   return (
     <Box
@@ -34,7 +48,7 @@ export function EmbedCardPreview(): ReactElement {
         overflow: 'hidden'
       }}
     >
-      {block != null && (
+      {iframeSlug != null && (
         <Box
           sx={{
             transform: 'scale(0.5)',
@@ -45,20 +59,29 @@ export function EmbedCardPreview(): ReactElement {
             width={340}
             height={520}
             dir={rtl ? 'rtl' : 'ltr'}
-            sx={{ borderRadius: 5 }}
+            sx={{ borderRadius: 4, overflow: 'hidden' }}
           >
             <ThemeProvider
               themeName={journey?.themeName ?? ThemeName.base}
               themeMode={journey?.themeMode ?? ThemeMode.light}
             >
-              <Box sx={{ height: '100%', borderRadius: 4 }}>
-                <BlockRenderer
+              <Box sx={{ height: '100%', borderRadius: 4, overflow: 'hidden' }}>
+                <StyledIframe
+                  src={`${embedBaseUrl}/embed/${iframeSlug}`}
+                  sx={{
+                    width: '100%',
+                    height: 600,
+                    border: 'none'
+                  }}
+                />
+
+                {/* <BlockRenderer
                   block={block}
                   wrappers={{
                     ImageWrapper: NullWrapper,
                     VideoWrapper: NullWrapper
                   }}
-                />
+                /> */}
               </Box>
             </ThemeProvider>
           </FramePortal>

@@ -23,11 +23,13 @@ import { EmbedCardPreview } from './EmbedCardPreview'
 interface EmbedJourneyDialogProps {
   open: boolean
   onClose: () => void
+  journeySlug?: string
 }
 
 export function EmbedJourneyDialog({
   open,
-  onClose
+  onClose,
+  journeySlug
 }: EmbedJourneyDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
@@ -44,7 +46,7 @@ export function EmbedJourneyDialog({
     hostname != null
       ? `https://${hostname}`
       : (process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'https://your.nextstep.is')
-  const embedUrl = `${providerUrl}/embed/${journey?.slug as string}`
+  const embedUrl = `${providerUrl}/embed/${journeySlug ?? (journey?.slug as string)}`
 
   // Self-closing iframe tag breaks embed on WordPress
   const iframeLink = `<iframe src="${embedUrl}" style="border: 0; width: 360px; height: 640px;" allow="fullscreen; autoplay" allowfullscreen></iframe>`
@@ -85,7 +87,7 @@ export function EmbedJourneyDialog({
               overflowX: 'hidden'
             }}
           >
-            <EmbedCardPreview />
+            <EmbedCardPreview journeySlug={journeySlug} />
           </Box>
         ) : (
           <Accordion
@@ -106,7 +108,7 @@ export function EmbedJourneyDialog({
               <Typography variant="subtitle2">{t('Show Preview')}</Typography>
             </AccordionSummary>
             <AccordionDetails sx={{ p: 0, pb: 2, ml: -4 }}>
-              <EmbedCardPreview />
+              <EmbedCardPreview journeySlug={journeySlug} />
             </AccordionDetails>
           </Accordion>
         )}

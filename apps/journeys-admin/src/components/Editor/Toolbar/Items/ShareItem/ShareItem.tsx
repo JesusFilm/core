@@ -165,6 +165,7 @@ export function ShareItem({
         <EmbedJourneyDialog
           open={showEmbedDialog}
           onClose={() => setShowEmbedDialog(false)}
+          journeySlug={journeySlug}
         />
       )}
       {showQrCodeDialog != null && (
