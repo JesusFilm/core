@@ -135,13 +135,14 @@ export function VideoImageAlt({ videoId }: VideoImageAltProps): ReactElement {
               <TextField
                 id="imageAlt"
                 name="imageAlt"
-                label="Image Alt"
+                label="Image Accessibility Text"
                 fullWidth
                 value={values.imageAlt}
                 variant="outlined"
                 error={Boolean(errors.imageAlt)}
                 onChange={handleChange}
                 helperText={errors.imageAlt as string}
+                spellCheck={true}
               />
             </Stack>
             <Divider sx={{ mx: -4 }} />

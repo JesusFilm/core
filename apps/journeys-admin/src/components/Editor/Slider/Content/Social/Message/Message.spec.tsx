@@ -1,11 +1,12 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { JourneyFields as Journey } from '../../../../../../../__generated__/JourneyFields'
 
-import { Message } from './Message'
+import { Message } from '.'
 
 describe('Message', () => {
   it('should display blank socialpreviewmessage', () => {
@@ -50,5 +51,74 @@ describe('Message', () => {
     )
     expect(getByText('journey title')).toBeInTheDocument()
     expect(getByText('journey description')).toBeInTheDocument()
+  })
+
+  it('should render social image tooltip', async () => {
+    render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journey.id'
+            } as unknown as Journey
+          }}
+        >
+          <Message />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const preview = screen.getByTestId('social-preview-message-empty')
+
+    await userEvent.hover(preview)
+
+    const tip = await screen.findByRole('tooltip')
+    expect(within(tip).getByText('Social Image')).toBeVisible()
+  })
+
+  it('should render headline tooltip', async () => {
+    render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journey.id'
+            } as unknown as Journey
+          }}
+        >
+          <Message />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const headline = screen.getByTestId('HeadlineSkeleton')
+
+    await userEvent.hover(headline)
+
+    const tip = await screen.findByRole('tooltip')
+    expect(within(tip).getByText('Headline')).toBeVisible()
+  })
+
+  it('should render secondary text tooltip on hover', async () => {
+    render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journey.id'
+            } as unknown as Journey
+          }}
+        >
+          <Message />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const message = screen.getByTestId('SecondaryTextSkeleton')
+
+    await userEvent.hover(message)
+
+    const tip = await screen.findByRole('tooltip')
+    expect(within(tip).getByText('Secondary Text')).toBeVisible()
   })
 })

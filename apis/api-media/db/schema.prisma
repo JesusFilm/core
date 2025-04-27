@@ -146,8 +146,9 @@ model VideoTitle {
 }
 
 enum VideoVariantDownloadQuality {
-  low
-  high
+  low // 2x0p
+  sd // 360p
+  high // 720p
 }
 
 model VideoVariantDownload {
