@@ -3,20 +3,15 @@ import { Theme, styled } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement } from 'react'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
-import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { FramePortal } from '@core/journeys/ui/FramePortal'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
-import { transformer } from '@core/journeys/ui/transformer'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../__generated__/globalTypes'
-
-const CARD_WIDTH = 340
 
 const StyledIframe = styled('iframe')(() => ({}))
 
@@ -29,7 +24,6 @@ export function EmbedCardPreview({
 }: EmbedCardPreviewProps): ReactElement {
   const { journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
-  const block = transformer(journey?.blocks as TreeBlock[])?.[0]
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   const iframeSlug = journeySlug ?? (journey?.slug as string)
@@ -71,17 +65,10 @@ export function EmbedCardPreview({
                   sx={{
                     width: '100%',
                     height: 600,
-                    border: 'none'
+                    border: 'none',
+                    pointerEvents: 'none'
                   }}
                 />
-
-                {/* <BlockRenderer
-                  block={block}
-                  wrappers={{
-                    ImageWrapper: NullWrapper,
-                    VideoWrapper: NullWrapper
-                  }}
-                /> */}
               </Box>
             </ThemeProvider>
           </FramePortal>
@@ -89,8 +76,4 @@ export function EmbedCardPreview({
       )}
     </Box>
   )
-}
-
-function NullWrapper({ children }): ReactElement {
-  return <fieldset disabled>{children}</fieldset>
 }
