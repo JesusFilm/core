@@ -1,1 +1,0 @@
-export { EditionCard } from './EditionCard'

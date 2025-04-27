@@ -1362,7 +1362,6 @@ export type Mutation = {
   deleteCloudflareImage: Scalars['Boolean']['output'];
   deleteMuxVideo: Scalars['Boolean']['output'];
   enableMuxDownload?: Maybe<MuxVideo>;
-  getTranscodeAssetProgress?: Maybe<Scalars['Int']['output']>;
   hostCreate: Host;
   hostDelete: Host;
   hostUpdate: Host;
@@ -1715,11 +1714,7 @@ export type MutationDeleteMuxVideoArgs = {
 
 export type MutationEnableMuxDownloadArgs = {
   id: Scalars['ID']['input'];
-};
-
-
-export type MutationGetTranscodeAssetProgressArgs = {
-  jobId: Scalars['String']['input'];
+  resolution?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -2748,6 +2743,7 @@ export type Query = {
   getMyCloudflareImages: Array<CloudflareImage>;
   getMyMuxVideo: MuxVideo;
   getMyMuxVideos: Array<MuxVideo>;
+  getTranscodeAssetProgress?: Maybe<Scalars['Int']['output']>;
   getUserRole?: Maybe<UserRole>;
   hosts: Array<Host>;
   integrations: Array<Integration>;
@@ -2926,6 +2922,11 @@ export type QueryGetMyMuxVideoArgs = {
 export type QueryGetMyMuxVideosArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryGetTranscodeAssetProgressArgs = {
+  jobId: Scalars['String']['input'];
 };
 
 
@@ -4841,7 +4842,8 @@ export type VideoVariantDownloadCreateInput = {
 
 export enum VideoVariantDownloadQuality {
   High = 'high',
-  Low = 'low'
+  Low = 'low',
+  Sd = 'sd'
 }
 
 export type VideoVariantDownloadUpdateInput = {
