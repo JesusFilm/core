@@ -74,7 +74,7 @@ export function ShareItem({
    * similar, but may diverge if their respective GraphQL fragments change.
    *
    * ShareItem.tsx uses the lazy query to get the journey slug, hostname/custom domain if there is no journeyContext.
-   * 
+   *
    * ⚠️ Note: If you access properties that are not guaranteed to exist on both types,
    * use type guards or map to a common interface to avoid runtime errors.
    *
