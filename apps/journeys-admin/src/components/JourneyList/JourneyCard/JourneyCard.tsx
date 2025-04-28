@@ -179,7 +179,7 @@ export function JourneyCard({
                   height: '100%',
                   bgcolor: 'rgba(0,0,0,0.3)',
                   opacity: isCardHovered ? 1 : 0,
-                  transition: 'opacity 0.3s',
+                  transition: 'opacity 0.3s'
                 }}
               />
             </Box>
@@ -189,13 +189,13 @@ export function JourneyCard({
             </CardContent>
           </CardActionArea>
         </NextLink>
-        <Box 
-          sx={{ 
-            position: 'absolute', 
-            bottom: 8, 
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: 8,
             left: 2,
             right: 10,
-            zIndex: 3,
+            zIndex: 3
           }}
         >
           <JourneyCardInfo journey={journey} variant={variant} />
