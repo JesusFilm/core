@@ -146,8 +146,9 @@ model VideoTitle {
 }
 
 enum VideoVariantDownloadQuality {
-  low
-  high
+  low // 2x0p
+  sd // 360p
+  high // 720p
 }
 
 model VideoVariantDownload {
@@ -156,6 +157,7 @@ model VideoVariantDownload {
   size           Float?
   height         Int?
   width          Int?
+  bitrate        Int?
   version        Int                         @default(1)
   url            String
   assetId        String?                     @unique

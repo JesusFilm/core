@@ -64,7 +64,7 @@ export async function createVideoFromUrl(
   downloadable = false
 ): Promise<Mux.Video.Asset> {
   return await getClient(userGenerated).video.assets.create({
-    input: [
+    inputs: [
       {
         url
       }
@@ -98,10 +98,28 @@ export async function deleteVideo(
 }
 
 export async function enableDownload(
-  videoId: string,
-  userGenerated: boolean
+  assetId: string,
+  userGenerated: boolean,
+  resolution: string
 ): Promise<void> {
-  await getClient(userGenerated).video.assets.updateMP4Support(videoId, {
-    mp4_support: 'capped-1080p'
-  })
+  // get existing static renditions
+  const existingAsset =
+    await getClient(userGenerated).video.assets.retrieve(assetId)
+
+  // skip if the resolution already exists
+  if (
+    existingAsset.static_renditions?.files?.some(
+      (file) => file.resolution === resolution
+    )
+  )
+    return
+
+  await getClient(userGenerated).post(
+    `/video/v1/assets/${assetId}/static-renditions`,
+    {
+      body: {
+        resolution
+      }
+    }
+  )
 }
