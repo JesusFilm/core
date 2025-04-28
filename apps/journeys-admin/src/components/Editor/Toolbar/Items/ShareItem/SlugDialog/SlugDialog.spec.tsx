@@ -178,13 +178,7 @@ describe('JourneyView/Properties/SlugDialog', () => {
                   id: 'teamId',
                   __typename: 'Team',
                   title: 'Team',
-                  publicTitle: 'Team',
-                  customDomains: [
-                    {
-                      __typename: 'CustomDomain',
-                      name: 'www.customdomain.com'
-                    }
-                  ]
+                  publicTitle: 'Team'
                 }
               },
               variant: 'admin'

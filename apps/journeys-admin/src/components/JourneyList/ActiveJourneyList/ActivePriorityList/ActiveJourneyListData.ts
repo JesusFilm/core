@@ -79,8 +79,7 @@ export const defaultJourney: Journey = {
   userJourneys: [ownerUserJourney, editorUserJourney],
   trashedAt: null,
   template: false,
-  primaryImageBlock: null,
-  team: null
+  primaryImageBlock: null
 }
 
 export const journey: Journey = {

@@ -52,8 +52,7 @@ describe('useHostCreate', () => {
         __typename: 'Team',
         id: 'team.id',
         title: 'value',
-        publicTitle: 'Public Title',
-        customDomains: []
+        publicTitle: 'Public Title'
       }
     }
 

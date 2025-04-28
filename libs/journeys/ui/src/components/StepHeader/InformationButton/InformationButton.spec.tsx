@@ -72,8 +72,7 @@ describe('InformationButton', () => {
       __typename: 'Team',
       id: 'teamId',
       title: 'Team Title',
-      publicTitle: '',
-      customDomains: []
+      publicTitle: ''
     },
     tags: [],
     website: null,
@@ -159,8 +158,7 @@ describe('InformationButton', () => {
                 __typename: 'Team',
                 id: 'teamId',
                 title: 'Team Title',
-                publicTitle: 'Public Title',
-                customDomains: []
+                publicTitle: 'Public Title'
               }
             }
           }}

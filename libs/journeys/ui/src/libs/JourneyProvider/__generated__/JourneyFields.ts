@@ -522,17 +522,11 @@ export interface JourneyFields_host {
   src2: string | null;
 }
 
-export interface JourneyFields_team_customDomains {
-  __typename: "CustomDomain";
-  name: string;
-}
-
 export interface JourneyFields_team {
   __typename: "Team";
   id: string;
   title: string;
   publicTitle: string | null;
-  customDomains: JourneyFields_team_customDomains[];
 }
 
 export interface JourneyFields_tags_name_language {
