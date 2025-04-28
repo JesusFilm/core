@@ -12,7 +12,7 @@ import { GetUserRole } from '@core/journeys/ui/useUserRoleQuery/__generated__/Ge
 import { Role } from '../../../../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
 import { getCustomDomainMock } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
-import { useJourneyForShareLazyQuery } from '../../../../../libs/useJourneyForShareLazyQuery/useJourneyForShareLazyQuery'
+import { useJourneyForSharingLazyQuery } from '../../../../../libs/useJourneyForShareLazyQuery/useJourneyForShareLazyQuery'
 
 import { ShareItem } from './ShareItem'
 
@@ -43,7 +43,8 @@ const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 const mockUseCurrentUserLazyQuery = useCurrentUserLazyQuery as jest.Mock
 const user = { id: 'user.id', email: 'test@email.com' }
-const mockUseJourneyForShareLazyQuery = useJourneyForShareLazyQuery as jest.Mock
+const mockUseJourneyForShareLazyQuery =
+  useJourneyForSharingLazyQuery as jest.Mock
 
 Object.assign(navigator, { clipboard: { writeText: jest.fn() } })
 

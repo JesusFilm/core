@@ -1,12 +1,12 @@
 import { gql, useLazyQuery } from '@apollo/client'
 
 import {
-  GetJourneyForShare,
-  GetJourneyForShareVariables
-} from '../../../__generated__/GetJourneyForShare'
+  GetJourneyForSharing,
+  GetJourneyForSharingVariables
+} from '../../../__generated__/GetJourneyForSharing'
 
-export const GET_JOURNEY_FOR_SHARE = gql`
-  query GetJourneyForShare($id: ID!) {
+export const GET_JOURNEY_FOR_SHARING = gql`
+  query GetJourneyForSharing($id: ID!) {
     journey: adminJourney(id: $id, idType: databaseId) {
       id
       slug
@@ -20,8 +20,8 @@ export const GET_JOURNEY_FOR_SHARE = gql`
   }
 `
 
-export function useJourneyForShareLazyQuery() {
-  return useLazyQuery<GetJourneyForShare, GetJourneyForShareVariables>(
-    GET_JOURNEY_FOR_SHARE
+export function useJourneyForSharingLazyQuery() {
+  return useLazyQuery<GetJourneyForSharing, GetJourneyForSharingVariables>(
+    GET_JOURNEY_FOR_SHARING
   )
 }

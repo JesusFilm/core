@@ -44,11 +44,15 @@ export const QR_CODE_CREATE = gql`
 interface QrCodeDialogProps {
   open: boolean
   onClose: () => void
+  journeyId?: string
+  teamId?: string
 }
 
 export function QrCodeDialog({
   open,
-  onClose
+  onClose,
+  journeyId,
+  teamId
 }: QrCodeDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
@@ -60,6 +64,9 @@ export function QrCodeDialog({
 
   const [loading, setLoading] = useState(true)
 
+  const selectedJourneyId = journeyId ?? journey?.id
+  const selectedTeamId = teamId ?? journey?.team?.id
+
   const {
     data,
     loading: getLoading,
@@ -69,9 +76,10 @@ export function QrCodeDialog({
     {
       variables: {
         where: {
-          journeyId: journey?.id
+          journeyId: selectedJourneyId
         }
-      }
+      },
+      skip: selectedJourneyId == null
     }
   )
 
@@ -91,12 +99,12 @@ export function QrCodeDialog({
   }, [getLoading, createLoading])
 
   async function handleGenerateQrCode(): Promise<void> {
-    if (journey?.id == null || journey?.team?.id == null) return
+    if (selectedJourneyId == null || selectedTeamId == null) return
     await qrCodeCreate({
       variables: {
         input: {
-          journeyId: journey?.id,
-          teamId: journey?.team.id
+          journeyId: selectedJourneyId,
+          teamId: selectedTeamId
         }
       },
       update(cache, { data }) {

@@ -17,9 +17,9 @@ import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import ShareIcon from '@core/shared/ui/icons/Share'
 import TransformIcon from '@core/shared/ui/icons/Transform'
 
-import { GetJourneyForShare_journey as LazyJourney } from '../../../../../../__generated__/GetJourneyForShare'
+import { GetJourneyForSharing_journey as JourneyForSharing } from '../../../../../../__generated__/GetJourneyForSharing'
 import { JourneyFields as ContextJourney } from '../../../../../../__generated__/JourneyFields'
-import { useJourneyForShareLazyQuery } from '../../../../../libs/useJourneyForShareLazyQuery/useJourneyForShareLazyQuery'
+import { useJourneyForSharingLazyQuery } from '../../../../../libs/useJourneyForShareLazyQuery/useJourneyForShareLazyQuery'
 import { Item } from '../Item/Item'
 
 const EmbedJourneyDialog = dynamic(
@@ -63,8 +63,8 @@ export function ShareItem({
   const { journey: journeyContext } = useJourney()
 
   // Lazy query for journey data if context is missing
-  const [loadJourney, { data: lazyData, loading, error }] =
-    useJourneyForShareLazyQuery()
+  const [loadJourney, { data: journeyShareData, loading, error }] =
+    useJourneyForSharingLazyQuery()
 
   /**
    * The journey data to be used for sharing.
@@ -81,10 +81,10 @@ export function ShareItem({
    * Guaranteed properties:
    * id, slug, team.id, team.customDomains (array, may be empty), team.customDomains[0]?.name (may be undefined if no custom domains)
    *
-   * @type {ContextJourney | LazyJourney | undefined}
+   * @type {ContextJourney | JourneyForSharing | undefined}
    */
-  const journeyData: ContextJourney | LazyJourney | undefined =
-    journeyContext ?? lazyData?.journey
+  const journeyData: ContextJourney | JourneyForSharing | undefined =
+    journeyContext ?? journeyShareData?.journey
 
   const shouldUseLazyQuery = journeyContext == null
 
@@ -100,7 +100,7 @@ export function ShareItem({
   // Trigger lazy query when dialog opens and context is missing
   const handleShowMenu = (event: MouseEvent<HTMLElement>): void => {
     setAnchorEl(event.currentTarget)
-    if (shouldUseLazyQuery && !lazyData) {
+    if (shouldUseLazyQuery && !journeyShareData) {
       if (journeyId == null) return
       void loadJourney({ variables: { id: journeyId } })
     }
@@ -213,6 +213,7 @@ export function ShareItem({
           onClose={() => setShowSlugDialog(false)}
           hostname={hostname}
           journeySlug={journeySlug}
+          journeyId={journeyId}
         />
       )}
       {showEmbedDialog != null && (
@@ -226,6 +227,8 @@ export function ShareItem({
         <QrCodeDialog
           open={showQrCodeDialog}
           onClose={() => setShowQrCodeDialog(false)}
+          journeyId={journeyId}
+          teamId={journeyData?.team?.id}
         />
       )}
     </Box>

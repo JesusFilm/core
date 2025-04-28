@@ -25,13 +25,15 @@ interface SlugDialogProps {
   onClose?: () => void
   hostname?: string
   journeySlug?: string
+  journeyId?: string
 }
 
 export function SlugDialog({
   open,
   onClose,
   hostname,
-  journeySlug
+  journeySlug,
+  journeyId
 }: SlugDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [journeyUpdate] = useMutation<JourneySlugUpdate>(JOURNEY_SLUG_UPDATE)
@@ -45,11 +47,12 @@ export function SlugDialog({
     values: FormikValues,
     { setValues }: FormikHelpers<FormikValues>
   ): Promise<void> => {
-    if (journey == null) return
+    const id = journeyId ?? journey?.id
+    if (id == null) return
 
     try {
       const response = await journeyUpdate({
-        variables: { id: journey.id, input: { slug: values.slug } }
+        variables: { id, input: { slug: values.slug } }
       })
       await setValues({ slug: response?.data?.journeyUpdate.slug })
       onClose?.()
