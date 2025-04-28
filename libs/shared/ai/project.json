@@ -42,7 +42,7 @@
     "codecov": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "codecov -f coverage/libs/ai/cobertura-coverage.xml -F libs.ai"
+        "command": "codecov -f coverage/libs/shared/ai/cobertura-coverage.xml -F libs.ai"
       }
     }
   }
