@@ -4,6 +4,7 @@ import { ReactElement, ReactNode } from 'react'
 
 import { useJourney } from '../../../libs/JourneyProvider'
 import { getFooterMobileSpacing } from '../utils/getFooterElements'
+import { showHeader } from '../utils/getHeaderElements'
 
 interface OverlayContentProps {
   children: ReactNode
@@ -29,8 +30,14 @@ export function OverlayContent({
 
   const topBottomEdgeFadeEffect: SxProps = !hasFullscreenVideo
     ? {
-        WebkitMask: `linear-gradient(transparent 0%, #0000001a 4%, #000000 8%, #000000 90%, #0000001a 98%, transparent 100%)`,
-        mask: `linear-gradient(transparent 0%, #0000001a 4%, #000000 8%, #000000 90%, #0000001a 98%, transparent 100%)`
+        WebkitMask: {
+          xs: `linear-gradient(transparent 0px, #0000001a 12px, #000000 32px, #000000 calc(100% - 24px), #0000001a calc(100% - 8px), transparent 100%)`,
+          lg: `linear-gradient(transparent 0px, #0000001a 12px, #000000 32px, #000000 calc(100% - 32px), #0000001a calc(100% - 12px), transparent 100%)`
+        },
+        mask: {
+          xs: `linear-gradient(transparent 0px, #0000001a 12px, #000000 32px, #000000 calc(100% - 24px), #0000001a calc(100% - 8px), transparent 100%)`,
+          lg: `linear-gradient(transparent 0px, #0000001a 12px, #000000 32px, #000000 calc(100% - 32px), #0000001a calc(100% - 12px), transparent 100%)`
+        }
       }
     : {}
 
@@ -67,15 +74,30 @@ export function OverlayContent({
     mb: { xs: footerMobileSpacing, sm: 10 }
   }
 
+  const hasHeader = showHeader(journey, variant)
+
+  const conditionalWebsiteStyles =
+    journey?.website === true
+      ? {
+          mb: 0,
+          '& > *': {
+            '&:first-child': { mt: hasHeader ? 20 : 6 },
+            '&:last-child': { mb: 20 }
+          }
+        }
+      : {
+          ...topBottomMarginsOnContent,
+          ...footerSpacing
+        }
+
   return (
     <Box
       data-testid="CardOverlayContent"
       sx={{
         ...enableVerticalScroll,
         ...topBottomEdgeFadeEffect,
-        ...topBottomMarginsOnContent,
+        ...conditionalWebsiteStyles,
         ...mobileNotchPadding,
-        ...footerSpacing,
         ...sx
       }}
     >

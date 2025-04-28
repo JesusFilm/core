@@ -74,6 +74,7 @@ export type BibleCitation = {
   chapterEnd?: Maybe<Scalars['Int']['output']>;
   chapterStart: Scalars['Int']['output'];
   id: Scalars['ID']['output'];
+  order: Scalars['Int']['output'];
   osisId: Scalars['String']['output'];
   verseEnd?: Maybe<Scalars['Int']['output']>;
   verseStart?: Maybe<Scalars['Int']['output']>;
@@ -892,9 +893,9 @@ export type JourneyEvent = Event & {
   email?: Maybe<Scalars['String']['output']>;
   /** Base event fields from Event interface */
   id: Scalars['ID']['output'];
-  /** Related fields queried from relevant ids in the events table */
-  journey?: Maybe<Journey>;
   journeyId: Scalars['ID']['output'];
+  /** Related fields queried from relevant ids in the events table */
+  journeySlug?: Maybe<Scalars['String']['output']>;
   label?: Maybe<Scalars['String']['output']>;
   language?: Maybe<Language>;
   messagePlatform?: Maybe<MessagePlatform>;
@@ -904,8 +905,10 @@ export type JourneyEvent = Event & {
   /** database fields from table, not explicitly surfaced from any other types */
   typename?: Maybe<Scalars['String']['output']>;
   value?: Maybe<Scalars['String']['output']>;
-  visitor?: Maybe<Visitor>;
+  visitorEmail?: Maybe<Scalars['String']['output']>;
   visitorId?: Maybe<Scalars['String']['output']>;
+  visitorName?: Maybe<Scalars['String']['output']>;
+  visitorPhone?: Maybe<Scalars['String']['output']>;
 };
 
 export type JourneyEventEdge = {
@@ -1319,6 +1322,9 @@ export enum MessagePlatform {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  bibleCitationCreate?: Maybe<BibleCitation>;
+  bibleCitationDelete?: Maybe<Scalars['Boolean']['output']>;
+  bibleCitationUpdate?: Maybe<BibleCitation>;
   /** blockDelete returns the updated sibling blocks on successful delete */
   blockDelete: Array<Block>;
   blockDeleteAction: Block;
@@ -1360,7 +1366,6 @@ export type Mutation = {
   deleteCloudflareImage: Scalars['Boolean']['output'];
   deleteMuxVideo: Scalars['Boolean']['output'];
   enableMuxDownload?: Maybe<MuxVideo>;
-  getTranscodeAssetProgress?: Maybe<Scalars['Int']['output']>;
   hostCreate: Host;
   hostDelete: Host;
   hostUpdate: Host;
@@ -1502,6 +1507,21 @@ export type Mutation = {
   visitorUpdate: Visitor;
   /** Allow current user to update specific allowable fields of their visitor record */
   visitorUpdateForCurrentUser: Visitor;
+};
+
+
+export type MutationBibleCitationCreateArgs = {
+  input: MutationBibleCitationCreateInput;
+};
+
+
+export type MutationBibleCitationDeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationBibleCitationUpdateArgs = {
+  input: MutationBibleCitationUpdateInput;
 };
 
 
@@ -1664,11 +1684,13 @@ export type MutationCreateJourneyEventsExportLogArgs = {
 
 export type MutationCreateMuxVideoUploadByFileArgs = {
   name: Scalars['String']['input'];
+  userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
 export type MutationCreateMuxVideoUploadByUrlArgs = {
   url: Scalars['String']['input'];
+  userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -1705,16 +1727,13 @@ export type MutationDeleteCloudflareImageArgs = {
 
 export type MutationDeleteMuxVideoArgs = {
   id: Scalars['ID']['input'];
+  userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
 export type MutationEnableMuxDownloadArgs = {
   id: Scalars['ID']['input'];
-};
-
-
-export type MutationGetTranscodeAssetProgressArgs = {
-  jobId: Scalars['String']['input'];
+  resolution?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -2336,6 +2355,29 @@ export type MutationVisitorUpdateForCurrentUserArgs = {
   input: VisitorUpdateInput;
 };
 
+export type MutationBibleCitationCreateInput = {
+  bibleBookId: Scalars['ID']['input'];
+  chapterEnd?: InputMaybe<Scalars['Int']['input']>;
+  chapterStart: Scalars['Int']['input'];
+  id?: InputMaybe<Scalars['ID']['input']>;
+  order: Scalars['Int']['input'];
+  osisId: Scalars['String']['input'];
+  verseEnd?: InputMaybe<Scalars['Int']['input']>;
+  verseStart?: InputMaybe<Scalars['Int']['input']>;
+  videoId: Scalars['ID']['input'];
+};
+
+export type MutationBibleCitationUpdateInput = {
+  bibleBookId?: InputMaybe<Scalars['ID']['input']>;
+  chapterEnd?: InputMaybe<Scalars['Int']['input']>;
+  chapterStart?: InputMaybe<Scalars['Int']['input']>;
+  id: Scalars['ID']['input'];
+  order?: InputMaybe<Scalars['Int']['input']>;
+  osisId?: InputMaybe<Scalars['String']['input']>;
+  verseEnd?: InputMaybe<Scalars['Int']['input']>;
+  verseStart?: InputMaybe<Scalars['Int']['input']>;
+};
+
 export type MutationShortLinkCreateInput = {
   /** the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to */
   hostname: Scalars['String']['input'];
@@ -2730,6 +2772,7 @@ export type Query = {
   adminVideos: Array<Video>;
   adminVideosCount: Scalars['Int']['output'];
   bibleBooks: Array<BibleBook>;
+  bibleCitation: BibleCitation;
   bibleCitations: Array<BibleCitation>;
   block: Block;
   blocks: Array<Block>;
@@ -2743,6 +2786,7 @@ export type Query = {
   getMyCloudflareImages: Array<CloudflareImage>;
   getMyMuxVideo: MuxVideo;
   getMyMuxVideos: Array<MuxVideo>;
+  getTranscodeAssetProgress?: Maybe<Scalars['Int']['output']>;
   getUserRole?: Maybe<UserRole>;
   hosts: Array<Host>;
   integrations: Array<Integration>;
@@ -2750,6 +2794,7 @@ export type Query = {
   journeyCollection: JourneyCollection;
   journeyCollections: Array<Maybe<JourneyCollection>>;
   journeyEventsConnection: JourneyEventsConnection;
+  journeyEventsCount: Scalars['Int']['output'];
   /** Get a JourneyVisitor count by JourneyVisitorFilter */
   journeyVisitorCount: Scalars['Int']['output'];
   /** Get a list of Visitor Information by Journey */
@@ -2863,6 +2908,16 @@ export type QueryAdminVideosCountArgs = {
 };
 
 
+export type QueryBibleCitationArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryBibleCitationsArgs = {
+  videoId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
 export type QueryBlockArgs = {
   id: Scalars['ID']['input'];
 };
@@ -2896,6 +2951,7 @@ export type QueryCustomDomainsArgs = {
 
 export type QueryGetMuxVideoArgs = {
   id: Scalars['ID']['input'];
+  userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -2912,12 +2968,18 @@ export type QueryGetMyCloudflareImagesArgs = {
 
 export type QueryGetMyMuxVideoArgs = {
   id: Scalars['ID']['input'];
+  userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
 export type QueryGetMyMuxVideosArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryGetTranscodeAssetProgressArgs = {
+  jobId: Scalars['String']['input'];
 };
 
 
@@ -2952,6 +3014,12 @@ export type QueryJourneyEventsConnectionArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   filter?: InputMaybe<JourneyEventsFilter>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  journeyId: Scalars['ID']['input'];
+};
+
+
+export type QueryJourneyEventsCountArgs = {
+  filter?: InputMaybe<JourneyEventsFilter>;
   journeyId: Scalars['ID']['input'];
 };
 
@@ -4626,6 +4694,7 @@ export type VideoStudyQuestion = {
   __typename?: 'VideoStudyQuestion';
   id: Scalars['ID']['output'];
   language: Language;
+  order: Scalars['Int']['output'];
   primary: Scalars['Boolean']['output'];
   value: Scalars['String']['output'];
 };
@@ -4826,7 +4895,8 @@ export type VideoVariantDownloadCreateInput = {
 
 export enum VideoVariantDownloadQuality {
   High = 'high',
-  Low = 'low'
+  Low = 'low',
+  Sd = 'sd'
 }
 
 export type VideoVariantDownloadUpdateInput = {

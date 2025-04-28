@@ -12,13 +12,13 @@ export function FormLanguageSelect({
   name,
   label,
   initialLanguage,
-  existingLanguages,
+  existingLanguageIds,
   parentObjectId
 }: {
   name: string
   label: string
   initialLanguage?: LanguageOption
-  existingLanguages?: Map<string, any>
+  existingLanguageIds?: string[]
   parentObjectId?: string
 }): ReactElement {
   // TODO: provide correct languageId
@@ -36,20 +36,23 @@ export function FormLanguageSelect({
   const hasError = meta.error !== undefined && meta.touched
 
   const filteredLanguages = useMemo(() => {
-    if (!data?.languages || !existingLanguages) {
+    if (!data?.languages || !existingLanguageIds) {
       return data?.languages
     }
 
     return data.languages.filter((language) => {
+      // Always include the parent object's language (which is the initial language)
       if (
         parentObjectId &&
-        existingLanguages.get(language.id)?.id === parentObjectId
+        initialLanguage &&
+        language.id === initialLanguage.id
       ) {
         return true
       }
-      return !existingLanguages.has(language.id)
+      // Exclude other languages that are in existingLanguageIds
+      return !existingLanguageIds.includes(language.id)
     })
-  }, [data?.languages, existingLanguages, parentObjectId])
+  }, [data?.languages, existingLanguageIds, parentObjectId, initialLanguage])
 
   return (
     <LanguageAutocomplete
@@ -65,6 +68,7 @@ export function FormLanguageSelect({
           variant="outlined"
           helperText={hasError ? meta.error : ''}
           error={hasError}
+          sx={{ mt: 1 }}
         />
       )}
     />

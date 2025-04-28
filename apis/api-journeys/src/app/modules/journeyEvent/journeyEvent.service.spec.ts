@@ -24,7 +24,8 @@ describe('JourneyEventService', () => {
           provide: PrismaService,
           useValue: {
             event: {
-              findMany: jest.fn()
+              findMany: jest.fn(),
+              count: jest.fn()
             }
           }
         }
@@ -134,13 +135,23 @@ describe('JourneyEventService', () => {
           nextStepId: null,
           previousStepId: null,
           userId: 'user-1',
-          journeyVisitorJourneyId: 'journey-1',
-          journeyVisitorVisitorId: 'visitor-1',
           languageId: 'en',
           radioOptionBlockId: null,
           position: 30,
           source: VideoBlockSource.internal,
-          progress: 0.5
+          progress: 0.5,
+          journeyVisitorJourneyId: 'journey-1',
+          journeyVisitorVisitorId: 'visitor-1',
+          journey: {
+            id: 'journey-1',
+            slug: 'test-journey'
+          },
+          visitor: {
+            id: 'visitor-1',
+            name: 'Test Visitor',
+            email: 'visitor@test.com',
+            phone: '1234567890'
+          }
         },
         {
           id: 'event-3',
@@ -160,13 +171,23 @@ describe('JourneyEventService', () => {
           nextStepId: null,
           previousStepId: null,
           userId: 'user-1',
-          journeyVisitorJourneyId: 'journey-1',
-          journeyVisitorVisitorId: 'visitor-1',
           languageId: 'en',
           radioOptionBlockId: null,
           position: null,
           source: null,
-          progress: null
+          progress: null,
+          journeyVisitorJourneyId: 'journey-1',
+          journeyVisitorVisitorId: 'visitor-1',
+          journey: {
+            id: 'journey-1',
+            slug: 'test-journey'
+          },
+          visitor: {
+            id: 'visitor-1',
+            name: 'Test Visitor',
+            email: 'visitor@test.com',
+            phone: '1234567890'
+          }
         },
         {
           id: 'event-4',
@@ -186,13 +207,23 @@ describe('JourneyEventService', () => {
           nextStepId: null,
           previousStepId: null,
           userId: 'user-1',
-          journeyVisitorJourneyId: 'journey-1',
-          journeyVisitorVisitorId: 'visitor-1',
           languageId: 'en',
           radioOptionBlockId: null,
           position: null,
           source: null,
-          progress: null
+          progress: null,
+          journeyVisitorJourneyId: 'journey-1',
+          journeyVisitorVisitorId: 'visitor-1',
+          journey: {
+            id: 'journey-1',
+            slug: 'test-journey'
+          },
+          visitor: {
+            id: 'visitor-1',
+            name: 'Test Visitor',
+            email: 'visitor@test.com',
+            phone: '1234567890'
+          }
         }
       ]
 
@@ -215,6 +246,37 @@ describe('JourneyEventService', () => {
           },
           AND: [{}, { typename: { in: ['TextResponseSubmissionEvent'] } }]
         },
+        select: {
+          id: true,
+          journeyId: true,
+          createdAt: true,
+          label: true,
+          value: true,
+          typename: true,
+          visitorId: true,
+          action: true,
+          actionValue: true,
+          messagePlatform: true,
+          email: true,
+          blockId: true,
+          position: true,
+          source: true,
+          progress: true,
+          journey: {
+            select: {
+              id: true,
+              slug: true
+            }
+          },
+          visitor: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              phone: true
+            }
+          }
+        },
         orderBy: { createdAt: 'desc' },
         cursor: { id: 'event-1' },
         skip: 1,
@@ -228,18 +290,31 @@ describe('JourneyEventService', () => {
               id: 'event-2',
               journeyId: 'journey-1',
               createdAt: '2023-01-15T12:00:00.000Z',
+              updatedAt: new Date('2023-01-15T12:00:00Z'),
               label: 'Event 2',
               value: 'Value 2',
               typename: 'TextResponseSubmissionEvent',
+              visitorId: 'visitor-1',
               action: ButtonAction.NavigateToBlockAction,
               actionValue: 'next',
               messagePlatform: MessagePlatform.facebook,
               email: 'test@example.com',
               blockId: 'block-1',
+              stepId: null,
+              nextStepId: null,
+              previousStepId: null,
+              userId: 'user-1',
+              languageId: 'en',
+              radioOptionBlockId: null,
               position: 30,
               source: VideoBlockSource.internal,
               progress: 0.5,
-              visitorId: 'visitor-1'
+              journeyVisitorJourneyId: 'journey-1',
+              journeyVisitorVisitorId: 'visitor-1',
+              journeySlug: 'test-journey',
+              visitorName: 'Test Visitor',
+              visitorEmail: 'visitor@test.com',
+              visitorPhone: '1234567890'
             },
             cursor: 'event-2'
           },
@@ -248,18 +323,31 @@ describe('JourneyEventService', () => {
               id: 'event-3',
               journeyId: 'journey-1',
               createdAt: '2023-01-14T12:00:00.000Z',
+              updatedAt: new Date('2023-01-14T12:00:00Z'),
               label: 'Event 3',
               value: 'Value 3',
               typename: 'TextResponseSubmissionEvent',
+              visitorId: 'visitor-1',
               action: null,
               actionValue: null,
               messagePlatform: null,
               email: null,
               blockId: null,
+              stepId: null,
+              nextStepId: null,
+              previousStepId: null,
+              userId: 'user-1',
+              languageId: 'en',
+              radioOptionBlockId: null,
               position: null,
               source: null,
               progress: null,
-              visitorId: 'visitor-1'
+              journeyVisitorJourneyId: 'journey-1',
+              journeyVisitorVisitorId: 'visitor-1',
+              journeySlug: 'test-journey',
+              visitorName: 'Test Visitor',
+              visitorEmail: 'visitor@test.com',
+              visitorPhone: '1234567890'
             },
             cursor: 'event-3'
           }
@@ -298,6 +386,37 @@ describe('JourneyEventService', () => {
             lte: undefined
           },
           AND: [{}, { typename: { in: ['TextResponseSubmissionEvent'] } }]
+        },
+        select: {
+          id: true,
+          journeyId: true,
+          createdAt: true,
+          label: true,
+          value: true,
+          typename: true,
+          visitorId: true,
+          action: true,
+          actionValue: true,
+          messagePlatform: true,
+          email: true,
+          blockId: true,
+          position: true,
+          source: true,
+          progress: true,
+          journey: {
+            select: {
+              id: true,
+              slug: true
+            }
+          },
+          visitor: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              phone: true
+            }
+          }
         },
         orderBy: { createdAt: 'desc' },
         cursor: undefined,
@@ -349,7 +468,17 @@ describe('JourneyEventService', () => {
           source: null,
           progress: null,
           journeyVisitorJourneyId: 'journey-1',
-          journeyVisitorVisitorId: 'visitor-1'
+          journeyVisitorVisitorId: 'visitor-1',
+          journey: {
+            id: 'journey-1',
+            slug: 'test-journey'
+          },
+          visitor: {
+            id: 'visitor-1',
+            name: 'Test Visitor',
+            email: 'visitor@test.com',
+            phone: '1234567890'
+          }
         },
         {
           id: 'event-2',
@@ -375,7 +504,17 @@ describe('JourneyEventService', () => {
           source: null,
           progress: null,
           journeyVisitorJourneyId: 'journey-1',
-          journeyVisitorVisitorId: 'visitor-1'
+          journeyVisitorVisitorId: 'visitor-1',
+          journey: {
+            id: 'journey-1',
+            slug: 'test-journey'
+          },
+          visitor: {
+            id: 'visitor-1',
+            name: 'Test Visitor',
+            email: 'visitor@test.com',
+            phone: '1234567890'
+          }
         }
       ]
 
@@ -392,6 +531,147 @@ describe('JourneyEventService', () => {
       expect(result.pageInfo.hasNextPage).toBe(false)
       expect(result.pageInfo.startCursor).toBe('event-1')
       expect(result.pageInfo.endCursor).toBe('event-2')
+    })
+  })
+
+  describe('getJourneyEventsCount', () => {
+    it('returns the correct count of events', async () => {
+      const journeyId = 'journey-1'
+      const filter: JourneyEventsFilter = {
+        typenames: ['TextResponseSubmissionEvent']
+      }
+      const accessibleEvent: Prisma.EventWhereInput = {}
+
+      const mockEvents = [
+        {
+          id: 'event-2',
+          journeyId: 'journey-1',
+          createdAt: new Date('2023-01-15T12:00:00Z'),
+          updatedAt: new Date('2023-01-15T12:00:00Z'),
+          typename: 'TextResponseSubmissionEvent',
+          visitorId: 'visitor-1',
+          label: 'Event 2',
+          value: 'Value 2',
+          action: ButtonAction.NavigateToBlockAction,
+          actionValue: 'next',
+          messagePlatform: MessagePlatform.facebook,
+          email: 'test@example.com',
+          blockId: 'block-1',
+          stepId: null,
+          nextStepId: null,
+          previousStepId: null,
+          userId: 'user-1',
+          languageId: 'en',
+          radioOptionBlockId: null,
+          position: 30,
+          source: VideoBlockSource.internal,
+          progress: 0.5,
+          journeyVisitorJourneyId: 'journey-1',
+          journeyVisitorVisitorId: 'visitor-1',
+          journey: {
+            id: 'journey-1',
+            slug: 'test-journey'
+          },
+          visitor: {
+            id: 'visitor-1',
+            name: 'Test Visitor',
+            email: 'visitor@test.com'
+          }
+        },
+        {
+          id: 'event-3',
+          journeyId: 'journey-1',
+          createdAt: new Date('2023-01-14T12:00:00Z'),
+          updatedAt: new Date('2023-01-14T12:00:00Z'),
+          typename: 'TextResponseSubmissionEvent',
+          visitorId: 'visitor-1',
+          label: 'Event 3',
+          value: 'Value 3',
+          action: null,
+          actionValue: null,
+          messagePlatform: null,
+          email: null,
+          blockId: null,
+          stepId: null,
+          nextStepId: null,
+          previousStepId: null,
+          userId: 'user-1',
+          languageId: 'en',
+          radioOptionBlockId: null,
+          position: null,
+          source: null,
+          progress: null,
+          journeyVisitorJourneyId: 'journey-1',
+          journeyVisitorVisitorId: 'visitor-1',
+          journey: {
+            id: 'journey-1',
+            slug: 'test-journey'
+          },
+          visitor: {
+            id: 'visitor-1',
+            name: 'Test Visitor',
+            email: 'visitor@test.com'
+          }
+        },
+        {
+          id: 'event-4',
+          journeyId: 'journey-1',
+          createdAt: new Date('2023-01-13T12:00:00Z'),
+          updatedAt: new Date('2023-01-13T12:00:00Z'),
+          typename: 'TextResponseSubmissionEvent',
+          visitorId: 'visitor-1',
+          label: 'Event 4',
+          value: 'Value 4',
+          action: null,
+          actionValue: null,
+          messagePlatform: null,
+          email: null,
+          blockId: null,
+          stepId: null,
+          nextStepId: null,
+          previousStepId: null,
+          userId: 'user-1',
+          languageId: 'en',
+          radioOptionBlockId: null,
+          position: null,
+          source: null,
+          progress: null,
+          journeyVisitorJourneyId: 'journey-1',
+          journeyVisitorVisitorId: 'visitor-1',
+          journey: {
+            id: 'journey-1',
+            slug: 'test-journey'
+          },
+          visitor: {
+            id: 'visitor-1',
+            name: 'Test Visitor',
+            email: 'visitor@test.com'
+          }
+        }
+      ]
+
+      jest
+        .spyOn(prismaService.event, 'count')
+        .mockResolvedValue(mockEvents.length)
+
+      const result = await service.getJourneyEventsCount({
+        journeyId,
+        accessibleEvent,
+        filter
+      })
+
+      expect(prismaService.event.count).toHaveBeenCalledWith({
+        where: {
+          journeyId: 'journey-1',
+          createdAt: {
+            gte: undefined,
+            lte: undefined
+          },
+          AND: [{}, { typename: { in: ['TextResponseSubmissionEvent'] } }]
+        }
+      })
+
+      expect(result).toEqual(mockEvents.length)
     })
   })
 })

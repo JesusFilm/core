@@ -401,7 +401,6 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   Transcode an asset. Returns the bullmq job ID.
   """
   transcodeAsset(input: TranscodeVideoInput!) : String @join__field(graph: API_MEDIA) 
-  getTranscodeAssetProgress(jobId: String!) : Int @join__field(graph: API_MEDIA) 
   createCloudflareUploadByFile(input: ImageInput) : CloudflareImage! @join__field(graph: API_MEDIA) 
   createCloudflareUploadByUrl(url: String!, input: ImageInput) : CloudflareImage! @join__field(graph: API_MEDIA) 
   createCloudflareImageFromPrompt(prompt: String!, input: ImageInput) : CloudflareImage! @join__field(graph: API_MEDIA) 
@@ -414,10 +413,13 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   cloudflareR2Delete(id: ID!) : CloudflareR2! @join__field(graph: API_MEDIA) 
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!) : CloudflareImage! @join__field(graph: API_MEDIA)  @deprecated(reason: "use createCloudflareImageFromPrompt") 
   triggerUnsplashDownload(url: String!) : Boolean! @join__field(graph: API_MEDIA) 
-  createMuxVideoUploadByFile(name: String!) : MuxVideo! @join__field(graph: API_MEDIA) 
-  createMuxVideoUploadByUrl(url: String!) : MuxVideo! @join__field(graph: API_MEDIA) 
-  enableMuxDownload(id: ID!) : MuxVideo @join__field(graph: API_MEDIA) 
-  deleteMuxVideo(id: ID!) : Boolean! @join__field(graph: API_MEDIA) 
+  bibleCitationCreate(input: MutationBibleCitationCreateInput!) : BibleCitation @join__field(graph: API_MEDIA) 
+  bibleCitationUpdate(input: MutationBibleCitationUpdateInput!) : BibleCitation @join__field(graph: API_MEDIA) 
+  bibleCitationDelete(id: ID!) : Boolean @join__field(graph: API_MEDIA) 
+  createMuxVideoUploadByFile(name: String!, userGenerated: Boolean) : MuxVideo! @join__field(graph: API_MEDIA) 
+  createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean) : MuxVideo! @join__field(graph: API_MEDIA) 
+  enableMuxDownload(id: ID!, resolution: String) : MuxVideo @join__field(graph: API_MEDIA) 
+  deleteMuxVideo(id: ID!, userGenerated: Boolean) : Boolean! @join__field(graph: API_MEDIA) 
   """
   Create a new short link domain that can be used for short links (this domain must have a CNAME record pointing to the short link service)
   """
@@ -613,6 +615,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   journeyCollection(id: ID!) : JourneyCollection! @join__field(graph: API_JOURNEYS) 
   journeyCollections(teamId: ID!) : [JourneyCollection]! @join__field(graph: API_JOURNEYS) 
   journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, first: Int, after: String) : JourneyEventsConnection! @join__field(graph: API_JOURNEYS) 
+  journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter) : Int! @join__field(graph: API_JOURNEYS) 
   getJourneyProfile: JourneyProfile @join__field(graph: API_JOURNEYS) 
   """
   Get a list of Visitor Information by Journey
@@ -702,6 +705,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   languagesCount(where: LanguagesFilter, term: String) : Int! @join__field(graph: API_LANGUAGES) 
   country(id: ID!) : Country @join__field(graph: API_LANGUAGES) 
   countries(term: String, ids: [ID!]) : [Country!]! @join__field(graph: API_LANGUAGES) 
+  getTranscodeAssetProgress(jobId: String!) : Int @join__field(graph: API_MEDIA) 
   getMyCloudflareImages(offset: Int, limit: Int) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
   getMyCloudflareImage(id: ID!) : CloudflareImage! @join__field(graph: API_MEDIA) 
   listUnsplashCollectionPhotos(
@@ -721,11 +725,12 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
     orientation: UnsplashPhotoOrientation
   ): UnsplashQueryResponse! @join__field(graph: API_MEDIA) 
   bibleBooks: [BibleBook!]! @join__field(graph: API_MEDIA) 
-  bibleCitations: [BibleCitation!]! @join__field(graph: API_MEDIA) 
+  bibleCitations(videoId: ID) : [BibleCitation!]! @join__field(graph: API_MEDIA) 
+  bibleCitation(id: ID!) : BibleCitation! @join__field(graph: API_MEDIA) 
   keywords: [Keyword!]! @join__field(graph: API_MEDIA) 
   getMyMuxVideos(offset: Int, limit: Int) : [MuxVideo!]! @join__field(graph: API_MEDIA) 
-  getMyMuxVideo(id: ID!) : MuxVideo! @join__field(graph: API_MEDIA) 
-  getMuxVideo(id: ID!) : MuxVideo @join__field(graph: API_MEDIA) 
+  getMyMuxVideo(id: ID!, userGenerated: Boolean) : MuxVideo! @join__field(graph: API_MEDIA) 
+  getMuxVideo(id: ID!, userGenerated: Boolean) : MuxVideo @join__field(graph: API_MEDIA) 
   """
   List of short link domains that can be used for short links
   """
@@ -1694,8 +1699,10 @@ type JourneyEvent implements Event @join__type(graph: API_JOURNEYS)  @join__impl
   """
   Related fields queried from relevant ids in the events table
   """
-  journey: Journey
-  visitor: Visitor
+  journeySlug: String
+  visitorName: String
+  visitorEmail: String
+  visitorPhone: String
 }
 
 type JourneyEventEdge @join__type(graph: API_JOURNEYS)  {
@@ -2310,6 +2317,7 @@ type BibleCitation @join__type(graph: API_MEDIA)  {
   bibleBook: BibleBook!
   chapterStart: Int!
   chapterEnd: Int
+  order: Int!
   verseStart: Int
   verseEnd: Int
   video: Video!
@@ -2654,6 +2662,7 @@ type VideoStudyQuestion @join__type(graph: API_MEDIA)  {
   id: ID!
   value: String!
   primary: Boolean!
+  order: Int!
   language: Language!
 }
 
@@ -3186,6 +3195,7 @@ enum VideoLabel @join__type(graph: API_MEDIA)  {
 
 enum VideoVariantDownloadQuality @join__type(graph: API_MEDIA)  {
   low @join__enumValue(graph: API_MEDIA) 
+  sd @join__enumValue(graph: API_MEDIA) 
   high @join__enumValue(graph: API_MEDIA) 
 }
 
@@ -4302,6 +4312,29 @@ input CloudflareR2CreateInput @join__type(graph: API_MEDIA)  {
 input ImageInput @join__type(graph: API_MEDIA)  {
   aspectRatio: ImageAspectRatio
   videoId: ID
+}
+
+input MutationBibleCitationCreateInput @join__type(graph: API_MEDIA)  {
+  id: ID
+  osisId: String!
+  videoId: ID!
+  bibleBookId: ID!
+  chapterStart: Int!
+  chapterEnd: Int
+  verseStart: Int
+  verseEnd: Int
+  order: Int!
+}
+
+input MutationBibleCitationUpdateInput @join__type(graph: API_MEDIA)  {
+  id: ID!
+  osisId: String
+  bibleBookId: ID
+  chapterStart: Int
+  chapterEnd: Int
+  verseStart: Int
+  verseEnd: Int
+  order: Int
 }
 
 input MutationShortLinkCreateInput @join__type(graph: API_MEDIA)  {
