@@ -12,6 +12,7 @@ import { GetUserRole } from '@core/journeys/ui/useUserRoleQuery/__generated__/Ge
 import { Role } from '../../../../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
 import { getCustomDomainMock } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
+import { useJourneyForShareLazyQuery } from '../../../../../libs/useJourneyForShareLazyQuery/useJourneyForShareLazyQuery'
 
 import { ShareItem } from './ShareItem'
 
@@ -30,10 +31,19 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
 }))
 
+jest.mock(
+  '../../../../../libs/useJourneyForShareLazyQuery/useJourneyForShareLazyQuery',
+  () => ({
+    __esModule: true,
+    useJourneyForShareLazyQuery: jest.fn()
+  })
+)
+
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 const mockUseCurrentUserLazyQuery = useCurrentUserLazyQuery as jest.Mock
 const user = { id: 'user.id', email: 'test@email.com' }
+const mockUseJourneyForShareLazyQuery = useJourneyForShareLazyQuery as jest.Mock
 
 Object.assign(navigator, { clipboard: { writeText: jest.fn() } })
 
@@ -286,5 +296,47 @@ describe('ShareItem', () => {
         'https://www.customdomain.com/default'
       )
     })
+  })
+
+  it('calls lazy query when there is no journey context', async () => {
+    const loadJourney = jest.fn()
+    mockUseJourneyForShareLazyQuery.mockReturnValue([
+      loadJourney,
+      { data: undefined, loading: false, error: undefined }
+    ])
+
+    render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ShareItem variant="button" journeyId="lazy-journey-id" />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Share' }))
+    expect(loadJourney).toHaveBeenCalledWith({
+      variables: { id: 'lazy-journey-id' }
+    })
+  })
+
+  it('does NOT call lazy query when there is journey context', async () => {
+    const loadJourney = jest.fn()
+    mockUseJourneyForShareLazyQuery.mockReturnValue([
+      loadJourney,
+      { data: undefined, loading: false, error: undefined }
+    ])
+
+    render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <JourneyProvider
+            value={{ journey: defaultJourney, variant: 'admin' }}
+          >
+            <ShareItem variant="button" />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Share' }))
+    expect(loadJourney).not.toHaveBeenCalled()
   })
 })
