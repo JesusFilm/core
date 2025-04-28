@@ -63,7 +63,7 @@ export function PageWrapper({
   const [open, setOpen] = useState<boolean>(false)
   const theme = useTheme()
   const viewportHeight = use100vh()
-  const { navbar, toolbar, bottomPanel, sidePanel } = usePageWrapperStyles()
+  const { navbar, toolbar, bottomPanel } = usePageWrapperStyles()
   const router = useRouter()
 
   return (

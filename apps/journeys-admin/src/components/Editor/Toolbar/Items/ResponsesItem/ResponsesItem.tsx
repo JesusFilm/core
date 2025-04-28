@@ -15,6 +15,7 @@ import { Item } from '../Item'
 
 interface ResponseItemProps {
   variant: ComponentProps<typeof Item>['variant']
+  fromJourneyList?: boolean
 }
 
 export const GET_JOURNEY_VISITORS_COUNT_WITH_TEXT_RESPONSES = gql`
@@ -25,7 +26,10 @@ export const GET_JOURNEY_VISITORS_COUNT_WITH_TEXT_RESPONSES = gql`
   }
 `
 
-export function ResponsesItem({ variant }: ResponseItemProps): ReactElement {
+export function ResponsesItem({
+  variant,
+  fromJourneyList = false
+}: ResponseItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
 
@@ -43,14 +47,13 @@ export function ResponsesItem({ variant }: ResponseItemProps): ReactElement {
       })
   }, [journey?.id, loadVisitorsResponseCount, data])
 
+  const linkHref = fromJourneyList
+    ? `/journeys/${journey?.id}/reports/visitors?withSubmittedText=true&from=journey-list`
+    : `/journeys/${journey?.id}/reports/visitors?withSubmittedText=true`
+
   return (
     <Box data-testid="ResponsesItem">
-      <NextLink
-        href={`/journeys/${journey?.id}/reports/visitors?withSubmittedText=true`}
-        passHref
-        legacyBehavior
-        prefetch={false}
-      >
+      <NextLink href={linkHref} passHref legacyBehavior prefetch={false}>
         <Item
           variant={variant}
           label={t('Responses')}

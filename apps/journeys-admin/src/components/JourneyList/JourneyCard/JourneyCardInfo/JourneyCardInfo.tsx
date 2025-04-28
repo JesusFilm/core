@@ -1,6 +1,5 @@
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
-import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import {
@@ -22,8 +21,6 @@ export function JourneyCardInfo({
   journey,
   variant
 }: JourneyCardInfoProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
-
   let inviteRequested: UserJourney[] | undefined
   if (
     variant === JourneyCardVariant.actionRequired &&
@@ -43,8 +40,8 @@ export function JourneyCardInfo({
       data-testid="JourneyCardInfo"
     >
       <Stack flexDirection="row">
-        <AnalyticsItem variant="icon-button" />
-        <ResponsesItem variant="icon-button" />
+        <AnalyticsItem variant="icon-button" fromJourneyList={true} />
+        <ResponsesItem variant="icon-button" fromJourneyList={true} />
       </Stack>
       <AccessAvatars
         journeyId={journey.id}
