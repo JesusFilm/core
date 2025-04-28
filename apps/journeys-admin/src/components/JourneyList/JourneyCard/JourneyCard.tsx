@@ -2,14 +2,13 @@ import { ApolloQueryResult } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
-import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
 import Chip from '@mui/material/Chip'
 import { useTheme } from '@mui/material/styles'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useRef } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 
 import { useNavigationState } from '@core/journeys/ui/useNavigationState'
 
@@ -52,6 +51,7 @@ export function JourneyCard({
   const duplicatedJourneyRef = useRef<HTMLDivElement>(null)
   const isNavigating = useNavigationState()
   const { t } = useTranslation('apps-journeys-admin')
+  const [isCardHovered, setIsCardHovered] = useState(false)
 
   useEffect(() => {
     if (duplicatedJourneyId != null && duplicatedJourneyRef.current != null) {
@@ -84,12 +84,15 @@ export function JourneyCard({
           borderBottom: '1px solid',
           borderColor: 'divider'
         },
-        height: '100%'
+        height: '100%',
+        boxShadow: isCardHovered ? 2 : 0
       }}
       data-testid={`JourneyCard-${journey.id}`}
+      onMouseEnter={() => setIsCardHovered(true)}
+      onMouseLeave={() => setIsCardHovered(false)}
     >
       <>
-        <Box sx={{ position: 'absolute', top: 12, right: 18, zIndex: 1 }}>
+        <Box sx={{ position: 'absolute', top: 18, right: 30, zIndex: 3 }}>
           <JourneyCardMenu
             id={journey.id}
             status={journey.status}
@@ -97,6 +100,8 @@ export function JourneyCard({
             published={journey.publishedAt != null}
             refetch={refetch}
             journey={journey}
+            hovered={isCardHovered}
+            onMenuClose={() => setIsCardHovered(false)}
           />
         </Box>
         <NextLink
@@ -142,7 +147,8 @@ export function JourneyCard({
                 mx: 3,
                 mt: 3,
                 borderRadius: '5px',
-                bgcolor: 'rgba(0, 0, 0, 0.1)'
+                bgcolor: 'rgba(0, 0, 0, 0.1)',
+                overflow: 'hidden'
               }}
             >
               {journey.primaryImageBlock?.src != null && (
@@ -163,15 +169,37 @@ export function JourneyCard({
                   `}
                 />
               )}
+              <Box
+                aria-hidden
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  bgcolor: 'rgba(0,0,0,0.3)',
+                  opacity: isCardHovered ? 1 : 0,
+                  transition: 'opacity 0.3s',
+                }}
+              />
             </Box>
             <CardContent sx={{ px: 3, py: 3 }}>
               <JourneyCardText journey={journey} />
+              <Box sx={{ height: '60px' }} />
             </CardContent>
           </CardActionArea>
         </NextLink>
-        <CardActions sx={{ pr: 3, pb: 2 }}>
+        <Box 
+          sx={{ 
+            position: 'absolute', 
+            bottom: 8, 
+            left: 2,
+            right: 10,
+            zIndex: 3,
+          }}
+        >
           <JourneyCardInfo journey={journey} variant={variant} />
-        </CardActions>
+        </Box>
       </>
     </Card>
   )

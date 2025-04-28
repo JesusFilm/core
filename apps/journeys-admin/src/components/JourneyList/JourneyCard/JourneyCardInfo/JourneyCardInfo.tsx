@@ -1,7 +1,6 @@
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
-import { Trans, useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import {
@@ -39,9 +38,8 @@ export function JourneyCardInfo({
     <Stack
       direction="row"
       justifyContent="space-between"
-      spacing={4}
       flexGrow={1}
-      sx={{ width: '95%' }}
+      sx={{ width: '100%' }}
       data-testid="JourneyCardInfo"
     >
       <Stack flexDirection="row">
