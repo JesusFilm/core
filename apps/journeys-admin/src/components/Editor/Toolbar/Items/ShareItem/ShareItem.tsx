@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
@@ -16,7 +17,9 @@ import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import ShareIcon from '@core/shared/ui/icons/Share'
 import TransformIcon from '@core/shared/ui/icons/Transform'
 
-import { GetAdminJourneys_journeys as Journey } from '../../../../../../__generated__/GetAdminJourneys'
+import { GetJourneyForShare_journey as LazyJourney } from '../../../../../../__generated__/GetJourneyForShare'
+import { JourneyFields as ContextJourney } from '../../../../../../__generated__/JourneyFields'
+import { useJourneyForShareLazyQuery } from '../../../../../libs/useJourneyForShareLazyQuery/useJourneyForShareLazyQuery'
 import { Item } from '../Item/Item'
 
 const EmbedJourneyDialog = dynamic(
@@ -48,22 +51,45 @@ const QrCodeDialog = dynamic(
 interface ShareItemProps {
   variant: ComponentProps<typeof Item>['variant']
   closeMenu?: () => void
-  journey?: Journey
+  journeyId?: string
 }
 
 export function ShareItem({
   variant,
   closeMenu,
-  journey
+  journeyId
 }: ShareItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey: journeyContext } = useJourney()
-  const journeyData = journeyContext ?? journey
-  const journeySlug = journeyData?.slug
 
-  const hostname =
-    journeyContext?.team?.customDomains[0]?.name ??
-    journeyData?.team?.customDomains[0]?.name
+  // Lazy query for journey data if context is missing
+  const [loadJourney, { data: lazyData, loading, error }] =
+    useJourneyForShareLazyQuery()
+
+  /**
+   * The journey data to be used for sharing.
+   *
+   * This variable may be sourced from either the JourneyProvider context (`ContextJourney`)
+   * or from a lazy GraphQL query (`LazyJourney`). Both types are expected to be structurally
+   * similar, but may diverge if their respective GraphQL fragments change.
+   *
+   * ShareItem.tsx uses the lazy query to get the journey slug, hostname/custom domain if there is no journeyContext.
+   * 
+   * ⚠️ Note: If you access properties that are not guaranteed to exist on both types,
+   * use type guards or map to a common interface to avoid runtime errors.
+   *
+   * Guaranteed properties:
+   * id, slug, team.id, team.customDomains (array, may be empty), team.customDomains[0]?.name (may be undefined if no custom domains)
+   *
+   * @type {ContextJourney | LazyJourney | undefined}
+   */
+  const journeyData: ContextJourney | LazyJourney | undefined =
+    journeyContext ?? lazyData?.journey
+
+  const shouldUseLazyQuery = journeyContext == null
+
+  const journeySlug = journeyData?.slug
+  const hostname = journeyData?.team?.customDomains[0]?.name
 
   const router = useRouter()
   const [showSlugDialog, setShowSlugDialog] = useState<boolean>(false)
@@ -71,9 +97,15 @@ export function ShareItem({
   const [showQrCodeDialog, setShowQrCodeDialog] = useState<boolean>(false)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
 
-  function handleShowMenu(event: MouseEvent<HTMLElement>): void {
+  // Trigger lazy query when dialog opens and context is missing
+  const handleShowMenu = (event: MouseEvent<HTMLElement>): void => {
     setAnchorEl(event.currentTarget)
+    if (shouldUseLazyQuery && !lazyData) {
+      if (journeyId == null) return
+      void loadJourney({ variables: { id: journeyId } })
+    }
   }
+
   function handleCloseMenu(): void {
     setAnchorEl(null)
     closeMenu?.() // test e2e
@@ -97,61 +129,83 @@ export function ShareItem({
         ButtonProps={{ variant: 'contained' }}
       />
       <Dialog open={Boolean(anchorEl)} onClose={handleCloseMenu}>
-        <Stack direction="column" spacing={4}>
-          <Typography variant="subtitle2" gutterBottom>
-            {t('Share This Journey')}
-          </Typography>
-          <CopyTextField
-            value={
-              journeySlug != null
-                ? `${
-                    hostname != null
-                      ? `https://${hostname}`
-                      : (process.env.NEXT_PUBLIC_JOURNEYS_URL ??
-                        'https://your.nextstep.is')
-                  }/${journeySlug}`
-                : undefined
-            }
-          />
-          <Stack direction="row" spacing={6}>
-            <Button
-              onClick={() => {
-                setShowSlugDialog(true)
-                setRoute('edit-url')
-              }}
-              size="small"
-              startIcon={<Edit2Icon />}
-              disabled={journeyData == null}
-              style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
-            >
-              {t('Edit URL')}
-            </Button>
-            <Button
-              onClick={() => {
-                setShowEmbedDialog(true)
-                setRoute('embed-journey')
-              }}
-              size="small"
-              startIcon={<Code1Icon />}
-              disabled={journeyData == null}
-              style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
-            >
-              {t('Embed Journey')}
-            </Button>
-            <Button
-              onClick={() => {
-                setShowQrCodeDialog(true)
-                setRoute('qr-code')
-              }}
-              size="small"
-              startIcon={<TransformIcon />}
-              disabled={journeyData == null}
-              style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
-            >
-              {t('QR Code')}
-            </Button>
+        {loading ? (
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            minHeight={120}
+          >
+            <CircularProgress />
+          </Box>
+        ) : error ? (
+          <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            minHeight={120}
+          >
+            <Typography color="error" variant="body2" gutterBottom>
+              {t('Failed to load journey data. Please try again.')}
+            </Typography>
+          </Box>
+        ) : journeyData != null ? (
+          <Stack direction="column" spacing={4}>
+            <Typography variant="subtitle2" gutterBottom>
+              {t('Share This Journey')}
+            </Typography>
+            <CopyTextField
+              value={
+                journeySlug != null
+                  ? `${
+                      hostname != null
+                        ? `https://${hostname}`
+                        : (process.env.NEXT_PUBLIC_JOURNEYS_URL ??
+                          'https://your.nextstep.is')
+                    }/${journeySlug}`
+                  : undefined
+              }
+            />
+            <Stack direction="row" spacing={6}>
+              <Button
+                onClick={() => {
+                  setShowSlugDialog(true)
+                  setRoute('edit-url')
+                }}
+                size="small"
+                startIcon={<Edit2Icon />}
+                disabled={journeyData == null}
+                style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
+              >
+                {t('Edit URL')}
+              </Button>
+              <Button
+                onClick={() => {
+                  setShowEmbedDialog(true)
+                  setRoute('embed-journey')
+                }}
+                size="small"
+                startIcon={<Code1Icon />}
+                disabled={journeyData == null}
+                style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
+              >
+                {t('Embed Journey')}
+              </Button>
+              <Button
+                onClick={() => {
+                  setShowQrCodeDialog(true)
+                  setRoute('qr-code')
+                }}
+                size="small"
+                startIcon={<TransformIcon />}
+                disabled={journeyData == null}
+                style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
+              >
+                {t('QR Code')}
+              </Button>
+            </Stack>
           </Stack>
-        </Stack>
+        ) : null}
       </Dialog>
       {showSlugDialog != null && (
         <SlugDialog

@@ -181,7 +181,7 @@ export function DefaultMenu({
           openInNew
         />
       </NextLink>
-      <ShareItem variant="menu-item" journey={journey} />
+      <ShareItem variant="menu-item" journeyId={journeyId} />
       <Divider />
       {template !== true && (
         <DuplicateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />
