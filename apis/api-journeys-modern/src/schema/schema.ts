@@ -1,7 +1,7 @@
 // Developers must add an import for every resolver
 // and object type in the schema
 
-import './aiTranslate'
+import './aiTranslateJourney'
 import './mediaVideo'
 import './journeyEventsExportLog'
 
