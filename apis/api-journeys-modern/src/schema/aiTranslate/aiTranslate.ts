@@ -34,7 +34,7 @@ builder.mutationField('aiTranslateJourneyCreate', (t) =>
       })) as Job<AiTranslateJourneyJob>
 
       if (!job.id) throw new Error('Failed to create job')
-      return job.id as
+      return job.id
     }
   })
 )
