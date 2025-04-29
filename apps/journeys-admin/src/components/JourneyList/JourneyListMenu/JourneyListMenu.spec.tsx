@@ -1,6 +1,11 @@
 import { fireEvent, render } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 
+import { useTeam } from '@core/journeys/ui/TeamProvider'
+
+import { UserTeamRole } from '../../../../__generated__/globalTypes'
+import { useCurrentUserLazyQuery } from '../../../libs/useCurrentUserLazyQuery'
+
 import { JourneyListMenu } from '.'
 
 jest.mock('next/router', () => ({
@@ -8,9 +13,43 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
 }))
 
+jest.mock('@core/journeys/ui/TeamProvider', () => ({
+  __esModule: true,
+  useTeam: jest.fn()
+}))
+
+jest.mock('../../../libs/useCurrentUserLazyQuery', () => ({
+  __esModule: true,
+  useCurrentUserLazyQuery: jest.fn()
+}))
+
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockedUseTeam = useTeam as jest.MockedFunction<typeof useTeam>
+const mockedUseCurrentUserLazyQuery =
+  useCurrentUserLazyQuery as jest.MockedFunction<typeof useCurrentUserLazyQuery>
 
 describe('JourneyListMenu', () => {
+  beforeEach(() => {
+    mockedUseTeam.mockReturnValue({
+      activeTeam: {
+        userTeams: [
+          {
+            user: { id: 'userId' },
+            role: UserTeamRole.manager
+          }
+        ]
+      }
+    } as any)
+
+    mockedUseCurrentUserLazyQuery.mockReturnValue({
+      loadUser: jest.fn(),
+      data: {
+        id: 'userId',
+        email: 'test@example.com'
+      }
+    } as any)
+  })
+
   it('should be empty if not needed', () => {
     mockedUseRouter.mockReturnValue({
       query: { tab: '' }
@@ -53,6 +92,27 @@ describe('JourneyListMenu', () => {
       fireEvent.click(getByRole('button'))
       fireEvent.click(getByText('Trash All'))
       expect(handleClick).toHaveBeenCalledWith('trashAllActive')
+    })
+
+    it('should disable actions for non-managers', () => {
+      mockedUseTeam.mockReturnValue({
+        activeTeam: {
+          userTeams: [
+            {
+              user: { id: 'userId' },
+              role: UserTeamRole.member
+            }
+          ]
+        }
+      } as any)
+
+      const { getByRole, getAllByRole } = render(
+        <JourneyListMenu onClick={jest.fn()} />
+      )
+      fireEvent.click(getByRole('button'))
+      const menuItems = getAllByRole('menuitem')
+      expect(menuItems[0]).toHaveAttribute('aria-disabled', 'true')
+      expect(menuItems[1]).toHaveAttribute('aria-disabled', 'true')
     })
   })
 
