@@ -52,9 +52,10 @@ export default function StudyQuestionsAddPage({
     value: string().required('Study question is required')
   })
   const order =
-    (data.adminVideo.studyQuestions.length > 1
-      ? Math.max(...data.adminVideo.studyQuestions.map(({ order }) => order))
-      : 0) + 1
+    data.adminVideo.studyQuestions.length === 0
+      ? 1
+      : Math.max(...data.adminVideo.studyQuestions.map(({ order }) => order)) +
+        1
   const returnUrl = `/videos/${videoId}`
   const [createStudyQuestion, { loading }] = useMutation(CREATE_STUDY_QUESTION)
   const handleSubmit = async (values: { value: string }): Promise<void> => {
