@@ -4,6 +4,7 @@ import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
 import FileShredIcon from '@core/shared/ui/icons/FileShred'
 import FolderDown1Icon from '@core/shared/ui/icons/FolderDown1'
@@ -11,6 +12,8 @@ import FolderUp1Icon from '@core/shared/ui/icons/FolderUp1'
 import MoreIcon from '@core/shared/ui/icons/More'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 
+import { UserTeamRole } from '../../../../__generated__/globalTypes'
+import { useCurrentUserLazyQuery } from '../../../libs/useCurrentUserLazyQuery'
 import { MenuItem } from '../../MenuItem'
 
 interface JourneyListMenuProps {
@@ -22,12 +25,22 @@ export function JourneyListMenu({
 }: JourneyListMenuProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
+  const { activeTeam } = useTeam()
+  const { loadUser, data: currentUser } = useCurrentUserLazyQuery()
 
   const activeTab = router?.query.tab?.toString() ?? 'active'
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
+
+  const isTeamManager = activeTeam?.userTeams?.some(
+    ({ user: { id }, role }) =>
+      id === currentUser?.id && role === UserTeamRole.manager
+  )
+
   const handleShowMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
+    void loadUser()
     setAnchorEl(event.currentTarget)
   }
+
   const handleEvent = (event: string): void => {
     onClick(event)
     handleCloseMenu()
@@ -72,12 +85,14 @@ export function JourneyListMenu({
                 icon={<FolderUp1Icon />}
                 onClick={() => handleEvent('archiveAllActive')}
                 key="archiveAllActive"
+                disabled={!isTeamManager}
               />,
               <MenuItem
                 label={t('Trash All')}
                 icon={<Trash2Icon />}
                 onClick={() => handleEvent('trashAllActive')}
                 key="trashAllActive"
+                disabled={!isTeamManager}
               />
             ]}
             {activeTab === 'archived' && [
