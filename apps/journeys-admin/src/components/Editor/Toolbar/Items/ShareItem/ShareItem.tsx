@@ -19,6 +19,7 @@ import TransformIcon from '@core/shared/ui/icons/Transform'
 
 import { GetJourneyForSharing_journey as JourneyForSharing } from '../../../../../../__generated__/GetJourneyForSharing'
 import { JourneyFields as ContextJourney } from '../../../../../../__generated__/JourneyFields'
+import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
 import { useJourneyForSharingLazyQuery } from '../../../../../libs/useJourneyForShareLazyQuery/useJourneyForShareLazyQuery'
 import { Item } from '../Item/Item'
 
@@ -61,6 +62,10 @@ export function ShareItem({
 }: ShareItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey: journeyContext } = useJourney()
+  const { hostname } = useCustomDomainsQuery({
+    variables: { teamId: journeyContext?.team?.id ?? '' },
+    skip: journeyContext?.team?.id == null
+  })
 
   // Lazy query for journey data if context is missing
   const [loadJourney, { data: journeyShareData, loading, error }] =
@@ -89,7 +94,8 @@ export function ShareItem({
   const shouldUseLazyQuery = journeyContext == null
 
   const journeySlug = journeyData?.slug
-  const hostname = journeyData?.team?.customDomains[0]?.name
+  const selectedHostname =
+    hostname ?? journeyShareData?.journey?.team?.customDomains?.[0]?.name
 
   const router = useRouter()
   const [showSlugDialog, setShowSlugDialog] = useState<boolean>(false)
@@ -158,8 +164,8 @@ export function ShareItem({
               value={
                 journeySlug != null
                   ? `${
-                      hostname != null
-                        ? `https://${hostname}`
+                      selectedHostname != null
+                        ? `https://${selectedHostname}`
                         : (process.env.NEXT_PUBLIC_JOURNEYS_URL ??
                           'https://your.nextstep.is')
                     }/${journeySlug}`
@@ -211,7 +217,7 @@ export function ShareItem({
         <SlugDialog
           open={showSlugDialog}
           onClose={() => setShowSlugDialog(false)}
-          hostname={hostname}
+          hostname={selectedHostname}
           journeySlug={journeySlug}
           journeyId={journeyId}
         />
