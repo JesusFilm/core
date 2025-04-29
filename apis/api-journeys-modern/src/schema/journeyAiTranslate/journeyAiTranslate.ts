@@ -1,18 +1,11 @@
 import { Job, Queue } from 'bullmq'
 
 import { connection } from '../../lib/redisConnection'
+import { queueName } from '../../workers/journeyAiTranslate'
+import { AiTranslateJourneyJob } from '../../workers/journeyAiTranslate/service'
 import { builder } from '../builder'
 
-const queueName = 'jfp-ai-translate-journey'
 const queue = new Queue(queueName, { connection })
-
-interface AiTranslateJourneyJob {
-  userId: string
-  journeyId: string
-  name: string
-  textLanguageId: string
-  videoLanguageId: string
-}
 
 builder.mutationField('journeyAiTranslateCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).fieldWithInput({
@@ -25,7 +18,7 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
     type: 'ID',
     nullable: false,
     resolve: async (_root, { input }, { user }) => {
-      const job = (await queue.add('api-journeys-modern-journey-ai-translate', {
+      const job = (await queue.add(`${user.id}-${input.journeyId}`, {
         userId: user.id,
         journeyId: input.journeyId,
         name: input.name,
