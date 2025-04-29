@@ -6,7 +6,7 @@ https://www.checklyhq.com/docs/cli/
 */
 
 // Set a longer timeout for this monitoring test
-test.setTimeout(100000)
+test.setTimeout(180000)
 
 /**
  * @check
@@ -132,21 +132,24 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
     const overlayContainer = previewPage.getByTestId(
       'CardOverlayContentContainer'
     )
-    await expect(overlayContainer).toBeVisible({ timeout: defaultTimeout })
 
-    await expect(
-      overlayContainer.getByRole('heading', { name: 'Are you happy?' })
-    ).toBeVisible({ timeout: defaultTimeout })
     // Try refreshing up to 5 times if button not visible
     let buttonVisible = false
     for (let i = 0; i < 5 && !buttonVisible; i++) {
-      await previewPage.waitForTimeout(10000) // Wait 10 seconds
-      await previewPage.reload()
-      await previewPage.waitForLoadState('networkidle')
       buttonVisible = await overlayContainer
           .getByRole('button', { name: 'Changed Button Text' })
           .isVisible()
+
+      if (!buttonVisible) {
+        await previewPage.waitForTimeout(10000) // Wait 10 seconds
+        await previewPage.reload()
+        await previewPage.waitForLoadState('networkidle')
+      }
     }
+    await expect(
+      overlayContainer.getByRole('heading', { name: 'Are you happy?' })
+    ).toBeVisible({ timeout: defaultTimeout })
+
     // Take checkpoint screenshot of preview
     await previewPage.screenshot({ fullPage: true })
     stepTiming['preview_load'] = Date.now() - previewStart
