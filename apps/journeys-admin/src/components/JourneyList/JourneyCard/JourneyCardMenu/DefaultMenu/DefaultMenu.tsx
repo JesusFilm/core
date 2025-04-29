@@ -90,8 +90,7 @@ export function DefaultMenu({
   setOpenTrashDialog,
   setOpenDetailsDialog,
   template,
-  refetch,
-  journey
+  refetch
 }: DefaultMenuProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
