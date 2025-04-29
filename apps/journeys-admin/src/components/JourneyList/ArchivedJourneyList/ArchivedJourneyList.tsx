@@ -191,7 +191,7 @@ export function ArchivedJourneyList({
                 sx={{
                   display: 'flex',
                   flexDirection: 'column',
-                  pt: 30,
+                  pt: 30
                 }}
               >
                 <Typography variant="subtitle1" align="center">
