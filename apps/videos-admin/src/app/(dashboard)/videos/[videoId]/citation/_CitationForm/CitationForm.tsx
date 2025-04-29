@@ -227,9 +227,9 @@ export function CitationForm({
             bibleBookId: values.bibleBookId,
             osisId: selectedBook.osisId,
             chapterStart: values.chapterStart,
-            chapterEnd: values.chapterEnd ?? null,
-            verseStart: values.verseStart ?? null,
-            verseEnd: values.verseEnd ?? null,
+            chapterEnd: values.chapterEnd ?? undefined,
+            verseStart: values.verseStart ?? undefined,
+            verseEnd: values.verseEnd ?? undefined,
             order: nextOrder
           }
         },
