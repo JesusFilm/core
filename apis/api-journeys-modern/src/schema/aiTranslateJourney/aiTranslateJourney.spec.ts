@@ -22,6 +22,17 @@ jest.mock('../builder', () => ({
       const t = {
         withAuth: jest.fn().mockReturnThis(),
         fieldWithInput: jest.fn(),
+        input: {
+          id: jest
+            .fn()
+            .mockImplementation(({ required }) => ({ type: 'ID', required })),
+          string: jest
+            .fn()
+            .mockImplementation(({ required }) => ({
+              type: 'String',
+              required
+            }))
+        },
         arg: jest
           .fn()
           .mockImplementation(({ type, required }) => ({ type, required }))
@@ -77,7 +88,7 @@ describe('aiTranslate', () => {
     describe('aiTranslateJourneyCreate', () => {
       it('should return job id when successful', async () => {
         // Import the implementation
-        require('./aiTranslate')
+        require('./aiTranslateJourney')
 
         // Call mock client
         const result = await mockAuthClient()

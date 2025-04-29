@@ -10,17 +10,17 @@ interface AiTranslateJourneyJob {
   userId: string
   journeyId: string
   name: string
-  textLanguage: string
-  videoLanguage: string
+  textLanguageId: string
+  videoLanguageId: string
 }
 
 builder.mutationField('aiTranslateJourneyCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).fieldWithInput({
     input: {
-      journeyId: t.arg({ type: 'ID', required: true }),
-      name: t.arg({ type: 'String', required: true }),
-      textLanguage: t.arg({ type: 'String', required: true }),
-      videoLanguage: t.arg({ type: 'String', required: false })
+      journeyId: t.input.id({ required: true }),
+      name: t.input.string({ required: true }),
+      textLanguageId: t.input.id({ required: true }),
+      videoLanguageId: t.input.id({ required: false })
     },
     type: 'ID',
     nullable: false,
@@ -29,8 +29,8 @@ builder.mutationField('aiTranslateJourneyCreate', (t) =>
         userId: user.id,
         journeyId: input.journeyId,
         name: input.name,
-        textLanguage: input.textLanguage,
-        videoLanguage: input.videoLanguage
+        textLanguageId: input.textLanguageId,
+        videoLanguageId: input.videoLanguageId
       })) as Job<AiTranslateJourneyJob>
 
       if (!job.id) throw new Error('Failed to create job')
