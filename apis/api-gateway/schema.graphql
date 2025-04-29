@@ -2741,6 +2741,7 @@ type VideoVariantDownload @join__type(graph: API_MEDIA)  {
   size: Float!
   height: Int!
   width: Int!
+  bitrate: Int!
   url: String!
   """
   master video file version
@@ -4518,6 +4519,7 @@ input VideoVariantDownloadCreateInput @join__type(graph: API_MEDIA)  {
   size: Float
   height: Int
   width: Int
+  bitrate: Int
   url: String!
   version: Int
 }
@@ -4530,6 +4532,7 @@ input VideoVariantDownloadUpdateInput @join__type(graph: API_MEDIA)  {
   size: Float
   height: Int
   width: Int
+  bitrate: Int
   url: String
   version: Int
 }

@@ -816,7 +816,6 @@ export class JourneyResolver {
           input.seoDescription != null ||
           input.primaryImageBlockId != null
         ) {
-          console.log('here 1asasdfasdf')
           await this.revalidateQueue.add('revalidate', {
             slug: updatedJourney.slug,
             hostname: updatedJourney.team.customDomains[0]?.name,

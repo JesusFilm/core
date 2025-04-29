@@ -14,6 +14,7 @@ const videoVariantDownloadSchema = z
     size: z.number(),
     height: z.number(),
     width: z.number(),
+    bitrate: z.number().optional(),
     uri: z.string(),
     videoVariantId: z.string()
   })

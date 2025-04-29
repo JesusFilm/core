@@ -42,6 +42,7 @@ describe('videoVariantDownload', () => {
           size: 1024,
           height: 1024,
           width: 1024,
+          bitrate: 1024,
           url: 'url',
           assetId: null,
           version: 1
@@ -119,6 +120,7 @@ describe('videoVariantDownload', () => {
           size: 1024,
           height: 1024,
           width: 1024,
+          bitrate: 1024,
           url: 'url',
           assetId: null,
           version: 1
@@ -194,6 +196,7 @@ describe('videoVariantDownload', () => {
           size: 1024,
           height: 1024,
           width: 1024,
+          bitrate: 1024,
           url: 'url',
           assetId: null,
           version: 1
