@@ -5,9 +5,9 @@ import { DragEndEvent } from '@dnd-kit/core'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import { graphql } from 'gql.tada'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import { OrderedList } from '../../../../../components/OrderedList'
 import { OrderedItem } from '../../../../../components/OrderedList/OrderedItem'
@@ -52,6 +52,8 @@ export function VideoBibleCitation({
 }: VideoBibleCitationProps): ReactElement {
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
+  const [reloadOnPathChange, setReloadOnPathChange] = useState(false)
+  const pathname = usePathname()
   const [updateBibleCitationOrder] = useMutation(UPDATE_BIBLE_CITATION_ORDER, {
     onError: (error) => {
       enqueueSnackbar(error.message, { variant: 'error' })
@@ -130,6 +132,11 @@ export function VideoBibleCitation({
       }
     }
   }
+
+  useEffect(() => {
+    if (reloadOnPathChange) void refetch()
+    setReloadOnPathChange(pathname?.includes('citation') ?? false)
+  }, [pathname])
 
   return (
     <Section title="Bible Citations" variant="outlined">
