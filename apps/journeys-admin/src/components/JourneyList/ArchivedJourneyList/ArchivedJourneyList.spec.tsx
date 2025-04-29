@@ -11,11 +11,7 @@ import {
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { ThemeProvider } from '../../ThemeProvider'
-import {
-  defaultJourney,
-  fakeDate,
-  oldJourney
-} from '../journeyListData'
+import { defaultJourney, fakeDate, oldJourney } from '../journeyListData'
 import { SortOrder } from '../JourneySort'
 
 import {
@@ -328,14 +324,16 @@ describe('ArchivedJourneyList', () => {
         <MockedProvider mocks={[archivedJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
-              <ArchivedJourneyList user={user}/>
+              <ArchivedJourneyList user={user} />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
       )
 
       // Wait for data to load
-      await waitFor(() => expect(getAllByLabelText('journey-card')).toHaveLength(2))
+      await waitFor(() =>
+        expect(getAllByLabelText('journey-card')).toHaveLength(2)
+      )
 
       const gridItems = container.querySelectorAll('.MuiGrid2-grid-md-3')
       expect(gridItems).toHaveLength(2) // 2 journeys in archivedJourneysMock
@@ -354,14 +352,16 @@ describe('ArchivedJourneyList', () => {
         <MockedProvider mocks={[archivedJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
-              <ArchivedJourneyList user={user}/>
+              <ArchivedJourneyList user={user} />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
       )
 
       // Wait for data to load
-      await waitFor(() => expect(getAllByLabelText('journey-card')).toHaveLength(2))
+      await waitFor(() =>
+        expect(getAllByLabelText('journey-card')).toHaveLength(2)
+      )
 
       const gridItems = container.querySelectorAll('.MuiGrid2-grid-md-4')
       expect(gridItems).toHaveLength(2)
@@ -380,14 +380,16 @@ describe('ArchivedJourneyList', () => {
         <MockedProvider mocks={[archivedJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
-              <ArchivedJourneyList user={user}/>
+              <ArchivedJourneyList user={user} />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
       )
 
       // Wait for data to load
-      await waitFor(() => expect(getAllByLabelText('journey-card')).toHaveLength(2))
+      await waitFor(() =>
+        expect(getAllByLabelText('journey-card')).toHaveLength(2)
+      )
 
       const gridItems = container.querySelectorAll('.MuiGrid2-grid-md-6')
       expect(gridItems).toHaveLength(2)
@@ -406,14 +408,16 @@ describe('ArchivedJourneyList', () => {
         <MockedProvider mocks={[archivedJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
-              <ArchivedJourneyList user={user}/>
+              <ArchivedJourneyList user={user} />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
       )
 
       // Wait for data to load
-      await waitFor(() => expect(getAllByLabelText('journey-card')).toHaveLength(2))
+      await waitFor(() =>
+        expect(getAllByLabelText('journey-card')).toHaveLength(2)
+      )
 
       const gridItems = container.querySelectorAll('.MuiGrid2-grid-md-12')
       expect(gridItems).toHaveLength(2)

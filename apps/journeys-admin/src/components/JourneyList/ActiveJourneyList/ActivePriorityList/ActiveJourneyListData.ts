@@ -109,5 +109,6 @@ export const pendingActionJourney: Journey = {
 export const journeyWithLongTitle: Journey = {
   ...defaultJourney,
   id: 'journey5.id',
-  title: 'This is a journey with an extremely long title that should be wrapped to two lines and then truncated with the ellipsis'
+  title:
+    'This is a journey with an extremely long title that should be wrapped to two lines and then truncated with the ellipsis'
 }
