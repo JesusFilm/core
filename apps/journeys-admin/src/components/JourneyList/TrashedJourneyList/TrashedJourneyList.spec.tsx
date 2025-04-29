@@ -378,14 +378,16 @@ describe('TrashedJourneyList', () => {
         <MockedProvider mocks={[trashedJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
-              <TrashedJourneyList user={user}/>
+              <TrashedJourneyList user={user} />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
       )
 
       // Wait for data to load
-      await waitFor(() => expect(getAllByLabelText('journey-card')).toHaveLength(2))
+      await waitFor(() =>
+        expect(getAllByLabelText('journey-card')).toHaveLength(2)
+      )
 
       const gridItems = container.querySelectorAll('.MuiGrid2-grid-md-3')
       expect(gridItems).toHaveLength(2) // Two journeys in trashedJourneysMock
@@ -404,14 +406,16 @@ describe('TrashedJourneyList', () => {
         <MockedProvider mocks={[trashedJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
-              <TrashedJourneyList user={user}/>
+              <TrashedJourneyList user={user} />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
       )
 
       // Wait for data to load
-      await waitFor(() => expect(getAllByLabelText('journey-card')).toHaveLength(2))
+      await waitFor(() =>
+        expect(getAllByLabelText('journey-card')).toHaveLength(2)
+      )
 
       const gridItems = container.querySelectorAll('.MuiGrid2-grid-md-4')
       expect(gridItems).toHaveLength(2)
@@ -430,14 +434,16 @@ describe('TrashedJourneyList', () => {
         <MockedProvider mocks={[trashedJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
-              <TrashedJourneyList user={user}/>
+              <TrashedJourneyList user={user} />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
       )
 
       // Wait for data to load
-      await waitFor(() => expect(getAllByLabelText('journey-card')).toHaveLength(2))
+      await waitFor(() =>
+        expect(getAllByLabelText('journey-card')).toHaveLength(2)
+      )
 
       const gridItems = container.querySelectorAll('.MuiGrid2-grid-md-6')
       expect(gridItems).toHaveLength(2)
@@ -456,14 +462,16 @@ describe('TrashedJourneyList', () => {
         <MockedProvider mocks={[trashedJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
-              <TrashedJourneyList user={user}/>
+              <TrashedJourneyList user={user} />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
       )
 
       // Wait for data to load
-      await waitFor(() => expect(getAllByLabelText('journey-card')).toHaveLength(2))
+      await waitFor(() =>
+        expect(getAllByLabelText('journey-card')).toHaveLength(2)
+      )
 
       const gridItems = container.querySelectorAll('.MuiGrid2-grid-md-12')
       expect(gridItems).toHaveLength(2)

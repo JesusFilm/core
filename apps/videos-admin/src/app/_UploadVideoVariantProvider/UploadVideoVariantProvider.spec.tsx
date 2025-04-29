@@ -42,7 +42,8 @@ const createMuxVideoUploadByUrlMock = {
   request: {
     query: CREATE_MUX_VIDEO_UPLOAD_BY_URL,
     variables: {
-      url: 'https://mock.cloudflare-domain.com/video-id/variants/language-id/videos/uuidv4/language-id_video-id.mp4'
+      url: 'https://mock.cloudflare-domain.com/video-id/variants/language-id/videos/uuidv4/language-id_video-id.mp4',
+      userGenerated: false
     }
   },
   result: {
@@ -61,7 +62,8 @@ const getMyMuxVideoMock = {
   request: {
     query: GET_MY_MUX_VIDEO,
     variables: {
-      id: 'mux-id'
+      id: 'mux-id',
+      userGenerated: false
     }
   },
   result: {
@@ -149,7 +151,8 @@ const createMuxVideoUploadByUrlErrorMock = {
   request: {
     query: CREATE_MUX_VIDEO_UPLOAD_BY_URL,
     variables: {
-      url: 'https://mock.cloudflare-domain.com/video-id/variants/language-id/videos/uuidv4/language-id_video-id.mp4'
+      url: 'https://mock.cloudflare-domain.com/video-id/variants/language-id/videos/uuidv4/language-id_video-id.mp4',
+      userGenerated: false
     }
   },
   error: new Error('Mux creation failed')

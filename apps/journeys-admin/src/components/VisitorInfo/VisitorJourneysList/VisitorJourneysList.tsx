@@ -25,7 +25,7 @@ export const GET_VISITOR_EVENTS = gql`
         ... on JourneyViewEvent {
           language {
             id
-            name(primary: true) {
+            name {
               value
             }
           }

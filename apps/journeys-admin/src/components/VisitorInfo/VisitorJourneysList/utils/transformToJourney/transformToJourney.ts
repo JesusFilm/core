@@ -23,7 +23,7 @@ export function transformToJourney(events: Event[] = []): JourneyWithEvents[] {
       }
       if (event.__typename === 'JourneyViewEvent') {
         journey.title = event.label
-        journey.subtitle = event.language?.name[0].value
+        journey.subtitle = event.language?.name?.[0]?.value ?? undefined
         journey.createdAt = event.createdAt
       }
       journey.events.push(event)
