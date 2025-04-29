@@ -144,7 +144,6 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
         // Wait 5 seconds as content publishing sometimes takes time
         await previewPage.waitForTimeout(5000)
         await previewPage.reload()
-        await previewPage.waitForLoadState('networkidle')
       }
     }
     await expect(
