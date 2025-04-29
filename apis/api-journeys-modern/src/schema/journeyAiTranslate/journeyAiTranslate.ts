@@ -25,7 +25,7 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
     type: 'ID',
     nullable: false,
     resolve: async (_root, { input }, { user }) => {
-      const job = (await queue.add('api-media-transcode-video', {
+      const job = (await queue.add('api-journeys-modern-journey-ai-translate', {
         userId: user.id,
         journeyId: input.journeyId,
         name: input.name,
