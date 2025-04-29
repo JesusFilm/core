@@ -23,6 +23,7 @@ import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery
 import { MenuItem } from '../../../../MenuItem'
 import { CopyToTeamMenuItem } from '../../../../Team/CopyToTeamMenuItem/CopyToTeamMenuItem'
 import { DuplicateJourneyMenuItem } from '../DuplicateJourneyMenuItem'
+import { TranslateJourneyMenuItem } from '../TranslateJourneyMenuItem'
 
 import { ArchiveJourney } from './ArchiveJourney'
 
@@ -175,7 +176,10 @@ export function DefaultMenu({
         />
       </NextLink>
       {template !== true && (
-        <DuplicateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />
+        <>
+          <DuplicateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />
+          <TranslateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />
+        </>
       )}
       <Divider />
       <CopyToTeamMenuItem id={id} handleCloseMenu={handleCloseMenu} />
