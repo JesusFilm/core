@@ -1,6 +1,7 @@
 import { ApolloQueryResult, OperationVariables } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid2'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { User } from 'next-firebase-auth'
 import { ReactElement, useMemo } from 'react'
 
@@ -32,6 +33,17 @@ export function ActivePriorityList({
   refetch,
   user
 }: ActivePriorityListProps): ReactElement {
+  const needsFourColumns = useMediaQuery('(min-width: 94rem)')
+  const needsThreeColumns = useMediaQuery('(min-width: 78rem)')
+  const needsTwoColumns = useMediaQuery('(min-width: 62rem)')
+
+  const gridSize = useMemo(() => {
+    if (needsFourColumns) return 3
+    if (needsThreeColumns) return 4
+    if (needsTwoColumns) return 6
+    return 12
+  }, [needsFourColumns, needsThreeColumns, needsTwoColumns])
+
   const { newJourneys, actionRequiredJourneys, activeJourneys } =
     useMemo(() => {
       const newJourneys: Journey[] = []
@@ -89,7 +101,7 @@ export function ActivePriorityList({
       <Grid container spacing={5} rowSpacing={5}>
         {Object.entries(allActiveJourneys).map(([key, journeys]) =>
           journeys.map((journey) => (
-            <Grid key={journey.id} size={{ xs: 12, sm: 6, md: 3 }}>
+            <Grid key={journey.id} size={{ xs: 12, sm: 6, md: gridSize }}>
               <JourneyProvider
                 value={{
                   journey: journey as unknown as JourneyFields,

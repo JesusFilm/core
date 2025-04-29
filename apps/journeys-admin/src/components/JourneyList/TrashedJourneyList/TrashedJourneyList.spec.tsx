@@ -1,4 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
@@ -28,6 +29,13 @@ jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
 }))
+
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: jest.fn()
+}))
+
+const mockedUseMediaQuery = useMediaQuery as jest.Mock
 
 const trashedJourneysMock: MockedResponse<
   GetAdminJourneys,
@@ -77,6 +85,10 @@ const noJourneysMock: MockedResponse<
 }
 
 describe('TrashedJourneyList', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
   beforeAll(() => {
     jest.useFakeTimers()
     jest.setSystemTime(new Date(fakeDate))
@@ -349,6 +361,112 @@ describe('TrashedJourneyList', () => {
       )
       fireEvent.click(getByText('Delete Forever'))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
+    })
+  })
+
+  describe('Responsive Grid', () => {
+    it('should show 4 journey cards per row on large screens', async () => {
+      const user = { id: 'user1.id' } as unknown as User
+
+      mockedUseMediaQuery.mockImplementation((query) => {
+        if (query === '(min-width: 94rem)') return true
+        if (query === '(min-width: 78rem)') return false
+        if (query === '(min-width: 62rem)') return false
+      })
+
+      const { container, getAllByLabelText } = render(
+        <MockedProvider mocks={[trashedJourneysMock]}>
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TrashedJourneyList user={user}/>
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      // Wait for data to load
+      await waitFor(() => expect(getAllByLabelText('journey-card')).toHaveLength(2))
+
+      const gridItems = container.querySelectorAll('.MuiGrid2-grid-md-3')
+      expect(gridItems).toHaveLength(2) // Two journeys in trashedJourneysMock
+    })
+
+    it('should show 3 journey cards per row on medium-large screens', async () => {
+      const user = { id: 'user1.id' } as unknown as User
+
+      mockedUseMediaQuery.mockImplementation((query) => {
+        if (query === '(min-width: 94rem)') return false
+        if (query === '(min-width: 78rem)') return true
+        if (query === '(min-width: 62rem)') return false
+      })
+
+      const { container, getAllByLabelText } = render(
+        <MockedProvider mocks={[trashedJourneysMock]}>
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TrashedJourneyList user={user}/>
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      // Wait for data to load
+      await waitFor(() => expect(getAllByLabelText('journey-card')).toHaveLength(2))
+
+      const gridItems = container.querySelectorAll('.MuiGrid2-grid-md-4')
+      expect(gridItems).toHaveLength(2)
+    })
+
+    it('should show 2 journey cards per row on medium screens', async () => {
+      const user = { id: 'user1.id' } as unknown as User
+
+      mockedUseMediaQuery.mockImplementation((query) => {
+        if (query === '(min-width: 94rem)') return false
+        if (query === '(min-width: 78rem)') return false
+        if (query === '(min-width: 62rem)') return true
+      })
+
+      const { container, getAllByLabelText } = render(
+        <MockedProvider mocks={[trashedJourneysMock]}>
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TrashedJourneyList user={user}/>
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      // Wait for data to load
+      await waitFor(() => expect(getAllByLabelText('journey-card')).toHaveLength(2))
+
+      const gridItems = container.querySelectorAll('.MuiGrid2-grid-md-6')
+      expect(gridItems).toHaveLength(2)
+    })
+
+    it('should show 1 journey card per row on small screens', async () => {
+      const user = { id: 'user1.id' } as unknown as User
+
+      mockedUseMediaQuery.mockImplementation((query) => {
+        if (query === '(min-width: 94rem)') return false
+        if (query === '(min-width: 78rem)') return false
+        if (query === '(min-width: 62rem)') return false
+      })
+
+      const { container, getAllByLabelText } = render(
+        <MockedProvider mocks={[trashedJourneysMock]}>
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TrashedJourneyList user={user}/>
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      // Wait for data to load
+      await waitFor(() => expect(getAllByLabelText('journey-card')).toHaveLength(2))
+
+      const gridItems = container.querySelectorAll('.MuiGrid2-grid-md-12')
+      expect(gridItems).toHaveLength(2)
     })
   })
 })
