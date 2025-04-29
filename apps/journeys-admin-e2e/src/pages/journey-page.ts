@@ -232,6 +232,7 @@ export class JourneyPage {
     await expect(createJourneyLoaderPath).toBeHidden({
       timeout: sixtySecondsTimeout
     })
+    await this.page.waitForLoadState('networkidle')
   }
 
   async setJourneyName(journey: string) {
@@ -1036,6 +1037,7 @@ export class JourneyPage {
   }
 
   async clickOnJourneyCard() {
+    await this.page.waitForLoadState('load')
     await this.page
       .frameLocator(this.journeyCardFrame)
       .first()

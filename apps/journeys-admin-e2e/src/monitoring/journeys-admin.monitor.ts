@@ -136,12 +136,13 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
     // Try refreshing up to 5 times if button not visible
     let buttonVisible = false
     for (let i = 0; i < 5 && !buttonVisible; i++) {
+      await previewPage.waitForLoadState('load')
       buttonVisible = await overlayContainer
           .getByRole('button', { name: 'Changed Button Text' })
           .isVisible()
-
       if (!buttonVisible) {
-        await previewPage.waitForTimeout(10000) // Wait 10 seconds
+        // Wait 5 seconds as content publishing sometimes takes time
+        await previewPage.waitForTimeout(5000)
         await previewPage.reload()
         await previewPage.waitForLoadState('networkidle')
       }
