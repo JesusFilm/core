@@ -6,7 +6,7 @@ import CopyLeftIcon from '@core/shared/ui/icons/CopyLeft'
 import { MenuItem } from '../../../../MenuItem'
 
 interface TranslateJourneyMenuItemProps {
-  id?: string
+  id: string
   handleCloseMenu: () => void
 }
 
