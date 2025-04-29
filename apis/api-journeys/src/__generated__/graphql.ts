@@ -1376,6 +1376,7 @@ export type Mutation = {
   integrationDelete: Integration;
   integrationGrowthSpacesCreate: IntegrationGrowthSpaces;
   integrationGrowthSpacesUpdate: IntegrationGrowthSpaces;
+  journeyAiTranslateCreate: Scalars['ID']['output'];
   journeyCollectionCreate: JourneyCollection;
   journeyCollectionDelete: JourneyCollection;
   journeyCollectionUpdate: JourneyCollection;
@@ -1793,6 +1794,11 @@ export type MutationIntegrationGrowthSpacesCreateArgs = {
 export type MutationIntegrationGrowthSpacesUpdateArgs = {
   id: Scalars['ID']['input'];
   input: IntegrationGrowthSpacesUpdateInput;
+};
+
+
+export type MutationJourneyAiTranslateCreateArgs = {
+  input: MutationJourneyAiTranslateCreateInput;
 };
 
 
@@ -2376,6 +2382,13 @@ export type MutationBibleCitationUpdateInput = {
   osisId?: InputMaybe<Scalars['String']['input']>;
   verseEnd?: InputMaybe<Scalars['Int']['input']>;
   verseStart?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type MutationJourneyAiTranslateCreateInput = {
+  journeyId: Scalars['ID']['input'];
+  name: Scalars['String']['input'];
+  textLanguageId: Scalars['ID']['input'];
+  videoLanguageId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type MutationShortLinkCreateInput = {
