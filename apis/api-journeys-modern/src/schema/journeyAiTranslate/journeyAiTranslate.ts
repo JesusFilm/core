@@ -18,13 +18,25 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
     type: 'ID',
     nullable: false,
     resolve: async (_root, { input }, { user }) => {
-      const job = (await queue.add(`${user.id}-${input.journeyId}`, {
-        userId: user.id,
-        journeyId: input.journeyId,
-        name: input.name,
-        textLanguageId: input.textLanguageId,
-        videoLanguageId: input.videoLanguageId
-      })) as Job<AiTranslateJourneyJob>
+      const job = (await queue.add(
+        `${user.id}-${input.journeyId}`,
+        {
+          userId: user.id,
+          journeyId: input.journeyId,
+          name: input.name,
+          textLanguageId: input.textLanguageId,
+          videoLanguageId: input.videoLanguageId
+        },
+        {
+          jobId: `${user.id}-${input.journeyId}`,
+          removeOnComplete: {
+            age: 1000 * 60 * 60 * 24 * 5 // 5 days
+          },
+          removeOnFail: {
+            age: 1000 * 60 * 60 * 24 * 5 // 5 days
+          }
+        }
+      )) as Job<AiTranslateJourneyJob>
 
       if (!job.id) throw new Error('Failed to create job')
       return job.id

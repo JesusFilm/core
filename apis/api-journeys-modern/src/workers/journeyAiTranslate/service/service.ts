@@ -8,11 +8,7 @@ export interface AiTranslateJourneyJob {
   videoLanguageId: string
 }
 
-export async function service(
-  incomingJob: Job<AiTranslateJourneyJob>
-): Promise<void> {
-  const job = await incomingJob.getJob()
-
+export async function service(job: Job<AiTranslateJourneyJob>): Promise<void> {
   await duplicateJourney(job)
   await translateJourney(job)
 }
