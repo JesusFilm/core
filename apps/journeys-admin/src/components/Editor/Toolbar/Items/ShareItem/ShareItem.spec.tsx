@@ -46,7 +46,7 @@ const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 const mockUseCurrentUserLazyQuery = useCurrentUserLazyQuery as jest.Mock
 const user = { id: 'user.id', email: 'test@email.com' }
-const mockUseJourneyForShareLazyQuery =
+const mockUseJourneyForSharingLazyQuery =
   useJourneyForSharingLazyQuery as jest.Mock
 
 Object.assign(navigator, { clipboard: { writeText: jest.fn() } })
@@ -296,7 +296,7 @@ describe('ShareItem', () => {
 
   it('calls lazy query when there is no journey context', async () => {
     const loadJourney = jest.fn()
-    mockUseJourneyForShareLazyQuery.mockImplementation(() => [
+    mockUseJourneyForSharingLazyQuery.mockImplementation(() => [
       loadJourney,
       { data: undefined, loading: false, error: undefined }
     ])
@@ -318,7 +318,7 @@ describe('ShareItem', () => {
 
   it('does NOT call lazy query when there is journey context', async () => {
     const loadJourney = jest.fn()
-    mockUseJourneyForShareLazyQuery.mockImplementation(() => [
+    mockUseJourneyForSharingLazyQuery.mockImplementation(() => [
       loadJourney,
       { data: undefined, loading: false, error: undefined }
     ])
