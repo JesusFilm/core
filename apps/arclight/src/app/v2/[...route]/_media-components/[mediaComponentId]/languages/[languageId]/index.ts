@@ -33,6 +33,7 @@ const GET_VIDEO_VARIANT = graphql(`
           width
           quality
           size
+          bitrate
           url
         }
       }
@@ -49,6 +50,7 @@ const GET_VIDEO_VARIANT = graphql(`
             width
             quality
             size
+            bitrate
           }
           subtitle {
             language {
@@ -222,6 +224,9 @@ mediaComponentLanguage.openapi(route, async (c) => {
   const downloadHigh = video.variant?.downloads?.find(
     (download) => download.quality === 'high'
   )
+  const downloadSd = video.variant?.downloads?.find(
+    (download) => download.quality === 'sd'
+  )
 
   const downloadUrls = {
     low:
@@ -292,7 +297,38 @@ mediaComponentLanguage.openapi(route, async (c) => {
         streamingUrls = {
           dash: [{ videoBitrate: 0, url: video.variant?.dash }],
           hls: [{ videoBitrate: 0, url: video.variant?.hls }],
-          http: []
+          http: [
+            {
+              videoBitrate: downloadLow?.bitrate ?? 0,
+              videoContainer: 'MP4',
+              url: downloadLow?.url
+            },
+            {
+              videoBitrate: downloadSd?.bitrate ?? 0,
+              videoContainer: 'MP4',
+              url: downloadSd?.url
+            },
+            {
+              videoBitrate: downloadSd?.bitrate ?? 0,
+              videoContainer: 'MP4',
+              url: downloadSd?.url
+            },
+            {
+              videoBitrate: downloadSd?.bitrate ?? 0,
+              videoContainer: 'MP4',
+              url: downloadSd?.url
+            },
+            {
+              videoBitrate: downloadSd?.bitrate ?? 0,
+              videoContainer: 'MP4',
+              url: downloadSd?.url
+            },
+            {
+              videoBitrate: downloadHigh?.bitrate ?? 0,
+              videoContainer: 'MP4',
+              url: downloadHigh?.url
+            }
+          ]
         }
         break
       case 'ios':
