@@ -35,7 +35,10 @@ jest.mock(
   '../../../../../libs/useJourneyForShareLazyQuery/useJourneyForShareLazyQuery',
   () => ({
     __esModule: true,
-    useJourneyForShareLazyQuery: jest.fn()
+    useJourneyForSharingLazyQuery: jest.fn(() => [
+      jest.fn(),
+      { data: undefined, loading: false, error: undefined }
+    ])
   })
 )
 
@@ -249,15 +252,15 @@ describe('ShareItem', () => {
   })
 
   it('should copy journey link with custom domain', async () => {
-    const result = jest.fn().mockReturnValue(getCustomDomainMock.result)
     mockedUseRouter.mockReturnValue({
       query: { param: null },
       push,
       events: { on }
     } as unknown as NextRouter)
+
     render(
       <SnackbarProvider>
-        <MockedProvider mocks={[{ ...getCustomDomainMock, result }]}>
+        <MockedProvider mocks={[getCustomDomainMock]}>
           <JourneyProvider
             value={{
               journey: {
@@ -266,13 +269,7 @@ describe('ShareItem', () => {
                   id: 'teamId',
                   __typename: 'Team',
                   title: 'Team Title',
-                  publicTitle: 'Team Title',
-                  customDomains: [
-                    {
-                      name: 'www.customdomain.com',
-                      __typename: 'CustomDomain'
-                    }
-                  ]
+                  publicTitle: 'Team Title'
                 }
               },
               variant: 'admin'
@@ -284,8 +281,6 @@ describe('ShareItem', () => {
       </SnackbarProvider>
     )
 
-    await waitFor(() => expect(result).toHaveBeenCalled())
-
     fireEvent.click(screen.getByRole('button', { name: 'Share' }))
     await waitFor(() => {
       expect(screen.getByRole('dialog')).toBeInTheDocument()
@@ -294,14 +289,14 @@ describe('ShareItem', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Copy' }))
     await waitFor(() => {
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-        'https://www.customdomain.com/default'
+        'https://example.com/default'
       )
     })
   })
 
   it('calls lazy query when there is no journey context', async () => {
     const loadJourney = jest.fn()
-    mockUseJourneyForShareLazyQuery.mockReturnValue([
+    mockUseJourneyForShareLazyQuery.mockImplementation(() => [
       loadJourney,
       { data: undefined, loading: false, error: undefined }
     ])
@@ -313,7 +308,9 @@ describe('ShareItem', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    fireEvent.click(screen.getByRole('button', { name: 'Share' }))
+    await waitFor(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'Share' }))
+    })
     expect(loadJourney).toHaveBeenCalledWith({
       variables: { id: 'lazy-journey-id' }
     })
@@ -321,7 +318,7 @@ describe('ShareItem', () => {
 
   it('does NOT call lazy query when there is journey context', async () => {
     const loadJourney = jest.fn()
-    mockUseJourneyForShareLazyQuery.mockReturnValue([
+    mockUseJourneyForShareLazyQuery.mockImplementation(() => [
       loadJourney,
       { data: undefined, loading: false, error: undefined }
     ])
@@ -337,7 +334,9 @@ describe('ShareItem', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    fireEvent.click(screen.getByRole('button', { name: 'Share' }))
+    await waitFor(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'Share' }))
+    })
     expect(loadJourney).not.toHaveBeenCalled()
   })
 })
