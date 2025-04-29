@@ -1,14 +1,21 @@
 import { SearchClient, algoliasearch } from 'algoliasearch'
 import { ReactElement, ReactNode, createContext, useContext } from 'react'
 
-const searchClient = algoliasearch(
-  process.env.NEXT_PUBLIC_ALGOLIA_APP_ID ?? '',
-  process.env.ALGOLIA_SERVER_API_KEY ??
-    process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ??
-    ''
-)
+let searchClientInstance: SearchClient | null = null
 
-const InstantSearchContext = createContext<SearchClient>(searchClient)
+function getSearchClient(): SearchClient {
+  if (searchClientInstance === null) {
+    searchClientInstance = algoliasearch(
+      process.env.NEXT_PUBLIC_ALGOLIA_APP_ID ?? '',
+      process.env.ALGOLIA_SERVER_API_KEY ??
+        process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ??
+        ''
+    )
+  }
+  return searchClientInstance
+}
+
+const InstantSearchContext = createContext<SearchClient | null>(null)
 
 interface InstantSearchProviderProps {
   children: ReactNode
@@ -19,7 +26,7 @@ export function InstantSearchProvider({
   children
 }: InstantSearchProviderProps): ReactElement {
   return (
-    <InstantSearchContext.Provider value={searchClient}>
+    <InstantSearchContext.Provider value={getSearchClient()}>
       {children}
     </InstantSearchContext.Provider>
   )
@@ -27,7 +34,7 @@ export function InstantSearchProvider({
 
 export function useInstantSearchClient(): SearchClient {
   const context = useContext(InstantSearchContext)
-  if (context === undefined) {
+  if (context === null) {
     throw new Error(
       'useInstantSearch must be used within a InstantSearchProvider'
     )
