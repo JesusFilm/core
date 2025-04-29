@@ -4,7 +4,9 @@ compatibility_flags = ["nodejs_compat"]
 main = "src/index.ts"
 
 [vars]
+# endpoint of the core service
 ENDPOINT_CORE = "http://localhost:4600"
+# endpoint of the arclight service
 ENDPOINT_ARCLIGHT = "https://preprod.arclight.org"
 # percentage of requests that will be sent to the arclight endpoint
 ENDPOINT_ARCLIGHT_WEIGHT = "50"
@@ -16,10 +18,16 @@ routes = [
 ]
 
 [env.stage.vars]
+# endpoint of the core service
 ENDPOINT_CORE = "https://core-stage.arclight.org"
+# endpoint of the arclight service
 ENDPOINT_ARCLIGHT = "https://preprod.arclight.org"
 # percentage of requests that will be sent to the arclight endpoint
 ENDPOINT_ARCLIGHT_WEIGHT = "50"
+# api keys that will be forced to the arclight endpoint
+FORCE_API_KEYS_TO_ARCLIGHT = "607f41540b2ca6.32427244"
+# api keys that will be forced to the core endpoint
+FORCE_API_KEYS_TO_CORE = "1234567890"
 
 [env.prod]
 name = "arclight-canary-prod"
@@ -28,7 +36,13 @@ routes = [
 ]
 
 [env.prod.vars]
+# endpoint of the core service
 ENDPOINT_CORE = "https://core.arclight.org"
+# endpoint of the arclight service
 ENDPOINT_ARCLIGHT = "https://api.arclight.org"
 # percentage of requests that will be sent to the arclight endpoint
 ENDPOINT_ARCLIGHT_WEIGHT = "90"
+# api keys that will be forced to the arclight endpoint
+FORCE_API_KEYS_TO_ARCLIGHT = "607f41540b2ca6.32427244"
+# api keys that will be forced to the core endpoint
+FORCE_API_KEYS_TO_CORE = "1234567890"
