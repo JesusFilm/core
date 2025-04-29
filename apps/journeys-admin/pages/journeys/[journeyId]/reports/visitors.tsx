@@ -246,7 +246,11 @@ function JourneyVisitorsPage({
       <PageWrapper
         title={t('Visitors')}
         user={user}
-        backHref={from === 'journey-list' ? `/journeys/${journeyId}/reports?from=journey-list` : `/journeys/${journeyId}/reports`}
+        backHref={
+          from === 'journey-list'
+            ? `/journeys/${journeyId}/reports?from=journey-list`
+            : `/journeys/${journeyId}/reports`
+        }
         mainHeaderChildren={
           <Stack
             direction="row"
