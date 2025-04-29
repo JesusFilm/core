@@ -14,7 +14,7 @@ interface AiTranslateJourneyJob {
   videoLanguageId: string
 }
 
-builder.mutationField('aiTranslateJourneyCreate', (t) =>
+builder.mutationField('journeyAiTranslateCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).fieldWithInput({
     input: {
       journeyId: t.input.id({ required: true }),

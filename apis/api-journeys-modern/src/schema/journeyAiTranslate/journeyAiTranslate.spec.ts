@@ -1,8 +1,6 @@
 // Import first to avoid linter errors
 import { Job } from 'bullmq'
 
-import { getClient } from '../../../test/client'
-
 // Mock the dependencies that cause issues
 jest.mock('../../lib/redisConnection', () => ({
   connection: 'mocked-connection'
@@ -26,12 +24,10 @@ jest.mock('../builder', () => ({
           id: jest
             .fn()
             .mockImplementation(({ required }) => ({ type: 'ID', required })),
-          string: jest
-            .fn()
-            .mockImplementation(({ required }) => ({
-              type: 'String',
-              required
-            }))
+          string: jest.fn().mockImplementation(({ required }) => ({
+            type: 'String',
+            required
+          }))
         },
         arg: jest
           .fn()
@@ -63,10 +59,10 @@ jest.mock('bullmq', () => {
 // Get a reference to the mocked Queue
 const mockQueue = jest.requireMock('bullmq').Queue()
 
-describe('aiTranslate', () => {
+describe('journeyAiTranslateCreate', () => {
   const mockAuthClient = jest.fn().mockImplementation(() => ({
     data: {
-      aiTranslateJourneyCreate: 'job-123'
+      journeyAiTranslateCreate: 'job-123'
     }
   }))
 
@@ -85,17 +81,17 @@ describe('aiTranslate', () => {
   })
 
   describe('mutations', () => {
-    describe('aiTranslateJourneyCreate', () => {
+    describe('journeyAiTranslateCreate', () => {
       it('should return job id when successful', async () => {
         // Import the implementation
-        require('./aiTranslateJourney')
+        require('./journeyAiTranslate')
 
         // Call mock client
         const result = await mockAuthClient()
 
         expect(result).toEqual({
           data: {
-            aiTranslateJourneyCreate: 'job-123'
+            journeyAiTranslateCreate: 'job-123'
           }
         })
 
@@ -121,7 +117,7 @@ describe('aiTranslate', () => {
 
         expect(result).toEqual({
           data: {
-            aiTranslateJourneyCreate: 'job-123'
+            journeyAiTranslateCreate: 'job-123'
           }
         })
       })
