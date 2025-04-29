@@ -187,22 +187,17 @@ export function ArchivedJourneyList({
           </Grid>
           {sortedJourneys.length === 0 && (
             <>
-              <Card
-                variant="outlined"
+              <Box
                 sx={{
                   display: 'flex',
                   flexDirection: 'column',
-                  py: 20,
-                  borderBottomLeftRadius: { xs: 0, sm: 12 },
-                  borderBottomRightRadius: { xs: 0, sm: 12 },
-                  borderTopLeftRadius: 0,
-                  borderTopRightRadius: 0
+                  pt: 30,
                 }}
               >
                 <Typography variant="subtitle1" align="center">
                   {t('No archived journeys.')}
                 </Typography>
-              </Card>
+              </Box>
             </>
           )}
         </Box>
