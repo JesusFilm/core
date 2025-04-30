@@ -11,34 +11,14 @@ import { GraphQLClient } from 'graphql-request'
 import { firebaseClient } from './firebaseClient'
 
 /*
-- [x] **CLI & Authentication**
-  - [x] Parse CLI arguments (folder, --dry-run)
-  - [x] Authenticate and get JWT token for API calls
-
-- [x] **File Discovery & Filtering**
-  - [x] Read all files in the folder
-  - [x] For each file:
-    - [x] Check filename pattern
-    - [x] Parse languageId and videoId
-
-- [x] **Dry Run or Real Processing**
-  - [x] If dry run: log intended actions
-  - [x] Else: process each file
-
-- [x] **Asset Creation & Upload**
-  - [x] Request R2 upload URL and public URL from backend
-  - [x] Upload file to R2
-
-- [ ] **Mux Video Creation**
-  - [ ] Create Mux video using R2 public URL
-  - [ ] Poll for Mux video readiness
-
-- [ ] **Backend Registration**
-  - [ ] Register video variant in backend
-
-- [ ] **Logging & Summary**
-  - [ ] Log success/error for each file
-  - [ ] Print summary at end
+TODO:
+- [ ] duration
+- [ ] dash
+- [ ] share
+- [ ] lengthInMiliseconds
+- [ ] masterHeight
+- [ ] masterUrl
+- [ ] masterWidth
 */
 
 const program = new Command()
@@ -50,7 +30,8 @@ program
 
 const options = program.opts()
 
-const VIDEO_FILENAME_REGEX = /^([a-zA-Z0-9_-]+)---([a-zA-Z0-9_-]+)\.mp4$/
+const VIDEO_FILENAME_REGEX =
+  /^([a-zA-Z0-9_-]+)---([a-zA-Z0-9_-]+)---([a-zA-Z0-9_-]+)\.mp4$/
 
 const GRAPHQL_ENDPOINT =
   process.env.GRAPHQL_ENDPOINT || 'http://localhost:4000/graphql' // TODO: Set this
@@ -114,6 +95,62 @@ const GET_MUX_VIDEO = graphql(`
   }
 `)
 
+const GET_LANGUAGE_SLUG = graphql(`
+  query GetLanguageSlug($id: ID!) {
+    language(id: $id) {
+      id
+      slug
+    }
+  }
+`)
+
+const CREATE_VIDEO_VARIANT = graphql(`
+  mutation CreateVideoVariant($input: VideoVariantCreateInput!) {
+    videoVariantCreate(input: $input) {
+      id
+      videoId
+      slug
+      hls
+      published
+      language {
+        id
+        name {
+          value
+          primary
+        }
+      }
+    }
+  }
+`)
+
+const UPDATE_VIDEO_VARIANT = graphql(`
+  mutation UpdateVideoVariant($input: VideoVariantUpdateInput!) {
+    videoVariantUpdate(input: $input) {
+      id
+      videoId
+      slug
+      hls
+      published
+      language {
+        id
+        name {
+          value
+          primary
+        }
+      }
+    }
+  }
+`)
+
+const CREATE_VIDEO_EDITION = graphql(`
+  mutation CreateVideoEdition($input: VideoEditionCreateInput!) {
+    videoEditionCreate(input: $input) {
+      id
+      name
+    }
+  }
+`)
+
 interface MuxVideoResponse {
   createMuxVideoUploadByUrl: {
     id: string
@@ -129,6 +166,103 @@ interface MuxVideoStatusResponse {
     assetId: string
     playbackId: string
     readyToStream: boolean
+  }
+}
+
+interface VideoVariantResponse {
+  videoVariantCreate: {
+    id: string
+    videoId: string
+    slug: string
+    hls: string
+    language: {
+      id: string
+      name: {
+        value: string
+        primary: boolean
+      }
+    }
+  }
+}
+
+interface VideoVariantUpdateResponse {
+  videoVariantUpdate: {
+    id: string
+    videoId: string
+    slug: string
+    hls: string
+  }
+}
+
+interface ProcessingSummary {
+  total: number
+  successful: number
+  failed: number
+  errors: Array<{ file: string; error: string }>
+}
+
+interface VideoVariantInput {
+  id: string
+  videoId: string
+  edition: string
+  languageId: string
+  slug: string
+  downloadable: boolean
+  published: boolean
+  muxVideoId: string
+  hls: string
+  dash?: string
+  share?: string
+  masterHeight?: number
+  masterWidth?: number
+  masterUrl?: string
+  version?: number
+}
+
+interface GetLanguageSlugResponse {
+  language: {
+    id: string
+    slug: string
+  }
+}
+
+async function getVideoVariantInput({
+  videoId,
+  languageId,
+  edition,
+  muxId,
+  playbackId
+}: {
+  videoId: string
+  languageId: string
+  edition: string
+  muxId: string
+  playbackId: string
+}): Promise<VideoVariantInput> {
+  // Parse source from videoId (e.g., "0_JesusVisionLumo" -> source="0")
+  const [source, restOfId] = videoId.split('_', 2)
+  const client = await getGraphQLClient()
+
+  const languageResponse = await client.request<GetLanguageSlugResponse>(
+    GET_LANGUAGE_SLUG,
+    { id: languageId }
+  )
+
+  if (!languageResponse.language?.slug) {
+    throw new Error(`No language slug found for language ID: ${languageId}`)
+  }
+
+  return {
+    id: `${source}_${languageId}_${restOfId}`,
+    videoId,
+    edition,
+    languageId,
+    slug: `${videoId}/${languageResponse.language.slug}`,
+    downloadable: true,
+    published: true,
+    muxVideoId: muxId,
+    hls: `https://stream.mux.com/${playbackId}.m3u8`,
+    version: 1
   }
 }
 
@@ -204,6 +338,133 @@ async function createAndWaitForMuxVideo(publicUrl: string): Promise<{
   }
 }
 
+async function updateVideoVariant({
+  videoId,
+  languageId,
+  edition,
+  muxId,
+  playbackId
+}: {
+  videoId: string
+  languageId: string
+  edition: string
+  muxId: string
+  playbackId: string
+}): Promise<void> {
+  const client = await getGraphQLClient()
+  const input = await getVideoVariantInput({
+    videoId,
+    languageId,
+    edition,
+    muxId,
+    playbackId
+  })
+  await client.request<VideoVariantUpdateResponse>(UPDATE_VIDEO_VARIANT, {
+    input: {
+      id: input.id,
+      videoId: input.videoId,
+      edition: input.edition,
+      languageId: input.languageId,
+      slug: input.slug,
+      downloadable: input.downloadable,
+      published: input.published,
+      muxVideoId: input.muxVideoId,
+      hls: input.hls
+    }
+  })
+}
+
+async function createVideoEdition(
+  videoId: string,
+  edition: string
+): Promise<void> {
+  const client = await getGraphQLClient()
+  try {
+    await client.request(CREATE_VIDEO_EDITION, {
+      input: {
+        name: edition,
+        videoId
+      }
+    })
+    console.log(`Created edition "${edition}" for video ${videoId}`)
+  } catch (error) {
+    // If edition already exists, we can ignore the error
+    const errorMessage = error?.toString() ?? ''
+    if (!errorMessage.includes('Unique constraint failed')) {
+      throw error
+    }
+  }
+}
+
+async function createVideoVariant({
+  videoId,
+  languageId,
+  edition,
+  muxId,
+  playbackId
+}: {
+  videoId: string
+  languageId: string
+  edition: string
+  muxId: string
+  playbackId: string
+}): Promise<'created' | 'updated'> {
+  const client = await getGraphQLClient()
+  const input = await getVideoVariantInput({
+    videoId,
+    languageId,
+    edition,
+    muxId,
+    playbackId
+  })
+
+  // First try to update
+  try {
+    console.log('Attempting to update existing variant...')
+    await updateVideoVariant({
+      videoId,
+      languageId,
+      edition,
+      muxId,
+      playbackId
+    })
+    return 'updated'
+  } catch (error) {
+    // If update fails because record doesn't exist, create it
+    const errorMessage = error?.toString() ?? ''
+    if (errorMessage.includes('Record to update not found')) {
+      console.log('No existing variant found, creating new one...')
+
+      // Create the edition first if it doesn't exist
+      await createVideoEdition(videoId, edition)
+
+      const response = await client.request<VideoVariantResponse>(
+        CREATE_VIDEO_VARIANT,
+        {
+          input: {
+            id: input.id,
+            videoId: input.videoId,
+            edition: input.edition,
+            languageId: input.languageId,
+            slug: input.slug,
+            downloadable: input.downloadable,
+            published: input.published,
+            muxVideoId: input.muxVideoId,
+            hls: input.hls
+          }
+        }
+      )
+
+      if (!response.videoVariantCreate) {
+        throw new Error('Failed to create video variant')
+      }
+
+      return 'created'
+    }
+    throw error
+  }
+}
+
 async function main() {
   const folderPath = path.resolve(options.folder)
   let files: string[]
@@ -221,48 +482,92 @@ async function main() {
     return
   }
 
+  const summary: ProcessingSummary = {
+    total: videoFiles.length,
+    successful: 0,
+    failed: 0,
+    errors: []
+  }
+
   for (const file of videoFiles) {
     const match = file.match(VIDEO_FILENAME_REGEX)
     if (!match) continue
-    const [, languageId, videoId] = match
+    const [, languageId, edition, videoId] = match
+
+    console.log(`\nProcessing ${file}...`)
+    console.log(
+      `Language ID: ${languageId}, Edition: ${edition}, Video ID: ${videoId}`
+    )
+
     if (options.dryRun) {
-      console.log(
-        `[DRY RUN] Would process file: ${file} (languageId: ${languageId}, videoId: ${videoId})`
-      )
-    } else {
-      console.log(
-        `Processing file: ${file} (languageId: ${languageId}, videoId: ${videoId})`
-      )
+      console.log(`[DRY RUN] Would process file: ${file}`)
+      continue
+    }
+
+    try {
       // --- R2 Asset Creation ---
       const filePath = path.join(folderPath, file)
       const contentType = 'video/mp4'
       const originalFilename = file
       const contentLength = (await fs.stat(filePath)).size
-      try {
-        const r2Asset = await createR2Asset({
-          fileName: `${videoId}/variants/${languageId}/videos/${videoId}_${languageId}.mp4`,
-          contentType,
-          originalFilename,
-          contentLength,
-          videoId
-        })
-        console.log(`Obtained R2 uploadUrl and publicUrl for ${file}`)
-        await uploadToR2(r2Asset.uploadUrl, filePath, contentType)
-        console.log(`Uploaded ${file} to R2.`)
 
-        // Create and wait for Mux video
-        console.log('Creating Mux video...')
-        const muxVideo = await createAndWaitForMuxVideo(r2Asset.publicUrl)
-        console.log(`Mux video created and ready. ID: ${muxVideo.id}`)
+      console.log('Creating R2 asset...')
+      const r2Asset = await createR2Asset({
+        fileName: `${videoId}/variants/${languageId}/videos/${videoId}_${languageId}.mp4`,
+        contentType,
+        originalFilename,
+        contentLength,
+        videoId
+      })
 
-        // TODO: Continue with backend registration
-      } catch (err) {
-        console.error(`Error processing ${file}:`, err)
-      }
+      console.log('Uploading to R2...')
+      await uploadToR2(r2Asset.uploadUrl, filePath, contentType)
+
+      console.log('Creating Mux video...')
+      const muxVideo = await createAndWaitForMuxVideo(r2Asset.publicUrl)
+
+      console.log('Creating video variant...')
+      console.log('Mux ID:', muxVideo.id)
+      console.log('Playback ID:', muxVideo.playbackId)
+      console.log('Video ID:', videoId)
+      console.log('Language ID:', languageId)
+      console.log('Edition:', edition)
+      const result = await createVideoVariant({
+        videoId,
+        languageId,
+        edition,
+        muxId: muxVideo.id,
+        playbackId: muxVideo.playbackId
+      })
+      console.log(
+        result === 'created'
+          ? '✅ Successfully created video variant'
+          : '♻️  Updated existing video variant'
+      )
+      summary.successful++
+    } catch (err) {
+      console.error(`❌ Error processing ${file}:`, err)
+      summary.failed++
+      summary.errors.push({
+        file,
+        error: err instanceof Error ? err.message : String(err)
+      })
     }
   }
 
-  console.log('Done.')
+  // Print summary
+  console.log('\n=== Processing Summary ===')
+  console.log(`Total files: ${summary.total}`)
+  console.log(`Successfully processed: ${summary.successful}`)
+  console.log(`Failed: ${summary.failed}`)
+
+  if (summary.errors.length > 0) {
+    console.log('\nErrors:')
+    summary.errors.forEach(({ file, error }) => {
+      console.log(`\n${file}:`)
+      console.log(`  ${error}`)
+    })
+  }
 }
 
 main().catch((err) => {
