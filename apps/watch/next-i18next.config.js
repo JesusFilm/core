@@ -24,7 +24,7 @@ const i18nConfig = {
       'id', // `Indonesian
       'th', // Thai
       'ja', // Japanese
-      'ko', // Korean
+      // 'ko', // Korean
       // 'ru', // Russian
       // 'tr', // Turkish
       // 'zh', // Chinese
@@ -39,7 +39,7 @@ const i18nConfig = {
     id: ['id-ID'],
     th: ['th-TH'],
     ja: ['ja-JP'],
-    ko: ['ko-KR'],
+    // ko: ['ko-KR'],
     // ru: ['ru-RU'],
     // tr: ['tr-TR'],
     zh: ['zh-Hans-CN']
