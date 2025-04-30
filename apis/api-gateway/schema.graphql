@@ -701,7 +701,6 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   Get a single visitor
   """
   visitor(id: ID!) : Visitor! @join__field(graph: API_JOURNEYS) 
-  journeyAiTranslateStatus(journeyId: ID!) : JourneyAiTranslateStatus @join__field(graph: API_JOURNEYS_MODERN) 
   language(id: ID!, idType: LanguageIdType = databaseId) : Language @join__field(graph: API_LANGUAGES) 
   languages(offset: Int, limit: Int, where: LanguagesFilter, term: String) : [Language!]! @join__field(graph: API_LANGUAGES) 
   languagesCount(where: LanguagesFilter, term: String) : Int! @join__field(graph: API_LANGUAGES) 
@@ -2239,7 +2238,7 @@ type MuxVideo @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId
 }
 
 type Subscription @join__type(graph: API_JOURNEYS_MODERN)  {
-  dummySubscription: Boolean
+  journeyAiTranslateStatus(jobId: ID!) : JourneyAiTranslateStatus
 }
 
 type YouTube @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", extension: true)  {

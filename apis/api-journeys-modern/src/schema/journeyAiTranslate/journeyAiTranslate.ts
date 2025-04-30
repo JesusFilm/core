@@ -1,7 +1,10 @@
-import { Job } from 'bullmq'
+import { Job, Queue, QueueEvents, Worker } from 'bullmq'
 
 import { AiTranslateJourneyJob } from '../../workers/userQueue/service'
 import { builder } from '../builder'
+import { connection } from '../../lib/redisConnection'
+import { queueName } from '../../workers/userQueue'
+import { service } from '../../workers/userQueue/service'
 
 class JourneyAiTranslateStatusShape {
   id: string
@@ -16,26 +19,12 @@ class JourneyAiTranslateStatusShape {
 
 const JourneyAiTranslateStatusRef = builder
   .objectRef<JourneyAiTranslateStatusShape>('JourneyAiTranslateStatus')
-  .implement({
-    // subscribe: (subscriptions, root, context) => {
-    //   if (context.type !== 'authenticated') return
-    //   subscriptions.register(`${context.user.id}`)
-    // }
-    // fields: (t) => ({
-    //   id: t.exposeString('id', { nullable: false }),
-    //   status: t.exposeString('status', { nullable: false }),
-    //   progress: t.exposeInt('progress', { nullable: false })
-    // })
-  })
+  .implement({})
 
 const JourneyAiTranslateStatus = builder.objectType(
   JourneyAiTranslateStatusRef,
   {
     name: 'JourneyAiTranslateStatus',
-    // subscribe: (subscriptions, root, context) => {
-    //   if (context.type !== 'authenticated') return
-    //   subscriptions.register(`${context.user.id}`)
-    // },
     fields: (t) => ({
       id: t.exposeString('id', { nullable: false }),
       status: t.exposeString('status', { nullable: false }),
@@ -44,49 +33,128 @@ const JourneyAiTranslateStatus = builder.objectType(
   }
 )
 
-// Define query field
-builder.queryField('journeyAiTranslateStatus', (t) =>
+builder.subscriptionField('journeyAiTranslateStatus', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
     args: {
-      journeyId: t.arg({ type: 'ID', required: true })
+      jobId: t.arg({ type: 'ID', required: true })
     },
-    // smartSubscription: true,
     type: JourneyAiTranslateStatus,
     nullable: true,
-    subscribe: (subscriptions, root, args, context) => {
-      if (context.type !== 'authenticated') return
-      subscriptions.register(`${context.user.id}`)
-    },
-    resolve: async (_root, { journeyId }, { queue }) => {
-      const job = (await queue?.getJob(journeyId)) as Job<AiTranslateJourneyJob>
-      if (!job) return null
-      let status = 'pending'
-      if (await job.isActive()) status = 'processing'
-      if (await job.isCompleted()) status = 'completed'
-      if (await job.isFailed()) status = 'failed'
-      return {
-        id: journeyId,
-        status,
-        progress: ((await job.progress) as number) ?? 0
+    subscribe: async (_root, { jobId }, context) => {
+      // Access queue from context same as in the query resolver
+      const { queue } = context
+
+      // Create a function to get job state - reusing similar logic from the query resolver
+      const getJobState = async (): Promise<JourneyAiTranslateStatusShape> => {
+        try {
+          const job = (await queue?.getJob(jobId)) as Job<AiTranslateJourneyJob>
+          if (!job) {
+            throw new Error('Job not found')
+          }
+
+          let status = 'pending'
+          if (await job.isActive()) status = 'processing'
+          if (await job.isCompleted()) status = 'completed'
+          if (await job.isFailed()) status = 'failed'
+
+          return {
+            id: jobId,
+            status,
+            progress: ((await job.progress) as number) ?? 0
+          }
+        } catch (error) {
+          console.error('Error getting job state:', error)
+          return {
+            id: jobId,
+            status: 'error',
+            progress: 0
+          }
+        }
       }
-    }
+
+      const queueEvents = new QueueEvents('userQueue', {
+        connection
+      })
+
+      // Create an async iterator that will emit job status updates
+      async function* createJobStatusIterator(): AsyncGenerator<
+        JourneyAiTranslateStatusShape,
+        void,
+        unknown
+      > {
+        // First, emit the initial state
+        yield await getJobState()
+
+        // Set up a promise-based event system
+        const events: {
+          resolve: ((value: JourneyAiTranslateStatusShape) => void) | null
+          promise: Promise<JourneyAiTranslateStatusShape>
+        } = {
+          resolve: null,
+          promise: new Promise<JourneyAiTranslateStatusShape>((resolve) => {
+            events.resolve = resolve
+          })
+        }
+
+        // Function to create a new promise when the previous one is resolved
+        const createNewPromise = () => {
+          events.promise = new Promise<JourneyAiTranslateStatusShape>(
+            (resolve) => {
+              events.resolve = resolve
+            }
+          )
+        }
+
+        // Set up event handlers for this specific job
+        const handleJobEvent = async () => {
+          if (events.resolve) {
+            const state = await getJobState()
+            events.resolve(state)
+            createNewPromise()
+          }
+        }
+
+        // Add event listeners for all relevant job states
+        queueEvents.on('progress', ({ jobId: eventJobId }) => {
+          if (eventJobId === jobId) handleJobEvent()
+        })
+
+        queueEvents.on('completed', ({ jobId: eventJobId }) => {
+          if (eventJobId === jobId) handleJobEvent()
+        })
+
+        queueEvents.on('failed', ({ jobId: eventJobId }) => {
+          if (eventJobId === jobId) handleJobEvent()
+        })
+
+        queueEvents.on('active', ({ jobId: eventJobId }) => {
+          if (eventJobId === jobId) handleJobEvent()
+        })
+
+        try {
+          // Continue yielding job status updates as they come in
+          while (true) {
+            yield await events.promise
+          }
+        } finally {
+          // Clean up when subscription ends
+          queueEvents.removeAllListeners()
+          await queueEvents.close()
+        }
+      }
+
+      return createJobStatusIterator()
+    },
+    resolve: (payload) => payload
   })
 )
 
-// Create a dummy subscription to satisfy the schema requirement
-// builder.subscriptionField('dummySubscription', (t) =>
-//   t.field({
-//     type: 'Boolean',
-//     nullable: true,
-//     subscribe: () => {
-//       // Create an empty async generator that never yields any values
-//       return (async function* () {
-//         // Never yield anything
-//       })()
-//     },
-//     resolve: () => null
-//   })
-// )
+// Add a type definition to ensure TypeScript understands our context
+type WorkerContext = {
+  queue?: Queue
+  worker?: Worker
+  user: { id: string }
+}
 
 builder.mutationFields((t) => ({
   journeyAiTranslateCreate: t
@@ -100,8 +168,63 @@ builder.mutationFields((t) => ({
       },
       type: 'ID',
       nullable: false,
-      resolve: async (_root, { input }, { user, queue }) => {
-        const job = (await queue?.add(
+      resolve: async (_root, { input }, context: WorkerContext) => {
+        const { user } = context
+        const userQueueName = `${queueName}/${user.id}`
+
+        // Ensure queue exists
+        let queue: Queue =
+          context.queue || new Queue(userQueueName, { connection })
+        context.queue = queue
+
+        // Create worker if it doesn't exist
+        if (!context.worker) {
+          // Create a worker
+          const worker = new Worker(
+            userQueueName,
+            async (job) => {
+              try {
+                await service(job)
+                return true
+              } catch (error) {
+                console.error(`Error processing job ${job.id}:`, error)
+                throw error
+              }
+            },
+            {
+              connection,
+              autorun: true,
+              concurrency: 2,
+              stalledInterval: 30000,
+              drainDelay: 60000 // 1 minute of inactivity before closing
+            }
+          )
+
+          context.worker = worker
+
+          // Event handlers
+          worker.on('completed', (job) => {
+            console.log(`Job ${job.id} completed successfully`)
+          })
+
+          worker.on('failed', (job, err) => {
+            console.error(`Job ${job?.id} failed with error:`, err)
+          })
+
+          worker.on('drained', async () => {
+            console.log('Queue is empty, closing worker')
+            if (context.worker) {
+              try {
+                await context.worker.close()
+                context.worker = undefined
+              } catch (error) {
+                console.error('Error closing worker:', error)
+              }
+            }
+          })
+        }
+
+        const job = (await queue.add(
           `${input.journeyId}`,
           {
             userId: user.id,
@@ -112,7 +235,7 @@ builder.mutationFields((t) => ({
             videoLanguageId: input.videoLanguageId
           },
           {
-            jobId: `${user.id}-${input.journeyId}`,
+            jobId: `journeyAiTranslate/${input.journeyId}:${input.textLanguageId}`,
             removeOnComplete: {
               age: 1000 * 60 * 60 * 24 * 5, // 5 days
               count: 100

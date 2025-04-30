@@ -837,6 +837,13 @@ export type Journey = {
   website?: Maybe<Scalars['Boolean']['output']>;
 };
 
+export type JourneyAiTranslateStatus = {
+  __typename?: 'JourneyAiTranslateStatus';
+  id: Scalars['String']['output'];
+  progress: Scalars['Int']['output'];
+  status: Scalars['String']['output'];
+};
+
 export type JourneyCollection = {
   __typename?: 'JourneyCollection';
   customDomains?: Maybe<Array<CustomDomain>>;
@@ -3703,6 +3710,16 @@ export type StepViewEventCreateInput = {
   id?: InputMaybe<Scalars['ID']['input']>;
   /** stepName of the current stepBlock */
   value?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type Subscription = {
+  __typename?: 'Subscription';
+  journeyAiTranslateStatus?: Maybe<JourneyAiTranslateStatus>;
+};
+
+
+export type SubscriptionJourneyAiTranslateStatusArgs = {
+  jobId: Scalars['ID']['input'];
 };
 
 export type Tag = {

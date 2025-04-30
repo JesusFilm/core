@@ -6,11 +6,10 @@ import DirectivesPlugin from '@pothos/plugin-directives'
 import FederationPlugin from '@pothos/plugin-federation'
 import pluginName from '@pothos/plugin-prisma'
 import ScopeAuthPlugin from '@pothos/plugin-scope-auth'
-import SmartSubscriptionsPlugin from '@pothos/plugin-smart-subscriptions'
 import TracingPlugin, { isRootField } from '@pothos/plugin-tracing'
 import WithInputPlugin from '@pothos/plugin-with-input'
 import { createOpenTelemetryWrapper } from '@pothos/tracing-opentelemetry'
-import { Queue } from 'bullmq'
+import { Queue, Worker } from 'bullmq'
 import { DateResolver, DateTimeISOResolver } from 'graphql-scalars'
 
 import { Prisma, Role } from '.prisma/api-journeys-modern-client'
@@ -19,10 +18,6 @@ import { InteropContext } from '@core/yoga/interop'
 
 import type PrismaTypes from '../__generated__/pothos-types'
 import { prisma } from '../lib/prisma'
-import { connection } from '../lib/redisConnection'
-import { run } from '../workers'
-import { queueName } from '../workers/userQueue'
-import { service } from '../workers/userQueue/service'
 
 interface BaseContext {
   type: string
@@ -77,30 +72,8 @@ export const builder = new SchemaBuilder<{
     PrismaPlugin,
     WithInputPlugin,
     DirectivesPlugin,
-    SmartSubscriptionsPlugin,
     FederationPlugin
   ],
-  smartSubscriptions: {
-    debounceDelay: 1000,
-    subscribe: (
-      name: string,
-      context: Context,
-      cb: (err: unknown, data?: unknown) => void
-    ) => {
-      if (context.type !== 'authenticated') return
-      if (context.queue == null) {
-        run({
-          service: service,
-          queueName: `${queueName}/context.user.id`
-        })
-      }
-      context.queue = new Queue(`${queueName}/context.user.id`, { connection })
-    },
-    unsubscribe: async (_name: string, context: Context) => {
-      if (context.type !== 'authenticated') return
-      await context.queue?.close()
-    }
-  },
   tracing: {
     default: (config) => isRootField(config),
     wrap: (resolver, options) => createSpan(resolver, options)

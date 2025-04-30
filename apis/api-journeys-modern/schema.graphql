@@ -76,12 +76,8 @@ type MuxVideo
   source: VideoBlockSource! @shareable
 }
 
-type Query {
-  journeyAiTranslateStatus(journeyId: ID!): JourneyAiTranslateStatus
-}
-
 type Subscription {
-  dummySubscription: Boolean
+  journeyAiTranslateStatus(jobId: ID!): JourneyAiTranslateStatus
 }
 
 type Video
