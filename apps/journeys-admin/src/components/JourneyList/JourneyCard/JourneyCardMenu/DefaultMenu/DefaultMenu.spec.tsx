@@ -212,6 +212,7 @@ describe('DefaultMenu', () => {
             setOpenTrashDialog={noop}
             setOpenDetailsDialog={noop}
             setOpenTranslateDialog={noop}
+            template
           />
         </SnackbarProvider>
       </MockedProvider>
@@ -882,34 +883,5 @@ describe('DefaultMenu', () => {
     fireEvent.click(getByRole('menuitem', { name: 'Translate' }))
     expect(setOpenTranslateDialog).toHaveBeenCalled()
     expect(handleCloseMenu).toHaveBeenCalled()
-  })
-
-  it('should not show duplicate and translate for template', () => {
-    const { queryByRole } = render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <DefaultMenu
-            id="template-id"
-            slug="template-slug"
-            status={JourneyStatus.published}
-            journeyId="template-id"
-            published
-            setOpenAccessDialog={noop}
-            handleCloseMenu={noop}
-            setOpenTrashDialog={noop}
-            setOpenDetailsDialog={noop}
-            setOpenTranslateDialog={noop}
-            template
-          />
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    expect(
-      queryByRole('menuitem', { name: 'Duplicate' })
-    ).not.toBeInTheDocument()
-    expect(
-      queryByRole('menuitem', { name: 'Translate' })
-    ).not.toBeInTheDocument()
   })
 })
