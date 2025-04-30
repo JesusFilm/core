@@ -15,6 +15,8 @@ interface JourneyCardTextProps {
 export function JourneyCardText({
   journey
 }: JourneyCardTextProps): ReactElement {
+  const nativeLanguageName = journey.language.name.find(({ primary }) => primary)?.value
+
   return (
     <>
       <Typography
@@ -35,7 +37,7 @@ export function JourneyCardText({
       <Stack direction="row" alignItems="center" spacing={1.5}>
         <Globe1Icon sx={{ fontSize: 13 }} />
         <Typography variant="caption">
-          {journey.language.name.find(({ primary }) => primary)?.value}
+          {nativeLanguageName}
         </Typography>
         <Typography variant="caption" sx={{ mx: 1 }}>
           •
