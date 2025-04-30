@@ -1,64 +1,41 @@
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { HeaderMenuPanel } from './HeaderMenuPanel'
 
 describe('HeaderMenuPanel', () => {
-  it('should close the header menu panel on close icon click', () => {
-    const onClose = jest.fn()
-    const { getByTestId } = render(<HeaderMenuPanel onClose={onClose} />)
-    fireEvent.click(getByTestId('CloseIcon'))
-    expect(onClose).toHaveBeenCalled()
+  const mockOnClose = jest.fn()
+
+  beforeEach(() => {
+    jest.clearAllMocks()
   })
 
-  it('should have Give link', () => {
-    const { getByRole } = render(<HeaderMenuPanel onClose={jest.fn()} />)
-    const el = getByRole('link', { name: 'Give' })
-    expect(el).toHaveAttribute('href', 'https://www.jesusfilm.org/give/')
-    expect(el).not.toHaveAttribute('target')
+  it('should render panel', () => {
+    render(<HeaderMenuPanel onClose={mockOnClose} />)
+
+    expect(screen.getByRole('link', { name: 'Give Now' })).toBeInTheDocument()
   })
 
-  it('should have About link', () => {
-    const { getByRole } = render(<HeaderMenuPanel onClose={jest.fn()} />)
-    const el = getByRole('link', { name: 'About' })
-    expect(el).toHaveAttribute('href', 'https://www.jesusfilm.org/about/')
-    expect(el).not.toHaveAttribute('target')
-  })
+  it('should handle accordion expand and collapse', async () => {
+    render(<HeaderMenuPanel onClose={mockOnClose} />)
 
-  it('should have Partners link', () => {
-    const { getByRole } = render(<HeaderMenuPanel onClose={jest.fn()} />)
-    const el = getByRole('link', { name: 'Partners' })
-    expect(el).toHaveAttribute('href', 'https://www.jesusfilm.org/partners/')
-    expect(el).not.toHaveAttribute('target')
-  })
+    const accordion = screen.getByRole('button', { name: 'Give' })
+    expect(
+      screen.queryByRole('link', { name: 'Ways to Give' })
+    ).not.toBeInTheDocument()
+    expect(accordion).toHaveAttribute('aria-expanded', 'false')
 
-  it('should have Blog link', () => {
-    const { getByRole } = render(<HeaderMenuPanel onClose={jest.fn()} />)
-    const el = getByRole('link', { name: 'Blog' })
-    expect(el).toHaveAttribute('href', 'https://www.jesusfilm.org/blog/')
-    expect(el).not.toHaveAttribute('target')
-  })
+    fireEvent.click(accordion)
+    expect(accordion).toHaveAttribute('aria-expanded', 'true')
+    expect(
+      screen.getByRole('link', { name: 'Ways to Give' })
+    ).toBeInTheDocument()
 
-  it('should have Tools link', () => {
-    const { getByRole } = render(<HeaderMenuPanel onClose={jest.fn()} />)
-    const el = getByRole('link', { name: 'Tools' })
-    expect(el).toHaveAttribute('href', 'https://www.jesusfilm.org/tools/')
-    expect(el).not.toHaveAttribute('target')
-  })
-
-  it('should have Contact link', () => {
-    const { getByRole } = render(<HeaderMenuPanel onClose={jest.fn()} />)
-    const el = getByRole('link', { name: 'Contact' })
-    expect(el).toHaveAttribute('href', 'https://www.jesusfilm.org/contact/')
-    expect(el).not.toHaveAttribute('target')
-  })
-
-  it('should have Give Now button', () => {
-    const { getByRole } = render(<HeaderMenuPanel onClose={jest.fn()} />)
-    const el = getByRole('link', { name: 'Give Now' })
-    expect(el).toHaveAttribute(
-      'href',
-      'https://www.jesusfilm.org/how-to-help/ways-to-donate/give-now-2/?amount=&frequency=single&campaign-code=NXWJPO&designation-number=2592320&thankYouRedirect=https%3A%2F%2Fwww.jesusfilm.org%2Fcontent%2Fjf%2Fus%2Fdevelopment%2Fspecial%2Fthank-you-refer%2Fsocial-share.html'
+    fireEvent.click(accordion)
+    expect(accordion).toHaveAttribute('aria-expanded', 'false')
+    await waitFor(() =>
+      expect(
+        screen.queryByRole('link', { name: 'Ways to Give' })
+      ).not.toBeInTheDocument()
     )
-    expect(el).not.toHaveAttribute('target')
   })
 })

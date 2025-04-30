@@ -10,9 +10,7 @@ import { HeaderTabButtons } from './HeaderTabButtons'
 jest.mock('next/compat/router', () => ({
   __esModule: true,
   useRouter() {
-    return {
-      pathname: '/watch'
-    }
+    return { pathname: '/watch' }
   }
 }))
 
@@ -42,8 +40,6 @@ describe('HeaderTabButtons', () => {
       expect(screen.getByTestId('ResourcesButton')).toBeInTheDocument()
       expect(screen.getByTestId('JourneysButton')).toBeInTheDocument()
       expect(screen.getByTestId('VideosButton')).toBeInTheDocument()
-      expect(screen.getByTestId('CalendarButton')).toBeInTheDocument()
-      expect(screen.getByTestId('ProductsButton')).toBeInTheDocument()
     })
 
     it('buttons should have correct links', () => {
@@ -64,14 +60,6 @@ describe('HeaderTabButtons', () => {
         'href',
         '/watch'
       )
-      expect(screen.getByTestId('CalendarButton')).toHaveAttribute(
-        'href',
-        '/calendar'
-      )
-      expect(screen.getByTestId('ProductsButton')).toHaveAttribute(
-        'href',
-        '/products'
-      )
     })
 
     it('should have Videos button selected when on /watch', () => {
@@ -86,7 +74,7 @@ describe('HeaderTabButtons', () => {
       expect(router?.pathname).toBe('/watch')
 
       const videosButton = screen.getByTestId('VideosButton')
-      expect(videosButton).toHaveStyle('border-color: #EF3340')
+      expect(videosButton).toHaveStyle('border-color: #CB333B')
 
       // other buttons shouldn't have red border
       const journeysButton = screen.getByTestId('JourneysButton')
@@ -139,12 +127,6 @@ describe('HeaderTabButtons', () => {
       expect(
         screen.getByRole('menuitem', { name: 'Videos' })
       ).toBeInTheDocument()
-      expect(
-        screen.getByRole('menuitem', { name: 'Calendar' })
-      ).toBeInTheDocument()
-      expect(
-        screen.getByRole('menuitem', { name: 'Products' })
-      ).toBeInTheDocument()
     })
 
     it('menu buttons should have correct links', () => {
@@ -165,12 +147,6 @@ describe('HeaderTabButtons', () => {
         'href',
         '/watch'
       )
-      expect(
-        screen.getByRole('menuitem', { name: 'Calendar' })
-      ).toHaveAttribute('href', '/calendar')
-      expect(
-        screen.getByRole('menuitem', { name: 'Products' })
-      ).toHaveAttribute('href', '/products')
     })
 
     it('should have Videos as name of dropdown button when on /watch', () => {
@@ -226,6 +202,24 @@ describe('HeaderTabButtons', () => {
         </FlagsProvider>
       )
       expect(screen.queryByTestId('DropDownButton')).not.toBeInTheDocument()
+    })
+
+    it('should use fallback values when current route does not match any headerItems', () => {
+      jest
+        .spyOn(require('next/compat/router'), 'useRouter')
+        .mockImplementationOnce(() => ({
+          pathname: '/unknown-route'
+        }))
+
+      render(
+        <FlagsProvider flags={{ ...trueHeaderItemsFlags }}>
+          <HeaderTabButtons />
+        </FlagsProvider>
+      )
+
+      const button = screen.getByTestId('DropDownButton')
+      expect(button).toHaveTextContent('')
+      expect(button).toBeInTheDocument()
     })
   })
 })

@@ -10,7 +10,7 @@ import {
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { ThemeProvider } from '../../ThemeProvider'
-import { defaultJourney, oldJourney } from '../journeyListData'
+import { defaultJourney, fakeDate, oldJourney } from '../journeyListData'
 import { SortOrder } from '../JourneySort'
 
 import {
@@ -66,7 +66,16 @@ const noJourneysMock: MockedResponse<
 }
 
 describe('ArchivedJourneyList', () => {
-  it('should render journeys in descending createdAt date by default', async () => {
+  beforeAll(() => {
+    jest.useFakeTimers()
+    jest.setSystemTime(new Date(fakeDate))
+  })
+
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
+  it('should render journeys in descending updatedAt date by default', async () => {
     const { getAllByLabelText } = render(
       <MockedProvider mocks={[archivedJourneysMock]}>
         <ThemeProvider>
@@ -79,11 +88,11 @@ describe('ArchivedJourneyList', () => {
 
     await waitFor(() =>
       expect(getAllByLabelText('journey-card')[0].textContent).toContain(
-        'January 1'
+        '11 months ago'
       )
     )
     expect(getAllByLabelText('journey-card')[1].textContent).toContain(
-      'November 19, 2020'
+      '1 year ago'
     )
   })
 
@@ -121,11 +130,11 @@ describe('ArchivedJourneyList', () => {
 
     await waitFor(() =>
       expect(getAllByLabelText('journey-card')[0].textContent).toContain(
-        'a lower case titleJanuary 1, 2021English'
+        'a lower case title11 months agoEnglish'
       )
     )
     expect(getAllByLabelText('journey-card')[1].textContent).toContain(
-      'An Old Journey HeadingNovember 19, 2020 - Journey created before the current year should also show the year in the dateEnglish'
+      'An Old Journey Heading1 year ago - Journey created before the current year should also show the year in the dateEnglish'
     )
   })
 

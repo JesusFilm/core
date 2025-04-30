@@ -200,6 +200,14 @@ export class CardLevelActionPage {
       )
       .click()
   }
+  async clickSelectedImageBtn() {
+    await this.page
+      .locator(
+        'div[data-testid="ImageSource"] button[data-testid="card click area"]',
+        { hasText: 'Selected Image' }
+      )
+      .click()
+  }
 
   async clickImageSelectionTab(tabName: string) {
     await this.page
@@ -212,7 +220,9 @@ export class CardLevelActionPage {
   async uploadImageInCustomTab() {
     await this.page
       .locator('div[data-testid="ImageUpload"] input')
-      .setInputFiles(testData.cardLevelAction.imgUploadPath)
+      .setInputFiles(
+        require('path').join(__dirname, '../utils/testResource/Flower.jpg')
+      )
     await expect(
       this.page.locator(
         'div[data-testid="ImageBlockHeader"] div[data-testid="ImageBlockThumbnail"] span[role="progressbar"]'
@@ -301,7 +311,15 @@ export class CardLevelActionPage {
   async uploadVideoInUploadTabOfVideoLibrary() {
     await this.page
       .locator('div[data-testid="VideoFromMux"] input')
-      .setInputFiles(testData.cardLevelAction.videoUploadPath)
+      .setInputFiles(
+        require('path').join(
+          __dirname,
+          '../utils/testResource/SampleVideo.mp4'
+        ),
+        {
+          timeout: 30000
+        }
+      )
     await expect(
       this.page.locator(
         'div[data-testid="VideoFromMux"] span[role="progressbar"]'
@@ -334,6 +352,13 @@ export class CardLevelActionPage {
       .click({ delay: 2000 })
   }
 
+  async clickChangeVideoOption() {
+    await this.page
+      .locator('div[data-testid="SettingsDrawerContent"] button', {
+        hasText: 'Change Video'
+      })
+      .click()
+  }
   async closeIconOfVideoDetails() {
     await expect(
       this.page
@@ -388,7 +413,7 @@ export class CardLevelActionPage {
     await this.page.locator('button[aria-label="clear-video"]').click()
   }
 
-  async clickSelectBtnAfrerSelectingVideo() {
+  async clickSelectBtnAfterSelectingVideo() {
     await this.page.waitForTimeout(3000)
     await this.page
       .locator('//button[text()="Select"]', { hasText: 'Select' })
@@ -403,7 +428,7 @@ export class CardLevelActionPage {
     ).toBeHidden({ timeout: sixtySecondsTimeout })
   }
 
-  async clickleftSideArrawIcon() {
+  async clickleftSideArrowIcon() {
     await this.page
       .locator('div[slot="container-start"] svg[data-testid="ChevronLeftIcon"]')
       .click()
@@ -730,7 +755,7 @@ export class CardLevelActionPage {
       .click()
   }
 
-  async selectEmailOptionInPrepertiesOptions() {
+  async selectEmailOptionInPropertiesOptions() {
     await this.page
       .locator('ul[role="listbox"] li[data-value="EmailAction"]')
       .click()
@@ -828,7 +853,7 @@ export class CardLevelActionPage {
       .click()
   }
 
-  async clickSubscribePropertiesDropDown(feedBackProperty: string) {
+  async clickPropertiesDropDown(feedBackProperty: string) {
     await this.page
       .locator(
         'div[data-testid="SignUpProperties"] div[data-testid="AccordionSummary"]',
@@ -848,9 +873,12 @@ export class CardLevelActionPage {
     // Verify whether the footer block is selected. If it is not, click the footer block again. in catch block
     /* eslint-disable playwright/missing-playwright-await */
     await expect(
-      this.page.locator(
-        'div[aria-labelledby*="hostedBy-tab"] div[data-testid="JourneysAdminContainedIconButton"] button'
-      )
+      this.page.locator('div[data-testid="AccordionSummary"]').filter({
+        has: this.page.getByRole('heading', {
+          name: 'Hosted By',
+          exact: true
+        })
+      })
     )
       .toBeVisible()
       .catch(async () => {
@@ -1047,8 +1075,8 @@ export class CardLevelActionPage {
           '//button[text()="Change Video"]//ancestor::div[@data-testid="SettingsDrawerContent"]/preceding-sibling::header//button[@aria-label="close-image-library"]'
         )
         .click({ delay: 3000 })
-    } catch {
-      /* empty */
+    } catch (error) {
+      console.error('An error occurred:', error)
     }
   }
 
@@ -1227,5 +1255,314 @@ export class CardLevelActionPage {
     await expect(
       this.page.frameLocator(this.journeyCardFrame).locator(textAreaPath)
     ).not.toHaveAttribute('style', textAeaStyleBefore, { timeout: 30000 })
+  }
+
+  async verifyButtonAddedToCard() {
+    await expect(
+      this.page
+        .frameLocator(this.journeyCardFrame)
+        .locator(
+          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid *="JourneysButton"]'
+        )
+        .first()
+    ).toBeVisible()
+  }
+  async verifyButtonRemovedFromCard() {
+    await expect(
+      this.page
+        .frameLocator(this.journeyCardFrame)
+        .locator(
+          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid *="JourneysButton"]'
+        )
+        .first()
+    ).toHaveCount(0)
+  }
+  async enterButtonNameInCard(buttonName: string) {
+    await this.page
+      .frameLocator(this.journeyCardFrame)
+      .locator(
+        'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid *="JourneysButton"] button textarea[name="buttonLabel"]'
+      )
+      .fill(buttonName)
+  }
+  async chooseButtonColor(buttonColor: string) {
+    await this.page
+      .getByTestId('ToggleButtonGroupColor')
+      .getByRole('button', { name: buttonColor })
+      .click()
+  }
+
+  async chooseButtonSize(buttonSize: string) {
+    await this.page
+      .getByTestId('ToggleButtonGroupSize')
+      .getByRole('button', { name: buttonSize })
+      .click()
+  }
+  async chooseButtonVariant(buttonVariant: string) {
+    await this.page
+      .getByTestId('ToggleButtonGroupVariant')
+      .getByRole('button', { name: buttonVariant })
+      .click()
+  }
+
+  async clickIconDropdown() {
+    await this.page
+      .locator('div.Mui-expanded div[data-testid="IconSelect"]')
+      .getByRole('combobox')
+      .click()
+  }
+  async chooseIconFromList(iconName: string) {
+    //"Arrow Right", "Chat Bubble"
+    await this.page.getByRole('option', { name: iconName }).click()
+  }
+  async chooseColorForIcon(iconColor: string) {
+    await this.page
+      .locator('div.Mui-expanded div[data-testid="ToggleButtonGroupColor"]')
+      .getByRole('button', { name: iconColor })
+      .click()
+  }
+  async verifyButtonPropertyUpdatedInCard(buttonName: string) {
+    await expect(
+      this.page
+        .frameLocator(this.journeyCardFrame)
+        .locator(
+          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid *="JourneysButton"]'
+        )
+        .locator(
+          'button.MuiButton-text.MuiButton-sizeSmall.MuiButton-textPrimary'
+        )
+        .filter({
+          has: this.page.locator('svg[data-testid="ArrowForwardRoundedIcon"]')
+        })
+        .filter({
+          has: this.page.locator(
+            'svg[data-testid="ChatBubbleOutlineRoundedIcon"]'
+          )
+        })
+        .locator('textarea[name="buttonLabel"]')
+    ).toHaveValue(buttonName)
+  }
+
+  async verifySpacerAddedToCard() {
+    await expect(
+      this.page
+        .frameLocator(this.journeyCardFrame)
+        .locator(
+          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid *="JourneysSpacer"]'
+        )
+        .first()
+    ).toBeVisible()
+  }
+  async verifySpacerRemovedFromCard() {
+    await expect(
+      this.page
+        .frameLocator(this.journeyCardFrame)
+        .locator(
+          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid *="JourneysSpacer"]'
+        )
+    ).toHaveCount(0)
+  }
+  async getSpacerHeightPixelBeforeChange() {
+    return await this.page
+      .locator(
+        'div[data-testid="SpacerProperties"] div[data-testid="AccordionSummary"]',
+        { hasText: 'Spacer Height' }
+      )
+      .locator('p')
+      .textContent()
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async validateSpacerHeightPixelGotChange(pixelHeightBeforeChange: any) {
+    const pixelHeightAfterChange = await this.getSpacerHeightPixelBeforeChange()
+    expect(
+      pixelHeightAfterChange != null && parseInt(pixelHeightAfterChange)
+    ).toBeGreaterThan(parseInt(pixelHeightBeforeChange))
+  }
+  async moveSpacerHeightTo() {
+    let desiredPosition = 0
+
+    const slider_thumb = this.page.locator(
+      'div.Mui-expanded span.MuiSlider-thumb'
+    )
+
+    // Wait for the slider to appear
+    const slider = this.page.locator('div.Mui-expanded .MuiSlider-root') // Find the slider by its class
+    await expect(slider).toBeVisible()
+    const sliderThumbPosition = (await slider_thumb.boundingBox())?.x
+    //Get the slider's position and width, fail if sliderBoundingBox is null
+    const sliderBoundingBox = await slider.boundingBox()
+    if (sliderBoundingBox == null) {
+      expect(false, {
+        message: 'Slider Bonding Box value is null'
+      }).toBeTruthy()
+    } else {
+      //Move the thumb (slider) to a specific position, e.g., 50% of the width
+      const sliderWidth = sliderBoundingBox?.width
+      desiredPosition = sliderWidth * 0.5 // Move to 50% of the width
+      //Drag the slider thumb to the desired position
+      //Drag the slider thumb to the desired position
+      await slider_thumb.hover({ force: true })
+      await this.page.mouse.down()
+      await slider_thumb.hover({
+        force: true,
+        position: { x: desiredPosition, y: sliderBoundingBox.y }
+      })
+      await this.page.mouse.up()
+
+      //await slider_thumb.dragTo(slider, { targetPosition: {x: desiredPosition, y: sliderBoundingBox.y }});
+      const thumbPositionAfterSlide = (await slider_thumb.boundingBox())?.x
+      if (thumbPositionAfterSlide != null && sliderThumbPosition != null) {
+        expect(thumbPositionAfterSlide).toBeGreaterThan(sliderThumbPosition)
+      } else {
+        expect(false, {
+          message: 'Slider thumb Bonding Box value is null'
+        }).toBeTruthy()
+      }
+    }
+  }
+  async selectAllTheReactionOptions() {
+    await this.selectReactionOptions('checkbox-Share')
+    await this.selectReactionOptions('checkbox-Like')
+    await this.selectReactionOptions('checkbox-Dislike')
+  }
+  async selectReactionOptions(checkBoxTestId: string) {
+    //'checkbox-Share', 'checkbox-Like', 'checkbox-Dislike'
+    const checkBox = this.page
+      .locator('div.Mui-expanded div[data-testid="Reactions"]')
+      .getByTestId(checkBoxTestId)
+      .getByRole('checkbox')
+    await checkBox.check()
+    await expect(checkBox).toBeChecked()
+  }
+  async enterDisplayTitleForFooter(footerTitle: string) {
+    await this.page
+      .locator('div.Mui-expanded input#display-title')
+      .fill(footerTitle)
+  }
+
+  async validateFooterTitleAndReactionButtonsInCard(footerTitle: string) {
+    await expect(
+      this.page
+        .frameLocator(this.journeyCardFrame)
+        .locator(
+          `div[data-testid="JourneysStepFooter"]:has(h6:text-is("${footerTitle}")) div[data-testid="StepFooterButtonList"]`
+        )
+        .first()
+        .filter({ has: this.page.getByTestId('ShareIcon') })
+        .filter({ has: this.page.getByTestId('ThumbsUpIcon') })
+        .filter({ has: this.page.getByTestId('ThumbsDownIcon') })
+    ).toBeVisible()
+  }
+  async clickJourneyOrWebSiteOptionForFooter(buttonName: string) {
+    //Journey , Website
+    await this.page
+      .locator('div[data-testid="SettingsDrawerContent"] div[role="group"]')
+      .getByRole('button', { name: buttonName, exact: true })
+      .click()
+  }
+  async selectFirstImageFromGalleryForFooter() {
+    await this.page.locator('li[data-testid *="image"] img').first().click()
+  }
+  async valdiateSelectedImageWithDeleteIcon() {
+    await expect(
+      this.page.locator(
+        'div[data-testid="ImageBlockHeader"]:has(img) button:has(svg[data-testid="imageBlockHeaderDelete"])'
+      )
+    ).toBeVisible()
+  }
+  async closeToolDrawerForFooterImage() {
+    await this.page
+      .locator(
+        'div.MuiToolbar-root:has-text("Image") button[aria-label="close-image-library"]'
+      )
+      .click()
+  }
+  async validateSelectedImageWithEditIcon() {
+    await expect(
+      this.page.locator(
+        'div[data-testid="ImageBlockHeader"]:has(div[data-testid="ImageBlockThumbnail"] img) button svg[data-testid *="Edit"]'
+      )
+    ).toBeVisible()
+  }
+
+  async clickSelectIconDropdownForFooterMenu() {
+    await this.page
+      .locator('div.Mui-expanded div[data-testid="MenuIconSelect"]')
+      .getByRole('combobox')
+      .click()
+  }
+  async selectChevronDownIconForFooter() {
+    await this.page
+      .locator('li:has(svg[data-testid="ChevronDownIcon"])')
+      .click()
+  }
+
+  async clickCreateMenuCardButtonInMenuFooter() {
+    await this.page
+      .locator('div.Mui-expanded div[data-testid="Menu"]')
+      .getByRole('button', { name: 'Create Menu Card' })
+      .click()
+  }
+
+  async validateWebsiteFooterSectionInCard(title: string) {
+    await expect(
+      this.page
+        .frameLocator(this.journeyCardFrame)
+        .locator(
+          `div[data-testid="JourneysStepHeader"]:has(h6:text-is("${title}"))`
+        )
+        .filter({ has: this.page.locator('img') })
+        .filter({
+          has: this.page.locator('svg[data-testid="ChevronDownIcon"]')
+        })
+    ).toBeVisible()
+  }
+
+  async validateWebsiteFooterSectionInMenuCard(title: string) {
+    await expect(
+      this.page
+        .locator(
+          `div[data-testid="JourneysStepHeader"]:has(h6:text-is("${title}"))`
+        )
+        .filter({ has: this.page.locator('img') })
+        .filter({ has: this.page.locator('svg[data-testid *="X"]') })
+    ).toBeVisible()
+  }
+
+  async validateMenuCardDetailsInCard() {
+    await expect(
+      this.page
+        .locator('div[data-testid="CardExpandedCover"]')
+        .filter({
+          has: this.page.locator(
+            'h1[data-testid="JourneysTypography"]:has-text("Menu")'
+          )
+        })
+        .filter({ has: this.page.locator('button:has-text("About Us")') })
+        .filter({ has: this.page.locator('button:has-text("Ministries")') })
+        .filter({ has: this.page.locator('button:has-text("Contact Us")') })
+    ).toBeVisible()
+  }
+  async validateMenuCardInReactFlow() {
+    await expect(
+      this.page.locator(
+        'div.MuiStack-root[data-testid *="StepBlockNode"] div[data-testid="BaseNode"]:has-text("Menu")'
+      )
+    ).toBeVisible()
+  }
+  async clickButtonPropertyDropdown(feedBackProperty: string) {
+    await this.page
+      .locator(
+        'div[data-testid="ButtonProperties"] div[data-testid="AccordionSummary"]',
+        { hasText: feedBackProperty }
+      )
+      .click()
+  }
+  async clickCardPropertiesDropDown(cardProperty: string) {
+    await this.page
+      .locator(
+        `div[data-testid="SettingsDrawer"] div[data-testid="AccordionSummary"]:has(span:text-is("${cardProperty}"))`
+      )
+      .click()
   }
 }

@@ -15,8 +15,43 @@ export const config = {
 }
 
 export function middleware(request: NextRequest) {
-  const { hostname, pathname } = request.nextUrl
-  const headerHostname = request.headers.get('host')?.split(':')[0]
-  const url = new URL(`/${headerHostname ?? hostname}${pathname}`, request.url)
+  const hostname = request.nextUrl.hostname
+  const pathname = request.nextUrl.pathname
+
+  if (
+    pathname.startsWith('/hls/') ||
+    pathname.startsWith('/dl/') ||
+    pathname.startsWith('/dh/') ||
+    pathname.startsWith('/s/')
+  ) {
+    const parts = pathname.split('/')
+    if (parts.length !== 4) {
+      return new NextResponse('Invalid URL format', { status: 400 })
+    }
+
+    const [, type, param1, param2] = parts
+
+    switch (type) {
+      case 'hls':
+        return NextResponse.redirect(
+          `https://api.arclight.org/hls/${param1}/${param2}`,
+          307
+        )
+      case 'dl':
+        return NextResponse.redirect(
+          `https://api.arclight.org/dl/${param1}/${param2}`
+        )
+      case 'dh':
+        return NextResponse.redirect(
+          `https://api.arclight.org/dh/${param1}/${param2}`
+        )
+      case 's':
+        return NextResponse.redirect(
+          `https://api.arclight.org/s/${param1}/${param2}`
+        )
+    }
+  }
+
+  const url = new URL(`/${hostname}${pathname}`, request.url)
   return NextResponse.rewrite(url)
 }

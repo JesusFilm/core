@@ -11,11 +11,11 @@ interface ResourceSectionsProps {
 }
 
 export const indexes = [
-  'wp_prd_posts_equipment',
-  'wp_prd_posts_training_strategies',
-  'wp_prd_posts_outreach_resources',
-  'wp_prd_posts_prayer_resources',
-  'wp_prd_posts_digital_strategies'
+  `${process.env.NEXT_PUBLIC_ALGOLIA_WP_PREFIX}_posts_equipment`,
+  `${process.env.NEXT_PUBLIC_ALGOLIA_WP_PREFIX}_posts_training_strategies`,
+  `${process.env.NEXT_PUBLIC_ALGOLIA_WP_PREFIX}_posts_outreach_resources`,
+  `${process.env.NEXT_PUBLIC_ALGOLIA_WP_PREFIX}_posts_prayer_resources`,
+  `${process.env.NEXT_PUBLIC_ALGOLIA_WP_PREFIX}_posts_digital_strategies`
 ]
 
 export function ResourceSections({

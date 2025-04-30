@@ -31,8 +31,37 @@ export const cache = {
               (args?.offset ?? 0) + (args?.limit ?? 100)
             ) as VideoData[]
           }
+        },
+        // Always fetch the video from the network
+        adminVideo: {
+          read(_, { args, toReference }) {
+            if (args?.id != null) {
+              return toReference({
+                __typename: 'AdminVideo',
+                id: args.id
+              })
+            }
+          }
         }
       }
+    },
+    AdminVideo: {
+      fields: {
+        studyQuestions: {
+          merge(existing, incoming, { mergeObjects }) {
+            return mergeObjects(existing, incoming)
+          }
+        },
+        images: {
+          merge(existing, incoming, { mergeObjects }) {
+            return mergeObjects(existing, incoming)
+          }
+        }
+      }
+    },
+    // Set proper identification for VideoStudyQuestion objects
+    VideoStudyQuestion: {
+      keyFields: ['id']
     }
   }
 }

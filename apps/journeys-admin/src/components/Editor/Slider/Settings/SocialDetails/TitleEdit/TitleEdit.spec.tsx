@@ -85,7 +85,10 @@ describe('TitleEdit', () => {
       >
         <JourneyProvider
           value={{
-            journey: { id: 'journey.id' } as unknown as Journey,
+            journey: {
+              id: 'journey.id',
+              slug: 'some-slug'
+            } as unknown as Journey,
             variant: 'admin'
           }}
         >

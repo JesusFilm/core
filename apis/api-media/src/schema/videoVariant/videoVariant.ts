@@ -11,6 +11,9 @@ import { VideoVariantUpdateInput } from './inputs/videoVariantUpdate'
 builder.prismaObject('VideoVariant', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
+    asset: t
+      .withAuth({ isPublisher: true })
+      .relation('asset', { nullable: true, description: 'master video file' }),
     videoId: t.exposeID('videoId'),
     hls: t.exposeString('hls'),
     dash: t.exposeString('dash'),
@@ -71,6 +74,10 @@ builder.prismaObject('VideoVariant', {
     slug: t.exposeString('slug', {
       nullable: false,
       description: 'slug is a permanent link to the video variant.'
+    }),
+    version: t.withAuth({ isPublisher: true }).exposeInt('version', {
+      nullable: false,
+      description: 'version control for master video file'
     })
   })
 })
@@ -122,7 +129,8 @@ builder.mutationFields((t) => ({
         data: {
           ...input,
           muxVideoId: input.muxVideoId ?? undefined,
-          published: input.published ?? true
+          published: input.published ?? true,
+          version: input.version ?? undefined
         }
       })
 
@@ -166,7 +174,9 @@ builder.mutationFields((t) => ({
           edition: input.edition ?? undefined,
           downloadable: input.downloadable ?? undefined,
           published: input.published ?? undefined,
-          muxVideoId: input.muxVideoId ?? undefined
+          muxVideoId: input.muxVideoId ?? undefined,
+          assetId: input.assetId ?? undefined,
+          version: input.version ?? undefined
         }
       })
     }

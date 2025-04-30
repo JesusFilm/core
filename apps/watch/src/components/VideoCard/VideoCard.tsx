@@ -177,6 +177,9 @@ export function VideoCard({
                   variant="h6"
                   component="h3"
                   color="primary.contrastText"
+                  fontWeight="bold"
+                  fontSize={21}
+                  lineHeight={27 / 21}
                   sx={{
                     textAlign: 'left',
                     textShadow:
@@ -232,7 +235,7 @@ export function VideoCard({
                   {active === true ? (
                     <>
                       <PlayArrow sx={{ fontSize: '1rem' }} />
-                      <Typography>{t('Playing now')}</Typography>
+                      <Typography variant="h6">{t('Playing now')}</Typography>
                     </>
                   ) : (
                     <>
@@ -248,7 +251,7 @@ export function VideoCard({
                       {video?.childrenCount === 0 && (
                         <>
                           <PlayArrow sx={{ fontSize: '1rem' }} />
-                          <Typography>
+                          <Typography variant="h6">
                             {secondsToTimeFormat(
                               video?.variant?.duration ?? 0,
                               {
@@ -259,7 +262,9 @@ export function VideoCard({
                         </>
                       )}
                       {(video?.childrenCount ?? 0) > 0 && (
-                        <Typography>{childCountLabel.toLowerCase()}</Typography>
+                        <Typography variant="h6">
+                          {childCountLabel.toLowerCase()}
+                        </Typography>
                       )}
                     </>
                   )}
@@ -286,7 +291,14 @@ export function VideoCard({
                   )}
                 </Typography>
               )}
-              <Typography color="textPrimary" variant="h6" component="h3">
+              <Typography
+                color="textPrimary"
+                variant="h6"
+                component="h3"
+                fontWeight="bold"
+                fontSize={21}
+                lineHeight={27 / 21}
+              >
                 {video?.title != null ? (
                   video?.title[0].value
                 ) : (

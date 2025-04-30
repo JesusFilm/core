@@ -5,10 +5,10 @@ import {
   SetStateAction,
   useEffect,
   useMemo,
+  useRef,
   useState
 } from 'react'
 import videojs from 'video.js'
-import Player from 'video.js/dist/types/player'
 
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
@@ -17,14 +17,15 @@ import { TreeBlock, useBlocks } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { VideoFields_mediaVideo } from '../__generated__/VideoFields'
+import { getMuxMetadata } from '../utils/getMuxMetadata'
+import VideoJsPlayer from '../utils/videoJsTypes'
 
-import { getMuxMetadata } from './getMuxMetadata'
 import 'videojs-mux'
 
 interface InitAndPlayProps {
   videoRef: RefObject<HTMLVideoElement>
-  player?: Player
-  setPlayer: Dispatch<SetStateAction<Player | undefined>>
+  player?: VideoJsPlayer
+  setPlayer: Dispatch<SetStateAction<VideoJsPlayer | undefined>>
   triggerTimes: number[]
   videoEndTime: number
   selectedBlock?: TreeBlock
@@ -70,6 +71,7 @@ export function InitAndPlay({
   const { blockHistory } = useBlocks()
   const activeBlock = blockHistory[blockHistory.length - 1]
   const [error, setError] = useState(false)
+  const playerInitializedRef = useRef(false)
 
   const muxMetadata = useMemo(() => {
     return journey != null
@@ -88,7 +90,7 @@ export function InitAndPlay({
 
   // Initiate video player
   useEffect(() => {
-    if (videoRef.current != null) {
+    if (videoRef.current != null && !playerInitializedRef.current) {
       setPlayer(
         videojs(videoRef.current, {
           ...defaultVideoJsOptions,
@@ -104,31 +106,19 @@ export function InitAndPlay({
           },
           responsive: true,
           muted: muted === true,
-          autoplay:
-            autoplay === true &&
-            activeStep &&
-            source === VideoBlockSource.youTube,
+          autoplay: autoplay === true && source === VideoBlockSource.youTube,
           plugins: {
             mux: {
               debug: false,
               data: muxMetadata
             }
           }
-        })
+        }) as VideoJsPlayer
       )
+      playerInitializedRef.current = true
     }
-  }, [
-    startAt,
-    endAt,
-    muted,
-    posterBlock,
-    setPlayer,
-    videoRef,
-    autoplay,
-    activeStep,
-    source,
-    muxMetadata
-  ])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- should only run once unless videoRef.current is null
+  }, [videoRef.current])
 
   // Initiate video player listeners
   useEffect(() => {
