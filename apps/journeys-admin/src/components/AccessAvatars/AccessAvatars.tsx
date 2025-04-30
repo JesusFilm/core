@@ -12,8 +12,6 @@ import { GetAdminJourneys_journeys_userJourneys as UserJourney } from '../../../
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
 import { Avatar } from '../Avatar'
 
-import { ManageAccessAvatar } from './ManageAccessAvatar'
-
 const AccessDialog = dynamic(
   async () =>
     await import(
@@ -28,7 +26,6 @@ export interface AccessAvatarsProps {
   userJourneys?: UserJourney[]
   size?: 'small' | 'medium' | 'large'
   max?: number
-  showManageButton?: boolean
 }
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
@@ -43,15 +40,13 @@ export function AccessAvatars({
   journeyId,
   userJourneys,
   size = 'small',
-  max = 3,
-  showManageButton = false
+  max = 3
 }: AccessAvatarsProps): ReactElement {
   const [open, setOpen] = useState<boolean | undefined>()
   const renderMax = withRenderLogic({
     size,
     max: max,
-    setOpen,
-    showManageButton
+    setOpen
   })
 
   return (
@@ -73,7 +68,6 @@ interface WithRenderLogicProps {
   size: 'small' | 'medium' | 'large'
   max: number
   setOpen: (open: boolean) => void
-  showManageButton: boolean
 }
 
 const sortByOwner = (values: UserJourney[] = []): UserJourney[] => {
@@ -89,8 +83,7 @@ const sortByOwner = (values: UserJourney[] = []): UserJourney[] => {
 const withRenderLogic = ({
   size,
   max,
-  setOpen,
-  showManageButton
+  setOpen
 }: WithRenderLogicProps): ((values?: UserJourney[]) => ReactElement) => {
   // small default sizes
   let diameter: number
@@ -186,10 +179,6 @@ const withRenderLogic = ({
           >
             {children}
           </AvatarGroup>
-
-          {showManageButton && (
-            <ManageAccessAvatar diameter={diameter} fontSize={size} />
-          )}
         </StyledBadge>
       </Box>
     )

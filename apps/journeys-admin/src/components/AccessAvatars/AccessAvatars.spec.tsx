@@ -158,24 +158,6 @@ describe('AccessAvatars', () => {
     )
   })
 
-  it('should not show manage button (presently disabled in the code)', async () => {
-    const { queryAllByLabelText } = render(
-      <SnackbarProvider>
-        <MockedProvider>
-          <ThemeProvider>
-            <AccessAvatars
-              journeyId="journeyId"
-              userJourneys={[userJourney1]}
-              showManageButton={false}
-            />
-          </ThemeProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-
-    expect(queryAllByLabelText('Manage Access')).toHaveLength(0)
-  })
-
   it('should display owner of journey first', async () => {
     const ownerUser = {
       ...userJourney2,
