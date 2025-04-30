@@ -64,8 +64,8 @@ interface BaseNodeProps {
 
 export function BaseNode({
   id,
-  targetHandle = HandleVariant.None,
-  sourceHandle = HandleVariant.None,
+  targetHandle = HandleVariant.Hidden,
+  sourceHandle = HandleVariant.Hidden,
   onSourceConnect,
   selected = false,
   isSourceConnected = false,

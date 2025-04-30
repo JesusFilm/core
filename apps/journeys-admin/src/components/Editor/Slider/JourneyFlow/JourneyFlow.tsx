@@ -46,6 +46,7 @@ import type {
 } from '../../../../../__generated__/GetStepBlocksWithPosition'
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
 
+import { AiEditButton } from './AiEditButton'
 import { AnalyticsOverlaySwitch } from './AnalyticsOverlaySwitch'
 import { Controls } from './Controls'
 import { CustomEdge } from './edges/CustomEdge'
@@ -540,9 +541,14 @@ export function JourneyFlow(): ReactElement {
         {activeSlide === ActiveSlide.JourneyFlow && (
           <>
             <Panel position="top-right">
-              {showAnalytics !== true && (
-                <NewStepButton disabled={steps == null || loading} />
-              )}
+              <Box sx={{ display: 'flex', gap: 3 }}>
+                {showAnalytics !== true && (
+                  <AiEditButton disabled={steps == null || loading} />
+                )}
+                {showAnalytics !== true && (
+                  <NewStepButton disabled={steps == null || loading} />
+                )}
+              </Box>
             </Panel>
             {editorAnalytics && (
               <Panel position="top-left">
