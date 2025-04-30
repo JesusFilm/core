@@ -1,8 +1,6 @@
 import { SearchClient, algoliasearch } from 'algoliasearch'
 import { ReactElement, ReactNode, createContext, useContext } from 'react'
 
-// let searchClientInstance: SearchClient | null = null
-
 const searchClient = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_APP_ID ?? '',
   process.env.ALGOLIA_SERVER_API_KEY ??
