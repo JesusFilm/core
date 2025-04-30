@@ -20,7 +20,7 @@ const i18nConfig = {
     locales: [
       'en', // English
       'es', // Spanish
-      'fr' // French
+      'fr', // French
       // 'id', // Indonesian
       // 'th', // Thai
       // 'ja', // Japanese
@@ -28,21 +28,21 @@ const i18nConfig = {
       // 'ru', // Russian
       // 'tr', // Turkish
       // 'zh', // Chinese
-      // 'zh-Hans-CN' // Chinese, Simplified
+      'zh-Hans-CN' // Chinese, Simplified
     ]
   },
   localePath,
   fallbackLng: {
     default: ['en'],
     es: ['es-ES'],
-    fr: ['fr-FR']
+    fr: ['fr-FR'],
     // id: ['id-ID'],
     // th: ['th-TH'],
     // ja: ['ja-JP'],
     // ko: ['ko-KR'],
     // ru: ['ru-RU'],
     // tr: ['tr-TR'],
-    // zh: ['zh-Hans-CN']
+    zh: ['zh-Hans-CN']
   },
   react: { useSuspense: false }
 }
