@@ -89,7 +89,10 @@ export function ActivePriorityList({
       <Grid container spacing={5} rowSpacing={5}>
         {Object.entries(allActiveJourneys).map(([key, journeys]) =>
           journeys.map((journey) => (
-            <Grid key={journey.id} size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 3 }}>
+            <Grid
+              key={journey.id}
+              size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 3 }}
+            >
               <JourneyProvider
                 value={{
                   journey: journey as unknown as JourneyFields,
