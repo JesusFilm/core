@@ -15,19 +15,19 @@ import { firebaseClient } from './firebaseClient'
   - [x] Parse CLI arguments (folder, --dry-run)
   - [x] Authenticate and get JWT token for API calls
 
-- [ ] **File Discovery & Filtering**
-  - [ ] Read all files in the folder
-  - [ ] For each file:
-    - [ ] Check filename pattern
-    - [ ] Parse languageId and videoId
+- [x] **File Discovery & Filtering**
+  - [x] Read all files in the folder
+  - [x] For each file:
+    - [x] Check filename pattern
+    - [x] Parse languageId and videoId
 
-- [ ] **Dry Run or Real Processing**
-  - [ ] If dry run: log intended actions
-  - [ ] Else: process each file
+- [x] **Dry Run or Real Processing**
+  - [x] If dry run: log intended actions
+  - [x] Else: process each file
 
-- [ ] **Asset Creation & Upload**
-  - [ ] Request R2 upload URL and public URL from backend
-  - [ ] Upload file to R2
+- [x] **Asset Creation & Upload**
+  - [x] Request R2 upload URL and public URL from backend
+  - [x] Upload file to R2
 
 - [ ] **Mux Video Creation**
   - [ ] Create Mux video using R2 public URL
@@ -92,6 +92,46 @@ const CREATE_R2_ASSET = graphql(`
   }
 `)
 
+const CREATE_MUX_VIDEO = graphql(`
+  mutation CreateMuxVideoUploadByUrl($url: String!, $userGenerated: Boolean) {
+    createMuxVideoUploadByUrl(url: $url, userGenerated: $userGenerated) {
+      id
+      assetId
+      playbackId
+      readyToStream
+    }
+  }
+`)
+
+const GET_MUX_VIDEO = graphql(`
+  query GetMyMuxVideo($id: ID!, $userGenerated: Boolean) {
+    getMyMuxVideo(id: $id, userGenerated: $userGenerated) {
+      id
+      assetId
+      playbackId
+      readyToStream
+    }
+  }
+`)
+
+interface MuxVideoResponse {
+  createMuxVideoUploadByUrl: {
+    id: string
+    assetId: string
+    playbackId: string
+    readyToStream: boolean
+  }
+}
+
+interface MuxVideoStatusResponse {
+  getMyMuxVideo: {
+    id: string
+    assetId: string
+    playbackId: string
+    readyToStream: boolean
+  }
+}
+
 async function createR2Asset({
   fileName,
   contentType,
@@ -122,6 +162,46 @@ async function uploadToR2(
   await axios.put(uploadUrl, fileBuffer, {
     headers: { 'Content-Type': contentType }
   })
+}
+
+async function createAndWaitForMuxVideo(publicUrl: string): Promise<{
+  id: string
+  playbackId: string
+}> {
+  const client = await getGraphQLClient()
+
+  // Create Mux video
+  const muxResponse = await client.request<MuxVideoResponse>(CREATE_MUX_VIDEO, {
+    url: publicUrl,
+    userGenerated: false
+  })
+
+  if (!muxResponse.createMuxVideoUploadByUrl?.id) {
+    throw new Error('Failed to create Mux video')
+  }
+
+  const muxId = muxResponse.createMuxVideoUploadByUrl.id
+
+  // Poll for Mux video readiness
+  while (true) {
+    const statusResponse = await client.request<MuxVideoStatusResponse>(
+      GET_MUX_VIDEO,
+      {
+        id: muxId,
+        userGenerated: false
+      }
+    )
+
+    if (statusResponse.getMyMuxVideo.readyToStream) {
+      return {
+        id: statusResponse.getMyMuxVideo.id,
+        playbackId: statusResponse.getMyMuxVideo.playbackId
+      }
+    }
+
+    console.log('Waiting for Mux video processing...')
+    await new Promise((resolve) => setTimeout(resolve, 2000)) // Wait 2 seconds before polling again
+  }
 }
 
 async function main() {
@@ -169,7 +249,13 @@ async function main() {
         console.log(`Obtained R2 uploadUrl and publicUrl for ${file}`)
         await uploadToR2(r2Asset.uploadUrl, filePath, contentType)
         console.log(`Uploaded ${file} to R2.`)
-        // TODO: Continue with Mux video creation and backend registration
+
+        // Create and wait for Mux video
+        console.log('Creating Mux video...')
+        const muxVideo = await createAndWaitForMuxVideo(r2Asset.publicUrl)
+        console.log(`Mux video created and ready. ID: ${muxVideo.id}`)
+
+        // TODO: Continue with backend registration
       } catch (err) {
         console.error(`Error processing ${file}:`, err)
       }
