@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
@@ -15,6 +16,7 @@ import { useTeam } from '@core/journeys/ui/TeamProvider'
 
 import { HelpScoutBeacon } from '../src/components/HelpScoutBeacon'
 import { JourneyList } from '../src/components/JourneyList'
+import { NotificationMenu } from '../src/components/NotificationMenu'
 import { OnboardingPanel } from '../src/components/OnboardingPanel'
 import { PageWrapper } from '../src/components/PageWrapper'
 import { TeamMenu } from '../src/components/Team/TeamMenu'
@@ -48,6 +50,9 @@ function IndexPage(): ReactElement {
           >
             <TeamSelect onboarding={router.query.onboarding === 'true'} />
             <Stack direction="row" alignItems="center">
+              <Box sx={{ pr: 4 }}>
+                <NotificationMenu />
+              </Box>
               <TeamMenu />
             </Stack>
           </Stack>
