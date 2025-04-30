@@ -85,6 +85,7 @@
   "Owner": "Owner",
   "Editor": "Editor",
   "Pending": "Pending",
+  "User with Requested Access": "User with Requested Access",
   "Error loading report": "Error loading report",
   "There was an error loading the report": "There was an error loading the report",
   "The report is loading...": "The report is loading...",
