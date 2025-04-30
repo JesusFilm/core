@@ -1,18 +1,25 @@
 import { SearchClient, algoliasearch } from 'algoliasearch'
 import { ReactElement, ReactNode, createContext, useContext } from 'react'
 
-let searchClientInstance: SearchClient | null = null
+// let searchClientInstance: SearchClient | null = null
+
+const searchClient = algoliasearch(
+  process.env.NEXT_PUBLIC_ALGOLIA_APP_ID ?? '',
+  process.env.ALGOLIA_SERVER_API_KEY ??
+    process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ??
+    ''
+)
 
 function getSearchClient(): SearchClient {
-  if (searchClientInstance === null) {
-    searchClientInstance = algoliasearch(
+  if (searchClient === null) {
+    return algoliasearch(
       process.env.NEXT_PUBLIC_ALGOLIA_APP_ID ?? '',
       process.env.ALGOLIA_SERVER_API_KEY ??
         process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ??
         ''
     )
   }
-  return searchClientInstance
+  return searchClient
 }
 
 const InstantSearchContext = createContext<SearchClient | null>(null)
