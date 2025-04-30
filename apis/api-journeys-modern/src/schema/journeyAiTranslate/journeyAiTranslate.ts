@@ -1,10 +1,9 @@
 import { Job, Queue, QueueEvents, Worker } from 'bullmq'
 
-import { AiTranslateJourneyJob } from '../../workers/userQueue/service'
-import { builder } from '../builder'
 import { connection } from '../../lib/redisConnection'
 import { queueName } from '../../workers/userQueue'
-import { service } from '../../workers/userQueue/service'
+import { AiTranslateJourneyJob , service } from '../../workers/userQueue/service'
+import { builder } from '../builder'
 
 class JourneyAiTranslateStatusShape {
   id: string
@@ -173,7 +172,7 @@ builder.mutationFields((t) => ({
         const userQueueName = `${queueName}/${user.id}`
 
         // Ensure queue exists
-        let queue: Queue =
+        const queue: Queue =
           context.queue || new Queue(userQueueName, { connection })
         context.queue = queue
 
