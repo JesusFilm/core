@@ -20,7 +20,6 @@ export function JourneyCardText({
       <Typography
         variant="subtitle1"
         component="div"
-        // noWrap
         gutterBottom
         sx={{
           color: 'secondary.main',

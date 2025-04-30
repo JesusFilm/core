@@ -3,6 +3,7 @@ import Badge from '@mui/material/Badge'
 import { SxProps } from '@mui/material/styles'
 import Tooltip from '@mui/material/Tooltip'
 import compact from 'lodash/compact'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { GetAdminJourneys_journeys_userJourneys_user as ApiUser } from '../../../__generated__/GetAdminJourneys'
@@ -22,13 +23,14 @@ export function Avatar({
   role
 }: AvatarProps): ReactElement {
   const displayName = compact([apiUser.firstName, apiUser.lastName]).join(' ')
+  const { t } = useTranslation('apps-journeys-admin')
 
   return (
     <Tooltip
       title={
         role !== UserJourneyRole.inviteRequested
           ? displayName
-          : 'User with Requested Access'
+          : t('User with Requested Access')
       }
       data-testid="JourneysAdminAvatar"
       arrow

@@ -141,8 +141,8 @@ export function JourneyCard({
                 position: 'relative',
                 width: 'auto',
                 paddingTop: {
-                  xs: `${(1 / 2) * 100}%`,
-                  sm: `${(4 / 6) * 100}%`
+                  xs: `${(1 / 2) * 100}%`, // 1:2 aspect ratio - shorter social media image allows for more cards to be fitted into phone
+                  sm: `${(4 / 6) * 100}%` // 4:6 aspect ratio - standard social media image aspect ratio
                 },
                 mx: 3,
                 mt: 3,

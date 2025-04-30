@@ -1,5 +1,4 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
@@ -29,13 +28,6 @@ jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
 }))
-
-jest.mock('@mui/material/useMediaQuery', () => ({
-  __esModule: true,
-  default: jest.fn()
-}))
-
-const mockedUseMediaQuery = useMediaQuery as jest.Mock
 
 const trashedJourneysMock: MockedResponse<
   GetAdminJourneys,

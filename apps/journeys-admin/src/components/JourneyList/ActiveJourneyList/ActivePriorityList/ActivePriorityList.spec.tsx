@@ -1,5 +1,4 @@
 import { MockedProvider } from '@apollo/client/testing'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { render } from '@testing-library/react'
 import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
@@ -10,19 +9,11 @@ import { SortOrder } from '../../JourneySort'
 import {
   defaultJourney,
   journey,
-  journeyWithLongTitle,
   newJourney,
   pendingActionJourney
 } from './ActiveJourneyListData'
 import { ActivePriorityList } from './ActivePriorityList'
 import '../../../../../test/i18n'
-
-jest.mock('@mui/material/useMediaQuery', () => ({
-  __esModule: true,
-  default: jest.fn()
-}))
-
-const mockedUseMediaQuery = useMediaQuery as jest.Mock
 
 describe('ActivePriorityList', () => {
   beforeEach(() => {
