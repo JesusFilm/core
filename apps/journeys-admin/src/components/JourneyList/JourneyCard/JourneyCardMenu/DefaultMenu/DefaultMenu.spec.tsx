@@ -181,6 +181,7 @@ describe('DefaultMenu', () => {
               handleCloseMenu={noop}
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -208,9 +209,9 @@ describe('DefaultMenu', () => {
             published
             setOpenAccessDialog={noop}
             handleCloseMenu={noop}
-            template
             setOpenTrashDialog={noop}
             setOpenDetailsDialog={noop}
+            setOpenTranslateDialog={noop}
           />
         </SnackbarProvider>
       </MockedProvider>
@@ -247,6 +248,7 @@ describe('DefaultMenu', () => {
               handleCloseMenu={handleCloseMenu}
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -274,6 +276,7 @@ describe('DefaultMenu', () => {
                 handleCloseMenu={noop}
                 setOpenTrashDialog={noop}
                 setOpenDetailsDialog={noop}
+                setOpenTranslateDialog={noop}
               />
             </TeamProvider>
           </MockedProvider>
@@ -312,6 +315,7 @@ describe('DefaultMenu', () => {
                 handleCloseMenu={noop}
                 setOpenTrashDialog={noop}
                 setOpenDetailsDialog={noop}
+                setOpenTranslateDialog={noop}
               />
             </TeamProvider>
           </MockedProvider>
@@ -350,6 +354,7 @@ describe('DefaultMenu', () => {
               handleCloseMenu={handleCloseMenu}
               setOpenTrashDialog={setOpenTrashDialog}
               setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -407,6 +412,7 @@ describe('DefaultMenu', () => {
               handleCloseMenu={noop}
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -469,6 +475,7 @@ describe('DefaultMenu', () => {
               handleCloseMenu={noop}
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -531,6 +538,7 @@ describe('DefaultMenu', () => {
               handleCloseMenu={noop}
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -595,6 +603,7 @@ describe('DefaultMenu', () => {
               handleCloseMenu={noop}
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -650,6 +659,7 @@ describe('DefaultMenu', () => {
             template
             setOpenTrashDialog={noop}
             setOpenDetailsDialog={noop}
+            setOpenTranslateDialog={noop}
           />
         </SnackbarProvider>
       </MockedProvider>
@@ -701,6 +711,7 @@ describe('DefaultMenu', () => {
             template={false}
             setOpenTrashDialog={noop}
             setOpenDetailsDialog={noop}
+            setOpenTranslateDialog={noop}
           />
         </SnackbarProvider>
       </MockedProvider>
@@ -754,6 +765,7 @@ describe('DefaultMenu', () => {
             template
             setOpenTrashDialog={noop}
             setOpenDetailsDialog={noop}
+            setOpenTranslateDialog={noop}
           />
         </SnackbarProvider>
       </MockedProvider>
@@ -822,6 +834,7 @@ describe('DefaultMenu', () => {
               handleCloseMenu={noop}
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -839,5 +852,64 @@ describe('DefaultMenu', () => {
         'true'
       )
     })
+  })
+
+  it('should call correct functions on Translate click', () => {
+    const handleCloseMenu = jest.fn()
+    const setOpenTranslateDialog = jest.fn()
+
+    const { getByRole } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <TeamProvider>
+            <DefaultMenu
+              id="journey-id"
+              slug="journey-slug"
+              status={JourneyStatus.draft}
+              journeyId="journey-id"
+              published={false}
+              setOpenAccessDialog={noop}
+              handleCloseMenu={handleCloseMenu}
+              setOpenTrashDialog={noop}
+              setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={setOpenTranslateDialog}
+            />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('menuitem', { name: 'Translate' }))
+    expect(setOpenTranslateDialog).toHaveBeenCalled()
+    expect(handleCloseMenu).toHaveBeenCalled()
+  })
+
+  it('should not show duplicate and translate for template', () => {
+    const { queryByRole } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <DefaultMenu
+            id="template-id"
+            slug="template-slug"
+            status={JourneyStatus.published}
+            journeyId="template-id"
+            published
+            setOpenAccessDialog={noop}
+            handleCloseMenu={noop}
+            setOpenTrashDialog={noop}
+            setOpenDetailsDialog={noop}
+            setOpenTranslateDialog={noop}
+            template
+          />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(
+      queryByRole('menuitem', { name: 'Duplicate' })
+    ).not.toBeInTheDocument()
+    expect(
+      queryByRole('menuitem', { name: 'Translate' })
+    ).not.toBeInTheDocument()
   })
 })
