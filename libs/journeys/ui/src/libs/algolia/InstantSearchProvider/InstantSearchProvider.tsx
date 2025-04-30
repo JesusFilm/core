@@ -32,8 +32,9 @@ interface InstantSearchProviderProps {
 export function InstantSearchProvider({
   children
 }: InstantSearchProviderProps): ReactElement {
+  const searchClient = getSearchClient()
   return (
-    <InstantSearchContext.Provider value={getSearchClient()}>
+    <InstantSearchContext.Provider value={searchClient}>
       {children}
     </InstantSearchContext.Provider>
   )
