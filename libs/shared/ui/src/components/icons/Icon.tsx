@@ -189,6 +189,7 @@ import ThumbsDown from './ThumbsDown'
 import ThumbsUp from './ThumbsUp'
 import Tiktok from './Tiktok'
 import Transform from './Transform'
+import Translate from './Translate'
 import Trash2 from './Trash2'
 import TrendDown1 from './TrendDown1'
 import TwitterLogo from './TwitterLogo'
@@ -403,6 +404,7 @@ export type IconName =
   | 'ThumbsDown'
   | 'ThumbsUp'
   | 'Tiktok'
+  | 'Translate'
   | 'Transform'
   | 'TrendDown1'
   | 'TwitterLogo'
@@ -621,6 +623,7 @@ const iconComponents: IconComponents = {
   ThumbsDown,
   ThumbsUp,
   Tiktok,
+  Translate,
   Transform,
   TrendDown1,
   TwitterLogo,
