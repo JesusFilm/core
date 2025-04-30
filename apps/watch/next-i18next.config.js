@@ -21,9 +21,9 @@ const i18nConfig = {
       'en', // English
       'es', // Spanish
       'fr', // French
-      'id', // Indonesian
-      // 'th', // Thai
-      // 'ja', // Japanese
+      'id', // `Indonesian
+      'th', // Thai
+      'ja', // Japanese
       // 'ko', // Korean
       // 'ru', // Russian
       // 'tr', // Turkish
@@ -37,8 +37,8 @@ const i18nConfig = {
     es: ['es-ES'],
     fr: ['fr-FR'],
     id: ['id-ID'],
-    // th: ['th-TH'],
-    // ja: ['ja-JP'],
+    th: ['th-TH'],
+    ja: ['ja-JP'],
     // ko: ['ko-KR'],
     // ru: ['ru-RU'],
     // tr: ['tr-TR'],
