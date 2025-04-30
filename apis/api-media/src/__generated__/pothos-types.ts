@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { Prisma, CloudflareImage, MuxVideo, CloudflareR2, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoEdition, VideoSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, TagName, Tag, Tagging, Taxonomy, TaxonomyName, UserMediaRole, ShortLinkDomain, ShortLink, ShortLinkBlocklistDomain } from ".prisma/api-media-client";
+import type { Prisma, CloudflareImage, MuxVideo, CloudflareR2, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoEdition, VideoSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, TagName, Tag, Tagging, Taxonomy, TaxonomyName, UserMediaRole, ShortLinkDomain, ShortLink, ShortLinkBlocklistDomain } from ".prisma/api-media-client/index.js";
 export default interface PrismaTypes {
     CloudflareImage: {
         Name: "CloudflareImage";
