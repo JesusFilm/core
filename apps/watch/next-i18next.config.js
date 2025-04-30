@@ -19,8 +19,8 @@ const i18nConfig = {
     defaultLocale: 'en',
     locales: [
       'en', // English
-      'es' // Spanish
-      // 'fr', // French
+      'es', // Spanish
+      'fr' // French
       // 'id', // Indonesian
       // 'th', // Thai
       // 'ja', // Japanese
@@ -34,8 +34,8 @@ const i18nConfig = {
   localePath,
   fallbackLng: {
     default: ['en'],
-    es: ['es-ES']
-    // fr: ['fr-FR'],
+    es: ['es-ES'],
+    fr: ['fr-FR']
     // id: ['id-ID'],
     // th: ['th-TH'],
     // ja: ['ja-JP'],
