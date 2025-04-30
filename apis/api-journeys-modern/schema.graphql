@@ -30,6 +30,12 @@ enum EventType {
   VideoProgressEvent
 }
 
+type JourneyAiTranslateStatus {
+  id: String!
+  status: String!
+  progress: Int!
+}
+
 type JourneyEventsExportLog {
   id: ID!
   createdAt: DateTimeISO!
@@ -68,6 +74,14 @@ type MuxVideo
   id: ID! @external
   primaryLanguageId: ID @external
   source: VideoBlockSource! @shareable
+}
+
+type Query {
+  journeyAiTranslateStatus(journeyId: ID!): JourneyAiTranslateStatus
+}
+
+type Subscription {
+  dummySubscription: Boolean
 }
 
 type Video

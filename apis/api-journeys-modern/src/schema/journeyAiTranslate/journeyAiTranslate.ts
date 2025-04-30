@@ -32,10 +32,10 @@ const JourneyAiTranslateStatus = builder.objectType(
   JourneyAiTranslateStatusRef,
   {
     name: 'JourneyAiTranslateStatus',
-    subscribe: (subscriptions, root, context) => {
-      if (context.type !== 'authenticated') return
-      subscriptions.register(`${context.user.id}`)
-    },
+    // subscribe: (subscriptions, root, context) => {
+    //   if (context.type !== 'authenticated') return
+    //   subscriptions.register(`${context.user.id}`)
+    // },
     fields: (t) => ({
       id: t.exposeString('id', { nullable: false }),
       status: t.exposeString('status', { nullable: false }),
@@ -44,14 +44,19 @@ const JourneyAiTranslateStatus = builder.objectType(
   }
 )
 
-builder.queryFields((t) => ({
-  journeyAiTranslateStatus: t.withAuth({ isAuthenticated: true }).field({
+// Define query field
+builder.queryField('journeyAiTranslateStatus', (t) =>
+  t.withAuth({ isAuthenticated: true }).field({
     args: {
       journeyId: t.arg({ type: 'ID', required: true })
     },
-    smartSubscription: true,
+    // smartSubscription: true,
     type: JourneyAiTranslateStatus,
     nullable: true,
+    subscribe: (subscriptions, root, args, context) => {
+      if (context.type !== 'authenticated') return
+      subscriptions.register(`${context.user.id}`)
+    },
     resolve: async (_root, { journeyId }, { queue }) => {
       const job = (await queue?.getJob(journeyId)) as Job<AiTranslateJourneyJob>
       if (!job) return null
@@ -66,7 +71,22 @@ builder.queryFields((t) => ({
       }
     }
   })
-}))
+)
+
+// Create a dummy subscription to satisfy the schema requirement
+// builder.subscriptionField('dummySubscription', (t) =>
+//   t.field({
+//     type: 'Boolean',
+//     nullable: true,
+//     subscribe: () => {
+//       // Create an empty async generator that never yields any values
+//       return (async function* () {
+//         // Never yield anything
+//       })()
+//     },
+//     resolve: () => null
+//   })
+// )
 
 builder.mutationFields((t) => ({
   journeyAiTranslateCreate: t
