@@ -12,7 +12,7 @@ export const {
   query,
   PreloadQuery
 } = registerApolloClient(async () => {
-  const tokens = await getTokens(cookies(), authConfig)
+  const tokens = await getTokens(await cookies(), authConfig)
 
   const httpLink = new HttpLink({
     uri: process.env.NEXT_PUBLIC_GATEWAY_URL,

@@ -1,6 +1,6 @@
 import { FetchResult } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
 import { Suspense } from 'react'
@@ -87,140 +87,166 @@ describe('UserNavigation', () => {
   }
 
   it('should show publisher button when publisher', async () => {
-    const { getByTestId } = render(
-      <MockedProvider
-        mocks={[getMeMock, getUserRoleMock, getAdminJourneysMock]}
-      >
-        <Suspense>
-          <UserNavigation user={user} selectedPage="publisher" />
-        </Suspense>
-      </MockedProvider>
-    )
+    await act(async () => {
+      render(
+        <MockedProvider
+          mocks={[getMeMock, getUserRoleMock, getAdminJourneysMock]}
+        >
+          <Suspense>
+            <UserNavigation user={user} selectedPage="publisher" />
+          </Suspense>
+        </MockedProvider>
+      )
+    })
     await waitFor(() =>
-      expect(getByTestId('NavigationListItemProfile')).toBeInTheDocument()
+      expect(
+        screen.getByTestId('NavigationListItemProfile')
+      ).toBeInTheDocument()
     )
-    expect(getByTestId('NavigationListItemPublisher')).toHaveClass(
+    expect(screen.getByTestId('NavigationListItemPublisher')).toHaveClass(
       'Mui-selected'
     )
-    expect(getByTestId('NavigationListItemPublisher')).toHaveAttribute(
+    expect(screen.getByTestId('NavigationListItemPublisher')).toHaveAttribute(
       'href',
       '/publisher'
     )
   })
 
   it('should hide publisher button when not publisher', async () => {
-    const { getByTestId, queryByTestId } = render(
-      <MockedProvider
-        mocks={[
-          getMeMock,
-          getAdminJourneysMock,
-          {
-            ...getUserRoleMock,
-            result: {
-              data: {
-                getUserRole: {
-                  id: 'userId',
-                  roles: [],
-                  __typename: 'UserRole'
+    await act(async () => {
+      render(
+        <MockedProvider
+          mocks={[
+            getMeMock,
+            getAdminJourneysMock,
+            {
+              ...getUserRoleMock,
+              result: {
+                data: {
+                  getUserRole: {
+                    id: 'userId',
+                    roles: [],
+                    __typename: 'UserRole'
+                  }
                 }
               }
             }
-          }
-        ]}
-      >
-        <Suspense>
-          <UserNavigation user={user} selectedPage="publisher" />
-        </Suspense>
-      </MockedProvider>
-    )
-    await waitFor(() =>
-      expect(getByTestId('NavigationListItemProfile')).toBeInTheDocument()
-    )
-    expect(queryByTestId('NavigationListItemPublisher')).not.toBeInTheDocument()
-  })
-
-  it('should show impersonate button when super admin', async () => {
-    const { getByTestId, getByRole, queryByTestId } = render(
-      <MockedProvider
-        mocks={[getMeMock, getUserRoleMock, getAdminJourneysMock]}
-      >
-        <SnackbarProvider>
+          ]}
+        >
           <Suspense>
             <UserNavigation user={user} selectedPage="publisher" />
           </Suspense>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
+        </MockedProvider>
+      )
+    })
     await waitFor(() =>
-      expect(getByTestId('NavigationListItemProfile')).toBeInTheDocument()
+      expect(
+        screen.getByTestId('NavigationListItemProfile')
+      ).toBeInTheDocument()
     )
-    fireEvent.click(getByTestId('NavigationListItemImpersonate'))
+    expect(
+      screen.queryByTestId('NavigationListItemPublisher')
+    ).not.toBeInTheDocument()
+  })
+
+  it('should show impersonate button when super admin', async () => {
+    await act(async () => {
+      render(
+        <MockedProvider
+          mocks={[getMeMock, getUserRoleMock, getAdminJourneysMock]}
+        >
+          <SnackbarProvider>
+            <Suspense>
+              <UserNavigation user={user} selectedPage="publisher" />
+            </Suspense>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+    })
     await waitFor(() =>
-      expect(getByTestId('ImpersonateDialog')).toBeInTheDocument()
+      expect(
+        screen.getByTestId('NavigationListItemProfile')
+      ).toBeInTheDocument()
     )
-    fireEvent.click(getByRole('button', { name: 'Cancel' }))
+    fireEvent.click(screen.getByTestId('NavigationListItemImpersonate'))
     await waitFor(() =>
-      expect(queryByTestId('ImpersonateDialog')).not.toBeInTheDocument()
+      expect(screen.getByTestId('ImpersonateDialog')).toBeInTheDocument()
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+    await waitFor(() =>
+      expect(screen.queryByTestId('ImpersonateDialog')).not.toBeInTheDocument()
     )
   })
 
   it('should hide impersonate button when not super admin', async () => {
-    const { getByTestId, queryByTestId } = render(
-      <MockedProvider
-        mocks={[
-          getAdminJourneysMock,
-          getUserRoleMock,
-          {
-            ...getMeMock,
-            result: {
-              data: {
-                me: {
-                  id: 'userId',
-                  firstName: 'Amin',
-                  lastName: 'One',
-                  imageUrl: 'https://bit.ly/3Gth4Yf',
-                  email: 'amin@email.com',
-                  superAdmin: false,
-                  __typename: 'User'
+    await act(async () => {
+      render(
+        <MockedProvider
+          mocks={[
+            getAdminJourneysMock,
+            getUserRoleMock,
+            {
+              ...getMeMock,
+              result: {
+                data: {
+                  me: {
+                    id: 'userId',
+                    firstName: 'Amin',
+                    lastName: 'One',
+                    imageUrl: 'https://bit.ly/3Gth4Yf',
+                    email: 'amin@email.com',
+                    superAdmin: false,
+                    __typename: 'User'
+                  }
                 }
               }
             }
-          }
-        ]}
-      >
-        <Suspense>
-          <UserNavigation user={user} selectedPage="publisher" />
-        </Suspense>
-      </MockedProvider>
-    )
+          ]}
+        >
+          <Suspense>
+            <UserNavigation user={user} selectedPage="publisher" />
+          </Suspense>
+        </MockedProvider>
+      )
+    })
     await waitFor(() =>
-      expect(getByTestId('NavigationListItemProfile')).toBeInTheDocument()
+      expect(
+        screen.getByTestId('NavigationListItemProfile')
+      ).toBeInTheDocument()
     )
     expect(
-      queryByTestId('NavigationListItemImpersonate')
+      screen.queryByTestId('NavigationListItemImpersonate')
     ).not.toBeInTheDocument()
   })
 
   it('should show profile button', async () => {
-    const { getByTestId, queryByTestId, getByRole } = render(
-      <MockedProvider
-        mocks={[getMeMock, getUserRoleMock, getAdminJourneysMock]}
-      >
-        <SnackbarProvider>
-          <Suspense>
-            <UserNavigation user={user} />
-          </Suspense>
-        </SnackbarProvider>
-      </MockedProvider>
+    await act(async () => {
+      render(
+        <MockedProvider
+          mocks={[getMeMock, getUserRoleMock, getAdminJourneysMock]}
+        >
+          <SnackbarProvider>
+            <Suspense>
+              <UserNavigation user={user} />
+            </Suspense>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+    })
+    await waitFor(() =>
+      expect(
+        screen.getByTestId('NavigationListItemProfile')
+      ).toBeInTheDocument()
+    )
+    fireEvent.click(screen.getByTestId('NavigationListItemProfile'))
+    await waitFor(() =>
+      expect(screen.getByTestId('UserMenu')).toBeInTheDocument()
+    )
+    fireEvent.click(
+      screen.getByRole('presentation').firstElementChild as Element
     )
     await waitFor(() =>
-      expect(getByTestId('NavigationListItemProfile')).toBeInTheDocument()
-    )
-    fireEvent.click(getByTestId('NavigationListItemProfile'))
-    await waitFor(() => expect(getByTestId('UserMenu')).toBeInTheDocument())
-    fireEvent.click(getByRole('presentation').firstElementChild as Element)
-    await waitFor(() =>
-      expect(queryByTestId('UserMenu')).not.toBeInTheDocument()
+      expect(screen.queryByTestId('UserMenu')).not.toBeInTheDocument()
     )
   })
 
@@ -232,74 +258,80 @@ describe('UserNavigation', () => {
       () => getAdminJourneysMock.result as FetchResult<GetAdminJourneys>
     )
     const getMeMockResult = jest.fn(() => ({ data: { me: null } }))
-    const { queryByTestId } = render(
-      <MockedProvider
-        mocks={[
-          { ...getUserRoleMock, result: getUserRoleMockResult },
-          { ...getAdminJourneysMock, result: getAdminJourneysMockResult },
-          { ...getMeMock, result: getMeMockResult }
-        ]}
-      >
-        <Suspense>
-          <UserNavigation user={user} />
-        </Suspense>
-      </MockedProvider>
-    )
+    await act(async () => {
+      render(
+        <MockedProvider
+          mocks={[
+            { ...getUserRoleMock, result: getUserRoleMockResult },
+            { ...getAdminJourneysMock, result: getAdminJourneysMockResult },
+            { ...getMeMock, result: getMeMockResult }
+          ]}
+        >
+          <Suspense>
+            <UserNavigation user={user} />
+          </Suspense>
+        </MockedProvider>
+      )
+    })
     await waitFor(() => {
       expect(getUserRoleMockResult).toHaveBeenCalledTimes(1)
       expect(getAdminJourneysMockResult).toHaveBeenCalledTimes(1)
       expect(getMeMockResult).toHaveBeenCalledTimes(1)
     })
-    expect(queryByTestId('NavigationListItemProfile')).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId('NavigationListItemProfile')
+    ).not.toBeInTheDocument()
   })
 
   it('should set tooltip to new editing request', async () => {
     const setTooltip = jest.fn()
-    render(
-      <MockedProvider
-        mocks={[
-          getMeMock,
-          getUserRoleMock,
-          {
-            ...getAdminJourneysMock,
-            result: {
-              data: {
-                journeys: [
-                  {
-                    id: 'journeyId',
-                    title: 'Journey Title',
-                    status: JourneyStatus.draft,
-                    __typename: 'Journey',
-                    userJourneys: [
-                      {
-                        id: 'userJourneyId',
-                        role: UserJourneyRole.owner,
-                        user: {
-                          id: 'userId',
-                          openedAt: new Date().toISOString()
+    await act(async () => {
+      render(
+        <MockedProvider
+          mocks={[
+            getMeMock,
+            getUserRoleMock,
+            {
+              ...getAdminJourneysMock,
+              result: {
+                data: {
+                  journeys: [
+                    {
+                      id: 'journeyId',
+                      title: 'Journey Title',
+                      status: JourneyStatus.draft,
+                      __typename: 'Journey',
+                      userJourneys: [
+                        {
+                          id: 'userJourneyId',
+                          role: UserJourneyRole.owner,
+                          user: {
+                            id: 'userId',
+                            openedAt: new Date().toISOString()
+                          }
+                        },
+                        {
+                          id: 'userJourneyId1',
+                          role: UserJourneyRole.inviteRequested,
+                          user: {
+                            id: 'userId1',
+                            openedAt: new Date().toISOString()
+                          }
                         }
-                      },
-                      {
-                        id: 'userJourneyId1',
-                        role: UserJourneyRole.inviteRequested,
-                        user: {
-                          id: 'userId1',
-                          openedAt: new Date().toISOString()
-                        }
-                      }
-                    ]
-                  }
-                ]
+                      ]
+                    }
+                  ]
+                }
               }
             }
-          }
-        ]}
-      >
-        <Suspense>
-          <UserNavigation user={user} setTooltip={setTooltip} />
-        </Suspense>
-      </MockedProvider>
-    )
+          ]}
+        >
+          <Suspense>
+            <UserNavigation user={user} setTooltip={setTooltip} />
+          </Suspense>
+        </MockedProvider>
+      )
+    })
     await waitFor(() =>
       expect(setTooltip).toHaveBeenCalledWith('New Editing Request')
     )
@@ -307,43 +339,45 @@ describe('UserNavigation', () => {
 
   it('should set tooltip to new journey', async () => {
     const setTooltip = jest.fn()
-    render(
-      <MockedProvider
-        mocks={[
-          getMeMock,
-          getUserRoleMock,
-          {
-            ...getAdminJourneysMock,
-            result: {
-              data: {
-                journeys: [
-                  {
-                    id: 'journeyId',
-                    title: 'Journey Title',
-                    status: JourneyStatus.draft,
-                    __typename: 'Journey',
-                    userJourneys: [
-                      {
-                        id: 'userJourneyId',
-                        role: UserJourneyRole.owner,
-                        user: {
-                          id: 'userId',
-                          openedAt: null
+    await act(async () => {
+      render(
+        <MockedProvider
+          mocks={[
+            getMeMock,
+            getUserRoleMock,
+            {
+              ...getAdminJourneysMock,
+              result: {
+                data: {
+                  journeys: [
+                    {
+                      id: 'journeyId',
+                      title: 'Journey Title',
+                      status: JourneyStatus.draft,
+                      __typename: 'Journey',
+                      userJourneys: [
+                        {
+                          id: 'userJourneyId',
+                          role: UserJourneyRole.owner,
+                          user: {
+                            id: 'userId',
+                            openedAt: null
+                          }
                         }
-                      }
-                    ]
-                  }
-                ]
+                      ]
+                    }
+                  ]
+                }
               }
             }
-          }
-        ]}
-      >
-        <Suspense>
-          <UserNavigation user={user} setTooltip={setTooltip} />
-        </Suspense>
-      </MockedProvider>
-    )
+          ]}
+        >
+          <Suspense>
+            <UserNavigation user={user} setTooltip={setTooltip} />
+          </Suspense>
+        </MockedProvider>
+      )
+    })
     await waitFor(() => expect(setTooltip).toHaveBeenCalledWith('New Journey'))
   })
 })
