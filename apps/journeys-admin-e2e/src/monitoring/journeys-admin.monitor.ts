@@ -138,8 +138,8 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
     for (let i = 0; i < 5 && !buttonVisible; i++) {
       await previewPage.waitForLoadState('load')
       buttonVisible = await overlayContainer
-          .getByRole('button', { name: 'Changed Button Text' })
-          .isVisible()
+        .getByRole('button', { name: 'Changed Button Text' })
+        .isVisible()
       if (!buttonVisible) {
         // Wait 5 seconds as content publishing sometimes takes time
         await previewPage.waitForTimeout(5000)
