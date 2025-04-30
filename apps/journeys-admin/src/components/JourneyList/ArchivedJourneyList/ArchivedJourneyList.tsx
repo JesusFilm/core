@@ -1,14 +1,12 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
-import Card from '@mui/material/Card'
 import Grid from '@mui/material/Grid2'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
@@ -84,17 +82,6 @@ export function ArchivedJourneyList({
   >()
   const [openTrashDialog, setOpenTrashDialog] = useState<boolean | undefined>()
 
-  const needsFourColumns = useMediaQuery('(min-width: 94rem)')
-  const needsThreeColumns = useMediaQuery('(min-width: 78rem)')
-  const needsTwoColumns = useMediaQuery('(min-width: 62rem)')
-
-  const gridSize = useMemo(() => {
-    if (needsFourColumns) return 3
-    if (needsThreeColumns) return 4
-    if (needsTwoColumns) return 6
-    return 12
-  }, [needsFourColumns, needsThreeColumns, needsTwoColumns])
-
   async function handleRestoreSubmit(): Promise<void> {
     try {
       const journeyIds = data?.journeys
@@ -169,7 +156,7 @@ export function ArchivedJourneyList({
         <Box sx={{ mt: 5 }}>
           <Grid container spacing={5} rowSpacing={5}>
             {sortedJourneys.map((journey) => (
-              <Grid key={journey.id} size={{ xs: 12, sm: 6, md: gridSize }}>
+              <Grid key={journey.id} size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 3 }}>
                 <JourneyProvider
                   value={{
                     journey: journey as unknown as JourneyFields,
