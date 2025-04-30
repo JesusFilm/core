@@ -1,1 +1,0 @@
-export { TranslateJourneyMenuItem } from './TranslateJourneyMenuItem'
