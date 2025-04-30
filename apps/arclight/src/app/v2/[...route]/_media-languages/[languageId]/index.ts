@@ -239,7 +239,11 @@ mediaLanguage.openapi(route, async (c) => {
       language.countryLanguages.find(({ primary }) => primary)?.country.id ??
       '',
     name: language.name[0]?.value ?? language.fallbackName[0]?.value ?? '',
-    nameNative: language.nameNative.find(({ primary }) => primary)?.value,
+    nameNative:
+      language.nameNative.find(({ primary }) => primary)?.value ??
+      language.name[0]?.value ??
+      language.fallbackName[0]?.value ??
+      '',
     alternateLanguageName: '',
     alternateLanguageNameNative: '',
     metadataLanguageTag: metadataLanguageTags[0] ?? 'en',
