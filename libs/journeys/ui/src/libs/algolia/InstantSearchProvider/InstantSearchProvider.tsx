@@ -22,7 +22,7 @@ function getSearchClient(): SearchClient {
   return searchClient
 }
 
-const InstantSearchContext = createContext<SearchClient | null>(null)
+const InstantSearchContext = createContext<SearchClient>(getSearchClient())
 
 interface InstantSearchProviderProps {
   children: ReactNode
