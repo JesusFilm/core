@@ -232,6 +232,7 @@ export class JourneyPage {
     await expect(createJourneyLoaderPath).toBeHidden({
       timeout: sixtySecondsTimeout
     })
+    // eslint-disable-next-line playwright/no-networkidle
     await this.page.waitForLoadState('networkidle')
   }
 
