@@ -1,14 +1,10 @@
 import { Job } from 'bullmq'
 
-export interface AiTranslateJourneyJob {
-  userId: string
-  journeyId: string
-  name: string
-  textLanguageId: string
-  videoLanguageId: string
-}
+import { AiTranslateJourneyJob } from '../service'
 
-export async function service(job: Job<AiTranslateJourneyJob>): Promise<void> {
+export async function journeyAiTranslate(
+  job: Job<AiTranslateJourneyJob>
+): Promise<void> {
   await duplicateJourney(job)
   await translateJourney(job)
 }
