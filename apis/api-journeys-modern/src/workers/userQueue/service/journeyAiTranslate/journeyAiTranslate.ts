@@ -360,6 +360,295 @@ export async function translateJourney(
     })
 
     // Update progress
+    await job.updateProgress(70)
+
+    // First translate the journey title and description
+    const UPDATE_JOURNEY = graphql(`
+      mutation UpdateJourney($id: ID!, $input: JourneyUpdateInput!) {
+        journeyUpdate(id: $id, input: $input) {
+          id
+          title
+          description
+        }
+      }
+    `)
+
+    try {
+      // Translate title and description
+      const titleDescPrompt = `
+        Translate the following journey title and description to ${job.data.targetLanguageName || analysisTargetLanguage}.
+        
+        Original title: "${journeyData.journey.title}"
+        Original description: "${journeyData.journey.description || ''}"
+        
+        Translation context:
+        ${journeyAnalysis}
+        
+        Return in this format:
+        Title: [translated title]
+        Description: [translated description]
+      `
+
+      const { text: translatedTitleDesc } = await generateText({
+        model: geminiModel,
+        prompt: titleDescPrompt
+      })
+
+      // Parse the response
+      let translatedTitle = journeyData.journey.title
+      let translatedDescription = journeyData.journey.description || ''
+
+      if (translatedTitleDesc) {
+        const titleMatch = translatedTitleDesc.match(/Title: (.*?)(?:\r?\n|$)/)
+        const descMatch = translatedTitleDesc.match(
+          /Description: (.*?)(?:\r?\n|$)/
+        )
+
+        if (titleMatch && titleMatch[1]) {
+          translatedTitle = titleMatch[1].trim()
+        }
+
+        if (descMatch && descMatch[1]) {
+          translatedDescription = descMatch[1].trim()
+        }
+
+        // Update the journey
+        await apollo.mutate({
+          mutation: UPDATE_JOURNEY,
+          variables: {
+            id: job.data.outputJourneyId,
+            input: {
+              title: translatedTitle,
+              description: translatedDescription
+            }
+          }
+        })
+
+        console.log('Successfully translated journey title and description')
+      }
+    } catch (titleTranslationError) {
+      console.error(
+        'Error translating journey title/description:',
+        titleTranslationError
+      )
+      // Continue with the rest of the translation
+    }
+
+    // 5. Analyze each card and immediately translate its content
+    // Define the mutations for updating blocks
+    const UPDATE_TYPOGRAPHY_BLOCK = graphql(`
+      mutation UpdateTypographyBlock(
+        $id: ID!
+        $journeyId: ID!
+        $input: TypographyBlockUpdateInput!
+      ) {
+        typographyBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+          id
+          content
+        }
+      }
+    `)
+
+    const UPDATE_BUTTON_BLOCK = graphql(`
+      mutation UpdateButtonBlock(
+        $id: ID!
+        $journeyId: ID!
+        $input: ButtonBlockUpdateInput!
+      ) {
+        buttonBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+          id
+          label
+        }
+      }
+    `)
+
+    // Identify all card blocks
+    const cardBlocks = blocks.filter(
+      (block) => block.__typename === 'CardBlock'
+    )
+
+    console.log(
+      `Analyzing and translating ${cardBlocks.length} card blocks individually`
+    )
+
+    for (let i = 0; i < cardBlocks.length; i++) {
+      const cardBlock = cardBlocks[i]
+
+      // Get all child blocks of this card
+      const cardChildBlocks = blocks.filter(
+        (block) => block.parentBlockId === cardBlock.id
+      )
+
+      // Extract text content from typography blocks in this card
+      const cardTypographyBlocks = cardChildBlocks.filter(
+        (block) => block.__typename === 'TypographyBlock'
+      )
+
+      // Extract button labels from button blocks in this card
+      const cardButtonBlocks = cardChildBlocks.filter(
+        (block) => block.__typename === 'ButtonBlock'
+      )
+
+      let cardContent = ''
+
+      // Compile card content
+      cardTypographyBlocks.forEach((block) => {
+        if (block.content) {
+          cardContent += `Text: ${block.content}\n`
+        }
+      })
+
+      cardButtonBlocks.forEach((block) => {
+        if (block.label) {
+          cardContent += `Button: ${block.label}\n`
+        }
+      })
+
+      if (cardContent) {
+        try {
+          // Analyze this card in relation to the journey intent
+          const cardAnalysisPrompt = `
+            I'm going to give you a journey analysis and the content of a specific card in that journey.
+            Your task is to analyze how this specific card contributes to the overall journey intent.
+            
+            Overall journey analysis:
+            ${journeyAnalysis}
+            
+            Card content:
+            ${cardContent}
+            
+            Please analyze:
+            1. How does this card relate to the overall journey intent?
+            2. What is the specific purpose of this card?
+            3. What emotion or action is this card trying to evoke?
+            4. Any cultural considerations for translating this card to ${job.data.targetLanguageName || analysisTargetLanguage}?
+            
+            Provide a concise analysis that will help inform translation decisions.
+          `
+
+          const { text: cardAnalysis } = await generateText({
+            model: geminiModel,
+            prompt: cardAnalysisPrompt
+          })
+
+          if (cardAnalysis) {
+            console.log(`Successfully analyzed card ${cardBlock.id}`)
+
+            // Now immediately translate all text blocks in this card
+            for (const textBlock of cardTypographyBlocks) {
+              if (!textBlock.content) continue
+
+              try {
+                // Use Gemini to translate the content
+                const translationPrompt = `
+                  Translate the following text to ${job.data.targetLanguageName || analysisTargetLanguage}.
+                  
+                  Original text: "${textBlock.content}"
+                  
+                  Journey context:
+                  ${journeyAnalysis}
+                  
+                  Specific card context:
+                  ${cardAnalysis}
+                  
+                  Please preserve formatting, emphasis (like bold, italic), and maintain the same tone and style.
+                  Return ONLY the translated text without additional notes or explanations.
+                `
+
+                const { text: translatedContent } = await generateText({
+                  model: geminiModel,
+                  prompt: translationPrompt
+                })
+
+                if (translatedContent) {
+                  // Update the block with translated content
+                  await apollo.mutate({
+                    mutation: UPDATE_TYPOGRAPHY_BLOCK,
+                    variables: {
+                      id: textBlock.id,
+                      journeyId: job.data.outputJourneyId,
+                      input: {
+                        content: translatedContent.trim()
+                      }
+                    }
+                  })
+
+                  console.log(
+                    `Successfully translated text block ${textBlock.id} in card ${cardBlock.id}`
+                  )
+                }
+              } catch (textTranslationError) {
+                console.error(
+                  `Error translating text block ${textBlock.id} in card ${cardBlock.id}:`,
+                  textTranslationError
+                )
+                // Continue with other blocks
+              }
+            }
+
+            // Translate all button blocks in this card
+            for (const buttonBlock of cardButtonBlocks) {
+              if (!buttonBlock.label) continue
+
+              try {
+                // Use Gemini to translate the button label
+                const translationPrompt = `
+                  Translate the following button label to ${job.data.targetLanguageName || analysisTargetLanguage}.
+                  
+                  Original button label: "${buttonBlock.label}"
+                  
+                  Journey context:
+                  ${journeyAnalysis}
+                  
+                  Specific card context:
+                  ${cardAnalysis}
+                  
+                  Keep it concise and appropriate for a button. Return ONLY the translated text.
+                `
+
+                const { text: translatedLabel } = await generateText({
+                  model: geminiModel,
+                  prompt: translationPrompt
+                })
+
+                if (translatedLabel) {
+                  // Update the button block with translated label
+                  await apollo.mutate({
+                    mutation: UPDATE_BUTTON_BLOCK,
+                    variables: {
+                      id: buttonBlock.id,
+                      journeyId: job.data.outputJourneyId,
+                      input: {
+                        label: translatedLabel.trim()
+                      }
+                    }
+                  })
+
+                  console.log(
+                    `Successfully translated button ${buttonBlock.id} in card ${cardBlock.id}`
+                  )
+                }
+              } catch (buttonTranslationError) {
+                console.error(
+                  `Error translating button ${buttonBlock.id} in card ${cardBlock.id}:`,
+                  buttonTranslationError
+                )
+                // Continue with other blocks
+              }
+            }
+          }
+        } catch (analysisError) {
+          console.error(`Error analyzing card ${cardBlock.id}:`, analysisError)
+          // Continue with other cards
+        }
+      }
+
+      // Update progress incrementally
+      const progressIncrement = Math.min(15 / cardBlocks.length, 0.5)
+      await job.updateProgress(Math.min(100, 70 + (i + 1) * progressIncrement))
+    }
+
+    // Update progress
     await job.updateProgress(100)
   } catch (error: unknown) {
     console.error('Error analyzing journey with Gemini:', error)
