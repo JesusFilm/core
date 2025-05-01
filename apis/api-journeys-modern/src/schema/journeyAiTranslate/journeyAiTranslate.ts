@@ -2,7 +2,7 @@ import { Job, Queue, QueueEvents, Worker } from 'bullmq'
 
 import { connection } from '../../lib/redisConnection'
 import { queueName } from '../../workers/userQueue'
-import { AiTranslateJourneyJob , service } from '../../workers/userQueue/service'
+import { AiTranslateJourneyJob, service } from '../../workers/userQueue/service'
 import { builder } from '../builder'
 
 class JourneyAiTranslateStatusShape {
@@ -115,19 +115,19 @@ builder.subscriptionField('journeyAiTranslateStatus', (t) =>
 
         // Add event listeners for all relevant job states
         queueEvents.on('progress', ({ jobId: eventJobId }) => {
-          if (eventJobId === jobId) handleJobEvent()
+          if (eventJobId === jobId) void handleJobEvent()
         })
 
         queueEvents.on('completed', ({ jobId: eventJobId }) => {
-          if (eventJobId === jobId) handleJobEvent()
+          if (eventJobId === jobId) void handleJobEvent()
         })
 
         queueEvents.on('failed', ({ jobId: eventJobId }) => {
-          if (eventJobId === jobId) handleJobEvent()
+          if (eventJobId === jobId) void handleJobEvent()
         })
 
         queueEvents.on('active', ({ jobId: eventJobId }) => {
-          if (eventJobId === jobId) handleJobEvent()
+          if (eventJobId === jobId) void handleJobEvent()
         })
 
         try {
@@ -210,11 +210,11 @@ builder.mutationFields((t) => ({
             console.error(`Job ${job?.id} failed with error:`, err)
           })
 
-          worker.on('drained', async () => {
+          worker.on('drained', () => {
             console.log('Queue is empty, closing worker')
             if (context.worker) {
               try {
-                await context.worker.close()
+                void context.worker.close()
                 context.worker = undefined
               } catch (error) {
                 console.error('Error closing worker:', error)
