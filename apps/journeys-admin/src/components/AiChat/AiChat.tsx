@@ -9,7 +9,7 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, Formik, FormikHelpers } from 'formik'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useRef } from 'react'
+import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import ArrowUpIcon from '@core/shared/ui/icons/ArrowUp'
@@ -25,7 +25,6 @@ interface FormValues {
 
 export function AiChat({ open = false }: AiChatProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const formikRef = useRef<any>(null)
 
   const { messages, append, setMessages } = useChat({
     maxSteps: 5
@@ -78,12 +77,16 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
     }
   }
 
+  const nonSystemMessages = messages
+    .filter((message) => message.role !== 'system')
+    .reverse()
+
   return (
     <Grow
       in={open}
+      style={{ transformOrigin: 'bottom left' }}
       mountOnEnter
       unmountOnExit
-      style={{ transformOrigin: 'bottom left' }}
     >
       <Card
         sx={{
@@ -92,7 +95,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
           bottom: 100,
           borderRadius: 4,
           zIndex: 1200,
-          width: 400
+          width: 600
         }}
       >
         {/* Chat Messages Display */}
@@ -103,64 +106,74 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
             gap: 2,
             p: 5,
             pb: 0,
-            maxHeight: 500,
+            maxHeight: 800,
+            minHeight: 150,
             overflowY: 'auto'
           }}
         >
-          {messages
-            .filter((message) => message.role !== 'system')
-            .reverse()
-            .map((message) => (
-              <Box
-                key={message.id}
+          {nonSystemMessages.length === 0 && (
+            <Typography
+              variant="body1"
+              textAlign="center"
+              color="text.secondary"
+              sx={{
+                my: 4,
+                mx: 3,
+                flexGrow: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              {t(
+                'NextSteps AI can help you make your journey more effective! Ask it anything.'
+              )}
+            </Typography>
+          )}
+          {nonSystemMessages.map((message) => (
+            <Box
+              key={message.id}
+              sx={{
+                backgroundColor:
+                  message.role === 'user'
+                    ? 'action.selected'
+                    : 'background.paper',
+                py: 2,
+                px: message.role === 'user' ? 3 : 0,
+                borderRadius: 2,
+                alignSelf: message.role === 'user' ? 'flex-end' : 'flex-start',
+                maxWidth: '80%'
+              }}
+            >
+              <Typography
+                variant="body1"
                 sx={{
-                  backgroundColor:
-                    message.role === 'user'
-                      ? 'action.selected'
-                      : 'background.paper',
-                  py: 2,
-                  px: message.role === 'user' ? 3 : 0,
-                  borderRadius: 2,
-                  alignSelf:
-                    message.role === 'user' ? 'flex-end' : 'flex-start',
-                  maxWidth: '80%'
+                  whiteSpace: 'pre-wrap'
                 }}
               >
-                <Typography
-                  variant="body1"
-                  sx={{
-                    whiteSpace: 'pre-wrap'
-                  }}
-                >
-                  {message.parts.map((part, i) => {
-                    switch (part.type) {
-                      case 'text':
-                        return (
-                          <span key={`${message.id}-${i}`}>{part.text}</span>
-                        )
-                      case 'tool-invocation':
-                        return (
-                          <pre
-                            key={`${message.id}-${i}`}
-                            style={{ fontSize: '0.8em', margin: '8px 0' }}
-                          >
-                            {JSON.stringify(part.toolInvocation, null, 2)}
-                          </pre>
-                        )
-                      default:
-                        return null
-                    }
-                  })}
-                </Typography>
-              </Box>
-            ))}
+                {message.parts.map((part, i) => {
+                  switch (part.type) {
+                    case 'text':
+                      return <span key={`${message.id}-${i}`}>{part.text}</span>
+                    case 'tool-invocation':
+                      return (
+                        <pre
+                          key={`${message.id}-${i}`}
+                          style={{ fontSize: '0.8em', margin: '8px 0' }}
+                        >
+                          {JSON.stringify(part.toolInvocation, null, 2)}
+                        </pre>
+                      )
+                    default:
+                      return null
+                  }
+                })}
+              </Typography>
+            </Box>
+          ))}
         </Box>
         <CardContent>
-          <Formik
-            innerRef={formikRef}
-            initialValues={initialValues}
-            onSubmit={handleFormikSubmit}
-          >
+          <Formik initialValues={initialValues} onSubmit={handleFormikSubmit}>
             {({ values, handleChange, handleSubmit }) => (
               <Form>
                 <Stack direction="row" spacing={2}>
@@ -188,6 +201,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
                         handleSubmit()
                       }
                     }}
+                    autoFocus
                   />
                   <Button type="submit" variant="outlined">
                     <ArrowUpIcon />
