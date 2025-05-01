@@ -1,1 +1,0 @@
-export { VideoBibleCitation } from './VideoBibleCitation'
