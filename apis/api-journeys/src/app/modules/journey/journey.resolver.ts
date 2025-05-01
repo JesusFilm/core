@@ -450,6 +450,285 @@ export class JourneyResolver {
 
   @Mutation()
   @UseGuards(AppCaslGuard)
+  async journeyDuplicate(
+    @CaslAbility() ability: AppAbility,
+    @Args('id') id: string,
+    @CurrentUserId() userId: string,
+    @Args('teamId') teamId: string
+  ): Promise<Journey | undefined> {
+    const journey = await this.prismaService.journey.findUnique({
+      where: { id },
+      include: {
+        userJourneys: true,
+        journeyTags: true,
+        team: {
+          include: { userTeams: true }
+        }
+      }
+    })
+    if (journey == null)
+      throw new GraphQLError('journey not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    if (ability.cannot(Action.Read, subject('Journey', journey)))
+      throw new GraphQLError('user is not allowed to duplicate journey', {
+        extensions: { code: 'FORBIDDEN' }
+      })
+
+    const duplicateJourneyId = uuidv4()
+
+    const originalBlocks = await this.prismaService.block.findMany({
+      where: { journeyId: journey.id, typename: 'StepBlock', deletedAt: null },
+      orderBy: { parentOrder: 'asc' },
+      include: { action: true }
+    })
+    let duplicateMenuStepBlockId: string | undefined
+    const duplicateStepIds = new Map<string, string>()
+    originalBlocks.forEach((block) => {
+      const duplicateBlockId = uuidv4()
+      if (journey.menuStepBlockId === block.id) {
+        duplicateMenuStepBlockId = duplicateBlockId
+      }
+      duplicateStepIds.set(block.id, duplicateBlockId)
+    })
+    const duplicateBlocks = await this.blockService.getDuplicateChildren(
+      originalBlocks,
+      id,
+      null,
+      true,
+      duplicateStepIds,
+      undefined,
+      duplicateJourneyId,
+      duplicateStepIds
+    )
+
+    let duplicatePrimaryImageBlock: BlockWithAction | undefined
+    if (journey.primaryImageBlockId != null) {
+      const primaryImageBlock = await this.prismaService.block.findUnique({
+        where: { id: journey.primaryImageBlockId },
+        include: { action: true }
+      })
+      if (primaryImageBlock != null) {
+        const id = uuidv4()
+        duplicatePrimaryImageBlock = {
+          ...omit(primaryImageBlock, ['id']),
+          id
+        }
+
+        duplicateBlocks.push(duplicatePrimaryImageBlock)
+      }
+    }
+
+    let duplicateLogoImageBlock: BlockWithAction | undefined
+    if (journey.logoImageBlockId != null) {
+      const logoImageBlock = await this.prismaService.block.findUnique({
+        where: { id: journey.logoImageBlockId },
+        include: { action: true }
+      })
+      if (logoImageBlock != null) {
+        const id = uuidv4()
+        duplicateLogoImageBlock = {
+          ...omit(logoImageBlock, ['id']),
+          id
+        }
+
+        duplicateBlocks.push(duplicateLogoImageBlock)
+      }
+    }
+
+    const existingActiveDuplicateJourneys =
+      await this.prismaService.journey.findMany({
+        where: {
+          title: {
+            contains: journey.title
+          },
+          archivedAt: null,
+          trashedAt: null,
+          deletedAt: null,
+          template: false,
+          team: { id: teamId }
+        }
+      })
+    const duplicates = this.getJourneyDuplicateNumbers(
+      existingActiveDuplicateJourneys,
+      journey.title
+    )
+    const duplicateNumber = this.getFirstMissingNumber(duplicates)
+    const duplicateTitle = `${journey.title}${
+      duplicateNumber === 0
+        ? ''
+        : duplicateNumber === 1
+          ? ' copy'
+          : ` copy ${duplicateNumber}`
+    }`.trimEnd()
+
+    let slug = slugify(duplicateTitle, {
+      lower: true,
+      strict: true
+    })
+
+    let retry = true
+    while (retry) {
+      try {
+        const duplicateJourney = await this.prismaService.$transaction(
+          async (tx) => {
+            await tx.journey.create({
+              data: {
+                ...omit(journey, [
+                  'primaryImageBlockId',
+                  'creatorImageBlockId',
+                  'creatorDescription',
+                  'publishedAt',
+                  'hostId',
+                  'teamId',
+                  'createdAt',
+                  'strategySlug',
+                  'journeyTags',
+                  'logoImageBlockId',
+                  'menuStepBlockId'
+                ]),
+                id: duplicateJourneyId,
+                slug,
+                title: duplicateTitle,
+                status: JourneyStatus.published,
+                publishedAt: new Date(),
+                featuredAt: null,
+                template: false,
+                team: { connect: { id: teamId } },
+                userJourneys: {
+                  create: {
+                    userId,
+                    role: UserJourneyRole.owner
+                  }
+                }
+              }
+            })
+            const duplicateJourney = await tx.journey.findUnique({
+              where: { id: duplicateJourneyId },
+              include: {
+                userJourneys: true,
+                team: {
+                  include: { userTeams: true }
+                }
+              }
+            })
+            if (duplicateJourney == null)
+              throw new GraphQLError('journey not found', {
+                extensions: { code: 'NOT_FOUND' }
+              })
+            if (
+              !ability.can(Action.Create, subject('Journey', duplicateJourney))
+            )
+              throw new GraphQLError(
+                'user is not allowed to duplicate journey',
+                {
+                  extensions: { code: 'FORBIDDEN' }
+                }
+              )
+            return duplicateJourney
+          }
+        )
+
+        // save base blocks
+        await this.blockService.saveAll(
+          duplicateBlocks.map((block) => ({
+            ...omit(block, [
+              'journeyId',
+              'parentBlockId',
+              'posterBlockId',
+              'coverBlockId',
+              'nextBlockId',
+              'action'
+            ]),
+            typename: block.typename,
+            journey: {
+              connect: { id: duplicateJourneyId }
+            }
+          }))
+        )
+        // update block references after import
+        for (const block of duplicateBlocks) {
+          if (
+            block.parentBlockId != null ||
+            block.posterBlockId != null ||
+            block.coverBlockId != null ||
+            block.nextBlockId != null
+          ) {
+            await this.prismaService.block.update({
+              where: { id: block.id },
+              data: {
+                parentBlockId: block.parentBlockId ?? undefined,
+                posterBlockId: block.posterBlockId ?? undefined,
+                coverBlockId: block.coverBlockId ?? undefined,
+                nextBlockId: block.nextBlockId ?? undefined
+              }
+            })
+          }
+          if (block.action != null && !isEmpty(block.action)) {
+            await this.prismaService.action.create({
+              data: {
+                ...block.action,
+                parentBlockId: block.id
+              }
+            })
+          }
+        }
+
+        if (duplicatePrimaryImageBlock != null) {
+          await this.prismaService.journey.update({
+            where: { id: duplicateJourneyId },
+            data: { primaryImageBlockId: duplicatePrimaryImageBlock.id }
+          })
+        }
+        if (duplicateLogoImageBlock != null) {
+          await this.prismaService.journey.update({
+            where: { id: duplicateJourneyId },
+            data: { logoImageBlockId: duplicateLogoImageBlock.id }
+          })
+        }
+        if (duplicateMenuStepBlockId != null) {
+          await this.prismaService.journey.update({
+            where: { id: duplicateJourneyId },
+            data: { menuStepBlockId: duplicateMenuStepBlockId }
+          })
+        }
+        retry = false
+        await this.plausibleQueue.add(
+          'create-journey-site',
+          {
+            __typename: 'plausibleCreateJourneySite',
+            journeyId: duplicateJourneyId
+          },
+          {
+            removeOnComplete: true,
+            removeOnFail: { age: FIVE_DAYS, count: 50 }
+          }
+        )
+        await this.plausibleQueue.add(
+          'create-team-site',
+          {
+            __typename: 'plausibleCreateTeamSite',
+            teamId
+          },
+          {
+            removeOnComplete: true,
+            removeOnFail: { age: FIVE_DAYS, count: 50 }
+          }
+        )
+        return duplicateJourney
+      } catch (err) {
+        if (err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED) {
+          slug = slugify(`${slug}-${duplicateJourneyId}`)
+        } else {
+          retry = false
+          throw err
+        }
+      }
+    }
+  }
+
+  @Mutation()
+  @UseGuards(AppCaslGuard)
   async journeyUpdate(
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
