@@ -265,10 +265,69 @@ export async function translateJourney(
   // Prepare images for multi-modal analysis
   const journeyImages = videoBlocks
     .filter((block) => block.image)
-    .map((block) => ({
-      type: 'image_url' as const,
-      image_url: { url: block.image }
-    }))
+    .map((block) => block.image)
+
+  // 4. Generate brief descriptions of images using gemini-2.0-flash-lite
+  let imageDescriptions = ''
+
+  if (journeyImages.length > 0) {
+    try {
+      console.log(
+        `Generating descriptions for ${journeyImages.length} images...`
+      )
+
+      // Process each image to get a brief description
+      for (let i = 0; i < journeyImages.length; i++) {
+        const image = journeyImages[i]
+
+        if (!image) {
+          continue // Skip if no valid URL
+        }
+
+        try {
+          // Use Gemini to analyze the image via URL directly
+          const { text: imageDescription } = await generateText({
+            model: google('gemini-2.0-flash-lite'),
+            messages: [
+              {
+                role: 'user',
+                content: [
+                  {
+                    type: 'text',
+                    text: `Analyze this image and provide a brief description focusing on key elements relevant to a journey or story (1-2 sentences)`
+                  },
+
+                  {
+                    type: 'image',
+                    image: image
+                  }
+                ]
+              }
+            ]
+          })
+
+          // Add the description to our collection
+          if (imageDescription) {
+            imageDescriptions += `\nImage ${i + 1} Description: ${imageDescription.trim()}\n`
+          }
+
+          // Update progress incrementally (5% per image, keeping within bounds)
+          const progressIncrement = Math.min(5, 30 / journeyImages.length)
+          await job.updateProgress(
+            Math.min(80, 50 + (i + 1) * progressIncrement)
+          )
+        } catch (imgError) {
+          console.error(`Error analyzing image ${i + 1}:`, imgError)
+          // Continue with other images
+        }
+      }
+
+      console.log('Image descriptions generated successfully')
+    } catch (error) {
+      console.error('Error in image analysis step:', error)
+      // Continue to main analysis even if image analysis fails
+    }
+  }
 
   try {
     // Initialize Gemini model
@@ -279,39 +338,29 @@ export async function translateJourney(
     const analysisTargetLanguage =
       requestedLanguageName || job.data.textLanguageId
 
-    // 4. Generate analysis with Gemini (Gemini 2.0 Flash is very capable with just text)
-    try {
-      // Create the prompt text
-      const promptText = `Analyze this journey content and provide the key intent, themes, and target audience. 
-        Also suggest ways to culturally adapt this content for the target language: ${analysisTargetLanguage}.
-        The source language name is: ${journeyData.journey.language?.name?.[0]?.value || 'unknown'}.
-        The target language name is: ${job.data.targetLanguageName || 'unknown'}.
-        
-        ${journeyContent}`
+    // 5. Generate analysis with Gemini
+    const prompt = `Analyze this journey content and provide the key intent, themes, and target audience. 
+      Also suggest ways to culturally adapt this content for the target language: ${analysisTargetLanguage}.
+      The source language name is: ${journeyData.journey.language?.name?.[0]?.value || 'unknown'}.
+      The target language name is: ${job.data.targetLanguageName || 'unknown'}.
+      
+      ${journeyContent}
+      
+      Journey Images:${imageDescriptions ? imageDescriptions : ' No images available'}`
 
-      // Call Gemini with text - Gemini 2.0 Flash is very capable just with text
-      const { text: journeyAnalysis } = await generateText({
-        model: google('gemini-2.0-flash'),
-        prompt: promptText
-      })
+    const { text: journeyAnalysis } = await generateText({
+      model: geminiModel,
+      prompt
+    })
 
-      // Store the analysis in the job data for use in translation
-      await job.updateData({
-        ...job.data,
-        journeyAnalysis
-      })
+    // Store the analysis in the job data for use in translation
+    await job.updateData({
+      ...job.data,
+      journeyAnalysis
+    })
 
-      // Log that we've successfully analyzed the journey
-      console.log('Successfully analyzed journey content with Gemini')
-
-      // Update progress
-      await job.updateProgress(100)
-    } catch (error: unknown) {
-      console.error('Error analyzing journey with Gemini:', error)
-      const errorMessage =
-        error instanceof Error ? error.message : 'Unknown error occurred'
-      throw new Error(`Failed to analyze journey: ${errorMessage}`)
-    }
+    // Update progress
+    await job.updateProgress(100)
   } catch (error: unknown) {
     console.error('Error analyzing journey with Gemini:', error)
     const errorMessage =
