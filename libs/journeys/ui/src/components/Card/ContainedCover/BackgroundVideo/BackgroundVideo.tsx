@@ -42,7 +42,7 @@ export function BackgroundVideo({
   // Initiate Video
   useEffect(() => {
     if (videoRef.current != null) {
-      playerRef.current = videojs(videoRef.current, {
+      const player = videojs(videoRef.current, {
         ...defaultBackgroundVideoJsOptions,
         // autoplay: true,
         controls: false,
@@ -61,7 +61,7 @@ export function BackgroundVideo({
         // Don't use poster prop as image isn't optimised
       })
 
-      player.on('error', (e) => console.error('video error', e))
+      player.on('error', (e: any) => console.error('video error', e))
       player.on('loadstart', () => console.log('loadstart'))
       player.on('ready', async () => {
         console.log('ready')
