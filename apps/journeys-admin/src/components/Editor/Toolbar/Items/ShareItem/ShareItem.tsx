@@ -50,14 +50,12 @@ const QrCodeDialog = dynamic(
 interface ShareItemProps {
   variant: ComponentProps<typeof Item>['variant']
   closeMenu?: () => void
-  // journeyId?: string
   journey?: ContextJourney | JourneyForSharing
 }
 
 export function ShareItem({
   variant,
   closeMenu,
-  // journeyId,
   journey
 }: ShareItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
