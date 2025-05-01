@@ -1,6 +1,4 @@
-// @ts-expect-error -- Add these to your package.json dependencies
 import { google } from '@ai-sdk/google'
-// @ts-expect-error -- Add these to your package.json dependencies
 import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
 import { generateText } from 'ai'
 import { Job } from 'bullmq'
@@ -23,6 +21,7 @@ interface JourneyBlock {
 declare module '../service' {
   interface AiTranslateJourneyJob {
     journeyAnalysis?: string
+    targetLanguageName?: string
   }
 }
 
@@ -90,7 +89,7 @@ export async function duplicateJourney(job: Job<AiTranslateJourneyJob>) {
 export async function translateJourney(
   job: Job<AiTranslateJourneyJob>
 ): Promise<void> {
-  await job.updateProgress(50)
+  await job.updateProgress(35)
 
   // Create Apollo client
   const httpLink = createHttpLink({
@@ -193,7 +192,51 @@ export async function translateJourney(
     throw new Error('Could not fetch journey for translation')
   }
 
-  // 2. Use Gemini to analyze the journey content and get intent
+  // 2. Get the language name for textLanguageId in language 529
+  const GET_LANGUAGE = graphql(`
+    query GetLanguage($id: ID!, $languageId: ID!) {
+      language(id: $id) {
+        id
+        name(languageId: $languageId) {
+          value
+        }
+      }
+    }
+  `)
+
+  await job.updateProgress(45)
+
+  // Get the requested language information in language ID 529
+  let requestedLanguageName = ''
+
+  try {
+    const { data: languageData } = await apollo.query({
+      query: GET_LANGUAGE,
+      variables: {
+        id: job.data.textLanguageId,
+        languageId: '529'
+      }
+    })
+
+    // Check the requested language data
+    if (languageData?.language?.name?.[0]?.value) {
+      requestedLanguageName = languageData.language.name[0].value
+      console.log(`Requested language name in 529: ${requestedLanguageName}`)
+
+      // Store the language name for use in translation
+      await job.updateData({
+        ...job.data,
+        targetLanguageName: requestedLanguageName
+      })
+    }
+  } catch (error) {
+    console.error('Error fetching language data:', error)
+    // Continue with the process
+  }
+
+  // 3. Use Gemini to analyze the journey content and get intent
+  await job.updateProgress(50)
+
   // Cast blocks to our JourneyBlock type to fix linter errors
   const blocks = (journeyData.journey.blocks as unknown as JourneyBlock[]) || []
 
@@ -232,27 +275,21 @@ export async function translateJourney(
     // Note: API key must be set via GOOGLE_GENERATIVE_AI_API_KEY environment variable
     const geminiModel = google('gemini-2.0-flash')
 
-    // Prepare the request content
-    const messages = [
-      {
-        role: 'user',
-        content: [
-          {
-            type: 'text',
-            text: `Analyze this journey content and provide the key intent, themes, and target audience. 
-            Also suggest ways to culturally adapt this content for the target language: ${job.data.textLanguageId}.
-            
-            ${journeyContent}`
-          },
-          ...journeyImages
-        ]
-      }
-    ]
+    // Get the target language name to use in the prompt
+    const analysisTargetLanguage =
+      requestedLanguageName || job.data.textLanguageId
 
-    // Generate analysis using Gemini
+    // 4. Generate analysis with Gemini
+    const prompt = `Analyze this journey content and provide the key intent, themes, and target audience. 
+      Also suggest ways to culturally adapt this content for the target language: ${analysisTargetLanguage}.
+      The source language name is: ${journeyData.journey.language?.name?.[0]?.value || 'unknown'}.
+      The target language name is: ${job.data.targetLanguageName || 'unknown'}.
+      
+      ${journeyContent}`
+
     const { text: journeyAnalysis } = await generateText({
       model: geminiModel,
-      messages
+      prompt
     })
 
     // Store the analysis in the job data for use in translation
