@@ -11,7 +11,7 @@ schema
 {
   query: Query
   mutation: Mutation
-  
+  subscription: Subscription
 }
 
 
@@ -2204,6 +2204,12 @@ type Translation @join__type(graph: API_JOURNEYS)  {
   primary: Boolean!
 }
 
+type JourneyAiTranslateStatus @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: String!
+  status: String!
+  progress: Int!
+}
+
 type JourneyEventsExportLog @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID!
   createdAt: DateTimeISO!
@@ -2229,6 +2235,21 @@ type MuxVideo @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId
   readyToStream: Boolean! @join__field(graph: API_MEDIA) 
   downloadable: Boolean! @join__field(graph: API_MEDIA) 
   videoVariants: [VideoVariant!]! @join__field(graph: API_MEDIA) 
+}
+
+type QueueNotificationStatus @join__type(graph: API_JOURNEYS_MODERN)  {
+  userId: String!
+  queueName: String!
+  jobId: String!
+  status: String!
+  progress: Int!
+  message: String!
+  timestamp: String!
+}
+
+type Subscription @join__type(graph: API_JOURNEYS_MODERN)  {
+  journeyAiTranslateStatus(jobId: ID!) : JourneyAiTranslateStatus
+  userQueueNotifications(userId: ID!) : QueueNotificationStatus
 }
 
 type YouTube @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", extension: true)  {
