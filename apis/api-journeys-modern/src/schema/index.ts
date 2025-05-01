@@ -1,4 +1,16 @@
+import './builder'
+import './schema'
+
+// Import schema modules
+import './journeyAiTranslate'
+import './journeyEventsExportLog'
+import './mediaVideo'
+import './userNotifications'
+import './journey'
+
 import { generate } from './generate'
+
+export * from './builder'
 
 export { schema } from './schema'
 
