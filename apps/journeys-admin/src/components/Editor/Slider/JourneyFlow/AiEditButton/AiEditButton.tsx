@@ -11,15 +11,11 @@ interface AiEditButtonProps {
 }
 
 export function AiEditButton({ disabled }: AiEditButtonProps): ReactElement {
-  const [open, setOpen] = useState<boolean | null>(null)
+  const [open, setOpen] = useState<boolean>(false)
   const { t } = useTranslation('apps-journeys-admin')
 
   const handleClick = () => {
-    if (open === null) {
-      setOpen(true)
-    } else {
-      setOpen(!open)
-    }
+    setOpen(!open)
   }
 
   return (
@@ -48,7 +44,7 @@ export function AiEditButton({ disabled }: AiEditButtonProps): ReactElement {
           }}
         />
       </Box>
-      {open && <AiChat />}
+      <AiChat open={open} />
     </>
   )
 }

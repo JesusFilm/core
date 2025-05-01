@@ -5,7 +5,11 @@ import { ReactElement } from 'react'
 
 import { AiChatForm } from '../AiChatForm/AiChatForm'
 
-export function AiChat(): ReactElement {
+interface AiChatProps {
+  open?: boolean
+}
+
+export function AiChat({ open = false }: AiChatProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   return (
@@ -20,7 +24,8 @@ export function AiChat(): ReactElement {
           'linear-gradient(90deg, #0C79B3 0%, #0FDABC 51%, #E72DBB 100%)',
         p: '6px',
         minWidth: { xs: '100%', md: 800 },
-        zIndex: 1200
+        zIndex: 1200,
+        display: open ? 'block' : 'none'
       }}
     >
       <Paper
