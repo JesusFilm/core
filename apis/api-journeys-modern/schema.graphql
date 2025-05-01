@@ -76,8 +76,19 @@ type MuxVideo
   source: VideoBlockSource! @shareable
 }
 
+type QueueNotificationStatus {
+  userId: String!
+  queueName: String!
+  jobId: String!
+  status: String!
+  progress: Int!
+  message: String!
+  timestamp: String!
+}
+
 type Subscription {
   journeyAiTranslateStatus(jobId: ID!): JourneyAiTranslateStatus
+  userQueueNotifications(userId: ID!): QueueNotificationStatus
 }
 
 type Video
