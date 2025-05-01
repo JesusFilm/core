@@ -26,6 +26,11 @@ export function middleware(request: NextRequest) {
       pathname.startsWith('/dh/') ||
       pathname.startsWith('/s/')
     ) {
+      const baseUrl =
+        hostname === 'arc.gt'
+          ? 'https://api.arclight.org'
+          : 'https://core-stage.arclight.org'
+
       const parts = pathname.split('/')
       if (parts.length !== 4) {
         return new NextResponse('Invalid URL format', { status: 400 })
@@ -36,21 +41,15 @@ export function middleware(request: NextRequest) {
       switch (type) {
         case 'hls':
           return NextResponse.redirect(
-            `https://api.arclight.org/hls/${param1}/${param2}`,
+            `${baseUrl}/hls/${param1}/${param2}`,
             307
           )
         case 'dl':
-          return NextResponse.redirect(
-            `https://api.arclight.org/dl/${param1}/${param2}`
-          )
+          return NextResponse.redirect(`${baseUrl}/dl/${param1}/${param2}`, 307)
         case 'dh':
-          return NextResponse.redirect(
-            `https://api.arclight.org/dh/${param1}/${param2}`
-          )
+          return NextResponse.redirect(`${baseUrl}/dh/${param1}/${param2}`, 307)
         case 's':
-          return NextResponse.redirect(
-            `https://api.arclight.org/s/${param1}/${param2}`
-          )
+          return NextResponse.redirect(`${baseUrl}/s/${param1}/${param2}`, 307)
       }
     }
   }
