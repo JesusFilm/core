@@ -388,7 +388,7 @@ export function CardForm(): ReactElement {
               variant: buttonBlock.buttonVariant,
               color: buttonBlock.buttonColor,
               size: buttonBlock.size,
-              submitEnabled: true
+              submitEnabled: buttonBlock.submitEnabled
             },
             buttonId: buttonBlock.id,
             buttonUpdateInput: {
