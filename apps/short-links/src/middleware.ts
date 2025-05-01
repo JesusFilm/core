@@ -18,7 +18,7 @@ export function middleware(request: NextRequest) {
   const hostname = request.nextUrl.hostname
   const pathname = request.nextUrl.pathname
 
-  // Only process redirects for arc.gt domain
+  // Handle by convention redirects for arc.gt and stage.arc.gt
   if (hostname === 'arc.gt' || hostname === 'stage.arc.gt') {
     if (
       pathname.startsWith('/hls/') ||
@@ -54,7 +54,6 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  // For all other cases, rewrite the URL
   const url = new URL(`/${hostname}${pathname}`, request.url)
   return NextResponse.rewrite(url)
 }
