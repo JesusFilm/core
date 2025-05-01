@@ -7,17 +7,17 @@ import { FramePortal } from '@core/journeys/ui/FramePortal'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
-import { GetJourneyForSharing_journey as JourneyForSharing } from '../../../../../../../../__generated__/GetJourneyForSharing'
+import { GetJourneyForSharing_journey as JourneyFromLazyQuery } from '../../../../../../../../__generated__/GetJourneyForSharing'
 import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../__generated__/globalTypes'
-import { JourneyFields as ContextJourney } from '../../../../../../../../__generated__/JourneyFields'
+import { JourneyFields as JourneyFromContext } from '../../../../../../../../__generated__/JourneyFields'
 
 const StyledIframe = styled('iframe')(() => ({}))
 
 interface EmbedCardPreviewProps {
-  journey?: ContextJourney | JourneyForSharing
+  journey?: JourneyFromContext | JourneyFromLazyQuery
 }
 
 export function EmbedCardPreview({
