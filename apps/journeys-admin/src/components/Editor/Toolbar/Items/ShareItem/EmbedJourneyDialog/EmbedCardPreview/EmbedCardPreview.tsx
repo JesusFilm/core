@@ -4,33 +4,31 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement } from 'react'
 
 import { FramePortal } from '@core/journeys/ui/FramePortal'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
+import { GetJourneyForSharing_journey as JourneyForSharing } from '../../../../../../../../__generated__/GetJourneyForSharing'
 import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../__generated__/globalTypes'
+import { JourneyFields as ContextJourney } from '../../../../../../../../__generated__/JourneyFields'
 
 const StyledIframe = styled('iframe')(() => ({}))
 
 interface EmbedCardPreviewProps {
-  journeySlug?: string
+  journey?: ContextJourney | JourneyForSharing
 }
 
 export function EmbedCardPreview({
-  journeySlug
+  journey
 }: EmbedCardPreviewProps): ReactElement {
-  const { journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
-  const iframeSlug = journeySlug ?? (journey?.slug as string)
+  const iframeSlug = journey?.slug
   const embedBaseUrl =
     process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'https://your.nextstep.is'
-
-  console.log('iframeSlug', iframeSlug)
 
   return (
     <Box

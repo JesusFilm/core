@@ -10,6 +10,17 @@ export const GET_JOURNEY_FOR_SHARING = gql`
     journey: adminJourney(id: $id, idType: databaseId) {
       id
       slug
+      language {
+        id
+        bcp47
+        iso3
+        name {
+          value
+          primary
+        }
+      }
+      themeName
+      themeMode
       team {
         id
         customDomains {

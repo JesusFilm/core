@@ -23,6 +23,7 @@ import {
 } from '../../../../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
 import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
+import { useJourneyForSharingLazyQuery } from '../../../../../libs/useJourneyForShareLazyQuery'
 import { ShareItem } from '../../../../Editor/Toolbar/Items/ShareItem/ShareItem'
 import { MenuItem } from '../../../../MenuItem'
 import { CopyToTeamMenuItem } from '../../../../Team/CopyToTeamMenuItem/CopyToTeamMenuItem'
@@ -102,7 +103,11 @@ export function DefaultMenu({
 
   const { loadUser, data: currentUser } = useCurrentUserLazyQuery()
 
-  const { data: journeyData } = useQuery(GET_JOURNEY_WITH_USER_ROLES, {
+  // Lazy query for journey data if context is missing
+  const [loadJourney, { data: journeyForSharing }] =
+    useJourneyForSharingLazyQuery()
+
+  const { data: journeyWithUserRoles } = useQuery(GET_JOURNEY_WITH_USER_ROLES, {
     variables: { id: journeyId },
     skip: currentUser?.id == null
   })
@@ -111,17 +116,24 @@ export function DefaultMenu({
     void loadUser()
   }, [loadUser])
 
+  useEffect(() => {
+    void loadJourney({ variables: { id: journeyId } })
+  }, [loadJourney, journeyId])
+
   // Determine the current user's role for this journey
   const userRole = useMemo<UserJourneyRole | undefined>(() => {
-    if (journeyData?.journey?.userJourneys == null || currentUser?.id == null)
+    if (
+      journeyWithUserRoles?.journey?.userJourneys == null ||
+      currentUser?.id == null
+    )
       return undefined
 
-    const userJourney = journeyData.journey.userJourneys.find(
+    const userJourney = journeyWithUserRoles.journey.userJourneys.find(
       (userJourney) => userJourney.user?.id === currentUser.id
     )
 
     return userJourney?.role
-  }, [journeyData?.journey?.userJourneys, currentUser?.id])
+  }, [journeyWithUserRoles?.journey?.userJourneys, currentUser?.id])
 
   // Determine the current user's role in the team
   const teamRole = useMemo<UserTeamRole | undefined>(() => {
@@ -180,7 +192,7 @@ export function DefaultMenu({
           openInNew
         />
       </NextLink>
-      <ShareItem variant="menu-item" journeyId={journeyId} />
+      <ShareItem variant="menu-item" journey={journeyForSharing?.journey} />
       <Divider />
       {template !== true && (
         <DuplicateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />
