@@ -228,7 +228,7 @@ builder.mutationFields((t) => ({
           {
             userId: user.id,
             type: 'journeyAiTranslate',
-            journeyId: input.journeyId,
+            inputJourneyId: input.journeyId,
             name: input.name,
             textLanguageId: input.textLanguageId,
             videoLanguageId: input.videoLanguageId

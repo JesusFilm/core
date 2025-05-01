@@ -5,7 +5,8 @@ import { journeyAiTranslate } from './journeyAiTranslate'
 export interface AiTranslateJourneyJob {
   userId: string
   type: 'journeyAiTranslate'
-  journeyId: string
+  inputJourneyId: string
+  outputJourneyId: string
   name: string
   textLanguageId: string
   videoLanguageId: string
