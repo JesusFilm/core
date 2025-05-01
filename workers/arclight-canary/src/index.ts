@@ -11,6 +11,8 @@ type Bindings = {
   ENDPOINT_ARCLIGHT?: string
   ENDPOINT_ARCLIGHT_WEIGHT?: string
   TIMEOUT?: string
+  FORCE_API_KEYS_TO_ARCLIGHT?: string
+  FORCE_API_KEYS_TO_CORE?: string
 }
 
 const app = new Hono<{ Bindings: Bindings }>()
@@ -57,20 +59,46 @@ const parseWeight = (weightStr: string): number => {
 }
 
 /**
- * Determines if a path should always be routed to the core endpoint
+ * Determines if a path or apiKey should always be routed to the core endpoint
  * @param path - Request path
- * @returns boolean - true if path should always use core endpoint
+ * @param apiKey - API key from URLSearchParams
+ * @param forceKeys - Force keys string from environment variables
+ * @returns boolean - true if should always use core endpoint
  */
-const shouldAlwaysUseCore = (path: string): boolean => {
+const shouldAlwaysUseCore = (
+  path: string,
+  apiKey: string | null,
+  forceKeys: string | undefined
+): boolean => {
+  if (apiKey && forceKeys) {
+    const keys = forceKeys
+      .split(',')
+      .map((k) => k.trim())
+      .filter(Boolean)
+    if (keys.includes(apiKey)) return true
+  }
   return CORE_ONLY_PATHS.some((prefix) => path.startsWith(prefix))
 }
 
 /**
- * Determines if a path should always be routed to the arclight endpoint
+ * Determines if a path or apiKey should always be routed to the arclight endpoint
  * @param path - Request path
- * @returns boolean - true if path should always use arclight endpoint
+ * @param apiKey - API key from URLSearchParams
+ * @param forceKeys - Force keys string from environment variables
+ * @returns boolean - true if should always use arclight endpoint
  */
-const shouldAlwaysUseArclight = (path: string): boolean => {
+const shouldAlwaysUseArclight = (
+  path: string,
+  apiKey: string | null,
+  forceKeys: string | undefined
+): boolean => {
+  if (apiKey && forceKeys) {
+    const keys = forceKeys
+      .split(',')
+      .map((k) => k.trim())
+      .filter(Boolean)
+    if (keys.includes(apiKey)) return true
+  }
   return ARCLIGHT_ONLY_PATHS.some((exactPath) => path === exactPath)
 }
 
@@ -107,15 +135,25 @@ const sanitizeHeaders = (headers: Headers): Record<string, string> => {
 app.all('*', async (c) => {
   // Parse the incoming request URL
   const url = new URL(c.req.url)
+  const apiKey = url.searchParams.get('apiKey')
 
   try {
     // Get and validate the configured weight (defaults to 50%)
     const weight = parseWeight(c.env.ENDPOINT_ARCLIGHT_WEIGHT ?? '50')
 
-    // Check path-based routing rules
+    // Check path/apiKey-based routing rules
     const useArclight =
-      shouldAlwaysUseArclight(url.pathname) ||
-      (!shouldAlwaysUseCore(url.pathname) && shouldUseArclight(weight))
+      shouldAlwaysUseArclight(
+        url.pathname,
+        apiKey,
+        c.env.FORCE_API_KEYS_TO_ARCLIGHT
+      ) ||
+      (!shouldAlwaysUseCore(
+        url.pathname,
+        apiKey,
+        c.env.FORCE_API_KEYS_TO_CORE
+      ) &&
+        shouldUseArclight(weight))
     const baseEndpoint = useArclight
       ? c.env.ENDPOINT_ARCLIGHT
       : c.env.ENDPOINT_CORE

@@ -4,7 +4,7 @@ import { CSSProperties, ReactElement, useEffect, useRef } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
-import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
+import { defaultBackgroundVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
 import {
   VideoBlockObjectFit,
@@ -42,8 +42,8 @@ export function BackgroundVideo({
   // Initiate Video
   useEffect(() => {
     if (videoRef.current != null) {
-      const player = videojs(videoRef.current, {
-        ...defaultVideoJsOptions,
+      playerRef.current = videojs(videoRef.current, {
+        ...defaultBackgroundVideoJsOptions,
         // autoplay: true,
         controls: false,
         controlBar: false,
@@ -176,7 +176,7 @@ export function BackgroundVideo({
           },
           '> .vjs-loading-spinner': {
             zIndex: 1,
-            display: isYouTube ? 'none' : 'block'
+            display: isYouTube ? 'none' : 'flex'
           },
           pointerEvents: 'none'
         }}

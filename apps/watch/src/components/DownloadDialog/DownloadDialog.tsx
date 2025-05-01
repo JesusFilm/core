@@ -22,6 +22,7 @@ import useDownloader from 'react-use-downloader'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
+import { VideoVariantDownloadQuality } from '../../../__generated__/globalTypes'
 import { useVideo } from '../../libs/videoContext'
 
 import { TermsOfUseDialog } from './TermsOfUseDialog'
@@ -161,12 +162,19 @@ export function DownloadDialog({
                 error={errors.file != null}
                 select
               >
-                {downloads.map((download) => (
-                  <MenuItem key={download.quality} value={download.url}>
-                    {download.quality.charAt(0).toUpperCase()}
-                    {download.quality.slice(1)} ({formatBytes(download.size)})
-                  </MenuItem>
-                ))}
+                {downloads
+                  .filter(({ quality }) =>
+                    [
+                      VideoVariantDownloadQuality.high,
+                      VideoVariantDownloadQuality.low
+                    ].includes(quality)
+                  )
+                  .map((download) => (
+                    <MenuItem key={download.quality} value={download.url}>
+                      {download.quality.charAt(0).toUpperCase()}
+                      {download.quality.slice(1)} ({formatBytes(download.size)})
+                    </MenuItem>
+                  ))}
               </TextField>
               <Stack
                 direction={{ xs: 'column', sm: 'row' }}

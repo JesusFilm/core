@@ -313,4 +313,147 @@ describe('arclight-canary worker', () => {
       )
     })
   })
+
+  describe('apiKey force routing (comma-separated lists)', () => {
+    const FORCE_API_KEYS_TO_ARCLIGHT =
+      'arclight-key-123, arclight-key-abc,  arclight-key-xyz '
+    const FORCE_API_KEYS_TO_CORE = 'core-key-456, core-key-def, core-key-uvw '
+    const baseEnv = {
+      ENDPOINT_CORE: 'http://core.test',
+      ENDPOINT_ARCLIGHT: 'http://arclight.test',
+      ENDPOINT_ARCLIGHT_WEIGHT: '0', // Force core unless overridden
+      FORCE_API_KEYS_TO_ARCLIGHT,
+      FORCE_API_KEYS_TO_CORE
+    }
+
+    it('should route to arclight if apiKey matches any in FORCE_API_KEYS_TO_ARCLIGHT (first, trimmed, or last)', async () => {
+      for (const key of [
+        'arclight-key-123',
+        'arclight-key-abc',
+        'arclight-key-xyz'
+      ]) {
+        fetchMock
+          .get('http://arclight.test')
+          .intercept({ path: `/any-path?apiKey=${key}` })
+          .reply(200, 'arclight endpoint content')
+
+        const res = await app.request(
+          `http://localhost/any-path?apiKey=${key}`,
+          {},
+          baseEnv
+        )
+
+        expect(res.status).toBe(200)
+        expect(await res.text()).toBe('arclight endpoint content')
+        expect(res.headers.get('x-routed-to')).toBe('arclight')
+      }
+    })
+
+    it('should route to core if apiKey matches any in FORCE_API_KEYS_TO_CORE (first, trimmed, or last)', async () => {
+      for (const key of ['core-key-456', 'core-key-def', 'core-key-uvw']) {
+        fetchMock
+          .get('http://core.test')
+          .intercept({ path: `/any-path?apiKey=${key}` })
+          .reply(200, 'core endpoint content')
+
+        const res = await app.request(
+          `http://localhost/any-path?apiKey=${key}`,
+          {},
+          baseEnv
+        )
+
+        expect(res.status).toBe(200)
+        expect(await res.text()).toBe('core endpoint content')
+        expect(res.headers.get('x-routed-to')).toBe('core')
+      }
+    })
+
+    it('should preserve apiKey in forwarded request for arclight', async () => {
+      let interceptedUrl: string = ''
+      fetchMock
+        .get('http://arclight.test')
+        .intercept({
+          path: (path) => {
+            interceptedUrl = path
+            return true
+          }
+        })
+        .reply(200, 'arclight endpoint content')
+
+      await app.request(
+        `http://localhost/forwarded?apiKey=arclight-key-abc&foo=bar`,
+        {},
+        baseEnv
+      )
+
+      expect(interceptedUrl).toContain('apiKey=arclight-key-abc')
+      expect(interceptedUrl).toContain('foo=bar')
+    })
+
+    it('should preserve apiKey in forwarded request for core', async () => {
+      let interceptedUrl: string = ''
+      fetchMock
+        .get('http://core.test')
+        .intercept({
+          path: (path) => {
+            interceptedUrl = path
+            return true
+          }
+        })
+        .reply(200, 'core endpoint content')
+
+      await app.request(
+        `http://localhost/forwarded?apiKey=core-key-def&foo=bar`,
+        {},
+        baseEnv
+      )
+
+      expect(interceptedUrl).toContain('apiKey=core-key-def')
+      expect(interceptedUrl).toContain('foo=bar')
+    })
+
+    it('should use normal routing if apiKey does not match any force key', async () => {
+      fetchMock
+        .get('http://core.test')
+        .intercept({ path: '/normal?apiKey=wrong-key' })
+        .reply(200, 'core endpoint content')
+
+      const res = await app.request(
+        'http://localhost/normal?apiKey=wrong-key',
+        {},
+        baseEnv
+      )
+
+      expect(res.status).toBe(200)
+      expect(await res.text()).toBe('core endpoint content')
+      expect(res.headers.get('x-routed-to')).toBe('core')
+    })
+
+    it('should handle whitespace and order in FORCE_API_KEYS_TO_ARCLIGHT and FORCE_API_KEYS_TO_CORE', async () => {
+      // Out of order and with extra whitespace
+      fetchMock
+        .get('http://arclight.test')
+        .intercept({ path: '/any-path?apiKey=arclight-key-xyz' })
+        .reply(200, 'arclight endpoint content')
+      let res = await app.request(
+        'http://localhost/any-path?apiKey=arclight-key-xyz',
+        {},
+        baseEnv
+      )
+      expect(res.status).toBe(200)
+      expect(res.headers.get('x-routed-to')).toBe('arclight')
+
+      fetchMock
+        .get('http://core.test')
+        .intercept({ path: '/any-path?apiKey=core-key-uvw' })
+        .reply(200, 'core endpoint content')
+      res = await app.request(
+        'http://localhost/any-path?apiKey=core-key-uvw',
+        {},
+        baseEnv
+      )
+      expect(res.status).toBe(200)
+      expect(res.headers.get('x-routed-to')).toBe('core')
+    })
+  })
 })

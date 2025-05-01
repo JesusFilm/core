@@ -66,6 +66,7 @@ model MuxVideo {
 model CloudflareR2 {
   id                   String                @id @default(uuid())
   fileName             String
+  originalFilename     String?
   uploadUrl            String?
   userId               String
   publicUrl            String?
@@ -145,8 +146,9 @@ model VideoTitle {
 }
 
 enum VideoVariantDownloadQuality {
-  low
-  high
+  low // 2x0p
+  sd // 360p
+  high // 720p
 }
 
 model VideoVariantDownload {
@@ -155,6 +157,7 @@ model VideoVariantDownload {
   size           Float?
   height         Int?
   width          Int?
+  bitrate        Int?
   version        Int                         @default(1)
   url            String
   assetId        String?                     @unique
@@ -300,14 +303,17 @@ model BibleCitation {
   id           String    @id @default(uuid())
   bibleBookId  String
   osisId       String
-  chapterStart Int
-  chapterEnd   Int?
-  verseStart   Int?
-  verseEnd     Int?
+  chapterStart Int       @default(-1)
+  chapterEnd   Int       @default(-1)
+  verseStart   Int       @default(-1)
+  verseEnd     Int       @default(-1)
   videoId      String
   order        Int
   video        Video     @relation(fields: [videoId], references: [id])
   bibleBook    BibleBook @relation(fields: [bibleBookId], references: [id])
+
+  @@unique([videoId, bibleBookId, chapterStart, chapterEnd, verseStart, verseEnd])
+  @@index([order])
 }
 
 model BibleBook {

@@ -86,6 +86,7 @@ export function Custom500(): ReactElement {
       parentOrder: 2,
       size: ButtonSize.large,
       startIconId: '500-icon-id',
+      submitEnabled: null,
       action: {
         gtmEventName: null,
         parentBlockId: '500-button-id',

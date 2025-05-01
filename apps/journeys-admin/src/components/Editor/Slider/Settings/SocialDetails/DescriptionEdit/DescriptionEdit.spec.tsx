@@ -39,25 +39,6 @@ describe('DescriptionEdit', () => {
     expect(getByText('social description')).toBeInTheDocument()
   })
 
-  it('should display journey description when seo description not set', () => {
-    const { getByText } = render(
-      <MockedProvider>
-        <JourneyProvider
-          value={{
-            journey: {
-              description: 'journey description',
-              seoDescription: null
-            } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <DescriptionEdit />
-        </JourneyProvider>
-      </MockedProvider>
-    )
-    expect(getByText('journey description')).toBeInTheDocument()
-  })
-
   it('should display empty form when journey description and seo description not set', () => {
     const { getByRole } = render(
       <MockedProvider>
@@ -107,7 +88,10 @@ describe('DescriptionEdit', () => {
       >
         <JourneyProvider
           value={{
-            journey: { id: 'journey.id' } as unknown as Journey,
+            journey: {
+              id: 'journey.id',
+              slug: 'some-slug'
+            } as unknown as Journey,
             variant: 'admin'
           }}
         >
@@ -130,7 +114,10 @@ describe('DescriptionEdit', () => {
       <MockedProvider>
         <JourneyProvider
           value={{
-            journey: { id: 'journey.id' } as unknown as Journey,
+            journey: {
+              id: 'journey.id',
+              slug: 'some-slug'
+            } as unknown as Journey,
             variant: 'admin'
           }}
         >

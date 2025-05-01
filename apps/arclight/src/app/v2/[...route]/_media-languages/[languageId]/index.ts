@@ -239,10 +239,14 @@ mediaLanguage.openapi(route, async (c) => {
       language.countryLanguages.find(({ primary }) => primary)?.country.id ??
       '',
     name: language.name[0]?.value ?? language.fallbackName[0]?.value ?? '',
-    nameNative: language.nameNative.find(({ primary }) => primary)?.value,
+    nameNative:
+      language.nameNative.find(({ primary }) => primary)?.value ??
+      language.name[0]?.value ??
+      language.fallbackName[0]?.value ??
+      '',
     alternateLanguageName: '',
     alternateLanguageNameNative: '',
-    metadataLanguageTag: language.name[0]?.language.bcp47 ?? '',
+    metadataLanguageTag: metadataLanguageTags[0] ?? 'en',
     _links: {
       self: {
         href: `http://api.arclight.org/v2/media-languages/${languageId}?${queryString}`
