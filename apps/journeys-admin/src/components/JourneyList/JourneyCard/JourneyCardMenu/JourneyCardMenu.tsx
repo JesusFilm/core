@@ -124,6 +124,9 @@ export function JourneyCardMenu({
   const [openDetailsDialog, setOpenDetailsDialog] = useState<
     boolean | undefined
   >()
+  const [openTranslateDialog, setOpenTranslateDialog] = useState<
+    boolean | undefined
+  >()
 
   const handleOpenMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
@@ -179,6 +182,7 @@ export function JourneyCardMenu({
             handleCloseMenu={handleCloseMenu}
             setOpenTrashDialog={() => setOpenTrashDialog(true)}
             setOpenDetailsDialog={() => setOpenDetailsDialog(true)}
+            setOpenTranslateDialog={() => setOpenTranslateDialog(true)}
             template={template}
             refetch={refetch}
           />
