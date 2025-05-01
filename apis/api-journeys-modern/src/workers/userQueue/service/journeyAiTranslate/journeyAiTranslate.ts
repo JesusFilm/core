@@ -1,32 +1,48 @@
-import {
-  ApolloClient,
-  InMemoryCache,
-  createHttpLink,
-  gql
-} from '@apollo/client'
+// @ts-expect-error -- Add these to your package.json dependencies
+import { google } from '@ai-sdk/google'
+// @ts-expect-error -- Add these to your package.json dependencies
+import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
+import { generateText } from 'ai'
 import { Job } from 'bullmq'
+import { graphql } from 'gql.tada'
 
 import { AiTranslateJourneyJob } from '../service'
 
-// Add a type interface for journey blocks
+// Update the interface to match the schema
 interface JourneyBlock {
   id: string
   journeyId: string
-  typename: string
-  parentBlockId?: string
+  __typename: string
+  parentBlockId?: string | null
   content?: string
+  image?: string
   [key: string]: any
 }
+
+// Extend the AiTranslateJourneyJob type to include journeyAnalysis
+declare module '../service' {
+  interface AiTranslateJourneyJob {
+    journeyAnalysis?: string
+  }
+}
+
+const JOURNEY_DUPLICATE = graphql(`
+  mutation JourneyDuplicate($id: ID!, $teamId: ID!) {
+    journeyDuplicate(id: $id, teamId: $teamId) {
+      id
+    }
+  }
+`)
 
 export async function journeyAiTranslate(
   job: Job<AiTranslateJourneyJob>
 ): Promise<void> {
   // First duplicate the journey
-  const duplicatedJob = await duplicateJourney(job)
+  await duplicateJourney(job)
 
   // Then translate the duplicated journey
-  if (duplicatedJob.data.outputJourneyId) {
-    await translateJourney(duplicatedJob)
+  if (job.data.outputJourneyId) {
+    await translateJourney(job)
   } else {
     throw new Error(
       'Journey duplication failed, cannot proceed with translation'
@@ -34,9 +50,7 @@ export async function journeyAiTranslate(
   }
 }
 
-export async function duplicateJourney(
-  job: Job<AiTranslateJourneyJob>
-): Promise<Job<AiTranslateJourneyJob>> {
+export async function duplicateJourney(job: Job<AiTranslateJourneyJob>) {
   // Create Apollo client
   const httpLink = createHttpLink({
     uri: process.env.GATEWAY_URL,
@@ -51,15 +65,6 @@ export async function duplicateJourney(
     link: httpLink,
     cache: new InMemoryCache()
   })
-
-  // Define the journeyDuplicate mutation
-  const JOURNEY_DUPLICATE = gql`
-    mutation JourneyDuplicate($id: ID!, $teamId: ID!) {
-      journeyDuplicate(id: $id, teamId: $teamId) {
-        id
-      }
-    }
-  `
 
   // Call the journeyDuplicate mutation
   const { data } = await apollo.mutate({
@@ -80,9 +85,6 @@ export async function duplicateJourney(
     throw new Error('Failed to duplicate journey')
   }
   await job.updateProgress(25)
-
-  // Return the updated job for the next step
-  return job
 }
 
 export async function translateJourney(
@@ -106,7 +108,7 @@ export async function translateJourney(
   })
 
   // 1. First get the journey details
-  const GET_JOURNEY = gql`
+  const GET_JOURNEY = graphql(`
     query GetJourney($id: ID!) {
       journey(id: $id) {
         id
@@ -114,12 +116,14 @@ export async function translateJourney(
         description
         language {
           id
-          name
+          name {
+            value
+          }
         }
         blocks {
           id
           journeyId
-          typename
+          __typename
           ... on StepBlock {
             id
             nextBlockId
@@ -140,7 +144,7 @@ export async function translateJourney(
             parentBlockId
             parentOrder
             content
-            variant
+            typographyVariant: variant
             align
             color
           }
@@ -160,35 +164,22 @@ export async function translateJourney(
             endAt
             posterBlockId
             fullsize
-            videoPosition
             muted
-            showControls
-            action {
-              parentBlockId
-              gtmEventName
-              navigateToBlockId
-            }
           }
           ... on ButtonBlock {
             id
             parentBlockId
             parentOrder
             label
-            buttonVariant
-            buttonColor
+            buttonVariant: variant
             size
             startIconId
             endIconId
-            action {
-              parentBlockId
-              gtmEventName
-              navigateToBlockId
-            }
           }
         }
       }
     }
-  `
+  `)
 
   // Fetch the journey that needs to be translated
   const { data: journeyData } = await apollo.query({
@@ -202,137 +193,80 @@ export async function translateJourney(
     throw new Error('Could not fetch journey for translation')
   }
 
-  // 2. Update journey title and description with translated versions
-  const updatedTitle = `${journeyData.journey.title} (${job.data.textLanguageId})`
-  const updatedDescription = journeyData.journey.description
-    ? `${journeyData.journey.description} - Translated to ${job.data.textLanguageId}`
-    : `Translated to ${job.data.textLanguageId}`
+  // 2. Use Gemini to analyze the journey content and get intent
+  // Cast blocks to our JourneyBlock type to fix linter errors
+  const blocks = (journeyData.journey.blocks as unknown as JourneyBlock[]) || []
 
-  // 3. Prepare journey update mutation
-  const UPDATE_JOURNEY = gql`
-    mutation UpdateJourney(
-      $id: ID!
-      $teamId: ID!
-      $title: String
-      $description: String
-      $languageId: ID
-    ) {
-      journeyUpdate(
-        id: $id
-        teamId: $teamId
-        input: {
-          title: $title
-          description: $description
-          languageId: $languageId
-        }
-      ) {
-        id
-      }
-    }
-  `
+  // Extract text content from typography blocks
+  const typographyBlocks = blocks.filter(
+    (block) => block.__typename === 'TypographyBlock'
+  )
 
-  // 4. Update the journey with translated information
-  await apollo.mutate({
-    mutation: UPDATE_JOURNEY,
-    variables: {
-      id: job.data.outputJourneyId,
-      teamId: job.data.userId,
-      title: updatedTitle,
-      description: updatedDescription,
-      languageId: job.data.textLanguageId
+  // Extract images from video blocks
+  const videoBlocks = blocks.filter(
+    (block) => block.__typename === 'VideoBlock'
+  )
+
+  // Create content for Gemini analysis
+  let journeyContent = `Journey Title: ${journeyData.journey.title}\n`
+  journeyContent += `Journey Description: ${journeyData.journey.description || 'No description'}\n\n`
+  journeyContent += 'Journey Content:\n'
+
+  // Add typography content
+  typographyBlocks.forEach((block) => {
+    if (block.content) {
+      journeyContent += `${block.content}\n`
     }
   })
 
-  // 5. Translate all text blocks (typography blocks)
-  const typographyBlocks = journeyData.journey.blocks.filter(
-    (block: JourneyBlock) => block.typename === 'TypographyBlock'
-  )
+  // Prepare images for multi-modal analysis
+  const journeyImages = videoBlocks
+    .filter((block) => block.image)
+    .map((block) => ({
+      type: 'image_url' as const,
+      image_url: { url: block.image }
+    }))
 
-  // 6. Update progress as we process blocks
-  const totalBlocks = typographyBlocks.length
-  let processedBlocks = 0
+  try {
+    // Initialize Gemini model
+    // Note: API key must be set via GOOGLE_GENERATIVE_AI_API_KEY environment variable
+    const geminiModel = google('gemini-2.0-flash')
 
-  // Update typography blocks mutation
-  const UPDATE_TYPOGRAPHY_BLOCK = gql`
-    mutation UpdateTypographyBlock(
-      $id: ID!
-      $journeyId: ID!
-      $teamId: ID!
-      $content: String
-    ) {
-      typographyBlockUpdate(
-        id: $id
-        journeyId: $journeyId
-        teamId: $teamId
-        input: { content: $content }
-      ) {
-        id
+    // Prepare the request content
+    const messages = [
+      {
+        role: 'user',
+        content: [
+          {
+            type: 'text',
+            text: `Analyze this journey content and provide the key intent, themes, and target audience. 
+            Also suggest ways to culturally adapt this content for the target language: ${job.data.textLanguageId}.
+            
+            ${journeyContent}`
+          },
+          ...journeyImages
+        ]
       }
-    }
-  `
+    ]
 
-  // 7. Process each typography block
-  for (const block of typographyBlocks) {
-    if (block.content) {
-      // Simulate translation - in a real implementation, you would call an actual
-      // translation service here to translate the content
-      const translatedContent = `[${job.data.textLanguageId}] ${block.content}`
+    // Generate analysis using Gemini
+    const { text: journeyAnalysis } = await generateText({
+      model: geminiModel,
+      messages
+    })
 
-      // Update the block with translated content
-      await apollo.mutate({
-        mutation: UPDATE_TYPOGRAPHY_BLOCK,
-        variables: {
-          id: block.id,
-          journeyId: job.data.outputJourneyId,
-          teamId: job.data.userId,
-          content: translatedContent
-        }
-      })
+    // Store the analysis in the job data for use in translation
+    await job.updateData({
+      ...job.data,
+      journeyAnalysis
+    })
 
-      // Update progress
-      processedBlocks++
-      const progress = 50 + Math.floor((processedBlocks / totalBlocks) * 50)
-      await job.updateProgress(progress > 99 ? 99 : progress)
-    }
+    // Update progress
+    await job.updateProgress(100)
+  } catch (error: unknown) {
+    console.error('Error analyzing journey with Gemini:', error)
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error occurred'
+    throw new Error(`Failed to analyze journey: ${errorMessage}`)
   }
-
-  // 8. Update video blocks to use the new language if specified
-  if (job.data.videoLanguageId) {
-    const videoBlocks = journeyData.journey.blocks.filter(
-      (block: JourneyBlock) => block.typename === 'VideoBlock'
-    )
-
-    const UPDATE_VIDEO_BLOCK = gql`
-      mutation UpdateVideoBlock(
-        $id: ID!
-        $journeyId: ID!
-        $teamId: ID!
-        $videoVariantLanguageId: ID
-      ) {
-        videoBlockUpdate(
-          id: $id
-          journeyId: $journeyId
-          teamId: $teamId
-          input: { videoVariantLanguageId: $videoVariantLanguageId }
-        ) {
-          id
-        }
-      }
-    `
-
-    for (const block of videoBlocks) {
-      await apollo.mutate({
-        mutation: UPDATE_VIDEO_BLOCK,
-        variables: {
-          id: block.id,
-          journeyId: job.data.outputJourneyId,
-          teamId: job.data.userId,
-          videoVariantLanguageId: job.data.videoLanguageId
-        }
-      })
-    }
-  }
-
-  // Mark job as complete
-  await job.updateProgress(100)
 }
