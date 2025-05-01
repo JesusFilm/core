@@ -15,8 +15,8 @@ import { ReactElement } from 'react'
 import { Dialog } from '@core/shared/ui/Dialog'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
-import { GetJourneyForSharing_journey as JourneyForSharing } from '../../../../../../../__generated__/GetJourneyForSharing'
-import { JourneyFields as ContextJourney } from '../../../../../../../__generated__/JourneyFields'
+import { GetJourneyForSharing_journey as JourneyFromLazyQuery } from '../../../../../../../__generated__/GetJourneyForSharing'
+import { JourneyFields as JourneyFromContext } from '../../../../../../../__generated__/JourneyFields'
 import { useCustomDomainsQuery } from '../../../../../../libs/useCustomDomainsQuery'
 
 import { EmbedCardPreview } from './EmbedCardPreview'
@@ -24,7 +24,7 @@ import { EmbedCardPreview } from './EmbedCardPreview'
 interface EmbedJourneyDialogProps {
   open: boolean
   onClose: () => void
-  journey?: ContextJourney | JourneyForSharing
+  journey?: JourneyFromContext | JourneyFromLazyQuery
 }
 
 export function EmbedJourneyDialog({

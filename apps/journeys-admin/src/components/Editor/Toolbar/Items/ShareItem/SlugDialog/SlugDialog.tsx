@@ -6,9 +6,10 @@ import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 
+import { GetJourneyForSharing_journey as JourneyFromLazyQuery } from '../../../../../../../__generated__/GetJourneyForSharing'
+import { JourneyFields as JourneyFromContext } from '../../../../../../../__generated__/JourneyFields'
 import { JourneySlugUpdate } from '../../../../../../../__generated__/JourneySlugUpdate'
 
 export const JOURNEY_SLUG_UPDATE = gql`
@@ -24,20 +25,17 @@ interface SlugDialogProps {
   open?: boolean
   onClose?: () => void
   hostname?: string
-  journeySlug?: string
-  journeyId?: string
+  journey?: JourneyFromContext | JourneyFromLazyQuery
 }
 
 export function SlugDialog({
   open,
   onClose,
   hostname,
-  journeySlug,
-  journeyId
+  journey
 }: SlugDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [journeyUpdate] = useMutation<JourneySlugUpdate>(JOURNEY_SLUG_UPDATE)
-  const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
   const slugSchema = object().shape({
     slug: string().required(t('Required'))
@@ -47,7 +45,7 @@ export function SlugDialog({
     values: FormikValues,
     { setValues }: FormikHelpers<FormikValues>
   ): Promise<void> => {
-    const id = journeyId ?? journey?.id
+    const id = journey?.id
     if (id == null) return
 
     try {
@@ -88,9 +86,9 @@ export function SlugDialog({
 
   return (
     <>
-      {journeySlug != null && (
+      {journey?.slug != null && (
         <Formik
-          initialValues={{ slug: journeySlug }}
+          initialValues={{ slug: journey.slug }}
           onSubmit={handleUpdateSlug}
           validationSchema={slugSchema}
         >

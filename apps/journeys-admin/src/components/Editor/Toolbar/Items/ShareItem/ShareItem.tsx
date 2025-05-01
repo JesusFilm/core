@@ -17,8 +17,8 @@ import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import ShareIcon from '@core/shared/ui/icons/Share'
 import TransformIcon from '@core/shared/ui/icons/Transform'
 
-import { GetJourneyForSharing_journey as JourneyForSharing } from '../../../../../../__generated__/GetJourneyForSharing'
-import { JourneyFields as ContextJourney } from '../../../../../../__generated__/JourneyFields'
+import { GetJourneyForSharing_journey as JourneyFromLazyQuery } from '../../../../../../__generated__/GetJourneyForSharing'
+import { JourneyFields as JourneyFromContext } from '../../../../../../__generated__/JourneyFields'
 import { Item } from '../Item/Item'
 
 const EmbedJourneyDialog = dynamic(
@@ -50,7 +50,7 @@ const QrCodeDialog = dynamic(
 interface ShareItemProps {
   variant: ComponentProps<typeof Item>['variant']
   closeMenu?: () => void
-  journey?: ContextJourney | JourneyForSharing
+  journey?: JourneyFromContext | JourneyFromLazyQuery
 }
 
 export function ShareItem({
@@ -168,8 +168,7 @@ export function ShareItem({
           open={showSlugDialog}
           onClose={() => setShowSlugDialog(false)}
           hostname={hostname}
-          journeySlug={journey?.slug}
-          journeyId={journey?.id}
+          journey={journey}
         />
       )}
       {showEmbedDialog != null && (
@@ -183,7 +182,7 @@ export function ShareItem({
         <QrCodeDialog
           open={showQrCodeDialog}
           onClose={() => setShowQrCodeDialog(false)}
-          journeyId={journey?.id}
+          journey={journey}
           teamId={activeTeam?.id}
         />
       )}

@@ -104,7 +104,7 @@ export function DefaultMenu({
   const { loadUser, data: currentUser } = useCurrentUserLazyQuery()
 
   // Lazy query for journey data if context is missing
-  const [loadJourney, { data: journeyForSharing }] =
+  const [loadJourney, { data: journeyFromLazyQuery }] =
     useJourneyForSharingLazyQuery()
 
   const { data: journeyWithUserRoles } = useQuery(GET_JOURNEY_WITH_USER_ROLES, {
@@ -192,7 +192,7 @@ export function DefaultMenu({
           openInNew
         />
       </NextLink>
-      <ShareItem variant="menu-item" journey={journeyForSharing?.journey} />
+      <ShareItem variant="menu-item" journey={journeyFromLazyQuery?.journey} />
       <Divider />
       {template !== true && (
         <DuplicateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />

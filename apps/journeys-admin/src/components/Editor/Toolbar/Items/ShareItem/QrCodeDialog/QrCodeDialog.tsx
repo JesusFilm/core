@@ -5,13 +5,14 @@ import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
 
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 
+import { GetJourneyForSharing_journey as JourneyFromLazyQuery } from '../../../../../../../__generated__/GetJourneyForSharing'
 import {
   GetJourneyQrCodes,
   GetJourneyQrCodesVariables
 } from '../../../../../../../__generated__/GetJourneyQrCodes'
+import { JourneyFields as JourneyFromContext } from '../../../../../../../__generated__/JourneyFields'
 import {
   QrCodeCreate,
   QrCodeCreateVariables
@@ -44,18 +45,17 @@ export const QR_CODE_CREATE = gql`
 interface QrCodeDialogProps {
   open: boolean
   onClose: () => void
-  journeyId?: string
   teamId?: string
+  journey?: JourneyFromContext | JourneyFromLazyQuery
 }
 
 export function QrCodeDialog({
   open,
   onClose,
-  journeyId,
+  journey,
   teamId
 }: QrCodeDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
   const [qrCodeCreate, { loading: createLoading }] = useMutation<
     QrCodeCreate,
@@ -63,9 +63,6 @@ export function QrCodeDialog({
   >(QR_CODE_CREATE)
 
   const [loading, setLoading] = useState(true)
-
-  const selectedJourneyId = journeyId ?? journey?.id
-  const selectedTeamId = teamId ?? journey?.team?.id
 
   const {
     data,
@@ -76,10 +73,10 @@ export function QrCodeDialog({
     {
       variables: {
         where: {
-          journeyId: selectedJourneyId
+          journeyId: journey?.id
         }
       },
-      skip: selectedJourneyId == null
+      skip: journey?.id == null
     }
   )
 
@@ -99,12 +96,12 @@ export function QrCodeDialog({
   }, [getLoading, createLoading])
 
   async function handleGenerateQrCode(): Promise<void> {
-    if (selectedJourneyId == null || selectedTeamId == null) return
+    if (journey?.id == null) return
     await qrCodeCreate({
       variables: {
         input: {
-          journeyId: selectedJourneyId,
-          teamId: selectedTeamId
+          journeyId: journey.id,
+          teamId: teamId ?? ''
         }
       },
       update(cache, { data }) {
