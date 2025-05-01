@@ -190,6 +190,12 @@ mediaComponent.openapi(route, async (c) => {
       )
     }
 
+    const queryObject = c.req.query()
+    const queryString = new URLSearchParams(queryObject).toString()
+    const mediaComponentLinksQuerystring = new URLSearchParams(
+      queryObject
+    ).toString()
+
     const descriptorsonlyResponse = {
       mediaComponentId,
       title: video.title[0]?.value ?? video.fallbackTitle[0]?.value ?? '',
@@ -199,10 +205,7 @@ mediaComponent.openapi(route, async (c) => {
         video.description[0]?.value ??
         video.fallbackDescription[0]?.value ??
         '',
-      studyQuestions:
-        video.studyQuestions.length > 0
-          ? video.studyQuestions.map((question) => question.value)
-          : video.fallbackStudyQuestions.map((question) => question.value),
+      studyQuestions: video.studyQuestions.map((question) => question.value),
       metadataLanguageTag: video.title[0]?.language.bcp47 ?? 'en',
       _links: {
         self: {
@@ -268,10 +271,7 @@ mediaComponent.openapi(route, async (c) => {
         video.description[0]?.value ??
         video.fallbackDescription[0]?.value ??
         '',
-      studyQuestions:
-        video.studyQuestions.length > 0
-          ? video.studyQuestions.map((question) => question.value)
-          : video.fallbackStudyQuestions.map((question) => question.value),
+      studyQuestions: video.studyQuestions.map((question) => question.value),
       metadataLanguageTag: metadataLanguageTags[0] ?? 'en',
       _links: {
         sampleMediaComponentLanguage: {

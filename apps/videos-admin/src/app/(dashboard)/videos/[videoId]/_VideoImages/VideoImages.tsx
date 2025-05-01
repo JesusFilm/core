@@ -24,7 +24,7 @@ export function VideoImages({ videoId }: VideoImagesProps): ReactElement {
     <Grid container spacing={2}>
       <Grid item xs={12} sm={6}>
         <Typography variant="subtitle2" gutterBottom>
-          Banner Image (1280x600)
+          Banner Image
         </Typography>
         <Suspense fallback={<Loading />}>
           <BannerImage videoId={videoId} />
@@ -32,7 +32,7 @@ export function VideoImages({ videoId }: VideoImagesProps): ReactElement {
       </Grid>
       <Grid item xs={12} sm={6}>
         <Typography variant="subtitle2" gutterBottom>
-          HD Image (1920x1080)
+          HD Image
         </Typography>
         <Suspense fallback={<Loading />}>
           <HdImage videoId={videoId} />

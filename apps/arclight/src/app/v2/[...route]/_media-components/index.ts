@@ -345,10 +345,9 @@ mediaComponents.openapi(route, async (c) => {
             video.description[0]?.value ??
             video.fallbackDescription[0]?.value ??
             '',
-          studyQuestions:
-            video.studyQuestions.length > 0
-              ? video.studyQuestions.map((question) => question.value)
-              : video.fallbackStudyQuestions.map((question) => question.value),
+          studyQuestions: video.studyQuestions.map(
+            (question) => question.value
+          ),
           metadataLanguageTag: video.title[0]?.language.bcp47 ?? 'en',
           ...(expand.includes('languageIds')
             ? {
