@@ -86,6 +86,12 @@ describe('Toolbar Menu', () => {
       )
       fireEvent.click(screen.getByRole('button'))
       expect(
+        screen.getByRole('menuitem', { name: 'Edit Details' })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('menuitem', { name: 'Translate' })
+      ).toBeInTheDocument()
+      expect(
         screen.getByRole('menuitem', { name: 'Manage Access' })
       ).toBeInTheDocument()
       expect(screen.getByTestId('menu-divider')).toBeInTheDocument()
@@ -149,6 +155,9 @@ describe('Toolbar Menu', () => {
         screen.getByRole('menuitem', { name: 'Edit Details' })
       ).toBeInTheDocument()
       expect(
+        screen.getByRole('menuitem', { name: 'Translate' })
+      ).toBeInTheDocument()
+      expect(
         screen.getByRole('menuitem', { name: 'Manage Access' })
       ).toBeInTheDocument()
       await waitFor(() =>
@@ -197,6 +206,12 @@ describe('Toolbar Menu', () => {
         </SnackbarProvider>
       )
       fireEvent.click(screen.getByRole('button'))
+      expect(
+        screen.getByRole('menuitem', { name: 'Edit Details' })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('menuitem', { name: 'Translate' })
+      ).toBeInTheDocument()
       expect(
         screen.getByRole('menuitem', { name: 'Template Settings' })
       ).toBeInTheDocument()
@@ -253,6 +268,53 @@ describe('Toolbar Menu', () => {
           { shallow: true }
         )
       })
+    })
+
+    it('should handle translate journey', async () => {
+      mockedUseRouter.mockReturnValue({
+        query: { param: null },
+        push,
+        events: {
+          on
+        }
+      } as unknown as NextRouter)
+
+      render(
+        <SnackbarProvider>
+          <MockedProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  id: 'journeyId',
+                  title: 'Some title',
+                  description: 'Some description',
+                  slug: 'my-journey',
+                  tags: [],
+                  language
+                } as unknown as Journey
+              }}
+            >
+              <EditorProvider>
+                <Menu />
+              </EditorProvider>
+            </JourneyProvider>
+          </MockedProvider>
+        </SnackbarProvider>
+      )
+      const menu = screen.getByRole('button')
+      fireEvent.click(menu)
+      fireEvent.click(screen.getByRole('menuitem', { name: 'Translate' }))
+
+      await waitFor(() => {
+        expect(push).toHaveBeenCalledWith(
+          {
+            query: { param: 'journeyTranslate' }
+          },
+          undefined,
+          { shallow: true }
+        )
+      })
+      expect(menu).not.toHaveAttribute('aria-expanded')
     })
   })
 
