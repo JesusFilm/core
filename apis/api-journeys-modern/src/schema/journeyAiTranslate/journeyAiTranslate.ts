@@ -224,7 +224,7 @@ builder.mutationFields((t) => ({
         }
 
         const job = (await queue.add(
-          `${input.journeyId}`,
+          `journeyAiTranslate/${input.journeyId}:${input.textLanguageId}`,
           {
             userId: user.id,
             type: 'journeyAiTranslate',
