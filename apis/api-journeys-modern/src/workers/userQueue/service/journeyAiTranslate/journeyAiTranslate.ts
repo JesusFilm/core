@@ -279,27 +279,39 @@ export async function translateJourney(
     const analysisTargetLanguage =
       requestedLanguageName || job.data.textLanguageId
 
-    // 4. Generate analysis with Gemini
-    const prompt = `Analyze this journey content and provide the key intent, themes, and target audience. 
-      Also suggest ways to culturally adapt this content for the target language: ${analysisTargetLanguage}.
-      The source language name is: ${journeyData.journey.language?.name?.[0]?.value || 'unknown'}.
-      The target language name is: ${job.data.targetLanguageName || 'unknown'}.
-      
-      ${journeyContent}`
+    // 4. Generate analysis with Gemini (Gemini 2.0 Flash is very capable with just text)
+    try {
+      // Create the prompt text
+      const promptText = `Analyze this journey content and provide the key intent, themes, and target audience. 
+        Also suggest ways to culturally adapt this content for the target language: ${analysisTargetLanguage}.
+        The source language name is: ${journeyData.journey.language?.name?.[0]?.value || 'unknown'}.
+        The target language name is: ${job.data.targetLanguageName || 'unknown'}.
+        
+        ${journeyContent}`
 
-    const { text: journeyAnalysis } = await generateText({
-      model: geminiModel,
-      prompt
-    })
+      // Call Gemini with text - Gemini 2.0 Flash is very capable just with text
+      const { text: journeyAnalysis } = await generateText({
+        model: google('gemini-2.0-flash'),
+        prompt: promptText
+      })
 
-    // Store the analysis in the job data for use in translation
-    await job.updateData({
-      ...job.data,
-      journeyAnalysis
-    })
+      // Store the analysis in the job data for use in translation
+      await job.updateData({
+        ...job.data,
+        journeyAnalysis
+      })
 
-    // Update progress
-    await job.updateProgress(100)
+      // Log that we've successfully analyzed the journey
+      console.log('Successfully analyzed journey content with Gemini')
+
+      // Update progress
+      await job.updateProgress(100)
+    } catch (error: unknown) {
+      console.error('Error analyzing journey with Gemini:', error)
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error occurred'
+      throw new Error(`Failed to analyze journey: ${errorMessage}`)
+    }
   } catch (error: unknown) {
     console.error('Error analyzing journey with Gemini:', error)
     const errorMessage =
