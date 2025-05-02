@@ -4,6 +4,7 @@ import { NextRouter, useRouter } from 'next/router'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
+import { getLanguagesMock } from '@core/journeys/ui/useLanguagesQuery/useLanguagesQuery.mock'
 
 import { TranslateItem } from './TranslateItem'
 
@@ -34,10 +35,26 @@ describe('TranslateItem', () => {
     jest.clearAllMocks()
   })
 
-  // TODO: Add test for opening translate dialog once implemented
-  it('should open translate dialog', async () => {
-    // This will be implemented once the TranslateJourneyDialog is added
-    // Similar to how DetailsItem opens JourneyDetailsDialog
+  it('should open translate journey dialog', async () => {
+    render(
+      <MockedProvider mocks={[getLanguagesMock]}>
+        <JourneyProvider value={{ journey: defaultJourney }}>
+          <TranslateItem variant="menu-item" />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByText('Translate'))
+    await waitFor(() =>
+      expect(screen.getByTestId('TranslateJourneyDialog')).toBeInTheDocument()
+    )
+    expect(screen.queryByRole('menuitem')).not.toBeInTheDocument()
+    fireEvent.click(screen.getByText('Cancel'))
+    await waitFor(() =>
+      expect(
+        screen.queryByTestId('TranslateJourneyDialog')
+      ).not.toBeInTheDocument()
+    )
   })
 
   it('should handle helpscout params on click', async () => {
