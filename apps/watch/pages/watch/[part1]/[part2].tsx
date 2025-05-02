@@ -47,13 +47,21 @@ const DynamicVideoContainerPage = dynamic(
     )
 )
 
+const DynamicNewContentPage = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "NewContentPage" */
+      '../../../src/components/NewContentPage'
+    )
+)
+
 export default function Part2Page({ content }: Part2PageProps): ReactElement {
   return (
     <SnackbarProvider>
       <LanguageProvider>
         <VideoProvider value={{ content }}>
           {content.variant?.hls != null ? (
-            <DynamicVideoContentPage />
+            <DynamicNewContentPage />
           ) : (
             <DynamicVideoContainerPage />
           )}
