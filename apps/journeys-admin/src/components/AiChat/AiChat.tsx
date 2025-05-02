@@ -6,6 +6,7 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
+import CircularProgress from '@mui/material/CircularProgress'
 import Grow from '@mui/material/Grow'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
@@ -29,7 +30,7 @@ You are currently in the context of a journey.
 export function AiChat({ open = false }: AiChatProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
-  const { messages, append, setMessages } = useChat({
+  const { messages, append, setMessages, status } = useChat({
     maxSteps: 5
   })
 
@@ -104,7 +105,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
             gap: 2,
             p: 5,
             pb: 0,
-            maxHeight: 800,
+            maxHeight: 'calc(100svh - 400px)',
             minHeight: 150,
             overflowY: 'auto'
           }}
@@ -127,6 +128,11 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
                 'NextSteps AI can help you make your journey more effective! Ask it anything.'
               )}
             </Typography>
+          )}
+          {status === 'submitted' && (
+            <Box>
+              <CircularProgress size={20} />
+            </Box>
           )}
           {nonSystemMessages.map((message) => (
             <Box
@@ -189,7 +195,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
               }}
               autoFocus
             />
-            <Button type="submit" variant="outlined">
+            <Button variant="outlined" onClick={handleSubmit}>
               <ArrowUpIcon />
             </Button>
           </Stack>
