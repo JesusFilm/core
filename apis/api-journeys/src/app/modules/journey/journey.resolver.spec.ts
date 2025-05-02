@@ -60,6 +60,7 @@ describe('JourneyResolver', () => {
   let resolver: JourneyResolver,
     blockService: DeepMockProxy<BlockService>,
     prismaService: DeepMockProxy<PrismaService>,
+    qrCodeService: DeepMockProxy<QrCodeService>,
     ability: AppAbility,
     abilityWithPublisher: AppAbility,
     plausibleQueue: { add: jest.Mock },
@@ -178,6 +179,9 @@ describe('JourneyResolver', () => {
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
+    qrCodeService = module.get<QrCodeService>(
+      QrCodeService
+    ) as DeepMockProxy<QrCodeService>
     ability = await new AppCaslFactory().createAbility({
       id: 'userId'
     })
@@ -1822,6 +1826,26 @@ describe('JourneyResolver', () => {
           journeyTags: { create: [{ tagId: 'tagId1' }] }
         }
       })
+    })
+
+    it('updates the journey short link when slug is provided', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(
+        journeyWithUserTeam
+      )
+      prismaService.journey.update.mockResolvedValueOnce({
+        ...journey,
+        id: 'journeyId',
+        slug: 'new-slug'
+      })
+
+      await resolver.journeyUpdate(ability, 'journeyId', {
+        slug: 'new-slug'
+      })
+
+      expect(qrCodeService.updateJourneyShortLink).toHaveBeenCalledWith(
+        'journeyId',
+        'new-slug'
+      )
     })
 
     it('updates a journey with empty fields when not passed in', async () => {

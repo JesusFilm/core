@@ -823,6 +823,13 @@ export class JourneyResolver {
           })
         }
 
+        if (input.slug != null) {
+          await this.qrCodeService.updateJourneyShortLink(
+            updatedJourney.id,
+            input.slug
+          )
+        }
+
         return updatedJourney
       })
     } catch (err) {
