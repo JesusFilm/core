@@ -1,0 +1,1 @@
+export { ChapterMetadata } from './ChapterMetadata'
