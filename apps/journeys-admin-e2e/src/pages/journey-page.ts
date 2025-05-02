@@ -1240,4 +1240,36 @@ export class JourneyPage {
       this.page.locator('div.MuiDialogContent-root input')
     ).toHaveValue(new RegExp(expectedValue))
   }
+
+  async verifyArchiveOptionIsDisabled() {
+    await expect(
+      this.page.locator('li[data-testid="JourneysAdminMenuItemArchive"]')
+    ).toBeDisabled()
+  }
+
+  async verifyUnarchiveOptionIsDisabled() {
+    await expect(
+      this.page.locator('li[data-testid="JourneysAdminMenuItemUnarchive"]')
+    ).toBeDisabled()
+  }
+
+  async verifyTrashOptionIsDisabled() {
+    await expect(
+      this.page.locator('li[data-testid="JourneysAdminMenuItem"]', {
+        hasText: 'Trash'
+      })
+    ).toBeDisabled()
+  }
+
+  async verifyRestoreOptionIsDisabled() {
+    await expect(
+      this.page.locator('li[data-testid="JourneysAdminMenuItemRestore"]')
+    ).toBeDisabled()
+  }
+
+  async verifyDeleteForeverOptionIsDisabled() {
+    await expect(
+      this.page.locator('li[data-testid="JourneysAdminMenuItemDelete"]')
+    ).toBeDisabled()
+  }
 }
