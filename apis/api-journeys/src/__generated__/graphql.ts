@@ -837,6 +837,13 @@ export type Journey = {
   website?: Maybe<Scalars['Boolean']['output']>;
 };
 
+export type JourneyAiTranslateStatus = {
+  __typename?: 'JourneyAiTranslateStatus';
+  id: Scalars['String']['output'];
+  progress: Scalars['Int']['output'];
+  status: Scalars['String']['output'];
+};
+
 export type JourneyCollection = {
   __typename?: 'JourneyCollection';
   customDomains?: Maybe<Array<CustomDomain>>;
@@ -3310,6 +3317,17 @@ export type QueryShortLinksConnectionEdge = {
   node?: Maybe<ShortLink>;
 };
 
+export type QueueNotificationStatus = {
+  __typename?: 'QueueNotificationStatus';
+  jobId: Scalars['String']['output'];
+  message: Scalars['String']['output'];
+  progress: Scalars['Int']['output'];
+  queueName: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+  timestamp: Scalars['String']['output'];
+  userId: Scalars['String']['output'];
+};
+
 export type RadioOptionBlock = Block & {
   __typename?: 'RadioOptionBlock';
   action?: Maybe<Action>;
@@ -3703,6 +3721,22 @@ export type StepViewEventCreateInput = {
   id?: InputMaybe<Scalars['ID']['input']>;
   /** stepName of the current stepBlock */
   value?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type Subscription = {
+  __typename?: 'Subscription';
+  journeyAiTranslateStatus?: Maybe<JourneyAiTranslateStatus>;
+  userQueueNotifications?: Maybe<QueueNotificationStatus>;
+};
+
+
+export type SubscriptionJourneyAiTranslateStatusArgs = {
+  jobId: Scalars['ID']['input'];
+};
+
+
+export type SubscriptionUserQueueNotificationsArgs = {
+  userId: Scalars['ID']['input'];
 };
 
 export type Tag = {

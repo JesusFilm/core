@@ -4,7 +4,7 @@ import { Logger } from 'pino'
 import { connection } from './lib/connection'
 import { logger } from './lib/logger'
 
-function run({
+export function run({
   service,
   queueName
 }: {
