@@ -738,6 +738,7 @@ export class JourneyResolver {
       where: { id },
       include: {
         userJourneys: true,
+        qrCode: true,
         team: {
           include: { userTeams: true }
         }
@@ -804,7 +805,7 @@ export class JourneyResolver {
           }
         })
 
-        if (input.slug != null) {
+        if (input.slug != null && journey.qrCode.length > 0) {
           await this.qrCodeService.updateJourneyShortLink(
             updatedJourney.id,
             input.slug

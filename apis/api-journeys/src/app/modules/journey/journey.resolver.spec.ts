@@ -1829,9 +1829,10 @@ describe('JourneyResolver', () => {
     })
 
     it('updates the journey short link when slug is provided', async () => {
-      prismaService.journey.findUnique.mockResolvedValueOnce(
-        journeyWithUserTeam
-      )
+      prismaService.journey.findUnique.mockResolvedValueOnce({
+        ...journeyWithUserTeam,
+        qrCode: [{ id: 'qrCodeId' }]
+      })
       prismaService.journey.update.mockResolvedValueOnce({
         ...journey,
         id: 'journeyId',
