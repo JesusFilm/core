@@ -59,28 +59,32 @@ test.describe('Verify user able to Active, Archived, Trash the journeys', () => 
     await journeyPage.verifyJourneyMovedFromArchivedToActiveTab()
   })
 
-  test('Verify journey menu list items are disabled for member user', async ({
+  test('Verify the user able to move the all journeys from Active, archived, Trash page', async ({
     page
   }) => {
     const journeyPage = new JourneyPage(page)
-    await journeyPage.clickCreateCustomJourney()
-    await journeyPage.createAndVerifyCustomJourney()
-
-    // Check Active tab menu list items
-    await journeyPage.clickThreeDotBesideSortByOption()
-    await journeyPage.verifyArchiveOptionIsDisabled()
-    await journeyPage.verifyTrashOptionIsDisabled()
-
-    // Check Archived tab menu list items
+    await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
+    await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
+    // Verify the user able to move the all journeys from Active to archived page
+    await journeyPage.verifyAllJourneysMovedActiveToArchivedTab()
     await journeyPage.clickArchivedTab()
-    await journeyPage.clickThreeDotBesideSortByOption()
-    await journeyPage.verifyUnarchiveOptionIsDisabled()
-    await journeyPage.verifyTrashOptionIsDisabled()
-
-    // Check Trash tab menu list items
-    await journeyPage.clickTrashTab()
-    await journeyPage.clickThreeDotBesideSortByOption()
-    await journeyPage.verifyRestoreOptionIsDisabled()
-    await journeyPage.verifyDeleteForeverOptionIsDisabled()
+    await journeyPage.getJourneyListOfArchivedTab()
+    // Verify the user able to move the all journeys from Archived to Trash page
+    await journeyPage.verifyAllJourneysMovedToTrash()
+    // Verify the user able to restore the all journeys from Trash to active page
+    await journeyPage.verifyAllJourneysRestored()
+    await journeyPage.getJourneyListOfActiveTab()
+    // Verify the user able to move the all journeys from Active to Trash page
+    await journeyPage.verifyAllJourneysMovedToTrash()
+    // Verify the user able to delete the all file permanently in Trash page
+    await journeyPage.verifyAllJourneysDeletedForeverFromTrashTab()
+    await journeyPage.clickActiveTab() // clickin on active tab
+    await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
+    await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
+    await journeyPage.verifyExistingJourneyMovedActiveToArchivedTab() // moving the created journey to archived tab by archiving that journey
+    await journeyPage.clickArchivedTab() // clicking on archived tab
+    await journeyPage.getJourneyListOfArchivedTab()
+    // Verify the user able to unarchive the all journeys from Archived to active page
+    await journeyPage.verifyAllJourneysMovedFromArchivedToActiveTab()
   })
 })
