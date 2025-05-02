@@ -77,6 +77,8 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
     .filter((message) => message.role !== 'system')
     .reverse()
 
+  console.log(nonSystemMessages)
+
   return (
     <Grow
       in={open}
@@ -168,7 +170,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
             </Box>
           ))}
         </Box>
-        <CardContent>
+        <CardContent sx={{ '&:last-child': { pb: 2 } }}>
           <Stack direction="row" spacing={2}>
             <TextField
               name="userMessage"
@@ -222,7 +224,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
                 {t('Advanced Settings')}
               </Typography>
             </AccordionSummary>
-            <AccordionDetails sx={{ p: 0 }}>
+            <AccordionDetails sx={{ p: 0, pb: 4 }}>
               <TextField
                 name="systemPrompt"
                 label={t('System Prompt')}
