@@ -210,9 +210,10 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
                 '& > .MuiAccordionSummary-content': {
                   my: 0,
                   justifyContent: 'flex-end',
-                  mr: 2,
+                  mr: 1,
                   '&.Mui-expanded': {
-                    my: 0
+                    my: 0,
+                    mr: 1
                   }
                 }
               }}
