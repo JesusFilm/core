@@ -101,12 +101,14 @@ export function JourneyListMenu({
                 icon={<FolderDown1Icon />}
                 onClick={() => handleEvent('restoreAllArchived')}
                 key="restoreAllArchived"
+                disabled={!isTeamManager}
               />,
               <MenuItem
                 label={t('Trash All')}
                 icon={<Trash2Icon />}
                 onClick={() => handleEvent('trashAllArchived')}
                 key="trashAllArchived"
+                disabled={!isTeamManager}
               />
             ]}
             {activeTab === 'trashed' && [
@@ -115,12 +117,14 @@ export function JourneyListMenu({
                 icon={<CheckContainedIcon />}
                 onClick={() => handleEvent('restoreAllTrashed')}
                 key="restoreAllTrashed"
+                disabled={!isTeamManager}
               />,
               <MenuItem
                 label={t('Delete All Forever')}
                 icon={<FileShredIcon />}
                 onClick={() => handleEvent('deleteAllTrashed')}
                 key="deleteAllTrashed"
+                disabled={!isTeamManager}
               />
             ]}
           </Menu>

@@ -106,13 +106,16 @@ describe('JourneyListMenu', () => {
         }
       } as any)
 
-      const { getByRole, getAllByRole } = render(
+      const { getByRole, getByText } = render(
         <JourneyListMenu onClick={jest.fn()} />
       )
       fireEvent.click(getByRole('button'))
-      const menuItems = getAllByRole('menuitem')
-      expect(menuItems[0]).toHaveAttribute('aria-disabled', 'true')
-      expect(menuItems[1]).toHaveAttribute('aria-disabled', 'true')
+      const archiveAllMenuItem =
+        getByText('Archive All').closest('[role="menuitem"]')
+      const trashAllMenuItem =
+        getByText('Trash All').closest('[role="menuitem"]')
+      expect(archiveAllMenuItem).toHaveAttribute('aria-disabled', 'true')
+      expect(trashAllMenuItem).toHaveAttribute('aria-disabled', 'true')
     })
   })
 
@@ -151,6 +154,30 @@ describe('JourneyListMenu', () => {
       fireEvent.click(getByText('Trash All'))
       expect(handleClick).toHaveBeenCalledWith('trashAllArchived')
     })
+
+    it('should disable actions for non-managers', () => {
+      mockedUseTeam.mockReturnValue({
+        activeTeam: {
+          userTeams: [
+            {
+              user: { id: 'userId' },
+              role: UserTeamRole.member
+            }
+          ]
+        }
+      } as any)
+
+      const { getByRole, getByText } = render(
+        <JourneyListMenu onClick={jest.fn()} />
+      )
+      fireEvent.click(getByRole('button'))
+      const unarchiveAllMenuItem =
+        getByText('Unarchive All').closest('[role="menuitem"]')
+      const trashAllMenuItem =
+        getByText('Trash All').closest('[role="menuitem"]')
+      expect(unarchiveAllMenuItem).toHaveAttribute('aria-disabled', 'true')
+      expect(trashAllMenuItem).toHaveAttribute('aria-disabled', 'true')
+    })
   })
 
   describe('trashed', () => {
@@ -187,6 +214,30 @@ describe('JourneyListMenu', () => {
       fireEvent.click(getByRole('button'))
       fireEvent.click(getByText('Delete All Forever'))
       expect(handleClick).toHaveBeenCalledWith('deleteAllTrashed')
+    })
+
+    it('should disable actions for non-managers', () => {
+      mockedUseTeam.mockReturnValue({
+        activeTeam: {
+          userTeams: [
+            {
+              user: { id: 'userId' },
+              role: UserTeamRole.member
+            }
+          ]
+        }
+      } as any)
+
+      const { getByRole, getByText } = render(
+        <JourneyListMenu onClick={jest.fn()} />
+      )
+      fireEvent.click(getByRole('button'))
+      const restoreAllMenuItem =
+        getByText('Restore All').closest('[role="menuitem"]')
+      const deleteAllMenuItem =
+        getByText('Delete All Forever').closest('[role="menuitem"]')
+      expect(restoreAllMenuItem).toHaveAttribute('aria-disabled', 'true')
+      expect(deleteAllMenuItem).toHaveAttribute('aria-disabled', 'true')
     })
   })
 })
