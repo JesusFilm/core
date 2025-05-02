@@ -1,0 +1,62 @@
+import { Block } from '.prisma/api-journeys-modern-client'
+
+import { translateButtonBlock } from './translateButtonBlock'
+import { translateRadioQuestionBlock } from './translateRadioQuestionBlock'
+import { translateTextResponseBlock } from './translateTextResponseBlock'
+import { translateTypographyBlock } from './translateTypographyBlock'
+
+export async function translateBlock({
+  blocks,
+  cardBlock,
+  cardAnalysis,
+  sourceLanguageName,
+  targetLanguageName
+}: {
+  blocks: Block[]
+  cardBlock: Block
+  cardAnalysis: string
+  sourceLanguageName: string
+  targetLanguageName: string
+}): Promise<void> {
+  const cardBlocksChildren = blocks.filter(
+    ({ parentBlockId }) => parentBlockId === cardBlock.id
+  )
+
+  for (const block of cardBlocksChildren) {
+    switch (block.typename) {
+      case 'TypographyBlock':
+        await translateTypographyBlock({
+          block,
+          cardAnalysis,
+          sourceLanguageName,
+          targetLanguageName
+        })
+        break
+      case 'ButtonBlock':
+        await translateButtonBlock({
+          block,
+          cardAnalysis,
+          sourceLanguageName,
+          targetLanguageName
+        })
+        break
+      case 'RadioQuestionBlock':
+        await translateRadioQuestionBlock({
+          block,
+          blocks,
+          cardAnalysis,
+          sourceLanguageName,
+          targetLanguageName
+        })
+        break
+      case 'TextResponseBlock':
+        await translateTextResponseBlock({
+          block,
+          cardAnalysis,
+          sourceLanguageName,
+          targetLanguageName
+        })
+        break
+    }
+  }
+}
