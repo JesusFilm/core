@@ -29,6 +29,8 @@ export async function POST(req: NextRequest) {
   if (token?.value == null)
     return Response.json({ error: 'Missing token' }, { status: 400 })
 
+  console.log(token.value)
+
   const apolloClient = createApolloClient(token.value)
 
   const result = streamText({
@@ -39,14 +41,20 @@ export async function POST(req: NextRequest) {
       getJourney: {
         ...tools.getJourney,
         execute: async ({ journeyId }) => {
-          const result = await apolloClient.query({
-            query: GET_ADMIN_JOURNEY,
-            variables: { id: journeyId }
-          })
-          return result.data?.journey
+          try {
+            const result = await apolloClient.query({
+              query: GET_ADMIN_JOURNEY,
+              variables: { id: journeyId }
+            })
+            return result.data?.journey
+          } catch (error) {
+            console.error(error)
+            return error
+          }
         }
       }
-    }
+    },
+    maxSteps: 5
   })
   return result.toDataStreamResponse()
 }
