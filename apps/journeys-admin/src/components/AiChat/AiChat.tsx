@@ -1,4 +1,7 @@
 import { useChat } from '@ai-sdk/react'
+import Accordion from '@mui/material/Accordion'
+import AccordionDetails from '@mui/material/AccordionDetails'
+import AccordionSummary from '@mui/material/AccordionSummary'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
@@ -7,21 +10,21 @@ import Grow from '@mui/material/Grow'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { Form, Formik, FormikHelpers } from 'formik'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import ArrowUpIcon from '@core/shared/ui/icons/ArrowUp'
+import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 interface AiChatProps {
   open?: boolean
 }
 
-interface FormValues {
-  systemPrompt: string
-  userMessage: string
-}
+const INITIAL_SYSTEM_PROMPT = `
+You are a helpful assistant that can answer questions and help with tasks.
+You are currently in the context of a journey.
+`
 
 export function AiChat({ open = false }: AiChatProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -30,24 +33,19 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
     maxSteps: 5
   })
 
-  const initialValues: FormValues = {
-    systemPrompt: '',
-    userMessage: ''
-  }
+  const [systemPrompt, setSystemPrompt] = useState(INITIAL_SYSTEM_PROMPT)
+  const [userMessage, setUserMessage] = useState('')
 
-  function handleFormikSubmit(
-    values: FormValues,
-    { resetForm }: FormikHelpers<FormValues>
-  ): void {
+  function handleSubmit(): void {
     try {
-      if (values.systemPrompt.trim()) {
+      if (systemPrompt.trim()) {
         const hasSystemMessage = messages.some((msg) => msg.role === 'system')
         if (!hasSystemMessage) {
           setMessages([
             {
               id: uuidv4(),
               role: 'system',
-              content: values.systemPrompt
+              content: systemPrompt.trim()
             },
             ...messages
           ])
@@ -55,25 +53,23 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
           // Update existing system message
           setMessages(
             messages.map((msg) =>
-              msg.role === 'system'
-                ? { ...msg, content: values.systemPrompt }
-                : msg
+              msg.role === 'system' ? { ...msg, content: systemPrompt } : msg
             )
           )
         }
       }
 
       // Send the user message if there's content
-      if (values.userMessage.trim()) {
+      if (userMessage.trim()) {
         void append({
           role: 'user',
-          content: values.userMessage
+          content: userMessage.trim()
         })
       }
     } catch (error) {
       console.error(error)
     } finally {
-      resetForm()
+      setUserMessage('')
     }
   }
 
@@ -173,43 +169,72 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
           ))}
         </Box>
         <CardContent>
-          <Formik initialValues={initialValues} onSubmit={handleFormikSubmit}>
-            {({ values, handleChange, handleSubmit }) => (
-              <Form>
-                <Stack direction="row" spacing={2}>
-                  {/* <TextField
-                    name="systemPrompt"
-                    label={t('System Prompt')}
-                    value={values.systemPrompt}
-                    fullWidth
-                    aria-label={t('System Prompt')}
-                    placeholder={t('Instructions for the AI')}
-                    onChange={handleChange}
-                  /> */}
-                  <TextField
-                    name="userMessage"
-                    value={values.userMessage}
-                    onChange={handleChange}
-                    placeholder={t('Ask Anything')}
-                    fullWidth
-                    multiline
-                    maxRows={4}
-                    aria-label={t('Message')}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault()
-                        handleSubmit()
-                      }
-                    }}
-                    autoFocus
-                  />
-                  <Button type="submit" variant="outlined">
-                    <ArrowUpIcon />
-                  </Button>
-                </Stack>
-              </Form>
-            )}
-          </Formik>
+          <Stack direction="row" spacing={2}>
+            <TextField
+              name="userMessage"
+              value={userMessage}
+              onChange={(e) => setUserMessage(e.target.value)}
+              placeholder={t('Ask Anything')}
+              fullWidth
+              multiline
+              maxRows={4}
+              aria-label={t('Message')}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault()
+                  handleSubmit()
+                }
+              }}
+              autoFocus
+            />
+            <Button type="submit" variant="outlined">
+              <ArrowUpIcon />
+            </Button>
+          </Stack>
+          <Accordion
+            sx={{
+              mt: 2,
+              '&:before': {
+                display: 'none'
+              }
+            }}
+            elevation={0}
+          >
+            <AccordionSummary
+              expandIcon={<ChevronDownIcon fontSize="small" />}
+              sx={{
+                minHeight: 32,
+                '&.Mui-expanded': {
+                  minHeight: 32
+                },
+                '& > .MuiAccordionSummary-content': {
+                  my: 0,
+                  justifyContent: 'flex-end',
+                  mr: 2,
+                  '&.Mui-expanded': {
+                    my: 0
+                  }
+                }
+              }}
+            >
+              <Typography component="span" variant="body2">
+                {t('Advanced Settings')}
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails sx={{ p: 0 }}>
+              <TextField
+                name="systemPrompt"
+                label={t('System Prompt')}
+                fullWidth
+                aria-label={t('System Prompt')}
+                placeholder={t('Instructions for the AI')}
+                value={systemPrompt}
+                onChange={(e) => setSystemPrompt(e.target.value)}
+                multiline
+                maxRows={4}
+              />
+            </AccordionDetails>
+          </Accordion>
         </CardContent>
       </Card>
     </Grow>
