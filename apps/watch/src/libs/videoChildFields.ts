@@ -16,6 +16,9 @@ export const VIDEO_CHILD_FIELDS = gql`
     snippet(languageId: $languageId, primary: true) {
       value
     }
+    description(languageId: $languageId, primary: true) {
+      value
+    }
     slug
     variant(languageId: $languageId) {
       id
