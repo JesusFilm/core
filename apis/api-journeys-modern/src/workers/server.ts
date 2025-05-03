@@ -37,7 +37,7 @@ function run({
     void queue.add(
       `${queueName}-job`,
       { __typename: 'updateAllShortlinks' },
-      { repeat: { pattern: repeat } }
+      { repeat: { cron: repeat } }
     )
     logger.info({ queue: queueName, repeat }, 'scheduled recurring job')
   }
