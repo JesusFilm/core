@@ -69,11 +69,12 @@ async function main(): Promise<void> {
       './revalidate'
     )
   )
-  const shortlinkUpdater = await import(
-    /* webpackChunkName: "shortlinkUpdater" */
-    './shortlinkUpdater'
+  run(
+    await import(
+      /* webpackChunkName: "shortlinkUpdater" */
+      './shortlinkUpdater'
+    )
   )
-  run(shortlinkUpdater)
 }
 
 // avoid running on test environment
