@@ -6,6 +6,26 @@ import { Logger } from 'pino'
 import { prisma } from '../../../lib/prisma'
 
 // GraphQL queries for ShortLink operations
+export const GET_SHORT_LINK = graphql(`
+  query GetShortLink($id: String!) {
+    shortLink(id: $id) {
+      ... on NotFoundError {
+        message
+      }
+      ... on QueryShortLinkSuccess {
+        data {
+          id
+          pathname
+          to
+          domain {
+            hostname
+          }
+        }
+      }
+    }
+  }
+`)
+
 export const UPDATE_SHORT_LINK = graphql(`
   mutation shortLinkUpdate($input: MutationShortLinkUpdateInput!) {
     shortLinkUpdate(input: $input) {
@@ -87,6 +107,17 @@ async function updateShortLink(id: string, to: string, logger?: Logger) {
   const apollo = createApolloClient()
 
   try {
+    const { data: shortLinkData } = await apollo.query({
+      query: GET_SHORT_LINK,
+      variables: { id }
+    })
+
+    if (shortLinkData?.shortLink?.__typename === 'QueryShortLinkSuccess') {
+      if (shortLinkData.shortLink.data.to === to) {
+        return null
+      }
+    }
+
     const { data } = await apollo.mutate({
       mutation: UPDATE_SHORT_LINK,
       variables: {
@@ -199,12 +230,19 @@ export async function updateAllShortlinks(logger?: Logger): Promise<number> {
             )
 
             // Update the shortlink
-            await updateShortLink(qrCode.shortLinkId, to, logger)
+            const updatedShortLink = await updateShortLink(
+              qrCode.shortLinkId,
+              to,
+              logger
+            )
 
             logger?.info(
               `Updated shortlink for journey: ${journey.slug} (ID: ${journey.id})`
             )
-            updatedCount++
+
+            if (updatedShortLink != null) {
+              updatedCount++
+            }
           }
         }
       } catch (error) {
