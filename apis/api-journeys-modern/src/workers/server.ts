@@ -51,6 +51,24 @@ function run({
 }
 
 async function main(): Promise<void> {
+  run(
+    await import(
+      /* webpackChunkName: "email" */
+      './email'
+    )
+  )
+  run(
+    await import(
+      /* webpackChunkName: "emailEvents" */
+      './emailEvents'
+    )
+  )
+  run(
+    await import(
+      /* webpackChunkName: "revalidate" */
+      './revalidate'
+    )
+  )
   const shortlinkUpdater = await import(
     /* webpackChunkName: "shortlinkUpdater" */
     './shortlinkUpdater'
