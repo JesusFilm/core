@@ -4,6 +4,9 @@ import { Logger } from 'pino'
 import { connection } from './lib/connection'
 import { logger } from './lib/logger'
 
+const ONE_HOUR = 3600
+const ONE_DAY = 86_400
+
 function run({
   service,
   queueName,
@@ -37,7 +40,11 @@ function run({
     void queue.add(
       `${queueName}-job`,
       { __typename: 'updateAllShortlinks' },
-      { repeat: { cron: repeat } }
+      {
+        removeOnComplete: { age: ONE_HOUR },
+        removeOnFail: { age: ONE_DAY },
+        repeat: repeat != null ? { pattern: repeat } : undefined
+      }
     )
     logger.info({ queue: queueName, repeat }, 'scheduled recurring job')
   }
