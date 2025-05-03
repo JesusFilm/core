@@ -6,26 +6,6 @@ import { Logger } from 'pino'
 import { prisma } from '../../../lib/prisma'
 
 // GraphQL queries for ShortLink operations
-export const GET_SHORT_LINK = graphql(`
-  query GetShortLink($id: String!) {
-    shortLink(id: $id) {
-      ... on NotFoundError {
-        message
-      }
-      ... on QueryShortLinkSuccess {
-        data {
-          id
-          pathname
-          to
-          domain {
-            hostname
-          }
-        }
-      }
-    }
-  }
-`)
-
 export const UPDATE_SHORT_LINK = graphql(`
   mutation shortLinkUpdate($input: MutationShortLinkUpdateInput!) {
     shortLinkUpdate(input: $input) {
