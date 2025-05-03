@@ -236,11 +236,10 @@ export async function updateAllShortlinks(logger?: Logger): Promise<number> {
               logger
             )
 
-            logger?.info(
-              `Updated shortlink for journey: ${journey.slug} (ID: ${journey.id})`
-            )
-
             if (updatedShortLink != null) {
+              logger?.info(
+                `Updated shortlink for journey: ${journey.slug} (ID: ${journey.id})`
+              )
               updatedCount++
             }
           }
