@@ -1,8 +1,2 @@
-import { service } from './service'
-
-export { service }
-
-// Export individual functions for direct CLI access
+export { service } from './service'
 export { updateAllShortlinks, updateJourneyShortlink } from './service'
-
-export type { ApiShortlinkUpdaterJobs } from './types'

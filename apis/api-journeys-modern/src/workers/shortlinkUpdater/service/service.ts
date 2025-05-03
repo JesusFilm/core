@@ -5,8 +5,6 @@ import { Logger } from 'pino'
 
 import { prisma } from '../../../lib/prisma'
 
-import { ApiShortlinkUpdaterJobs } from './types'
-
 // GraphQL queries for ShortLink operations
 export const GET_SHORT_LINK = graphql(`
   query GetShortLink($id: String!) {
@@ -71,10 +69,10 @@ async function buildJourneyUrl(
   shortLinkId: string,
   journeyId: string,
   slug: string,
-  blockId?: string | null | undefined
+  blockId?: string | undefined
 ): Promise<string> {
-  const journeysUrl = process.env.JOURNEYS_URL
-  if (journeysUrl === undefined || journeysUrl === '') {
+  const journeysUrl = process.env.JOURNEYS_URL ?? ''
+  if (journeysUrl === '') {
     throw new Error('JOURNEYS_URL not configured')
   }
 
@@ -94,39 +92,12 @@ async function buildJourneyUrl(
   const base =
     customDomain?.name != null ? `https://${customDomain.name}` : journeysUrl
 
-  // Handle the blockId that might be null or undefined
+  // Handle the blockId that might be undefined
   const blockPath = blockId ? `/${blockId}` : ''
   const path = `${slug}${blockPath}`
   const utm = `?utm_source=ns-qr-code&utm_campaign=${shortLinkId}`
 
   return `${base}/${path}${utm}`
-}
-
-/**
- * Gets a shortlink by ID
- */
-async function getShortLink(id: string, logger?: Logger) {
-  const apollo = createApolloClient()
-
-  try {
-    const { data } = await apollo.query({
-      query: GET_SHORT_LINK,
-      variables: { id }
-    })
-
-    if (data?.shortLink?.__typename === 'NotFoundError') {
-      throw new Error(data.shortLink.message)
-    } else if (data?.shortLink?.__typename === 'QueryShortLinkSuccess') {
-      return data.shortLink.data
-    } else {
-      throw new Error('Unexpected error occurred in short link query')
-    }
-  } catch (error) {
-    logger?.error(
-      `Failed to get shortlink ${id}: ${error instanceof Error ? error.message : String(error)}`
-    )
-    throw error
-  }
 }
 
 /**
@@ -184,15 +155,15 @@ export async function updateJourneyShortlink(
   }
 
   try {
-    // Get the current shortlink to check its destination
-    const shortLink = await getShortLink(qrCode.shortLinkId, logger)
+    // Convert toBlockId to undefined if null to fix type issue
+    const blockId = qrCode.toBlockId ?? undefined
 
     // Build the new URL for the shortlink
     const to = await buildJourneyUrl(
       qrCode.id,
       qrCode.toJourneyId,
       slug,
-      qrCode.toBlockId
+      blockId
     )
 
     // Update the shortlink
@@ -236,12 +207,15 @@ export async function updateAllShortlinks(logger?: Logger): Promise<number> {
         for (const qrCode of journey.qrCode) {
           // Only update if the QR code is for this journey
           if (qrCode.journeyId === qrCode.toJourneyId) {
+            // Convert toBlockId to undefined if null to fix type issue
+            const blockId = qrCode.toBlockId ?? undefined
+
             // Build the new URL for the shortlink
             const to = await buildJourneyUrl(
               qrCode.id,
               qrCode.toJourneyId,
               journey.slug,
-              qrCode.toBlockId
+              blockId
             )
 
             // Update the shortlink
@@ -271,10 +245,7 @@ export async function updateAllShortlinks(logger?: Logger): Promise<number> {
   }
 }
 
-export async function service(
-  job: Job<ApiShortlinkUpdaterJobs>,
-  logger?: Logger
-): Promise<void> {
+export async function service(job: Job, logger?: Logger): Promise<void> {
   switch (job.data.__typename) {
     case 'updateAllShortlinks':
       await updateAllShortlinks(logger)
