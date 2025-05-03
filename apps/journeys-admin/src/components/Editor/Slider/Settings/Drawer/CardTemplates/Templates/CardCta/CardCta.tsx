@@ -485,7 +485,13 @@ export function CardCta(): ReactElement {
             },
             button1Id: buttonBlock1.id,
             button1Input: {
-              ...pick(buttonBlock1, ['id', 'parentBlockId', 'label', 'size']),
+              ...pick(buttonBlock1, [
+                'id',
+                'parentBlockId',
+                'label',
+                'size',
+                'submitEnabled'
+              ]),
               journeyId: journey.id,
               variant: buttonBlock1.buttonVariant
             },
@@ -504,7 +510,13 @@ export function CardCta(): ReactElement {
             },
             button2Id: buttonBlock2.id,
             button2Input: {
-              ...pick(buttonBlock2, ['id', 'parentBlockId', 'label', 'size']),
+              ...pick(buttonBlock2, [
+                'id',
+                'parentBlockId',
+                'label',
+                'size',
+                'submitEnabled'
+              ]),
               journeyId: journey.id,
               variant: buttonBlock2.buttonVariant
             },
@@ -523,7 +535,13 @@ export function CardCta(): ReactElement {
             },
             button3Id: buttonBlock3.id,
             button3Input: {
-              ...pick(buttonBlock3, ['id', 'parentBlockId', 'label', 'size']),
+              ...pick(buttonBlock3, [
+                'id',
+                'parentBlockId',
+                'label',
+                'size',
+                'submitEnabled'
+              ]),
               journeyId: journey.id,
               variant: buttonBlock3.buttonVariant,
               color: buttonBlock3.buttonColor

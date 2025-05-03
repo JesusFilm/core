@@ -68,6 +68,7 @@ const GET_VIDEO_BIBLE_CITATIONS_COUNT = graphql(`
   query GetVideoBibleCitationsCount($videoId: ID!) {
     bibleCitations(videoId: $videoId) {
       id
+      order
     }
   }
 `)
@@ -133,7 +134,12 @@ export function CitationForm({
   )
   const [updateBibleCitation, { loading }] = useMutation(UPDATE_BIBLE_CITATION)
 
-  const nextOrder = citationsData.bibleCitations.length
+  const nextOrder =
+    citationsData.bibleCitations.length > 0
+      ? Math.max(
+          ...citationsData.bibleCitations.map((citation) => citation.order ?? 0)
+        ) + 1
+      : 1
 
   const bibleBooks = bibleBookData.bibleBooks
   const validationSchema = object().shape({
