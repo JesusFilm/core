@@ -1,4 +1,4 @@
-import { Job, Worker } from 'bullmq'
+import { Job, Queue, Worker } from 'bullmq'
 import { Logger } from 'pino'
 
 import { connection } from './lib/connection'
@@ -6,10 +6,12 @@ import { logger } from './lib/logger'
 
 function run({
   service,
-  queueName
+  queueName,
+  repeat
 }: {
   service: (job: Job, logger?: Logger) => Promise<void>
   queueName: string
+  repeat?: string
 }): void {
   // eslint-disable-next-line no-new
   new Worker(queueName, job, {
@@ -28,27 +30,25 @@ function run({
   }
 
   logger.info({ queue: queueName }, 'waiting for jobs')
+
+  if (repeat != null) {
+    // Set up scheduled job
+    const queue = new Queue(queueName, { connection })
+    void queue.add(
+      `${queueName}-job`,
+      { __typename: 'updateAllShortlinks' },
+      { repeat: { pattern: repeat } }
+    )
+    logger.info({ queue: queueName, repeat }, 'scheduled recurring job')
+  }
 }
 
 async function main(): Promise<void> {
-  run(
-    await import(
-      /* webpackChunkName: "email" */
-      './email'
-    )
+  const shortlinkUpdater = await import(
+    /* webpackChunkName: "shortlinkUpdater" */
+    './shortlinkUpdater'
   )
-  run(
-    await import(
-      /* webpackChunkName: "emailEvents" */
-      './emailEvents'
-    )
-  )
-  run(
-    await import(
-      /* webpackChunkName: "revalidate" */
-      './revalidate'
-    )
-  )
+  run(shortlinkUpdater)
 }
 
 // avoid running on test environment
