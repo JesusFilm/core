@@ -635,6 +635,12 @@ export interface GetJourney_journey {
   logoImageBlock: GetJourney_journey_logoImageBlock | null;
   menuButtonIcon: JourneyMenuButtonIcon | null;
   menuStepBlock: GetJourney_journey_menuStepBlock | null;
+  showHosts: boolean | null;
+  showChatButtons: boolean | null;
+  showReactionButtons: boolean | null;
+  showLogo: boolean | null;
+  showMenu: boolean | null;
+  showDisplayTitle: boolean | null;
 }
 
 export interface GetJourney {

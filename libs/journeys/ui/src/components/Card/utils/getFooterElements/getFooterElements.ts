@@ -12,9 +12,10 @@ interface JourneyInfoProps {
 
 export function hasReactions({ journey }: JourneyInfoProps): boolean {
   return (
-    journey?.showShareButton === true ||
-    journey?.showLikeButton === true ||
-    journey?.showDislikeButton === true
+    journey?.showReactionButtons === true &&
+    (journey?.showShareButton === true ||
+      journey?.showLikeButton === true ||
+      journey?.showDislikeButton === true)
   )
 }
 

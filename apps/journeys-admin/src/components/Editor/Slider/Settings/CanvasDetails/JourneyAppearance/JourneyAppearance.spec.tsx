@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
 
@@ -58,23 +58,9 @@ describe('JourneyAppearance', () => {
     expect(toggleBtn).toBeInTheDocument()
     expect(toggleBtn).toHaveAttribute('aria-pressed', 'true')
 
-    const reactions = await waitFor(() =>
-      screen.getByRole('button', { name: 'Reactions' })
+    await waitFor(() =>
+      expect(screen.getAllByTestId('AccordionSummary')).toHaveLength(4)
     )
-    const title = await waitFor(() =>
-      screen.getByRole('button', { name: 'Display Title' })
-    )
-    const details = await waitFor(() =>
-      screen.getByRole('button', { name: 'Hosted By' })
-    )
-    const chat = await waitFor(() =>
-      screen.getByRole('button', { name: 'Chat Widget' })
-    )
-
-    expect(reactions).toBeInTheDocument()
-    expect(title).toBeInTheDocument()
-    expect(details).toBeInTheDocument()
-    expect(chat).toBeInTheDocument()
   })
 
   it('should display JourneyAppearance attributes for Website mode', async () => {
@@ -100,23 +86,13 @@ describe('JourneyAppearance', () => {
     expect(toggleBtn).toBeInTheDocument()
     expect(toggleBtn).toHaveAttribute('aria-pressed', 'true')
 
-    const title = await waitFor(() =>
-      screen.getByRole('button', { name: 'Display Title' })
-    )
-    const menu = await waitFor(() =>
-      screen.getByRole('button', { name: 'Menu' })
-    )
-    const chat = await waitFor(() =>
-      screen.getByRole('button', { name: 'Chat Widget' })
-    )
-    const logo = await waitFor(() =>
-      screen.getByRole('button', { name: 'Logo' })
+    await waitFor(() =>
+      expect(screen.getAllByTestId('AccordionSummary')).toHaveLength(4)
     )
 
-    expect(title).toBeInTheDocument()
-    expect(menu).toBeInTheDocument()
-    expect(chat).toBeInTheDocument()
-    expect(logo).toBeInTheDocument()
+    expect(
+      within(screen.getAllByTestId('AccordionSummary')[0]).getByText('Logo')
+    ).toBeInTheDocument()
   })
 
   it('should return to journey map when close icon is clicked', async () => {

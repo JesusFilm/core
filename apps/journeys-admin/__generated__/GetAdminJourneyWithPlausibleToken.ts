@@ -635,6 +635,12 @@ export interface GetAdminJourneyWithPlausibleToken_journey {
   logoImageBlock: GetAdminJourneyWithPlausibleToken_journey_logoImageBlock | null;
   menuButtonIcon: JourneyMenuButtonIcon | null;
   menuStepBlock: GetAdminJourneyWithPlausibleToken_journey_menuStepBlock | null;
+  showHosts: boolean | null;
+  showChatButtons: boolean | null;
+  showReactionButtons: boolean | null;
+  showLogo: boolean | null;
+  showMenu: boolean | null;
+  showDisplayTitle: boolean | null;
   /**
    * used in a plausible share link to embed report
    */

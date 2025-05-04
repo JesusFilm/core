@@ -9,7 +9,6 @@ import { getJourneyRTL } from '../../libs/rtl'
 import {
   getFooterMobileHeight,
   getTitle,
-  hasChatWidget,
   hasCombinedFooter,
   hasHostAvatar,
   hasHostDetails
@@ -35,7 +34,6 @@ export function StepFooter({
 
   const hostAvatar = hasHostAvatar({ journey, variant })
   const hostDetails = hasHostDetails({ journey })
-  const chat = hasChatWidget({ journey, variant })
   const title = getTitle({ journey })
 
   const footerMobileHeight = getFooterMobileHeight({ journey, variant })
@@ -73,11 +71,11 @@ export function StepFooter({
           width: '100%'
         }}
       >
-        {!isWebsite && !combinedFooter && (
-          <Box sx={{ display: { xs: 'flex', sm: 'none' } }}>
-            <FooterButtonList />
-          </Box>
-        )}
+        {!isWebsite &&
+          !combinedFooter &&
+          journey?.showReactionButtons === true && (
+            <FooterButtonList sx={{ display: { xs: 'flex', sm: 'none' } }} />
+          )}
 
         <Stack
           sx={{
@@ -111,11 +109,12 @@ export function StepFooter({
                   hasPlaceholder={variant === 'admin'}
                   avatarSrc1={journey?.host?.src1}
                   avatarSrc2={journey?.host?.src2}
+                  showFallback
                 />
               )}
               {(title != null || hostDetails) && (
                 <Stack sx={{ flex: '1 1 100%', minWidth: 0 }}>
-                  {title != null && (
+                  {title != null && journey?.showDisplayTitle === true && (
                     <Typography
                       variant="subtitle1"
                       sx={{
@@ -130,21 +129,23 @@ export function StepFooter({
                       {title}
                     </Typography>
                   )}
-                  {hostDetails && <HostTitleLocation />}
+                  {journey?.showHosts === true && hostDetails && (
+                    <HostTitleLocation />
+                  )}
                 </Stack>
               )}
 
-              <Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
-                <FooterButtonList />
-              </Box>
+              {journey?.showReactionButtons === true && (
+                <FooterButtonList
+                  sx={{ display: { xs: 'none', sm: 'flex' } }}
+                />
+              )}
             </Stack>
           )}
 
-          {chat && (
-            <Box>
-              <ChatButtons />
-            </Box>
-          )}
+          <Box>
+            <ChatButtons />
+          </Box>
         </Stack>
       </Stack>
     </Box>
