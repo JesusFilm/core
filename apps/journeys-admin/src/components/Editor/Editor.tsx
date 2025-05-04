@@ -27,6 +27,10 @@ interface EditorProps {
  * descendants are able to make use of via useJourney and useEditor
  * respectively.
  */
+
+// TODO
+// Editor revamp feature branch creation. Remove when other changes are in
+
 export function Editor({
   journey,
   selectedStepId,
