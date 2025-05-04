@@ -23,11 +23,11 @@ const i18nConfig = {
       'fr', // French
       'id', // `Indonesian
       'th', // Thai
-      // 'ja', // Japanese
-      // 'ko', // Korean
-      // 'ru', // Russian
-      // 'tr', // Turkish
-      // 'zh', // Chinese
+      'ja', // Japanese
+      'ko', // Korean
+      'ru', // Russian
+      'tr', // Turkish
+      'zh', // Chinese
       'zh-Hans-CN' // Chinese, Simplified
     ]
   },
@@ -38,10 +38,10 @@ const i18nConfig = {
     fr: ['fr-FR'],
     id: ['id-ID'],
     th: ['th-TH'],
-    // ja: ['ja-JP'],
-    // ko: ['ko-KR'],
-    // ru: ['ru-RU'],
-    // tr: ['tr-TR'],
+    ja: ['ja-JP'],
+    ko: ['ko-KR'],
+    ru: ['ru-RU'],
+    tr: ['tr-TR'],
     zh: ['zh-Hans-CN']
   },
   react: { useSuspense: false }
