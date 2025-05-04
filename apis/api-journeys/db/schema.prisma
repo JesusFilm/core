@@ -417,6 +417,8 @@ model Journey {
   menuStepBlockId           String?                     @unique
   menuStepBlock             Block?                      @relation("MenuStepBlock", fields: [menuStepBlockId], references: [id], onDelete: SetNull)
   menuButtonIcon            JourneyMenuButtonIcon?
+  socialNodeX               Int?                        @default(-240)
+  socialNodeY               Int?                        @default(-46)
   qrCode                    QrCode[]
   Event                     Event[]
   journeyEventsExportLogs   JourneyEventsExportLog[]

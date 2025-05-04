@@ -72,7 +72,9 @@ const journey: Journey = {
   displayTitle: null,
   logoImageBlock: null,
   menuButtonIcon: null,
-  menuStepBlock: null
+  menuStepBlock: null,
+  socialNodeX: null,
+  socialNodeY: null
 }
 
 const teamResult = jest.fn(() => ({
