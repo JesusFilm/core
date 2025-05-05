@@ -16,6 +16,7 @@ const mockStatusData = {
 }
 
 describe('useJourneyAiTranslateStatusSubscription', () => {
+  // TODO: revisit this test
   it('subscribes to translation status updates', async () => {
     const cache = new InMemoryCache()
 
@@ -28,7 +29,7 @@ describe('useJourneyAiTranslateStatusSubscription', () => {
             mocks={[
               {
                 request: {
-                  query: JOURNEY_AI_TRANSLATE_STATUS,
+                  query: JOURNEY_AI_TRANSLATE_STATUS, // change query to subscription ?
                   variables: { jobId }
                 },
                 result: {
