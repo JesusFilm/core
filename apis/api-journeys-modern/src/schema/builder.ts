@@ -9,7 +9,6 @@ import ScopeAuthPlugin from '@pothos/plugin-scope-auth'
 import TracingPlugin, { isRootField } from '@pothos/plugin-tracing'
 import WithInputPlugin from '@pothos/plugin-with-input'
 import { createOpenTelemetryWrapper } from '@pothos/tracing-opentelemetry'
-import { Queue, Worker } from 'bullmq'
 import { DateResolver, DateTimeISOResolver } from 'graphql-scalars'
 
 import { Prisma, Role } from '.prisma/api-journeys-modern-client'
@@ -31,8 +30,6 @@ interface AuthenticatedContext extends BaseContext {
   type: 'authenticated'
   user: User
   currentRoles: Role[]
-  queue?: Queue
-  worker?: Worker
 }
 
 interface LocalInteropContext extends BaseContext, InteropContext {

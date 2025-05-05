@@ -1,1 +1,0 @@
-export { journeyAiTranslate } from './journeyAiTranslate'
