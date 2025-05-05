@@ -1,4 +1,4 @@
-import { openai } from '@ai-sdk/openai'
+import { google } from '@ai-sdk/google'
 import { streamText } from 'ai'
 import { NextRequest } from 'next/server'
 
@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
   const client = createApolloClient(token.split(' ')[1])
 
   const result = streamText({
-    model: openai('gpt-4'),
+    model: google('gemini-2.0-flash-lite'),
     messages,
     tools: tools(client)
   })

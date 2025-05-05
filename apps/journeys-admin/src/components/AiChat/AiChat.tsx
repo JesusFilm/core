@@ -6,6 +6,7 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
+import Chip from '@mui/material/Chip'
 import CircularProgress from '@mui/material/CircularProgress'
 import Grow from '@mui/material/Grow'
 import Stack from '@mui/material/Stack'
@@ -14,6 +15,7 @@ import Typography from '@mui/material/Typography'
 import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
+import Markdown from 'react-markdown'
 import { v4 as uuidv4 } from 'uuid'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -25,12 +27,18 @@ interface AiChatProps {
 }
 
 const INITIAL_SYSTEM_PROMPT = `
+IT IS VERY IMPORTANT THAT YOU ONLY RESPOND IN MARKDOWN.
+
 You are a helpful assistant that can answer questions and help with tasks.
 You are currently in the context of a journey.
 
 You specialize in translating text from one language to another.
-You do this by getting journey's and their related content then translating it.
+If the user asks for translation without specifying what to translate,
+assume that the user wants to translate the journey's title and description.
 You can then update the journey with the new translation.
+
+Whenever the user asks to perform some action, assume that the user wants to 
+perform the action on the journey or its blocks.
 `.trim()
 
 export function AiChat({ open = false }: AiChatProps): ReactElement {
@@ -62,21 +70,26 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
     })
   }
 
+  function getSystemPromptWithJourneyId(): string {
+    if (journey == null) return systemPrompt.trim()
+
+    return systemPrompt
+      .trim()
+      .concat(
+        `\n\nThe current journey ID is ${journey?.id}. You can use this to get the journey and update it.`
+      )
+  }
+
   async function handleSubmit(): Promise<void> {
     const message = userMessage.trim()
     if (message === '') return
 
     setUserMessage('')
     try {
-      if (systemPrompt.trim()) {
+      const systemPromptWithJourneyId = getSystemPromptWithJourneyId()
+      if (systemPromptWithJourneyId) {
         const hasSystemMessage = messages.some((msg) => msg.role === 'system')
         if (!hasSystemMessage) {
-          const systemPromptWithJourneyId =
-            journey != null
-              ? systemPrompt
-                  .trim()
-                  .concat(`\n\nThe current journey ID is ${journey?.id}`)
-              : systemPrompt.trim()
           setMessages([
             {
               id: uuidv4(),
@@ -90,7 +103,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
           setMessages(
             messages.map((msg) =>
               msg.role === 'system'
-                ? { ...msg, content: systemPrompt.trim() }
+                ? { ...msg, content: systemPromptWithJourneyId }
                 : msg
             )
           )
@@ -135,7 +148,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
           sx={{
             display: 'flex',
             flexDirection: 'column-reverse',
-            gap: 2,
+            gap: 4,
             p: 5,
             pb: 0,
             maxHeight: 'calc(100svh - 400px)',
@@ -171,74 +184,93 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
             <Box
               key={message.id}
               sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 2,
                 backgroundColor:
                   message.role === 'user'
                     ? 'action.selected'
                     : 'background.paper',
-                py: 2,
+                py: message.role === 'user' ? 2 : 0,
                 px: message.role === 'user' ? 3 : 0,
                 borderRadius: 2,
                 alignSelf: message.role === 'user' ? 'flex-end' : 'flex-start',
-                maxWidth: '80%'
+                maxWidth: '80%',
+                '& > p': {
+                  m: 0
+                }
               }}
             >
-              <Typography
-                variant="body1"
-                sx={{
-                  whiteSpace: 'pre-wrap'
-                }}
-              >
-                {message.parts.map((part, i) => {
-                  switch (part.type) {
-                    case 'text':
-                      return <span key={`${message.id}-${i}`}>{part.text}</span>
-                    case 'tool-invocation': {
-                      const callId = part.toolInvocation.toolCallId
-                      switch (part.toolInvocation.toolName) {
-                        case 'getJourney': {
-                          switch (part.toolInvocation.state) {
-                            case 'call':
-                              return (
-                                <div key={callId}>
-                                  {t('Getting journey...')}
-                                </div>
-                              )
-                            case 'result':
-                              return (
-                                <div key={callId}>
-                                  {t('Journey:')}{' '}
-                                  {part.toolInvocation.result.title}
-                                </div>
-                              )
+              {message.parts.map((part, i) => {
+                switch (part.type) {
+                  case 'text': {
+                    return message.role === 'user' ? (
+                      <Typography key={`${message.id}-${i}`}>
+                        {part.text}
+                      </Typography>
+                    ) : (
+                      <Markdown key={`${message.id}-${i}`}>
+                        {part.text}
+                      </Markdown>
+                    )
+                  }
+                  case 'tool-invocation': {
+                    const callId = part.toolInvocation.toolCallId
+                    switch (part.toolInvocation.toolName) {
+                      case 'getJourney': {
+                        switch (part.toolInvocation.state) {
+                          case 'call':
+                            return (
+                              <Typography
+                                key={callId}
+                                variant="body2"
+                                color="text.secondary"
+                              >
+                                {t('Getting journey...')}
+                              </Typography>
+                            )
+                          default: {
+                            return null
                           }
-                          break
-                        }
-                        case 'updateJourney': {
-                          switch (part.toolInvocation.state) {
-                            case 'call':
-                              return (
-                                <div key={callId}>
-                                  {t('Updating journey...')}
-                                </div>
-                              )
-                            case 'result':
-                              return (
-                                <div key={callId}>
-                                  {t('Journey updated:')}{' '}
-                                  {part.toolInvocation.result.title}
-                                </div>
-                              )
-                          }
-                          break
                         }
                       }
-                      return null
+                      case 'updateJourney': {
+                        switch (part.toolInvocation.state) {
+                          case 'call':
+                            return (
+                              <Typography
+                                key={callId}
+                                variant="body2"
+                                color="text.secondary"
+                              >
+                                {t('Updating journey...')}
+                              </Typography>
+                            )
+                          case 'result':
+                            return (
+                              <Box>
+                                <Chip
+                                  key={callId}
+                                  label={t('Journey updated')}
+                                  size="small"
+                                />
+                              </Box>
+                            )
+                          default: {
+                            return null
+                          }
+                        }
+                      }
+                      default: {
+                        return null
+                      }
                     }
-                    default:
-                      return null
                   }
-                })}
-              </Typography>
+                  default: {
+                    return null
+                  }
+                }
+              })}
             </Box>
           ))}
         </Box>
