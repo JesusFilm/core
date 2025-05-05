@@ -44,6 +44,7 @@ if (!GRAPHQL_ENDPOINT) {
 let cachedJwtToken: string | undefined
 let cachedJwtTokenIssueTime: number | undefined
 let cachedGraphQLClient: GraphQLClient | undefined
+let cachedGraphQLClientToken: string | undefined
 
 async function getFirebaseJwtToken(): Promise<string> {
   const now = Date.now()
@@ -74,15 +75,17 @@ async function getFirebaseJwtToken(): Promise<string> {
 }
 
 async function getGraphQLClient(): Promise<GraphQLClient> {
-  if (cachedGraphQLClient) return cachedGraphQLClient
-
   const jwtToken = process.env.JWT_TOKEN ?? (await getFirebaseJwtToken())
+  if (cachedGraphQLClient && cachedGraphQLClientToken === jwtToken) {
+    return cachedGraphQLClient
+  }
   cachedGraphQLClient = new GraphQLClient(GRAPHQL_ENDPOINT!, {
     headers: {
       Authorization: `JWT ${jwtToken}`,
       'x-graphql-client-name': 'video-importer'
     }
   })
+  cachedGraphQLClientToken = jwtToken
   return cachedGraphQLClient
 }
 

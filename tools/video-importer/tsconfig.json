@@ -1,17 +1,9 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "jsx": "preserve",
-    "allowJs": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "noEmit": false,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "incremental": true,
-    "tsBuildInfoFile": "../../.cache/video-importer/tsc/.tsbuildinfo"
+    "outDir": "dist"
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "jest.config.ts", "**/*.spec.ts"]
