@@ -31,7 +31,7 @@ export function updateJourney(
           mutation: AI_UPDATE_JOURNEY,
           variables: { id: journeyId, title, description }
         })
-        return result.data?.journey
+        return result.data?.journeyUpdate
       } catch (error) {
         return error
       }
