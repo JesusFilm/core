@@ -1,11 +1,10 @@
-import { Job, Queue, QueueEvents, Worker } from 'bullmq'
+import { Job, Queue, QueueEvents } from 'bullmq'
 
 import { connection } from '../../lib/redisConnection'
-import { queueName } from '../../workers/journeyAiTranslate'
 import {
   AiTranslateJourneyJob,
-  service
-} from '../../workers/journeyAiTranslate/service'
+  queueName
+} from '../../workers/journeyAiTranslate'
 import { builder } from '../builder'
 
 class JourneyAiTranslateStatusShape {
@@ -150,13 +149,6 @@ builder.subscriptionField('journeyAiTranslateStatus', (t) =>
   })
 )
 
-// Add a type definition to ensure TypeScript understands our context
-type WorkerContext = {
-  queue?: Queue
-  worker?: Worker
-  user: { id: string }
-}
-
 builder.mutationFields((t) => ({
   journeyAiTranslateCreate: t
     .withAuth({ isAuthenticated: true })
@@ -169,56 +161,7 @@ builder.mutationFields((t) => ({
       },
       type: 'ID',
       nullable: false,
-      resolve: async (_root, { input }, context: WorkerContext) => {
-        const { user } = context
-
-        // Create worker if it doesn't exist
-        if (!context.worker) {
-          // Create a worker
-          const worker = new Worker(
-            queueName,
-            async (job) => {
-              try {
-                await service(job)
-                return true
-              } catch (error) {
-                console.error(`Error processing job ${job.id}:`, error)
-                throw error
-              }
-            },
-            {
-              connection,
-              autorun: true,
-              concurrency: 2,
-              stalledInterval: 30000,
-              drainDelay: 60000 // 1 minute of inactivity before closing
-            }
-          )
-
-          context.worker = worker
-
-          // Event handlers
-          worker.on('completed', (job) => {
-            console.log(`Job ${job.id} completed successfully`)
-          })
-
-          worker.on('failed', (job, err) => {
-            console.error(`Job ${job?.id} failed with error:`, err)
-          })
-
-          worker.on('drained', () => {
-            console.log('Queue is empty, closing worker')
-            if (context.worker) {
-              try {
-                void context.worker.close()
-                context.worker = undefined
-              } catch (error) {
-                console.error('Error closing worker:', error)
-              }
-            }
-          })
-        }
-
+      resolve: async (_root, { input }, { user }) => {
         const job = (await queue.add(
           `${queueName}/${user.id}:${input.journeyId}:${input.textLanguageId}`,
           {
