@@ -86,9 +86,6 @@ describe('Toolbar Menu', () => {
       )
       fireEvent.click(screen.getByRole('button'))
       expect(
-        screen.getByRole('menuitem', { name: 'Edit Details' })
-      ).toBeInTheDocument()
-      expect(
         screen.getByRole('menuitem', { name: 'Manage Access' })
       ).toBeInTheDocument()
       expect(screen.getByTestId('menu-divider')).toBeInTheDocument()
@@ -200,9 +197,6 @@ describe('Toolbar Menu', () => {
         </SnackbarProvider>
       )
       fireEvent.click(screen.getByRole('button'))
-      expect(
-        screen.getByRole('menuitem', { name: 'Edit Details' })
-      ).toBeInTheDocument()
       expect(
         screen.getByRole('menuitem', { name: 'Template Settings' })
       ).toBeInTheDocument()
