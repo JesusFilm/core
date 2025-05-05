@@ -45,8 +45,11 @@ export function useJourneyAiTranslateStatusSubscription(jobId: string): {
     variables: { jobId }
   })
 
+  // Convert null to undefined to maintain a consistent interface
+  const translationStatus = data?.journeyAiTranslateStatus ?? undefined
+
   return {
-    data: data?.journeyAiTranslateStatus ?? undefined,
+    data: translationStatus,
     loading,
     error
   }
