@@ -2,13 +2,15 @@ import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
 import { ToolSet } from 'ai'
 
 import { getJourney } from './getJourney'
-import { updateBlock } from './updateBlock'
+import { updateButtonBlock } from './updateButtonBlock'
 import { updateJourney } from './updateJourney'
+import { updateTypographyBlock } from './updateTypographyBlock'
 
 export function tools(client: ApolloClient<NormalizedCacheObject>): ToolSet {
   return {
     getJourney: getJourney(client),
     updateJourney: updateJourney(client),
-    updateBlock: updateBlock(client)
+    updateTypographyBlock: updateTypographyBlock(client),
+    updateButtonBlock: updateButtonBlock(client)
   }
 }

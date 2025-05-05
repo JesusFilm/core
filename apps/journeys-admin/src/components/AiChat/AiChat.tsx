@@ -35,13 +35,20 @@ You are currently in the context of a journey.
 
 You specialize in translating text from one language to another.
 If the user asks for translation without specifying what to translate,
-assume that the user wants to translate the journey's title and description.
+assume that the user wants to translate the journey's title and description, the content of the typography blocks and button blocks.
 You can then update the journey with the new translation.
 
 Whenever the user asks to perform some action, assume that the user wants to 
 perform the action on the journey or its blocks.
 
 if you are missing any block Ids, get the journey. Then you will have context over the ids of it's blocks.
+
+Never show any form of UUID (e.g. 123e4567-e89b-12d3-a456-426614174000) to the user unless the user specifically asks for
+you to return the id.
+
+You must not ask the user to confirm or approve any action. Just perform the action.
+
+Don't reference steps as they only have a card child. Pretend they are synonymous.
 `.trim()
 
 export function AiChat({ open = false }: AiChatProps): ReactElement {
@@ -50,29 +57,24 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
   const user = useUser()
   const client = useApolloClient()
   const { journey } = useJourney()
-  const { messages, append, setMessages, status, error, toolResults } = useChat(
-    {
-      fetch: fetchWithAuthorization,
-      maxSteps: 5,
-      credentials: 'omit',
-      onFinish: (result) => {
-        const isUpdateJourney = result.parts?.some(
-          (part) =>
-            part.type === 'tool-invocation' &&
-            part.toolInvocation.toolName === 'updateJourney'
-        )
-        if (isUpdateJourney) {
-          void client.refetchQueries({
-            include: ['GetAdminJourney']
-          })
-        }
+  const { messages, append, setMessages, status, error } = useChat({
+    fetch: fetchWithAuthorization,
+    maxSteps: 5,
+    credentials: 'omit',
+    onFinish: (result) => {
+      const isUpdateJourney = result.parts?.some(
+        (part) =>
+          part.type === 'tool-invocation' &&
+          part.toolInvocation.toolName === 'updateJourney'
+      )
+      if (isUpdateJourney) {
+        void client.refetchQueries({
+          include: ['GetAdminJourney']
+        })
       }
     }
-  )
+  })
 
-  console.log('error', error)
-  console.log('messages', messages)
-  console.log('toolResults', toolResults)
   const [systemPrompt, setSystemPrompt] = useState(INITIAL_SYSTEM_PROMPT)
   const [userMessage, setUserMessage] = useState('')
 
