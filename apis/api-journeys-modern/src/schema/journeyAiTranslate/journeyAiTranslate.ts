@@ -1,8 +1,11 @@
-import { Job, Queue, QueueEvents, Worker } from 'bullmq'
+import { Job, Queue, QueueEvents } from 'bullmq'
 
 import { connection } from '../../lib/redisConnection'
-import { queueName } from '../../workers/userQueue'
-import { AiTranslateJourneyJob, service } from '../../workers/userQueue/service'
+import {
+  AiTranslateJourneyJob,
+  jobName,
+  queueName
+} from '../../workers/journeyAiTranslate'
 import { builder } from '../builder'
 
 class JourneyAiTranslateStatusShape {
@@ -15,6 +18,8 @@ class JourneyAiTranslateStatusShape {
     this.progress = progress
   }
 }
+
+const queue = new Queue(queueName, { connection })
 
 const JourneyAiTranslateStatusRef = builder
   .objectRef<JourneyAiTranslateStatusShape>('JourneyAiTranslateStatus')
@@ -39,10 +44,7 @@ builder.subscriptionField('journeyAiTranslateStatus', (t) =>
     },
     type: JourneyAiTranslateStatus,
     nullable: true,
-    subscribe: async (_root, { jobId }, context) => {
-      // Access queue from context same as in the query resolver
-      const { queue } = context
-
+    subscribe: async (_root, { jobId }) => {
       // Create a function to get job state - reusing similar logic from the query resolver
       const getJobState = async (): Promise<JourneyAiTranslateStatusShape> => {
         try {
@@ -71,7 +73,7 @@ builder.subscriptionField('journeyAiTranslateStatus', (t) =>
         }
       }
 
-      const queueEvents = new QueueEvents('userQueue', {
+      const queueEvents = new QueueEvents(queueName, {
         connection
       })
 
@@ -148,13 +150,6 @@ builder.subscriptionField('journeyAiTranslateStatus', (t) =>
   })
 )
 
-// Add a type definition to ensure TypeScript understands our context
-type WorkerContext = {
-  queue?: Queue
-  worker?: Worker
-  user: { id: string }
-}
-
 builder.mutationFields((t) => ({
   journeyAiTranslateCreate: t
     .withAuth({ isAuthenticated: true })
@@ -167,64 +162,9 @@ builder.mutationFields((t) => ({
       },
       type: 'ID',
       nullable: false,
-      resolve: async (_root, { input }, context: WorkerContext) => {
-        const { user } = context
-        const userQueueName = `${queueName}/${user.id}`
-
-        // Ensure queue exists
-        const queue: Queue =
-          context.queue || new Queue(userQueueName, { connection })
-        context.queue = queue
-
-        // Create worker if it doesn't exist
-        if (!context.worker) {
-          // Create a worker
-          const worker = new Worker(
-            userQueueName,
-            async (job) => {
-              try {
-                await service(job)
-                return true
-              } catch (error) {
-                console.error(`Error processing job ${job.id}:`, error)
-                throw error
-              }
-            },
-            {
-              connection,
-              autorun: true,
-              concurrency: 2,
-              stalledInterval: 30000,
-              drainDelay: 60000 // 1 minute of inactivity before closing
-            }
-          )
-
-          context.worker = worker
-
-          // Event handlers
-          worker.on('completed', (job) => {
-            console.log(`Job ${job.id} completed successfully`)
-          })
-
-          worker.on('failed', (job, err) => {
-            console.error(`Job ${job?.id} failed with error:`, err)
-          })
-
-          worker.on('drained', () => {
-            console.log('Queue is empty, closing worker')
-            if (context.worker) {
-              try {
-                void context.worker.close()
-                context.worker = undefined
-              } catch (error) {
-                console.error('Error closing worker:', error)
-              }
-            }
-          })
-        }
-
+      resolve: async (_root, { input }, { user }) => {
         const job = (await queue.add(
-          `journeyAiTranslate/${input.journeyId}:${input.textLanguageId}`,
+          jobName,
           {
             userId: user.id,
             type: 'journeyAiTranslate',
@@ -234,7 +174,7 @@ builder.mutationFields((t) => ({
             videoLanguageId: input.videoLanguageId
           },
           {
-            jobId: `journeyAiTranslate/${input.journeyId}:${input.textLanguageId}`,
+            jobId: `${queueName}/${user.id}:${input.journeyId}:${input.textLanguageId}`,
             removeOnComplete: {
               age: 1000 * 60 * 60 * 24 * 5, // 5 days
               count: 100

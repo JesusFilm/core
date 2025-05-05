@@ -49,6 +49,12 @@ async function main(): Promise<void> {
       './revalidate'
     )
   )
+  run(
+    await import(
+      /* webpackChunkName: "journeyAiTranslate" */
+      './journeyAiTranslate'
+    )
+  )
 }
 
 // avoid running on test environment
