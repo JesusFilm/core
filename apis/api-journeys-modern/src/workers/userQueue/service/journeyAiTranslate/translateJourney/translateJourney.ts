@@ -9,6 +9,7 @@ import { AiTranslateJourneyJob } from '../../service'
 
 import { getCardBlocksContent } from './getCardBlocksContent'
 import { getLanguageName } from './getLanguageName'
+import { translateCardBlock } from './translateCard/translateCard'
 
 export async function translateJourney(
   job: Job<AiTranslateJourneyJob>,
@@ -32,10 +33,14 @@ export async function translateJourney(
 
   // 2. Get the language names
   const sourceLanguageName = await getLanguageName(apollo, journey.languageId)
+  if (sourceLanguageName == null)
+    throw new Error('Could not fetch source language name')
   const requestedLanguageName = await getLanguageName(
     apollo,
     job.data.textLanguageId
   )
+  if (requestedLanguageName == null)
+    throw new Error('Could not fetch requested language name')
 
   await job.updateProgress(50)
 
@@ -70,7 +75,7 @@ Journey Title: ${journey.title}
 Journey Content:
 ${cardBlocksContent.join('\n')}
 `
-  const journeyAnalysis = ''
+
   try {
     const { text: journeyAnalysis } = await generateText({
       model: google('gemini-2.0-flash'),
@@ -84,18 +89,18 @@ ${cardBlocksContent.join('\n')}
     try {
       // Translate title and description
       const titleDescPrompt = `
-        Translate the following journey title and description to ${requestedLanguageName}.
-        If a description is not provided, return a brief 1 sentence description of the journey.
-        
-        Original title: "${journey.title}"
-        Original description: "${journey.description || ''}"
-        
-        Translation context:
-        ${journeyAnalysis}
-        
-        Return in this format:
-        Title: [translated title]
-        Description: [translated description]
+Translate the following journey title and description to ${requestedLanguageName}.
+If a description is not provided, return a brief 1 sentence description of the journey.
+
+Original title: "${journey.title}"
+Original description: "${journey.description || ''}"
+
+Translation context:
+${journeyAnalysis}
+
+Return in this format:
+Title: [translated title]
+Description: [translated description]
       `
 
       const { object: translatedTitleDesc } = await generateObject({
@@ -124,8 +129,8 @@ ${cardBlocksContent.join('\n')}
       })
 
       console.log('Successfully translated journey title and description')
-    } catch (_error) {
-      console.error('Error translating journey title/description')
+    } catch (error) {
+      console.error('Error translating journey title/description', error)
       // Continue with the rest of the translation
     }
 
@@ -140,22 +145,6 @@ ${cardBlocksContent.join('\n')}
 
     for (let i = 0; i < cardBlocks.length; i++) {
       const cardBlock = cardBlocks[i]
-
-      // Get all child blocks of this card
-      const cardChildBlocks = journey.blocks.filter(
-        (block) => block.parentBlockId === cardBlock.id
-      )
-
-      // Extract text blocks in this card
-      const cardTypographyBlocks = cardChildBlocks.filter(
-        (block) => block.typename === 'TypographyBlock'
-      )
-
-      // Extract button blocks in this card
-      const cardButtonBlocks = cardChildBlocks.filter(
-        (block) => block.typename === 'ButtonBlock'
-      )
-
       const cardContent = cardBlocksContent[i]
 
       try {
@@ -187,104 +176,13 @@ ${cardBlocksContent.join('\n')}
         if (cardAnalysis) {
           console.log(`Successfully analyzed card ${cardBlock.id}`)
 
-          // Now translate all text blocks in this card
-          for (const textBlock of cardTypographyBlocks) {
-            if (!textBlock.content) continue
-
-            try {
-              // Use Gemini to translate the content
-              const translationPrompt = `
-                  Translate the following text to ${requestedLanguageName}.
-                  
-                  Original text: "${textBlock.content}"
-                  
-                  Journey context:
-                  ${journeyAnalysis}
-                  
-                  Specific card context:
-                  ${cardAnalysis}
-                  
-                  Please preserve formatting, emphasis (like bold, italic), and maintain the same tone and style.
-                  Return ONLY the translated text without additional notes or explanations.
-                `
-
-              const { text: translatedContent } = await generateText({
-                model: geminiModel,
-                prompt: translationPrompt
-              })
-
-              if (translatedContent) {
-                // Update the block with translated content using Prisma
-                await prisma.block.update({
-                  where: {
-                    id: textBlock.id
-                  },
-                  data: {
-                    content: translatedContent.trim()
-                  }
-                })
-
-                console.log(
-                  `Successfully translated text block ${textBlock.id} in card ${cardBlock.id}`
-                )
-              }
-            } catch (textTranslationError) {
-              console.error(
-                `Error translating text block ${textBlock.id} in card ${cardBlock.id}:`,
-                textTranslationError
-              )
-              // Continue with other blocks
-            }
-          }
-
-          // Translate all button blocks in this card
-          for (const buttonBlock of cardButtonBlocks) {
-            if (!buttonBlock.label) continue
-
-            try {
-              // Use Gemini to translate the button label
-              const translationPrompt = `
-                  Translate the following button label to ${requestedLanguageName}.
-                  
-                  Original button label: "${buttonBlock.label}"
-                  
-                  Journey context:
-                  ${journeyAnalysis}
-                  
-                  Specific card context:
-                  ${cardAnalysis}
-                  
-                  Keep it concise and appropriate for a button. Return ONLY the translated text.
-                `
-
-              const { text: translatedLabel } = await generateText({
-                model: geminiModel,
-                prompt: translationPrompt
-              })
-
-              if (translatedLabel) {
-                // Update the button block with translated label using Prisma
-                await prisma.block.update({
-                  where: {
-                    id: buttonBlock.id
-                  },
-                  data: {
-                    label: translatedLabel.trim()
-                  }
-                })
-
-                console.log(
-                  `Successfully translated button ${buttonBlock.id} in card ${cardBlock.id}`
-                )
-              }
-            } catch (buttonTranslationError) {
-              console.error(
-                `Error translating button ${buttonBlock.id} in card ${cardBlock.id}:`,
-                buttonTranslationError
-              )
-              // Continue with other blocks
-            }
-          }
+          await translateCardBlock({
+            blocks: journey.blocks,
+            cardBlock,
+            cardAnalysis,
+            sourceLanguageName,
+            targetLanguageName: requestedLanguageName
+          })
         }
       } catch (analysisError) {
         console.error(`Error analyzing card ${cardBlock.id}:`, analysisError)

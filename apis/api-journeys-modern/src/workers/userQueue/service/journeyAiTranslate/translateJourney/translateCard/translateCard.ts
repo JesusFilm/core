@@ -5,7 +5,7 @@ import { translateRadioQuestionBlock } from './translateRadioQuestionBlock'
 import { translateTextResponseBlock } from './translateTextResponseBlock'
 import { translateTypographyBlock } from './translateTypographyBlock'
 
-export async function translateBlock({
+export async function translateCardBlock({
   blocks,
   cardBlock,
   cardAnalysis,
