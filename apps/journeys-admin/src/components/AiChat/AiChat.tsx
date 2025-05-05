@@ -275,13 +275,26 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
                           }
                         }
                       }
+                      case 'updateBlock': {
+                        switch (part.toolInvocation.state) {
+                          case 'call':
+                            return (
+                              <div key={callId}>{t('Updating block...')}</div>
+                            )
+                          case 'result':
+                            return (
+                              <div key={callId}>
+                                {t('Block updated:')}{' '}
+                                {part.toolInvocation.result.id}
+                              </div>
+                            )
+                        }
+                        break
+                      }
                       default: {
                         return null
                       }
                     }
-                  }
-                  default: {
-                    return null
                   }
                 }
               })}
