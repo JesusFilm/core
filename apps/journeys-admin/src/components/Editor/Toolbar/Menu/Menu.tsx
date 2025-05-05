@@ -22,7 +22,6 @@ import { DetailsItem } from '../Items/DetailsItem'
 import { ShareItem } from '../Items/ShareItem'
 import { StrategyItem } from '../Items/StrategyItem'
 import { TemplateSettingsItem } from '../Items/TemplateSettingsItem'
-import { TranslateItem } from '../Items/TranslateItem'
 import { JourneyDetails } from '../JourneyDetails'
 
 export const GET_ROLE = gql`
@@ -86,7 +85,6 @@ export function Menu({ user }: MenuProps): ReactElement {
       >
         {!mdUp && <JourneyDetails />}
         <DetailsItem variant="menu-item" onClose={handleCloseMenu} />
-        <TranslateItem variant="menu-item" onClose={handleCloseMenu} />
         {!mdUp && <Divider data-testid="details-menu-divider" />}
         {journey?.template === true && (
           <TemplateSettingsItem variant="menu-item" onClose={handleCloseMenu} />
