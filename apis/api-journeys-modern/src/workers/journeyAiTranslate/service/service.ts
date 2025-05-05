@@ -1,6 +1,7 @@
 import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
 import { Job } from 'bullmq'
 import { Logger } from 'pino'
+
 import { duplicateJourney } from './duplicateJourney'
 import { translateJourney } from './translateJourney'
 
