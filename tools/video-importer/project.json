@@ -1,0 +1,22 @@
+{
+  "name": "video-importer",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/video-importer/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["tsc -p apps/video-importer/tsconfig.json"],
+        "parallel": false
+      }
+    },
+    "run": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx ts-node src/video-importer.ts --folder ./test-videos"
+      }
+    }
+  },
+  "tags": []
+}

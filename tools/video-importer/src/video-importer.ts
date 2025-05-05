@@ -36,7 +36,13 @@ const VIDEO_FILENAME_REGEX =
 const GRAPHQL_ENDPOINT =
   process.env.GRAPHQL_ENDPOINT || 'http://localhost:4000/graphql' // TODO: Set this
 
+// Caching for JWT token and GraphQL client
+let cachedJwtToken: string | undefined
+let cachedGraphQLClient: GraphQLClient | undefined
+
 async function getFirebaseJwtToken(): Promise<string> {
+  if (cachedJwtToken) return cachedJwtToken
+
   const email = process.env.FIREBASE_EMAIL
   const password = process.env.FIREBASE_PASSWORD
 
@@ -48,20 +54,21 @@ async function getFirebaseJwtToken(): Promise<string> {
 
   const auth = getAuth(firebaseClient)
   const userCredential = await signInWithEmailAndPassword(auth, email, password)
-  return await userCredential.user.getIdToken()
+  cachedJwtToken = await userCredential.user.getIdToken()
+  return cachedJwtToken
 }
 
 async function getGraphQLClient(): Promise<GraphQLClient> {
-  let jwtToken = process.env.JWT_TOKEN
-  if (!jwtToken) {
-    jwtToken = await getFirebaseJwtToken()
-  }
-  return new GraphQLClient(GRAPHQL_ENDPOINT, {
+  if (cachedGraphQLClient) return cachedGraphQLClient
+
+  const jwtToken = process.env.JWT_TOKEN ?? (await getFirebaseJwtToken())
+  cachedGraphQLClient = new GraphQLClient(GRAPHQL_ENDPOINT, {
     headers: {
       Authorization: `JWT ${jwtToken}`,
       'x-graphql-client-name': 'video-importer'
     }
   })
+  return cachedGraphQLClient
 }
 
 const CREATE_R2_ASSET = graphql(`
@@ -240,7 +247,25 @@ async function getVideoVariantInput({
   playbackId: string
 }): Promise<VideoVariantInput> {
   // Parse source from videoId (e.g., "0_JesusVisionLumo" -> source="0")
-  const [source, restOfId] = videoId.split('_', 2)
+  let source: string
+  let restOfId: string
+  if (videoId.includes('_')) {
+    ;[source, restOfId = ''] = videoId.split('_', 2)
+    if (restOfId === '') {
+      console.warn(
+        `[video-importer] Expected an '_' in videoId "${videoId}".` +
+          ' The variant id/slug will use the plain videoId which may collide.'
+      )
+      source = '0'
+      restOfId = videoId
+    }
+  } else {
+    source = '0'
+    restOfId = videoId
+    console.warn(
+      `[video-importer] No '_' found in videoId "${videoId}". Using source='0' and restOfId=videoId. The variant id/slug will use the plain videoId which may collide.`
+    )
+  }
   const client = await getGraphQLClient()
 
   const languageResponse = await client.request<GetLanguageSlugResponse>(
@@ -316,7 +341,38 @@ async function createAndWaitForMuxVideo(publicUrl: string): Promise<{
 
   const muxId = muxResponse.createMuxVideoUploadByUrl.id
 
-  // Poll for Mux video readiness
+  // Exponential backoff intervals in ms: 1min, 2min, 5min, 10min, 15min, 20min
+  const BACKOFF_INTERVALS = [
+    60_000, 120_000, 300_000, 600_000, 900_000, 1_200_000
+  ]
+  const MAX_ATTEMPTS = BACKOFF_INTERVALS.length
+
+  for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+    const statusResponse = await client.request<MuxVideoStatusResponse>(
+      GET_MUX_VIDEO,
+      {
+        id: muxId,
+        userGenerated: false
+      }
+    )
+
+    if (statusResponse.getMyMuxVideo.readyToStream) {
+      return {
+        id: statusResponse.getMyMuxVideo.id,
+        playbackId: statusResponse.getMyMuxVideo.playbackId
+      }
+    }
+
+    const waitMs = BACKOFF_INTERVALS[attempt]
+    const waitMin = Math.round(waitMs / 60000)
+    console.log(
+      `Waiting for Mux processing… (attempt ${attempt + 1}/${MAX_ATTEMPTS}, waiting ${waitMin} min)`
+    )
+    await new Promise((resolve) => setTimeout(resolve, waitMs))
+  }
+
+  // Continue polling with the last interval if needed
+  let attempt = MAX_ATTEMPTS
   while (true) {
     const statusResponse = await client.request<MuxVideoStatusResponse>(
       GET_MUX_VIDEO,
@@ -333,9 +389,21 @@ async function createAndWaitForMuxVideo(publicUrl: string): Promise<{
       }
     }
 
-    console.log('Waiting for Mux video processing...')
-    await new Promise((resolve) => setTimeout(resolve, 2000)) // Wait 2 seconds before polling again
+    const waitMs = BACKOFF_INTERVALS[BACKOFF_INTERVALS.length - 1]
+    const waitMin = Math.round(waitMs / 60000)
+    console.log(
+      `Waiting for Mux processing… (attempt ${attempt + 1}, waiting ${waitMin} min)`
+    )
+    await new Promise((resolve) => setTimeout(resolve, waitMs))
+    attempt++
+    if (attempt >= 20) {
+      // hard cap at 20 attempts (total ~3.5 hours)
+      break
+    }
   }
+  throw new Error(
+    `Mux video ${muxId} not ready after extended polling – aborting.`
+  )
 }
 
 async function updateVideoVariant({
