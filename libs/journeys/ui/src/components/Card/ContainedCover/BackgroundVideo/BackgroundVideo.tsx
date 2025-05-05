@@ -23,8 +23,6 @@ interface BackgroundVideoProps extends TreeBlock<VideoFields> {
 
 const StyledVideo = styled('video')(() => ({}))
 
-videojs.log.level('debug')
-
 export function BackgroundVideo({
   source,
   children,
@@ -42,7 +40,7 @@ export function BackgroundVideo({
   // Initiate Video
   useEffect(() => {
     if (videoRef.current != null) {
-      const player = videojs(videoRef.current, {
+      playerRef.current = videojs(videoRef.current, {
         ...defaultBackgroundVideoJsOptions,
         autoplay: true,
         controls: false,
@@ -56,23 +54,12 @@ export function BackgroundVideo({
           doubleClick: false
         },
         muted: true,
+        loop: true,
         responsive: true
         // Don't use poster prop as image isn't optimised
       })
-      player.on('error', (e: any) => console.error('video error', e))
-      player.on('ready', async () => {
-        void player.play()
-      })
-      player.on('canplay', () => {
-        void player.play()
-      })
-      player.on('ended', () => {
-        player.currentTime(startAt ?? 0)
-        void player.play()
-      })
-      playerRef.current = player
     }
-  })
+  }, [])
 
   // Set up video listeners
   useEffect(() => {
@@ -104,6 +91,21 @@ export function BackgroundVideo({
           (endAt != null && currentTime >= endAt)
         ) {
           player?.pause()
+        }
+      })
+
+      player.ready(() => {
+        if (mediaVideo?.__typename === 'MuxVideo' && mediaVideo?.playbackId != null) {
+          player.src({
+            src: `https://stream.mux.com/${mediaVideo.playbackId}.m3u8`,
+            type: 'application/x-mpegURL'
+          })
+        }
+        if (mediaVideo?.__typename === 'Video' && mediaVideo?.variant?.hls != null) {
+          player.src({
+            src: mediaVideo.variant.hls,
+            type: 'application/x-mpegURL'
+          })
         }
       })
     }
