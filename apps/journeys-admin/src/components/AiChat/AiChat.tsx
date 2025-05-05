@@ -11,10 +11,12 @@ import Grow from '@mui/material/Grow'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
+import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import ArrowUpIcon from '@core/shared/ui/icons/ArrowUp'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
@@ -25,28 +27,55 @@ interface AiChatProps {
 const INITIAL_SYSTEM_PROMPT = `
 You are a helpful assistant that can answer questions and help with tasks.
 You are currently in the context of a journey.
-`
+`.trim()
 
 export function AiChat({ open = false }: AiChatProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
+  const user = useUser()
+  const { journey } = useJourney()
   const { messages, append, setMessages, status } = useChat({
-    maxSteps: 5
+    fetch: fetchWithAuthorization,
+    maxSteps: 5,
+    credentials: 'omit'
   })
 
   const [systemPrompt, setSystemPrompt] = useState(INITIAL_SYSTEM_PROMPT)
   const [userMessage, setUserMessage] = useState('')
 
-  function handleSubmit(): void {
+  async function fetchWithAuthorization(
+    url: string,
+    options: RequestInit
+  ): Promise<Response> {
+    return await fetch(url, {
+      ...options,
+      headers: {
+        ...options.headers,
+        Authorization: `JWT ${await user?.getIdToken()}`
+      }
+    })
+  }
+
+  async function handleSubmit(): Promise<void> {
+    const message = userMessage.trim()
+    if (message === '') return
+
+    setUserMessage('')
     try {
       if (systemPrompt.trim()) {
         const hasSystemMessage = messages.some((msg) => msg.role === 'system')
         if (!hasSystemMessage) {
+          const systemPromptWithJourneyId =
+            journey != null
+              ? systemPrompt
+                  .trim()
+                  .concat(`\n\nThe current journey ID is ${journey?.id}`)
+              : systemPrompt.trim()
           setMessages([
             {
               id: uuidv4(),
               role: 'system',
-              content: systemPrompt.trim()
+              content: systemPromptWithJourneyId
             },
             ...messages
           ])
@@ -54,31 +83,29 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
           // Update existing system message
           setMessages(
             messages.map((msg) =>
-              msg.role === 'system' ? { ...msg, content: systemPrompt } : msg
+              msg.role === 'system'
+                ? { ...msg, content: systemPrompt.trim() }
+                : msg
             )
           )
         }
       }
 
       // Send the user message if there's content
-      if (userMessage.trim()) {
-        void append({
+      if (message) {
+        await append({
           role: 'user',
-          content: userMessage.trim()
+          content: message
         })
       }
     } catch (error) {
       console.error(error)
-    } finally {
-      setUserMessage('')
     }
   }
 
   const nonSystemMessages = messages
     .filter((message) => message.role !== 'system')
     .reverse()
-
-  console.log(nonSystemMessages)
 
   return (
     <Grow
@@ -159,15 +186,48 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
                   switch (part.type) {
                     case 'text':
                       return <span key={`${message.id}-${i}`}>{part.text}</span>
-                    case 'tool-invocation':
-                      return (
-                        <pre
-                          key={`${message.id}-${i}`}
-                          style={{ fontSize: '0.8em', margin: '8px 0' }}
-                        >
-                          {JSON.stringify(part.toolInvocation, null, 2)}
-                        </pre>
-                      )
+                    case 'tool-invocation': {
+                      const callId = part.toolInvocation.toolCallId
+                      switch (part.toolInvocation.toolName) {
+                        case 'getJourney': {
+                          switch (part.toolInvocation.state) {
+                            case 'call':
+                              return (
+                                <div key={callId}>
+                                  {t('Getting journey...')}
+                                </div>
+                              )
+                            case 'result':
+                              return (
+                                <div key={callId}>
+                                  {t('Journey:')}{' '}
+                                  {part.toolInvocation.result.title}
+                                </div>
+                              )
+                          }
+                          break
+                        }
+                        case 'updateJourney': {
+                          switch (part.toolInvocation.state) {
+                            case 'call':
+                              return (
+                                <div key={callId}>
+                                  {t('Updating journey...')}
+                                </div>
+                              )
+                            case 'result':
+                              return (
+                                <div key={callId}>
+                                  {t('Journey updated:')}{' '}
+                                  {part.toolInvocation.result.title}
+                                </div>
+                              )
+                          }
+                          break
+                        }
+                      }
+                      return null
+                    }
                     default:
                       return null
                   }
@@ -190,7 +250,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault()
-                  handleSubmit()
+                  void handleSubmit()
                 }
               }}
               autoFocus
@@ -212,8 +272,10 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
               expandIcon={<ChevronDownIcon fontSize="small" />}
               sx={{
                 minHeight: 32,
+                p: 0,
                 '&.Mui-expanded': {
-                  minHeight: 32
+                  minHeight: 32,
+                  p: 0
                 },
                 '& > .MuiAccordionSummary-content': {
                   my: 0,

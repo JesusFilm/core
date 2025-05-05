@@ -1,23 +1,33 @@
+import { ApolloClient, NormalizedCacheObject, gql } from '@apollo/client'
+import { Tool, tool } from 'ai'
 import { z } from 'zod'
 
-interface ExecuteParams {
-  journeyId: string
-}
-
-export const getJourney = {
-  getJourney: {
-    description: 'Get the journey.',
-    parameters: z.object({
-      journeyId: z.string().describe('The id of the journey.'),
-      getJourneyById: z.function().args(z.string()).returns(z.any()),
-      token: z
-        .string()
-        .describe(
-          'The token of the user. this is used to authenticate the user and get the journey that the user has access to.'
-        )
-    }),
-    execute: async ({ journeyId }: ExecuteParams) => {
-      throw new Error('Not implemented')
+const GET_ADMIN_JOURNEY = gql`
+  query GetAdminJourney($id: ID!) {
+    journey: adminJourney(id: $id, idType: databaseId) {
+      id
+      title
+      description
     }
   }
+`
+
+export function getJourney(client: ApolloClient<NormalizedCacheObject>): Tool {
+  return tool({
+    description: 'Get the journey.',
+    parameters: z.object({
+      journeyId: z.string().describe('The id of the journey.')
+    }),
+    execute: async ({ journeyId }) => {
+      try {
+        const result = await client.query({
+          query: GET_ADMIN_JOURNEY,
+          variables: { id: journeyId }
+        })
+        return result.data?.journey
+      } catch (error) {
+        return error
+      }
+    }
+  })
 }
