@@ -183,7 +183,7 @@ export function JourneyCard({
                 }}
               />
             </Box>
-            <CardContent sx={{ px: 3, py: 3 }}>
+            <CardContent sx={{ p: 3 }}>
               <JourneyCardText journey={journey} />
               <Box sx={{ height: '60px' }} />
             </CardContent>
