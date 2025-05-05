@@ -4,7 +4,6 @@
 import './journeyAiTranslate'
 import './mediaVideo'
 import './journeyEventsExportLog'
-import './userNotifications'
 
 import { builder } from './builder'
 

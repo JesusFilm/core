@@ -1,1 +1,0 @@
-export { queueName } from './config'
