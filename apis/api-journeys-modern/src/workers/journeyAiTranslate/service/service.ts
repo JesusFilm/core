@@ -5,12 +5,22 @@ import {
   gql
 } from '@apollo/client'
 import { Job } from 'bullmq'
+import { Logger } from 'pino'
 
-import { AiTranslateJourneyJob } from '../service'
+export interface AiTranslateJourneyJob {
+  userId: string
+  type: 'journeyAiTranslate'
+  inputJourneyId: string
+  outputJourneyId: string
+  name: string
+  textLanguageId: string
+  videoLanguageId: string
+}
 
-export async function journeyAiTranslate(
-  job: Job<AiTranslateJourneyJob>
-): Promise<void> {
+export const service = async (
+  job: Job<AiTranslateJourneyJob>,
+  customLogger?: Logger
+): Promise<void> => {
   await duplicateJourney(job)
   await translateJourney(job)
 }

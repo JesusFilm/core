@@ -3317,17 +3317,6 @@ export type QueryShortLinksConnectionEdge = {
   node?: Maybe<ShortLink>;
 };
 
-export type QueueNotificationStatus = {
-  __typename?: 'QueueNotificationStatus';
-  jobId: Scalars['String']['output'];
-  message: Scalars['String']['output'];
-  progress: Scalars['Int']['output'];
-  queueName: Scalars['String']['output'];
-  status: Scalars['String']['output'];
-  timestamp: Scalars['String']['output'];
-  userId: Scalars['String']['output'];
-};
-
 export type RadioOptionBlock = Block & {
   __typename?: 'RadioOptionBlock';
   action?: Maybe<Action>;
@@ -3726,17 +3715,11 @@ export type StepViewEventCreateInput = {
 export type Subscription = {
   __typename?: 'Subscription';
   journeyAiTranslateStatus?: Maybe<JourneyAiTranslateStatus>;
-  userQueueNotifications?: Maybe<QueueNotificationStatus>;
 };
 
 
 export type SubscriptionJourneyAiTranslateStatusArgs = {
   jobId: Scalars['ID']['input'];
-};
-
-
-export type SubscriptionUserQueueNotificationsArgs = {
-  userId: Scalars['ID']['input'];
 };
 
 export type Tag = {

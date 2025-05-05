@@ -2237,19 +2237,8 @@ type MuxVideo @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId
   videoVariants: [VideoVariant!]! @join__field(graph: API_MEDIA) 
 }
 
-type QueueNotificationStatus @join__type(graph: API_JOURNEYS_MODERN)  {
-  userId: String!
-  queueName: String!
-  jobId: String!
-  status: String!
-  progress: Int!
-  message: String!
-  timestamp: String!
-}
-
 type Subscription @join__type(graph: API_JOURNEYS_MODERN)  {
   journeyAiTranslateStatus(jobId: ID!) : JourneyAiTranslateStatus
-  userQueueNotifications(userId: ID!) : QueueNotificationStatus
 }
 
 type YouTube @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", extension: true)  {

@@ -1,8 +1,11 @@
 import { Job, Queue, QueueEvents, Worker } from 'bullmq'
 
 import { connection } from '../../lib/redisConnection'
-import { queueName } from '../../workers/userQueue'
-import { AiTranslateJourneyJob, service } from '../../workers/userQueue/service'
+import { queueName } from '../../workers/journeyAiTranslate'
+import {
+  AiTranslateJourneyJob,
+  service
+} from '../../workers/journeyAiTranslate/service'
 import { builder } from '../builder'
 
 class JourneyAiTranslateStatusShape {
@@ -15,6 +18,8 @@ class JourneyAiTranslateStatusShape {
     this.progress = progress
   }
 }
+
+const queue = new Queue(queueName, { connection })
 
 const JourneyAiTranslateStatusRef = builder
   .objectRef<JourneyAiTranslateStatusShape>('JourneyAiTranslateStatus')
@@ -39,10 +44,7 @@ builder.subscriptionField('journeyAiTranslateStatus', (t) =>
     },
     type: JourneyAiTranslateStatus,
     nullable: true,
-    subscribe: async (_root, { jobId }, context) => {
-      // Access queue from context same as in the query resolver
-      const { queue } = context
-
+    subscribe: async (_root, { jobId }) => {
       // Create a function to get job state - reusing similar logic from the query resolver
       const getJobState = async (): Promise<JourneyAiTranslateStatusShape> => {
         try {
@@ -71,7 +73,7 @@ builder.subscriptionField('journeyAiTranslateStatus', (t) =>
         }
       }
 
-      const queueEvents = new QueueEvents('userQueue', {
+      const queueEvents = new QueueEvents(queueName, {
         connection
       })
 
@@ -169,18 +171,12 @@ builder.mutationFields((t) => ({
       nullable: false,
       resolve: async (_root, { input }, context: WorkerContext) => {
         const { user } = context
-        const userQueueName = `${queueName}/${user.id}`
-
-        // Ensure queue exists
-        const queue: Queue =
-          context.queue || new Queue(userQueueName, { connection })
-        context.queue = queue
 
         // Create worker if it doesn't exist
         if (!context.worker) {
           // Create a worker
           const worker = new Worker(
-            userQueueName,
+            queueName,
             async (job) => {
               try {
                 await service(job)
@@ -224,7 +220,7 @@ builder.mutationFields((t) => ({
         }
 
         const job = (await queue.add(
-          `journeyAiTranslate/${input.journeyId}:${input.textLanguageId}`,
+          `${queueName}/${input.journeyId}:${input.textLanguageId}`,
           {
             userId: user.id,
             type: 'journeyAiTranslate',
@@ -234,7 +230,7 @@ builder.mutationFields((t) => ({
             videoLanguageId: input.videoLanguageId
           },
           {
-            jobId: `journeyAiTranslate/${input.journeyId}:${input.textLanguageId}`,
+            jobId: `${queueName}/${input.journeyId}:${input.textLanguageId}`,
             removeOnComplete: {
               age: 1000 * 60 * 60 * 24 * 5, // 5 days
               count: 100
