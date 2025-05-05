@@ -1,5 +1,12 @@
 import { createInstance } from 'i18next'
-import { ReactElement, ReactNode, useEffect, useMemo, useState } from 'react'
+import {
+  ReactElement,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState
+} from 'react'
 // eslint-disable-next-line no-restricted-imports
 import { I18nextProvider } from 'react-i18next'
 
@@ -40,59 +47,49 @@ export function JourneyI18nProvider({
   const [resources, setResources] = useState<
     Record<string, Record<string, any>>
   >({})
-  const [isLoading, setIsLoading] = useState(locale !== 'en')
 
-  async function loadResources(directoryLocale: string): Promise<void> {
-    try {
-      const [adminResources, uiResources] = await Promise.all([
-        import(
-          /* webpackChunkName: "locale-[request]" */
-          `../../../../../../../../libs/locales/${directoryLocale}/apps-journeys-admin.json`
-        ),
-        import(
-          /* webpackChunkName: "locale-[request]" */
-          `../../../../../../../../libs/locales/${directoryLocale}/libs-journeys-ui.json`
+  const loadResources = useCallback(
+    async (directoryLocale: string): Promise<void> => {
+      try {
+        const [adminResources, uiResources] = await Promise.all([
+          import(
+            /* webpackChunkName: "locale-[request]" */
+            `../../../../../../../../libs/locales/${directoryLocale}/apps-journeys-admin.json`
+          ),
+          import(
+            /* webpackChunkName: "locale-[request]" */
+            `../../../../../../../../libs/locales/${directoryLocale}/libs-journeys-ui.json`
+          )
+        ])
+
+        setResources({
+          [locale]: {
+            'apps-journeys-admin': adminResources.default || adminResources,
+            'libs-journeys-ui': uiResources.default || uiResources
+          }
+        })
+        console.log(
+          `Loaded ${locale} (${directoryLocale}) resources successfully`
         )
-      ])
-
-      setResources({
-        [locale]: {
-          'apps-journeys-admin': adminResources.default || adminResources,
-          'libs-journeys-ui': uiResources.default || uiResources
-        }
-      })
-      console.log(
-        `Loaded ${locale} (${directoryLocale}) resources successfully`
-      )
-    } catch (error) {
-      console.error(
-        `Error loading locale resources for ${locale} (${directoryLocale}):`,
-        error
-      )
-    } finally {
-      setIsLoading(false)
-    }
-  }
+      } catch (error) {
+        console.error(
+          `Error loading locale resources for ${locale} (${directoryLocale}):`,
+          error
+        )
+      }
+    },
+    [locale]
+  )
 
   console.log('locale set on journey:', locale)
 
   // Dynamically load resources for the selected locale
   useEffect(() => {
-    // Skip loading for English as it's the default
-    if (locale === 'en') {
-      setIsLoading(false)
-      return
-    }
-
-    // Hard-coded locale map to match directory structure in libs/locales
-
     const directoryLocale = LOCALE_MAP[locale] || locale
-    setIsLoading(true)
+    // setIsLoading(true)
 
     void loadResources(directoryLocale)
-  }, [locale])
-
-  // Using dynamic imports instead of require
+  }, [locale, loadResources])
 
   // Create a new i18next instance for this component tree
   const i18nInstance = useMemo(() => {
@@ -116,10 +113,6 @@ export function JourneyI18nProvider({
 
     return instance
   }, [locale, resources])
-
-  if (isLoading) {
-    return <div>Loading translations...</div>
-  }
 
   return <I18nextProvider i18n={i18nInstance}>{children}</I18nextProvider>
 }
