@@ -44,7 +44,7 @@ export function BackgroundVideo({
     if (videoRef.current != null) {
       const player = videojs(videoRef.current, {
         ...defaultBackgroundVideoJsOptions,
-        // autoplay: true,
+        autoplay: true,
         controls: false,
         controlBar: false,
         bigPlayButton: false,
@@ -56,35 +56,37 @@ export function BackgroundVideo({
           doubleClick: false
         },
         muted: true,
-        // loop: true,
         responsive: true
         // Don't use poster prop as image isn't optimised
       })
-
       player.on('error', (e: any) => console.error('video error', e))
-      player.on('loadstart', () => console.log('loadstart'))
       player.on('ready', async () => {
-        console.log('ready')
-        // void player.play()
+        const promise = player.play()
+        if (promise !== undefined) {
+          promise.then(function() {
+            console.log("Promise resolved - Ready to play")
+          }).catch(function(error) {
+            console.error("Promise rejected - Not ready to play", error)
+          });
+        }
       })
-      player.on('loadeddata', () => console.log('loadeddata'))
-      player.on('loadedmetadata', () => console.log('loadedmetadata'))
       player.on('canplay', () => {
-        console.log('canplay')
-        void player.play()
+        const promise = player.play()
+        if (promise !== undefined) {
+          promise.then(function() {
+            console.log("Promise resolved - Can play")
+          }).catch(function(error) {
+            console.error("Promise rejected - Cannot play", error)
+          });
+        }
       })
-      player.on('play', () => console.log('play'))
-      player.on('pause', () => console.log('pause'))
-
       player.on('ended', () => {
         player.currentTime(startAt ?? 0)
         void player.play()
       })
-
-      console.log('player', player)
       playerRef.current = player
     }
-  }, [])
+  })
 
   // Set up video listeners
   useEffect(() => {
