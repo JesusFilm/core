@@ -3,6 +3,7 @@ import { Job, Queue, QueueEvents } from 'bullmq'
 import { connection } from '../../lib/redisConnection'
 import {
   AiTranslateJourneyJob,
+  jobName,
   queueName
 } from '../../workers/journeyAiTranslate'
 import { builder } from '../builder'
@@ -163,7 +164,7 @@ builder.mutationFields((t) => ({
       nullable: false,
       resolve: async (_root, { input }, { user }) => {
         const job = (await queue.add(
-          `${queueName}/${user.id}:${input.journeyId}:${input.textLanguageId}`,
+          jobName,
           {
             userId: user.id,
             type: 'journeyAiTranslate',
