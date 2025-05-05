@@ -2,12 +2,14 @@ import { ApolloClient, NormalizedCacheObject, gql } from '@apollo/client'
 import { Tool, tool } from 'ai'
 import { z } from 'zod'
 
+import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
+
 const GET_ADMIN_JOURNEY = gql`
+  ${JOURNEY_FIELDS}
   query GetAdminJourney($id: ID!) {
     journey: adminJourney(id: $id, idType: databaseId) {
       id
-      title
-      description
+      ...JourneyFields
     }
   }
 `
