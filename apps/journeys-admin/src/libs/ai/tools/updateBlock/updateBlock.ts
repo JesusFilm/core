@@ -31,6 +31,7 @@ export function updateBlock(client: ApolloClient<NormalizedCacheObject>): Tool {
     execute: async ({ blockId, block }) => {
       console.log('block', block)
       function getMutationByBlockType(block: any): DocumentNode {
+        console.log('block.__typename', block.__typename)
         switch (block.__typename) {
           case 'TypographyBlock':
             return UPDATE_TYPOGRAPHY_BLOCK
@@ -46,12 +47,12 @@ export function updateBlock(client: ApolloClient<NormalizedCacheObject>): Tool {
           mutation: getMutationByBlockType(block),
           variables: { id: blockId, input: { ...blockToUpdate } },
           onError: (error) => {
-            console.log('error', error)
+            console.error('error', error)
           }
         })
         return JSON.stringify(result.data)
       } catch (error) {
-        console.log('error', error)
+        console.error('error', error)
         return error
       }
     }
