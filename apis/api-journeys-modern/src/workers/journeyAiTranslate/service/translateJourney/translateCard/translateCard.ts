@@ -1,3 +1,5 @@
+import { Logger } from 'pino'
+
 import { Block } from '.prisma/api-journeys-modern-client'
 
 import { translateButtonBlock } from './translateButtonBlock'
@@ -10,13 +12,15 @@ export async function translateCardBlock({
   cardBlock,
   cardAnalysis,
   sourceLanguageName,
-  targetLanguageName
+  targetLanguageName,
+  logger
 }: {
   blocks: Block[]
   cardBlock: Block
   cardAnalysis: string
   sourceLanguageName: string
   targetLanguageName: string
+  logger?: Logger
 }): Promise<void> {
   const cardBlocksChildren = blocks.filter(
     ({ parentBlockId }) => parentBlockId === cardBlock.id
@@ -29,7 +33,8 @@ export async function translateCardBlock({
           block,
           cardAnalysis,
           sourceLanguageName,
-          targetLanguageName
+          targetLanguageName,
+          logger
         })
         break
       case 'ButtonBlock':
@@ -37,7 +42,8 @@ export async function translateCardBlock({
           block,
           cardAnalysis,
           sourceLanguageName,
-          targetLanguageName
+          targetLanguageName,
+          logger
         })
         break
       case 'RadioQuestionBlock':
@@ -46,7 +52,8 @@ export async function translateCardBlock({
           blocks,
           cardAnalysis,
           sourceLanguageName,
-          targetLanguageName
+          targetLanguageName,
+          logger
         })
         break
       case 'TextResponseBlock':
@@ -54,7 +61,8 @@ export async function translateCardBlock({
           block,
           cardAnalysis,
           sourceLanguageName,
-          targetLanguageName
+          targetLanguageName,
+          logger
         })
         break
     }

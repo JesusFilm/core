@@ -1,5 +1,6 @@
 import { google } from '@ai-sdk/google'
 import { generateText } from 'ai'
+import { Logger } from 'pino'
 
 import { Block } from '.prisma/api-journeys-modern-client'
 
@@ -9,12 +10,14 @@ export async function translateButtonBlock({
   block,
   cardAnalysis,
   sourceLanguageName,
-  targetLanguageName
+  targetLanguageName,
+  logger
 }: {
   block: Block
   cardAnalysis: string
   sourceLanguageName: string
   targetLanguageName: string
+  logger?: Logger
 }): Promise<void> {
   // Skip if label is empty
   if (!block.label) return
@@ -48,10 +51,10 @@ export async function translateButtonBlock({
         }
       })
 
-      console.log(`Successfully translated button block ${block.id}`)
+      logger?.info(`Successfully translated button block ${block.id}`)
     }
   } catch (error) {
-    console.error(`Error translating button block ${block.id}:`, error)
+    logger?.error(`Error translating button block ${block.id}:`, error)
     const errorMessage =
       error instanceof Error ? error.message : 'Unknown error occurred'
     throw new Error(`Failed to translate button block: ${errorMessage}`)

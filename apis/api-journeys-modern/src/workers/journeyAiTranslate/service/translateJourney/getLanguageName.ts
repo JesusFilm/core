@@ -1,5 +1,6 @@
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
 import { graphql } from 'gql.tada'
+import { Logger } from 'pino'
 
 export const GET_LANGUAGE = graphql(`
   query GetLanguage($id: ID!, $languageId: ID!) {
@@ -14,7 +15,8 @@ export const GET_LANGUAGE = graphql(`
 
 export async function getLanguageName(
   apollo: ApolloClient<NormalizedCacheObject>,
-  languageId: string
+  languageId: string,
+  logger?: Logger
 ): Promise<string | null> {
   try {
     const { data } = await apollo.query({
@@ -28,11 +30,11 @@ export async function getLanguageName(
     if (data?.language?.name?.[0]?.value) {
       return data.language.name[0].value
     } else {
-      console.log(`Could not get source language name for ID ${languageId}`)
+      logger?.info(`Could not get source language name for ID ${languageId}`)
       return null
     }
   } catch (error) {
-    console.error('Error fetching source language data:', error)
+    logger?.error('Error fetching source language data:', error)
   }
   return null
 }

@@ -34,12 +34,17 @@ export async function translateJourney(
   await job.updateProgress(45)
 
   // 2. Get the language names
-  const sourceLanguageName = await getLanguageName(apollo, journey.languageId)
+  const sourceLanguageName = await getLanguageName(
+    apollo,
+    journey.languageId,
+    logger
+  )
   if (sourceLanguageName == null)
     throw new Error('Could not fetch source language name')
   const requestedLanguageName = await getLanguageName(
     apollo,
-    job.data.textLanguageId
+    job.data.textLanguageId,
+    logger
   )
   if (requestedLanguageName == null)
     throw new Error('Could not fetch requested language name')
@@ -183,7 +188,8 @@ Description: [translated description]
             cardBlock,
             cardAnalysis,
             sourceLanguageName,
-            targetLanguageName: requestedLanguageName
+            targetLanguageName: requestedLanguageName,
+            logger
           })
         }
       } catch (analysisError) {

@@ -1,5 +1,6 @@
 import { google } from '@ai-sdk/google'
 import { generateText } from 'ai'
+import { Logger } from 'pino'
 
 import { Block } from '.prisma/api-journeys-modern-client'
 
@@ -9,12 +10,14 @@ export async function translateTextResponseBlock({
   block,
   cardAnalysis,
   sourceLanguageName,
-  targetLanguageName
+  targetLanguageName,
+  logger
 }: {
   block: Block
   cardAnalysis: string
   sourceLanguageName: string
   targetLanguageName: string
+  logger?: Logger
 }): Promise<void> {
   // TextResponseBlock has several fields that may need translation:
   // - label (required)
@@ -100,11 +103,11 @@ export async function translateTextResponseBlock({
           data: updateData
         })
 
-        console.log(`Successfully translated text response block ${block.id}`)
+        logger?.info(`Successfully translated text response block ${block.id}`)
       }
     }
   } catch (error) {
-    console.error(`Error translating text response block ${block.id}:`, error)
+    logger?.error(`Error translating text response block ${block.id}:`, error)
     const errorMessage =
       error instanceof Error ? error.message : 'Unknown error occurred'
     throw new Error(`Failed to translate text response block: ${errorMessage}`)

@@ -1,5 +1,6 @@
 import { google } from '@ai-sdk/google'
 import { generateText } from 'ai'
+import { Logger } from 'pino'
 
 import { Block } from '.prisma/api-journeys-modern-client'
 
@@ -10,13 +11,15 @@ export async function translateRadioQuestionBlock({
   blocks,
   cardAnalysis,
   sourceLanguageName,
-  targetLanguageName
+  targetLanguageName,
+  logger
 }: {
   block: Block
   blocks: Block[]
   cardAnalysis: string
   sourceLanguageName: string
   targetLanguageName: string
+  logger?: Logger
 }): Promise<void> {
   // RadioQuestionBlock itself doesn't have text to translate
   // We need to find and translate its child RadioOptionBlocks
@@ -27,11 +30,11 @@ export async function translateRadioQuestionBlock({
   )
 
   if (radioOptionBlocks.length === 0) {
-    console.log(`No radio options found for radio question block ${block.id}`)
+    logger?.info(`No radio options found for radio question block ${block.id}`)
     return
   }
 
-  console.log(
+  logger?.info(
     `Translating ${radioOptionBlocks.length} radio options for radio question block ${block.id}`
   )
 
@@ -69,18 +72,18 @@ export async function translateRadioQuestionBlock({
           }
         })
 
-        console.log(
+        logger?.info(
           `Successfully translated radio option block ${optionBlock.id}`
         )
       }
     } catch (error) {
-      console.error(
+      logger?.error(
         `Error translating radio option block ${optionBlock.id}:`,
         error
       )
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error occurred'
-      console.error(`Failed to translate radio option: ${errorMessage}`)
+      logger?.error(`Failed to translate radio option: ${errorMessage}`)
       // Continue with other options
     }
   }
