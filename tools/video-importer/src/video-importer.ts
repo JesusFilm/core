@@ -1,4 +1,4 @@
-import fs from 'fs/promises'
+import { createReadStream, promises } from 'fs'
 import path from 'path'
 import 'dotenv/config'
 
@@ -33,15 +33,29 @@ const options = program.opts()
 const VIDEO_FILENAME_REGEX =
   /^([a-zA-Z0-9_-]+)---([a-zA-Z0-9_-]+)---([a-zA-Z0-9_-]+)\.mp4$/
 
-const GRAPHQL_ENDPOINT =
-  process.env.GRAPHQL_ENDPOINT || 'http://localhost:4000/graphql' // TODO: Set this
+const GRAPHQL_ENDPOINT = process.env.GRAPHQL_ENDPOINT
+if (!GRAPHQL_ENDPOINT) {
+  throw new Error(
+    '[video-importer] GRAPHQL_ENDPOINT environment variable must be set.'
+  )
+}
 
 // Caching for JWT token and GraphQL client
 let cachedJwtToken: string | undefined
+let cachedJwtTokenIssueTime: number | undefined
 let cachedGraphQLClient: GraphQLClient | undefined
 
 async function getFirebaseJwtToken(): Promise<string> {
-  if (cachedJwtToken) return cachedJwtToken
+  const now = Date.now()
+  // 55 minutes in ms
+  const TOKEN_EXPIRY_MS = 55 * 60 * 1000
+  if (
+    cachedJwtToken &&
+    cachedJwtTokenIssueTime &&
+    now - cachedJwtTokenIssueTime < TOKEN_EXPIRY_MS
+  ) {
+    return cachedJwtToken
+  }
 
   const email = process.env.FIREBASE_EMAIL
   const password = process.env.FIREBASE_PASSWORD
@@ -55,6 +69,7 @@ async function getFirebaseJwtToken(): Promise<string> {
   const auth = getAuth(firebaseClient)
   const userCredential = await signInWithEmailAndPassword(auth, email, password)
   cachedJwtToken = await userCredential.user.getIdToken()
+  cachedJwtTokenIssueTime = Date.now()
   return cachedJwtToken
 }
 
@@ -62,7 +77,7 @@ async function getGraphQLClient(): Promise<GraphQLClient> {
   if (cachedGraphQLClient) return cachedGraphQLClient
 
   const jwtToken = process.env.JWT_TOKEN ?? (await getFirebaseJwtToken())
-  cachedGraphQLClient = new GraphQLClient(GRAPHQL_ENDPOINT, {
+  cachedGraphQLClient = new GraphQLClient(GRAPHQL_ENDPOINT!, {
     headers: {
       Authorization: `JWT ${jwtToken}`,
       'x-graphql-client-name': 'video-importer'
@@ -317,9 +332,9 @@ async function uploadToR2(
   filePath: string,
   contentType: string
 ) {
-  const fileBuffer = await fs.readFile(filePath)
-  await axios.put(uploadUrl, fileBuffer, {
-    headers: { 'Content-Type': contentType }
+  await axios.put(uploadUrl, createReadStream(filePath), {
+    headers: { 'Content-Type': contentType },
+    maxBodyLength: Infinity
   })
 }
 
@@ -537,7 +552,7 @@ async function main() {
   const folderPath = path.resolve(options.folder)
   let files: string[]
   try {
-    files = await fs.readdir(folderPath)
+    files = await promises.readdir(folderPath)
   } catch (err) {
     console.error(`Failed to read folder: ${folderPath}`)
     process.exit(1)
@@ -577,7 +592,7 @@ async function main() {
       const filePath = path.join(folderPath, file)
       const contentType = 'video/mp4'
       const originalFilename = file
-      const contentLength = (await fs.stat(filePath)).size
+      const contentLength = (await promises.stat(filePath)).size
 
       console.log('Creating R2 asset...')
       const r2Asset = await createR2Asset({

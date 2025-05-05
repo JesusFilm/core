@@ -7,7 +7,7 @@
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["tsc -p apps/video-importer/tsconfig.json"],
+        "commands": ["tsc -p tools/video-importer/tsconfig.json"],
         "parallel": false
       }
     },
