@@ -61,24 +61,10 @@ export function BackgroundVideo({
       })
       player.on('error', (e: any) => console.error('video error', e))
       player.on('ready', async () => {
-        const promise = player.play()
-        if (promise !== undefined) {
-          promise.then(function() {
-            console.log("Promise resolved - Ready to play")
-          }).catch(function(error) {
-            console.error("Promise rejected - Not ready to play", error)
-          });
-        }
+        void player.play()
       })
       player.on('canplay', () => {
-        const promise = player.play()
-        if (promise !== undefined) {
-          promise.then(function() {
-            console.log("Promise resolved - Can play")
-          }).catch(function(error) {
-            console.error("Promise rejected - Cannot play", error)
-          });
-        }
+        void player.play()
       })
       player.on('ended', () => {
         player.currentTime(startAt ?? 0)
