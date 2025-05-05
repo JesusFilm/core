@@ -191,7 +191,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
           )}
           {status === 'submitted' && (
             <Box>
-              <CircularProgress size={20} />
+              <CircularProgress size={18} />
             </Box>
           )}
           {nonSystemMessages.map((message) => (
