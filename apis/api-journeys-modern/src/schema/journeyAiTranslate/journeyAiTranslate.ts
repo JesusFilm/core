@@ -220,7 +220,7 @@ builder.mutationFields((t) => ({
         }
 
         const job = (await queue.add(
-          `${queueName}/${input.journeyId}:${input.textLanguageId}`,
+          `${queueName}/${user.id}:${input.journeyId}:${input.textLanguageId}`,
           {
             userId: user.id,
             type: 'journeyAiTranslate',
@@ -230,7 +230,7 @@ builder.mutationFields((t) => ({
             videoLanguageId: input.videoLanguageId
           },
           {
-            jobId: `${queueName}/${input.journeyId}:${input.textLanguageId}`,
+            jobId: `${queueName}/${user.id}:${input.journeyId}:${input.textLanguageId}`,
             removeOnComplete: {
               age: 1000 * 60 * 60 * 24 * 5, // 5 days
               count: 100
