@@ -1,0 +1,1 @@
+export { useJourneyAiTranslateMutation } from './useJourneyAiTranslateMutation'
