@@ -1,4 +1,4 @@
-export { translateBlock } from './translateCard'
+export { translateCardBlock } from './translateCard'
 export { translateButtonBlock } from './translateButtonBlock'
 export { translateRadioQuestionBlock } from './translateRadioQuestionBlock'
 export { translateTextResponseBlock } from './translateTextResponseBlock'

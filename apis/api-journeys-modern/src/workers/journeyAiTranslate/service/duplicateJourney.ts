@@ -1,12 +1,14 @@
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
 import { Job } from 'bullmq'
 import { graphql } from 'gql.tada'
+import { Logger } from 'pino'
 
-import { AiTranslateJourneyJob } from '../service'
+import { AiTranslateJourneyJob } from './service'
 
 export async function duplicateJourney(
   job: Job<AiTranslateJourneyJob>,
-  apollo: ApolloClient<NormalizedCacheObject>
+  apollo: ApolloClient<NormalizedCacheObject>,
+  logger?: Logger
 ) {
   const JOURNEY_DUPLICATE = graphql(`
     mutation JourneyDuplicate($id: ID!, $teamId: ID!) {
@@ -32,6 +34,7 @@ export async function duplicateJourney(
       outputJourneyId: data.journeyDuplicate.id
     })
   } else {
+    logger?.error('Failed to duplicate journey')
     throw new Error('Failed to duplicate journey')
   }
   await job.updateProgress(25)

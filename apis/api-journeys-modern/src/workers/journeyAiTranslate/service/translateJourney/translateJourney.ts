@@ -2,10 +2,11 @@ import { google } from '@ai-sdk/google'
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
 import { generateObject, generateText } from 'ai'
 import { Job } from 'bullmq'
+import { Logger } from 'pino'
 import { z } from 'zod'
 
-import { prisma } from '../../../../../lib/prisma'
-import { AiTranslateJourneyJob } from '../../service'
+import { prisma } from '../../../../lib/prisma'
+import { AiTranslateJourneyJob } from '../service'
 
 import { getCardBlocksContent } from './getCardBlocksContent'
 import { getLanguageName } from './getLanguageName'
@@ -13,7 +14,8 @@ import { translateCardBlock } from './translateCard/translateCard'
 
 export async function translateJourney(
   job: Job<AiTranslateJourneyJob>,
-  apollo: ApolloClient<NormalizedCacheObject>
+  apollo: ApolloClient<NormalizedCacheObject>,
+  logger?: Logger
 ): Promise<void> {
   // 1. First get the journey details using Prisma
   const journey = await prisma.journey.findUnique({
@@ -128,9 +130,9 @@ Description: [translated description]
         }
       })
 
-      console.log('Successfully translated journey title and description')
+      logger?.info('Successfully translated journey title and description')
     } catch (error) {
-      console.error('Error translating journey title/description', error)
+      logger?.error('Error translating journey title/description', error)
       // Continue with the rest of the translation
     }
 
@@ -139,7 +141,7 @@ Description: [translated description]
       (block) => block.typename === 'CardBlock'
     )
 
-    console.log(
+    logger?.info(
       `Analyzing and translating ${cardBlocks.length} card blocks individually`
     )
 
@@ -174,7 +176,7 @@ Description: [translated description]
         })
 
         if (cardAnalysis) {
-          console.log(`Successfully analyzed card ${cardBlock.id}`)
+          logger?.info(`Successfully analyzed card ${cardBlock.id}`)
 
           await translateCardBlock({
             blocks: journey.blocks,
@@ -185,7 +187,7 @@ Description: [translated description]
           })
         }
       } catch (analysisError) {
-        console.error(`Error analyzing card ${cardBlock.id}:`, analysisError)
+        logger?.error(`Error analyzing card ${cardBlock.id}:`, analysisError)
         // Continue with other cards
       }
 
@@ -197,7 +199,7 @@ Description: [translated description]
     // Update progress
     await job.updateProgress(100)
   } catch (error: unknown) {
-    console.error('Error analyzing journey with Gemini:', error)
+    logger?.error('Error analyzing journey with Gemini:', error)
     const errorMessage =
       error instanceof Error ? error.message : 'Unknown error occurred'
     throw new Error(`Failed to analyze journey: ${errorMessage}`)

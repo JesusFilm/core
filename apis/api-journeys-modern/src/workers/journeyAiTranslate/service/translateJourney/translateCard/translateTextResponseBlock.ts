@@ -3,7 +3,7 @@ import { generateText } from 'ai'
 
 import { Block } from '.prisma/api-journeys-modern-client'
 
-import { prisma } from '../../../../../../lib/prisma'
+import { prisma } from '../../../../../lib/prisma'
 
 export async function translateTextResponseBlock({
   block,
