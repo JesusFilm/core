@@ -1,6 +1,7 @@
 import { ApolloClient, NormalizedCacheObject, gql } from '@apollo/client'
 import { Tool, tool } from 'ai'
 import { DocumentNode } from 'graphql'
+import omit from 'lodash/omit'
 import { z } from 'zod'
 
 import { TYPOGRAPHY_FIELDS } from '@core/journeys/ui/Typography/typographyFields'
@@ -40,9 +41,10 @@ export function updateBlock(client: ApolloClient<NormalizedCacheObject>): Tool {
       }
 
       try {
+        const blockToUpdate = omit(block, ['__typename'])
         const result = await client.mutate({
           mutation: getMutationByBlockType(block),
-          variables: { id: blockId, input: { ...block } },
+          variables: { id: blockId, input: { ...blockToUpdate } },
           onError: (error) => {
             console.log('error', error)
           }

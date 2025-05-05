@@ -31,6 +31,8 @@ export const typographyAlignEnum = z
 
 // TypographyBlock schema
 export const typographyBlockSchema = blockSchema.extend({
+  id: z.string().describe('Unique identifier for the block'),
+  __typename: z.literal('TypographyBlock'),
   content: z.string().describe('Text content of the typography block'),
   variant: typographyVariantEnum
     .optional()
