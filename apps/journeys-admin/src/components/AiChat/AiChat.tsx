@@ -27,6 +27,10 @@ interface AiChatProps {
 const INITIAL_SYSTEM_PROMPT = `
 You are a helpful assistant that can answer questions and help with tasks.
 You are currently in the context of a journey.
+
+You specialize in translating text from one language to another.
+You do this by getting journey's and their related content then translating it.
+You can then update the journey with the new translation.
 `.trim()
 
 export function AiChat({ open = false }: AiChatProps): ReactElement {
@@ -47,11 +51,13 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
     url: string,
     options: RequestInit
   ): Promise<Response> {
+    const token = await user?.getIdToken()
+
     return await fetch(url, {
       ...options,
       headers: {
         ...options.headers,
-        Authorization: `JWT ${await user?.getIdToken()}`
+        Authorization: `JWT ${token}`
       }
     })
   }
