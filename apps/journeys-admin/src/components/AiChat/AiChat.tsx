@@ -40,6 +40,8 @@ You can then update the journey with the new translation.
 
 Whenever the user asks to perform some action, assume that the user wants to 
 perform the action on the journey or its blocks.
+
+if you are missing any block Ids, get the journey. Then you will have context over the ids of it's blocks.
 `.trim()
 
 export function AiChat({ open = false }: AiChatProps): ReactElement {
@@ -48,24 +50,29 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
   const user = useUser()
   const client = useApolloClient()
   const { journey } = useJourney()
-  const { messages, append, setMessages, status } = useChat({
-    fetch: fetchWithAuthorization,
-    maxSteps: 5,
-    credentials: 'omit',
-    onFinish: (result) => {
-      const isUpdateJourney = result.parts?.some(
-        (part) =>
-          part.type === 'tool-invocation' &&
-          part.toolInvocation.toolName === 'updateJourney'
-      )
-      if (isUpdateJourney) {
-        void client.refetchQueries({
-          include: ['GetAdminJourney']
-        })
+  const { messages, append, setMessages, status, error, toolResults } = useChat(
+    {
+      fetch: fetchWithAuthorization,
+      maxSteps: 5,
+      credentials: 'omit',
+      onFinish: (result) => {
+        const isUpdateJourney = result.parts?.some(
+          (part) =>
+            part.type === 'tool-invocation' &&
+            part.toolInvocation.toolName === 'updateJourney'
+        )
+        if (isUpdateJourney) {
+          void client.refetchQueries({
+            include: ['GetAdminJourney']
+          })
+        }
       }
     }
-  })
+  )
 
+  console.log('error', error)
+  console.log('messages', messages)
+  console.log('toolResults', toolResults)
   const [systemPrompt, setSystemPrompt] = useState(INITIAL_SYSTEM_PROMPT)
   const [userMessage, setUserMessage] = useState('')
 
@@ -123,7 +130,6 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
           )
         }
       }
-
       // Send the user message if there's content
       if (message) {
         await append({
