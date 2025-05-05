@@ -1,4 +1,5 @@
 import { useChat } from '@ai-sdk/react'
+import { useApolloClient } from '@apollo/client'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
@@ -45,11 +46,24 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   const user = useUser()
+  const client = useApolloClient()
   const { journey } = useJourney()
   const { messages, append, setMessages, status } = useChat({
     fetch: fetchWithAuthorization,
     maxSteps: 5,
-    credentials: 'omit'
+    credentials: 'omit',
+    onFinish: (result) => {
+      const isUpdateJourney = result.parts?.some(
+        (part) =>
+          part.type === 'tool-invocation' &&
+          part.toolInvocation.toolName === 'updateJourney'
+      )
+      if (isUpdateJourney) {
+        void client.refetchQueries({
+          include: ['GetAdminJourney']
+        })
+      }
+    }
   })
 
   const [systemPrompt, setSystemPrompt] = useState(INITIAL_SYSTEM_PROMPT)
@@ -293,7 +307,14 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
               }}
               autoFocus
             />
-            <Button variant="outlined" onClick={handleSubmit}>
+            <Button
+              variant="outlined"
+              onClick={handleSubmit}
+              sx={{
+                borderRadius: 1,
+                borderWidth: '1px'
+              }}
+            >
               <ArrowUpIcon />
             </Button>
           </Stack>
