@@ -29,6 +29,7 @@ import { CardWrapper } from './CardWrapper'
 import { DragDropWrapper } from './DragDropWrapper'
 import { DragItemWrapper } from './DragItemWrapper'
 import { InlineEditWrapper } from './InlineEditWrapper'
+import { JourneyI18nProvider } from './JourneyI18nProvider'
 import { SelectableWrapper } from './SelectableWrapper'
 import {
   CARD_HEIGHT,
@@ -289,27 +290,29 @@ export function Canvas(): ReactElement {
                           />
                         </ThemeProvider>
                         <DragDropWrapper>
-                          <BlockRenderer
-                            block={selectedStep}
-                            wrappers={{
-                              Wrapper: SelectableWrapper,
-                              TypographyWrapper: InlineEditWrapper,
-                              ButtonWrapper: InlineEditWrapper,
-                              RadioQuestionWrapper: InlineEditWrapper,
-                              RadioOptionWrapper: InlineEditWrapper,
-                              TextResponseWrapper: InlineEditWrapper,
-                              SignUpWrapper: InlineEditWrapper,
-                              VideoWrapper,
-                              CardWrapper,
-                              DragItemWrapper
-                            }}
-                          />
+                          <JourneyI18nProvider locale={locale}>
+                            <BlockRenderer
+                              block={selectedStep}
+                              wrappers={{
+                                Wrapper: SelectableWrapper,
+                                TypographyWrapper: InlineEditWrapper,
+                                ButtonWrapper: InlineEditWrapper,
+                                RadioQuestionWrapper: InlineEditWrapper,
+                                RadioOptionWrapper: InlineEditWrapper,
+                                TextResponseWrapper: InlineEditWrapper,
+                                SignUpWrapper: InlineEditWrapper,
+                                VideoWrapper,
+                                CardWrapper,
+                                DragItemWrapper
+                              }}
+                            />
+                          </JourneyI18nProvider>
                         </DragDropWrapper>
                         <ThemeProvider
                           themeName={ThemeName.journeyUi}
                           themeMode={theme.themeMode}
                           rtl={rtl}
-                          locale={locale}
+                          locale={'ko'}
                           nested
                         >
                           <StepFooter
