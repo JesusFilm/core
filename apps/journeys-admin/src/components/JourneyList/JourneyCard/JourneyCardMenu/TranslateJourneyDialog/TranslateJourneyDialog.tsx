@@ -95,10 +95,10 @@ export function TranslateJourneyDialog({
     <Dialog
       open={open}
       onClose={onClose}
-      dialogTitle={{ title: t('Translate Journey'), closeButton: true }}
+      dialogTitle={{ title: t('Create Translated Copy'), closeButton: true }}
       dialogAction={{
         onSubmit: handleTranslate,
-        submitLabel: t('Translate'),
+        submitLabel: t('Create'),
         closeLabel: t('Cancel')
       }}
       loading={loading}
@@ -113,7 +113,7 @@ export function TranslateJourneyDialog({
           <TextField
             {...params}
             placeholder={t('Search Language')}
-            label={t('Language')}
+            label={t('Select Language')}
             variant="filled"
           />
         )}
