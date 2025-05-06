@@ -181,6 +181,7 @@ describe('DefaultMenu', () => {
               handleCloseMenu={noop}
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -189,6 +190,8 @@ describe('DefaultMenu', () => {
     expect(getByRole('menuitem', { name: 'Edit Details' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Access' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Duplicate' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Translate' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Copy to ...' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Archive' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Trash' })).toBeInTheDocument()
@@ -209,6 +212,7 @@ describe('DefaultMenu', () => {
             template
             setOpenTrashDialog={noop}
             setOpenDetailsDialog={noop}
+            setOpenTranslateDialog={noop}
           />
         </SnackbarProvider>
       </MockedProvider>
@@ -218,6 +222,12 @@ describe('DefaultMenu', () => {
     expect(getByRole('menuitem', { name: 'Archive' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Trash' })).toBeInTheDocument()
     expect(queryByRole('menuitem', { name: 'Access' })).not.toBeInTheDocument()
+    expect(
+      queryByRole('menuitem', { name: 'Duplicate' })
+    ).not.toBeInTheDocument()
+    expect(
+      queryByRole('menuitem', { name: 'Translate' })
+    ).not.toBeInTheDocument()
     expect(queryByRole('menuitem', { name: 'Copy to' })).not.toBeInTheDocument()
   })
 
@@ -239,6 +249,7 @@ describe('DefaultMenu', () => {
               handleCloseMenu={handleCloseMenu}
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -266,6 +277,7 @@ describe('DefaultMenu', () => {
                 handleCloseMenu={noop}
                 setOpenTrashDialog={noop}
                 setOpenDetailsDialog={noop}
+                setOpenTranslateDialog={noop}
               />
             </TeamProvider>
           </MockedProvider>
@@ -304,6 +316,7 @@ describe('DefaultMenu', () => {
                 handleCloseMenu={noop}
                 setOpenTrashDialog={noop}
                 setOpenDetailsDialog={noop}
+                setOpenTranslateDialog={noop}
               />
             </TeamProvider>
           </MockedProvider>
@@ -342,6 +355,7 @@ describe('DefaultMenu', () => {
               handleCloseMenu={handleCloseMenu}
               setOpenTrashDialog={setOpenTrashDialog}
               setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -399,6 +413,7 @@ describe('DefaultMenu', () => {
               handleCloseMenu={noop}
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -461,6 +476,7 @@ describe('DefaultMenu', () => {
               handleCloseMenu={noop}
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -523,6 +539,7 @@ describe('DefaultMenu', () => {
               handleCloseMenu={noop}
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -587,6 +604,7 @@ describe('DefaultMenu', () => {
               handleCloseMenu={noop}
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -642,6 +660,7 @@ describe('DefaultMenu', () => {
             template
             setOpenTrashDialog={noop}
             setOpenDetailsDialog={noop}
+            setOpenTranslateDialog={noop}
           />
         </SnackbarProvider>
       </MockedProvider>
@@ -693,6 +712,7 @@ describe('DefaultMenu', () => {
             template={false}
             setOpenTrashDialog={noop}
             setOpenDetailsDialog={noop}
+            setOpenTranslateDialog={noop}
           />
         </SnackbarProvider>
       </MockedProvider>
@@ -746,6 +766,7 @@ describe('DefaultMenu', () => {
             template
             setOpenTrashDialog={noop}
             setOpenDetailsDialog={noop}
+            setOpenTranslateDialog={noop}
           />
         </SnackbarProvider>
       </MockedProvider>
@@ -814,6 +835,7 @@ describe('DefaultMenu', () => {
               handleCloseMenu={noop}
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -831,5 +853,35 @@ describe('DefaultMenu', () => {
         'true'
       )
     })
+  })
+
+  it('should call correct functions on Translate click', () => {
+    const setOpenTranslateDialog = jest.fn()
+    const handleCloseMenu = jest.fn()
+
+    const { getByRole } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <TeamProvider>
+            <DefaultMenu
+              id="journey-id"
+              slug="journey-slug"
+              status={JourneyStatus.draft}
+              journeyId="journey-id"
+              published={false}
+              setOpenAccessDialog={noop}
+              handleCloseMenu={handleCloseMenu}
+              setOpenTrashDialog={noop}
+              setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={setOpenTranslateDialog}
+            />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('menuitem', { name: 'Translate' }))
+    expect(setOpenTranslateDialog).toHaveBeenCalled()
+    expect(handleCloseMenu).toHaveBeenCalled()
   })
 })
