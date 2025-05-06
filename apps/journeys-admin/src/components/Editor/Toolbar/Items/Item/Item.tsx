@@ -29,7 +29,9 @@ export function Item({
   countLabel
 }: ItemProps): ReactElement {
   switch (variant) {
-    case 'icon-button':
+    case 'icon-button': {
+      const { sx: buttonPropsSx, ...restButtonProps } = ButtonProps ?? {};
+
       return (
         <Tooltip
           title={label}
@@ -61,9 +63,9 @@ export function Item({
                   '& > .MuiButton-startIcon > .MuiSvgIcon-root': {
                     fontSize: '24px'
                   },
-                  ...ButtonProps?.sx
+                  ...buttonPropsSx
                 }}
-                {...ButtonProps}
+                {...restButtonProps}
               >
                 {count.toLocaleString()}
               </Button>
@@ -82,6 +84,7 @@ export function Item({
           </span>
         </Tooltip>
       )
+    }
     case 'button':
       return (
         <Button

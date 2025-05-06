@@ -35,17 +35,19 @@ export function JourneyCardInfo({
     <Stack
       direction="row"
       justifyContent="space-between"
+      alignItems="center"
       flexGrow={1}
       sx={{ width: '100%' }}
       data-testid="JourneyCardInfo"
     >
-      <Stack flexDirection="row">
+      <Stack flexDirection="row" gap={1} sx={{ mt: 1 }}>
         <AnalyticsItem variant="icon-button" fromJourneyList={true} />
         <ResponsesItem variant="icon-button" fromJourneyList={true} />
       </Stack>
       <AccessAvatars
         journeyId={journey.id}
         userJourneys={inviteRequested ?? journey.userJourneys ?? undefined}
+        size="xsmall"
       />
       {variant === JourneyCardVariant.actionRequired ? (
         <Skeleton variant="text" width={60} />

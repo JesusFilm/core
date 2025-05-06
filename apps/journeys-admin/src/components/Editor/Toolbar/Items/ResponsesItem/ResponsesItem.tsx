@@ -51,6 +51,17 @@ export function ResponsesItem({
     ? `/journeys/${journey?.id}/reports/visitors?withSubmittedText=true&from=journey-list`
     : `/journeys/${journey?.id}/reports/visitors?withSubmittedText=true`
 
+  const buttonProps = fromJourneyList
+    ? {
+        sx: {
+          minWidth: 30,
+          '& > .MuiButton-startIcon > .MuiSvgIcon-root': {
+            fontSize: '20px'
+          }
+        }
+      }
+    : {}
+
   return (
     <Box data-testid="ResponsesItem">
       <NextLink href={linkHref} passHref legacyBehavior prefetch={false}>
@@ -62,6 +73,7 @@ export function ResponsesItem({
           countLabel={t('{{count}} responses', {
             count: data?.journeyVisitorCount ?? 0
           })}
+          ButtonProps={buttonProps}
         />
       </NextLink>
     </Box>

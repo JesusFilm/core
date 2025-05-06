@@ -70,7 +70,7 @@ export function JourneyCard({
       aria-label="journey-card"
       variant="outlined"
       sx={{
-        aspectRatio: { xs: '1', sm: '1/1.3'},
+        aspectRatio: { xs: '1', sm: '1/1.3' },
         borderRadius: 0,
         borderColor: 'divider',
         borderBottom: 'none',
@@ -93,7 +93,7 @@ export function JourneyCard({
       onMouseLeave={() => setIsCardHovered(false)}
     >
       <>
-        <Box sx={{ position: 'absolute', top: 18, right: 30, zIndex: 3 }}>
+        <Box sx={{ position: 'absolute', top: 12, right: 25, zIndex: 3 }}>
           <JourneyCardMenu
             id={journey.id}
             status={journey.status}
@@ -120,16 +120,17 @@ export function JourneyCard({
             }}
           >
             {variant === JourneyCardVariant.new && (
-              <Box sx={{ position: 'absolute', top: 20, left: 20, zIndex: 1 }}>
+              <Box sx={{ position: 'absolute', top: 12, left: 15, zIndex: 1 }}>
                 <Chip
                   label={t('New')}
                   size="small"
                   data-testid="new-journey-badge"
                   sx={{
+                    fontSize: 10,
                     backgroundColor: 'warning.main',
                     color: 'warning.contrastText',
-                    borderRadius: 12.5,
-                    height: 25,
+                    borderRadius: 11,
+                    height: 22,
                     px: 0.5,
                     border: 1.5,
                     borderColor: '#eb5b3b'
@@ -145,8 +146,8 @@ export function JourneyCard({
                   xs: '1.9',
                   sm: '1.43'
                 },
-                mx: { xs: 3, sm: 2},
-                mt: { xs: 3, sm: 2},
+                mx: { xs: 3, sm: 1.75 },
+                mt: { xs: 3, sm: 1.75 },
                 borderRadius: '4%',
                 borderWidth: 1,
                 borderStyle: 'solid',
@@ -162,7 +163,6 @@ export function JourneyCard({
                   alt={journey.primaryImageBlock.alt ?? ''}
                   fill
                   style={{
-                    borderRadius: '16px',
                     objectFit: 'cover'
                   }}
                   // Define appropriate image sizes for different screen sizes
@@ -187,18 +187,17 @@ export function JourneyCard({
                 }}
               />
             </Box>
-            <CardContent sx={{ pl: 3, pr: 3, pb: 3, pt: 2 }}>
+            <CardContent sx={{ pl: 2, pr: 1, pt: 1 }}>
               <JourneyCardText journey={journey} />
-              <Box sx={{ height: '60px' }} />
             </CardContent>
           </CardActionArea>
         </NextLink>
         <Box
           sx={{
             position: 'absolute',
-            bottom: 8,
+            bottom: 3,
             left: 2,
-            right: 10,
+            right: 7,
             zIndex: 3
           }}
         >

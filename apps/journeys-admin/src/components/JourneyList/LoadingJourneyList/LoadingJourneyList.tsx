@@ -64,24 +64,23 @@ function LoadingJourneyCard(): ReactElement {
           }}
         />
       </Box>
-      <CardContent sx={{ pl: 3, pr: 3, pb: 3, pt: 2 }}>
-        <Skeleton variant="text" width="80%" height={32} sx={{ mb: 1 }} />
-        <Skeleton variant="text" width="60%" height={20} />
-        <Box sx={{ height: '60px' }} />
+      <CardContent sx={{ pl: 2, pr: 3, pb: 3, pt: 1 }}>
+        <Skeleton variant="text" width="100%" height={25} />
+        <Skeleton variant="text" width="60%" height={25} />
       </CardContent>
       <Box
         sx={{
           position: 'absolute',
-          bottom: 8,
+          bottom: 3,
           left: 2,
-          right: 10,
+          right: 2,
           zIndex: 3,
           px: 3
         }}
       >
-        <Stack direction="row" alignItems="center" spacing={2}>
-          <Skeleton variant="circular" width={31} height={31} />
-          <Skeleton variant="text" width={80} />
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1 }}>
+          <Skeleton variant="text" width={80} height={25} />
+          <Skeleton variant="circular" width={27} height={27} />
         </Stack>
       </Box>
     </Card>

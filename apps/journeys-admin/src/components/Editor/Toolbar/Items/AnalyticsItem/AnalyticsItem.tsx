@@ -61,6 +61,17 @@ export function AnalyticsItem({
     ? `/journeys/${journey?.id}/reports?from=journey-list`
     : `/journeys/${journey?.id}/reports`
 
+    const buttonProps = fromJourneyList
+    ? {
+        sx: {
+          minWidth: 30,
+          '& > .MuiButton-startIcon > .MuiSvgIcon-root': {
+            fontSize: '20px'
+          }
+        }
+      }
+    : {}
+
   return (
     <Box data-testid="AnalyticsItem">
       <NextLink href={linkHref} passHref legacyBehavior prefetch={false}>
@@ -72,6 +83,7 @@ export function AnalyticsItem({
           countLabel={t('{{count}} visitors', {
             count: data?.journeyAggregateVisitors?.visitors?.value ?? 0
           })}
+          ButtonProps={buttonProps}
         />
       </NextLink>
     </Box>

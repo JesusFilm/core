@@ -24,7 +24,7 @@ const AccessDialog = dynamic(
 export interface AccessAvatarsProps {
   journeyId?: string
   userJourneys?: UserJourney[]
-  size?: 'small' | 'medium' | 'large'
+  size?: 'xsmall' | 'small' | 'medium' | 'large'
   max?: number
 }
 
@@ -65,7 +65,7 @@ export function AccessAvatars({
 }
 
 interface WithRenderLogicProps {
-  size: 'small' | 'medium' | 'large'
+  size: 'xsmall' | 'small' | 'medium' | 'large'
   max: number
   setOpen: (open: boolean) => void
 }
@@ -91,6 +91,11 @@ const withRenderLogic = ({
   let borderWidth: number | undefined
 
   switch (size) {
+    case 'xsmall':
+      diameter = 26
+      fontSize = 12
+      borderWidth = 2
+      break
     case 'small':
       diameter = 31
       fontSize = 12
