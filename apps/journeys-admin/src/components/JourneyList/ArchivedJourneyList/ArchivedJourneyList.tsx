@@ -202,11 +202,10 @@ export function ArchivedJourneyList({
             closeLabel: t('Cancel')
           }}
         >
-          <Typography>
-            {t(
-              'Are you sure you would like to unarchive all archived journeys immediately?'
-            )}
+          <Typography sx={{ fontWeight: 'bold' }}>
+            {t('This will unarchive all archived journeys you own.')}
           </Typography>
+          <Typography>{t('Are you sure you want to proceed?')}</Typography>
         </Dialog>
       )}
       {openTrashDialog != null && (
@@ -223,11 +222,10 @@ export function ArchivedJourneyList({
             closeLabel: t('Cancel')
           }}
         >
-          <Typography>
-            {t(
-              'Are you sure you would like to trash all archived journeys immediately?'
-            )}
+          <Typography sx={{ fontWeight: 'bold' }}>
+            {t('This will trash all archived journeys you own.')}
           </Typography>
+          <Typography>{t('Are you sure you want to proceed?')}</Typography>
         </Dialog>
       )}
     </>
