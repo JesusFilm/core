@@ -306,6 +306,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
 
                                   <Box>
                                     <Button
+                                      variant="outlined"
                                       onClick={() => {
                                         setToolCallId(callId)
                                         setOpenImageLibrary(true)
