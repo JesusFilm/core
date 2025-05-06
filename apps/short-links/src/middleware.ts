@@ -19,7 +19,7 @@ export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
 
   // Handle by convention redirects for arc.gt and stage.arc.gt
-  if (hostname === 'arc.gt' || hostname === 'stage.arc.gt') {
+  if (hostname === 'arc.gt' || hostname === 'stg.arc.gt') {
     if (
       pathname.startsWith('/hls/') ||
       pathname.startsWith('/dl/') ||
