@@ -1,0 +1,32 @@
+import { z } from 'zod'
+
+export const journeyUpdateInputSchema = z.object({
+  title: z.string().optional(),
+  description: z.string().optional(),
+  languageId: z.string().optional(),
+  themeMode: z.string().optional(),
+  themeName: z.string().optional(),
+  creatorDescription: z.string().optional(),
+  creatorImageBlockId: z.string().optional(),
+  primaryImageBlockId: z.string().optional(),
+  slug: z.string().optional(),
+  seoTitle: z.string().optional(),
+  seoDescription: z.string().optional(),
+  hostId: z.string().optional(),
+  strategySlug: z.string().optional(),
+  tagIds: z.array(z.string()).optional(),
+  website: z.boolean().optional(),
+  showShareButton: z.boolean().optional(),
+  showLikeButton: z.boolean().optional(),
+  showDislikeButton: z.boolean().optional(),
+  displayTitle: z.string().optional(),
+  showHosts: z.boolean().optional(),
+  showChatButtons: z.boolean().optional(),
+  showReactionButtons: z.boolean().optional(),
+  showLogo: z.boolean().optional(),
+  showMenu: z.boolean().optional(),
+  showDisplayTitle: z.boolean().optional(),
+  menuButtonIcon: z.string().optional(),
+  menuStepBlockId: z.string().optional(),
+  logoImageBlockId: z.string().optional()
+})

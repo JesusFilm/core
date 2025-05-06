@@ -19,6 +19,7 @@ import { ReactElement, useState } from 'react'
 import Markdown from 'react-markdown'
 import { v4 as uuidv4 } from 'uuid'
 
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import ArrowUpIcon from '@core/shared/ui/icons/ArrowUp'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
@@ -38,7 +39,7 @@ You are currently in the context of a journey.
 
 You specialize in translating text from one language to another.
 If the user asks for translation without specifying what to translate,
-assume that the user wants to translate the journey's title and description,
+assume that the user wants to translate the journey's attributes,
 alongside the content of the typography, radio option, and button blocks.
 Before translating, you must get the journey, then update the journey with the
 new translations. Do not say it is done until you have updated the journey
@@ -50,6 +51,9 @@ changes.
 
 Whenever the user asks to perform some action without specifying what to act on,
 assume that the user wants to perform the action on the journey or its blocks.
+
+If the user has a currently selected step, assume that the user wants to perform
+the action on the step or its blocks.
 
 If you are missing any block Ids, get the journey. Then you will have context
 over the ids of it's blocks.
@@ -75,6 +79,9 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
   const user = useUser()
   const client = useApolloClient()
   const { journey } = useJourney()
+  const {
+    state: { selectedStepId }
+  } = useEditor()
   const { messages, append, setMessages, status, addToolResult } = useChat({
     fetch: fetchWithAuthorization,
     maxSteps: 5,
@@ -83,7 +90,12 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
       const isUpdateJourney = result.parts?.some(
         (part) =>
           part.type === 'tool-invocation' &&
-          part.toolInvocation.toolName === 'updateJourney'
+          [
+            'updateJourneys',
+            'updateTypographyBlocks',
+            'updateRadioBlocks',
+            'updateButtonBlocks'
+          ].includes(part.toolInvocation.toolName)
       )
       if (isUpdateJourney) {
         void client.refetchQueries({
@@ -117,14 +129,17 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
     })
   }
 
-  function getSystemPromptWithJourneyId(): string {
-    if (journey == null) return systemPrompt.trim()
+  function getSystemPromptWithContext(): string {
+    let systemPromptWithContext = systemPrompt.trim()
 
-    return systemPrompt
-      .trim()
-      .concat(
-        `\n\nThe current journey ID is ${journey?.id}. You can use this to get the journey and update it.`
-      )
+    if (journey == null) return systemPromptWithContext
+
+    systemPromptWithContext = `${systemPromptWithContext}\n\nThe current journey ID is ${journey?.id}. You can use this to get the journey and update it. RUN THE GET JOURNEY TOOL FIRST IF YOU DO NOT HAVE THE JOURNEY ALREADY.`
+
+    if (selectedStepId != null)
+      systemPromptWithContext = `${systemPromptWithContext}\n\nThe current step ID is ${selectedStepId}. You can use this to get the step and update it.`
+
+    return systemPromptWithContext
   }
 
   function handleToolCall(toolCallId: string, result: string): void {
@@ -146,15 +161,15 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
 
     setUserMessage('')
     try {
-      const systemPromptWithJourneyId = getSystemPromptWithJourneyId()
-      if (systemPromptWithJourneyId) {
+      const systemPromptWithContext = getSystemPromptWithContext()
+      if (systemPromptWithContext) {
         const hasSystemMessage = messages.some((msg) => msg.role === 'system')
         if (!hasSystemMessage) {
           setMessages([
             {
               id: uuidv4(),
               role: 'system',
-              content: systemPromptWithJourneyId
+              content: systemPromptWithContext
             },
             ...messages
           ])
@@ -163,7 +178,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
           setMessages(
             messages.map((msg) =>
               msg.role === 'system'
-                ? { ...msg, content: systemPromptWithJourneyId }
+                ? { ...msg, content: systemPromptWithContext }
                 : msg
             )
           )
@@ -349,7 +364,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
                             }
                           }
                         }
-                        case 'updateJourney': {
+                        case 'updateJourneys': {
                           switch (part.toolInvocation.state) {
                             case 'call':
                               return (
