@@ -70,6 +70,10 @@ Pretend they are synonymous when talking to the user.
 If the user wants to change the image of a block, ask them to select the new
 image by calling the askUserToSelectImage tool.
 
+If the user wants to change the video of a block, ask them to select the new
+video by calling the askUserToSelectVideo tool. You can also ask them this if
+they want to update more than one video block.
+
 When updating blocks, only include properties that have changed.
 `.trim()
 
@@ -87,17 +91,19 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
     maxSteps: 5,
     credentials: 'omit',
     onFinish: (result) => {
-      const isUpdateJourney = result.parts?.some(
+      const shouldRefetch = result.parts?.some(
         (part) =>
           part.type === 'tool-invocation' &&
           [
             'updateJourneys',
             'updateTypographyBlocks',
-            'updateRadioBlocks',
-            'updateButtonBlocks'
+            'updateRadioOptionBlocks',
+            'updateButtonBlocks',
+            'updateImageBlock',
+            'updateVideoBlock'
           ].includes(part.toolInvocation.toolName)
       )
-      if (isUpdateJourney) {
+      if (shouldRefetch) {
         void client.refetchQueries({
           include: ['GetAdminJourney']
         })

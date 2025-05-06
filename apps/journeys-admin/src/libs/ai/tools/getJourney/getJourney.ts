@@ -6,13 +6,13 @@ import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 import { transformer } from '@core/journeys/ui/transformer'
 
 import {
-  GetAdminJourney,
-  GetAdminJourneyVariables
-} from '../../../../../__generated__/GetAdminJourney'
+  AiGetAdminJourney,
+  AiGetAdminJourneyVariables
+} from '../../../../../__generated__/AiGetAdminJourney'
 
-const GET_ADMIN_JOURNEY = gql`
+const AI_GET_ADMIN_JOURNEY = gql`
   ${JOURNEY_FIELDS}
-  query GetAdminJourney($id: ID!) {
+  query AiGetAdminJourney($id: ID!) {
     journey: adminJourney(id: $id, idType: databaseId) {
       id
       ...JourneyFields
@@ -34,10 +34,10 @@ export function getJourney(client: ApolloClient<NormalizedCacheObject>): Tool {
     execute: async ({ journeyId }) => {
       try {
         const result = await client.query<
-          GetAdminJourney,
-          GetAdminJourneyVariables
+          AiGetAdminJourney,
+          AiGetAdminJourneyVariables
         >({
-          query: GET_ADMIN_JOURNEY,
+          query: AI_GET_ADMIN_JOURNEY,
           variables: { id: journeyId }
         })
         if (result.data?.journey.blocks == null) {
