@@ -70,6 +70,7 @@ export function JourneyCard({
       aria-label="journey-card"
       variant="outlined"
       sx={{
+        aspectRatio: { xs: '1', sm: '1/1.3'},
         borderRadius: 0,
         borderColor: 'divider',
         borderBottom: 'none',
@@ -77,10 +78,10 @@ export function JourneyCard({
         display: 'flex',
         flexDirection: 'column',
         '&:last-of-type': {
-          borderBottomLeftRadius: 12,
-          borderBottomRightRadius: 12,
-          borderTopLeftRadius: 12,
-          borderTopRightRadius: 12,
+          borderBottomLeftRadius: '4%',
+          borderBottomRightRadius: '4%',
+          borderTopLeftRadius: '4%',
+          borderTopRightRadius: '4%',
           borderBottom: '1px solid',
           borderColor: 'divider'
         },
@@ -140,13 +141,16 @@ export function JourneyCard({
               sx={{
                 position: 'relative',
                 width: 'auto',
-                paddingTop: {
-                  xs: '50%',
-                  sm: `${(4 / 6) * 100}%` // 4:6 aspect ratio - standard social media image aspect ratio
+                aspectRatio: {
+                  xs: '1.9',
+                  sm: '1.43'
                 },
-                mx: 3,
-                mt: 3,
-                borderRadius: '5px',
+                mx: { xs: 3, sm: 2},
+                mt: { xs: 3, sm: 2},
+                borderRadius: '4%',
+                borderWidth: 1,
+                borderStyle: 'solid',
+                borderColor: 'rgba(0, 0, 0, 0.05)',
                 bgcolor: 'rgba(0, 0, 0, 0.1)',
                 overflow: 'hidden'
               }}
@@ -158,7 +162,7 @@ export function JourneyCard({
                   alt={journey.primaryImageBlock.alt ?? ''}
                   fill
                   style={{
-                    borderRadius: '5px',
+                    borderRadius: '16px',
                     objectFit: 'cover'
                   }}
                   // Define appropriate image sizes for different screen sizes
@@ -183,7 +187,7 @@ export function JourneyCard({
                 }}
               />
             </Box>
-            <CardContent sx={{ p: 3 }}>
+            <CardContent sx={{ pl: 3, pr: 3, pb: 3, pt: 2 }}>
               <JourneyCardText journey={journey} />
               <Box sx={{ height: '60px' }} />
             </CardContent>

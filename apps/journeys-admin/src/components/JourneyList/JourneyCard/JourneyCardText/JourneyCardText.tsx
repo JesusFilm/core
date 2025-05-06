@@ -26,6 +26,7 @@ export function JourneyCardText({
         component="div"
         gutterBottom
         sx={{
+          fontSize: '1.2rem',
           color: 'secondary.main',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
@@ -36,19 +37,29 @@ export function JourneyCardText({
       >
         {journey.title}
       </Typography>
-      <Stack direction="row" alignItems="center" spacing={1.5}>
-        <Globe1Icon sx={{ fontSize: 13 }} />
-        <Typography variant="caption">{nativeLanguageName}</Typography>
-        <Typography variant="caption" sx={{ mx: 1 }}>
+      <Stack direction="row" alignItems="center" spacing={1.5} sx={{ width: '100%' }}>
+        <Globe1Icon sx={{ fontSize: 18 }} />
+        <Typography
+          variant="body1"
+          sx={{
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}
+        >
+          {nativeLanguageName}
+        </Typography>
+        <Typography variant="body1" sx={{ mx: 1 }}>
           •
         </Typography>
         <Typography
-          variant="caption"
-          noWrap
+          variant="body1"
           sx={{
-            display: 'block',
-            color: 'secondary.main'
+            flex: '0 0 auto',
+            whiteSpace: 'nowrap',
+            color: 'secondary.main',
           }}
+          noWrap
           suppressHydrationWarning
         >
           <LastModifiedDate modifiedDate={journey.updatedAt} />
