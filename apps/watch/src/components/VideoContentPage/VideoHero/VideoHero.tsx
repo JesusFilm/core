@@ -13,6 +13,7 @@ import {
 import { ThemeMode } from '@core/shared/ui/themes'
 
 import { Header } from '../../Header'
+import { SimpleVideoHero } from '../SimpleVideoHero'
 
 import { VideoHeroOverlay } from './VideoHeroOverlay'
 
@@ -111,7 +112,8 @@ export function VideoHero({ onPlay, hasPlayed }: VideoHeroProps): ReactElement {
           paddingBottom: isFullscreen ? 0 : VIDEO_HERO_BOTTOM_SPACING
         }}
       >
-        <Box
+        <SimpleVideoHero />
+        {/* <Box
           sx={{
             background: 'black',
             position: 'relative',
@@ -132,7 +134,7 @@ export function VideoHero({ onPlay, hasPlayed }: VideoHeroProps): ReactElement {
           ) : (
             !isPlaying && <VideoHeroOverlay handlePlay={handlePlay} />
           )}
-        </Box>
+        </Box> */}
       </Box>
     </>
   )
