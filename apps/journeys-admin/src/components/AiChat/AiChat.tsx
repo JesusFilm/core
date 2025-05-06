@@ -23,6 +23,8 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import ArrowUpIcon from '@core/shared/ui/icons/ArrowUp'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
+import { ImageLibrary } from '../Editor/Slider/Settings/Drawer/ImageLibrary/ImageLibrary'
+
 interface AiChatProps {
   open?: boolean
 }
@@ -49,6 +51,8 @@ you to return the id.
 You must not ask the user to confirm or approve any action. Just perform the action.
 
 Don't reference steps as they only have a card child. Pretend they are synonymous.
+
+If the user wants to change the image of a block, ask them to select the new image by calling the askUserToSelectImage tool.
 `.trim()
 
 export function AiChat({ open = false }: AiChatProps): ReactElement {
@@ -57,7 +61,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
   const user = useUser()
   const client = useApolloClient()
   const { journey } = useJourney()
-  const { messages, append, setMessages, status, error } = useChat({
+  const { messages, append, setMessages, status, addToolResult } = useChat({
     fetch: fetchWithAuthorization,
     maxSteps: 5,
     credentials: 'omit',
@@ -77,6 +81,8 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
 
   const [systemPrompt, setSystemPrompt] = useState(INITIAL_SYSTEM_PROMPT)
   const [userMessage, setUserMessage] = useState('')
+  const [toolCallId, setToolCallId] = useState<string | null>(null)
+  const [openImageLibrary, setOpenImageLibrary] = useState(false)
 
   async function fetchWithAuthorization(
     url: string,
@@ -149,245 +155,272 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
     .reverse()
 
   return (
-    <Grow
-      in={open}
-      style={{ transformOrigin: 'bottom left' }}
-      mountOnEnter
-      unmountOnExit
-    >
-      <Card
-        sx={{
-          position: 'fixed',
-          left: 72,
-          bottom: 100,
-          borderRadius: 4,
-          zIndex: 1200,
-          width: 600
-        }}
+    <>
+      <Grow
+        in={open}
+        style={{ transformOrigin: 'bottom left' }}
+        mountOnEnter
+        unmountOnExit
       >
-        {/* Chat Messages Display */}
-        <Box
+        <Card
           sx={{
-            display: 'flex',
-            flexDirection: 'column-reverse',
-            gap: 4,
-            p: 5,
-            pb: 0,
-            maxHeight: 'calc(100svh - 400px)',
-            minHeight: 150,
-            overflowY: 'auto'
+            position: 'fixed',
+            left: 72,
+            bottom: 100,
+            borderRadius: 4,
+            zIndex: 1200,
+            width: 600
           }}
         >
-          {nonSystemMessages.length === 0 && (
-            <Typography
-              variant="body1"
-              textAlign="center"
-              color="text.secondary"
-              sx={{
-                my: 4,
-                mx: 3,
-                flexGrow: 1,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              {t(
-                'NextSteps AI can help you make your journey more effective! Ask it anything.'
-              )}
-            </Typography>
-          )}
-          {status === 'submitted' && (
-            <Box>
-              <CircularProgress size={18} />
-            </Box>
-          )}
-          {nonSystemMessages.map((message) => (
-            <Box
-              key={message.id}
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 2,
-                backgroundColor:
-                  message.role === 'user'
-                    ? 'action.selected'
-                    : 'background.paper',
-                py: message.role === 'user' ? 2 : 0,
-                px: message.role === 'user' ? 3 : 0,
-                borderRadius: 2,
-                alignSelf: message.role === 'user' ? 'flex-end' : 'flex-start',
-                maxWidth: '80%',
-                '& > p': {
-                  m: 0
-                }
-              }}
-            >
-              {message.parts.map((part, i) => {
-                switch (part.type) {
-                  case 'text': {
-                    return message.role === 'user' ? (
-                      <Typography key={`${message.id}-${i}`}>
-                        {part.text}
-                      </Typography>
-                    ) : (
-                      <Markdown key={`${message.id}-${i}`}>
-                        {part.text}
-                      </Markdown>
-                    )
+          {/* Chat Messages Display */}
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column-reverse',
+              gap: 4,
+              p: 5,
+              pb: 0,
+              maxHeight: 'calc(100svh - 400px)',
+              minHeight: 150,
+              overflowY: 'auto'
+            }}
+          >
+            {nonSystemMessages.length === 0 && (
+              <Typography
+                variant="body1"
+                textAlign="center"
+                color="text.secondary"
+                sx={{
+                  my: 4,
+                  mx: 3,
+                  flexGrow: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                {t(
+                  'NextSteps AI can help you make your journey more effective! Ask it anything.'
+                )}
+              </Typography>
+            )}
+            {status === 'submitted' && (
+              <Box>
+                <CircularProgress size={18} />
+              </Box>
+            )}
+            {nonSystemMessages.map((message) => (
+              <Box
+                key={message.id}
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 2,
+                  backgroundColor:
+                    message.role === 'user'
+                      ? 'action.selected'
+                      : 'background.paper',
+                  py: message.role === 'user' ? 2 : 0,
+                  px: message.role === 'user' ? 3 : 0,
+                  borderRadius: 2,
+                  alignSelf:
+                    message.role === 'user' ? 'flex-end' : 'flex-start',
+                  maxWidth: '80%',
+                  '& > p': {
+                    m: 0
                   }
-                  case 'tool-invocation': {
-                    const callId = part.toolInvocation.toolCallId
-                    switch (part.toolInvocation.toolName) {
-                      case 'getJourney': {
-                        switch (part.toolInvocation.state) {
-                          case 'call':
-                            return (
-                              <Typography
-                                key={callId}
-                                variant="body2"
-                                color="text.secondary"
-                              >
-                                {t('Getting journey...')}
-                              </Typography>
-                            )
-                          default: {
-                            return null
-                          }
-                        }
-                      }
-                      case 'updateJourney': {
-                        switch (part.toolInvocation.state) {
-                          case 'call':
-                            return (
-                              <Typography
-                                key={callId}
-                                variant="body2"
-                                color="text.secondary"
-                              >
-                                {t('Updating journey...')}
-                              </Typography>
-                            )
-                          case 'result':
-                            return (
-                              <Box>
-                                <Chip
+                }}
+              >
+                {message.parts.map((part, i) => {
+                  switch (part.type) {
+                    case 'text': {
+                      return message.role === 'user' ? (
+                        <Typography key={`${message.id}-${i}`}>
+                          {part.text}
+                        </Typography>
+                      ) : (
+                        <Markdown key={`${message.id}-${i}`}>
+                          {part.text}
+                        </Markdown>
+                      )
+                    }
+                    case 'tool-invocation': {
+                      const callId = part.toolInvocation.toolCallId
+                      switch (part.toolInvocation.toolName) {
+                        case 'getJourney': {
+                          switch (part.toolInvocation.state) {
+                            case 'call':
+                              return (
+                                <Typography
                                   key={callId}
-                                  label={t('Journey updated')}
-                                  size="small"
-                                />
-                              </Box>
-                            )
-                          default: {
-                            return null
+                                  variant="body2"
+                                  color="text.secondary"
+                                >
+                                  {t('Getting journey...')}
+                                </Typography>
+                              )
+                            default: {
+                              return null
+                            }
                           }
                         }
-                      }
-                      case 'updateBlock': {
-                        switch (part.toolInvocation.state) {
-                          case 'call':
-                            return (
-                              <div key={callId}>{t('Updating block...')}</div>
-                            )
-                          case 'result':
-                            return (
-                              <div key={callId}>
-                                {t('Block updated:')}{' '}
-                                {part.toolInvocation.result.id}
-                              </div>
-                            )
+                        case 'updateJourney': {
+                          switch (part.toolInvocation.state) {
+                            case 'call':
+                              return (
+                                <Typography
+                                  key={callId}
+                                  variant="body2"
+                                  color="text.secondary"
+                                >
+                                  {t('Updating journey...')}
+                                </Typography>
+                              )
+                            case 'result':
+                              return (
+                                <Box>
+                                  <Chip
+                                    key={callId}
+                                    label={t('Journey updated')}
+                                    size="small"
+                                  />
+                                </Box>
+                              )
+                            default: {
+                              return null
+                            }
+                          }
                         }
-                        break
-                      }
-                      default: {
-                        return null
+                        case 'askUserToSelectImage': {
+                          switch (part.toolInvocation.state) {
+                            case 'call':
+                              return (
+                                <div key={callId}>
+                                  {part.toolInvocation.args.message}
+                                  <div>
+                                    <button
+                                      onClick={() => {
+                                        setToolCallId(callId)
+                                        setOpenImageLibrary(true)
+                                      }}
+                                    >
+                                      {'Yes'}
+                                    </button>
+                                  </div>
+                                </div>
+                              )
+                            default: {
+                              return null
+                            }
+                          }
+                        }
+                        default: {
+                          return null
+                        }
                       }
                     }
                   }
-                }
-              })}
-            </Box>
-          ))}
-        </Box>
-        <CardContent sx={{ '&:last-child': { pb: 2 } }}>
-          <Stack direction="row" spacing={2}>
-            <TextField
-              name="userMessage"
-              value={userMessage}
-              onChange={(e) => setUserMessage(e.target.value)}
-              placeholder={t('Ask Anything')}
-              fullWidth
-              multiline
-              maxRows={4}
-              aria-label={t('Message')}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault()
-                  void handleSubmit()
-                }
-              }}
-              autoFocus
-            />
-            <Button
-              variant="outlined"
-              onClick={handleSubmit}
-              sx={{
-                borderRadius: 1,
-                borderWidth: '1px'
-              }}
-            >
-              <ArrowUpIcon />
-            </Button>
-          </Stack>
-          <Accordion
-            sx={{
-              mt: 2,
-              '&:before': {
-                display: 'none'
-              }
-            }}
-            elevation={0}
-          >
-            <AccordionSummary
-              expandIcon={<ChevronDownIcon fontSize="small" />}
-              sx={{
-                minHeight: 32,
-                p: 0,
-                '&.Mui-expanded': {
-                  minHeight: 32,
-                  p: 0
-                },
-                '& > .MuiAccordionSummary-content': {
-                  my: 0,
-                  justifyContent: 'flex-end',
-                  mr: 1,
-                  '&.Mui-expanded': {
-                    my: 0,
-                    mr: 1
-                  }
-                }
-              }}
-            >
-              <Typography component="span" variant="body2">
-                {t('Advanced Settings')}
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails sx={{ p: 0, pb: 4 }}>
+                })}
+              </Box>
+            ))}
+          </Box>
+          <CardContent sx={{ '&:last-child': { pb: 2 } }}>
+            <Stack direction="row" spacing={2}>
               <TextField
-                name="systemPrompt"
-                label={t('System Prompt')}
+                name="userMessage"
+                value={userMessage}
+                onChange={(e) => setUserMessage(e.target.value)}
+                placeholder={t('Ask Anything')}
                 fullWidth
-                aria-label={t('System Prompt')}
-                placeholder={t('Instructions for the AI')}
-                value={systemPrompt}
-                onChange={(e) => setSystemPrompt(e.target.value)}
                 multiline
                 maxRows={4}
+                aria-label={t('Message')}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault()
+                    void handleSubmit()
+                  }
+                }}
+                autoFocus
               />
-            </AccordionDetails>
-          </Accordion>
-        </CardContent>
-      </Card>
-    </Grow>
+              <Button
+                variant="outlined"
+                onClick={handleSubmit}
+                sx={{
+                  borderRadius: 1,
+                  borderWidth: '1px'
+                }}
+              >
+                <ArrowUpIcon />
+              </Button>
+            </Stack>
+            <Accordion
+              sx={{
+                mt: 2,
+                '&:before': {
+                  display: 'none'
+                }
+              }}
+              elevation={0}
+            >
+              <AccordionSummary
+                expandIcon={<ChevronDownIcon fontSize="small" />}
+                sx={{
+                  minHeight: 32,
+                  p: 0,
+                  '&.Mui-expanded': {
+                    minHeight: 32,
+                    p: 0
+                  },
+                  '& > .MuiAccordionSummary-content': {
+                    my: 0,
+                    justifyContent: 'flex-end',
+                    mr: 1,
+                    '&.Mui-expanded': {
+                      my: 0,
+                      mr: 1
+                    }
+                  }
+                }}
+              >
+                <Typography component="span" variant="body2">
+                  {t('Advanced Settings')}
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails sx={{ p: 0, pb: 4 }}>
+                <TextField
+                  name="systemPrompt"
+                  label={t('System Prompt')}
+                  fullWidth
+                  aria-label={t('System Prompt')}
+                  placeholder={t('Instructions for the AI')}
+                  value={systemPrompt}
+                  onChange={(e) => setSystemPrompt(e.target.value)}
+                  multiline
+                  maxRows={4}
+                />
+              </AccordionDetails>
+            </Accordion>
+          </CardContent>
+        </Card>
+      </Grow>
+      <ImageLibrary
+        open={openImageLibrary}
+        onClose={() => {
+          setOpenImageLibrary(false)
+        }}
+        onChange={async (block) => {
+          if (toolCallId != null) {
+            addToolResult({
+              toolCallId: toolCallId,
+              result: `here is the image the new image. Update the old image block to this image: ${JSON.stringify(
+                block
+              )}`
+            })
+          }
+        }}
+        selectedBlock={null}
+      />
+    </>
   )
 }
