@@ -130,7 +130,6 @@ export function JourneyCardMenu({
           './TrashMenu'
         )
         setTrashMenuComponent(() => mod.TrashMenu)
-        
       }
     } else {
       if (!DefaultMenuComponent) {
