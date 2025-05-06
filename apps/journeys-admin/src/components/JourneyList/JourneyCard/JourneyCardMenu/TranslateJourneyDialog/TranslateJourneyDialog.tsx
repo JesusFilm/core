@@ -2,6 +2,7 @@ import { Theme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTranslation } from 'next-i18next'
+import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -10,6 +11,7 @@ import { Dialog } from '@core/shared/ui/Dialog'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../../../__generated__/GetAdminJourneys'
+import { useJourneyAiTranslateMutation } from '../../../../../libs/useJourneyAiTranslateMutation'
 
 /**
  * Props for the TranslateJourneyDialog component
@@ -55,6 +57,9 @@ export function TranslateJourneyDialog({
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { journey: journeyFromContext } = useJourney()
   const journeyData = journey ?? journeyFromContext
+  const { enqueueSnackbar } = useSnackbar()
+  const { translateJourney, loading: translationLoading } =
+    useJourneyAiTranslateMutation()
 
   // TODO: Update so only the selected AI model + i18n languages are shown.
   const { data: languagesData, loading: languagesLoading } = useLanguagesQuery({
@@ -77,18 +82,38 @@ export function TranslateJourneyDialog({
   >(journeyLanguage)
 
   const handleTranslate = async (): Promise<void> => {
-    if (selectedLanguage == null) return
+    if (selectedLanguage == null || journeyData == null) return
 
-    // Log the selected language
-    console.log('Selected language for translation:', selectedLanguage)
-
-    // This will be implemented later to handle the actual translation
     setLoading(true)
-    // Placeholder for actual translation logic
-    setTimeout(() => {
+    try {
+      const jobId = await translateJourney({
+        journeyId: journeyData.id,
+        name: `${journeyData.title} (${selectedLanguage.nativeName ?? selectedLanguage.localName})`,
+        textLanguageId: selectedLanguage.id,
+        videoLanguageId: null // Optional
+      })
+
+      console.log('jobId', jobId)
+
+      if (jobId) {
+        enqueueSnackbar(
+          t('Translation started. You will be notified when it completes.'),
+          {
+            variant: 'success'
+          }
+        )
+        onClose()
+      } else {
+        throw new Error('Failed to start translation')
+      }
+    } catch (error) {
+      console.error('Error starting translation:', error)
+      enqueueSnackbar(t('Failed to start translation. Please try again.'), {
+        variant: 'error'
+      })
+    } finally {
       setLoading(false)
-      onClose()
-    }, 1000)
+    }
   }
 
   return (
@@ -101,7 +126,7 @@ export function TranslateJourneyDialog({
         submitLabel: t('Create'),
         closeLabel: t('Cancel')
       }}
-      loading={loading}
+      loading={loading || translationLoading}
       testId="TranslateJourneyDialog"
     >
       <LanguageAutocomplete
