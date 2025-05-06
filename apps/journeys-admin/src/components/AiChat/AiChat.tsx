@@ -100,7 +100,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
             'updateRadioOptionBlocks',
             'updateButtonBlocks',
             'updateImageBlock',
-            'updateVideoBlock'
+            'updateVideoBlocks'
           ].includes(part.toolInvocation.toolName)
       )
       if (shouldRefetch) {
