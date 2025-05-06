@@ -158,5 +158,17 @@ export const getStaticProps: GetStaticProps<Part3PageProps> = async (
 }
 
 export const getStaticPaths: GetStaticPaths = () => {
-  return { paths: [], fallback: 'blocking' }
+  return {
+    paths: [
+      {
+        params: {
+          part1: 'jesus.html',
+          part2: 'the-beginning',
+          part3: 'english.html',
+          locale: 'en'
+        }
+      }
+    ],
+    fallback: 'blocking'
+  }
 }

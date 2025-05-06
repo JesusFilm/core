@@ -226,11 +226,10 @@ export function TrashedJourneyList({
             closeLabel: t('Cancel')
           }}
         >
-          <Typography>
-            {t(
-              'Are you sure you would like to restore all trashed journeys immediately?'
-            )}
+          <Typography sx={{ fontWeight: 'bold' }}>
+            {t('This will restore all trashed journeys you own.')}
           </Typography>
+          <Typography>{t('Are you sure you want to proceed?')}</Typography>
         </Dialog>
       )}
       {deleteDialogOpen != null && (
@@ -247,11 +246,10 @@ export function TrashedJourneyList({
             closeLabel: t('Cancel')
           }}
         >
-          <Typography>
-            {t(
-              'Are you sure you would like to permanently delete all trashed journeys immediately?'
-            )}
+          <Typography sx={{ fontWeight: 'bold' }}>
+            {t('This will permanently delete all trashed journeys you own.')}
           </Typography>
+          <Typography>{t('Are you sure you want to proceed?')}</Typography>
         </Dialog>
       )}
     </>
