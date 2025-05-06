@@ -295,19 +295,26 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
                           switch (part.toolInvocation.state) {
                             case 'call':
                               return (
-                                <div key={callId}>
-                                  {part.toolInvocation.args.message}
-                                  <div>
-                                    <button
+                                <Box key={callId}>
+                                  <Typography
+                                    key={callId}
+                                    variant="body2"
+                                    color="text.secondary"
+                                  >
+                                    {part.toolInvocation.args.message}
+                                  </Typography>
+
+                                  <Box>
+                                    <Button
                                       onClick={() => {
                                         setToolCallId(callId)
                                         setOpenImageLibrary(true)
                                       }}
                                     >
-                                      {'Yes'}
-                                    </button>
-                                  </div>
-                                </div>
+                                      {t('Open Image Library')}
+                                    </Button>
+                                  </Box>
+                                </Box>
                               )
                             default: {
                               return null
@@ -409,12 +416,12 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
         onClose={() => {
           setOpenImageLibrary(false)
         }}
-        onChange={async (block) => {
+        onChange={async (selectedImage) => {
           if (toolCallId != null) {
             addToolResult({
               toolCallId: toolCallId,
               result: `here is the image the new image. Update the old image block to this image: ${JSON.stringify(
-                block
+                selectedImage
               )}`
             })
           }
