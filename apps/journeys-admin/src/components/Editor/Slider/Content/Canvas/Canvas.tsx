@@ -29,7 +29,7 @@ import { CardWrapper } from './CardWrapper'
 import { DragDropWrapper } from './DragDropWrapper'
 import { DragItemWrapper } from './DragItemWrapper'
 import { InlineEditWrapper } from './InlineEditWrapper'
-import { JourneyI18nProvider } from './JourneyI18nProvider'
+import { JourneyLocaleProvider } from './JourneyLocaleProvider'
 import { SelectableWrapper } from './SelectableWrapper'
 import {
   CARD_HEIGHT,
@@ -290,7 +290,7 @@ export function Canvas(): ReactElement {
                           />
                         </ThemeProvider>
                         <DragDropWrapper>
-                          <JourneyI18nProvider locale={locale}>
+                          <JourneyLocaleProvider locale={locale}>
                             <BlockRenderer
                               block={selectedStep}
                               wrappers={{
@@ -306,7 +306,7 @@ export function Canvas(): ReactElement {
                                 DragItemWrapper
                               }}
                             />
-                          </JourneyI18nProvider>
+                          </JourneyLocaleProvider>
                         </DragDropWrapper>
                         <ThemeProvider
                           themeName={ThemeName.journeyUi}

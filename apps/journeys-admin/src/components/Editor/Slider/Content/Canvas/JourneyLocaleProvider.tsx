@@ -8,9 +8,9 @@ import {
   useState
 } from 'react'
 // eslint-disable-next-line no-restricted-imports
-import { I18nextProvider } from 'react-i18next'
+import { I18nextProvider, useTranslation } from 'react-i18next'
 
-interface JourneyI18nProviderProps {
+interface JourneyLocaleProviderProps {
   children: ReactNode
   locale: string
 }
@@ -18,8 +18,7 @@ interface JourneyI18nProviderProps {
 const LOCALE_MAP = {
   en: 'en',
   ko: 'ko-KR',
-  zh: 'zh-Hans-CN',
-  'zh-Hant': 'zh-Hant-TW',
+  'zh-hans': 'zh-Hans-CN',
   es: 'es-ES',
   fr: 'fr-FR',
   hi: 'hi-IN',
@@ -40,13 +39,15 @@ const LOCALE_MAP = {
 /**
  * JourneyI18nProvider creates a separate i18next instance for journey editing components.
  */
-export function JourneyI18nProvider({
+export function JourneyLocaleProvider({
   children,
   locale
-}: JourneyI18nProviderProps): ReactElement {
+}: JourneyLocaleProviderProps): ReactElement {
+  const { t } = useTranslation('libs-journeys-ui')
   const [resources, setResources] = useState<
     Record<string, Record<string, any>>
   >({})
+  console.log('locale', locale)
 
   const loadResources = useCallback(
     async (directoryLocale: string): Promise<void> => {
@@ -71,6 +72,7 @@ export function JourneyI18nProvider({
         console.log(
           `Loaded ${locale} (${directoryLocale}) resources successfully`
         )
+        console.log('test translate Save', t('Submit'))
       } catch (error) {
         console.error(
           `Error loading locale resources for ${locale} (${directoryLocale}):`,
