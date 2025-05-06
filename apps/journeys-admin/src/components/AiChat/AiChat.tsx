@@ -66,6 +66,10 @@ Pretend they are synonymous when talking to the user.
 If the user wants to change the image of a block, ask them to select the new
 image by calling the askUserToSelectImage tool.
 
+If the user wants to change the video of a block, ask them to select the new
+video by calling the askUserToSelectVideo tool. You can also ask them this if
+they want to update more than one video block.
+
 When updating blocks, only include properties that have changed.
 `.trim()
 
