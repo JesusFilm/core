@@ -186,7 +186,6 @@ export function JourneyCardMenu({
               />
             )
           : DefaultMenuComponent &&
-            anchorEl != null &&
             open && (
               <DefaultMenuComponent
                 id={id}
