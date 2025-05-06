@@ -24,6 +24,7 @@ import {
 } from '../../../../__generated__/GetAdminJourneys'
 import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
 import { JourneyCardMenu } from '../../JourneyList/JourneyCard/JourneyCardMenu'
+import { LastModifiedDate } from '../../JourneyList/JourneyCard/JourneyCardText/LastModifiedDate'
 
 export interface TemplateListItemProps {
   journey?: AdminJourney | Journey
@@ -135,7 +136,7 @@ export function TemplateListItem({
                     sx={{ fontSize: 12 }}
                     suppressHydrationWarning
                   >
-                    {date}
+                    <LastModifiedDate modifiedDate={date} />
                     {journey?.description != null
                       ? t(' - {{ description }}', {
                           description: journey.description

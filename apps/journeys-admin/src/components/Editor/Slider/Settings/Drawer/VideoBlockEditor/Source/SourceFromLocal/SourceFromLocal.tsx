@@ -79,7 +79,7 @@ export function SourceFromLocal({
           selectedBlock={{
             src:
               (selectedBlock?.mediaVideo as VideoFields_mediaVideo_Video)
-                ?.images[0]?.mobileCinematicHigh ?? '',
+                ?.images?.[0]?.mobileCinematicHigh ?? '',
             alt:
               (selectedBlock?.mediaVideo as VideoFields_mediaVideo_Video)
                 ?.title?.[0]?.value ?? ''

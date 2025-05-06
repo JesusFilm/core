@@ -45,9 +45,9 @@ describe('bigQuery/importers/bibleCitations', () => {
           bibleBookId: 1,
           order: 1,
           chapterStart: 1,
-          chapterEnd: null,
+          chapterEnd: -1,
           verseStart: 1,
-          verseEnd: null,
+          verseEnd: -1,
           position: 1,
           datastream_metadata: {
             uuid: 'mockUuid'
@@ -62,9 +62,9 @@ describe('bigQuery/importers/bibleCitations', () => {
             bibleBookId: '1',
             order: 1,
             chapterStart: 1,
-            chapterEnd: null,
+            chapterEnd: -1,
             verseStart: 1,
-            verseEnd: null
+            verseEnd: -1
           },
           create: {
             id: 'mockUuid',
@@ -73,9 +73,9 @@ describe('bigQuery/importers/bibleCitations', () => {
             bibleBookId: '1',
             order: 1,
             chapterStart: 1,
-            chapterEnd: null,
+            chapterEnd: -1,
             verseStart: 1,
-            verseEnd: null
+            verseEnd: -1
           }
         })
       })
@@ -91,9 +91,9 @@ describe('bigQuery/importers/bibleCitations', () => {
           bibleBookId: 1,
           order: 1,
           chapterStart: 1,
-          chapterEnd: null,
+          chapterEnd: -1,
           verseStart: 1,
-          verseEnd: null,
+          verseEnd: -1,
           position: 1,
           datastream_metadata: {
             uuid: 'mockUuid'
@@ -105,9 +105,9 @@ describe('bigQuery/importers/bibleCitations', () => {
           bibleBookId: 1,
           order: 1,
           chapterStart: 1,
-          chapterEnd: null,
+          chapterEnd: -1,
           verseStart: 1,
-          verseEnd: null,
+          verseEnd: -1,
           position: 1,
           datastream_metadata: {
             uuid: 'mockUuid1'
@@ -123,9 +123,9 @@ describe('bigQuery/importers/bibleCitations', () => {
             bibleBookId: '1',
             order: 1,
             chapterStart: 1,
-            chapterEnd: null,
+            chapterEnd: -1,
             verseStart: 1,
-            verseEnd: null
+            verseEnd: -1
           },
           {
             id: 'mockUuid1',
@@ -134,9 +134,9 @@ describe('bigQuery/importers/bibleCitations', () => {
             bibleBookId: '1',
             order: 1,
             chapterStart: 1,
-            chapterEnd: null,
+            chapterEnd: -1,
             verseStart: 1,
-            verseEnd: null
+            verseEnd: -1
           }
         ],
         skipDuplicates: true

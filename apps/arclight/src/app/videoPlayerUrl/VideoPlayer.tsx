@@ -1,7 +1,8 @@
 'use client'
-
 import { useEffect, useRef } from 'react'
 import videojs from 'video.js'
+
+import { MuxMetadata } from '@core/shared/ui/muxMetadataType'
 import 'video.js/dist/video-js.css'
 
 import 'videojs-mux'
@@ -21,6 +22,12 @@ export function VideoPlayer({
 
   const initPlayer = (ref: typeof playerRef): void => {
     if (ref.current == null) return
+    const muxMetadata: MuxMetadata = {
+      env_key: process.env.NEXT_PUBLIC_MUX_DEFAULT_REPORTING_KEY || '',
+      player_name: 'arclight',
+      video_title: videoTitle
+    }
+
     videojs(ref.current, {
       enableSmoothSeeking: true,
       experimentalSvgIcons: true,
@@ -40,11 +47,7 @@ export function VideoPlayer({
       plugins: {
         mux: {
           debug: false,
-          data: {
-            env_key: 'e2thjm49ulacc6tgf56laoeak',
-            player_name: 'arclight',
-            video_title: videoTitle
-          }
+          data: muxMetadata
         }
       }
     })

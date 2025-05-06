@@ -8,6 +8,9 @@ import { VideoVariantDownloadUpdateInput } from './inputs/videoVariantDownloadUp
 builder.prismaObject('VideoVariantDownload', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
+    asset: t
+      .withAuth({ isPublisher: true })
+      .relation('asset', { nullable: true, description: 'master video file' }),
     quality: t.field({
       type: VideoVariantDownloadQuality,
       nullable: false,
@@ -16,7 +19,12 @@ builder.prismaObject('VideoVariantDownload', {
     size: t.float({ nullable: false, resolve: ({ size }) => size ?? 0 }),
     height: t.int({ nullable: false, resolve: ({ height }) => height ?? 0 }),
     width: t.int({ nullable: false, resolve: ({ width }) => width ?? 0 }),
-    url: t.exposeString('url', { nullable: false })
+    bitrate: t.int({ nullable: false, resolve: ({ bitrate }) => bitrate ?? 0 }),
+    url: t.exposeString('url', { nullable: false }),
+    version: t.withAuth({ isPublisher: true }).exposeInt('version', {
+      nullable: false,
+      description: 'master video file version'
+    })
   })
 })
 
@@ -31,7 +39,9 @@ builder.mutationFields((t) => ({
       return await prisma.videoVariantDownload.create({
         data: {
           ...input,
-          id: input.id ?? undefined
+          id: input.id ?? undefined,
+          assetId: input.assetId ?? undefined,
+          version: input.version ?? undefined
         }
       })
     }
@@ -51,7 +61,10 @@ builder.mutationFields((t) => ({
           size: input.size ?? undefined,
           height: input.height ?? undefined,
           width: input.width ?? undefined,
-          url: input.url ?? undefined
+          bitrate: input.bitrate ?? undefined,
+          url: input.url ?? undefined,
+          assetId: input.assetId ?? undefined,
+          version: input.version ?? undefined
         }
       })
     }

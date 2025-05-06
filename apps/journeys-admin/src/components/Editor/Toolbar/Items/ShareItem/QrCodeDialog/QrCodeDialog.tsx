@@ -173,7 +173,7 @@ export function QrCodeDialog({
           />
           <Typography variant="body2" color="secondary.main">
             {t(
-              'Here is the unique QR code for your Journey. For the moment, please avoid changing the Journey URL after generating the QR code'
+              'Here is the unique QR code for your Journey. You can change the Journey URL without needing to re-generate the QR code'
             )}
           </Typography>
         </Stack>

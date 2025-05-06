@@ -213,6 +213,19 @@ describe('LocalDetails', () => {
     })
   })
 
+  it('should disable select button if loading', async () => {
+    const onSelect = jest.fn()
+    const result = jest.fn().mockReturnValue(getVideoMock.result)
+    const { getByRole } = render(
+      <MockedProvider mocks={[{ ...getVideoMock, result }]}>
+        <LocalDetails id="2_Acts7302-0-0" open onSelect={onSelect} />
+      </MockedProvider>
+    )
+    expect(getByRole('button', { name: 'Select' })).toBeDisabled()
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(getByRole('button', { name: 'Select' })).not.toBeDisabled()
+  })
+
   it('should keep startAt and endAt values if already exist on select click', async () => {
     const onSelect = jest.fn()
     const { getByRole } = render(

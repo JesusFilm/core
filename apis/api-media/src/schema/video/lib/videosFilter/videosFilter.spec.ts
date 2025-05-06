@@ -78,7 +78,8 @@ describe('videosFilter', () => {
         availableVariantLanguageIds: ['en'],
         labels: ['collection'],
         ids: ['videoId'],
-        published: true
+        published: true,
+        locked: true
       })
     ).toEqual({
       id: { in: ['videoId'] },
@@ -90,7 +91,8 @@ describe('videosFilter', () => {
           subtitle: undefined
         }
       },
-      published: true
+      published: true,
+      locked: true
     })
   })
 
@@ -120,6 +122,17 @@ describe('videosFilter', () => {
       subtitels: undefined,
       variants: undefined,
       published: true
+    })
+  })
+
+  it('should filter with locked status', () => {
+    expect(videosFilter({ locked: true })).toEqual({
+      id: undefined,
+      label: undefined,
+      title: undefined,
+      subtitles: undefined,
+      variants: undefined,
+      locked: true
     })
   })
 })

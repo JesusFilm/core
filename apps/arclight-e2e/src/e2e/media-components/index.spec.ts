@@ -148,6 +148,23 @@ test.describe('media components', () => {
     expect(data._links).toHaveProperty('next')
   })
 
+  test('handles string values for numeric parameters', async ({ request }) => {
+    const params = createQueryParams({
+      page: '3',
+      limit: '2'
+    })
+
+    const response = await request.get(
+      `${await getBaseUrl()}/v2/media-components?${params}`
+    )
+
+    expect(response.ok()).toBeTruthy()
+    const data = await response.json()
+    expect(data.page).toBe(3)
+    expect(data.limit).toBe(2)
+    expect(data._embedded.mediaComponents.length).toBeLessThanOrEqual(2)
+  })
+
   test('media components returns 400 for invalid language with no fallback content', async ({
     request
   }) => {

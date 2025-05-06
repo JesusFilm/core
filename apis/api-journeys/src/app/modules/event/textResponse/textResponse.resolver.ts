@@ -47,6 +47,10 @@ export class TextResponseSubmissionEventResolver {
       visitorDataUpdate.email = input.value
     }
 
+    if (block.type === TextResponseType.phone) {
+      visitorDataUpdate.phone = input.value
+    }
+
     const [textResponseSubmissionEvent, updatedVisitor] = await Promise.all([
       this.eventService.save({
         ...input,
@@ -54,7 +58,7 @@ export class TextResponseSubmissionEventResolver {
         typename: 'TextResponseSubmissionEvent',
         visitor: { connect: { id: visitor.id } },
         createdAt: new Date().toISOString(),
-        journeyId,
+        journey: { connect: { id: journeyId } },
         stepId: input.stepId ?? undefined
       }),
       this.prismaService.visitor.update({

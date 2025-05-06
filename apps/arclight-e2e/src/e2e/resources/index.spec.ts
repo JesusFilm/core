@@ -14,11 +14,6 @@ async function searchResources(
   return response
 }
 
-const traverseObject = (obj: any): any[] =>
-  !obj || typeof obj !== 'object'
-    ? []
-    : [obj].concat(Object.values(obj).flatMap(traverseObject))
-
 test.describe('GET /v2/resources', () => {
   test('returns United States in countries', async ({ request }) => {
     const response = await searchResources(request, { term: 'United' })
@@ -168,12 +163,20 @@ test.describe('GET /v2/resources', () => {
         approximateSmallDownloadSizeInBytes: expect.any(Number),
         approximateLargeDownloadSizeInBytes: expect.any(Number)
       },
-      bibleCitations: expect.any(Array),
+      bibleCitations: [
+        {
+          osisBibleBook: expect.any(String),
+          chapterStart: expect.any(Number),
+          verseStart: expect.any(Number),
+          chapterEnd: null,
+          verseEnd: null
+        }
+      ],
       primaryLanguageId: expect.any(Number),
       title: expect.stringContaining('Paper Hats'),
       shortDescription: expect.any(String),
       longDescription: expect.any(String),
-      studyQuestions: expect.any(Array),
+      studyQuestions: expect.arrayContaining([expect.any(String)]),
       metadataLanguageTag: 'en'
     })
 
@@ -183,25 +186,92 @@ test.describe('GET /v2/resources', () => {
       ([key, url]) => {
         expect(typeof url).toBe('string')
         expect(url.startsWith('https://')).toBeTruthy()
-        if (key === 'mobileCinematicVeryLow') {
-          expect(url).toContain('webp')
-        } else {
-          expect(url).toContain('jpg')
-        }
+        const expectedExtension =
+          key === 'mobileCinematicVeryLow' ? 'webp' : 'jpg'
+        expect(url).toContain(expectedExtension)
       }
     )
+  })
 
-    if (paperHatsVideo.bibleCitations.length > 0) {
-      const citation = paperHatsVideo.bibleCitations[0]
-      expect(citation.osisBibleBook).toEqual(expect.any(String))
-      expect(citation.chapterStart).toEqual(expect.any(Number))
-      expect(citation.verseStart).toEqual(expect.any(Number))
-      expect(
-        citation.chapterEnd === null || typeof citation.chapterEnd === 'number'
-      ).toBeTruthy()
-      expect(
-        citation.verseEnd === null || typeof citation.verseEnd === 'number'
-      ).toBeTruthy()
-    }
+  test('returns United States as countryId in bulk format', async ({
+    request
+  }) => {
+    const response = await searchResources(request, {
+      term: 'United',
+      bulk: 'true'
+    })
+    expect(response.ok()).toBeTruthy()
+    expect(response.status()).toBe(200)
+
+    const data = await response.json()
+    const { resources } = data._embedded
+
+    expect(resources.countryIds).toContain('US')
+    expect(resources.countryIds.every((id) => typeof id === 'string')).toBe(
+      true
+    )
+    expect(resources.countryIds.every((id) => /^[A-Z]{2}$/.test(id))).toBe(true)
+
+    expect(Object.keys(resources)).toEqual([
+      'resourceCount',
+      'countryIds',
+      'languageIds',
+      'alternateLanguageIds',
+      'mediaComponentIds'
+    ])
+  })
+
+  test('returns English as languageId in bulk format', async ({ request }) => {
+    const response = await searchResources(request, {
+      term: 'English',
+      bulk: 'true'
+    })
+    expect(response.ok()).toBeTruthy()
+    expect(response.status()).toBe(200)
+
+    const data = await response.json()
+    const { resources } = data._embedded
+
+    expect(resources.languageIds).toContain(529)
+    expect(resources.languageIds.every((id) => typeof id === 'number')).toBe(
+      true
+    )
+
+    expect(Object.keys(resources)).toEqual([
+      'resourceCount',
+      'countryIds',
+      'languageIds',
+      'alternateLanguageIds',
+      'mediaComponentIds'
+    ])
+  })
+
+  test('returns Paper Hats as mediaComponentId in bulk format', async ({
+    request
+  }) => {
+    const response = await searchResources(request, {
+      term: 'Paper Hats',
+      metadataLanguageTags: 'en',
+      bulk: 'true'
+    })
+    expect(response.ok()).toBeTruthy()
+    expect(response.status()).toBe(200)
+
+    const data = await response.json()
+    const { resources } = data._embedded
+
+    expect(resources.mediaComponentIds.length).toBeGreaterThan(0)
+    expect(
+      resources.mediaComponentIds.every((id) => typeof id === 'string')
+    ).toBe(true)
+    expect(resources.alternateLanguageIds).toEqual([])
+
+    expect(Object.keys(resources)).toEqual([
+      'resourceCount',
+      'countryIds',
+      'languageIds',
+      'alternateLanguageIds',
+      'mediaComponentIds'
+    ])
   })
 })

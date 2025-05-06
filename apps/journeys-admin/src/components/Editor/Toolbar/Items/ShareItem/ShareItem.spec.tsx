@@ -8,7 +8,6 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'
 import { GetUserRole } from '@core/journeys/ui/useUserRoleQuery/__generated__/GetUserRole'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { Role } from '../../../../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
@@ -173,19 +172,17 @@ describe('ShareItem', () => {
     }
 
     render(
-      <FlagsProvider flags={{ qrCode: true }}>
-        <SnackbarProvider>
-          <MockedProvider mocks={[getUserRoleMock]}>
-            <Suspense>
-              <JourneyProvider
-                value={{ journey: defaultJourney, variant: 'admin' }}
-              >
-                <ShareItem variant="button" />
-              </JourneyProvider>
-            </Suspense>
-          </MockedProvider>
-        </SnackbarProvider>
-      </FlagsProvider>
+      <SnackbarProvider>
+        <MockedProvider mocks={[getUserRoleMock]}>
+          <Suspense>
+            <JourneyProvider
+              value={{ journey: defaultJourney, variant: 'admin' }}
+            >
+              <ShareItem variant="button" />
+            </JourneyProvider>
+          </Suspense>
+        </MockedProvider>
+      </SnackbarProvider>
     )
     fireEvent.click(screen.getByRole('button', { name: 'Share' }))
     expect(screen.getByRole('dialog')).toBeInTheDocument()

@@ -36,6 +36,7 @@ export interface ArchiveJourneyProps {
   published: boolean
   handleClose: () => void
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
+  disabled?: boolean
 }
 
 export function ArchiveJourney({
@@ -43,7 +44,8 @@ export function ArchiveJourney({
   id,
   published,
   handleClose,
-  refetch
+  refetch,
+  disabled = false
 }: ArchiveJourneyProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const previousStatus = published
@@ -115,6 +117,7 @@ export function ArchiveJourney({
           icon={<FolderUp1Icon color="secondary" />}
           onClick={handleClick}
           testId="Archive"
+          disabled={disabled}
         />
       ) : (
         <MenuItem
@@ -122,6 +125,7 @@ export function ArchiveJourney({
           icon={<FolderDown1Icon color="secondary" />}
           onClick={handleClick}
           testId="Unarchive"
+          disabled={disabled}
         />
       )}
     </>

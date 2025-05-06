@@ -50,6 +50,7 @@ export interface StepBlockRestoreFromStep_blockRestore_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: StepBlockRestoreFromStep_blockRestore_ButtonBlock_action | null;
 }
 
@@ -235,7 +236,9 @@ export interface StepBlockRestoreFromStep_blockRestore_TextResponseBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;
