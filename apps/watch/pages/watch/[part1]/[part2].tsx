@@ -61,7 +61,11 @@ export default function Part2Page({ content }: Part2PageProps): ReactElement {
       <LanguageProvider>
         <VideoProvider value={{ content }}>
           {content.variant?.hls != null ? (
-            <DynamicNewContentPage />
+            content.childrenCount > 0 ? (
+              <DynamicNewContentPage />
+            ) : (
+              <DynamicVideoContentPage />
+            )
           ) : (
             <DynamicVideoContainerPage />
           )}
