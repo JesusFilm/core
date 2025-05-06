@@ -78,7 +78,12 @@ function LoadingJourneyCard(): ReactElement {
           px: 3
         }}
       >
-        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1 }}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          sx={{ mb: 1 }}
+        >
           <Skeleton variant="text" width={80} height={25} />
           <Skeleton variant="circular" width={27} height={27} />
         </Stack>

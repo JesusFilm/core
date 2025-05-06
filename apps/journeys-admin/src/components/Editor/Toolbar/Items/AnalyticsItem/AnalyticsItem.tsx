@@ -61,7 +61,7 @@ export function AnalyticsItem({
     ? `/journeys/${journey?.id}/reports?from=journey-list`
     : `/journeys/${journey?.id}/reports`
 
-    const buttonProps = fromJourneyList
+  const buttonProps = fromJourneyList
     ? {
         sx: {
           minWidth: 30,
