@@ -3,17 +3,17 @@ import { ToolSet } from 'ai'
 
 import { askUserToSelectImage } from './askUserToSelectImage'
 import { getJourney } from './getJourney'
-import { updateButtonBlock } from './updateButtonBlock'
+import { updateButtonBlocks } from './updateButtonBlocks'
 import { updateImageBlock } from './updateImageBlock'
 import { updateJourney } from './updateJourney'
-import { updateTypographyBlock } from './updateTypographyBlock'
+import { updateTypographyBlocks } from './updateTypographyBlocks'
 
 export function tools(client: ApolloClient<NormalizedCacheObject>): ToolSet {
   return {
     getJourney: getJourney(client),
     updateJourney: updateJourney(client),
-    updateTypographyBlock: updateTypographyBlock(client),
-    updateButtonBlock: updateButtonBlock(client),
+    updateTypographyBlocks: updateTypographyBlocks(client),
+    updateButtonBlocks: updateButtonBlocks(client),
     updateImageBlock: updateImageBlock(client),
     askUserToSelectImage: askUserToSelectImage()
   }

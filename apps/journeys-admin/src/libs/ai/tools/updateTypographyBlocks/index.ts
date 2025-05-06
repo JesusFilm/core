@@ -1,0 +1,1 @@
+export { updateTypographyBlocks } from './updateTypographyBlocks'
