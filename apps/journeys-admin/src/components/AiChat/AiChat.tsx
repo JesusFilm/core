@@ -87,7 +87,12 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
       const isUpdateJourney = result.parts?.some(
         (part) =>
           part.type === 'tool-invocation' &&
-          part.toolInvocation.toolName === 'updateJourney'
+          (part.toolInvocation.toolName === 'updateJourney' ||
+            part.toolInvocation.toolName === 'updateVideoBlocks' ||
+            part.toolInvocation.toolName === 'updateRadioOptionBlocks' ||
+            part.toolInvocation.toolName === 'updateTypographyBlocks' ||
+            part.toolInvocation.toolName === 'updateButtonBlocks' ||
+            part.toolInvocation.toolName === 'updateImageBlock')
       )
       if (isUpdateJourney) {
         void client.refetchQueries({
