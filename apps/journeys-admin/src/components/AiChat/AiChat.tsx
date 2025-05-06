@@ -24,6 +24,7 @@ import ArrowUpIcon from '@core/shared/ui/icons/ArrowUp'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import { ImageLibrary } from '../Editor/Slider/Settings/Drawer/ImageLibrary'
+import { VideoLibrary } from '../Editor/Slider/Settings/Drawer/VideoLibrary'
 
 interface AiChatProps {
   open?: boolean
@@ -91,11 +92,12 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
 
   const [systemPrompt, setSystemPrompt] = useState(INITIAL_SYSTEM_PROMPT)
   const [userMessage, setUserMessage] = useState('')
+  const [openImageLibrary, setOpenImageLibrary] = useState<boolean | null>(null)
+  const [openVideoLibrary, setOpenVideoLibrary] = useState<boolean | null>(null)
   const [toolCall, setToolCall] = useState<{
     id: string
     callback?: () => void
   } | null>(null)
-  const [openImageLibrary, setOpenImageLibrary] = useState(false)
 
   async function fetchWithAuthorization(
     url: string,
@@ -423,6 +425,42 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
                             }
                           }
                         }
+                        case 'askUserToSelectVideo': {
+                          switch (part.toolInvocation.state) {
+                            case 'call':
+                              return (
+                                <Box key={callId}>
+                                  <Typography
+                                    key={callId}
+                                    variant="body2"
+                                    color="text.secondary"
+                                  >
+                                    {part.toolInvocation.args.message}
+                                  </Typography>
+
+                                  <Box>
+                                    <Button
+                                      variant="outlined"
+                                      onClick={() => {
+                                        setOpenVideoLibrary(true)
+                                        setToolCall({
+                                          id: callId,
+                                          callback: () => {
+                                            setOpenVideoLibrary(false)
+                                          }
+                                        })
+                                      }}
+                                    >
+                                      {t('Open Image Library')}
+                                    </Button>
+                                  </Box>
+                                </Box>
+                              )
+                            default: {
+                              return null
+                            }
+                          }
+                        }
                         default: {
                           return null
                         }
@@ -516,7 +554,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
         </Card>
       </Grow>
       <ImageLibrary
-        open={openImageLibrary}
+        open={openImageLibrary ?? false}
         onClose={() => {
           setOpenImageLibrary(false)
         }}
@@ -531,6 +569,21 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
           }
         }}
         selectedBlock={null}
+      />
+      <VideoLibrary
+        open={openVideoLibrary ?? false}
+        onClose={() => {
+          setOpenVideoLibrary(false)
+        }}
+        selectedBlock={null}
+        onSelect={async (selectedVideo) => {
+          if (toolCall != null) {
+            handleToolCall(
+              toolCall.id,
+              `here is the video: ${JSON.stringify(selectedVideo)}`
+            )
+          }
+        }}
       />
     </>
   )

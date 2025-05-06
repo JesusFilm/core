@@ -1,12 +1,12 @@
 import { Tool, tool } from 'ai'
 import { z } from 'zod'
 
-export function askUserToSelectImage(): Tool {
+export function askUserToSelectVideo(): Tool {
   return tool({
-    description: 'Ask the user for confirmation on an image.',
+    description: 'Ask the user for confirmation on a video.',
     parameters: z.object({
       message: z.string().describe('The message to ask for confirmation.'),
-      imageId: z.string().describe('The id of the image to select.')
+      videoId: z.string().describe('The id of the video to select.')
     })
   })
 }
