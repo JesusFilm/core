@@ -12,12 +12,10 @@ const StyledSwiper = styled(Swiper)(() => ({}))
 
 interface ChapterCarouselProps {
   videos: VideoChildFields[]
-  containerSlug?: string
 }
 
 export function ChapterCarousel({
-  videos,
-  containerSlug
+  videos
 }: ChapterCarouselProps): ReactElement {
   return (
     <div data-testid="ChapterCarousel" className="py-7">
@@ -41,11 +39,7 @@ export function ChapterCarousel({
             className="max-w-[200px]"
             data-testid={`CarouselSlide-${video.id}`}
           >
-            <ChapterCard
-              key={video.id}
-              containerSlug={containerSlug}
-              video={video}
-            />
+            <ChapterCard key={video.id} video={video} />
           </SwiperSlide>
         ))}
       </StyledSwiper>
