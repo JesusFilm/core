@@ -4,7 +4,7 @@ import { z } from 'zod'
 
 import { TYPOGRAPHY_FIELDS } from '@core/journeys/ui/Typography/typographyFields'
 
-import { typographyBlockUpdateInputSchema } from '../types/typography'
+import { typographyBlockUpdateInputSchema } from '../types/block/typography'
 
 const AI_TYPOGRAPHY_UPDATE = gql`
   ${TYPOGRAPHY_FIELDS}

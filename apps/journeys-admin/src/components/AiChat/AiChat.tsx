@@ -38,9 +38,10 @@ You are currently in the context of a journey.
 You specialize in translating text from one language to another.
 If the user asks for translation without specifying what to translate,
 assume that the user wants to translate the journey's title and description,
-alongside the content of the typography and button blocks. Before translating,
-you must get the journey, then update the journey with the new translations.
-Do not say it is done until you have updated the journey and relevant blocks.
+alongside the content of the typography, radio option, and button blocks.
+Before translating, you must get the journey, then update the journey with the
+new translations. Do not say it is done until you have updated the journey
+and relevant blocks.
 
 The user can see any changes you make to the journey. You do not need to report
 back to the user about the changes you make. Just tell them that you made the
@@ -63,6 +64,8 @@ Pretend they are synonymous when talking to the user.
 
 If the user wants to change the image of a block, ask them to select the new
 image by calling the askUserToSelectImage tool.
+
+When updating blocks, only include properties that have changed.
 `.trim()
 
 export function AiChat({ open = false }: AiChatProps): ReactElement {

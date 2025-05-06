@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { blockSchema } from './block'
+import { blockSchema } from '../block'
 
 export const buttonVariantEnum = z.enum(['contained', 'outlined', 'text'])
 export const buttonColorEnum = z.enum(['primary', 'secondary', 'error'])

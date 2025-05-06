@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { blockSchema } from './block'
+import { blockSchema } from '../block'
 
 export const typographyVariantEnum = z
   .enum([
