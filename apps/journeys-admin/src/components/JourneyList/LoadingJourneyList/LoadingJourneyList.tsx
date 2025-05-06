@@ -12,7 +12,7 @@ function LoadingJourneyCard(): ReactElement {
     <Card
       variant="outlined"
       sx={{
-        aspectRatio: { xs: '1', sm: '1/1.3'},
+        aspectRatio: { xs: '1', sm: '1/1.3' },
         borderRadius: 0,
         borderColor: 'divider',
         borderBottom: 'none',
