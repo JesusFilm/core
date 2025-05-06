@@ -1,0 +1,13 @@
+{
+  "404": "404",
+  "500": "500",
+  "%s | Next Steps": "%s | Nächste Schritte",
+  "Next Steps": "Nächste Schritte",
+  "This Journey is not available.": "Diese Reise ist nicht verfügbar.",
+  "Oops! Something went wrong.": "Ups! Etwas ist schief gelaufen.",
+  "<0>This page has been created to test the embed code.<1>If youve found this page in error click the button below.</1></0>": "<0>Diese Seite wurde erstellt, um den Einbettungscode zu testen<1>. Wenn du diese Seite fehlerhaft gefunden hast, klicke auf die Schaltfläche unten.</1></0>",
+  "Get me out of here!": "Hol mich hier raus!",
+  "Terms & Conditions": "Bedingungen & Konditionen",
+  "Privacy Policy": "Datenschutzrichtlinie",
+  "NextSteps © {{year}}": "NextSteps © {{year}}"
+}
