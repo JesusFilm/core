@@ -1,0 +1,1 @@
+export { updateImageBlock } from './updateImageBlock'
