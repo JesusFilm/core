@@ -9,6 +9,7 @@ import { PageWrapper } from '../PageWrapper'
 
 import { Chapters } from './Chapters'
 import { ContentHero } from './ContentHero'
+import { ChapterCarousel } from './ChapterCarousel'
 
 export function NewContentPage(): ReactElement {
   const { container, variant } = useVideo()
@@ -26,6 +27,7 @@ export function NewContentPage(): ReactElement {
       hideFooter
     >
       <CollectionsPageContent>
+        <ChapterCarousel videos={realChildren} />
         <Chapters videos={realChildren} containerSlug={slug} />
       </CollectionsPageContent>
     </PageWrapper>

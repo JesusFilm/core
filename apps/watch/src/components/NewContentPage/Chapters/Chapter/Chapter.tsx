@@ -25,7 +25,7 @@ export function Chapter({ video }: ChapterProps): ReactElement {
         ] as unknown as VideoChildFields_studyQuestions[])
 
   return (
-    <div className="py-16 relative scroll-snap-start-always">
+    <div className="py-16 relative scroll-snap-start-always" id={video.slug}>
       <div data-testid="ChapterVideoPlayer"></div>
       <div className="xl:flex w-full z-1 relative" data-testid="ChapterContent">
         <ChapterMetadata video={video} />
