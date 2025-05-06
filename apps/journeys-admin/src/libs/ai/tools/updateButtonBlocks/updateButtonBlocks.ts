@@ -4,7 +4,7 @@ import { z } from 'zod'
 
 import { BUTTON_FIELDS } from '@core/journeys/ui/Button/buttonFields'
 
-import { buttonBlockUpdateInputSchema } from '../types/button'
+import { buttonBlockUpdateInputSchema } from '../types/block/button'
 
 const AI_BUTTON_UPDATE = gql`
   ${BUTTON_FIELDS}

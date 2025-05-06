@@ -7,6 +7,7 @@ import { getJourney } from './getJourney'
 import { updateButtonBlocks } from './updateButtonBlocks'
 import { updateImageBlock } from './updateImageBlock'
 import { updateJourney } from './updateJourney'
+import { updateRadioOptionBlocks } from './updateRadioOptionBlocks'
 import { updateTypographyBlocks } from './updateTypographyBlocks'
 import { updateVideoBlocks } from './updateVideoBlocks'
 
@@ -19,6 +20,7 @@ export function tools(client: ApolloClient<NormalizedCacheObject>): ToolSet {
     updateImageBlock: updateImageBlock(client),
     updateVideoBlocks: updateVideoBlocks(client),
     askUserToSelectImage: askUserToSelectImage(),
-    askUserToSelectVideo: askUserToSelectVideo()
+    askUserToSelectVideo: askUserToSelectVideo(),
+    updateRadioOptionBlocks: updateRadioOptionBlocks(client)
   }
 }
