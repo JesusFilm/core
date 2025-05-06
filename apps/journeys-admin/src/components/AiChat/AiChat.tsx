@@ -91,7 +91,10 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
 
   const [systemPrompt, setSystemPrompt] = useState(INITIAL_SYSTEM_PROMPT)
   const [userMessage, setUserMessage] = useState('')
-  const [toolCallId, setToolCallId] = useState<string | null>(null)
+  const [toolCall, setToolCall] = useState<{
+    id: string
+    callback?: () => void
+  } | null>(null)
   const [openImageLibrary, setOpenImageLibrary] = useState(false)
 
   async function fetchWithAuthorization(
@@ -124,15 +127,16 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
       toolCallId: toolCallId,
       result: result
     })
-    setToolCallId(null)
+    toolCall?.callback?.()
+    setToolCall(null)
   }
 
   async function handleSubmit(customMessage?: string): Promise<void> {
     const message = customMessage ?? userMessage.trim()
 
     if (message === '') return
-    if (toolCallId != null) {
-      handleToolCall(toolCallId, 'cancel the previous tool call')
+    if (toolCall != null) {
+      handleToolCall(toolCall.id, 'cancel the previous tool call')
     }
 
     setUserMessage('')
@@ -400,8 +404,13 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
                                     <Button
                                       variant="outlined"
                                       onClick={() => {
-                                        setToolCallId(callId)
                                         setOpenImageLibrary(true)
+                                        setToolCall({
+                                          id: callId,
+                                          callback: () => {
+                                            setOpenImageLibrary(false)
+                                          }
+                                        })
                                       }}
                                     >
                                       {t('Open Image Library')}
@@ -512,9 +521,9 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
           setOpenImageLibrary(false)
         }}
         onChange={async (selectedImage) => {
-          if (toolCallId != null) {
+          if (toolCall != null) {
             handleToolCall(
-              toolCallId,
+              toolCall.id,
               `here is the image the new image. Update the old image block to this image: ${JSON.stringify(
                 selectedImage
               )}`
