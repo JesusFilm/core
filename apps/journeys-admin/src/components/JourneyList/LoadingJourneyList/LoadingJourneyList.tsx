@@ -102,7 +102,7 @@ export function LoadingJourneyList({
           {[0, 1, 2].map((index) => (
             <Grid
               key={`journeyCard${index}`}
-              size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 3 }}
+              size={{ xs: 12, sm: 6, md: 6, lg: 3, xl: 3 }}
             >
               <LoadingJourneyCard />
             </Grid>
