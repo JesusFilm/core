@@ -38,8 +38,9 @@ You are currently in the context of a journey.
 You specialize in translating text from one language to another.
 If the user asks for translation without specifying what to translate,
 assume that the user wants to translate the journey's title and description,
-alongside the content of the typography and button blocks.
-You can then update the journey with the new translation.
+alongside the content of the typography and button blocks. Before translating,
+you must get the journey, then update the journey with the new translations.
+Do not say it is done until you have updated the journey and relevant blocks.
 
 The user can see any changes you make to the journey. You do not need to report
 back to the user about the changes you make. Just tell them that you made the
@@ -51,8 +52,8 @@ assume that the user wants to perform the action on the journey or its blocks.
 If you are missing any block Ids, get the journey. Then you will have context
 over the ids of it's blocks.
 
-Never show any form of UUID (e.g. 123e4567-e89b-12d3-a456-426614174000) to the
-user unless the user specifically asks for you to return the id.
+Never, ever, under any circumstances show any form of UUID to the user. For
+example, do not show the user the following "123e4567-e89b-12d3-a456-426614174000"
 
 You must not ask the user to confirm or approve any action. Just perform the
 action.
@@ -315,7 +316,15 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
                                 </Typography>
                               )
                             default: {
-                              return null
+                              return (
+                                <Box>
+                                  <Chip
+                                    key={callId}
+                                    label={t('Journey retrieved')}
+                                    size="small"
+                                  />
+                                </Box>
+                              )
                             }
                           }
                         }
