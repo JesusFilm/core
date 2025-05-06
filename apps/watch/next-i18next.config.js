@@ -26,7 +26,7 @@ const i18nConfig = {
       'ja', // Japanese
       'ko', // Korean
       'ru', // Russian
-      // 'tr', // Turkish
+      'tr', // Turkish
       'zh', // Chinese
       'zh-Hans-CN' // Chinese, Simplified
     ]
@@ -41,7 +41,7 @@ const i18nConfig = {
     ja: ['ja-JP'],
     ko: ['ko-KR'],
     ru: ['ru-RU'],
-    // tr: ['tr-TR'],
+    tr: ['tr-TR'],
     zh: ['zh-Hans-CN']
   },
   react: { useSuspense: false }

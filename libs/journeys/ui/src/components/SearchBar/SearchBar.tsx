@@ -38,6 +38,14 @@ const SearchbarDropdown = dynamic(
   { ssr: false }
 )
 
+const LanguageButtons = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "SearchBar/LanguageButtons" */ './LanguageButtons'
+    ).then((mod) => mod.LanguageButtons),
+  { ssr: false }
+)
+
 interface StyledTextFieldProps extends BaseTextFieldProps {
   showLanguageButton?: boolean
 }
@@ -73,14 +81,6 @@ interface SearchBarProps {
   showLanguageButton?: boolean
   props?: TextFieldProps
 }
-
-const LanguageButtons = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "SearchBar/LanguageButtons" */ './LanguageButtons'
-    ).then((mod) => mod.LanguageButtons),
-  { ssr: false }
-)
 
 export function SearchBar({
   showDropdown = false,
