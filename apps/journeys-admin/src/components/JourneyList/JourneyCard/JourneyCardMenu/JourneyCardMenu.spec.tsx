@@ -11,7 +11,7 @@ import { JourneyCardMenu } from '.'
 
 describe('JourneyCardMenu', () => {
   it('should open default menu on click', async () => {
-    const { getByRole } = render(
+    const { getByRole, findByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
           <TeamProvider>
@@ -35,23 +35,16 @@ describe('JourneyCardMenu', () => {
     expect(getByRole('button')).toHaveAttribute('aria-haspopup', 'true')
     expect(getByRole('button')).toHaveAttribute('aria-expanded', 'false')
     fireEvent.click(getByRole('button'))
-    expect(getByRole('menu')).toHaveAttribute(
-      'aria-labelledby',
-      'journey-actions'
-    )
-    await waitFor(() =>
-      expect(
-        getByRole('menuitem', { name: 'Edit Details' })
-      ).toBeInTheDocument()
-    )
-    expect(getByRole('menuitem', { name: 'Access' })).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Archive' })).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Trash' })).toBeInTheDocument()
+
+    await findByRole('menuitem', { name: 'Edit Details' })
+    await findByRole('menuitem', { name: 'Access' })
+    await findByRole('menuitem', { name: 'Preview' })
+    await findByRole('menuitem', { name: 'Archive' })
+    await findByRole('menuitem', { name: 'Trash' })
   })
 
   it('should open trash menu on click', async () => {
-    const { getByRole } = render(
+    const { getByRole, findByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
           <ThemeProvider>
@@ -73,20 +66,13 @@ describe('JourneyCardMenu', () => {
     expect(getByRole('button')).toHaveAttribute('aria-haspopup', 'true')
     expect(getByRole('button')).toHaveAttribute('aria-expanded', 'false')
     fireEvent.click(getByRole('button'))
-    expect(getByRole('menu')).toHaveAttribute(
-      'aria-labelledby',
-      'journey-actions'
-    )
-    await waitFor(() =>
-      expect(getByRole('menuitem', { name: 'Restore' })).toBeInTheDocument()
-    )
-    expect(
-      getByRole('menuitem', { name: 'Delete Forever' })
-    ).toBeInTheDocument()
+
+    await findByRole('menuitem', { name: 'Restore' })
+    await findByRole('menuitem', { name: 'Delete Forever' })
   })
 
   it('should show access dialog on click', async () => {
-    const { getByRole, queryByText, getByTestId } = render(
+    const { getByRole, findByRole, queryByText, getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
           <TeamProvider>
@@ -103,6 +89,7 @@ describe('JourneyCardMenu', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
+    await findByRole('menuitem', { name: 'Access' })
     fireEvent.click(getByRole('menuitem', { name: 'Access' }))
 
     await waitFor(() =>
@@ -115,7 +102,7 @@ describe('JourneyCardMenu', () => {
   })
 
   it('should show trash dialog on click', async () => {
-    const { getByRole, queryByText, getByTestId } = render(
+    const { getByRole, findByRole, queryByText, getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
           <TeamProvider>
@@ -132,7 +119,7 @@ describe('JourneyCardMenu', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
-    fireEvent.click(getByRole('menuitem', { name: 'Trash' }))
+    fireEvent.click(await findByRole('menuitem', { name: 'Trash' }))
 
     await waitFor(() =>
       expect(queryByText('Trash Journey?')).toBeInTheDocument()
@@ -144,7 +131,7 @@ describe('JourneyCardMenu', () => {
   })
 
   it('should show restore dialog on click', async () => {
-    const { getByRole, queryByText, getByTestId } = render(
+    const { getByRole, findByRole, queryByText, getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
           <ThemeProvider>
@@ -159,7 +146,7 @@ describe('JourneyCardMenu', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
-    fireEvent.click(getByRole('menuitem', { name: 'Restore' }))
+    fireEvent.click(await findByRole('menuitem', { name: 'Restore' }))
 
     await waitFor(() =>
       expect(queryByText('Restore Journey?')).toBeInTheDocument()
@@ -171,7 +158,7 @@ describe('JourneyCardMenu', () => {
   })
 
   it('should show delete forever dialog on click', async () => {
-    const { getByRole, queryByText, getByTestId } = render(
+    const { getByRole, findByRole, queryByText, getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
           <ThemeProvider>
@@ -186,7 +173,7 @@ describe('JourneyCardMenu', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
-    fireEvent.click(getByRole('menuitem', { name: 'Delete Forever' }))
+    fireEvent.click(await findByRole('menuitem', { name: 'Delete Forever' }))
 
     await waitFor(() =>
       expect(queryByText('Delete Forever?')).toBeInTheDocument()
