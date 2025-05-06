@@ -3,16 +3,16 @@ import { ReactElement, useState } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
-import { simpleComponentConfig } from '@core/shared/ui/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { TranslateJourneyDialog } from './TranslateJourneyDialog'
 
 const TranslateJourneyDialogStory: Meta<typeof TranslateJourneyDialog> = {
-  ...simpleComponentConfig,
+  ...journeysAdminConfig,
   component: TranslateJourneyDialog,
   title: 'Journeys-Admin/JourneyList/TranslateJourneyDialog',
   parameters: {
-    ...simpleComponentConfig.parameters,
+    ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
   }
 }
