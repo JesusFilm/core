@@ -109,9 +109,20 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
       )
   }
 
+  function handleToolCall(toolCallId: string, result: string): void {
+    addToolResult({
+      toolCallId: toolCallId,
+      result: result
+    })
+    setToolCallId(null)
+  }
+
   async function handleSubmit(): Promise<void> {
     const message = userMessage.trim()
     if (message === '') return
+    if (toolCallId != null) {
+      handleToolCall(toolCallId, 'cancel the previous tool call')
+    }
 
     setUserMessage('')
     try {
@@ -419,12 +430,12 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
         }}
         onChange={async (selectedImage) => {
           if (toolCallId != null) {
-            addToolResult({
-              toolCallId: toolCallId,
-              result: `here is the image the new image. Update the old image block to this image: ${JSON.stringify(
+            handleToolCall(
+              toolCallId,
+              `here is the image the new image. Update the old image block to this image: ${JSON.stringify(
                 selectedImage
               )}`
-            })
+            )
           }
         }}
         selectedBlock={null}
