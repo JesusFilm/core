@@ -5,8 +5,8 @@ import Player from 'video.js/dist/types/player'
 import { useVideo } from '../../../libs/videoContext'
 
 import { ContentHeader } from './ContentHeader'
-import { ContentHeroVideo } from './ContentHeroVideo'
 import { ContentHeroMuteButton } from './ContentHeroMuteButton'
+import { ContentHeroVideo } from './ContentHeroVideo'
 
 export function ContentHero(): ReactElement {
   const { t } = useTranslation('apps-watch')

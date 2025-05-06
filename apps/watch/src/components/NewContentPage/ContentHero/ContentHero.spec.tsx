@@ -1,11 +1,13 @@
-import { render, screen, fireEvent } from '@testing-library/react'
-import { ContentHero } from './ContentHero'
-import { VideoProvider } from '../../../libs/videoContext'
-import type { VideoContentFields } from '../../../../__generated__/VideoContentFields'
+import { fireEvent, render, screen } from '@testing-library/react'
+
 import {
   VideoLabel,
   VideoVariantDownloadQuality
 } from '../../../../__generated__/globalTypes'
+import type { VideoContentFields } from '../../../../__generated__/VideoContentFields'
+import { VideoProvider } from '../../../libs/videoContext'
+
+import { ContentHero } from './ContentHero'
 
 // Mock the video context
 const mockVideoContent: VideoContentFields = {
