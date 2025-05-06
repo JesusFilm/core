@@ -35,20 +35,28 @@ You are currently in the context of a journey.
 
 You specialize in translating text from one language to another.
 If the user asks for translation without specifying what to translate,
-assume that the user wants to translate the journey's title and description, the content of the typography blocks and button blocks.
+assume that the user wants to translate the journey's title and description,
+alongside the content of the typography and button blocks.
 You can then update the journey with the new translation.
 
-Whenever the user asks to perform some action, assume that the user wants to 
-perform the action on the journey or its blocks.
+The user can see any changes you make to the journey. You do not need to report
+back to the user about the changes you make. Just tell them that you made the
+changes.
 
-if you are missing any block Ids, get the journey. Then you will have context over the ids of it's blocks.
+Whenever the user asks to perform some action without specifying what to act on,
+assume that the user wants to perform the action on the journey or its blocks.
 
-Never show any form of UUID (e.g. 123e4567-e89b-12d3-a456-426614174000) to the user unless the user specifically asks for
-you to return the id.
+If you are missing any block Ids, get the journey. Then you will have context
+over the ids of it's blocks.
 
-You must not ask the user to confirm or approve any action. Just perform the action.
+Never show any form of UUID (e.g. 123e4567-e89b-12d3-a456-426614174000) to the
+user unless the user specifically asks for you to return the id.
 
-Don't reference steps as they only have a card child. Pretend they are synonymous.
+You must not ask the user to confirm or approve any action. Just perform the
+action.
+
+Don't reference step blocks as they only have a single card block as a child.
+Pretend they are synonymous when talking to the user.
 `.trim()
 
 export function AiChat({ open = false }: AiChatProps): ReactElement {
@@ -57,7 +65,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
   const user = useUser()
   const client = useApolloClient()
   const { journey } = useJourney()
-  const { messages, append, setMessages, status, error } = useChat({
+  const { messages, append, setMessages, status } = useChat({
     fetch: fetchWithAuthorization,
     maxSteps: 5,
     credentials: 'omit',
@@ -103,8 +111,8 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
       )
   }
 
-  async function handleSubmit(): Promise<void> {
-    const message = userMessage.trim()
+  async function handleSubmit(customMessage?: string): Promise<void> {
+    const message = customMessage ?? userMessage.trim()
     if (message === '') return
 
     setUserMessage('')
@@ -179,23 +187,69 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
           }}
         >
           {nonSystemMessages.length === 0 && (
-            <Typography
-              variant="body1"
-              textAlign="center"
-              color="text.secondary"
-              sx={{
-                my: 4,
-                mx: 3,
-                flexGrow: 1,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              {t(
-                'NextSteps AI can help you make your journey more effective! Ask it anything.'
-              )}
-            </Typography>
+            <>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  gap: 2,
+                  flexWrap: 'wrap'
+                }}
+              >
+                <Chip
+                  label={t('Customize my journey')}
+                  size="small"
+                  variant="outlined"
+                  onClick={() => {
+                    void handleSubmit('Help me customize my journey.')
+                  }}
+                />
+                <Chip
+                  label={t('Translate to another language')}
+                  size="small"
+                  variant="outlined"
+                  onClick={() => {
+                    void handleSubmit(
+                      'Help me to translate my journey to another language.'
+                    )
+                  }}
+                />
+                <Chip
+                  label={t('Tell me about my journey')}
+                  size="small"
+                  variant="outlined"
+                  onClick={() => {
+                    void handleSubmit('Tell me about my journey.')
+                  }}
+                />
+                <Chip
+                  label={t('What can I do to improve my journey?')}
+                  size="small"
+                  variant="outlined"
+                  onClick={() => {
+                    void handleSubmit('What can I do to improve my journey?')
+                  }}
+                />
+              </Box>
+
+              <Typography
+                variant="body1"
+                textAlign="center"
+                color="text.secondary"
+                sx={{
+                  my: 4,
+                  mx: 3,
+                  flexGrow: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                {t(
+                  'NextSteps AI can help you make your journey more effective! Ask it anything.'
+                )}
+              </Typography>
+            </>
           )}
           {status === 'submitted' && (
             <Box>
