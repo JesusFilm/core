@@ -454,7 +454,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
                                         })
                                       }}
                                     >
-                                      {t('Open Image Library')}
+                                      {t('Open Video Library')}
                                     </Button>
                                   </Box>
                                 </Box>
