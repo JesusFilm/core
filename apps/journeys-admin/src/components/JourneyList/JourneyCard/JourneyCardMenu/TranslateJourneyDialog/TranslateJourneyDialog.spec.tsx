@@ -21,9 +21,9 @@ describe('TranslateJourneyDialog', () => {
       </MockedProvider>
     )
 
-    expect(screen.getByText('Translate Journey')).toBeInTheDocument()
-    expect(screen.getByText('Language')).toBeInTheDocument()
-    expect(screen.getByText('Translate')).toBeInTheDocument()
+    expect(screen.getByText('Create Translated Copy')).toBeInTheDocument()
+    expect(screen.getByText('Select Language')).toBeInTheDocument()
+    expect(screen.getByText('Create')).toBeInTheDocument()
     expect(screen.getByText('Cancel')).toBeInTheDocument()
   })
 
