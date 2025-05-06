@@ -9,6 +9,7 @@ import { getWatchUrl } from '../../libs/utils/getWatchUrl'
 import { useVideo } from '../../libs/videoContext'
 import { PageWrapper } from '../PageWrapper'
 
+import { ChapterCarousel } from './ChapterCarousel'
 import { ContentHero } from './ContentHero'
 import { ContentMetadata } from './ContentMetadata'
 
@@ -103,6 +104,7 @@ export function NewContentPage(): ReactElement {
                 py: 10
               }}
             >
+              <ChapterCarousel videos={realChildren} />
               <ContentMetadata
                 title={title[0].value}
                 description={description[0].value}
