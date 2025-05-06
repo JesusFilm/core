@@ -37,14 +37,19 @@ export function JourneyCardText({
       >
         {journey.title}
       </Typography>
-      <Stack direction="row" alignItems="center" spacing={1.5} sx={{ width: '100%' }}>
+      <Stack
+        direction="row"
+        alignItems="center"
+        spacing={1.5}
+        sx={{ width: '100%' }}
+      >
         <Globe1Icon sx={{ fontSize: 18 }} />
         <Typography
           variant="body1"
           sx={{
             whiteSpace: 'nowrap',
             overflow: 'hidden',
-            textOverflow: 'ellipsis',
+            textOverflow: 'ellipsis'
           }}
         >
           {nativeLanguageName}
@@ -57,7 +62,7 @@ export function JourneyCardText({
           sx={{
             flex: '0 0 auto',
             whiteSpace: 'nowrap',
-            color: 'secondary.main',
+            color: 'secondary.main'
           }}
           noWrap
           suppressHydrationWarning
