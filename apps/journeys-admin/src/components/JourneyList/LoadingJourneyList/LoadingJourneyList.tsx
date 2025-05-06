@@ -38,8 +38,8 @@ function LoadingJourneyCard(): ReactElement {
             xs: '1.9',
             sm: '1.43'
           },
-          mx: { xs: 3, sm: 2},
-          mt: { xs: 3, sm: 2},
+          mx: { xs: 3, sm: 2 },
+          mt: { xs: 3, sm: 2 },
           borderRadius: '4%',
           borderWidth: 1,
           borderStyle: 'solid',

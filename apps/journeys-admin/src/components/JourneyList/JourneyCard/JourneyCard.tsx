@@ -70,7 +70,7 @@ export function JourneyCard({
       aria-label="journey-card"
       variant="outlined"
       sx={{
-        aspectRatio: { xs: '1', sm: '1/1.3'},
+        aspectRatio: { xs: '1', sm: '1/1.3' },
         borderRadius: 0,
         borderColor: 'divider',
         borderBottom: 'none',
@@ -145,8 +145,8 @@ export function JourneyCard({
                   xs: '1.9',
                   sm: '1.43'
                 },
-                mx: { xs: 3, sm: 2},
-                mt: { xs: 3, sm: 2},
+                mx: { xs: 3, sm: 2 },
+                mt: { xs: 3, sm: 2 },
                 borderRadius: '4%',
                 borderWidth: 1,
                 borderStyle: 'solid',
