@@ -132,6 +132,12 @@
           "email dev --dir apis/api-journeys-modern/src/emails/templates --port 4601"
         ]
       }
+    },
+    "update-shortlinks": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx ts-node -P apis/api-journeys-modern/tsconfig.app.json apis/api-journeys-modern/src/workers/cli.ts shortlink-updater"
+      }
     }
   }
 }
