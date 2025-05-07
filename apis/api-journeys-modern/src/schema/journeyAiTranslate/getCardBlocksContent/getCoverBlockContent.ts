@@ -12,7 +12,6 @@ export async function getCoverBlockContent({
 }): Promise<string> {
   if (coverBlock.typename === 'ImageBlock' && coverBlock.src != null) {
     return await getImageBlockContent({
-      blocks,
       block: coverBlock,
       isCoverBlock: true
     })

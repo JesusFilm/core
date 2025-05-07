@@ -108,6 +108,5 @@ export const builder = new SchemaBuilder<{
 
 builder.queryType({})
 builder.mutationType({})
-builder.subscriptionType({})
 builder.addScalarType('Date', DateResolver)
 builder.addScalarType('DateTimeISO', DateTimeISOResolver)

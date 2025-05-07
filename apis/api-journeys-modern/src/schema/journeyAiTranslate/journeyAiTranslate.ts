@@ -1,154 +1,15 @@
-import { Job, Queue, QueueEvents } from 'bullmq'
+import { google } from '@ai-sdk/google'
+import { ApolloClient, createHttpLink } from '@apollo/client'
+import { InMemoryCache } from '@apollo/client/cache'
+import { generateObject, generateText } from 'ai'
+import { z } from 'zod'
 
-import { connection } from '../../lib/redisConnection'
-import {
-  AiTranslateJourneyJob,
-  jobName,
-  queueName
-} from '../../workers/journeyAiTranslate'
+import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
-class JourneyAiTranslateStatusShape {
-  id: string
-  status: string
-  progress: number
-  constructor(id: string, status: string, progress: number) {
-    this.id = id
-    this.status = status
-    this.progress = progress
-  }
-}
-
-const queue = new Queue(queueName, { connection })
-
-const JourneyAiTranslateStatusRef = builder
-  .objectRef<JourneyAiTranslateStatusShape>('JourneyAiTranslateStatus')
-  .implement({})
-
-const JourneyAiTranslateStatus = builder.objectType(
-  JourneyAiTranslateStatusRef,
-  {
-    name: 'JourneyAiTranslateStatus',
-    fields: (t) => ({
-      id: t.exposeString('id', { nullable: false }),
-      status: t.exposeString('status', { nullable: false }),
-      progress: t.exposeInt('progress', { nullable: false })
-    })
-  }
-)
-
-builder.subscriptionField('journeyAiTranslateStatus', (t) =>
-  t.withAuth({ isAuthenticated: true }).field({
-    args: {
-      jobId: t.arg({ type: 'ID', required: true })
-    },
-    type: JourneyAiTranslateStatus,
-    nullable: true,
-    subscribe: async (_root, { jobId }) => {
-      // Create a function to get job state - reusing similar logic from the query resolver
-      const getJobState = async (): Promise<JourneyAiTranslateStatusShape> => {
-        try {
-          const job = (await queue?.getJob(jobId)) as Job<AiTranslateJourneyJob>
-          if (!job) {
-            throw new Error('Job not found')
-          }
-
-          let status = 'pending'
-          if (await job.isActive()) status = 'processing'
-          if (await job.isCompleted()) status = 'completed'
-          if (await job.isFailed()) status = 'failed'
-
-          return {
-            id: jobId,
-            status,
-            progress: ((await job.progress) as number) ?? 0
-          }
-        } catch (error) {
-          console.error('Error getting job state:', error)
-          return {
-            id: jobId,
-            status: 'error',
-            progress: 0
-          }
-        }
-      }
-
-      const queueEvents = new QueueEvents(queueName, {
-        connection
-      })
-
-      // Create an async iterator that will emit job status updates
-      async function* createJobStatusIterator(): AsyncGenerator<
-        JourneyAiTranslateStatusShape,
-        void,
-        unknown
-      > {
-        // First, emit the initial state
-        yield await getJobState()
-
-        // Set up a promise-based event system
-        const events: {
-          resolve: ((value: JourneyAiTranslateStatusShape) => void) | null
-          promise: Promise<JourneyAiTranslateStatusShape>
-        } = {
-          resolve: null,
-          promise: new Promise<JourneyAiTranslateStatusShape>((resolve) => {
-            events.resolve = resolve
-          })
-        }
-
-        // Function to create a new promise when the previous one is resolved
-        const createNewPromise = () => {
-          events.promise = new Promise<JourneyAiTranslateStatusShape>(
-            (resolve) => {
-              events.resolve = resolve
-            }
-          )
-        }
-
-        // Set up event handlers for this specific job
-        const handleJobEvent = async () => {
-          if (events.resolve) {
-            const state = await getJobState()
-            events.resolve(state)
-            createNewPromise()
-          }
-        }
-
-        // Add event listeners for all relevant job states
-        queueEvents.on('progress', ({ jobId: eventJobId }) => {
-          if (eventJobId === jobId) void handleJobEvent()
-        })
-
-        queueEvents.on('completed', ({ jobId: eventJobId }) => {
-          if (eventJobId === jobId) void handleJobEvent()
-        })
-
-        queueEvents.on('failed', ({ jobId: eventJobId }) => {
-          if (eventJobId === jobId) void handleJobEvent()
-        })
-
-        queueEvents.on('active', ({ jobId: eventJobId }) => {
-          if (eventJobId === jobId) void handleJobEvent()
-        })
-
-        try {
-          // Continue yielding job status updates as they come in
-          while (true) {
-            yield await events.promise
-          }
-        } finally {
-          // Clean up when subscription ends
-          queueEvents.removeAllListeners()
-          await queueEvents.close()
-        }
-      }
-
-      return createJobStatusIterator()
-    },
-    resolve: (payload) => payload
-  })
-)
+import { getCardBlocksContent } from './getCardBlocksContent'
+import { getLanguageName } from './translateJourney/getLanguageName'
+import { translateCardBlock } from './translateJourney/translateCard/translateCard'
 
 builder.mutationFields((t) => ({
   journeyAiTranslateCreate: t
@@ -163,31 +24,211 @@ builder.mutationFields((t) => ({
       type: 'ID',
       nullable: false,
       resolve: async (_root, { input }, { user }) => {
-        const job = (await queue.add(
-          jobName,
-          {
-            userId: user.id,
-            type: 'journeyAiTranslate',
-            inputJourneyId: input.journeyId,
-            name: input.name,
-            textLanguageId: input.textLanguageId,
-            videoLanguageId: input.videoLanguageId
+        // TODO: check if user has write access \
+        // Create Apollo client
+        const httpLink = createHttpLink({
+          uri: process.env.GATEWAY_URL,
+          headers: {
+            'interop-token': process.env.INTEROP_TOKEN ?? '',
+            'x-graphql-client-name': 'api-journeys-modern',
+            'x-graphql-client-version': process.env.SERVICE_VERSION ?? ''
+          }
+        })
+
+        const apollo = new ApolloClient({
+          link: httpLink,
+          cache: new InMemoryCache()
+        })
+
+        // 1. First get the journey details using Prisma
+        const journey = await prisma.journey.findUnique({
+          where: {
+            id: input.journeyId
           },
-          {
-            jobId: `${queueName}/${user.id}:${input.journeyId}:${input.textLanguageId}`,
-            removeOnComplete: {
-              age: 1000 * 60 * 60 * 24 * 5, // 5 days
-              count: 100
-            },
-            removeOnFail: {
-              age: 1000 * 60 * 60 * 24 * 5, // 5 days
-              count: 100
+          include: {
+            blocks: true
+          }
+        })
+
+        if (!journey) {
+          throw new Error('Could not fetch journey for translation')
+        }
+
+        // 2. Get the language names
+        const sourceLanguageName = await getLanguageName(
+          apollo,
+          journey.languageId
+        )
+        if (sourceLanguageName == null)
+          throw new Error('Could not fetch source language name')
+        const requestedLanguageName = await getLanguageName(
+          apollo,
+          input.textLanguageId
+        )
+        if (requestedLanguageName == null)
+          throw new Error('Could not fetch requested language name')
+
+        // 3. Get Cards Content
+        const stepBlocks = journey.blocks
+          .filter((block) => block.typename === 'StepBlock')
+          .sort((a, b) => (a.parentOrder ?? 0) - (b.parentOrder ?? 0))
+        const cardBlocks = stepBlocks
+          .map((block) =>
+            journey.blocks.find(
+              ({ parentBlockId }) =>
+                parentBlockId === block.id && block.typename === 'CardBlock'
+            )
+          )
+          .filter((block) => block !== undefined)
+
+        const cardBlocksContent = await getCardBlocksContent({
+          blocks: journey.blocks,
+          cardBlocks
+        })
+
+        // 4. Use Gemini to analyze the journey content and get intent
+        const prompt = `
+Analyze this journey content and provide the key intent, themes, and target audience. 
+Also suggest ways to culturally adapt this content for the target language: ${requestedLanguageName}.
+The source language is: ${sourceLanguageName}.
+The target language name is: ${requestedLanguageName}.
+
+Journey Title: ${journey.title}
+ ${journey.description ? `Journey Description: ${journey.description}` : ''}
+
+Journey Content:
+${cardBlocksContent.join('\n')}
+`
+
+        try {
+          const { text: journeyAnalysis } = await generateText({
+            model: google('gemini-2.0-flash'),
+            prompt,
+            onStepFinish: ({ usage }) => {
+              console.log('usage', usage)
+            }
+          })
+
+          // translate the journey title and description
+          try {
+            // Translate title and description
+            const titleDescPrompt = `
+Translate the following journey title and description to ${requestedLanguageName}.
+If a description is not provided, return a brief 1 sentence description of the journey.
+
+Original title: "${journey.title}"
+Original description: "${journey.description || ''}"
+
+Translation context:
+${journeyAnalysis}
+
+Return in this format:
+Title: [translated title]
+Description: [translated description]
+      `
+
+            const { object: translatedTitleDesc, usage } = await generateObject(
+              {
+                model: google('gemini-2.0-flash'),
+                prompt: titleDescPrompt,
+                schema: z.object({
+                  title: z.string(),
+                  description: z.string()
+                })
+              }
+            )
+
+            console.log('usage', usage)
+            if (translatedTitleDesc.title === null)
+              throw new Error('Failed to translate journey title')
+            if (translatedTitleDesc.description === null)
+              throw new Error('Failed to translate journey description')
+
+            // Update the journey using Prisma
+            await prisma.journey.update({
+              where: {
+                id: input.journeyId
+              },
+              data: {
+                title: translatedTitleDesc.title,
+                description: translatedTitleDesc.description
+              }
+            })
+
+            console.log('Successfully translated journey title and description')
+          } catch (error) {
+            console.error('Error translating journey title/description', error)
+            // Continue with the rest of the translation
+          }
+
+          // 5. Translate each card
+          const cardBlocks = journey.blocks.filter(
+            (block) => block.typename === 'CardBlock'
+          )
+
+          console.log(
+            `Analyzing and translating ${cardBlocks.length} card blocks individually`
+          )
+
+          for (let i = 0; i < cardBlocks.length; i++) {
+            const cardBlock = cardBlocks[i]
+            const cardContent = cardBlocksContent[i]
+
+            try {
+              // Analyze this card in relation to the journey intent
+              const cardAnalysisPrompt = `
+            I'm going to give you a journey analysis and the content of a specific card in that journey.
+            Your task is to analyze how this specific card contributes to the overall journey intent.
+            
+            Overall journey analysis:
+            ${journeyAnalysis}
+            
+            Card content:
+            ${cardContent}
+            
+            Please analyze:
+            1. How does this card relate to the overall journey intent?
+            2. What is the specific purpose of this card?
+            3. What emotion or action is this card trying to evoke?
+            4. Any cultural considerations for translating this card to ${requestedLanguageName}?
+            
+            Provide a concise analysis that will help inform translation decisions.
+          `
+
+              const { text: cardAnalysis } = await generateText({
+                model: google('gemini-2.0-flash'),
+                prompt: cardAnalysisPrompt,
+                onStepFinish: ({ usage }) => {
+                  console.log('usage', usage)
+                }
+              })
+
+              if (cardAnalysis) {
+                console.log(`Successfully analyzed card ${cardBlock.id}`)
+
+                await translateCardBlock({
+                  blocks: journey.blocks,
+                  cardBlock,
+                  cardAnalysis,
+                  sourceLanguageName,
+                  targetLanguageName: requestedLanguageName
+                })
+              }
+            } catch (analysisError) {
+              console.error(
+                `Error analyzing card ${cardBlock.id}:`,
+                analysisError
+              )
+              // Continue with other cards
             }
           }
-        )) as Job<AiTranslateJourneyJob>
-
-        if (!job.id) throw new Error('Failed to create job')
-        return job.id
+        } catch (error: unknown) {
+          console.error('Error analyzing journey with Gemini:', error)
+          const errorMessage =
+            error instanceof Error ? error.message : 'Unknown error occurred'
+          throw new Error(`Failed to analyze journey: ${errorMessage}`)
+        }
+        return input.journeyId
       }
     })
 }))

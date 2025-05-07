@@ -2,11 +2,9 @@ import { Block } from '.prisma/api-journeys-modern-client'
 import { getImageDescription } from '@core/shared/ai/getImageDescription'
 
 export async function getImageBlockContent({
-  blocks,
   block,
   isCoverBlock = false
 }: {
-  blocks: Block[]
   block: Block
   isCoverBlock?: boolean
 }): Promise<string> {
