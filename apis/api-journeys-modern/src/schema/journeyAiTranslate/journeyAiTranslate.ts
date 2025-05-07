@@ -1,7 +1,7 @@
 import { google } from '@ai-sdk/google'
 import { ApolloClient, createHttpLink } from '@apollo/client'
 import { InMemoryCache } from '@apollo/client/cache'
-import { generateObject, generateText, streamObject } from 'ai'
+import { generateObject, generateText } from 'ai'
 import { z } from 'zod'
 
 import { prisma } from '../../lib/prisma'
@@ -303,7 +303,6 @@ Description: [translated description]
           `
 
               try {
-                // Skip primary approach and go directly to the known working fallback
                 console.log(
                   `Translating card ${cardBlock.id} with ${allBlocksToTranslate.length} blocks`
                 )
