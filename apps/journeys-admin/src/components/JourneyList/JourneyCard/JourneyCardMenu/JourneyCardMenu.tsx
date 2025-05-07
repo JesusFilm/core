@@ -48,15 +48,6 @@ const TrashJourneyDialog = dynamic(
   { ssr: false }
 )
 
-const TrashMenu = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "TrashMenu" */
-      './TrashMenu'
-    ).then((mod) => mod.TrashMenu),
-  { ssr: false }
-)
-
 const JourneyDetailsDialog = dynamic(
   async () =>
     await import(
