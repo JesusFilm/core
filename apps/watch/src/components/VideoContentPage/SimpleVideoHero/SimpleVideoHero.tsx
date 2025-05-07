@@ -50,7 +50,6 @@ export function SimpleVideoHero(): ReactElement {
   return (
     <Box
       sx={{
-        // height: { xs: '90vh', md: '87vh' },
         height: {
           xs: `calc(100svh - ${APP_BAR_HEIGHT_XS}px)`,
           lg: `calc(100svh - ${APP_BAR_HEIGHT}px)`

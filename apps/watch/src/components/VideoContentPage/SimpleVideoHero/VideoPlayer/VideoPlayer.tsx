@@ -26,7 +26,7 @@ export function VideoPlayer({
   const pauseVideoOnScrollAway = useCallback((): void => {
     const scrollY = window.scrollY
     if (player != null) {
-      if (scrollY > 300) {
+      if (scrollY > 700) {
         player.pause()
       } else {
         void player.play()

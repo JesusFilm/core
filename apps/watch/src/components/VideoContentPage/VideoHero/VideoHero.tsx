@@ -18,7 +18,7 @@ import { SimpleVideoHero } from '../SimpleVideoHero'
 export function VideoHero(): ReactElement {
   return (
     <>
-      <Header hideBottomAppBar hideSpacer themeMode={ThemeMode.dark} />
+      <Header hideSpacer themeMode={ThemeMode.dark} />
       <SimpleVideoHero />
     </>
   )
