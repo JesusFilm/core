@@ -210,60 +210,52 @@ Description: [translated description]
                 journey.blocks.map((block) => block.id)
               )
 
+              // Create a more concise representation of blocks to translate
+              const blocksToTranslateInfo = allBlocksToTranslate
+                .map((block) => {
+                  let fieldInfo = ''
+                  switch (block.typename) {
+                    case 'TypographyBlock':
+                      fieldInfo = `Content: "${block.content || ''}"`
+                      break
+                    case 'ButtonBlock':
+                    case 'RadioOptionBlock':
+                    case 'RadioQuestionBlock':
+                      fieldInfo = `Label: "${block.label || ''}"`
+                      break
+                    case 'TextResponseBlock':
+                      fieldInfo = `Label: "${block.label || ''}", Placeholder: "${block.placeholder || ''}"`
+                      break
+                  }
+
+                  return `[${block.id}] ${block.typename}: ${fieldInfo}`
+                })
+                .join('\n')
+
               // Create prompt for translation
               const cardAnalysisPrompt = `
-            Translate the following blocks from ${sourceLanguageName} to ${requestedLanguageName}.
+            Translate content from ${sourceLanguageName} to ${requestedLanguageName}.
             
-            Card content:
+            CONTEXT:
             ${cardContent}
             
-            Translate the following blocks and return a list of translated content.
+            TRANSLATE THE FOLLOWING BLOCKS:
+            ${blocksToTranslateInfo}
             
-            Blocks to translate:
-            ${allBlocksToTranslate
-              .map((block) => {
-                switch (block.typename) {
-                  case 'TypographyBlock':
-                    return `Block ID: ${block.id}
-                            Type: TypographyBlock
-                            Content to translate: "${block.content || ''}"`
-                  case 'ButtonBlock':
-                    return `Block ID: ${block.id}
-                            Type: ButtonBlock
-                            Label to translate: "${block.label || ''}"`
-                  case 'RadioQuestionBlock':
-                    return `Block ID: ${block.id}
-                            Type: RadioQuestionBlock
-                            Label to translate: "${block.label || ''}"`
-                  case 'RadioOptionBlock':
-                    return `Block ID: ${block.id}
-                            Type: RadioOptionBlock
-                            Label to translate: "${block.label || ''}"`
-                  case 'TextResponseBlock':
-                    return `Block ID: ${block.id}
-                            Type: TextResponseBlock
-                            Label to translate: "${block.label || ''}"
-                            Placeholder to translate: "${block.placeholder || ''}"`
-                  default:
-                    return null
-                }
-              })
-              .filter(Boolean)
-              .join('\n\n')}
-            
-            IMPORTANT: For each block, use ONLY the EXACT Block IDs provided above. Do not use placeholder, sequential, or made-up IDs like "1", "2", etc.
-            
+            IMPORTANT: For each block, use ONLY the EXACT IDs in square brackets [ID].
             Return an array where each item is an object with:
-            - blockId: The EXACT ID of the block as provided above
-            - blockType: The type of the block
-            - updates: An object with field names and their translated values
+            - blockId: The EXACT ID from square brackets
+            - updates: An object with field names and translated values
             
-            For RadioOptionBlock, translate the "label" field.
-            For TextResponseBlock, translate both "label" and "placeholder" fields if present.
-            For all other blocks, translate the appropriate field (content for TypographyBlock, label for ButtonBlock, etc.)
+            Field names to translate per block type:
+            - TypographyBlock: "content" field
+            - ButtonBlock: "label" field
+            - RadioOptionBlock: "label" field
+            - RadioQuestionBlock: "label" field
+            - TextResponseBlock: "label" and "placeholder" fields
             
-            Ensure translations maintain the meaning and intent while being culturally appropriate for ${requestedLanguageName}.
-            Keep translations concise and effective for their UI context (e.g., button labels should remain short).
+            Ensure translations maintain the meaning while being culturally appropriate for ${requestedLanguageName}.
+            Keep translations concise and effective for UI context (e.g., button labels should remain short).
           `
               try {
                 // Stream the translations
