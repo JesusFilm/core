@@ -6,10 +6,10 @@
 import { ImageBlockUpdateInput } from "./globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: AiUpdateImageBlock
+// GraphQL mutation operation: AiBlockImageUpdate
 // ====================================================
 
-export interface AiUpdateImageBlock_imageBlockUpdate {
+export interface AiBlockImageUpdate_imageBlockUpdate {
   __typename: "ImageBlock";
   id: string;
   parentBlockId: string | null;
@@ -28,11 +28,11 @@ export interface AiUpdateImageBlock_imageBlockUpdate {
   focalLeft: number | null;
 }
 
-export interface AiUpdateImageBlock {
-  imageBlockUpdate: AiUpdateImageBlock_imageBlockUpdate;
+export interface AiBlockImageUpdate {
+  imageBlockUpdate: AiBlockImageUpdate_imageBlockUpdate;
 }
 
-export interface AiUpdateImageBlockVariables {
+export interface AiBlockImageUpdateVariables {
   id: string;
   input: ImageBlockUpdateInput;
 }

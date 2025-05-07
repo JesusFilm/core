@@ -3,57 +3,57 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform, JourneyMenuButtonIcon } from "./globalTypes";
+import { JourneyUpdateInput, JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform, JourneyMenuButtonIcon } from "./globalTypes";
 
 // ====================================================
-// GraphQL query operation: AiGetAdminJourney
+// GraphQL mutation operation: AiJourneyUpdate
 // ====================================================
 
-export interface AiGetAdminJourney_journey_language_name {
+export interface AiJourneyUpdate_journeyUpdate_language_name {
   __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
 
-export interface AiGetAdminJourney_journey_language {
+export interface AiJourneyUpdate_journeyUpdate_language {
   __typename: "Language";
   id: string;
   bcp47: string | null;
   iso3: string | null;
-  name: AiGetAdminJourney_journey_language_name[];
+  name: AiJourneyUpdate_journeyUpdate_language_name[];
 }
 
-export interface AiGetAdminJourney_journey_blocks_GridContainerBlock {
+export interface AiJourneyUpdate_journeyUpdate_blocks_GridContainerBlock {
   __typename: "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
 }
 
-export interface AiGetAdminJourney_journey_blocks_ButtonBlock_action_NavigateToBlockAction {
+export interface AiJourneyUpdate_journeyUpdate_blocks_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface AiGetAdminJourney_journey_blocks_ButtonBlock_action_LinkAction {
+export interface AiJourneyUpdate_journeyUpdate_blocks_ButtonBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export interface AiGetAdminJourney_journey_blocks_ButtonBlock_action_EmailAction {
+export interface AiJourneyUpdate_journeyUpdate_blocks_ButtonBlock_action_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
 
-export type AiGetAdminJourney_journey_blocks_ButtonBlock_action = AiGetAdminJourney_journey_blocks_ButtonBlock_action_NavigateToBlockAction | AiGetAdminJourney_journey_blocks_ButtonBlock_action_LinkAction | AiGetAdminJourney_journey_blocks_ButtonBlock_action_EmailAction;
+export type AiJourneyUpdate_journeyUpdate_blocks_ButtonBlock_action = AiJourneyUpdate_journeyUpdate_blocks_ButtonBlock_action_NavigateToBlockAction | AiJourneyUpdate_journeyUpdate_blocks_ButtonBlock_action_LinkAction | AiJourneyUpdate_journeyUpdate_blocks_ButtonBlock_action_EmailAction;
 
-export interface AiGetAdminJourney_journey_blocks_ButtonBlock {
+export interface AiJourneyUpdate_journeyUpdate_blocks_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
   parentBlockId: string | null;
@@ -65,10 +65,10 @@ export interface AiGetAdminJourney_journey_blocks_ButtonBlock {
   startIconId: string | null;
   endIconId: string | null;
   submitEnabled: boolean | null;
-  action: AiGetAdminJourney_journey_blocks_ButtonBlock_action | null;
+  action: AiJourneyUpdate_journeyUpdate_blocks_ButtonBlock_action | null;
 }
 
-export interface AiGetAdminJourney_journey_blocks_CardBlock {
+export interface AiJourneyUpdate_journeyUpdate_blocks_CardBlock {
   __typename: "CardBlock";
   id: string;
   parentBlockId: string | null;
@@ -101,7 +101,7 @@ export interface AiGetAdminJourney_journey_blocks_CardBlock {
   fullscreen: boolean;
 }
 
-export interface AiGetAdminJourney_journey_blocks_IconBlock {
+export interface AiJourneyUpdate_journeyUpdate_blocks_IconBlock {
   __typename: "IconBlock";
   id: string;
   parentBlockId: string | null;
@@ -111,7 +111,7 @@ export interface AiGetAdminJourney_journey_blocks_IconBlock {
   iconColor: IconColor | null;
 }
 
-export interface AiGetAdminJourney_journey_blocks_ImageBlock {
+export interface AiJourneyUpdate_journeyUpdate_blocks_ImageBlock {
   __typename: "ImageBlock";
   id: string;
   parentBlockId: string | null;
@@ -130,79 +130,79 @@ export interface AiGetAdminJourney_journey_blocks_ImageBlock {
   focalLeft: number | null;
 }
 
-export interface AiGetAdminJourney_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction {
+export interface AiJourneyUpdate_journeyUpdate_blocks_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface AiGetAdminJourney_journey_blocks_RadioOptionBlock_action_LinkAction {
+export interface AiJourneyUpdate_journeyUpdate_blocks_RadioOptionBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export interface AiGetAdminJourney_journey_blocks_RadioOptionBlock_action_EmailAction {
+export interface AiJourneyUpdate_journeyUpdate_blocks_RadioOptionBlock_action_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
 
-export type AiGetAdminJourney_journey_blocks_RadioOptionBlock_action = AiGetAdminJourney_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction | AiGetAdminJourney_journey_blocks_RadioOptionBlock_action_LinkAction | AiGetAdminJourney_journey_blocks_RadioOptionBlock_action_EmailAction;
+export type AiJourneyUpdate_journeyUpdate_blocks_RadioOptionBlock_action = AiJourneyUpdate_journeyUpdate_blocks_RadioOptionBlock_action_NavigateToBlockAction | AiJourneyUpdate_journeyUpdate_blocks_RadioOptionBlock_action_LinkAction | AiJourneyUpdate_journeyUpdate_blocks_RadioOptionBlock_action_EmailAction;
 
-export interface AiGetAdminJourney_journey_blocks_RadioOptionBlock {
+export interface AiJourneyUpdate_journeyUpdate_blocks_RadioOptionBlock {
   __typename: "RadioOptionBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  action: AiGetAdminJourney_journey_blocks_RadioOptionBlock_action | null;
+  action: AiJourneyUpdate_journeyUpdate_blocks_RadioOptionBlock_action | null;
 }
 
-export interface AiGetAdminJourney_journey_blocks_RadioQuestionBlock {
+export interface AiJourneyUpdate_journeyUpdate_blocks_RadioQuestionBlock {
   __typename: "RadioQuestionBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
 }
 
-export interface AiGetAdminJourney_journey_blocks_SignUpBlock_action_NavigateToBlockAction {
+export interface AiJourneyUpdate_journeyUpdate_blocks_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface AiGetAdminJourney_journey_blocks_SignUpBlock_action_LinkAction {
+export interface AiJourneyUpdate_journeyUpdate_blocks_SignUpBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export interface AiGetAdminJourney_journey_blocks_SignUpBlock_action_EmailAction {
+export interface AiJourneyUpdate_journeyUpdate_blocks_SignUpBlock_action_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
 
-export type AiGetAdminJourney_journey_blocks_SignUpBlock_action = AiGetAdminJourney_journey_blocks_SignUpBlock_action_NavigateToBlockAction | AiGetAdminJourney_journey_blocks_SignUpBlock_action_LinkAction | AiGetAdminJourney_journey_blocks_SignUpBlock_action_EmailAction;
+export type AiJourneyUpdate_journeyUpdate_blocks_SignUpBlock_action = AiJourneyUpdate_journeyUpdate_blocks_SignUpBlock_action_NavigateToBlockAction | AiJourneyUpdate_journeyUpdate_blocks_SignUpBlock_action_LinkAction | AiJourneyUpdate_journeyUpdate_blocks_SignUpBlock_action_EmailAction;
 
-export interface AiGetAdminJourney_journey_blocks_SignUpBlock {
+export interface AiJourneyUpdate_journeyUpdate_blocks_SignUpBlock {
   __typename: "SignUpBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
   submitLabel: string | null;
   submitIconId: string | null;
-  action: AiGetAdminJourney_journey_blocks_SignUpBlock_action | null;
+  action: AiJourneyUpdate_journeyUpdate_blocks_SignUpBlock_action | null;
 }
 
-export interface AiGetAdminJourney_journey_blocks_SpacerBlock {
+export interface AiJourneyUpdate_journeyUpdate_blocks_SpacerBlock {
   __typename: "SpacerBlock";
   id: string;
   parentBlockId: string | null;
@@ -210,7 +210,7 @@ export interface AiGetAdminJourney_journey_blocks_SpacerBlock {
   spacing: number | null;
 }
 
-export interface AiGetAdminJourney_journey_blocks_StepBlock {
+export interface AiJourneyUpdate_journeyUpdate_blocks_StepBlock {
   __typename: "StepBlock";
   id: string;
   parentBlockId: string | null;
@@ -235,7 +235,7 @@ export interface AiGetAdminJourney_journey_blocks_StepBlock {
   slug: string | null;
 }
 
-export interface AiGetAdminJourney_journey_blocks_TextResponseBlock {
+export interface AiJourneyUpdate_journeyUpdate_blocks_TextResponseBlock {
   __typename: "TextResponseBlock";
   id: string;
   parentBlockId: string | null;
@@ -250,7 +250,7 @@ export interface AiGetAdminJourney_journey_blocks_TextResponseBlock {
   integrationId: string | null;
 }
 
-export interface AiGetAdminJourney_journey_blocks_TypographyBlock {
+export interface AiJourneyUpdate_journeyUpdate_blocks_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
   parentBlockId: string | null;
@@ -261,81 +261,81 @@ export interface AiGetAdminJourney_journey_blocks_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
-export interface AiGetAdminJourney_journey_blocks_VideoBlock_mediaVideo_Video_title {
+export interface AiJourneyUpdate_journeyUpdate_blocks_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
 }
 
-export interface AiGetAdminJourney_journey_blocks_VideoBlock_mediaVideo_Video_images {
+export interface AiJourneyUpdate_journeyUpdate_blocks_VideoBlock_mediaVideo_Video_images {
   __typename: "CloudflareImage";
   mobileCinematicHigh: string | null;
 }
 
-export interface AiGetAdminJourney_journey_blocks_VideoBlock_mediaVideo_Video_variant {
+export interface AiJourneyUpdate_journeyUpdate_blocks_VideoBlock_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
   hls: string | null;
 }
 
-export interface AiGetAdminJourney_journey_blocks_VideoBlock_mediaVideo_Video_variantLanguages_name {
+export interface AiJourneyUpdate_journeyUpdate_blocks_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
 
-export interface AiGetAdminJourney_journey_blocks_VideoBlock_mediaVideo_Video_variantLanguages {
+export interface AiJourneyUpdate_journeyUpdate_blocks_VideoBlock_mediaVideo_Video_variantLanguages {
   __typename: "Language";
   id: string;
-  name: AiGetAdminJourney_journey_blocks_VideoBlock_mediaVideo_Video_variantLanguages_name[];
+  name: AiJourneyUpdate_journeyUpdate_blocks_VideoBlock_mediaVideo_Video_variantLanguages_name[];
 }
 
-export interface AiGetAdminJourney_journey_blocks_VideoBlock_mediaVideo_Video {
+export interface AiJourneyUpdate_journeyUpdate_blocks_VideoBlock_mediaVideo_Video {
   __typename: "Video";
   id: string;
-  title: AiGetAdminJourney_journey_blocks_VideoBlock_mediaVideo_Video_title[];
-  images: AiGetAdminJourney_journey_blocks_VideoBlock_mediaVideo_Video_images[];
-  variant: AiGetAdminJourney_journey_blocks_VideoBlock_mediaVideo_Video_variant | null;
-  variantLanguages: AiGetAdminJourney_journey_blocks_VideoBlock_mediaVideo_Video_variantLanguages[];
+  title: AiJourneyUpdate_journeyUpdate_blocks_VideoBlock_mediaVideo_Video_title[];
+  images: AiJourneyUpdate_journeyUpdate_blocks_VideoBlock_mediaVideo_Video_images[];
+  variant: AiJourneyUpdate_journeyUpdate_blocks_VideoBlock_mediaVideo_Video_variant | null;
+  variantLanguages: AiJourneyUpdate_journeyUpdate_blocks_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
 
-export interface AiGetAdminJourney_journey_blocks_VideoBlock_mediaVideo_MuxVideo {
+export interface AiJourneyUpdate_journeyUpdate_blocks_VideoBlock_mediaVideo_MuxVideo {
   __typename: "MuxVideo";
   id: string;
   assetId: string | null;
   playbackId: string | null;
 }
 
-export interface AiGetAdminJourney_journey_blocks_VideoBlock_mediaVideo_YouTube {
+export interface AiJourneyUpdate_journeyUpdate_blocks_VideoBlock_mediaVideo_YouTube {
   __typename: "YouTube";
   id: string;
 }
 
-export type AiGetAdminJourney_journey_blocks_VideoBlock_mediaVideo = AiGetAdminJourney_journey_blocks_VideoBlock_mediaVideo_Video | AiGetAdminJourney_journey_blocks_VideoBlock_mediaVideo_MuxVideo | AiGetAdminJourney_journey_blocks_VideoBlock_mediaVideo_YouTube;
+export type AiJourneyUpdate_journeyUpdate_blocks_VideoBlock_mediaVideo = AiJourneyUpdate_journeyUpdate_blocks_VideoBlock_mediaVideo_Video | AiJourneyUpdate_journeyUpdate_blocks_VideoBlock_mediaVideo_MuxVideo | AiJourneyUpdate_journeyUpdate_blocks_VideoBlock_mediaVideo_YouTube;
 
-export interface AiGetAdminJourney_journey_blocks_VideoBlock_action_NavigateToBlockAction {
+export interface AiJourneyUpdate_journeyUpdate_blocks_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface AiGetAdminJourney_journey_blocks_VideoBlock_action_LinkAction {
+export interface AiJourneyUpdate_journeyUpdate_blocks_VideoBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export interface AiGetAdminJourney_journey_blocks_VideoBlock_action_EmailAction {
+export interface AiJourneyUpdate_journeyUpdate_blocks_VideoBlock_action_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
 
-export type AiGetAdminJourney_journey_blocks_VideoBlock_action = AiGetAdminJourney_journey_blocks_VideoBlock_action_NavigateToBlockAction | AiGetAdminJourney_journey_blocks_VideoBlock_action_LinkAction | AiGetAdminJourney_journey_blocks_VideoBlock_action_EmailAction;
+export type AiJourneyUpdate_journeyUpdate_blocks_VideoBlock_action = AiJourneyUpdate_journeyUpdate_blocks_VideoBlock_action_NavigateToBlockAction | AiJourneyUpdate_journeyUpdate_blocks_VideoBlock_action_LinkAction | AiJourneyUpdate_journeyUpdate_blocks_VideoBlock_action_EmailAction;
 
-export interface AiGetAdminJourney_journey_blocks_VideoBlock {
+export interface AiJourneyUpdate_journeyUpdate_blocks_VideoBlock {
   __typename: "VideoBlock";
   id: string;
   parentBlockId: string | null;
@@ -403,37 +403,37 @@ export interface AiGetAdminJourney_journey_blocks_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  mediaVideo: AiGetAdminJourney_journey_blocks_VideoBlock_mediaVideo | null;
+  mediaVideo: AiJourneyUpdate_journeyUpdate_blocks_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */
-  action: AiGetAdminJourney_journey_blocks_VideoBlock_action | null;
+  action: AiJourneyUpdate_journeyUpdate_blocks_VideoBlock_action | null;
 }
 
-export interface AiGetAdminJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
+export interface AiJourneyUpdate_journeyUpdate_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface AiGetAdminJourney_journey_blocks_VideoTriggerBlock_triggerAction_LinkAction {
+export interface AiJourneyUpdate_journeyUpdate_blocks_VideoTriggerBlock_triggerAction_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export interface AiGetAdminJourney_journey_blocks_VideoTriggerBlock_triggerAction_EmailAction {
+export interface AiJourneyUpdate_journeyUpdate_blocks_VideoTriggerBlock_triggerAction_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
 
-export type AiGetAdminJourney_journey_blocks_VideoTriggerBlock_triggerAction = AiGetAdminJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction | AiGetAdminJourney_journey_blocks_VideoTriggerBlock_triggerAction_LinkAction | AiGetAdminJourney_journey_blocks_VideoTriggerBlock_triggerAction_EmailAction;
+export type AiJourneyUpdate_journeyUpdate_blocks_VideoTriggerBlock_triggerAction = AiJourneyUpdate_journeyUpdate_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction | AiJourneyUpdate_journeyUpdate_blocks_VideoTriggerBlock_triggerAction_LinkAction | AiJourneyUpdate_journeyUpdate_blocks_VideoTriggerBlock_triggerAction_EmailAction;
 
-export interface AiGetAdminJourney_journey_blocks_VideoTriggerBlock {
+export interface AiJourneyUpdate_journeyUpdate_blocks_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";
   id: string;
   parentBlockId: string | null;
@@ -443,12 +443,12 @@ export interface AiGetAdminJourney_journey_blocks_VideoTriggerBlock {
    * this is the number of seconds since the start of the video
    */
   triggerStart: number;
-  triggerAction: AiGetAdminJourney_journey_blocks_VideoTriggerBlock_triggerAction;
+  triggerAction: AiJourneyUpdate_journeyUpdate_blocks_VideoTriggerBlock_triggerAction;
 }
 
-export type AiGetAdminJourney_journey_blocks = AiGetAdminJourney_journey_blocks_GridContainerBlock | AiGetAdminJourney_journey_blocks_ButtonBlock | AiGetAdminJourney_journey_blocks_CardBlock | AiGetAdminJourney_journey_blocks_IconBlock | AiGetAdminJourney_journey_blocks_ImageBlock | AiGetAdminJourney_journey_blocks_RadioOptionBlock | AiGetAdminJourney_journey_blocks_RadioQuestionBlock | AiGetAdminJourney_journey_blocks_SignUpBlock | AiGetAdminJourney_journey_blocks_SpacerBlock | AiGetAdminJourney_journey_blocks_StepBlock | AiGetAdminJourney_journey_blocks_TextResponseBlock | AiGetAdminJourney_journey_blocks_TypographyBlock | AiGetAdminJourney_journey_blocks_VideoBlock | AiGetAdminJourney_journey_blocks_VideoTriggerBlock;
+export type AiJourneyUpdate_journeyUpdate_blocks = AiJourneyUpdate_journeyUpdate_blocks_GridContainerBlock | AiJourneyUpdate_journeyUpdate_blocks_ButtonBlock | AiJourneyUpdate_journeyUpdate_blocks_CardBlock | AiJourneyUpdate_journeyUpdate_blocks_IconBlock | AiJourneyUpdate_journeyUpdate_blocks_ImageBlock | AiJourneyUpdate_journeyUpdate_blocks_RadioOptionBlock | AiJourneyUpdate_journeyUpdate_blocks_RadioQuestionBlock | AiJourneyUpdate_journeyUpdate_blocks_SignUpBlock | AiJourneyUpdate_journeyUpdate_blocks_SpacerBlock | AiJourneyUpdate_journeyUpdate_blocks_StepBlock | AiJourneyUpdate_journeyUpdate_blocks_TextResponseBlock | AiJourneyUpdate_journeyUpdate_blocks_TypographyBlock | AiJourneyUpdate_journeyUpdate_blocks_VideoBlock | AiJourneyUpdate_journeyUpdate_blocks_VideoTriggerBlock;
 
-export interface AiGetAdminJourney_journey_primaryImageBlock {
+export interface AiJourneyUpdate_journeyUpdate_primaryImageBlock {
   __typename: "ImageBlock";
   id: string;
   parentBlockId: string | null;
@@ -467,7 +467,7 @@ export interface AiGetAdminJourney_journey_primaryImageBlock {
   focalLeft: number | null;
 }
 
-export interface AiGetAdminJourney_journey_creatorImageBlock {
+export interface AiJourneyUpdate_journeyUpdate_creatorImageBlock {
   __typename: "ImageBlock";
   id: string;
   parentBlockId: string | null;
@@ -486,7 +486,7 @@ export interface AiGetAdminJourney_journey_creatorImageBlock {
   focalLeft: number | null;
 }
 
-export interface AiGetAdminJourney_journey_userJourneys_user {
+export interface AiJourneyUpdate_journeyUpdate_userJourneys_user {
   __typename: "User";
   id: string;
   firstName: string;
@@ -494,7 +494,7 @@ export interface AiGetAdminJourney_journey_userJourneys_user {
   imageUrl: string | null;
 }
 
-export interface AiGetAdminJourney_journey_userJourneys {
+export interface AiJourneyUpdate_journeyUpdate_userJourneys {
   __typename: "UserJourney";
   id: string;
   role: UserJourneyRole;
@@ -502,17 +502,17 @@ export interface AiGetAdminJourney_journey_userJourneys {
    * Date time of when the journey was first opened
    */
   openedAt: any | null;
-  user: AiGetAdminJourney_journey_userJourneys_user | null;
+  user: AiJourneyUpdate_journeyUpdate_userJourneys_user | null;
 }
 
-export interface AiGetAdminJourney_journey_chatButtons {
+export interface AiJourneyUpdate_journeyUpdate_chatButtons {
   __typename: "ChatButton";
   id: string;
   link: string | null;
   platform: MessagePlatform | null;
 }
 
-export interface AiGetAdminJourney_journey_host {
+export interface AiJourneyUpdate_journeyUpdate_host {
   __typename: "Host";
   id: string;
   teamId: string;
@@ -522,33 +522,33 @@ export interface AiGetAdminJourney_journey_host {
   src2: string | null;
 }
 
-export interface AiGetAdminJourney_journey_team {
+export interface AiJourneyUpdate_journeyUpdate_team {
   __typename: "Team";
   id: string;
   title: string;
   publicTitle: string | null;
 }
 
-export interface AiGetAdminJourney_journey_tags_name_language {
+export interface AiJourneyUpdate_journeyUpdate_tags_name_language {
   __typename: "Language";
   id: string;
 }
 
-export interface AiGetAdminJourney_journey_tags_name {
+export interface AiJourneyUpdate_journeyUpdate_tags_name {
   __typename: "TagName";
   value: string;
-  language: AiGetAdminJourney_journey_tags_name_language;
+  language: AiJourneyUpdate_journeyUpdate_tags_name_language;
   primary: boolean;
 }
 
-export interface AiGetAdminJourney_journey_tags {
+export interface AiJourneyUpdate_journeyUpdate_tags {
   __typename: "Tag";
   id: string;
   parentId: string | null;
-  name: AiGetAdminJourney_journey_tags_name[];
+  name: AiJourneyUpdate_journeyUpdate_tags_name[];
 }
 
-export interface AiGetAdminJourney_journey_logoImageBlock {
+export interface AiJourneyUpdate_journeyUpdate_logoImageBlock {
   __typename: "ImageBlock";
   id: string;
   parentBlockId: string | null;
@@ -567,7 +567,7 @@ export interface AiGetAdminJourney_journey_logoImageBlock {
   focalLeft: number | null;
 }
 
-export interface AiGetAdminJourney_journey_menuStepBlock {
+export interface AiJourneyUpdate_journeyUpdate_menuStepBlock {
   __typename: "StepBlock";
   id: string;
   parentBlockId: string | null;
@@ -592,7 +592,7 @@ export interface AiGetAdminJourney_journey_menuStepBlock {
   slug: string | null;
 }
 
-export interface AiGetAdminJourney_journey {
+export interface AiJourneyUpdate_journeyUpdate {
   __typename: "Journey";
   id: string;
   slug: string;
@@ -602,7 +602,7 @@ export interface AiGetAdminJourney_journey {
   title: string;
   description: string | null;
   status: JourneyStatus;
-  language: AiGetAdminJourney_journey_language;
+  language: AiJourneyUpdate_journeyUpdate_language;
   createdAt: any;
   featuredAt: any | null;
   publishedAt: any | null;
@@ -615,15 +615,15 @@ export interface AiGetAdminJourney_journey {
   seoTitle: string | null;
   seoDescription: string | null;
   template: boolean | null;
-  blocks: AiGetAdminJourney_journey_blocks[] | null;
-  primaryImageBlock: AiGetAdminJourney_journey_primaryImageBlock | null;
+  blocks: AiJourneyUpdate_journeyUpdate_blocks[] | null;
+  primaryImageBlock: AiJourneyUpdate_journeyUpdate_primaryImageBlock | null;
   creatorDescription: string | null;
-  creatorImageBlock: AiGetAdminJourney_journey_creatorImageBlock | null;
-  userJourneys: AiGetAdminJourney_journey_userJourneys[] | null;
-  chatButtons: AiGetAdminJourney_journey_chatButtons[];
-  host: AiGetAdminJourney_journey_host | null;
-  team: AiGetAdminJourney_journey_team | null;
-  tags: AiGetAdminJourney_journey_tags[];
+  creatorImageBlock: AiJourneyUpdate_journeyUpdate_creatorImageBlock | null;
+  userJourneys: AiJourneyUpdate_journeyUpdate_userJourneys[] | null;
+  chatButtons: AiJourneyUpdate_journeyUpdate_chatButtons[];
+  host: AiJourneyUpdate_journeyUpdate_host | null;
+  team: AiJourneyUpdate_journeyUpdate_team | null;
+  tags: AiJourneyUpdate_journeyUpdate_tags[];
   website: boolean | null;
   showShareButton: boolean | null;
   showLikeButton: boolean | null;
@@ -632,15 +632,16 @@ export interface AiGetAdminJourney_journey {
    * public title for viewers
    */
   displayTitle: string | null;
-  logoImageBlock: AiGetAdminJourney_journey_logoImageBlock | null;
+  logoImageBlock: AiJourneyUpdate_journeyUpdate_logoImageBlock | null;
   menuButtonIcon: JourneyMenuButtonIcon | null;
-  menuStepBlock: AiGetAdminJourney_journey_menuStepBlock | null;
+  menuStepBlock: AiJourneyUpdate_journeyUpdate_menuStepBlock | null;
 }
 
-export interface AiGetAdminJourney {
-  journey: AiGetAdminJourney_journey;
+export interface AiJourneyUpdate {
+  journeyUpdate: AiJourneyUpdate_journeyUpdate;
 }
 
-export interface AiGetAdminJourneyVariables {
+export interface AiJourneyUpdateVariables {
   id: string;
+  input: JourneyUpdateInput;
 }

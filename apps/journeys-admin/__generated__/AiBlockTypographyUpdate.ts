@@ -6,10 +6,10 @@
 import { TypographyBlockUpdateInput, TypographyAlign, TypographyColor, TypographyVariant } from "./globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: AITypographyUpdate
+// GraphQL mutation operation: AiBlockTypographyUpdate
 // ====================================================
 
-export interface AITypographyUpdate_typographyBlockUpdate {
+export interface AiBlockTypographyUpdate_typographyBlockUpdate {
   __typename: "TypographyBlock";
   id: string;
   parentBlockId: string | null;
@@ -20,11 +20,11 @@ export interface AITypographyUpdate_typographyBlockUpdate {
   variant: TypographyVariant | null;
 }
 
-export interface AITypographyUpdate {
-  typographyBlockUpdate: AITypographyUpdate_typographyBlockUpdate;
+export interface AiBlockTypographyUpdate {
+  typographyBlockUpdate: AiBlockTypographyUpdate_typographyBlockUpdate;
 }
 
-export interface AITypographyUpdateVariables {
+export interface AiBlockTypographyUpdateVariables {
   id: string;
   input: TypographyBlockUpdateInput;
 }

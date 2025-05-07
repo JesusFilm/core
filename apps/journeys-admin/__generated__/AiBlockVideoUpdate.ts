@@ -6,84 +6,84 @@
 import { VideoBlockUpdateInput, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: AiUpdateVideoBlock
+// GraphQL mutation operation: AiBlockVideoUpdate
 // ====================================================
 
-export interface AiUpdateVideoBlock_videoBlockUpdate_mediaVideo_Video_title {
+export interface AiBlockVideoUpdate_videoBlockUpdate_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
 }
 
-export interface AiUpdateVideoBlock_videoBlockUpdate_mediaVideo_Video_images {
+export interface AiBlockVideoUpdate_videoBlockUpdate_mediaVideo_Video_images {
   __typename: "CloudflareImage";
   mobileCinematicHigh: string | null;
 }
 
-export interface AiUpdateVideoBlock_videoBlockUpdate_mediaVideo_Video_variant {
+export interface AiBlockVideoUpdate_videoBlockUpdate_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
   hls: string | null;
 }
 
-export interface AiUpdateVideoBlock_videoBlockUpdate_mediaVideo_Video_variantLanguages_name {
+export interface AiBlockVideoUpdate_videoBlockUpdate_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
 
-export interface AiUpdateVideoBlock_videoBlockUpdate_mediaVideo_Video_variantLanguages {
+export interface AiBlockVideoUpdate_videoBlockUpdate_mediaVideo_Video_variantLanguages {
   __typename: "Language";
   id: string;
-  name: AiUpdateVideoBlock_videoBlockUpdate_mediaVideo_Video_variantLanguages_name[];
+  name: AiBlockVideoUpdate_videoBlockUpdate_mediaVideo_Video_variantLanguages_name[];
 }
 
-export interface AiUpdateVideoBlock_videoBlockUpdate_mediaVideo_Video {
+export interface AiBlockVideoUpdate_videoBlockUpdate_mediaVideo_Video {
   __typename: "Video";
   id: string;
-  title: AiUpdateVideoBlock_videoBlockUpdate_mediaVideo_Video_title[];
-  images: AiUpdateVideoBlock_videoBlockUpdate_mediaVideo_Video_images[];
-  variant: AiUpdateVideoBlock_videoBlockUpdate_mediaVideo_Video_variant | null;
-  variantLanguages: AiUpdateVideoBlock_videoBlockUpdate_mediaVideo_Video_variantLanguages[];
+  title: AiBlockVideoUpdate_videoBlockUpdate_mediaVideo_Video_title[];
+  images: AiBlockVideoUpdate_videoBlockUpdate_mediaVideo_Video_images[];
+  variant: AiBlockVideoUpdate_videoBlockUpdate_mediaVideo_Video_variant | null;
+  variantLanguages: AiBlockVideoUpdate_videoBlockUpdate_mediaVideo_Video_variantLanguages[];
 }
 
-export interface AiUpdateVideoBlock_videoBlockUpdate_mediaVideo_MuxVideo {
+export interface AiBlockVideoUpdate_videoBlockUpdate_mediaVideo_MuxVideo {
   __typename: "MuxVideo";
   id: string;
   assetId: string | null;
   playbackId: string | null;
 }
 
-export interface AiUpdateVideoBlock_videoBlockUpdate_mediaVideo_YouTube {
+export interface AiBlockVideoUpdate_videoBlockUpdate_mediaVideo_YouTube {
   __typename: "YouTube";
   id: string;
 }
 
-export type AiUpdateVideoBlock_videoBlockUpdate_mediaVideo = AiUpdateVideoBlock_videoBlockUpdate_mediaVideo_Video | AiUpdateVideoBlock_videoBlockUpdate_mediaVideo_MuxVideo | AiUpdateVideoBlock_videoBlockUpdate_mediaVideo_YouTube;
+export type AiBlockVideoUpdate_videoBlockUpdate_mediaVideo = AiBlockVideoUpdate_videoBlockUpdate_mediaVideo_Video | AiBlockVideoUpdate_videoBlockUpdate_mediaVideo_MuxVideo | AiBlockVideoUpdate_videoBlockUpdate_mediaVideo_YouTube;
 
-export interface AiUpdateVideoBlock_videoBlockUpdate_action_NavigateToBlockAction {
+export interface AiBlockVideoUpdate_videoBlockUpdate_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface AiUpdateVideoBlock_videoBlockUpdate_action_LinkAction {
+export interface AiBlockVideoUpdate_videoBlockUpdate_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export interface AiUpdateVideoBlock_videoBlockUpdate_action_EmailAction {
+export interface AiBlockVideoUpdate_videoBlockUpdate_action_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
 
-export type AiUpdateVideoBlock_videoBlockUpdate_action = AiUpdateVideoBlock_videoBlockUpdate_action_NavigateToBlockAction | AiUpdateVideoBlock_videoBlockUpdate_action_LinkAction | AiUpdateVideoBlock_videoBlockUpdate_action_EmailAction;
+export type AiBlockVideoUpdate_videoBlockUpdate_action = AiBlockVideoUpdate_videoBlockUpdate_action_NavigateToBlockAction | AiBlockVideoUpdate_videoBlockUpdate_action_LinkAction | AiBlockVideoUpdate_videoBlockUpdate_action_EmailAction;
 
-export interface AiUpdateVideoBlock_videoBlockUpdate {
+export interface AiBlockVideoUpdate_videoBlockUpdate {
   __typename: "VideoBlock";
   id: string;
   parentBlockId: string | null;
@@ -151,18 +151,18 @@ export interface AiUpdateVideoBlock_videoBlockUpdate {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  mediaVideo: AiUpdateVideoBlock_videoBlockUpdate_mediaVideo | null;
+  mediaVideo: AiBlockVideoUpdate_videoBlockUpdate_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */
-  action: AiUpdateVideoBlock_videoBlockUpdate_action | null;
+  action: AiBlockVideoUpdate_videoBlockUpdate_action | null;
 }
 
-export interface AiUpdateVideoBlock {
-  videoBlockUpdate: AiUpdateVideoBlock_videoBlockUpdate;
+export interface AiBlockVideoUpdate {
+  videoBlockUpdate: AiBlockVideoUpdate_videoBlockUpdate;
 }
 
-export interface AiUpdateVideoBlockVariables {
+export interface AiBlockVideoUpdateVariables {
   id: string;
   input: VideoBlockUpdateInput;
 }
