@@ -5,8 +5,6 @@ import { alpha, useTheme } from '@mui/material/styles'
 import { ReactElement, useCallback, useState } from 'react'
 import Player from 'video.js/dist/types/player'
 
-import ChevronDown from '@core/shared/ui/icons/ChevronDown'
-
 import { useVideo } from '../../../libs/videoContext'
 
 import { VideoHeader } from './VideoHeader'
@@ -14,13 +12,13 @@ import { VideoPlayer } from './VideoPlayer'
 
 export function SimpleVideoHero(): ReactElement {
   const { title } = useVideo()
-  const [playerRef, setPlayerRef] = useState<Player | null>(null)
+  const [player, setPlayer] = useState<Player | null>(null)
   const [isMuted, setIsMuted] = useState(true)
   const [hasUnmutedOnce, setHasUnmutedOnce] = useState(false)
   const theme = useTheme()
 
-  const handlePlayerReady = useCallback((player: Player): void => {
-    setPlayerRef(player)
+  const handleSetPlayer = useCallback((newPlayer: Player): void => {
+    setPlayer(newPlayer)
   }, [])
 
   const handleMutedChange = useCallback((muted: boolean): void => {
@@ -28,19 +26,19 @@ export function SimpleVideoHero(): ReactElement {
   }, [])
 
   const handleToggleMute = useCallback((): void => {
-    if (playerRef) {
+    if (player) {
       const newMutedState = !isMuted
-      playerRef.muted(newMutedState)
+      player.muted(newMutedState)
       setIsMuted(newMutedState)
 
       // If un-muting for the first time, restart video
       if (!newMutedState && !hasUnmutedOnce) {
-        playerRef.currentTime(0)
-        void playerRef.play()
+        player.currentTime(0)
+        void player.play()
         setHasUnmutedOnce(true)
       }
     }
-  }, [isMuted, hasUnmutedOnce, playerRef])
+  }, [isMuted, hasUnmutedOnce, player])
 
   return (
     <div
@@ -50,7 +48,8 @@ export function SimpleVideoHero(): ReactElement {
       <VideoHeader />
       <VideoPlayer
         onMutedChange={handleMutedChange}
-        onPlayerReady={handlePlayerReady}
+        handleSetPlayer={handleSetPlayer}
+        player={player}
       />
 
       <div

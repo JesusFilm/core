@@ -1,4 +1,4 @@
-import { ReactElement, useCallback, useEffect, useRef } from 'react'
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 import 'video.js/dist/video-js.css'
@@ -9,24 +9,26 @@ import { useVideo } from '../../../../libs/videoContext'
 
 interface PlayerProps {
   onMutedChange: (isMuted: boolean) => void
-  onPlayerReady: (player: Player) => void
+  handleSetPlayer: (player: Player | null) => void
+  player: Player | null
 }
 
 export function VideoPlayer({
   onMutedChange,
-  onPlayerReady
+  handleSetPlayer,
+  player
 }: PlayerProps): ReactElement {
-  const { variant, title } = useVideo()
+  const { variant } = useVideo()
+  const src = variant?.hls ?? ''
   const videoRef = useRef<HTMLVideoElement>(null)
-  const playerRef = useRef<Player | null>(null)
 
   const pauseVideoOnScrollAway = useCallback((): void => {
     const scrollY = window.scrollY
-    if (playerRef.current) {
+    if (player != null) {
       if (scrollY > 100) {
-        playerRef.current.pause()
+        player.pause()
       } else if (scrollY === 0) {
-        void playerRef.current.play()
+        void player.play()
       }
     }
   }, [])
@@ -40,36 +42,39 @@ export function VideoPlayer({
     if (!videoRef.current) return
 
     // Initialize player
-    const player = videojs(videoRef.current, {
-      ...defaultVideoJsOptions,
-      autoplay: true,
-      controls: false,
-      loop: true,
-      muted: true,
-      fluid: false,
-      fill: true,
-      responsive: false,
-      aspectRatio: undefined
-    })
-
-    playerRef.current = player
-    onPlayerReady(player)
-
-    // Sync muted state with player
-    player.on('volumechange', () => {
-      onMutedChange(player.muted() ?? true)
-    })
-
-    void player.src(variant?.hls ?? '')
+    handleSetPlayer(
+      videojs(videoRef.current, {
+        ...defaultVideoJsOptions,
+        autoplay: true,
+        controls: false,
+        loop: true,
+        muted: true,
+        fluid: false,
+        fill: true,
+        responsive: false,
+        aspectRatio: undefined
+      })
+    )
 
     return () => {
-      if (playerRef.current) {
-        playerRef.current.dispose()
+      if (player != null) {
+        player.dispose()
 
-        playerRef.current = null
+        handleSetPlayer(null)
       }
     }
-  }, [onMutedChange, onPlayerReady])
+  }, [onMutedChange, handleSetPlayer])
+
+  useEffect(() => {
+    if (player != null) {
+      // Sync muted state with player
+      player.on('volumechange', () => {
+        onMutedChange(player.muted() ?? true)
+      })
+
+      void player.src(src)
+    }
+  }, [player])
 
   return (
     <div
@@ -91,7 +96,7 @@ export function VideoPlayer({
         playsInline
       >
         <source
-          src={variant?.hls ?? ''}
+          src={src}
           type="application/x-mpegURL"
           data-testid="ContainerHeroVideoSource"
         />
