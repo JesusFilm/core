@@ -26,18 +26,18 @@ export function VideoPlayer({
   const pauseVideoOnScrollAway = useCallback((): void => {
     const scrollY = window.scrollY
     if (player != null) {
-      if (scrollY > 100) {
+      if (scrollY > 300) {
         player.pause()
-      } else if (scrollY === 0) {
+      } else {
         void player.play()
       }
     }
-  }, [])
+  }, [player])
 
   useEffect(() => {
     window.addEventListener('scroll', pauseVideoOnScrollAway)
     return () => window.removeEventListener('scroll', pauseVideoOnScrollAway)
-  }, [pauseVideoOnScrollAway])
+  }, [pauseVideoOnScrollAway, player])
 
   useEffect(() => {
     if (!videoRef.current) return
@@ -78,10 +78,7 @@ export function VideoPlayer({
   }, [player])
 
   return (
-    <Box
-      // className="fixed top-0 left-0 right-0  h-[85%] md:h-[85%] max-w-[1919px] mx-auto z-0 bg-stone-950"
-      data-testid="ContainerHeroVideo"
-    >
+    <Box data-testid="ContainerHeroVideo">
       <video
         data-testid="ContainerHeroVideoApplication"
         ref={videoRef}
