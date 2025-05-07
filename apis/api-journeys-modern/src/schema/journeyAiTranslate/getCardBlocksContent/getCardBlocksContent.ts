@@ -16,8 +16,10 @@ export async function getCardBlocksContent({
   const result: string[] = []
   for (let i = 0; i < cardBlocks.length; i++) {
     const cardBlock = cardBlocks[i]
-    let cardResult = ''
-    cardResult += `# Card ${i + 1}:\n`
+    let cardResult = `
+# Card
+- Card ID: ${cardBlock.id}
+`
     if (cardBlock.coverBlockId) {
       const coverBlock = cardBlocksChildren[i].find(
         (block) => block.id === cardBlock.coverBlockId

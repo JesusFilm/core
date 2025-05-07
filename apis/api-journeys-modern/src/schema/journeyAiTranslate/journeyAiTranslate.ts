@@ -1,15 +1,26 @@
 import { google } from '@ai-sdk/google'
 import { ApolloClient, createHttpLink } from '@apollo/client'
 import { InMemoryCache } from '@apollo/client/cache'
-import { generateObject, generateText } from 'ai'
+import { generateObject, generateText, streamObject } from 'ai'
 import { z } from 'zod'
 
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
 import { getCardBlocksContent } from './getCardBlocksContent'
-import { getLanguageName } from './translateJourney/getLanguageName'
-import { translateCardBlock } from './translateJourney/translateCard/translateCard'
+import { getLanguageName } from './getLanguageName'
+
+// Define interface for translation data
+interface TranslatedBlock {
+  blockId: string
+  blockType:
+    | 'TypographyBlock'
+    | 'ButtonBlock'
+    | 'RadioOptionBlock'
+    | 'TextResponseBlock'
+    | 'RadioQuestionBlock'
+  updates: Record<string, string>
+}
 
 builder.mutationFields((t) => ({
   journeyAiTranslateCreate: t
@@ -103,10 +114,7 @@ ${cardBlocksContent.join('\n')}
         try {
           const { text: journeyAnalysis } = await generateText({
             model: google('gemini-2.0-flash'),
-            prompt,
-            onStepFinish: ({ usage }) => {
-              console.log('usage', usage)
-            }
+            prompt
           })
 
           // translate the journey title and description
@@ -127,18 +135,15 @@ Title: [translated title]
 Description: [translated description]
       `
 
-            const { object: translatedTitleDesc, usage } = await generateObject(
-              {
-                model: google('gemini-2.0-flash'),
-                prompt: titleDescPrompt,
-                schema: z.object({
-                  title: z.string(),
-                  description: z.string()
-                })
-              }
-            )
+            const { object: translatedTitleDesc } = await generateObject({
+              model: google('gemini-2.0-flash'),
+              prompt: titleDescPrompt,
+              schema: z.object({
+                title: z.string(),
+                description: z.string()
+              })
+            })
 
-            console.log('usage', usage)
             if (translatedTitleDesc.title === null)
               throw new Error('Failed to translate journey title')
             if (translatedTitleDesc.description === null)
@@ -155,10 +160,8 @@ Description: [translated description]
                 languageId: input.textLanguageId
               }
             })
-
-            console.log('Successfully translated journey title and description')
           } catch (error) {
-            console.error('Error translating journey title/description', error)
+            console.warn('Error translating journey title/description', error)
             // Continue with the rest of the translation
           }
 
@@ -167,58 +170,177 @@ Description: [translated description]
             (block) => block.typename === 'CardBlock'
           )
 
-          console.log(
-            `Analyzing and translating ${cardBlocks.length} card blocks individually`
-          )
-
           for (let i = 0; i < cardBlocks.length; i++) {
             const cardBlock = cardBlocks[i]
             const cardContent = cardBlocksContent[i]
 
             try {
-              // Analyze this card in relation to the journey intent
+              // Get all child blocks of this card
+              const cardBlocksChildren = journey.blocks.filter(
+                ({ parentBlockId }) => parentBlockId === cardBlock.id
+              )
+
+              // Skip if no children to translate
+              if (cardBlocksChildren.length === 0) continue
+
+              // Get radio question blocks to find their radio option blocks
+              const radioQuestionBlocks = cardBlocksChildren.filter(
+                (block) => block.typename === 'RadioQuestionBlock'
+              )
+
+              // Find all radio option blocks that need translation
+              const radioOptionBlocks = []
+              for (const radioQuestionBlock of radioQuestionBlocks) {
+                const options = journey.blocks.filter(
+                  (block) =>
+                    block.parentBlockId === radioQuestionBlock.id &&
+                    block.typename === 'RadioOptionBlock'
+                )
+                radioOptionBlocks.push(...options)
+              }
+
+              // All blocks that need translation including radio options
+              const allBlocksToTranslate = [
+                ...cardBlocksChildren,
+                ...radioOptionBlocks
+              ]
+
+              // Create a map of valid block IDs for quick lookup
+              const validBlockIds = new Set(
+                journey.blocks.map((block) => block.id)
+              )
+
+              // Create a more concise representation of blocks to translate
+              const blocksToTranslateInfo = allBlocksToTranslate
+                .map((block) => {
+                  let fieldInfo = ''
+                  switch (block.typename) {
+                    case 'TypographyBlock':
+                      fieldInfo = `Content: "${block.content || ''}"`
+                      break
+                    case 'ButtonBlock':
+                    case 'RadioOptionBlock':
+                    case 'RadioQuestionBlock':
+                      fieldInfo = `Label: "${block.label || ''}"`
+                      break
+                    case 'TextResponseBlock':
+                      fieldInfo = `Label: "${block.label || ''}", Placeholder: "${block.placeholder || ''}"`
+                      break
+                  }
+
+                  return `[${block.id}] ${block.typename}: ${fieldInfo}`
+                })
+                .join('\n')
+
+              // Create prompt for translation
               const cardAnalysisPrompt = `
-            I'm going to give you a journey analysis and the content of a specific card in that journey.
-            Your task is to analyze how this specific card contributes to the overall journey intent.
+            Translate content from ${sourceLanguageName} to ${requestedLanguageName}.
             
-            Overall journey analysis:
-            ${journeyAnalysis}
-            
-            Card content:
+            CONTEXT:
             ${cardContent}
             
-            Please analyze:
-            1. How does this card relate to the overall journey intent?
-            2. What is the specific purpose of this card?
-            3. What emotion or action is this card trying to evoke?
-            4. Any cultural considerations for translating this card to ${requestedLanguageName}?
+            TRANSLATE THE FOLLOWING BLOCKS:
+            ${blocksToTranslateInfo}
             
-            Provide a concise analysis that will help inform translation decisions.
+            IMPORTANT: For each block, use ONLY the EXACT IDs in square brackets [ID].
+            Return an array where each item is an object with:
+            - blockId: The EXACT ID from square brackets
+            - updates: An object with field names and translated values
+            
+            Field names to translate per block type:
+            - TypographyBlock: "content" field
+            - ButtonBlock: "label" field
+            - RadioOptionBlock: "label" field
+            - RadioQuestionBlock: "label" field
+            - TextResponseBlock: "label" and "placeholder" fields
+            
+            Ensure translations maintain the meaning while being culturally appropriate for ${requestedLanguageName}.
+            Keep translations concise and effective for UI context (e.g., button labels should remain short).
           `
-
-              const { text: cardAnalysis } = await generateText({
-                model: google('gemini-2.0-flash'),
-                prompt: cardAnalysisPrompt,
-                onStepFinish: ({ usage }) => {
-                  console.log('usage', usage)
-                }
-              })
-
-              if (cardAnalysis) {
-                console.log(`Successfully analyzed card ${cardBlock.id}`)
-
-                await translateCardBlock({
-                  blocks: journey.blocks,
-                  cardBlock,
-                  cardAnalysis,
-                  sourceLanguageName,
-                  targetLanguageName: requestedLanguageName
+              try {
+                // Stream the translations
+                const { fullStream } = streamObject({
+                  model: google('gemini-2.0-flash'),
+                  output: 'no-schema',
+                  prompt: cardAnalysisPrompt,
+                  onError: ({ error }) => {
+                    console.warn(
+                      `Error in translation stream for card ${cardBlock.id}:`,
+                      error
+                    )
+                  }
                 })
+
+                let partialTranslations = []
+
+                // Process the stream as chunks arrive
+                for await (const chunk of fullStream) {
+                  // Process object chunks which contain translation data
+                  if (chunk.type === 'object' && chunk.object) {
+                    // Handle streaming array building
+                    if (Array.isArray(chunk.object)) {
+                      partialTranslations = chunk.object
+
+                      // Process each block in the array
+                      for (const item of partialTranslations) {
+                        try {
+                          // Check if we've already processed this block (in case of duplicate items in stream)
+                          if (
+                            item &&
+                            typeof item === 'object' &&
+                            'blockId' in item &&
+                            typeof item.blockId === 'string' &&
+                            'updates' in item &&
+                            typeof item.updates === 'object'
+                          ) {
+                            // Check if block ID is valid before trying to update
+                            const typedBlock =
+                              item as unknown as TranslatedBlock
+
+                            // Verify block ID exists in our journey
+                            if (!validBlockIds.has(typedBlock.blockId)) continue
+
+                            await prisma.block.update({
+                              where: {
+                                id: typedBlock.blockId
+                              },
+                              data: typedBlock.updates
+                            })
+                          }
+                        } catch (updateError) {
+                          if (
+                            item &&
+                            typeof item === 'object' &&
+                            'blockId' in item
+                          ) {
+                            const blockIdString =
+                              typeof item.blockId === 'string'
+                                ? item.blockId
+                                : JSON.stringify(item.blockId)
+
+                            console.error(
+                              `Error updating block ${blockIdString}:`,
+                              updateError
+                            )
+                          } else {
+                            console.error(
+                              `Error updating unknown block:`,
+                              updateError
+                            )
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              } catch (error) {
+                console.warn(`Error translating card ${cardBlock.id}:`, error)
+                // Continue with other cards
               }
-            } catch (analysisError) {
-              console.error(
-                `Error analyzing card ${cardBlock.id}:`,
-                analysisError
+            } catch (error) {
+              console.warn(
+                `Error analyzing and translating card ${cardBlock.id}:`,
+                error
               )
               // Continue with other cards
             }

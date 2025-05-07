@@ -18,10 +18,21 @@ export async function getVideoBlockContent({
     const videoDescription = await getImageDescription({
       imageUrl: videoCoverBlock.src
     })
-    if (videoDescription)
-      return `## ${label}: \n Description: ${videoDescription}\n`
-    else return `## ${label}: \n No infomation is available for this video\n`
+    if (videoDescription) {
+      return `
+## ${label}:
+- Description: ${videoDescription}
+`
+    } else {
+      return `
+## ${label}:
+- Description: No description given
+`
+    }
   } else {
-    return `## ${label}: \n No infomation is available for this video\n`
+    return `
+## ${label}:
+- Description: No description given
+`
   }
 }
