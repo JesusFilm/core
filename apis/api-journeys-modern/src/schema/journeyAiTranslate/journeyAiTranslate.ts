@@ -8,7 +8,7 @@ import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
 import { getCardBlocksContent } from './getCardBlocksContent'
-import { getLanguageName } from './translateJourney/getLanguageName'
+import { getLanguageName } from './getLanguageName'
 
 // Define interface for translation data
 interface TranslatedBlock {
@@ -21,25 +21,6 @@ interface TranslatedBlock {
     | 'RadioQuestionBlock'
   updates: Record<string, string>
 }
-
-// Define Zod schemas for translation
-const TranslatedFieldSchema = z.object({
-  blockId: z.string().describe('The ID of the block to update'),
-  blockType: z
-    .enum([
-      'TypographyBlock',
-      'ButtonBlock',
-      'RadioOptionBlock',
-      'TextResponseBlock',
-      'RadioQuestionBlock'
-    ])
-    .describe('The type of block'),
-  updates: z
-    .record(z.string(), z.string())
-    .describe('Field names and their translated values')
-})
-
-const TranslatedBlocksSchema = z.array(TranslatedFieldSchema)
 
 builder.mutationFields((t) => ({
   journeyAiTranslateCreate: t
@@ -133,10 +114,7 @@ ${cardBlocksContent.join('\n')}
         try {
           const { text: journeyAnalysis } = await generateText({
             model: google('gemini-2.0-flash'),
-            prompt,
-            onStepFinish: ({ usage }) => {
-              console.log('usage', usage)
-            }
+            prompt
           })
 
           // translate the journey title and description
@@ -157,18 +135,15 @@ Title: [translated title]
 Description: [translated description]
       `
 
-            const { object: translatedTitleDesc, usage } = await generateObject(
-              {
-                model: google('gemini-2.0-flash'),
-                prompt: titleDescPrompt,
-                schema: z.object({
-                  title: z.string(),
-                  description: z.string()
-                })
-              }
-            )
+            const { object: translatedTitleDesc } = await generateObject({
+              model: google('gemini-2.0-flash'),
+              prompt: titleDescPrompt,
+              schema: z.object({
+                title: z.string(),
+                description: z.string()
+              })
+            })
 
-            console.log('usage', usage)
             if (translatedTitleDesc.title === null)
               throw new Error('Failed to translate journey title')
             if (translatedTitleDesc.description === null)
@@ -185,20 +160,14 @@ Description: [translated description]
                 languageId: input.textLanguageId
               }
             })
-
-            console.log('Successfully translated journey title and description')
           } catch (error) {
-            console.error('Error translating journey title/description', error)
+            console.warn('Error translating journey title/description', error)
             // Continue with the rest of the translation
           }
 
           // 5. Translate each card
           const cardBlocks = journey.blocks.filter(
             (block) => block.typename === 'CardBlock'
-          )
-
-          console.log(
-            `Analyzing and translating ${cardBlocks.length} card blocks individually`
           )
 
           for (let i = 0; i < cardBlocks.length; i++) {
@@ -212,12 +181,7 @@ Description: [translated description]
               )
 
               // Skip if no children to translate
-              if (cardBlocksChildren.length === 0) {
-                console.log(
-                  `Card ${cardBlock.id} has no child blocks to translate, skipping`
-                )
-                continue
-              }
+              if (cardBlocksChildren.length === 0) continue
 
               // Get radio question blocks to find their radio option blocks
               const radioQuestionBlocks = cardBlocksChildren.filter(
@@ -301,27 +265,20 @@ Description: [translated description]
             Ensure translations maintain the meaning and intent while being culturally appropriate for ${requestedLanguageName}.
             Keep translations concise and effective for their UI context (e.g., button labels should remain short).
           `
-
               try {
-                console.log(
-                  `Translating card ${cardBlock.id} with ${allBlocksToTranslate.length} blocks using streaming`
-                )
-
                 // Stream the translations
                 const { fullStream } = streamObject({
                   model: google('gemini-2.0-flash'),
                   output: 'no-schema',
                   prompt: cardAnalysisPrompt,
                   onError: ({ error }) => {
-                    console.error(
+                    console.warn(
                       `Error in translation stream for card ${cardBlock.id}:`,
                       error
                     )
                   }
                 })
 
-                let blockCount = 0
-                let invalidBlockCount = 0
                 let partialTranslations = []
 
                 // Process the stream as chunks arrive
@@ -349,13 +306,7 @@ Description: [translated description]
                               item as unknown as TranslatedBlock
 
                             // Verify block ID exists in our journey
-                            if (!validBlockIds.has(typedBlock.blockId)) {
-                              console.error(
-                                `Skipping invalid block ID ${typedBlock.blockId} - not found in journey`
-                              )
-                              invalidBlockCount++
-                              continue
-                            }
+                            if (!validBlockIds.has(typedBlock.blockId)) continue
 
                             await prisma.block.update({
                               where: {
@@ -363,10 +314,6 @@ Description: [translated description]
                               },
                               data: typedBlock.updates
                             })
-                            blockCount++
-                            console.log(
-                              `Successfully updated block ${typedBlock.blockId} (${blockCount}/${allBlocksToTranslate.length})`
-                            )
                           }
                         } catch (updateError) {
                           if (
@@ -392,28 +339,14 @@ Description: [translated description]
                         }
                       }
                     }
-                  } else if (chunk.type === 'finish') {
-                    console.log(
-                      `Translation stream finished for card ${cardBlock.id}`
-                    )
                   }
                 }
-
-                if (invalidBlockCount > 0) {
-                  console.warn(
-                    `Found ${invalidBlockCount} invalid block IDs that don't exist in journey`
-                  )
-                }
-
-                console.log(
-                  `Completed streaming translation of card ${cardBlock.id} with ${blockCount} blocks updated`
-                )
               } catch (error) {
-                console.error(`Error translating card ${cardBlock.id}:`, error)
+                console.warn(`Error translating card ${cardBlock.id}:`, error)
                 // Continue with other cards
               }
             } catch (error) {
-              console.error(
+              console.warn(
                 `Error analyzing and translating card ${cardBlock.id}:`,
                 error
               )
