@@ -1,1 +1,0 @@
-export { ChapterCard } from './ChapterCard'

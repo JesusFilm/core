@@ -1,1 +1,0 @@
-export { ChapterCarousel } from './ChapterCarousel'
