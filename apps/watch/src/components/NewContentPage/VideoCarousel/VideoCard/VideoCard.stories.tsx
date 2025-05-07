@@ -1,8 +1,10 @@
 import { Meta, StoryObj } from '@storybook/react'
-import { ChapterCard } from './ChapterCard'
 import { ComponentPropsWithoutRef } from 'react'
-import { VideoChildFields } from '../../../../../__generated__/VideoChildFields'
+
 import { VideoLabel } from '../../../../../__generated__/globalTypes'
+import { VideoChildFields } from '../../../../../__generated__/VideoChildFields'
+
+import { VideoCard } from './VideoCard'
 
 const video: VideoChildFields = {
   __typename: 'Video',
@@ -33,11 +35,11 @@ const video: VideoChildFields = {
   childrenCount: 0
 }
 
-type StoryArgs = ComponentPropsWithoutRef<typeof ChapterCard>
+type StoryArgs = ComponentPropsWithoutRef<typeof VideoCard>
 
 const meta = {
-  title: 'ChapterCard',
-  component: ChapterCard
+  title: 'VideoCard',
+  component: VideoCard
 } satisfies Meta<StoryArgs>
 
 export default meta

@@ -1,9 +1,11 @@
-import { render, screen, fireEvent } from '@testing-library/react'
-import { ChapterCard } from './ChapterCard'
+import { render, screen } from '@testing-library/react'
+
 import { VideoLabel } from '../../../../../__generated__/globalTypes'
 import { VideoChildFields } from '../../../../../__generated__/VideoChildFields'
 
-describe('ChapterCard', () => {
+import { VideoCard } from './VideoCard'
+
+describe('VideoCard', () => {
   const mockVideo: VideoChildFields = {
     __typename: 'Video',
     id: 'test-id',
@@ -27,7 +29,7 @@ describe('ChapterCard', () => {
   }
 
   it('renders the component with video data correctly', () => {
-    render(<ChapterCard video={mockVideo} />)
+    render(<VideoCard video={mockVideo} />)
 
     expect(screen.getByText('Test Video Title')).toBeInTheDocument()
     expect(screen.getByText(VideoLabel.episode)).toBeInTheDocument()
@@ -39,7 +41,7 @@ describe('ChapterCard', () => {
   })
 
   it('has proper accessibility attributes', () => {
-    render(<ChapterCard video={mockVideo} />)
+    render(<VideoCard video={mockVideo} />)
 
     const card = screen.getByRole('button')
     expect(card).toHaveAttribute('tabIndex', '0')

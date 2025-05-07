@@ -1,7 +1,9 @@
 import { render, screen } from '@testing-library/react'
-import { ChapterCarousel } from './ChapterCarousel'
+
 import { VideoLabel } from '../../../../__generated__/globalTypes'
 import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
+
+import { VideoCarousel } from './VideoCarousel'
 
 // Mock Swiper modules
 jest.mock('swiper/modules', () => ({
@@ -10,7 +12,7 @@ jest.mock('swiper/modules', () => ({
   Mousewheel: jest.fn()
 }))
 
-describe('ChapterCarousel', () => {
+describe('VideoCarousel', () => {
   const mockVideos: VideoChildFields[] = [
     {
       __typename: 'Video',
@@ -57,20 +59,20 @@ describe('ChapterCarousel', () => {
   ]
 
   it('renders the carousel container', () => {
-    render(<ChapterCarousel videos={mockVideos} />)
-    expect(screen.getByTestId('ChapterCarousel')).toBeInTheDocument()
+    render(<VideoCarousel videos={mockVideos} />)
+    expect(screen.getByTestId('VideoCarousel')).toBeInTheDocument()
   })
 
   it('renders ChapterCards for each video', () => {
-    render(<ChapterCarousel videos={mockVideos} />)
+    render(<VideoCarousel videos={mockVideos} />)
     mockVideos.forEach((video) => {
       expect(screen.getByText(video.title[0].value)).toBeInTheDocument()
     })
   })
 
   it('handles empty videos array', () => {
-    render(<ChapterCarousel videos={[]} />)
-    expect(screen.getByTestId('ChapterCarouselSwiper')).toBeInTheDocument()
+    render(<VideoCarousel videos={[]} />)
+    expect(screen.getByTestId('VideoCarouselSwiper')).toBeInTheDocument()
     expect(screen.queryByTestId(/^CarouselSlide-/)).not.toBeInTheDocument()
   })
 })
