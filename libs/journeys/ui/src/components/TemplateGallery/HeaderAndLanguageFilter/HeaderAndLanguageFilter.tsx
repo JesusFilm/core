@@ -16,12 +16,12 @@ import {
 } from 'react'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
+import { convertLanguagesToOptions } from '@core/shared/ui/LanguageAutocomplete/utils/convertLanguagesToOptions'
 import { LanguageOption } from '@core/shared/ui/MultipleLanguageAutocomplete'
 
 import { setBeaconPageViewed } from '../../../libs/beaconHooks'
 import { useLanguagesQuery } from '../../../libs/useLanguagesQuery'
 
-import { convertLanguagesToOptions } from './convertLanguagesToOptions'
 import { LanguagesFilterPopper } from './LanguagesFilterPopper/LanguagesFilterPopper'
 
 interface LocalTypographyProps extends ComponentProps<typeof Typography> {}

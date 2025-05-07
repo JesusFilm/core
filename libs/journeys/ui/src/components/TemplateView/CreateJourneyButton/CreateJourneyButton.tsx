@@ -3,7 +3,11 @@ import { sendGTMEvent } from '@next/third-parties/google'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
+import { useSnackbar } from 'notistack'
 import { type ReactElement, useCallback, useEffect, useState } from 'react'
+
+import { convertLanguagesToOptions } from '@core/shared/ui/LanguageAutocomplete/utils/convertLanguagesToOptions'
+import { useJourneyAiTranslateMutation } from '@core/journeys/ui/useJourneyAiTranslateMutation'
 
 import { useJourney } from '../../../libs/JourneyProvider'
 import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
@@ -35,35 +39,74 @@ export function CreateJourneyButton({
   const [openAccountDialog, setOpenAccountDialog] = useState(false)
   const [loadingJourney, setLoadingJourney] = useState(false)
   const [journeyDuplicate] = useJourneyDuplicateMutation()
+  const { enqueueSnackbar } = useSnackbar()
+  const { translateJourney } = useJourneyAiTranslateMutation()
+  const journeyLanguage = journey?.language
+    ? convertLanguagesToOptions([journey.language])[0]
+    : undefined
 
   const handleCreateJourney = useCallback(
-    async (teamId: string): Promise<void> => {
-      if (journey == null) return
+    async (teamId: string, languageId: string): Promise<void> => {
+      if (journey == null || languageId == '') return
 
       setLoadingJourney(true)
 
-      const { data } = await journeyDuplicate({
-        variables: { id: journey.id, teamId }
-      })
-
-      if (data != null) {
-        sendGTMEvent({
-          event: 'template_use',
-          journeyId: journey.id,
-          journeyTitle: journey.title
+      try {
+        const { data } = await journeyDuplicate({
+          variables: { id: journey.id, teamId }
         })
-        void router
-          .push(`/journeys/${data.journeyDuplicate.id}`, undefined, {
-            shallow: true
+
+        // Check if duplication was successful
+        if (data?.journeyDuplicate?.id) {
+          sendGTMEvent({
+            event: 'template_use',
+            journeyId: journey.id,
+            journeyTitle: journey.title
           })
-          .finally(() => {
-            setLoadingJourney(false)
+
+          console.log('languageId', languageId)
+          // Use the duplicated journey ID for translation
+          const translatedJourney = await translateJourney({
+            journeyId: data.journeyDuplicate.id,
+            name: `${journey.title}`,
+            textLanguageId: languageId,
+            videoLanguageId: null // Optional
           })
-      } else {
+
+          if (translatedJourney) {
+            enqueueSnackbar(t('Translation Finished'), {
+              variant: 'success'
+            })
+
+            setOpenTeamDialog(false)
+
+            void router.push(
+              `/journeys/${data.journeyDuplicate.id}`,
+              undefined,
+              {
+                shallow: true
+              }
+            )
+          } else {
+            throw new Error('Failed to start translation')
+          }
+        } else {
+          throw new Error('Journey duplication failed')
+        }
+      } catch (error) {
+        console.error('Error in translation process:', error)
+        enqueueSnackbar(
+          t('Failed to process translation request. Please try again.'),
+          {
+            variant: 'error'
+          }
+        )
+      } finally {
         setLoadingJourney(false)
       }
     },
-    [journey, journeyDuplicate, router]
+
+    [journey, journeyDuplicate, router, t, enqueueSnackbar, translateJourney]
   )
 
   const handleCheckSignIn = (): void => {
@@ -131,6 +174,7 @@ export function CreateJourneyButton({
           title={t('Add Journey to Team')}
           open={openTeamDialog}
           loading={loadingJourney}
+          journeyLanguage={journeyLanguage}
           onClose={() =>
             setOpenTeamDialog !== undefined && setOpenTeamDialog(false)
           }

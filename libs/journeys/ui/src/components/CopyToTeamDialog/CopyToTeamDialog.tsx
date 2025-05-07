@@ -1,15 +1,19 @@
 import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
+import { Theme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { Formik, FormikHelpers } from 'formik'
 import sortBy from 'lodash/sortBy'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import { InferType, object, string } from 'yup'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
+import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
+import { useLanguagesQuery } from '../../libs/useLanguagesQuery'
 import { useUpdateLastActiveTeamIdMutation } from '../../libs/useUpdateLastActiveTeamIdMutation'
 import { useTeam } from '../TeamProvider'
 
@@ -19,7 +23,14 @@ interface CopyToTeamDialogProps {
   open: boolean
   loading?: boolean
   onClose: () => void
-  submitAction: (teamId: string) => Promise<void>
+  submitAction: (teamId: string, languageId: string) => Promise<void>
+  journeyLanguage?: JourneyLanguage
+}
+
+interface JourneyLanguage {
+  id: string
+  localName?: string
+  nativeName?: string
 }
 
 export function CopyToTeamDialog({
@@ -28,10 +39,19 @@ export function CopyToTeamDialog({
   open,
   loading,
   onClose,
-  submitAction
+  submitAction,
+  journeyLanguage
 }: CopyToTeamDialogProps): ReactElement {
   const { query, setActiveTeam } = useTeam()
   const teams = query?.data?.teams ?? []
+  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+  const { data: languagesData, loading: languagesLoading } = useLanguagesQuery({
+    languageId: '529'
+  })
+
+  const [selectedLanguage, setSelectedLanguage] = useState<
+    JourneyLanguage | undefined
+  >(journeyLanguage)
 
   const { t } = useTranslation('libs-journeys-ui')
   function handleClose(): void {
@@ -56,7 +76,7 @@ export function CopyToTeamDialog({
       }
     })
     // submit action goes before setActiveTeam for proper loading states to be shown
-    await submitAction(values.teamSelect)
+    await submitAction(values.teamSelect, selectedLanguage?.id ?? '')
     setActiveTeam(teams.find((team) => team.id === values.teamSelect) ?? null)
     resetForm()
   }
@@ -107,7 +127,8 @@ export function CopyToTeamDialog({
               sx={{
                 '& >.MuiFormHelperText-contained': {
                   ml: 0
-                }
+                },
+                mb: 2
               }}
             >
               {(query?.data?.teams != null
@@ -129,6 +150,24 @@ export function CopyToTeamDialog({
               ))}
             </TextField>
           </FormControl>
+          <LanguageAutocomplete
+            onChange={(value) => setSelectedLanguage(value)}
+            value={selectedLanguage}
+            languages={languagesData?.languages}
+            loading={languagesLoading}
+            disabled={isSubmitting}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                placeholder={t('Search Language')}
+                label={t('Select Language')}
+                variant="filled"
+              />
+            )}
+            popper={{
+              placement: !smUp ? 'top' : 'bottom'
+            }}
+          />
         </Dialog>
       )}
     </Formik>
