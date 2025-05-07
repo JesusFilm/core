@@ -196,7 +196,7 @@ export function JourneyCard({
           sx={{
             position: 'absolute',
             bottom: 3,
-            left: 2,
+            left: 3,
             right: 7,
             zIndex: 3
           }}
