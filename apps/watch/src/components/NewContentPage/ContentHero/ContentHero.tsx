@@ -120,9 +120,8 @@ export function ContentHero(): ReactElement {
             >
               <Typography
                 component="h1"
-                variant="h1"
+                variant="h2"
                 sx={{
-                  fontSize: '3.75rem',
                   fontWeight: 'bold',
                   color: 'text.primary',
                   opacity: 0.9,
@@ -140,7 +139,7 @@ export function ContentHero(): ReactElement {
             </Box>
 
             <Typography
-              component="h6"
+              component="h4"
               variant="h6"
               data-testid="ContainerHeroDescription"
               sx={{
