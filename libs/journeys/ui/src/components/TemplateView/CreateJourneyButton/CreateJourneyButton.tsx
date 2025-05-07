@@ -46,12 +46,12 @@ export function CreateJourneyButton({
     : undefined
 
   const handleCreateJourney = useCallback(
-    async (teamId: string, languageId: string): Promise<void> => {
-      if (journey == null || languageId == '') return
+    async (teamId: string, selectedLanguageId: string): Promise<void> => {
+      if (journey == null || selectedLanguageId == '') return
 
       setLoadingJourney(true)
 
-      if (languageId === journeyLanguage?.id) {
+      if (selectedLanguageId === journeyLanguage?.id) {
         enqueueSnackbar(
           t(
             'The selected language is the same as the source journey language.'
@@ -77,7 +77,7 @@ export function CreateJourneyButton({
           const translatedJourney = await translateJourney({
             journeyId: data.journeyDuplicate.id,
             name: `${journey.title}`,
-            textLanguageId: languageId,
+            textLanguageId: selectedLanguageId,
             videoLanguageId: null
           })
 
