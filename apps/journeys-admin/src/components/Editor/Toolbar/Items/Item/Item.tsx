@@ -30,7 +30,7 @@ export function Item({
 }: ItemProps): ReactElement {
   switch (variant) {
     case 'icon-button': {
-      const { sx: buttonPropsSx, ...restButtonProps } = ButtonProps ?? {};
+      const { sx: buttonPropsSx, ...restButtonProps } = ButtonProps ?? {}
 
       return (
         <Tooltip

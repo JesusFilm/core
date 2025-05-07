@@ -37,7 +37,12 @@ export function JourneyCardText({
       >
         {journey.title}
       </Typography>
-      <Stack direction="row" alignItems="center" spacing={1.5} sx={{ width: '100%' }}>
+      <Stack
+        direction="row"
+        alignItems="center"
+        spacing={1.5}
+        sx={{ width: '100%' }}
+      >
         <Globe1Icon sx={{ fontSize: 16, color: '#6D6D7D' }} />
         <Typography
           variant="body2"
