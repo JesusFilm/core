@@ -10,18 +10,6 @@ import { builder } from '../builder'
 import { getCardBlocksContent } from './getCardBlocksContent'
 import { getLanguageName } from './getLanguageName'
 
-// Define interface for translation data
-interface TranslatedBlock {
-  blockId: string
-  blockType:
-    | 'TypographyBlock'
-    | 'ButtonBlock'
-    | 'RadioOptionBlock'
-    | 'TextResponseBlock'
-    | 'RadioQuestionBlock'
-  updates: Record<string, string>
-}
-
 builder.mutationFields((t) => ({
   journeyAiTranslateCreate: t
     .withAuth({ isAuthenticated: true })
@@ -170,181 +158,190 @@ Description: [translated description]
             (block) => block.typename === 'CardBlock'
           )
 
-          for (let i = 0; i < cardBlocks.length; i++) {
-            const cardBlock = cardBlocks[i]
-            const cardContent = cardBlocksContent[i]
+          // Create a map of valid block IDs for quick lookup
+          const validBlockIds = new Set(journey.blocks.map((block) => block.id))
 
-            try {
-              // Get all child blocks of this card
-              const cardBlocksChildren = journey.blocks.filter(
-                ({ parentBlockId }) => parentBlockId === cardBlock.id
-              )
-
-              // Skip if no children to translate
-              if (cardBlocksChildren.length === 0) continue
-
-              // Get radio question blocks to find their radio option blocks
-              const radioQuestionBlocks = cardBlocksChildren.filter(
-                (block) => block.typename === 'RadioQuestionBlock'
-              )
-
-              // Find all radio option blocks that need translation
-              const radioOptionBlocks = []
-              for (const radioQuestionBlock of radioQuestionBlocks) {
-                const options = journey.blocks.filter(
-                  (block) =>
-                    block.parentBlockId === radioQuestionBlock.id &&
-                    block.typename === 'RadioOptionBlock'
-                )
-                radioOptionBlocks.push(...options)
-              }
-
-              // All blocks that need translation including radio options
-              const allBlocksToTranslate = [
-                ...cardBlocksChildren,
-                ...radioOptionBlocks
-              ]
-
-              // Create a map of valid block IDs for quick lookup
-              const validBlockIds = new Set(
-                journey.blocks.map((block) => block.id)
-              )
-
-              // Create a more concise representation of blocks to translate
-              const blocksToTranslateInfo = allBlocksToTranslate
-                .map((block) => {
-                  let fieldInfo = ''
-                  switch (block.typename) {
-                    case 'TypographyBlock':
-                      fieldInfo = `Content: "${block.content || ''}"`
-                      break
-                    case 'ButtonBlock':
-                    case 'RadioOptionBlock':
-                    case 'RadioQuestionBlock':
-                      fieldInfo = `Label: "${block.label || ''}"`
-                      break
-                    case 'TextResponseBlock':
-                      fieldInfo = `Label: "${block.label || ''}", Placeholder: "${block.placeholder || ''}"`
-                      break
-                  }
-
-                  return `[${block.id}] ${block.typename}: ${fieldInfo}`
-                })
-                .join('\n')
-
-              // Create prompt for translation
-              const cardAnalysisPrompt = `
-            Translate content from ${sourceLanguageName} to ${requestedLanguageName}.
-            
-            CONTEXT:
-            ${cardContent}
-            
-            TRANSLATE THE FOLLOWING BLOCKS:
-            ${blocksToTranslateInfo}
-            
-            IMPORTANT: For each block, use ONLY the EXACT IDs in square brackets [ID].
-            Return an array where each item is an object with:
-            - blockId: The EXACT ID from square brackets
-            - updates: An object with field names and translated values
-            
-            Field names to translate per block type:
-            - TypographyBlock: "content" field
-            - ButtonBlock: "label" field
-            - RadioOptionBlock: "label" field
-            - RadioQuestionBlock: "label" field
-            - TextResponseBlock: "label" and "placeholder" fields
-            
-            Ensure translations maintain the meaning while being culturally appropriate for ${requestedLanguageName}.
-            Keep translations concise and effective for UI context (e.g., button labels should remain short).
-          `
+          await Promise.all(
+            cardBlocks.map(async (cardBlock, i) => {
+              const cardContent = cardBlocksContent[i]
               try {
-                // Stream the translations
-                const { fullStream } = streamObject({
-                  model: google('gemini-2.0-flash'),
-                  output: 'no-schema',
-                  prompt: cardAnalysisPrompt,
-                  onError: ({ error }) => {
-                    console.warn(
-                      `Error in translation stream for card ${cardBlock.id}:`,
-                      error
-                    )
-                  }
-                })
+                // Get all child blocks of this card
+                const cardBlocksChildren = journey.blocks.filter(
+                  ({ parentBlockId }) => parentBlockId === cardBlock.id
+                )
 
-                let partialTranslations = []
+                // Skip if no children to translate
+                if (cardBlocksChildren.length === 0) {
+                  return
+                }
 
-                // Process the stream as chunks arrive
-                for await (const chunk of fullStream) {
-                  // Process object chunks which contain translation data
-                  if (chunk.type === 'object' && chunk.object) {
-                    // Handle streaming array building
-                    if (Array.isArray(chunk.object)) {
-                      partialTranslations = chunk.object
+                // Get radio question blocks to find their radio option blocks
+                const radioQuestionBlocks = cardBlocksChildren.filter(
+                  (block) => block.typename === 'RadioQuestionBlock'
+                )
 
-                      // Process each block in the array
-                      for (const item of partialTranslations) {
-                        try {
-                          // Check if we've already processed this block (in case of duplicate items in stream)
-                          if (
-                            item &&
-                            typeof item === 'object' &&
-                            'blockId' in item &&
-                            typeof item.blockId === 'string' &&
-                            'updates' in item &&
-                            typeof item.updates === 'object'
-                          ) {
-                            // Check if block ID is valid before trying to update
-                            const typedBlock =
-                              item as unknown as TranslatedBlock
+                // Find all radio option blocks that need translation
+                const radioOptionBlocks = []
+                for (const radioQuestionBlock of radioQuestionBlocks) {
+                  const options = journey.blocks.filter(
+                    (block) =>
+                      block.parentBlockId === radioQuestionBlock.id &&
+                      block.typename === 'RadioOptionBlock'
+                  )
+                  radioOptionBlocks.push(...options)
+                }
 
-                            // Verify block ID exists in our journey
-                            if (!validBlockIds.has(typedBlock.blockId)) continue
+                // All blocks that need translation including radio options
+                const allBlocksToTranslate = [
+                  ...cardBlocksChildren,
+                  ...radioOptionBlocks
+                ]
 
-                            await prisma.block.update({
-                              where: {
-                                id: typedBlock.blockId
-                              },
-                              data: typedBlock.updates
-                            })
-                          }
-                        } catch (updateError) {
-                          if (
-                            item &&
-                            typeof item === 'object' &&
-                            'blockId' in item
-                          ) {
-                            const blockIdString =
-                              typeof item.blockId === 'string'
-                                ? item.blockId
-                                : JSON.stringify(item.blockId)
+                // Skip if no blocks to translate
+                if (allBlocksToTranslate.length === 0) {
+                  return
+                }
 
-                            console.error(
-                              `Error updating block ${blockIdString}:`,
-                              updateError
-                            )
-                          } else {
-                            console.error(
-                              `Error updating unknown block:`,
-                              updateError
-                            )
+                // Create a more concise representation of blocks to translate
+                const blocksToTranslateInfo = allBlocksToTranslate
+                  .map((block) => {
+                    let fieldInfo = ''
+                    switch (block.typename) {
+                      case 'TypographyBlock':
+                        fieldInfo = `Content: "${block.content || ''}"`
+                        break
+                      case 'ButtonBlock':
+                      case 'RadioOptionBlock':
+                      case 'RadioQuestionBlock':
+                        fieldInfo = `Label: "${block.label || ''}"`
+                        break
+                      case 'TextResponseBlock':
+                        fieldInfo = `Label: "${block.label || ''}", Placeholder: "${block.placeholder || ''}"`
+                        break
+                    }
+
+                    return `[${block.id}] ${block.typename}: ${fieldInfo}`
+                  })
+                  .join('\n')
+
+                // Create prompt for translation
+                const cardAnalysisPrompt = `
+              Translate content from ${sourceLanguageName} to ${requestedLanguageName}.
+              
+              CONTEXT:
+              ${cardContent}
+              
+              TRANSLATE THE FOLLOWING BLOCKS:
+              ${blocksToTranslateInfo}
+              
+              IMPORTANT: For each block, use ONLY the EXACT IDs in square brackets [ID].
+              Return an array where each item is an object with:
+              - blockId: The EXACT ID from square brackets
+              - updates: An object with field names and translated values
+              
+              Field names to translate per block type:
+              - TypographyBlock: "content" field
+              - ButtonBlock: "label" field
+              - RadioOptionBlock: "label" field
+              - RadioQuestionBlock: "label" field
+              - TextResponseBlock: "label" and "placeholder" fields
+              
+              Ensure translations maintain the meaning while being culturally appropriate for ${requestedLanguageName}.
+              Keep translations concise and effective for UI context (e.g., button labels should remain short).
+            `
+                try {
+                  // Stream the translations
+                  const { fullStream } = streamObject({
+                    model: google('gemini-2.0-flash'),
+                    output: 'no-schema',
+                    prompt: cardAnalysisPrompt,
+                    onError: ({ error }) => {
+                      console.warn(
+                        `Error in translation stream for card ${cardBlock.id}:`,
+                        error
+                      )
+                    }
+                  })
+
+                  let partialTranslations = []
+
+                  // Process the stream as chunks arrive
+                  for await (const chunk of fullStream) {
+                    // Process object chunks which contain translation data
+                    if (chunk.type === 'object' && chunk.object) {
+                      // Handle streaming array building
+                      if (Array.isArray(chunk.object)) {
+                        partialTranslations = chunk.object
+                        // Process each block in the array
+                        for (const item of partialTranslations) {
+                          try {
+                            // Check if we've already processed this block (in case of duplicate items in stream)
+                            if (
+                              item &&
+                              typeof item === 'object' &&
+                              'blockId' in item &&
+                              typeof item.blockId === 'string' &&
+                              'updates' in item &&
+                              typeof item.updates === 'object' &&
+                              !Array.isArray(item.updates) &&
+                              item.updates !== null
+                            ) {
+                              // Remove brackets if present
+                              const cleanBlockId =
+                                typeof item.blockId === 'string'
+                                  ? item.blockId.replace(/^\[|\]$/g, '')
+                                  : item.blockId
+
+                              // Verify block ID exists in our journey
+                              if (!validBlockIds.has(cleanBlockId)) {
+                                return
+                              }
+                              await prisma.block.update({
+                                where: {
+                                  id: cleanBlockId
+                                },
+                                data: item.updates
+                              })
+                            }
+                          } catch (updateError) {
+                            if (
+                              item &&
+                              typeof item === 'object' &&
+                              'blockId' in item
+                            ) {
+                              const blockIdString =
+                                typeof item.blockId === 'string'
+                                  ? item.blockId
+                                  : JSON.stringify(item.blockId)
+
+                              console.error(
+                                `Error updating block ${blockIdString}:`,
+                                updateError
+                              )
+                            } else {
+                              console.error(
+                                `Error updating unknown block:`,
+                                updateError
+                              )
+                            }
                           }
                         }
                       }
                     }
                   }
+                } catch (error) {
+                  console.warn(`Error translating card ${cardBlock.id}:`, error)
+                  // Continue with other cards
                 }
               } catch (error) {
-                console.warn(`Error translating card ${cardBlock.id}:`, error)
+                console.warn(
+                  `Error analyzing and translating card ${cardBlock.id}:`,
+                  error
+                )
                 // Continue with other cards
               }
-            } catch (error) {
-              console.warn(
-                `Error analyzing and translating card ${cardBlock.id}:`,
-                error
-              )
-              // Continue with other cards
-            }
-          }
+            })
+          )
         } catch (error: unknown) {
           console.error('Error analyzing journey with Gemini:', error)
           const errorMessage =
