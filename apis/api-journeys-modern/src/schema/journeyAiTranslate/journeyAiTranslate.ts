@@ -9,7 +9,6 @@ import { builder } from '../builder'
 
 import { getCardBlocksContent } from './getCardBlocksContent'
 import { getLanguageName } from './translateJourney/getLanguageName'
-import { translateCardBlock } from './translateJourney/translateCard/translateCard'
 
 // Define interface for translation data
 interface TranslatedBlock {
@@ -288,8 +287,10 @@ Description: [translated description]
               .filter(Boolean)
               .join('\n\n')}
             
+            IMPORTANT: For each block, use ONLY the EXACT Block IDs provided above. Do not use placeholder, sequential, or made-up IDs like "1", "2", etc.
+            
             Return an array where each item is an object with:
-            - blockId: The ID of the block 
+            - blockId: The EXACT ID of the block as provided above
             - blockType: The type of the block
             - updates: An object with field names and their translated values
             
@@ -315,6 +316,8 @@ Description: [translated description]
                 // Process the raw translation result
                 if (Array.isArray(translatedBlocksRaw)) {
                   let blockCount = 0
+                  let invalidBlockCount = 0
+
                   for (const item of translatedBlocksRaw) {
                     try {
                       // Validate that item has the expected structure
@@ -332,8 +335,9 @@ Description: [translated description]
                         // Verify block ID exists in our journey
                         if (!validBlockIds.has(typedBlock.blockId)) {
                           console.error(
-                            `Block ID ${typedBlock.blockId} does not exist in journey, skipping update`
+                            `Skipping invalid block ID ${typedBlock.blockId} - not found in journey`
                           )
+                          invalidBlockCount++
                           continue
                         }
 
@@ -371,6 +375,13 @@ Description: [translated description]
                       }
                     }
                   }
+
+                  if (invalidBlockCount > 0) {
+                    console.warn(
+                      `Found ${invalidBlockCount} invalid block IDs that don't exist in journey`
+                    )
+                  }
+
                   console.log(
                     `Completed translation of card ${cardBlock.id} with ${blockCount} blocks updated`
                   )
