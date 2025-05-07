@@ -7,21 +7,15 @@ export function getTextResponseBlockContent({
   blocks: Block[]
   block: Block
 }): string {
-  let result = ''
-  result += `## Text Input: \n`
-  result += `Label: \n ${block.label}\n`
-  result += `Input Placeholder Text: \n ${block.placeholder}\n`
-  result += `Required: \n ${block.required}\n`
+  let result = `
+## Text Input:
+- Block ID: ${block.id}
+- Label: ${block.label}
+- Input Placeholder Text: ${block.placeholder}
+- Required: ${block.required}
+`
   if (block.submitLabel != null) {
-    result += `\n## Submit Button :\n Label: ${block.submitLabel}\n`
-    if (block.submitIconId != null) {
-      const submitIcon = blocks.find(
-        (childBlock) => childBlock.id === block.submitIconId
-      )
-      if (submitIcon) {
-        result += `Icon: \n ${submitIcon.name}\n`
-      }
-    }
+    result += `### Submit Button :\n - Label: ${block.submitLabel}\n`
   }
   return result
 }

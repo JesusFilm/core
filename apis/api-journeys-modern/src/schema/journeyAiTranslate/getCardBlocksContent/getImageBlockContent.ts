@@ -11,10 +11,21 @@ export async function getImageBlockContent({
   const label = isCoverBlock ? 'Background Image' : 'Image'
   if (block.src != null) {
     const imageDescription = await getImageDescription({ imageUrl: block.src })
-    if (imageDescription)
-      return `## ${label}: \n Description: ${imageDescription}\n`
-    else return `## ${label}: \n No infomation is available for this image\n`
+    if (imageDescription) {
+      return `
+## ${label}:
+- Block ID: ${block.id}
+- Description: ${imageDescription}\n`
+    } else {
+      return `
+## ${label}:
+- Block ID: ${block.id}
+- Description: No infomation is available for this image\n`
+    }
   } else {
-    return `## ${label}: \n No infomation is available for this image\n`
+    return `
+## ${label}:
+- Block ID: ${block.id}
+- Description: No infomation is available for this image\n`
   }
 }
