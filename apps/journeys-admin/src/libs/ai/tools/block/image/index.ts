@@ -1,2 +1,2 @@
-export { blockImageUpdate } from './update'
+export { blockImageUpdateMany } from './updateMany'
 export { blockImageUpdateInputSchema } from './type'
