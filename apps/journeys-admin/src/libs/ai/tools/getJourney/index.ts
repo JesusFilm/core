@@ -1,1 +1,0 @@
-export { getJourney } from './getJourney'

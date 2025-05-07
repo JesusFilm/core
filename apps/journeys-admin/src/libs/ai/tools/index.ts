@@ -1,26 +1,20 @@
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
 import { ToolSet } from 'ai'
 
-import { askUserToSelectImage } from './askUserToSelectImage'
-import { askUserToSelectVideo } from './askUserToSelectVideo'
-import { getJourney } from './getJourney'
-import { updateButtonBlocks } from './updateButtonBlocks'
-import { updateImageBlock } from './updateImageBlock'
-import { updateJourneys } from './updateJourneys'
-import { updateRadioOptionBlocks } from './updateRadioOptionBlocks'
-import { updateTypographyBlocks } from './updateTypographyBlocks'
-import { updateVideoBlocks } from './updateVideoBlocks'
+import { tools as blockTools } from './block'
+import { tools as clientTools } from './client'
+import { tools as journeyTools } from './journey'
 
 export function tools(client: ApolloClient<NormalizedCacheObject>): ToolSet {
+  const tools = {
+    ...blockTools,
+    ...clientTools,
+    ...journeyTools
+  }
+
   return {
-    getJourney: getJourney(client),
-    updateJourneys: updateJourneys(client),
-    updateTypographyBlocks: updateTypographyBlocks(client),
-    updateButtonBlocks: updateButtonBlocks(client),
-    updateImageBlock: updateImageBlock(client),
-    updateVideoBlocks: updateVideoBlocks(client),
-    askUserToSelectImage: askUserToSelectImage(),
-    askUserToSelectVideo: askUserToSelectVideo(),
-    updateRadioOptionBlocks: updateRadioOptionBlocks(client)
+    ...Object.fromEntries(
+      Object.entries(tools).map(([key, tool]) => [key, tool(client)])
+    )
   }
 }

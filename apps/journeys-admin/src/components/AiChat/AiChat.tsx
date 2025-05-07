@@ -51,12 +51,12 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
         (part) =>
           part.type === 'tool-invocation' &&
           [
-            'updateJourneys',
-            'updateTypographyBlocks',
-            'updateRadioOptionBlocks',
-            'updateButtonBlocks',
-            'updateImageBlock',
-            'updateVideoBlocks'
+            'journeyUpdate',
+            'blockTypographyUpdateMany',
+            'blockRadioOptionUpdateMany',
+            'blockButtonUpdateMany',
+            'blockImageUpdate',
+            'blockVideoUpdateMany'
           ].includes(part.toolInvocation.toolName)
       )
       if (shouldRefetch) {
@@ -281,7 +281,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
                 case 'tool-invocation': {
                   const callId = part.toolInvocation.toolCallId
                   switch (part.toolInvocation.toolName) {
-                    case 'getJourney': {
+                    case 'journeyGet': {
                       switch (part.toolInvocation.state) {
                         case 'call':
                           return (
@@ -306,7 +306,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
                         }
                       }
                     }
-                    case 'updateJourneys': {
+                    case 'journeyUpdateMany': {
                       switch (part.toolInvocation.state) {
                         case 'call':
                           return (
@@ -333,23 +333,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
                         }
                       }
                     }
-                    case 'updateBlock': {
-                      switch (part.toolInvocation.state) {
-                        case 'call':
-                          return (
-                            <div key={callId}>{t('Updating block...')}</div>
-                          )
-                        case 'result':
-                          return (
-                            <div key={callId}>
-                              {t('Block updated:')}{' '}
-                              {part.toolInvocation.result.id}
-                            </div>
-                          )
-                      }
-                      break
-                    }
-                    case 'askUserToSelectImage': {
+                    case 'clientSelectImage': {
                       switch (part.toolInvocation.state) {
                         case 'call':
                           return (
@@ -385,7 +369,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
                         }
                       }
                     }
-                    case 'askUserToSelectVideo': {
+                    case 'clientSelectVideo': {
                       switch (part.toolInvocation.state) {
                         case 'call':
                           return (

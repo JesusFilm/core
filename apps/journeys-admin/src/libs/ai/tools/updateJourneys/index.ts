@@ -1,1 +1,0 @@
-export { updateJourneys } from './updateJourneys'

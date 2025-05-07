@@ -1,0 +1,44 @@
+import { ApolloClient, NormalizedCacheObject, gql } from '@apollo/client'
+import { Tool, tool } from 'ai'
+import { z } from 'zod'
+
+import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
+
+import { journeyUpdateInputSchema } from './type'
+
+const AI_JOURNEY_UPDATE = gql`
+  ${JOURNEY_FIELDS}
+  mutation AiJourneyUpdate($id: ID!, $input: JourneyUpdateInput!) {
+    journeyUpdate(id: $id, input: $input) {
+      ...JourneyFields
+    }
+  }
+`
+
+export function journeyUpdateMany(
+  client: ApolloClient<NormalizedCacheObject>
+): Tool {
+  return tool({
+    description: 'Update one or more journeys.',
+    parameters: z.object({
+      journeys: z.array(
+        z.object({
+          id: z.string(),
+          input: journeyUpdateInputSchema
+        })
+      )
+    }),
+    execute: async ({ journeys }) => {
+      const results = await Promise.all(
+        journeys.map(async ({ id, input }) => {
+          const result = await client.mutate({
+            mutation: AI_JOURNEY_UPDATE,
+            variables: { id, input }
+          })
+          return result.data?.journeyUpdate
+        })
+      )
+      return results
+    }
+  })
+}
