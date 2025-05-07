@@ -1,4 +1,5 @@
-import { useTranslation } from 'next-i18next'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
 import { ReactElement, useCallback, useState } from 'react'
 import Player from 'video.js/dist/types/player'
 
@@ -9,7 +10,6 @@ import { ContentHeroMuteButton } from './ContentHeroMuteButton'
 import { ContentHeroVideo } from './ContentHeroVideo'
 
 export function ContentHero(): ReactElement {
-  const { t } = useTranslation('apps-watch')
   const video = useVideo()
 
   const [player, setPlayer] = useState<Player | null>(null)
@@ -43,51 +43,120 @@ export function ContentHero(): ReactElement {
   const snippet = video?.snippet[0]?.value ?? ''
 
   return (
-    <div
-      className="h-[90vh] md:h-[70vh] w-full flex items-end relative transition-height duration-300 ease-out bg-stone-900 font-sans"
+    <Box
+      sx={{
+        height: { xs: '90svh', md: '70svh' },
+        width: '100%',
+        display: 'flex',
+        alignItems: 'flex-end',
+        position: 'relative',
+        transition: 'height 0.3s ease-out',
+        bgcolor: 'background.default'
+      }}
       data-testid="ContainerHero"
     >
-      <ContentHeader feedbackButtonLabel={t('Give Feedback')} />
+      <ContentHeader />
       <ContentHeroVideo
         onMutedChange={handleMutedChange}
         onPlayerReady={handlePlayerReady}
       />
-      <div
+      <Box
         data-testid="ContainerHeroTitleContainer"
-        className="w-full relative flex flex-col sm:flex-row max-w-[1920px] mx-auto pb-4"
+        sx={{
+          width: '100%',
+          position: 'relative',
+          display: 'flex',
+          flexDirection: { xs: 'column', sm: 'row' },
+          maxWidth: '1920px',
+          mx: 'auto',
+          pb: 4
+        }}
       >
-        <div
-          className="absolute top-0 left-0 right-0 h-full w-full pointer-events-none md:hidden"
-          style={{
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '100%',
+            width: '100%',
+            pointerEvents: 'none',
+            display: { xs: 'block', md: 'none' },
             backdropFilter: 'brightness(.6) blur(40px)',
-            mask: 'linear-gradient(0deg, rgba(2,0,36,1) 46%, rgba(2,0,36,1) 53%, rgba(0,0,0,0) 100%)'
+            maskImage:
+              'linear-gradient(0deg, rgba(2,0,36,1) 46%, rgba(2,0,36,1) 53%, rgba(0,0,0,0) 100%)'
           }}
         />
-        <div
+        <Box
           data-testid="ContainerHeroTitle"
-          className="w-full flex padded pb-4
-          min-h-[500px] items-end"
+          sx={{
+            width: '100%',
+            display: 'flex',
+            px: { xs: 4, sm: 6, md: 8, lg: 10, xl: 12 },
+            pb: 10,
+            minHeight: '500px',
+            alignItems: 'flex-end'
+          }}
         >
-          <div className="pb-4 sm:pb-0 w-full relative z-[2] flex flex-col">
-            <div className="flex items-center justify-between w-full z-[2]">
-              <h2 className="text-[3.75rem] font-bold text-white opacity-90 mix-blend-screen flex-grow mb-1">
+          <Box
+            sx={{
+              pb: { xs: 4, sm: 0 },
+              width: '100%',
+              position: 'relative',
+              zIndex: 2,
+              display: 'flex',
+              flexDirection: 'column'
+            }}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                width: '100%',
+                zIndex: 2,
+                gap: 4
+              }}
+            >
+              <Typography
+                component="h1"
+                variant="h1"
+                sx={{
+                  fontSize: '3.75rem',
+                  fontWeight: 'bold',
+                  color: 'text.primary',
+                  opacity: 0.9,
+                  mixBlendMode: 'screen',
+                  flexGrow: 1,
+                  mb: 1
+                }}
+              >
                 {title}
-              </h2>
+              </Typography>
               <ContentHeroMuteButton
                 isMuted={isMuted}
                 onClick={handleToggleMute}
               />
-            </div>
+            </Box>
 
-            <h1
-              className="text-secondary-contrast opacity-50 mix-blend-screen z-[2] uppercase tracking-widest text-white"
+            <Typography
+              component="h6"
+              variant="h6"
               data-testid="ContainerHeroDescription"
+              sx={{
+                opacity: 0.5,
+                mixBlendMode: 'screen',
+                zIndex: 2,
+                textTransform: 'uppercase',
+                letterSpacing: '0.1em',
+                color: 'text.primary'
+              }}
             >
               {snippet}
-            </h1>
-          </div>
-        </div>
-      </div>
-    </div>
+            </Typography>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
   )
 }

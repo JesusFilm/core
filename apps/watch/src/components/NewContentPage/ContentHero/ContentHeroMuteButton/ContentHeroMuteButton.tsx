@@ -1,7 +1,8 @@
+import VolumeOffRoundedIcon from '@mui/icons-material/VolumeOffRounded'
+import VolumeUpRoundedIcon from '@mui/icons-material/VolumeUpRounded'
+import IconButton from '@mui/material/IconButton'
+import { alpha } from '@mui/material/styles'
 import { ReactElement } from 'react'
-
-import Volume5 from '@core/shared/ui/icons/Volume5'
-import VolumeOff from '@core/shared/ui/icons/VolumeOff'
 
 interface ContentHeroMuteButtonProps {
   isMuted: boolean
@@ -14,16 +15,26 @@ export function ContentHeroMuteButton({
   onClick
 }: ContentHeroMuteButtonProps): ReactElement {
   return (
-    <button
+    <IconButton
+      disableRipple
+      size="large"
       onClick={onClick}
-      className="w-[56px] h-[56px] rounded-full bg-black/50 text-white ml-4 mr-1 transition-colors hover:bg-black/70"
+      sx={{
+        width: '56px',
+        height: '56px',
+        bgcolor: ({ palette }) => alpha(palette.text.secondary, 0.5),
+        transition: 'background-color 0.2s',
+        '&:hover': {
+          bgcolor: ({ palette }) => alpha(palette.text.secondary, 0.3)
+        }
+      }}
       aria-label={isMuted ? 'muted' : 'unmuted'}
     >
       {isMuted ? (
-        <VolumeOff sx={{ fontSize: '32px' }} />
+        <VolumeOffRoundedIcon sx={{ fontSize: '32px' }} />
       ) : (
-        <Volume5 sx={{ fontSize: '32px' }} />
+        <VolumeUpRoundedIcon sx={{ fontSize: '32px' }} />
       )}
-    </button>
+    </IconButton>
   )
 }
