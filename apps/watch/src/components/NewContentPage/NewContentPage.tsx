@@ -9,7 +9,6 @@ import { getWatchUrl } from '../../libs/utils/getWatchUrl'
 import { useVideo } from '../../libs/videoContext'
 import { PageWrapper } from '../PageWrapper'
 
-import { Chapters } from './Chapters'
 import { ContentHero } from './ContentHero'
 import { ContentMetadata } from './ContentMetadata'
 
@@ -26,9 +25,6 @@ export function NewContentPage(): ReactElement {
   } = useVideo()
 
   const watchUrl = getWatchUrl(container?.slug, label, variant?.slug)
-
-  const { loading, children } = useVideoChildren(slug)
-  const realChildren = children.filter((video) => video.variant !== null)
 
   return (
     <>
