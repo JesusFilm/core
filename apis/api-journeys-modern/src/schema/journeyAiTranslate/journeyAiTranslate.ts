@@ -151,7 +151,8 @@ Description: [translated description]
               },
               data: {
                 title: translatedTitleDesc.title,
-                description: translatedTitleDesc.description
+                description: translatedTitleDesc.description,
+                languageId: input.textLanguageId
               }
             })
 
