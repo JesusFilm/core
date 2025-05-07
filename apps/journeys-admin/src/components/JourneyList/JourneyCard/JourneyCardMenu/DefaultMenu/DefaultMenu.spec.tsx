@@ -378,7 +378,7 @@ describe('DefaultMenu', () => {
       },
       result: {
         data: {
-          journey: journeyData
+          adminJourney: journeyData
         }
       }
     }
@@ -440,7 +440,7 @@ describe('DefaultMenu', () => {
       },
       result: {
         data: {
-          journey: journeyData
+          adminJourney: journeyData
         }
       }
     }
@@ -502,7 +502,7 @@ describe('DefaultMenu', () => {
       },
       result: {
         data: {
-          journey: journeyData
+          adminJourney: journeyData
         }
       }
     }
@@ -566,7 +566,7 @@ describe('DefaultMenu', () => {
       },
       result: {
         data: {
-          journey: journeyData
+          adminJourney: journeyData
         }
       }
     }
@@ -621,7 +621,7 @@ describe('DefaultMenu', () => {
       },
       result: {
         data: {
-          journey: templateData
+          adminJourney: templateData
         }
       }
     }
@@ -672,7 +672,7 @@ describe('DefaultMenu', () => {
       },
       result: {
         data: {
-          journey: journeyData
+          adminJourney: journeyData
         }
       }
     }
@@ -725,7 +725,7 @@ describe('DefaultMenu', () => {
       },
       result: {
         data: {
-          journey: templateData
+          adminJourney: templateData
         }
       }
     }
@@ -788,7 +788,7 @@ describe('DefaultMenu', () => {
       },
       result: {
         data: {
-          journey: journeyData
+          adminJourney: journeyData
         }
       }
     }
