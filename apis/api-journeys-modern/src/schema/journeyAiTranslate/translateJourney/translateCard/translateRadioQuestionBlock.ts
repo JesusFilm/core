@@ -1,25 +1,22 @@
 import { google } from '@ai-sdk/google'
 import { generateText } from 'ai'
-import { Logger } from 'pino'
 
 import { Block } from '.prisma/api-journeys-modern-client'
 
-import { prisma } from '../../../../../lib/prisma'
+import { prisma } from '../../../../lib/prisma'
 
 export async function translateRadioQuestionBlock({
   block,
   blocks,
   cardAnalysis,
   sourceLanguageName,
-  targetLanguageName,
-  logger
+  targetLanguageName
 }: {
   block: Block
   blocks: Block[]
   cardAnalysis: string
   sourceLanguageName: string
   targetLanguageName: string
-  logger?: Logger
 }): Promise<void> {
   // RadioQuestionBlock itself doesn't have text to translate
   // We need to find and translate its child RadioOptionBlocks
@@ -30,11 +27,11 @@ export async function translateRadioQuestionBlock({
   )
 
   if (radioOptionBlocks.length === 0) {
-    logger?.info(`No radio options found for radio question block ${block.id}`)
+    console.log(`No radio options found for radio question block ${block.id}`)
     return
   }
 
-  logger?.info(
+  console.log(
     `Translating ${radioOptionBlocks.length} radio options for radio question block ${block.id}`
   )
 
@@ -58,7 +55,10 @@ export async function translateRadioQuestionBlock({
 
       const { text: translatedLabel } = await generateText({
         model: google('gemini-2.0-flash'),
-        prompt: translationPrompt
+        prompt: translationPrompt,
+        onStepFinish: ({ usage }) => {
+          console.log('usage', usage)
+        }
       })
 
       if (translatedLabel) {
@@ -72,18 +72,18 @@ export async function translateRadioQuestionBlock({
           }
         })
 
-        logger?.info(
+        console.log(
           `Successfully translated radio option block ${optionBlock.id}`
         )
       }
     } catch (error) {
-      logger?.error(
+      console.error(
         `Error translating radio option block ${optionBlock.id}:`,
         error
       )
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error occurred'
-      logger?.error(`Failed to translate radio option: ${errorMessage}`)
+      console.error(`Failed to translate radio option: ${errorMessage}`)
       // Continue with other options
     }
   }
