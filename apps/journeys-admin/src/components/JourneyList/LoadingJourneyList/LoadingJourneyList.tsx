@@ -74,7 +74,7 @@ function LoadingJourneyCard(): ReactElement {
           bottom: 3,
           left: 8,
           right: 8,
-          zIndex: 3,
+          zIndex: 3
         }}
       >
         <Stack
