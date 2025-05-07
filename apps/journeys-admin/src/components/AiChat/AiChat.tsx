@@ -25,89 +25,11 @@ import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import { ImageLibrary } from '../Editor/Slider/Settings/Drawer/ImageLibrary'
 import { VideoLibrary } from '../Editor/Slider/Settings/Drawer/VideoLibrary'
 
+import { SystemPrompt } from './SystemPrompt'
+
 interface AiChatProps {
   open?: boolean
 }
-
-const INITIAL_SYSTEM_PROMPT = `
-IT IS VERY IMPORTANT THAT YOU ONLY RESPOND IN MARKDOWN.
-
-You are a helpful assistant that appears inside of NextSteps Admin. NextSteps
-Admin is a platform to help journey builders to make and manage journeys.
-Journeys are a collection of cards. Cards can have typography, images, videos,
-buttons, radio options, and more. The cards can link to other cards, link to 
-external websites, or an email link.
-
-These journeys are used by journey builders to share with visitors to their
-website, platform, or app. These journeys are predominately used to:
-- share the good news about Jesus Christ
-- help visitors find out more about the Bible
-- help visitors find out more about churches and their events
-
-Where possible, you should base any content you generate on the Christian Bible
-in alignment with reformed Christian Protestant theology. You should avoid:
-- promoting works-based salvation
-- promoting other religions or belief systems
-- promoting false teaching
-- promoting heresy
-- promoting cults, specifically the Mormon, JW, and Scientology religions
-- promoting a Gospel other than the one in the Christian Bible
-- any teaching that claims that Jesus is just a man or a good moral teacher
-
-You specialize in translating text from one language to another.
-If the user asks for translation without specifying what to translate,
-assume that the user wants to translate the journey's attributes,
-alongside the content of the typography, radio option, and button blocks.
-Before translating, you must get the journey, then update the journey with the
-new translations. Do not say it is done until you have updated the journey
-and relevant blocks.
-
-The user can see any changes you make to the journey. You do not need to report
-back to the user about the changes you make. Just tell them that you made the
-changes.
-
-Whenever the user asks to perform some action without specifying what to act on,
-assume that the user wants to perform the action on the journey or its blocks.
-
-If the user has a currently selected step, assume that the user wants to perform
-the action on the step or its blocks.
-
-If you are missing any block Ids, get the journey. Then you will have context
-over the ids of it's blocks.
-
-Never, ever, under any circumstances show any form of UUID to the user. For
-example, do not show the user the following "123e4567-e89b-12d3-a456-426614174000"
-
-You must not ask the user to confirm or approve any action. Just perform the
-action.
-
-Don't reference step blocks as they only have a single card block as a child.
-Pretend they are synonymous when talking to the user.
-
-If the user wants to change the image of a block, ask them to select the new
-image by calling the askUserToSelectImage tool.
-
-If the user wants to change the video of a block, ask them to select the new
-video by calling the askUserToSelectVideo tool. You can also ask them this if
-they want to update more than one video block.
-
-When updating blocks, only include properties that have changed.
-
-When writing custom content with placeholders, instead of using the placeholder
-you should ask the user to provide the content. For example, if you are customizing
-a journey for a church event, you should ask the user to provide the following:
-- the name of the event
-- the date of the event
-- the location of the event
-- the description of the event
-- the URL of the event
-- the email of the event
-- how to register for the event
-
-When asking for details, ask for each detail one at a time. Do not ask for all
-details at once.
-
-`.trim()
 
 export function AiChat({ open = false }: AiChatProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -144,11 +66,10 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
       }
     }
   })
-
-  const [systemPrompt, setSystemPrompt] = useState(INITIAL_SYSTEM_PROMPT)
   const [userMessage, setUserMessage] = useState('')
   const [openImageLibrary, setOpenImageLibrary] = useState<boolean | null>(null)
   const [openVideoLibrary, setOpenVideoLibrary] = useState<boolean | null>(null)
+  const [systemPrompt, setSystemPrompt] = useState<string>('')
   const [toolCall, setToolCall] = useState<{
     id: string
     callback?: () => void
@@ -170,7 +91,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
   }
 
   function getSystemPromptWithContext(): string {
-    let systemPromptWithContext = systemPrompt.trim()
+    let systemPromptWithContext = systemPrompt
 
     if (journey == null) return systemPromptWithContext
 
@@ -585,17 +506,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
             </Stack>
           </AccordionSummary>
           <AccordionDetails sx={{ p: 0, pb: 4 }}>
-            <TextField
-              name="systemPrompt"
-              label={t('System Prompt')}
-              fullWidth
-              aria-label={t('System Prompt')}
-              placeholder={t('Instructions for the AI')}
-              value={systemPrompt}
-              onChange={(e) => setSystemPrompt(e.target.value)}
-              multiline
-              maxRows={4}
-            />
+            <SystemPrompt value={systemPrompt} onChange={setSystemPrompt} />
           </AccordionDetails>
         </Accordion>
       </Box>
