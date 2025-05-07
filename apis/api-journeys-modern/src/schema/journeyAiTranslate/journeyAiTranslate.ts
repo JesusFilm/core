@@ -1,7 +1,7 @@
 import { google } from '@ai-sdk/google'
 import { ApolloClient, createHttpLink } from '@apollo/client'
 import { InMemoryCache } from '@apollo/client/cache'
-import { generateObject, generateText } from 'ai'
+import { generateObject, generateText, streamObject } from 'ai'
 import { z } from 'zod'
 
 import { prisma } from '../../lib/prisma'
@@ -304,92 +304,110 @@ Description: [translated description]
 
               try {
                 console.log(
-                  `Translating card ${cardBlock.id} with ${allBlocksToTranslate.length} blocks`
+                  `Translating card ${cardBlock.id} with ${allBlocksToTranslate.length} blocks using streaming`
                 )
-                const { object: translatedBlocksRaw } = await generateObject({
+
+                // Stream the translations
+                const { fullStream } = streamObject({
                   model: google('gemini-2.0-flash'),
                   output: 'no-schema',
-                  prompt: cardAnalysisPrompt
-                })
-
-                // Process the raw translation result
-                if (Array.isArray(translatedBlocksRaw)) {
-                  let blockCount = 0
-                  let invalidBlockCount = 0
-
-                  for (const item of translatedBlocksRaw) {
-                    try {
-                      // Validate that item has the expected structure
-                      if (
-                        item &&
-                        typeof item === 'object' &&
-                        'blockId' in item &&
-                        typeof item.blockId === 'string' &&
-                        'updates' in item &&
-                        typeof item.updates === 'object'
-                      ) {
-                        // Check if block ID is valid before trying to update
-                        const typedBlock = item as unknown as TranslatedBlock
-
-                        // Verify block ID exists in our journey
-                        if (!validBlockIds.has(typedBlock.blockId)) {
-                          console.error(
-                            `Skipping invalid block ID ${typedBlock.blockId} - not found in journey`
-                          )
-                          invalidBlockCount++
-                          continue
-                        }
-
-                        await prisma.block.update({
-                          where: {
-                            id: typedBlock.blockId
-                          },
-                          data: typedBlock.updates
-                        })
-                        blockCount++
-                        console.log(
-                          `Successfully updated block ${typedBlock.blockId} (${blockCount}/${allBlocksToTranslate.length})`
-                        )
-                      }
-                    } catch (updateError) {
-                      if (
-                        item &&
-                        typeof item === 'object' &&
-                        'blockId' in item
-                      ) {
-                        const blockIdString =
-                          typeof item.blockId === 'string'
-                            ? item.blockId
-                            : JSON.stringify(item.blockId)
-
-                        console.error(
-                          `Error updating block ${blockIdString}:`,
-                          updateError
-                        )
-                      } else {
-                        console.error(
-                          `Error updating unknown block:`,
-                          updateError
-                        )
-                      }
-                    }
-                  }
-
-                  if (invalidBlockCount > 0) {
-                    console.warn(
-                      `Found ${invalidBlockCount} invalid block IDs that don't exist in journey`
+                  prompt: cardAnalysisPrompt,
+                  onError: ({ error }) => {
+                    console.error(
+                      `Error in translation stream for card ${cardBlock.id}:`,
+                      error
                     )
                   }
+                })
 
-                  console.log(
-                    `Completed translation of card ${cardBlock.id} with ${blockCount} blocks updated`
-                  )
-                } else {
-                  console.error(
-                    `Unexpected response format for card ${cardBlock.id}, expected array but got:`,
-                    typeof translatedBlocksRaw
+                let blockCount = 0
+                let invalidBlockCount = 0
+                let partialTranslations = []
+
+                // Process the stream as chunks arrive
+                for await (const chunk of fullStream) {
+                  // Process object chunks which contain translation data
+                  if (chunk.type === 'object' && chunk.object) {
+                    // Handle streaming array building
+                    if (Array.isArray(chunk.object)) {
+                      partialTranslations = chunk.object
+
+                      // Process each block in the array
+                      for (const item of partialTranslations) {
+                        try {
+                          // Check if we've already processed this block (in case of duplicate items in stream)
+                          if (
+                            item &&
+                            typeof item === 'object' &&
+                            'blockId' in item &&
+                            typeof item.blockId === 'string' &&
+                            'updates' in item &&
+                            typeof item.updates === 'object'
+                          ) {
+                            // Check if block ID is valid before trying to update
+                            const typedBlock =
+                              item as unknown as TranslatedBlock
+
+                            // Verify block ID exists in our journey
+                            if (!validBlockIds.has(typedBlock.blockId)) {
+                              console.error(
+                                `Skipping invalid block ID ${typedBlock.blockId} - not found in journey`
+                              )
+                              invalidBlockCount++
+                              continue
+                            }
+
+                            await prisma.block.update({
+                              where: {
+                                id: typedBlock.blockId
+                              },
+                              data: typedBlock.updates
+                            })
+                            blockCount++
+                            console.log(
+                              `Successfully updated block ${typedBlock.blockId} (${blockCount}/${allBlocksToTranslate.length})`
+                            )
+                          }
+                        } catch (updateError) {
+                          if (
+                            item &&
+                            typeof item === 'object' &&
+                            'blockId' in item
+                          ) {
+                            const blockIdString =
+                              typeof item.blockId === 'string'
+                                ? item.blockId
+                                : JSON.stringify(item.blockId)
+
+                            console.error(
+                              `Error updating block ${blockIdString}:`,
+                              updateError
+                            )
+                          } else {
+                            console.error(
+                              `Error updating unknown block:`,
+                              updateError
+                            )
+                          }
+                        }
+                      }
+                    }
+                  } else if (chunk.type === 'finish') {
+                    console.log(
+                      `Translation stream finished for card ${cardBlock.id}`
+                    )
+                  }
+                }
+
+                if (invalidBlockCount > 0) {
+                  console.warn(
+                    `Found ${invalidBlockCount} invalid block IDs that don't exist in journey`
                   )
                 }
+
+                console.log(
+                  `Completed streaming translation of card ${cardBlock.id} with ${blockCount} blocks updated`
+                )
               } catch (error) {
                 console.error(`Error translating card ${cardBlock.id}:`, error)
                 // Continue with other cards
