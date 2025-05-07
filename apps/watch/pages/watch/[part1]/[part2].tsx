@@ -31,14 +31,6 @@ interface Part2PageProps {
   content: VideoContentFields
 }
 
-const DynamicVideoContentPage = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "VideoContentPage" */
-      '../../../src/components/VideoContentPage'
-    )
-)
-
 const DynamicVideoContainerPage = dynamic(
   async () =>
     await import(
@@ -61,11 +53,7 @@ export default function Part2Page({ content }: Part2PageProps): ReactElement {
       <LanguageProvider>
         <VideoProvider value={{ content }}>
           {content.variant?.hls != null ? (
-            content.childrenCount > 0 ? (
-              <DynamicNewContentPage />
-            ) : (
-              <DynamicVideoContentPage />
-            )
+            <DynamicNewContentPage />
           ) : (
             <DynamicVideoContainerPage />
           )}
