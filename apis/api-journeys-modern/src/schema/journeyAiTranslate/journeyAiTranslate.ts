@@ -85,73 +85,60 @@ builder.mutationFields((t) => ({
           cardBlocks
         })
 
-        // 4. Use Gemini to analyze the journey content and get intent
-        const prompt = `
-Analyze this journey content and provide the key intent, themes, and target audience. 
+        // 4. Use Gemini to analyze the journey content and get intent, and translate title/description
+        const combinedPrompt = `
+Analyze this journey content and provide the key intent, themes, and target audience.
 Also suggest ways to culturally adapt this content for the target language: ${requestedLanguageName}.
+Then, translate the following journey title and description to ${requestedLanguageName}.
+If a description is not provided, return a brief 1 sentence description of the journey.
+
 The source language is: ${sourceLanguageName}.
 The target language name is: ${requestedLanguageName}.
 
 Journey Title: ${journey.title}
- ${journey.description ? `Journey Description: ${journey.description}` : ''}
+${journey.description ? `Journey Description: ${journey.description}` : ''}
 
 Journey Content:
 ${cardBlocksContent.join('\n')}
+
+Return in this format:
+{
+  analysis: [analysis and adaptation suggestions],
+  title: [translated title],
+  description: [translated description]
+}
 `
 
         try {
-          const { text: journeyAnalysis } = await generateText({
+          const { object: analysisAndTranslation } = await generateObject({
             model: google('gemini-2.0-flash'),
-            prompt
+            prompt: combinedPrompt,
+            schema: z.object({
+              analysis: z.string(),
+              title: z.string(),
+              description: z.string()
+            })
           })
 
-          // translate the journey title and description
-          try {
-            // Translate title and description
-            const titleDescPrompt = `
-Translate the following journey title and description to ${requestedLanguageName}.
-If a description is not provided, return a brief 1 sentence description of the journey.
+          if (!analysisAndTranslation.title)
+            throw new Error('Failed to translate journey title')
+          if (!analysisAndTranslation.description)
+            throw new Error('Failed to translate journey description')
 
-Original title: "${journey.title}"
-Original description: "${journey.description || ''}"
+          // Update the journey using Prisma
+          await prisma.journey.update({
+            where: {
+              id: input.journeyId
+            },
+            data: {
+              title: analysisAndTranslation.title,
+              description: analysisAndTranslation.description,
+              languageId: input.textLanguageId
+            }
+          })
 
-Translation context:
-${journeyAnalysis}
-
-Return in this format:
-Title: [translated title]
-Description: [translated description]
-      `
-
-            const { object: translatedTitleDesc } = await generateObject({
-              model: google('gemini-2.0-flash'),
-              prompt: titleDescPrompt,
-              schema: z.object({
-                title: z.string(),
-                description: z.string()
-              })
-            })
-
-            if (translatedTitleDesc.title === null)
-              throw new Error('Failed to translate journey title')
-            if (translatedTitleDesc.description === null)
-              throw new Error('Failed to translate journey description')
-
-            // Update the journey using Prisma
-            await prisma.journey.update({
-              where: {
-                id: input.journeyId
-              },
-              data: {
-                title: translatedTitleDesc.title,
-                description: translatedTitleDesc.description,
-                languageId: input.textLanguageId
-              }
-            })
-          } catch (error) {
-            console.warn('Error translating journey title/description', error)
-            // Continue with the rest of the translation
-          }
+          // Use analysisAndTranslation.analysis for card translation context
+          const journeyAnalysis = analysisAndTranslation.analysis
 
           // 5. Translate each card
           const cardBlocks = journey.blocks.filter(
@@ -226,29 +213,32 @@ Description: [translated description]
 
                 // Create prompt for translation
                 const cardAnalysisPrompt = `
-              Translate content from ${sourceLanguageName} to ${requestedLanguageName}.
-              
-              CONTEXT:
-              ${cardContent}
-              
-              TRANSLATE THE FOLLOWING BLOCKS:
-              ${blocksToTranslateInfo}
-              
-              IMPORTANT: For each block, use ONLY the EXACT IDs in square brackets [ID].
-              Return an array where each item is an object with:
-              - blockId: The EXACT ID from square brackets
-              - updates: An object with field names and translated values
-              
-              Field names to translate per block type:
-              - TypographyBlock: "content" field
-              - ButtonBlock: "label" field
-              - RadioOptionBlock: "label" field
-              - RadioQuestionBlock: "label" field
-              - TextResponseBlock: "label" and "placeholder" fields
-              
-              Ensure translations maintain the meaning while being culturally appropriate for ${requestedLanguageName}.
-              Keep translations concise and effective for UI context (e.g., button labels should remain short).
-            `
+JOURNEY ANALYSIS AND ADAPTATION SUGGESTIONS:
+${journeyAnalysis}
+
+Translate content from ${sourceLanguageName} to ${requestedLanguageName}.
+
+CONTEXT:
+${cardContent}
+
+TRANSLATE THE FOLLOWING BLOCKS:
+${blocksToTranslateInfo}
+
+IMPORTANT: For each block, use ONLY the EXACT IDs in square brackets [ID].
+Return an array where each item is an object with:
+- blockId: The EXACT ID from square brackets
+- updates: An object with field names and translated values
+
+Field names to translate per block type:
+- TypographyBlock: "content" field
+- ButtonBlock: "label" field
+- RadioOptionBlock: "label" field
+- RadioQuestionBlock: "label" field
+- TextResponseBlock: "label" and "placeholder" fields
+
+Ensure translations maintain the meaning while being culturally appropriate for ${requestedLanguageName}.
+Keep translations concise and effective for UI context (e.g., button labels should remain short).
+`
                 try {
                   // Stream the translations
                   const { fullStream } = streamObject({
