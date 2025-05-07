@@ -5,11 +5,8 @@ import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
 import Chip from '@mui/material/Chip'
 import CircularProgress from '@mui/material/CircularProgress'
-import Grow from '@mui/material/Grow'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
@@ -208,375 +205,354 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
 
   return (
     <>
-      <Grow
-        in={open}
-        style={{ transformOrigin: 'bottom left' }}
-        mountOnEnter
-        unmountOnExit
+      {/* Chat Messages Display */}
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column-reverse',
+          gap: 4,
+          p: 5,
+          pb: 0,
+          maxHeight: 'calc(100svh - 400px)',
+          minHeight: 150,
+          overflowY: 'auto'
+        }}
       >
-        <Card
-          sx={{
-            position: 'fixed',
-            left: 72,
-            bottom: 100,
-            borderRadius: 4,
-            zIndex: 1200,
-            width: 600
-          }}
-        >
-          {/* Chat Messages Display */}
+        {nonSystemMessages.length === 0 && (
+          <>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                gap: 2,
+                flexWrap: 'wrap'
+              }}
+            >
+              <Chip
+                label={t('Customize my journey')}
+                size="small"
+                variant="outlined"
+                onClick={() => {
+                  void handleSubmit('Help me customize my journey.')
+                }}
+              />
+              <Chip
+                label={t('Translate to another language')}
+                size="small"
+                variant="outlined"
+                onClick={() => {
+                  void handleSubmit(
+                    'Help me to translate my journey to another language.'
+                  )
+                }}
+              />
+              <Chip
+                label={t('Tell me about my journey')}
+                size="small"
+                variant="outlined"
+                onClick={() => {
+                  void handleSubmit('Tell me about my journey.')
+                }}
+              />
+              <Chip
+                label={t('What can I do to improve my journey?')}
+                size="small"
+                variant="outlined"
+                onClick={() => {
+                  void handleSubmit('What can I do to improve my journey?')
+                }}
+              />
+            </Box>
+
+            <Typography
+              variant="body1"
+              textAlign="center"
+              color="text.secondary"
+              sx={{
+                my: 4,
+                mx: 3,
+                flexGrow: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              {t(
+                'NextSteps AI can help you make your journey more effective! Ask it anything.'
+              )}
+            </Typography>
+          </>
+        )}
+        {status === 'submitted' && (
+          <Box>
+            <CircularProgress size={18} />
+          </Box>
+        )}
+        {nonSystemMessages.map((message) => (
           <Box
+            key={message.id}
             sx={{
               display: 'flex',
-              flexDirection: 'column-reverse',
-              gap: 4,
-              p: 5,
-              pb: 0,
-              maxHeight: 'calc(100svh - 400px)',
-              minHeight: 150,
-              overflowY: 'auto'
+              flexDirection: 'column',
+              gap: 2,
+              backgroundColor:
+                message.role === 'user'
+                  ? 'action.selected'
+                  : 'background.paper',
+              py: message.role === 'user' ? 2 : 0,
+              px: message.role === 'user' ? 3 : 0,
+              borderRadius: 2,
+              alignSelf: message.role === 'user' ? 'flex-end' : 'flex-start',
+              maxWidth: '80%',
+              '& > p': {
+                m: 0
+              }
             }}
           >
-            {nonSystemMessages.length === 0 && (
-              <>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    gap: 2,
-                    flexWrap: 'wrap'
-                  }}
-                >
-                  <Chip
-                    label={t('Customize my journey')}
-                    size="small"
-                    variant="outlined"
-                    onClick={() => {
-                      void handleSubmit('Help me customize my journey.')
-                    }}
-                  />
-                  <Chip
-                    label={t('Translate to another language')}
-                    size="small"
-                    variant="outlined"
-                    onClick={() => {
-                      void handleSubmit(
-                        'Help me to translate my journey to another language.'
-                      )
-                    }}
-                  />
-                  <Chip
-                    label={t('Tell me about my journey')}
-                    size="small"
-                    variant="outlined"
-                    onClick={() => {
-                      void handleSubmit('Tell me about my journey.')
-                    }}
-                  />
-                  <Chip
-                    label={t('What can I do to improve my journey?')}
-                    size="small"
-                    variant="outlined"
-                    onClick={() => {
-                      void handleSubmit('What can I do to improve my journey?')
-                    }}
-                  />
-                </Box>
-
-                <Typography
-                  variant="body1"
-                  textAlign="center"
-                  color="text.secondary"
-                  sx={{
-                    my: 4,
-                    mx: 3,
-                    flexGrow: 1,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}
-                >
-                  {t(
-                    'NextSteps AI can help you make your journey more effective! Ask it anything.'
-                  )}
-                </Typography>
-              </>
-            )}
-            {status === 'submitted' && (
-              <Box>
-                <CircularProgress size={18} />
-              </Box>
-            )}
-            {nonSystemMessages.map((message) => (
-              <Box
-                key={message.id}
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 2,
-                  backgroundColor:
-                    message.role === 'user'
-                      ? 'action.selected'
-                      : 'background.paper',
-                  py: message.role === 'user' ? 2 : 0,
-                  px: message.role === 'user' ? 3 : 0,
-                  borderRadius: 2,
-                  alignSelf:
-                    message.role === 'user' ? 'flex-end' : 'flex-start',
-                  maxWidth: '80%',
-                  '& > p': {
-                    m: 0
-                  }
-                }}
-              >
-                {message.parts.map((part, i) => {
-                  switch (part.type) {
-                    case 'text': {
-                      return message.role === 'user' ? (
-                        <Typography key={`${message.id}-${i}`}>
-                          {part.text}
-                        </Typography>
-                      ) : (
-                        <Markdown key={`${message.id}-${i}`}>
-                          {part.text}
-                        </Markdown>
-                      )
+            {message.parts.map((part, i) => {
+              switch (part.type) {
+                case 'text': {
+                  return message.role === 'user' ? (
+                    <Typography key={`${message.id}-${i}`}>
+                      {part.text}
+                    </Typography>
+                  ) : (
+                    <Markdown key={`${message.id}-${i}`}>{part.text}</Markdown>
+                  )
+                }
+                case 'tool-invocation': {
+                  const callId = part.toolInvocation.toolCallId
+                  switch (part.toolInvocation.toolName) {
+                    case 'getJourney': {
+                      switch (part.toolInvocation.state) {
+                        case 'call':
+                          return (
+                            <Typography
+                              key={callId}
+                              variant="body2"
+                              color="text.secondary"
+                            >
+                              {t('Getting journey...')}
+                            </Typography>
+                          )
+                        default: {
+                          return (
+                            <Box>
+                              <Chip
+                                key={callId}
+                                label={t('Journey retrieved')}
+                                size="small"
+                              />
+                            </Box>
+                          )
+                        }
+                      }
                     }
-                    case 'tool-invocation': {
-                      const callId = part.toolInvocation.toolCallId
-                      switch (part.toolInvocation.toolName) {
-                        case 'getJourney': {
-                          switch (part.toolInvocation.state) {
-                            case 'call':
-                              return (
-                                <Typography
-                                  key={callId}
-                                  variant="body2"
-                                  color="text.secondary"
-                                >
-                                  {t('Getting journey...')}
-                                </Typography>
-                              )
-                            default: {
-                              return (
-                                <Box>
-                                  <Chip
-                                    key={callId}
-                                    label={t('Journey retrieved')}
-                                    size="small"
-                                  />
-                                </Box>
-                              )
-                            }
-                          }
-                        }
-                        case 'updateJourneys': {
-                          switch (part.toolInvocation.state) {
-                            case 'call':
-                              return (
-                                <Typography
-                                  key={callId}
-                                  variant="body2"
-                                  color="text.secondary"
-                                >
-                                  {t('Updating journey...')}
-                                </Typography>
-                              )
-                            case 'result':
-                              return (
-                                <Box>
-                                  <Chip
-                                    key={callId}
-                                    label={t('Journey updated')}
-                                    size="small"
-                                  />
-                                </Box>
-                              )
-                            default: {
-                              return null
-                            }
-                          }
-                        }
-                        case 'updateBlock': {
-                          switch (part.toolInvocation.state) {
-                            case 'call':
-                              return (
-                                <div key={callId}>{t('Updating block...')}</div>
-                              )
-                            case 'result':
-                              return (
-                                <div key={callId}>
-                                  {t('Block updated:')}{' '}
-                                  {part.toolInvocation.result.id}
-                                </div>
-                              )
-                          }
-                          break
-                        }
-                        case 'askUserToSelectImage': {
-                          switch (part.toolInvocation.state) {
-                            case 'call':
-                              return (
-                                <Box key={callId}>
-                                  <Typography
-                                    key={callId}
-                                    variant="body2"
-                                    color="text.secondary"
-                                  >
-                                    {part.toolInvocation.args.message}
-                                  </Typography>
-
-                                  <Box>
-                                    <Button
-                                      variant="outlined"
-                                      onClick={() => {
-                                        setOpenImageLibrary(true)
-                                        setToolCall({
-                                          id: callId,
-                                          callback: () => {
-                                            setOpenImageLibrary(false)
-                                          }
-                                        })
-                                      }}
-                                    >
-                                      {t('Open Image Library')}
-                                    </Button>
-                                  </Box>
-                                </Box>
-                              )
-                            default: {
-                              return null
-                            }
-                          }
-                        }
-                        case 'askUserToSelectVideo': {
-                          switch (part.toolInvocation.state) {
-                            case 'call':
-                              return (
-                                <Box key={callId}>
-                                  <Typography
-                                    key={callId}
-                                    variant="body2"
-                                    color="text.secondary"
-                                  >
-                                    {part.toolInvocation.args.message}
-                                  </Typography>
-
-                                  <Box>
-                                    <Button
-                                      variant="outlined"
-                                      onClick={() => {
-                                        setOpenVideoLibrary(true)
-                                        setToolCall({
-                                          id: callId,
-                                          callback: () => {
-                                            setOpenVideoLibrary(false)
-                                          }
-                                        })
-                                      }}
-                                    >
-                                      {t('Open Video Library')}
-                                    </Button>
-                                  </Box>
-                                </Box>
-                              )
-                            default: {
-                              return null
-                            }
-                          }
-                        }
+                    case 'updateJourneys': {
+                      switch (part.toolInvocation.state) {
+                        case 'call':
+                          return (
+                            <Typography
+                              key={callId}
+                              variant="body2"
+                              color="text.secondary"
+                            >
+                              {t('Updating journey...')}
+                            </Typography>
+                          )
+                        case 'result':
+                          return (
+                            <Box>
+                              <Chip
+                                key={callId}
+                                label={t('Journey updated')}
+                                size="small"
+                              />
+                            </Box>
+                          )
                         default: {
                           return null
                         }
                       }
                     }
-                  }
-                })}
-              </Box>
-            ))}
-          </Box>
-          <CardContent sx={{ '&:last-child': { pb: 2 } }}>
-            <Stack direction="row" spacing={2}>
-              <TextField
-                name="userMessage"
-                value={userMessage}
-                onChange={(e) => setUserMessage(e.target.value)}
-                placeholder={t('Ask Anything')}
-                fullWidth
-                multiline
-                maxRows={4}
-                aria-label={t('Message')}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault()
-                    void handleSubmit()
-                  }
-                }}
-                autoFocus
-              />
-              <Button
-                variant="outlined"
-                onClick={() => {
-                  void handleSubmit()
-                }}
-                sx={{
-                  borderRadius: 1,
-                  borderWidth: '1px'
-                }}
-              >
-                <ArrowUpIcon />
-              </Button>
-            </Stack>
-            <Accordion
-              sx={{
-                mt: 2,
-                '&:before': {
-                  display: 'none'
-                }
-              }}
-              elevation={0}
-            >
-              <AccordionSummary
-                expandIcon={<ChevronDownIcon fontSize="small" />}
-                sx={{
-                  minHeight: 32,
-                  p: 0,
-                  '&.Mui-expanded': {
-                    minHeight: 32,
-                    p: 0
-                  },
-                  '& > .MuiAccordionSummary-content': {
-                    my: 0,
-                    justifyContent: 'flex-end',
-                    mr: 1,
-                    '&.Mui-expanded': {
-                      my: 0,
-                      mr: 1
+                    case 'updateBlock': {
+                      switch (part.toolInvocation.state) {
+                        case 'call':
+                          return (
+                            <div key={callId}>{t('Updating block...')}</div>
+                          )
+                        case 'result':
+                          return (
+                            <div key={callId}>
+                              {t('Block updated:')}{' '}
+                              {part.toolInvocation.result.id}
+                            </div>
+                          )
+                      }
+                      break
+                    }
+                    case 'askUserToSelectImage': {
+                      switch (part.toolInvocation.state) {
+                        case 'call':
+                          return (
+                            <Box key={callId}>
+                              <Typography
+                                key={callId}
+                                variant="body2"
+                                color="text.secondary"
+                              >
+                                {part.toolInvocation.args.message}
+                              </Typography>
+
+                              <Box>
+                                <Button
+                                  variant="outlined"
+                                  onClick={() => {
+                                    setOpenImageLibrary(true)
+                                    setToolCall({
+                                      id: callId,
+                                      callback: () => {
+                                        setOpenImageLibrary(false)
+                                      }
+                                    })
+                                  }}
+                                >
+                                  {t('Open Image Library')}
+                                </Button>
+                              </Box>
+                            </Box>
+                          )
+                        default: {
+                          return null
+                        }
+                      }
+                    }
+                    case 'askUserToSelectVideo': {
+                      switch (part.toolInvocation.state) {
+                        case 'call':
+                          return (
+                            <Box key={callId}>
+                              <Typography
+                                key={callId}
+                                variant="body2"
+                                color="text.secondary"
+                              >
+                                {part.toolInvocation.args.message}
+                              </Typography>
+
+                              <Box>
+                                <Button
+                                  variant="outlined"
+                                  onClick={() => {
+                                    setOpenVideoLibrary(true)
+                                    setToolCall({
+                                      id: callId,
+                                      callback: () => {
+                                        setOpenVideoLibrary(false)
+                                      }
+                                    })
+                                  }}
+                                >
+                                  {t('Open Video Library')}
+                                </Button>
+                              </Box>
+                            </Box>
+                          )
+                        default: {
+                          return null
+                        }
+                      }
+                    }
+                    default: {
+                      return null
                     }
                   }
-                }}
-              >
-                <Typography component="span" variant="body2">
-                  {t('Advanced Settings')}
-                </Typography>
-              </AccordionSummary>
-              <AccordionDetails sx={{ p: 0, pb: 4 }}>
-                <TextField
-                  name="systemPrompt"
-                  label={t('System Prompt')}
-                  fullWidth
-                  aria-label={t('System Prompt')}
-                  placeholder={t('Instructions for the AI')}
-                  value={systemPrompt}
-                  onChange={(e) => setSystemPrompt(e.target.value)}
-                  multiline
-                  maxRows={4}
-                />
-              </AccordionDetails>
-            </Accordion>
-          </CardContent>
-        </Card>
-      </Grow>
+                }
+              }
+            })}
+          </Box>
+        ))}
+      </Box>
+      <Box sx={{ p: 4, '&:last-child': { pb: 2 } }}>
+        <Stack direction="row" spacing={2}>
+          <TextField
+            name="userMessage"
+            value={userMessage}
+            onChange={(e) => setUserMessage(e.target.value)}
+            placeholder={t('Ask Anything')}
+            fullWidth
+            multiline
+            maxRows={4}
+            aria-label={t('Message')}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault()
+                void handleSubmit()
+              }
+            }}
+            autoFocus
+          />
+          <Button
+            variant="outlined"
+            onClick={() => {
+              void handleSubmit()
+            }}
+            sx={{
+              borderRadius: 1,
+              borderWidth: '1px'
+            }}
+          >
+            <ArrowUpIcon />
+          </Button>
+        </Stack>
+        <Accordion
+          sx={{
+            mt: 2,
+            '&:before': {
+              display: 'none'
+            }
+          }}
+          elevation={0}
+        >
+          <AccordionSummary
+            expandIcon={<ChevronDownIcon fontSize="small" />}
+            sx={{
+              minHeight: 32,
+              p: 0,
+              '&.Mui-expanded': {
+                minHeight: 32,
+                p: 0
+              },
+              '& > .MuiAccordionSummary-content': {
+                my: 0,
+                justifyContent: 'flex-end',
+                mr: 1,
+                '&.Mui-expanded': {
+                  my: 0,
+                  mr: 1
+                }
+              }
+            }}
+          >
+            <Typography component="span" variant="body2">
+              {t('Advanced Settings')}
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails sx={{ p: 0, pb: 4 }}>
+            <TextField
+              name="systemPrompt"
+              label={t('System Prompt')}
+              fullWidth
+              aria-label={t('System Prompt')}
+              placeholder={t('Instructions for the AI')}
+              value={systemPrompt}
+              onChange={(e) => setSystemPrompt(e.target.value)}
+              multiline
+              maxRows={4}
+            />
+          </AccordionDetails>
+        </Accordion>
+      </Box>
       <ImageLibrary
         open={openImageLibrary ?? false}
         onClose={() => {
