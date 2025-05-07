@@ -51,7 +51,8 @@ export function ContentHero(): ReactElement {
         alignItems: 'flex-end',
         position: 'relative',
         transition: 'height 0.3s ease-out',
-        bgcolor: 'background.default'
+        bgcolor: 'background.default',
+        zIndex: 1
       }}
       data-testid="ContainerHero"
     >
@@ -120,9 +121,8 @@ export function ContentHero(): ReactElement {
             >
               <Typography
                 component="h1"
-                variant="h1"
+                variant="h2"
                 sx={{
-                  fontSize: '3.75rem',
                   fontWeight: 'bold',
                   color: 'text.primary',
                   opacity: 0.9,
@@ -140,7 +140,7 @@ export function ContentHero(): ReactElement {
             </Box>
 
             <Typography
-              component="h6"
+              component="h4"
               variant="h6"
               data-testid="ContainerHeroDescription"
               sx={{
