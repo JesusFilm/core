@@ -66,17 +66,6 @@ export function VideoPlayer({
     }
   }, [onMutedChange, handleSetPlayer])
 
-  useEffect(() => {
-    if (player != null) {
-      // Sync muted state with player
-      player.on('volumechange', () => {
-        onMutedChange(player.muted() ?? true)
-      })
-
-      void player.src(src)
-    }
-  }, [player])
-
   return (
     <Box data-testid="ContainerHeroVideo">
       <video

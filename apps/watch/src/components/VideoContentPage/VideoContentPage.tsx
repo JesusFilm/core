@@ -96,7 +96,6 @@ export function VideoContentPage(): ReactElement {
             >
               <VideoHeading
                 loading={loading}
-                hasPlayed={false}
                 videos={realChildren}
                 onShareClick={() => setOpenShare(true)}
                 onDownloadClick={() => setOpenDownload(true)}
