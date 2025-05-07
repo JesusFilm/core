@@ -64,7 +64,7 @@ function LoadingJourneyCard(): ReactElement {
           }}
         />
       </Box>
-      <CardContent sx={{ pl: 2, pr: 3, pb: 3, pt: 1 }}>
+      <CardContent sx={{ pl: 2, pr: 2, pb: 3, pt: 1 }}>
         <Skeleton variant="text" width="100%" height={25} />
         <Skeleton variant="text" width="60%" height={25} />
       </CardContent>
@@ -72,10 +72,9 @@ function LoadingJourneyCard(): ReactElement {
         sx={{
           position: 'absolute',
           bottom: 3,
-          left: 2,
-          right: 2,
+          left: 8,
+          right: 8,
           zIndex: 3,
-          px: 3
         }}
       >
         <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1 }}>
