@@ -28,7 +28,7 @@ import { ArchiveJourney } from './ArchiveJourney'
 
 export const GET_JOURNEY_WITH_USER_ROLES = gql`
   query GetJourneyWithUserRoles($id: ID!) {
-    journey(id: $id, idType: databaseId) {
+    adminJourney(id: $id, idType: databaseId) {
       id
       userJourneys {
         id
@@ -102,21 +102,15 @@ export function DefaultMenu({
     skip: currentUser?.id == null
   })
 
+  const isOwner = journeyData?.adminJourney?.userJourneys?.some(
+    (userJourney: { user: { id: string }; role: UserJourneyRole }) =>
+      userJourney.user?.id === currentUser?.id &&
+      userJourney.role === UserJourneyRole.owner
+  )
+
   useEffect(() => {
     void loadUser()
   }, [loadUser])
-
-  // Determine the current user's role for this journey
-  const userRole = useMemo<UserJourneyRole | undefined>(() => {
-    if (journeyData?.journey?.userJourneys == null || currentUser?.id == null)
-      return undefined
-
-    const userJourney = journeyData.journey.userJourneys.find(
-      (userJourney) => userJourney.user?.id === currentUser.id
-    )
-
-    return userJourney?.role
-  }, [journeyData?.journey?.userJourneys, currentUser?.id])
 
   // Determine the current user's role in the team
   const teamRole = useMemo<UserTeamRole | undefined>(() => {
@@ -134,7 +128,7 @@ export function DefaultMenu({
     userRoleData?.getUserRole?.roles?.includes(Role.publisher) === true
 
   const canManageJourney =
-    userRole === UserJourneyRole.owner ||
+    isOwner ||
     teamRole === UserTeamRole.manager ||
     (isPublisher && template === true)
 
