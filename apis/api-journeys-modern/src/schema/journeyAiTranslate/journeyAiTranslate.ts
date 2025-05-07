@@ -1,7 +1,7 @@
 import { google } from '@ai-sdk/google'
 import { ApolloClient, createHttpLink } from '@apollo/client'
 import { InMemoryCache } from '@apollo/client/cache'
-import { generateObject, generateText, streamObject } from 'ai'
+import { generateObject, streamObject } from 'ai'
 import { z } from 'zod'
 
 import { prisma } from '../../lib/prisma'
