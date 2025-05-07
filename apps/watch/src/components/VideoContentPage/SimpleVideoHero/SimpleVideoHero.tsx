@@ -9,6 +9,10 @@ import { ReactElement, useCallback, useState } from 'react'
 import Player from 'video.js/dist/types/player'
 
 import { useVideo } from '../../../libs/videoContext'
+import {
+  APP_BAR_HEIGHT,
+  APP_BAR_HEIGHT_XS
+} from '../../Header/LocalAppBar/LocalAppBar'
 
 import { VideoHeader } from './VideoHeader'
 import { VideoPlayer } from './VideoPlayer'
@@ -46,7 +50,11 @@ export function SimpleVideoHero(): ReactElement {
   return (
     <Box
       sx={{
-        height: { xs: '90vh', md: '87vh' },
+        // height: { xs: '90vh', md: '87vh' },
+        height: {
+          xs: `calc(100svh - ${APP_BAR_HEIGHT_XS}px)`,
+          lg: `calc(100svh - ${APP_BAR_HEIGHT}px)`
+        },
         width: '100%',
         display: 'flex',
         alignItems: 'flex-end',

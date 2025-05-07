@@ -15,6 +15,9 @@ interface LocalAppBarProps extends AppBarProps {
   menuOpen?: boolean
 }
 
+export const APP_BAR_HEIGHT = 159
+export const APP_BAR_HEIGHT_XS = 100
+
 export function LocalAppBar({
   onMenuClick,
   hideSpacer = false,
@@ -36,7 +39,7 @@ export function LocalAppBar({
         py: 10,
         pt: { lg: '69px' },
         pb: { lg: 14 },
-        height: { xs: 100, lg: 159 },
+        height: { xs: APP_BAR_HEIGHT_XS, lg: APP_BAR_HEIGHT },
         width: '100%',
         ...props.sx
       }}

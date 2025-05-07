@@ -37,7 +37,6 @@ export function VideoContentPage(): ReactElement {
   const { loading, children } = useVideoChildren(
     container?.variant?.slug ?? variant?.slug
   )
-  const [hasPlayed, setHasPlayed] = useState(false)
   const [openShare, setOpenShare] = useState(false)
   const [openDownload, setOpenDownload] = useState(false)
 
@@ -84,17 +83,12 @@ export function VideoContentPage(): ReactElement {
         hideHeader
         hero={
           <>
-            <VideoHero
-              onPlay={() => setHasPlayed(true)}
-              hasPlayed={hasPlayed}
-            />
+            <VideoHero />
             <Stack
               sx={{
                 backgroundColor: 'background.default',
                 py:
-                  hasPlayed ||
-                  (container?.childrenCount ?? 0) > 0 ||
-                  childrenCount > 0
+                  (container?.childrenCount ?? 0) > 0 || childrenCount > 0
                     ? 5
                     : 0
               }}
@@ -102,7 +96,7 @@ export function VideoContentPage(): ReactElement {
             >
               <VideoHeading
                 loading={loading}
-                hasPlayed={hasPlayed}
+                hasPlayed={false}
                 videos={realChildren}
                 onShareClick={() => setOpenShare(true)}
                 onDownloadClick={() => setOpenDownload(true)}
