@@ -13,6 +13,7 @@ import Grow from '@mui/material/Grow'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
+import { LanguageModelUsage } from 'ai'
 import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
@@ -34,8 +35,27 @@ interface AiChatProps {
 const INITIAL_SYSTEM_PROMPT = `
 IT IS VERY IMPORTANT THAT YOU ONLY RESPOND IN MARKDOWN.
 
-You are a helpful assistant that can answer questions and help with tasks.
-You are currently in the context of a journey.
+You are a helpful assistant that appears inside of NextSteps Admin. NextSteps
+Admin is a platform to help journey builders to make and manage journeys.
+Journeys are a collection of cards. Cards can have typography, images, videos,
+buttons, radio options, and more. The cards can link to other cards, link to 
+external websites, or an email link.
+
+These journeys are used by journey builders to share with visitors to their
+website, platform, or app. These journeys are predominately used to:
+- share the good news about Jesus Christ
+- help visitors find out more about the Bible
+- help visitors find out more about churches and their events
+
+Where possible, you should base any content you generate on the Christian Bible
+in alignment with reformed Christian Protestant theology. You should avoid:
+- promoting works-based salvation
+- promoting other religions or belief systems
+- promoting false teaching
+- promoting heresy
+- promoting cults, specifically the Mormon, JW, and Scientology religions
+- promoting a Gospel other than the one in the Christian Bible
+- any teaching that claims that Jesus is just a man or a good moral teacher
 
 You specialize in translating text from one language to another.
 If the user asks for translation without specifying what to translate,
@@ -75,6 +95,21 @@ video by calling the askUserToSelectVideo tool. You can also ask them this if
 they want to update more than one video block.
 
 When updating blocks, only include properties that have changed.
+
+When writing custom content with placeholders, instead of using the placeholder
+you should ask the user to provide the content. For example, if you are customizing
+a journey for a church event, you should ask the user to provide the following:
+- the name of the event
+- the date of the event
+- the location of the event
+- the description of the event
+- the URL of the event
+- the email of the event
+- how to register for the event
+
+When asking for details, ask for each detail one at a time. Do not ask for all
+details at once.
+
 `.trim()
 
 export function AiChat({ open = false }: AiChatProps): ReactElement {
@@ -86,11 +121,13 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
   const {
     state: { selectedStepId }
   } = useEditor()
+  const [usage, setUsage] = useState<LanguageModelUsage | null>(null)
   const { messages, append, setMessages, status, addToolResult } = useChat({
     fetch: fetchWithAuthorization,
     maxSteps: 5,
     credentials: 'omit',
-    onFinish: (result) => {
+    onFinish: (result, { usage }) => {
+      setUsage(usage)
       const shouldRefetch = result.parts?.some(
         (part) =>
           part.type === 'tool-invocation' &&
@@ -556,9 +593,18 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
                   }
                 }}
               >
-                <Typography component="span" variant="body2">
-                  {t('Advanced Settings')}
-                </Typography>
+                <Stack
+                  direction="row"
+                  spacing={2}
+                  sx={{ width: '100%', justifyContent: 'space-between' }}
+                >
+                  <Typography component="span" variant="body2">
+                    {usage?.totalTokens ?? 0} {t('Tokens Used')}
+                  </Typography>
+                  <Typography component="span" variant="body2">
+                    {t('Advanced Settings')}
+                  </Typography>
+                </Stack>
               </AccordionSummary>
               <AccordionDetails sx={{ p: 0, pb: 4 }}>
                 <TextField
