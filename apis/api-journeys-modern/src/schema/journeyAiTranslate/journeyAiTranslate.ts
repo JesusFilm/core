@@ -179,7 +179,9 @@ Description: [translated description]
               // Analyze this card in relation to the journey intent
               const cardAnalysisPrompt = `
             I'm going to give you a journey analysis and the content of a specific card in that journey.
-            Your task is to analyze how this specific card contributes to the overall journey intent.
+            Your task is to analyze how this specific card contributes to the overall journey intent and translate each block of the card that contains a Block ID.
+            The source language is: ${sourceLanguageName}.
+            The target language name is: ${requestedLanguageName}.
             
             Overall journey analysis:
             ${journeyAnalysis}
