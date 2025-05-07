@@ -51,12 +51,22 @@ export function CreateJourneyButton({
 
       setLoadingJourney(true)
 
+      if (languageId === journeyLanguage?.id) {
+        enqueueSnackbar(
+          t(
+            'The selected language is the same as the source journey language.'
+          ),
+          { variant: 'warning' }
+        )
+        setLoadingJourney(false)
+        return
+      }
+
       try {
         const { data } = await journeyDuplicate({
           variables: { id: journey.id, teamId }
         })
 
-        // Check if duplication was successful
         if (data?.journeyDuplicate?.id) {
           sendGTMEvent({
             event: 'template_use',
@@ -64,13 +74,11 @@ export function CreateJourneyButton({
             journeyTitle: journey.title
           })
 
-          console.log('languageId', languageId)
-          // Use the duplicated journey ID for translation
           const translatedJourney = await translateJourney({
             journeyId: data.journeyDuplicate.id,
             name: `${journey.title}`,
             textLanguageId: languageId,
-            videoLanguageId: null // Optional
+            videoLanguageId: null
           })
 
           if (translatedJourney) {
