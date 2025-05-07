@@ -14,7 +14,7 @@ describe('ContentHeader', () => {
   it('renders the header with a logo', () => {
     ;(useScrollTrigger as jest.Mock).mockReturnValue(false)
 
-    render(<ContentHeader feedbackButtonLabel="Feedback" />)
+    render(<ContentHeader />)
 
     const header = screen.getByRole('img', { name: 'JesusFilm Project' })
     expect(header).toBeInTheDocument()
@@ -26,7 +26,7 @@ describe('ContentHeader', () => {
   it('opens language modal when language button is clicked and closes when close button is clicked', async () => {
     ;(useScrollTrigger as jest.Mock).mockReturnValue(false)
 
-    render(<ContentHeader feedbackButtonLabel="Feedback" />)
+    render(<ContentHeader />)
 
     const languageButton = screen.getByTestId('LanguageButton')
     expect(languageButton).toBeInTheDocument()
