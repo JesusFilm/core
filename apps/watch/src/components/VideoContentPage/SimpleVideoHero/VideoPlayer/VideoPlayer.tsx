@@ -1,4 +1,5 @@
-import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
+import Box from '@mui/material/Box'
+import { ReactElement, useCallback, useEffect, useRef } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 import 'video.js/dist/video-js.css'
@@ -77,7 +78,7 @@ export function VideoPlayer({
   }, [player])
 
   return (
-    <div
+    <Box
       // className="fixed top-0 left-0 right-0  h-[85%] md:h-[85%] max-w-[1919px] mx-auto z-0 bg-stone-950"
       data-testid="ContainerHeroVideo"
     >
@@ -101,6 +102,6 @@ export function VideoPlayer({
           data-testid="ContainerHeroVideoSource"
         />
       </video>
-    </div>
+    </Box>
   )
 }

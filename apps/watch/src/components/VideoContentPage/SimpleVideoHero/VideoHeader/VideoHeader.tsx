@@ -1,5 +1,6 @@
 import LanguageIcon from '@mui/icons-material/Language'
 import IconButton from '@mui/material/IconButton'
+import Stack from '@mui/material/Stack'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { ReactElement, useState } from 'react'
@@ -17,9 +18,23 @@ export function VideoHeader(): ReactElement {
 
   return (
     <>
-      <div
+      <Stack
         data-testid="CollectionsHeader"
-        className="absolute top-0 left-0 right-0 w-full h-[100px] lg:h-[200px] max-w-[1920px] mx-auto z-99 flex items-center justify-between padded"
+        direction="row"
+        alignItems="center"
+        justifyContent="space-between"
+        sx={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          width: '100%',
+          height: { xs: '100px', lg: '200px' },
+          maxWidth: '1920px',
+          mx: 'auto',
+          zIndex: 99,
+          p: 3
+        }}
       >
         <NextLink href="https://www.jesusfilm.org/watch">
           <Image
@@ -41,7 +56,7 @@ export function VideoHeader(): ReactElement {
         >
           <LanguageIcon />
         </IconButton>
-      </div>
+      </Stack>
       {/* <LanguageModal
         open={isLanguageModalOpen}
         onClose={handleCloseLanguageModal}

@@ -1,7 +1,10 @@
 import VolumeOffRoundedIcon from '@mui/icons-material/VolumeOffRounded'
 import VolumeUpRoundedIcon from '@mui/icons-material/VolumeUpRounded'
+import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
+import Stack from '@mui/material/Stack'
 import { alpha, useTheme } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import { ReactElement, useCallback, useState } from 'react'
 import Player from 'video.js/dist/types/player'
 
@@ -41,8 +44,17 @@ export function SimpleVideoHero(): ReactElement {
   }, [isMuted, hasUnmutedOnce, player])
 
   return (
-    <div
-      className="h-[90vh] md:h-[87vh] w-full flex items-end relative transition-height duration-300 ease-out bg-stone-900 font-sans"
+    <Box
+      sx={{
+        height: { xs: '90vh', md: '87vh' },
+        width: '100%',
+        display: 'flex',
+        alignItems: 'flex-end',
+        position: 'relative',
+        transition: 'height 0.3s',
+        backgroundColor: 'background.default',
+        fontFamily: 'sans-serif'
+      }}
       data-testid="ContainerHero"
     >
       <VideoHeader />
@@ -52,43 +64,63 @@ export function SimpleVideoHero(): ReactElement {
         player={player}
       />
 
-      <div
+      <Stack
         data-testid="ContainerHeroTitleContainer"
-        className="w-full relative flex flex-col sm:flex-row max-w-[1920px] mx-auto pb-4"
+        sx={{
+          width: '100%',
+          position: 'relative',
+          maxWidth: '1920px',
+          mx: 'auto',
+          pb: 4
+        }}
+        direction="row"
       >
-        <div
-          className="absolute top-0 left-0 right-0 h-full w-full pointer-events-none md:hidden"
-          style={{
-            backdropFilter: 'brightness(.6) blur(40px)',
-            mask: 'linear-gradient(0deg, rgba(2,0,36,1) 46%, rgba(2,0,36,1) 53%, rgba(0,0,0,0) 100%)'
-          }}
-        />
-        <div
+        <Stack
           data-testid="ContainerHeroTitle"
-          className="w-full flex padded pb-4 min-h-[500px] items-end"
+          direction="row"
+          alignItems="flex-end"
+          sx={{
+            width: '100%',
+            pb: 4,
+            minHeight: '500px'
+          }}
         >
-          <div className="pb-4 sm:pb-0 w-full relative z-[2] flex flex-col">
-            <div className="flex items-center justify-between w-full z-[2]">
-              <h2 className="text-[3.75rem] font-bold text-white opacity-90 mix-blend-screen mb-1 flex-grow">
-                {title?.[0]?.value ?? ''}
-              </h2>
-              <IconButton
-                size="large"
-                onClick={handleToggleMute}
-                sx={{
-                  backgroundColor: alpha(theme.palette.secondary.main, 0.1),
-                  transition: 'background-color 0.2s',
-                  '&:hover': {
-                    backgroundColor: alpha(theme.palette.secondary.main, 0.3)
-                  }
-                }}
-              >
-                {isMuted ? <VolumeOffRoundedIcon /> : <VolumeUpRoundedIcon />}
-              </IconButton>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+            sx={{ width: '100%' }}
+          >
+            <Typography
+              component="h2"
+              sx={{
+                fontSize: '3.75rem',
+                fontWeight: 'bold',
+                color: 'white',
+                opacity: 0.9,
+                mixBlendMode: 'screen',
+                mb: 1,
+                flexGrow: 1
+              }}
+            >
+              {title?.[0]?.value ?? ''}
+            </Typography>
+            <IconButton
+              size="large"
+              onClick={handleToggleMute}
+              sx={{
+                backgroundColor: alpha(theme.palette.secondary.main, 0.1),
+                transition: 'background-color 0.2s',
+                '&:hover': {
+                  backgroundColor: alpha(theme.palette.secondary.main, 0.3)
+                }
+              }}
+            >
+              {isMuted ? <VolumeOffRoundedIcon /> : <VolumeUpRoundedIcon />}
+            </IconButton>
+          </Stack>
+        </Stack>
+      </Stack>
+    </Box>
   )
 }
