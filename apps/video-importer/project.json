@@ -14,7 +14,7 @@
     "run": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx ts-node apps/video-importer/src/video-importer.ts --folder ./test-videos"
+        "command": "npx ts-node apps/video-importer/src/video-importer.ts --folder apps/video-importer/test-videos"
       }
     }
   },

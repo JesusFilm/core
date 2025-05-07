@@ -1,6 +1,8 @@
+import { exec } from 'child_process'
 import { createReadStream, promises } from 'fs'
 import path from 'path'
 import 'dotenv/config'
+import { promisify } from 'util'
 
 import axios from 'axios'
 import { Command } from 'commander'
@@ -9,17 +11,6 @@ import { graphql } from 'gql.tada'
 import { GraphQLClient } from 'graphql-request'
 
 import { firebaseClient } from './firebaseClient'
-
-/*
-TODO:
-- [ ] duration
-- [ ] dash
-- [ ] share
-- [ ] lengthInMiliseconds
-- [ ] masterHeight
-- [ ] masterUrl
-- [ ] masterWidth
-*/
 
 const program = new Command()
 
@@ -39,6 +30,8 @@ if (!GRAPHQL_ENDPOINT) {
     '[video-importer] GRAPHQL_ENDPOINT environment variable must be set.'
   )
 }
+
+const execAsync = promisify(exec)
 
 // Caching for JWT token and GraphQL client
 let cachedJwtToken: string | undefined
@@ -129,6 +122,15 @@ const GET_LANGUAGE_SLUG = graphql(`
   }
 `)
 
+const GET_VIDEO_SLUG = graphql(`
+  query GetVideoSlug($id: ID!) {
+    video(id: $id) {
+      id
+      slug
+    }
+  }
+`)
+
 const CREATE_VIDEO_VARIANT = graphql(`
   mutation CreateVideoVariant($input: VideoVariantCreateInput!) {
     videoVariantCreate(input: $input) {
@@ -136,7 +138,10 @@ const CREATE_VIDEO_VARIANT = graphql(`
       videoId
       slug
       hls
+      share
       published
+      lengthInMilliseconds
+      duration
       language {
         id
         name {
@@ -156,6 +161,8 @@ const UPDATE_VIDEO_VARIANT = graphql(`
       slug
       hls
       published
+      lengthInMilliseconds
+      duration
       language {
         id
         name {
@@ -226,6 +233,34 @@ interface ProcessingSummary {
   errors: Array<{ file: string; error: string }>
 }
 
+interface VideoMetadata {
+  durationMs: number
+  duration: number
+  width: number
+  height: number
+}
+
+async function getVideoMetadata(filePath: string): Promise<VideoMetadata> {
+  const { stdout } = await execAsync(
+    `ffprobe -v error -select_streams v:0 -show_entries stream=width,height -show_entries format=duration -of json "${filePath}"`
+  )
+  const metadata = JSON.parse(stdout)
+  const stream = metadata.streams[0]
+  const format = metadata.format
+  const durationSeconds = parseFloat(format.duration)
+
+  // Log raw duration for debugging
+  console.log('Raw duration from ffprobe:', format.duration)
+  console.log('Parsed duration in seconds:', durationSeconds)
+
+  return {
+    durationMs: Math.round(durationSeconds * 1000),
+    duration: Math.round(durationSeconds),
+    width: stream.width,
+    height: stream.height
+  }
+}
+
 interface VideoVariantInput {
   id: string
   videoId: string
@@ -236,11 +271,12 @@ interface VideoVariantInput {
   published: boolean
   muxVideoId: string
   hls: string
-  dash?: string
-  share?: string
-  masterHeight?: number
-  masterWidth?: number
-  masterUrl?: string
+  share: string
+  masterUrl: string
+  masterHeight: number
+  masterWidth: number
+  lengthInMilliseconds: number
+  duration: number
   version?: number
 }
 
@@ -251,18 +287,29 @@ interface GetLanguageSlugResponse {
   }
 }
 
+interface GetVideoSlugResponse {
+  video: {
+    id: string
+    slug: string
+  }
+}
+
 async function getVideoVariantInput({
   videoId,
   languageId,
   edition,
   muxId,
-  playbackId
+  playbackId,
+  r2PublicUrl,
+  metadata
 }: {
   videoId: string
   languageId: string
   edition: string
   muxId: string
   playbackId: string
+  r2PublicUrl: string
+  metadata: VideoMetadata
 }): Promise<VideoVariantInput> {
   // Parse source from videoId (e.g., "0_JesusVisionLumo" -> source="0")
   let source: string
@@ -286,6 +333,19 @@ async function getVideoVariantInput({
   }
   const client = await getGraphQLClient()
 
+  // Get video slug
+  const videoResponse = await client.request<GetVideoSlugResponse>(
+    GET_VIDEO_SLUG,
+    {
+      id: videoId
+    }
+  )
+
+  if (!videoResponse.video?.slug) {
+    throw new Error(`No slug found for video ID: ${videoId}`)
+  }
+
+  // Get language slug
   const languageResponse = await client.request<GetLanguageSlugResponse>(
     GET_LANGUAGE_SLUG,
     { id: languageId }
@@ -295,16 +355,24 @@ async function getVideoVariantInput({
     throw new Error(`No language slug found for language ID: ${languageId}`)
   }
 
+  const slug = `${videoResponse.video.slug}/${languageResponse.language.slug}`
+
   return {
     id: `${source}_${languageId}_${restOfId}`,
     videoId,
     edition,
     languageId,
-    slug: `${videoId}/${languageResponse.language.slug}`,
+    slug,
     downloadable: true,
     published: true,
     muxVideoId: muxId,
     hls: `https://stream.mux.com/${playbackId}.m3u8`,
+    share: `http://jesusfilm.org/watch/${slug}`,
+    masterUrl: r2PublicUrl,
+    masterHeight: metadata.height,
+    masterWidth: metadata.width,
+    lengthInMilliseconds: metadata.durationMs,
+    duration: metadata.duration,
     version: 1
   }
 }
@@ -323,9 +391,21 @@ async function createR2Asset({
   videoId: string
 }) {
   const client = await getGraphQLClient()
+
+  // Convert to string to handle large numbers
+  const contentLengthStr = contentLength.toString()
+
+  console.log(`File size: ${contentLengthStr} bytes`)
+
   const data: { cloudflareR2Create: { uploadUrl: string; publicUrl: string } } =
     await client.request(CREATE_R2_ASSET, {
-      input: { fileName, contentType, originalFilename, contentLength, videoId }
+      input: {
+        fileName,
+        contentType,
+        originalFilename,
+        contentLength: parseInt(contentLengthStr),
+        videoId
+      }
     })
   return data.cloudflareR2Create
 }
@@ -333,10 +413,14 @@ async function createR2Asset({
 async function uploadToR2(
   uploadUrl: string,
   filePath: string,
-  contentType: string
+  contentType: string,
+  contentLength: number
 ) {
   await axios.put(uploadUrl, createReadStream(filePath), {
-    headers: { 'Content-Type': contentType },
+    headers: {
+      'Content-Type': contentType,
+      'Content-Length': contentLength.toString()
+    },
     maxBodyLength: Infinity
   })
 }
@@ -359,9 +443,9 @@ async function createAndWaitForMuxVideo(publicUrl: string): Promise<{
 
   const muxId = muxResponse.createMuxVideoUploadByUrl.id
 
-  // Exponential backoff intervals in ms: 1min, 2min, 5min, 10min, 15min, 20min
+  // Exponential backoff intervals in ms: 10s, 2min, 5min, 10min, 15min, 20min
   const BACKOFF_INTERVALS = [
-    60_000, 120_000, 300_000, 600_000, 900_000, 1_200_000
+    10_000, 60_000, 120_000, 300_000, 600_000, 900_000, 1_200_000
   ]
   const MAX_ATTEMPTS = BACKOFF_INTERVALS.length
 
@@ -429,13 +513,17 @@ async function updateVideoVariant({
   languageId,
   edition,
   muxId,
-  playbackId
+  playbackId,
+  r2PublicUrl,
+  metadata
 }: {
   videoId: string
   languageId: string
   edition: string
   muxId: string
   playbackId: string
+  r2PublicUrl: string
+  metadata: VideoMetadata
 }): Promise<void> {
   const client = await getGraphQLClient()
   const input = await getVideoVariantInput({
@@ -443,7 +531,9 @@ async function updateVideoVariant({
     languageId,
     edition,
     muxId,
-    playbackId
+    playbackId,
+    r2PublicUrl,
+    metadata
   })
   await client.request<VideoVariantUpdateResponse>(UPDATE_VIDEO_VARIANT, {
     input: {
@@ -455,7 +545,10 @@ async function updateVideoVariant({
       downloadable: input.downloadable,
       published: input.published,
       muxVideoId: input.muxVideoId,
-      hls: input.hls
+      hls: input.hls,
+      share: input.share,
+      duration: input.duration,
+      lengthInMilliseconds: input.lengthInMilliseconds
     }
   })
 }
@@ -487,13 +580,17 @@ async function createVideoVariant({
   languageId,
   edition,
   muxId,
-  playbackId
+  playbackId,
+  r2PublicUrl,
+  metadata
 }: {
   videoId: string
   languageId: string
   edition: string
   muxId: string
   playbackId: string
+  r2PublicUrl: string
+  metadata: VideoMetadata
 }): Promise<'created' | 'updated'> {
   const client = await getGraphQLClient()
   const input = await getVideoVariantInput({
@@ -501,7 +598,9 @@ async function createVideoVariant({
     languageId,
     edition,
     muxId,
-    playbackId
+    playbackId,
+    r2PublicUrl,
+    metadata
   })
 
   // First try to update
@@ -512,7 +611,9 @@ async function createVideoVariant({
       languageId,
       edition,
       muxId,
-      playbackId
+      playbackId,
+      r2PublicUrl,
+      metadata
     })
     return 'updated'
   } catch (error) {
@@ -536,7 +637,10 @@ async function createVideoVariant({
             downloadable: input.downloadable,
             published: input.published,
             muxVideoId: input.muxVideoId,
-            hls: input.hls
+            hls: input.hls,
+            share: input.share,
+            duration: input.duration,
+            lengthInMilliseconds: input.lengthInMilliseconds
           }
         }
       )
@@ -591,11 +695,14 @@ async function main() {
     }
 
     try {
-      // --- R2 Asset Creation ---
       const filePath = path.join(folderPath, file)
       const contentType = 'video/mp4'
       const originalFilename = file
       const contentLength = (await promises.stat(filePath)).size
+
+      console.log('Getting video metadata...')
+      const metadata = await getVideoMetadata(filePath)
+      console.log('Video metadata:', metadata)
 
       console.log('Creating R2 asset...')
       const r2Asset = await createR2Asset({
@@ -606,11 +713,16 @@ async function main() {
         videoId
       })
 
+      console.log('R2 Public URL:', r2Asset.publicUrl)
       console.log('Uploading to R2...')
-      await uploadToR2(r2Asset.uploadUrl, filePath, contentType)
+      await uploadToR2(r2Asset.uploadUrl, filePath, contentType, contentLength)
 
       console.log('Creating Mux video...')
       const muxVideo = await createAndWaitForMuxVideo(r2Asset.publicUrl)
+      console.log(
+        'Mux Playback URL:',
+        `https://stream.mux.com/${muxVideo.playbackId}.m3u8`
+      )
 
       console.log('Creating video variant...')
       console.log('Mux ID:', muxVideo.id)
@@ -623,7 +735,9 @@ async function main() {
         languageId,
         edition,
         muxId: muxVideo.id,
-        playbackId: muxVideo.playbackId
+        playbackId: muxVideo.playbackId,
+        r2PublicUrl: r2Asset.publicUrl,
+        metadata
       })
       console.log(
         result === 'created'
