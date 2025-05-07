@@ -71,12 +71,6 @@ async function main(): Promise<void> {
   )
   run(
     await import(
-      /* webpackChunkName: "journeyAiTranslate" */
-      './journeyAiTranslate'
-    )
-  )
-  run(
-    await import(
       /* webpackChunkName: "shortlinkUpdater" */
       './shortlinkUpdater'
     )

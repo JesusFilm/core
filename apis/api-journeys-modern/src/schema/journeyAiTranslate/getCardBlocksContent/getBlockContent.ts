@@ -16,7 +16,6 @@ export async function getBlockContent({
   switch (block.typename) {
     case 'ImageBlock':
       return await getImageBlockContent({
-        blocks,
         block
       })
     case 'VideoBlock':

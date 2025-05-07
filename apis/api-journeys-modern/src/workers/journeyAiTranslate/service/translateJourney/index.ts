@@ -1,1 +1,0 @@
-export { translateJourney } from './translateJourney'

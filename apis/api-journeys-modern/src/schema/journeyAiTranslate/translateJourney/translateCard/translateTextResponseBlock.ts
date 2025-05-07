@@ -1,23 +1,20 @@
 import { google } from '@ai-sdk/google'
 import { generateText } from 'ai'
-import { Logger } from 'pino'
 
 import { Block } from '.prisma/api-journeys-modern-client'
 
-import { prisma } from '../../../../../lib/prisma'
+import { prisma } from '../../../../lib/prisma'
 
 export async function translateTextResponseBlock({
   block,
   cardAnalysis,
   sourceLanguageName,
-  targetLanguageName,
-  logger
+  targetLanguageName
 }: {
   block: Block
   cardAnalysis: string
   sourceLanguageName: string
   targetLanguageName: string
-  logger?: Logger
 }): Promise<void> {
   // TextResponseBlock has several fields that may need translation:
   // - label (required)
@@ -40,7 +37,10 @@ export async function translateTextResponseBlock({
 
       const { text: translatedLabel } = await generateText({
         model: google('gemini-2.0-flash'),
-        prompt: labelPrompt
+        prompt: labelPrompt,
+        onStepFinish: ({ usage }) => {
+          console.log('usage', usage)
+        }
       })
 
       if (translatedLabel) {
@@ -64,7 +64,10 @@ export async function translateTextResponseBlock({
 
           const { text: translatedPlaceholder } = await generateText({
             model: google('gemini-2.0-flash'),
-            prompt: placeholderPrompt
+            prompt: placeholderPrompt,
+            onStepFinish: ({ usage }) => {
+              console.log('usage', usage)
+            }
           })
 
           if (translatedPlaceholder) {
@@ -87,7 +90,10 @@ export async function translateTextResponseBlock({
 
           const { text: translatedHint } = await generateText({
             model: google('gemini-2.0-flash'),
-            prompt: hintPrompt
+            prompt: hintPrompt,
+            onStepFinish: ({ usage }) => {
+              console.log('usage', usage)
+            }
           })
 
           if (translatedHint) {
@@ -103,11 +109,11 @@ export async function translateTextResponseBlock({
           data: updateData
         })
 
-        logger?.info(`Successfully translated text response block ${block.id}`)
+        console.log(`Successfully translated text response block ${block.id}`)
       }
     }
   } catch (error) {
-    logger?.error(`Error translating text response block ${block.id}:`, error)
+    console.error(`Error translating text response block ${block.id}:`, error)
     const errorMessage =
       error instanceof Error ? error.message : 'Unknown error occurred'
     throw new Error(`Failed to translate text response block: ${errorMessage}`)

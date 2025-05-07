@@ -1,23 +1,20 @@
 import { google } from '@ai-sdk/google'
 import { generateText } from 'ai'
-import { Logger } from 'pino'
 
 import { Block } from '.prisma/api-journeys-modern-client'
 
-import { prisma } from '../../../../../lib/prisma'
+import { prisma } from '../../../../lib/prisma'
 
 export async function translateTypographyBlock({
   block,
   cardAnalysis,
   sourceLanguageName,
-  targetLanguageName,
-  logger
+  targetLanguageName
 }: {
   block: Block
   cardAnalysis: string
   sourceLanguageName: string
   targetLanguageName: string
-  logger?: Logger
 }): Promise<void> {
   // Skip if content is empty
   if (!block.content) return
@@ -37,7 +34,10 @@ export async function translateTypographyBlock({
 
     const { text: translatedContent } = await generateText({
       model: google('gemini-2.0-flash'),
-      prompt: translationPrompt
+      prompt: translationPrompt,
+      onStepFinish: ({ usage }) => {
+        console.log('usage', usage)
+      }
     })
 
     if (translatedContent) {
@@ -51,10 +51,10 @@ export async function translateTypographyBlock({
         }
       })
 
-      logger?.info(`Successfully translated typography block ${block.id}`)
+      console.log(`Successfully translated typography block ${block.id}`)
     }
   } catch (error) {
-    logger?.error(`Error translating typography block ${block.id}:`, error)
+    console.error(`Error translating typography block ${block.id}:`, error)
     const errorMessage =
       error instanceof Error ? error.message : 'Unknown error occurred'
     throw new Error(`Failed to translate typography block: ${errorMessage}`)
