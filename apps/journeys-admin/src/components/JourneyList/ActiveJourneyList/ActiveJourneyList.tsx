@@ -203,11 +203,10 @@ export function ActiveJourneyList({
             closeLabel: t('Cancel')
           }}
         >
-          <Typography>
-            {t(
-              'Are you sure you would like to archive all active journeys immediately?'
-            )}
+          <Typography sx={{ fontWeight: 'bold' }}>
+            {t('This will archive all active journeys you own.')}
           </Typography>
+          <Typography>{t('Are you sure you want to proceed?')}</Typography>
         </Dialog>
       )}
       {trashDialogOpen != null && (
@@ -224,11 +223,10 @@ export function ActiveJourneyList({
             closeLabel: t('Cancel')
           }}
         >
-          <Typography>
-            {t(
-              'Are you sure you would like to trash all active journeys immediately?'
-            )}
+          <Typography sx={{ fontWeight: 'bold' }}>
+            {t('This will trash all active journeys you own.')}
           </Typography>
+          <Typography>{t('Are you sure you want to proceed?')}</Typography>
         </Dialog>
       )}
     </>
