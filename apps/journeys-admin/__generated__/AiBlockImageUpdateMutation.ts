@@ -12,20 +12,6 @@ import { ImageBlockUpdateInput } from "./globalTypes";
 export interface AiBlockImageUpdateMutation_imageBlockUpdate {
   __typename: "ImageBlock";
   id: string;
-  parentBlockId: string | null;
-  parentOrder: number | null;
-  src: string | null;
-  alt: string;
-  width: number;
-  height: number;
-  /**
-   * blurhash is a compact representation of a placeholder for an image.
-   * Find a frontend implementation at https: // github.com/woltapp/blurhash
-   */
-  blurhash: string;
-  scale: number | null;
-  focalTop: number | null;
-  focalLeft: number | null;
 }
 
 export interface AiBlockImageUpdateMutation {
