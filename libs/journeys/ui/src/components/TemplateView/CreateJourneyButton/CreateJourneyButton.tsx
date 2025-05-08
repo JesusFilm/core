@@ -6,17 +6,23 @@ import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { type ReactElement, useCallback, useEffect, useState } from 'react'
 
-import { convertLanguagesToOptions } from '@core/shared/ui/LanguageAutocomplete/utils/convertLanguagesToOptions'
 import { useJourneyAiTranslateMutation } from '@core/journeys/ui/useJourneyAiTranslateMutation'
 
 import { useJourney } from '../../../libs/JourneyProvider'
 import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
 import { AccountCheckDialog } from '../AccountCheckDialog'
+import { TeamLanguageWrapper } from '../../CopyToTeamDialog/TeamLanguageWrapper'
 
 interface CreateJourneyButtonProps {
   signedIn?: boolean
   openTeamDialog: boolean
   setOpenTeamDialog: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+interface JourneyLanguage {
+  id: string
+  localName?: string
+  nativeName?: string
 }
 
 const DynamicCopyToTeamDialog = dynamic(
@@ -41,26 +47,15 @@ export function CreateJourneyButton({
   const [journeyDuplicate] = useJourneyDuplicateMutation()
   const { enqueueSnackbar } = useSnackbar()
   const { translateJourney } = useJourneyAiTranslateMutation()
-  const journeyLanguage = journey?.language
-    ? convertLanguagesToOptions([journey.language])[0]
-    : undefined
 
   const handleCreateJourney = useCallback(
-    async (teamId: string, selectedLanguageId: string): Promise<void> => {
-      if (journey == null || selectedLanguageId == '') return
+    async (
+      teamId: string,
+      selectedLanguage: JourneyLanguage
+    ): Promise<void> => {
+      if (journey == null || selectedLanguage.id == '') return
 
       setLoadingJourney(true)
-
-      if (selectedLanguageId === journeyLanguage?.id) {
-        enqueueSnackbar(
-          t(
-            'The selected language is the same as the source journey language.'
-          ),
-          { variant: 'warning' }
-        )
-        setLoadingJourney(false)
-        return
-      }
 
       try {
         const { data } = await journeyDuplicate({
@@ -77,8 +72,12 @@ export function CreateJourneyButton({
           const translatedJourney = await translateJourney({
             journeyId: data.journeyDuplicate.id,
             name: `${journey.title}`,
-            textLanguageId: selectedLanguageId,
-            videoLanguageId: null
+            journeyLanguageName:
+              journey.language?.name.find(({ primary }) => !primary)?.value ??
+              '',
+            textLanguageId: selectedLanguage.id,
+            textLanguageName:
+              selectedLanguage.nativeName ?? selectedLanguage.localName ?? ''
           })
 
           if (translatedJourney) {
@@ -177,17 +176,21 @@ export function CreateJourneyButton({
         onClose={() => setOpenAccountDialog(false)}
       />
       {openTeamDialog != null && (
-        <DynamicCopyToTeamDialog
-          submitLabel={t('Add')}
-          title={t('Add Journey to Team')}
-          open={openTeamDialog}
-          loading={loadingJourney}
-          journeyLanguage={journeyLanguage}
-          onClose={() =>
-            setOpenTeamDialog !== undefined && setOpenTeamDialog(false)
-          }
-          submitAction={handleCreateJourney}
-        />
+        <TeamLanguageWrapper>
+          {(journeyLanguage) => (
+            <DynamicCopyToTeamDialog
+              submitLabel={t('Add')}
+              title={t('Add Journey to Team')}
+              open={openTeamDialog}
+              loading={loadingJourney}
+              journeyLanguage={journeyLanguage}
+              onClose={() =>
+                setOpenTeamDialog !== undefined && setOpenTeamDialog(false)
+              }
+              submitAction={handleCreateJourney}
+            />
+          )}
+        </TeamLanguageWrapper>
       )}
     </>
   )

@@ -23,7 +23,7 @@ interface CopyToTeamDialogProps {
   open: boolean
   loading?: boolean
   onClose: () => void
-  submitAction: (teamId: string, languageId: string) => Promise<void>
+  submitAction: (teamId: string, language: JourneyLanguage) => Promise<void>
   journeyLanguage?: JourneyLanguage
 }
 
@@ -76,7 +76,7 @@ export function CopyToTeamDialog({
       }
     })
     // submit action goes before setActiveTeam for proper loading states to be shown
-    await submitAction(values.teamSelect, selectedLanguage?.id ?? '')
+    await submitAction(values.teamSelect, selectedLanguage ?? { id: '' })
     setActiveTeam(teams.find((team) => team.id === values.teamSelect) ?? null)
     resetForm()
   }
