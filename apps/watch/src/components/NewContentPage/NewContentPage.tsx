@@ -134,7 +134,7 @@ export function NewContentPage(): ReactElement {
               <Box
                 sx={{
                   display: 'grid',
-                  gridTemplateColumns: { xs: '1fr', xl: '60% 40%' },
+                  gridTemplateColumns: { xs: '1fr', xl: '3fr 2fr' },
                   flexWrap: 'wrap',
                   zIndex: 1,
                   gap: 10,
