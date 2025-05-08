@@ -4,11 +4,19 @@ import { z } from 'zod'
 
 import { VIDEO_FIELDS } from '@core/journeys/ui/Video/videoFields'
 
+import {
+  AiBlockVideoUpdateMutation,
+  AiBlockVideoUpdateMutationVariables
+} from '../../../../../../__generated__/AiBlockVideoUpdateMutation'
+
 import { blockVideoUpdateInputSchema } from './type'
 
 export const AI_BLOCK_VIDEO_UPDATE = gql`
   ${VIDEO_FIELDS}
-  mutation AiBlockVideoUpdate($id: ID!, $input: VideoBlockUpdateInput!) {
+  mutation AiBlockVideoUpdateMutation(
+    $id: ID!
+    $input: VideoBlockUpdateInput!
+  ) {
     videoBlockUpdate(id: $id, input: $input) {
       ...VideoFields
     }
@@ -31,11 +39,14 @@ export function blockVideoUpdateMany(
     execute: async ({ blocks }) => {
       const results = await Promise.all(
         blocks.map(async ({ id, input }) => {
-          const { data } = await client.mutate({
+          const { data } = await client.mutate<
+            AiBlockVideoUpdateMutation,
+            AiBlockVideoUpdateMutationVariables
+          >({
             mutation: AI_BLOCK_VIDEO_UPDATE,
             variables: { id, input }
           })
-          return data.videoBlockUpdate
+          return data?.videoBlockUpdate
         })
       )
       return results

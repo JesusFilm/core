@@ -1,13 +1,23 @@
 import { z } from 'zod'
 
-export const blockVideoSourceEnum = z.enum([
-  'cloudflare',
-  'internal',
-  'mux',
-  'youTube'
-])
+import {
+  BlockFields_VideoBlock,
+  BlockFields_VideoBlock_mediaVideo
+} from '../../../../../../__generated__/BlockFields'
+import {
+  VideoBlockObjectFit,
+  VideoBlockSource,
+  VideoBlockUpdateInput
+} from '../../../../../../__generated__/globalTypes'
+import { actionSchema } from '../../action/type'
 
-export const blockVideoObjectFitEnum = z.enum(['fill', 'fit', 'zoomed'])
+export const blockVideoSourceEnum = z
+  .nativeEnum(VideoBlockSource)
+  .describe('Source of the video (internal, youTube, etc.)')
+
+export const blockVideoObjectFitEnum = z
+  .nativeEnum(VideoBlockObjectFit)
+  .describe('How the video should fit within its container')
 
 export const blockVideoUpdateInputSchema = z.object({
   startAt: z
@@ -63,7 +73,64 @@ export const blockVideoUpdateInputSchema = z.object({
     .nullable()
     .optional()
     .describe('How the video should fit within its container')
+}) satisfies z.ZodType<VideoBlockUpdateInput>
+
+const videoTitleSchema = z.object({
+  __typename: z.literal('VideoTitle'),
+  value: z.string().describe('Title of the video')
 })
+
+const videoImagesSchema = z.object({
+  __typename: z.literal('CloudflareImage'),
+  mobileCinematicHigh: z.string().nullable()
+})
+
+const videoVariantSchema = z.object({
+  __typename: z.literal('VideoVariant'),
+  id: z.string().describe('ID of the video variant'),
+  hls: z.string().nullable().describe('HLS URL of the video variant')
+})
+
+const languageNameSchema = z.object({
+  __typename: z.literal('LanguageName'),
+  value: z.string().describe('Name of the language'),
+  primary: z
+    .boolean()
+    .describe('whether this value is translated or the source name')
+})
+
+const languageSchema = z.object({
+  __typename: z.literal('Language'),
+  id: z.string().describe('ID of the language'),
+  name: z.array(languageNameSchema)
+})
+
+const mediaVideoVideoSchema = z.object({
+  __typename: z.literal('Video'),
+  id: z.string(),
+  title: z.array(videoTitleSchema),
+  images: z.array(videoImagesSchema),
+  variant: videoVariantSchema.nullable(),
+  variantLanguages: z.array(languageSchema)
+})
+
+const mediaVideoMuxVideoSchema = z.object({
+  __typename: z.literal('MuxVideo'),
+  id: z.string(),
+  assetId: z.string().nullable().describe('ID of the Mux video asset'),
+  playbackId: z.string().nullable().describe('ID of the Mux video playback')
+})
+
+const mediaVideoYouTubeSchema = z.object({
+  __typename: z.literal('YouTube'),
+  id: z.string().describe('ID of the YouTube video')
+})
+
+const mediaVideoSchema = z.union([
+  mediaVideoVideoSchema,
+  mediaVideoMuxVideoSchema,
+  mediaVideoYouTubeSchema
+]) satisfies z.ZodType<BlockFields_VideoBlock_mediaVideo>
 
 export const blockVideoUpdateSchema = z.object({
   __typename: z.literal('VideoBlock'),
@@ -118,6 +185,8 @@ export const blockVideoUpdateSchema = z.object({
   objectFit: blockVideoObjectFitEnum
     .nullable()
     .describe('How the video should display within the VideoBlock'),
-  mediaVideo: z.any().nullable().describe('Media video details'),
-  action: z.any().nullable().describe('Action to perform when the video ends')
-})
+  action: actionSchema
+    .nullable()
+    .describe('Action to perform when the video ends'),
+  mediaVideo: mediaVideoSchema
+}) satisfies z.ZodType<BlockFields_VideoBlock>

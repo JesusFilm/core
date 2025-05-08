@@ -4,11 +4,19 @@ import { z } from 'zod'
 
 import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
 
+import {
+  AiBlockImageUpdateMutation,
+  AiBlockImageUpdateMutationVariables
+} from '../../../../../../__generated__/AiBlockImageUpdateMutation'
+
 import { blockImageUpdateInputSchema } from './type'
 
 export const AI_BLOCK_IMAGE_UPDATE = gql`
   ${IMAGE_FIELDS}
-  mutation AiBlockImageUpdate($id: ID!, $input: ImageBlockUpdateInput!) {
+  mutation AiBlockImageUpdateMutation(
+    $id: ID!
+    $input: ImageBlockUpdateInput!
+  ) {
     imageBlockUpdate(id: $id, input: $input) {
       ...ImageFields
     }
@@ -31,11 +39,14 @@ export function blockImageUpdateMany(
     execute: async ({ blocks }) => {
       const results = await Promise.all(
         blocks.map(async ({ id, input }) => {
-          const { data } = await client.mutate({
+          const { data } = await client.mutate<
+            AiBlockImageUpdateMutation,
+            AiBlockImageUpdateMutationVariables
+          >({
             mutation: AI_BLOCK_IMAGE_UPDATE,
             variables: { id, input }
           })
-          return data.imageBlockUpdate
+          return data?.imageBlockUpdate
         })
       )
       return results

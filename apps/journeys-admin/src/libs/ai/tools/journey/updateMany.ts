@@ -4,11 +4,16 @@ import { z } from 'zod'
 
 import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 
+import {
+  AiJourneyUpdateMutation,
+  AiJourneyUpdateMutationVariables
+} from '../../../../../__generated__/AiJourneyUpdateMutation'
+
 import { journeyUpdateInputSchema } from './type'
 
 const AI_JOURNEY_UPDATE = gql`
   ${JOURNEY_FIELDS}
-  mutation AiJourneyUpdate($id: ID!, $input: JourneyUpdateInput!) {
+  mutation AiJourneyUpdateMutation($id: ID!, $input: JourneyUpdateInput!) {
     journeyUpdate(id: $id, input: $input) {
       ...JourneyFields
     }
@@ -31,7 +36,10 @@ export function journeyUpdateMany(
     execute: async ({ journeys }) => {
       const results = await Promise.all(
         journeys.map(async ({ id, input }) => {
-          const result = await client.mutate({
+          const result = await client.mutate<
+            AiJourneyUpdateMutation,
+            AiJourneyUpdateMutationVariables
+          >({
             mutation: AI_JOURNEY_UPDATE,
             variables: { id, input }
           })

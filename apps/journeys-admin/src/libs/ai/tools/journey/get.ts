@@ -5,9 +5,14 @@ import { z } from 'zod'
 import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 import { transformer } from '@core/journeys/ui/transformer'
 
+import {
+  AiJourneyGetQuery,
+  AiJourneyGetQueryVariables
+} from '../../../../../__generated__/AiJourneyGetQuery'
+
 const AI_JOURNEY_GET = gql`
   ${JOURNEY_FIELDS}
-  query AiJourneyGet($id: ID!) {
+  query AiJourneyGetQuery($id: ID!) {
     journey: adminJourney(id: $id, idType: databaseId) {
       ...JourneyFields
     }
@@ -27,7 +32,10 @@ export function journeyGet(client: ApolloClient<NormalizedCacheObject>): Tool {
     }),
     execute: async ({ journeyId }) => {
       try {
-        const result = await client.query({
+        const result = await client.query<
+          AiJourneyGetQuery,
+          AiJourneyGetQueryVariables
+        >({
           query: AI_JOURNEY_GET,
           variables: { id: journeyId }
         })
