@@ -11,12 +11,16 @@ interface VideoPlayerProps {
   hlsUrl: string
   videoTitle: string
   thumbnail?: string | null
+  startTime?: number
+  endTime?: number
 }
 
 export function VideoPlayer({
   hlsUrl,
   videoTitle,
-  thumbnail
+  thumbnail,
+  startTime,
+  endTime
 }: VideoPlayerProps): JSX.Element {
   const playerRef = useRef<HTMLVideoElement>(null)
 
@@ -28,7 +32,7 @@ export function VideoPlayer({
       video_title: videoTitle
     }
 
-    videojs(ref.current, {
+    const player = videojs(ref.current, {
       enableSmoothSeeking: true,
       experimentalSvgIcons: true,
       preload: 'none',
@@ -50,7 +54,24 @@ export function VideoPlayer({
           data: muxMetadata
         }
       }
-    })
+    }) as any
+
+    if (startTime != null) {
+      player.currentTime(startTime)
+    }
+
+    if (endTime != null) {
+      player.on('timeupdate', () => {
+        if (player.currentTime() >= endTime) {
+          player.currentTime(endTime)
+          player.pause()
+        }
+      })
+      player.on('ended', () => {
+        player.currentTime(endTime)
+        player.pause()
+      })
+    }
   }
 
   useEffect(() => {
@@ -73,6 +94,8 @@ export function VideoPlayer({
         ref={playerRef}
         poster={thumbnail ?? undefined}
         controls
+        data-play-start={startTime ?? 0}
+        data-play-end={endTime ?? 0}
       >
         <source src={hlsUrl} type="application/x-mpegURL" />
       </video>
