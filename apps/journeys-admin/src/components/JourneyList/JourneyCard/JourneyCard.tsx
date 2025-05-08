@@ -70,7 +70,6 @@ export function JourneyCard({
       aria-label="journey-card"
       variant="outlined"
       sx={{
-        aspectRatio: { xs: '1', sm: '1/1.3' },
         borderRadius: 0,
         borderColor: 'divider',
         borderBottom: 'none',
@@ -143,7 +142,7 @@ export function JourneyCard({
                 position: 'relative',
                 width: 'auto',
                 aspectRatio: {
-                  xs: '1.9',
+                  xs: '2',
                   sm: '1.43'
                 },
                 mx: { xs: 3, sm: 1.75 },
@@ -187,7 +186,15 @@ export function JourneyCard({
                 }}
               />
             </Box>
-            <CardContent sx={{ pl: 2, pr: 1, pt: 1 }}>
+            <CardContent sx={{ 
+              pl: { xs: 3, sm: 2 }, 
+              pr: 1, 
+              pt: 1,
+              height: { xs: 139, sm: 137 }, // Fixed height to accommodate both one and two line titles
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'flex-start'
+            }}>
               <JourneyCardText journey={journey} />
             </CardContent>
           </CardActionArea>
@@ -195,9 +202,9 @@ export function JourneyCard({
         <Box
           sx={{
             position: 'absolute',
-            bottom: 3,
-            left: 3,
-            right: 7,
+            bottom: { xs: 8, sm: 3 },
+            left: { xs: 7, sm: 3 },
+            right: { xs: 10, sm: 7 },
             zIndex: 3
           }}
         >
