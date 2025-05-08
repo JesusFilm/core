@@ -1,24 +1,18 @@
 import { useMutation, useQuery } from '@apollo/client'
 import CloseIcon from '@mui/icons-material/Close'
-import Autocomplete from '@mui/material/Autocomplete'
 import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
-import CircularProgress from '@mui/material/CircularProgress'
 import FormLabel from '@mui/material/FormLabel'
-import IconButton from '@mui/material/IconButton'
-import InputAdornment from '@mui/material/InputAdornment'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
-import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { graphql } from 'gql.tada'
 import { useSnackbar } from 'notistack'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 interface VideoKeywordsProps {
-  videoId: string
   primaryLanguageId: string
   initialKeywords: { id: string; value: string }[]
   onChange: (keywords: { id: string; value: string }[]) => void
@@ -55,13 +49,12 @@ function isKeywordObject(item: unknown): item is { id: string; value: string } {
 }
 
 export function VideoKeywords({
-  videoId,
   primaryLanguageId,
   initialKeywords,
   onChange
 }: VideoKeywordsProps) {
   const { enqueueSnackbar } = useSnackbar()
-  const { data, loading } = useQuery(GET_KEYWORDS)
+  const { data } = useQuery(GET_KEYWORDS)
   const [createKeyword] = useMutation(CREATE_KEYWORD)
   const [selected, setSelected] = useState(initialKeywords)
   const [inputValue, setInputValue] = useState('')
@@ -71,50 +64,6 @@ export function VideoKeywords({
   }, [initialKeywords])
 
   const options = useMemo(() => data?.keywords ?? [], [data])
-
-  const handleChange = async (
-    _event: unknown,
-    values: (string | { id?: string; value: string })[]
-  ) => {
-    // Check for new keywords (no id)
-    const newKeywords = await Promise.all(
-      values.map(async (item) => {
-        if (typeof item === 'string') {
-          // Free solo string, create keyword
-          try {
-            const res = await createKeyword({
-              variables: { value: item, languageId: primaryLanguageId }
-            })
-            if (res.data?.createKeyword) return res.data.createKeyword
-            // fallback if mutation returns nothing
-            return { id: `temp-${item}`, value: item }
-          } catch (e) {
-            enqueueSnackbar('Failed to create keyword', { variant: 'error' })
-            return { id: `temp-${item}`, value: item }
-          }
-        } else if (item.id) {
-          // Existing keyword object
-          return { id: item.id, value: item.value }
-        } else {
-          // New keyword object without id
-          try {
-            const res = await createKeyword({
-              variables: { value: item.value, languageId: primaryLanguageId }
-            })
-            if (res.data?.createKeyword) return res.data.createKeyword
-            return { id: `temp-${item.value}`, value: item.value }
-          } catch (e) {
-            enqueueSnackbar('Failed to create keyword', { variant: 'error' })
-            return { id: `temp-${item.value}`, value: item.value }
-          }
-        }
-      })
-    )
-    // Filter to ensure all are correct type
-    const filteredKeywords = newKeywords.filter(isKeywordObject)
-    setSelected(filteredKeywords)
-    onChange(filteredKeywords)
-  }
 
   // Add keyword on Enter or comma
   const handleInputKeyDown = async (

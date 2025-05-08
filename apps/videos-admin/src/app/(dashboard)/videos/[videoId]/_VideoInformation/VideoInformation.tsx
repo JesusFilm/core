@@ -304,7 +304,6 @@ export function VideoInformation({
               </FormControl>
             </Stack>
             <VideoKeywords
-              videoId={videoId}
               primaryLanguageId={data.adminVideo.primaryLanguageId}
               initialKeywords={values.keywords}
               onChange={(keywords) =>

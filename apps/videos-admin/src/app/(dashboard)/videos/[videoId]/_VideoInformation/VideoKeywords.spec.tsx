@@ -34,7 +34,6 @@ describe('VideoKeywords', () => {
     render(
       <MockedProvider>
         <VideoKeywords
-          videoId="v1"
           primaryLanguageId="en"
           initialKeywords={initialKeywords}
           onChange={jest.fn()}
@@ -50,7 +49,6 @@ describe('VideoKeywords', () => {
     render(
       <MockedProvider mocks={[mockCreateKeyword]} addTypename={false}>
         <VideoKeywords
-          videoId="v1"
           primaryLanguageId="en"
           initialKeywords={[]}
           onChange={onChange}
@@ -72,7 +70,6 @@ describe('VideoKeywords', () => {
     render(
       <MockedProvider>
         <VideoKeywords
-          videoId="v1"
           primaryLanguageId="en"
           initialKeywords={[{ id: '1', value: 'alpha' }]}
           onChange={onChange}
@@ -89,7 +86,6 @@ describe('VideoKeywords', () => {
     render(
       <MockedProvider>
         <VideoKeywords
-          videoId="v1"
           primaryLanguageId="en"
           initialKeywords={initialKeywords}
           onChange={onChange}
@@ -112,7 +108,6 @@ describe('VideoKeywords', () => {
     render(
       <MockedProvider mocks={[errorMock]} addTypename={false}>
         <VideoKeywords
-          videoId="v1"
           primaryLanguageId="en"
           initialKeywords={[]}
           onChange={jest.fn()}
