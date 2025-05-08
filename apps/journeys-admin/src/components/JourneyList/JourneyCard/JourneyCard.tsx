@@ -155,7 +155,7 @@ export function JourneyCard({
                 borderRadius: `calc(0% + 8px)`,
                 borderWidth: 1,
                 borderStyle: 'solid',
-                borderColor: 'rgba(0, 0, 0, 0.05)',
+                borderColor: 'rgba(0, 0, 0, 0.02)',
                 bgcolor: 'rgba(0, 0, 0, 0.1)',
                 overflow: 'hidden'
               }}
@@ -193,8 +193,8 @@ export function JourneyCard({
             </Box>
             <CardContent
               sx={{
-                pl: { xs: 3, sm: 2 },
-                pr: 1,
+                pl: { xs: 3, sm: 2.5 },
+                pr: 2,
                 pt: 1,
                 height: { xs: 139, sm: 137 }, // Fixed height to accommodate both one and two line titles
                 display: 'flex',
@@ -210,7 +210,7 @@ export function JourneyCard({
           sx={{
             position: 'absolute',
             bottom: { xs: 8, sm: 3 },
-            left: { xs: 7, sm: 3 },
+            left: { xs: 7, sm: 4 },
             right: { xs: 10, sm: 7 },
             zIndex: 3
           }}
