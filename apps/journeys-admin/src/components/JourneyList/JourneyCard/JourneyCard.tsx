@@ -186,15 +186,17 @@ export function JourneyCard({
                 }}
               />
             </Box>
-            <CardContent sx={{ 
-              pl: { xs: 3, sm: 2 }, 
-              pr: 1, 
-              pt: 1,
-              height: { xs: 139, sm: 137 }, // Fixed height to accommodate both one and two line titles
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'flex-start'
-            }}>
+            <CardContent
+              sx={{
+                pl: { xs: 3, sm: 2 },
+                pr: 1,
+                pt: 1,
+                height: { xs: 139, sm: 137 }, // Fixed height to accommodate both one and two line titles
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'flex-start'
+              }}
+            >
               <JourneyCardText journey={journey} />
             </CardContent>
           </CardActionArea>
