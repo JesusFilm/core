@@ -15,6 +15,7 @@ import { PageWrapper } from '../PageWrapper'
 import { ContentHero } from './ContentHero'
 import { ContentMetadata } from './ContentMetadata'
 import { DiscussionQuestions } from './DiscussionQuestions'
+import { ShareButton } from './ShareButton'
 import { VideoCarousel } from './VideoCarousel'
 
 export function NewContentPage(): ReactElement {
@@ -150,6 +151,17 @@ export function NewContentPage(): ReactElement {
                 />
                 <DiscussionQuestions questions={questions} />
               </Box>
+              <Stack
+                sx={{
+                  zIndex: 1,
+                  px: { xs: 4, sm: 6, md: 8, lg: 10, xl: 12 }
+                }}
+                direction="row"
+                spacing={2}
+                justifyContent="space-between"
+              >
+                <ShareButton />
+              </Stack>
             </Stack>
           </Box>
         </Box>
