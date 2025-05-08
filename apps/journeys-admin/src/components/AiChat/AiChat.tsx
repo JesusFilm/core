@@ -55,6 +55,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
           part.type === 'tool-invocation' &&
           [
             'journeyUpdateMany',
+            'blockCardUpdateMany',
             'blockTypographyUpdateMany',
             'blockRadioOptionUpdateMany',
             'blockButtonUpdateMany',
