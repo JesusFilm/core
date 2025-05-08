@@ -11,6 +11,7 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { LanguageModelUsage } from 'ai'
+import Image from 'next/image'
 import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
@@ -399,6 +400,37 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
                                   {t('Open Video Library')}
                                 </Button>
                               </Box>
+                            </Box>
+                          )
+                        default: {
+                          return null
+                        }
+                      }
+                    }
+                    case 'generateImage': {
+                      switch (part.toolInvocation.state) {
+                        case 'call':
+                          return (
+                            <Typography
+                              key={callId}
+                              variant="body2"
+                              color="text.secondary"
+                            >
+                              {t('Generating image...')}
+                            </Typography>
+                          )
+                        case 'result':
+                          return (
+                            <Box>
+                              <Chip
+                                key={callId}
+                                label={t('Image generated')}
+                                size="small"
+                              />
+                              <Image
+                                src={part.toolInvocation.result.imageSrc}
+                                alt="Generated image"
+                              />
                             </Box>
                           )
                         default: {
