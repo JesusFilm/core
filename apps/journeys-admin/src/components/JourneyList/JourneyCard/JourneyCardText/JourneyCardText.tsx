@@ -23,7 +23,6 @@ export function JourneyCardText({
     <>
       <Typography
         variant="subtitle1"
-        component="div"
         gutterBottom
         sx={{
           fontSize: 16,

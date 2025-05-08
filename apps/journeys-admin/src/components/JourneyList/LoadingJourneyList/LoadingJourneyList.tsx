@@ -18,10 +18,10 @@ function LoadingJourneyCard(): ReactElement {
         display: 'flex',
         flexDirection: 'column',
         '&:last-of-type': {
-          borderBottomLeftRadius: `calc(0% + 12px)`,
-          borderBottomRightRadius: `calc(0% + 12px)`,
-          borderTopLeftRadius: `calc(0% + 12px)`,
-          borderTopRightRadius: `calc(0% + 12px)`,
+          borderBottomLeftRadius: '12px',
+          borderBottomRightRadius: '12px',
+          borderTopLeftRadius: '12px',
+          borderTopRightRadius: '12px',
           borderBottom: '1px solid',
           borderColor: 'divider'
         },
@@ -38,7 +38,7 @@ function LoadingJourneyCard(): ReactElement {
           },
           mx: { xs: 3, sm: 1.75 },
           mt: { xs: 3, sm: 1.75 },
-          borderRadius: `calc(0% + 8px)`,
+          borderRadius: '8px',
           borderWidth: 1,
           borderStyle: 'solid',
           borderColor: 'rgba(0, 0, 0, 0.05)',
