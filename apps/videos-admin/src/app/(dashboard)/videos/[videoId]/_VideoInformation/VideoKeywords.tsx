@@ -1,12 +1,17 @@
 import { useMutation, useQuery } from '@apollo/client'
+import CloseIcon from '@mui/icons-material/Close'
 import Autocomplete from '@mui/material/Autocomplete'
+import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import CircularProgress from '@mui/material/CircularProgress'
+import FormLabel from '@mui/material/FormLabel'
+import IconButton from '@mui/material/IconButton'
+import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { graphql } from 'gql.tada'
 import { useSnackbar } from 'notistack'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 interface VideoKeywordsProps {
   videoId: string
@@ -33,6 +38,18 @@ const CREATE_KEYWORD = graphql(`
   }
 `)
 
+// Helper type guard
+function isKeywordObject(item: unknown): item is { id: string; value: string } {
+  return (
+    typeof item === 'object' &&
+    item !== null &&
+    'value' in item &&
+    typeof (item as any).value === 'string' &&
+    'id' in item &&
+    typeof (item as any).id === 'string'
+  )
+}
+
 export function VideoKeywords({
   videoId,
   primaryLanguageId,
@@ -43,6 +60,7 @@ export function VideoKeywords({
   const { data, loading } = useQuery(GET_KEYWORDS)
   const [createKeyword] = useMutation(CREATE_KEYWORD)
   const [selected, setSelected] = useState(initialKeywords)
+  const [inputValue, setInputValue] = useState('')
 
   useEffect(() => {
     setSelected(initialKeywords)
@@ -52,67 +70,137 @@ export function VideoKeywords({
 
   const handleChange = async (
     _event: unknown,
-    values: { id?: string; value: string }[]
+    values: (string | { id?: string; value: string })[]
   ) => {
     // Check for new keywords (no id)
     const newKeywords = await Promise.all(
       values.map(async (item) => {
-        if (item.id) return item
-        try {
-          const res = await createKeyword({
-            variables: { value: item.value, languageId: primaryLanguageId }
-          })
-          return res.data?.createKeyword ?? item
-        } catch (e) {
-          enqueueSnackbar('Failed to create keyword', { variant: 'error' })
-          return item
+        if (typeof item === 'string') {
+          // Free solo string, create keyword
+          try {
+            const res = await createKeyword({
+              variables: { value: item, languageId: primaryLanguageId }
+            })
+            if (res.data?.createKeyword) return res.data.createKeyword
+            // fallback if mutation returns nothing
+            return { id: `temp-${item}`, value: item }
+          } catch (e) {
+            enqueueSnackbar('Failed to create keyword', { variant: 'error' })
+            return { id: `temp-${item}`, value: item }
+          }
+        } else if (item.id) {
+          // Existing keyword object
+          return { id: item.id, value: item.value }
+        } else {
+          // New keyword object without id
+          try {
+            const res = await createKeyword({
+              variables: { value: item.value, languageId: primaryLanguageId }
+            })
+            if (res.data?.createKeyword) return res.data.createKeyword
+            return { id: `temp-${item.value}`, value: item.value }
+          } catch (e) {
+            enqueueSnackbar('Failed to create keyword', { variant: 'error' })
+            return { id: `temp-${item.value}`, value: item.value }
+          }
         }
       })
     )
-    setSelected(newKeywords)
-    onChange(newKeywords)
+    // Filter to ensure all are correct type
+    const filteredKeywords = newKeywords.filter(isKeywordObject)
+    setSelected(filteredKeywords)
+    onChange(filteredKeywords)
+  }
+
+  // Add keyword on Enter or comma
+  const handleInputKeyDown = async (
+    event: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (event.key === 'Enter' || event.key === ',') {
+      event.preventDefault()
+      const value = inputValue.trim().replace(/,$/, '')
+      if (
+        !value ||
+        selected.some((k) => k.value.toLowerCase() === value.toLowerCase())
+      ) {
+        setInputValue('')
+        return
+      }
+      try {
+        const res = await createKeyword({
+          variables: { value, languageId: primaryLanguageId }
+        })
+        const newKeyword = res.data?.createKeyword ?? {
+          id: `temp-${value}`,
+          value
+        }
+        // Ensure type safety
+        if (isKeywordObject(newKeyword)) {
+          const newSelected = [...selected, newKeyword]
+          setSelected(newSelected)
+          onChange(newSelected)
+        }
+      } catch {
+        enqueueSnackbar('Failed to create keyword', { variant: 'error' })
+      }
+      setInputValue('')
+    }
+  }
+
+  // Remove keyword
+  const handleDelete = (id: string) => {
+    const newSelected = selected.filter((k) => k.id !== id)
+    setSelected(newSelected)
+    onChange(newSelected)
   }
 
   return (
-    <Stack>
-      <Autocomplete
-        multiple
-        freeSolo
-        options={options}
-        getOptionLabel={(option) => option.value}
-        value={selected}
-        onChange={handleChange}
-        filterSelectedOptions
-        loading={loading}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            label="Keywords"
-            placeholder="Add keyword"
-            InputProps={{
-              ...params.InputProps,
-              endAdornment: (
-                <>
-                  {loading ? (
-                    <CircularProgress color="inherit" size={20} />
-                  ) : null}
-                  {params.InputProps.endAdornment}
-                </>
-              )
-            }}
+    <>
+      <FormLabel sx={{ mb: 1 }}>Keywords</FormLabel>
+      <Box
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'flex-start',
+          gap: 1,
+          p: 1,
+          border: 1,
+          borderColor: 'divider',
+          borderRadius: 1,
+          backgroundColor: 'background.paper',
+          minHeight: 56
+        }}
+      >
+        {selected.map((option) => (
+          <Chip
+            key={option.id}
+            label={option.value}
+            onDelete={() => handleDelete(option.id)}
+            deleteIcon={<CloseIcon />}
+            sx={{ my: 0.25 }}
           />
-        )}
-        renderTags={(value, getTagProps) =>
-          value.map((option, index) => (
-            <Chip
-              variant="outlined"
-              label={option.value}
-              {...getTagProps({ index })}
-              key={option.id ?? option.value}
-            />
-          ))
-        }
-      />
-    </Stack>
+        ))}
+        <TextField
+          placeholder="Add keyword"
+          variant="standard"
+          multiline
+          minRows={1}
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onKeyDown={handleInputKeyDown}
+          sx={{
+            flex: 1,
+            minWidth: 120,
+            border: 'none',
+            background: 'transparent',
+            '& .MuiInputBase-root': { p: 0 },
+            '& textarea': { p: 0, background: 'transparent' }
+          }}
+          InputProps={{
+            disableUnderline: true
+          }}
+        />
+      </Box>
+    </>
   )
 }
