@@ -4,6 +4,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { SxProps } from '@mui/system/styleFunctionSx'
 import { useFormikContext } from 'formik'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { TextResponseType } from '../../../__generated__/globalTypes'
@@ -55,6 +56,7 @@ export const TextResponse = ({
   type,
   required
 }: TextResponseProps): ReactElement => {
+  const { t } = useTranslation('libs-journeys-ui')
   const [value, setValue] = useState('')
 
   const formikContext = useFormikContext<{
@@ -107,7 +109,7 @@ export const TextResponse = ({
             fontSize: 14
           }}
         >
-          {label.trim() === '' ? 'Label' : label}
+          {label.trim() === '' ? t('Label') : label}
           {(required ?? false) ? '*' : ''}
         </Typography>
         <TextField
