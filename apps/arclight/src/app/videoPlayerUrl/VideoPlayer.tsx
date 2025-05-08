@@ -61,6 +61,12 @@ export function VideoPlayer({
     }
 
     if (endTime != null) {
+      player.on('timeupdate', () => {
+        if (player.currentTime() >= endTime) {
+          player.currentTime(endTime)
+          player.pause()
+        }
+      })
       player.on('ended', () => {
         player.currentTime(endTime)
         player.pause()
