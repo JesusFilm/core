@@ -67,7 +67,7 @@ export function JourneyList({
     status: [JourneyStatus.draft, JourneyStatus.published],
     useLastActiveTeamId: true
   })
-  const { sidePanel } = usePageWrapperStyles()
+  const { navbar, sidePanel } = usePageWrapperStyles()
 
   useEffect(() => {
     const handleRouteChange = (url: string) => {
@@ -102,12 +102,10 @@ export function JourneyList({
     <>
       <Box
         sx={{
-          pr: { xs: 0, md: 4 },
-          mx: 0,
-          mt: -5,
+          mt: { xs: 0, sm: -5 },
           width: {
-            xs: '100%',
-            md: `calc(100% - ${sidePanel.width})`
+            sm: '100%',
+            md: `calc(100vw - ${sidePanel.width} - ${navbar.width} - 80px)`
           }
         }}
         data-testid="JourneysAdminJourneyList"

@@ -85,31 +85,26 @@ export function ActivePriorityList({
   )
 
   return (
-    <Box sx={{ mt: 5 }}>
-      <Grid container spacing={5} rowSpacing={5}>
-        {Object.entries(allActiveJourneys).map(([key, journeys]) =>
-          journeys.map((journey) => (
-            <Grid
-              key={journey.id}
-              size={{ xs: 12, sm: 6, md: 6, lg: 3, xl: 3 }}
+    <Grid container spacing={4} rowSpacing={{ xs: 2.5, sm: 4 }}>
+      {Object.entries(allActiveJourneys).map(([key, journeys]) =>
+        journeys.map((journey) => (
+          <Grid key={journey.id} size={{ xs: 12, sm: 6, md: 6, lg: 3, xl: 3 }}>
+            <JourneyProvider
+              value={{
+                journey: journey as unknown as JourneyFields,
+                variant: 'admin'
+              }}
             >
-              <JourneyProvider
-                value={{
-                  journey: journey as unknown as JourneyFields,
-                  variant: 'admin'
-                }}
-              >
-                <JourneyCard
-                  key={journey.id}
-                  journey={journey}
-                  refetch={refetch}
-                  variant={key as JourneyCardVariant}
-                />
-              </JourneyProvider>
-            </Grid>
-          ))
-        )}
-      </Grid>
-    </Box>
+              <JourneyCard
+                key={journey.id}
+                journey={journey}
+                refetch={refetch}
+                variant={key as JourneyCardVariant}
+              />
+            </JourneyProvider>
+          </Grid>
+        ))
+      )}
+    </Grid>
   )
 }
