@@ -5,13 +5,16 @@ import { SnackbarProvider } from 'notistack'
 import { Suspense } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider
+} from '@core/journeys/ui/TeamProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'
 import { GetUserRole } from '@core/journeys/ui/useUserRoleQuery/__generated__/GetUserRole'
 
 import { Role } from '../../../../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
-import { getCustomDomainMock } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 
 import { ShareItem } from './ShareItem'
 
@@ -29,6 +32,17 @@ jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
 }))
+
+jest.mock(
+  '../../../../../libs/useJourneyForShareLazyQuery/useJourneyForShareLazyQuery',
+  () => ({
+    __esModule: true,
+    useJourneyForSharingLazyQuery: jest.fn(() => [
+      jest.fn(),
+      { data: undefined, loading: false, error: undefined }
+    ])
+  })
+)
 
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
@@ -48,7 +62,7 @@ describe('ShareItem', () => {
     originalEnv = process.env
     process.env = {
       ...originalEnv,
-      NEXT_PUBLIC_JOURNEYS_URL: 'https://my.custom.domain'
+      NEXT_PUBLIC_JOURNEYS_URL: 'https://default.domain.com'
     }
     mockUseCurrentUserLazyQuery.mockReturnValue({
       loadUser: jest.fn(),
@@ -73,7 +87,7 @@ describe('ShareItem', () => {
           <JourneyProvider
             value={{ journey: defaultJourney, variant: 'admin' }}
           >
-            <ShareItem variant="button" />
+            <ShareItem variant="button" journey={defaultJourney} />
           </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
@@ -117,7 +131,7 @@ describe('ShareItem', () => {
           <JourneyProvider
             value={{ journey: defaultJourney, variant: 'admin' }}
           >
-            <ShareItem variant="button" />
+            <ShareItem variant="button" journey={defaultJourney} />
           </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
@@ -178,7 +192,7 @@ describe('ShareItem', () => {
             <JourneyProvider
               value={{ journey: defaultJourney, variant: 'admin' }}
             >
-              <ShareItem variant="button" />
+              <ShareItem variant="button" journey={defaultJourney} />
             </JourneyProvider>
           </Suspense>
         </MockedProvider>
@@ -220,52 +234,89 @@ describe('ShareItem', () => {
           <JourneyProvider
             value={{ journey: defaultJourney, variant: 'admin' }}
           >
-            <ShareItem variant="button" />
+            <ShareItem variant="button" journey={defaultJourney} />
           </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
     fireEvent.click(screen.getByRole('button', { name: 'Share' }))
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+    })
     fireEvent.click(screen.getByRole('button', { name: 'Copy' }))
-    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-      'https://my.custom.domain/default'
-    )
+    await waitFor(() => {
+      expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
+        'https://default.domain.com/default'
+      )
+    })
   })
 
   it('should copy journey link with custom domain', async () => {
-    const result = jest.fn().mockReturnValue(getCustomDomainMock.result)
     mockedUseRouter.mockReturnValue({
       query: { param: null },
       push,
       events: { on }
     } as unknown as NextRouter)
+
+    const teamMock = {
+      request: {
+        query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+      },
+      result: {
+        data: {
+          teams: [
+            {
+              __typename: 'Team',
+              id: 'teamId1',
+              title: 'Team with custom domain',
+              publicTitle: null,
+              userTeams: [],
+              customDomains: [
+                {
+                  __typename: 'CustomDomain',
+                  id: 'customDomainId',
+                  name: 'custom.domain.com'
+                }
+              ]
+            }
+          ],
+          getJourneyProfile: {
+            __typename: 'JourneyProfile',
+            id: 'journeyProfileId',
+            lastActiveTeamId: 'teamId1'
+          }
+        }
+      }
+    }
+
     render(
       <SnackbarProvider>
-        <MockedProvider mocks={[{ ...getCustomDomainMock, result }]}>
-          <JourneyProvider
-            value={{
-              journey: {
-                ...defaultJourney,
-                team: {
-                  id: 'teamId',
-                  __typename: 'Team',
-                  title: 'Team Title',
-                  publicTitle: 'Team Title'
-                }
-              },
-              variant: 'admin'
-            }}
-          >
-            <ShareItem variant="button" />
-          </JourneyProvider>
+        <MockedProvider mocks={[teamMock]}>
+          <TeamProvider>
+            <JourneyProvider
+              value={{ journey: defaultJourney, variant: 'admin' }}
+            >
+              <ShareItem variant="button" journey={defaultJourney} />
+            </JourneyProvider>
+          </TeamProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
-    await waitFor(() => expect(result).toHaveBeenCalled())
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Share' })).toBeInTheDocument()
+    })
+
     fireEvent.click(screen.getByRole('button', { name: 'Share' }))
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+    })
+
     fireEvent.click(screen.getByRole('button', { name: 'Copy' }))
-    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-      'https://example.com/default'
-    )
+    await waitFor(() => {
+      expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
+        'https://custom.domain.com/default'
+      )
+    })
   })
 })

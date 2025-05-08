@@ -121,7 +121,7 @@ describe('QrCodeDialog', () => {
         <Suspense>
           <JourneyProvider value={{ journey }}>
             <SnackbarProvider>
-              <QrCodeDialog open onClose={handleClose} />
+              <QrCodeDialog open onClose={handleClose} journey={journey} />
             </SnackbarProvider>
           </JourneyProvider>
         </Suspense>
@@ -141,7 +141,7 @@ describe('QrCodeDialog', () => {
         <Suspense>
           <JourneyProvider value={{ journey }}>
             <SnackbarProvider>
-              <QrCodeDialog open onClose={handleClose} />
+              <QrCodeDialog open onClose={handleClose} journey={journey} />
             </SnackbarProvider>
           </JourneyProvider>
         </Suspense>
@@ -159,7 +159,7 @@ describe('QrCodeDialog', () => {
         <Suspense>
           <JourneyProvider value={{ journey }}>
             <SnackbarProvider>
-              <QrCodeDialog open onClose={handleClose} />
+              <QrCodeDialog open onClose={handleClose} journey={journey} />
             </SnackbarProvider>
           </JourneyProvider>
         </Suspense>
@@ -209,7 +209,7 @@ describe('QrCodeDialog', () => {
         <Suspense>
           <JourneyProvider value={{ journey }}>
             <SnackbarProvider>
-              <QrCodeDialog open onClose={handleClose} />
+              <QrCodeDialog open onClose={handleClose} journey={journey} />
             </SnackbarProvider>
           </JourneyProvider>
         </Suspense>
@@ -240,9 +240,14 @@ describe('QrCodeDialog', () => {
       QrCodeCreateVariables
     > = {
       request: {
-        query: QR_CODE_CREATE
+        query: QR_CODE_CREATE,
+        variables: {
+          input: {
+            journeyId: 'journey.id',
+            teamId: ''
+          }
+        }
       },
-      variableMatcher: () => true,
       result: jest.fn(() => ({
         data: {
           qrCodeCreate: {
@@ -261,7 +266,7 @@ describe('QrCodeDialog', () => {
         <Suspense>
           <JourneyProvider value={{ journey }}>
             <SnackbarProvider>
-              <QrCodeDialog open onClose={handleClose} />
+              <QrCodeDialog open onClose={handleClose} journey={journey} />
             </SnackbarProvider>
           </JourneyProvider>
         </Suspense>
@@ -297,9 +302,14 @@ describe('QrCodeDialog', () => {
       QrCodeCreateVariables
     > = {
       request: {
-        query: QR_CODE_CREATE
+        query: QR_CODE_CREATE,
+        variables: {
+          input: {
+            journeyId: 'journey.id',
+            teamId: ''
+          }
+        }
       },
-      variableMatcher: () => true,
       error: new Error('error')
     }
 
@@ -308,7 +318,7 @@ describe('QrCodeDialog', () => {
         <Suspense>
           <JourneyProvider value={{ journey }}>
             <SnackbarProvider>
-              <QrCodeDialog open onClose={handleClose} />
+              <QrCodeDialog open onClose={handleClose} journey={journey} />
             </SnackbarProvider>
           </JourneyProvider>
         </Suspense>
