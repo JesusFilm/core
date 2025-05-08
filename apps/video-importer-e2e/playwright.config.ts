@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
-import { defineConfig, devices } from '@playwright/test'
+import { defineConfig } from '@playwright/test'
 
 /**
  * Read environment variables from file.
@@ -36,54 +36,10 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
     {
-      name: 'chrome-desktop',
-      use: {
-        ...devices['Desktop Chrome'],
-        channel:
-          process.platform === 'linux' && process.arch === 'arm64'
-            ? 'chromium'
-            : 'chrome'
-      }
-    },
-
-    // /* Test against mobile viewports. */
-    // // By default it's using chromium channel, changed it to chrome so it can play the video
-    {
-      name: 'chrome-mobile',
-      use: {
-        ...devices['Pixel 5'],
-        channel:
-          process.platform === 'linux' && process.arch === 'arm64'
-            ? 'chromium'
-            : 'chrome'
-      }
+      name: 'cli',
+      testMatch: /.*\.spec\.ts/
     }
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
-
-    /* Others. */
-    // {
-    //   name: 'firefox',
-    //   use: { ...devices['Desktop Firefox'] },
-    // },
-
-    // {
-    //   name: 'webkit',
-    //   use: { ...devices['Desktop Safari'] },
-    // },
-    // Video is not playing on chromium, so we use chrome instead
-    // {
-    //   name: 'chromium',
-    //   use: { ...devices['Desktop Chrome'] },
-    // },
   ]
 
   /* Run your local dev server before starting the tests */

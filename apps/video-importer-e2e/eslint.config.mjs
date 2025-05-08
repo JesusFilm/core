@@ -14,7 +14,7 @@ export default [
   {
     files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
-      parserOptions: { project: ['apps/docs-e2e/tsconfig.*?.json'] }
+      parserOptions: { project: ['apps/video-importer-e2e/tsconfig.*?.json'] }
     }
   },
   {

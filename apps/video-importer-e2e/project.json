@@ -4,13 +4,13 @@
   "sourceRoot": "apps/video-importer-e2e/src",
   "projectType": "application",
   "tags": [],
-  "implicitDependencies": ["docs"],
+  "implicitDependencies": ["docs", "video-importer"],
   "targets": {
     "e2e": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["playwright test"],
-        "cwd": "apps/video-importer-e2e"
+        "commands": ["nx build video-importer", "playwright test"],
+        "parallel": false
       }
     },
     "update-snapshots": {
