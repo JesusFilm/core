@@ -18,7 +18,7 @@ interface VideoKeywordsProps {
   onChange: (keywords: { id: string; value: string }[]) => void
 }
 
-const GET_KEYWORDS = graphql(`
+export const GET_KEYWORDS = graphql(`
   query GetKeywords {
     keywords {
       id
@@ -27,7 +27,7 @@ const GET_KEYWORDS = graphql(`
   }
 `)
 
-const CREATE_KEYWORD = graphql(`
+export const CREATE_KEYWORD = graphql(`
   mutation CreateKeyword($value: String!, $languageId: String!) {
     createKeyword(value: $value, languageId: $languageId) {
       id
