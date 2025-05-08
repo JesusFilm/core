@@ -575,7 +575,7 @@
   "Restore": "Restore",
   "Are you sure you would like to restore this journey?": "Are you sure you would like to restore this journey?",
   "The selected language is the same as the source journey language.": "The selected language is the same as the source journey language.",
-  "Translation started. You will be notified when it completes.": "Translation started. You will be notified when it completes.",
+  "Translation complete": "Translation complete",
   "Failed to process translation request. Please try again.": "Failed to process translation request. Please try again.",
   "Create Translated Copy": "Create Translated Copy",
   "Create": "Create",
