@@ -7,3 +7,4 @@ export {
   blockTypographyAlignEnum
 } from './type'
 export { blockTypographyUpdateMany } from './updateMany'
+export { blockTypographyCreate } from './create'

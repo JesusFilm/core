@@ -36,7 +36,9 @@ export const blockTypographySchema = blockSchema.extend({
 export const blockTypographyCreateInputSchema = z.object({
   id: z.string().optional().describe('Optional ID for the new block'),
   journeyId: z.string().describe('ID of the journey this block belongs to'),
-  parentBlockId: z.string().describe('ID of the parent block'),
+  parentBlockId: z
+    .string()
+    .describe('ID of the parent block. The parent block must be a card block!'),
   content: z.string().describe('Text content of the typography block'),
   variant: blockTypographyVariantEnum
     .optional()
@@ -46,7 +48,10 @@ export const blockTypographyCreateInputSchema = z.object({
 }) satisfies z.ZodType<TypographyBlockCreateInput>
 
 export const blockTypographyUpdateInputSchema = z.object({
-  parentBlockId: z.string().optional().describe('ID of the parent block'),
+  parentBlockId: z
+    .string()
+    .optional()
+    .describe('ID of the parent block. The parent block must be a card block!'),
   content: z
     .string()
     .optional()

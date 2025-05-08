@@ -56,6 +56,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
           [
             'journeyUpdateMany',
             'blockCardUpdateMany',
+            'blockTypographyCreate',
             'blockTypographyUpdateMany',
             'blockRadioOptionUpdateMany',
             'blockButtonUpdateMany',
@@ -317,6 +318,22 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
                 case 'tool-invocation': {
                   const callId = part.toolInvocation.toolCallId
                   switch (part.toolInvocation.toolName) {
+                    case 'agentWebSearch': {
+                      switch (part.toolInvocation.state) {
+                        case 'call':
+                          return (
+                            <Typography
+                              key={callId}
+                              variant="body2"
+                              color="text.secondary"
+                            >
+                              {t('Searching the web...')}
+                            </Typography>
+                          )
+                        default:
+                          return null
+                      }
+                    }
                     case 'journeyGet': {
                       switch (part.toolInvocation.state) {
                         case 'call':
@@ -364,6 +381,23 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
                               />
                             </Box>
                           )
+                        default: {
+                          return null
+                        }
+                      }
+                    }
+                    case 'blockTypographyCreate': {
+                      switch (part.toolInvocation.state) {
+                        case 'result': {
+                          return (
+                            <Box>
+                              <Chip
+                                key={callId}
+                                label={t('Typography block created')}
+                              />
+                            </Box>
+                          )
+                        }
                         default: {
                           return null
                         }

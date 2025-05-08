@@ -2,7 +2,7 @@ import { blockButtonUpdateMany } from './button'
 import { blockCardUpdateMany } from './card'
 import { blockImageUpdateMany } from './image'
 import { blockRadioOptionUpdateMany } from './radioOption'
-import { blockTypographyUpdateMany } from './typography'
+import { blockTypographyCreate, blockTypographyUpdateMany } from './typography'
 import { blockVideoUpdateMany } from './video'
 
 export const tools = {
@@ -10,6 +10,7 @@ export const tools = {
   blockCardUpdateMany,
   blockImageUpdateMany,
   blockRadioOptionUpdateMany,
+  blockTypographyCreate,
   blockTypographyUpdateMany,
   blockVideoUpdateMany
 }

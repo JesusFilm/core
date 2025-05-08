@@ -1,0 +1,41 @@
+import { ApolloClient, NormalizedCacheObject, gql } from '@apollo/client'
+import { Tool, tool } from 'ai'
+import { z } from 'zod'
+
+import {
+  AiBlockTypographyCreateMutation,
+  AiBlockTypographyCreateMutationVariables
+} from '../../../../../../__generated__/AiBlockTypographyCreateMutation'
+
+import { blockTypographyCreateInputSchema } from './type'
+
+const AI_BLOCK_TYPOGRAPHY_CREATE = gql`
+  mutation AiBlockTypographyCreateMutation(
+    $input: TypographyBlockCreateInput!
+  ) {
+    typographyBlockCreate(input: $input) {
+      id
+    }
+  }
+`
+
+export function blockTypographyCreate(
+  client: ApolloClient<NormalizedCacheObject>
+): Tool {
+  return tool({
+    description: 'Create a new typography block.',
+    parameters: z.object({
+      input: blockTypographyCreateInputSchema
+    }),
+    execute: async ({ input }) => {
+      const { data } = await client.mutate<
+        AiBlockTypographyCreateMutation,
+        AiBlockTypographyCreateMutationVariables
+      >({
+        mutation: AI_BLOCK_TYPOGRAPHY_CREATE,
+        variables: { input }
+      })
+      return data?.typographyBlockCreate
+    }
+  })
+}
