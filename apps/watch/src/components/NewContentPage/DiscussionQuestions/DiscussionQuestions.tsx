@@ -1,6 +1,5 @@
 import { ReactElement, useState } from 'react'
 
-import { VideoChildFields_studyQuestions } from '../../../../__generated__/VideoChildFields'
 import MessageCircle from '@core/shared/ui/icons/MessageCircle'
 import { useTranslation } from 'next-i18next'
 
@@ -8,9 +7,10 @@ import { Question } from './Question'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
+import { VideoContentFields_studyQuestions } from '../../../../__generated__/VideoContentFields'
 
 interface DiscussionQuestionProps {
-  questions: VideoChildFields_studyQuestions[]
+  questions: VideoContentFields_studyQuestions[]
 }
 
 export function DiscussionQuestions({
@@ -80,7 +80,7 @@ export function DiscussionQuestions({
         <Box sx={{ position: 'relative' }}>
           {questions.map((q, i) => (
             <Question
-              key={q.id}
+              key={i}
               question={q.value}
               isOpen={i === openQuestion}
               onToggle={() => handleQuestionToggle(i)}
