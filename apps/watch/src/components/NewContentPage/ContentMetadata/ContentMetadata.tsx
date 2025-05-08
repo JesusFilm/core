@@ -25,9 +25,7 @@ export function ContentMetadata({
       data-testid="ChapterMetadata"
       sx={{
         zIndex: 1,
-        position: 'relative',
-        width: { xl: '60%' },
-        px: { xs: 4, sm: 6, md: 8, lg: 10, xl: 12 }
+        position: 'relative'
       }}
     >
       <Stack spacing={3}>

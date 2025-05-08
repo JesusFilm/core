@@ -13,6 +13,8 @@ import { PageWrapper } from '../PageWrapper'
 import { ContentHero } from './ContentHero'
 import { ContentMetadata } from './ContentMetadata'
 import { VideoCarousel } from './VideoCarousel'
+import { DiscussionQuestions } from './DiscussionQuestions'
+import { VideoChildFields_studyQuestions } from '../../../__generated__/VideoChildFields'
 
 export function NewContentPage(): ReactElement {
   const {
@@ -25,6 +27,7 @@ export function NewContentPage(): ReactElement {
     images,
     imageAlt,
     label,
+    studyQuestions,
     slug: videoSlug
   } = useVideo()
 
@@ -33,6 +36,17 @@ export function NewContentPage(): ReactElement {
 
   const { loading, children } = useVideoChildren(variantSlug)
   const realChildren = children.filter((video) => video.variant !== null)
+
+  const questions =
+    studyQuestions.length > 0
+      ? studyQuestions
+      : ([
+          {
+            id: 0,
+            value:
+              'If you could ask the creator of this video a question, what would it be?'
+          }
+        ] as unknown as VideoChildFields_studyQuestions[])
 
   return (
     <>
@@ -117,11 +131,23 @@ export function NewContentPage(): ReactElement {
                 containerSlug={container?.slug ?? videoSlug}
                 activeVideoId={id}
               />
-              <ContentMetadata
-                title={title[0].value}
-                description={description[0].value}
-                label={label}
-              />
+              <Box
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: { xs: '1fr', xl: '60% 40%' },
+                  flexWrap: 'wrap',
+                  zIndex: 1,
+                  gap: 10,
+                  px: { xs: 4, sm: 6, md: 8, lg: 10, xl: 12 }
+                }}
+              >
+                <ContentMetadata
+                  title={title[0].value}
+                  description={description[0].value}
+                  label={label}
+                />
+                <DiscussionQuestions questions={questions} />
+              </Box>
             </Stack>
           </Box>
         </Box>
