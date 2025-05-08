@@ -15,6 +15,10 @@ import { ContentMetadata } from './ContentMetadata'
 import { VideoCarousel } from './VideoCarousel'
 import { DiscussionQuestions } from './DiscussionQuestions'
 import { VideoChildFields_studyQuestions } from '../../../__generated__/VideoChildFields'
+import Button from '@mui/material/Button'
+
+import LinkExternal from '@core/shared/ui/icons/LinkExternal'
+import { ShareButton } from './ShareButton'
 
 export function NewContentPage(): ReactElement {
   const {
@@ -148,6 +152,17 @@ export function NewContentPage(): ReactElement {
                 />
                 <DiscussionQuestions questions={questions} />
               </Box>
+              <Stack
+                sx={{
+                  zIndex: 1,
+                  px: { xs: 4, sm: 6, md: 8, lg: 10, xl: 12 }
+                }}
+                direction="row"
+                spacing={2}
+                justifyContent="space-between"
+              >
+                <ShareButton />
+              </Stack>
             </Stack>
           </Box>
         </Box>
