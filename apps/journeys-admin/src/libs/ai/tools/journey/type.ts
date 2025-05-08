@@ -16,7 +16,6 @@ const menuButtonIconEnum = z
 export const journeyUpdateInputSchema = z.object({
   title: z.string().optional().describe('Title of the journey'),
   description: z.string().optional().describe('Description of the journey'),
-  languageId: z.string().optional().describe('Language ID of the journey'),
   themeMode: themeModeEnum.optional(),
   themeName: themeNameEnum.optional(),
   creatorDescription: z

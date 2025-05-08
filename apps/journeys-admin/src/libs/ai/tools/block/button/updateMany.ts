@@ -2,8 +2,6 @@ import { ApolloClient, NormalizedCacheObject, gql } from '@apollo/client'
 import { Tool, tool } from 'ai'
 import { z } from 'zod'
 
-import { BUTTON_FIELDS } from '@core/journeys/ui/Button/buttonFields'
-
 import {
   AiBlockButtonUpdateMutation,
   AiBlockButtonUpdateMutationVariables
@@ -12,13 +10,12 @@ import {
 import { blockButtonUpdateInputSchema } from './type'
 
 const AI_BLOCK_BUTTON_UPDATE = gql`
-  ${BUTTON_FIELDS}
   mutation AiBlockButtonUpdateMutation(
     $id: ID!
     $input: ButtonBlockUpdateInput!
   ) {
     buttonBlockUpdate(id: $id, input: $input) {
-      ...ButtonFields
+      id
     }
   }
 `

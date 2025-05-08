@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { TypographyBlockUpdateInput, TypographyAlign, TypographyColor, TypographyVariant } from "./globalTypes";
+import { TypographyBlockUpdateInput } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: AiBlockTypographyUpdateMutation
@@ -12,12 +12,6 @@ import { TypographyBlockUpdateInput, TypographyAlign, TypographyColor, Typograph
 export interface AiBlockTypographyUpdateMutation_typographyBlockUpdate {
   __typename: "TypographyBlock";
   id: string;
-  parentBlockId: string | null;
-  parentOrder: number | null;
-  align: TypographyAlign | null;
-  color: TypographyColor | null;
-  content: string;
-  variant: TypographyVariant | null;
 }
 
 export interface AiBlockTypographyUpdateMutation {

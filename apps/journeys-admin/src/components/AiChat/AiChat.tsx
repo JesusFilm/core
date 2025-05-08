@@ -49,11 +49,12 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
     credentials: 'omit',
     onFinish: (result, { usage }) => {
       setUsage(usage)
+      console.log('result', result)
       const shouldRefetch = result.parts?.some(
         (part) =>
           part.type === 'tool-invocation' &&
           [
-            'journeyUpdate',
+            'journeyUpdateMany',
             'blockTypographyUpdateMany',
             'blockRadioOptionUpdateMany',
             'blockButtonUpdateMany',

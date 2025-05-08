@@ -30,12 +30,7 @@ export function AiEditButton({ disabled }: AiEditButtonProps): ReactElement {
       >
         <AutoAwesomeIcon />
       </Fab>
-      <Grow
-        in={open}
-        style={{ transformOrigin: 'bottom left' }}
-        mountOnEnter
-        unmountOnExit
-      >
+      <Grow in={open} style={{ transformOrigin: 'bottom left' }}>
         <Card
           sx={{
             position: 'fixed',

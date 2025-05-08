@@ -1,9 +1,7 @@
-import { gql, useQuery } from '@apollo/client'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useRouter } from 'next/router'
 import {
   AuthAction,
   useUser,
@@ -23,7 +21,6 @@ import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
 function AiEditPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const router = useRouter()
   const user = useUser()
 
   const searchClient = useInstantSearchClient()
