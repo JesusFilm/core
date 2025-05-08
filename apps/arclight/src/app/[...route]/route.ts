@@ -152,7 +152,7 @@ app.get('/s/:mediaComponentId/:languageId', async (c) => {
 app.options('*', (c) => {
   c.header('Access-Control-Allow-Origin', '*')
   c.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
-  c.header('Access-Control-Allow-Headers', 'Content-Type')
+  c.header('Access-Control-Allow-Headers', '*')
   return new Response(null, { status: 204 })
 })
 
