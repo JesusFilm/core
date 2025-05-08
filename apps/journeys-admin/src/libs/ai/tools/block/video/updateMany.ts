@@ -2,8 +2,6 @@ import { ApolloClient, NormalizedCacheObject, gql } from '@apollo/client'
 import { Tool, tool } from 'ai'
 import { z } from 'zod'
 
-import { VIDEO_FIELDS } from '@core/journeys/ui/Video/videoFields'
-
 import {
   AiBlockVideoUpdateMutation,
   AiBlockVideoUpdateMutationVariables
@@ -12,13 +10,12 @@ import {
 import { blockVideoUpdateInputSchema } from './type'
 
 export const AI_BLOCK_VIDEO_UPDATE = gql`
-  ${VIDEO_FIELDS}
   mutation AiBlockVideoUpdateMutation(
     $id: ID!
     $input: VideoBlockUpdateInput!
   ) {
     videoBlockUpdate(id: $id, input: $input) {
-      ...VideoFields
+      id
     }
   }
 `

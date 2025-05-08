@@ -2,8 +2,6 @@ import { ApolloClient, NormalizedCacheObject, gql } from '@apollo/client'
 import { Tool, tool } from 'ai'
 import { z } from 'zod'
 
-import { RADIO_OPTION_FIELDS } from '@core/journeys/ui/RadioOption/radioOptionFields'
-
 import {
   AiBlockRadioOptionMutation,
   AiBlockRadioOptionMutationVariables
@@ -12,13 +10,12 @@ import {
 import { blockRadioOptionUpdateInputSchema } from './type'
 
 const AI_BLOCK_RADIO_OPTION_UPDATE = gql`
-  ${RADIO_OPTION_FIELDS}
   mutation AiBlockRadioOptionMutation(
     $id: ID!
     $input: RadioOptionBlockUpdateInput!
   ) {
     radioOptionBlockUpdate(id: $id, input: $input) {
-      ...RadioOptionFields
+      id
     }
   }
 `

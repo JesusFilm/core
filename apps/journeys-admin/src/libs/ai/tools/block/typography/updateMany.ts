@@ -2,8 +2,6 @@ import { ApolloClient, NormalizedCacheObject, gql } from '@apollo/client'
 import { Tool, tool } from 'ai'
 import { z } from 'zod'
 
-import { TYPOGRAPHY_FIELDS } from '@core/journeys/ui/Typography/typographyFields'
-
 import {
   AiBlockTypographyUpdateMutation,
   AiBlockTypographyUpdateMutationVariables
@@ -12,13 +10,12 @@ import {
 import { blockTypographyUpdateInputSchema } from './type'
 
 const AI_BLOCK_TYPOGRAPHY_UPDATE = gql`
-  ${TYPOGRAPHY_FIELDS}
   mutation AiBlockTypographyUpdateMutation(
     $id: ID!
     $input: TypographyBlockUpdateInput!
   ) {
     typographyBlockUpdate(id: $id, input: $input) {
-      ...TypographyFields
+      id
     }
   }
 `

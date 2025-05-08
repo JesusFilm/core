@@ -2,8 +2,6 @@ import { ApolloClient, NormalizedCacheObject, gql } from '@apollo/client'
 import { Tool, tool } from 'ai'
 import { z } from 'zod'
 
-import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
-
 import {
   AiBlockImageUpdateMutation,
   AiBlockImageUpdateMutationVariables
@@ -12,13 +10,12 @@ import {
 import { blockImageUpdateInputSchema } from './type'
 
 export const AI_BLOCK_IMAGE_UPDATE = gql`
-  ${IMAGE_FIELDS}
   mutation AiBlockImageUpdateMutation(
     $id: ID!
     $input: ImageBlockUpdateInput!
   ) {
     imageBlockUpdate(id: $id, input: $input) {
-      ...ImageFields
+      id
     }
   }
 `

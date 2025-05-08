@@ -2,8 +2,6 @@ import { ApolloClient, NormalizedCacheObject, gql } from '@apollo/client'
 import { Tool, tool } from 'ai'
 import { z } from 'zod'
 
-import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
-
 import {
   AiJourneyUpdateMutation,
   AiJourneyUpdateMutationVariables
@@ -12,10 +10,9 @@ import {
 import { journeyUpdateInputSchema } from './type'
 
 const AI_JOURNEY_UPDATE = gql`
-  ${JOURNEY_FIELDS}
   mutation AiJourneyUpdateMutation($id: ID!, $input: JourneyUpdateInput!) {
     journeyUpdate(id: $id, input: $input) {
-      ...JourneyFields
+      id
     }
   }
 `
