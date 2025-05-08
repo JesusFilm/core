@@ -11,10 +11,11 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { LanguageModelUsage } from 'ai'
+import noop from 'lodash/noop'
 import Image from 'next/image'
 import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import Markdown from 'react-markdown'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -71,7 +72,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
   const [openImageLibrary, setOpenImageLibrary] = useState<boolean | null>(null)
   const [openVideoLibrary, setOpenVideoLibrary] = useState<boolean | null>(null)
   const [systemPrompt, setSystemPrompt] = useState<string>('')
-  const [toolCall, setToolCall] = useState<{
+  const [clientSideToolCall, setClientSideToolCall] = useState<{
     id: string
     callback?: () => void
   } | null>(null)
@@ -109,16 +110,16 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
       toolCallId: toolCallId,
       result: result
     })
-    toolCall?.callback?.()
-    setToolCall(null)
+    clientSideToolCall?.callback?.()
+    setClientSideToolCall(null)
   }
 
   async function handleSubmit(customMessage?: string): Promise<void> {
     const message = customMessage ?? userMessage.trim()
 
     if (message === '') return
-    if (toolCall != null) {
-      handleToolCall(toolCall.id, 'cancel the previous tool call')
+    if (clientSideToolCall != null) {
+      handleToolCall(clientSideToolCall.id, 'cancel the previous tool call')
     }
 
     setUserMessage('')
@@ -161,6 +162,38 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
   const nonSystemMessages = messages
     .filter((message) => message.role !== 'system')
     .reverse()
+
+  // Effect to handle client tool invocations only once per toolCallId
+  useEffect(() => {
+    // Find the latest unhandled client-side tool invocation
+    const unhandled = nonSystemMessages
+      .flatMap((msg) => msg.parts)
+      .find((part) => {
+        if (
+          part.type === 'tool-invocation' &&
+          (part.toolInvocation.toolName === 'clientSelectImage' ||
+            part.toolInvocation.toolName === 'clientSelectVideo') &&
+          part.toolInvocation.state === 'call'
+        ) {
+          return true
+        }
+        return false
+      })
+    if (
+      unhandled &&
+      unhandled.type === 'tool-invocation' &&
+      (unhandled.toolInvocation.toolName === 'clientSelectImage' ||
+        unhandled.toolInvocation.toolName === 'clientSelectVideo') &&
+      unhandled.toolInvocation.state === 'call' &&
+      (!clientSideToolCall ||
+        clientSideToolCall.id !== unhandled.toolInvocation.toolCallId)
+    ) {
+      setClientSideToolCall({
+        id: unhandled.toolInvocation.toolCallId,
+        callback: noop
+      })
+    }
+  }, [nonSystemMessages, clientSideToolCall])
 
   return (
     <>
@@ -337,12 +370,6 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
                     case 'clientSelectImage': {
                       switch (part.toolInvocation.state) {
                         case 'call': {
-                          setToolCall({
-                            id: callId,
-                            callback: () => {
-                              setOpenImageLibrary(false)
-                            }
-                          })
                           return (
                             <Box key={callId}>
                               <Typography
@@ -357,6 +384,12 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
                                 <Button
                                   variant="outlined"
                                   onClick={() => {
+                                    setClientSideToolCall({
+                                      id: callId,
+                                      callback: () => {
+                                        setOpenImageLibrary(false)
+                                      }
+                                    })
                                     setOpenImageLibrary(true)
                                   }}
                                 >
@@ -373,7 +406,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
                     }
                     case 'clientSelectVideo': {
                       switch (part.toolInvocation.state) {
-                        case 'call':
+                        case 'call': {
                           return (
                             <Box key={callId}>
                               <Typography
@@ -388,13 +421,13 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
                                 <Button
                                   variant="outlined"
                                   onClick={() => {
-                                    setOpenVideoLibrary(true)
-                                    setToolCall({
+                                    setClientSideToolCall({
                                       id: callId,
                                       callback: () => {
                                         setOpenVideoLibrary(false)
                                       }
                                     })
+                                    setOpenVideoLibrary(true)
                                   }}
                                 >
                                   {t('Open Video Library')}
@@ -402,6 +435,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
                               </Box>
                             </Box>
                           )
+                        }
                         default: {
                           return null
                         }
@@ -532,12 +566,18 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
       <ImageLibrary
         open={openImageLibrary ?? false}
         onClose={() => {
+          if (clientSideToolCall != null) {
+            handleToolCall(
+              clientSideToolCall.id,
+              'cancel the previous tool call'
+            )
+          }
           setOpenImageLibrary(false)
         }}
         onChange={async (selectedImage) => {
-          if (toolCall != null) {
+          if (clientSideToolCall != null) {
             handleToolCall(
-              toolCall.id,
+              clientSideToolCall.id,
               `here is the image the new image. Update the old image block to this image: ${JSON.stringify(
                 selectedImage
               )}`
@@ -549,13 +589,19 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
       <VideoLibrary
         open={openVideoLibrary ?? false}
         onClose={() => {
+          if (clientSideToolCall != null) {
+            handleToolCall(
+              clientSideToolCall.id,
+              'cancel the previous tool call'
+            )
+          }
           setOpenVideoLibrary(false)
         }}
         selectedBlock={null}
         onSelect={async (selectedVideo) => {
-          if (toolCall != null) {
+          if (clientSideToolCall != null) {
             handleToolCall(
-              toolCall.id,
+              clientSideToolCall.id,
               `here is the video: ${JSON.stringify(selectedVideo)}`
             )
           }
