@@ -20,7 +20,7 @@ export function JourneyCardText({
   )?.value
 
   return (
-    <>
+    <Stack spacing={0.4}>
       <Typography
         variant="subtitle1"
         gutterBottom
@@ -40,7 +40,7 @@ export function JourneyCardText({
         direction="row"
         alignItems="center"
         spacing={1.5}
-        sx={{ width: '100%', mt: -1 }}
+        sx={{ width: '100%' }}
       >
         <Globe1Icon sx={{ fontSize: 16, color: 'secondary.light' }} />
         <Typography
@@ -69,6 +69,6 @@ export function JourneyCardText({
           <LastModifiedDate modifiedDate={journey.updatedAt} />
         </Typography>
       </Stack>
-    </>
+    </Stack>
   )
 }
