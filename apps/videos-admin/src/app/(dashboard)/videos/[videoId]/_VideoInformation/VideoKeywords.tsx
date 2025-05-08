@@ -7,6 +7,10 @@ import CircularProgress from '@mui/material/CircularProgress'
 import FormLabel from '@mui/material/FormLabel'
 import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import ListItemButton from '@mui/material/ListItemButton'
+import ListItemText from '@mui/material/ListItemText'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { graphql } from 'gql.tada'
@@ -154,6 +158,29 @@ export function VideoKeywords({
     onChange(newSelected)
   }
 
+  // Filter suggestions for inline list (optimized)
+  const suggestions = useMemo(() => {
+    if (!inputValue.trim()) return []
+    const lowerInput = inputValue.trim().toLowerCase()
+    const selectedSet = new Set(selected.map((s) => s.value.toLowerCase()))
+    return options
+      .filter(
+        (k) =>
+          !selectedSet.has(k.value.toLowerCase()) &&
+          k.value.toLowerCase().includes(lowerInput)
+      )
+      .slice(0, 10) // Limit to top 10 suggestions
+  }, [inputValue, options, selected])
+
+  // Handle suggestion click (optimized)
+  const handleSuggestionClick = (keyword: { id: string; value: string }) => {
+    if (selected.some((s) => s.id === keyword.id)) return
+    const newSelected = [...selected, keyword]
+    setSelected(newSelected)
+    onChange(newSelected)
+    setInputValue('')
+  }
+
   return (
     <>
       <FormLabel sx={{ mb: 1 }}>Keywords</FormLabel>
@@ -201,6 +228,28 @@ export function VideoKeywords({
           }}
         />
       </Box>
+      {suggestions.length > 0 && (
+        <List
+          sx={{
+            mt: 0.5,
+            mb: 1,
+            boxShadow: 1,
+            borderRadius: 1,
+            bgcolor: 'background.paper',
+            maxHeight: 200,
+            overflow: 'auto',
+            p: 0
+          }}
+        >
+          {suggestions.map((s) => (
+            <ListItem key={s.id} disablePadding>
+              <ListItemButton onClick={() => handleSuggestionClick(s)}>
+                <ListItemText primary={s.value} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+      )}
     </>
   )
 }
