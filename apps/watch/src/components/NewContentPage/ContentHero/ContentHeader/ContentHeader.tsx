@@ -2,6 +2,7 @@ import Stack from '@mui/material/Stack'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { ReactElement, useState } from 'react'
+
 import { AudioLanguageButton } from '../../../VideoContentPage/AudioLanguageButton'
 
 export function ContentHeader(): ReactElement {
