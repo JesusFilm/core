@@ -63,7 +63,7 @@ builder.mutationFields((t) => ({
 Analyze this journey content and provide the key intent, themes, and target audience.
 Also suggest ways to culturally adapt this content for the target language: ${requestedLanguageName}.
 Then, translate the following journey title and description to ${requestedLanguageName}.
-If a description is not provided, return a brief 1 sentence description of the journey.
+If a description is not provided, do not create one.
 
 The source language is: ${sourceLanguageName}.
 The target language name is: ${requestedLanguageName}.
@@ -78,7 +78,7 @@ Return in this format:
 {
   analysis: [analysis and adaptation suggestions],
   title: [translated title],
-  description: [translated description]
+  description: [translated description or empty string if no description was provided]
 }
 `
 
@@ -95,7 +95,9 @@ Return in this format:
 
           if (!analysisAndTranslation.title)
             throw new Error('Failed to translate journey title')
-          if (!analysisAndTranslation.description)
+
+          // Only validate description if the original journey had one
+          if (journey.description && !analysisAndTranslation.description)
             throw new Error('Failed to translate journey description')
 
           // Update the journey using Prisma
@@ -105,7 +107,10 @@ Return in this format:
             },
             data: {
               title: analysisAndTranslation.title,
-              description: analysisAndTranslation.description,
+              // Only update description if the original journey had one
+              ...(journey.description
+                ? { description: analysisAndTranslation.description }
+                : {}),
               languageId: input.textLanguageId
             }
           })
