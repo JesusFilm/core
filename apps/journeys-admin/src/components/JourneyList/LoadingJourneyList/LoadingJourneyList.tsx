@@ -12,18 +12,16 @@ function LoadingJourneyCard(): ReactElement {
     <Card
       variant="outlined"
       sx={{
-        aspectRatio: { xs: '1', sm: '1/1.3' },
-        borderRadius: 0,
         borderColor: 'divider',
         borderBottom: 'none',
         position: 'relative',
         display: 'flex',
         flexDirection: 'column',
         '&:last-of-type': {
-          borderBottomLeftRadius: '4%',
-          borderBottomRightRadius: '4%',
-          borderTopLeftRadius: '4%',
-          borderTopRightRadius: '4%',
+          borderBottomLeftRadius: `calc(0% + 12px)`,
+          borderBottomRightRadius: `calc(0% + 12px)`,
+          borderTopLeftRadius: `calc(0% + 12px)`,
+          borderTopRightRadius: `calc(0% + 12px)`,
           borderBottom: '1px solid',
           borderColor: 'divider'
         },
@@ -35,12 +33,12 @@ function LoadingJourneyCard(): ReactElement {
           position: 'relative',
           width: 'auto',
           aspectRatio: {
-            xs: '1.9',
+            xs: '2',
             sm: '1.43'
           },
-          mx: { xs: 3, sm: 2 },
-          mt: { xs: 3, sm: 2 },
-          borderRadius: '4%',
+          mx: { xs: 3, sm: 1.75 },
+          mt: { xs: 3, sm: 1.75 },
+          borderRadius: `calc(0% + 8px)`,
           borderWidth: 1,
           borderStyle: 'solid',
           borderColor: 'rgba(0, 0, 0, 0.05)',
@@ -64,7 +62,17 @@ function LoadingJourneyCard(): ReactElement {
           }}
         />
       </Box>
-      <CardContent sx={{ pl: 2, pr: 2, pb: 3, pt: 1 }}>
+      <CardContent
+        sx={{
+          pl: { xs: 3, sm: 2 },
+          pr: 1,
+          pt: 1,
+          height: { xs: 139, sm: 137 },
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'flex-start'
+        }}
+      >
         <Skeleton variant="text" width="100%" height={25} />
         <Skeleton variant="text" width="60%" height={25} />
       </CardContent>
