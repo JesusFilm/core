@@ -1,5 +1,10 @@
+import { LoadingButton } from '@mui/lab'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import CircularProgress from '@mui/material/CircularProgress'
 import { Theme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
@@ -157,32 +162,67 @@ export function TranslateJourneyDialog({
     <Dialog
       open={open}
       onClose={onClose}
-      dialogTitle={{ title: t('Create Translated Copy'), closeButton: true }}
-      dialogAction={{
-        onSubmit: handleTranslate,
-        submitLabel: t('Create'),
-        closeLabel: t('Cancel')
+      dialogTitle={{
+        title: t('Create Translated Copy'),
+        closeButton: !loading
       }}
-      loading={loading}
+      dialogActionChildren={
+        <>
+          {!loading ? (
+            <>
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={onClose}
+                disabled={loading}
+                sx={{ mr: 3 }}
+              >
+                {t('Cancel')}
+              </Button>
+              <LoadingButton
+                variant="contained"
+                color="secondary"
+                onClick={handleTranslate}
+                loading={loading}
+              >
+                {t('Create')}
+              </LoadingButton>
+            </>
+          ) : (
+            <Button variant="outlined" color="secondary" onClick={onClose}>
+              {t('Cancel')}
+            </Button>
+          )}
+        </>
+      }
       testId="TranslateJourneyDialog"
     >
-      <LanguageAutocomplete
-        onChange={async (value) => setSelectedLanguage(value)}
-        value={selectedLanguage}
-        languages={languagesData?.languages}
-        loading={languagesLoading}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            placeholder={t('Search Language')}
-            label={t('Select Language')}
-            variant="filled"
-          />
-        )}
-        popper={{
-          placement: !smUp ? 'top' : 'bottom'
-        }}
-      />
+      {loading ? (
+        <Box display="flex" flexDirection="column" alignItems="center" p={3}>
+          <CircularProgress color="secondary" />
+          <Typography variant="body1" mt={2}>
+            {t('Translating your journey...')}
+          </Typography>
+        </Box>
+      ) : (
+        <LanguageAutocomplete
+          onChange={async (value) => setSelectedLanguage(value)}
+          value={selectedLanguage}
+          languages={languagesData?.languages}
+          loading={languagesLoading}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              placeholder={t('Search Language')}
+              label={t('Select Language')}
+              variant="filled"
+            />
+          )}
+          popper={{
+            placement: !smUp ? 'top' : 'bottom'
+          }}
+        />
+      )}
     </Dialog>
   )
 }
