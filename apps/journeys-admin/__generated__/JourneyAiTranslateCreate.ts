@@ -14,6 +14,7 @@ export interface JourneyAiTranslateCreate {
 export interface JourneyAiTranslateCreateVariables {
   journeyId: string;
   name: string;
+  journeyLanguageName: string;
   textLanguageId: string;
-  videoLanguageId?: string | null;
+  textLanguageName: string;
 }

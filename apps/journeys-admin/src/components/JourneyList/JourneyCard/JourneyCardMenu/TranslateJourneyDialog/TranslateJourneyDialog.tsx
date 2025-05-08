@@ -118,8 +118,12 @@ export function TranslateJourneyDialog({
         const jobId = await translateJourney({
           journeyId: duplicateData.journeyDuplicate.id,
           name: `${journeyData.title} (${selectedLanguage.nativeName ?? selectedLanguage.localName})`,
+          journeyLanguageName:
+            journeyData.language.name.find(({ primary }) => !primary)?.value ??
+            '',
           textLanguageId: selectedLanguage.id,
-          videoLanguageId: null // Optional
+          textLanguageName:
+            selectedLanguage.nativeName ?? selectedLanguage.localName ?? ''
         })
 
         if (jobId) {

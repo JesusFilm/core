@@ -10,7 +10,9 @@ import {
 const variables = {
   journeyId: 'journey-123',
   name: 'Translated Journey',
-  textLanguageId: 'es-419'
+  journeyLanguageName: 'English',
+  textLanguageId: 'es-419',
+  textLanguageName: 'Spanish'
 }
 
 const data = {

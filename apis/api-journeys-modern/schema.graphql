@@ -57,8 +57,9 @@ type Mutation {
 input MutationJourneyAiTranslateCreateInput {
   journeyId: ID!
   name: String!
+  journeyLanguageName: String!
   textLanguageId: ID!
-  videoLanguageId: ID
+  textLanguageName: String!
 }
 
 type MuxVideo
