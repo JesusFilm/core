@@ -216,6 +216,14 @@ Field names to translate per block type:
 
 Ensure translations maintain the meaning while being culturally appropriate for ${requestedLanguageName}.
 Keep translations concise and effective for UI context (e.g., button labels should remain short).
+
+If you are in the process of translating and you recognize passages from the
+Bible you should not translate that content. Instead, you should rely on a Bible
+translation available in ${requestedLanguageName} and use that content directly. 
+You must never make changes to content from the Bible yourself. 
+If there is no Bible translation available in ${requestedLanguageName}, 
+use the the most popular English Bible translation available. 
+You should inform the user about which Bible translation you chose to use.
 `
                 try {
                   // Stream the translations
