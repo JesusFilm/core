@@ -162,10 +162,14 @@ export function TranslateJourneyDialog({
     <Dialog
       open={open}
       onClose={onClose}
-      dialogTitle={{
-        title: t('Create Translated Copy'),
-        closeButton: !loading
-      }}
+      dialogTitle={
+        !loading
+          ? {
+              title: t('Create Translated Copy'),
+              closeButton: true
+            }
+          : undefined
+      }
       dialogActionChildren={
         <>
           {!loading ? (
