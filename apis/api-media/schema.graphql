@@ -168,6 +168,7 @@ type Mutation {
   bibleCitationCreate(input: MutationBibleCitationCreateInput!): BibleCitation
   bibleCitationUpdate(input: MutationBibleCitationUpdateInput!): BibleCitation
   bibleCitationDelete(id: ID!): Boolean
+  createKeyword(value: String!, languageId: String!): Keyword!
   createMuxVideoUploadByFile(name: String!, userGenerated: Boolean): MuxVideo!
   createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean): MuxVideo!
   enableMuxDownload(id: ID!, resolution: String): MuxVideo
@@ -947,6 +948,7 @@ input VideoUpdateInput {
   slug: String
   noIndex: Boolean
   childIds: [String!]
+  keywordIds: [String!]
 }
 
 type VideoVariant {

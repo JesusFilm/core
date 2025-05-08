@@ -24,6 +24,8 @@ import { CancelButton } from '../../../../../components/CancelButton'
 import { SaveButton } from '../../../../../components/SaveButton'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
 
+import { VideoKeywords } from './VideoKeywords'
+
 const videoStatuses = [
   { label: 'Published', value: 'published' },
   { label: 'Draft', value: 'unpublished' }
@@ -51,6 +53,11 @@ export const GET_VIDEO_INFORMATION = graphql(`
       label
       published
       slug
+      primaryLanguageId
+      keywords(languageId: $languageId) {
+        id
+        value
+      }
       title(languageId: $languageId) {
         id
         value
@@ -152,7 +159,8 @@ export function VideoInformation({
           id: videoId,
           slug: values.url,
           published: values.published === 'published',
-          label: values.label
+          label: values.label,
+          keywordIds: values.keywords.map((k) => k.id)
         },
         titleInput: {
           id: titleId,
@@ -181,7 +189,8 @@ export function VideoInformation({
         url: data.adminVideo.slug,
         published:
           data.adminVideo.published === true ? 'published' : 'unpublished',
-        label: data.adminVideo.label ?? ''
+        label: data.adminVideo.label ?? '',
+        keywords: data.adminVideo.keywords ?? []
       }}
       onSubmit={handleUpdateVideoInformation}
       validationSchema={validationSchema}
@@ -316,6 +325,13 @@ export function VideoInformation({
                 </Button>
               </Box>
             </Stack>
+            <VideoKeywords
+              primaryLanguageId={data.adminVideo.primaryLanguageId}
+              initialKeywords={values.keywords}
+              onChange={(keywords) =>
+                handleChange({ target: { name: 'keywords', value: keywords } })
+              }
+            />
             <Divider sx={{ mx: -4 }} />
             <Stack direction="row" justifyContent="flex-end" gap={1}>
               <CancelButton show={dirty} handleCancel={() => resetForm()} />
