@@ -1,30 +1,25 @@
 import { z } from 'zod'
 
+import { BlockFields_TypographyBlock } from '../../../../../../__generated__/BlockFields'
+import {
+  TypographyAlign,
+  TypographyBlockCreateInput,
+  TypographyBlockUpdateInput,
+  TypographyColor,
+  TypographyVariant
+} from '../../../../../../__generated__/globalTypes'
 import { blockSchema } from '../type'
 
 export const blockTypographyVariantEnum = z
-  .enum([
-    'h1',
-    'h2',
-    'h3',
-    'h4',
-    'h5',
-    'h6',
-    'subtitle1',
-    'subtitle2',
-    'body1',
-    'body2',
-    'caption',
-    'overline'
-  ])
+  .nativeEnum(TypographyVariant)
   .describe('Typography style variants corresponding to MUI typography styles')
 
 export const blockTypographyColorEnum = z
-  .enum(['primary', 'secondary', 'error'])
+  .nativeEnum(TypographyColor)
   .describe('Color options for the typography')
 
 export const blockTypographyAlignEnum = z
-  .enum(['left', 'center', 'right'])
+  .nativeEnum(TypographyAlign)
   .describe('Text alignment options')
 
 export const blockTypographySchema = blockSchema.extend({
@@ -32,11 +27,11 @@ export const blockTypographySchema = blockSchema.extend({
   __typename: z.literal('TypographyBlock'),
   content: z.string().describe('Text content of the typography block'),
   variant: blockTypographyVariantEnum
-    .optional()
+    .nullable()
     .describe('Typography style variant'),
-  color: blockTypographyColorEnum.optional().describe('Color of the text'),
-  align: blockTypographyAlignEnum.optional().describe('Text alignment')
-})
+  color: blockTypographyColorEnum.nullable().describe('Color of the text'),
+  align: blockTypographyAlignEnum.nullable().describe('Text alignment')
+}) satisfies z.ZodType<BlockFields_TypographyBlock>
 
 export const blockTypographyCreateInputSchema = z.object({
   id: z.string().optional().describe('Optional ID for the new block'),
@@ -48,7 +43,7 @@ export const blockTypographyCreateInputSchema = z.object({
     .describe('Typography style variant'),
   color: blockTypographyColorEnum.optional().describe('Color of the text'),
   align: blockTypographyAlignEnum.optional().describe('Text alignment')
-})
+}) satisfies z.ZodType<TypographyBlockCreateInput>
 
 export const blockTypographyUpdateInputSchema = z.object({
   parentBlockId: z.string().optional().describe('ID of the parent block'),
@@ -61,4 +56,4 @@ export const blockTypographyUpdateInputSchema = z.object({
     .describe('Typography style variant'),
   color: blockTypographyColorEnum.optional().describe('Color of the text'),
   align: blockTypographyAlignEnum.optional().describe('Text alignment')
-})
+}) satisfies z.ZodType<TypographyBlockUpdateInput>

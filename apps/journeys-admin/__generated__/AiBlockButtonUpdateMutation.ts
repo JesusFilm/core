@@ -6,33 +6,33 @@
 import { ButtonBlockUpdateInput, ButtonVariant, ButtonColor, ButtonSize } from "./globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: AIButtonUpdate
+// GraphQL mutation operation: AiBlockButtonUpdateMutation
 // ====================================================
 
-export interface AIButtonUpdate_buttonBlockUpdate_action_NavigateToBlockAction {
+export interface AiBlockButtonUpdateMutation_buttonBlockUpdate_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface AIButtonUpdate_buttonBlockUpdate_action_LinkAction {
+export interface AiBlockButtonUpdateMutation_buttonBlockUpdate_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export interface AIButtonUpdate_buttonBlockUpdate_action_EmailAction {
+export interface AiBlockButtonUpdateMutation_buttonBlockUpdate_action_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
 
-export type AIButtonUpdate_buttonBlockUpdate_action = AIButtonUpdate_buttonBlockUpdate_action_NavigateToBlockAction | AIButtonUpdate_buttonBlockUpdate_action_LinkAction | AIButtonUpdate_buttonBlockUpdate_action_EmailAction;
+export type AiBlockButtonUpdateMutation_buttonBlockUpdate_action = AiBlockButtonUpdateMutation_buttonBlockUpdate_action_NavigateToBlockAction | AiBlockButtonUpdateMutation_buttonBlockUpdate_action_LinkAction | AiBlockButtonUpdateMutation_buttonBlockUpdate_action_EmailAction;
 
-export interface AIButtonUpdate_buttonBlockUpdate {
+export interface AiBlockButtonUpdateMutation_buttonBlockUpdate {
   __typename: "ButtonBlock";
   id: string;
   parentBlockId: string | null;
@@ -44,14 +44,14 @@ export interface AIButtonUpdate_buttonBlockUpdate {
   startIconId: string | null;
   endIconId: string | null;
   submitEnabled: boolean | null;
-  action: AIButtonUpdate_buttonBlockUpdate_action | null;
+  action: AiBlockButtonUpdateMutation_buttonBlockUpdate_action | null;
 }
 
-export interface AIButtonUpdate {
-  buttonBlockUpdate: AIButtonUpdate_buttonBlockUpdate | null;
+export interface AiBlockButtonUpdateMutation {
+  buttonBlockUpdate: AiBlockButtonUpdateMutation_buttonBlockUpdate | null;
 }
 
-export interface AIButtonUpdateVariables {
+export interface AiBlockButtonUpdateMutationVariables {
   id: string;
   input: ButtonBlockUpdateInput;
 }

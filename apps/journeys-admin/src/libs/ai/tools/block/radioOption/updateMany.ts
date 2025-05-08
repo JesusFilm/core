@@ -4,11 +4,16 @@ import { z } from 'zod'
 
 import { RADIO_OPTION_FIELDS } from '@core/journeys/ui/RadioOption/radioOptionFields'
 
+import {
+  AiBlockRadioOptionMutation,
+  AiBlockRadioOptionMutationVariables
+} from '../../../../../../__generated__/AiBlockRadioOptionMutation'
+
 import { blockRadioOptionUpdateInputSchema } from './type'
 
 const AI_BLOCK_RADIO_OPTION_UPDATE = gql`
   ${RADIO_OPTION_FIELDS}
-  mutation AiBlockRadioOptionUpdate(
+  mutation AiBlockRadioOptionMutation(
     $id: ID!
     $input: RadioOptionBlockUpdateInput!
   ) {
@@ -36,11 +41,14 @@ export function blockRadioOptionUpdateMany(
     execute: async ({ blocks }) => {
       const results = await Promise.all(
         blocks.map(async ({ id, input }) => {
-          const { data } = await client.mutate({
+          const { data } = await client.mutate<
+            AiBlockRadioOptionMutation,
+            AiBlockRadioOptionMutationVariables
+          >({
             mutation: AI_BLOCK_RADIO_OPTION_UPDATE,
             variables: { id, input }
           })
-          return data.radioOptionBlockUpdate
+          return data?.radioOptionBlockUpdate
         })
       )
       return results

@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+import { ImageBlockUpdateInput } from '../../../../../../__generated__/globalTypes'
+
 export const blockImageUpdateInputSchema = z.object({
   parentBlockId: z
     .string()
@@ -42,4 +44,4 @@ export const blockImageUpdateInputSchema = z.object({
     .nullable()
     .optional()
     .describe('The focal point position from the left (percentage)')
-})
+}) satisfies z.ZodType<ImageBlockUpdateInput>

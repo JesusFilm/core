@@ -6,12 +6,10 @@ export const blockSchema = z.object({
   parentBlockId: z
     .string()
     .nullable()
-    .optional()
     .describe('ID of the parent block, if any'),
   parentOrder: z
     .number()
     .int()
     .nullable()
-    .optional()
     .describe('Order position within the parent block')
 })

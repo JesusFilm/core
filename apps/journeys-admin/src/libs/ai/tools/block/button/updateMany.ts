@@ -4,11 +4,19 @@ import { z } from 'zod'
 
 import { BUTTON_FIELDS } from '@core/journeys/ui/Button/buttonFields'
 
+import {
+  AiBlockButtonUpdateMutation,
+  AiBlockButtonUpdateMutationVariables
+} from '../../../../../../__generated__/AiBlockButtonUpdateMutation'
+
 import { blockButtonUpdateInputSchema } from './type'
 
 const AI_BLOCK_BUTTON_UPDATE = gql`
   ${BUTTON_FIELDS}
-  mutation AiBlockButtonUpdate($id: ID!, $input: ButtonBlockUpdateInput!) {
+  mutation AiBlockButtonUpdateMutation(
+    $id: ID!
+    $input: ButtonBlockUpdateInput!
+  ) {
     buttonBlockUpdate(id: $id, input: $input) {
       ...ButtonFields
     }
@@ -31,11 +39,14 @@ export function blockButtonUpdateMany(
     execute: async ({ blocks }) => {
       const results = await Promise.all(
         blocks.map(async ({ id, input }) => {
-          const { data } = await client.mutate({
+          const { data } = await client.mutate<
+            AiBlockButtonUpdateMutation,
+            AiBlockButtonUpdateMutationVariables
+          >({
             mutation: AI_BLOCK_BUTTON_UPDATE,
             variables: { id, input }
           })
-          return data.buttonBlockUpdate
+          return data?.buttonBlockUpdate
         })
       )
       return results

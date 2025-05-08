@@ -4,11 +4,16 @@ import { z } from 'zod'
 
 import { TYPOGRAPHY_FIELDS } from '@core/journeys/ui/Typography/typographyFields'
 
+import {
+  AiBlockTypographyUpdateMutation,
+  AiBlockTypographyUpdateMutationVariables
+} from '../../../../../../__generated__/AiBlockTypographyUpdateMutation'
+
 import { blockTypographyUpdateInputSchema } from './type'
 
 const AI_BLOCK_TYPOGRAPHY_UPDATE = gql`
   ${TYPOGRAPHY_FIELDS}
-  mutation AiBlockTypographyUpdate(
+  mutation AiBlockTypographyUpdateMutation(
     $id: ID!
     $input: TypographyBlockUpdateInput!
   ) {
@@ -34,11 +39,14 @@ export function blockTypographyUpdateMany(
     execute: async ({ blocks }) => {
       const results = await Promise.all(
         blocks.map(async ({ id, input }) => {
-          const { data } = await client.mutate({
+          const { data } = await client.mutate<
+            AiBlockTypographyUpdateMutation,
+            AiBlockTypographyUpdateMutationVariables
+          >({
             mutation: AI_BLOCK_TYPOGRAPHY_UPDATE,
             variables: { id, input }
           })
-          return data.typographyBlockUpdate
+          return data?.typographyBlockUpdate
         })
       )
       return results
