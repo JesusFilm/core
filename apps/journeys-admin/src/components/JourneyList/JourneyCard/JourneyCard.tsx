@@ -70,17 +70,16 @@ export function JourneyCard({
       aria-label="journey-card"
       variant="outlined"
       sx={{
-        borderRadius: 0,
         borderColor: 'divider',
         borderBottom: 'none',
         position: 'relative',
         display: 'flex',
         flexDirection: 'column',
         '&:last-of-type': {
-          borderBottomLeftRadius: '4%',
-          borderBottomRightRadius: '4%',
-          borderTopLeftRadius: '4%',
-          borderTopRightRadius: '4%',
+          borderBottomLeftRadius: `calc(0% + 12px)`,
+          borderBottomRightRadius: `calc(0% + 12px)`,
+          borderTopLeftRadius: `calc(0% + 12px)`,
+          borderTopRightRadius: `calc(0% + 12px)`,
           borderBottom: '1px solid',
           borderColor: 'divider'
         },
@@ -113,13 +112,19 @@ export function JourneyCard({
           <CardActionArea
             disabled={isNavigating}
             sx={{
-              borderRadius: 0,
               opacity: isNavigating ? 0.5 : 1,
               flex: 1
             }}
           >
             {variant === JourneyCardVariant.new && (
-              <Box sx={{ position: 'absolute', top: 12, left: 15, zIndex: 1 }}>
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: { xs: 16, sm: 12 },
+                  left: { xs: 20, sm: 15 },
+                  zIndex: 1
+                }}
+              >
                 <Chip
                   label={t('New')}
                   size="small"
@@ -147,7 +152,7 @@ export function JourneyCard({
                 },
                 mx: { xs: 3, sm: 1.75 },
                 mt: { xs: 3, sm: 1.75 },
-                borderRadius: '4%',
+                borderRadius: `calc(0% + 8px)`,
                 borderWidth: 1,
                 borderStyle: 'solid',
                 borderColor: 'rgba(0, 0, 0, 0.05)',
@@ -186,15 +191,17 @@ export function JourneyCard({
                 }}
               />
             </Box>
-            <CardContent sx={{ 
-              pl: { xs: 3, sm: 2 }, 
-              pr: 1, 
-              pt: 1,
-              height: { xs: 139, sm: 137 }, // Fixed height to accommodate both one and two line titles
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'flex-start'
-            }}>
+            <CardContent
+              sx={{
+                pl: { xs: 3, sm: 2 },
+                pr: 1,
+                pt: 1,
+                height: { xs: 139, sm: 137 }, // Fixed height to accommodate both one and two line titles
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'flex-start'
+              }}
+            >
               <JourneyCardText journey={journey} />
             </CardContent>
           </CardActionArea>
