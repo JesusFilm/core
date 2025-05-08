@@ -61,7 +61,27 @@ app.get('/hls/:mediaComponentId/:languageId', async (c) => {
     if (!variant.hls) {
       return c.json({ error: 'HLS URL not available' }, 404)
     }
-    return c.redirect(variant.hls)
+
+    // Follow redirects and get the final URL
+    const response = await fetch(variant.hls, {
+      redirect: 'follow',
+      headers: {
+        Origin: c.req.header('origin') || '*',
+        Referer: c.req.header('referer') || '*'
+      }
+    })
+
+    // Get the final URL after redirects
+    const finalUrl = response.url
+
+    // Set CORS headers
+    c.header('Access-Control-Allow-Origin', '*')
+    c.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+    c.header('Access-Control-Allow-Headers', '*')
+    c.header('Access-Control-Expose-Headers', '*')
+
+    // Return the final URL instead of the content
+    return c.json({ url: finalUrl })
   } catch (error) {
     if (error instanceof HTTPException) {
       return c.json({ error: error.message }, error.status)
@@ -127,6 +147,13 @@ app.get('/s/:mediaComponentId/:languageId', async (c) => {
     }
     return c.json({ error: 'Internal server error' }, 500)
   }
+})
+
+app.options('*', (c) => {
+  c.header('Access-Control-Allow-Origin', '*')
+  c.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+  c.header('Access-Control-Allow-Headers', 'Content-Type')
+  return new Response(null, { status: 204 })
 })
 
 export const GET = handle(app)
