@@ -132,12 +132,9 @@ export function TranslateJourneyDialog({
         })
 
         if (jobId) {
-          enqueueSnackbar(
-            t('Translation started. You will be notified when it completes.'),
-            {
-              variant: 'success'
-            }
-          )
+          enqueueSnackbar(t('Translation complete'), {
+            variant: 'success'
+          })
           onClose()
         } else {
           throw new Error('Failed to start translation')
