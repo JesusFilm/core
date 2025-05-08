@@ -100,8 +100,13 @@ export function LoadingJourneyList({
 }: LoadingJourneyListProps): ReactElement {
   return (
     <>
-      <Box sx={{ mt: 5 }}>
-        <Grid container spacing={5} rowSpacing={5}>
+      <Box
+        sx={{
+          mt: { xs: 3, sm: 2 },
+          px: { xs: 5, sm: 0 }
+        }}
+      >
+        <Grid container spacing={4} rowSpacing={{ xs: 2.5, sm: 4 }}>
           {[0, 1, 2].map((index) => (
             <Grid
               key={`journeyCard${index}`}
