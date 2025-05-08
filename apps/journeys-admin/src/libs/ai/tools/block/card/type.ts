@@ -7,7 +7,7 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../__generated__/globalTypes'
-import { actionSchema } from '../../action/type'
+import { actionSchema } from '../action/type'
 import { blockSchema } from '../type'
 
 export const themeModeEnum = z.nativeEnum(ThemeMode)

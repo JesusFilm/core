@@ -8,7 +8,7 @@ import {
   ButtonSize,
   ButtonVariant
 } from '../../../../../../__generated__/globalTypes'
-import { actionSchema } from '../../action/type'
+import { actionSchema } from '../action/type'
 import { blockSchema } from '../type'
 
 export const buttonVariantEnum = z.nativeEnum(ButtonVariant)
@@ -16,6 +16,9 @@ export const buttonColorEnum = z.nativeEnum(ButtonColor)
 export const buttonSizeEnum = z.nativeEnum(ButtonSize)
 
 export const blockButtonSchema = blockSchema.extend({
+  parentBlockId: z
+    .string()
+    .describe('ID of the parent block. The parent block must be a card block!'),
   label: z.string().describe('Label for the button'),
   buttonVariant: buttonVariantEnum.nullable().describe('Variant of the button'),
   buttonColor: buttonColorEnum.nullable().describe('Color of the button'),
@@ -32,23 +35,24 @@ export const blockButtonCreateInputSchema = blockButtonSchema
     journeyId: true,
     parentBlockId: true,
     label: true,
-    buttonColor: true,
-    buttonVariant: true,
     size: true,
     submitEnabled: true
   })
   .extend({
-    parentBlockId: z.string().describe('ID of the parent block'),
+    parentBlockId: z
+      .string()
+      .describe(
+        'ID of the parent block. The parent block must be a card block!'
+      ),
     variant: buttonVariantEnum
       .nullable()
       .optional()
-      .describe('Variant of the button')
+      .describe('Variant of the button'),
+    color: buttonColorEnum.nullable().optional().describe('Color of the button')
   }) satisfies z.ZodType<ButtonBlockCreateInput>
 
 export const blockButtonUpdateInputSchema = blockButtonSchema
   .pick({
-    buttonVariant: true,
-    buttonColor: true,
     size: true,
     startIconId: true,
     endIconId: true,
@@ -61,4 +65,14 @@ export const blockButtonUpdateInputSchema = blockButtonSchema
         parentBlockId: true
       })
       .partial()
-  ) satisfies z.ZodType<ButtonBlockUpdateInput>
+  )
+  .extend({
+    color: buttonColorEnum
+      .nullable()
+      .optional()
+      .describe('Color of the button'),
+    variant: buttonVariantEnum
+      .nullable()
+      .optional()
+      .describe('Variant of the button')
+  }) satisfies z.ZodType<ButtonBlockUpdateInput>

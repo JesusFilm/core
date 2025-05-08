@@ -5,11 +5,8 @@ import {
   ActionFields_EmailAction,
   ActionFields_LinkAction,
   ActionFields_NavigateToBlockAction
-} from '../../../../../__generated__/ActionFields'
-import {
-  EmailActionInput,
-  LinkActionInput
-} from '../../../../../__generated__/globalTypes'
+} from '../../../../../../__generated__/ActionFields'
+import { BlockUpdateActionInput } from '../../../../../../__generated__/globalTypes'
 
 export const actionBaseSchema = z.object({
   parentBlockId: z.string().describe('ID of the parent block'),
@@ -38,33 +35,32 @@ export const actionSchema = z.union([
   actionEmailSchema
 ]) satisfies z.ZodType<ActionFields>
 
-export const actionNavigateToBlockInputSchema = actionNavigateToBlockSchema
-  .pick({
-    gtmEventName: true,
-    blockId: true
-  })
-  .partial()
-  .required({
-    blockId: true
-  })
-
-export const actionLinkInputSchema = actionLinkSchema
-  .pick({
-    gtmEventName: true,
-    url: true,
-    target: true
-  })
-  .partial()
-  .required({
-    url: true
-  }) satisfies z.ZodType<LinkActionInput>
-
-export const actionEmailInputSchema = actionEmailSchema
-  .pick({
-    gtmEventName: true,
-    email: true
-  })
-  .partial()
-  .required({
-    email: true
-  }) satisfies z.ZodType<EmailActionInput>
+export const blockActionUpdateInputSchema = z.object({
+  gtmEventName: z
+    .string()
+    .describe('Google Tag Manager event name for analytics.'),
+  email: z
+    .string()
+    .optional()
+    .describe(
+      'Email to send to. If this is provided, you must not provide the url, target and blockId fields'
+    ),
+  url: z
+    .string()
+    .optional()
+    .describe(
+      'URL to navigate to. If this is provided, you must not provide the email, blockId. You must also provide a target.'
+    ),
+  target: z
+    .string()
+    .optional()
+    .describe(
+      'Target of the link like _blank, _self, etc. If this is provided, you must not provide the email, blockId. You must also provide a url.'
+    ),
+  blockId: z
+    .string()
+    .optional()
+    .describe(
+      'ID of the block to navigate to. If this is provided, you must not provide the email, url and target fields.'
+    )
+}) satisfies z.ZodType<BlockUpdateActionInput>

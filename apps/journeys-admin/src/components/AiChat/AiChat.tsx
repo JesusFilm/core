@@ -386,6 +386,23 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
                         }
                       }
                     }
+                    case 'blockButtonCreate': {
+                      switch (part.toolInvocation.state) {
+                        case 'result': {
+                          return (
+                            <Box>
+                              <Chip
+                                key={callId}
+                                label={t('Button block created')}
+                              />
+                            </Box>
+                          )
+                        }
+                        default: {
+                          return null
+                        }
+                      }
+                    }
                     case 'blockTypographyCreate': {
                       switch (part.toolInvocation.state) {
                         case 'result': {

@@ -5,7 +5,7 @@ import {
   RadioOptionBlockCreateInput,
   RadioOptionBlockUpdateInput
 } from '../../../../../../__generated__/globalTypes'
-import { actionSchema } from '../../action/type'
+import { actionSchema } from '../action/type'
 import { blockSchema } from '../type'
 
 export const blockRadioOptionSchema = blockSchema.extend({

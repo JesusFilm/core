@@ -9,7 +9,7 @@ import {
   VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../../../../__generated__/globalTypes'
-import { actionSchema } from '../../action/type'
+import { actionSchema } from '../action/type'
 
 export const blockVideoSourceEnum = z
   .nativeEnum(VideoBlockSource)
