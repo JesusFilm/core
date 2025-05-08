@@ -56,7 +56,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
             'blockTypographyUpdateMany',
             'blockRadioOptionUpdateMany',
             'blockButtonUpdateMany',
-            'blockImageUpdate',
+            'blockImageUpdateMany',
             'blockVideoUpdateMany'
           ].includes(part.toolInvocation.toolName)
       )
@@ -96,7 +96,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
 
     if (journey == null) return systemPromptWithContext
 
-    systemPromptWithContext = `${systemPromptWithContext}\n\nThe current journey ID is ${journey?.id}. You can use this to get the journey and update it. RUN THE GET JOURNEY TOOL FIRST IF YOU DO NOT HAVE THE JOURNEY ALREADY.`
+    systemPromptWithContext = `${systemPromptWithContext}\n\nThe current journey ID is ${journey?.id}. You can use this to get the journey and update it. RUN THE GET JOURNEY TOOL FIRST IF YOU DO NOT HAVE THE JOURNEY ALREADY. \n\n ${JSON.stringify(journey)}`
 
     if (selectedStepId != null)
       systemPromptWithContext = `${systemPromptWithContext}\n\nThe current step ID is ${selectedStepId}. You can use this to get the step and update it.`
@@ -336,7 +336,13 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
                     }
                     case 'clientSelectImage': {
                       switch (part.toolInvocation.state) {
-                        case 'call':
+                        case 'call': {
+                          setToolCall({
+                            id: callId,
+                            callback: () => {
+                              setOpenImageLibrary(false)
+                            }
+                          })
                           return (
                             <Box key={callId}>
                               <Typography
@@ -352,12 +358,6 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
                                   variant="outlined"
                                   onClick={() => {
                                     setOpenImageLibrary(true)
-                                    setToolCall({
-                                      id: callId,
-                                      callback: () => {
-                                        setOpenImageLibrary(false)
-                                      }
-                                    })
                                   }}
                                 >
                                   {t('Open Image Library')}
@@ -365,6 +365,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
                               </Box>
                             </Box>
                           )
+                        }
                         default: {
                           return null
                         }
@@ -420,7 +421,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
                           )
                         case 'result':
                           return (
-                            <Box>
+                            <Stack gap={2}>
                               <Chip
                                 key={callId}
                                 label={t('Image generated')}
@@ -429,8 +430,10 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
                               <Image
                                 src={part.toolInvocation.result.imageSrc}
                                 alt="Generated image"
+                                width={100}
+                                height={100}
                               />
-                            </Box>
+                            </Stack>
                           )
                         default: {
                           return null
