@@ -261,7 +261,8 @@ Keep translations concise and effective for UI context (e.g., button labels shou
                               }
                               await prisma.block.update({
                                 where: {
-                                  id: cleanBlockId
+                                  id: cleanBlockId,
+                                  journeyId: input.journeyId
                                 },
                                 data: item.updates
                               })
