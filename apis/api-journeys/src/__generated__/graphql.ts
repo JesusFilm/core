@@ -2386,9 +2386,10 @@ export type MutationBibleCitationUpdateInput = {
 
 export type MutationJourneyAiTranslateCreateInput = {
   journeyId: Scalars['ID']['input'];
+  journeyLanguageName: Scalars['String']['input'];
   name: Scalars['String']['input'];
   textLanguageId: Scalars['ID']['input'];
-  videoLanguageId?: InputMaybe<Scalars['ID']['input']>;
+  textLanguageName: Scalars['String']['input'];
 };
 
 export type MutationShortLinkCreateInput = {

@@ -4284,8 +4284,9 @@ input JourneyEventsExportLogInput @join__type(graph: API_JOURNEYS_MODERN)  {
 input MutationJourneyAiTranslateCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   journeyId: ID!
   name: String!
+  journeyLanguageName: String!
   textLanguageId: ID!
-  videoLanguageId: ID
+  textLanguageName: String!
 }
 
 input LanguagesFilter @join__type(graph: API_LANGUAGES)  {

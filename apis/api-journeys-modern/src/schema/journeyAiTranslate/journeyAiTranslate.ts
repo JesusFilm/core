@@ -1,6 +1,4 @@
 import { google } from '@ai-sdk/google'
-import { ApolloClient, createHttpLink } from '@apollo/client'
-import { InMemoryCache } from '@apollo/client/cache'
 import { generateObject, streamObject } from 'ai'
 import { z } from 'zod'
 
@@ -8,7 +6,6 @@ import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
 import { getCardBlocksContent } from './getCardBlocksContent'
-import { getLanguageName } from './getLanguageName'
 
 builder.mutationFields((t) => ({
   journeyAiTranslateCreate: t
@@ -17,28 +14,14 @@ builder.mutationFields((t) => ({
       input: {
         journeyId: t.input.id({ required: true }),
         name: t.input.string({ required: true }),
+        journeyLanguageName: t.input.string({ required: true }),
         textLanguageId: t.input.id({ required: true }),
-        videoLanguageId: t.input.id({ required: false })
+        textLanguageName: t.input.string({ required: true })
       },
       type: 'ID',
       nullable: false,
       resolve: async (_root, { input }, { user }) => {
-        // TODO: check if user has write access \
-        // Create Apollo client
-        const httpLink = createHttpLink({
-          uri: process.env.GATEWAY_URL,
-          headers: {
-            'interop-token': process.env.INTEROP_TOKEN ?? '',
-            'x-graphql-client-name': 'api-journeys-modern',
-            'x-graphql-client-version': process.env.SERVICE_VERSION ?? ''
-          }
-        })
-
-        const apollo = new ApolloClient({
-          link: httpLink,
-          cache: new InMemoryCache()
-        })
-
+        // TODO: check if user has write access
         // 1. First get the journey details using Prisma
         const journey = await prisma.journey.findUnique({
           where: {
@@ -54,18 +37,8 @@ builder.mutationFields((t) => ({
         }
 
         // 2. Get the language names
-        const sourceLanguageName = await getLanguageName(
-          apollo,
-          journey.languageId
-        )
-        if (sourceLanguageName == null)
-          throw new Error('Could not fetch source language name')
-        const requestedLanguageName = await getLanguageName(
-          apollo,
-          input.textLanguageId
-        )
-        if (requestedLanguageName == null)
-          throw new Error('Could not fetch requested language name')
+        const sourceLanguageName = input.journeyLanguageName
+        const requestedLanguageName = input.textLanguageName
 
         // 3. Get Cards Content
         const stepBlocks = journey.blocks
@@ -90,7 +63,7 @@ builder.mutationFields((t) => ({
 Analyze this journey content and provide the key intent, themes, and target audience.
 Also suggest ways to culturally adapt this content for the target language: ${requestedLanguageName}.
 Then, translate the following journey title and description to ${requestedLanguageName}.
-If a description is not provided, return a brief 1 sentence description of the journey.
+If a description is not provided, do not create one.
 
 The source language is: ${sourceLanguageName}.
 The target language name is: ${requestedLanguageName}.
@@ -105,7 +78,7 @@ Return in this format:
 {
   analysis: [analysis and adaptation suggestions],
   title: [translated title],
-  description: [translated description]
+  description: [translated description or empty string if no description was provided]
 }
 `
 
@@ -122,7 +95,9 @@ Return in this format:
 
           if (!analysisAndTranslation.title)
             throw new Error('Failed to translate journey title')
-          if (!analysisAndTranslation.description)
+
+          // Only validate description if the original journey had one
+          if (journey.description && !analysisAndTranslation.description)
             throw new Error('Failed to translate journey description')
 
           // Update the journey using Prisma
@@ -132,7 +107,10 @@ Return in this format:
             },
             data: {
               title: analysisAndTranslation.title,
-              description: analysisAndTranslation.description,
+              // Only update description if the original journey had one
+              ...(journey.description
+                ? { description: analysisAndTranslation.description }
+                : {}),
               languageId: input.textLanguageId
             }
           })
@@ -288,7 +266,8 @@ Keep translations concise and effective for UI context (e.g., button labels shou
                               }
                               await prisma.block.update({
                                 where: {
-                                  id: cleanBlockId
+                                  id: cleanBlockId,
+                                  journeyId: input.journeyId
                                 },
                                 data: item.updates
                               })
