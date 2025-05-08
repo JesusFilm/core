@@ -1,6 +1,4 @@
 import { google } from '@ai-sdk/google'
-import { ApolloClient, createHttpLink } from '@apollo/client'
-import { InMemoryCache } from '@apollo/client/cache'
 import { generateObject, streamObject } from 'ai'
 import { z } from 'zod'
 
@@ -8,7 +6,6 @@ import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
 import { getCardBlocksContent } from './getCardBlocksContent'
-import { getLanguageName } from './getLanguageName'
 
 builder.mutationFields((t) => ({
   journeyAiTranslateCreate: t
@@ -17,28 +14,14 @@ builder.mutationFields((t) => ({
       input: {
         journeyId: t.input.id({ required: true }),
         name: t.input.string({ required: true }),
+        journeyLanguageName: t.input.string({ required: true }),
         textLanguageId: t.input.id({ required: true }),
-        videoLanguageId: t.input.id({ required: false })
+        textLanguageName: t.input.string({ required: true })
       },
       type: 'ID',
       nullable: false,
       resolve: async (_root, { input }, { user }) => {
-        // TODO: check if user has write access \
-        // Create Apollo client
-        const httpLink = createHttpLink({
-          uri: process.env.GATEWAY_URL,
-          headers: {
-            'interop-token': process.env.INTEROP_TOKEN ?? '',
-            'x-graphql-client-name': 'api-journeys-modern',
-            'x-graphql-client-version': process.env.SERVICE_VERSION ?? ''
-          }
-        })
-
-        const apollo = new ApolloClient({
-          link: httpLink,
-          cache: new InMemoryCache()
-        })
-
+        // TODO: check if user has write access
         // 1. First get the journey details using Prisma
         const journey = await prisma.journey.findUnique({
           where: {
@@ -54,18 +37,8 @@ builder.mutationFields((t) => ({
         }
 
         // 2. Get the language names
-        const sourceLanguageName = await getLanguageName(
-          apollo,
-          journey.languageId
-        )
-        if (sourceLanguageName == null)
-          throw new Error('Could not fetch source language name')
-        const requestedLanguageName = await getLanguageName(
-          apollo,
-          input.textLanguageId
-        )
-        if (requestedLanguageName == null)
-          throw new Error('Could not fetch requested language name')
+        const sourceLanguageName = input.journeyLanguageName
+        const requestedLanguageName = input.textLanguageName
 
         // 3. Get Cards Content
         const stepBlocks = journey.blocks

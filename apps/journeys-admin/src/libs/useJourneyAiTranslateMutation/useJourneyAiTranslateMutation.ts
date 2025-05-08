@@ -9,15 +9,17 @@ export const JOURNEY_AI_TRANSLATE_CREATE = gql`
   mutation JourneyAiTranslateCreate(
     $journeyId: ID!
     $name: String!
+    $journeyLanguageName: String!
     $textLanguageId: ID!
-    $videoLanguageId: ID
+    $textLanguageName: String!
   ) {
     journeyAiTranslateCreate(
       input: {
         journeyId: $journeyId
         name: $name
+        journeyLanguageName: $journeyLanguageName
         textLanguageId: $textLanguageId
-        videoLanguageId: $videoLanguageId
+        textLanguageName: $textLanguageName
       }
     )
   }
