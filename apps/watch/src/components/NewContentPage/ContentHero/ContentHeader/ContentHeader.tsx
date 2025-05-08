@@ -1,9 +1,8 @@
-import LanguageIcon from '@mui/icons-material/Language'
-import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { ReactElement, useState } from 'react'
+import { AudioLanguageButton } from '../../../VideoContentPage/AudioLanguageButton'
 
 export function ContentHeader(): ReactElement {
   const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false)
@@ -45,17 +44,7 @@ export function ContentHeader(): ReactElement {
             className="max-w-[50px] lg:max-w-[70px]"
           />
         </NextLink>
-        <IconButton
-          data-testid="LanguageButton"
-          onClick={handleOpenLanguageModal}
-          aria-label="select language"
-          tabIndex={0}
-          sx={{
-            color: 'white'
-          }}
-        >
-          <LanguageIcon />
-        </IconButton>
+        <AudioLanguageButton componentVariant="icon" />
       </Stack>
     </>
   )

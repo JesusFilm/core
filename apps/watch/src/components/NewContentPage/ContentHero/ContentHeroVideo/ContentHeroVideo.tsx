@@ -12,12 +12,10 @@ import 'videojs-mux'
 import { useVideo } from '../../../../libs/videoContext'
 
 interface ContentHeroVideoProps {
-  onMutedChange: (isMuted: boolean) => void
   onPlayerReady: (player: Player) => void
 }
 
 export function ContentHeroVideo({
-  onMutedChange,
   onPlayerReady
 }: ContentHeroVideoProps): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -71,12 +69,7 @@ export function ContentHeroVideo({
 
     playerRef.current = player
     onPlayerReady(player)
-
-    // Sync muted state with player
-    player.on('volumechange', () => {
-      onMutedChange(player.muted() ?? true)
-    })
-  }, [onMutedChange, onPlayerReady, variant])
+  }, [onPlayerReady, variant])
 
   useEffect(() => {
     void playerRef.current?.src({

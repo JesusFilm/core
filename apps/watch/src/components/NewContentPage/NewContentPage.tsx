@@ -14,7 +14,6 @@ export function NewContentPage(): ReactElement {
   const { container, variant, title, snippet, images, imageAlt, label } =
     useVideo()
 
-  const slug = container?.slug ?? variant?.slug
   const watchUrl = getWatchUrl(container?.slug, label, variant?.slug)
 
   return (
@@ -59,7 +58,7 @@ export function NewContentPage(): ReactElement {
         hideHeader
         hideFooter
       >
-        <CollectionsPageContent></CollectionsPageContent>
+        <CollectionsPageContent />
       </PageWrapper>
     </>
   )

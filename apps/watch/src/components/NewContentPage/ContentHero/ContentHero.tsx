@@ -20,10 +20,6 @@ export function ContentHero(): ReactElement {
     setPlayer(player)
   }, [])
 
-  const handleMutedChange = useCallback((muted: boolean): void => {
-    setIsMuted(muted)
-  }, [])
-
   const handleToggleMute = useCallback((): void => {
     if (player) {
       const newMutedState = !isMuted
@@ -56,10 +52,7 @@ export function ContentHero(): ReactElement {
       data-testid="ContainerHero"
     >
       <ContentHeader />
-      <ContentHeroVideo
-        onMutedChange={handleMutedChange}
-        onPlayerReady={handlePlayerReady}
-      />
+      <ContentHeroVideo onPlayerReady={handlePlayerReady} />
       <Box
         data-testid="ContainerHeroTitleContainer"
         sx={{

@@ -22,29 +22,4 @@ describe('ContentHeader', () => {
     const link = screen.getByRole('link')
     expect(link).toHaveAttribute('href', 'https://www.jesusfilm.org/watch')
   })
-
-  // it('opens language modal when language button is clicked and closes when close button is clicked', async () => {
-  //   ;(useScrollTrigger as jest.Mock).mockReturnValue(false)
-
-  //   render(<ContentHeader />)
-
-  //   const languageButton = screen.getByTestId('LanguageButton')
-  //   expect(languageButton).toBeInTheDocument()
-
-  //   fireEvent.click(languageButton)
-
-  //   const dialog = screen.getByRole('dialog')
-  //   expect(dialog).toBeInTheDocument()
-
-  //   const closeButton = screen.getByTestId('CloseLanguageButton')
-  //   expect(closeButton).toBeInTheDocument()
-
-  //   fireEvent.click(closeButton)
-
-  //   await waitFor(() => {
-  //     expect(
-  //       screen.queryByTestId('CloseLanguageButton')
-  //     ).not.toBeInTheDocument()
-  //   })
-  // })
 })
