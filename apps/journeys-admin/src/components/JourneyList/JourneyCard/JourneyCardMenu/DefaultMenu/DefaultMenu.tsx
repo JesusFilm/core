@@ -28,7 +28,7 @@ import { ArchiveJourney } from './ArchiveJourney'
 
 export const GET_JOURNEY_WITH_USER_ROLES = gql`
   query GetJourneyWithUserRoles($id: ID!) {
-    journey(id: $id, idType: databaseId) {
+    adminJourney(id: $id, idType: databaseId) {
       id
       userJourneys {
         id
@@ -102,21 +102,55 @@ export function DefaultMenu({
     skip: currentUser?.id == null
   })
 
+  console.log('Debug - Current User:', {
+    currentUserId: currentUser?.id,
+    journeyId,
+    journeyData
+  })
+
+  const isOwner = journeyData?.adminJourney?.userJourneys?.some(
+    (userJourney: { user: { id: string }; role: UserJourneyRole }) =>
+      userJourney.user?.id === currentUser?.id &&
+      userJourney.role === UserJourneyRole.owner
+  )
+
+  console.log('Debug - Owner Check:', {
+    isOwner,
+    userJourneys: journeyData?.adminJourney?.userJourneys
+  })
+
   useEffect(() => {
     void loadUser()
   }, [loadUser])
 
   // Determine the current user's role for this journey
   const userRole = useMemo<UserJourneyRole | undefined>(() => {
-    if (journeyData?.journey?.userJourneys == null || currentUser?.id == null)
+    if (
+      journeyData?.adminJourney?.userJourneys == null ||
+      currentUser?.id == null
+    )
       return undefined
 
-    const userJourney = journeyData.journey.userJourneys.find(
+    const userJourney = journeyData.adminJourney.userJourneys.find(
       (userJourney) => userJourney.user?.id === currentUser.id
     )
 
     return userJourney?.role
-  }, [journeyData?.journey?.userJourneys, currentUser?.id])
+  }, [journeyData?.adminJourney?.userJourneys, currentUser?.id])
+
+  console.log('Debug - User Role:', {
+    userRole,
+    currentUserEmail: currentUser?.email
+  })
+
+  console.log('Debug - Role Comparison:', {
+    isOwner,
+    userRole,
+    isOwnerRole: userRole === UserJourneyRole.owner,
+    areTheyEqual: isOwner === (userRole === UserJourneyRole.owner),
+    currentUserId: currentUser?.id,
+    userJourneys: journeyData?.adminJourney?.userJourneys
+  })
 
   // Determine the current user's role in the team
   const teamRole = useMemo<UserTeamRole | undefined>(() => {
@@ -130,15 +164,35 @@ export function DefaultMenu({
     return userTeam?.role
   }, [activeTeam?.userTeams, currentUser?.email])
 
+  console.log('Debug - Team Role:', {
+    teamRole,
+    activeTeam,
+    currentUserEmail: currentUser?.email
+  })
+
   const isPublisher =
     userRoleData?.getUserRole?.roles?.includes(Role.publisher) === true
 
+  console.log('Debug - Publisher Check:', {
+    isPublisher,
+    userRoles: userRoleData?.getUserRole?.roles
+  })
+
   const canManageJourney =
-    userRole === UserJourneyRole.owner ||
+    isOwner ||
     teamRole === UserTeamRole.manager ||
     (isPublisher && template === true)
 
   const cantManageJourney = !canManageJourney
+
+  console.log('Debug - Journey Management:', {
+    canManageJourney,
+    cantManageJourney,
+    isOwner,
+    teamRole,
+    isPublisher,
+    template
+  })
 
   return (
     <>
