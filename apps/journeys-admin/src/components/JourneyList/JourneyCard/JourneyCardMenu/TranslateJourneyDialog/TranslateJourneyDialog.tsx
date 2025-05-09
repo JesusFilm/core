@@ -91,15 +91,6 @@ export function TranslateJourneyDialog({
     )
       return
 
-    // Check if selected language is the same as the source journey's language
-    if (selectedLanguage.id === journeyData.language.id) {
-      enqueueSnackbar(
-        t('The selected language is the same as the source journey language.'),
-        { variant: 'warning' }
-      )
-      return
-    }
-
     try {
       // First duplicate the journey
       const { data: duplicateData } = await journeyDuplicate({
