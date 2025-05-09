@@ -1,10 +1,5 @@
-import { LoadingButton } from '@mui/lab'
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import CircularProgress from '@mui/material/CircularProgress'
 import { Theme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
@@ -12,9 +7,9 @@ import { ReactElement, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
+import { TranslationDialogWrapper } from '@core/journeys/ui/TranslationDialogWrapper'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
-import { Dialog } from '@core/shared/ui/Dialog'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../../../__generated__/GetAdminJourneys'
@@ -60,7 +55,6 @@ export function TranslateJourneyDialog({
   journey
 }: TranslateJourneyDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [loading, setLoading] = useState(false)
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { journey: journeyFromContext } = useJourney()
   const { activeTeam } = useTeam()
@@ -106,8 +100,6 @@ export function TranslateJourneyDialog({
       return
     }
 
-    setLoading(true)
-
     try {
       // First duplicate the journey
       const { data: duplicateData } = await journeyDuplicate({
@@ -122,7 +114,7 @@ export function TranslateJourneyDialog({
         // Use the duplicated journey ID for translation
         const jobId = await translateJourney({
           journeyId: duplicateData.journeyDuplicate.id,
-          name: `${journeyData.title} (${selectedLanguage.nativeName ?? selectedLanguage.localName})`,
+          name: `${journeyData.title}`,
           journeyLanguageName:
             journeyData.language.name.find(({ primary }) => !primary)?.value ??
             '',
@@ -150,80 +142,36 @@ export function TranslateJourneyDialog({
           variant: 'error'
         }
       )
-    } finally {
-      setLoading(false)
+      throw error
     }
   }
 
   return (
-    <Dialog
+    <TranslationDialogWrapper
       open={open}
       onClose={onClose}
-      dialogTitle={
-        !loading
-          ? {
-              title: t('Create Translated Copy'),
-              closeButton: true
-            }
-          : undefined
-      }
-      dialogActionChildren={
-        <>
-          {!loading ? (
-            <>
-              <Button
-                variant="outlined"
-                color="secondary"
-                onClick={onClose}
-                disabled={loading}
-                sx={{ mr: 3 }}
-              >
-                {t('Cancel')}
-              </Button>
-              <LoadingButton
-                variant="contained"
-                color="secondary"
-                onClick={handleTranslate}
-                loading={loading}
-              >
-                {t('Create')}
-              </LoadingButton>
-            </>
-          ) : (
-            <Button variant="outlined" color="secondary" onClick={onClose}>
-              {t('Cancel')}
-            </Button>
-          )}
-        </>
-      }
+      onTranslate={handleTranslate}
+      title={t('Create Translated Copy')}
+      loadingText={t('Translating your journey...')}
       testId="TranslateJourneyDialog"
     >
-      {loading ? (
-        <Box display="flex" flexDirection="column" alignItems="center" p={3}>
-          <CircularProgress color="secondary" />
-          <Typography variant="body1" mt={2}>
-            {t('Translating your journey...')}
-          </Typography>
-        </Box>
-      ) : (
-        <LanguageAutocomplete
-          onChange={async (value) => setSelectedLanguage(value)}
-          value={selectedLanguage}
-          languages={languagesData?.languages}
-          loading={languagesLoading}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              placeholder={t('Search Language')}
-              label={t('Select Language')}
-              variant="filled"
-            />
-          )}
-          popper={{
-            placement: !smUp ? 'top' : 'bottom'
-          }}
-        />
-      )}
-    </Dialog>
+      <LanguageAutocomplete
+        onChange={async (value) => setSelectedLanguage(value)}
+        value={selectedLanguage}
+        languages={languagesData?.languages}
+        loading={languagesLoading}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            placeholder={t('Search Language')}
+            label={t('Select Language')}
+            variant="filled"
+          />
+        )}
+        popper={{
+          placement: !smUp ? 'top' : 'bottom'
+        }}
+      />
+    </TranslationDialogWrapper>
   )
 }
