@@ -30,12 +30,38 @@ const GET_VIDEO_TITLE = graphql(`
 export default async function Page({
   searchParams
 }: {
-  searchParams: { refId?: string }
+  searchParams: { refId?: string; start?: string; end?: string }
 }) {
   if (!searchParams.refId) {
     return {
       message: 'Missing refId parameter',
       status: 404
+    }
+  }
+
+  // Parse start and end times, ensuring they are valid numbers
+  const startTime = searchParams.start ? Number(searchParams.start) : undefined
+  const endTime = searchParams.end ? Number(searchParams.end) : undefined
+
+  // Validate time parameters
+  if (startTime != null && (isNaN(startTime) || startTime < 0)) {
+    return {
+      message: 'Invalid start time parameter',
+      status: 400
+    }
+  }
+
+  if (endTime != null && (isNaN(endTime) || endTime < 0)) {
+    return {
+      message: 'Invalid end time parameter',
+      status: 400
+    }
+  }
+
+  if (startTime != null && endTime != null && endTime <= startTime) {
+    return {
+      message: 'End time must be greater than start time',
+      status: 400
     }
   }
 
@@ -64,6 +90,8 @@ export default async function Page({
         hlsUrl={hlsUrl}
         videoTitle={videoTitle}
         thumbnail={thumbnail}
+        startTime={startTime}
+        endTime={endTime}
       />
     </div>
   )
