@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box'
-import Container from '@mui/material/Container'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
@@ -7,6 +6,7 @@ import { ReactElement, useEffect, useState } from 'react'
 
 import { JourneyStatus } from '../../../__generated__/globalTypes'
 import { useAdminJourneysQuery } from '../../libs/useAdminJourneysQuery'
+import { usePageWrapperStyles } from '../PageWrapper/utils/usePageWrapperStyles'
 import { StatusTabPanel } from '../StatusTabPanel'
 
 import { AddJourneyFab } from './AddJourneyFab'
@@ -67,6 +67,7 @@ export function JourneyList({
     status: [JourneyStatus.draft, JourneyStatus.published],
     useLastActiveTeamId: true
   })
+  const { navbar, sidePanel } = usePageWrapperStyles()
 
   useEffect(() => {
     const handleRouteChange = (url: string) => {
@@ -100,19 +101,23 @@ export function JourneyList({
   return (
     <>
       <Box
-        sx={{ mx: { xs: -6, sm: 0 } }}
+        sx={{
+          mt: { xs: 0, sm: -5 },
+          width: {
+            sm: '100%',
+            md: `calc(100vw - ${sidePanel.width} - ${navbar.width} - 80px)`
+          }
+        }}
         data-testid="JourneysAdminJourneyList"
       >
-        <Container disableGutters>
-          <StatusTabPanel
-            activeList={<ActiveJourneyList {...journeyListProps} />}
-            archivedList={<ArchivedJourneyList {...journeyListProps} />}
-            trashedList={<TrashedJourneyList {...journeyListProps} />}
-            setActiveEvent={handleClick}
-            setSortOrder={setSortOrder}
-            sortOrder={sortOrder}
-          />
-        </Container>
+        <StatusTabPanel
+          activeList={<ActiveJourneyList {...journeyListProps} />}
+          archivedList={<ArchivedJourneyList {...journeyListProps} />}
+          trashedList={<TrashedJourneyList {...journeyListProps} />}
+          setActiveEvent={handleClick}
+          setSortOrder={setSortOrder}
+          sortOrder={sortOrder}
+        />
       </Box>
       {activeTab === 'active' && <AddJourneyFab />}
     </>

@@ -105,6 +105,30 @@ describe('AnalyticsItem', () => {
     )
   })
 
+  it('should link to journey reports page as an icon button with modified href if fromJourneyList prop is true', async () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider mocks={[]}>
+          <TeamProvider>
+            <JourneyProvider
+              value={{
+                journey: defaultJourney,
+                variant: 'admin'
+              }}
+            >
+              <AnalyticsItem variant="button" fromJourneyList={true} />
+            </JourneyProvider>
+          </TeamProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    expect(getByRole('link', { name: 'Analytics' })).toBeInTheDocument()
+    expect(getByRole('link', { name: 'Analytics' })).toHaveAttribute(
+      'href',
+      '/journeys/journey-id/reports?from=journey-list'
+    )
+  })
+
   it('should show number of plausible visitors', async () => {
     const result = jest
       .fn()
