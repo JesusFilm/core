@@ -7,6 +7,8 @@ import { enqueueSnackbar } from 'notistack'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
+import { getVideoSlug } from '../../../../../libs/getVideoSlug'
+
 const REMOVE_VIDEO_CHILD = graphql(`
   mutation RemoveVideoChild($input: VideoUpdateInput!) {
     videoUpdate(input: $input) {
@@ -71,7 +73,7 @@ export default function DeleteChild({
           childIds: updatedChildIds
         }
       },
-      onCompleted: () => {
+      onCompleted: async () => {
         enqueueSnackbar('Successfully removed child video.', {
           variant: 'success'
         })
