@@ -76,7 +76,7 @@ export function VideoControls({
   const [progressPercentNotYetEmitted, setProgressPercentNotYetEmitted] =
     useState([10, 25, 50, 75, 90])
   const [volume, setVolume] = useState(0)
-  const [mute, setMute] = useState(false)
+  const [mute, setMute] = useState(true)
   const [fullscreen, setFullscreen] = useState(false)
   const [openSubtitleDialog, setOpenSubtitleDialog] = useState(false)
   const [loadSubtitleDialog, setLoadSubtitleDialog] = useState(false)
