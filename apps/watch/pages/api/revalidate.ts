@@ -16,6 +16,7 @@ export default async function handler(
 
   // Get url (path) to revalidate
   const { url } = req.body
+  console.log('url', url)
   if (typeof url !== 'string' || !url.startsWith('/')) {
     return res.status(400).json({ message: 'Invalid url' })
   }

@@ -61,6 +61,14 @@ const GET_ADMIN_VIDEO_VARIANTS = graphql(`
   }
 `)
 
+const GET_VIDEO_SLUG = graphql(`
+  query GetVideoSlug($id: ID!) {
+    adminVideo(id: $id) {
+      slug
+    }
+  }
+`)
+
 export default function AddAudioLanguageDialog({
   params: { videoId }
 }: AddAudioLanguageDialogProps): ReactElement {
@@ -77,6 +85,10 @@ export default function AddAudioLanguageDialog({
     variables: { id: videoId }
   })
 
+  const { data: videoData } = useSuspenseQuery(GET_VIDEO_SLUG, {
+    variables: { id: videoId }
+  })
+
   const availableLanguages = data?.languages?.filter(
     (language) =>
       !variantsData.adminVideo.variants.some(
@@ -87,6 +99,8 @@ export default function AddAudioLanguageDialog({
   const returnUrl = `/videos/${videoId}/audio`
   const handleSubmit = async (values: FormikValues): Promise<void> => {
     if (values.language == null || values.file == null) return
+    const videoSlug = videoData?.adminVideo?.slug
+    if (!videoSlug) return
     await startUpload(
       values.file,
       videoId,
@@ -98,7 +112,8 @@ export default function AddAudioLanguageDialog({
         router.push(returnUrl, {
           scroll: false
         })
-      }
+      },
+      videoSlug
     )
   }
 

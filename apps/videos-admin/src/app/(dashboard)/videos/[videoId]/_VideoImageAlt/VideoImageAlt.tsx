@@ -17,7 +17,7 @@ import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
 export const GET_VIDEO_IMAGE_ALT = graphql(`
   query GetVideoImageAlt($id: ID!, $languageId: ID!) {
     adminVideo(id: $id) {
-      id
+      slug
       imageAlt(languageId: $languageId) {
         id
         value
@@ -85,7 +85,7 @@ export function VideoImageAlt({ videoId }: VideoImageAltProps): ReactElement {
           })
           resetForm({ values })
           // Revalidate watch app page for this video
-          const revalidatePath = `/watch/${encodeURIComponent(videoId)}.html/english.html`
+          const revalidatePath = `/watch/${encodeURIComponent(data.adminVideo.slug)}.html/english.html`
           const result = await revalidateWatchApp(revalidatePath)
           if (!result.revalidated) {
             enqueueSnackbar(
@@ -115,7 +115,7 @@ export function VideoImageAlt({ videoId }: VideoImageAltProps): ReactElement {
             variant: 'success'
           })
           // Revalidate watch app page for this video
-          const revalidatePath = `/watch/${encodeURIComponent(videoId)}.html/english.html`
+          const revalidatePath = `/watch/${encodeURIComponent(data.adminVideo.slug)}.html/english.html`
           const result = await revalidateWatchApp(revalidatePath)
           if (!result.revalidated) {
             enqueueSnackbar(

@@ -23,7 +23,7 @@ const UPDATE_STUDY_QUESTION = graphql(`
 const GET_STUDY_QUESTION = graphql(`
   query GetStudyQuestion($id: ID!) {
     adminVideo(id: $id) {
-      id
+      slug
       studyQuestions {
         id
         value
@@ -70,7 +70,7 @@ export default function StudyQuestionDialog({
       onCompleted: async () => {
         enqueueSnackbar('Study question updated', { variant: 'success' })
         // Revalidate watch app page for this video
-        const revalidatePath = `/watch/${encodeURIComponent(videoId)}.html/english.html`
+        const revalidatePath = `/watch/${encodeURIComponent(data.adminVideo.slug)}.html/english.html`
         const result = await revalidateWatchApp(revalidatePath)
         if (!result.revalidated) {
           enqueueSnackbar(

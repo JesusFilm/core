@@ -19,6 +19,7 @@ const GET_EXISTING_IMAGE = graphql(`
   query GetExistingImage($videoId: ID!, $aspectRatio: ImageAspectRatio!) {
     adminVideo(id: $videoId) {
       id
+      slug
       images(aspectRatio: $aspectRatio) {
         id
       }
@@ -142,7 +143,7 @@ export default function VideoImage({
           })
         }
         // Revalidate watch app page for this video
-        const revalidatePath = `/watch/${encodeURIComponent(videoId)}.html/english.html`
+        const revalidatePath = `/watch/${encodeURIComponent(adminVideo.slug)}.html/english.html`
         const result = await revalidateWatchApp(revalidatePath)
         if (!result.revalidated) {
           enqueueSnackbar(
@@ -187,7 +188,7 @@ export default function VideoImage({
           'image/webp': []
         }}
         onUploadComplete={() => {
-          router.push(`/videos/${videoId}`, {
+          router.push(`/videos/${adminVideo.slug}`, {
             scroll: false
           })
         }}

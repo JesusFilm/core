@@ -18,7 +18,7 @@ import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
 export const GET_VIDEO_SNIPPET = graphql(`
   query GetVideoSnippet($videoId: ID!, $languageId: ID!) {
     adminVideo(id: $videoId) {
-      id
+      slug
       snippet(languageId: $languageId) {
         id
         value
@@ -81,7 +81,7 @@ export function VideoSnippet({ videoId }: VideoSnippetProps): ReactElement {
             variant: 'success'
           })
           // Revalidate watch app page for this video
-          const revalidatePath = `/watch/${encodeURIComponent(videoId)}.html/english.html`
+          const revalidatePath = `/watch/${encodeURIComponent(data.adminVideo.slug)}.html/english.html`
           const result = await revalidateWatchApp(revalidatePath)
           if (!result.revalidated) {
             enqueueSnackbar(
@@ -112,7 +112,7 @@ export function VideoSnippet({ videoId }: VideoSnippetProps): ReactElement {
           })
           resetForm({ values })
           // Revalidate watch app page for this video
-          const revalidatePath = `/watch/${encodeURIComponent(videoId)}.html/english.html`
+          const revalidatePath = `/watch/${encodeURIComponent(data.adminVideo.slug)}.html/english.html`
           const result = await revalidateWatchApp(revalidatePath)
           if (!result.revalidated) {
             enqueueSnackbar(
