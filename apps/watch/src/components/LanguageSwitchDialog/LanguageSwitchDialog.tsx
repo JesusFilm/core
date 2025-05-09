@@ -8,8 +8,9 @@ import IconButton from '@mui/material/IconButton'
 import Slide from '@mui/material/Slide'
 import Stack from '@mui/material/Stack'
 import { TransitionProps } from '@mui/material/transitions'
+import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, Ref, forwardRef } from 'react'
+import { ReactElement, Ref, forwardRef, useEffect, useState } from 'react'
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {
@@ -20,6 +21,12 @@ const Transition = forwardRef(function Transition(
   return <Slide direction="left" ref={ref} {...props} />
 })
 
+interface Language {
+  languageCode: string
+  localName: string
+  nativeName?: string
+}
+
 interface LanguageSwitchDialogProps {
   open: boolean
   handleClose: () => void
@@ -29,15 +36,49 @@ export function LanguageSwitchDialog({
   open,
   handleClose
 }: LanguageSwitchDialogProps): ReactElement {
-  const { t } = useTranslation('apps-watch')
+  const { t, i18n } = useTranslation('apps-watch')
+  const router = useRouter()
 
-  const languages = [
-    { code: 'en', name: 'English', urlName: 'english' },
-    { code: 'fr', name: 'Français', urlName: 'french' },
-    { code: 'es', name: 'Español', urlName: 'spanish-latin-american' },
-    { code: 'pt', name: 'Português', urlName: 'portuguese-brazil' },
-    { code: 'ru', name: 'Русский', urlName: 'russian' }
-  ]
+  const [languages, setLanguages] = useState<Language[]>([])
+  const [currentLanguageCode, setCurrentLanguageCode] = useState(
+    i18n?.language ?? 'en'
+  )
+
+  function handleChange(languageCode: string): void {
+    setCurrentLanguageCode(languageCode)
+
+    const cookieFingerprint = '00005'
+    document.cookie = `NEXT_LOCALE=${cookieFingerprint}---${languageCode}; path=/`
+    const path = router.asPath
+    void router.push(path, path, { locale: languageCode })
+    handleClose()
+  }
+
+  useEffect(() => {
+    const supportedLanguageCodes = (
+      i18n.options as unknown as { locales: string[] }
+    )?.locales
+
+    if (supportedLanguageCodes == null) return
+    const formattedLanguages = supportedLanguageCodes
+      .filter((languageCode) => languageCode !== 'zh')
+      .map((languageCode): Language => {
+        const nativeName = new Intl.DisplayNames([currentLanguageCode], {
+          type: 'language'
+        }).of(languageCode)
+        const localName = new Intl.DisplayNames([languageCode], {
+          type: 'language'
+        }).of(languageCode)
+
+        return {
+          languageCode,
+          nativeName: nativeName === localName ? undefined : nativeName,
+          localName: localName ?? ''
+        }
+      })
+    setLanguages(formattedLanguages)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentLanguageCode])
 
   const commonButtonStyles = {
     py: 3,
@@ -85,17 +126,17 @@ export function LanguageSwitchDialog({
           <Stack spacing={2}>
             {languages.map((language) => (
               <Button
-                key={language.code}
-                href={`/watch/easter/${language.urlName}`}
+                key={language.languageCode}
+                onClick={() => handleChange(language.languageCode)}
                 {...commonButtonStyles}
                 sx={{
                   ...commonButtonStyles,
                   textTransform: 'uppercase',
                   bgcolor: 'rgba(41, 37, 36, 0.5)'
                 }}
-                data-testid={`language-button-${language.code}`}
+                data-testid={`language-button-${language.languageCode}`}
               >
-                {language.name}
+                {language.localName}
               </Button>
             ))}
 

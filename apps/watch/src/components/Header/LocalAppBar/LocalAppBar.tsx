@@ -4,12 +4,21 @@ import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
+import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { MouseEventHandler, ReactElement, useState } from 'react'
 
-import { LanguageSwitchDialog } from '../../LanguageSwitchDialog'
 import logo from '../assets/logo.svg'
+
+const LanguageSwitchDialog = dynamic(
+  () =>
+    import(
+      /* webpackChunkName: "LanguageSwitchDialog" */
+      '../../LanguageSwitchDialog'
+    ).then((mod) => mod.LanguageSwitchDialog),
+  { ssr: false }
+)
 
 interface LocalAppBarProps extends AppBarProps {
   onMenuClick: MouseEventHandler<HTMLButtonElement>
