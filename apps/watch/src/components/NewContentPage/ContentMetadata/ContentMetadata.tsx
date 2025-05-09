@@ -5,18 +5,21 @@ import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
 import { VideoLabel } from '../../../../__generated__/globalTypes'
+import { SimpleQuizButton } from '../../../components/Quiz'
 import { getLabelDetails } from '../../../libs/utils/getLabelDetails/getLabelDetails'
 
 interface ContentMetadataProps {
   title: string
   description: string
   label: VideoLabel
+  contentId: string
 }
 
 export function ContentMetadata({
   title,
   description,
-  label
+  label,
+  contentId
 }: ContentMetadataProps): ReactElement {
   const { label: labelText, color } = getLabelDetails(label)
 
@@ -52,6 +55,7 @@ export function ContentMetadata({
             description.split(' ').slice(0, 3).join(' ').length
           )}
         </Typography>
+        <SimpleQuizButton buttonText="Take the Quiz" contentId={contentId} />
       </Stack>
     </Box>
   )

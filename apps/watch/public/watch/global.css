@@ -1,9 +1,8 @@
 @import 'tailwindcss';
 
 @theme {
-  --font-sans:
-    'Montserrat', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
-    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-sans: 'Montserrat', ui-sans-serif, system-ui, sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
   /* Light Mode Colors */
   --color-primary: #cb333b;
@@ -125,5 +124,135 @@
 
   .overlay-texture-image {
     background-image: url('../../src/components/HeroOverlay/assets/overlay.svg');
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    opacity: 0;
+    animation: fadeIn 0.75s ease-out forwards;
+  }
+
+  .animate-fade-in-delay-500 {
+    opacity: 0;
+    animation: fadeIn 0.75s ease-out 0.5s forwards;
+  }
+
+  .animate-fade-in-delay-750 {
+    opacity: 0;
+    animation: fadeIn 0.75s ease-out 0.75s forwards;
+  }
+
+  .animate-fade-in-delay-1000 {
+    opacity: 0;
+    animation: fadeIn 0.75s ease-out 1s forwards;
+  }
+
+  .animate-fade-in-delay-1250 {
+    opacity: 0;
+    animation: fadeIn 0.75s ease-out 1.25s forwards;
+  }
+
+  .animate-fade-in-delay-1500 {
+    opacity: 0;
+    animation: fadeIn 0.75s ease-out 1.5s forwards;
+  }
+
+  .animate-fade-in-delay-1750 {
+    opacity: 0;
+    animation: fadeIn 0.75s ease-out 1.75s forwards;
+  }
+
+  .animate-fade-in-delay-2000 {
+    opacity: 0;
+    animation: fadeIn 0.75s ease-out 2s forwards;
+  }
+
+  .animate-fade-in-delay-2500 {
+    opacity: 0;
+    animation: fadeIn 0.75s ease-out 2.5s forwards;
+  }
+
+  .animate-fade-in-delay-3000 {
+    opacity: 0;
+    animation: fadeIn 0.75s ease-out 3s forwards;
+  }
+
+  .animate-fade-in-delay-3500 {
+    opacity: 0;
+    animation: fadeIn 0.75s ease-out 3.5s forwards;
+  }
+
+  .animate-fade-in-delay-4000 {
+    opacity: 0;
+    animation: fadeIn 0.75s ease-out 4s forwards;
+  }
+
+  .animate-fade-in-delay-4500 {
+    opacity: 0;
+    animation: fadeIn 0.75s ease-out 4.5s forwards;
+  }
+
+  .animate-fade-in-delay-5000 {
+    opacity: 0;
+    animation: fadeIn 0.75s ease-out 5s forwards;
+  }
+}
+
+/* Quiz View Transitions */
+::view-transition-old(quiz-container),
+::view-transition-new(quiz-container) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(quiz-backdrop),
+::view-transition-new(quiz-backdrop) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(quiz-modal),
+::view-transition-new(quiz-modal) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(quiz-content) {
+  animation: fade-slide-out 0.3s ease-in-out;
+}
+
+::view-transition-new(quiz-content) {
+  animation: fade-slide-in 0.3s ease-in-out;
+}
+
+@keyframes fade-slide-out {
+  from {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes fade-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

@@ -1,0 +1,35 @@
+---
+description: 
+globs: apps/watch/src/components/*
+alwaysApply: false
+---
+# Watch Project Rules
+
+This project uses Tailwind CSS instead of MUI.
+DO NOT use MUI for components inside apps/watch/src/components/
+
+### Code Implementation Guidelines
+
+- Use Tailwind CSS classes for styling instead of MUI components
+- Use standard HTML elements with Tailwind classes
+- For styling, prioritize Tailwind utility classes over custom CSS
+- Follow Tailwind's responsive design patterns using breakpoint prefixes (sm:, md:, lg:, etc.)
+
+### Example
+Instead of:
+```jsx
+<Box sx={{ p: 2 }}>
+  <Typography variant="h4">Title</Typography>
+  <Button variant="contained">Click me</Button>
+</Box>
+```
+
+Use:
+```jsx
+<div className="p-4">
+  <h4 className="text-2xl font-medium">Title</h4>
+  <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Click me</button>
+</div>
+```
+
+All other project guidelines regarding TypeScript best practices, accessibility, naming conventions, etc. should still be followed.
