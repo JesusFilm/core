@@ -31,12 +31,12 @@ describe('TranslationDialogWrapper', () => {
           title="Test Title"
           testId="test-dialog"
         >
-          <Typography data-testid="test-children">Test Children</Typography>
+          <Typography>Test Children</Typography>
         </TranslationDialogWrapper>
       )
 
       expect(screen.getByText('Test Title')).toBeInTheDocument()
-      expect(screen.getByTestId('test-children')).toBeInTheDocument()
+      expect(screen.getByText('Test Children')).toBeInTheDocument()
       expect(screen.getByText('Cancel')).toBeInTheDocument()
       expect(screen.getByText('Create')).toBeInTheDocument()
     })
@@ -51,26 +51,23 @@ describe('TranslationDialogWrapper', () => {
           title="Test Title"
           testId="test-dialog"
         >
-          <Typography data-testid="test-children">Test Children</Typography>
+          <Typography>Test Children</Typography>
         </TranslationDialogWrapper>
       )
 
-      // Check that loading state is shown
       expect(screen.getByRole('progressbar')).toBeInTheDocument()
       expect(
         screen.getByText('Translating your journey...')
       ).toBeInTheDocument()
 
-      // Check that normal content is hidden
       expect(screen.queryByText('Test Title')).not.toBeInTheDocument()
-      expect(screen.queryByTestId('test-children')).not.toBeInTheDocument()
+      expect(screen.queryByText('Test Children')).not.toBeInTheDocument()
       expect(screen.queryByText('Create')).not.toBeInTheDocument()
 
-      // Check that only Cancel button is shown
       expect(screen.getByText('Cancel')).toBeInTheDocument()
     })
 
-    it('should render custom loading text when provided', () => {
+    it('should render custom loading text when provided and loading is true', () => {
       render(
         <TranslationDialogWrapper
           open
@@ -81,11 +78,10 @@ describe('TranslationDialogWrapper', () => {
           loadingText="Custom Loading Text"
           testId="test-dialog"
         >
-          <Typography data-testid="test-children">Test Children</Typography>
+          <Typography>Test Children</Typography>
         </TranslationDialogWrapper>
       )
 
-      // Check that custom loading text is shown
       expect(screen.getByText('Custom Loading Text')).toBeInTheDocument()
     })
   })
@@ -101,7 +97,7 @@ describe('TranslationDialogWrapper', () => {
           title="Test Title"
           testId="test-dialog"
         >
-          <Typography data-testid="test-children">Test Children</Typography>
+          <Typography>Test Children</Typography>
         </TranslationDialogWrapper>
       )
 
@@ -119,7 +115,7 @@ describe('TranslationDialogWrapper', () => {
           title="Test Title"
           testId="test-dialog"
         >
-          <Typography data-testid="test-children">Test Children</Typography>
+          <Typography>Test Children</Typography>
         </TranslationDialogWrapper>
       )
 
@@ -137,11 +133,10 @@ describe('TranslationDialogWrapper', () => {
           title="Test Title"
           testId="test-dialog"
         >
-          <Typography data-testid="test-children">Test Children</Typography>
+          <Typography>Test Children</Typography>
         </TranslationDialogWrapper>
       )
 
-      // Click the Create button
       fireEvent.click(screen.getByText('Create'))
       expect(onTranslate).toHaveBeenCalled()
     })
