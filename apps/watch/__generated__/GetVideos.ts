@@ -29,6 +29,11 @@ export interface GetVideos_videos_snippet {
   value: string;
 }
 
+export interface GetVideos_videos_description {
+  __typename: "VideoDescription";
+  value: string;
+}
+
 export interface GetVideos_videos_variant {
   __typename: "VideoVariant";
   id: string;
@@ -48,6 +53,7 @@ export interface GetVideos_videos {
   images: GetVideos_videos_images[];
   imageAlt: GetVideos_videos_imageAlt[];
   snippet: GetVideos_videos_snippet[];
+  description: GetVideos_videos_description[];
   /**
    * slug is a permanent link to the video.
    */

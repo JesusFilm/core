@@ -44,7 +44,8 @@ export function ContentHero(): ReactElement {
         alignItems: 'flex-end',
         position: 'relative',
         transition: 'height 0.3s ease-out',
-        bgcolor: 'background.default'
+        bgcolor: 'background.default',
+        zIndex: 1
       }}
       data-testid="ContainerHero"
     >
