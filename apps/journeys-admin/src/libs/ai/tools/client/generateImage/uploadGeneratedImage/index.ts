@@ -1,0 +1,1 @@
+export { uploadGeneratedImage } from './uploadGeneratedImage'
