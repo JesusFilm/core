@@ -1,6 +1,10 @@
 import compact from 'lodash/compact'
 
 import { prisma } from '../../lib/prisma'
+import {
+  videoCacheReset,
+  videoVariantCacheReset
+} from '../../lib/videoCacheReset'
 import { builder } from '../builder'
 import { Language } from '../language'
 
@@ -133,22 +137,22 @@ builder.mutationFields((t) => ({
           version: input.version ?? undefined
         }
       })
-
       const video = await prisma.video.findUnique({
         where: { id: newVariant.videoId },
         select: { availableLanguages: true }
       })
-
       const currentLanguages = video?.availableLanguages || []
       const updatedLanguages = Array.from(
         new Set([...currentLanguages, newVariant.languageId])
       )
-
       await prisma.video.update({
         where: { id: newVariant.videoId },
         data: { availableLanguages: updatedLanguages }
       })
-
+      try {
+        await videoVariantCacheReset(newVariant.id)
+        await videoCacheReset(newVariant.videoId)
+      } catch {}
       return newVariant
     }
   }),
@@ -159,7 +163,7 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoVariantUpdateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
-      return await prisma.videoVariant.update({
+      const updated = await prisma.videoVariant.update({
         ...query,
         where: { id: input.id },
         data: {
@@ -179,6 +183,10 @@ builder.mutationFields((t) => ({
           version: input.version ?? undefined
         }
       })
+      try {
+        await videoVariantCacheReset(updated.id)
+      } catch {}
+      return updated
     }
   }),
   videoVariantDelete: t.withAuth({ isPublisher: true }).prismaField({
@@ -188,10 +196,15 @@ builder.mutationFields((t) => ({
       id: t.arg.id({ required: true })
     },
     resolve: async (query, _parent, { id }) => {
-      return await prisma.videoVariant.delete({
+      const deleted = await prisma.videoVariant.delete({
         ...query,
         where: { id }
       })
+      try {
+        await videoVariantCacheReset(deleted.id)
+        await videoCacheReset(deleted.videoId)
+      } catch {}
+      return deleted
     }
   })
 }))

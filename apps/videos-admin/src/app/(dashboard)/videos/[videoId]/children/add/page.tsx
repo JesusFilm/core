@@ -13,7 +13,6 @@ import { ReactElement, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
-import { getVideoSlug } from '../../../../../libs/getVideoSlug'
 import { VideoCreateForm } from '../../../_VideoCreateForm'
 
 import { ExistingVideoByIdSelector } from './_ExistingVideoByIdSelector'
