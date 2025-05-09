@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { expect } from '@playwright/test'
-import dayjs from 'dayjs'
 import type { Page } from 'playwright-core'
 
 import testData from '../utils/testData.json'
+import { generateRandomNumber } from '../framework/helpers'
 
 let randomNumber = ''
 const thirtySecondsTimeout = 30000
@@ -16,21 +17,22 @@ export class JourneyLevelActions {
   selectedTeam
   descriptionText = testData.journey.descriptionText
   selectedLanguage = ''
+  journeyNamePath =
+    'div[data-testid *="JourneyCard"] div.MuiCardContent-root div.MuiTypography-root'
+
   constructor(page: Page) {
     this.page = page
-    randomNumber =
-      dayjs().format('DDMMYY-hhmmss') +
-      Math.floor(Math.random() * (100 - 999 + 1) + 999)
+    randomNumber = generateRandomNumber(3)
     this.memberEmail = `playwright${randomNumber}@example.com`
   }
 
-  async setBrowserContext(context) {
+  async setBrowserContext(context): Promise<void> {
     this.context = context
   }
 
-  async clickThreeDotOfExistingJourney() {
+  async clickThreeDotOfExistingJourney(): Promise<void> {
     this.existingJourneyName = await this.page
-      .locator('span[data-testid="new-journey-badge"] div', {
+      .locator(this.journeyNamePath, {
         hasNotText: 'Untitled Journey'
       })
       .first()
@@ -42,10 +44,10 @@ export class JourneyLevelActions {
       .first()
       .locator('button#journey-actions')
       .first()
-      .click()
+      .click({ delay: 500 })
   }
 
-  async clickThreeDotOfCreatedJourney(journeyName) {
+  async clickThreeDotOfCreatedJourney(journeyName): Promise<void> {
     await this.page
       .locator('div[aria-label="journey-card"]', { hasText: journeyName })
       .first()
@@ -55,9 +57,9 @@ export class JourneyLevelActions {
     this.existingJourneyName = journeyName
   }
 
-  async selectExistingJourney() {
+  async selectExistingJourney(): Promise<void> {
     this.existingJourneyName = await this.page
-      .locator('span[data-testid="new-journey-badge"] div', {
+      .locator(this.journeyNamePath, {
         hasNotText: 'Untitled Journey'
       })
       .first()
@@ -70,7 +72,7 @@ export class JourneyLevelActions {
       .click()
   }
 
-  async selectCreatedJourney(journeyName) {
+  async selectCreatedJourney(journeyName): Promise<void> {
     this.existingJourneyName = journeyName
     await this.page
       .locator('div[aria-label="journey-card"]', { hasText: journeyName })
@@ -78,13 +80,13 @@ export class JourneyLevelActions {
       .click()
   }
 
-  async clickThreeDotOptions(options) {
+  async clickThreeDotOptions(options): Promise<void> {
     await this.page
       .locator('ul[aria-labelledby="journey-actions"] li', { hasText: options })
       .click()
   }
 
-  async enterTitle() {
+  async enterTitle(): Promise<void> {
     this.renameJourneyName = testData.journey.renameJourneyName + randomNumber
     await this.page
       .locator('input#title')
@@ -93,31 +95,31 @@ export class JourneyLevelActions {
     await this.page.locator('input#title').fill(this.renameJourneyName)
   }
 
-  async verifyJourneyRenamedInActiveList() {
+  async verifyJourneyRenamedInActiveList(): Promise<void> {
+    await expect(this.page.locator(this.journeyNamePath).first()).toBeVisible({
+      timeout: 300000
+    })
     await expect(
-      this.page.locator('span[data-testid="new-journey-badge"] div').first()
-    ).toBeVisible({ timeout: 300000 })
-    await expect(
-      this.page.locator('span[data-testid="new-journey-badge"] div', {
+      this.page.locator(this.journeyNamePath, {
         hasText: this.renameJourneyName
       })
     ).toBeVisible()
     await expect(
-      this.page.locator('span[data-testid="new-journey-badge"] div', {
+      this.page.locator(this.journeyNamePath, {
         hasText: this.existingJourneyName
       })
     ).toBeHidden({ timeout: thirtySecondsTimeout })
   }
 
-  async enterTeamMember() {
+  async enterTeamMember(): Promise<void> {
     await this.page.locator('input[name="email"]').fill(this.memberEmail)
   }
 
-  async clickPlusMemberInMemberPopup() {
+  async clickPlusMemberInMemberPopup(): Promise<void> {
     await this.page.locator('button[aria-label="add user"]').click()
   }
 
-  async verifyAccessAddedInManageEditors() {
+  async verifyAccessAddedInManageEditors(): Promise<void> {
     await expect(
       this.page.locator('div[data-testid="UserListItem"] p', {
         hasText: this.memberEmail
@@ -125,11 +127,11 @@ export class JourneyLevelActions {
     ).toBeVisible({ timeout: 20000 })
   }
 
-  async clickDiaLogBoxCloseBtn() {
+  async clickDiaLogBoxCloseBtn(): Promise<void> {
     await this.page.locator('button[data-testid="dialog-close-button"]').click()
   }
 
-  async verifyPreviewForExistingJourney() {
+  async verifyPreviewForExistingJourney(): Promise<void> {
     const [newPage] = await Promise.all([
       this.context.waitForEvent('page'),
       this.page
@@ -139,7 +141,7 @@ export class JourneyLevelActions {
         .click()
     ])
     await newPage.waitForLoadState()
-    // await expect(await newPage.locator('h3[data-testid="JourneysTypography"]')).toHaveText(this.existingJourneyName)
+    // await expect(await newPage.locator('h3[data-testid="JourneysTypography"]').toHaveText(this.existingJourneyName)
     const tabName: string = await newPage.title()
     expect(tabName.includes(this.existingJourneyName)).toBeTruthy()
     const slidesCount = await newPage
@@ -157,6 +159,7 @@ export class JourneyLevelActions {
     for (let slide = 1; slide < slidesCount; slide++) {
       await newPage
         .locator('button[data-testid="ConductorNavigationButtonNext"]')
+        // eslint-disable-next-line playwright/no-force-option
         .hover({ force: true })
       await newPage
         .locator('button[data-testid="ConductorNavigationButtonNext"]')
@@ -172,15 +175,15 @@ export class JourneyLevelActions {
     await newPage.close()
   }
 
-  async verifyExistingJourneyDuplicate() {
+  async verifyExistingJourneyDuplicate(): Promise<void> {
     await expect(
-      this.page.locator('span[data-testid="new-journey-badge"] div', {
+      this.page.locator(this.journeyNamePath, {
         hasText: `${this.existingJourneyName} copy`
       })
     ).toBeVisible()
   }
 
-  async verifySnackBarMsg(snackbarMsg: string) {
+  async verifySnackBarMsg(snackbarMsg: string): Promise<void> {
     await expect(
       this.page.locator('div[id="notistack-snackbar"]', {
         hasText: snackbarMsg
@@ -193,13 +196,13 @@ export class JourneyLevelActions {
     ).toBeHidden({ timeout: thirtySecondsTimeout })
   }
 
-  async clickSelectTeamDropDownIcon() {
+  async clickSelectTeamDropDownIcon(): Promise<void> {
     await this.page
       .locator('div[role="dialog"] div[aria-haspopup="listbox"]')
       .click()
   }
 
-  async selectTeamToCopyTheJourney() {
+  async selectTeamToCopyTheJourney(): Promise<void> {
     this.selectedTeam = await this.page
       .locator('div[id="menu-teamSelect"] ul[role="listbox"] li')
       .last()
@@ -215,7 +218,7 @@ export class JourneyLevelActions {
     ).toBeHidden({ timeout: thirtySecondsTimeout })
   }
 
-  async clickCopyButton() {
+  async clickCopyButton(): Promise<void> {
     await this.page
       .locator('div[data-testid="dialog-action"] button[type="button"]', {
         hasText: 'Copy'
@@ -223,23 +226,23 @@ export class JourneyLevelActions {
       .click()
   }
 
-  async verifyCopiedTeamNameUpdatedInTeamSelectDropdown() {
+  async verifyCopiedTeamNameUpdatedInTeamSelectDropdown(): Promise<void> {
     await expect(this.page.locator('div[aria-haspopup="listbox"]')).toHaveText(
       this.selectedTeam
     )
   }
 
-  async verifyCopiedJournetInSelectedTeamList() {
+  async verifyCopiedJournetInSelectedTeamList(): Promise<void> {
     await expect(
       this.page
-        .locator('span[data-testid="new-journey-badge"] div', {
+        .locator(this.journeyNamePath, {
           hasText: this.existingJourneyName
         })
         .first()
     ).toBeVisible()
   }
 
-  async clickThreeDotOptionsOfJourneyCreationPage(option) {
+  async clickThreeDotOptionsOfJourneyCreationPage(option): Promise<void> {
     await this.page
       .locator('ul[aria-labelledby="edit-journey-actions"] li', {
         hasText: option
@@ -261,12 +264,12 @@ export class JourneyLevelActions {
     }
   }
 
-  async enterDescription() {
+  async enterDescription(): Promise<void> {
     await this.page.locator('textarea#description').clear({ timeout: 50000 })
     await this.page.locator('textarea#description').fill(this.descriptionText)
   }
 
-  async verifyDescriptionAddedForSelectedJourney() {
+  async verifyDescriptionAddedForSelectedJourney(): Promise<void> {
     await expect(
       this.page
         .locator('div[aria-label="journey-card"]', {
@@ -279,7 +282,7 @@ export class JourneyLevelActions {
     ).toBeVisible()
   }
 
-  async enterLanguage(language: string) {
+  async enterLanguage(language: string): Promise<void> {
     const selectedValue = await this.page
       .locator('input[placeholder="Search Language"]')
       .getAttribute('value', { timeout: thirtySecondsTimeout })
@@ -333,20 +336,20 @@ export class JourneyLevelActions {
   }
 
   async verifyLinkIsCopied() {
-    const copiedLinkPage = await this.context.newPage()
     const clipBoardText = await this.page.evaluate(
       'navigator.clipboard.readText()'
     )
+    const copiedLinkPage = await this.context.newPage()
     await copiedLinkPage.goto(clipBoardText)
     const tabName: string = await copiedLinkPage.title()
     expect(tabName.includes(this.existingJourneyName)).toBeTruthy()
   }
 
-  async clickNavigateToGoalBtn() {
+  async clickNavigateToGoalBtn(): Promise<void> {
     await this.page.locator('div[data-testid="StrategyItem"] button').click()
   }
 
-  async verifyPageIsNavigatedToGoalPage() {
+  async verifyPageIsNavigatedToGoalPage(): Promise<void> {
     await expect(
       this.page.locator('div[data-testid="ActionInformation"] h6', {
         hasText: 'What are Goals?'
@@ -356,13 +359,13 @@ export class JourneyLevelActions {
     // expect( currentUrl.includes('param=goals')).toBeTruthy() // now the uRL doesn't change after clicking goal(Strategy) btn
   }
 
-  async clickNavigationSideMenu() {
+  async clickNavigationSideMenu(): Promise<void> {
     await this.page
       .locator('div[data-testid="NavigationListItemToggle"]')
       .click()
   }
 
-  async verifyNavigationSideMenuOpened() {
+  async verifyNavigationSideMenuOpened(): Promise<void> {
     await expect(
       this.page.locator(
         'div[data-testid="NavigationDrawer"] div[aria-hidden="true"][style*="visibility: hidden"]'
@@ -370,7 +373,7 @@ export class JourneyLevelActions {
     ).toBeHidden()
   }
 
-  async verifyNavigationSideMenuClosed() {
+  async verifyNavigationSideMenuClosed(): Promise<void> {
     await expect(
       this.page.locator(
         'div[data-testid="NavigationDrawer"] div[aria-hidden="true"][style*="visibility: hidden"]'
@@ -378,7 +381,7 @@ export class JourneyLevelActions {
     ).toHaveCount(1)
   }
 
-  async clickHelpBtn() {
+  async clickHelpBtn(): Promise<void> {
     await expect(
       this.page.getByTestId('side-header').locator('button[aria-label="Help"]')
     ).toBeEnabled({ timeout: thirtySecondsTimeout })
@@ -388,7 +391,7 @@ export class JourneyLevelActions {
       .click({ delay: 3000 })
   }
 
-  async verifyHelpWindowOpened() {
+  async verifyHelpWindowOpened(): Promise<void> {
     await expect(
       this.page.locator(
         'div[class="Beacon"] div[class*="BeaconContainer-enter-done"]'
@@ -396,20 +399,28 @@ export class JourneyLevelActions {
     ).toBeVisible()
   }
 
-  async verifySelectedLanguageInLanguagePopup() {
+  async verifySelectedLanguageInLanguagePopup(): Promise<void> {
     await expect(
       this.page.locator('input[placeholder="Search Language"]')
     ).toHaveAttribute('value', this.selectedLanguage)
   }
 
-  async sleep(ms) {
+  async sleep(ms): Promise<Promise<void>> {
     return await new Promise((resolve) => setTimeout(resolve, ms))
   }
 
-  async selectFirstJourney() {
+  async selectFirstJourney(): Promise<void> {
     await this.page
       .locator('div[aria-label="journey-card"] a[href *="journeys"]')
       .first()
       .click()
+  }
+
+  async validateJourneyDescription() {
+    await expect(
+      this.page.locator('p[data-testid="DescriptionDot"] + p', {
+        hasText: this.descriptionText
+      })
+    ).toBeVisible()
   }
 }

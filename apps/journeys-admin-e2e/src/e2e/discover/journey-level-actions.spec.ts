@@ -1,4 +1,3 @@
-/* eslint-disable playwright/no-skipped-test */
 /* eslint-disable playwright/expect-expect */
 import { test } from '@playwright/test'
 
@@ -135,8 +134,10 @@ test.describe('Journey level actions', () => {
     ) // clicking on the description option of the three dot options
     await journeyLevelActions.enterDescription() // entering the description value on the description field in the 'edit description' popup
     await journeyPage.clickSaveBtn() // clicking on save button in the 'edit description' popup
-    await journeyPage.backIcon() // clicking back icon at the top left corner in the custom journey page
-    await journeyLevelActions.verifyDescriptionAddedForSelectedJourney() // verifying the journey is displaying in the journey list with added description below the journey title
+    await journeyLevelActions.validateJourneyDescription() // verifying the description is updated in the journey details page
+    //new UI descriptions details are not shown in the journey card list, so commenting the below line
+    //await journeyPage.backIcon() // clicking back icon at the top left corner in the custom journey page
+    //await journeyLevelActions.verifyDescriptionAddedForSelectedJourney() // verifying the journey is displaying in the journey list with added description below the journey title
   })
 
   // Discover page -> Select an existing journey -> Three dots on top right -> Language
