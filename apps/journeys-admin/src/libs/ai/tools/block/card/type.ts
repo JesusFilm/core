@@ -18,8 +18,16 @@ export const blockCardSchema = blockSchema.extend({
   __typename: z.literal('CardBlock'),
   backgroundColor: z.string().describe('Background color of the card (hex)'),
   coverBlockId: z.string().describe('ID of the cover block'),
-  themeMode: themeModeEnum.nullable().describe('Theme mode of the card'),
-  themeName: themeNameEnum.nullable().describe('Theme name of the card'),
+  themeMode: themeModeEnum
+    .nullable()
+    .describe(
+      'Theme mode of the card. Use dark as the default value if no other theme mode is specified.'
+    ),
+  themeName: themeNameEnum
+    .nullable()
+    .describe(
+      'Theme name of the card. Use base as the default value if no other theme name is specified.'
+    ),
   fullscreen: z.boolean().describe('Whether the card is fullscreen'),
   action: actionSchema
 }) satisfies z.ZodType<BlockFields_CardBlock>
@@ -36,6 +44,11 @@ export const blockCardCreateInputSchema = blockCardSchema
   })
   .merge(
     z.object({
+      backgroundColor: z
+        .string()
+        .describe(
+          'Background color of the card (hex). Use #30313D as the default value if no other color is specified.'
+        ),
       parentBlockId: z
         .string()
         .describe(
