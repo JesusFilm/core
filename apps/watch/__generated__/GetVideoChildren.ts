@@ -29,6 +29,11 @@ export interface GetVideoChildren_video_children_snippet {
   value: string;
 }
 
+export interface GetVideoChildren_video_children_description {
+  __typename: "VideoDescription";
+  value: string;
+}
+
 export interface GetVideoChildren_video_children_variant {
   __typename: "VideoVariant";
   id: string;
@@ -40,6 +45,13 @@ export interface GetVideoChildren_video_children_variant {
   slug: string;
 }
 
+export interface GetVideoChildren_video_children_studyQuestions {
+  __typename: "VideoStudyQuestion";
+  id: string;
+  value: string;
+  order: number;
+}
+
 export interface GetVideoChildren_video_children {
   __typename: "Video";
   id: string;
@@ -48,11 +60,13 @@ export interface GetVideoChildren_video_children {
   images: GetVideoChildren_video_children_images[];
   imageAlt: GetVideoChildren_video_children_imageAlt[];
   snippet: GetVideoChildren_video_children_snippet[];
+  description: GetVideoChildren_video_children_description[];
   /**
    * slug is a permanent link to the video.
    */
   slug: string;
   variant: GetVideoChildren_video_children_variant | null;
+  studyQuestions: GetVideoChildren_video_children_studyQuestions[];
   /**
    * the number value of the amount of children on a video
    */
