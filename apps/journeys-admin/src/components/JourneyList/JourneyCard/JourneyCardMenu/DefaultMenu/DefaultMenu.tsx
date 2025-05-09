@@ -123,6 +123,26 @@ export function DefaultMenu({
     void loadUser()
   }, [loadUser])
 
+  // Determine the current user's role for this journey
+  const userRole = useMemo<UserJourneyRole | undefined>(() => {
+    if (
+      journeyData?.adminJourney?.userJourneys == null ||
+      currentUser?.id == null
+    )
+      return undefined
+
+    const userJourney = journeyData.adminJourney.userJourneys.find(
+      (userJourney) => userJourney.user?.id === currentUser.id
+    )
+
+    return userJourney?.role
+  }, [journeyData?.adminJourney?.userJourneys, currentUser?.id])
+
+  console.log('Debug - User Role:', {
+    userRole,
+    currentUserEmail: currentUser?.email
+  })
+
   // Determine the current user's role in the team
   const teamRole = useMemo<UserTeamRole | undefined>(() => {
     if (activeTeam?.userTeams == null || currentUser?.email == null)
