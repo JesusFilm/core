@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import { ReactElement, useCallback, useEffect, useRef } from 'react'
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 import 'video.js/dist/video-js.css'
@@ -10,6 +10,7 @@ import { MuxMetadata } from '@core/shared/ui/muxMetadataType'
 import 'videojs-mux'
 
 import { useVideo } from '../../../../libs/videoContext'
+import { VideoControls } from '../../../VideoContentPage/VideoHero/VideoPlayer/VideoControls'
 
 interface ContentHeroVideoProps {
   onPlayerReady: (player: Player) => void
@@ -18,9 +19,12 @@ interface ContentHeroVideoProps {
 export function ContentHeroVideo({
   onPlayerReady
 }: ContentHeroVideoProps): ReactElement {
+  const { variant, ...video } = useVideo()
+
+  const title = video.title?.[0]?.value ?? ''
+
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<Player | null>(null)
-  const { variant, title } = useVideo()
 
   const pauseVideoOnScrollAway = useCallback((): void => {
     const scrollY = window.scrollY
@@ -44,7 +48,7 @@ export function ContentHeroVideo({
     const muxMetadata: MuxMetadata = {
       env_key: process.env.NEXT_PUBLIC_MUX_DEFAULT_REPORTING_KEY || '',
       player_name: 'watch',
-      video_title: title?.[0]?.value ?? '',
+      video_title: title,
       video_id: variant?.id ?? ''
     }
 
@@ -86,12 +90,15 @@ export function ContentHeroVideo({
         left: 0,
         right: 0,
         height: {
-          xs: '85%',
-          md: '85%'
+          xs: '90%',
+          md: '80%'
         },
-        maxWidth: 1919,
+        maxWidth: 1920,
         marginX: 'auto',
-        zIndex: 0
+        zIndex: 0,
+        '.vjs-hidden': { display: 'none' },
+        '.vjs-loading-spinner, .vjs-seeking .vjs-loading-spinner, .vjs-waiting .vjs-loading-spinner':
+          { display: 'none' }
       }}
       data-testid="ContentHeroVideoContainer"
     >
@@ -109,6 +116,9 @@ export function ContentHeroVideo({
         }}
         playsInline
       />
+      {playerRef.current != null && (
+        <VideoControls player={playerRef.current} />
+      )}
     </Box>
   )
 }
