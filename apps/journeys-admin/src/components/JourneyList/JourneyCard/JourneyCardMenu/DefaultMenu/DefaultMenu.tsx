@@ -143,6 +143,15 @@ export function DefaultMenu({
     currentUserEmail: currentUser?.email
   })
 
+  console.log('Debug - Role Comparison:', {
+    isOwner,
+    userRole,
+    isOwnerRole: userRole === UserJourneyRole.owner,
+    areTheyEqual: isOwner === (userRole === UserJourneyRole.owner),
+    currentUserId: currentUser?.id,
+    userJourneys: journeyData?.adminJourney?.userJourneys
+  })
+
   // Determine the current user's role in the team
   const teamRole = useMemo<UserTeamRole | undefined>(() => {
     if (activeTeam?.userTeams == null || currentUser?.email == null)
