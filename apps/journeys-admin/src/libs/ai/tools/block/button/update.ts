@@ -30,14 +30,19 @@ export function blockButtonUpdate(
       input: blockButtonUpdateInputSchema
     }),
     execute: async ({ id, input }) => {
-      const { data } = await client.mutate<
-        AiBlockButtonUpdateMutation,
-        AiBlockButtonUpdateMutationVariables
-      >({
-        mutation: AI_BLOCK_BUTTON_UPDATE,
-        variables: { id, input }
-      })
-      return data?.buttonBlockUpdate
+      try {
+        const { data } = await client.mutate<
+          AiBlockButtonUpdateMutation,
+          AiBlockButtonUpdateMutationVariables
+        >({
+          mutation: AI_BLOCK_BUTTON_UPDATE,
+          variables: { id, input }
+        })
+        return data?.buttonBlockUpdate
+      } catch (error) {
+        console.error(error)
+        return `Error updating button block: ${error}`
+      }
     }
   })
 }

@@ -28,14 +28,19 @@ export function blockTypographyCreate(
       input: blockTypographyCreateInputSchema
     }),
     execute: async ({ input }) => {
-      const { data } = await client.mutate<
-        AiBlockTypographyCreateMutation,
-        AiBlockTypographyCreateMutationVariables
-      >({
-        mutation: AI_BLOCK_TYPOGRAPHY_CREATE,
-        variables: { input }
-      })
-      return data?.typographyBlockCreate
+      try {
+        const { data } = await client.mutate<
+          AiBlockTypographyCreateMutation,
+          AiBlockTypographyCreateMutationVariables
+        >({
+          mutation: AI_BLOCK_TYPOGRAPHY_CREATE,
+          variables: { input }
+        })
+        return data?.typographyBlockCreate
+      } catch (error) {
+        console.error(error)
+        return `Error creating typography block: ${error}`
+      }
     }
   })
 }

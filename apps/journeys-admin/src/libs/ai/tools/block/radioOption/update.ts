@@ -30,14 +30,19 @@ export function blockRadioOptionUpdate(
       input: blockRadioOptionUpdateInputSchema
     }),
     execute: async ({ id, input }) => {
-      const { data } = await client.mutate<
-        AiBlockRadioOptionMutation,
-        AiBlockRadioOptionMutationVariables
-      >({
-        mutation: AI_BLOCK_RADIO_OPTION_UPDATE,
-        variables: { id, input }
-      })
-      return data?.radioOptionBlockUpdate
+      try {
+        const { data } = await client.mutate<
+          AiBlockRadioOptionMutation,
+          AiBlockRadioOptionMutationVariables
+        >({
+          mutation: AI_BLOCK_RADIO_OPTION_UPDATE,
+          variables: { id, input }
+        })
+        return data?.radioOptionBlockUpdate
+      } catch (error) {
+        console.error(error)
+        return `Error updating radio option block: ${error}`
+      }
     }
   })
 }

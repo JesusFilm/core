@@ -30,14 +30,19 @@ export function blockActionUpdate(
       input: blockActionUpdateInputSchema
     }),
     execute: async ({ id, input }) => {
-      const { data } = await client.mutate<
-        AiBlockActionUpdateMutation,
-        AiBlockActionUpdateMutationVariables
-      >({
-        mutation: AI_BLOCK_ACTION_UPDATE,
-        variables: { id, input }
-      })
-      return data?.blockUpdateAction
+      try {
+        const { data } = await client.mutate<
+          AiBlockActionUpdateMutation,
+          AiBlockActionUpdateMutationVariables
+        >({
+          mutation: AI_BLOCK_ACTION_UPDATE,
+          variables: { id, input }
+        })
+        return data?.blockUpdateAction
+      } catch (error) {
+        console.error(error)
+        return `Error updating action: ${error}`
+      }
     }
   })
 }

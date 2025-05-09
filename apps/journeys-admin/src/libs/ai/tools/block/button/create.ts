@@ -26,14 +26,19 @@ export function blockButtonCreate(
       input: blockButtonCreateInputSchema
     }),
     execute: async ({ input }) => {
-      const { data } = await client.mutate<
-        AiBlockButtonCreateMutation,
-        AiBlockButtonCreateMutationVariables
-      >({
-        mutation: AI_BLOCK_BUTTON_CREATE,
-        variables: { input }
-      })
-      return data?.buttonBlockCreate
+      try {
+        const { data } = await client.mutate<
+          AiBlockButtonCreateMutation,
+          AiBlockButtonCreateMutationVariables
+        >({
+          mutation: AI_BLOCK_BUTTON_CREATE,
+          variables: { input }
+        })
+        return data?.buttonBlockCreate
+      } catch (error) {
+        console.error(error)
+        return `Error creating button block: ${error}`
+      }
     }
   })
 }

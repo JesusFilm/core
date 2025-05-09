@@ -30,14 +30,19 @@ export function blockTypographyUpdate(
       input: blockTypographyUpdateInputSchema
     }),
     execute: async ({ id, input }) => {
-      const { data } = await client.mutate<
-        AiBlockTypographyUpdateMutation,
-        AiBlockTypographyUpdateMutationVariables
-      >({
-        mutation: AI_BLOCK_TYPOGRAPHY_UPDATE,
-        variables: { id, input }
-      })
-      return data?.typographyBlockUpdate
+      try {
+        const { data } = await client.mutate<
+          AiBlockTypographyUpdateMutation,
+          AiBlockTypographyUpdateMutationVariables
+        >({
+          mutation: AI_BLOCK_TYPOGRAPHY_UPDATE,
+          variables: { id, input }
+        })
+        return data?.typographyBlockUpdate
+      } catch (error) {
+        console.error(error)
+        return `Error updating typography block: ${error}`
+      }
     }
   })
 }

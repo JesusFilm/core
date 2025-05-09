@@ -53,16 +53,8 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
       const shouldRefetch = result.parts?.some(
         (part) =>
           part.type === 'tool-invocation' &&
-          [
-            'journeyUpdateMany',
-            'blockCardUpdateMany',
-            'blockTypographyCreate',
-            'blockTypographyUpdateMany',
-            'blockRadioOptionUpdateMany',
-            'blockButtonUpdateMany',
-            'blockImageUpdateMany',
-            'blockVideoUpdateMany'
-          ].includes(part.toolInvocation.toolName)
+          (part.toolInvocation.toolName.endsWith('Update') ||
+            part.toolInvocation.toolName.endsWith('Create'))
       )
       if (shouldRefetch) {
         void client.refetchQueries({

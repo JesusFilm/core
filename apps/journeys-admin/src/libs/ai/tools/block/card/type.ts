@@ -35,7 +35,11 @@ export const blockCardCreateInputSchema = blockCardSchema
   })
   .merge(
     z.object({
-      parentBlockId: z.string().describe('ID of the parent block')
+      parentBlockId: z
+        .string()
+        .describe(
+          'ID of the parent block. This should be the step block that the card is inside of.'
+        )
     })
   ) satisfies z.ZodType<CardBlockCreateInput>
 
@@ -48,9 +52,11 @@ export const blockCardUpdateInputSchema = blockCardSchema
     fullscreen: true
   })
   .merge(
-    blockCardSchema
-      .pick({
-        parentBlockId: true
-      })
-      .partial()
+    z.object({
+      parentBlockId: z
+        .string()
+        .describe(
+          'ID of the parent block. This should be the step block that the card is inside of.'
+        )
+    })
   ) satisfies z.ZodType<CardBlockUpdateInput>

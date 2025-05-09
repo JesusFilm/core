@@ -30,14 +30,19 @@ export function blockImageUpdate(
       input: blockImageUpdateInputSchema
     }),
     execute: async ({ id, input }) => {
-      const { data } = await client.mutate<
-        AiBlockImageUpdateMutation,
-        AiBlockImageUpdateMutationVariables
-      >({
-        mutation: AI_BLOCK_IMAGE_UPDATE,
-        variables: { id, input }
-      })
-      return data?.imageBlockUpdate
+      try {
+        const { data } = await client.mutate<
+          AiBlockImageUpdateMutation,
+          AiBlockImageUpdateMutationVariables
+        >({
+          mutation: AI_BLOCK_IMAGE_UPDATE,
+          variables: { id, input }
+        })
+        return data?.imageBlockUpdate
+      } catch (error) {
+        console.error(error)
+        return `Error updating image block: ${error}`
+      }
     }
   })
 }

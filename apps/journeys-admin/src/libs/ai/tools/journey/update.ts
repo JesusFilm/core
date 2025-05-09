@@ -27,14 +27,19 @@ export function journeyUpdate(
       input: journeyUpdateInputSchema
     }),
     execute: async ({ id, input }) => {
-      const result = await client.mutate<
-        AiJourneyUpdateMutation,
-        AiJourneyUpdateMutationVariables
-      >({
-        mutation: AI_JOURNEY_UPDATE,
-        variables: { id, input }
-      })
-      return result.data?.journeyUpdate
+      try {
+        const result = await client.mutate<
+          AiJourneyUpdateMutation,
+          AiJourneyUpdateMutationVariables
+        >({
+          mutation: AI_JOURNEY_UPDATE,
+          variables: { id, input }
+        })
+        return result.data?.journeyUpdate
+      } catch (error) {
+        console.error(error)
+        return `Error updating journey: ${error}`
+      }
     }
   })
 }

@@ -30,14 +30,19 @@ export function blockVideoUpdate(
       input: blockVideoUpdateInputSchema
     }),
     execute: async ({ id, input }) => {
-      const { data } = await client.mutate<
-        AiBlockVideoUpdateMutation,
-        AiBlockVideoUpdateMutationVariables
-      >({
-        mutation: AI_BLOCK_VIDEO_UPDATE,
-        variables: { id, input }
-      })
-      return data?.videoBlockUpdate
+      try {
+        const { data } = await client.mutate<
+          AiBlockVideoUpdateMutation,
+          AiBlockVideoUpdateMutationVariables
+        >({
+          mutation: AI_BLOCK_VIDEO_UPDATE,
+          variables: { id, input }
+        })
+        return data?.videoBlockUpdate
+      } catch (error) {
+        console.error(error)
+        return `Error updating video block: ${error}`
+      }
     }
   })
 }

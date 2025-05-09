@@ -27,14 +27,19 @@ export function blockCardUpdate(
       input: blockCardUpdateInputSchema
     }),
     execute: async ({ id, input }) => {
-      const { data } = await client.mutate<
-        AiBlockCardUpdateMutation,
-        AiBlockCardUpdateMutationVariables
-      >({
-        mutation: AI_BLOCK_CARD_UPDATE,
-        variables: { id, input }
-      })
-      return data?.cardBlockUpdate
+      try {
+        const { data } = await client.mutate<
+          AiBlockCardUpdateMutation,
+          AiBlockCardUpdateMutationVariables
+        >({
+          mutation: AI_BLOCK_CARD_UPDATE,
+          variables: { id, input }
+        })
+        return data?.cardBlockUpdate
+      } catch (error) {
+        console.error(error)
+        return `Error updating card block: ${error}`
+      }
     }
   })
 }
