@@ -102,11 +102,22 @@ export function DefaultMenu({
     skip: currentUser?.id == null
   })
 
+  console.log('Debug - Current User:', {
+    currentUserId: currentUser?.id,
+    journeyId,
+    journeyData
+  })
+
   const isOwner = journeyData?.adminJourney?.userJourneys?.some(
     (userJourney: { user: { id: string }; role: UserJourneyRole }) =>
       userJourney.user?.id === currentUser?.id &&
       userJourney.role === UserJourneyRole.owner
   )
+
+  console.log('Debug - Owner Check:', {
+    isOwner,
+    userJourneys: journeyData?.adminJourney?.userJourneys
+  })
 
   useEffect(() => {
     void loadUser()
@@ -124,8 +135,19 @@ export function DefaultMenu({
     return userTeam?.role
   }, [activeTeam?.userTeams, currentUser?.email])
 
+  console.log('Debug - Team Role:', {
+    teamRole,
+    activeTeam,
+    currentUserEmail: currentUser?.email
+  })
+
   const isPublisher =
     userRoleData?.getUserRole?.roles?.includes(Role.publisher) === true
+
+  console.log('Debug - Publisher Check:', {
+    isPublisher,
+    userRoles: userRoleData?.getUserRole?.roles
+  })
 
   const canManageJourney =
     isOwner ||
@@ -133,6 +155,15 @@ export function DefaultMenu({
     (isPublisher && template === true)
 
   const cantManageJourney = !canManageJourney
+
+  console.log('Debug - Journey Management:', {
+    canManageJourney,
+    cantManageJourney,
+    isOwner,
+    teamRole,
+    isPublisher,
+    template
+  })
 
   return (
     <>
