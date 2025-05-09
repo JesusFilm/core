@@ -21,6 +21,7 @@ builder.mutationFields((t) => ({
       type: 'ID',
       nullable: false,
       resolve: async (_root, { input }, { user }) => {
+        const originalName = input.name
         // TODO: check if user has write access
         // 1. First get the journey details using Prisma
         const journey = await prisma.journey.findUnique({
@@ -68,7 +69,7 @@ If a description is not provided, do not create one.
 The source language is: ${sourceLanguageName}.
 The target language name is: ${requestedLanguageName}.
 
-Journey Title: ${journey.title}
+Journey Title: ${originalName}
 ${journey.description ? `Journey Description: ${journey.description}` : ''}
 
 Journey Content:
