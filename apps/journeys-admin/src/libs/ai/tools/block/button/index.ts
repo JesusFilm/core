@@ -1,5 +1,5 @@
 export { blockButtonCreate } from './create'
-export { blockButtonUpdateMany } from './updateMany'
+export { blockButtonUpdate } from './update'
 export {
   blockButtonSchema,
   blockButtonCreateInputSchema,

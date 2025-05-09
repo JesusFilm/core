@@ -6,5 +6,5 @@ export {
   blockTypographyColorEnum,
   blockTypographyAlignEnum
 } from './type'
-export { blockTypographyUpdateMany } from './updateMany'
+export { blockTypographyUpdate } from './update'
 export { blockTypographyCreate } from './create'

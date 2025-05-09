@@ -1,19 +1,19 @@
-import { blockActionUpdateMany } from './action'
-import { blockButtonCreate, blockButtonUpdateMany } from './button'
-import { blockCardUpdateMany } from './card'
-import { blockImageUpdateMany } from './image'
-import { blockRadioOptionUpdateMany } from './radioOption'
-import { blockTypographyCreate, blockTypographyUpdateMany } from './typography'
-import { blockVideoUpdateMany } from './video'
+import { blockActionUpdate } from './action'
+import { blockButtonCreate, blockButtonUpdate } from './button'
+import { blockCardUpdate } from './card'
+import { blockImageUpdate } from './image'
+import { blockRadioOptionUpdate } from './radioOption'
+import { blockTypographyCreate, blockTypographyUpdate } from './typography'
+import { blockVideoUpdate } from './video'
 
 export const tools = {
-  blockActionUpdateMany,
+  blockActionUpdate,
   blockButtonCreate,
-  blockButtonUpdateMany,
-  blockCardUpdateMany,
-  blockImageUpdateMany,
-  blockRadioOptionUpdateMany,
+  blockButtonUpdate,
+  blockCardUpdate,
+  blockImageUpdate,
+  blockRadioOptionUpdate,
   blockTypographyCreate,
-  blockTypographyUpdateMany,
-  blockVideoUpdateMany
+  blockTypographyUpdate,
+  blockVideoUpdate
 }

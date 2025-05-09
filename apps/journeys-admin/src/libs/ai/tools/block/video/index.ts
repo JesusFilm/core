@@ -4,4 +4,4 @@ export {
   blockVideoUpdateInputSchema,
   blockVideoUpdateSchema
 } from './type'
-export { blockVideoUpdateMany } from './updateMany'
+export { blockVideoUpdate } from './update'

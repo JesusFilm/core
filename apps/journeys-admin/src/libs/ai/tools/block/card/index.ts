@@ -1,4 +1,4 @@
-export { blockCardUpdateMany } from './updateMany'
+export { blockCardUpdate } from './update'
 export {
   blockCardSchema,
   blockCardCreateInputSchema,

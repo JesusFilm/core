@@ -3,4 +3,4 @@ export {
   blockRadioOptionSchema,
   blockRadioOptionUpdateInputSchema
 } from './type'
-export { blockRadioOptionUpdateMany } from './updateMany'
+export { blockRadioOptionUpdate } from './update'
