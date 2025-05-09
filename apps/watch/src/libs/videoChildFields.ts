@@ -23,6 +23,11 @@ export const VIDEO_CHILD_FIELDS = gql`
       hls
       slug
     }
+    studyQuestions(languageId: $languageId, primary: true) {
+      id
+      value
+      order
+    }
     childrenCount
   }
 `

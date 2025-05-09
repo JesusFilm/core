@@ -45,6 +45,13 @@ export interface GetVideos_videos_variant {
   slug: string;
 }
 
+export interface GetVideos_videos_studyQuestions {
+  __typename: "VideoStudyQuestion";
+  id: string;
+  value: string;
+  order: number;
+}
+
 export interface GetVideos_videos {
   __typename: "Video";
   id: string;
@@ -59,6 +66,7 @@ export interface GetVideos_videos {
    */
   slug: string;
   variant: GetVideos_videos_variant | null;
+  studyQuestions: GetVideos_videos_studyQuestions[];
   /**
    * the number value of the amount of children on a video
    */
