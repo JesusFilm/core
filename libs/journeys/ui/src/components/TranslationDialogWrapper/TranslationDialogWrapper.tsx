@@ -4,7 +4,7 @@ import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, ReactNode, useState } from 'react'
+import { ReactElement, ReactNode } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
@@ -36,6 +36,11 @@ interface TranslationDialogWrapperProps {
   loadingText?: string
 
   /**
+   * Whether the component is in loading state
+   */
+  loading: boolean
+
+  /**
    * Test ID for the component
    */
   testId?: string
@@ -59,27 +64,12 @@ export function TranslationDialogWrapper({
   onTranslate,
   title,
   loadingText,
+  loading,
   testId,
   children
 }: TranslationDialogWrapperProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
-  const [loading, setLoading] = useState(false)
-
+  const { t } = useTranslation('apps-journeys-ui')
   const defaultLoadingText = t('Translating your journey...')
-
-  const handleTranslate = async (): Promise<void> => {
-    if (loading) return
-
-    try {
-      setLoading(true)
-      await onTranslate()
-    } catch (error) {
-      // Error UI should be handled in the onTranslate function
-      console.error('Translation operation failed:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   return (
     <Dialog
@@ -109,7 +99,7 @@ export function TranslationDialogWrapper({
               <LoadingButton
                 variant="contained"
                 color="secondary"
-                onClick={handleTranslate}
+                onClick={onTranslate}
                 loading={loading}
               >
                 {t('Create')}

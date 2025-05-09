@@ -62,6 +62,7 @@ export function TranslateJourneyDialog({
   const { enqueueSnackbar } = useSnackbar()
   const { translateJourney } = useJourneyAiTranslateMutation()
   const [journeyDuplicate] = useJourneyDuplicateMutation()
+  const [loading, setLoading] = useState(false)
 
   // TODO: Update so only the selected AI model + i18n languages are shown.
   const { data: languagesData, loading: languagesLoading } = useLanguagesQuery({
@@ -92,6 +93,8 @@ export function TranslateJourneyDialog({
       return
 
     try {
+      setLoading(true)
+
       // First duplicate the journey
       const { data: duplicateData } = await journeyDuplicate({
         variables: {
@@ -103,7 +106,7 @@ export function TranslateJourneyDialog({
       // Check if duplication was successful
       if (duplicateData?.journeyDuplicate?.id) {
         // Use the duplicated journey ID for translation
-        const jobId = await translateJourney({
+        const translatedJourney = await translateJourney({
           journeyId: duplicateData.journeyDuplicate.id,
           name: `${journeyData.title}`,
           journeyLanguageName:
@@ -114,7 +117,7 @@ export function TranslateJourneyDialog({
             selectedLanguage.nativeName ?? selectedLanguage.localName ?? ''
         })
 
-        if (jobId) {
+        if (translatedJourney) {
           enqueueSnackbar(t('Translation complete'), {
             variant: 'success'
           })
@@ -133,7 +136,8 @@ export function TranslateJourneyDialog({
           variant: 'error'
         }
       )
-      throw error
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -142,6 +146,7 @@ export function TranslateJourneyDialog({
       open={open}
       onClose={onClose}
       onTranslate={handleTranslate}
+      loading={loading}
       title={t('Create Translated Copy')}
       loadingText={t('Translating your journey...')}
       testId="TranslateJourneyDialog"
