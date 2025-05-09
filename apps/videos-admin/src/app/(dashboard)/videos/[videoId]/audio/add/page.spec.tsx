@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
 import { act } from 'react'
 
@@ -246,7 +247,7 @@ describe('AddAudioLanguageDialog', () => {
     expect(editionSelect).toHaveTextContent("Director's Cut")
   })
 
-  it('should handle form interaction', async () => {
+  it('should require all fields and enable submit only when valid', async () => {
     render(
       <SnackbarProvider>
         <MockedProvider>
@@ -255,33 +256,63 @@ describe('AddAudioLanguageDialog', () => {
       </SnackbarProvider>
     )
 
-    // Fill out the form
-    // First set the edition
+    const user = userEvent.setup()
+
+    // Initially, submit button should be disabled
+    expect(screen.getByTestId('submit-button')).toBeDisabled()
+
+    // Select Edition
     await act(async () => {
-      const selects = screen.getAllByTestId('mui-select')
-      const editionSelect = selects[0]
-      fireEvent.change(editionSelect, {
+      fireEvent.change(screen.getAllByTestId('mui-select')[0], {
         target: { value: 'Standard' }
       })
     })
 
-    // Then set the language
+    // Select Status
     await act(async () => {
-      fireEvent.change(screen.getByTestId('language-input'))
-    })
-
-    // Set the status
-    await act(async () => {
-      const selects = screen.getAllByTestId('mui-select')
-      const statusSelect = selects[1]
-      fireEvent.change(statusSelect, {
+      fireEvent.change(screen.getAllByTestId('mui-select')[1], {
         target: { value: 'published' }
       })
     })
 
-    // Finally upload a file
+    // Fill Language
     await act(async () => {
-      fireEvent.change(screen.getByTestId('file-input'))
+      fireEvent.change(screen.getByTestId('language-input'), {
+        target: { value: 'en' }
+      })
+    })
+
+    // Upload file (simulate file input)
+    const file = new File(['audio'], 'audio.mp3', { type: 'audio/mp3' })
+    await act(async () => {
+      fireEvent.change(screen.getByTestId('file-input'), {
+        target: { files: [file] }
+      })
+    })
+
+    // Now, submit button should be enabled
+    expect(screen.getByTestId('submit-button')).not.toBeDisabled()
+  })
+
+  it('should show validation errors if required fields are missing', async () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <AddAudioLanguageDialog params={{ videoId: mockVideoId }} />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    // Try to submit without filling fields
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('submit-button'))
+    })
+
+    // Wait for validation errors to appear
+    await waitFor(() => {
+      expect(screen.getByText(/Edition is required/i)).toBeInTheDocument()
+      expect(screen.getByText(/Language is required/i)).toBeInTheDocument()
+      expect(screen.getByText(/Video file is required/i)).toBeInTheDocument()
     })
   })
 
@@ -306,10 +337,7 @@ describe('AddAudioLanguageDialog', () => {
     )
 
     // Form elements should be disabled
-    const selects = screen.getAllByTestId('mui-select')
-    const editionSelect = selects[0]
-
-    expect(editionSelect).toBeDisabled()
+    expect(screen.getAllByTestId('mui-select')[0]).toBeDisabled()
     expect(screen.getByTestId('language-input')).toBeDisabled()
     expect(screen.getByLabelText('Status')).toBeDisabled()
     expect(screen.getByTestId('submit-button')).toBeDisabled()
@@ -317,7 +345,7 @@ describe('AddAudioLanguageDialog', () => {
     expect(screen.getByTestId('close-button')).toBeDisabled()
   })
 
-  it('should handle upload errors', async () => {
+  it('should handle upload errors and show error message', async () => {
     ;(useUploadVideoVariant as jest.Mock).mockReturnValue({
       uploadState: {
         isUploading: false,
@@ -369,7 +397,7 @@ describe('AddAudioLanguageDialog', () => {
     )
   })
 
-  it('should prevent dialog close during upload', async () => {
+  it('should prevent dialog close during upload or processing', async () => {
     const mockRouterPush = jest.fn()
     jest
       .spyOn(require('next/navigation'), 'useRouter')
@@ -379,7 +407,7 @@ describe('AddAudioLanguageDialog', () => {
     ;(useUploadVideoVariant as jest.Mock).mockReturnValue({
       uploadState: {
         isUploading: true,
-        isProcessing: false,
+        isProcessing: true,
         uploadProgress: 50,
         error: null
       },

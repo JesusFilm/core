@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { act } from 'react-dom/test-utils'
 
 import {
   CREATE_VIDEO_TITLE,
@@ -177,8 +178,10 @@ describe('VideoInformation', () => {
     ).not.toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: 'Title' })).toHaveValue('JESUS')
 
-    fireEvent.change(screen.getByRole('textbox', { name: 'Title' }), {
-      target: { value: 'Hello' }
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox', { name: 'Title' }), {
+        target: { value: 'Hello' }
+      })
     })
     expect(screen.getByRole('textbox', { name: 'Title' })).toHaveValue('Hello')
     expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
@@ -197,8 +200,10 @@ describe('VideoInformation', () => {
       screen.queryByRole('button', { name: 'Cancel' })
     ).not.toBeInTheDocument()
 
-    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Status' }))
-    fireEvent.click(screen.getByRole('option', { name: 'Draft' }))
+    await act(async () => {
+      fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Status' }))
+      fireEvent.click(screen.getByRole('option', { name: 'Draft' }))
+    })
     expect(screen.getByRole('combobox', { name: 'Status' })).toHaveTextContent(
       'Draft'
     )
@@ -218,8 +223,10 @@ describe('VideoInformation', () => {
       screen.queryByRole('button', { name: 'Cancel' })
     ).not.toBeInTheDocument()
 
-    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Label' }))
-    fireEvent.click(screen.getByRole('option', { name: 'Short Film' }))
+    await act(async () => {
+      fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Label' }))
+      fireEvent.click(screen.getByRole('option', { name: 'Short Film' }))
+    })
     expect(screen.getByRole('combobox', { name: 'Label' })).toHaveTextContent(
       'Short Film'
     )
@@ -259,8 +266,10 @@ describe('VideoInformation', () => {
     const textbox = screen.getByRole('textbox', { name: 'Title' })
     expect(textbox).toHaveValue('')
 
-    await user.type(textbox, 'new title')
-    await user.click(screen.getByRole('button', { name: 'Save' }))
+    await act(async () => {
+      await user.type(textbox, 'new title')
+      await user.click(screen.getByRole('button', { name: 'Save' }))
+    })
 
     await waitFor(() => {
       expect(mockCreateVideoTitle.result).toHaveBeenCalled()
@@ -284,14 +293,18 @@ describe('VideoInformation', () => {
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
     expect(screen.getByRole('textbox', { name: 'Title' })).toHaveValue('JESUS')
 
-    fireEvent.change(screen.getByRole('textbox', { name: 'Title' }), {
-      target: { value: 'new title' }
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox', { name: 'Title' }), {
+        target: { value: 'new title' }
+      })
     })
     expect(screen.getByRole('textbox', { name: 'Title' })).toHaveValue(
       'new title'
     )
     expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
-    fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+    })
     await waitFor(() =>
       expect(mockUpdateVideoInformation.result).toHaveBeenCalled()
     )
@@ -319,8 +332,10 @@ describe('VideoInformation', () => {
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
     expect(screen.getByRole('textbox', { name: 'Title' })).toHaveValue('JESUS')
 
-    fireEvent.change(screen.getByRole('textbox', { name: 'Title' }), {
-      target: { value: '' }
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox', { name: 'Title' }), {
+        target: { value: '' }
+      })
     })
     await waitFor(() =>
       expect(screen.getByText('Title is required')).toBeInTheDocument()
@@ -345,20 +360,22 @@ describe('VideoInformation', () => {
     expect(status).toHaveTextContent('Published')
     expect(label).toHaveTextContent('Feature Film')
 
-    await user.clear(title)
-    await user.type(title, 'Title')
-
-    await user.click(status)
-    await user.click(screen.getByRole('option', { name: 'Draft' }))
-
-    await user.click(label)
-    await user.click(screen.getByRole('option', { name: 'Short Film' }))
+    await act(async () => {
+      await user.clear(title)
+      await user.type(title, 'Title')
+      await user.click(status)
+      await user.click(screen.getByRole('option', { name: 'Draft' }))
+      await user.click(label)
+      await user.click(screen.getByRole('option', { name: 'Short Film' }))
+    })
 
     expect(title).toHaveValue('Title')
     expect(status).toHaveTextContent('Draft')
     expect(label).toHaveTextContent('Short Film')
 
-    await user.click(screen.getByRole('button', { name: 'Cancel' }))
+    await act(async () => {
+      await user.click(screen.getByRole('button', { name: 'Cancel' }))
+    })
 
     expect(title).toHaveValue('JESUS')
     expect(status).toHaveTextContent('Published')

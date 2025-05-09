@@ -190,7 +190,8 @@ const initialStateForTests = {
   languageSlug: null,
   videoId: null,
   published: null,
-  onComplete: undefined
+  onComplete: undefined,
+  videoSlug: null
 }
 
 const mockEnqueueSnackbar = jest.fn()
@@ -428,7 +429,8 @@ describe('UploadVideoVariantContext', () => {
           onComplete: undefined,
           published: null,
           uploadProgress: 0,
-          videoId: null
+          videoId: null,
+          videoSlug: null
         })
       })
 

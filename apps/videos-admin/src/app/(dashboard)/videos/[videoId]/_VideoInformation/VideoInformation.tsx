@@ -60,9 +60,7 @@ export const GET_VIDEO_INFORMATION = graphql(`
         slug
         language {
           id
-          name(languageId: $languageId) {
-            value
-          }
+          slug
         }
       }
     }
@@ -311,7 +309,7 @@ export function VideoInformation({
                 <Button
                   variant="outlined"
                   color="primary"
-                  href={`${process.env.NEXT_PUBLIC_WATCH_URL ?? ''}/watch/${values.url}.html/${data.adminVideo.variant?.language.name[0].value}.html`}
+                  href={`${process.env.NEXT_PUBLIC_WATCH_URL ?? ''}/watch/${values.url}.html/${data.adminVideo.variant?.language.slug}.html`}
                   target="_blank"
                   rel="noopener noreferrer"
                   startIcon={<OpenInNewIcon />}
