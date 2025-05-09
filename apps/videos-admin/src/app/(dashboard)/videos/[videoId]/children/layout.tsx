@@ -14,7 +14,6 @@ import { OrderedList } from '../../../../../components/OrderedList'
 import { OrderedItem } from '../../../../../components/OrderedList/OrderedItem'
 import { Section } from '../../../../../components/Section'
 import { getVideoChildrenLabel } from '../../../../../libs/getVideoChildrenLabel'
-import { getVideoSlug } from '../../../../../libs/getVideoSlug'
 
 const VIDEO_CHILDREN_ORDER_UPDATE = graphql(`
   mutation VideoChildrenOrderUpdate($input: VideoUpdateInput!) {
@@ -104,7 +103,7 @@ export default function ChildrenLayout({
             childIds: newOrder.map((video) => video.id)
           }
         },
-        onCompleted: async () => {
+        onCompleted: () => {
           enqueueSnackbar('Successfully updated video children order.', {
             variant: 'success'
           })

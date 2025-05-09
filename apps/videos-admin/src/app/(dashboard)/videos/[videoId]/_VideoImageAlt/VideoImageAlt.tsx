@@ -11,13 +11,12 @@ import { object, string } from 'yup'
 
 import { CancelButton } from '../../../../../components/CancelButton'
 import { SaveButton } from '../../../../../components/SaveButton'
-import { revalidateWatchApp } from '../../../../../libs/revalidateWatchApp'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
 
 export const GET_VIDEO_IMAGE_ALT = graphql(`
   query GetVideoImageAlt($id: ID!, $languageId: ID!) {
     adminVideo(id: $id) {
-      slug
+      id
       imageAlt(languageId: $languageId) {
         id
         value
@@ -79,22 +78,11 @@ export function VideoImageAlt({ videoId }: VideoImageAltProps): ReactElement {
             languageId: DEFAULT_VIDEO_LANGUAGE_ID
           }
         },
-        onCompleted: async () => {
+        onCompleted: () => {
           enqueueSnackbar('Video image alt created', {
             variant: 'success'
           })
           resetForm({ values })
-          // Revalidate watch app page for this video
-          const revalidatePath = `/watch/${encodeURIComponent(data.adminVideo.slug)}.html/english.html`
-          const result = await revalidateWatchApp(revalidatePath)
-          if (!result.revalidated) {
-            enqueueSnackbar(
-              `Watch app revalidation failed: ${result.error ?? 'Unknown error'}`,
-              {
-                variant: 'warning'
-              }
-            )
-          }
         },
         onError: () => {
           enqueueSnackbar('Failed to create video image alt', {
@@ -110,21 +98,10 @@ export function VideoImageAlt({ videoId }: VideoImageAltProps): ReactElement {
             value: values.imageAlt
           }
         },
-        onCompleted: async () => {
+        onCompleted: () => {
           enqueueSnackbar('Video image alt updated', {
             variant: 'success'
           })
-          // Revalidate watch app page for this video
-          const revalidatePath = `/watch/${encodeURIComponent(data.adminVideo.slug)}.html/english.html`
-          const result = await revalidateWatchApp(revalidatePath)
-          if (!result.revalidated) {
-            enqueueSnackbar(
-              `Watch app revalidation failed: ${result.error ?? 'Unknown error'}`,
-              {
-                variant: 'warning'
-              }
-            )
-          }
         },
         onError: () => {
           enqueueSnackbar('Failed to update video image alt', {

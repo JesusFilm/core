@@ -13,7 +13,6 @@ import { object, string } from 'yup'
 import { CancelButton } from '../../../../../components/CancelButton'
 import { ResizableTextField } from '../../../../../components/ResizableTextField'
 import { SaveButton } from '../../../../../components/SaveButton'
-import { revalidateWatchApp } from '../../../../../libs/revalidateWatchApp'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
 
 export const CREATE_VIDEO_DESCRIPTION = graphql(`
@@ -28,7 +27,6 @@ export const CREATE_VIDEO_DESCRIPTION = graphql(`
 export const GET_VIDEO_DESCRIPTION = graphql(`
   query GetVideoDescription($videoId: ID!, $languageId: ID!) {
     adminVideo(id: $videoId) {
-      slug
       description(languageId: $languageId) {
         id
         value
@@ -81,22 +79,11 @@ export function VideoDescription({
             languageId: DEFAULT_VIDEO_LANGUAGE_ID
           }
         },
-        onCompleted: async () => {
+        onCompleted: () => {
           enqueueSnackbar('Video description created', {
             variant: 'success'
           })
           resetForm({ values })
-          // Revalidate watch app page for this video
-          const revalidatePath = `/watch/${encodeURIComponent(data.adminVideo.slug)}.html/english.html`
-          const result = await revalidateWatchApp(revalidatePath)
-          if (!result.revalidated) {
-            enqueueSnackbar(
-              `Watch app revalidation failed: ${result.error ?? 'Unknown error'}`,
-              {
-                variant: 'warning'
-              }
-            )
-          }
         },
         onError: () => {
           enqueueSnackbar('Failed to create video description', {
@@ -112,21 +99,10 @@ export function VideoDescription({
             value: values.description
           }
         },
-        onCompleted: async () => {
+        onCompleted: () => {
           enqueueSnackbar('Video description updated', {
             variant: 'success'
           })
-          // Revalidate watch app page for this video
-          const revalidatePath = `/watch/${encodeURIComponent(data.adminVideo.slug)}.html/english.html`
-          const result = await revalidateWatchApp(revalidatePath)
-          if (!result.revalidated) {
-            enqueueSnackbar(
-              `Watch app revalidation failed: ${result.error ?? 'Unknown error'}`,
-              {
-                variant: 'warning'
-              }
-            )
-          }
         },
         onError: () => {
           enqueueSnackbar('Failed to update video description', {
