@@ -1,3 +1,4 @@
+import LanguageRoundedIcon from '@mui/icons-material/LanguageRounded'
 import AppBar, { AppBarProps } from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
@@ -5,8 +6,9 @@ import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Image from 'next/image'
 import NextLink from 'next/link'
-import { MouseEventHandler, ReactElement } from 'react'
+import { MouseEventHandler, ReactElement, useState } from 'react'
 
+import { LanguageSwitchDialog } from '../../LanguageSwitchDialog'
 import logo from '../assets/logo.svg'
 
 interface LocalAppBarProps extends AppBarProps {
@@ -21,6 +23,7 @@ export function LocalAppBar({
   menuOpen = false,
   ...props
 }: LocalAppBarProps): ReactElement {
+  const [openLanguagesDialog, setOpenLanguagesDialog] = useState(false)
   return (
     <AppBar
       data-testid="Header"
@@ -71,6 +74,22 @@ export function LocalAppBar({
             </Box>
           </NextLink>
           <Box data-testid="MenuBox">
+            <IconButton
+              color="inherit"
+              onClick={() => setOpenLanguagesDialog(true)}
+              sx={{
+                mr: 8
+              }}
+            >
+              <LanguageRoundedIcon
+                sx={{ fontSize: 39, color: 'text.secondary' }}
+              />
+            </IconButton>
+            <LanguageSwitchDialog
+              open={openLanguagesDialog}
+              handleClose={() => setOpenLanguagesDialog(false)}
+            />
+
             <IconButton
               data-testid="MenuIcon"
               color="inherit"
