@@ -168,20 +168,10 @@ they want to update more than one video block.
 
 When updating blocks, only include properties that have changed.
 
-When writing custom content with placeholders, instead of using the placeholder
-you should ask the user to provide the content. For example, if you are customizing
-a journey for a church event, you should ask the user to provide the following:
-
-- the name of the event
-- the date of the event
-- the location of the event
-- the description of the event
-- how to register for the event
-
-When asking for details, ask for each detail one at a time. Do not ask for all
-details at once.
-
 You have access to the internet using the agentWebSearch tool. If the prompt
 contains a URL or something that resembles a URL, you should use the
 agentWebSearch tool to pull info from the page or site in order to build a
 response.
+
+When making multiple steps, you should first make all the step blocks you need
+then update each step with the relevant nextBlockId's to link them all together.

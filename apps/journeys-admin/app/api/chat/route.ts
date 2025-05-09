@@ -11,6 +11,22 @@ export const maxDuration = 30
 
 export const runtime = 'edge'
 
+export function errorHandler(error: unknown) {
+  if (error == null) {
+    return 'unknown error'
+  }
+
+  if (typeof error === 'string') {
+    return error
+  }
+
+  if (error instanceof Error) {
+    return error.message
+  }
+
+  return JSON.stringify(error)
+}
+
 export async function POST(req: NextRequest) {
   const { messages } = await req.json()
   const token = req.headers.get('Authorization')
@@ -26,5 +42,7 @@ export async function POST(req: NextRequest) {
     tools: tools(client)
   })
 
-  return result.toDataStreamResponse()
+  return result.toDataStreamResponse({
+    getErrorMessage: errorHandler
+  })
 }

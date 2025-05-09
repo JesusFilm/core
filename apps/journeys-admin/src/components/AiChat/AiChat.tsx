@@ -45,7 +45,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
   const [usage, setUsage] = useState<LanguageModelUsage | null>(null)
   const { messages, append, setMessages, status, addToolResult } = useChat({
     fetch: fetchWithAuthorization,
-    maxSteps: 5,
+    maxSteps: 50,
     credentials: 'omit',
     onFinish: (result, { usage }) => {
       setUsage(usage)
@@ -61,6 +61,9 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
           include: ['GetAdminJourney']
         })
       }
+    },
+    onError: (error) => {
+      console.error('useChat error', error)
     }
   })
   const [userMessage, setUserMessage] = useState('')

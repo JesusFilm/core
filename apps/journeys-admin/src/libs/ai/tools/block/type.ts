@@ -1,7 +1,11 @@
 import { z } from 'zod'
 
 export const blockSchema = z.object({
-  id: z.string().describe('Unique identifier for the block'),
+  id: z
+    .string()
+    .describe(
+      'Unique identifier for the block. This must be in the format of a UUID.'
+    ),
   journeyId: z.string().describe('ID of the journey this block belongs to'),
   parentBlockId: z
     .string()

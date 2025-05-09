@@ -26,6 +26,7 @@ export const blockCardSchema = blockSchema.extend({
 
 export const blockCardCreateInputSchema = blockCardSchema
   .pick({
+    id: true,
     journeyId: true,
     parentBlockId: true,
     backgroundColor: true,
