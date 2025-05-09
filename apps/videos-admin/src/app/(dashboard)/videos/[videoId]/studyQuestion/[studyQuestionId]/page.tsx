@@ -8,6 +8,7 @@ import { ReactElement } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
+import { revalidateWatchApp } from '../../../../../../libs/revalidateWatchApp'
 import { StudyQuestionForm } from '../_StudyQuestionForm/StudyQuestionForm'
 
 const UPDATE_STUDY_QUESTION = graphql(`
@@ -66,8 +67,19 @@ export default function StudyQuestionDialog({
           value: values.value
         }
       },
-      onCompleted: () => {
+      onCompleted: async () => {
         enqueueSnackbar('Study question updated', { variant: 'success' })
+        // Revalidate watch app page for this video
+        const revalidatePath = `/watch/${encodeURIComponent(videoId)}.html/english.html`
+        const result = await revalidateWatchApp(revalidatePath)
+        if (!result.revalidated) {
+          enqueueSnackbar(
+            `Watch app revalidation failed: ${result.error ?? 'Unknown error'}`,
+            {
+              variant: 'warning'
+            }
+          )
+        }
         router.push(returnUrl, {
           scroll: false
         })

@@ -19,6 +19,7 @@ import { object, string } from 'yup'
 
 import { CancelButton } from '../../../../../components/CancelButton'
 import { SaveButton } from '../../../../../components/SaveButton'
+import { revalidateWatchApp } from '../../../../../libs/revalidateWatchApp'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
 
 const videoStatuses = [
@@ -156,12 +157,23 @@ export function VideoInformation({
           value: values.title
         }
       },
-      onCompleted: () => {
+      onCompleted: async () => {
         enqueueSnackbar('Successfully updated video information', {
           variant: 'success'
         })
         resetForm({ values })
         router.push('?', { scroll: false })
+        // Revalidate watch app page for this video
+        const revalidatePath = `/watch/${encodeURIComponent(values.url)}.html/english.html`
+        const result = await revalidateWatchApp(revalidatePath)
+        if (!result.revalidated) {
+          enqueueSnackbar(
+            `Watch app revalidation failed: ${result.error ?? 'Unknown error'}`,
+            {
+              variant: 'warning'
+            }
+          )
+        }
       },
       onError: () => {
         enqueueSnackbar('Failed to update video information', {

@@ -12,6 +12,7 @@ import { ReactElement, useState } from 'react'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { FileUpload } from '../../../../../../components/FileUpload'
+import { revalidateWatchApp } from '../../../../../../libs/revalidateWatchApp'
 import { ImageAspectRatio } from '../../../constants'
 
 const GET_EXISTING_IMAGE = graphql(`
@@ -139,6 +140,17 @@ export default function VideoImage({
               id: existingImage.id
             }
           })
+        }
+        // Revalidate watch app page for this video
+        const revalidatePath = `/watch/${encodeURIComponent(videoId)}.html/english.html`
+        const result = await revalidateWatchApp(revalidatePath)
+        if (!result.revalidated) {
+          enqueueSnackbar(
+            `Watch app revalidation failed: ${result.error ?? 'Unknown error'}`,
+            {
+              variant: 'warning'
+            }
+          )
         }
       } catch {
         handleError()

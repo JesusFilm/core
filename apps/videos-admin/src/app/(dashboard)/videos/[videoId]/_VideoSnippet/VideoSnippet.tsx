@@ -12,6 +12,7 @@ import { object, string } from 'yup'
 import { CancelButton } from '../../../../../components/CancelButton'
 import { ResizableTextField } from '../../../../../components/ResizableTextField'
 import { SaveButton } from '../../../../../components/SaveButton'
+import { revalidateWatchApp } from '../../../../../libs/revalidateWatchApp'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
 
 export const GET_VIDEO_SNIPPET = graphql(`
@@ -75,10 +76,21 @@ export function VideoSnippet({ videoId }: VideoSnippetProps): ReactElement {
             languageId: DEFAULT_VIDEO_LANGUAGE_ID
           }
         },
-        onCompleted: () => {
+        onCompleted: async () => {
           enqueueSnackbar('Video short description created', {
             variant: 'success'
           })
+          // Revalidate watch app page for this video
+          const revalidatePath = `/watch/${encodeURIComponent(videoId)}.html/english.html`
+          const result = await revalidateWatchApp(revalidatePath)
+          if (!result.revalidated) {
+            enqueueSnackbar(
+              `Watch app revalidation failed: ${result.error ?? 'Unknown error'}`,
+              {
+                variant: 'warning'
+              }
+            )
+          }
         },
         onError: () => {
           enqueueSnackbar('Failed to create video short description', {
@@ -94,11 +106,22 @@ export function VideoSnippet({ videoId }: VideoSnippetProps): ReactElement {
             value: values.snippet
           }
         },
-        onCompleted: () => {
+        onCompleted: async () => {
           enqueueSnackbar('Video short description updated', {
             variant: 'success'
           })
           resetForm({ values })
+          // Revalidate watch app page for this video
+          const revalidatePath = `/watch/${encodeURIComponent(videoId)}.html/english.html`
+          const result = await revalidateWatchApp(revalidatePath)
+          if (!result.revalidated) {
+            enqueueSnackbar(
+              `Watch app revalidation failed: ${result.error ?? 'Unknown error'}`,
+              {
+                variant: 'warning'
+              }
+            )
+          }
         },
         onError: () => {
           enqueueSnackbar('Failed to update video short description', {

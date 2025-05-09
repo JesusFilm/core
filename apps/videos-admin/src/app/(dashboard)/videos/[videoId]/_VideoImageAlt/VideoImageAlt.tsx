@@ -11,6 +11,7 @@ import { object, string } from 'yup'
 
 import { CancelButton } from '../../../../../components/CancelButton'
 import { SaveButton } from '../../../../../components/SaveButton'
+import { revalidateWatchApp } from '../../../../../libs/revalidateWatchApp'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
 
 export const GET_VIDEO_IMAGE_ALT = graphql(`
@@ -78,11 +79,22 @@ export function VideoImageAlt({ videoId }: VideoImageAltProps): ReactElement {
             languageId: DEFAULT_VIDEO_LANGUAGE_ID
           }
         },
-        onCompleted: () => {
+        onCompleted: async () => {
           enqueueSnackbar('Video image alt created', {
             variant: 'success'
           })
           resetForm({ values })
+          // Revalidate watch app page for this video
+          const revalidatePath = `/watch/${encodeURIComponent(videoId)}.html/english.html`
+          const result = await revalidateWatchApp(revalidatePath)
+          if (!result.revalidated) {
+            enqueueSnackbar(
+              `Watch app revalidation failed: ${result.error ?? 'Unknown error'}`,
+              {
+                variant: 'warning'
+              }
+            )
+          }
         },
         onError: () => {
           enqueueSnackbar('Failed to create video image alt', {
@@ -98,10 +110,21 @@ export function VideoImageAlt({ videoId }: VideoImageAltProps): ReactElement {
             value: values.imageAlt
           }
         },
-        onCompleted: () => {
+        onCompleted: async () => {
           enqueueSnackbar('Video image alt updated', {
             variant: 'success'
           })
+          // Revalidate watch app page for this video
+          const revalidatePath = `/watch/${encodeURIComponent(videoId)}.html/english.html`
+          const result = await revalidateWatchApp(revalidatePath)
+          if (!result.revalidated) {
+            enqueueSnackbar(
+              `Watch app revalidation failed: ${result.error ?? 'Unknown error'}`,
+              {
+                variant: 'warning'
+              }
+            )
+          }
         },
         onError: () => {
           enqueueSnackbar('Failed to update video image alt', {
