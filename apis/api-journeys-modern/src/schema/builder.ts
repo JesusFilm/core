@@ -7,6 +7,7 @@ import FederationPlugin from '@pothos/plugin-federation'
 import pluginName from '@pothos/plugin-prisma'
 import ScopeAuthPlugin from '@pothos/plugin-scope-auth'
 import TracingPlugin, { isRootField } from '@pothos/plugin-tracing'
+import WithInputPlugin from '@pothos/plugin-with-input'
 import { createOpenTelemetryWrapper } from '@pothos/tracing-opentelemetry'
 import { DateResolver, DateTimeISOResolver } from 'graphql-scalars'
 
@@ -66,6 +67,7 @@ export const builder = new SchemaBuilder<{
     TracingPlugin,
     ScopeAuthPlugin,
     PrismaPlugin,
+    WithInputPlugin,
     DirectivesPlugin,
     FederationPlugin
   ],
