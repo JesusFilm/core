@@ -117,6 +117,24 @@ export class Publisher {
     await this.addFilterBelowCategoryTab(filter)
     await this.clickCloseDropDownIconToFilter(filter)
   }
+  async setTemplateCategoriesInTemplateSettingPopup(
+    filter: string,
+    filterOption: string[]
+  ) {
+    await this.clickOpenDropDownIconToFilter(filter)
+    for (const option of filterOption) {
+      await this.selectFilterOptionFromList(option)
+    }
+    await this.clickCloseDropDownIconToFilter(filter)
+  }
+
+  async selectFilterOptionFromList(filterOption: string) {
+    await this.page
+      .locator('div[role="presentation"] ul[role="listbox"] li', {
+        hasText: filterOption
+      })
+      .click()
+  }
 
   async getExistingTemplateName() {
     await expect(

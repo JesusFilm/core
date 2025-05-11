@@ -33,9 +33,10 @@ test.describe('Journey level actions', () => {
   test('Edit existing journey from journey card menu', async ({ page }) => {
     const journeyLevelActions = new JourneyLevelActions(page)
     const journeyPage = new JourneyPage(page)
-    const journeyName = await journeyPage.getJourneyName()
+
     await journeyPage.clickCreateCustomJourney() // click the create custom journey button
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
+    const journeyName = await journeyPage.getJourneyName() // getting the journey name
     await journeyLevelActions.clickThreeDotOfCreatedJourney(journeyName) // clicking on the three dot of created journey in the journey list
     await journeyLevelActions.clickThreeDotOptions('Edit Details') // clicking on Edit Details option of the three dot button
     await journeyLevelActions.enterTitle() // renaming the title on the title field in the 'edit title' popup
@@ -47,9 +48,10 @@ test.describe('Journey level actions', () => {
   test('Edit existing journey from custom journey page', async ({ page }) => {
     const journeyLevelActions = new JourneyLevelActions(page)
     const journeyPage = new JourneyPage(page)
-    const journeyName = await journeyPage.getJourneyName()
+
     await journeyPage.clickCreateCustomJourney() // click the create custom journey button
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
+    const journeyName = await journeyPage.getJourneyName() // getting the journey name
     await journeyLevelActions.selectCreatedJourney(journeyName) // clicking on the created journey in the journey list
     await journeyPage.clickThreeDotBtnOfCustomJourney() // clicking on the three dot at top right corner of the custom journey page
     await journeyPage.clickEditDetailsInThreeDotOptions() // clicking on the title option of the three dot options
@@ -77,10 +79,10 @@ test.describe('Journey level actions', () => {
   test('Preview existing journey', async ({ page, context }) => {
     const journeyLevelActions = new JourneyLevelActions(page)
     const journeyPage = new JourneyPage(page)
-    const journeyName = await journeyPage.getJourneyName() // getting journay name
     await journeyLevelActions.setBrowserContext(context) // setting context
     await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
+    const journeyName = await journeyPage.getJourneyName() // getting journay name
     await journeyLevelActions.clickThreeDotOfCreatedJourney(journeyName) // clicking on the three dot of created journey in the journey list
     await journeyLevelActions.verifyPreviewForExistingJourney() // clicking on the preview option in three dot options and verifying the journey is loaded on the preview tab
   })
@@ -89,9 +91,9 @@ test.describe('Journey level actions', () => {
   test('Duplicate existing journey', async ({ page }) => {
     const journeyLevelActions = new JourneyLevelActions(page)
     const journeyPage = new JourneyPage(page)
-    const journeyName = await journeyPage.getJourneyName() // getting journay name
     await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
+    const journeyName = await journeyPage.getJourneyName() // getting journay name
     await journeyLevelActions.clickThreeDotOfCreatedJourney(journeyName) // clicking on the three dot of created journey in the journey list
     await journeyLevelActions.clickThreeDotOptions('Duplicate') // clicking on the duplicate option of the three dot options
     await journeyLevelActions.verifyExistingJourneyDuplicate() // verifying the journey gets duplicated and updated in the journey list
@@ -104,9 +106,9 @@ test.describe('Journey level actions', () => {
   }) => {
     const journeyLevelActions = new JourneyLevelActions(page)
     const journeyPage = new JourneyPage(page)
-    const journeyName = await journeyPage.getJourneyName()
     await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
+    const journeyName = await journeyPage.getJourneyName()
     await journeyLevelActions.selectCreatedJourney(journeyName) // clicking on the created journey in the journey list
     await journeyPage.clickThreeDotBtnOfCustomJourney() // clicking on the three dot at top right corner of the custom journey page
     await journeyLevelActions.clickThreeDotOptionsOfJourneyCreationPage(
@@ -124,9 +126,9 @@ test.describe('Journey level actions', () => {
   }) => {
     const journeyLevelActions = new JourneyLevelActions(page)
     const journeyPage = new JourneyPage(page)
-    const journeyName = await journeyPage.getJourneyName() // getting journay name
     await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
+    const journeyName = await journeyPage.getJourneyName() // getting journay name
     await journeyLevelActions.selectCreatedJourney(journeyName) // clicking on the created journey in the journey list
     await journeyPage.clickThreeDotBtnOfCustomJourney() // clicking on the three dot at top right corner of the custom journey page
     await journeyLevelActions.clickThreeDotOptionsOfJourneyCreationPage(
@@ -171,10 +173,11 @@ test.describe('Journey level actions', () => {
   }) => {
     const journeyLevelActions = new JourneyLevelActions(page)
     const journeyPage = new JourneyPage(page)
-    const journeyName = await journeyPage.getJourneyName() // getting the journey name
+
     await journeyLevelActions.setBrowserContext(context) // setting the context
     await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
+    const journeyName = await journeyPage.getJourneyName() // getting the journey name
     await journeyLevelActions.selectCreatedJourney(journeyName) // clicking on the created journey in the journey list
     await journeyPage.clickThreeDotBtnOfCustomJourney() // clicking on the three dot at top right corner of the custom journey page
     await journeyLevelActions.clickThreeDotOptionsOfJourneyCreationPage(
@@ -221,9 +224,9 @@ test.describe('Journey level actions', () => {
   }) => {
     const journeyLevelActions = new JourneyLevelActions(page)
     const journeyPage = new JourneyPage(page)
-    const journeyName = await journeyPage.getJourneyName() // getting journay name
     await journeyPage.clickCreateCustomJourney() // click the create custom journey button
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
+    const journeyName = await journeyPage.getJourneyName() // getting journay name
     await journeyLevelActions.selectCreatedJourney(journeyName)
     await journeyPage.clickThreeDotBtnOfCustomJourney() // clicking on the three dot at top of right corner of the custom journey page
     await journeyLevelActions.clickThreeDotOptionsOfJourneyCreationPage(
@@ -241,9 +244,10 @@ test.describe('Journey level actions', () => {
     const journeyPage = new JourneyPage(page)
     const teamsPage = new TeamsPage(page)
     await teamsPage.createNewTeamAndVerifyCreatedTeam() // create new team and verify the created team
-    const journeyName = await journeyPage.getJourneyName() // getting journay name
+
     await journeyPage.clickCreateCustomJourney() // click the create custom journey button
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
+    const journeyName = await journeyPage.getJourneyName() // getting journay name
     await journeyLevelActions.clickThreeDotOfCreatedJourney(journeyName) // clicking on the three dot of created journey in the journey list        await journeyLevelActions.clickThreeDotOptions('Copy to ...') // clicking on the copy to ... option of the three dot options
     await journeyLevelActions.clickThreeDotOptions('Copy to ...') // clicking on the copy to ... option of the three dot options
     await journeyLevelActions.clickSelectTeamDropDownIcon() // cliking on the select team field in the 'copy to another team' popup
@@ -261,10 +265,11 @@ test.describe('Journey level actions', () => {
   }) => {
     const journeyLevelActions = new JourneyLevelActions(page)
     const journeyPage = new JourneyPage(page)
-    const journeyName = await journeyPage.getJourneyName() // getting the journey name
+
     await journeyLevelActions.setBrowserContext(context) // setting the context
     await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
+    const journeyName = await journeyPage.getJourneyName() // getting the journey name
     await journeyLevelActions.selectCreatedJourney(journeyName) // clicking on the created journey in the journey list
     await journeyPage.clickShareButtonInJourneyPage() // clicking on the Share button at top of the custom journey page
     await journeyPage.clickCopyIconInShareDialog() // clicking on the Copy icon of the Share option dialog popup
@@ -279,11 +284,12 @@ test.describe('Journey level actions', () => {
   }) => {
     const journeyLevelActions = new JourneyLevelActions(page)
     const journeyPage = new JourneyPage(page)
-    const journeyName = await journeyPage.getJourneyName() // getting the journey name
+
     await journeyLevelActions.setBrowserContext(context) // setting the context
     await journeyPage.setBrowserContext(context) // setting the context
     await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
+    const journeyName = await journeyPage.getJourneyName() // getting the journey name
     await journeyLevelActions.selectCreatedJourney(journeyName) // clicking on the created journey in the journey list
     await journeyPage.clickShareButtonInJourneyPage() // clicking on the Share button at top of the custom journey page
     const urlSlug = await journeyPage.editUrlAndSave() // clicking on the Edit Url button, update URL Slug and save in the Share option dialog popup
@@ -300,11 +306,12 @@ test.describe('Journey level actions', () => {
   }) => {
     const journeyLevelActions = new JourneyLevelActions(page)
     const journeyPage = new JourneyPage(page)
-    const journeyName = await journeyPage.getJourneyName() // getting the journey name
+
     await journeyLevelActions.setBrowserContext(context) // setting the context
     await journeyPage.setBrowserContext(context) // setting the context
     await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
+    const journeyName = await journeyPage.getJourneyName() // getting the journey name
     await journeyLevelActions.selectCreatedJourney(journeyName) // clicking on the created journey in the journey list
     await journeyPage.clickShareButtonInJourneyPage() // clicking on the Share button at top of the custom journey page
     await journeyPage.clickButtonInShareDialog('Embed Journey') // CLick Embed Journey button in the Share option dialog
@@ -323,11 +330,12 @@ test.describe('Journey level actions', () => {
   }) => {
     const journeyLevelActions = new JourneyLevelActions(page)
     const journeyPage = new JourneyPage(page)
-    const journeyName = await journeyPage.getJourneyName() // getting the journey name
+
     await journeyLevelActions.setBrowserContext(context) // setting the context
     await journeyPage.setBrowserContext(context) // setting the context
     await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
+    const journeyName = await journeyPage.getJourneyName() // getting the journey name
     await journeyLevelActions.selectCreatedJourney(journeyName) // clicking on the created journey in the journey list
     await journeyPage.clickShareButtonInJourneyPage() // clicking on the Share button at top of the custom journey page
     await journeyPage.clickButtonInShareDialog('QR Code') // CLick QR Code button in the Share option dialog

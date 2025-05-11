@@ -115,7 +115,7 @@ export class TemplatePage {
     await this.page.getByRole('button', { name: 'Add' }).click()
   }
 
-  async navigateToTempalatePage() {
+  async navigateToTemplatePage() {
     await this.page
       .locator('a[data-testid="NavigationListItemTemplates"]')
       .click({ timeout: sixtySecondsTimeout })

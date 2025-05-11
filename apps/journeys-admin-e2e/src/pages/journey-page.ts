@@ -23,13 +23,21 @@ export class JourneyPage {
     'div[data-testid="EditorCanvas"] div[data-testid="CanvasContainer"] iframe'
   downloadedQrFile: string
   journeyNamePath =
-    'div[data-testid *="JourneyCard"] div.MuiCardContent-root div.MuiTypography-root'
+    'div[data-testid *="JourneyCard"] div.MuiCardContent-root h6.MuiTypography-root'
   constructor(page: Page) {
     this.page = page
   }
 
   async setNewJourneyName() {
     journeyName = testData.journey.firstJourneyName + generateRandomNumber(3)
+  }
+  async verifyJourneyTitleGotUpdated() {
+    await expect(
+      this.page.locator(
+        'button[aria-label="Click to edit"] p.MuiTypography-root',
+        { hasText: journeyName }
+      )
+    ).toBeVisible({ timeout: thirtySecondsTimeout })
   }
   async createAndVerifyCustomJourney() {
     await this.enterJourneysTypography()
@@ -38,10 +46,27 @@ export class JourneyPage {
     await this.clickEditDetailsInThreeDotOptions()
     await this.enterTitle()
     await this.clickSaveBtn()
+    await this.verifyJourneyTitleGotUpdated()
     await this.backIcon()
     await this.verifyCreatedCustomJourneyInActiveList()
   }
-
+  async createANewCustomJourney() {
+    await this.enterJourneysTypography()
+    await this.clickDoneBtn()
+    await this.clickThreeDotBtnOfCustomJourney()
+    await this.clickEditDetailsInThreeDotOptions()
+    await this.enterTitle()
+    await this.clickSaveBtn()
+    await this.verifyJourneyTitleGotUpdated()
+  }
+  async createAndVerifyTemplateFromNewJourney() {
+    await this.clickThreeDotBtnOfCustomJourney()
+    await this.clickCreateTempleteOrTemplateSettingsOption('Create Template')
+    await this.backIcon()
+    await this.verifyCreatedCustomJourneyInActiveList()
+    await this.navigateToPublisherPage()
+    await this.verifyCreatedJourneyInTemplateList()
+  }
   async createAndVerifyTemplate() {
     await this.clickOnTheCreatedCustomJourney()
     await this.clickThreeDotBtnOfCustomJourney()
@@ -191,6 +216,7 @@ export class JourneyPage {
     await this.clickEditDetailsInThreeDotOptions()
     await this.enterTitle()
     await this.clickSaveBtn()
+    await this.verifyJourneyTitleGotUpdated()
     await this.backIcon()
     await this.verifyCreatedCustomJourneyInActiveList()
   }
@@ -325,14 +351,11 @@ export class JourneyPage {
   }
 
   async verifyCreatedCustomJourneyInActiveList() {
-    await expect(this.page.locator(this.journeyNamePath).first()).toBeVisible({
-      timeout: thirtySecondsTimeout
-    })
     await expect(
       this.page.locator(this.journeyNamePath, {
         hasText: journeyName
       })
-    ).toBeVisible()
+    ).toBeVisible({ timeout: thirtySecondsTimeout })
   }
 
   async clickOnTheCreatedCustomJourney() {
@@ -457,12 +480,13 @@ export class JourneyPage {
   }
 
   async clickThreeDotOfCreatedNewJourney() {
-    await this.page
+    const threeDotBtnPath = this.page
       .locator('div[aria-label="journey-card"]', { hasText: journeyName })
       .first()
       .locator('button#journey-actions')
       .first()
-      .click()
+    await expect(threeDotBtnPath).toBeVisible({ timeout: thirtySecondsTimeout })
+    await threeDotBtnPath.click()
   }
 
   async clickTheRestore() {

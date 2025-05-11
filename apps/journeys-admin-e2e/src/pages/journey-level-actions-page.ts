@@ -18,7 +18,7 @@ export class JourneyLevelActions {
   descriptionText = testData.journey.descriptionText
   selectedLanguage = ''
   journeyNamePath =
-    'div[data-testid *="JourneyCard"] div.MuiCardContent-root div.MuiTypography-root'
+    'div[data-testid *="JourneyCard"] div.MuiCardContent-root h6.MuiTypography-root'
 
   constructor(page: Page) {
     this.page = page
@@ -74,10 +74,16 @@ export class JourneyLevelActions {
 
   async selectCreatedJourney(journeyName): Promise<void> {
     this.existingJourneyName = journeyName
-    await this.page
+    const journeyCardpath = this.page
       .locator('div[aria-label="journey-card"]', { hasText: journeyName })
       .first()
-      .click()
+
+    await expect(journeyCardpath).toBeVisible({ timeout: thirtySecondsTimeout })
+    await expect(journeyCardpath).toBeEnabled({ timeout: thirtySecondsTimeout })
+    await expect(journeyCardpath).toBeInViewport({
+      timeout: thirtySecondsTimeout
+    })
+    await journeyCardpath.click({ delay: 500 })
   }
 
   async clickThreeDotOptions(options): Promise<void> {
@@ -96,14 +102,11 @@ export class JourneyLevelActions {
   }
 
   async verifyJourneyRenamedInActiveList(): Promise<void> {
-    await expect(this.page.locator(this.journeyNamePath).first()).toBeVisible({
-      timeout: 300000
-    })
     await expect(
       this.page.locator(this.journeyNamePath, {
         hasText: this.renameJourneyName
       })
-    ).toBeVisible()
+    ).toBeVisible({ timeout: thirtySecondsTimeout })
     await expect(
       this.page.locator(this.journeyNamePath, {
         hasText: this.existingJourneyName
