@@ -19,6 +19,7 @@ export class Publisher {
   genreFilter: string
   collectionsFilter: string
   uploadedImgSrc
+  dropdownListBoxPath = 'div[data-popper-placement="bottom"] ul[role="listbox"]'
   async verifyTemplateMovedToArchivedTab() {
     await this.getExistingTemplateName()
     await this.clickThreeDotOfTemple()
@@ -115,6 +116,24 @@ export class Publisher {
     await this.setFilterBelowCategoryTab(filter)
     await this.addFilterBelowCategoryTab(filter)
     await this.clickCloseDropDownIconToFilter(filter)
+  }
+  async setTemplateCategoriesInTemplateSettingPopup(
+    filter: string,
+    filterOption: string[]
+  ) {
+    await this.clickOpenDropDownIconToFilter(filter)
+    for (const option of filterOption) {
+      await this.selectFilterOptionFromList(option)
+    }
+    await this.clickCloseDropDownIconToFilter(filter)
+  }
+
+  async selectFilterOptionFromList(filterOption: string) {
+    await this.page
+      .locator('div[role="presentation"] ul[role="listbox"] li', {
+        hasText: filterOption
+      })
+      .click()
   }
 
   async getExistingTemplateName() {
@@ -514,14 +533,13 @@ export class Publisher {
   }
 
   async setFilterBelowCategoryTab(filter: string) {
-    const selectedFilter = await this.page
-      .locator('div[role="presentation"] div[role="listbox"] li')
+    const listOptionPath = this.page
+      .locator('div[role="presentation"].MuiPopper-root')
+      .getByRole('listbox')
+      .getByRole('option')
       .first()
-      .innerText()
-    await this.page
-      .locator('div[role="presentation"] div[role="listbox"] li')
-      .first()
-      .click()
+    const selectedFilter = await listOptionPath.innerText()
+    await listOptionPath.click()
     switch (filter) {
       case 'Topics': {
         this.topicFilter = selectedFilter
@@ -564,7 +582,7 @@ export class Publisher {
         }
       }
       await this.page
-        .locator('div[role="presentation"] div[role="listbox"] li', {
+        .locator('div[role="presentation"] ul[role="listbox"] li', {
           hasText: selectedFilter
         })
         .first()
@@ -589,7 +607,7 @@ export class Publisher {
       .locator('button[aria-label="Close"]')
       .click()
     await expect(
-      this.page.locator('div[role="presentation"] div[role="listbox"] li')
+      this.page.locator('div[role="presentation"] ul[role="listbox"] li')
     ).toHaveCount(0)
   }
 
@@ -639,10 +657,7 @@ export class Publisher {
       }
     }
     await this.page
-      .locator(
-        'div[data-popper-placement="bottom"] div[role="listbox"]  li ul',
-        { hasText: option }
-      )
+      .locator(`${this.dropdownListBoxPath}  li ul`, { hasText: option })
       .locator('li[role="option"]', { hasText: selectedFilter })
       .first()
       .click()
@@ -748,10 +763,9 @@ export class Publisher {
       }
     }
     await this.page
-      .locator(
-        'div[data-popper-placement="bottom"] div[role="listbox"] li[role="option"] p',
-        { hasText: selectedFilter }
-      )
+      .locator(`${this.dropdownListBoxPath} li[role="option"] p`, {
+        hasText: selectedFilter
+      })
       .click()
   }
 
@@ -772,6 +786,7 @@ export class Publisher {
   async clickImageUploadPlusIcon() {
     await this.page
       .locator('div[role="dialog"] div[data-testid="ImageBlockHeader"] button')
+      // eslint-disable-next-line
       .click({ force: true })
   }
 
