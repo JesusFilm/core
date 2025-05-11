@@ -50,6 +50,7 @@ import {
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
+import { RevalidateJob } from '../../lib/prisma.types'
 import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
 import { BlockService } from '../block/block.service'
 import { PlausibleJob } from '../plausible/plausible.consumer'
@@ -62,6 +63,8 @@ const FIVE_DAYS = 5 * 24 * 60 * 60 // in seconds
 @Resolver('Journey')
 export class JourneyResolver {
   constructor(
+    @InjectQueue('api-journeys-revalidate')
+    private readonly revalidateQueue: Queue<RevalidateJob>,
     @InjectQueue('api-journeys-plausible')
     private readonly plausibleQueue: Queue<PlausibleJob>,
     private readonly blockService: BlockService,
@@ -782,6 +785,13 @@ export class JourneyResolver {
 
         const updatedJourney = await tx.journey.update({
           where: { id },
+          include: {
+            team: {
+              include: {
+                customDomains: true
+              }
+            }
+          },
           data: {
             ...omit(input, ['tagIds']),
             title: input.title ?? undefined,
@@ -799,6 +809,18 @@ export class JourneyResolver {
             updatedJourney.id,
             input.slug
           )
+        }
+
+        if (
+          input.seoTitle != null ||
+          input.seoDescription != null ||
+          input.primaryImageBlockId != null
+        ) {
+          await this.revalidateQueue.add('revalidate', {
+            slug: updatedJourney.slug,
+            hostname: updatedJourney.team.customDomains[0]?.name,
+            fbReScrape: true
+          })
         }
 
         return updatedJourney
