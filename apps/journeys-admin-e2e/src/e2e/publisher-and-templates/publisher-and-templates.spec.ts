@@ -327,6 +327,7 @@ test.describe.fixme('Template page', () => {
     await templatesPage.navigateToTemplatePage() // navigating to templates page
     await templatesPage.selectExistingTemplate() // clicking on existing template in template page
     await templatesPage.verifySelectedTemplatePage() // verifying the page is navigated to selected template page
+
     await test.step('Verify the template is edited', async () => {
       await templatesPage.verifyTemplateIsEdited(journeyName) // verifying the template is edited
     })

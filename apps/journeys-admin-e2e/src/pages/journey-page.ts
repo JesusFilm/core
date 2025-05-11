@@ -5,8 +5,8 @@ import path from 'path'
 import { expect } from '@playwright/test'
 import type { Page } from 'playwright-core'
 
-import testData from '../utils/testData.json'
 import { generateRandomNumber } from '../framework/helpers'
+import testData from '../utils/testData.json'
 
 let journeyName = ''
 const thirtySecondsTimeout = 30000
