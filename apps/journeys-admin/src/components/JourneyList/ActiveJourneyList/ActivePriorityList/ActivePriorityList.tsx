@@ -1,5 +1,4 @@
 import { ApolloQueryResult, OperationVariables } from '@apollo/client'
-import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid2'
 import { User } from 'next-firebase-auth'
 import { ReactElement, useMemo } from 'react'
