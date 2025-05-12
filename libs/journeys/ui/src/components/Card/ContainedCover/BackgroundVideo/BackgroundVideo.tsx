@@ -93,6 +93,27 @@ export function BackgroundVideo({
           player?.pause()
         }
       })
+
+      player.ready(() => {
+        if (
+          mediaVideo?.__typename === 'MuxVideo' &&
+          mediaVideo?.playbackId != null
+        ) {
+          player.src({
+            src: `https://stream.mux.com/${mediaVideo.playbackId}.m3u8`,
+            type: 'application/x-mpegURL'
+          })
+        }
+        if (
+          mediaVideo?.__typename === 'Video' &&
+          mediaVideo?.variant?.hls != null
+        ) {
+          player.src({
+            src: mediaVideo.variant.hls,
+            type: 'application/x-mpegURL'
+          })
+        }
+      })
     }
   }, [playerRef, startAt, endAt, source, mediaVideo, videoId, setLoading])
 
