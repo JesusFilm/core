@@ -4,7 +4,7 @@ import { getApolloClient } from '../../lib/apolloClient'
 
 import { VideoPlayer } from './VideoPlayer'
 
-const DEFAULT_SUB_LANGUGE_IDS = [
+const DEFAULT_SUB_LANGUAGE_IDS = [
   '529',
   '22658',
   '21754',
@@ -68,7 +68,7 @@ export default async function Page({
   // Parse start and end times, ensuring they are valid numbers
   const startTime = searchParams.start ? Number(searchParams.start) : undefined
   const endTime = searchParams.end ? Number(searchParams.end) : undefined
-  const subon = Boolean(searchParams.subon)
+  const subon = searchParams.subon === 'true'
   const sublangids = searchParams.sublangids
 
   // Validate time parameters
@@ -104,7 +104,7 @@ export default async function Page({
     variables: { id: data?.videoVariant?.videoId ?? '' }
   })
 
-  const acceptedSubLangIds = DEFAULT_SUB_LANGUGE_IDS.concat(
+  const acceptedSubLangIds = DEFAULT_SUB_LANGUAGE_IDS.concat(
     sublangids?.split(',') ?? []
   )
 
