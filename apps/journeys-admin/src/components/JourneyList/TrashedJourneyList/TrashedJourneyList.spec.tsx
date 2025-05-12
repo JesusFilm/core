@@ -77,6 +77,10 @@ const noJourneysMock: MockedResponse<
 }
 
 describe('TrashedJourneyList', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
   beforeAll(() => {
     jest.useFakeTimers()
     jest.setSystemTime(new Date(fakeDate))
@@ -146,11 +150,11 @@ describe('TrashedJourneyList', () => {
     )
     await waitFor(() =>
       expect(getAllByLabelText('journey-card')[0].textContent).toContain(
-        'a lower case title11 months agoEnglish'
+        'a lower case titleEnglish•11 months ago00'
       )
     )
     expect(getAllByLabelText('journey-card')[1].textContent).toContain(
-      'An Old Journey Heading1 year ago - Journey created before the current year should also show the year in the dateEnglish'
+      'An Old Journey HeadingEnglish•1 year ago00'
     )
   })
 
