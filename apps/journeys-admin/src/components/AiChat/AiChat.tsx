@@ -58,7 +58,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
       )
       if (shouldRefetch) {
         void client.refetchQueries({
-          include: ['GetAdminJourney']
+          include: ['GetAdminJourney', 'GetStepBlocksWithPosition']
         })
       }
     },

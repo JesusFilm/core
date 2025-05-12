@@ -175,3 +175,6 @@ response.
 
 When making multiple steps, you should first make all the step blocks you need
 then update each step with the relevant nextBlockId's to link them all together.
+
+When making cards you should try and have at least one button at the end of the
+card's children so the visitor has a clear call to action.

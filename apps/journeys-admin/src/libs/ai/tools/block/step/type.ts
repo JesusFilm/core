@@ -20,14 +20,14 @@ export const blockStepSchema = blockSchema.extend({
     .nullable()
     .optional()
     .describe(
-      'Horizontal position in the editor diagram. You should try position this block to the right of the previous block without overlapping other blocks.'
+      'Horizontal position in the editor diagram. You should try position this block to the right of the previous block without overlapping other blocks. Should be at least 400 more than the previous block.'
     ),
   y: z
     .number()
     .nullable()
     .optional()
     .describe(
-      'Vertical position in the editor diagram. You should try position this block to the left of the card block without overlapping other blocks.'
+      'Vertical position in the editor diagram. You should try position this block to the left of the card block without overlapping other blocks. Should be at least 200 more than the previous block.'
     ),
   locked: z
     .boolean()
