@@ -14,7 +14,12 @@ interface VideoPlayerProps {
   startTime?: number
   endTime?: number
   subon: boolean
-  subtitles: { key: string; language: string; bcp47: string; vttSrc: string }[]
+  subtitles: {
+    key: string
+    language: string
+    bcp47: string | null
+    vttSrc: string | null
+  }[]
 }
 
 export function VideoPlayer({
@@ -121,7 +126,8 @@ export function VideoPlayer({
             key={subtitle.key}
             kind="subtitles"
             label={subtitle.language}
-            src={subtitle.vttSrc}
+            src={subtitle.vttSrc ?? ''}
+            srcLang={subtitle.bcp47 ?? undefined}
             default={subtitle.language === 'English'}
           />
         ))}
