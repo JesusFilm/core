@@ -13,6 +13,7 @@ import Typography from '@mui/material/Typography'
 import { LanguageModelUsage } from 'ai'
 import noop from 'lodash/noop'
 import Image from 'next/image'
+import { useRouter } from 'next/router'
 import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
@@ -36,6 +37,9 @@ interface AiChatProps {
 export function AiChat({ open = false }: AiChatProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
+  const router = useRouter()
+  const fromTemplate = router.query?.ai === 'true'
+
   const user = useUser()
   const client = useApolloClient()
   const { journey } = useJourney()
@@ -49,7 +53,6 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
     credentials: 'omit',
     onFinish: (result, { usage }) => {
       setUsage(usage)
-      console.log('result', result)
       const shouldRefetch = result.parts?.some(
         (part) =>
           part.type === 'tool-invocation' &&
@@ -90,7 +93,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
     })
   }
 
-  function getSystemPromptWithContext(): string {
+  function getSystemPromptWithContext(fromTemplate: boolean): string {
     let systemPromptWithContext = systemPrompt
 
     if (journey == null) return systemPromptWithContext
@@ -99,6 +102,12 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
 
     if (selectedStepId != null)
       systemPromptWithContext = `${systemPromptWithContext}\n\nThe current step ID is ${selectedStepId}. You can use this to get the step and update it.`
+
+    if (fromTemplate) {
+      systemPromptWithContext = `${systemPromptWithContext}\n\nThe current journey is from a template. Please ask the user questions to update the button label values, typography values, and image values to make it unique to the journey. Please also update the title and description of the journey to make it unique to the journey.
+      ask the user questions about their church, organization and other things you will find relevant to help customise the journey to the user. 
+      If you need to you can even ask the user to change images, videos, or other assets to make it more relevant to the user.`
+    }
 
     return systemPromptWithContext
   }
@@ -122,7 +131,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
 
     setUserMessage('')
     try {
-      const systemPromptWithContext = getSystemPromptWithContext()
+      const systemPromptWithContext = getSystemPromptWithContext(fromTemplate)
       if (systemPromptWithContext) {
         const hasSystemMessage = messages.some((msg) => msg.role === 'system')
         if (!hasSystemMessage) {
@@ -162,6 +171,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
     .reverse()
 
   // Effect to handle client tool invocations only once per toolCallId
+  // needed to cancel client side tool calls if the user types a new message or the user cancels the tool call
   useEffect(() => {
     // Find the latest unhandled client-side tool invocation
     const unhandled = nonSystemMessages
