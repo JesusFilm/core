@@ -461,93 +461,7 @@ export function VideoPlayer({
               mb: 1
             }}
           >
-            <Slider
-              value={getSegmentProgress()}
-              onChange={handleSeek}
-              aria-label="video-progress"
-              size="small"
-              step={0.001} // Even smaller steps for ms precision
-              min={0}
-              max={100}
-              disabled={!player}
-              sx={{
-                height: 4,
-                padding: 0,
-                my: 0,
-                transition: 'all 0.3s ease',
-                '&:hover': {
-                  '& .MuiSlider-thumb': {
-                    width: 14,
-                    height: 14,
-                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
-                  },
-                  '& .MuiSlider-track': {
-                    height: 5,
-                    transition: 'height 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
-                  }
-                },
-                '& .MuiSlider-thumb': {
-                  width: 12,
-                  height: 12,
-                  marginTop: 0,
-                  transform: 'translateY(-50%)',
-                  backgroundColor: 'white',
-                  boxShadow: 'none',
-                  transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                  '&:hover, &.Mui-focusVisible': {
-                    boxShadow: '0px 0px 0px 8px rgba(52, 152, 219, 0.16)',
-                    width: 14,
-                    height: 14,
-                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
-                  },
-                  '&.Mui-active': {
-                    boxShadow: '0px 0px 0px 8px rgba(52, 152, 219, 0.24)',
-                    width: 16,
-                    height: 16,
-                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
-                  }
-                },
-                '& .MuiSlider-rail': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.4)',
-                  opacity: 1,
-                  transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                  position: 'relative',
-                  '&::before': {
-                    content: '""',
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                    borderRadius: '2px'
-                  }
-                },
-                '& .MuiSlider-track': {
-                  border: 'none',
-                  backgroundColor: '#3498db',
-                  transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                  height: 4
-                },
-                '&::before, &::after': {
-                  content: '""',
-                  position: 'absolute',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  width: '3px',
-                  height: '10px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                  zIndex: 2,
-                  transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
-                },
-                '&::before': {
-                  left: 0
-                },
-                '&::after': {
-                  right: 0
-                }
-              }}
-            />
+            {/* Slider removed from here */}
           </Box>
 
           <Stack
@@ -660,37 +574,86 @@ export function VideoPlayer({
                 />
               </Stack>
 
-              {/* Time Display */}
+              {/* Seek Slider - moved here */}
+              <Box sx={{ flex: 1, mx: 1, minWidth: 60, display: 'flex', alignItems: 'center', height: '100%' }}>
+                <Slider
+                  value={getSegmentProgress()}
+                  onChange={handleSeek}
+                  aria-label="video-progress"
+                  size="small"
+                  step={0.001}
+                  min={0}
+                  max={100}
+                  disabled={!player}
+                  sx={{
+                    height: 4,
+                    padding: 0,
+                    alignSelf: 'center',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      '& .MuiSlider-thumb': {
+                        width: 14,
+                        height: 14,
+                        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
+                      },
+                      '& .MuiSlider-track': {
+                        height: 5,
+                        transition: 'height 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
+                      }
+                    },
+                    '& .MuiSlider-thumb': {
+                      width: 12,
+                      height: 12,
+                      backgroundColor: 'white',
+                      boxShadow: 'none',
+                      transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                      '&:hover, &.Mui-focusVisible': {
+                        boxShadow: '0px 0px 0px 8px rgba(52, 152, 219, 0.16)',
+                        width: 14,
+                        height: 14,
+                        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
+                      },
+                      '&.Mui-active': {
+                        boxShadow: '0px 0px 0px 8px rgba(52, 152, 219, 0.24)',
+                        width: 16,
+                        height: 16,
+                        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
+                      }
+                    },
+                    '& .MuiSlider-rail': {
+                      backgroundColor: 'rgba(255, 255, 255, 0.4)',
+                      opacity: 1,
+                      transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                      position: 'relative',
+                      '&::before': {
+                        content: '""',
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                        borderRadius: '2px'
+                      }
+                    },
+                    '& .MuiSlider-track': {
+                      border: 'none',
+                      backgroundColor: '#3498db',
+                      transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                      height: 4
+                    }
+                  }}
+                />
+              </Box>
+
+              {/* Time Display (Duration only) */}
               <Stack
                 direction="row"
                 spacing={0.5}
                 alignItems="center"
                 onClick={(e) => e.stopPropagation()}
+                sx={{ minWidth: 40 }}
               >
-                <Typography
-                  variant="caption"
-                  sx={{
-                    color: 'white',
-                    fontSize: '0.75rem',
-                    fontFamily: 'Roboto, sans-serif',
-                    fontWeight: 400,
-                    lineHeight: 1,
-                    minWidth: '32px'
-                  }}
-                >
-                  {formatTime(getSegmentCurrentTime())}
-                </Typography>
-                <Typography
-                  variant="caption"
-                  sx={{
-                    color: 'rgba(255, 255, 255, 0.7)',
-                    fontSize: '0.75rem',
-                    fontFamily: 'Roboto, sans-serif',
-                    mx: 0.5
-                  }}
-                >
-                  /
-                </Typography>
                 <Typography
                   variant="caption"
                   sx={{
