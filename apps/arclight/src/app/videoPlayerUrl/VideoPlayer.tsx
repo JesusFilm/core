@@ -13,6 +13,8 @@ interface VideoPlayerProps {
   thumbnail?: string | null
   startTime?: number
   endTime?: number
+  subon: boolean
+  subtitles: { key: string; language: string; bcp47: string; vttSrc: string }[]
 }
 
 export function VideoPlayer({
@@ -20,7 +22,9 @@ export function VideoPlayer({
   videoTitle,
   thumbnail,
   startTime,
-  endTime
+  endTime,
+  subon,
+  subtitles
 }: VideoPlayerProps): JSX.Element {
   const playerRef = useRef<HTMLVideoElement>(null)
 
@@ -98,6 +102,15 @@ export function VideoPlayer({
         data-play-end={endTime ?? 0}
       >
         <source src={hlsUrl} type="application/x-mpegURL" />
+        {subtitles.map((subtitle) => (
+          <track
+            key={subtitle.key}
+            kind="subtitles"
+            label={subtitle.language}
+            src={subtitle.vttSrc}
+            default={subtitle.language === 'English'}
+          />
+        ))}
       </video>
     </div>
   )
