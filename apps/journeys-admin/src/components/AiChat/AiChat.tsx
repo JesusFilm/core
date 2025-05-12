@@ -48,7 +48,15 @@ export function AiChat({
     state: { selectedStepId }
   } = useEditor()
   const [usage, setUsage] = useState<LanguageModelUsage | null>(null)
+  const [systemPrompt, setSystemPrompt] = useState<string>('')
   const { messages, append, setMessages, status, addToolResult } = useChat({
+    initialMessages: [
+      {
+        id: uuidv4(),
+        role: 'system',
+        content: getSystemPromptWithContext(fromTemplate)
+      }
+    ],
     fetch: fetchWithAuthorization,
     maxSteps: 50,
     credentials: 'omit',
@@ -73,7 +81,6 @@ export function AiChat({
   const [userMessage, setUserMessage] = useState('')
   const [openImageLibrary, setOpenImageLibrary] = useState<boolean | null>(null)
   const [openVideoLibrary, setOpenVideoLibrary] = useState<boolean | null>(null)
-  const [systemPrompt, setSystemPrompt] = useState<string>('')
   const [clientSideToolCall, setClientSideToolCall] = useState<{
     id: string
     callback?: () => void
@@ -133,26 +140,13 @@ export function AiChat({
     try {
       const systemPromptWithContext = getSystemPromptWithContext(fromTemplate)
       if (systemPromptWithContext) {
-        const hasSystemMessage = messages.some((msg) => msg.role === 'system')
-        if (!hasSystemMessage) {
-          setMessages([
-            {
-              id: uuidv4(),
-              role: 'system',
-              content: systemPromptWithContext
-            },
-            ...messages
-          ])
-        } else {
-          // Update existing system message
-          setMessages(
-            messages.map((msg) =>
-              msg.role === 'system'
-                ? { ...msg, content: systemPromptWithContext }
-                : msg
-            )
+        setMessages(
+          messages.map((msg) =>
+            msg.role === 'system'
+              ? { ...msg, content: systemPromptWithContext }
+              : msg
           )
-        }
+        )
       }
       // Send the user message if there's content
       if (message) {
@@ -204,6 +198,12 @@ export function AiChat({
       })
     }
   }, [nonSystemMessages, clientSideToolCall])
+
+  useEffect(() => {
+    if (fromTemplate) {
+      void handleSubmit('Please help me customize this journey!')
+    }
+  }, [])
 
   return (
     <>
