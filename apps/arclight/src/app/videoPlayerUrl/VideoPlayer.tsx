@@ -10,7 +10,7 @@ import IconButton from '@mui/material/IconButton'
 import Slider from '@mui/material/Slider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { MouseEvent, TouchEvent, useEffect, useRef, useState } from 'react'
+import { MouseEvent, useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
 
 import { MuxMetadata } from '@core/shared/ui/muxMetadataType'
