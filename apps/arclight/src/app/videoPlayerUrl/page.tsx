@@ -50,7 +50,13 @@ const GET_VIDEO_TITLE = graphql(`
 export default async function Page({
   searchParams
 }: {
-  searchParams: { refId?: string; start?: string; end?: string; subon?: string }
+  searchParams: {
+    refId?: string
+    start?: string
+    end?: string
+    subon?: string
+    sublangids?: string
+  }
 }) {
   if (!searchParams.refId) {
     return {
