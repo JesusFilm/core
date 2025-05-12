@@ -106,7 +106,9 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
     if (fromTemplate) {
       systemPromptWithContext = `${systemPromptWithContext}\n\nThe current journey is from a template. Please ask the user questions to update the button label values, typography values, and image values to make it unique to the journey. Please also update the title and description of the journey to make it unique to the journey.
       ask the user questions about their church, organization and other things you will find relevant to help customise the journey to the user. 
-      If you need to you can even ask the user to change images, videos, or other assets to make it more relevant to the user.`
+      If you need to you can even ask the user to change images, videos, or other assets to make it more relevant to the user.
+      after you and the user are satisfied with the journey, tell the user you are done and ask them if they would like to see the journey.
+      `
     }
 
     return systemPromptWithContext
@@ -180,7 +182,8 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
         if (
           part.type === 'tool-invocation' &&
           (part.toolInvocation.toolName === 'clientSelectImage' ||
-            part.toolInvocation.toolName === 'clientSelectVideo') &&
+            part.toolInvocation.toolName === 'clientSelectVideo' ||
+            part.toolInvocation.toolName === 'clientRedirectUserToEditor') &&
           part.toolInvocation.state === 'call'
         ) {
           return true
@@ -191,7 +194,8 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
       unhandled &&
       unhandled.type === 'tool-invocation' &&
       (unhandled.toolInvocation.toolName === 'clientSelectImage' ||
-        unhandled.toolInvocation.toolName === 'clientSelectVideo') &&
+        unhandled.toolInvocation.toolName === 'clientSelectVideo' ||
+        unhandled.toolInvocation.toolName === 'clientRedirectUserToEditor') &&
       unhandled.toolInvocation.state === 'call' &&
       (!clientSideToolCall ||
         clientSideToolCall.id !== unhandled.toolInvocation.toolCallId)
@@ -452,6 +456,37 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
                                   }}
                                 >
                                   {t('Open Image Library')}
+                                </Button>
+                              </Box>
+                            </Box>
+                          )
+                        }
+                        default: {
+                          return null
+                        }
+                      }
+                    }
+                    case 'clientRedirectUserToEditor': {
+                      switch (part.toolInvocation.state) {
+                        case 'call': {
+                          return (
+                            <Box key={callId}>
+                              <Typography
+                                key={callId}
+                                variant="body2"
+                                color="text.secondary"
+                              >
+                                {part.toolInvocation.args.message}
+                              </Typography>
+
+                              <Box>
+                                <Button
+                                  variant="outlined"
+                                  onClick={() => {
+                                    void router.push(`/journeys/${journey?.id}`)
+                                  }}
+                                >
+                                  {t('See My Journey!')}
                                 </Button>
                               </Box>
                             </Box>
