@@ -39,19 +39,9 @@ export default async function Page({
     }
   }
 
-  // Parse start and end times, ensuring they are valid numbers
+  // Parse start and end times
   const startTime = searchParams.start ? Number(searchParams.start) : undefined
   const endTime = searchParams.end ? Number(searchParams.end) : undefined
-
-  // Only use start time if it's a valid number and non-negative
-  const validStartTime =
-    startTime != null && !isNaN(startTime) && startTime >= 0
-      ? startTime
-      : undefined
-
-  // Only use end time if it's a valid number and non-negative
-  const validEndTime =
-    endTime != null && !isNaN(endTime) && endTime >= 0 ? endTime : undefined
 
   const { data } = await getApolloClient().query({
     query: GET_VIDEO_VARIANT,
@@ -78,8 +68,8 @@ export default async function Page({
         hlsUrl={hlsUrl}
         videoTitle={videoTitle}
         thumbnail={thumbnail}
-        startTime={validStartTime}
-        endTime={validEndTime}
+        startTime={startTime}
+        endTime={endTime}
       />
     </div>
   )
