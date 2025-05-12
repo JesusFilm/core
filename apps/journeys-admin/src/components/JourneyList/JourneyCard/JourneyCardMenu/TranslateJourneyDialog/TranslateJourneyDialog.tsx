@@ -7,9 +7,9 @@ import { ReactElement, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
+import { TranslationDialogWrapper } from '@core/journeys/ui/TranslationDialogWrapper'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
-import { Dialog } from '@core/shared/ui/Dialog'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../../../__generated__/GetAdminJourneys'
@@ -55,7 +55,6 @@ export function TranslateJourneyDialog({
   journey
 }: TranslateJourneyDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [loading, setLoading] = useState(false)
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { journey: journeyFromContext } = useJourney()
   const { activeTeam } = useTeam()
@@ -63,6 +62,7 @@ export function TranslateJourneyDialog({
   const { enqueueSnackbar } = useSnackbar()
   const { translateJourney } = useJourneyAiTranslateMutation()
   const [journeyDuplicate] = useJourneyDuplicateMutation()
+  const [loading, setLoading] = useState(false)
 
   // TODO: Update so only the selected AI model + i18n languages are shown.
   const { data: languagesData, loading: languagesLoading } = useLanguagesQuery({
@@ -92,18 +92,9 @@ export function TranslateJourneyDialog({
     )
       return
 
-    // Check if selected language is the same as the source journey's language
-    if (selectedLanguage.id === journeyData.language.id) {
-      enqueueSnackbar(
-        t('The selected language is the same as the source journey language.'),
-        { variant: 'warning' }
-      )
-      return
-    }
-
-    setLoading(true)
-
     try {
+      setLoading(true)
+
       // First duplicate the journey
       const { data: duplicateData } = await journeyDuplicate({
         variables: {
@@ -115,9 +106,9 @@ export function TranslateJourneyDialog({
       // Check if duplication was successful
       if (duplicateData?.journeyDuplicate?.id) {
         // Use the duplicated journey ID for translation
-        const jobId = await translateJourney({
+        const translatedJourney = await translateJourney({
           journeyId: duplicateData.journeyDuplicate.id,
-          name: `${journeyData.title} (${selectedLanguage.nativeName ?? selectedLanguage.localName})`,
+          name: `${journeyData.title}`,
           journeyLanguageName:
             journeyData.language.name.find(({ primary }) => !primary)?.value ??
             '',
@@ -126,13 +117,10 @@ export function TranslateJourneyDialog({
             selectedLanguage.nativeName ?? selectedLanguage.localName ?? ''
         })
 
-        if (jobId) {
-          enqueueSnackbar(
-            t('Translation started. You will be notified when it completes.'),
-            {
-              variant: 'success'
-            }
-          )
+        if (translatedJourney) {
+          enqueueSnackbar(t('Translation complete'), {
+            variant: 'success'
+          })
           onClose()
         } else {
           throw new Error('Failed to start translation')
@@ -154,16 +142,13 @@ export function TranslateJourneyDialog({
   }
 
   return (
-    <Dialog
+    <TranslationDialogWrapper
       open={open}
       onClose={onClose}
-      dialogTitle={{ title: t('Create Translated Copy'), closeButton: true }}
-      dialogAction={{
-        onSubmit: handleTranslate,
-        submitLabel: t('Create'),
-        closeLabel: t('Cancel')
-      }}
+      onTranslate={handleTranslate}
       loading={loading}
+      title={t('Create Translated Copy')}
+      loadingText={t('Translating your journey...')}
       testId="TranslateJourneyDialog"
     >
       <LanguageAutocomplete
@@ -183,6 +168,6 @@ export function TranslateJourneyDialog({
           placement: !smUp ? 'top' : 'bottom'
         }}
       />
-    </Dialog>
+    </TranslationDialogWrapper>
   )
 }
