@@ -125,10 +125,13 @@ model Video {
   cloudflareAssets   CloudflareR2[]
   videoEditions      VideoEdition[]
   availableLanguages String[]
+  owner              VideoOwner?          @relation(fields: [ownerId], references: [id])
+  ownerId            String?
 
   @@index(label)
   @@index(childIds)
   @@index(published(type: Hash))
+  @@index(ownerId(type: Hash))
 }
 
 model VideoTitle {
@@ -468,4 +471,13 @@ model ShortLink {
 model ShortLinkBlocklistDomain {
   /// the hostname including subdomain, domain, and TLD, but excluding port
   hostname String @id
+}
+
+model VideoOwner {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  videos      Video[]
+
+  @@index(name(type: Hash))
 }
