@@ -53,31 +53,6 @@ export function VideoPlayer({
             type: 'application/x-mpegURL'
           }
         ],
-        controlBar: {
-          children: [
-            'playToggle',
-            'skipBackward',
-            'skipForward',
-            'volumePanel',
-            'currentTimeDisplay',
-            'timeDivider',
-            'durationDisplay',
-            'progressControl',
-            'liveDisplay',
-            'seekToLive',
-            'remainingTimeDisplay',
-            'customControlSpacer',
-            'playbackRateMenuButton',
-            'chaptersButton',
-            'descriptionsButton',
-            'subtitlesButton',
-            'captionsButton',
-            'subsCapsButton',
-            'audioTrackButton',
-            'pictureInPictureToggle',
-            'fullscreenToggle'
-          ]
-        },
         html5: {
           nativeTextTracks: false, // Force emulated text tracks
           vhs: {
@@ -93,10 +68,9 @@ export function VideoPlayer({
         }
       }
 
-      // Wait for next tick to ensure DOM is ready
-      setTimeout(() => {
+      // Initialize player
+      const initializePlayer = () => {
         try {
-          logger('Initializing video player')
           const player = videojs(videoElement, playerOptions)
           playerRef.current = player
 
@@ -106,29 +80,18 @@ export function VideoPlayer({
           })
 
           player.on('loadedmetadata', () => {
-            logger('Video metadata loaded')
+            // Load subtitles after video is ready
+            loadSubtitles().catch((error) => {
+              logger.error('Error in subtitle loading:', error)
+            })
           })
 
-          // Add text track event listeners
-          player.on('texttrackchange', () => {
-            logger('Text track changed')
-            const textTracks = player.textTracks()
-            logger(
-              'Current text tracks:',
-              Array.from(textTracks).map((track) => ({
-                kind: track.kind,
-                label: track.label,
-                language: track.language,
-                mode: track.mode,
-                readyState: track.readyState
-              }))
-            )
-          })
-
+          // Handle start time
           if (startTime != null) {
             player.currentTime(startTime)
           }
 
+          // Handle end time
           if (endTime != null) {
             player.on('timeupdate', () => {
               if (player.currentTime() >= endTime) {
@@ -142,144 +105,104 @@ export function VideoPlayer({
             })
           }
 
-          // Load English subtitles after video is ready
-          const loadSubtitles = async () => {
-            try {
-              logger('Starting subtitle loading...')
-              logger('Available subtitles:', subtitles)
-
-              // Find English subtitle
-              const englishSubtitle = subtitles.find(
-                (sub) => sub.language === 'English'
-              )
-              if (englishSubtitle) {
-                logger('Found English subtitle:', englishSubtitle)
-
-                try {
-                  // Fetch the subtitle file first
-                  logger('Fetching subtitle from:', englishSubtitle.vttSrc)
-                  const response = await fetch(englishSubtitle.vttSrc, {
-                    mode: 'cors',
-                    credentials: 'omit'
-                  })
-
-                  if (!response.ok) {
-                    throw new Error(
-                      `Failed to fetch subtitle: ${response.statusText}`
-                    )
-                  }
-
-                  const subtitleText = await response.text()
-                  logger(
-                    'Subtitle content preview:',
-                    subtitleText.substring(0, 200)
-                  )
-
-                  // Validate VTT format
-                  if (!subtitleText.startsWith('WEBVTT')) {
-                    logger.error('Invalid VTT format - missing WEBVTT header')
-                    throw new Error('Invalid VTT format')
-                  }
-
-                  // Create a blob URL for the subtitle
-                  const blob = new Blob([subtitleText], { type: 'text/vtt' })
-                  const blobUrl = URL.createObjectURL(blob)
-                  logger('Created blob URL:', blobUrl)
-
-                  // Add the track using the player's API
-                  logger('Adding track to player with options:', {
-                    kind: 'subtitles',
-                    label: englishSubtitle.language,
-                    srclang: englishSubtitle.bcp47,
-                    src: blobUrl,
-                    default: true
-                  })
-
-                  const track = player.addRemoteTextTrack(
-                    {
-                      kind: 'subtitles',
-                      label: englishSubtitle.language,
-                      srclang: englishSubtitle.bcp47,
-                      src: blobUrl,
-                      default: true
-                    },
-                    false
-                  )
-
-                  // Wait for the track to be loaded
-                  track.addEventListener('load', () => {
-                    logger('English subtitle track loaded successfully')
-
-                    // Get the text track
-                    const textTracks = player.textTracks()
-                    logger(
-                      'All text tracks:',
-                      Array.from(textTracks).map((track) => ({
-                        kind: track.kind,
-                        label: track.label,
-                        language: track.language,
-                        mode: track.mode,
-                        readyState: track.readyState
-                      }))
-                    )
-
-                    // Find our English subtitle track
-                    const englishTrack = Array.from(textTracks).find(
-                      (track) =>
-                        track.kind === 'subtitles' && track.label === 'English'
-                    )
-
-                    if (englishTrack) {
-                      logger(
-                        'Found English subtitle track, setting mode to showing'
-                      )
-                      englishTrack.mode = 'showing'
-
-                      // Debug text track state
-                      logger('Text track details:', {
-                        kind: englishTrack.kind,
-                        label: englishTrack.label,
-                        language: englishTrack.language,
-                        mode: englishTrack.mode,
-                        readyState: englishTrack.readyState
-                      })
-
-                      // Force the player to recognize the new track
-                      player.trigger('texttrackchange')
-                    } else {
-                      logger.warn('Could not find English subtitle track')
-                    }
-                  })
-
-                  // Clean up blob URL when track is removed
-                  track.addEventListener('remove', () => {
-                    logger('Track removed, cleaning up blob URL')
-                    URL.revokeObjectURL(blobUrl)
-                  })
-
-                  // Add error event listener
-                  track.addEventListener('error', (error) => {
-                    logger.warn('Error loading English subtitle track:', error)
-                  })
-                } catch (error) {
-                  logger.error('Error fetching subtitle:', error)
-                }
-              } else {
-                logger.warn('No English subtitle found')
-              }
-            } catch (error) {
-              logger.warn('Failed to load subtitles:', error)
-            }
-          }
-
-          // Start loading subtitles after a short delay to ensure video is ready
-          setTimeout(() => {
-            loadSubtitles().catch((error) => {
-              logger.error('Error in subtitle loading:', error)
-            })
-          }, 1000)
+          return player
         } catch (error) {
           logger.error('Failed to initialize video player:', error)
+          throw error
+        }
+      }
+
+      // Load English subtitles
+      const loadSubtitles = async () => {
+        try {
+          // Find English subtitle
+          const englishSubtitle = subtitles.find(
+            (sub) => sub.language === 'English'
+          )
+          if (!englishSubtitle) {
+            logger.warn('No English subtitle found')
+            return
+          }
+
+          try {
+            // Fetch the subtitle file
+            const response = await fetch(englishSubtitle.vttSrc, {
+              mode: 'cors',
+              credentials: 'omit'
+            })
+
+            if (!response.ok) {
+              throw new Error(
+                `Failed to fetch subtitle: ${response.statusText}`
+              )
+            }
+
+            const subtitleText = await response.text()
+
+            // Validate VTT format
+            if (!subtitleText.startsWith('WEBVTT')) {
+              logger.error('Invalid VTT format - missing WEBVTT header')
+              throw new Error('Invalid VTT format')
+            }
+
+            // Create a blob URL for the subtitle
+            const blob = new Blob([subtitleText], { type: 'text/vtt' })
+            const blobUrl = URL.createObjectURL(blob)
+
+            // Add the track using the player's API
+            const track = playerRef.current.addRemoteTextTrack(
+              {
+                kind: 'subtitles',
+                label: englishSubtitle.language,
+                srclang: englishSubtitle.bcp47,
+                src: blobUrl,
+                default: true
+              },
+              false
+            )
+
+            // Wait for the track to be loaded
+            track.addEventListener('load', () => {
+              // Get the text track
+              const textTracks = playerRef.current.textTracks()
+
+              // Find our English subtitle track
+              const englishTrack = Array.from(textTracks).find(
+                (track) =>
+                  track.kind === 'subtitles' && track.label === 'English'
+              )
+
+              if (englishTrack) {
+                englishTrack.mode = 'showing'
+                playerRef.current.trigger('texttrackchange')
+              } else {
+                logger.warn('Could not find English subtitle track')
+              }
+            })
+
+            // Clean up blob URL when track is removed
+            track.addEventListener('remove', () => {
+              URL.revokeObjectURL(blobUrl)
+            })
+
+            // Add error event listener
+            track.addEventListener('error', (error) => {
+              logger.warn('Error loading English subtitle track:', error)
+            })
+          } catch (error) {
+            logger.error('Error fetching subtitle:', error)
+          }
+        } catch (error) {
+          logger.warn('Failed to load subtitles:', error)
+        }
+      }
+
+      // Initialize player after a short delay to ensure DOM is ready
+      setTimeout(() => {
+        try {
+          initializePlayer()
+        } catch (error) {
+          logger.error('Failed to initialize player:', error)
         }
       }, 0)
     }
