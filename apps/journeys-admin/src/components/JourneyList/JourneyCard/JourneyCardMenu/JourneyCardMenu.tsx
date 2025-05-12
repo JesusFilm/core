@@ -8,6 +8,7 @@ import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
 import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
+import { CopyToTeamDialog } from '@core/journeys/ui/CopyToTeamDialog'
 import { useJourneyAiTranslateMutation } from '@core/journeys/ui/useJourneyAiTranslateMutation'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import MoreIcon from '@core/shared/ui/icons/More'
@@ -89,15 +90,6 @@ const TranslateJourneyDialog = dynamic(
       /* webpackChunkName: "TranslateJourneyDialog" */
       './TranslateJourneyDialog'
     ).then((mod) => mod.TranslateJourneyDialog),
-  { ssr: false }
-)
-
-const CopyToTeamDialog = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "CopyToTeamDialog" */
-      '@core/journeys/ui/CopyToTeamDialog'
-    ).then((mod) => mod.CopyToTeamDialog),
   { ssr: false }
 )
 
