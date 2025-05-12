@@ -1,8 +1,9 @@
-import Volume5 from '@core/shared/ui/icons/Volume5'
-import VolumeOff from '@core/shared/ui/icons/VolumeOff'
 import IconButton from '@mui/material/IconButton'
 import { alpha } from '@mui/material/styles'
 import { ReactElement } from 'react'
+
+import Volume5 from '@core/shared/ui/icons/Volume5'
+import VolumeOff from '@core/shared/ui/icons/VolumeOff'
 
 interface ContentHeroMuteButtonProps {
   isMuted: boolean
