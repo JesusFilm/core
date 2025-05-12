@@ -102,6 +102,7 @@ function JourneyVisitorsPage({
   const user = useUser()
   const router = useRouter()
   const journeyId = router.query.journeyId as string
+  const from = router.query.from
 
   // Hide visitors count
   // const { data } = useQuery<GetJourneyVisitorsCount>(
@@ -245,7 +246,11 @@ function JourneyVisitorsPage({
       <PageWrapper
         title={t('Visitors')}
         user={user}
-        backHref={`/journeys/${journeyId}/reports`}
+        backHref={
+          from === 'journey-list'
+            ? `/journeys/${journeyId}/reports?from=journey-list`
+            : `/journeys/${journeyId}/reports`
+        }
         mainHeaderChildren={
           <Stack
             direction="row"
