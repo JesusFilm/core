@@ -192,7 +192,15 @@ export function DefaultMenu({
           openInNew
         />
       </NextLink>
-      <ShareItem variant="menu-item" journey={journeyFromLazyQuery?.journey} />
+      <ShareItem
+        variant="menu-item"
+        journey={journeyFromLazyQuery?.journey}
+        // onClick={() => {
+        //   setOpenShareDialog()
+        //   handleCloseMenu()
+        // }}
+        handleCloseMenu={handleCloseMenu}
+      />
       <Divider />
       {template !== true && (
         <DuplicateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />

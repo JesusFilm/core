@@ -51,12 +51,15 @@ interface ShareItemProps {
   variant: ComponentProps<typeof Item>['variant']
   closeMenu?: () => void
   journey?: JourneyFromContext | JourneyFromLazyQuery
+  // onClick?: () => void
+  handleCloseMenu?: () => void
 }
 
 export function ShareItem({
   variant,
   closeMenu,
-  journey
+  journey,
+  handleCloseMenu
 }: ShareItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
@@ -71,11 +74,7 @@ export function ShareItem({
 
   const handleShowMenu = (event: MouseEvent<HTMLElement>): void => {
     setAnchorEl(event.currentTarget)
-  }
-
-  function handleCloseMenu(): void {
-    setAnchorEl(null)
-    closeMenu?.() // test e2e
+    handleCloseMenu?.()
   }
   function setRoute(param: string): void {
     void router.push({ query: { ...router.query, param } }, undefined, {
@@ -95,7 +94,12 @@ export function ShareItem({
         onClick={handleShowMenu}
         ButtonProps={{ variant: 'contained' }}
       />
-      <Dialog open={Boolean(anchorEl)} onClose={handleCloseMenu}>
+      <Dialog
+        open={Boolean(anchorEl)}
+        onClose={() => {
+          setAnchorEl(null)
+        }}
+      >
         {journey == null ? (
           <Box
             display="flex"
