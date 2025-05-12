@@ -1,5 +1,5 @@
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
+import Container from '@mui/material/Container'
+import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import {
@@ -44,10 +44,7 @@ function AiEditPage({ journey }: { journey: Journey }): ReactElement {
           filters="label:episode OR label:featureFilm OR label:segment OR label:shortFilm"
           hitsPerPage={5}
         />
-        <NextSeo
-          title={t('Next Steps A.I')}
-          description={t('Next Steps A.I')}
-        />
+        <NextSeo title={t('Next Steps AI')} description={t('Next Steps AI')} />
         <PageWrapper
           user={user}
           mainHeaderChildren={
@@ -57,15 +54,19 @@ function AiEditPage({ journey }: { journey: Journey }): ReactElement {
               alignItems="center"
               width="100%"
             >
-              <Typography variant="h6">{t('Next Steps A.I')}</Typography>
+              <Typography variant="h6">{t('Next Steps AI')}</Typography>
             </Stack>
           }
+          mainBodyPadding={false}
         >
-          <Card sx={{ borderRadius: 4 }}>
-            <CardContent>
-              <AiChat fromTemplate={true} />
-            </CardContent>
-          </Card>
+          <Paper elevation={0} sx={{ height: '100%' }}>
+            <Container
+              maxWidth="md"
+              sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+            >
+              <AiChat fromTemplate={true} variant="page" />
+            </Container>
+          </Paper>
         </PageWrapper>
       </JourneyProvider>
     </InstantSearch>

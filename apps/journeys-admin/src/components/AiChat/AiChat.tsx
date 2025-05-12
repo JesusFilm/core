@@ -32,9 +32,13 @@ import { SystemPrompt } from './SystemPrompt'
 
 interface AiChatProps {
   fromTemplate?: boolean
+  variant?: 'popup' | 'page'
 }
 
-export function AiChat({ fromTemplate = false }: AiChatProps): ReactElement {
+export function AiChat({
+  fromTemplate = false,
+  variant = 'popup'
+}: AiChatProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const user = useUser()
@@ -209,11 +213,14 @@ export function AiChat({ fromTemplate = false }: AiChatProps): ReactElement {
           display: 'flex',
           flexDirection: 'column-reverse',
           gap: 4,
-          p: 5,
+          py: 5,
+          px: 4,
           pb: 0,
-          maxHeight: 'calc(100svh - 400px)',
+          maxHeight: variant === 'popup' ? 'calc(100svh - 400px)' : '100%',
           minHeight: 150,
-          overflowY: 'auto'
+          overflowY: 'auto',
+          flexGrow: variant === 'page' ? 1 : 0,
+          justifyContent: variant === 'page' ? 'flex-end' : undefined
         }}
       >
         {nonSystemMessages.length === 0 && (
@@ -617,9 +624,21 @@ export function AiChat({ fromTemplate = false }: AiChatProps): ReactElement {
             sx={{
               minHeight: 32,
               p: 0,
+              '& .expanded': {
+                display: 'none'
+              },
+              '& .collapsed': {
+                display: 'block'
+              },
               '&.Mui-expanded': {
                 minHeight: 32,
-                p: 0
+                p: 0,
+                '& .expanded': {
+                  display: 'block'
+                },
+                '& .collapsed': {
+                  display: 'none'
+                }
               },
               '& > .MuiAccordionSummary-content': {
                 my: 0,
@@ -637,7 +656,14 @@ export function AiChat({ fromTemplate = false }: AiChatProps): ReactElement {
               spacing={2}
               sx={{ width: '100%', justifyContent: 'space-between' }}
             >
-              <Typography component="span" variant="body2">
+              <Typography
+                component="span"
+                variant="body2"
+                className="collapsed"
+              >
+                {t('NextSteps AI can make mistakes. Check important info.')}
+              </Typography>
+              <Typography component="span" variant="body2" className="expanded">
                 {usage?.totalTokens ?? 0} {t('Tokens Used')}
               </Typography>
               <Typography component="span" variant="body2">
@@ -645,7 +671,7 @@ export function AiChat({ fromTemplate = false }: AiChatProps): ReactElement {
               </Typography>
             </Stack>
           </AccordionSummary>
-          <AccordionDetails sx={{ p: 0, pb: 4 }}>
+          <AccordionDetails sx={{ p: 0, pt: 2 }}>
             <SystemPrompt value={systemPrompt} onChange={setSystemPrompt} />
           </AccordionDetails>
         </Accordion>
