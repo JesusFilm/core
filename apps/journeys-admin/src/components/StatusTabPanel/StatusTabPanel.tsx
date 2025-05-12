@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box'
-import Paper from '@mui/material/Paper'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import { useRouter } from 'next/router'
@@ -99,65 +98,51 @@ export function StatusTabPanel({
 
   return (
     <>
-      <Box sx={{ mx: 6, mb: 4, mt: -2, display: { xs: 'block', sm: 'none' } }}>
-        <JourneySort sortOrder={sortOrder} onChange={setSortOrder} />
-      </Box>
-
-      <Paper
-        variant="outlined"
-        sx={{
-          borderColor: 'divider',
-          borderBottom: 0,
-          borderTopLeftRadius: { xs: 0, sm: 12 },
-          borderTopRightRadius: { xs: 0, sm: 12 }
-        }}
+      <Tabs
+        value={activeTab}
+        onChange={handleChange}
+        aria-label="journey status tabs"
+        data-testid="journey-list"
       >
-        <Tabs
-          value={activeTab}
-          onChange={handleChange}
-          aria-label="journey status tabs"
-          data-testid="journey-list"
+        <Tab
+          label={journeyStatusTabs[0].displayValue}
+          {...tabA11yProps(
+            'active-status-panel',
+            journeyStatusTabs[0].tabIndex
+          )}
+        />
+        <Tab
+          label={journeyStatusTabs[1].displayValue}
+          {...tabA11yProps(
+            'archived-status-panel',
+            journeyStatusTabs[1].tabIndex
+          )}
+        />
+        <Tab
+          label={journeyStatusTabs[2].displayValue}
+          {...tabA11yProps(
+            'trashed-status-panel',
+            journeyStatusTabs[2].tabIndex
+          )}
+        />
+        <Box sx={{ flexGrow: 1 }} />
+        <Box
+          sx={{
+            display: { xs: 'none', sm: 'flex' },
+            alignItems: 'center'
+          }}
         >
-          <Tab
-            label={journeyStatusTabs[0].displayValue}
-            {...tabA11yProps(
-              'active-status-panel',
-              journeyStatusTabs[0].tabIndex
-            )}
-          />
-          <Tab
-            label={journeyStatusTabs[1].displayValue}
-            {...tabA11yProps(
-              'archived-status-panel',
-              journeyStatusTabs[1].tabIndex
-            )}
-          />
-          <Tab
-            label={journeyStatusTabs[2].displayValue}
-            {...tabA11yProps(
-              'trashed-status-panel',
-              journeyStatusTabs[2].tabIndex
-            )}
-          />
-          <Box sx={{ flexGrow: 1 }} />
-          <Box
-            sx={{
-              display: { xs: 'none', sm: 'flex' },
-              alignItems: 'center'
-            }}
-          >
-            <JourneySort sortOrder={sortOrder} onChange={setSortOrder} />
-          </Box>
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center'
-            }}
-          >
-            <JourneyListMenu onClick={setActiveEvent} />
-          </Box>
-        </Tabs>
-      </Paper>
+          <JourneySort sortOrder={sortOrder} onChange={setSortOrder} />
+        </Box>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center'
+          }}
+        >
+          <JourneyListMenu onClick={setActiveEvent} />
+        </Box>
+      </Tabs>
       <TabPanel
         name="active-status-panel"
         value={activeTab}

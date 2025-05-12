@@ -179,7 +179,6 @@ const Template: StoryObj<typeof AccessAvatars> = {
           journeyId="journeyId"
           userJourneys={defaultUserJourneys}
           size={args.size}
-          showManageButton
         />
 
         <Typography>Overflow</Typography>
@@ -194,7 +193,6 @@ const Template: StoryObj<typeof AccessAvatars> = {
           journeyId="journeyId"
           userJourneys={overflowUserJourneys}
           size={args.size}
-          showManageButton
         />
 
         <Typography>Notification</Typography>

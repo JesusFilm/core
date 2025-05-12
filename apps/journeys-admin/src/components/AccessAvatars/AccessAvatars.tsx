@@ -12,8 +12,6 @@ import { GetAdminJourneys_journeys_userJourneys as UserJourney } from '../../../
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
 import { Avatar } from '../Avatar'
 
-import { ManageAccessAvatar } from './ManageAccessAvatar'
-
 const AccessDialog = dynamic(
   async () =>
     await import(
@@ -26,10 +24,8 @@ const AccessDialog = dynamic(
 export interface AccessAvatarsProps {
   journeyId?: string
   userJourneys?: UserJourney[]
-  size?: 'small' | 'medium' | 'large'
-  xsMax?: number
-  smMax?: number
-  showManageButton?: boolean
+  size?: 'xsmall' | 'small' | 'medium' | 'large'
+  max?: number
 }
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
@@ -44,23 +40,18 @@ export function AccessAvatars({
   journeyId,
   userJourneys,
   size = 'small',
-  xsMax = 3,
-  smMax = 5,
-  showManageButton = false
+  max = 3
 }: AccessAvatarsProps): ReactElement {
   const [open, setOpen] = useState<boolean | undefined>()
-  const min = withRenderLogic({ size, max: xsMax, setOpen, showManageButton })
-  const max = withRenderLogic({ size, max: smMax, setOpen, showManageButton })
+  const renderMax = withRenderLogic({
+    size,
+    max: max,
+    setOpen
+  })
 
   return (
     <Box>
-      <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
-        {min(userJourneys)}
-      </Box>
-
-      <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-        {max(userJourneys)}
-      </Box>
+      <Box>{renderMax(userJourneys)}</Box>
 
       {journeyId != null && open != null && (
         <AccessDialog
@@ -74,10 +65,9 @@ export function AccessAvatars({
 }
 
 interface WithRenderLogicProps {
-  size: 'small' | 'medium' | 'large'
+  size: 'xsmall' | 'small' | 'medium' | 'large'
   max: number
   setOpen: (open: boolean) => void
-  showManageButton: boolean
 }
 
 const sortByOwner = (values: UserJourney[] = []): UserJourney[] => {
@@ -93,8 +83,7 @@ const sortByOwner = (values: UserJourney[] = []): UserJourney[] => {
 const withRenderLogic = ({
   size,
   max,
-  setOpen,
-  showManageButton
+  setOpen
 }: WithRenderLogicProps): ((values?: UserJourney[]) => ReactElement) => {
   // small default sizes
   let diameter: number
@@ -102,6 +91,11 @@ const withRenderLogic = ({
   let borderWidth: number | undefined
 
   switch (size) {
+    case 'xsmall':
+      diameter = 26
+      fontSize = 12
+      borderWidth = 2
+      break
     case 'small':
       diameter = 31
       fontSize = 12
@@ -149,6 +143,7 @@ const withRenderLogic = ({
                 apiUser={user}
                 notification={role === UserJourneyRole.inviteRequested}
                 key={user.id}
+                role={role}
               />
             )
           )
@@ -189,10 +184,6 @@ const withRenderLogic = ({
           >
             {children}
           </AvatarGroup>
-
-          {showManageButton && (
-            <ManageAccessAvatar diameter={diameter} fontSize={size} />
-          )}
         </StyledBadge>
       </Box>
     )
