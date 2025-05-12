@@ -2,9 +2,17 @@ import { ApolloQueryResult } from '@apollo/client'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import dynamic from 'next/dynamic'
+import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
+import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
+import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
+import { useJourneyAiTranslateMutation } from '@core/journeys/ui/useJourneyAiTranslateMutation'
+import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import MoreIcon from '@core/shared/ui/icons/More'
+import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
+import { convertLanguagesToOptions } from '@core/shared/ui/LanguageAutocomplete/utils/convertLanguagesToOptions'
 
 import {
   GetAdminJourneys,
@@ -84,6 +92,15 @@ const TranslateJourneyDialog = dynamic(
   { ssr: false }
 )
 
+const CopyToTeamDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "CopyToTeamDialog" */
+      '@core/journeys/ui/CopyToTeamDialog'
+    ).then((mod) => mod.CopyToTeamDialog),
+  { ssr: false }
+)
+
 export interface JourneyCardMenuProps {
   id: string
   status: JourneyStatus
@@ -136,6 +153,15 @@ export function JourneyCardMenu({
   const [openTranslateDialog, setOpenTranslateDialog] = useState<
     boolean | undefined
   >()
+  const [openCopyToTeamDialog, setOpenCopyToTeamDialog] = useState<
+    boolean | undefined
+  >()
+
+  const router = useRouter()
+  const [journeyDuplicate] = useJourneyDuplicateMutation()
+  const { translateJourney } = useJourneyAiTranslateMutation()
+  const { enqueueSnackbar } = useSnackbar()
+  const { t } = useTranslation('apps-journeys-admin')
 
   const handleOpenMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
@@ -143,6 +169,77 @@ export function JourneyCardMenu({
   const handleCloseMenu = (): void => {
     setAnchorEl(null)
   }
+
+  function setRoute(param: string): void {
+    void router.push({ query: { ...router.query, param } }, undefined, {
+      shallow: true
+    })
+    router.events.on('routeChangeComplete', () => {
+      setBeaconPageViewed(param)
+    })
+  }
+
+  async function handleCopyToTeam(
+    teamId: string,
+    selectedLanguage: LanguageOption
+  ): Promise<void> {
+    if (journey?.id == null || selectedLanguage == null) return
+
+    const journeyTitle = journey.title
+    const journeyLanguageData = journey.language
+
+    try {
+      const { data } = await journeyDuplicate({
+        variables: {
+          id: journey.id,
+          teamId
+        }
+      })
+
+      if (data?.journeyDuplicate.id != null) {
+        const translatedJourney = await translateJourney({
+          journeyId: data.journeyDuplicate.id,
+          name: `${journeyTitle}`,
+          journeyLanguageName:
+            journeyLanguageData?.name.find((n) => !n.primary)?.value ??
+            journeyLanguageData?.name.find((n) => n.primary)?.value ??
+            '',
+          textLanguageId: selectedLanguage.id ?? '',
+          textLanguageName:
+            selectedLanguage.nativeName ?? selectedLanguage.localName ?? ''
+        })
+
+        if (translatedJourney) {
+          enqueueSnackbar(t('Journey Copied'), {
+            variant: 'success',
+            preventDuplicate: true
+          })
+        } else {
+          throw new Error('Failed to start translation')
+        }
+      } else {
+        throw new Error('Journey duplication failed')
+      }
+    } catch (error) {
+      console.error('Error in translation process:', error)
+      enqueueSnackbar(
+        t('Failed to process translation request. Please try again.'),
+        {
+          variant: 'error'
+        }
+      )
+    }
+  }
+
+  function handleOpenCopyToTeamDialog(): void {
+    setRoute('copy-journey')
+    setOpenCopyToTeamDialog(true)
+  }
+
+  const journeyLanguageOption: LanguageOption | undefined =
+    journey?.language != null
+      ? convertLanguagesToOptions([journey.language])[0]
+      : undefined
 
   return (
     <>
@@ -194,6 +291,7 @@ export function JourneyCardMenu({
             setOpenTranslateDialog={() => setOpenTranslateDialog(true)}
             template={template}
             refetch={refetch}
+            handleOpenCopyToTeamDialog={handleOpenCopyToTeamDialog}
           />
         )}
       </Menu>
@@ -241,6 +339,17 @@ export function JourneyCardMenu({
           open={openTranslateDialog}
           onClose={() => setOpenTranslateDialog(false)}
           journey={journey}
+        />
+      )}
+      {openCopyToTeamDialog != null && (
+        <CopyToTeamDialog
+          title={t('Copy to Another Team')}
+          open={openCopyToTeamDialog}
+          journeyLanguage={journeyLanguageOption}
+          onClose={() => {
+            setOpenCopyToTeamDialog(false)
+          }}
+          submitAction={handleCopyToTeam}
         />
       )}
     </>

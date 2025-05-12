@@ -6,12 +6,15 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { Formik, FormikHelpers } from 'formik'
 import sortBy from 'lodash/sortBy'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { InferType, object, string } from 'yup'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
-import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
+import {
+  LanguageAutocomplete,
+  LanguageOption
+} from '@core/shared/ui/LanguageAutocomplete'
 
 import { useLanguagesQuery } from '../../libs/useLanguagesQuery'
 import { useUpdateLastActiveTeamIdMutation } from '../../libs/useUpdateLastActiveTeamIdMutation'
@@ -23,14 +26,8 @@ interface CopyToTeamDialogProps {
   open: boolean
   loading?: boolean
   onClose: () => void
-  submitAction: (teamId: string, language: JourneyLanguage) => Promise<void>
-  journeyLanguage?: JourneyLanguage
-}
-
-interface JourneyLanguage {
-  id: string
-  localName?: string
-  nativeName?: string
+  submitAction: (teamId: string, language: LanguageOption) => Promise<void>
+  journeyLanguage?: LanguageOption
 }
 
 export function CopyToTeamDialog({
@@ -42,6 +39,7 @@ export function CopyToTeamDialog({
   submitAction,
   journeyLanguage
 }: CopyToTeamDialogProps): ReactElement {
+  const { t } = useTranslation('libs-journeys-ui')
   const { query, setActiveTeam } = useTeam()
   const teams = query?.data?.teams ?? []
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
@@ -50,10 +48,13 @@ export function CopyToTeamDialog({
   })
 
   const [selectedLanguage, setSelectedLanguage] = useState<
-    JourneyLanguage | undefined
+    LanguageOption | undefined
   >(journeyLanguage)
 
-  const { t } = useTranslation('libs-journeys-ui')
+  useEffect(() => {
+    setSelectedLanguage(journeyLanguage)
+  }, [journeyLanguage])
+
   function handleClose(): void {
     onClose()
   }
@@ -151,7 +152,9 @@ export function CopyToTeamDialog({
             </TextField>
           </FormControl>
           <LanguageAutocomplete
-            onChange={(value) => setSelectedLanguage(value)}
+            onChange={(value) => {
+              setSelectedLanguage(value)
+            }}
             value={selectedLanguage}
             languages={languagesData?.languages}
             loading={languagesLoading}

@@ -7,11 +7,12 @@ import { useSnackbar } from 'notistack'
 import { type ReactElement, useCallback, useEffect, useState } from 'react'
 
 import { useJourneyAiTranslateMutation } from '@core/journeys/ui/useJourneyAiTranslateMutation'
+import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
+import { convertLanguagesToOptions } from '@core/shared/ui/LanguageAutocomplete/utils/convertLanguagesToOptions'
 
 import { useJourney } from '../../../libs/JourneyProvider'
 import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
 import { AccountCheckDialog } from '../AccountCheckDialog'
-import { TeamLanguageWrapper } from '../../CopyToTeamDialog/TeamLanguageWrapper'
 
 interface CreateJourneyButtonProps {
   signedIn?: boolean
@@ -19,13 +20,7 @@ interface CreateJourneyButtonProps {
   setOpenTeamDialog: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-interface JourneyLanguage {
-  id: string
-  localName?: string
-  nativeName?: string
-}
-
-const DynamicCopyToTeamDialog = dynamic(
+const CopyToTeamDialog = dynamic(
   async () =>
     await import(
       /* webpackChunkName: "CopyToTeamDialog" */
@@ -49,11 +44,8 @@ export function CreateJourneyButton({
   const { translateJourney } = useJourneyAiTranslateMutation()
 
   const handleCreateJourney = useCallback(
-    async (
-      teamId: string,
-      selectedLanguage: JourneyLanguage
-    ): Promise<void> => {
-      if (journey == null || selectedLanguage.id == '') return
+    async (teamId: string, selectedLanguage: LanguageOption): Promise<void> => {
+      if (journey == null || selectedLanguage == null) return
 
       setLoadingJourney(true)
 
@@ -159,6 +151,11 @@ export function CreateJourneyButton({
     }
   }, [signedIn, router, handleCreateJourney, setOpenTeamDialog])
 
+  const journeyLanguage: LanguageOption | undefined =
+    journey?.language != null
+      ? convertLanguagesToOptions([journey.language])[0]
+      : undefined
+
   return (
     <>
       <Button
@@ -176,21 +173,17 @@ export function CreateJourneyButton({
         onClose={() => setOpenAccountDialog(false)}
       />
       {openTeamDialog != null && (
-        <TeamLanguageWrapper>
-          {(journeyLanguage) => (
-            <DynamicCopyToTeamDialog
-              submitLabel={t('Add')}
-              title={t('Add Journey to Team')}
-              open={openTeamDialog}
-              loading={loadingJourney}
-              journeyLanguage={journeyLanguage}
-              onClose={() =>
-                setOpenTeamDialog !== undefined && setOpenTeamDialog(false)
-              }
-              submitAction={handleCreateJourney}
-            />
-          )}
-        </TeamLanguageWrapper>
+        <CopyToTeamDialog
+          submitLabel={t('Add')}
+          title={t('Add Journey to Team')}
+          open={openTeamDialog}
+          loading={loadingJourney}
+          journeyLanguage={journeyLanguage}
+          onClose={() =>
+            setOpenTeamDialog !== undefined && setOpenTeamDialog(false)
+          }
+          submitAction={handleCreateJourney}
+        />
       )}
     </>
   )

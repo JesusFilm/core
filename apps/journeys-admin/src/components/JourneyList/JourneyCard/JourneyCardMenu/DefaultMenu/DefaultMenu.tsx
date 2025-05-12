@@ -6,6 +6,7 @@ import { ReactElement, useEffect, useMemo } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { useUserRoleQuery } from '@core/journeys/ui/useUserRoleQuery'
+import CopyToIcon from '@core/shared/ui/icons/CopyTo'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 import Globe2Icon from '@core/shared/ui/icons/Globe2'
@@ -22,7 +23,6 @@ import {
 import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
 import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
 import { MenuItem } from '../../../../MenuItem'
-import { CopyToTeamMenuItem } from '../../../../Team/CopyToTeamMenuItem/CopyToTeamMenuItem'
 import { DuplicateJourneyMenuItem } from '../DuplicateJourneyMenuItem'
 
 import { ArchiveJourney } from './ArchiveJourney'
@@ -55,6 +55,7 @@ interface DefaultMenuProps {
   setOpenTranslateDialog: () => void
   template?: boolean
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
+  handleOpenCopyToTeamDialog: () => void
 }
 
 /**
@@ -75,6 +76,7 @@ interface DefaultMenuProps {
  * @param {() => void} props.setOpenTranslateDialog - Function to open the translate dialog
  * @param {boolean} [props.template] - Whether the journey is a template
  * @param {() => Promise<ApolloQueryResult<GetAdminJourneys>>} [props.refetch] - Function to refetch journey data
+ * @param {() => void} props.handleOpenCopyToTeamDialog - Function to handle copying to team click
  * @returns {ReactElement} The rendered menu component
  */
 export function DefaultMenu({
@@ -89,7 +91,8 @@ export function DefaultMenu({
   setOpenDetailsDialog,
   setOpenTranslateDialog,
   template,
-  refetch
+  refetch,
+  handleOpenCopyToTeamDialog
 }: DefaultMenuProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
@@ -192,7 +195,15 @@ export function DefaultMenu({
         </>
       )}
       <Divider />
-      <CopyToTeamMenuItem id={id} handleCloseMenu={handleCloseMenu} />
+      <MenuItem
+        label={t('Copy to ...')}
+        icon={<CopyToIcon color="secondary" />}
+        onClick={() => {
+          handleOpenCopyToTeamDialog()
+          handleCloseMenu()
+        }}
+        data-testid="Copy"
+      />
       <ArchiveJourney
         status={status}
         id={journeyId}

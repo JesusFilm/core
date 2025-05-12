@@ -1,1 +1,0 @@
-export { TeamLanguageWrapper } from './TeamLanguageWrapper'
