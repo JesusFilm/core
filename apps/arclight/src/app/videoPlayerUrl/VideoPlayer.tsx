@@ -60,6 +60,20 @@ export function VideoPlayer({
       }
     }) as any
 
+    // Enable first subtitle track if subon is true
+    if (subon && subtitles.length > 0) {
+      player.ready(() => {
+        const tracks = player.textTracks()
+        for (let i = 0; i < tracks.length; i++) {
+          const track = tracks[i]
+          if (track.kind === 'subtitles') {
+            track.mode = 'showing'
+            break // Only enable the first subtitle track
+          }
+        }
+      })
+    }
+
     if (startTime != null) {
       player.currentTime(startTime)
     }

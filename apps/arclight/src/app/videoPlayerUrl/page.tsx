@@ -4,15 +4,22 @@ import { getApolloClient } from '../../lib/apolloClient'
 
 import { VideoPlayer } from './VideoPlayer'
 
-const DEFAULT_SUB_LANGUGE_IDS = ['22658', '21754', '21753', '496', '21028']
+const DEFAULT_SUB_LANGUGE_IDS = [
+  '529',
+  '22658',
+  '21754',
+  '21753',
+  '496',
+  '21028'
+]
 
 const GET_VIDEO_VARIANT = graphql(`
-  query GetVideoVariant($id: ID!, $includeSubtitles: Boolean!) {
+  query GetVideoVariant($id: ID!) {
     videoVariant(id: $id) {
       id
       hls
       videoId
-      subtitle @include(if: $includeSubtitles) {
+      subtitle {
         id
         language {
           id
@@ -83,8 +90,7 @@ export default async function Page({
   const { data } = await getApolloClient().query({
     query: GET_VIDEO_VARIANT,
     variables: {
-      id: searchParams.refId,
-      includeSubtitles: subon
+      id: searchParams.refId
     }
   })
   const { data: videoTitleData } = await getApolloClient().query({
@@ -99,18 +105,16 @@ export default async function Page({
   const hlsUrl = data?.videoVariant?.hls
   const videoTitle = videoTitleData?.video?.title?.[0]?.value
   const thumbnail = videoTitleData?.video?.images?.[0]?.mobileCinematicHigh
-  const subtitles = subon
-    ? data?.videoVariant?.subtitle
-        ?.filter((subtitle) =>
-          acceptedSubLangIds.includes(subtitle.language?.id ?? '')
-        )
-        .map((subtitle) => ({
-          key: subtitle.id,
-          language: subtitle.language?.name?.[0]?.value,
-          bcp47: subtitle.language?.bcp47,
-          vttSrc: subtitle.vttSrc
-        }))
-    : []
+  const subtitles = data?.videoVariant?.subtitle
+    ?.filter((subtitle) =>
+      acceptedSubLangIds.includes(subtitle.language?.id ?? '')
+    )
+    .map((subtitle) => ({
+      key: subtitle.id,
+      language: subtitle.language?.name?.[0]?.value,
+      bcp47: subtitle.language?.bcp47,
+      vttSrc: subtitle.vttSrc
+    }))
 
   if (!hlsUrl) {
     return {
