@@ -13,6 +13,7 @@ import Typography from '@mui/material/Typography'
 import { LanguageModelUsage } from 'ai'
 import noop from 'lodash/noop'
 import Image from 'next/image'
+import { useRouter } from 'next/router'
 import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
@@ -30,12 +31,12 @@ import { VideoLibrary } from '../Editor/Slider/Settings/Drawer/VideoLibrary'
 import { SystemPrompt } from './SystemPrompt'
 
 interface AiChatProps {
-  open?: boolean
+  fromTemplate?: boolean
 }
 
-export function AiChat({ open = false }: AiChatProps): ReactElement {
+export function AiChat({ fromTemplate = false }: AiChatProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-
+  const router = useRouter()
   const user = useUser()
   const client = useApolloClient()
   const { journey } = useJourney()
@@ -49,7 +50,6 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
     credentials: 'omit',
     onFinish: (result, { usage }) => {
       setUsage(usage)
-      console.log('result', result)
       const shouldRefetch = result.parts?.some(
         (part) =>
           part.type === 'tool-invocation' &&
@@ -90,7 +90,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
     })
   }
 
-  function getSystemPromptWithContext(): string {
+  function getSystemPromptWithContext(fromTemplate: boolean): string {
     let systemPromptWithContext = systemPrompt
 
     if (journey == null) return systemPromptWithContext
@@ -99,6 +99,11 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
 
     if (selectedStepId != null)
       systemPromptWithContext = `${systemPromptWithContext}\n\nThe current step ID is ${selectedStepId}. You can use this to get the step and update it.`
+
+    if (fromTemplate) {
+      systemPromptWithContext = `${systemPromptWithContext}\n\n this journey has been duplicated from a template. 
+      `
+    }
 
     return systemPromptWithContext
   }
@@ -122,7 +127,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
 
     setUserMessage('')
     try {
-      const systemPromptWithContext = getSystemPromptWithContext()
+      const systemPromptWithContext = getSystemPromptWithContext(fromTemplate)
       if (systemPromptWithContext) {
         const hasSystemMessage = messages.some((msg) => msg.role === 'system')
         if (!hasSystemMessage) {
@@ -162,6 +167,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
     .reverse()
 
   // Effect to handle client tool invocations only once per toolCallId
+  // needed to cancel client side tool calls if the user types a new message or the user cancels the tool call
   useEffect(() => {
     // Find the latest unhandled client-side tool invocation
     const unhandled = nonSystemMessages
@@ -170,7 +176,8 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
         if (
           part.type === 'tool-invocation' &&
           (part.toolInvocation.toolName === 'clientSelectImage' ||
-            part.toolInvocation.toolName === 'clientSelectVideo') &&
+            part.toolInvocation.toolName === 'clientSelectVideo' ||
+            part.toolInvocation.toolName === 'clientRedirectUserToEditor') &&
           part.toolInvocation.state === 'call'
         ) {
           return true
@@ -181,7 +188,8 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
       unhandled &&
       unhandled.type === 'tool-invocation' &&
       (unhandled.toolInvocation.toolName === 'clientSelectImage' ||
-        unhandled.toolInvocation.toolName === 'clientSelectVideo') &&
+        unhandled.toolInvocation.toolName === 'clientSelectVideo' ||
+        unhandled.toolInvocation.toolName === 'clientRedirectUserToEditor') &&
       unhandled.toolInvocation.state === 'call' &&
       (!clientSideToolCall ||
         clientSideToolCall.id !== unhandled.toolInvocation.toolCallId)
@@ -442,6 +450,37 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
                                   }}
                                 >
                                   {t('Open Image Library')}
+                                </Button>
+                              </Box>
+                            </Box>
+                          )
+                        }
+                        default: {
+                          return null
+                        }
+                      }
+                    }
+                    case 'clientRedirectUserToEditor': {
+                      switch (part.toolInvocation.state) {
+                        case 'call': {
+                          return (
+                            <Box key={callId}>
+                              <Typography
+                                key={callId}
+                                variant="body2"
+                                color="text.secondary"
+                              >
+                                {part.toolInvocation.args.message}
+                              </Typography>
+
+                              <Box>
+                                <Button
+                                  variant="outlined"
+                                  onClick={() => {
+                                    void router.push(`/journeys/${journey?.id}`)
+                                  }}
+                                >
+                                  {t('See My Journey!')}
                                 </Button>
                               </Box>
                             </Box>

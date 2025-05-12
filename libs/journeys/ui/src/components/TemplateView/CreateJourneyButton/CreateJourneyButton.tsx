@@ -37,7 +37,7 @@ export function CreateJourneyButton({
   const [journeyDuplicate] = useJourneyDuplicateMutation()
 
   const handleCreateJourney = useCallback(
-    async (teamId: string): Promise<void> => {
+    async (teamId: string, createWithAi: boolean = false): Promise<void> => {
       if (journey == null) return
 
       setLoadingJourney(true)
@@ -53,9 +53,17 @@ export function CreateJourneyButton({
           journeyTitle: journey.title
         })
         void router
-          .push(`/journeys/${data.journeyDuplicate.id}`, undefined, {
-            shallow: true
-          })
+          .push(
+            {
+              pathname: createWithAi
+                ? `/${data.journeyDuplicate.id}/ai`
+                : `/journeys/${data.journeyDuplicate.id}`
+            },
+            undefined,
+            {
+              shallow: true
+            }
+          )
           .finally(() => {
             setLoadingJourney(false)
           })

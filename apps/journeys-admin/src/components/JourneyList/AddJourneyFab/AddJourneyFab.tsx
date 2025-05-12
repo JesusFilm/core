@@ -28,7 +28,7 @@ export function AddJourneyFab(): ReactElement {
         position: 'fixed',
         bottom: 16,
         right: 16,
-        zIndex: 1,
+        zIndex: 3,
         display: { xs: 'flex', md: 'none' }
       }}
       data-testid="AddJourneyFab"
