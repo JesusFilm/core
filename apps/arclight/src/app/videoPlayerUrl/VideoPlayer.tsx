@@ -13,6 +13,7 @@ interface VideoPlayerProps {
   thumbnail?: string | null
   startTime?: number
   endTime?: number
+  subOn: boolean
   subtitles: { key: string; language: string; bcp47: string; vttSrc: string }[]
 }
 
@@ -22,6 +23,7 @@ export function VideoPlayer({
   thumbnail,
   startTime,
   endTime,
+  subOn,
   subtitles
 }: VideoPlayerProps): JSX.Element {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -112,85 +114,94 @@ export function VideoPlayer({
         }
       }
 
-      // Load English subtitles
       const loadSubtitles = async () => {
+        if (!subOn || subtitles.length === 0) {
+          return
+        }
+
         try {
-          // Find English subtitle
-          const englishSubtitle = subtitles.find(
-            (sub) => sub.language === 'English'
-          )
-          if (!englishSubtitle) {
-            logger.warn('No English subtitle found')
-            return
-          }
+          // Load all available subtitles
+          for (const subtitle of subtitles) {
+            try {
+              // Fetch the subtitle file
+              const response = await fetch(subtitle.vttSrc, {
+                mode: 'cors',
+                credentials: 'omit'
+              })
 
-          try {
-            // Fetch the subtitle file
-            const response = await fetch(englishSubtitle.vttSrc, {
-              mode: 'cors',
-              credentials: 'omit'
-            })
-
-            if (!response.ok) {
-              throw new Error(
-                `Failed to fetch subtitle: ${response.statusText}`
-              )
-            }
-
-            const subtitleText = await response.text()
-
-            // Validate VTT format
-            if (!subtitleText.startsWith('WEBVTT')) {
-              logger.error('Invalid VTT format - missing WEBVTT header')
-              throw new Error('Invalid VTT format')
-            }
-
-            // Create a blob URL for the subtitle
-            const blob = new Blob([subtitleText], { type: 'text/vtt' })
-            const blobUrl = URL.createObjectURL(blob)
-
-            // Add the track using the player's API
-            const track = playerRef.current.addRemoteTextTrack(
-              {
-                kind: 'subtitles',
-                label: englishSubtitle.language,
-                srclang: englishSubtitle.bcp47,
-                src: blobUrl,
-                default: true
-              },
-              false
-            )
-
-            // Wait for the track to be loaded
-            track.addEventListener('load', () => {
-              // Get the text track
-              const textTracks = playerRef.current.textTracks()
-
-              // Find our English subtitle track
-              const englishTrack = Array.from(textTracks).find(
-                (track) =>
-                  track.kind === 'subtitles' && track.label === 'English'
-              )
-
-              if (englishTrack) {
-                englishTrack.mode = 'showing'
-                playerRef.current.trigger('texttrackchange')
-              } else {
-                logger.warn('Could not find English subtitle track')
+              if (!response.ok) {
+                throw new Error(
+                  `Failed to fetch subtitle: ${response.statusText}`
+                )
               }
-            })
 
-            // Clean up blob URL when track is removed
-            track.addEventListener('remove', () => {
-              URL.revokeObjectURL(blobUrl)
-            })
+              const subtitleText = await response.text()
 
-            // Add error event listener
-            track.addEventListener('error', (error) => {
-              logger.warn('Error loading English subtitle track:', error)
-            })
-          } catch (error) {
-            logger.error('Error fetching subtitle:', error)
+              // Validate VTT format
+              if (!subtitleText.startsWith('WEBVTT')) {
+                logger.error('Invalid VTT format - missing WEBVTT header')
+                throw new Error('Invalid VTT format')
+              }
+
+              // Create a blob URL for the subtitle
+              const blob = new Blob([subtitleText], { type: 'text/vtt' })
+              const blobUrl = URL.createObjectURL(blob)
+
+              // Add the track using the player's API
+              const track = playerRef.current.addRemoteTextTrack(
+                {
+                  kind: 'subtitles',
+                  label: subtitle.language,
+                  srclang: subtitle.bcp47,
+                  src: blobUrl,
+                  default: subtitle.language === 'English' // Set English as default if available
+                },
+                false
+              )
+
+              // Wait for the track to be loaded
+              track.addEventListener('load', () => {
+                // Get the text track
+                const textTracks = playerRef.current.textTracks()
+
+                // Find our subtitle track
+                const subtitleTrack = Array.from(textTracks).find(
+                  (track) =>
+                    track.kind === 'subtitles' &&
+                    track.label === subtitle.language
+                )
+
+                if (subtitleTrack) {
+                  // Only set to showing if it's English (default)
+                  if (subtitle.language === 'English') {
+                    subtitleTrack.mode = 'showing'
+                  }
+                  playerRef.current.trigger('texttrackchange')
+                } else {
+                  logger.warn(
+                    `Could not find ${subtitle.language} subtitle track`
+                  )
+                }
+              })
+
+              // Clean up blob URL when track is removed
+              track.addEventListener('remove', () => {
+                URL.revokeObjectURL(blobUrl)
+              })
+
+              // Add error event listener
+              track.addEventListener('error', (error) => {
+                logger.warn(
+                  `Error loading ${subtitle.language} subtitle track:`,
+                  error
+                )
+              })
+            } catch (error) {
+              logger.error(
+                `Error fetching ${subtitle.language} subtitle:`,
+                error
+              )
+            }
           }
         } catch (error) {
           logger.warn('Failed to load subtitles:', error)

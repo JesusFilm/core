@@ -5,12 +5,12 @@ import { getApolloClient } from '../../lib/apolloClient'
 import { VideoPlayer } from './VideoPlayer'
 
 const GET_VIDEO_VARIANT = graphql(`
-  query GetVideoVariant($id: ID!) {
+  query GetVideoVariant($id: ID!, $includeSubtitles: Boolean!) {
     videoVariant(id: $id) {
       id
       hls
       videoId
-      subtitle {
+      subtitle @include(if: $includeSubtitles) {
         id
         language {
           id
@@ -34,16 +34,6 @@ const GET_VIDEO_TITLE = graphql(`
       images {
         mobileCinematicHigh
       }
-      subtitles(languageId: "529") {
-        language {
-          id
-          bcp47
-          name(languageId: "529") {
-            value
-          }
-        }
-        vttSrc
-      }
     }
   }
 `)
@@ -51,7 +41,7 @@ const GET_VIDEO_TITLE = graphql(`
 export default async function Page({
   searchParams
 }: {
-  searchParams: { refId?: string; start?: string; end?: string }
+  searchParams: { refId?: string; start?: string; end?: string; subOn?: string }
 }) {
   if (!searchParams.refId) {
     return {
@@ -63,6 +53,7 @@ export default async function Page({
   // Parse start and end times, ensuring they are valid numbers
   const startTime = searchParams.start ? Number(searchParams.start) : undefined
   const endTime = searchParams.end ? Number(searchParams.end) : undefined
+  const subOn = Boolean(searchParams.subOn)
 
   // Validate time parameters
   if (startTime != null && (isNaN(startTime) || startTime < 0)) {
@@ -88,7 +79,10 @@ export default async function Page({
 
   const { data } = await getApolloClient().query({
     query: GET_VIDEO_VARIANT,
-    variables: { id: searchParams.refId }
+    variables: {
+      id: searchParams.refId,
+      includeSubtitles: subOn
+    }
   })
   const { data: videoTitleData } = await getApolloClient().query({
     query: GET_VIDEO_TITLE,
@@ -98,12 +92,14 @@ export default async function Page({
   const hlsUrl = data?.videoVariant?.hls
   const videoTitle = videoTitleData?.video?.title?.[0]?.value
   const thumbnail = videoTitleData?.video?.images?.[0]?.mobileCinematicHigh
-  const subtitles = data?.videoVariant?.subtitle?.map((subtitle) => ({
-    key: subtitle.id,
-    language: subtitle.language?.name?.[0]?.value,
-    bcp47: subtitle.language?.bcp47,
-    vttSrc: subtitle.vttSrc
-  }))
+  const subtitles = subOn
+    ? data?.videoVariant?.subtitle?.map((subtitle) => ({
+        key: subtitle.id,
+        language: subtitle.language?.name?.[0]?.value,
+        bcp47: subtitle.language?.bcp47,
+        vttSrc: subtitle.vttSrc
+      }))
+    : []
 
   if (!hlsUrl) {
     return {
@@ -120,6 +116,7 @@ export default async function Page({
         thumbnail={thumbnail}
         startTime={startTime}
         endTime={endTime}
+        subOn={subOn}
         subtitles={subtitles}
       />
     </div>
