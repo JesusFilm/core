@@ -195,10 +195,6 @@ export function DefaultMenu({
       <ShareItem
         variant="menu-item"
         journey={journeyFromLazyQuery?.journey}
-        // onClick={() => {
-        //   setOpenShareDialog()
-        //   handleCloseMenu()
-        // }}
         handleCloseMenu={handleCloseMenu}
       />
       <Divider />
