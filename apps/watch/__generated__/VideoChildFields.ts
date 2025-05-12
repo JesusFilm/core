@@ -29,11 +29,6 @@ export interface VideoChildFields_snippet {
   value: string;
 }
 
-export interface VideoChildFields_description {
-  __typename: "VideoDescription";
-  value: string;
-}
-
 export interface VideoChildFields_variant {
   __typename: "VideoVariant";
   id: string;
@@ -60,7 +55,6 @@ export interface VideoChildFields {
   images: VideoChildFields_images[];
   imageAlt: VideoChildFields_imageAlt[];
   snippet: VideoChildFields_snippet[];
-  description: VideoChildFields_description[];
   /**
    * slug is a permanent link to the video.
    */

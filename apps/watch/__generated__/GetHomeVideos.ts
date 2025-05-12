@@ -29,11 +29,6 @@ export interface GetHomeVideos_videos_snippet {
   value: string;
 }
 
-export interface GetHomeVideos_videos_description {
-  __typename: "VideoDescription";
-  value: string;
-}
-
 export interface GetHomeVideos_videos_variant {
   __typename: "VideoVariant";
   id: string;
@@ -60,7 +55,6 @@ export interface GetHomeVideos_videos {
   images: GetHomeVideos_videos_images[];
   imageAlt: GetHomeVideos_videos_imageAlt[];
   snippet: GetHomeVideos_videos_snippet[];
-  description: GetHomeVideos_videos_description[];
   /**
    * slug is a permanent link to the video.
    */
