@@ -56,22 +56,33 @@ export function VideoPlayer({
       }
     }) as any
 
-    if (startTime != null) {
-      player.currentTime(startTime)
-    }
+    player.on('loadedmetadata', () => {
+      const duration = player.duration()
 
-    if (endTime != null) {
-      player.on('timeupdate', () => {
-        if (player.currentTime() >= endTime) {
+      // Only set start time if it's valid
+      if (startTime != null && startTime >= 0 && startTime < duration) {
+        player.currentTime(startTime)
+      }
+
+      // Only set end time if it's valid
+      if (
+        endTime != null &&
+        endTime >= 0 &&
+        endTime < duration &&
+        (startTime == null || endTime > startTime)
+      ) {
+        player.on('timeupdate', () => {
+          if (player.currentTime() >= endTime) {
+            player.currentTime(endTime)
+            player.pause()
+          }
+        })
+        player.on('ended', () => {
           player.currentTime(endTime)
           player.pause()
-        }
-      })
-      player.on('ended', () => {
-        player.currentTime(endTime)
-        player.pause()
-      })
-    }
+        })
+      }
+    })
   }
 
   useEffect(() => {

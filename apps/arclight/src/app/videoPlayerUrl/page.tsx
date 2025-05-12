@@ -43,27 +43,15 @@ export default async function Page({
   const startTime = searchParams.start ? Number(searchParams.start) : undefined
   const endTime = searchParams.end ? Number(searchParams.end) : undefined
 
-  // Validate time parameters
-  if (startTime != null && (isNaN(startTime) || startTime < 0)) {
-    return {
-      message: 'Invalid start time parameter',
-      status: 400
-    }
-  }
+  // Only use start time if it's a valid number and non-negative
+  const validStartTime =
+    startTime != null && !isNaN(startTime) && startTime >= 0
+      ? startTime
+      : undefined
 
-  if (endTime != null && (isNaN(endTime) || endTime < 0)) {
-    return {
-      message: 'Invalid end time parameter',
-      status: 400
-    }
-  }
-
-  if (startTime != null && endTime != null && endTime <= startTime) {
-    return {
-      message: 'End time must be greater than start time',
-      status: 400
-    }
-  }
+  // Only use end time if it's a valid number and non-negative
+  const validEndTime =
+    endTime != null && !isNaN(endTime) && endTime >= 0 ? endTime : undefined
 
   const { data } = await getApolloClient().query({
     query: GET_VIDEO_VARIANT,
@@ -90,8 +78,8 @@ export default async function Page({
         hlsUrl={hlsUrl}
         videoTitle={videoTitle}
         thumbnail={thumbnail}
-        startTime={startTime}
-        endTime={endTime}
+        startTime={validStartTime}
+        endTime={validEndTime}
       />
     </div>
   )
