@@ -6,7 +6,6 @@ import { ReactElement } from 'react'
 
 interface ContentHeroMuteButtonProps {
   isMuted: boolean
-
   onClick: () => void
 }
 
