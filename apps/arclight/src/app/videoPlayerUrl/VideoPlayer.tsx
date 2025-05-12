@@ -10,7 +10,7 @@ import IconButton from '@mui/material/IconButton'
 import Slider from '@mui/material/Slider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { MouseEvent, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
 
 import { MuxMetadata } from '@core/shared/ui/muxMetadataType'
@@ -205,13 +205,6 @@ export function VideoPlayer({
     const segmentCurrentTimeMs = currentTime - startTimeMs
     // Return with higher precision to avoid jumps
     return (segmentCurrentTimeMs / segmentDurationMs) * 100
-  }
-
-  // Calculate the current position relative to the segment
-  const getSegmentCurrentTime = () => {
-    const startTimeMs = startTime * 1000
-    const segmentCurrentTimeMs = currentTime - startTimeMs
-    return Math.max(0, segmentCurrentTimeMs)
   }
 
   // Handle seeking with smoother movements
@@ -662,7 +655,8 @@ export function VideoPlayer({
                     fontFamily: 'Roboto, sans-serif',
                     fontWeight: 400,
                     lineHeight: 1,
-                    minWidth: '32px'
+                    minWidth: '32px',
+                    pl: 2
                   }}
                 >
                   {formatTime(
