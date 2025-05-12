@@ -41,7 +41,7 @@ export function AiEditButton({ disabled }: AiEditButtonProps): ReactElement {
             width: 600
           }}
         >
-          <AiChat open={open} />
+          <AiChat />
         </Card>
       </Grow>
     </>

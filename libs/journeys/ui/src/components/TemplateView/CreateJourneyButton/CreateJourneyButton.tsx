@@ -57,10 +57,7 @@ export function CreateJourneyButton({
             {
               pathname: createWithAi
                 ? `/${data.journeyDuplicate.id}/ai`
-                : `/journeys/${data.journeyDuplicate.id}`,
-              query: {
-                ai: createWithAi ? 'true' : undefined
-              }
+                : `/journeys/${data.journeyDuplicate.id}`
             },
             undefined,
             {

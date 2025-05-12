@@ -63,7 +63,7 @@ function AiEditPage({ journey }: { journey: Journey }): ReactElement {
         >
           <Card sx={{ borderRadius: 4 }}>
             <CardContent>
-              <AiChat open={true} />
+              <AiChat fromTemplate={true} />
             </CardContent>
           </Card>
         </PageWrapper>

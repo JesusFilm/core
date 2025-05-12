@@ -31,15 +31,12 @@ import { VideoLibrary } from '../Editor/Slider/Settings/Drawer/VideoLibrary'
 import { SystemPrompt } from './SystemPrompt'
 
 interface AiChatProps {
-  open?: boolean
+  fromTemplate?: boolean
 }
 
-export function AiChat({ open = false }: AiChatProps): ReactElement {
+export function AiChat({ fromTemplate = false }: AiChatProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-
   const router = useRouter()
-  const fromTemplate = router.query?.ai === 'true'
-
   const user = useUser()
   const client = useApolloClient()
   const { journey } = useJourney()
@@ -104,10 +101,7 @@ export function AiChat({ open = false }: AiChatProps): ReactElement {
       systemPromptWithContext = `${systemPromptWithContext}\n\nThe current step ID is ${selectedStepId}. You can use this to get the step and update it.`
 
     if (fromTemplate) {
-      systemPromptWithContext = `${systemPromptWithContext}\n\nThe current journey is from a template. Please ask the user questions to update the button label values, typography values, and image values to make it unique to the journey. Please also update the title and description of the journey to make it unique to the journey.
-      ask the user questions about their church, organization and other things you will find relevant to help customise the journey to the user. 
-      If you need to you can even ask the user to change images, videos, or other assets to make it more relevant to the user.
-      after you and the user are satisfied with the journey, tell the user you are done and ask them if they would like to see the journey.
+      systemPromptWithContext = `${systemPromptWithContext}\n\n this journey has been duplicated from a template. 
       `
     }
 
