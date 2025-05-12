@@ -1,12 +1,12 @@
+import { MockedProvider } from '@apollo/client/testing'
 import useScrollTrigger from '@mui/material/useScrollTrigger'
+import { userEvent } from '@storybook/test'
 import { render, screen, waitFor } from '@testing-library/react'
 
-import { ContentHeader } from './ContentHeader'
 import { VideoProvider } from '../../../../libs/videoContext'
-
 import { videos } from '../../../Videos/__generated__/testData'
-import { userEvent } from '@storybook/test'
-import { MockedProvider } from '@apollo/client/testing'
+
+import { ContentHeader } from './ContentHeader'
 
 describe('ContentHeader', () => {
   beforeEach(() => {
