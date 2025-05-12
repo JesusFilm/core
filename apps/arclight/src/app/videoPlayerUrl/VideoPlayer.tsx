@@ -1,4 +1,5 @@
 'use client'
+import ClosedCaptionOutlined from '@mui/icons-material/ClosedCaptionOutlined'
 import FullscreenExitRounded from '@mui/icons-material/FullscreenExitRounded'
 import FullscreenRounded from '@mui/icons-material/FullscreenRounded'
 import PauseRounded from '@mui/icons-material/PauseRounded'
@@ -7,6 +8,8 @@ import VolumeOffOutlined from '@mui/icons-material/VolumeOffOutlined'
 import VolumeUpOutlined from '@mui/icons-material/VolumeUpOutlined'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
 import Slider from '@mui/material/Slider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -18,12 +21,19 @@ import 'video.js/dist/video-js.css'
 
 import 'videojs-mux'
 
+interface CaptionTrack {
+  label: string
+  src: string
+  srcLang: string
+}
+
 interface VideoPlayerProps {
   hlsUrl: string
   videoTitle: string
   thumbnail?: string | null
   startTime?: number
   endTime?: number
+  captionTracks?: CaptionTrack[]
 }
 
 export function VideoPlayer({
@@ -31,7 +41,10 @@ export function VideoPlayer({
   videoTitle,
   thumbnail,
   startTime = 0,
-  endTime
+  endTime,
+  captionTracks = [
+    { label: 'English', src: '/captions/english.vtt', srcLang: 'en' }
+  ]
 }: VideoPlayerProps): JSX.Element {
   const playerRef = useRef<HTMLVideoElement>(null)
   const [player, setPlayer] = useState<any>(null)
@@ -44,6 +57,9 @@ export function VideoPlayer({
   const [controlsVisible, setControlsVisible] = useState(true)
   const [hoveringControls, setHoveringControls] = useState(false)
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const [captionsEnabled, setCaptionsEnabled] = useState(true)
+  const [captionsMenuAnchor, setCaptionsMenuAnchor] = useState<null | HTMLElement>(null)
+  const [selectedCaption, setSelectedCaption] = useState<string>('')
 
   const effectiveEndTime = endTime ?? Infinity
 
@@ -243,6 +259,14 @@ export function VideoPlayer({
     }
   }
 
+  const handleToggleCaptions = () => {
+    setCaptionsEnabled((prev) => !prev)
+    const video = playerRef.current
+    if (video && video.textTracks && video.textTracks[0]) {
+      video.textTracks[0].mode = captionsEnabled ? 'disabled' : 'showing'
+    }
+  }
+
   // Watch for fullscreen changes
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -338,6 +362,40 @@ export function VideoPlayer({
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`
   }
 
+  useEffect(() => {
+    // Set default selected caption to first track if available
+    if (captionTracks.length > 0) {
+      setSelectedCaption(captionTracks[0].label)
+    } else {
+      setSelectedCaption('Off')
+    }
+  }, [captionTracks])
+
+  // When selectedCaption changes, update textTracks
+  useEffect(() => {
+    const video = playerRef.current
+    if (!video) return
+    const tracks = video.textTracks
+    for (let i = 0; i < tracks.length; i++) {
+      if (selectedCaption === 'Off') {
+        tracks[i].mode = 'disabled'
+      } else {
+        tracks[i].mode = tracks[i].label === selectedCaption ? 'showing' : 'disabled'
+      }
+    }
+  }, [selectedCaption])
+
+  const handleOpenCaptionsMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setCaptionsMenuAnchor(event.currentTarget)
+  }
+  const handleCloseCaptionsMenu = () => {
+    setCaptionsMenuAnchor(null)
+  }
+  const handleSelectCaption = (label: string) => {
+    setSelectedCaption(label)
+    setCaptionsMenuAnchor(null)
+  }
+
   return (
     <div
       className="relative w-full h-full"
@@ -360,6 +418,16 @@ export function VideoPlayer({
         onDoubleClick={handleFullscreen}
       >
         <source src={hlsUrl} type="application/x-mpegURL" />
+        {captionTracks.map((track, idx) => (
+          <track
+            key={track.label + track.srcLang + idx}
+            kind="subtitles"
+            src={track.src}
+            srcLang={track.srcLang}
+            label={track.label}
+            default={idx === 0}
+          />
+        ))}
       </video>
 
       {/* Custom Video Controls - show even if player not initialized yet */}
@@ -675,6 +743,48 @@ export function VideoPlayer({
               alignItems="center"
               onClick={(e) => e.stopPropagation()}
             >
+              {/* Captions Selector Button 
+              <IconButton
+                onClick={handleOpenCaptionsMenu}
+                aria-label="Captions menu"
+                tabIndex={0}
+                sx={{
+                  color: selectedCaption !== 'Off' ? '#3498db' : 'white',
+                  padding: 0.7,
+                  '&:hover': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.15)'
+                  }
+                }}
+                size="small"
+                disabled={!player}
+              >
+                <ClosedCaptionOutlined sx={{ fontSize: 20 }} />
+              </IconButton>
+              <Menu
+                anchorEl={captionsMenuAnchor}
+                open={Boolean(captionsMenuAnchor)}
+                onClose={handleCloseCaptionsMenu}
+                MenuListProps={{ 'aria-label': 'Captions menu' }}
+              >
+                <MenuItem
+                  selected={selectedCaption === 'Off'}
+                  onClick={() => handleSelectCaption('Off')}
+                  aria-label="Turn captions off"
+                // eslint-disable-next-line i18next/no-literal-string
+                >
+                  Off
+                </MenuItem>
+                {captionTracks.map((track) => (
+                  <MenuItem
+                    key={track.label}
+                    selected={selectedCaption === track.label}
+                    onClick={() => handleSelectCaption(track.label)}
+                    aria-label={`Show captions: ${track.label}`}
+                  >
+                    {track.label}
+                  </MenuItem>
+                ))}
+              </Menu> */}
               {/* Fullscreen Button */}
               <IconButton
                 onClick={handleFullscreen}
