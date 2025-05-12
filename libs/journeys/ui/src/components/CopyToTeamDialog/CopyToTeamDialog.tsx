@@ -19,6 +19,7 @@ import {
 import { useLanguagesQuery } from '../../libs/useLanguagesQuery'
 import { useUpdateLastActiveTeamIdMutation } from '../../libs/useUpdateLastActiveTeamIdMutation'
 import { useTeam } from '../TeamProvider'
+import { TranslationDialogWrapper } from '../TranslationDialogWrapper'
 
 interface CopyToTeamDialogProps {
   title: string
@@ -49,7 +50,7 @@ export function CopyToTeamDialog({
 
   const [selectedLanguage, setSelectedLanguage] = useState<
     LanguageOption | undefined
-  >(journeyLanguage)
+  >(undefined)
 
   useEffect(() => {
     setSelectedLanguage(journeyLanguage)
@@ -89,18 +90,14 @@ export function CopyToTeamDialog({
       validationSchema={copyToSchema}
     >
       {({ values, errors, handleChange, handleSubmit, isSubmitting }) => (
-        <Dialog
+        <TranslationDialogWrapper
           open={open}
           onClose={handleClose}
-          dialogTitle={{ title: t(title) }}
+          onTranslate={async () => handleSubmit()}
+          title={title}
           loading={loading ?? isSubmitting}
-          dialogAction={{
-            onSubmit: () => {
-              if (!isSubmitting) handleSubmit()
-            },
-            closeLabel: t('Cancel'),
-            submitLabel: submitLabel === 'Add' ? t('Add') : t('Copy')
-          }}
+          submitLabel={submitLabel === 'Add' ? t('Add') : t('Copy')}
+          divider={false}
           testId="CopyToTeamDialog"
         >
           <FormControl variant="filled" hiddenLabel fullWidth>
@@ -171,7 +168,7 @@ export function CopyToTeamDialog({
               placement: !smUp ? 'top' : 'bottom'
             }}
           />
-        </Dialog>
+        </TranslationDialogWrapper>
       )}
     </Formik>
   )

@@ -9,6 +9,7 @@ import { ReactElement, useState } from 'react'
 
 import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import { CopyToTeamDialog } from '@core/journeys/ui/CopyToTeamDialog'
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { useJourneyAiTranslateMutation } from '@core/journeys/ui/useJourneyAiTranslateMutation'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import MoreIcon from '@core/shared/ui/icons/More'
@@ -158,6 +159,9 @@ export function JourneyCardMenu({
   const { translateJourney } = useJourneyAiTranslateMutation()
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
+  const [loading, setLoading] = useState(false)
+  const { query, setActiveTeam } = useTeam()
+  const teams = query?.data?.teams ?? []
 
   const handleOpenMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
@@ -186,12 +190,14 @@ export function JourneyCardMenu({
     const journeyLanguageData = journey.language
 
     try {
+      setLoading(true)
       const { data } = await journeyDuplicate({
         variables: {
           id: journey.id,
           teamId
         }
       })
+      console.log('selectedLanguage', selectedLanguage)
 
       if (data?.journeyDuplicate.id != null) {
         const translatedJourney = await translateJourney({
@@ -211,6 +217,7 @@ export function JourneyCardMenu({
             variant: 'success',
             preventDuplicate: true
           })
+          setActiveTeam(teams.find((team) => team.id === team.id) ?? null)
         } else {
           throw new Error('Failed to start translation')
         }
@@ -225,6 +232,8 @@ export function JourneyCardMenu({
           variant: 'error'
         }
       )
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -354,9 +363,10 @@ export function JourneyCardMenu({
       )}
       {openCopyToTeamDialog != null && (
         <CopyToTeamDialog
-          title={t('Copy to Another Team')}
+          title={t('Add Journey to Team')}
           open={openCopyToTeamDialog}
           journeyLanguage={journeyLanguageOption}
+          loading={loading}
           onClose={() => {
             setOpenCopyToTeamDialog(false)
           }}

@@ -49,6 +49,17 @@ interface TranslationDialogWrapperProps {
    * Children to render when not in loading state
    */
   children: ReactNode
+
+  /**
+   * Whether to show dividers in the dialog
+   * @default true
+   */
+  divider?: boolean
+
+  /**
+   * The label for the submit button
+   */
+  submitLabel?: string
 }
 
 /**
@@ -66,7 +77,9 @@ export function TranslationDialogWrapper({
   loadingText,
   loading,
   testId,
-  children
+  children,
+  divider,
+  submitLabel
 }: TranslationDialogWrapperProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const defaultLoadingText = t('Translating your journey...')
@@ -102,16 +115,25 @@ export function TranslationDialogWrapper({
                 onClick={onTranslate}
                 loading={loading}
               >
-                {t('Create')}
+                {submitLabel ? submitLabel : t('Create')}
               </LoadingButton>
             </>
           ) : (
-            <Button variant="outlined" color="secondary" onClick={onClose}>
-              {t('Cancel')}
-            </Button>
+            <Box
+              sx={{
+                display: 'flex',
+                width: '100%',
+                justifyContent: 'center'
+              }}
+            >
+              <Button variant="outlined" color="secondary" onClick={onClose}>
+                {t('Cancel')}
+              </Button>
+            </Box>
           )}
         </>
       }
+      divider={divider}
       testId={testId}
     >
       {loading ? (
