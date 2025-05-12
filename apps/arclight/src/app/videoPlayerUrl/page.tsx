@@ -10,6 +10,17 @@ const GET_VIDEO_VARIANT = graphql(`
       id
       hls
       videoId
+      subtitle {
+        id
+        language {
+          id
+          bcp47
+          name(languageId: "529") {
+            value
+          }
+        }
+        vttSrc
+      }
     }
   }
 `)
@@ -22,6 +33,16 @@ const GET_VIDEO_TITLE = graphql(`
       }
       images {
         mobileCinematicHigh
+      }
+      subtitles(languageId: "529") {
+        language {
+          id
+          bcp47
+          name(languageId: "529") {
+            value
+          }
+        }
+        vttSrc
       }
     }
   }
@@ -77,6 +98,13 @@ export default async function Page({
   const hlsUrl = data?.videoVariant?.hls
   const videoTitle = videoTitleData?.video?.title?.[0]?.value
   const thumbnail = videoTitleData?.video?.images?.[0]?.mobileCinematicHigh
+  const subtitles = data?.videoVariant?.subtitle?.map((subtitle) => ({
+    key: subtitle.id,
+    language: subtitle.language?.name?.[0]?.value,
+    bcp47: subtitle.language?.bcp47,
+    vttSrc: subtitle.vttSrc
+  }))
+
   if (!hlsUrl) {
     return {
       message: 'No video URL found for ID: ' + searchParams.refId,
@@ -92,6 +120,7 @@ export default async function Page({
         thumbnail={thumbnail}
         startTime={startTime}
         endTime={endTime}
+        subtitles={subtitles}
       />
     </div>
   )
