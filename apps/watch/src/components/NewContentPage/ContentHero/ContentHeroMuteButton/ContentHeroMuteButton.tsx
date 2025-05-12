@@ -1,5 +1,5 @@
-import VolumeOffRoundedIcon from '@mui/icons-material/VolumeOffRounded'
-import VolumeUpRoundedIcon from '@mui/icons-material/VolumeUpRounded'
+import Volume5 from '@core/shared/ui/icons/Volume5'
+import VolumeOff from '@core/shared/ui/icons/VolumeOff'
 import IconButton from '@mui/material/IconButton'
 import { alpha } from '@mui/material/styles'
 import { ReactElement } from 'react'
@@ -30,9 +30,9 @@ export function ContentHeroMuteButton({
       aria-label={isMuted ? 'muted' : 'unmuted'}
     >
       {isMuted ? (
-        <VolumeOffRoundedIcon sx={{ fontSize: '32px' }} />
+        <VolumeOff sx={{ fontSize: '32px' }} />
       ) : (
-        <VolumeUpRoundedIcon sx={{ fontSize: '32px' }} />
+        <Volume5 sx={{ fontSize: '32px' }} />
       )}
     </IconButton>
   )
