@@ -1,7 +1,7 @@
 {
   "%s | Next Steps": "%s | Next Steps",
   "Admin | Next Steps": "Admin | Next Steps",
-  "Next Steps A.I": "Next Steps A.I",
+  "Next Steps AI": "Next Steps AI",
   "Email Preferences Updated.": "Email Preferences Updated.",
   "Email Preferences": "Email Preferences",
   "Select the types of email notifications you want to receive from NextSteps.": "Select the types of email notifications you want to receive from NextSteps.",
@@ -105,6 +105,7 @@
   "Image generated": "Image generated",
   "Ask Anything": "Ask Anything",
   "Message": "Message",
+  "NextSteps AI can make mistakes. Check important info.": "NextSteps AI can make mistakes. Check important info.",
   "Tokens Used": "Tokens Used",
   "Advanced Settings": "Advanced Settings",
   "System Prompt": "System Prompt",
