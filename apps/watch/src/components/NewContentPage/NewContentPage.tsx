@@ -1,26 +1,31 @@
+import { Typography } from '@mui/material'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
+import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
+import { v4 as uuidv4 } from 'uuid'
+
 import { ThemeMode } from '@core/shared/ui/themes'
 
+import { VideoChildFields_studyQuestions } from '../../../__generated__/VideoChildFields'
 import { useVideoChildren } from '../../libs/useVideoChildren'
 import { getWatchUrl } from '../../libs/utils/getWatchUrl'
 import { useVideo } from '../../libs/videoContext'
 import { PageWrapper } from '../PageWrapper'
 
+import { BibleCitations } from './BibleCitations'
 import { ContentHero } from './ContentHero'
 import { ContentMetadata } from './ContentMetadata'
-import { VideoCarousel } from './VideoCarousel'
 import { DiscussionQuestions } from './DiscussionQuestions'
-import { VideoChildFields_studyQuestions } from '../../../__generated__/VideoChildFields'
-import Button from '@mui/material/Button'
-
-import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 import { ShareButton } from './ShareButton'
+import { VideoCarousel } from './VideoCarousel'
+import Bible from '@core/shared/ui/icons/Bible'
+import { sendGTMEvent } from '@next/third-parties/google'
 
 export function NewContentPage(): ReactElement {
+  const { t } = useTranslation('apps-watch')
   const {
     id,
     container,
@@ -32,7 +37,8 @@ export function NewContentPage(): ReactElement {
     imageAlt,
     label,
     studyQuestions,
-    slug: videoSlug
+    slug: videoSlug,
+    bibleCitations
   } = useVideo()
 
   const variantSlug = container?.variant?.slug ?? variant?.slug
@@ -51,6 +57,19 @@ export function NewContentPage(): ReactElement {
               'If you could ask the creator of this video a question, what would it be?'
           }
         ] as unknown as VideoChildFields_studyQuestions[])
+
+  const handleFreeResourceClick = () => {
+    sendGTMEvent({
+      event: 'join_study_button_click',
+      eventId: uuidv4(),
+      date: new Date().toISOString(),
+      contentId: variantSlug
+    })
+    window.open(
+      'https://join.bsfinternational.org/?utm_source=jesusfilm-watch',
+      '_blank'
+    )
+  }
 
   return (
     <>
@@ -127,7 +146,9 @@ export function NewContentPage(): ReactElement {
               data-testid="ContentPageContent"
               gap={10}
               sx={{
-                py: 10
+                py: 10,
+                zIndex: 1,
+                px: { xs: 4, sm: 6, md: 8, lg: 10, xl: 12 }
               }}
             >
               <VideoCarousel
@@ -141,8 +162,7 @@ export function NewContentPage(): ReactElement {
                   gridTemplateColumns: { xs: '1fr', xl: '3fr 2fr' },
                   flexWrap: 'wrap',
                   zIndex: 1,
-                  gap: 10,
-                  px: { xs: 4, sm: 6, md: 8, lg: 10, xl: 12 }
+                  gap: 10
                 }}
               >
                 <ContentMetadata
@@ -154,15 +174,29 @@ export function NewContentPage(): ReactElement {
               </Box>
               <Stack
                 sx={{
-                  zIndex: 1,
-                  px: { xs: 4, sm: 6, md: 8, lg: 10, xl: 12 }
+                  zIndex: 1
                 }}
                 direction="row"
                 spacing={2}
                 justifyContent="space-between"
               >
+                <Typography>{t('Bible Quotes')}</Typography>
                 <ShareButton />
               </Stack>
+              <BibleCitations
+                bibleCitations={bibleCitations}
+                freeResource={{
+                  heading: t('Free Resources'),
+                  text: t(
+                    'Want to grow deep in your understanding of the Bible?'
+                  ),
+                  cta: {
+                    icon: Bible,
+                    label: t('Join Our Bible Study'),
+                    onClick: handleFreeResourceClick
+                  }
+                }}
+              />
             </Stack>
           </Box>
         </Box>
