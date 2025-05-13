@@ -645,7 +645,8 @@ export function VideoPlayer({
           zIndex: 20,
           transition: 'opacity 0.3s ease',
           opacity: controlsVisible ? 1 : 0,
-          background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 30%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.2) 100%)',
+          background:
+            'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 30%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.2) 100%)',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between'
