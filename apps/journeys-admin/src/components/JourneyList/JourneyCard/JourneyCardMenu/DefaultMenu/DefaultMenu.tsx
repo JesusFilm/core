@@ -25,6 +25,7 @@ import { CopyToTeamMenuItem } from '../../../../Team/CopyToTeamMenuItem/CopyToTe
 import { DuplicateJourneyMenuItem } from '../DuplicateJourneyMenuItem'
 
 import { ArchiveJourney } from './ArchiveJourney'
+import { useUser } from 'next-firebase-auth'
 
 export const GET_JOURNEY_WITH_USER_ROLES = gql`
   query GetJourneyWithUserRoles($id: ID!) {
@@ -89,6 +90,7 @@ export function DefaultMenu({
 }: DefaultMenuProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
+  const user = useUser()
   const { data: userRoleData } = useUserRoleQuery()
   const { hostname } = useCustomDomainsQuery({
     variables: { teamId: activeTeam?.id ?? '' },
@@ -104,8 +106,26 @@ export function DefaultMenu({
 
   console.log('Debug - Current User:', {
     currentUserId: currentUser?.id,
-    journeyId,
-    journeyData
+    journeyId: journeyId,
+    journeyData: journeyData
+  })
+
+  const owner = useMemo(
+    () =>
+      journeyData?.adminJourney?.userJourneys?.find(
+        (userJourney) => userJourney.role === UserJourneyRole.owner
+      ),
+    [journeyData?.adminJourney?.userJourneys]
+  )
+  const isOwnerNew = useMemo(
+    () => owner?.user?.id === user?.id,
+    [owner?.user?.id, user?.id]
+  )
+
+  console.log('Debug - Owner Check:', {
+    isOwnerNew: isOwnerNew,
+    owner: owner,
+    user: user
   })
 
   const isOwner = journeyData?.adminJourney?.userJourneys?.some(
@@ -115,7 +135,7 @@ export function DefaultMenu({
   )
 
   console.log('Debug - Owner Check:', {
-    isOwner,
+    isOwner: isOwner,
     userJourneys: journeyData?.adminJourney?.userJourneys
   })
 
