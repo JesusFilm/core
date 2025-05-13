@@ -343,7 +343,11 @@ export function VideoPlayer({
 
       // Use requestAnimationFrame for smoother visual updates
       requestAnimationFrame(() => {
-        playerInstanceRef.current.currentTime(seekTimeSeconds)
+        try {
+          playerInstanceRef.current.currentTime(seekTimeSeconds)
+        } catch (error) {
+          console.error('Error during seek operation:', error)
+        }
       })
     }
   }
