@@ -4,7 +4,8 @@ import {
   cleanup,
   fireEvent,
   render,
-  waitFor
+  waitFor,
+  screen
 } from '@testing-library/react'
 import fscreen from 'fscreen'
 import videojs from 'video.js'
@@ -67,14 +68,14 @@ describe('VideoControls', () => {
     const playStub = jest.spyOn(player, 'play').mockImplementation(() => ({
       play: jest.fn()
     }))
-    const { getAllByTestId } = render(
+    render(
       <MockedProvider>
         <VideoProvider value={{ content: videos[0] }}>
           <VideoControls player={player} />
         </VideoProvider>
       </MockedProvider>
     )
-    fireEvent.click(getAllByTestId('PlayArrowRoundedIcon')[1])
+    fireEvent.click(screen.getByTestId('PlayArrowRoundedIcon'))
     expect(playStub).toHaveBeenCalled()
   })
 
@@ -85,29 +86,29 @@ describe('VideoControls', () => {
     const pauseStub = jest.spyOn(player, 'pause').mockImplementation(() => ({
       pause: jest.fn()
     }))
-    const { getAllByTestId } = render(
+    render(
       <MockedProvider>
         <VideoProvider value={{ content: videos[0] }}>
           <VideoControls player={player} />
         </VideoProvider>
       </MockedProvider>
     )
-    fireEvent.click(getAllByTestId('PauseRoundedIcon')[1])
+    fireEvent.click(screen.getByTestId('PauseRoundedIcon'))
     expect(pauseStub).toHaveBeenCalled()
   })
 
-  it('mutes the video on mute icon click', () => {
+  it('unmutes the video on mute icon click', () => {
     const mutedStub = jest.spyOn(player, 'muted').mockImplementation(() => ({
       muted: jest.fn()
     }))
-    const { getByTestId } = render(
+    render(
       <MockedProvider>
         <VideoProvider value={{ content: videos[0] }}>
           <VideoControls player={player} />
         </VideoProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('VolumeUpOutlinedIcon'))
+    fireEvent.click(screen.getByTestId('VolumeOffOutlinedIcon'))
     expect(mutedStub).toHaveBeenCalled()
   })
 
