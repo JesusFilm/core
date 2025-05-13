@@ -56,7 +56,6 @@ export function VideoPlayer({
   const [controlsVisible, setControlsVisible] = useState(true)
   const [hoveringControls, setHoveringControls] = useState(false)
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const [captionsEnabled, setCaptionsEnabled] = useState(true)
   const [captionsMenuAnchor, setCaptionsMenuAnchor] =
     useState<null | HTMLElement>(null)
   const [selectedCaption, setSelectedCaption] = useState<string>('')
