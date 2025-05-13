@@ -9,8 +9,8 @@ import NextLink from 'next/link'
 import { ReactElement } from 'react'
 
 import { VideoChildFields } from '../../../../../__generated__/VideoChildFields'
-import { getWatchUrl } from '../../../../libs/utils/getWatchUrl'
 import { getLabelDetails } from '../../../../libs/utils/getLabelDetails/getLabelDetails'
+import { getWatchUrl } from '../../../../libs/utils/getWatchUrl'
 
 const ImageButton = styled(ButtonBase)(() => ({
   borderRadius: 8,

@@ -2,9 +2,9 @@ import { render, screen } from '@testing-library/react'
 
 import { VideoLabel } from '../../../../__generated__/globalTypes'
 import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
+import { videos } from '../../Videos/__generated__/testData'
 
 import { VideoCarousel } from './VideoCarousel'
-import { videos } from '../../Videos/__generated__/testData'
 
 // Mock Swiper modules
 jest.mock('swiper/modules', () => ({
