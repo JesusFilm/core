@@ -13,6 +13,13 @@ interface VideoPlayerProps {
   thumbnail?: string | null
   startTime?: number
   endTime?: number
+  subon: boolean
+  subtitles: {
+    key: string
+    language: string
+    bcp47: string | null
+    vttSrc: string | null
+  }[]
 }
 
 export function VideoPlayer({
@@ -20,7 +27,9 @@ export function VideoPlayer({
   videoTitle,
   thumbnail,
   startTime,
-  endTime
+  endTime,
+  subon,
+  subtitles
 }: VideoPlayerProps): JSX.Element {
   const playerRef = useRef<HTMLVideoElement>(null)
 
@@ -56,7 +65,26 @@ export function VideoPlayer({
       }
     }) as any
 
-    player.on('loadedmetadata', () => {
+    // Enable first subtitle track if subon is true
+    if (subon && subtitles.length > 0) {
+      player.ready(() => {
+        const tracks = player.textTracks()
+        for (let i = 0; i < tracks.length; i++) {
+          const track = tracks[i]
+          if (track.kind === 'subtitles') {
+            track.mode = 'showing'
+            break // Only enable the first subtitle track
+          }
+        }
+      })
+    }
+
+    if (startTime != null) {
+      player.currentTime(startTime)
+    }
+
+    // Handle end time in a separate effect
+    player.ready(() => {
       const duration = player.duration()
 
       // Only set start time if it's valid
@@ -71,16 +99,26 @@ export function VideoPlayer({
         endTime < duration &&
         (startTime == null || endTime > startTime)
       ) {
-        player.on('timeupdate', () => {
+        const handleTimeUpdate = () => {
           if (player.currentTime() >= endTime) {
             player.currentTime(endTime)
             player.pause()
           }
-        })
-        player.on('ended', () => {
+        }
+
+        const handleEnded = () => {
           player.currentTime(endTime)
           player.pause()
-        })
+        }
+
+        player.on('timeupdate', handleTimeUpdate)
+        player.on('ended', handleEnded)
+
+        // Return cleanup function
+        return () => {
+          player.off('timeupdate', handleTimeUpdate)
+          player.off('ended', handleEnded)
+        }
       }
     })
   }
@@ -109,6 +147,16 @@ export function VideoPlayer({
         data-play-end={endTime ?? 0}
       >
         <source src={hlsUrl} type="application/x-mpegURL" />
+        {subtitles.map((subtitle) => (
+          <track
+            key={subtitle.key}
+            kind="subtitles"
+            label={subtitle.language}
+            src={subtitle.vttSrc ?? ''}
+            srcLang={subtitle.bcp47 ?? undefined}
+            default={subtitle.language === 'English'}
+          />
+        ))}
       </video>
     </div>
   )
