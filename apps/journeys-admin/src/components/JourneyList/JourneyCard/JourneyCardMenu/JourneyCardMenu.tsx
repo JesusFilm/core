@@ -168,6 +168,7 @@ export function JourneyCardMenu({
         anchorEl={anchorEl}
         open={open}
         onClose={handleCloseMenu}
+        keepMounted
         MenuListProps={{
           'aria-labelledby': 'journey-actions'
         }}
@@ -201,7 +202,6 @@ export function JourneyCardMenu({
             setOpenDetailsDialog={() => setOpenDetailsDialog(true)}
             template={template}
             refetch={refetch}
-            keepMounted={true}
           />
         )}
       </Menu>
