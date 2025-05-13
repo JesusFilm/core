@@ -65,6 +65,8 @@ export interface JourneyCardMenuProps {
   template?: boolean
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
   journey?: Journey
+  hovered?: boolean
+  onMenuClose?: () => void
 }
 
 /**
@@ -88,7 +90,9 @@ export function JourneyCardMenu({
   published,
   template,
   refetch,
-  journey
+  journey,
+  hovered,
+  onMenuClose
 }: JourneyCardMenuProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const [open, setOpen] = useState<boolean | null>(null)
@@ -135,7 +139,7 @@ export function JourneyCardMenu({
   }
   const handleCloseMenu = (): void => {
     setAnchorEl(null)
-    setOpen(false)
+    onMenuClose?.()
   }
 
   return (
@@ -147,6 +151,20 @@ export function JourneyCardMenu({
         aria-expanded={open ? 'true' : 'false'}
         onClick={handleOpenMenu}
         edge="end"
+        sx={{
+          color: hovered ? 'gray.400' : 'white',
+          '& svg': {
+            filter: 'drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.4))'
+          },
+          '&:hover': {
+            backgroundColor: '#FFF'
+          },
+          backgroundColor: hovered ? 'white' : 'transparent',
+          transition: 'background-color 0.3s, color 0.3s',
+          borderRadius: '10px',
+          width: '20px',
+          height: '30px'
+        }}
       >
         <MoreIcon />
       </IconButton>
