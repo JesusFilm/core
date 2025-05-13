@@ -60,6 +60,7 @@ input MutationJourneyAiTranslateCreateInput {
   journeyLanguageName: String!
   textLanguageId: ID!
   textLanguageName: String!
+  forceTranslate: Boolean
 }
 
 type MuxVideo

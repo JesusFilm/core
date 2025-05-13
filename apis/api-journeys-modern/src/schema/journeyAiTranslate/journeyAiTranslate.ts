@@ -16,11 +16,13 @@ builder.mutationFields((t) => ({
         name: t.input.string({ required: true }),
         journeyLanguageName: t.input.string({ required: true }),
         textLanguageId: t.input.id({ required: true }),
-        textLanguageName: t.input.string({ required: true })
+        textLanguageName: t.input.string({ required: true }),
+        forceTranslate: t.input.boolean({ required: false })
       },
       type: 'ID',
       nullable: false,
       resolve: async (_root, { input }, { user }) => {
+        const shouldForceTranslate = input.forceTranslate ?? false
         const originalName = input.name
         // TODO: check if user has write access
         // 1. First get the journey details using Prisma
@@ -45,19 +47,70 @@ builder.mutationFields((t) => ({
         const stepBlocks = journey.blocks
           .filter((block) => block.typename === 'StepBlock')
           .sort((a, b) => (a.parentOrder ?? 0) - (b.parentOrder ?? 0))
-        const cardBlocks = stepBlocks
-          .map((block) =>
-            journey.blocks.find(
-              ({ parentBlockId }) =>
-                parentBlockId === block.id && block.typename === 'CardBlock'
-            )
-          )
-          .filter((block) => block !== undefined)
+        // console.log('stepBlocks', stepBlocks)
+        // const cardBlocks = stepBlocks
+        //   .map((block) =>
+        //     journey.blocks.find(
+        //       ({ parentBlockId }) =>
+        //         parentBlockId === block.id && block.typename === 'CardBlock'
+        //     )
+        //   )
+        //   .filter((block) => block !== undefined)
+        const cardBlocks = journey.blocks
+          .filter((block) => block.typename === 'CardBlock')
+          .sort((a, b) => (a.parentOrder ?? 0) - (b.parentOrder ?? 0))
 
         const cardBlocksContent = await getCardBlocksContent({
           blocks: journey.blocks,
           cardBlocks
         })
+
+        // Use AI to detect the language of the journey content
+        const languageDetectionPrompt = `
+        Detect the language and writing system of the following journey content.
+        
+        Journey Content:
+        ${cardBlocksContent.join('\n')}
+        
+        Analyze the content at the character level, with a strong focus on the specific script used:
+        - For Chinese, determine whether the characters are from the Simplified set (used in Mainland China/Singapore) or the Traditional set (used in Taiwan/Hong Kong/Macau).
+        - Consider "Simplified Chinese" and "Traditional Chinese" as distinct for comparison, even though they share the same spoken language base.
+        - If the detected language is Simplified Chinese:
+          - And the ${requestedLanguageName} is 華語, then isSameLanguage should be false.
+          - And the ${requestedLanguageName} is 中文, then isSameLanguage should be true.
+        - If the detected language is Traditional Chinese:
+          - And the ${requestedLanguageName} is 華語, then isSameLanguage should be true.
+          - And the ${requestedLanguageName} is 中文, then isSameLanguage should be false.
+
+        Return the result in this format:
+        {
+          detectedLanguage: [e.g. "Traditional Chinese", "Simplified Chinese", "Japanese", "English"],
+          isSameLanguage: [true if the writing system of the detected language exactly matches ${requestedLanguageName}; false otherwise]
+        }
+        Note: Do not return 'true' for isSameLanguage unless both the language and the script match exactly.
+        `
+
+        try {
+          const { object: detectedLanguage } = await generateObject({
+            model: google('gemini-2.0-flash'),
+            prompt: languageDetectionPrompt,
+            schema: z.object({
+              langauge: z.string(),
+              isSameLanguage: z.boolean()
+            })
+          })
+          console.log('detectedLanguage', detectedLanguage.langauge)
+          console.log('requestedLanguageName', requestedLanguageName)
+          console.log('isSameLanguage', detectedLanguage.isSameLanguage)
+          if (detectedLanguage.isSameLanguage) {
+            throw new Error(
+              'The content is already in the requested language. Translation is not necessary.'
+            )
+          }
+        } catch (error) {
+          console.error('Error detecting language with AI:', error)
+          throw new Error('Failed to detect language of the journey content.')
+        }
 
         // 4. Use Gemini to analyze the journey content and get intent, and translate title/description
         const combinedPrompt = `
@@ -216,12 +269,16 @@ Field names to translate per block type:
 - TextResponseBlock: "label" and "placeholder" fields
 
 Ensure translations maintain the meaning while being culturally appropriate for ${requestedLanguageName}.
+You must translate the content to the exact language and script of ${requestedLanguageName}.
+For Chinese scripts, do not return pinyin.
+For Japanese scripts, do not return romaji.
+If there are street names or addresses, do not translate them.
 Keep translations concise and effective for UI context (e.g., button labels should remain short).
 
 If you are in the process of translating and you recognize passages from the
 Bible you should not translate that content. Instead, you should rely on a Bible
 translation available in ${requestedLanguageName} and use that content directly. 
-You must never make changes to content from the Bible yourself. 
+You must never make changes to content from the Bible yourself.
 If there is no Bible translation available in ${requestedLanguageName}, 
 use the the most popular English Bible translation available. 
 You should inform the user about which Bible translation you chose to use.

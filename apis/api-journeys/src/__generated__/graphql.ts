@@ -2385,6 +2385,7 @@ export type MutationBibleCitationUpdateInput = {
 };
 
 export type MutationJourneyAiTranslateCreateInput = {
+  forceTranslate?: InputMaybe<Scalars['Boolean']['input']>;
   journeyId: Scalars['ID']['input'];
   journeyLanguageName: Scalars['String']['input'];
   name: Scalars['String']['input'];

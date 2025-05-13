@@ -4287,6 +4287,7 @@ input MutationJourneyAiTranslateCreateInput @join__type(graph: API_JOURNEYS_MODE
   journeyLanguageName: String!
   textLanguageId: ID!
   textLanguageName: String!
+  forceTranslate: Boolean
 }
 
 input LanguagesFilter @join__type(graph: API_LANGUAGES)  {
