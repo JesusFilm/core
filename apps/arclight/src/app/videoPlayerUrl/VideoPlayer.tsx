@@ -569,17 +569,25 @@ export function VideoPlayer({
       `}</style>
       {thumbnail && (
         <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${thumbnail})` }}
+          className="absolute inset-0"
+          style={{
+            width: '100vw',
+            height: '100vh',
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            zIndex: 0,
+            backgroundImage: `url(${thumbnail})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
+          }}
         />
       )}
       <div
         data-vjs-player
         className="w-full h-full relative z-10"
-        style={{
-          ...videoWrapperStyles,
-          display: playing ? undefined : 'none'
-        }}
+        style={videoWrapperStyles}
       >
         <video
           className="video-js vjs-big-play-centered vjs-fluid vjs-fill"
@@ -589,10 +597,7 @@ export function VideoPlayer({
           data-play-start={startTime ?? 0}
           data-play-end={endTime ?? 0}
           playsInline
-          style={{
-            ...videoElementStyles,
-            display: playing ? 'block' : 'none'
-          }}
+          style={videoElementStyles}
           crossOrigin="anonymous"
         >
           <source src={hlsUrl} type="application/x-mpegURL" />
