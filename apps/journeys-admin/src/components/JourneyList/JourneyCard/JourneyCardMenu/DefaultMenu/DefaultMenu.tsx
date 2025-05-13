@@ -122,7 +122,7 @@ export function DefaultMenu({
     [owner?.user?.id, user?.id]
   )
 
-  console.log('Debug - Owner Check:', {
+  console.log('Debug - isOwnerNew Owner Check:', {
     isOwnerNew: isOwnerNew,
     owner: owner,
     user: user
@@ -134,7 +134,7 @@ export function DefaultMenu({
       userJourney.role === UserJourneyRole.owner
   )
 
-  console.log('Debug - Owner Check:', {
+  console.log('Debug - isOwner Check:', {
     isOwner: isOwner,
     userJourneys: journeyData?.adminJourney?.userJourneys
   })
