@@ -586,7 +586,10 @@ export function VideoPlayer({
           data-play-start={startTime ?? 0}
           data-play-end={endTime ?? 0}
           playsInline
-          style={videoElementStyles}
+          style={{
+            ...videoElementStyles,
+            display: playing ? 'block' : 'none'
+          }}
           crossOrigin="anonymous"
         >
           <source src={hlsUrl} type="application/x-mpegURL" />
