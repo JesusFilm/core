@@ -314,9 +314,13 @@ export function VideoPlayer({
 
     // Handle edge cases to prevent NaN, Infinity or undefined values
     if (
-      !segmentDurationMs ||
-      !isFinite(segmentDurationMs) ||
-      segmentDurationMs <= 0
+  // Handle edge cases to prevent NaN, Infinity or undefined values
+  if (
+    !segmentDurationMs ||
+    !Number.isFinite(segmentDurationMs) ||
+    segmentDurationMs <= 0
+  ) {
+    // ...
     ) {
       // If duration is zero or invalid, return either 0 or 100 based on context
       return endTimeMs === Infinity ? 0 : 100
