@@ -44,7 +44,7 @@ export function VideoCard({
   const href = getWatchUrl(containerSlug, video.label, video.variant?.slug)
 
   return (
-    <NextLink href={href} passHref legacyBehavior>
+    <NextLink href={href} passHref legacyBehavior scroll={false}>
       <Link
         display="block"
         underline="none"
@@ -65,11 +65,8 @@ export function VideoCard({
                 justifyContent: 'flex-end',
                 width: '100%',
                 borderRadius: 3,
-                overflow: 'hidden',
                 cursor: 'pointer',
-                bgcolor: 'common.black',
-                boxSizing: 'border-box',
-                border: active ? '4px solid white' : 'none'
+                bgcolor: 'common.black'
               }}
               tabIndex={0}
               role="button"
@@ -90,6 +87,14 @@ export function VideoCard({
                   }}
                 />
               </Layer>
+              <Layer
+                sx={{
+                  overflow: 'visible',
+                  boxShadow: active ? 'inset 0 0 0 4px #fff' : undefined,
+                  pointerEvents: 'none'
+                }}
+                data-testid="ActiveLayer"
+              />
               <Box sx={{ p: 4, fontFamily: 'Inter' }}>
                 <Typography
                   sx={{

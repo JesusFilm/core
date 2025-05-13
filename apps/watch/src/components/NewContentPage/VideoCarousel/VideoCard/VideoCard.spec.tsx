@@ -1,8 +1,5 @@
 import { render, screen } from '@testing-library/react'
 
-import { VideoLabel } from '../../../../../__generated__/globalTypes'
-import { VideoChildFields } from '../../../../../__generated__/VideoChildFields'
-
 import { VideoCard } from './VideoCard'
 import { videos } from '../../../Videos/__generated__/testData'
 
@@ -22,8 +19,8 @@ describe('VideoCard', () => {
   it('should have active styles when active is true', () => {
     render(<VideoCard video={videos[0]} active />)
 
-    const card = screen.getByTestId(`CarouselItem-${videos[0].slug}`)
-    expect(card).toHaveStyle('border: 4px solid white')
+    const card = screen.getByTestId('ActiveLayer')
+    expect(card).toHaveStyle('box-shadow: inset 0 0 0 4px #fff')
   })
 
   it('has proper accessibility attributes', () => {
