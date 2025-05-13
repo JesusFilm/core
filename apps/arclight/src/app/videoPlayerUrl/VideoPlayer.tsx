@@ -597,7 +597,7 @@ export function VideoPlayer({
               src={track.vttSrc ?? ''}
               srcLang={track.bcp47 ?? undefined}
               label={track.language}
-              default={idx === 0}
+              default={subon && idx === 0}
             />
           ))}
         </video>
