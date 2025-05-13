@@ -187,7 +187,8 @@ export function JourneyCardMenu({
         data-testid="JourneyCardMenu"
       >
         {status === JourneyStatus.trashed
-          ? TrashMenuComponent && (
+          ? TrashMenuComponent &&
+            open && (
               <TrashMenuComponent
                 setOpenRestoreDialog={() => setOpenRestoreDialog(true)}
                 setOpenDeleteDialog={() => setOpenDeleteDialog(true)}
