@@ -314,13 +314,9 @@ export function VideoPlayer({
 
     // Handle edge cases to prevent NaN, Infinity or undefined values
     if (
-  // Handle edge cases to prevent NaN, Infinity or undefined values
-  if (
-    !segmentDurationMs ||
-    !Number.isFinite(segmentDurationMs) ||
-    segmentDurationMs <= 0
-  ) {
-    // ...
+      !segmentDurationMs ||
+      !Number.isFinite(segmentDurationMs) ||
+      segmentDurationMs <= 0
     ) {
       // If duration is zero or invalid, return either 0 or 100 based on context
       return endTimeMs === Infinity ? 0 : 100
@@ -347,11 +343,7 @@ export function VideoPlayer({
 
       // Use requestAnimationFrame for smoother visual updates
       requestAnimationFrame(() => {
-        try {
-          playerInstanceRef.current.currentTime(seekTimeSeconds)
-        } catch (error) {
-          console.error('Error during seek operation:', error)
-        }
+        playerInstanceRef.current.currentTime(seekTimeSeconds)
       })
     }
   }
@@ -395,17 +387,16 @@ export function VideoPlayer({
         }
       })
     }
+
     return () => {
       if (playerInstanceRef.current) {
-        // Properly dispose of the player, which will clean up all event listeners
         playerInstanceRef.current.dispose()
-        playerInstanceRef.current = null
       }
       if (controlsTimeoutRef.current) {
         clearTimeout(controlsTimeoutRef.current)
-        controlsTimeoutRef.current = null
       }
     }
+  }, [])
 
   // Add keyboard shortcuts
   useEffect(() => {
