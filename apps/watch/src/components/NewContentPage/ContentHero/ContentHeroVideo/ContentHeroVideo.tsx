@@ -12,13 +12,7 @@ import 'videojs-mux'
 import { useVideo } from '../../../../libs/videoContext'
 import { VideoControls } from '../../../VideoContentPage/VideoHero/VideoPlayer/VideoControls'
 
-interface ContentHeroVideoProps {
-  onPlayerReady: (player: Player) => void
-}
-
-export function ContentHeroVideo({
-  onPlayerReady
-}: ContentHeroVideoProps): ReactElement {
+export function ContentHeroVideo(): ReactElement {
   const { variant, ...video } = useVideo()
 
   const title = video.title?.[0]?.value ?? ''
@@ -72,8 +66,7 @@ export function ContentHeroVideo({
     })
 
     playerRef.current = player
-    onPlayerReady(player)
-  }, [onPlayerReady, variant])
+  }, [variant])
 
   useEffect(() => {
     void playerRef.current?.src({
