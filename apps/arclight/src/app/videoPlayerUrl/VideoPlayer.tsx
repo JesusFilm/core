@@ -494,13 +494,13 @@ export function VideoPlayer({
   }
 
   useEffect(() => {
-    // Set default selected caption to first track if available
+    // Set default selected caption to first track if available and subon is true
     if (subon && subtitles.length > 0) {
       setSelectedCaption(subtitles[0].language)
     } else {
       setSelectedCaption('Off')
     }
-  }, [subtitles])
+  }, [subon, subtitles])
 
   const handleOpenCaptionsMenu = (event: React.MouseEvent<HTMLElement>) => {
     setCaptionsMenuAnchor(event.currentTarget)
