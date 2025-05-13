@@ -64,14 +64,17 @@ export function VideoCard({
                 flexDirection: 'column',
                 justifyContent: 'flex-end',
                 width: '100%',
-                borderRadius: 2,
+                borderRadius: 3,
                 overflow: 'hidden',
                 cursor: 'pointer',
-                bgcolor: 'common.black'
+                bgcolor: 'common.black',
+                boxSizing: 'border-box',
+                border: active ? '4px solid white' : 'none'
               }}
               tabIndex={0}
               role="button"
               data-testid={`CarouselItem-${video.slug}`}
+              aria-label={`Navigate to ${video.slug}`}
             >
               <Layer>
                 <Image
