@@ -63,7 +63,7 @@ export function PageWrapper({
   const [open, setOpen] = useState<boolean>(false)
   const theme = useTheme()
   const viewportHeight = use100vh()
-  const { navbar, toolbar, bottomPanel, sidePanel } = usePageWrapperStyles()
+  const { navbar, toolbar, bottomPanel } = usePageWrapperStyles()
   const router = useRouter()
 
   return (
@@ -121,10 +121,7 @@ export function PageWrapper({
               sx={{
                 width: {
                   xs: 'inherit',
-                  md:
-                    sidePanelChildren != null || customSidePanel != null
-                      ? `calc(100vw - ${navbar.width} - ${sidePanel.width})`
-                      : 'inherit'
+                  md: `calc(100vw - ${navbar.width})`
                 }
               }}
             >

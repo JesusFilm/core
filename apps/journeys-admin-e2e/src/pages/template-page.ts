@@ -11,6 +11,8 @@ export class TemplatePage {
   selectedTeam
   context
   selectedFilterOption: string
+  dropdownListBoxPath = 'div[data-popper-placement="bottom"] ul[role="listbox"]'
+
   constructor(page: Page) {
     this.page = page
   }
@@ -113,7 +115,7 @@ export class TemplatePage {
     await this.page.getByRole('button', { name: 'Add' }).click()
   }
 
-  async navigateToTempalatePage() {
+  async navigateToTemplatePage() {
     await this.page
       .locator('a[data-testid="NavigationListItemTemplates"]')
       .click({ timeout: sixtySecondsTimeout })
@@ -304,18 +306,12 @@ export class TemplatePage {
 
   async selectCheckBoxesForTopicDropDown(option: string) {
     this.selectedFilterOption = await this.page
-      .locator(
-        'div[data-popper-placement="bottom"] div[role="listbox"] li ul',
-        { hasText: option }
-      )
+      .locator(`${this.dropdownListBoxPath} li ul`, { hasText: option })
       .locator('li[role="option"] p')
       .first()
       .innerText()
     await this.page
-      .locator(
-        'div[data-popper-placement="bottom"] div[role="listbox"] li ul',
-        { hasText: option }
-      )
+      .locator(`${this.dropdownListBoxPath} li ul`, { hasText: option })
       .locator('li[role="option"] input')
       .first()
       .click()
@@ -363,15 +359,14 @@ export class TemplatePage {
 
   async selectCheckBoxForFilters() {
     this.selectedFilterOption = await this.page
-      .locator(
-        'div[data-popper-placement="bottom"] div[role="listbox"] li[role="option"] p'
-      )
+      .locator('div[data-popper-placement="bottom"]')
+      .getByRole('listbox')
+      .getByRole('option')
+      .locator('p')
       .first()
       .innerText()
     await this.page
-      .locator(
-        'div[data-popper-placement="bottom"] div[role="listbox"] li[role="option"] input'
-      )
+      .locator(`${this.dropdownListBoxPath} li[role="option"] input`)
       .first()
       .click()
   }

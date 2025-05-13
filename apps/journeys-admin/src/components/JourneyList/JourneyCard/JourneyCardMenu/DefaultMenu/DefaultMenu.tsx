@@ -28,7 +28,7 @@ import { ArchiveJourney } from './ArchiveJourney'
 
 export const GET_JOURNEY_WITH_USER_ROLES = gql`
   query GetJourneyWithUserRoles($id: ID!) {
-    journey(id: $id, idType: databaseId) {
+    adminJourney(id: $id, idType: databaseId) {
       id
       userJourneys {
         id

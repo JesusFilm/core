@@ -13,6 +13,13 @@ interface VideoPlayerProps {
   thumbnail?: string | null
   startTime?: number
   endTime?: number
+  subon: boolean
+  subtitles: {
+    key: string
+    language: string
+    bcp47: string | null
+    vttSrc: string | null
+  }[]
 }
 
 export function VideoPlayer({
@@ -20,7 +27,9 @@ export function VideoPlayer({
   videoTitle,
   thumbnail,
   startTime,
-  endTime
+  endTime,
+  subon,
+  subtitles
 }: VideoPlayerProps): JSX.Element {
   const playerRef = useRef<HTMLVideoElement>(null)
 
@@ -55,6 +64,20 @@ export function VideoPlayer({
         }
       }
     }) as any
+
+    // Enable first subtitle track if subon is true
+    if (subon && subtitles.length > 0) {
+      player.ready(() => {
+        const tracks = player.textTracks()
+        for (let i = 0; i < tracks.length; i++) {
+          const track = tracks[i]
+          if (track.kind === 'subtitles') {
+            track.mode = 'showing'
+            break // Only enable the first subtitle track
+          }
+        }
+      })
+    }
 
     if (startTime != null) {
       player.currentTime(startTime)
@@ -98,6 +121,16 @@ export function VideoPlayer({
         data-play-end={endTime ?? 0}
       >
         <source src={hlsUrl} type="application/x-mpegURL" />
+        {subtitles.map((subtitle) => (
+          <track
+            key={subtitle.key}
+            kind="subtitles"
+            label={subtitle.language}
+            src={subtitle.vttSrc ?? ''}
+            srcLang={subtitle.bcp47 ?? undefined}
+            default={subtitle.language === 'English'}
+          />
+        ))}
       </video>
     </div>
   )

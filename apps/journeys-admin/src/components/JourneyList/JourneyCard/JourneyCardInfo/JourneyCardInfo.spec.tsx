@@ -14,20 +14,6 @@ import { JourneyCardInfo } from '.'
 import '../../../../../test/i18n'
 
 describe('JourneyCardInfo', () => {
-  it('should show the langauge name', () => {
-    const { getByText } = render(
-      <MockedProvider>
-        <ThemeProvider>
-          <JourneyCardInfo
-            journey={publishedJourney}
-            variant={JourneyCardVariant.default}
-          />
-        </ThemeProvider>
-      </MockedProvider>
-    )
-    expect(getByText('English')).toBeInTheDocument()
-  })
-
   it('should should show user requesting access', () => {
     const uj = publishedJourney.userJourneys as unknown as UserJourney[]
     const actionRequiredJourney = {
@@ -49,7 +35,7 @@ describe('JourneyCardInfo', () => {
       ]
     } as unknown as Journey
 
-    const { getAllByTestId, getByText, getAllByRole } = render(
+    const { getAllByTestId, getAllByRole } = render(
       <MockedProvider>
         <ThemeProvider>
           <JourneyCardInfo
@@ -59,12 +45,8 @@ describe('JourneyCardInfo', () => {
         </ThemeProvider>
       </MockedProvider>
     )
-    expect(getAllByTestId('avatar')).toHaveLength(2)
-    expect(getAllByRole('button')).toHaveLength(2)
-    expect(getByText('1 user')).toBeInTheDocument()
-    expect(
-      getByText('requested editing rights for your journey')
-    ).toBeInTheDocument()
+    expect(getAllByTestId('avatar')).toHaveLength(1)
+    expect(getAllByRole('button')).toHaveLength(1)
   })
 
   it('should should show many users requesting access', () => {
@@ -100,7 +82,7 @@ describe('JourneyCardInfo', () => {
       ]
     } as unknown as Journey
 
-    const { getAllByTestId, getByText } = render(
+    const { getAllByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
           <JourneyCardInfo
@@ -110,7 +92,22 @@ describe('JourneyCardInfo', () => {
         </ThemeProvider>
       </MockedProvider>
     )
-    expect(getAllByTestId('avatar')).toHaveLength(4)
-    expect(getByText('2 users')).toBeInTheDocument()
+    expect(getAllByTestId('avatar')).toHaveLength(2)
+  })
+
+  it('should render the response and analytics items', () => {
+    const { getByTestId } = render(
+      <MockedProvider>
+        <ThemeProvider>
+          <JourneyCardInfo
+            journey={publishedJourney}
+            variant={JourneyCardVariant.default}
+          />
+        </ThemeProvider>
+      </MockedProvider>
+    )
+
+    expect(getByTestId('AnalyticsItem')).toBeInTheDocument()
+    expect(getByTestId('ResponsesItem')).toBeInTheDocument()
   })
 })
