@@ -49,15 +49,12 @@ const QrCodeDialog = dynamic(
 
 interface ShareItemProps {
   variant: ComponentProps<typeof Item>['variant']
-  closeMenu?: () => void
   journey?: JourneyFromContext | JourneyFromLazyQuery
-  // onClick?: () => void
   handleCloseMenu?: () => void
 }
 
 export function ShareItem({
   variant,
-  closeMenu,
   journey,
   handleCloseMenu
 }: ShareItemProps): ReactElement {
