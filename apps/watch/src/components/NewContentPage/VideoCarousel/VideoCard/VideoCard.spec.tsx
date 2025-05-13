@@ -4,47 +4,33 @@ import { VideoLabel } from '../../../../../__generated__/globalTypes'
 import { VideoChildFields } from '../../../../../__generated__/VideoChildFields'
 
 import { VideoCard } from './VideoCard'
+import { videos } from '../../../Videos/__generated__/testData'
 
 describe('VideoCard', () => {
-  const mockVideo: VideoChildFields = {
-    __typename: 'Video',
-    id: 'test-id',
-    slug: 'test-video',
-    label: VideoLabel.episode,
-    title: [{ __typename: 'VideoTitle', value: 'Test Video Title' }],
-    imageAlt: [{ __typename: 'VideoImageAlt', value: 'Test Image Alt' }],
-    images: [
-      {
-        __typename: 'CloudflareImage',
-        mobileCinematicHigh: 'https://example.com/test-image.jpg'
-      }
-    ],
-    snippet: [{ __typename: 'VideoSnippet', value: 'Test Snippet' }],
-    description: [
-      { __typename: 'VideoDescription', value: 'Test Description' }
-    ],
-    variant: null,
-    studyQuestions: [],
-    childrenCount: 0
-  }
-
   it('renders the component with video data correctly', () => {
-    render(<VideoCard video={mockVideo} />)
+    render(<VideoCard video={videos[0]} active={false} />)
 
-    expect(screen.getByText('Test Video Title')).toBeInTheDocument()
-    expect(screen.getByText(VideoLabel.episode)).toBeInTheDocument()
-    expect(screen.getByRole('img')).toHaveAttribute('alt', 'Test Image Alt')
+    expect(screen.getByText('JESUS')).toBeInTheDocument()
+    expect(screen.getByText('Feature Film')).toBeInTheDocument()
+    expect(screen.getByRole('img')).toHaveAttribute('alt', 'JESUS')
     expect(screen.getByRole('img')).toHaveAttribute(
       'src',
-      'https://example.com/test-image.jpg'
+      'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
     )
   })
 
-  it('has proper accessibility attributes', () => {
-    render(<VideoCard video={mockVideo} />)
+  it('should have active styles when active is true', () => {
+    render(<VideoCard video={videos[0]} active />)
 
-    const card = screen.getByRole('button')
+    const card = screen.getByTestId(`CarouselItem-${videos[0].slug}`)
+    expect(card).toHaveStyle('border: 4px solid white')
+  })
+
+  it('has proper accessibility attributes', () => {
+    render(<VideoCard video={videos[0]} active={false} />)
+
+    const card = screen.getByTestId(`CarouselItem-${videos[0].slug}`)
     expect(card).toHaveAttribute('tabIndex', '0')
-    expect(card).toHaveAttribute('aria-label', `Navigate to ${mockVideo.slug}`)
+    expect(card).toHaveAttribute('aria-label', `Navigate to ${videos[0].slug}`)
   })
 })
