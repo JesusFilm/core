@@ -576,7 +576,10 @@ export function VideoPlayer({
       <div
         data-vjs-player
         className="w-full h-full relative z-10"
-        style={videoWrapperStyles}
+        style={{
+          ...videoWrapperStyles,
+          display: playing ? undefined : 'none'
+        }}
       >
         <video
           className="video-js vjs-big-play-centered vjs-fluid vjs-fill"
