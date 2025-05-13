@@ -97,8 +97,6 @@ export function VideoPlayer({
       video_title: videoTitle
     }
 
-    console.log('Initializing player...')
-
     // Apply any necessary styles to ensure video is visible
     const videoElement = ref.current
     videoElement.style.width = '100%'
@@ -141,7 +139,6 @@ export function VideoPlayer({
       },
       function onPlayerReady() {
         // This callback runs when the player is ready
-        console.log('Player is ready!')
 
         // Fix any sizing issues
         vjsPlayer.addClass('vjs-fill')
@@ -165,10 +162,7 @@ export function VideoPlayer({
       }
     )
 
-    console.log('Player initialized, setting up event handlers...')
-
     vjsPlayer.on('loadedmetadata', () => {
-      console.log('Metadata loaded')
       const playerDuration = vjsPlayer.duration()
       setDuration((playerDuration ?? 0) * 1000) // Convert to milliseconds
       if (
@@ -198,13 +192,11 @@ export function VideoPlayer({
     })
 
     vjsPlayer.on('play', () => {
-      console.log('Play event')
       setPlaying(true)
       resetControlsTimeout()
     })
 
     vjsPlayer.on('pause', () => {
-      console.log('Pause event')
       setPlaying(false)
       showControls()
     })
@@ -245,22 +237,11 @@ export function VideoPlayer({
       }
     }, 100)
 
-    // Debug videojs dimensions and visibility
-    console.log('Video dimensions:', {
-      width: vjsPlayer.width(),
-      height: vjsPlayer.height(),
-      videoWidth: ref.current.videoWidth,
-      videoHeight: ref.current.videoHeight,
-      clientWidth: ref.current.clientWidth,
-      clientHeight: ref.current.clientHeight
-    })
-
     // Force controls to be visible initially
     setControlsVisible(true)
 
     // Set the player state
     playerInstanceRef.current = vjsPlayer
-    console.log('Player setup complete')
   }
 
   // Show/hide controls based on user activity
@@ -576,11 +557,12 @@ export function VideoPlayer({
             position: 'fixed',
             top: 0,
             left: 0,
-            zIndex: 0,
+            zIndex: 10,
             backgroundImage: `url(${thumbnail})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat'
+            backgroundRepeat: 'no-repeat',
+            display: playing ? 'none' : 'block'
           }}
         />
       )}
@@ -593,7 +575,6 @@ export function VideoPlayer({
           className="video-js vjs-big-play-centered vjs-fluid vjs-fill"
           id="arclight-player"
           ref={playerRef}
-          poster={thumbnail ?? undefined}
           data-play-start={startTime ?? 0}
           data-play-end={endTime ?? 0}
           playsInline
