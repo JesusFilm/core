@@ -86,21 +86,35 @@ export const getServerSideProps = withUserTokenSSR({
   })
 
   if (redirect != null) return { redirect }
-
-  const { data } = await apolloClient.query<
-    GetAdminJourney,
-    GetAdminJourneyVariables
-  >({
-    query: GET_ADMIN_JOURNEY,
-    variables: { id: query.journeyId as string }
-  })
-
-  if (data == null) {
-    return {
-      props: {
-        status: 'error',
-        ...translations,
-        flags
+  let journey: Journey | null = null
+  try {
+    const { data } = await apolloClient.query<
+      GetAdminJourney,
+      GetAdminJourneyVariables
+    >({
+      query: GET_ADMIN_JOURNEY,
+      variables: { id: query.journeyId as string }
+    })
+    if (data?.journey == null) throw new Error('journey not found')
+    journey = data.journey
+  } catch (error) {
+    if (error.message === 'journey not found') {
+      return {
+        redirect: {
+          permanent: false,
+          destination: '/',
+          initialApolloState: apolloClient.cache.extract()
+        }
+      }
+    }
+    if (error.message === 'user is not allowed to view journey') {
+      return {
+        props: {
+          status: 'noAccess',
+          ...translations,
+          flags,
+          initialApolloState: apolloClient.cache.extract()
+        }
       }
     }
   }
@@ -110,7 +124,7 @@ export const getServerSideProps = withUserTokenSSR({
       ...translations,
       flags,
       initialApolloState: apolloClient.cache.extract(),
-      journey: data.journey
+      journey
     }
   }
 })

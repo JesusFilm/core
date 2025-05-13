@@ -199,10 +199,13 @@ export function AiChat({
     }
   }, [nonSystemMessages, clientSideToolCall])
 
+  // needed to insert a message from the user if the journey is created from a template
   useEffect(() => {
     if (fromTemplate) {
       void handleSubmit('Please help me customize this journey!')
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
