@@ -2,8 +2,9 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
-import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
 import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'
+
+import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
 import { ThemeProvider } from '../../ThemeProvider'
 import {
   defaultTemplate,
