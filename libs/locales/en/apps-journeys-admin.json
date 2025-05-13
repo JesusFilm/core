@@ -1,7 +1,6 @@
 {
   "%s | Next Steps": "%s | Next Steps",
   "Admin | Next Steps": "Admin | Next Steps",
-  "Next Steps AI": "Next Steps AI",
   "Email Preferences Updated.": "Email Preferences Updated.",
   "Email Preferences": "Email Preferences",
   "Select the types of email notifications you want to receive from NextSteps.": "Select the types of email notifications you want to receive from NextSteps.",
@@ -13,6 +12,7 @@
   "Request Access": "Request Access",
   "Edit {{title}}": "Edit {{title}}",
   "Edit Journey": "Edit Journey",
+  "Next Steps AI": "Next Steps AI",
   "{{title}} Express Setup": "{{title}} Express Setup",
   "Journey Express Setup": "Journey Express Setup",
   "Journey Analytics": "Journey Analytics",
