@@ -165,7 +165,7 @@ export function JourneyCardMenu({
       </IconButton>
       <Menu
         id="journey-actions"
-        keepMounted
+        // keepMounted
         anchorEl={anchorEl}
         open={open}
         onClose={handleCloseMenu}
@@ -202,6 +202,7 @@ export function JourneyCardMenu({
             setOpenDetailsDialog={() => setOpenDetailsDialog(true)}
             template={template}
             refetch={refetch}
+            keepMounted={true}
           />
         )}
       </Menu>

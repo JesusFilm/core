@@ -59,6 +59,7 @@ interface DefaultMenuProps {
   template?: boolean
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
   journey?: Journey
+  keepMounted?: boolean
 }
 
 /**
@@ -91,7 +92,8 @@ export function DefaultMenu({
   setOpenTrashDialog,
   setOpenDetailsDialog,
   template,
-  refetch
+  refetch,
+  keepMounted
 }: DefaultMenuProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
