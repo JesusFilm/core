@@ -12,7 +12,10 @@ import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
-import { GetAdminJourneys } from '../../../../../../__generated__/GetAdminJourneys'
+import {
+  GetAdminJourneys,
+  GetAdminJourneys_journeys as Journey
+} from '../../../../../../__generated__/GetAdminJourneys'
 import {
   JourneyStatus,
   Role,
@@ -54,6 +57,7 @@ interface DefaultMenuProps {
   setOpenDetailsDialog: () => void
   template?: boolean
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
+  journey: Journey
 }
 
 /**
@@ -86,7 +90,8 @@ export function DefaultMenu({
   setOpenTrashDialog,
   setOpenDetailsDialog,
   template,
-  refetch
+  refetch,
+  journey
 }: DefaultMenuProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
@@ -112,10 +117,10 @@ export function DefaultMenu({
 
   const owner = useMemo(
     () =>
-      journeyData?.adminJourney?.userJourneys?.find(
+      journey?.userJourneys?.find(
         (userJourney) => userJourney.role === UserJourneyRole.owner
       ),
-    [journeyData?.adminJourney?.userJourneys]
+    [journey?.userJourneys]
   )
   const isOwnerNew = useMemo(
     () => owner?.user?.id === user?.id,
