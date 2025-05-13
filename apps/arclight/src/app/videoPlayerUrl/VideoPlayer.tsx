@@ -487,21 +487,6 @@ export function VideoPlayer({
     }
   }, [subtitles])
 
-  // When selectedCaption changes, update textTracks
-  useEffect(() => {
-    const video = playerRef.current
-    if (!video) return
-    const tracks = video.textTracks
-    for (let i = 0; i < tracks.length; i++) {
-      if (selectedCaption === 'Off') {
-        tracks[i].mode = 'disabled'
-      } else {
-        tracks[i].mode =
-          tracks[i].label === selectedCaption ? 'showing' : 'disabled'
-      }
-    }
-  }, [selectedCaption])
-
   const handleOpenCaptionsMenu = (event: React.MouseEvent<HTMLElement>) => {
     setCaptionsMenuAnchor(event.currentTarget)
   }
@@ -511,6 +496,17 @@ export function VideoPlayer({
   const handleSelectCaption = (label: string) => {
     setSelectedCaption(label)
     setCaptionsMenuAnchor(null)
+    // Use video.js API to update text tracks
+    if (playerInstanceRef.current) {
+      const tracks = playerInstanceRef.current.textTracks()
+      for (let i = 0; i < tracks.length; i++) {
+        if (label === 'Off') {
+          tracks[i].mode = 'disabled'
+        } else {
+          tracks[i].mode = tracks[i].label === label ? 'showing' : 'disabled'
+        }
+      }
+    }
   }
 
   return (
