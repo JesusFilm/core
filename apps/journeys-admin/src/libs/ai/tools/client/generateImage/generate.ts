@@ -19,8 +19,8 @@ export function generateImage(client: ApolloClient<NormalizedCacheObject>) {
 
       const { src, success } = await uploadGeneratedImage(
         client,
-        image.base64,
-        `ai-generated-${Date.now()}.png`
+        image.base64
+        // `ai-generated-${Date.now()}.png`
       )
 
       return {
