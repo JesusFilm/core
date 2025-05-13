@@ -4,8 +4,8 @@ import {
   cleanup,
   fireEvent,
   render,
-  waitFor,
-  screen
+  screen,
+  waitFor
 } from '@testing-library/react'
 import fscreen from 'fscreen'
 import videojs from 'video.js'
