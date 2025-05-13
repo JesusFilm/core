@@ -165,7 +165,6 @@ export function JourneyCardMenu({
       </IconButton>
       <Menu
         id="journey-actions"
-        // keepMounted
         anchorEl={anchorEl}
         open={open}
         onClose={handleCloseMenu}
