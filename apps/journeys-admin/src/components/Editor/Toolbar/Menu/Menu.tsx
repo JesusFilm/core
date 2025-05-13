@@ -99,11 +99,7 @@ export function Menu({ user }: MenuProps): ReactElement {
         {!mdUp && (
           <>
             <StrategyItem variant="menu-item" closeMenu={handleCloseMenu} />
-            <ShareItem
-              variant="menu-item"
-              closeMenu={handleCloseMenu}
-              journey={journey}
-            />
+            <ShareItem variant="menu-item" journey={journey} />
           </>
         )}
         {journey != null && mdUp && <Divider data-testid="menu-divider" />}
