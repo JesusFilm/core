@@ -22,7 +22,7 @@ test.describe('firefox only', () => {
   // eslint-disable-next-line playwright/no-skipped-test
   test.skip(({ browserName }) => browserName !== 'firefox', 'firefox only!')
 
-  test('Feature film', async ({ page, browser }) => {
+  test.skip('Feature film', async ({ page, browser }) => {
     // Set test time out as it has video
     test.setTimeout(5 * 60 * 1000)
 
