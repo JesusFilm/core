@@ -1,6 +1,7 @@
 import { ApolloQueryResult, gql, useQuery } from '@apollo/client'
 import Divider from '@mui/material/Divider'
 import NextLink from 'next/link'
+import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useMemo } from 'react'
 
@@ -25,7 +26,6 @@ import { CopyToTeamMenuItem } from '../../../../Team/CopyToTeamMenuItem/CopyToTe
 import { DuplicateJourneyMenuItem } from '../DuplicateJourneyMenuItem'
 
 import { ArchiveJourney } from './ArchiveJourney'
-import { useUser } from 'next-firebase-auth'
 
 export const GET_JOURNEY_WITH_USER_ROLES = gql`
   query GetJourneyWithUserRoles($id: ID!) {
