@@ -395,16 +395,17 @@ export function VideoPlayer({
         }
       })
     }
-
     return () => {
       if (playerInstanceRef.current) {
+        // Properly dispose of the player, which will clean up all event listeners
         playerInstanceRef.current.dispose()
+        playerInstanceRef.current = null
       }
       if (controlsTimeoutRef.current) {
         clearTimeout(controlsTimeoutRef.current)
+        controlsTimeoutRef.current = null
       }
     }
-  }, [])
 
   // Add keyboard shortcuts
   useEffect(() => {
