@@ -47,7 +47,7 @@ export function VideoPlayer({
   ]
 }: VideoPlayerProps): JSX.Element {
   const playerRef = useRef<HTMLVideoElement>(null)
-  const [player, setPlayer] = useState<any>(null)
+  const playerInstanceRef = useRef<any>(null)
   const [playing, setPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(startTime * 1000) // Track in milliseconds
   const [duration, setDuration] = useState(0)
@@ -58,10 +58,31 @@ export function VideoPlayer({
   const [hoveringControls, setHoveringControls] = useState(false)
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const [captionsEnabled, setCaptionsEnabled] = useState(true)
-  const [captionsMenuAnchor, setCaptionsMenuAnchor] = useState<null | HTMLElement>(null)
+  const [captionsMenuAnchor, setCaptionsMenuAnchor] =
+    useState<null | HTMLElement>(null)
   const [selectedCaption, setSelectedCaption] = useState<string>('')
 
   const effectiveEndTime = endTime ?? Infinity
+
+  // Wrapper styles to ensure video is visible
+  const videoWrapperStyles = {
+    position: 'relative',
+    width: '100%',
+    height: '100%',
+    overflow: 'hidden',
+    backgroundColor: 'transparent'
+  } as const
+
+  const videoElementStyles = {
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    display: 'block',
+    objectFit: 'contain',
+    backgroundColor: 'transparent'
+  } as const
 
   const initPlayer = (ref: typeof playerRef): void => {
     if (ref.current == null) return
@@ -73,30 +94,71 @@ export function VideoPlayer({
 
     console.log('Initializing player...')
 
-    const vjsPlayer = videojs(ref.current, {
-      enableSmoothSeeking: true,
-      experimentalSvgIcons: true,
-      preload: 'none',
-      controls: false, // Disable built-in controls
-      html5: {
-        vhs: {
-          limitRenditionByPlayerDimensions: false,
-          useNetworkInformationApi: true,
-          useDevicePixelRatio: true
+    // Apply any necessary styles to ensure video is visible
+    const videoElement = ref.current
+    videoElement.style.width = '100%'
+    videoElement.style.height = '100%'
+    videoElement.style.display = 'block'
+    videoElement.style.backgroundColor = 'transparent'
+
+    const vjsPlayer = videojs(
+      ref.current,
+      {
+        enableSmoothSeeking: true,
+        experimentalSvgIcons: true,
+        preload: 'auto',
+        autoplay: false,
+        controls: false, // Disable built-in controls
+        fluid: true, // Make it responsive
+        responsive: true,
+        fill: true,
+        playsinline: true, // Enable inline playback on mobile
+        techOrder: ['html5'], // Ensure HTML5 tech is used first
+        html5: {
+          vhs: {
+            limitRenditionByPlayerDimensions: false,
+            useNetworkInformationApi: true,
+            useDevicePixelRatio: true
+          },
+          hls: {
+            limitRenditionByPlayerDimensions: false,
+            useNetworkInformationApi: true,
+            useDevicePixelRatio: true
+          },
+          nativeTextTracks: true
         },
-        hls: {
-          limitRenditionByPlayerDimensions: false,
-          useNetworkInformationApi: true,
-          useDevicePixelRatio: true
+        plugins: {
+          mux: {
+            debug: false,
+            data: muxMetadata
+          }
         }
       },
-      plugins: {
-        mux: {
-          debug: false,
-          data: muxMetadata
+      function onPlayerReady() {
+        // This callback runs when the player is ready
+        console.log('Player is ready!')
+
+        // Fix any sizing issues
+        vjsPlayer.addClass('vjs-fill')
+        vjsPlayer.addClass('vjs-transparent-background')
+        vjsPlayer.dimensions(
+          videoElement.clientWidth,
+          videoElement.clientHeight
+        )
+
+        // Remove background color from player element
+        const playerEl = vjsPlayer.el()
+        if (playerEl instanceof HTMLElement) {
+          playerEl.style.backgroundColor = 'transparent'
+        }
+
+        // Find and remove background color from video element
+        const videoEl = vjsPlayer.tech().el()
+        if (videoEl instanceof HTMLElement) {
+          videoEl.style.backgroundColor = 'transparent'
         }
       }
-    })
+    )
 
     console.log('Player initialized, setting up event handlers...')
 
@@ -147,11 +209,43 @@ export function VideoPlayer({
     // Manually trigger the first timeupdate to set current time
     vjsPlayer.currentTime(startTime)
 
+    // Apply styles to all video-js related elements
+    setTimeout(() => {
+      // Target all potentially problematic elements
+      const videoJsWrapper = document.querySelector('.video-js')
+      const videoElement = document.querySelector('.vjs-tech')
+      const posterElement = document.querySelector('.vjs-poster')
+
+      if (videoJsWrapper instanceof HTMLElement) {
+        videoJsWrapper.style.backgroundColor = 'transparent'
+      }
+
+      if (videoElement instanceof HTMLElement) {
+        videoElement.style.backgroundColor = 'transparent'
+        videoElement.style.objectFit = 'contain'
+        videoElement.style.opacity = '1'
+      }
+
+      if (posterElement instanceof HTMLElement) {
+        posterElement.style.backgroundColor = 'transparent'
+      }
+    }, 100)
+
+    // Debug videojs dimensions and visibility
+    console.log('Video dimensions:', {
+      width: vjsPlayer.width(),
+      height: vjsPlayer.height(),
+      videoWidth: ref.current.videoWidth,
+      videoHeight: ref.current.videoHeight,
+      clientWidth: ref.current.clientWidth,
+      clientHeight: ref.current.clientHeight
+    })
+
     // Force controls to be visible initially
     setControlsVisible(true)
 
     // Set the player state
-    setPlayer(vjsPlayer)
+    playerInstanceRef.current = vjsPlayer
     console.log('Player setup complete')
   }
 
@@ -179,31 +273,31 @@ export function VideoPlayer({
 
   // Handle various user interactions
   const handlePlayPause = () => {
-    if (player) {
+    if (playerInstanceRef.current) {
       if (playing) {
-        player.pause()
+        playerInstanceRef.current.pause()
       } else {
-        void player.play()
+        void playerInstanceRef.current.play()
       }
     }
   }
 
   const handleMute = () => {
-    if (player) {
-      player.muted(!muted)
+    if (playerInstanceRef.current) {
+      playerInstanceRef.current.muted(!muted)
     }
   }
 
   const handleVolumeChange = (_: Event, newValue: number | number[]) => {
-    if (player && !Array.isArray(newValue)) {
+    if (playerInstanceRef.current && !Array.isArray(newValue)) {
       const volumeValue = newValue / 100
-      player.volume(volumeValue)
+      playerInstanceRef.current.volume(volumeValue)
 
       // Handle muting when volume is dragged to zero
       if (volumeValue <= 0) {
-        player.muted(true)
+        playerInstanceRef.current.muted(true)
       } else if (muted) {
-        player.muted(false)
+        playerInstanceRef.current.muted(false)
       }
     }
   }
@@ -218,6 +312,17 @@ export function VideoPlayer({
     if (currentTime > endTimeMs) return 100
 
     const segmentDurationMs = endTimeMs - startTimeMs
+
+    // Handle edge cases to prevent NaN, Infinity or undefined values
+    if (
+      !segmentDurationMs ||
+      !isFinite(segmentDurationMs) ||
+      segmentDurationMs <= 0
+    ) {
+      // If duration is zero or invalid, return either 0 or 100 based on context
+      return endTimeMs === Infinity ? 0 : 100
+    }
+
     const segmentCurrentTimeMs = currentTime - startTimeMs
     // Return with higher precision to avoid jumps
     return (segmentCurrentTimeMs / segmentDurationMs) * 100
@@ -225,7 +330,7 @@ export function VideoPlayer({
 
   // Handle seeking with smoother movements
   const handleSeek = (_: Event, newValue: number | number[]) => {
-    if (player && !Array.isArray(newValue)) {
+    if (playerInstanceRef.current && !Array.isArray(newValue)) {
       // Convert from segment time to actual video time with higher precision
       const startTimeMs = startTime * 1000
       const endTimeMs =
@@ -239,20 +344,20 @@ export function VideoPlayer({
 
       // Use requestAnimationFrame for smoother visual updates
       requestAnimationFrame(() => {
-        player.currentTime(seekTimeSeconds)
+        playerInstanceRef.current.currentTime(seekTimeSeconds)
       })
     }
   }
 
   const handleFullscreen = () => {
-    if (!player) return
+    if (!playerInstanceRef.current) return
 
     if (fullscreen) {
       if (document.exitFullscreen) {
         void document.exitFullscreen()
       }
     } else {
-      const playerElement = player.el()
+      const playerElement = playerInstanceRef.current.el()
       if (playerElement.requestFullscreen) {
         void playerElement.requestFullscreen()
       }
@@ -282,11 +387,19 @@ export function VideoPlayer({
   useEffect(() => {
     if (playerRef.current != null) {
       initPlayer(playerRef)
+
+      // Remove any background colors from Video.js elements
+      const videoJsElements = document.querySelectorAll('.video-js')
+      videoJsElements.forEach((el) => {
+        if (el instanceof HTMLElement) {
+          el.style.backgroundColor = 'transparent'
+        }
+      })
     }
 
     return () => {
-      if (player) {
-        player.dispose()
+      if (playerInstanceRef.current) {
+        playerInstanceRef.current.dispose()
       }
       if (controlsTimeoutRef.current) {
         clearTimeout(controlsTimeoutRef.current)
@@ -297,7 +410,7 @@ export function VideoPlayer({
   // Add keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (!player) return
+      if (!playerInstanceRef.current) return
 
       // Prevent default behavior for these keys
       switch (event.key) {
@@ -316,33 +429,45 @@ export function VideoPlayer({
           break
         case 'ArrowLeft': // back 5 seconds
           event.preventDefault()
-          if (player) {
-            const newTime = Math.max(startTime, player.currentTime() - 5)
-            player.currentTime(newTime)
+          if (playerInstanceRef.current) {
+            const newTime = Math.max(
+              startTime,
+              playerInstanceRef.current.currentTime() - 5
+            )
+            playerInstanceRef.current.currentTime(newTime)
           }
           break
         case 'ArrowRight': // forward 5 seconds
           event.preventDefault()
-          if (player) {
-            const newTime = Math.min(effectiveEndTime, player.currentTime() + 5)
-            player.currentTime(newTime)
+          if (playerInstanceRef.current) {
+            const newTime = Math.min(
+              effectiveEndTime,
+              playerInstanceRef.current.currentTime() + 5
+            )
+            playerInstanceRef.current.currentTime(newTime)
           }
           break
         case 'ArrowUp': // volume up
           event.preventDefault()
-          if (player) {
-            const newVolume = Math.min(1, player.volume() + 0.1)
-            player.volume(newVolume)
-            if (player.muted()) {
-              player.muted(false)
+          if (playerInstanceRef.current) {
+            const newVolume = Math.min(
+              1,
+              playerInstanceRef.current.volume() + 0.1
+            )
+            playerInstanceRef.current.volume(newVolume)
+            if (playerInstanceRef.current.muted()) {
+              playerInstanceRef.current.muted(false)
             }
           }
           break
         case 'ArrowDown': // volume down
           event.preventDefault()
-          if (player) {
-            const newVolume = Math.max(0, player.volume() - 0.1)
-            player.volume(newVolume)
+          if (playerInstanceRef.current) {
+            const newVolume = Math.max(
+              0,
+              playerInstanceRef.current.volume() - 0.1
+            )
+            playerInstanceRef.current.volume(newVolume)
           }
           break
       }
@@ -352,7 +477,7 @@ export function VideoPlayer({
     return () => {
       document.removeEventListener('keydown', handleKeyDown)
     }
-  }, [player, playing, startTime, effectiveEndTime])
+  }, [playing, startTime, effectiveEndTime])
 
   // Format time for display (now handling milliseconds)
   const formatTime = (milliseconds: number) => {
@@ -380,7 +505,8 @@ export function VideoPlayer({
       if (selectedCaption === 'Off') {
         tracks[i].mode = 'disabled'
       } else {
-        tracks[i].mode = tracks[i].label === selectedCaption ? 'showing' : 'disabled'
+        tracks[i].mode =
+          tracks[i].label === selectedCaption ? 'showing' : 'disabled'
       }
     }
   }, [selectedCaption])
@@ -398,37 +524,71 @@ export function VideoPlayer({
 
   return (
     <div
-      className="relative w-full h-full"
+      className="relative w-full h-full overflow-hidden"
       onMouseMove={showControls}
       onClick={showControls}
+      style={{ aspectRatio: '16/9', backgroundColor: 'transparent' }}
     >
+      {/* Custom CSS to override Video.js defaults */}
+      <style jsx global>{`
+        .video-js,
+        .vjs-poster,
+        .vjs-tech,
+        .vjs-big-play-button,
+        .vjs-loading-spinner,
+        .vjs-control-bar,
+        .vjs-background-bar,
+        .vjs-loaded,
+        .vjs-progress-holder {
+          background-color: transparent !important;
+        }
+
+        /* Ensure actual video shows through */
+        .vjs-tech {
+          object-fit: contain !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+        }
+
+        /* Custom class for transparent background */
+        .vjs-transparent-background {
+          background-color: transparent !important;
+        }
+      `}</style>
       {thumbnail && (
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: `url(${thumbnail})` }}
         />
       )}
-      <video
-        className="video-js vjs-fluid relative z-10"
-        id="arclight-player"
-        ref={playerRef}
-        poster={thumbnail ?? undefined}
-        data-play-start={startTime ?? 0}
-        data-play-end={endTime ?? 0}
-        onDoubleClick={handleFullscreen}
+      <div
+        data-vjs-player
+        className="w-full h-full relative z-10"
+        style={videoWrapperStyles}
       >
-        <source src={hlsUrl} type="application/x-mpegURL" />
-        {captionTracks.map((track, idx) => (
-          <track
-            key={track.label + track.srcLang + idx}
-            kind="subtitles"
-            src={track.src}
-            srcLang={track.srcLang}
-            label={track.label}
-            default={idx === 0}
-          />
-        ))}
-      </video>
+        <video
+          className="video-js vjs-big-play-centered vjs-fluid vjs-fill"
+          id="arclight-player"
+          ref={playerRef}
+          poster={thumbnail ?? undefined}
+          data-play-start={startTime ?? 0}
+          data-play-end={endTime ?? 0}
+          playsInline
+          style={videoElementStyles}
+        >
+          <source src={hlsUrl} type="application/x-mpegURL" />
+          {captionTracks.map((track, idx) => (
+            <track
+              key={track.label + track.srcLang + idx}
+              kind="subtitles"
+              src={track.src}
+              srcLang={track.srcLang}
+              label={track.label}
+              default={idx === 0}
+            />
+          ))}
+        </video>
+      </div>
 
       {/* Custom Video Controls - show even if player not initialized yet */}
       <Box
@@ -438,7 +598,7 @@ export function VideoPlayer({
           left: 0,
           right: 0,
           bottom: 0,
-          zIndex: 10,
+          zIndex: 20,
           transition: 'opacity 0.3s ease',
           opacity: controlsVisible ? 1 : 0,
           background: playing
@@ -481,7 +641,7 @@ export function VideoPlayer({
                 }
               }}
               size="large"
-              disabled={!player}
+              disabled={!playerInstanceRef.current}
             >
               <PlayArrowRounded sx={{ fontSize: 40 }} />
             </IconButton>
@@ -553,7 +713,7 @@ export function VideoPlayer({
                   }
                 }}
                 size="small"
-                disabled={!player}
+                disabled={!playerInstanceRef.current}
               >
                 {playing ? (
                   <PauseRounded sx={{ fontSize: 20 }} />
@@ -592,7 +752,7 @@ export function VideoPlayer({
                     }
                   }}
                   size="small"
-                  disabled={!player}
+                  disabled={!playerInstanceRef.current}
                 >
                   {muted ? (
                     <VolumeOffOutlined sx={{ fontSize: 20 }} />
@@ -606,7 +766,7 @@ export function VideoPlayer({
                   onChange={handleVolumeChange}
                   aria-label="Volume"
                   size="small"
-                  disabled={!player}
+                  disabled={!playerInstanceRef.current}
                   sx={{
                     width: 0,
                     opacity: 0,
@@ -636,7 +796,16 @@ export function VideoPlayer({
               </Stack>
 
               {/* Seek Slider - moved here */}
-              <Box sx={{ flex: 1, mx: 1, minWidth: 60, display: 'flex', alignItems: 'center', height: '100%' }}>
+              <Box
+                sx={{
+                  flex: 1,
+                  mx: 1,
+                  minWidth: 60,
+                  display: 'flex',
+                  alignItems: 'center',
+                  height: '100%'
+                }}
+              >
                 <Slider
                   value={getSegmentProgress()}
                   onChange={handleSeek}
@@ -645,7 +814,7 @@ export function VideoPlayer({
                   step={0.001}
                   min={0}
                   max={100}
-                  disabled={!player}
+                  disabled={!playerInstanceRef.current}
                   sx={{
                     height: 4,
                     padding: 0,
@@ -756,7 +925,7 @@ export function VideoPlayer({
                   }
                 }}
                 size="small"
-                disabled={!player}
+                disabled={!playerInstanceRef.current}
               >
                 <ClosedCaptionOutlined sx={{ fontSize: 20 }} />
               </IconButton>
@@ -797,7 +966,7 @@ export function VideoPlayer({
                   }
                 }}
                 size="small"
-                disabled={!player}
+                disabled={!playerInstanceRef.current}
               >
                 {fullscreen ? (
                   <FullscreenExitRounded sx={{ fontSize: 20 }} />
