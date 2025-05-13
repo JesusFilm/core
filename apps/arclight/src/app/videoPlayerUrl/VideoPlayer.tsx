@@ -930,7 +930,7 @@ export function VideoPlayer({
                   selected={selectedCaption === 'Off'}
                   onClick={() => handleSelectCaption('Off')}
                   aria-label="Turn captions off"
-                // eslint-disable-next-line i18next/no-literal-string
+                  // eslint-disable-next-line i18next/no-literal-string
                 >
                   Off
                 </MenuItem>
@@ -944,7 +944,7 @@ export function VideoPlayer({
                     {track.language}
                   </MenuItem>
                 ))}
-              </Menu> 
+              </Menu>
               {/* Fullscreen Button */}
               <IconButton
                 onClick={handleFullscreen}
