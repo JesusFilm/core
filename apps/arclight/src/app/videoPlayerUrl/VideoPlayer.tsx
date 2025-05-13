@@ -59,18 +59,23 @@ export function VideoPlayer({
   const [captionsMenuAnchor, setCaptionsMenuAnchor] =
     useState<null | HTMLElement>(null)
   const [selectedCaption, setSelectedCaption] = useState<string>('')
-  const [hasStarted, setHasStarted] = useState(false)
-  const [aspectRatio, setAspectRatio] = useState<number | undefined>(undefined)
+  const [aspectRatio, setAspectRatio] = useState<number | null>(null)
 
   const effectiveEndTime = endTime ?? Infinity
 
   // Wrapper styles to ensure video is visible
   const videoWrapperStyles = {
     position: 'relative',
-    width: '100%',
-    height: '100%',
+    width: aspectRatio ? `calc(100vh * ${aspectRatio})` : '100vw',
+    height: '100vh',
     overflow: 'hidden',
-    backgroundColor: 'transparent'
+    backgroundColor: 'transparent',
+    margin: '0 auto',
+    maxWidth: '100vw',
+    maxHeight: '100vh',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
   } as const
 
   const videoElementStyles = {
@@ -166,9 +171,8 @@ export function VideoPlayer({
       console.log('Metadata loaded')
       const playerDuration = vjsPlayer.duration()
       setDuration((playerDuration ?? 0) * 1000) // Convert to milliseconds
-      const video = playerRef.current
-      if (video) {
-        setAspectRatio(video.videoWidth / video.videoHeight)
+      if (playerRef.current && playerRef.current.videoWidth && playerRef.current.videoHeight) {
+        setAspectRatio(playerRef.current.videoWidth / playerRef.current.videoHeight)
       }
     })
 
@@ -277,7 +281,6 @@ export function VideoPlayer({
 
   // Handle various user interactions
   const handlePlayPause = () => {
-    if (!hasStarted) setHasStarted(true)
     if (playerInstanceRef.current) {
       if (playing) {
         playerInstanceRef.current.pause()
@@ -517,19 +520,19 @@ export function VideoPlayer({
 
   return (
     <div
-      className="relative w-full h-full overflow-hidden"
+      className="relative w-full h-full"
       onMouseMove={showControls}
       onClick={showControls}
       style={{
-        height: '100vh',
-        width: aspectRatio ? `${100 * aspectRatio}vh` : 'auto',
-        maxWidth: '100vw',
-        overflow: 'hidden',
         backgroundColor: 'transparent',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        margin: '0 auto'
+        width: '100vw',
+        height: '100vh',
+        overflow: 'hidden',
+        margin: 0,
+        padding: 0,
+        position: 'fixed',
+        top: 0,
+        left: 0
       }}
     >
       {/* Custom CSS to override Video.js defaults */}
@@ -558,80 +561,40 @@ export function VideoPlayer({
           background-color: transparent !important;
         }
       `}</style>
-      {thumbnail && !hasStarted && (
+      {thumbnail && (
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${thumbnail})`, zIndex: 15 }}
-        >
-          <Box
-            sx={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 16
-            }}
-            onClick={(e) => {
-              e.stopPropagation()
-              handlePlayPause()
-            }}
-          >
-            <IconButton
-              aria-label="Play"
-              sx={{
-                color: 'white',
-                padding: 2,
-                backgroundColor: 'rgba(0, 0, 0, 0.4)',
-                '&:hover': {
-                  backgroundColor: 'rgba(0, 0, 0, 0.6)'
-                }
-              }}
-              size="large"
-            >
-              <PlayArrowRounded sx={{ fontSize: 40 }} />
-            </IconButton>
-          </Box>
-        </div>
+          style={{ backgroundImage: `url(${thumbnail})` }}
+        />
       )}
       <div
         data-vjs-player
         className="w-full h-full relative z-10"
         style={videoWrapperStyles}
       >
-        {hasStarted && (
-          <video
-            className="video-js vjs-big-play-centered vjs-fluid vjs-fill"
-            id="arclight-player"
-            ref={playerRef}
-            poster={thumbnail ?? undefined}
-            data-play-start={startTime ?? 0}
-            data-play-end={endTime ?? 0}
-            playsInline
-            style={videoElementStyles}
-            crossOrigin="anonymous"
-            onLoadedMetadata={() => {
-              const video = playerRef.current
-              if (video) {
-                setAspectRatio(video.videoWidth / video.videoHeight)
-              }
-            }}
-          >
-            <source src={hlsUrl} type="application/x-mpegURL" />
-            {subtitles.map((track, idx) => (
-              <track
-                key={track.language + track.bcp47 + idx}
-                kind="subtitles"
-                src={track.vttSrc ?? ''}
-                srcLang={track.bcp47 ?? undefined}
-                label={track.language}
-                default={idx === 0}
-              />
-            ))}
-          </video>
-        )}
+        <video
+          className="video-js vjs-big-play-centered vjs-fluid vjs-fill"
+          id="arclight-player"
+          ref={playerRef}
+          poster={thumbnail ?? undefined}
+          data-play-start={startTime ?? 0}
+          data-play-end={endTime ?? 0}
+          playsInline
+          style={videoElementStyles}
+          crossOrigin="anonymous"
+        >
+          <source src={hlsUrl} type="application/x-mpegURL" />
+          {subtitles.map((track, idx) => (
+            <track
+              key={track.language + track.bcp47 + idx}
+              kind="subtitles"
+              src={track.vttSrc ?? ''}
+              srcLang={track.bcp47 ?? undefined}
+              label={track.language}
+              default={idx === 0}
+            />
+          ))}
+        </video>
       </div>
 
       {/* Custom Video Controls - show even if player not initialized yet */}
@@ -645,8 +608,7 @@ export function VideoPlayer({
           zIndex: 20,
           transition: 'opacity 0.3s ease',
           opacity: controlsVisible ? 1 : 0,
-          background:
-            'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 30%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.2) 100%)',
+          background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 30%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.2) 100%)',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between'
