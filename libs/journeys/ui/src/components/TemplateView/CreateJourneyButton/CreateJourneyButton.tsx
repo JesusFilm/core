@@ -55,9 +55,9 @@ export function CreateJourneyButton({
         void router
           .push(
             {
-              pathname: createWithAi
-                ? `/${data.journeyDuplicate.id}/ai`
-                : `/journeys/${data.journeyDuplicate.id}`
+              pathname: `/journeys/${data.journeyDuplicate.id}${
+                createWithAi ? '/ai' : ''
+              }`
             },
             undefined,
             {

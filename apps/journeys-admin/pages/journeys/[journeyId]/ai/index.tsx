@@ -20,11 +20,11 @@ import {
   GetAdminJourney,
   GetAdminJourneyVariables,
   GetAdminJourney_journey as Journey
-} from '../../../__generated__/GetAdminJourney'
-import { AiChat } from '../../../src/components/AiChat/AiChat'
-import { PageWrapper } from '../../../src/components/PageWrapper'
-import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
-import { GET_ADMIN_JOURNEY } from '../../journeys/[journeyId]'
+} from '../../../../__generated__/GetAdminJourney'
+import { AiChat } from '../../../../src/components/AiChat/AiChat'
+import { PageWrapper } from '../../../../src/components/PageWrapper'
+import { initAndAuthApp } from '../../../../src/libs/initAndAuthApp'
+import { GET_ADMIN_JOURNEY } from '../../[journeyId]'
 
 function AiEditPage({ journey }: { journey: Journey }): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
