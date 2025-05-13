@@ -113,11 +113,18 @@ export function VideoPlayer({
 
         player.on('timeupdate', handleTimeUpdate)
         player.on('ended', handleEnded)
-
+        const handleSeeked = () => {
+          if (player.currentTime() > endTime) {
+            player.currentTime(endTime)
+            player.pause()
+          }
+        }
+        player.on('seeked', handleSeeked)
         // Return cleanup function
         return () => {
           player.off('timeupdate', handleTimeUpdate)
           player.off('ended', handleEnded)
+          player.off('seeked', handleSeeked)
         }
       }
     })
