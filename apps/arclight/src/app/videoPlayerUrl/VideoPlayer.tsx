@@ -21,19 +21,19 @@ import 'video.js/dist/video-js.css'
 
 import 'videojs-mux'
 
-interface CaptionTrack {
-  label: string
-  src: string
-  srcLang: string
-}
-
 interface VideoPlayerProps {
   hlsUrl: string
   videoTitle: string
   thumbnail?: string | null
   startTime?: number
   endTime?: number
-  captionTracks?: CaptionTrack[]
+  subon: boolean
+  subtitles: {
+    key: string
+    language: string
+    bcp47: string | null
+    vttSrc: string | null
+  }[]
 }
 
 export function VideoPlayer({
@@ -42,9 +42,8 @@ export function VideoPlayer({
   thumbnail,
   startTime = 0,
   endTime,
-  captionTracks = [
-    { label: 'English', src: '/captions/english.vtt', srcLang: 'en' }
-  ]
+  subon,
+  subtitles
 }: VideoPlayerProps): JSX.Element {
   const playerRef = useRef<HTMLVideoElement>(null)
   const playerInstanceRef = useRef<any>(null)
@@ -364,14 +363,6 @@ export function VideoPlayer({
     }
   }
 
-  const handleToggleCaptions = () => {
-    setCaptionsEnabled((prev) => !prev)
-    const video = playerRef.current
-    if (video && video.textTracks && video.textTracks[0]) {
-      video.textTracks[0].mode = captionsEnabled ? 'disabled' : 'showing'
-    }
-  }
-
   // Watch for fullscreen changes
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -489,12 +480,12 @@ export function VideoPlayer({
 
   useEffect(() => {
     // Set default selected caption to first track if available
-    if (captionTracks.length > 0) {
-      setSelectedCaption(captionTracks[0].label)
+    if (subon && subtitles.length > 0) {
+      setSelectedCaption(subtitles[0].language)
     } else {
       setSelectedCaption('Off')
     }
-  }, [captionTracks])
+  }, [subtitles])
 
   // When selectedCaption changes, update textTracks
   useEffect(() => {
@@ -577,13 +568,13 @@ export function VideoPlayer({
           style={videoElementStyles}
         >
           <source src={hlsUrl} type="application/x-mpegURL" />
-          {captionTracks.map((track, idx) => (
+          {subtitles.map((track, idx) => (
             <track
-              key={track.label + track.srcLang + idx}
+              key={track.language + track.bcp47 + idx}
               kind="subtitles"
-              src={track.src}
-              srcLang={track.srcLang}
-              label={track.label}
+              src={track.vttSrc ?? ''}
+              srcLang={track.bcp47 ?? undefined}
+              label={track.language}
               default={idx === 0}
             />
           ))}
@@ -912,7 +903,7 @@ export function VideoPlayer({
               alignItems="center"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Captions Selector Button 
+              {/* Captions Selector Button */}
               <IconButton
                 onClick={handleOpenCaptionsMenu}
                 aria-label="Captions menu"
@@ -943,17 +934,17 @@ export function VideoPlayer({
                 >
                   Off
                 </MenuItem>
-                {captionTracks.map((track) => (
+                {subtitles.map((track) => (
                   <MenuItem
-                    key={track.label}
-                    selected={selectedCaption === track.label}
-                    onClick={() => handleSelectCaption(track.label)}
-                    aria-label={`Show captions: ${track.label}`}
+                    key={track.language}
+                    selected={selectedCaption === track.language}
+                    onClick={() => handleSelectCaption(track.language)}
+                    aria-label={`Show captions: ${track.language}`}
                   >
-                    {track.label}
+                    {track.language}
                   </MenuItem>
                 ))}
-              </Menu> */}
+              </Menu> 
               {/* Fullscreen Button */}
               <IconButton
                 onClick={handleFullscreen}
