@@ -15,7 +15,11 @@ interface JourneyCardTextProps {
 export function JourneyCardText({
   journey
 }: JourneyCardTextProps): ReactElement {
-  const nativeLanguageName = journey.language.name.find(
+  const nativeName = journey.language.name.find(
+    ({ primary }) => !primary
+  )?.value
+
+  const localName = journey?.language?.name.find(
     ({ primary }) => primary
   )?.value
 
@@ -51,7 +55,7 @@ export function JourneyCardText({
             textOverflow: 'ellipsis'
           }}
         >
-          {nativeLanguageName}
+          {localName ?? nativeName}
         </Typography>
         <Typography variant="body2" sx={{ mx: 1 }}>
           •
