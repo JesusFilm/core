@@ -11,7 +11,7 @@ import { MouseEventHandler, ReactElement, useState } from 'react'
 
 import logo from '../assets/logo.svg'
 
-const LanguageSwitchDialog = dynamic(
+const DynamicLanguageSwitchDialog = dynamic(
   () =>
     import(
       /* webpackChunkName: "LanguageSwitchDialog" */
@@ -85,6 +85,8 @@ export function LocalAppBar({
           <Box data-testid="MenuBox">
             <IconButton
               color="inherit"
+              aria-label="open language selector"
+              data-testid="LanguageSelector"
               onClick={() => setOpenLanguagesDialog(true)}
               sx={{
                 mr: 8
@@ -94,7 +96,7 @@ export function LocalAppBar({
                 sx={{ fontSize: 39, color: 'text.secondary' }}
               />
             </IconButton>
-            <LanguageSwitchDialog
+            <DynamicLanguageSwitchDialog
               open={openLanguagesDialog}
               handleClose={() => setOpenLanguagesDialog(false)}
             />

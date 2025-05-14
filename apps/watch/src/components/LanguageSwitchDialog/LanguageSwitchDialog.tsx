@@ -95,7 +95,7 @@ export function LanguageSwitchDialog({
       open={open}
       onClose={handleClose}
       TransitionComponent={Transition}
-      aria-labelledby="language-modal-title"
+      aria-label="language-modal-title"
       sx={{
         '& .MuiDialog-paper': {
           backgroundColor: 'transparent'
