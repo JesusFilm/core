@@ -31,8 +31,6 @@ export function DiscussionQuestions({
     )
   }
 
-  console.log(openQuestion)
-
   return (
     <Box data-testid="DiscussionQuestions">
       <Box sx={{ pt: 4 }}>
