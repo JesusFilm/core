@@ -446,7 +446,7 @@ export function VideoPlayer({
           event.preventDefault()
           if (playerInstanceRef.current) {
             const newTime = Math.min(
-              effectiveEndTime,
+              effectiveEndTime ?? Infinity,
               playerInstanceRef.current.currentTime() + 5
             )
             playerInstanceRef.current.currentTime(newTime)
