@@ -25,12 +25,20 @@ export function HeaderTabButtons(): ReactElement {
 
   const headerItems = compact([
     strategies
-      ? { label: t('Resources'), icon: <TerminalIcon />, href: '/resources' }
+      ? {
+          label: t('Resources', { lng: 'en' }),
+          icon: <TerminalIcon />,
+          href: '/resources'
+        }
       : undefined,
     journeys
-      ? { label: t('Journeys'), icon: <JourneysIcon />, href: '/journeys' }
+      ? {
+          label: t('Journeys', { lng: 'en' }),
+          icon: <JourneysIcon />,
+          href: '/journeys'
+        }
       : undefined,
-    { label: t('Videos'), icon: <Play1Icon />, href: '/watch' }
+    { label: t('Videos', { lng: 'en' }), icon: <Play1Icon />, href: '/watch' }
   ])
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
