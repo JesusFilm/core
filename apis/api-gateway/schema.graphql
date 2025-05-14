@@ -464,6 +464,9 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   videoTitleCreate(input: VideoTranslationCreateInput!) : VideoTitle! @join__field(graph: API_MEDIA) 
   videoTitleUpdate(input: VideoTranslationUpdateInput!) : VideoTitle! @join__field(graph: API_MEDIA) 
   videoTitleDelete(id: ID!) : VideoTitle! @join__field(graph: API_MEDIA) 
+  videoOriginCreate(name: String!, description: String) : VideoOrigin! @join__field(graph: API_MEDIA) 
+  videoOriginUpdate(id: ID!, name: String, description: String) : VideoOrigin! @join__field(graph: API_MEDIA) 
+  videoOriginDelete(id: ID!) : VideoOrigin! @join__field(graph: API_MEDIA) 
   videoEditionCreate(input: VideoEditionCreateInput!) : VideoEdition! @join__field(graph: API_MEDIA) 
   videoEditionUpdate(input: VideoEditionUpdateInput!) : VideoEdition! @join__field(graph: API_MEDIA) 
   videoEditionDelete(id: ID!) : VideoEdition! @join__field(graph: API_MEDIA) 
@@ -993,6 +996,7 @@ type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId", extensi
   primaryLanguageId: ID!
   source: VideoBlockSource @join__field(graph: API_JOURNEYS_MODERN, type: "VideoBlockSource!")  @join__field(graph: API_MEDIA, type: "VideoBlockSource") 
   bibleCitations: [BibleCitation!]! @join__field(graph: API_MEDIA) 
+  origin: VideoOrigin @join__field(graph: API_MEDIA) 
   keywords(languageId: ID) : [Keyword!]! @join__field(graph: API_MEDIA) 
   label: VideoLabel! @join__field(graph: API_MEDIA) 
   locked: Boolean! @join__field(graph: API_MEDIA) 
@@ -2649,6 +2653,13 @@ type VideoImageAlt @join__type(graph: API_MEDIA)  {
   value: String!
   primary: Boolean!
   language: Language!
+}
+
+type VideoOrigin @join__type(graph: API_MEDIA)  {
+  id: ID!
+  name: String!
+  description: String
+  videos: [Video!]!
 }
 
 type VideoSnippet @join__type(graph: API_MEDIA)  {

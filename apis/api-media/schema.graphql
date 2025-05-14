@@ -214,6 +214,9 @@ type Mutation {
   videoTitleCreate(input: VideoTranslationCreateInput!): VideoTitle!
   videoTitleUpdate(input: VideoTranslationUpdateInput!): VideoTitle!
   videoTitleDelete(id: ID!): VideoTitle!
+  videoOriginCreate(name: String!, description: String): VideoOrigin!
+  videoOriginUpdate(id: ID!, name: String, description: String): VideoOrigin!
+  videoOriginDelete(id: ID!): VideoOrigin!
   videoEditionCreate(input: VideoEditionCreateInput!): VideoEdition!
   videoEditionUpdate(input: VideoEditionUpdateInput!): VideoEdition!
   videoEditionDelete(id: ID!): VideoEdition!
@@ -736,6 +739,7 @@ type Video
   @shareable
 {
   bibleCitations: [BibleCitation!]!
+  origin: VideoOrigin
   source: VideoBlockSource @shareable
   keywords(languageId: ID): [Keyword!]!
   id: ID!
@@ -827,6 +831,13 @@ enum VideoLabel {
   shortFilm
   trailer
   behindTheScenes
+}
+
+type VideoOrigin {
+  id: ID!
+  name: String!
+  description: String
+  videos: [Video!]!
 }
 
 type VideoSnippet {

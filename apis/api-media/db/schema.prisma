@@ -125,13 +125,13 @@ model Video {
   cloudflareAssets   CloudflareR2[]
   videoEditions      VideoEdition[]
   availableLanguages String[]
-  owner              VideoOwner?          @relation(fields: [ownerId], references: [id])
-  ownerId            String?
+  origin             VideoOrigin?         @relation(fields: [originId], references: [id])
+  originId           String?
 
   @@index(label)
   @@index(childIds)
   @@index(published(type: Hash))
-  @@index(ownerId(type: Hash))
+  @@index(originId(type: Hash))
 }
 
 model VideoTitle {
@@ -473,7 +473,7 @@ model ShortLinkBlocklistDomain {
   hostname String @id
 }
 
-model VideoOwner {
+model VideoOrigin {
   id          String  @id @default(uuid())
   name        String
   description String?
