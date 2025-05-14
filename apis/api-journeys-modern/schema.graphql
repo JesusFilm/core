@@ -38,13 +38,13 @@ enum EventType {
 type Journey
   @key(fields: "id")
 {
-  id: ID @shareable
-  title: String @shareable
+  id: ID! @shareable
+  title: String! @shareable
   description: String @shareable
-  slug: String @shareable
-  createdAt: DateTime @shareable
-  updatedAt: DateTime @shareable
-  status: JourneyStatus @shareable
+  slug: String! @shareable
+  createdAt: DateTime! @shareable
+  updatedAt: DateTime! @shareable
+  status: JourneyStatus! @shareable
   languageId: String @shareable
 }
 

@@ -11,11 +11,11 @@ import { CustomDomainCreateInput } from "./globalTypes";
 
 export interface CreateCustomDomain_customDomainCreate_journeyCollection_journeys {
   __typename: "Journey";
-  id: string | null;
+  id: string;
   /**
    * private title for creators
    */
-  title: string | null;
+  title: string;
 }
 
 export interface CreateCustomDomain_customDomainCreate_journeyCollection {

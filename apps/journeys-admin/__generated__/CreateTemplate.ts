@@ -11,7 +11,7 @@ import { JourneyTemplateInput } from "./globalTypes";
 
 export interface CreateTemplate_journeyTemplate {
   __typename: "Journey";
-  id: string | null;
+  id: string;
   template: boolean | null;
 }
 

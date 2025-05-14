@@ -12,8 +12,8 @@ export interface GetCustomDomains_customDomains_journeyCollection_journeys {
   /**
    * private title for creators
    */
-  title: string | null;
-  id: string | null;
+  title: string;
+  id: string;
 }
 
 export interface GetCustomDomains_customDomains_journeyCollection {

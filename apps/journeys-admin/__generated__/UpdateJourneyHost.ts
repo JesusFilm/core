@@ -16,7 +16,7 @@ export interface UpdateJourneyHost_journeyUpdate_host {
 
 export interface UpdateJourneyHost_journeyUpdate {
   __typename: "Journey";
-  id: string | null;
+  id: string;
   host: UpdateJourneyHost_journeyUpdate_host | null;
 }
 

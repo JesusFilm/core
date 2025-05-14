@@ -791,7 +791,7 @@ export type Journey = {
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
   blocks?: Maybe<Array<Block>>;
   chatButtons: Array<ChatButton>;
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  createdAt: Scalars['DateTime']['output'];
   creatorDescription?: Maybe<Scalars['String']['output']>;
   creatorImageBlock?: Maybe<ImageBlock>;
   deletedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -800,7 +800,7 @@ export type Journey = {
   displayTitle?: Maybe<Scalars['String']['output']>;
   featuredAt?: Maybe<Scalars['DateTime']['output']>;
   host?: Maybe<Host>;
-  id?: Maybe<Scalars['ID']['output']>;
+  id: Scalars['ID']['output'];
   journeyCollections: Array<JourneyCollection>;
   language: Language;
   languageId?: Maybe<Scalars['String']['output']>;
@@ -823,8 +823,8 @@ export type Journey = {
   showMenu?: Maybe<Scalars['Boolean']['output']>;
   showReactionButtons?: Maybe<Scalars['Boolean']['output']>;
   showShareButton?: Maybe<Scalars['Boolean']['output']>;
-  slug?: Maybe<Scalars['String']['output']>;
-  status?: Maybe<JourneyStatus>;
+  slug: Scalars['String']['output'];
+  status: JourneyStatus;
   strategySlug?: Maybe<Scalars['String']['output']>;
   tags: Array<Tag>;
   team?: Maybe<Team>;
@@ -832,9 +832,9 @@ export type Journey = {
   themeMode: ThemeMode;
   themeName: ThemeName;
   /** private title for creators */
-  title?: Maybe<Scalars['String']['output']>;
+  title: Scalars['String']['output'];
   trashedAt?: Maybe<Scalars['DateTime']['output']>;
-  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
   userJourneys?: Maybe<Array<UserJourney>>;
   website?: Maybe<Scalars['Boolean']['output']>;
 };

@@ -240,7 +240,7 @@ export interface MenuBlockCreate_journeyUpdate_menuStepBlock {
 
 export interface MenuBlockCreate_journeyUpdate {
   __typename: "Journey";
-  id: string | null;
+  id: string;
   menuStepBlock: MenuBlockCreate_journeyUpdate_menuStepBlock | null;
 }
 

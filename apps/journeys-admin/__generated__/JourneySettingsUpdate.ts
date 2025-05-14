@@ -55,11 +55,11 @@ export interface JourneySettingsUpdate_journeyUpdate_menuStepBlock {
 
 export interface JourneySettingsUpdate_journeyUpdate {
   __typename: "Journey";
-  id: string | null;
+  id: string;
   /**
    * private title for creators
    */
-  title: string | null;
+  title: string;
   description: string | null;
   strategySlug: string | null;
   language: JourneySettingsUpdate_journeyUpdate_language;

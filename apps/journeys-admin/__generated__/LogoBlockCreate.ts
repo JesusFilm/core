@@ -35,7 +35,7 @@ export interface LogoBlockCreate_journeyUpdate_logoImageBlock {
 
 export interface LogoBlockCreate_journeyUpdate {
   __typename: "Journey";
-  id: string | null;
+  id: string;
   logoImageBlock: LogoBlockCreate_journeyUpdate_logoImageBlock | null;
 }
 

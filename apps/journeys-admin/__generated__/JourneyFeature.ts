@@ -9,7 +9,7 @@
 
 export interface JourneyFeature_journeyFeature {
   __typename: "Journey";
-  id: string | null;
+  id: string;
   featuredAt: any | null;
 }
 

@@ -594,16 +594,16 @@ export interface GetAdminJourneyWithPlausibleToken_journey_menuStepBlock {
 
 export interface GetAdminJourneyWithPlausibleToken_journey {
   __typename: "Journey";
-  id: string | null;
-  slug: string | null;
+  id: string;
+  slug: string;
   /**
    * private title for creators
    */
-  title: string | null;
+  title: string;
   description: string | null;
-  status: JourneyStatus | null;
+  status: JourneyStatus;
   language: GetAdminJourneyWithPlausibleToken_journey_language;
-  createdAt: any | null;
+  createdAt: any;
   featuredAt: any | null;
   publishedAt: any | null;
   themeName: ThemeName;

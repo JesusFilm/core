@@ -532,7 +532,7 @@ type EmailAction implements Action @join__type(graph: API_JOURNEYS)  @join__impl
 }
 
 type Journey @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  {
-  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  id: ID!
   blocks: [Block!] @join__field(graph: API_JOURNEYS) 
   primaryImageBlock: ImageBlock @join__field(graph: API_JOURNEYS) 
   creatorImageBlock: ImageBlock @join__field(graph: API_JOURNEYS) 
@@ -542,22 +542,22 @@ type Journey @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API
   """
   private title for creators
   """
-  title: String @join__field(graph: API_JOURNEYS, type: "String!")  @join__field(graph: API_JOURNEYS_MODERN, type: "String") 
+  title: String!
   language: Language! @join__field(graph: API_JOURNEYS) 
   languageId: String @join__field(graph: API_JOURNEYS, type: "String!")  @join__field(graph: API_JOURNEYS_MODERN, type: "String") 
   themeMode: ThemeMode! @join__field(graph: API_JOURNEYS) 
   themeName: ThemeName! @join__field(graph: API_JOURNEYS) 
   description: String
   creatorDescription: String @join__field(graph: API_JOURNEYS) 
-  slug: String @join__field(graph: API_JOURNEYS, type: "String!")  @join__field(graph: API_JOURNEYS_MODERN, type: "String") 
+  slug: String!
   archivedAt: DateTime @join__field(graph: API_JOURNEYS) 
   deletedAt: DateTime @join__field(graph: API_JOURNEYS) 
   publishedAt: DateTime @join__field(graph: API_JOURNEYS) 
   trashedAt: DateTime @join__field(graph: API_JOURNEYS) 
   featuredAt: DateTime @join__field(graph: API_JOURNEYS) 
-  updatedAt: DateTime @join__field(graph: API_JOURNEYS, type: "DateTime!")  @join__field(graph: API_JOURNEYS_MODERN, type: "DateTime") 
-  createdAt: DateTime @join__field(graph: API_JOURNEYS, type: "DateTime!")  @join__field(graph: API_JOURNEYS_MODERN, type: "DateTime") 
-  status: JourneyStatus @join__field(graph: API_JOURNEYS, type: "JourneyStatus!")  @join__field(graph: API_JOURNEYS_MODERN, type: "JourneyStatus") 
+  updatedAt: DateTime!
+  createdAt: DateTime!
+  status: JourneyStatus!
   """
   title for seo and sharing
   """

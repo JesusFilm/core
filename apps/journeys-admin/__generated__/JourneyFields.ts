@@ -594,16 +594,16 @@ export interface JourneyFields_menuStepBlock {
 
 export interface JourneyFields {
   __typename: "Journey";
-  id: string | null;
-  slug: string | null;
+  id: string;
+  slug: string;
   /**
    * private title for creators
    */
-  title: string | null;
+  title: string;
   description: string | null;
-  status: JourneyStatus | null;
+  status: JourneyStatus;
   language: JourneyFields_language;
-  createdAt: any | null;
+  createdAt: any;
   featuredAt: any | null;
   publishedAt: any | null;
   themeName: ThemeName;

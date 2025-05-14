@@ -63,7 +63,7 @@ export interface GetJourneyWithPermissions_journey_userJourneys {
 
 export interface GetJourneyWithPermissions_journey {
   __typename: "Journey";
-  id: string | null;
+  id: string;
   team: GetJourneyWithPermissions_journey_team | null;
   userJourneys: GetJourneyWithPermissions_journey_userJourneys[] | null;
 }

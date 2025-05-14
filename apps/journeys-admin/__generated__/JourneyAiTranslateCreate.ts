@@ -14,11 +14,11 @@ export interface JourneyAiTranslateCreate_journeyAiTranslateCreate_language {
 
 export interface JourneyAiTranslateCreate_journeyAiTranslateCreate {
   __typename: "Journey";
-  id: string | null;
+  id: string;
   /**
    * private title for creators
    */
-  title: string | null;
+  title: string;
   description: string | null;
   language: JourneyAiTranslateCreate_journeyAiTranslateCreate_language;
 }

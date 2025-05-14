@@ -594,16 +594,16 @@ export interface GetPublisherTemplate_publisherTemplate_menuStepBlock {
 
 export interface GetPublisherTemplate_publisherTemplate {
   __typename: "Journey";
-  id: string | null;
-  slug: string | null;
+  id: string;
+  slug: string;
   /**
    * private title for creators
    */
-  title: string | null;
+  title: string;
   description: string | null;
-  status: JourneyStatus | null;
+  status: JourneyStatus;
   language: GetPublisherTemplate_publisherTemplate_language;
-  createdAt: any | null;
+  createdAt: any;
   featuredAt: any | null;
   publishedAt: any | null;
   themeName: ThemeName;

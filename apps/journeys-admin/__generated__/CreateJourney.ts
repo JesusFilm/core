@@ -37,19 +37,19 @@ export interface CreateJourney_journeyCreate_userJourneys {
 
 export interface CreateJourney_journeyCreate {
   __typename: "Journey";
-  id: string | null;
+  id: string;
   /**
    * private title for creators
    */
-  title: string | null;
-  createdAt: any | null;
+  title: string;
+  createdAt: any;
   publishedAt: any | null;
   description: string | null;
-  slug: string | null;
+  slug: string;
   themeName: ThemeName;
   themeMode: ThemeMode;
   language: CreateJourney_journeyCreate_language;
-  status: JourneyStatus | null;
+  status: JourneyStatus;
   userJourneys: CreateJourney_journeyCreate_userJourneys[] | null;
 }
 

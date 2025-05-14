@@ -9,7 +9,7 @@
 
 export interface UserJourneyRemove_userJourneyRemove_journey {
   __typename: "Journey";
-  id: string | null;
+  id: string;
 }
 
 export interface UserJourneyRemove_userJourneyRemove {

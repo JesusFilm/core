@@ -17,7 +17,7 @@ export interface UserJourneyPromote_userJourneyPromote_journey_userJourneys {
 
 export interface UserJourneyPromote_userJourneyPromote_journey {
   __typename: "Journey";
-  id: string | null;
+  id: string;
   userJourneys: UserJourneyPromote_userJourneyPromote_journey_userJourneys[] | null;
 }
 

@@ -25,11 +25,11 @@ export interface TitleDescLanguageUpdate_journeyUpdate_language {
 
 export interface TitleDescLanguageUpdate_journeyUpdate {
   __typename: "Journey";
-  id: string | null;
+  id: string;
   /**
    * private title for creators
    */
-  title: string | null;
+  title: string;
   description: string | null;
   language: TitleDescLanguageUpdate_journeyUpdate_language;
 }

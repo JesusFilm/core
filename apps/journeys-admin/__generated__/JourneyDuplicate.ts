@@ -9,7 +9,7 @@
 
 export interface JourneyDuplicate_journeyDuplicate {
   __typename: "Journey";
-  id: string | null;
+  id: string;
 }
 
 export interface JourneyDuplicate {

@@ -20,7 +20,7 @@ export interface GetSSRAdminJourney_journey_language {
 
 export interface GetSSRAdminJourney_journey {
   __typename: "Journey";
-  id: string | null;
+  id: string;
   template: boolean | null;
   team: GetSSRAdminJourney_journey_team | null;
   language: GetSSRAdminJourney_journey_language;

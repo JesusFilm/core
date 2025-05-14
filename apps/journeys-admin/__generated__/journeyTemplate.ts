@@ -9,5 +9,5 @@
 
 export interface journeyTemplate {
   __typename: "Journey";
-  id: string | null;
+  id: string;
 }
