@@ -3,6 +3,7 @@ import { ResultOf, graphql } from 'gql.tada'
 import { timeout } from 'hono/timeout'
 
 import { getApolloClient } from '../../../../../../lib/apolloClient'
+import { getPlatformForApiKey } from '../../../../../../lib/platformHelper'
 import {
   getWebEmbedPlayer,
   getWebEmbedSharePlayer
@@ -101,8 +102,11 @@ const route = createRoute({
 mediaComponentLanguages.openapi(route, async (c) => {
   const mediaComponentId = c.req.param('mediaComponentId')
 
-  const apiKey = c.req.query('apiKey') ?? '616db012e9a951.51499299'
-  const platform = c.req.query('platform') ?? 'ios'
+  const apiKey = c.req.query('apiKey')
+  const explicitPlatform = c.req.query('platform')
+  const platformFromApiKey = getPlatformForApiKey(apiKey)
+  const platform = explicitPlatform ?? platformFromApiKey ?? 'ios'
+
   const languageIds = c.req.query('languageIds')?.split(',') ?? []
   const apiSessionId = '6622f10d2260a8.05128925'
 

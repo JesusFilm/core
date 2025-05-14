@@ -2,6 +2,7 @@ import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { ResultOf, graphql } from 'gql.tada'
 
 import { getApolloClient } from '../../../../../../../lib/apolloClient'
+import { getPlatformForApiKey } from '../../../../../../../lib/platformHelper'
 import {
   getWebEmbedPlayer,
   getWebEmbedSharePlayer
@@ -209,9 +210,11 @@ mediaComponentLanguage.openapi(route, async (c) => {
     }
   })
 
-  const apiKey = c.req.query('apiKey') ?? '616db012e9a951.51499299'
-  const platform = c.req.query('platform') ?? 'ios'
-  // TODO: implement
+  const apiKey = c.req.query('apiKey')
+  const explicitPlatform = c.req.query('platform')
+  const platformFromApiKey = getPlatformForApiKey(apiKey)
+  const platform = explicitPlatform ?? platformFromApiKey ?? 'ios'
+
   const apiSessionId = '6622f10d2260a8.05128925'
 
   const video = data.video
