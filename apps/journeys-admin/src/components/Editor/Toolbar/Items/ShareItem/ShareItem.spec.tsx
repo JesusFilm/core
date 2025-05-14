@@ -42,48 +42,48 @@ const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 Object.assign(navigator, { clipboard: { writeText: jest.fn() } })
 
-const journeyForSharingMock: MockedResponse<GetJourneyForSharing> = {
-  request: {
-    query: GET_JOURNEY_FOR_SHARING,
-    variables: { id: 'journeyId' }
-  },
-  result: {
-    data: {
-      journey: {
-        __typename: 'Journey',
-        id: 'journeyId',
-        slug: 'default',
-        language: {
-          __typename: 'Language',
-          id: 'languageId',
-          bcp47: 'en',
-          iso3: 'eng',
-          name: [
-            {
-              __typename: 'LanguageName',
-              value: 'English',
-              primary: true
-            }
-          ]
-        },
-        themeName: ThemeName.base,
-        themeMode: ThemeMode.light,
-        team: {
-          __typename: 'Team',
-          id: 'teamId',
-          customDomains: [
-            {
-              __typename: 'CustomDomain',
-              name: 'custom.domain.com'
-            }
-          ]
+describe('ShareItem', () => {
+  const journeyForSharingMock: MockedResponse<GetJourneyForSharing> = {
+    request: {
+      query: GET_JOURNEY_FOR_SHARING,
+      variables: { id: 'journeyId' }
+    },
+    result: {
+      data: {
+        journey: {
+          __typename: 'Journey',
+          id: 'journeyId',
+          slug: 'default',
+          language: {
+            __typename: 'Language',
+            id: 'languageId',
+            bcp47: 'en',
+            iso3: 'eng',
+            name: [
+              {
+                __typename: 'LanguageName',
+                value: 'English',
+                primary: true
+              }
+            ]
+          },
+          themeName: ThemeName.base,
+          themeMode: ThemeMode.light,
+          team: {
+            __typename: 'Team',
+            id: 'teamId',
+            customDomains: [
+              {
+                __typename: 'CustomDomain',
+                name: 'custom.domain.com'
+              }
+            ]
+          }
         }
       }
     }
   }
-}
 
-describe('ShareItem', () => {
   const push = jest.fn()
   const on = jest.fn()
 
