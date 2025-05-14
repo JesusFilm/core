@@ -121,7 +121,12 @@ describe('QrCodeDialog', () => {
         <Suspense>
           <JourneyProvider value={{ journey }}>
             <SnackbarProvider>
-              <QrCodeDialog open onClose={handleClose} journey={journey} />
+              <QrCodeDialog
+                open
+                onClose={handleClose}
+                journey={journey}
+                teamId={journey.team?.id}
+              />
             </SnackbarProvider>
           </JourneyProvider>
         </Suspense>
@@ -141,7 +146,12 @@ describe('QrCodeDialog', () => {
         <Suspense>
           <JourneyProvider value={{ journey }}>
             <SnackbarProvider>
-              <QrCodeDialog open onClose={handleClose} journey={journey} />
+              <QrCodeDialog
+                open
+                onClose={handleClose}
+                journey={journey}
+                teamId={journey.team?.id}
+              />
             </SnackbarProvider>
           </JourneyProvider>
         </Suspense>
@@ -159,7 +169,12 @@ describe('QrCodeDialog', () => {
         <Suspense>
           <JourneyProvider value={{ journey }}>
             <SnackbarProvider>
-              <QrCodeDialog open onClose={handleClose} journey={journey} />
+              <QrCodeDialog
+                open
+                onClose={handleClose}
+                journey={journey}
+                teamId={journey.team?.id}
+              />
             </SnackbarProvider>
           </JourneyProvider>
         </Suspense>
@@ -209,7 +224,12 @@ describe('QrCodeDialog', () => {
         <Suspense>
           <JourneyProvider value={{ journey }}>
             <SnackbarProvider>
-              <QrCodeDialog open onClose={handleClose} journey={journey} />
+              <QrCodeDialog
+                open
+                onClose={handleClose}
+                journey={journey}
+                teamId={journey.team?.id}
+              />
             </SnackbarProvider>
           </JourneyProvider>
         </Suspense>
@@ -244,7 +264,7 @@ describe('QrCodeDialog', () => {
         variables: {
           input: {
             journeyId: 'journey.id',
-            teamId: ''
+            teamId: 'team.id'
           }
         }
       },
@@ -266,7 +286,12 @@ describe('QrCodeDialog', () => {
         <Suspense>
           <JourneyProvider value={{ journey }}>
             <SnackbarProvider>
-              <QrCodeDialog open onClose={handleClose} journey={journey} />
+              <QrCodeDialog
+                open
+                onClose={handleClose}
+                journey={journey}
+                teamId={journey.team?.id}
+              />
             </SnackbarProvider>
           </JourneyProvider>
         </Suspense>
@@ -306,7 +331,7 @@ describe('QrCodeDialog', () => {
         variables: {
           input: {
             journeyId: 'journey.id',
-            teamId: ''
+            teamId: 'team.id'
           }
         }
       },
@@ -318,7 +343,12 @@ describe('QrCodeDialog', () => {
         <Suspense>
           <JourneyProvider value={{ journey }}>
             <SnackbarProvider>
-              <QrCodeDialog open onClose={handleClose} journey={journey} />
+              <QrCodeDialog
+                open
+                onClose={handleClose}
+                journey={journey}
+                teamId={journey.team?.id}
+              />
             </SnackbarProvider>
           </JourneyProvider>
         </Suspense>
