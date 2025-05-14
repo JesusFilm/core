@@ -48,7 +48,7 @@ export function VideoPlayer({
   const playerRef = useRef<HTMLVideoElement>(null)
   const playerInstanceRef = useRef<any>(null)
   const [playing, setPlaying] = useState(false)
-  const [currentTime, setCurrentTime] = useState(startTime * 1000) // Track in milliseconds
+  const [currentTime, setCurrentTime] = useState(0) // Initialize to 0, will be set properly after validation
   const [duration, setDuration] = useState(0)
   const [volume, setVolume] = useState(1)
   const [muted, setMuted] = useState(false)
@@ -61,7 +61,12 @@ export function VideoPlayer({
   const [selectedCaption, setSelectedCaption] = useState<string>('')
   const [aspectRatio, setAspectRatio] = useState<number | null>(null)
 
-  const effectiveEndTime = endTime ?? Infinity
+  // Validate and adjust time values
+  const validatedStartTime = Math.max(0, startTime ?? 0)
+  const validatedEndTime = endTime != null ? Math.max(0, endTime) : null
+
+  // If end time is before start time or equal to start time, treat as no end time
+  const [effectiveEndTime, setEffectiveEndTime] = useState<number | null>(null)
 
   // Wrapper styles to ensure video is visible
   const videoWrapperStyles = {
@@ -164,7 +169,16 @@ export function VideoPlayer({
 
     vjsPlayer.on('loadedmetadata', () => {
       const playerDuration = vjsPlayer.duration()
-      setDuration((playerDuration ?? 0) * 1000) // Convert to milliseconds
+      const durationInMs = (playerDuration ?? 0) * 1000 // Convert to milliseconds
+      setDuration(durationInMs)
+
+      // Set effective end time based on video duration
+      if (validatedEndTime != null && validatedEndTime > validatedStartTime) {
+        setEffectiveEndTime(Math.min(validatedEndTime, playerDuration ?? 0))
+      } else {
+        setEffectiveEndTime(playerDuration ?? 0)
+      }
+
       if (
         playerRef.current &&
         playerRef.current.videoWidth &&
@@ -174,6 +188,10 @@ export function VideoPlayer({
           playerRef.current.videoWidth / playerRef.current.videoHeight
         )
       }
+
+      // Set initial time after metadata is loaded
+      setCurrentTime(validatedStartTime * 1000)
+      vjsPlayer.currentTime(validatedStartTime)
     })
 
     vjsPlayer.on('timeupdate', () => {
@@ -182,9 +200,12 @@ export function VideoPlayer({
       setCurrentTime(timeInMs)
 
       // Ensure we stay within the clip boundaries (in seconds for videojs API)
-      if (timeInSeconds < startTime) {
-        vjsPlayer.currentTime(startTime)
-      } else if (timeInSeconds >= effectiveEndTime) {
+      if (timeInSeconds < validatedStartTime) {
+        vjsPlayer.currentTime(validatedStartTime)
+      } else if (
+        effectiveEndTime != null &&
+        timeInSeconds >= effectiveEndTime
+      ) {
         vjsPlayer.currentTime(effectiveEndTime)
         vjsPlayer.pause()
         setPlaying(false)
@@ -211,9 +232,6 @@ export function VideoPlayer({
     vjsPlayer.on('error', (error: any) => {
       console.error('Video.js error:', error)
     })
-
-    // Manually trigger the first timeupdate to set current time
-    vjsPlayer.currentTime(startTime)
 
     // Apply styles to all video-js related elements
     setTimeout(() => {
@@ -299,9 +317,9 @@ export function VideoPlayer({
 
   // Calculate progress percentage within the segment with higher precision
   const getSegmentProgress = () => {
-    const startTimeMs = startTime * 1000
+    const startTimeMs = validatedStartTime * 1000
     const endTimeMs =
-      effectiveEndTime === Infinity ? duration : effectiveEndTime * 1000
+      effectiveEndTime != null ? effectiveEndTime * 1000 : duration
 
     if (currentTime < startTimeMs) return 0
     if (currentTime > endTimeMs) return 100
@@ -315,7 +333,7 @@ export function VideoPlayer({
       segmentDurationMs <= 0
     ) {
       // If duration is zero or invalid, return either 0 or 100 based on context
-      return endTimeMs === Infinity ? 0 : 100
+      return endTimeMs === duration ? 0 : 100
     }
 
     const segmentCurrentTimeMs = currentTime - startTimeMs
@@ -327,9 +345,9 @@ export function VideoPlayer({
   const handleSeek = (_: Event, newValue: number | number[]) => {
     if (playerInstanceRef.current && !Array.isArray(newValue)) {
       // Convert from segment time to actual video time with higher precision
-      const startTimeMs = startTime * 1000
+      const startTimeMs = validatedStartTime * 1000
       const endTimeMs =
-        effectiveEndTime === Infinity ? duration : effectiveEndTime * 1000
+        effectiveEndTime != null ? effectiveEndTime * 1000 : duration
       const segmentDurationMs = endTimeMs - startTimeMs
 
       // Calculate time in milliseconds first
@@ -418,7 +436,7 @@ export function VideoPlayer({
           event.preventDefault()
           if (playerInstanceRef.current) {
             const newTime = Math.max(
-              startTime,
+              validatedStartTime,
               playerInstanceRef.current.currentTime() - 5
             )
             playerInstanceRef.current.currentTime(newTime)
@@ -464,7 +482,7 @@ export function VideoPlayer({
     return () => {
       document.removeEventListener('keydown', handleKeyDown)
     }
-  }, [playing, startTime, effectiveEndTime])
+  }, [playing, validatedStartTime, effectiveEndTime])
 
   // Format time for display (now handling milliseconds)
   const formatTime = (milliseconds: number) => {
@@ -901,9 +919,9 @@ export function VideoPlayer({
                   }}
                 >
                   {formatTime(
-                    (effectiveEndTime === Infinity
-                      ? duration / 1000
-                      : effectiveEndTime - startTime) * 1000
+                    (effectiveEndTime != null
+                      ? effectiveEndTime - validatedStartTime
+                      : duration / 1000) * 1000
                   )}
                 </Typography>
               </Stack>
