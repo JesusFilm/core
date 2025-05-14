@@ -1,5 +1,7 @@
 import { ThemeOptions } from '@mui/material/styles'
 
+import { baseBreakpoints } from '../../base/tokens/breakpoints'
+
 // Update the Typography's variant prop options
 declare module '@mui/material' {
   interface TypographyPropsVariantOverrides {
@@ -12,12 +14,14 @@ declare module '@mui/material/styles' {
   interface TypographyVariants {
     subtitle3: React.CSSProperties
     overline2: React.CSSProperties
+    body2_responsive: React.CSSProperties
   }
 
   // allow configuration using `createTheme`
   interface TypographyVariantsOptions {
     subtitle3?: React.CSSProperties
     overline2?: React.CSSProperties
+    body2_responsive?: React.CSSProperties
   }
 }
 
@@ -26,6 +30,7 @@ declare module '@mui/material/Typography' {
   interface TypographyPropsVariantOverrides {
     subtitle3: true
     overline2: true
+    body2_responsive: true
   }
 }
 
@@ -92,6 +97,20 @@ export const adminTypography: Pick<ThemeOptions, 'typography'> = {
       fontWeight: 400,
       fontSize: 14,
       lineHeight: '22px'
+    },
+    body2_responsive: {
+      fontFamily: '"Open Sans", "Tahoma", "Verdana", sans-serif',
+      fontWeight: 400,
+      fontSize: 14,
+      lineHeight: '22px',
+      [baseBreakpoints.breakpoints.up('xl')]: {
+        fontSize: 12,
+        lineHeight: '18px'
+      },
+      [baseBreakpoints.breakpoints.up('xxl')]: {
+        fontSize: 14,
+        lineHeight: '22px'
+      }
     },
     overline: {
       fontWeight: 600,

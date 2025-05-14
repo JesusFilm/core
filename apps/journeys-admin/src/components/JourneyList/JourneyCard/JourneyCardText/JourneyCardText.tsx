@@ -42,9 +42,9 @@ export function JourneyCardText({
         spacing={1.5}
         sx={{ width: '100%' }}
       >
-        <Globe1Icon sx={{ fontSize: 16, color: 'secondary.light' }} />
+        <Globe1Icon sx={{ fontSize: 15, color: 'secondary.light' }} />
         <Typography
-          variant="body2"
+          variant="body2_responsive"
           sx={{
             whiteSpace: 'nowrap',
             overflow: 'hidden',
