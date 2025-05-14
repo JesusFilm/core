@@ -335,7 +335,7 @@ You should inform the user about which Bible translation you chose to use.
       const updatedJourney = await prisma.journey.findUnique({
         where: { id: input.journeyId },
         include: {
-          blocks: true,
+          blocks: true
           // Add other relations as needed for the full object
         }
       })

@@ -9,7 +9,11 @@ import ScopeAuthPlugin from '@pothos/plugin-scope-auth'
 import TracingPlugin, { isRootField } from '@pothos/plugin-tracing'
 import WithInputPlugin from '@pothos/plugin-with-input'
 import { createOpenTelemetryWrapper } from '@pothos/tracing-opentelemetry'
-import { DateResolver, DateTimeISOResolver, DateTimeResolver } from 'graphql-scalars'
+import {
+  DateResolver,
+  DateTimeISOResolver,
+  DateTimeResolver
+} from 'graphql-scalars'
 
 import { Prisma, Role } from '.prisma/api-journeys-modern-client'
 import { User } from '@core/yoga/firebaseClient'
