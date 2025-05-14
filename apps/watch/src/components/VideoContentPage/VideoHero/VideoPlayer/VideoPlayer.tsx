@@ -1,3 +1,4 @@
+import last from 'lodash/last'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
@@ -28,7 +29,7 @@ export function VideoPlayer({
       const muxMetadata: MuxMetadata = {
         env_key: process.env.NEXT_PUBLIC_MUX_DEFAULT_REPORTING_KEY || '',
         player_name: 'watch',
-        video_title: title?.[0]?.value ?? '',
+        video_title: last(title)?.value ?? '',
         video_id: variant?.id ?? ''
       }
 

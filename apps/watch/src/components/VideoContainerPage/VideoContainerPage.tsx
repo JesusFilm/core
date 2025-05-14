@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
+import last from 'lodash/last'
 import { ReactElement, useState } from 'react'
 
 import { ThemeMode } from '@core/shared/ui/themes'
@@ -27,6 +28,7 @@ export function VideoContainerPage(): ReactElement {
   function handleCloseDialog(): void {
     setShareDialog(false)
   }
+  console.log(snippet)
 
   return (
     <PageWrapper
@@ -41,7 +43,7 @@ export function VideoContainerPage(): ReactElement {
           direction="column"
         >
           <ContainerDescription
-            value={snippet[0].value}
+            value={last(snippet)?.value ?? ''}
             openDialog={handleOpenDialog}
           />
           <ShareDialog open={shareDialog} onClose={handleCloseDialog} />

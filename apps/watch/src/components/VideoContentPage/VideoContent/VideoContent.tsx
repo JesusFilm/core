@@ -5,6 +5,7 @@ import Stack from '@mui/material/Stack'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Typography from '@mui/material/Typography'
+import last from 'lodash/last'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
 
@@ -159,7 +160,7 @@ export function VideoContent(): ReactElement {
             }
           }}
         >
-          {description[0]?.value}
+          {last(description)?.value}
         </TextFormatter>
       </TabPanel>
       {studyQuestions?.length !== 0 && (

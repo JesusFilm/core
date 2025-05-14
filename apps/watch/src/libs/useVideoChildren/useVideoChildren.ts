@@ -5,6 +5,7 @@ import {
   GetVideoChildren,
   GetVideoChildren_video_children
 } from '../../../__generated__/GetVideoChildren'
+import { getVideoLanguageId } from '../getVideoLanguageId'
 import { VIDEO_CHILD_FIELDS } from '../videoChildFields'
 
 export const GET_VIDEO_CHILDREN = gql`
@@ -28,8 +29,11 @@ export function useVideoChildren(slug?: string): {
 
   useEffect(() => {
     if (slug != null) {
+      const languageSlug = slug.split('/').pop()
+      const languageId = getVideoLanguageId(languageSlug)
+
       void getVideoChildren({
-        variables: { id: slug }
+        variables: { id: slug, languageId }
       })
     }
   }, [getVideoChildren, slug])
