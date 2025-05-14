@@ -1,15 +1,16 @@
-import { ReactElement } from 'react'
 
-import HelpSquareContained from '@core/shared/ui/icons/HelpSquareContained'
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion'
+import MuiAccordionDetails from '@mui/material/AccordionDetails'
 import MuiAccordionSummary, {
   AccordionSummaryProps,
   accordionSummaryClasses
 } from '@mui/material/AccordionSummary'
-import MuiAccordionDetails from '@mui/material/AccordionDetails'
+import { alpha, styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import { styled, alpha } from '@mui/material/styles'
+import { ReactElement } from 'react'
+
 import ChevronDown from '@core/shared/ui/icons/ChevronDown'
+import HelpSquareContained from '@core/shared/ui/icons/HelpSquareContained'
 
 const Accordion = styled((props: AccordionProps) => (
   <MuiAccordion disableGutters elevation={0} {...props} />

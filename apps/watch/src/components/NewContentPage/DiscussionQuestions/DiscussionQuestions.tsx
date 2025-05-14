@@ -1,13 +1,15 @@
-import { ReactElement, useState } from 'react'
 
-import MessageCircle from '@core/shared/ui/icons/MessageCircle'
-import { useTranslation } from 'next-i18next'
-
-import { Question } from './Question'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
+import { ReactElement, useState } from 'react'
+
+import MessageCircle from '@core/shared/ui/icons/MessageCircle'
+
 import { VideoContentFields_studyQuestions } from '../../../../__generated__/VideoContentFields'
+
+import { Question } from './Question'
 
 interface DiscussionQuestionProps {
   questions: VideoContentFields_studyQuestions[]

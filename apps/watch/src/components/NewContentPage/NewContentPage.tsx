@@ -5,6 +5,7 @@ import { ReactElement } from 'react'
 
 import { ThemeMode } from '@core/shared/ui/themes'
 
+import { VideoContentFields_studyQuestions } from '../../../__generated__/VideoContentFields'
 import { useVideoChildren } from '../../libs/useVideoChildren'
 import { getWatchUrl } from '../../libs/utils/getWatchUrl'
 import { useVideo } from '../../libs/videoContext'
@@ -12,9 +13,8 @@ import { PageWrapper } from '../PageWrapper'
 
 import { ContentHero } from './ContentHero'
 import { ContentMetadata } from './ContentMetadata'
-import { VideoCarousel } from './VideoCarousel'
 import { DiscussionQuestions } from './DiscussionQuestions'
-import { VideoContentFields_studyQuestions } from '../../../__generated__/VideoContentFields'
+import { VideoCarousel } from './VideoCarousel'
 
 export function NewContentPage(): ReactElement {
   const {
