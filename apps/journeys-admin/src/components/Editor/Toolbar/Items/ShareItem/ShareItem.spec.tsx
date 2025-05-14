@@ -14,7 +14,8 @@ import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'
 import { GetUserRole } from '@core/journeys/ui/useUserRoleQuery/__generated__/GetUserRole'
 
 import { GetJourneyForSharing } from '../../../../../../__generated__/GetJourneyForSharing'
-import { Role ,
+import {
+  Role,
   ThemeMode,
   ThemeName
 } from '../../../../../../__generated__/globalTypes'
