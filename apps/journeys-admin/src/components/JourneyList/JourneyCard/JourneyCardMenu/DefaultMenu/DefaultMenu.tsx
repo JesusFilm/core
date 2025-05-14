@@ -111,6 +111,7 @@ export function DefaultMenu({
 
   console.log('Debug - Current User:', {
     currentUserId: currentUser?.id,
+    userId: user?.id,
     journeyId: journeyId,
     journeyData: journeyData
   })
@@ -123,7 +124,7 @@ export function DefaultMenu({
     [journey?.userJourneys]
   )
   const isOwner = useMemo(
-    () => owner?.user?.id === user?.id,
+    () => owner?.user?.id === user?.id || owner?.user?.id === currentUser?.id,
     [owner?.user?.id, user?.id]
   )
 
@@ -135,12 +136,12 @@ export function DefaultMenu({
 
   const isOwnerOld = journeyData?.adminJourney?.userJourneys?.some(
     (userJourney: { user: { id: string }; role: UserJourneyRole }) =>
-      userJourney.user?.id === currentUser?.id &&
+      userJourney.user?.id === user?.id &&
       userJourney.role === UserJourneyRole.owner
   )
 
-  console.log('Debug - isOwner Check:', {
-    isOwner: isOwner,
+  console.log('Debug - isOwnerOld Check:', {
+    isOwner: isOwnerOld,
     userJourneys: journeyData?.adminJourney?.userJourneys
   })
 
@@ -163,20 +164,6 @@ export function DefaultMenu({
     return userJourney?.role
   }, [journeyData?.adminJourney?.userJourneys, currentUser?.id])
 
-  console.log('Debug - User Role:', {
-    userRole,
-    currentUserEmail: currentUser?.email
-  })
-
-  console.log('Debug - Role Comparison:', {
-    isOwner,
-    userRole,
-    isOwnerRole: userRole === UserJourneyRole.owner,
-    areTheyEqual: isOwner === (userRole === UserJourneyRole.owner),
-    currentUserId: currentUser?.id,
-    userJourneys: journeyData?.adminJourney?.userJourneys
-  })
-
   // Determine the current user's role in the team
   const teamRole = useMemo<UserTeamRole | undefined>(() => {
     if (activeTeam?.userTeams == null || currentUser?.email == null)
@@ -189,19 +176,8 @@ export function DefaultMenu({
     return userTeam?.role
   }, [activeTeam?.userTeams, currentUser?.email])
 
-  console.log('Debug - Team Role:', {
-    teamRole,
-    activeTeam,
-    currentUserEmail: currentUser?.email
-  })
-
   const isPublisher =
     userRoleData?.getUserRole?.roles?.includes(Role.publisher) === true
-
-  console.log('Debug - Publisher Check:', {
-    isPublisher,
-    userRoles: userRoleData?.getUserRole?.roles
-  })
 
   const canManageJourney =
     isOwner ||
