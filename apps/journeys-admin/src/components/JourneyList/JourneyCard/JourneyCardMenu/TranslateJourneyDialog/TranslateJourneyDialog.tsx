@@ -24,18 +24,12 @@ import { JOURNEY_DELETE } from '../DeleteJourneyDialog/DeleteJourneyDialog'
 
 import { ConfirmSameLanguageDialog } from './ConfirmSameLanguageDialog'
 
-/**
- * Interface for the language object structure used in the component
- */
 interface JourneyLanguage {
   id: string
   localName?: string
   nativeName?: string
 }
 
-/**
- * Interface for translation parameters
- */
 interface TranslationParams {
   journeyId: string
   name: string
@@ -45,14 +39,7 @@ interface TranslationParams {
   forceTranslate?: boolean
 }
 
-/**
- * Props for the TranslateJourneyDialog component
- *
- * @property {boolean} open - Controls whether the dialog is displayed
- * @property {() => void} onClose - Function to call when the dialog is closed
- * @property {Journey} [journey] - Optional journey data object. If not provided, uses journey from context
- */
-export interface TranslateJourneyDialogProps {
+interface TranslateJourneyDialogProps {
   open: boolean
   onClose: () => void
   journey?: Journey
@@ -60,17 +47,17 @@ export interface TranslateJourneyDialogProps {
 }
 
 /**
- * TranslateJourneyDialog component provides a dialog interface for translating journeys.
+ * Dialog component that enables users to create translated copies of journeys.
  *
- * The component fetches the list of available languages and allows users to select a target
- * language for translation. It gets the current journey either from props or from context.
+ * This component handles the language selection, journey duplication, and translation processes.
+ * It displays a confirmation dialog if the system detects the same language has been selected,
+ * and provides appropriate loading states and error handling throughout the translation flow.
  *
- * @param {TranslateJourneyDialogProps} props - The component props
- * @param {boolean} props.open - Controls whether the dialog is displayed
- * @param {() => void} props.onClose - Function to call when the dialog is closed
- * @param {Journey} [props.journey] - Optional journey data object. If not provided, uses journey from context
- * @param {() => Promise<ApolloQueryResult<GetAdminJourneys>>} [props.refetch] - Function to call when the journey is duplicated
- * @returns {ReactElement} The rendered dialog component
+ * @param open Controls whether the dialog is displayed
+ * @param onClose Function to call when the dialog is closed
+ * @param journey Optional journey data object. If not provided, uses journey from context
+ * @param refetch Function to refetch journeys after translation completes
+ * @returns Dialog interface for translating journeys
  */
 export function TranslateJourneyDialog({
   open,
@@ -188,15 +175,12 @@ export function TranslateJourneyDialog({
 
   async function handleConfirmTranslate(): Promise<void> {
     if (!duplicatedJourneyId || !translationParams) return
-
+    setLoading(true)
     try {
-      setLoading(true)
-
       const translatedJourney = await translateJourney({
         ...translationParams,
         forceTranslate: true
       })
-
       if (translatedJourney) {
         enqueueSnackbar(t('Translation complete'), {
           variant: 'success'
@@ -205,16 +189,14 @@ export function TranslateJourneyDialog({
         onClose()
         setTranslationParams(null)
         setDuplicatedJourneyId(null)
-      } else {
-        throw new Error('Failed to translate journey')
       }
     } catch (error) {
-      enqueueSnackbar(
-        t('Failed to process translation request. Please try again.'),
-        {
-          variant: 'error'
-        }
-      )
+      if (error instanceof Error) {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true
+        })
+      }
     } finally {
       setLoading(false)
     }
@@ -236,11 +218,6 @@ export function TranslateJourneyDialog({
     }
   }
 
-  /**
-   * Handles the translate dialog close event, checking both loading state and close reason
-   *
-   * @param reason The reason for closing ('backdropClick', 'escapeKeyDown' or undefined)
-   */
   function handleTranslateDialogClose(
     _?: object,
     reason?: 'backdropClick' | 'escapeKeyDown'
@@ -250,11 +227,6 @@ export function TranslateJourneyDialog({
     onClose()
   }
 
-  /**
-   * Handles the confirmation dialog close event
-   *
-   * @param reason The reason for closing ('backdropClick', 'escapeKeyDown' or undefined)
-   */
   function handleConfirmDialogClose(
     _?: object,
     reason?: 'backdropClick' | 'escapeKeyDown'
