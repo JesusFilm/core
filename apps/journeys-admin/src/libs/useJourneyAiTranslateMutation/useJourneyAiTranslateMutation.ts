@@ -12,6 +12,7 @@ export const JOURNEY_AI_TRANSLATE_CREATE = gql`
     $journeyLanguageName: String!
     $textLanguageId: ID!
     $textLanguageName: String!
+    $forceTranslate: Boolean
   ) {
     journeyAiTranslateCreate(
       input: {
@@ -20,6 +21,7 @@ export const JOURNEY_AI_TRANSLATE_CREATE = gql`
         journeyLanguageName: $journeyLanguageName
         textLanguageId: $textLanguageId
         textLanguageName: $textLanguageName
+        forceTranslate: $forceTranslate
       }
     )
   }
@@ -59,7 +61,7 @@ export function useJourneyAiTranslateMutation(): {
       return data?.journeyAiTranslateCreate
     } catch (error) {
       console.error('Error translating journey:', error)
-      return undefined
+      throw error
     }
   }
 

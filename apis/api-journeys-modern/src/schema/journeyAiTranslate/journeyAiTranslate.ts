@@ -7,6 +7,13 @@ import { builder } from '../builder'
 
 import { getCardBlocksContent } from './getCardBlocksContent'
 
+class AlreadyTranslatedError extends Error {
+  constructor() {
+    super('The content is already in the requested language')
+    this.name = 'AlreadyTranslatedError'
+  }
+}
+
 builder.mutationFields((t) => ({
   journeyAiTranslateCreate: t
     .withAuth({ isAuthenticated: true })
@@ -44,18 +51,6 @@ builder.mutationFields((t) => ({
         const requestedLanguageName = input.textLanguageName
 
         // 3. Get Cards Content
-        const stepBlocks = journey.blocks
-          .filter((block) => block.typename === 'StepBlock')
-          .sort((a, b) => (a.parentOrder ?? 0) - (b.parentOrder ?? 0))
-        // console.log('stepBlocks', stepBlocks)
-        // const cardBlocks = stepBlocks
-        //   .map((block) =>
-        //     journey.blocks.find(
-        //       ({ parentBlockId }) =>
-        //         parentBlockId === block.id && block.typename === 'CardBlock'
-        //     )
-        //   )
-        //   .filter((block) => block !== undefined)
         const cardBlocks = journey.blocks
           .filter((block) => block.typename === 'CardBlock')
           .sort((a, b) => (a.parentOrder ?? 0) - (b.parentOrder ?? 0))
@@ -65,49 +60,59 @@ builder.mutationFields((t) => ({
           cardBlocks
         })
 
+        console.log('requestedLanguageName', requestedLanguageName)
         // Use AI to detect the language of the journey content
         const languageDetectionPrompt = `
         Detect the language and writing system of the following journey content.
+        Do not just look at the individual words or characters but the whole sentences to determine the language.
+        The requested language is ${requestedLanguageName}.
+        
+        When determining if the languge of the Journey Content provided is Simplified Chinese or Traditional Chinese, always consider the following:
+        - For Chinese, determine whether the characters are from the Simplified set (used in Mainland China/Singapore) or the Traditional set (used in Taiwan/Hong Kong/Macau).
+        - Consider "Simplified Chinese" and "Traditional Chinese" as distinct for comparison, even though they share the same spoken language base.
+      
+        Only apply the following logic if the detected language is Simplified Chinese or Traditional Chinese:
+        - If the detected language is Simplified Chinese:
+          - And the ${requestedLanguageName} is 華語, then always return isSameLanguage as false.
+          - And the ${requestedLanguageName} is 中文, then always return isSameLanguage as true.
+        - If the detected language is Traditional Chinese:
+          - And the ${requestedLanguageName} is 華語, then always return isSameLanguage as true.
+          - And the ${requestedLanguageName} is 中文, then always return isSameLanguage as false.
+
+        For languages that use the western alphabet, do not assume the detected language is English.
+        Instead, analyze the Journey content to determine the language.
         
         Journey Content:
         ${cardBlocksContent.join('\n')}
         
-        Analyze the content at the character level, with a strong focus on the specific script used:
-        - For Chinese, determine whether the characters are from the Simplified set (used in Mainland China/Singapore) or the Traditional set (used in Taiwan/Hong Kong/Macau).
-        - Consider "Simplified Chinese" and "Traditional Chinese" as distinct for comparison, even though they share the same spoken language base.
-        - If the detected language is Simplified Chinese:
-          - And the ${requestedLanguageName} is 華語, then isSameLanguage should be false.
-          - And the ${requestedLanguageName} is 中文, then isSameLanguage should be true.
-        - If the detected language is Traditional Chinese:
-          - And the ${requestedLanguageName} is 華語, then isSameLanguage should be true.
-          - And the ${requestedLanguageName} is 中文, then isSameLanguage should be false.
-
         Return the result in this format:
         {
           detectedLanguage: [e.g. "Traditional Chinese", "Simplified Chinese", "Japanese", "English"],
-          isSameLanguage: [true if the writing system of the detected language exactly matches ${requestedLanguageName}; false otherwise]
+          isSameLanguage: [whether the detected language is the same as the requested language]
         }
-        Note: Do not return 'true' for isSameLanguage unless both the language and the script match exactly.
         `
 
         try {
-          const { object: detectedLanguage } = await generateObject({
-            model: google('gemini-2.0-flash'),
-            prompt: languageDetectionPrompt,
-            schema: z.object({
-              langauge: z.string(),
-              isSameLanguage: z.boolean()
+          if (!shouldForceTranslate) {
+            const { object: detectedLanguage } = await generateObject({
+              model: google('gemini-2.0-flash'),
+              prompt: languageDetectionPrompt,
+              schema: z.object({
+                language: z.string(),
+                isSameLanguage: z.boolean()
+              })
             })
-          })
-          console.log('detectedLanguage', detectedLanguage.langauge)
-          console.log('requestedLanguageName', requestedLanguageName)
-          console.log('isSameLanguage', detectedLanguage.isSameLanguage)
-          if (detectedLanguage.isSameLanguage) {
-            throw new Error(
-              'The content is already in the requested language. Translation is not necessary.'
-            )
+
+            console.log('detectedLanguage', detectedLanguage)
+            if (detectedLanguage.isSameLanguage) {
+              throw new AlreadyTranslatedError()
+            }
           }
         } catch (error) {
+          if (error instanceof AlreadyTranslatedError) {
+            // Throw a new error with the frontend-friendly message
+            throw new Error('The content is already in the requested language')
+          }
           console.error('Error detecting language with AI:', error)
           throw new Error('Failed to detect language of the journey content.')
         }

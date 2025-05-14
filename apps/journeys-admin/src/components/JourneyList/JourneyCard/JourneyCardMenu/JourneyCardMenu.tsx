@@ -260,6 +260,7 @@ export function JourneyCardMenu({
           open={openTranslateDialog}
           onClose={() => setOpenTranslateDialog(false)}
           journey={journey}
+          refetch={refetch}
         />
       )}
     </>
