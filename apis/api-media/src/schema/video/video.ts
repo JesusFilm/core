@@ -516,7 +516,10 @@ builder.mutationFields((t) => ({
           published: input.published ?? undefined,
           slug: input.slug ?? undefined,
           noIndex: input.noIndex ?? undefined,
-          childIds: input.childIds ?? undefined
+          childIds: input.childIds ?? undefined,
+          ...(input.keywordIds
+            ? { keywords: { set: input.keywordIds.map((id) => ({ id })) } }
+            : {})
         },
         include: {
           ...query.include,
