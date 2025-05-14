@@ -28,9 +28,9 @@
   "NextSteps © {{year}}": "NextSteps © {{year}}",
   "Strategy": "Strategy",
   "Case Study Preview": "Case Study Preview",
-  "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}} {{secondLanguage}}</2>": "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}} {{secondLanguage}}</2>",
+  "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}} {{secondLanguage}}</2>": "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}, {{secondLanguage}}</2>",
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_one": "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>",
-  "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_other": "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>",
+  "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_other": "<0>Journey Templates</0><1>in</1><2>{{count}} Languages</2>",
   "Available Languages": "Available Languages",
   "Topics, holidays, felt needs, collections": "Topics, holidays, felt needs, collections",
   "Audience": "Audience",
@@ -83,5 +83,6 @@
   "Send an Email": "Send an Email",
   "Visit a Website": "Visit a Website",
   "Untitled": "Untitled",
-  "Step {{number}}": "Step {{number}}"
+  "Step {{number}}": "Step {{number}}",
+  "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_zero": "<0>Journey Templates</0><1>in</1><2>All Languages</2>"
 }

@@ -831,5 +831,6 @@
   "Journey ID": "Journey ID",
   "Slug": "Slug",
   "Event Type": "Event Type",
-  "Value": "Value"
+  "Value": "Value",
+  "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_zero": "<0>Journey Templates</0><1>in</1><2>All Languages</2>"
 }
