@@ -1,7 +1,7 @@
 import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 
-builder.prismaObject('VideoOwner', {
+builder.prismaObject('VideoOrigin', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
     name: t.exposeString('name', { nullable: false }),
@@ -11,15 +11,15 @@ builder.prismaObject('VideoOwner', {
 })
 
 builder.mutationFields((t) => ({
-  videoOwnerCreate: t.withAuth({ isPublisher: true }).prismaField({
-    type: 'VideoOwner',
+  videoOriginCreate: t.withAuth({ isPublisher: true }).prismaField({
+    type: 'VideoOrigin',
     nullable: false,
     args: {
       name: t.arg.string({ required: true }),
       description: t.arg.string({ required: false })
     },
     resolve: async (query, _parent, { name, description }) => {
-      return await prisma.videoOwner.create({
+      return await prisma.videoOrigin.create({
         ...query,
         data: {
           name,
@@ -28,8 +28,8 @@ builder.mutationFields((t) => ({
       })
     }
   }),
-  videoOwnerUpdate: t.withAuth({ isPublisher: true }).prismaField({
-    type: 'VideoOwner',
+  videoOriginUpdate: t.withAuth({ isPublisher: true }).prismaField({
+    type: 'VideoOrigin',
     nullable: false,
     args: {
       id: t.arg.id({ required: true }),
@@ -37,7 +37,7 @@ builder.mutationFields((t) => ({
       description: t.arg.string({ required: false })
     },
     resolve: async (query, _parent, { id, name, description }) => {
-      return await prisma.videoOwner.update({
+      return await prisma.videoOrigin.update({
         ...query,
         where: { id },
         data: {
@@ -47,14 +47,14 @@ builder.mutationFields((t) => ({
       })
     }
   }),
-  videoOwnerDelete: t.withAuth({ isPublisher: true }).prismaField({
-    type: 'VideoOwner',
+  videoOriginDelete: t.withAuth({ isPublisher: true }).prismaField({
+    type: 'VideoOrigin',
     nullable: false,
     args: {
       id: t.arg.id({ required: true })
     },
     resolve: async (query, _parent, { id }) => {
-      return await prisma.videoOwner.delete({
+      return await prisma.videoOrigin.delete({
         ...query,
         where: { id }
       })
