@@ -1,6 +1,7 @@
 import { ApolloQueryResult, gql, useQuery } from '@apollo/client'
 import Divider from '@mui/material/Divider'
 import NextLink from 'next/link'
+import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useMemo } from 'react'
 
@@ -11,7 +12,10 @@ import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
-import { GetAdminJourneys } from '../../../../../../__generated__/GetAdminJourneys'
+import {
+  GetAdminJourneys,
+  GetAdminJourneys_journeys as Journey
+} from '../../../../../../__generated__/GetAdminJourneys'
 import {
   JourneyStatus,
   Role,
@@ -53,6 +57,7 @@ interface DefaultMenuProps {
   setOpenDetailsDialog: () => void
   template?: boolean
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
+  journey: Journey
 }
 
 /**
@@ -85,10 +90,12 @@ export function DefaultMenu({
   setOpenTrashDialog,
   setOpenDetailsDialog,
   template,
-  refetch
+  refetch,
+  journey
 }: DefaultMenuProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
+  const user = useUser()
   const { data: userRoleData } = useUserRoleQuery()
   const { hostname } = useCustomDomainsQuery({
     variables: { teamId: activeTeam?.id ?? '' },
@@ -102,21 +109,73 @@ export function DefaultMenu({
     skip: currentUser?.id == null
   })
 
+  console.log('Debug - Current User:', {
+    currentUserId: currentUser?.id,
+    journeyId: journeyId,
+    journeyData: journeyData
+  })
+
+  const owner = useMemo(
+    () =>
+      journey?.userJourneys?.find(
+        (userJourney) => userJourney.role === UserJourneyRole.owner
+      ),
+    [journey?.userJourneys]
+  )
+  const isOwner = useMemo(
+    () => owner?.user?.id === user?.id,
+    [owner?.user?.id, user?.id]
+  )
+
+  console.log('Debug - isOwnerNew Owner Check:', {
+    isOwner: isOwner,
+    owner: owner,
+    user: user
+  })
+
+  const isOwnerOld = journeyData?.adminJourney?.userJourneys?.some(
+    (userJourney: { user: { id: string }; role: UserJourneyRole }) =>
+      userJourney.user?.id === currentUser?.id &&
+      userJourney.role === UserJourneyRole.owner
+  )
+
+  console.log('Debug - isOwner Check:', {
+    isOwner: isOwner,
+    userJourneys: journeyData?.adminJourney?.userJourneys
+  })
+
   useEffect(() => {
     void loadUser()
   }, [loadUser])
 
   // Determine the current user's role for this journey
   const userRole = useMemo<UserJourneyRole | undefined>(() => {
-    if (journeyData?.journey?.userJourneys == null || currentUser?.id == null)
+    if (
+      journeyData?.adminJourney?.userJourneys == null ||
+      currentUser?.id == null
+    )
       return undefined
 
-    const userJourney = journeyData.journey.userJourneys.find(
+    const userJourney = journeyData.adminJourney.userJourneys.find(
       (userJourney) => userJourney.user?.id === currentUser.id
     )
 
     return userJourney?.role
-  }, [journeyData?.journey?.userJourneys, currentUser?.id])
+  }, [journeyData?.adminJourney?.userJourneys, currentUser?.id])
+
+  console.log('Debug - User Role:', {
+    userRole,
+    currentUserEmail: currentUser?.email
+  })
+
+  console.log('Debug - Role Comparison:', {
+    isOwner,
+    userRole,
+    isOwnerRole: userRole === UserJourneyRole.owner,
+    areTheyEqual: isOwner === (userRole === UserJourneyRole.owner),
+    currentUserId: currentUser?.id,
+    userJourneys: journeyData?.adminJourney?.userJourneys
+  })
 
   // Determine the current user's role in the team
   const teamRole = useMemo<UserTeamRole | undefined>(() => {
@@ -130,15 +189,35 @@ export function DefaultMenu({
     return userTeam?.role
   }, [activeTeam?.userTeams, currentUser?.email])
 
+  console.log('Debug - Team Role:', {
+    teamRole,
+    activeTeam,
+    currentUserEmail: currentUser?.email
+  })
+
   const isPublisher =
     userRoleData?.getUserRole?.roles?.includes(Role.publisher) === true
 
+  console.log('Debug - Publisher Check:', {
+    isPublisher,
+    userRoles: userRoleData?.getUserRole?.roles
+  })
+
   const canManageJourney =
-    userRole === UserJourneyRole.owner ||
+    isOwner ||
     teamRole === UserTeamRole.manager ||
     (isPublisher && template === true)
 
   const cantManageJourney = !canManageJourney
+
+  console.log('Debug - Journey Management:', {
+    canManageJourney,
+    cantManageJourney,
+    isOwner,
+    teamRole,
+    isPublisher,
+    template
+  })
 
   return (
     <>

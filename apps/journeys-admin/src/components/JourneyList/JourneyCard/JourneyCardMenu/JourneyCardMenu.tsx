@@ -82,7 +82,7 @@ export interface JourneyCardMenuProps {
   published: boolean
   template?: boolean
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
-  journey?: Journey
+  journey: Journey
   hovered?: boolean
   onMenuClose?: () => void
 }
@@ -200,6 +200,7 @@ export function JourneyCardMenu({
             setOpenDetailsDialog={() => setOpenDetailsDialog(true)}
             template={template}
             refetch={refetch}
+            journey={journey}
           />
         )}
       </Menu>
