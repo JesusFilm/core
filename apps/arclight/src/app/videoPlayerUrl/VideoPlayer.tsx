@@ -60,6 +60,7 @@ export function VideoPlayer({
     useState<null | HTMLElement>(null)
   const [selectedCaption, setSelectedCaption] = useState<string>('')
   const [aspectRatio, setAspectRatio] = useState<number | null>(null)
+  const [videoWrapperSize, setVideoWrapperSize] = useState<{ width: string; height: string }>({ width: '100vw', height: '100vh' })
 
   const effectiveEndTime = endTime ?? Infinity
 
@@ -490,6 +491,29 @@ export function VideoPlayer({
     }
   }
 
+  useEffect(() => {
+    if (!aspectRatio) return
+    const handleResize = () => {
+      const windowAspect = window.innerWidth / window.innerHeight
+      if (windowAspect > aspectRatio) {
+        // Window is wider than video: fill height
+        setVideoWrapperSize({
+          width: `${window.innerHeight * aspectRatio}px`,
+          height: `${window.innerHeight}px`
+        })
+      } else {
+        // Window is taller than video: fill width
+        setVideoWrapperSize({
+          width: `${window.innerWidth}px`,
+          height: `${window.innerWidth / aspectRatio}px`
+        })
+      }
+    }
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [aspectRatio])
+
   return (
     <div
       className="video-player-root"
@@ -558,11 +582,10 @@ export function VideoPlayer({
         data-vjs-player
         className="w-full h-full relative z-10"
         style={{
-          width: aspectRatio ? `calc(100vh * ${aspectRatio})` : '100vw',
-          height: aspectRatio ? '100vh' : 'auto',
+          width: videoWrapperSize.width,
+          height: videoWrapperSize.height,
           maxWidth: '100vw',
           maxHeight: '100vh',
-          aspectRatio: aspectRatio ? `${aspectRatio}` : undefined,
           backgroundColor: 'transparent',
           display: 'flex',
           alignItems: 'center',
