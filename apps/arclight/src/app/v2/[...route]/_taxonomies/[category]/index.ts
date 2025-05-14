@@ -1,5 +1,5 @@
+import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { ResultOf, graphql } from 'gql.tada'
-import { Hono } from 'hono'
 
 import { getApolloClient } from '../../../../../lib/apolloClient'
 import { findBestMatchingName } from '../lib'
@@ -19,13 +19,69 @@ const GET_TAXONOMY = graphql(`
   }
 `)
 
-export const taxonomiesWithCategory = new Hono()
+const ResponseSchema = z.object({
+  terms: z.record(
+    z.string(), // term
+    z.object({
+      label: z.string(),
+      metadataLanguageTag: z.string()
+    })
+  ),
+  _links: z.object({
+    self: z.object({ href: z.string().url() }),
+    taxonomies: z.object({ href: z.string().url() })
+  })
+})
 
-taxonomiesWithCategory.get('/', async (c) => {
+const QuerySchema = z.object({
+  metadataLanguageTags: z
+    .string()
+    .optional()
+    .describe('Filter by metadata language tags'),
+  apiKey: z.string().optional().describe('API key')
+})
+
+export const taxonomiesWithCategory = new OpenAPIHono()
+
+const getTaxonomyByCategoryRoute = createRoute({
+  method: 'get',
+  path: '/',
+  tags: ['taxonomy'],
+  summary:
+    'Returns a resource containing terms contained within a given taxonomy.',
+  request: {
+    params: z.object({
+      category: z.string().describe('The category (name) of the taxonomy.')
+    }),
+    query: QuerySchema
+  },
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: ResponseSchema
+        }
+      },
+      description: 'A list of terms for the specified taxonomy category.'
+    },
+    404: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            message: z.string(),
+            logref: z.number().optional()
+          })
+        }
+      },
+      description: 'Taxonomy category not found.'
+    }
+  }
+} as const)
+
+taxonomiesWithCategory.openapi(getTaxonomyByCategoryRoute, async (c) => {
   const category = c.req.param('category')
-  const metadataLanguageTags = c.req
-    .query('metadataLanguageTags')
-    ?.split(',') ?? ['en']
+  const metadataLanguageTags =
+    c.req.query('metadataLanguageTags')?.split(',') ?? []
   const apiKey = c.req.query('apiKey') ?? ''
 
   const { data } = await getApolloClient().query<ResultOf<typeof GET_TAXONOMY>>(
@@ -39,12 +95,12 @@ taxonomiesWithCategory.get('/', async (c) => {
   )
 
   if (data.taxonomies.length === 0) {
-    return new Response(
-      JSON.stringify({
+    return c.json(
+      {
         message: `Taxonomy '${category}' not found!`,
         logref: 404
-      }),
-      { status: 404 }
+      },
+      404
     )
   }
 
@@ -74,5 +130,5 @@ taxonomiesWithCategory.get('/', async (c) => {
     }
   })
 
-  return c.json(response)
+  return c.json(response, 200)
 })

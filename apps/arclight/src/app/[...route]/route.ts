@@ -1,3 +1,4 @@
+import { swaggerUI } from '@hono/swagger-ui'
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { ResultOf, graphql } from 'gql.tada'
 import { etag } from 'hono/etag'
@@ -66,8 +67,10 @@ const getVideoVariant = async (
 const hlsRoute = createRoute({
   method: 'get',
   path: '/hls/:mediaComponentId/:languageId',
-  tags: ['Video Player'],
-  summary: 'Get HLS video URL',
+  tags: ['Redirects by-convention'],
+  summary: 'Redirects to the HTTP Live Streaming (HLS) rendition',
+  description:
+    'Redirects to the HTTP Live Streaming (HLS) rendition of the given media component and language IDs.',
   request: {
     params: z.object({
       mediaComponentId: z.string().describe('The ID of the media component'),
@@ -84,6 +87,10 @@ const hlsRoute = createRoute({
         }
       },
       description: 'Returns the HLS video URL'
+    },
+    302: {
+      description:
+        'Redirects to the HLS stream URL. Note: The handler currently returns 200 with JSON, this documents intended redirect behavior for HLS manifest/playlist.'
     },
     404: {
       content: {
@@ -111,8 +118,10 @@ const hlsRoute = createRoute({
 const downloadRoute = createRoute({
   method: 'get',
   path: '/dl/:mediaComponentId/:languageId',
-  tags: ['Video Player'],
-  summary: 'Get video download URL',
+  tags: ['Redirects by-convention'],
+  summary: 'Redirects to the smallest/lowest quality download rendition',
+  description:
+    'Redirects to the smallest/lowest quality download rendition of the given media component and language IDs.',
   request: {
     params: z.object({
       mediaComponentId: z.string().describe('The ID of the media component'),
@@ -155,8 +164,10 @@ const downloadRoute = createRoute({
 const highQualityRoute = createRoute({
   method: 'get',
   path: '/dh/:mediaComponentId/:languageId',
-  tags: ['Video Player'],
-  summary: 'Get high-quality video download URL',
+  tags: ['Redirects by-convention'],
+  summary: 'Redirects to the largest/highest quality download rendition',
+  description:
+    'Redirects to the largest/highest quality download rendition of the given media component and language IDs.',
   request: {
     params: z.object({
       mediaComponentId: z.string().describe('The ID of the media component'),
@@ -193,8 +204,10 @@ const highQualityRoute = createRoute({
 const watchRoute = createRoute({
   method: 'get',
   path: '/s/:mediaComponentId/:languageId',
-  tags: ['Video Player'],
-  summary: 'Redirect to watch page',
+  tags: ['Redirects by-convention'],
+  summary: 'Redirects to the target share URL',
+  description:
+    'Redirects to the target share URL of the given media component and language IDs.',
   request: {
     params: z.object({
       mediaComponentId: z.string().describe('The ID of the media component'),
@@ -204,6 +217,153 @@ const watchRoute = createRoute({
   responses: {
     302: {
       description: 'Redirects to the watch page'
+    },
+    500: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: z.string()
+          })
+        }
+      },
+      description: 'Internal server error'
+    }
+  }
+} as const)
+
+const dashRoute = createRoute({
+  method: 'get',
+  path: '/dash/:mediaComponentId/:languageId',
+  tags: ['Redirects by-convention'],
+  summary: 'Redirects to the DASH rendition',
+  description:
+    'Redirects to the DASH rendition of the given media component and language IDs, if available.',
+  request: {
+    params: z.object({
+      mediaComponentId: z.string().describe('The ID of the media component'),
+      languageId: z.string().describe('The ID of the language')
+    })
+  },
+  responses: {
+    302: {
+      description: 'Redirects to the DASH manifest URL'
+    },
+    404: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: z.string()
+          })
+        }
+      },
+      description: 'DASH rendition not found'
+    },
+    500: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: z.string()
+          })
+        }
+      },
+      description: 'Internal server error'
+    }
+  }
+} as const)
+
+const threeGpRoute = createRoute({
+  method: 'get',
+  path: '/3g/:mediaComponentId/:languageId',
+  tags: ['Redirects by-convention'],
+  summary: 'Redirects to the 3GP download rendition',
+  description:
+    'Redirects to the 3GP download rendition of the given media component and language IDs.',
+  request: {
+    params: z.object({
+      mediaComponentId: z.string().describe('The ID of the media component'),
+      languageId: z.string().describe('The ID of the language')
+    })
+  },
+  responses: {
+    302: {
+      description: 'Redirects to the 3GP download URL'
+    },
+    404: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: z.string()
+          })
+        }
+      },
+      description: '3GP download rendition not found'
+    },
+    500: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: z.string()
+          })
+        }
+      },
+      description: 'Internal server error'
+    }
+  }
+} as const)
+
+const keywordRoute = createRoute({
+  method: 'get',
+  path: '/:keyword',
+  tags: ['Redirect keyword'],
+  summary: 'Redirects a short URL keyword',
+  description: 'Returns a short URL keyword to its corresponding long URL.',
+  request: {
+    params: z.object({
+      keyword: z.string().describe('The short URL keyword')
+    })
+  },
+  responses: {
+    302: {
+      description: 'Redirects to the long URL'
+    },
+    404: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: z.string()
+          })
+        }
+      },
+      description: 'Keyword not found'
+    },
+    500: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: z.string()
+          })
+        }
+      },
+      description: 'Internal server error'
+    }
+  }
+} as const)
+
+const videoPlayerRoute = createRoute({
+  method: 'get',
+  path: '/videoPlayerUrl',
+  tags: ['Web Video Player'],
+  summary: 'Renders a page with a web video player',
+  description:
+    'Renders a page containing a web video player that logs play and share analytics events.',
+  responses: {
+    200: {
+      content: {
+        'text/html': {
+          schema: z.string()
+        }
+      },
+      description: 'Returns the HTML page for the video player'
     },
     500: {
       content: {
@@ -313,11 +473,82 @@ app.openapi(watchRoute, async (c) => {
   }
 })
 
+app.openapi(dashRoute, async (c) => {
+  const { mediaComponentId, languageId } = c.req.param()
+  try {
+    const variant = await getVideoVariant(mediaComponentId, languageId)
+    if (!variant.dash) {
+      return c.json({ error: 'DASH URL not available' }, 404)
+    }
+    // Typically, you'd redirect to the DASH manifest URL.
+    // For direct fetching and then redirecting (like HLS example), more logic is needed.
+    return c.redirect(variant.dash, 302)
+  } catch (error) {
+    if (error instanceof HTTPException) {
+      if (error.status === 404) {
+        return c.json({ error: error.message }, 404)
+      }
+    }
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    return c.json({ error: `Internal server error: ${errorMessage}` }, 500)
+  }
+})
+
+app.openapi(threeGpRoute, async (c) => {
+  const { mediaComponentId, languageId } = c.req.param()
+  try {
+    const variant = await getVideoVariant(mediaComponentId, languageId)
+    // Assuming '3gp' is a quality in the downloads array
+    const download = variant.downloads?.find((d) => d.quality === '3gp')
+
+    if (!download?.url) {
+      return c.json({ error: '3GP download URL not available' }, 404)
+    }
+    return c.redirect(download.url, 302)
+  } catch (error) {
+    if (error instanceof HTTPException) {
+      if (error.status === 404) {
+        return c.json({ error: error.message }, 404)
+      }
+    }
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    return c.json({ error: `Internal server error: ${errorMessage}` }, 500)
+  }
+})
+
+// Placeholder implementation for keyword route
+app.openapi(keywordRoute, async (c) => {
+  const { keyword } = c.req.param()
+  // TODO: Implement keyword lookup and redirect logic
+  console.log('Keyword received:', keyword)
+  return c.json({ error: 'Keyword redirection not implemented' }, 501)
+})
+
+// Placeholder implementation for video player route
+app.openapi(videoPlayerRoute, async (c) => {
+  // TODO: Implement logic to render an HTML page with a video player
+  console.log('Video player URL request received')
+  return c.html('<h1>Video Player Page (Not Implemented)</h1>', 501)
+})
+
 app.options('*', (c) => {
   c.header('Access-Control-Allow-Origin', '*')
   c.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
   c.header('Access-Control-Allow-Headers', '*')
   return new Response(null, { status: 204 })
 })
+
+// OpenAPI documentation setup
+app.doc('/openapi-root.json', {
+  openapi: '3.0.0',
+  info: {
+    version: '1.0.0', // Adjust version as needed
+    title: 'Arclight API (Root Routes)'
+  }
+  // You might want to add servers, externalDocs, etc.
+})
+
+// Swagger UI for root routes
+app.get('/api/doc-root', swaggerUI({ url: '/openapi-root.json' }))
 
 export const GET = handle(app)
