@@ -63,21 +63,6 @@ export function VideoPlayer({
 
   const effectiveEndTime = endTime ?? Infinity
 
-  // Wrapper styles to ensure video is visible
-  const videoWrapperStyles = {
-    position: 'relative',
-    width: aspectRatio ? `calc(100vh * ${aspectRatio})` : '100vw',
-    height: '100vh',
-    overflow: 'hidden',
-    backgroundColor: 'transparent',
-    margin: '0 auto',
-    maxWidth: '100vw',
-    maxHeight: '100vh',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
-  } as const
-
   const videoElementStyles = {
     width: '100%',
     height: '100%',
@@ -507,19 +492,22 @@ export function VideoPlayer({
 
   return (
     <div
-      className="relative w-full h-full"
+      className="video-player-root"
       onMouseMove={showControls}
       onClick={showControls}
       style={{
-        backgroundColor: 'transparent',
-        width: '100vw',
-        height: '100vh',
-        overflow: 'hidden',
-        margin: 0,
-        padding: 0,
         position: 'fixed',
         top: 0,
-        left: 0
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden',
+        backgroundColor: 'transparent',
+        margin: 0,
+        padding: 0
       }}
     >
       {/* Custom CSS to override Video.js defaults */}
@@ -569,7 +557,19 @@ export function VideoPlayer({
       <div
         data-vjs-player
         className="w-full h-full relative z-10"
-        style={videoWrapperStyles}
+        style={{
+          width: aspectRatio ? `calc(100vh * ${aspectRatio})` : '100vw',
+          height: aspectRatio ? '100vh' : 'auto',
+          maxWidth: '100vw',
+          maxHeight: '100vh',
+          aspectRatio: aspectRatio ? `${aspectRatio}` : undefined,
+          backgroundColor: 'transparent',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          position: 'relative',
+          overflow: 'hidden'
+        }}
       >
         <video
           className="video-js vjs-big-play-centered vjs-fluid vjs-fill"
