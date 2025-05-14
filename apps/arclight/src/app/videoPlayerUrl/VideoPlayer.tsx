@@ -61,6 +61,7 @@ export function VideoPlayer({
   const [selectedCaption, setSelectedCaption] = useState<string>('')
   const [aspectRatio, setAspectRatio] = useState<number | null>(null)
   const [videoWrapperSize, setVideoWrapperSize] = useState<{ width: string; height: string }>({ width: '100vw', height: '100vh' })
+  const [hasStarted, setHasStarted] = useState(false)
 
   const effectiveEndTime = endTime ?? Infinity
 
@@ -180,6 +181,7 @@ export function VideoPlayer({
     vjsPlayer.on('play', () => {
       setPlaying(true)
       resetControlsTimeout()
+      setHasStarted(true)
     })
 
     vjsPlayer.on('pause', () => {
@@ -560,7 +562,7 @@ export function VideoPlayer({
           background-color: transparent !important;
         }
       `}</style>
-      {thumbnail && (
+      {thumbnail && !hasStarted && (
         <div
           className="absolute inset-0"
           style={{
@@ -574,7 +576,7 @@ export function VideoPlayer({
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
-            display: playing ? 'none' : 'block'
+            display: 'block'
           }}
         />
       )}
