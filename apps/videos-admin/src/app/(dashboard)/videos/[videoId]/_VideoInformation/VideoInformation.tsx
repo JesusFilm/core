@@ -1,6 +1,9 @@
 'use client'
 
 import { useMutation, useSuspenseQuery } from '@apollo/client'
+import OpenInNewIcon from '@mui/icons-material/OpenInNew'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import FormControl from '@mui/material/FormControl'
 import InputAdornment from '@mui/material/InputAdornment'
@@ -250,7 +253,8 @@ export function VideoInformation({
               gap={2}
               sx={{
                 flexDirection: { xs: 'col', sm: 'row' },
-                alignItems: { xs: 'start', sm: 'end' }
+                alignItems: { xs: 'start', sm: 'end' },
+                justifyContent: { sm: 'flex-end' }
               }}
             >
               <FormControl variant="standard">
@@ -287,6 +291,24 @@ export function VideoInformation({
                   ))}
                 </Select>
               </FormControl>
+              <Box sx={{ ml: 'auto' }}>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  href={`${process.env.NEXT_PUBLIC_WATCH_URL ?? ''}/watch/${values.url}.html/english.html`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  startIcon={<OpenInNewIcon />}
+                  aria-label="View public watch page"
+                  sx={{
+                    alignSelf: { xs: 'stretch', sm: 'center' },
+                    whiteSpace: 'nowrap'
+                  }}
+                  disabled={!data.adminVideo.published}
+                >
+                  View Public Page
+                </Button>
+              </Box>
             </Stack>
             <VideoKeywords
               primaryLanguageId={data.adminVideo.primaryLanguageId}
