@@ -1,9 +1,4 @@
-import { swaggerUI } from '@hono/swagger-ui'
 import { OpenAPIHono } from '@hono/zod-openapi'
-import { compress } from 'hono/compress'
-import { etag } from 'hono/etag'
-import { HTTPException } from 'hono/http-exception'
-import { handle } from 'hono/vercel'
 
 import { mediaComponentLinks } from './_media-component-links'
 import { mediaComponents } from './_media-components'
@@ -14,55 +9,15 @@ import { metadataLanguageTags } from './_metadata-language-tags'
 import { resources } from './_resources'
 import { taxonomies } from './_taxonomies'
 
-const app = new OpenAPIHono().basePath('/v2')
+const v2App = new OpenAPIHono()
 
-// Apply compression for responses larger than 1KB
-app.use(
-  '*',
-  compress({
-    threshold: 1024 // Only compress responses > 1KB
-  })
-)
+v2App.route('/media-component-links', mediaComponentLinks)
+v2App.route('/media-components', mediaComponents)
+v2App.route('/media-countries', mediaCountries)
+v2App.route('/media-country-links', mediaCountryLinks)
+v2App.route('/media-languages', mediaLanguages)
+v2App.route('/metadata-language-tags', metadataLanguageTags)
+v2App.route('/taxonomies', taxonomies)
+v2App.route('/resources', resources)
 
-app.use(etag())
-
-app.onError((err, c) => {
-  if (err instanceof HTTPException) {
-    return c.json(
-      {
-        message: err.message,
-        logref: err.status
-      },
-      err.status
-    )
-  }
-  console.error('Unexpected error:', err)
-  return c.json(
-    {
-      message: 'Internal server error',
-      logref: 500
-    },
-    500
-  )
-})
-
-app.route('/media-component-links', mediaComponentLinks)
-app.route('/media-components', mediaComponents)
-app.route('/media-countries', mediaCountries)
-app.route('/media-country-links', mediaCountryLinks)
-app.route('/media-languages', mediaLanguages)
-app.route('/metadata-language-tags', metadataLanguageTags)
-app.route('/taxonomies', taxonomies)
-app.route('/resources', resources)
-
-app.doc('/doc', {
-  openapi: '3.0.0',
-  info: {
-    version: '2.0.0',
-    title: 'Arclight'
-  }
-})
-
-app.get('/api/doc', swaggerUI({ url: '/v2/doc' }))
-
-export const GET = handle(app)
+export { v2App }

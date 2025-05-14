@@ -1,15 +1,47 @@
-import { OpenAPIHono } from '@hono/zod-openapi'
+import { swaggerUI } from '@hono/swagger-ui'
+import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { ResultOf, graphql } from 'gql.tada'
+import { compress } from 'hono/compress'
 import { etag } from 'hono/etag'
 import { HTTPException } from 'hono/http-exception'
 import { handle } from 'hono/vercel'
 
 import { getApolloClient } from '../../lib/apolloClient'
+import { v2App } from '../v2/[...route]/route'
 
 export const dynamic = 'force-dynamic'
 
 const app = new OpenAPIHono().basePath('/')
 app.use(etag())
+
+app.use(
+  '*',
+  compress({
+    threshold: 1024
+  })
+)
+
+app.onError((err, c) => {
+  if (err instanceof HTTPException) {
+    return c.json(
+      {
+        message: err.message,
+        logref: err.status
+      },
+      err.status
+    )
+  }
+  console.error('Unexpected error:', err)
+  return c.json(
+    {
+      message: 'Internal server error',
+      logref: 500
+    },
+    500
+  )
+})
+
+app.route('/v2', v2App)
 
 const GET_VIDEO_VARIANT = graphql(`
   query GetVideoWithVariant($id: ID!, $languageId: ID!) {
@@ -27,10 +59,20 @@ const GET_VIDEO_VARIANT = graphql(`
   }
 `)
 
+type VideoVariant = {
+  hls: string | null
+  dash: string | null
+  share: string | null
+  downloads: Array<{
+    quality: string
+    url: string
+  }> | null
+}
+
 const getVideoVariant = async (
   mediaComponentId: string,
   languageId: string
-) => {
+): Promise<VideoVariant> => {
   try {
     const { data } = await getApolloClient().query<
       ResultOf<typeof GET_VIDEO_VARIANT>
@@ -53,16 +95,169 @@ const getVideoVariant = async (
   }
 }
 
-app.get('/hls/:mediaComponentId/:languageId', async (c) => {
-  const { mediaComponentId, languageId } = c.req.param()
+const hlsRoute = createRoute({
+  method: 'get',
+  path: '/hls/:mediaComponentId/:languageId',
+  tags: ['Video Player'],
+  summary: 'Get HLS video URL',
+  request: {
+    params: z.object({
+      mediaComponentId: z.string().describe('The ID of the media component'),
+      languageId: z.string().describe('The ID of the language')
+    })
+  },
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            url: z.string().describe('The HLS video URL')
+          })
+        }
+      },
+      description: 'Returns the HLS video URL'
+    },
+    404: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: z.string()
+          })
+        }
+      },
+      description: 'Video variant or HLS URL not found'
+    },
+    500: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: z.string()
+          })
+        }
+      },
+      description: 'Internal server error'
+    }
+  }
+} as const)
 
+const downloadRoute = createRoute({
+  method: 'get',
+  path: '/dl/:mediaComponentId/:languageId',
+  tags: ['Video Player'],
+  summary: 'Get video download URL',
+  request: {
+    params: z.object({
+      mediaComponentId: z.string().describe('The ID of the media component'),
+      languageId: z.string().describe('The ID of the language')
+    }),
+    query: z.object({
+      quality: z
+        .string()
+        .optional()
+        .describe('The desired video quality (defaults to "high")')
+    })
+  },
+  responses: {
+    302: {
+      description: 'Redirects to the download URL'
+    },
+    404: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: z.string()
+          })
+        }
+      },
+      description: 'Download URL not found'
+    },
+    500: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: z.string()
+          })
+        }
+      },
+      description: 'Internal server error'
+    }
+  }
+} as const)
+
+const highQualityRoute = createRoute({
+  method: 'get',
+  path: '/dh/:mediaComponentId/:languageId',
+  tags: ['Video Player'],
+  summary: 'Get high-quality video download URL',
+  request: {
+    params: z.object({
+      mediaComponentId: z.string().describe('The ID of the media component'),
+      languageId: z.string().describe('The ID of the language')
+    })
+  },
+  responses: {
+    302: {
+      description: 'Redirects to the high-quality download URL'
+    },
+    404: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: z.string()
+          })
+        }
+      },
+      description: 'High-quality download URL not found'
+    },
+    500: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: z.string()
+          })
+        }
+      },
+      description: 'Internal server error'
+    }
+  }
+} as const)
+
+const watchRoute = createRoute({
+  method: 'get',
+  path: '/s/:mediaComponentId/:languageId',
+  tags: ['Video Player'],
+  summary: 'Redirect to watch page',
+  request: {
+    params: z.object({
+      mediaComponentId: z.string().describe('The ID of the media component'),
+      languageId: z.string().describe('The ID of the language')
+    })
+  },
+  responses: {
+    302: {
+      description: 'Redirects to the watch page'
+    },
+    500: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: z.string()
+          })
+        }
+      },
+      description: 'Internal server error'
+    }
+  }
+} as const)
+
+app.openapi(hlsRoute, async (c) => {
+  const { mediaComponentId, languageId } = c.req.param()
   try {
     const variant = await getVideoVariant(mediaComponentId, languageId)
     if (!variant.hls) {
       return c.json({ error: 'HLS URL not available' }, 404)
     }
 
-    // Follow redirects and get the final URL
     const response = await fetch(variant.hls, {
       redirect: 'follow',
       headers: {
@@ -71,29 +266,28 @@ app.get('/hls/:mediaComponentId/:languageId', async (c) => {
       }
     })
 
-    // Get the final URL after redirects
     const finalUrl = response.url
 
-    // Set CORS headers
     c.header('Access-Control-Allow-Origin', '*')
     c.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
     c.header('Access-Control-Allow-Headers', '*')
     c.header('Access-Control-Expose-Headers', '*')
 
-    // Return the final URL instead of the content
-    return c.json({ url: finalUrl })
+    return c.json({ url: finalUrl }, 200)
   } catch (error) {
     if (error instanceof HTTPException) {
-      return c.json({ error: error.message }, error.status)
+      if (error.status === 404) {
+        return c.json({ error: error.message }, 404)
+      }
     }
-    return c.json({ error: 'Internal server error' }, 500)
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    return c.json({ error: `Internal server error: ${errorMessage}` }, 500)
   }
 })
 
-app.get('/dl/:mediaComponentId/:languageId', async (c) => {
+app.openapi(downloadRoute, async (c) => {
   const { mediaComponentId, languageId } = c.req.param()
   const quality = c.req.query('quality') || 'high'
-
   try {
     const variant = await getVideoVariant(mediaComponentId, languageId)
     const download = variant.downloads?.find((d) => d.quality === quality)
@@ -108,15 +302,17 @@ app.get('/dl/:mediaComponentId/:languageId', async (c) => {
     return c.redirect(download.url)
   } catch (error) {
     if (error instanceof HTTPException) {
-      return c.json({ error: error.message }, error.status)
+      if (error.status === 404) {
+        return c.json({ error: error.message }, 404)
+      }
     }
-    return c.json({ error: 'Internal server error' }, 500)
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    return c.json({ error: `Internal server error: ${errorMessage}` }, 500)
   }
 })
 
-app.get('/dh/:mediaComponentId/:languageId', async (c) => {
+app.openapi(highQualityRoute, async (c) => {
   const { mediaComponentId, languageId } = c.req.param()
-
   try {
     const variant = await getVideoVariant(mediaComponentId, languageId)
     const download = variant.downloads?.find((d) => d.quality === 'high')
@@ -128,24 +324,24 @@ app.get('/dh/:mediaComponentId/:languageId', async (c) => {
     return c.redirect(download.url)
   } catch (error) {
     if (error instanceof HTTPException) {
-      return c.json({ error: error.message }, error.status)
+      if (error.status === 404) {
+        return c.json({ error: error.message }, 404)
+      }
     }
-    return c.json({ error: 'Internal server error' }, 500)
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    return c.json({ error: `Internal server error: ${errorMessage}` }, 500)
   }
 })
 
-app.get('/s/:mediaComponentId/:languageId', async (c) => {
+app.openapi(watchRoute, async (c) => {
   const { mediaComponentId, languageId } = c.req.param()
-
   try {
     return c.redirect(
       `http://jesusfilm.org/bin/jf/watch.html/${mediaComponentId}/${languageId}`
     )
   } catch (error) {
-    if (error instanceof HTTPException) {
-      return c.json({ error: error.message }, error.status)
-    }
-    return c.json({ error: 'Internal server error' }, 500)
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    return c.json({ error: `Internal server error: ${errorMessage}` }, 500)
   }
 })
 
@@ -155,5 +351,16 @@ app.options('*', (c) => {
   c.header('Access-Control-Allow-Headers', '*')
   return new Response(null, { status: 204 })
 })
+
+app.doc('/doc', {
+  openapi: '3.0.0',
+  info: {
+    version: '1.0.0',
+    title: 'Arclight API - Unified'
+  }
+})
+
+app.get('/api/doc', swaggerUI({ url: '/doc' }))
+app.get('/v2/api/doc', swaggerUI({ url: '/doc' }))
 
 export const GET = handle(app)
