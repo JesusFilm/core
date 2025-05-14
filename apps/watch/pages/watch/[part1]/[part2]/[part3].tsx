@@ -20,7 +20,7 @@ import i18nConfig from '../../../../next-i18next.config'
 import { VideoContentPage } from '../../../../src/components/VideoContentPage'
 import { createApolloClient } from '../../../../src/libs/apolloClient'
 import { getFlags } from '../../../../src/libs/getFlags'
-import { getVideoLanguageId } from '../../../../src/libs/getVideoLanguageId'
+import { getUiLanguageId } from '../../../../src/libs/getUiLanguageId'
 import { LanguageProvider } from '../../../../src/libs/languageContext/LanguageContext'
 import { slugMap } from '../../../../src/libs/slugMap'
 import { VIDEO_CONTENT_FIELDS } from '../../../../src/libs/videoContentFields'
@@ -113,13 +113,14 @@ export const getStaticProps: GetStaticProps<Part3PageProps> = async (
         query: GET_VIDEO_CONTAINER_PART_2,
         variables: {
           containerId: `${containerId}/${languageId}`,
-          languageId: getVideoLanguageId(languageId)
+          languageId: getUiLanguageId(languageId)
         }
       }),
       client.query<GetVideoContentPart3, GetVideoContentPart3Variables>({
         query: GET_VIDEO_CONTENT_PART_3,
         variables: {
-          contentId: `${contentId}/${languageId}`
+          contentId: `${contentId}/${languageId}`,
+          languageId: getUiLanguageId(languageId)
         }
       })
     ])
