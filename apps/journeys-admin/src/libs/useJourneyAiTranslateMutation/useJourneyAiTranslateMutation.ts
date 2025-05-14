@@ -61,7 +61,7 @@ export function useJourneyAiTranslateMutation(): {
       return data?.journeyAiTranslateCreate
     } catch (error) {
       console.error('Error translating journey:', error)
-      throw error
+      return undefined
     }
   }
 
