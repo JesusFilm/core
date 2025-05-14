@@ -14,9 +14,14 @@ import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'
 import { GetUserRole } from '@core/journeys/ui/useUserRoleQuery/__generated__/GetUserRole'
 
 import { Role } from '../../../../../../__generated__/globalTypes'
-import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
 
 import { ShareItem } from './ShareItem'
+import { GET_JOURNEY_FOR_SHARING } from '../../../../../libs/useJourneyForShareLazyQuery/useJourneyForShareLazyQuery'
+import { GetJourneyForSharing } from '../../../../../../__generated__/GetJourneyForSharing'
+import {
+  ThemeName,
+  ThemeMode
+} from '../../../../../../__generated__/globalTypes'
 
 jest.mock('../../../../../libs/useCurrentUserLazyQuery', () => ({
   __esModule: true,
@@ -33,23 +38,50 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
 }))
 
-jest.mock(
-  '../../../../../libs/useJourneyForShareLazyQuery/useJourneyForShareLazyQuery',
-  () => ({
-    __esModule: true,
-    useJourneyForSharingLazyQuery: jest.fn(() => [
-      jest.fn(),
-      { data: undefined, loading: false, error: undefined }
-    ])
-  })
-)
-
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
-const mockUseCurrentUserLazyQuery = useCurrentUserLazyQuery as jest.Mock
-const user = { id: 'user.id', email: 'test@email.com' }
-
 Object.assign(navigator, { clipboard: { writeText: jest.fn() } })
+
+const journeyForSharingMock: MockedResponse<GetJourneyForSharing> = {
+  request: {
+    query: GET_JOURNEY_FOR_SHARING,
+    variables: { id: 'journeyId' }
+  },
+  result: {
+    data: {
+      journey: {
+        __typename: 'Journey',
+        id: 'journeyId',
+        slug: 'default',
+        language: {
+          __typename: 'Language',
+          id: 'languageId',
+          bcp47: 'en',
+          iso3: 'eng',
+          name: [
+            {
+              __typename: 'LanguageName',
+              value: 'English',
+              primary: true
+            }
+          ]
+        },
+        themeName: ThemeName.base,
+        themeMode: ThemeMode.light,
+        team: {
+          __typename: 'Team',
+          id: 'teamId',
+          customDomains: [
+            {
+              __typename: 'CustomDomain',
+              name: 'custom.domain.com'
+            }
+          ]
+        }
+      }
+    }
+  }
+}
 
 describe('ShareItem', () => {
   const push = jest.fn()
@@ -64,10 +96,6 @@ describe('ShareItem', () => {
       ...originalEnv,
       NEXT_PUBLIC_JOURNEYS_URL: 'https://default.domain.com'
     }
-    mockUseCurrentUserLazyQuery.mockReturnValue({
-      loadUser: jest.fn(),
-      data: user
-    })
   })
 
   afterEach(() => {
@@ -83,7 +111,7 @@ describe('ShareItem', () => {
 
     render(
       <SnackbarProvider>
-        <MockedProvider>
+        <MockedProvider mocks={[journeyForSharingMock]}>
           <JourneyProvider
             value={{ journey: defaultJourney, variant: 'admin' }}
           >
@@ -127,7 +155,7 @@ describe('ShareItem', () => {
     } as unknown as NextRouter)
     render(
       <SnackbarProvider>
-        <MockedProvider>
+        <MockedProvider mocks={[journeyForSharingMock]}>
           <JourneyProvider
             value={{ journey: defaultJourney, variant: 'admin' }}
           >
@@ -187,7 +215,7 @@ describe('ShareItem', () => {
 
     render(
       <SnackbarProvider>
-        <MockedProvider mocks={[getUserRoleMock]}>
+        <MockedProvider mocks={[getUserRoleMock, journeyForSharingMock]}>
           <Suspense>
             <JourneyProvider
               value={{ journey: defaultJourney, variant: 'admin' }}
@@ -230,7 +258,7 @@ describe('ShareItem', () => {
     } as unknown as NextRouter)
     render(
       <SnackbarProvider>
-        <MockedProvider>
+        <MockedProvider mocks={[journeyForSharingMock]}>
           <JourneyProvider
             value={{ journey: defaultJourney, variant: 'admin' }}
           >
@@ -291,7 +319,7 @@ describe('ShareItem', () => {
 
     render(
       <SnackbarProvider>
-        <MockedProvider mocks={[teamMock]}>
+        <MockedProvider mocks={[teamMock, journeyForSharingMock]}>
           <TeamProvider>
             <JourneyProvider
               value={{ journey: defaultJourney, variant: 'admin' }}
