@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
@@ -11,9 +12,11 @@ import { PageWrapper } from '../PageWrapper'
 
 import { ContentHero } from './ContentHero'
 import { ContentMetadata } from './ContentMetadata'
+import { VideoCarousel } from './VideoCarousel'
 
 export function NewContentPage(): ReactElement {
   const {
+    id,
     container,
     variant,
     title,
@@ -21,10 +24,15 @@ export function NewContentPage(): ReactElement {
     snippet,
     images,
     imageAlt,
-    label
+    label,
+    slug: videoSlug
   } = useVideo()
 
+  const variantSlug = container?.variant?.slug ?? variant?.slug
   const watchUrl = getWatchUrl(container?.slug, label, variant?.slug)
+
+  const { loading, children } = useVideoChildren(variantSlug)
+  const realChildren = children.filter((video) => video.variant !== null)
 
   return (
     <>
@@ -97,18 +105,24 @@ export function NewContentPage(): ReactElement {
               mt: '-100vh'
             }}
           >
-            <Box
+            <Stack
               data-testid="ContentPageContent"
+              gap={10}
               sx={{
                 py: 10
               }}
             >
+              <VideoCarousel
+                videos={realChildren}
+                containerSlug={container?.slug ?? videoSlug}
+                activeVideoId={id}
+              />
               <ContentMetadata
                 title={title[0].value}
                 description={description[0].value}
                 label={label}
               />
-            </Box>
+            </Stack>
           </Box>
         </Box>
       </PageWrapper>
