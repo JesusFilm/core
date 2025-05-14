@@ -122,18 +122,18 @@ export function DefaultMenu({
       ),
     [journey?.userJourneys]
   )
-  const isOwnerNew = useMemo(
+  const isOwner = useMemo(
     () => owner?.user?.id === user?.id,
     [owner?.user?.id, user?.id]
   )
 
   console.log('Debug - isOwnerNew Owner Check:', {
-    isOwnerNew: isOwnerNew,
+    isOwner: isOwner,
     owner: owner,
     user: user
   })
 
-  const isOwner = journeyData?.adminJourney?.userJourneys?.some(
+  const isOwnerOld = journeyData?.adminJourney?.userJourneys?.some(
     (userJourney: { user: { id: string }; role: UserJourneyRole }) =>
       userJourney.user?.id === currentUser?.id &&
       userJourney.role === UserJourneyRole.owner
