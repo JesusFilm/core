@@ -97,7 +97,7 @@ export function TranslationDialogWrapper({
     >
       {loading ? (
         <Box display="flex" flexDirection="column" alignItems="center" p={3}>
-          <CircularProgress color="secondary" />
+          <CircularProgress color="primary" />
           <Typography variant="body1" mt={2}>
             {loadingText ?? defaultLoadingText}
           </Typography>

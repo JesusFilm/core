@@ -204,6 +204,7 @@ export function TranslateJourneyDialog({
 
   async function handleCancelConfirmation(): Promise<void> {
     try {
+      setShowConfirmationDialog(false)
       await deleteJourney()
       await refetch?.()
     } catch (error) {
@@ -213,8 +214,6 @@ export function TranslateJourneyDialog({
           preventDuplicate: true
         })
       }
-    } finally {
-      setShowConfirmationDialog(false)
     }
   }
 
@@ -239,7 +238,7 @@ export function TranslateJourneyDialog({
   return (
     <>
       <TranslationDialogWrapper
-        open={open && !showConfirmationDialog}
+        open={open}
         onClose={handleTranslateDialogClose}
         onTranslate={handleTranslate}
         loading={loading}
