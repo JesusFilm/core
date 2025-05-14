@@ -80,7 +80,7 @@ export function DownloadDialog({
         onClose?.()
       }}
       dialogTitle={{
-        title: 'Download Video',
+        title: t('Download Video'),
         closeButton: true
       }}
       testId="DownloadDialog"
@@ -153,7 +153,7 @@ export function DownloadDialog({
             <Form>
               <TextField
                 name="file"
-                label="Select a file size"
+                label={t('Select a file size')}
                 fullWidth
                 value={values.file}
                 onChange={handleChange}
@@ -171,8 +171,12 @@ export function DownloadDialog({
                   )
                   .map((download) => (
                     <MenuItem key={download.quality} value={download.url}>
-                      {download.quality.charAt(0).toUpperCase()}
-                      {download.quality.slice(1)} ({formatBytes(download.size)})
+                      {t(
+                        download.quality === VideoVariantDownloadQuality.high
+                          ? t('High')
+                          : t('Low')
+                      )}{' '}
+                      ({formatBytes(download.size)})
                     </MenuItem>
                   ))}
               </TextField>
@@ -193,7 +197,7 @@ export function DownloadDialog({
                         onChange={handleChange}
                       />
                     }
-                    label="I agree to the"
+                    label={t('I agree to the')}
                   />
                   <Link
                     underline="none"
