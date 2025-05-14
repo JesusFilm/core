@@ -1,13 +1,24 @@
+import LanguageRoundedIcon from '@mui/icons-material/LanguageRounded'
 import AppBar, { AppBarProps } from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
+import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import NextLink from 'next/link'
-import { MouseEventHandler, ReactElement } from 'react'
+import { MouseEventHandler, ReactElement, useState } from 'react'
 
 import logo from '../assets/logo.svg'
+
+const DynamicLanguageSwitchDialog = dynamic(
+  () =>
+    import(
+      /* webpackChunkName: "LanguageSwitchDialog" */
+      '../../LanguageSwitchDialog'
+    ).then((mod) => mod.LanguageSwitchDialog),
+  { ssr: false }
+)
 
 interface LocalAppBarProps extends AppBarProps {
   onMenuClick: MouseEventHandler<HTMLButtonElement>
@@ -21,6 +32,7 @@ export function LocalAppBar({
   menuOpen = false,
   ...props
 }: LocalAppBarProps): ReactElement {
+  const [openLanguagesDialog, setOpenLanguagesDialog] = useState(false)
   return (
     <AppBar
       data-testid="Header"
@@ -71,6 +83,24 @@ export function LocalAppBar({
             </Box>
           </NextLink>
           <Box data-testid="MenuBox">
+            <IconButton
+              color="inherit"
+              aria-label="open language selector"
+              data-testid="LanguageSelector"
+              onClick={() => setOpenLanguagesDialog(true)}
+              sx={{
+                mr: 8
+              }}
+            >
+              <LanguageRoundedIcon
+                sx={{ fontSize: 39, color: 'text.secondary' }}
+              />
+            </IconButton>
+            <DynamicLanguageSwitchDialog
+              open={openLanguagesDialog}
+              handleClose={() => setOpenLanguagesDialog(false)}
+            />
+
             <IconButton
               data-testid="MenuIcon"
               color="inherit"
