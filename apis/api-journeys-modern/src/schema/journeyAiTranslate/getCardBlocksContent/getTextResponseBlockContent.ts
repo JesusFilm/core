@@ -11,8 +11,8 @@ export function getTextResponseBlockContent({
 ## Text Input:
 - Block ID: ${block.id}
 - Label: ${block.label}
-- Input Placeholder Text: ${block.placeholder}
-- Required: ${block.required}
+- Input Placeholder Text: ${(block as any).placeholder ?? ''}
+- Required: ${(block as any).required ?? false}
 `
   if (block.submitLabel != null) {
     result += `### Submit Button :\n - Label: ${block.submitLabel}\n`

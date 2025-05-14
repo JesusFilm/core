@@ -16,11 +16,11 @@ export interface GetOnboardingJourneys_onboardingJourneys_primaryImageBlock {
 
 export interface GetOnboardingJourneys_onboardingJourneys {
   __typename: "Journey";
-  id: string;
+  id: string | null;
   /**
    * private title for creators
    */
-  title: string;
+  title: string | null;
   description: string | null;
   template: boolean | null;
   primaryImageBlock: GetOnboardingJourneys_onboardingJourneys_primaryImageBlock | null;

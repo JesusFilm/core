@@ -11,7 +11,7 @@ import { JourneyUpdateInput } from "./globalTypes";
 
 export interface JourneySeoTitleUpdate_journeyUpdate {
   __typename: "Journey";
-  id: string;
+  id: string | null;
   /**
    * title for seo and sharing
    */

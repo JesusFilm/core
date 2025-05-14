@@ -58,21 +58,21 @@ export interface GetAdminJourneys_journeys_primaryImageBlock {
 
 export interface GetAdminJourneys_journeys {
   __typename: "Journey";
-  id: string;
+  id: string | null;
   /**
    * private title for creators
    */
-  title: string;
-  createdAt: any;
+  title: string | null;
+  createdAt: any | null;
   publishedAt: any | null;
   trashedAt: any | null;
-  updatedAt: any;
+  updatedAt: any | null;
   description: string | null;
-  slug: string;
+  slug: string | null;
   themeName: ThemeName;
   themeMode: ThemeMode;
   language: GetAdminJourneys_journeys_language;
-  status: JourneyStatus;
+  status: JourneyStatus | null;
   /**
    * title for seo and sharing
    */

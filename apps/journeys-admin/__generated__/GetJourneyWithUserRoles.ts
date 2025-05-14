@@ -23,7 +23,7 @@ export interface GetJourneyWithUserRoles_adminJourney_userJourneys {
 
 export interface GetJourneyWithUserRoles_adminJourney {
   __typename: "Journey";
-  id: string;
+  id: string | null;
   userJourneys: GetJourneyWithUserRoles_adminJourney_userJourneys[] | null;
 }
 

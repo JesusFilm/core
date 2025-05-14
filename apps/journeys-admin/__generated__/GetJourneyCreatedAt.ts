@@ -9,8 +9,8 @@
 
 export interface GetJourneyCreatedAt_journey {
   __typename: "Journey";
-  id: string;
-  createdAt: any;
+  id: string | null;
+  createdAt: any | null;
 }
 
 export interface GetJourneyCreatedAt {

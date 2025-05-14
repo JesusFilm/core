@@ -11,8 +11,8 @@ import { JourneyStatus } from "./globalTypes";
 
 export interface ArchiveActiveJourneys_journeysArchive {
   __typename: "Journey";
-  id: string;
-  status: JourneyStatus;
+  id: string | null;
+  status: JourneyStatus | null;
 }
 
 export interface ArchiveActiveJourneys {

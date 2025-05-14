@@ -77,21 +77,21 @@ export interface GetJourneys_journeys_tags {
 
 export interface GetJourneys_journeys {
   __typename: "Journey";
-  id: string;
+  id: string | null;
   /**
    * private title for creators
    */
-  title: string;
-  createdAt: any;
+  title: string | null;
+  createdAt: any | null;
   publishedAt: any | null;
   featuredAt: any | null;
   trashedAt: any | null;
   description: string | null;
-  slug: string;
+  slug: string | null;
   themeName: ThemeName;
   themeMode: ThemeMode;
   language: GetJourneys_journeys_language;
-  status: JourneyStatus;
+  status: JourneyStatus | null;
   /**
    * title for seo and sharing
    */

@@ -42,7 +42,7 @@ export interface MenuBlockDelete_journeyUpdate_menuStepBlock {
 
 export interface MenuBlockDelete_journeyUpdate {
   __typename: "Journey";
-  id: string;
+  id: string | null;
   menuStepBlock: MenuBlockDelete_journeyUpdate_menuStepBlock | null;
 }
 

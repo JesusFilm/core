@@ -21,7 +21,7 @@ export interface JourneyImageBlockAssociationUpdate_journeyUpdate_creatorImageBl
 
 export interface JourneyImageBlockAssociationUpdate_journeyUpdate {
   __typename: "Journey";
-  id: string;
+  id: string | null;
   primaryImageBlock: JourneyImageBlockAssociationUpdate_journeyUpdate_primaryImageBlock | null;
   creatorImageBlock: JourneyImageBlockAssociationUpdate_journeyUpdate_creatorImageBlock | null;
 }

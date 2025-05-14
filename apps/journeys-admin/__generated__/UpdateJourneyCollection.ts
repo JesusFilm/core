@@ -11,7 +11,7 @@ import { JourneyCollectionUpdateInput } from "./globalTypes";
 
 export interface UpdateJourneyCollection_journeyCollectionUpdate_journeys {
   __typename: "Journey";
-  id: string;
+  id: string | null;
 }
 
 export interface UpdateJourneyCollection_journeyCollectionUpdate {
