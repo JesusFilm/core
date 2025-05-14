@@ -14,7 +14,7 @@ import { ContentHero } from './ContentHero'
 import { ContentMetadata } from './ContentMetadata'
 import { VideoCarousel } from './VideoCarousel'
 import { DiscussionQuestions } from './DiscussionQuestions'
-import { VideoChildFields_studyQuestions } from '../../../__generated__/VideoChildFields'
+import { VideoContentFields_studyQuestions } from '../../../__generated__/VideoContentFields'
 
 export function NewContentPage(): ReactElement {
   const {
@@ -42,11 +42,10 @@ export function NewContentPage(): ReactElement {
       ? studyQuestions
       : ([
           {
-            id: 0,
             value:
               'If you could ask the creator of this video a question, what would it be?'
           }
-        ] as unknown as VideoChildFields_studyQuestions[])
+        ] as unknown as VideoContentFields_studyQuestions[])
 
   return (
     <>

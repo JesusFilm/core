@@ -11,6 +11,12 @@ declare module '@mui/material/Button' {
   }
 }
 
+declare module '@mui/material/IconButton' {
+  interface IconButtonPropsSizeOverrides {
+    xsmall: true
+  }
+}
+
 export const websiteComponents: Required<Pick<ThemeOptions, 'components'>> = {
   components: {
     MuiContainer: {
