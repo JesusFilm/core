@@ -13,6 +13,7 @@ import type { VideoContentFields } from '../../../__generated__/VideoContentFiel
 import i18nConfig from '../../../next-i18next.config'
 import { createApolloClient } from '../../../src/libs/apolloClient'
 import { getFlags } from '../../../src/libs/getFlags'
+import { getVideoLanguageId } from '../../../src/libs/getVideoLanguageId'
 import { LanguageProvider } from '../../../src/libs/languageContext/LanguageContext'
 import { slugMap } from '../../../src/libs/slugMap'
 import { VIDEO_CONTENT_FIELDS } from '../../../src/libs/videoContentFields'
@@ -101,7 +102,8 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
     >({
       query: GET_VIDEO_CONTENT,
       variables: {
-        id: `${contentId}/${languageId}`
+        id: `${contentId}/${languageId}`,
+        languageId: getVideoLanguageId(languageId)
       }
     })
     if (data.content == null) {

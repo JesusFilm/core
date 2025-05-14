@@ -21,14 +21,28 @@ async function importLanguageSlugs(): Promise<void> {
     }
   }
 
-  const file = `
+  const file = `/**
+ * This file is auto-generated from apis/api-media/src/lib/exportExistingLanguageSlugs.ts
+ * DO NOT EDIT DIRECTLY
+ * 
+ * Generated: ${new Date().toISOString()}
+ * 
+ * Maps language IDs to their corresponding slugs based on video variant slugs.
+ * The slugs are extracted from the last segment of the video variant slug.
+ */
+
 export const languageSlugs: Record<string, string> = {
   ${Object.keys(languageSlugs)
     .map((id) => `'${id}': '${languageSlugs[id]}'`)
     .join(',\n')}
 }
 `
+
+  // Write to api-languages generated directory
   writeFileSync(`apis/api-languages/src/__generated__/languageSlugs.ts`, file)
+
+  // Write to watch app generated directory
+  writeFileSync(`apps/watch/src/libs/languageSlugs.ts`, file)
 }
 
 void main()
