@@ -78,5 +78,7 @@
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_other": "<0>Journey Templates</0><1>in</1><2>{{count}} languages</2>",
   "{{count}} more cards_other": "{{count}} more cards",
   "{{count}} Cards_other": "{{count}} Cards",
-  "{{count}} Videos_other": "{{count}} Videos"
+  "{{count}} Videos_other": "{{count}} Videos",
+  "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_zero": "<0>Journey Templates</0><1>in</1><2>All Languages</2>"
+  
 }
