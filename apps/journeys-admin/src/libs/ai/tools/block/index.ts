@@ -1,6 +1,7 @@
 import { blockActionUpdate } from './action'
 import { blockButtonCreate, blockButtonUpdate } from './button'
 import { blockCardUpdate } from './card'
+import { blockDelete } from './delete'
 import { blockImageCreate, blockImageUpdate } from './image'
 import { blockRadioOptionCreate, blockRadioOptionUpdate } from './radioOption'
 import { blockStepCreate, blockStepUpdate } from './step'
@@ -12,6 +13,7 @@ export const tools = {
   blockButtonCreate,
   blockButtonUpdate,
   blockCardUpdate,
+  blockDelete,
   blockImageCreate,
   blockImageUpdate,
   blockRadioOptionCreate,
