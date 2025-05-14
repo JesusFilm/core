@@ -9,51 +9,14 @@ import { ReactElement, ReactNode } from 'react'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 interface TranslationDialogWrapperProps {
-  /**
-   * Controls whether the dialog is displayed
-   */
   open: boolean
-
-  /**
-   * Function to call when the dialog is closed
-   */
   onClose: () => void
-
-  /**
-   * Function to call when the translation action is triggered
-   * This function should handle its own error states and messaging
-   */
   onTranslate: () => Promise<void>
-
-  /**
-   * Dialog title to display when not in loading state
-   */
   title: string
-
-  /**
-   * Text to display during loading state
-   */
   loadingText?: string
-
-  /**
-   * Whether the component is in loading state
-   */
   loading: boolean
-
-  /**
-   * Test ID for the component
-   */
   testId?: string
-
-  /**
-   * Children to render when not in loading state
-   */
   children: ReactNode
-
-  /**
-   * Whether to show dividers in the dialog
-   * @default true
-   */
   divider?: boolean
 }
 
@@ -61,8 +24,16 @@ interface TranslationDialogWrapperProps {
  * A wrapper component that provides a consistent UI for translation dialogs
  * with loading state handling and standard buttons.
  *
- * @param {TranslationDialogWrapperProps} props - The component props
- * @returns {ReactElement} The rendered component
+ * @param open Controls whether the dialog is displayed
+ * @param onClose Function to call when the dialog is closed
+ * @param onTranslate Function to call when the translation action is triggered
+ * @param title Dialog title to display when not in loading state
+ * @param loadingText Text to display during loading state
+ * @param loading Whether the component is in loading state
+ * @param testId Test ID for the component
+ * @param children Children to render when not in loading state
+ * @param divider Whether to show dividers in the dialog
+ * @returns The rendered dialog component
  */
 export function TranslationDialogWrapper({
   open,
