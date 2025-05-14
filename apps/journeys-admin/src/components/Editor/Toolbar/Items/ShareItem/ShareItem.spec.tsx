@@ -13,15 +13,14 @@ import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'
 import { GetUserRole } from '@core/journeys/ui/useUserRoleQuery/__generated__/GetUserRole'
 
-import { Role } from '../../../../../../__generated__/globalTypes'
+import { GetJourneyForSharing } from '../../../../../../__generated__/GetJourneyForSharing'
+import { Role ,
+  ThemeMode,
+  ThemeName
+} from '../../../../../../__generated__/globalTypes'
+import { GET_JOURNEY_FOR_SHARING } from '../../../../../libs/useJourneyForShareLazyQuery/useJourneyForShareLazyQuery'
 
 import { ShareItem } from './ShareItem'
-import { GET_JOURNEY_FOR_SHARING } from '../../../../../libs/useJourneyForShareLazyQuery/useJourneyForShareLazyQuery'
-import { GetJourneyForSharing } from '../../../../../../__generated__/GetJourneyForSharing'
-import {
-  ThemeName,
-  ThemeMode
-} from '../../../../../../__generated__/globalTypes'
 
 jest.mock('../../../../../libs/useCurrentUserLazyQuery', () => ({
   __esModule: true,
