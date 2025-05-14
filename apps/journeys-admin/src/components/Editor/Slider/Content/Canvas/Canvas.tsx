@@ -312,7 +312,7 @@ export function Canvas(): ReactElement {
                           themeName={ThemeName.journeyUi}
                           themeMode={theme.themeMode}
                           rtl={rtl}
-                          locale={'ko'}
+                          locale={locale}
                           nested
                         >
                           <StepFooter
