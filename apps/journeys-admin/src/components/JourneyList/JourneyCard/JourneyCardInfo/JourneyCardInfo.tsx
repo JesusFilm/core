@@ -1,4 +1,3 @@
-import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
 
@@ -49,9 +48,6 @@ export function JourneyCardInfo({
         userJourneys={inviteRequested ?? journey.userJourneys ?? undefined}
         size="xsmall"
       />
-      {variant === JourneyCardVariant.actionRequired ? (
-        <Skeleton variant="text" width={60} />
-      ) : null}
     </Stack>
   )
 }
