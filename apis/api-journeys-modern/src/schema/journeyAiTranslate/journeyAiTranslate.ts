@@ -81,7 +81,7 @@ builder.mutationFields((t) => ({
 
         For languages that use the western alphabet, do not assume the detected language is English.
         Instead, analyze the Journey content to determine the language.
-        
+
         Journey Content:
         ${cardBlocksContent.join('\n')}
         
@@ -110,7 +110,6 @@ builder.mutationFields((t) => ({
           }
         } catch (error) {
           if (error instanceof AlreadyTranslatedError) {
-            // Throw a new error with the frontend-friendly message
             throw new Error('The content is already in the requested language')
           }
           console.error('Error detecting language with AI:', error)
