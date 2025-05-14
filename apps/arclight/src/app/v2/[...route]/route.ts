@@ -63,6 +63,6 @@ app.doc('/doc', {
   }
 })
 
-app.get('/ui', swaggerUI({ url: '/v2/doc' }))
+app.get('/api/doc', swaggerUI({ url: '/v2/doc' }))
 
 export const GET = handle(app)
