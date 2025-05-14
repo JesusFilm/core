@@ -14,8 +14,12 @@ export interface ConfirmSameLanguageDialogProps {
 /**
  * Dialog that asks for confirmation when attempting to translate to the same language
  *
- * @param props Component props
- * @returns React element
+ * @param open Controls whether the dialog is displayed
+ * @param onClose Function to call when the dialog is closed
+ * @param onConfirm Function to call when translation is confirmed
+ * @param loading Whether the component is in loading state
+ * @param language The language name to display in the confirmation message
+ * @returns Confirmation dialog component
  */
 export function ConfirmSameLanguageDialog({
   open,
