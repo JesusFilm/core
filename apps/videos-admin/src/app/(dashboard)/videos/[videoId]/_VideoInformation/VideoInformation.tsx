@@ -25,6 +25,8 @@ import { SaveButton } from '../../../../../components/SaveButton'
 import { videoLabels, videoStatuses } from '../../../../../constants'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
 
+import { VideoKeywords } from './VideoKeywords'
+
 interface VideoInformationProps {
   videoId: string
 }
