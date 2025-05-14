@@ -64,12 +64,12 @@ export function ShareItem({
   const hostname = activeTeam?.customDomains[0]?.name
 
   const router = useRouter()
-  const [showSlugDialog, setShowSlugDialog] = useState<boolean>(false)
-  const [showEmbedDialog, setShowEmbedDialog] = useState<boolean>(false)
-  const [showQrCodeDialog, setShowQrCodeDialog] = useState<boolean>(false)
+  const [showSlugDialog, setShowSlugDialog] = useState<boolean | null>(null)
+  const [showEmbedDialog, setShowEmbedDialog] = useState<boolean | null>(null)
+  const [showQrCodeDialog, setShowQrCodeDialog] = useState<boolean | null>(null)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
 
-  const handleShowMenu = (event: MouseEvent<HTMLElement>): void => {
+  function handleShowMenu(event: MouseEvent<HTMLElement>): void {
     setAnchorEl(event.currentTarget)
     handleCloseMenu?.()
   }

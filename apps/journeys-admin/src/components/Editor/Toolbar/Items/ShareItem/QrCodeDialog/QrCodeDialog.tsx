@@ -96,12 +96,12 @@ export function QrCodeDialog({
   }, [getLoading, createLoading])
 
   async function handleGenerateQrCode(): Promise<void> {
-    if (journey?.id == null) return
+    if (journey?.id == null || teamId == null) return
     await qrCodeCreate({
       variables: {
         input: {
           journeyId: journey.id,
-          teamId: teamId ?? ''
+          teamId: teamId
         }
       },
       update(cache, { data }) {
