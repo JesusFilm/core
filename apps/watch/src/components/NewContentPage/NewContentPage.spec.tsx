@@ -1,10 +1,11 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import { NewContentPage } from './NewContentPage'
-import { videos } from '../Videos/__generated__/testData'
 import { VideoProvider } from '../../libs/videoContext'
-import { MockedProvider } from '@apollo/client/testing'
+import { videos } from '../Videos/__generated__/testData'
+
+import { NewContentPage } from './NewContentPage'
 
 describe('NewContentPage', () => {
   it('should render', () => {

@@ -5,6 +5,7 @@ import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useState } from 'react'
 
+import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 import { ThemeMode } from '@core/shared/ui/themes'
 
 import { VideoContentFields_studyQuestions } from '../../../__generated__/VideoContentFields'
@@ -12,13 +13,12 @@ import { useVideoChildren } from '../../libs/useVideoChildren'
 import { getWatchUrl } from '../../libs/utils/getWatchUrl'
 import { useVideo } from '../../libs/videoContext'
 import { PageWrapper } from '../PageWrapper'
+import { ShareDialog } from '../ShareDialog'
 
 import { ContentHero } from './ContentHero'
 import { ContentMetadata } from './ContentMetadata'
 import { DiscussionQuestions } from './DiscussionQuestions'
 import { VideoCarousel } from './VideoCarousel'
-import { ShareDialog } from '../ShareDialog'
-import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 
 export function NewContentPage(): ReactElement {
   const { t } = useTranslation('apps-watch')
