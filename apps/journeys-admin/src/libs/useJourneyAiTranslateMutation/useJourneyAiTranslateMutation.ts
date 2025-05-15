@@ -1,6 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 
 import {
+  JourneyAiTranslateCreate_journeyAiTranslateCreate as Journey,
   JourneyAiTranslateCreate,
   JourneyAiTranslateCreateVariables
 } from '../../../__generated__/JourneyAiTranslateCreate'
@@ -23,7 +24,14 @@ export const JOURNEY_AI_TRANSLATE_CREATE = gql`
         textLanguageName: $textLanguageName
         forceTranslate: $forceTranslate
       }
-    )
+    ) {
+      id
+      title
+      description
+      language {
+        id
+      }
+    }
   }
 `
 
@@ -37,7 +45,7 @@ export const JOURNEY_AI_TRANSLATE_CREATE = gql`
 export function useJourneyAiTranslateMutation(): {
   translateJourney: (
     variables: JourneyAiTranslateCreateVariables
-  ) => Promise<string | undefined>
+  ) => Promise<Journey | undefined>
   loading: boolean
 } {
   const [mutate, { loading }] = useMutation<
@@ -53,7 +61,7 @@ export function useJourneyAiTranslateMutation(): {
    */
   const translateJourney = async (
     variables: JourneyAiTranslateCreateVariables
-  ): Promise<string | undefined> => {
+  ): Promise<Journey | undefined> => {
     try {
       // TODO: Add cache update logic to add the translated journey to adminJourneys
       // when the backend starts returning the created journey ID

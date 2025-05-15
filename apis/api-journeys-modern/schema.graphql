@@ -7,6 +7,11 @@ A date string, such as 2007-12-03, compliant with the `full-date` format outline
 scalar Date
 
 """
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
+
+"""
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.This scalar is serialized to a string in ISO 8601 format and parsed from a string in ISO 8601 format.
 """
 scalar DateTimeISO
@@ -30,6 +35,27 @@ enum EventType {
   VideoProgressEvent
 }
 
+type Journey
+  @key(fields: "id")
+{
+  id: ID! @shareable
+  title: String! @shareable
+  description: String @shareable
+  slug: String! @shareable
+  createdAt: DateTime! @shareable
+  updatedAt: DateTime! @shareable
+  status: JourneyStatus! @shareable
+  languageId: String @shareable
+}
+
+input JourneyAiTranslateInput {
+  journeyId: ID!
+  name: String!
+  journeyLanguageName: String!
+  textLanguageId: ID!
+  textLanguageName: String!
+}
+
 type JourneyEventsExportLog {
   id: ID!
   createdAt: DateTimeISO!
@@ -47,13 +73,22 @@ input JourneyEventsExportLogInput {
   dateRangeEnd: DateTimeISO
 }
 
+enum JourneyStatus {
+  archived
+  deleted
+  draft
+  published
+  trashed
+}
+
 union MediaVideo = MuxVideo | Video | YouTube
 
 type Mutation {
-  journeyAiTranslateCreate(input: MutationJourneyAiTranslateCreateInput!): ID!
+  journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
 }
 
+<<<<<<< HEAD
 input MutationJourneyAiTranslateCreateInput {
   journeyId: ID!
   name: String!
@@ -63,6 +98,8 @@ input MutationJourneyAiTranslateCreateInput {
   forceTranslate: Boolean
 }
 
+=======
+>>>>>>> feature/25-04-MA-feat-ai-translation
 type MuxVideo
   @key(fields: "id primaryLanguageId")
   @extends

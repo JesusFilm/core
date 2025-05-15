@@ -16,6 +16,7 @@ export type Scalars = {
   Float: { input: number; output: number; }
   /** A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
   Date: { input: any; output: any; }
+  /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
   DateTime: { input: any; output: any; }
   /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.This scalar is serialized to a string in ISO 8601 format and parsed from a string in ISO 8601 format. */
   DateTimeISO: { input: any; output: any; }
@@ -802,6 +803,7 @@ export type Journey = {
   id: Scalars['ID']['output'];
   journeyCollections: Array<JourneyCollection>;
   language: Language;
+  languageId?: Maybe<Scalars['String']['output']>;
   logoImageBlock?: Maybe<ImageBlock>;
   menuButtonIcon?: Maybe<JourneyMenuButtonIcon>;
   menuStepBlock?: Maybe<StepBlock>;
@@ -835,6 +837,14 @@ export type Journey = {
   updatedAt: Scalars['DateTime']['output'];
   userJourneys?: Maybe<Array<UserJourney>>;
   website?: Maybe<Scalars['Boolean']['output']>;
+};
+
+export type JourneyAiTranslateInput = {
+  journeyId: Scalars['ID']['input'];
+  journeyLanguageName: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  textLanguageId: Scalars['ID']['input'];
+  textLanguageName: Scalars['String']['input'];
 };
 
 export type JourneyCollection = {
@@ -1356,6 +1366,7 @@ export type Mutation = {
   /** @deprecated use createCloudflareImageFromPrompt */
   createImageBySegmindPrompt: CloudflareImage;
   createJourneyEventsExportLog: JourneyEventsExportLog;
+  createKeyword: Keyword;
   createMuxVideoUploadByFile: MuxVideo;
   createMuxVideoUploadByUrl: MuxVideo;
   createVerificationRequest?: Maybe<Scalars['Boolean']['output']>;
@@ -1376,7 +1387,7 @@ export type Mutation = {
   integrationDelete: Integration;
   integrationGrowthSpacesCreate: IntegrationGrowthSpaces;
   integrationGrowthSpacesUpdate: IntegrationGrowthSpaces;
-  journeyAiTranslateCreate: Scalars['ID']['output'];
+  journeyAiTranslateCreate: Journey;
   journeyCollectionCreate: JourneyCollection;
   journeyCollectionDelete: JourneyCollection;
   journeyCollectionUpdate: JourneyCollection;
@@ -1683,6 +1694,12 @@ export type MutationCreateJourneyEventsExportLogArgs = {
 };
 
 
+export type MutationCreateKeywordArgs = {
+  languageId: Scalars['String']['input'];
+  value: Scalars['String']['input'];
+};
+
+
 export type MutationCreateMuxVideoUploadByFileArgs = {
   name: Scalars['String']['input'];
   userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
@@ -1798,7 +1815,7 @@ export type MutationIntegrationGrowthSpacesUpdateArgs = {
 
 
 export type MutationJourneyAiTranslateCreateArgs = {
-  input: MutationJourneyAiTranslateCreateInput;
+  input: JourneyAiTranslateInput;
 };
 
 
@@ -2384,6 +2401,7 @@ export type MutationBibleCitationUpdateInput = {
   verseStart?: InputMaybe<Scalars['Int']['input']>;
 };
 
+<<<<<<< HEAD
 export type MutationJourneyAiTranslateCreateInput = {
   forceTranslate?: InputMaybe<Scalars['Boolean']['input']>;
   journeyId: Scalars['ID']['input'];
@@ -2393,6 +2411,8 @@ export type MutationJourneyAiTranslateCreateInput = {
   textLanguageName: Scalars['String']['input'];
 };
 
+=======
+>>>>>>> feature/25-04-MA-feat-ai-translation
 export type MutationShortLinkCreateInput = {
   /** the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to */
   hostname: Scalars['String']['input'];
@@ -4826,6 +4846,7 @@ export type VideoTriggerBlock = Block & {
 export type VideoUpdateInput = {
   childIds?: InputMaybe<Array<Scalars['String']['input']>>;
   id: Scalars['String']['input'];
+  keywordIds?: InputMaybe<Array<Scalars['String']['input']>>;
   label?: InputMaybe<VideoLabel>;
   noIndex?: InputMaybe<Scalars['Boolean']['input']>;
   primaryLanguageId?: InputMaybe<Scalars['String']['input']>;
