@@ -1,0 +1,444 @@
+.video-js-container.vjs-hd {
+  padding-top: 56.25%;
+}
+.video-js-container.vjs-sd {
+  padding-top: 75%;
+}
+.video-js-container {
+  width: 100%;
+  position: relative;
+}
+.video-js-container .video-js {
+  height: 100% !important;
+  width: 100% !important;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.video-js .vjs-poster {
+  background-size: cover !important;
+  width: 100% !important;
+  height: 100% !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+}
+
+picture.vjs-poster > img:nth-child(1) {
+  object-fit: cover !important;
+  width: 100% !important;
+  height: 100% !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+}
+
+.vjs-control-bar .vjs-captions-button {
+  display: none !important;
+}
+#video_0 .vjs-big-play-button:before {
+  font-size: 1em;
+  color: #fff;
+  opacity: 0.9;
+  margin-top: 35%;
+  margin-left: 30%;
+}
+#video_0 .vjs-big-play-button {
+  top: 50%;
+  left: 50%;
+  margin-left: -1em;
+  margin-top: -1em;
+  width: 2em;
+  height: 2em;
+  line-height: 2em;
+  background-color: none;
+  border: solid #fff;
+  border-radius: 50%;
+  font-size: 4.5em;
+  opacity: 0.6;
+  z-index: inherit;
+}
+.video-js.vjs-default-skin.vjs-paused .vjs-big-play-button {
+  display: block !important;
+}
+.wordwrap {
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+}
+
+.arclight-player *,
+.arclight-player :after,
+.arclight-player :before {
+  box-sizing: inherit;
+  font-size: inherit;
+  color: inherit;
+  line-height: inherit;
+}
+.arclight-player {
+  width: 300px;
+  height: 150px;
+  font-size: 14px;
+  overflow: hidden;
+}
+.arclight-player.vjs-fluid.vjs-16-9:not(.vjs-audio-only-mode),
+.arclight-player.vjs-fluid:not(.vjs-audio-only-mode) {
+  padding-top: 56.25%;
+}
+.arclight-player.vjs-fluid.vjs-4-3:not(.vjs-audio-only-mode) {
+  padding-top: 75%;
+}
+.arclight-player.vjs-fill:not(.vjs-audio-only-mode) {
+  width: 100%;
+  height: 100%;
+}
+.bc-iframe,
+.bc-iframe body,
+.arclight-player {
+  background-color: #151b17;
+}
+.bc-iframe,
+.bc-iframe .arclight-player,
+.bc-iframe body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.arclight-player.vjs-fullscreen,
+.arclight-player.vjs-fullscreen .vjs-tech {
+  width: 100% !important;
+  height: 100% !important;
+}
+.arclight-player .vjs-track-setting select {
+  color: #000;
+  background-color: #fff;
+}
+.arclight-player .vjs-audio-button .vjs-menu-item,
+.arclight-player .vjs-chapters-button .vjs-menu-item,
+.arclight-player .vjs-descriptions-button .vjs-menu-item,
+.arclight-player .vjs-subs-caps-button .vjs-menu-item {
+  text-transform: none;
+}
+.arclight-player.vjs-waiting-for-autoplay .vjs-big-play-button {
+  opacity: 0;
+}
+.arclight-player .vjs-progress-control .vjs-mouse-display {
+  z-index: 2;
+} /*! @name @brightcove/player-core @version 0.31.4 @license UNLICENSED */
+.vjs-modal-dialog.vjs-player-info-modal {
+  background: rgba(0, 0, 0, 0.9);
+}
+.vjs-modal-dialog.vjs-player-info-modal .vjs-modal-dialog-content {
+  overflow: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 1em;
+}
+@media screen and (max-width: 640px) {
+  .vjs-modal-dialog.vjs-player-info-modal .vjs-modal-dialog-content {
+    grid-template-columns: 1fr;
+  }
+}
+.vjs-modal-dialog.vjs-player-info-modal h2 {
+  font-size: 1.1667em;
+  margin: 0 0 0.4286em;
+}
+.vjs-modal-dialog.vjs-player-info-modal table {
+  border-bottom: 1px solid #333;
+  border-collapse: collapse;
+  border-top: 1px solid #333;
+  margin-bottom: 1.5em;
+  width: 100%;
+}
+.vjs-modal-dialog.vjs-player-info-modal table.vjs-two td,
+.vjs-modal-dialog.vjs-player-info-modal table.vjs-two th {
+  width: 50%;
+}
+.vjs-modal-dialog.vjs-player-info-modal table.vjs-three td,
+.vjs-modal-dialog.vjs-player-info-modal table.vjs-three th {
+  width: 33.333%;
+}
+.vjs-modal-dialog.vjs-player-info-modal th {
+  font-weight: 400;
+  text-align: left;
+}
+.vjs-modal-dialog.vjs-player-info-modal td {
+  border-bottom: 1px solid #333;
+  opacity: 0.5;
+}
+.vjs-modal-dialog.vjs-player-info-modal tr:last-child td {
+  border-bottom: 0;
+}
+.vjs-modal-dialog.vjs-player-info-modal tr:hover td {
+  opacity: 1;
+}
+.vjs-error-display {
+  color: #fff;
+  display: none;
+  font-family:
+    Helvetica,
+    Arial,
+    sans serif;
+  font-size: 16px;
+  line-height: 1.428;
+}
+.vjs-error .vjs-error-display {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+.vjs-error .vjs-error-display .vjs-modal-dialog-content {
+  font-size: 14px;
+}
+.vjs-errors-dialog {
+  text-align: left;
+  border: 1px #999 solid;
+  overflow: hidden;
+  position: absolute;
+  top: 2%;
+  bottom: 2%;
+  left: 5%;
+  right: 5%;
+  padding-left: 1%;
+  padding-right: 1%;
+  background: rgba(24, 24, 24, 0.8);
+  -ms-filter: 'progid:DXImageTransform.Microsoft.gradient(startColorstr=#CC000000, endColorstr=#CC000000)';
+}
+.vjs-errors-details {
+  margin-top: 15px;
+}
+.vjs-errors-message {
+  border: 1px #999 solid;
+  background-color: #2c2c2c;
+  overflow: auto;
+  margin-top: 15px;
+  padding: 15px;
+}
+.vjs-errors-ok-button-container {
+  display: block;
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+  right: 15px;
+  text-align: center;
+}
+.vjs-errors-ok-button {
+  display: block;
+  margin: 0 auto;
+  width: 80px;
+  height: 36px;
+  background-color: #000;
+  border: 1px #999 solid;
+  border-radius: 5px;
+  color: #999;
+  font-size: 14px;
+  cursor: pointer;
+}
+.vjs-errors-ok-button:hover {
+  border: 1px #fff solid;
+  color: #ccc;
+}
+.vjs-errors-content-container {
+  overflow: auto;
+  position: absolute;
+  padding-bottom: 15px;
+  top: 0;
+  left: 15px;
+  right: 15px;
+  bottom: 61px;
+}
+.vjs-errors-headline {
+  font-size: 14px;
+  font-weight: 700;
+  padding-right: 3em;
+}
+.vjs-errors-dialog .vjs-control.vjs-close-button {
+  width: 3em;
+  height: 3em;
+  top: 0;
+}
+.vjs-errors-flashmessage {
+  float: right;
+  font-size: 9px;
+  font-style: italic;
+}
+.vjs-xs.vjs-error-display {
+  font-size: 14px;
+  background-color: #000;
+}
+.vjs-xs.vjs-error-display .vjs-errors-details,
+.vjs-xs.vjs-error-display .vjs-errors-message {
+  display: none;
+}
+.vjs-xs .vjs-errors-content-container {
+  top: 0;
+}
+.vjs-xs .vjs-errors-headline {
+  font-size: 16px;
+  font-weight: 700;
+}
+.vjs-xs .vjs-errors-dialog {
+  border: none;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+.vjs-xs.vjs-errors-flashmessage {
+  display: none;
+}
+@media (max-width: 600px), (max-height: 250px) {
+  .vjs-error-display {
+    font-size: 14px;
+    background-color: #000;
+  }
+  .vjs-error-display .vjs-errors-details,
+  .vjs-error-display .vjs-errors-message {
+    display: none;
+  }
+  .vjs-error-display .vjs-errors-content-container {
+    top: 15px;
+  }
+  .vjs-error-display .vjs-errors-headline {
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .vjs-error-display .vjs-errors-dialog {
+    border: none;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+  .vjs-errors-flashmessage {
+    display: none;
+  }
+}
+.vjs-errors-ref-id {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.75em;
+  margin: 0.5em 0 0;
+}
+.video-js .vjs-dock-shelf,
+.video-js .vjs-dock-text {
+  font-size: 1.8em;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  -webkit-transition: opacity 0.1s;
+  -moz-transition: opacity 0.1s;
+  -o-transition: opacity 0.1s;
+  transition: opacity 0.1s;
+}
+.video-js .vjs-dock-text {
+  left: 0;
+  margin: 0;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  background: -webkit-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.8) 0,
+    rgba(0, 0, 0, 0.7) 30%,
+    rgba(0, 0, 0, 0.7) 70%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.8) 0,
+    rgba(0, 0, 0, 0.7) 30%,
+    rgba(0, 0, 0, 0.7) 70%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  padding: 1em 25% 2em 1em;
+}
+.video-js.vjs-no-flex .vjs-dock-text {
+  padding-bottom: 1em;
+}
+.video-js .vjs-dock-shelf {
+  padding: 1em 1em;
+  right: 0;
+  text-align: right;
+  width: 25%;
+}
+.video-js .vjs-dock-shelf * {
+  pointer-events: auto;
+}
+.video-js .vjs-dock-description,
+.video-js .vjs-dock-title {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.video-js .vjs-dock-title {
+  font-weight: 700;
+  letter-spacing: 1px;
+  line-height: 1.333;
+  margin-bottom: 0.333em;
+}
+.video-js .vjs-dock-description {
+  font-weight: 400;
+  line-height: 1.5;
+}
+.vjs-playing.vjs-user-inactive .vjs-dock-shelf,
+.vjs-playing.vjs-user-inactive .vjs-dock-text {
+  opacity: 0;
+  -webkit-transition: opacity 1s;
+  -moz-transition: opacity 1s;
+  -o-transition: opacity 1s;
+  transition: opacity 1s;
+}
+.vjs-playing.vjs-no-flex.vjs-user-inactive .vjs-dock-shelf,
+.vjs-playing.vjs-no-flex.vjs-user-inactive .vjs-dock-text {
+  display: none;
+}
+.video-js .vjs-dock-shelf,
+.video-js .vjs-dock-text {
+  font-size: 1em;
+}
+.vjs-has-started:not(:hover) .vjs-dock-shelf:focus-within {
+  opacity: 1;
+}
+.vjs-has-started:not(:hover) .vjs-dock-shelf,
+.vjs-has-started:not(:hover) .vjs-dock-text {
+  opacity: 0;
+  -webkit-transition: opacity 1s;
+  -moz-transition: opacity 1s;
+  -ms-transition: opacity 1s;
+  -o-transition: opacity 1s;
+  transition: opacity 1s;
+}
+
+.arclight-player.video-js .vjs-dock-shelf,
+.arclight-player.video-js .vjs-dock-text {
+  display: none;
+}
+.arclight-player .vjs-control-bar {
+  display: flex;
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Fix volume slider handle alignment */
+.arclight-player .vjs-slider-horizontal .vjs-volume-level:before {
+  line-height: 0.35em;
+  right: -0.5em;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* For SVG icons */
+.arclight-player .vjs-slider-horizontal .vjs-volume-level .vjs-svg-icon {
+  right: -0.3em;
+  top: 50%;
+  transform: translateY(-50%);
+}
