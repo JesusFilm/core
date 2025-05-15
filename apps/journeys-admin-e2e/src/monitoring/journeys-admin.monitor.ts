@@ -16,23 +16,24 @@ test.setTimeout(180000)
  * @maxRetryTime 600 // Will stop retrying after 10 minutes
  */
 test('NS Admin Monitoring: Check user can login and create a journey via template', async ({
-  page
+  browser
 }) => {
   if (!process.env.PLAYWRIGHT_EMAIL || !process.env.PLAYWRIGHT_PASSWORD) {
     throw new Error(
       'Email & password environment variables are not set in checkly.'
     )
   }
+  const context = await browser.newContext()
+  const page = await context.newPage()
 
   const email = process.env.PLAYWRIGHT_EMAIL
   const password = process.env.PLAYWRIGHT_PASSWORD
 
-  const defaultTimeout = 30000
-  const navigationTimeout = 60000
+  const timeout = 60000
 
   // Configure longer timeouts for navigation
-  page.setDefaultTimeout(defaultTimeout)
-  page.setDefaultNavigationTimeout(navigationTimeout)
+  page.setDefaultTimeout(timeout)
+  page.setDefaultNavigationTimeout(timeout)
 
   const startTime = Date.now()
   const stepTiming: { [key: string]: number } = {}
@@ -40,9 +41,7 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
   try {
     // Step 1: Navigate to login page
     const loginStart = Date.now()
-    await page.goto('https://admin.nextstep.is/', {
-      timeout: navigationTimeout
-    })
+    await page.goto('https://admin.nextstep.is/')
     stepTiming['navigation'] = Date.now() - loginStart
 
     // Step 2: Login
@@ -57,11 +56,8 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
 
     // Step 3: Wait for and verify dashboard load
     const dashboardStart = Date.now()
-    await expect(page.getByTestId('NavigationListItemTemplates')).toBeVisible({
-      timeout: defaultTimeout
-    })
-    // Take checkpoint screenshot after login
-    await page.screenshot({ fullPage: true })
+    await expect(page.getByTestId('NavigationListItemTemplates')).toBeVisible()
+
     stepTiming['dashboard_load'] = Date.now() - dashboardStart
 
     // Step 4: Template selection
@@ -72,14 +68,12 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
         .getByTestId('love-template-gallery-carousel')
         .getByTestId('journey-0605d097-9da9-4da3-b23b-eec66553ec1e')
         .getByTestId('templateGalleryCard')
-    ).toBeVisible({ timeout: defaultTimeout })
+    ).toBeVisible()
     await page
       .getByTestId('love-template-gallery-carousel')
       .getByTestId('journey-0605d097-9da9-4da3-b23b-eec66553ec1e')
       .getByTestId('templateGalleryCard')
       .click()
-    // Take checkpoint screenshot after template selection
-    await page.screenshot({ fullPage: true })
     stepTiming['template_selection'] = Date.now() - templateStart
 
     // Step 5: Template usage and team selection
@@ -97,9 +91,7 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
     const editStart = Date.now()
 
     // Wait for the iframe to be present with explicit timeout
-    await page.waitForSelector('[data-testid="CanvasContainer"] iframe', {
-      timeout: defaultTimeout
-    })
+    await page.waitForSelector('[data-testid="CanvasContainer"] iframe')
 
     // Use frameLocator to handle the iframe
     const frame = page
@@ -109,7 +101,7 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
     // Wait for and verify the button exists
     await expect(
       frame.getByRole('button', { name: 'Watch the story' })
-    ).toBeVisible({ timeout: defaultTimeout })
+    ).toBeVisible()
 
     // Perform the interactions
     await frame.getByRole('button', { name: 'Watch the story' }).click()
@@ -117,17 +109,13 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
     await frame.getByPlaceholder('Edit text...').fill('Changed Button Text')
     await page.getByTestId('EditorCanvas').click()
 
-    // Take checkpoint screenshot after editing
-    await page.screenshot({ fullPage: true })
     stepTiming['journey_editing'] = Date.now() - editStart
 
     // Step 7: Preview journey
     const previewStart = Date.now()
     await page.getByRole('link', { name: 'Preview' }).click()
 
-    const previewPage = await page.waitForEvent('popup', {
-      timeout: defaultTimeout
-    })
+    const previewPage = await page.waitForEvent('popup')
 
     const overlayContainer = previewPage.getByTestId(
       'CardOverlayContentContainer'
@@ -148,10 +136,8 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
     }
     await expect(
       overlayContainer.getByRole('heading', { name: 'Are you happy?' })
-    ).toBeVisible({ timeout: defaultTimeout })
+    ).toBeVisible()
 
-    // Take checkpoint screenshot of preview
-    await previewPage.screenshot({ fullPage: true })
     stepTiming['preview_load'] = Date.now() - previewStart
 
     // Log monitoring metrics
@@ -165,6 +151,8 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
     })
     // Log total duration as a metric
     console.log(`METRIC total_duration ${totalDuration}`)
+    await page.close()
+    await context.close()
   } catch (error) {
     // Enhanced error logging for monitoring
     console.error('=== Monitoring Alert ===')
