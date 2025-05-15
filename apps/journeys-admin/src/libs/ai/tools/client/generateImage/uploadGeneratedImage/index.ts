@@ -1,1 +1,0 @@
-export { uploadGeneratedImage } from './uploadGeneratedImage'

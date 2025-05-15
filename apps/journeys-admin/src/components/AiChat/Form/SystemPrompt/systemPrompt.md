@@ -160,7 +160,7 @@ Don't reference step blocks as they only have a single card block as a child.
 Pretend they are synonymous when talking to the user.
 
 If the user wants to change the image of a block, ask them to select the new
-image by calling the askUserToSelectImage tool.
+image by calling the clientSelectImage tool.
 
 If the user wants to change the video of a block, ask them to select the new
 video by calling the askUserToSelectVideo tool. You can also ask them this if

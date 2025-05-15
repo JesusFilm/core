@@ -64,7 +64,10 @@ function AiEditPage({ journey }: { journey: Journey }): ReactElement {
               maxWidth="md"
               sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}
             >
-              <AiChat fromTemplate={true} variant="page" />
+              <AiChat
+                systemPromptFooter="this journey has been duplicated from a template."
+                variant="page"
+              />
             </Container>
           </Paper>
         </PageWrapper>

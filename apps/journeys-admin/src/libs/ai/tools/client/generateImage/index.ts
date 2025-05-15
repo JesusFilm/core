@@ -1,1 +1,0 @@
-export { generateImage } from './generate'
