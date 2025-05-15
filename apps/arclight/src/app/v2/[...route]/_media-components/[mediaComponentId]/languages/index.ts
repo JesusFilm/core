@@ -3,7 +3,7 @@ import { ResultOf, graphql } from 'gql.tada'
 import { timeout } from 'hono/timeout'
 
 import { getApolloClient } from '../../../../../../lib/apolloClient'
-import { getDefaultPlatformForApiKey } from '../../../../../../lib/platformHelpers'
+import { getDefaultPlatformForApiKey } from '../../../../../../lib/getPlatformFromApiKey'
 import {
   getWebEmbedPlayer,
   getWebEmbedSharePlayer

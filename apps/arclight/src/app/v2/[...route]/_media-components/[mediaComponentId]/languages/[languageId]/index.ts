@@ -2,7 +2,7 @@ import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { ResultOf, graphql } from 'gql.tada'
 
 import { getApolloClient } from '../../../../../../../lib/apolloClient'
-import { getDefaultPlatformForApiKey } from '../../../../../../../lib/platformHelpers'
+import { getDefaultPlatformForApiKey } from '../../../../../../../lib/getPlatformFromApiKey'
 import {
   getWebEmbedPlayer,
   getWebEmbedSharePlayer

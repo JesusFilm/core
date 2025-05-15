@@ -4,7 +4,7 @@ import { HTTPException } from 'hono/http-exception'
 
 import { getApolloClient } from '../../../../../lib/apolloClient'
 import { getLanguageIdsFromTags } from '../../../../../lib/getLanguageIdsFromTags'
-import { getDefaultPlatformForApiKey } from '../../../../../lib/platformHelpers'
+import { getDefaultPlatformForApiKey } from '../../../../../lib/getPlatformFromApiKey'
 import { mediaComponentSchema } from '../../mediaComponent.schema'
 
 import { mediaComponentLanguages } from './languages'
