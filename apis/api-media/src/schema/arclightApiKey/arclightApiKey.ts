@@ -49,18 +49,6 @@ builder.queryFields((t) => ({
         ...query,
         where: { key }
       })
-  }),
-  arclightApiKeyById: t.prismaField({
-    type: ArclightApiKeyObject,
-    nullable: true,
-    args: {
-      key: t.arg.string({ required: true })
-    },
-    resolve: async (query, _parent, { key }) =>
-      prisma.arclightApiKey.findUnique({
-        ...query,
-        where: { key }
-      })
   })
 }))
 
