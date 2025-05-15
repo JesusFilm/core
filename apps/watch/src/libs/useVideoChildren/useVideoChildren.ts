@@ -20,7 +20,10 @@ export const GET_VIDEO_CHILDREN = gql`
   }
 `
 
-export function useVideoChildren(slug?: string): {
+export function useVideoChildren(
+  slug?: string,
+  locale?: string
+): {
   loading: boolean
   children: GetVideoChildren_video_children[]
 } {
@@ -29,8 +32,7 @@ export function useVideoChildren(slug?: string): {
 
   useEffect(() => {
     if (slug != null) {
-      const languageSlug = slug.split('/').pop()
-      const languageId = getUiLanguageId(languageSlug as any)
+      const languageId = getUiLanguageId(locale)
 
       void getVideoChildren({
         variables: { id: slug, languageId }

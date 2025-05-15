@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import last from 'lodash/last'
+import { useRouter } from 'next/router'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useState } from 'react'
 
@@ -23,6 +24,7 @@ import 'video.js/dist/video-js.css'
 
 // Usually FeatureFilm, ShortFilm, Episode or Segment Videos
 export function VideoContentPage(): ReactElement {
+  const router = useRouter()
   const {
     title,
     snippet,
@@ -36,7 +38,8 @@ export function VideoContentPage(): ReactElement {
     childrenCount
   } = useVideo()
   const { loading, children } = useVideoChildren(
-    container?.variant?.slug ?? variant?.slug
+    container?.variant?.slug ?? variant?.slug,
+    router.locale
   )
 
   const [hasPlayed, setHasPlayed] = useState(false)
