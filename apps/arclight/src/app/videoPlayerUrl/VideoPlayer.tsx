@@ -93,6 +93,37 @@ export function VideoPlayer({
     videoElement.style.display = 'block'
     videoElement.style.backgroundColor = 'transparent'
 
+    // Create a Video.js middleware to limit seeking to startTime and endTime range
+    const timeRangeMiddleware = function (player: any) {
+      return {
+        setSource: function (
+          srcObj: any,
+          next: (arg0: null, arg1: any) => void
+        ) {
+          // Required method - passthrough
+          next(null, srcObj)
+        },
+        setCurrentTime: function (time: number) {
+          const effectiveStartTime = startTime
+          const effectiveEndTime = endTime ?? player.duration()
+
+          // If the requested time is outside our permitted range, clamp it
+          if (time < effectiveStartTime) {
+            return effectiveStartTime
+          }
+          if (time > effectiveEndTime) {
+            return effectiveEndTime
+          }
+
+          // Within range, allow the seek
+          return time
+        }
+      }
+    }
+
+    // Register the middleware
+    videojs.use('*', timeRangeMiddleware)
+
     const vjsPlayer = videojs(
       ref.current,
       {
@@ -100,7 +131,7 @@ export function VideoPlayer({
         experimentalSvgIcons: true,
         preload: 'auto',
         autoplay: false,
-        controls: false, // Disable built-in controls
+        controls: true, // Use built-in controls
         fluid: true, // Make it responsive
         responsive: true,
         fill: true,
@@ -148,12 +179,41 @@ export function VideoPlayer({
         if (videoEl instanceof HTMLElement) {
           videoEl.style.backgroundColor = 'transparent'
         }
+
+        // Add custom CSS to display only the segment we care about in the progress bar
+        const segmentStartPercent = 0
+        const segmentEndPercent = endTime
+          ? (endTime / vjsPlayer.duration()) * 100
+          : 100
+
+        const styleEl = document.createElement('style')
+        styleEl.textContent = `
+          .vjs-progress-holder .vjs-play-progress {
+            background-color: #3498db;
+          }
+          .vjs-progress-holder:before {
+            position: absolute;
+            display: block;
+            content: '';
+            background-color: rgba(255, 255, 255, 0.3);
+            width: 100%;
+            height: 100%;
+            border-radius: 0.3em;
+          }
+          .vjs-time-tooltip, .vjs-mouse-display {
+            z-index: 2;
+          }
+        `
+        document.head.appendChild(styleEl)
       }
     )
 
     vjsPlayer.on('loadedmetadata', () => {
       const playerDuration = vjsPlayer.duration()
       setDuration((playerDuration ?? 0) * 1000) // Convert to milliseconds
+
+      // Set initial time to startTime
+      vjsPlayer.currentTime(startTime)
     })
 
     vjsPlayer.on('timeupdate', () => {
@@ -164,8 +224,8 @@ export function VideoPlayer({
       // Ensure we stay within the clip boundaries (in seconds for videojs API)
       if (timeInSeconds < startTime) {
         vjsPlayer.currentTime(startTime)
-      } else if (timeInSeconds >= effectiveEndTime) {
-        vjsPlayer.currentTime(effectiveEndTime)
+      } else if (endTime && timeInSeconds >= endTime) {
+        vjsPlayer.currentTime(endTime)
         vjsPlayer.pause()
         setPlaying(false)
       }
@@ -531,6 +591,25 @@ export function VideoPlayer({
         .vjs-transparent-background {
           background-color: transparent !important;
         }
+
+        /* Add visual cue for available time range in the seek bar */
+        .video-js .vjs-progress-control .vjs-progress-holder {
+          position: relative;
+        }
+
+        .video-js .vjs-progress-control .vjs-progress-holder::before {
+          background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .video-js .vjs-play-progress {
+          background-color: #3498db;
+        }
+
+        /* Ensure time tooltips are visible */
+        .video-js .vjs-time-tooltip,
+        .video-js .vjs-mouse-display {
+          z-index: 2;
+        }
       `}</style>
       {thumbnail && !hasStarted && (
         <div
@@ -591,401 +670,7 @@ export function VideoPlayer({
         </video>
       </div>
 
-      {/* Custom Video Controls - show even if player not initialized yet */}
-      <Box
-        sx={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          zIndex: 20,
-          transition: 'opacity 0.3s ease',
-          opacity: controlsVisible ? 1 : 0,
-          background:
-            'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 30%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.2) 100%)',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          touchAction: 'manipulation', // Improve touch handling
-          WebkitTapHighlightColor: 'transparent', // Remove tap highlight on mobile
-          pointerEvents: 'auto' // Ensure controls are clickable
-        }}
-        onMouseEnter={() => setHoveringControls(true)}
-        onMouseLeave={() => setHoveringControls(false)}
-        onClick={playing ? handlePlayPause : undefined}
-        onTouchStart={showControls} // Show controls on touch
-        onTouchEnd={() => {
-          if (!hoveringControls) {
-            resetControlsTimeout()
-          }
-        }}
-      >
-        {/* Center Play/Pause Button */}
-        {!playing && (
-          <Box
-            sx={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 12
-            }}
-            onClick={(e) => {
-              e.stopPropagation()
-              handlePlayPause()
-            }}
-          >
-            <IconButton
-              aria-label="Play"
-              sx={{
-                color: 'white',
-                padding: 2,
-                backgroundColor: 'rgba(0, 0, 0, 0.4)',
-                '&:hover': {
-                  backgroundColor: 'rgba(0, 0, 0, 0.6)'
-                }
-              }}
-              size="large"
-              disabled={!playerInstanceRef.current}
-            >
-              <PlayArrowRounded sx={{ fontSize: 40 }} />
-            </IconButton>
-          </Box>
-        )}
-
-        {/* Top controls - title */}
-        <Box
-          sx={{
-            px: 2,
-            pt: 2,
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}
-        >
-          {/* Title removed */}
-        </Box>
-
-        {/* Bottom Controls Bar */}
-        <Box
-          sx={{
-            px: 1.5,
-            pb: { xs: 2.5, md: 1.5 }, // Increased padding on mobile
-            width: '100%'
-          }}
-        >
-          {/* Progress Bar */}
-          <Box
-            sx={{
-              width: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              position: 'relative',
-              mb: 1
-            }}
-          >
-            {/* Slider removed from here */}
-          </Box>
-
-          <Stack
-            direction="row"
-            spacing={1}
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            {/* Left side controls */}
-            <Stack
-              direction="row"
-              spacing={0.5}
-              alignItems="center"
-              sx={{ flex: 1 }}
-            >
-              {/* Play/Pause Button */}
-              <IconButton
-                onClick={(e) => {
-                  e.stopPropagation()
-                  handlePlayPause()
-                }}
-                aria-label={playing ? 'Pause' : 'Play'}
-                sx={{
-                  color: 'white',
-                  padding: { xs: 1, md: 0.7 }, // Larger touch target on mobile
-                  '&:hover': {
-                    backgroundColor: 'rgba(255, 255, 255, 0.15)'
-                  }
-                }}
-                size={isMobile ? 'medium' : 'small'}
-                disabled={!playerInstanceRef.current}
-              >
-                {playing ? (
-                  <PauseRounded sx={{ fontSize: { xs: 24, md: 20 } }} />
-                ) : (
-                  <PlayArrowRounded sx={{ fontSize: { xs: 24, md: 20 } }} />
-                )}
-              </IconButton>
-
-              {/* Volume Control - Hide on mobile */}
-              <Stack
-                direction="row"
-                spacing={0.5}
-                alignItems="center"
-                sx={{
-                  display: { xs: 'none', sm: 'flex' }, // Hide on mobile
-                  '&:hover .volume-slider': {
-                    width: 50,
-                    opacity: 1,
-                    ml: 0.5,
-                    mr: 0.5,
-                    px: 0.5
-                  },
-                  mr: 1.5,
-                  alignItems: 'center'
-                }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <IconButton
-                  onClick={handleMute}
-                  aria-label={muted ? 'Unmute' : 'Mute'}
-                  sx={{
-                    color: 'white',
-                    padding: 0.7,
-                    '&:hover': {
-                      backgroundColor: 'rgba(255, 255, 255, 0.15)'
-                    }
-                  }}
-                  size="small"
-                  disabled={!playerInstanceRef.current}
-                >
-                  {muted ? (
-                    <VolumeOffOutlined sx={{ fontSize: 20 }} />
-                  ) : (
-                    <VolumeUpOutlined sx={{ fontSize: 20 }} />
-                  )}
-                </IconButton>
-                <Slider
-                  className="volume-slider"
-                  value={muted ? 0 : volume * 100}
-                  onChange={handleVolumeChange}
-                  aria-label="Volume"
-                  size="small"
-                  disabled={!playerInstanceRef.current}
-                  sx={{
-                    width: 0,
-                    opacity: 0,
-                    transition: 'all 0.2s ease',
-                    height: 2,
-                    display: 'flex',
-                    alignItems: 'center',
-                    my: 0,
-                    '& .MuiSlider-track': {
-                      border: 'none',
-                      backgroundColor: '#3498db'
-                    },
-                    '& .MuiSlider-rail': {
-                      backgroundColor: 'rgba(255, 255, 255, 0.3)'
-                    },
-                    '& .MuiSlider-thumb': {
-                      width: 10,
-                      height: 10,
-                      backgroundColor: 'white',
-                      boxShadow: 'none',
-                      '&:hover, &.Mui-focusVisible': {
-                        boxShadow: '0px 0px 0px 8px rgba(52, 152, 219, 0.16)'
-                      }
-                    }
-                  }}
-                />
-              </Stack>
-
-              {/* Seek Slider - moved here */}
-              <Box
-                sx={{
-                  flex: 1,
-                  mx: 1,
-                  minWidth: 60,
-                  display: 'flex',
-                  alignItems: 'center',
-                  height: '100%'
-                }}
-              >
-                <Slider
-                  value={getSegmentProgress()}
-                  onChange={handleSeek}
-                  aria-label="video-progress"
-                  size={isMobile ? 'medium' : 'small'}
-                  step={0.001}
-                  min={0}
-                  max={100}
-                  disabled={!playerInstanceRef.current}
-                  sx={{
-                    height: { xs: 6, md: 4 }, // Thicker slider on mobile
-                    padding: 0,
-                    alignSelf: 'center',
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      '& .MuiSlider-thumb': {
-                        width: { xs: 18, md: 14 },
-                        height: { xs: 18, md: 14 },
-                        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
-                      },
-                      '& .MuiSlider-track': {
-                        height: { xs: 7, md: 5 },
-                        transition: 'height 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
-                      }
-                    },
-                    '& .MuiSlider-thumb': {
-                      width: { xs: 16, md: 12 },
-                      height: { xs: 16, md: 12 },
-                      backgroundColor: 'white',
-                      boxShadow: 'none',
-                      transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                      '&:hover, &.Mui-focusVisible': {
-                        boxShadow: '0px 0px 0px 8px rgba(52, 152, 219, 0.16)',
-                        width: { xs: 18, md: 14 },
-                        height: { xs: 18, md: 14 },
-                        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
-                      },
-                      '&.Mui-active': {
-                        boxShadow: '0px 0px 0px 8px rgba(52, 152, 219, 0.24)',
-                        width: { xs: 20, md: 16 },
-                        height: { xs: 20, md: 16 },
-                        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
-                      }
-                    },
-                    '& .MuiSlider-rail': {
-                      backgroundColor: 'rgba(255, 255, 255, 0.4)',
-                      opacity: 1,
-                      transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                      position: 'relative',
-                      '&::before': {
-                        content: '""',
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                        borderRadius: '2px'
-                      }
-                    },
-                    '& .MuiSlider-track': {
-                      border: 'none',
-                      backgroundColor: '#3498db',
-                      transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                      height: { xs: 6, md: 4 }
-                    }
-                  }}
-                />
-              </Box>
-
-              {/* Time Display (Duration only) */}
-              <Stack
-                direction="row"
-                spacing={0.5}
-                alignItems="center"
-                onClick={(e) => e.stopPropagation()}
-                sx={{ minWidth: 40 }}
-              >
-                <Typography
-                  variant="caption"
-                  sx={{
-                    color: 'rgba(255, 255, 255, 0.7)',
-                    fontSize: { xs: '0.85rem', md: '0.75rem' }, // Larger text on mobile
-                    fontFamily: 'Roboto, sans-serif',
-                    fontWeight: 400,
-                    lineHeight: 1,
-                    minWidth: '32px',
-                    pl: 2
-                  }}
-                >
-                  {formatTime(
-                    (effectiveEndTime === Infinity
-                      ? duration / 1000
-                      : effectiveEndTime - startTime) * 1000
-                  )}
-                </Typography>
-              </Stack>
-            </Stack>
-
-            {/* Right side controls */}
-            <Stack
-              direction="row"
-              spacing={0.5}
-              alignItems="center"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Captions Selector Button */}
-              <IconButton
-                onClick={handleOpenCaptionsMenu}
-                aria-label="Captions menu"
-                tabIndex={0}
-                sx={{
-                  color: selectedCaption !== 'Off' ? '#3498db' : 'white',
-                  padding: { xs: 1, md: 0.7 }, // Larger touch target on mobile
-                  '&:hover': {
-                    backgroundColor: 'rgba(255, 255, 255, 0.15)'
-                  }
-                }}
-                size={isMobile ? 'medium' : 'small'}
-                disabled={!playerInstanceRef.current}
-              >
-                <ClosedCaptionOutlined sx={{ fontSize: { xs: 24, md: 20 } }} />
-              </IconButton>
-              <Menu
-                anchorEl={captionsMenuAnchor}
-                open={Boolean(captionsMenuAnchor)}
-                onClose={handleCloseCaptionsMenu}
-                MenuListProps={{ 'aria-label': 'Captions menu' }}
-              >
-                <MenuItem
-                  selected={selectedCaption === 'Off'}
-                  onClick={() => handleSelectCaption('Off')}
-                  aria-label="Turn captions off"
-                  // eslint-disable-next-line i18next/no-literal-string
-                >
-                  Off
-                </MenuItem>
-                {subtitles.map((track) => (
-                  <MenuItem
-                    key={track.language}
-                    selected={selectedCaption === track.language}
-                    onClick={() => handleSelectCaption(track.language)}
-                    aria-label={`Show captions: ${track.language}`}
-                  >
-                    {track.language}
-                  </MenuItem>
-                ))}
-              </Menu>
-              {/* Fullscreen Button */}
-              <IconButton
-                onClick={handleFullscreen}
-                aria-label={fullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
-                sx={{
-                  color: 'white',
-                  padding: { xs: 1, md: 0.7 }, // Larger touch target on mobile
-                  '&:hover': {
-                    backgroundColor: 'rgba(255, 255, 255, 0.15)'
-                  }
-                }}
-                size={isMobile ? 'medium' : 'small'}
-                disabled={!playerInstanceRef.current}
-              >
-                {fullscreen ? (
-                  <FullscreenExitRounded
-                    sx={{ fontSize: { xs: 24, md: 20 } }}
-                  />
-                ) : (
-                  <FullscreenRounded sx={{ fontSize: { xs: 24, md: 20 } }} />
-                )}
-              </IconButton>
-            </Stack>
-          </Stack>
-        </Box>
-      </Box>
+      {/* Remove all custom controls since we're using Video.js built-in controls */}
     </div>
   )
 }
