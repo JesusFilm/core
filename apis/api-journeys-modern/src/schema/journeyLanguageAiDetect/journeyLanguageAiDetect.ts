@@ -63,7 +63,7 @@ builder.mutationFields((t) => ({
         - And the ${requestedLanguageName} is 中文, then always return isSameLanguage as false.
       For languages that use the western alphabet, do not assume the detected language is English.
       Instead, analyze the content to determine the language.
-      Journey Content: ${journeyContent}
+      Content: ${journeyContent}
       Return the result in this format:
       {
         detectedLanguage: [e.g. "Traditional Chinese", "Simplified Chinese", "Japanese", "English"],
