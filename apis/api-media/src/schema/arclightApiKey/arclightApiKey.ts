@@ -7,7 +7,6 @@ const DefaultPlatform = builder.enumType('DefaultPlatform', {
 
 const ArclightApiKeyObject = builder.prismaObject('ArclightApiKey', {
   fields: (t) => ({
-    id: t.exposeID('id', { nullable: false }),
     key: t.exposeString('key', { nullable: false }),
     desc: t.exposeString('desc', { nullable: true }),
     defaultPlatform: t.expose('defaultPlatform', {
@@ -18,13 +17,13 @@ const ArclightApiKeyObject = builder.prismaObject('ArclightApiKey', {
 })
 
 builder.asEntity(ArclightApiKeyObject, {
-  key: builder.selection<{ id: string }>('id'),
-  resolveReference: async ({ id }) => {
+  key: builder.selection<{ key: string }>('key'),
+  resolveReference: async ({ key }) => {
     const arclightApiKey = await prisma.arclightApiKey.findUnique({
-      where: { id }
+      where: { key }
     })
     if (arclightApiKey == null) {
-      throw new Error(`ArclightApiKey with id ${id} not found`)
+      throw new Error(`ArclightApiKey with key ${key} not found`)
     }
     return arclightApiKey
   }
@@ -32,15 +31,27 @@ builder.asEntity(ArclightApiKeyObject, {
 
 builder.queryFields((t) => ({
   arclightApiKeys: t.prismaField({
-    type: ['ArclightApiKey'],
+    type: [ArclightApiKeyObject],
     nullable: false,
     resolve: async (query) =>
       prisma.arclightApiKey.findMany({
         ...query
       })
   }),
-  arclightApiKey: t.prismaField({
-    type: 'ArclightApiKey',
+  arclightApiKeyByKey: t.prismaField({
+    type: ArclightApiKeyObject,
+    nullable: true,
+    args: {
+      key: t.arg.string({ required: true })
+    },
+    resolve: async (query, _parent, { key }) =>
+      prisma.arclightApiKey.findUnique({
+        ...query,
+        where: { key }
+      })
+  }),
+  arclightApiKeyById: t.prismaField({
+    type: ArclightApiKeyObject,
     nullable: true,
     args: {
       id: t.arg.id({ required: true })

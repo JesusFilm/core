@@ -477,7 +477,6 @@ enum DefaultPlatform {
 }
 
 model ArclightApiKey {
-  id              String          @id @default(cuid())
   key             String          @unique
   desc            String?
   defaultPlatform DefaultPlatform
