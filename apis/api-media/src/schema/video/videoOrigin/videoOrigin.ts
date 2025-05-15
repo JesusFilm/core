@@ -1,12 +1,13 @@
 import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 
+import { VideoOriginCreateInput, VideoOriginUpdateInput } from './inputs'
+
 builder.prismaObject('VideoOrigin', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
     name: t.exposeString('name', { nullable: false }),
-    description: t.exposeString('description', { nullable: true }),
-    videos: t.relation('videos', { nullable: false })
+    description: t.exposeString('description', { nullable: true })
   })
 })
 
@@ -15,15 +16,14 @@ builder.mutationFields((t) => ({
     type: 'VideoOrigin',
     nullable: false,
     args: {
-      name: t.arg.string({ required: true }),
-      description: t.arg.string({ required: false })
+      input: t.arg({ type: VideoOriginCreateInput, required: true })
     },
-    resolve: async (query, _parent, { name, description }) => {
+    resolve: async (query, _parent, { input }) => {
       return await prisma.videoOrigin.create({
         ...query,
         data: {
-          name,
-          description
+          name: input.name,
+          description: input.description
         }
       })
     }
@@ -32,17 +32,15 @@ builder.mutationFields((t) => ({
     type: 'VideoOrigin',
     nullable: false,
     args: {
-      id: t.arg.id({ required: true }),
-      name: t.arg.string({ required: false }),
-      description: t.arg.string({ required: false })
+      input: t.arg({ type: VideoOriginUpdateInput, required: true })
     },
-    resolve: async (query, _parent, { id, name, description }) => {
+    resolve: async (query, _parent, { input }) => {
       return await prisma.videoOrigin.update({
         ...query,
-        where: { id },
+        where: { id: input.id },
         data: {
-          name: name ?? undefined,
-          description: description ?? undefined
+          name: input.name ?? undefined,
+          description: input.description ?? undefined
         }
       })
     }
