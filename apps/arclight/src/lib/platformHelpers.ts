@@ -2,84 +2,64 @@ import { gql } from '@apollo/client'
 
 import { getApolloClient } from './apolloClient'
 
-interface ApiKeyPlatform {
-  key: string
-  defaultPlatform: string
-}
-
-let apiKeyToDefaultPlatform: Map<string, string> | null = null
-let isLoadingApiKeys = false
-let loadPromise: Promise<void> | null = null
-
-const GET_API_KEYS_AND_PLATFORMS = gql`
-  query GetArclightApiKeysAndPlatforms {
-    arclightApiKeys {
-      key
+const GET_DEFAULT_PLATFORM_FOR_API_KEY = gql`
+  query GetDefaultPlatformForApiKey($key: String!) {
+    arclightApiKeyByKey(key: $key) {
       defaultPlatform
     }
   }
 `
 
-/**
- * Fetches API keys and their default platforms from the GraphQL API
- * and populates an in-memory map.
- * Should be called once during application initialization.
- */
-export async function loadApiKeysAndPlatforms(): Promise<void> {
-  if (apiKeyToDefaultPlatform !== null) {
-    return Promise.resolve()
-  }
+interface ArclightApiKeyByKeyData {
+  arclightApiKeyByKey: {
+    defaultPlatform: string
+  } | null
+}
 
-  if (isLoadingApiKeys && loadPromise) {
-    return loadPromise
-  }
-
-  isLoadingApiKeys = true
-  loadPromise = (async () => {
-    try {
-      const { data } = await getApolloClient().query<
-        { arclightApiKeys: ApiKeyPlatform[] },
-        never // No variables for this query
-      >({
-        query: GET_API_KEYS_AND_PLATFORMS
-      })
-
-      const tempMap = new Map<string, string>() // Use a temporary map
-      if (data && data.arclightApiKeys) {
-        for (const item of data.arclightApiKeys) {
-          tempMap.set(item.key, item.defaultPlatform)
-        }
-      }
-      apiKeyToDefaultPlatform = tempMap // Assign to module-level map only on success
-      console.log('API keys and platforms loaded successfully.')
-    } catch (error) {
-      console.error('Failed to load API keys and platforms:', error)
-      apiKeyToDefaultPlatform = null // On error, reset the map to allow retries
-    } finally {
-      isLoadingApiKeys = false
-      loadPromise = null
-    }
-  })()
-  return loadPromise
+interface GetDefaultPlatformForApiKeyVars {
+  key: string
 }
 
 /**
- * Gets the default platform for a given API key.
- * Relies on `loadApiKeysAndPlatforms` being called beforehand, typically at app startup.
+ * Fetches the default platform for a given API key directly from the API.
+ * This version does not use any caching or concurrent request management.
+ *
  * @param apiKey The API key string.
- * @returns The default platform string (e.g., 'ios', 'android', 'web') or undefined if not found or not loaded.
+ * @returns The default platform string (e.g., 'ios', 'android', 'web') or undefined if not found or an error occurs.
  */
-export function getPlatformForApiKey(apiKey?: string): string | undefined {
+export async function getDefaultPlatformForApiKey(
+  apiKey?: string
+): Promise<string | undefined> {
   if (!apiKey) {
+    console.warn('getDefaultPlatformForApiKey called with no API key.')
     return undefined
   }
-  if (apiKeyToDefaultPlatform === null) {
+
+  try {
+    const { data } = await getApolloClient().query<
+      ArclightApiKeyByKeyData,
+      GetDefaultPlatformForApiKeyVars
+    >({
+      query: GET_DEFAULT_PLATFORM_FOR_API_KEY,
+      variables: { key: apiKey }
+    })
+
+    if (
+      data &&
+      data.arclightApiKeyByKey &&
+      data.arclightApiKeyByKey.defaultPlatform
+    ) {
+      return data.arclightApiKeyByKey.defaultPlatform
+    }
     console.warn(
-      'getPlatformForApiKey called before API keys were loaded. Call loadApiKeysAndPlatforms() at app startup.'
+      `No default platform found for API key: ${apiKey.substring(0, 5)}...`
     )
-    // Optionally, trigger a load here if desired, though typically done at startup
-    // loadApiKeysAndPlatforms(); // This would make getPlatformForApiKey async or require a different pattern
+    return undefined
+  } catch (error) {
+    console.error(
+      `Failed to load default platform for API key ${apiKey.substring(0, 5)}...:`,
+      error
+    )
     return undefined
   }
-  return apiKeyToDefaultPlatform.get(apiKey)
 }

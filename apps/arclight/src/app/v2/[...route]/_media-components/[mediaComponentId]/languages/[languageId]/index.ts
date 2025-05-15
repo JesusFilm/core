@@ -2,7 +2,7 @@ import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { ResultOf, graphql } from 'gql.tada'
 
 import { getApolloClient } from '../../../../../../../lib/apolloClient'
-import { getPlatformForApiKey } from '../../../../../../../lib/platformHelpers'
+import { getDefaultPlatformForApiKey } from '../../../../../../../lib/platformHelpers'
 import {
   getWebEmbedPlayer,
   getWebEmbedSharePlayer
@@ -203,7 +203,7 @@ mediaComponentLanguage.openapi(route, async (c) => {
 
   let platform = c.req.query('platform')
   if (!platform && apiKey) {
-    platform = getPlatformForApiKey(apiKey)
+    platform = await getDefaultPlatformForApiKey(apiKey)
   }
   if (!platform) {
     platform = 'ios' // Default platform for this route

@@ -4,7 +4,7 @@ import { HTTPException } from 'hono/http-exception'
 
 import { getApolloClient } from '../../../../../lib/apolloClient'
 import { getLanguageIdsFromTags } from '../../../../../lib/getLanguageIdsFromTags'
-import { getPlatformForApiKey } from '../../../../../lib/platformHelpers'
+import { getDefaultPlatformForApiKey } from '../../../../../lib/platformHelpers'
 import { mediaComponentSchema } from '../../mediaComponent.schema'
 
 import { mediaComponentLanguages } from './languages'
@@ -153,7 +153,7 @@ mediaComponent.openapi(route, async (c) => {
 
   let platform = c.req.query('platform')
   if (!platform && apiKey) {
-    platform = getPlatformForApiKey(apiKey)
+    platform = await getDefaultPlatformForApiKey(apiKey)
   }
   if (!platform) {
     platform = 'ios'
