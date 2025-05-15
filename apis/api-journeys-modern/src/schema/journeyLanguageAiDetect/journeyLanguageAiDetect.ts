@@ -70,16 +70,19 @@ builder.mutationFields((t) => ({
         isSameLanguage: [whether the detected language is the same as the requested language]
       }`
 
-        const { object: detectedLanguage } = await generateObject({
-          model: google('gemini-2.0-flash'),
-          schema: z.object({
-            language: z.string(),
-            isSameLanguage: z.boolean()
-          }),
-          prompt: languageDetectionPrompt
-        })
-
-        return detectedLanguage.isSameLanguage
+        try {
+          const { object: detectedLanguage } = await generateObject({
+            model: google('gemini-2.0-flash'),
+            schema: z.object({
+              language: z.string(),
+              isSameLanguage: z.boolean()
+            }),
+            prompt: languageDetectionPrompt
+          })
+          return detectedLanguage.isSameLanguage
+        } catch {
+          throw new Error('Error detecting language with AI')
+        }
       }
     })
 }))
