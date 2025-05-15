@@ -59,7 +59,7 @@ export function VideoPlayer({
   const [captionsMenuAnchor, setCaptionsMenuAnchor] =
     useState<null | HTMLElement>(null)
   const [selectedCaption, setSelectedCaption] = useState<string>('')
-  const [aspectRatio, setAspectRatio] = useState<number | null>(null)
+  const [hasStarted, setHasStarted] = useState(false)
 
   const effectiveEndTime = endTime ?? Infinity
 
@@ -150,15 +150,6 @@ export function VideoPlayer({
     vjsPlayer.on('loadedmetadata', () => {
       const playerDuration = vjsPlayer.duration()
       setDuration((playerDuration ?? 0) * 1000) // Convert to milliseconds
-      if (
-        playerRef.current &&
-        playerRef.current.videoWidth &&
-        playerRef.current.videoHeight
-      ) {
-        setAspectRatio(
-          playerRef.current.videoWidth / playerRef.current.videoHeight
-        )
-      }
     })
 
     vjsPlayer.on('timeupdate', () => {
@@ -179,6 +170,7 @@ export function VideoPlayer({
     vjsPlayer.on('play', () => {
       setPlaying(true)
       resetControlsTimeout()
+      setHasStarted(true)
     })
 
     vjsPlayer.on('pause', () => {
@@ -536,7 +528,7 @@ export function VideoPlayer({
           background-color: transparent !important;
         }
       `}</style>
-      {thumbnail && (
+      {thumbnail && !hasStarted && (
         <div
           className="absolute inset-0"
           style={{
@@ -550,7 +542,7 @@ export function VideoPlayer({
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
-            display: playing ? 'none' : 'block'
+            display: 'block'
           }}
         />
       )}
@@ -562,7 +554,6 @@ export function VideoPlayer({
           width: 'auto',
           maxWidth: '100vw',
           maxHeight: '100vh',
-          aspectRatio: aspectRatio ? `${aspectRatio}` : undefined,
           backgroundColor: 'transparent',
           display: 'flex',
           alignItems: 'center',
