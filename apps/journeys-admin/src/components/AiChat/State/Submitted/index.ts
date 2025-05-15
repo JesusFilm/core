@@ -1,1 +1,0 @@
-export { StateSubmitted } from './Submitted'

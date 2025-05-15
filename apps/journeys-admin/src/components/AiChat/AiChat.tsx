@@ -11,7 +11,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { Form } from './Form'
 import { MessageList } from './MessageList'
-import { StateEmpty, StateError, StateSubmitted } from './State'
+import { StateEmpty, StateError, StateLoading } from './State'
 
 interface AiChatProps {
   variant?: 'popup' | 'page'
@@ -134,8 +134,9 @@ export function AiChat({
           justifyContent: variant === 'page' ? 'flex-end' : undefined
         }}
       >
+        {/* this component displays it's children in reverse order */}
+        <StateLoading status={status} />
         <StateEmpty messages={nonSystemMessages} append={append} />
-        <StateSubmitted status={status} />
         <StateError error={error} reload={reload} />
         <MessageList
           messages={nonSystemMessages}

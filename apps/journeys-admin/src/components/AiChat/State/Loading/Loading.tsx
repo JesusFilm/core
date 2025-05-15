@@ -4,16 +4,16 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Collapse from '@mui/material/Collapse'
 import { ReactElement } from 'react'
 
-interface StateSubmittedProps {
+interface StateLoadingProps {
   status: UseChatHelpers['status']
 }
 
-export function StateSubmitted({
+export function StateLoading({
   status
-}: StateSubmittedProps): ReactElement | null {
+}: StateLoadingProps): ReactElement | null {
   return (
     <>
-      <Collapse in={status === 'submitted'}>
+      <Collapse in={status === 'submitted'} unmountOnExit>
         <Box>
           <CircularProgress size={18} />
         </Box>
