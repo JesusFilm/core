@@ -33,5 +33,4 @@ export interface JourneyAiTranslateCreateVariables {
   journeyLanguageName: string;
   textLanguageId: string;
   textLanguageName: string;
-  forceTranslate?: boolean | null;
 }

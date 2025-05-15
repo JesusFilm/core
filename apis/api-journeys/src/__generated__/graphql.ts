@@ -840,6 +840,7 @@ export type Journey = {
 };
 
 export type JourneyAiTranslateInput = {
+  forceTranslate?: InputMaybe<Scalars['Boolean']['input']>;
   journeyId: Scalars['ID']['input'];
   journeyLanguageName: Scalars['String']['input'];
   name: Scalars['String']['input'];
@@ -2401,18 +2402,6 @@ export type MutationBibleCitationUpdateInput = {
   verseStart?: InputMaybe<Scalars['Int']['input']>;
 };
 
-<<<<<<< HEAD
-export type MutationJourneyAiTranslateCreateInput = {
-  forceTranslate?: InputMaybe<Scalars['Boolean']['input']>;
-  journeyId: Scalars['ID']['input'];
-  journeyLanguageName: Scalars['String']['input'];
-  name: Scalars['String']['input'];
-  textLanguageId: Scalars['ID']['input'];
-  textLanguageName: Scalars['String']['input'];
-};
-
-=======
->>>>>>> feature/25-04-MA-feat-ai-translation
 export type MutationShortLinkCreateInput = {
   /** the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to */
   hostname: Scalars['String']['input'];

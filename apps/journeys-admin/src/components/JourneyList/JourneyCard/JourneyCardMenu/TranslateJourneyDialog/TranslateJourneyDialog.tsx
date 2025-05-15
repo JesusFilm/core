@@ -36,7 +36,6 @@ interface TranslationParams {
   journeyLanguageName: string
   textLanguageId: string
   textLanguageName: string
-  forceTranslate?: boolean
 }
 
 interface TranslateJourneyDialogProps {
@@ -78,8 +77,6 @@ export function TranslateJourneyDialog({
   const [duplicatedJourneyId, setDuplicatedJourneyId] = useState<string | null>(
     null
   )
-  const [translationParams, setTranslationParams] =
-    useState<TranslationParams | null>(null)
 
   const [deleteJourney] = useMutation<JourneyDelete>(JOURNEY_DELETE, {
     variables: {
@@ -148,7 +145,6 @@ export function TranslateJourneyDialog({
             selectedLanguage.nativeName ?? selectedLanguage.localName ?? ''
         }
 
-        setTranslationParams(translationParams)
         try {
           await translateJourney(translationParams)
           enqueueSnackbar(t('Translation complete'), {
@@ -173,50 +169,6 @@ export function TranslateJourneyDialog({
     }
   }
 
-  async function handleConfirmTranslate(): Promise<void> {
-    if (!duplicatedJourneyId || !translationParams) return
-    setLoading(true)
-    try {
-      const translatedJourney = await translateJourney({
-        ...translationParams,
-        forceTranslate: true
-      })
-      if (translatedJourney) {
-        enqueueSnackbar(t('Translation complete'), {
-          variant: 'success'
-        })
-        setShowConfirmationDialog(false)
-        onClose()
-        setTranslationParams(null)
-        setDuplicatedJourneyId(null)
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        enqueueSnackbar(error.message, {
-          variant: 'error',
-          preventDuplicate: true
-        })
-      }
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  async function handleCancelConfirmation(): Promise<void> {
-    try {
-      setShowConfirmationDialog(false)
-      await deleteJourney()
-      await refetch?.()
-    } catch (error) {
-      if (error instanceof Error) {
-        enqueueSnackbar(error.message, {
-          variant: 'error',
-          preventDuplicate: true
-        })
-      }
-    }
-  }
-
   function handleTranslateDialogClose(
     _?: object,
     reason?: 'backdropClick' | 'escapeKeyDown'
@@ -226,14 +178,14 @@ export function TranslateJourneyDialog({
     onClose()
   }
 
-  function handleConfirmDialogClose(
-    _?: object,
-    reason?: 'backdropClick' | 'escapeKeyDown'
-  ): void {
-    if (loading && (reason === 'backdropClick' || reason === 'escapeKeyDown'))
-      return
-    void handleCancelConfirmation()
-  }
+  // function handleConfirmDialogClose(
+  //   _?: object,
+  //   reason?: 'backdropClick' | 'escapeKeyDown'
+  // ): void {
+  //   if (loading && (reason === 'backdropClick' || reason === 'escapeKeyDown'))
+  //     return
+  //   void handleCancelConfirmation()
+  // }
 
   return (
     <>
@@ -265,15 +217,6 @@ export function TranslateJourneyDialog({
           }}
         />
       </TranslationDialogWrapper>
-      {showConfirmationDialog && (
-        <ConfirmSameLanguageDialog
-          open={showConfirmationDialog}
-          onClose={handleConfirmDialogClose}
-          onConfirm={handleConfirmTranslate}
-          loading={loading}
-          language={translationParams?.textLanguageName ?? ''}
-        />
-      )}
     </>
   )
 }

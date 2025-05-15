@@ -88,18 +88,6 @@ type Mutation {
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
 }
 
-<<<<<<< HEAD
-input MutationJourneyAiTranslateCreateInput {
-  journeyId: ID!
-  name: String!
-  journeyLanguageName: String!
-  textLanguageId: ID!
-  textLanguageName: String!
-  forceTranslate: Boolean
-}
-
-=======
->>>>>>> feature/25-04-MA-feat-ai-translation
 type MuxVideo
   @key(fields: "id primaryLanguageId")
   @extends
