@@ -558,8 +558,8 @@ export function VideoPlayer({
         data-vjs-player
         className="w-full h-full relative z-10"
         style={{
-          width: aspectRatio ? `calc(100vh * ${aspectRatio})` : '100vw',
-          height: aspectRatio ? '100vh' : 'auto',
+          height: '100vh',
+          width: 'auto',
           maxWidth: '100vw',
           maxHeight: '100vh',
           aspectRatio: aspectRatio ? `${aspectRatio}` : undefined,
@@ -568,7 +568,8 @@ export function VideoPlayer({
           alignItems: 'center',
           justifyContent: 'center',
           position: 'relative',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          margin: '0 auto'
         }}
       >
         <video
