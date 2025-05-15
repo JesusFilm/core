@@ -84,7 +84,7 @@ export function VideoHeading({
                     color="primary"
                     sx={{ textDecoration: 'none' }}
                   >
-                    {container.title[0].value}
+                    {last(container.title)?.value}
                   </Link>
                 </NextLink>
                 <Typography
@@ -123,8 +123,8 @@ export function VideoHeading({
                   sx={{ display: { xs: 'none', xl: 'block' } }}
                 >
                   {container.label === VideoLabel.featureFilm
-                    ? 'Watch Full Film'
-                    : 'See All'}
+                    ? t('Watch Full Film')
+                    : t('See All')}
                 </Button>
               </NextLink>
               <Typography
