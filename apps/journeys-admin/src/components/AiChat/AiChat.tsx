@@ -124,7 +124,6 @@ export function AiChat({
         sx={{
           display: 'flex',
           flexDirection: 'column-reverse',
-          gap: 4,
           py: 5,
           px: 4,
           pb: 0,

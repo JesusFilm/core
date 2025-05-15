@@ -28,33 +28,18 @@ export function MessageList({
           sx={{
             display: 'flex',
             flexDirection: 'column',
-            gap: 2,
-            backgroundColor:
-              message.role === 'user' ? 'action.selected' : 'background.paper',
-            py: message.role === 'user' ? 2 : 0,
-            px: message.role === 'user' ? 3 : 0,
-            borderRadius: 2,
-            alignSelf: message.role === 'user' ? 'flex-end' : 'flex-start',
-            maxWidth: '80%',
-            '& > p': {
-              m: 0
+            '& > div + div': {
+              mt: 2
             }
           }}
         >
           {message.parts?.map((part, i) => {
             switch (part.type) {
               case 'text':
-                return (
-                  <TextPart
-                    key={`${message.id}-${i}`}
-                    message={message}
-                    part={part}
-                  />
-                )
+                return <TextPart message={message} part={part} />
               case 'tool-invocation':
                 return (
                   <ToolInvocationPart
-                    key={`${message.id}-${part.toolInvocation.toolCallId}`}
                     part={part}
                     addToolResult={addToolResult}
                   />
