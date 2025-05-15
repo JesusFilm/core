@@ -19,7 +19,7 @@ describe('DiscussionQuestions', () => {
   it('renders the component with questions', () => {
     render(<DiscussionQuestions questions={mockQuestions} />)
 
-    expect(screen.getByTestId('DiscussionQuestions')).toBeInTheDocument()
+    expect(screen.getByTestId('ContentDiscussionQuestions')).toBeInTheDocument()
     expect(screen.getByText('Related questions')).toBeInTheDocument()
     expect(screen.getByText('Ask yours')).toBeInTheDocument()
     expect(screen.getByTestId('AskQuestionButton')).toBeInTheDocument()

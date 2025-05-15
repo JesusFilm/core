@@ -1,16 +1,21 @@
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 
+import Download2 from '@core/shared/ui/icons/Download2'
+import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 import { ThemeMode } from '@core/shared/ui/themes'
 
 import { VideoContentFields_studyQuestions } from '../../../__generated__/VideoContentFields'
 import { useVideoChildren } from '../../libs/useVideoChildren'
 import { getWatchUrl } from '../../libs/utils/getWatchUrl'
 import { useVideo } from '../../libs/videoContext'
+import { DownloadDialog } from '../DownloadDialog'
 import { PageWrapper } from '../PageWrapper'
+import { ShareDialog } from '../ShareDialog'
 
 import { ContentHero } from './ContentHero'
 import { ContentMetadata } from './ContentMetadata'
@@ -32,6 +37,9 @@ export function NewContentPage(): ReactElement {
     studyQuestions,
     slug: videoSlug
   } = useVideo()
+
+  const [showShare, setShowShare] = useState(false)
+  const [showDownload, setShowDownload] = useState(false)
 
   const variantSlug = container?.variant?.slug ?? variant?.slug
   const watchUrl = getWatchUrl(container?.slug, label, variant?.slug)
@@ -150,6 +158,66 @@ export function NewContentPage(): ReactElement {
                 />
                 <DiscussionQuestions questions={questions} />
               </Box>
+              <Stack
+                sx={{
+                  zIndex: 1,
+                  px: { xs: 4, sm: 6, md: 8, lg: 10, xl: 12 }
+                }}
+                direction="row"
+                spacing={2}
+                justifyContent="space-between"
+              >
+                <Stack direction="row" spacing={2}>
+                  <Button
+                    size="xsmall"
+                    startIcon={<LinkExternal sx={{ fontSize: 16 }} />}
+                    onClick={() => setShowShare(true)}
+                    sx={{
+                      borderRadius: '64px',
+                      color: 'text.primary',
+                      fontWeight: 'bold',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.1em',
+                      bgcolor: 'white',
+                      '&:hover': {
+                        bgcolor: 'primary.main',
+                        color: 'common.white'
+                      },
+                      transition: 'colors 0.2s'
+                    }}
+                  >
+                    {t('Share')}
+                  </Button>
+                  <Button
+                    size="xsmall"
+                    startIcon={<Download2 sx={{ fontSize: 16 }} />}
+                    onClick={() => setShowDownload(true)}
+                    sx={{
+                      borderRadius: '64px',
+                      color: 'text.primary',
+                      fontWeight: 'bold',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.1em',
+                      bgcolor: 'white',
+                      '&:hover': {
+                        bgcolor: 'primary.main',
+                        color: 'common.white'
+                      },
+                      transition: 'colors 0.2s'
+                    }}
+                  >
+                    {t('Download')}
+                  </Button>
+                </Stack>
+                <DownloadDialog
+                  open={showDownload}
+                  onClose={() => setShowDownload(false)}
+                />
+                <ShareDialog
+                  open={showShare}
+                  onClose={() => setShowShare(false)}
+                />
+              </Stack>
             </Stack>
           </Box>
         </Box>
