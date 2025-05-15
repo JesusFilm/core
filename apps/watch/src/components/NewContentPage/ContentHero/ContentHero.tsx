@@ -17,7 +17,7 @@ export function ContentHero(): ReactElement {
         bgcolor: 'background.default',
         zIndex: 1
       }}
-      data-testid="ContainerHero"
+      data-testid="ContentHero"
     >
       <ContentHeader />
       <ContentHeroVideo />

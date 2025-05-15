@@ -1,8 +1,9 @@
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { ThemeMode } from '@core/shared/ui/themes'
 
@@ -15,8 +16,9 @@ import { PageWrapper } from '../PageWrapper'
 import { ContentHero } from './ContentHero'
 import { ContentMetadata } from './ContentMetadata'
 import { DiscussionQuestions } from './DiscussionQuestions'
-import { ShareButton } from './ShareButton'
 import { VideoCarousel } from './VideoCarousel'
+import { ShareDialog } from '../ShareDialog'
+import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 
 export function NewContentPage(): ReactElement {
   const { t } = useTranslation('apps-watch')
@@ -33,6 +35,8 @@ export function NewContentPage(): ReactElement {
     studyQuestions,
     slug: videoSlug
   } = useVideo()
+
+  const [showShare, setShowShare] = useState(false)
 
   const variantSlug = container?.variant?.slug ?? variant?.slug
   const watchUrl = getWatchUrl(container?.slug, label, variant?.slug)
@@ -160,7 +164,30 @@ export function NewContentPage(): ReactElement {
                 spacing={2}
                 justifyContent="space-between"
               >
-                <ShareButton />
+                <Button
+                  size="xsmall"
+                  startIcon={<LinkExternal sx={{ fontSize: 16 }} />}
+                  onClick={() => setShowShare(true)}
+                  sx={{
+                    borderRadius: '64px',
+                    color: 'text.primary',
+                    fontWeight: 'bold',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.1em',
+                    bgcolor: 'white',
+                    '&:hover': {
+                      bgcolor: 'primary.main',
+                      color: 'common.white'
+                    },
+                    transition: 'colors 0.2s'
+                  }}
+                >
+                  {t('Share')}
+                </Button>
+                <ShareDialog
+                  open={showShare}
+                  onClose={() => setShowShare(false)}
+                />
               </Stack>
             </Stack>
           </Box>
