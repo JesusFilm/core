@@ -4,6 +4,7 @@ import { HTTPException } from 'hono/http-exception'
 
 import { getApolloClient } from '../../../../../lib/apolloClient'
 import { getLanguageIdsFromTags } from '../../../../../lib/getLanguageIdsFromTags'
+import { getPlatformForApiKey } from '../../../../../lib/platformHelpers'
 import { mediaComponentSchema } from '../../mediaComponent.schema'
 
 import { mediaComponentLanguages } from './languages'
@@ -147,8 +148,17 @@ mediaComponent.openapi(route, async (c) => {
   const mediaComponentId = c.req.param('mediaComponentId')
   const expand = c.req.query('expand') ?? ''
   const filter = c.req.query('filter') ?? ''
-  const platform = c.req.query('platform') ?? 'ios'
-  const apiKey = c.req.query('apiKey') ?? ''
+
+  const apiKey = c.req.query('apiKey')
+
+  let platform = c.req.query('platform')
+  if (!platform && apiKey) {
+    platform = getPlatformForApiKey(apiKey)
+  }
+  if (!platform) {
+    platform = 'ios'
+  }
+
   const metadataLanguageTags =
     c.req.query('metadataLanguageTags')?.split(',').filter(Boolean) ?? []
 
