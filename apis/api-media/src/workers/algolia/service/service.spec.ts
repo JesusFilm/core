@@ -159,6 +159,18 @@ describe('algolia/service', () => {
             slug: 'slug',
             subtitles: ['21754'],
             titles: ['title2', 'title'],
+            titlesWithLanguages: [
+              {
+                value: 'title2',
+                languageId: '529',
+                bcp47: ''
+              },
+              {
+                value: 'title',
+                languageId: '555',
+                bcp47: ''
+              }
+            ],
             videoId: 'videoId',
             manualRanking: 1
           }
