@@ -465,8 +465,8 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   videoTitleCreate(input: VideoTranslationCreateInput!) : VideoTitle! @join__field(graph: API_MEDIA) 
   videoTitleUpdate(input: VideoTranslationUpdateInput!) : VideoTitle! @join__field(graph: API_MEDIA) 
   videoTitleDelete(id: ID!) : VideoTitle! @join__field(graph: API_MEDIA) 
-  videoOriginCreate(name: String!, description: String) : VideoOrigin! @join__field(graph: API_MEDIA) 
-  videoOriginUpdate(id: ID!, name: String, description: String) : VideoOrigin! @join__field(graph: API_MEDIA) 
+  videoOriginCreate(input: VideoOriginCreateInput!) : VideoOrigin! @join__field(graph: API_MEDIA) 
+  videoOriginUpdate(input: VideoOriginUpdateInput!) : VideoOrigin! @join__field(graph: API_MEDIA) 
   videoOriginDelete(id: ID!) : VideoOrigin! @join__field(graph: API_MEDIA) 
   videoEditionCreate(input: VideoEditionCreateInput!) : VideoEdition! @join__field(graph: API_MEDIA) 
   videoEditionUpdate(input: VideoEditionUpdateInput!) : VideoEdition! @join__field(graph: API_MEDIA) 
@@ -2660,7 +2660,6 @@ type VideoOrigin @join__type(graph: API_MEDIA)  {
   id: ID!
   name: String!
   description: String
-  videos: [Video!]!
 }
 
 type VideoSnippet @join__type(graph: API_MEDIA)  {
@@ -4427,6 +4426,17 @@ input VideoEditionCreateInput @join__type(graph: API_MEDIA)  {
 input VideoEditionUpdateInput @join__type(graph: API_MEDIA)  {
   id: ID!
   name: String
+}
+
+input VideoOriginCreateInput @join__type(graph: API_MEDIA)  {
+  name: String!
+  description: String
+}
+
+input VideoOriginUpdateInput @join__type(graph: API_MEDIA)  {
+  id: ID!
+  name: String
+  description: String
 }
 
 input VideoStudyQuestionCreateInput @join__type(graph: API_MEDIA)  {
