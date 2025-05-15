@@ -1,3 +1,5 @@
+import { useMutation } from '@apollo/client'
+import { graphql } from 'gql.tada'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
@@ -11,6 +13,26 @@ import CopyToIcon from '@core/shared/ui/icons/CopyTo'
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
 import { useJourneyAiTranslateMutation } from '../../../libs/useJourneyAiTranslateMutation'
 import { MenuItem } from '../../MenuItem'
+
+export const JOURNEY_LANGUAGE_AI_DETECT = graphql(`
+  mutation JourneyLanguageAiDetect(
+    $journeyId: ID!
+    $name: String!
+    $journeyLanguageName: String!
+    $textLanguageId: ID!
+    $textLanguageName: String!
+  ) {
+    journeyLanguageAiDetect(
+      input: {
+        journeyId: $journeyId
+        name: $name
+        journeyLanguageName: $journeyLanguageName
+        textLanguageId: $textLanguageId
+        textLanguageName: $textLanguageName
+      }
+    )
+  }
+`)
 
 interface CopyToTeamMenuItemProps {
   id?: string
@@ -36,6 +58,7 @@ export function CopyToTeamMenuItem({
     useState<boolean>(false)
   const [journeyDuplicate] = useJourneyDuplicateMutation()
   const { translateJourney } = useJourneyAiTranslateMutation()
+  const [journeyLanguageAiDetect] = useMutation(JOURNEY_LANGUAGE_AI_DETECT)
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
   const [loading, setLoading] = useState(false)
@@ -44,7 +67,7 @@ export function CopyToTeamMenuItem({
     teamId: string,
     selectedLanguage?: JourneyLanguage
   ): Promise<void> => {
-    if (id == null) return
+    if (id == null || journey == null) return
 
     try {
       setLoading(true)
@@ -56,7 +79,20 @@ export function CopyToTeamMenuItem({
       })
 
       if (duplicateData?.journeyDuplicate?.id) {
-        if (journey == null) return
+        const { data: detectedLanguageData } = await journeyLanguageAiDetect({
+          variables: {
+            journeyId: duplicateData?.journeyDuplicate?.id,
+            name: journey.title,
+            journeyLanguageName:
+              journey?.language.name.find(({ primary }) => primary)?.value ??
+              '',
+            textLanguageId: selectedLanguage?.id ?? '',
+            textLanguageName:
+              journey?.language.name.find(({ primary }) => primary)?.value ?? ''
+          }
+        })
+
+        console.log('detectedLanguageData', detectedLanguageData)
 
         // If no language selected, just show copied message
         if (selectedLanguage == null) {
