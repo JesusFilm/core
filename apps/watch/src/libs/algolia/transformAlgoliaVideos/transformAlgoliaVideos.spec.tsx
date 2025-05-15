@@ -6,6 +6,7 @@ describe('transformAlgoliaVideos', () => {
   const algoliaVideos = [
     {
       videoId: 'videoId',
+      titles: ['title'],
       titlesWithLanguages: [
         { value: 'English Title', bcp47: 'en' },
         { value: 'Spanish Title', bcp47: 'es' }
