@@ -38,13 +38,15 @@ export const UI_LANGUAGE_IDS: Readonly<Record<string, string>> = {
  * @returns The corresponding language ID or undefined if not found
  * @example
  * ```ts
- * const languageId = getUiLanguageId('en') // returns '529'
+ * const languageId = getLanguageIdFromLocale('en') // returns '529'
  * ```
  */
-export const getUiLanguageId = (locale: string | undefined | null): string => {
+export const getLanguageIdFromLocale = (
+  locale: string | undefined | null
+): string => {
   if (locale != null && UI_LANGUAGE_CODES.includes(locale)) {
     return UI_LANGUAGE_IDS[locale]
+  } else {
+    return UI_LANGUAGE_IDS['en']
   }
-
-  return UI_LANGUAGE_IDS[locale ?? 'en']
 }
