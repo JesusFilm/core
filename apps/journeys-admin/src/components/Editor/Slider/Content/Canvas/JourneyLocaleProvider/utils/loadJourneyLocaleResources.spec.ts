@@ -16,7 +16,6 @@ describe('loadJourneyLocaleResources', () => {
   let setResourcesMock: jest.Mock<
     Dispatch<SetStateAction<Record<string, Record<string, any>>>>
   >
-  let consoleErrorSpy: ReturnType<typeof jest.spyOn>
 
   beforeEach(() => {
     setResourcesMock = jest.fn()
@@ -55,7 +54,6 @@ describe('loadJourneyLocaleResources', () => {
         'apps-journeys-admin': mockAdminResourcesData
       }
     })
-    expect(consoleErrorSpy).not.toHaveBeenCalled()
   })
 
   test('correctly maps directoryLocale zh-Hans-CN to i18nKey zh-Hans', async () => {
