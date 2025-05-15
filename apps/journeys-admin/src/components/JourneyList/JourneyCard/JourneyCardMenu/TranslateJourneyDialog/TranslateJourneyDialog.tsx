@@ -1,4 +1,3 @@
-import { ApolloQueryResult, useMutation } from '@apollo/client'
 import { Theme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import useMediaQuery from '@mui/material/useMediaQuery'
@@ -13,16 +12,8 @@ import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplica
 import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
-import {
-  GetAdminJourneys,
-  GetAdminJourneys_journeys as Journey
-} from '../../../../../../__generated__/GetAdminJourneys'
-import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
-import { JourneyDelete } from '../../../../../../__generated__/JourneyDelete'
+import { GetAdminJourneys_journeys as Journey } from '../../../../../../__generated__/GetAdminJourneys'
 import { useJourneyAiTranslateMutation } from '../../../../../libs/useJourneyAiTranslateMutation'
-import { JOURNEY_DELETE } from '../DeleteJourneyDialog/DeleteJourneyDialog'
-
-import { ConfirmSameLanguageDialog } from './ConfirmSameLanguageDialog'
 
 interface JourneyLanguage {
   id: string
@@ -42,7 +33,6 @@ interface TranslateJourneyDialogProps {
   open: boolean
   onClose: () => void
   journey?: Journey
-  refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
 }
 
 /**
@@ -61,8 +51,7 @@ interface TranslateJourneyDialogProps {
 export function TranslateJourneyDialog({
   open,
   onClose,
-  journey,
-  refetch
+  journey
 }: TranslateJourneyDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
@@ -73,25 +62,6 @@ export function TranslateJourneyDialog({
   const { translateJourney } = useJourneyAiTranslateMutation()
   const [journeyDuplicate] = useJourneyDuplicateMutation()
   const [loading, setLoading] = useState(false)
-  const [showConfirmationDialog, setShowConfirmationDialog] = useState(false)
-  const [duplicatedJourneyId, setDuplicatedJourneyId] = useState<string | null>(
-    null
-  )
-
-  const [deleteJourney] = useMutation<JourneyDelete>(JOURNEY_DELETE, {
-    variables: {
-      ids: [duplicatedJourneyId]
-    },
-    optimisticResponse: {
-      journeysDelete: [
-        {
-          id: duplicatedJourneyId ?? '',
-          status: JourneyStatus.deleted,
-          __typename: 'Journey'
-        }
-      ]
-    }
-  })
 
   // TODO: Update so only the selected AI model + i18n languages are shown.
   const { data: languagesData, loading: languagesLoading } = useLanguagesQuery({
@@ -132,14 +102,11 @@ export function TranslateJourneyDialog({
       })
 
       if (duplicateData?.journeyDuplicate?.id) {
-        setDuplicatedJourneyId(duplicateData.journeyDuplicate.id)
-
         const translationParams: TranslationParams = {
           journeyId: duplicateData.journeyDuplicate.id,
           name: journeyData.title,
           journeyLanguageName:
-            journeyData.language.name.find(({ primary }) => !primary)?.value ??
-            '',
+            journeyLanguage?.nativeName ?? journeyLanguage?.localName ?? '',
           textLanguageId: selectedLanguage.id,
           textLanguageName:
             selectedLanguage.nativeName ?? selectedLanguage.localName ?? ''
@@ -151,8 +118,13 @@ export function TranslateJourneyDialog({
             variant: 'success'
           })
           onClose()
-        } catch {
-          setShowConfirmationDialog(true)
+        } catch (error) {
+          if (error instanceof Error) {
+            enqueueSnackbar(error.message, {
+              variant: 'error',
+              preventDuplicate: true
+            })
+          }
         }
       } else {
         throw new Error('Journey duplication failed')
@@ -177,15 +149,6 @@ export function TranslateJourneyDialog({
       return
     onClose()
   }
-
-  // function handleConfirmDialogClose(
-  //   _?: object,
-  //   reason?: 'backdropClick' | 'escapeKeyDown'
-  // ): void {
-  //   if (loading && (reason === 'backdropClick' || reason === 'escapeKeyDown'))
-  //     return
-  //   void handleCancelConfirmation()
-  // }
 
   return (
     <>
