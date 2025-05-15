@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router'
 import type { MouseEvent, ReactElement } from 'react'
 
 import { useAlgoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos'
@@ -9,6 +10,8 @@ import {
 import { VideoGrid, VideoGridProps } from '../VideoGrid'
 
 export function AlgoliaVideoGrid(props: VideoGridProps): ReactElement {
+  const { locale } = useRouter()
+
   const {
     items: algoliaVideos,
     showMore,
@@ -16,7 +19,7 @@ export function AlgoliaVideoGrid(props: VideoGridProps): ReactElement {
     loading,
     noResults,
     sendEvent
-  } = useAlgoliaVideos<CoreVideo>({ transformItems })
+  } = useAlgoliaVideos<CoreVideo>({ transformItems, locale })
 
   const handleClick =
     (videoId?: string) =>
