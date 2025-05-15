@@ -584,8 +584,8 @@ export function VideoPlayer({
         data-vjs-player
         className="w-full h-full relative z-10"
         style={{
-          width: videoWrapperSize.width,
-          height: videoWrapperSize.height,
+          height: '100vh',
+          width: 'auto',
           maxWidth: '100vw',
           maxHeight: '100vh',
           backgroundColor: 'transparent',
@@ -593,7 +593,8 @@ export function VideoPlayer({
           alignItems: 'center',
           justifyContent: 'center',
           position: 'relative',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          margin: '0 auto'
         }}
       >
         <video
