@@ -840,7 +840,6 @@ export type Journey = {
 };
 
 export type JourneyAiTranslateInput = {
-  forceTranslate?: InputMaybe<Scalars['Boolean']['input']>;
   journeyId: Scalars['ID']['input'];
   journeyLanguageName: Scalars['String']['input'];
   name: Scalars['String']['input'];
