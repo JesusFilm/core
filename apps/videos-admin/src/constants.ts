@@ -10,6 +10,6 @@ export const videoLabels = [
   { label: 'Clip', value: 'segment' },
   { label: 'Series', value: 'series' },
   { label: 'Short Film', value: 'shortFilm' },
-  { label: 'Trailer', value: 'trailer' },
+  { label: 'Trailer/Preview', value: 'trailer' },
   { label: 'Behind The Scenes', value: 'behindTheScenes' }
 ]

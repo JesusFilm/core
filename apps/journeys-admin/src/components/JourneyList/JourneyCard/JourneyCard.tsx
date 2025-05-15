@@ -4,6 +4,7 @@ import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import CardContent from '@mui/material/CardContent'
 import Chip from '@mui/material/Chip'
+import Skeleton from '@mui/material/Skeleton'
 import { useTheme } from '@mui/material/styles'
 import Image from 'next/image'
 import NextLink from 'next/link'
@@ -52,6 +53,7 @@ export function JourneyCard({
   const isNavigating = useNavigationState()
   const { t } = useTranslation('apps-journeys-admin')
   const [isCardHovered, setIsCardHovered] = useState(false)
+  const [isImageLoading, setIsImageLoading] = useState(true)
 
   useEffect(() => {
     if (duplicatedJourneyId != null && duplicatedJourneyRef.current != null) {
@@ -161,21 +163,37 @@ export function JourneyCard({
               }}
             >
               {journey.primaryImageBlock?.src != null && (
-                <Image
-                  data-testid="JourneyCard-Image"
-                  src={journey.primaryImageBlock.src}
-                  alt={journey.primaryImageBlock.alt ?? ''}
-                  fill
-                  style={{
-                    objectFit: 'cover'
-                  }}
-                  // Define appropriate image sizes for different screen sizes
-                  sizes={`
-                    (max-width: ${theme.breakpoints.values.sm}px) calc(100vw - ${theme.spacing(6)})px,
-                    (max-width: ${theme.breakpoints.values.md}px) calc(40vw - ${theme.spacing(6)})px,
-                    calc(20vw - ${theme.spacing(6)})px
-                  `}
-                />
+                <>
+                  {isImageLoading && (
+                    <Skeleton
+                      variant="rectangular"
+                      width="100%"
+                      height="100%"
+                      sx={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        height: '100%',
+                        width: '100%'
+                      }}
+                    />
+                  )}
+                  <Image
+                    data-testid="JourneyCard-Image"
+                    src={journey.primaryImageBlock.src}
+                    alt={journey.primaryImageBlock.alt ?? ''}
+                    fill
+                    style={{
+                      objectFit: 'cover'
+                    }}
+                    sizes={`
+                      (max-width: ${theme.breakpoints.values.sm}px) calc(100vw - ${theme.spacing(6)})px,
+                      (max-width: ${theme.breakpoints.values.md}px) calc(40vw - ${theme.spacing(6)})px,
+                      calc(20vw - ${theme.spacing(6)})px
+                    `}
+                    onLoadingComplete={() => setIsImageLoading(false)}
+                  />
+                </>
               )}
               <Box
                 aria-hidden
