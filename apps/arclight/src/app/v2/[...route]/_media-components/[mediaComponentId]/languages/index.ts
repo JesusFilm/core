@@ -107,6 +107,11 @@ mediaComponentLanguages.openapi(route, async (c) => {
   let platform = c.req.query('platform')
   if (!platform && apiKey) {
     platform = await getDefaultPlatformForApiKey(apiKey)
+    if (!platform) {
+      console.info(
+        `Platform not found for API key ${apiKey}..., defaulting to 'ios'`
+      )
+    }
   }
   if (!platform) {
     platform = 'ios' // Default platform for this route
