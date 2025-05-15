@@ -144,6 +144,13 @@ export async function service(logger?: Logger): Promise<void> {
           titles: videoVariant.video?.title
             .sort(sortByEnglishFirst)
             .map((title) => title?.value),
+          titlesWithLanguages: videoVariant.video?.title
+            .sort(sortByEnglishFirst)
+            .map((title) => ({
+              value: title.value,
+              languageId: title.languageId,
+              bcp47: languages[title.languageId]?.bcp47 ?? ''
+            })),
           description: videoVariant.video?.description
             ?.sort(sortByEnglishFirst)
             .map((description) => description?.value),
