@@ -14,6 +14,7 @@ import { useTheme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, Formik } from 'formik'
+import last from 'lodash/last'
 import Image from 'next/image'
 import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement, useEffect, useState } from 'react'
@@ -135,7 +136,7 @@ export function DownloadDialog({
           )}
           <Stack>
             <Typography variant="h6" sx={{ mb: 1 }}>
-              {title[0].value}
+              {last(title)?.value}
             </Typography>
             <Stack direction="row" alignItems="center">
               <LanguageIcon fontSize="small" sx={{ mr: 1 }} />
