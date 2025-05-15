@@ -5,9 +5,7 @@ CREATE TYPE "DefaultPlatform" AS ENUM ('ios', 'android', 'web');
 CREATE TABLE "ArclightApiKey" (
     "key" TEXT NOT NULL,
     "desc" TEXT,
-    "defaultPlatform" "DefaultPlatform" NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL
+    "defaultPlatform" "DefaultPlatform" NOT NULL
 );
 
 -- CreateIndex

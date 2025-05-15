@@ -480,6 +480,4 @@ model ArclightApiKey {
   key             String          @unique
   desc            String?
   defaultPlatform DefaultPlatform
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
 }
