@@ -343,7 +343,6 @@ export function VideoPlayer({
       const playerElement = playerInstanceRef.current.el()
       if (playerElement.requestFullscreen) {
         void playerElement.requestFullscreen()
-        showControls() // Show controls when entering fullscreen
       }
     }
   }
@@ -351,11 +350,7 @@ export function VideoPlayer({
   // Watch for fullscreen changes
   useEffect(() => {
     const handleFullscreenChange = () => {
-      const isFullscreen = document.fullscreenElement !== null
-      setFullscreen(isFullscreen)
-      if (isFullscreen) {
-        showControls() // Show controls when entering fullscreen
-      }
+      setFullscreen(document.fullscreenElement !== null)
     }
 
     document.addEventListener('fullscreenchange', handleFullscreenChange)
@@ -634,7 +629,7 @@ export function VideoPlayer({
           left: 0,
           right: 0,
           bottom: 0,
-          zIndex: fullscreen ? 9999 : 20, // Higher z-index in fullscreen
+          zIndex: 20,
           transition: 'opacity 0.3s ease',
           opacity: controlsVisible ? 1 : 0,
           background:
