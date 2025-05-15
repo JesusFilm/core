@@ -12,7 +12,10 @@ import Globe2Icon from '@core/shared/ui/icons/Globe2'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
-import { GetAdminJourneys } from '../../../../../../__generated__/GetAdminJourneys'
+import {
+  GetAdminJourneys,
+  GetAdminJourneys_journeys as Journey
+} from '../../../../../../__generated__/GetAdminJourneys'
 import {
   JourneyStatus,
   Role,
@@ -47,6 +50,7 @@ interface DefaultMenuProps {
   slug: string
   status: JourneyStatus
   journeyId: string
+  journey?: Journey
   published: boolean
   setOpenAccessDialog: () => void
   handleCloseMenu: () => void
@@ -83,6 +87,7 @@ export function DefaultMenu({
   slug,
   status,
   journeyId,
+  journey,
   published,
   setOpenAccessDialog,
   handleCloseMenu,
@@ -198,6 +203,7 @@ export function DefaultMenu({
         id={id}
         handleCloseMenu={handleCloseMenu}
         handleKeepMounted={handleKeepMounted}
+        journey={journey}
       />
       <ArchiveJourney
         status={status}

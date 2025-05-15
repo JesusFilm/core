@@ -26,9 +26,9 @@ export const JOURNEY_AI_TRANSLATE_CREATE = gql`
       id
       title
       description
-      language {
-        id
-      }
+      languageId
+      createdAt
+      updatedAt
     }
   }
 `
