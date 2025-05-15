@@ -19,6 +19,8 @@ import { ContentHero } from './ContentHero'
 import { ContentMetadata } from './ContentMetadata'
 import { DiscussionQuestions } from './DiscussionQuestions'
 import { VideoCarousel } from './VideoCarousel'
+import Download2 from '@core/shared/ui/icons/Download2'
+import { DownloadDialog } from '../DownloadDialog'
 
 export function NewContentPage(): ReactElement {
   const { t } = useTranslation('apps-watch')
@@ -37,6 +39,7 @@ export function NewContentPage(): ReactElement {
   } = useVideo()
 
   const [showShare, setShowShare] = useState(false)
+  const [showDownload, setShowDownload] = useState(false)
 
   const variantSlug = container?.variant?.slug ?? variant?.slug
   const watchUrl = getWatchUrl(container?.slug, label, variant?.slug)
@@ -164,26 +167,52 @@ export function NewContentPage(): ReactElement {
                 spacing={2}
                 justifyContent="space-between"
               >
-                <Button
-                  size="xsmall"
-                  startIcon={<LinkExternal sx={{ fontSize: 16 }} />}
-                  onClick={() => setShowShare(true)}
-                  sx={{
-                    borderRadius: '64px',
-                    color: 'text.primary',
-                    fontWeight: 'bold',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.1em',
-                    bgcolor: 'white',
-                    '&:hover': {
-                      bgcolor: 'primary.main',
-                      color: 'common.white'
-                    },
-                    transition: 'colors 0.2s'
-                  }}
-                >
-                  {t('Share')}
-                </Button>
+                <Stack direction="row" spacing={2}>
+                  <Button
+                    size="xsmall"
+                    startIcon={<LinkExternal sx={{ fontSize: 16 }} />}
+                    onClick={() => setShowShare(true)}
+                    sx={{
+                      borderRadius: '64px',
+                      color: 'text.primary',
+                      fontWeight: 'bold',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.1em',
+                      bgcolor: 'white',
+                      '&:hover': {
+                        bgcolor: 'primary.main',
+                        color: 'common.white'
+                      },
+                      transition: 'colors 0.2s'
+                    }}
+                  >
+                    {t('Share')}
+                  </Button>
+                  <Button
+                    size="xsmall"
+                    startIcon={<Download2 sx={{ fontSize: 16 }} />}
+                    onClick={() => setShowDownload(true)}
+                    sx={{
+                      borderRadius: '64px',
+                      color: 'text.primary',
+                      fontWeight: 'bold',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.1em',
+                      bgcolor: 'white',
+                      '&:hover': {
+                        bgcolor: 'primary.main',
+                        color: 'common.white'
+                      },
+                      transition: 'colors 0.2s'
+                    }}
+                  >
+                    {t('Download')}
+                  </Button>
+                </Stack>
+                <DownloadDialog
+                  open={showDownload}
+                  onClose={() => setShowDownload(false)}
+                />
                 <ShareDialog
                   open={showShare}
                   onClose={() => setShowShare(false)}
