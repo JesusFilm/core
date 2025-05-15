@@ -53,6 +53,7 @@ interface DefaultMenuProps {
   setOpenTrashDialog: () => void
   setOpenDetailsDialog: () => void
   setOpenTranslateDialog: () => void
+  handleKeepMounted?: () => void
   template?: boolean
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
 }
@@ -88,6 +89,7 @@ export function DefaultMenu({
   setOpenTrashDialog,
   setOpenDetailsDialog,
   setOpenTranslateDialog,
+  handleKeepMounted,
   template,
   refetch
 }: DefaultMenuProps): ReactElement {
@@ -192,7 +194,11 @@ export function DefaultMenu({
         </>
       )}
       <Divider />
-      <CopyToTeamMenuItem id={id} handleCloseMenu={handleCloseMenu} />
+      <CopyToTeamMenuItem
+        id={id}
+        handleCloseMenu={handleCloseMenu}
+        handleKeepMounted={handleKeepMounted}
+      />
       <ArchiveJourney
         status={status}
         id={journeyId}

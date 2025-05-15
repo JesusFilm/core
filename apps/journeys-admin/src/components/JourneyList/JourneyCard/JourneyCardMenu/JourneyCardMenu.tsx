@@ -140,13 +140,17 @@ export function JourneyCardMenu({
   const [openTranslateDialog, setOpenTranslateDialog] = useState<
     boolean | undefined
   >()
-
+  const [keepMounted, setKeepMounted] = useState<boolean>(false)
   const handleOpenMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
   }
   const handleCloseMenu = (): void => {
     setAnchorEl(null)
     onMenuClose?.()
+  }
+
+  const handleKeepMounted = (): void => {
+    setKeepMounted(true)
   }
 
   return (
@@ -180,6 +184,7 @@ export function JourneyCardMenu({
         anchorEl={anchorEl}
         open={open}
         onClose={handleCloseMenu}
+        keepMounted={keepMounted}
         MenuListProps={{
           'aria-labelledby': 'journey-actions'
         }}
@@ -206,6 +211,7 @@ export function JourneyCardMenu({
             slug={slug}
             journeyId={id}
             published={published}
+            handleKeepMounted={handleKeepMounted}
             setOpenAccessDialog={() => setOpenAccessDialog(true)}
             handleCloseMenu={handleCloseMenu}
             setOpenTrashDialog={() => setOpenTrashDialog(true)}

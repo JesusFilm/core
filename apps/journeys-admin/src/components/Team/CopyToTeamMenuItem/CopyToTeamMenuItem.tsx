@@ -13,11 +13,13 @@ import { MenuItem } from '../../MenuItem'
 interface DuplicateJourneyMenuItemProps {
   id?: string
   handleCloseMenu: () => void
+  handleKeepMounted?: () => void
 }
 
 export function CopyToTeamMenuItem({
   id,
-  handleCloseMenu
+  handleCloseMenu,
+  handleKeepMounted
 }: DuplicateJourneyMenuItemProps): ReactElement {
   const router = useRouter()
   const [duplicateTeamDialogOpen, setDuplicateTeamDialogOpen] =
@@ -61,6 +63,8 @@ export function CopyToTeamMenuItem({
         label={t('Copy to ...')}
         icon={<CopyToIcon color="secondary" />}
         onClick={() => {
+          handleKeepMounted?.()
+          handleCloseMenu()
           setRoute('copy-journey')
           setDuplicateTeamDialogOpen(true)
         }}
@@ -68,6 +72,7 @@ export function CopyToTeamMenuItem({
       />
       <CopyToTeamDialog
         title={t('Copy to Another Team')}
+        submitLabel={t('Add')}
         open={duplicateTeamDialogOpen}
         onClose={() => {
           setDuplicateTeamDialogOpen(false)

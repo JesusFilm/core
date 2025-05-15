@@ -4,14 +4,17 @@ import TextField from '@mui/material/TextField'
 import { Formik, FormikHelpers } from 'formik'
 import sortBy from 'lodash/sortBy'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import { InferType, object, string } from 'yup'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
+import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
+import { useLanguagesQuery } from '../../libs/useLanguagesQuery'
 import { useUpdateLastActiveTeamIdMutation } from '../../libs/useUpdateLastActiveTeamIdMutation'
 import { useTeam } from '../TeamProvider'
+import { TranslationDialogWrapper } from '../TranslationDialogWrapper'
 
 interface CopyToTeamDialogProps {
   title: string
@@ -22,9 +25,15 @@ interface CopyToTeamDialogProps {
   submitAction: (teamId: string) => Promise<void>
 }
 
+interface JourneyLanguage {
+  id: string
+  localName?: string
+  nativeName?: string
+}
+
 export function CopyToTeamDialog({
   title,
-  submitLabel = 'Copy',
+  submitLabel,
   open,
   loading,
   onClose,
@@ -34,6 +43,16 @@ export function CopyToTeamDialog({
   const teams = query?.data?.teams ?? []
 
   const { t } = useTranslation('libs-journeys-ui')
+
+  // TODO: Update so only the selected AI model + i18n languages are shown.
+  const { data: languagesData, loading: languagesLoading } = useLanguagesQuery({
+    languageId: '529'
+  })
+
+  const [selectedLanguage, setSelectedLanguage] = useState<
+    JourneyLanguage | undefined
+  >()
+
   function handleClose(): void {
     onClose()
   }
@@ -68,18 +87,13 @@ export function CopyToTeamDialog({
       validationSchema={copyToSchema}
     >
       {({ values, errors, handleChange, handleSubmit, isSubmitting }) => (
-        <Dialog
+        <TranslationDialogWrapper
           open={open}
           onClose={handleClose}
-          dialogTitle={{ title: t(title) }}
+          onTranslate={async () => handleSubmit()}
+          title={title}
           loading={loading ?? isSubmitting}
-          dialogAction={{
-            onSubmit: () => {
-              if (!isSubmitting) handleSubmit()
-            },
-            closeLabel: t('Cancel'),
-            submitLabel: submitLabel === 'Add' ? t('Add') : t('Copy')
-          }}
+          submitLabel={submitLabel}
           testId="CopyToTeamDialog"
         >
           <FormControl variant="filled" hiddenLabel fullWidth>
@@ -129,7 +143,13 @@ export function CopyToTeamDialog({
               ))}
             </TextField>
           </FormControl>
-        </Dialog>
+          <LanguageAutocomplete
+            languages={languagesData?.languages}
+            loading={languagesLoading}
+            onChange={setSelectedLanguage}
+            value={selectedLanguage}
+          />
+        </TranslationDialogWrapper>
       )}
     </Formik>
   )
