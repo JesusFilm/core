@@ -12,7 +12,8 @@ const UI_LANGUAGE_CODES = [
   'ru',
   'tr',
   'zh',
-  'zh-Hans-CN'
+  'zh-Hans-CN',
+  'please-build'
 ]
 
 /**
