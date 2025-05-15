@@ -139,6 +139,7 @@ export function JourneyCardMenu({
   }
   const handleCloseMenu = (): void => {
     setAnchorEl(null)
+    setOpen(false)
     onMenuClose?.()
   }
 
