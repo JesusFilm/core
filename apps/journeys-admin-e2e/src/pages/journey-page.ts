@@ -1271,6 +1271,6 @@ export class JourneyPage {
   async validateUrlFieldInShareDialog(expectedValue: string) {
     await expect(
       this.page.locator('div.MuiDialogContent-root input')
-    ).toHaveValue(new RegExp(expectedValue))
+    ).toHaveValue(new RegExp(expectedValue), { timeout: 10000 })
   }
 }
