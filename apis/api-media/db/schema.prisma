@@ -469,3 +469,17 @@ model ShortLinkBlocklistDomain {
   /// the hostname including subdomain, domain, and TLD, but excluding port
   hostname String @id
 }
+
+enum DefaultPlatform {
+  ios
+  android
+  web
+}
+
+model ArclightApiKey {
+  key             String          @unique
+  desc            String?
+  defaultPlatform DefaultPlatform
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
