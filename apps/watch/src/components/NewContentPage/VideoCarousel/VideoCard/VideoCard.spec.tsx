@@ -1,7 +1,8 @@
 import { render, screen } from '@testing-library/react'
 
-import { VideoCard } from './VideoCard'
 import { videos } from '../../../Videos/__generated__/testData'
+
+import { VideoCard } from './VideoCard'
 
 describe('VideoCard', () => {
   it('renders the component with video data correctly', () => {

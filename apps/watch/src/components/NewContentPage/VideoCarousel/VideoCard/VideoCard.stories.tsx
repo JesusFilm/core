@@ -1,8 +1,9 @@
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentPropsWithoutRef } from 'react'
 
-import { VideoCard } from './VideoCard'
 import { videos } from '../../../Videos/__generated__/testData'
+
+import { VideoCard } from './VideoCard'
 
 type StoryArgs = ComponentPropsWithoutRef<typeof VideoCard>
 

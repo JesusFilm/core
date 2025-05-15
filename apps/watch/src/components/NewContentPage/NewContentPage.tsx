@@ -1,10 +1,12 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
+import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
 import { ThemeMode } from '@core/shared/ui/themes'
 
+import { VideoContentFields_studyQuestions } from '../../../__generated__/VideoContentFields'
 import { useVideoChildren } from '../../libs/useVideoChildren'
 import { getWatchUrl } from '../../libs/utils/getWatchUrl'
 import { useVideo } from '../../libs/videoContext'
@@ -12,9 +14,11 @@ import { PageWrapper } from '../PageWrapper'
 
 import { ContentHero } from './ContentHero'
 import { ContentMetadata } from './ContentMetadata'
+import { DiscussionQuestions } from './DiscussionQuestions'
 import { VideoCarousel } from './VideoCarousel'
 
 export function NewContentPage(): ReactElement {
+  const { t } = useTranslation('apps-watch')
   const {
     id,
     container,
@@ -25,6 +29,7 @@ export function NewContentPage(): ReactElement {
     images,
     imageAlt,
     label,
+    studyQuestions,
     slug: videoSlug
   } = useVideo()
 
@@ -33,6 +38,17 @@ export function NewContentPage(): ReactElement {
 
   const { loading, children } = useVideoChildren(variantSlug)
   const realChildren = children.filter((video) => video.variant !== null)
+
+  const questions =
+    studyQuestions.length > 0
+      ? studyQuestions
+      : ([
+          {
+            value: t(
+              'If you could ask the creator of this video a question, what would it be?'
+            )
+          }
+        ] as unknown as VideoContentFields_studyQuestions[])
 
   return (
     <>
@@ -117,11 +133,23 @@ export function NewContentPage(): ReactElement {
                 containerSlug={container?.slug ?? videoSlug}
                 activeVideoId={id}
               />
-              <ContentMetadata
-                title={title[0].value}
-                description={description[0].value}
-                label={label}
-              />
+              <Box
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: { xs: '1fr', xl: '3fr 2fr' },
+                  flexWrap: 'wrap',
+                  zIndex: 1,
+                  gap: 10,
+                  px: { xs: 4, sm: 6, md: 8, lg: 10, xl: 12 }
+                }}
+              >
+                <ContentMetadata
+                  title={title[0].value}
+                  description={description[0].value}
+                  label={label}
+                />
+                <DiscussionQuestions questions={questions} />
+              </Box>
             </Stack>
           </Box>
         </Box>
