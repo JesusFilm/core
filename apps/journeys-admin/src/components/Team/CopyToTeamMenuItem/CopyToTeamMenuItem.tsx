@@ -79,20 +79,21 @@ export function CopyToTeamMenuItem({
       })
 
       if (duplicateData?.journeyDuplicate?.id) {
-        const { data: detectedLanguageData } = await journeyLanguageAiDetect({
-          variables: {
-            journeyId: duplicateData?.journeyDuplicate?.id,
-            name: journey.title,
-            journeyLanguageName:
-              journey?.language.name.find(({ primary }) => primary)?.value ??
-              '',
-            textLanguageId: selectedLanguage?.id ?? '',
-            textLanguageName:
-              journey?.language.name.find(({ primary }) => primary)?.value ?? ''
-          }
-        })
+        // const { data: detectedLanguageData } = await journeyLanguageAiDetect({
+        //   variables: {
+        //     journeyId: duplicateData?.journeyDuplicate?.id,
+        //     name: journey.title,
+        //     journeyLanguageName:
+        //       duplicateData?.journeyDuplicate?.language.name.find(
+        //         ({ primary }) => primary
+        //       )?.value ?? '',
+        //     textLanguageId: selectedLanguage?.id ?? '',
+        //     textLanguageName:
+        //       journey?.language.name.find(({ primary }) => primary)?.value ?? ''
+        //   }
+        // })
 
-        console.log('detectedLanguageData', detectedLanguageData)
+        // console.log('detectedLanguageData', detectedLanguageData)
 
         // If no language selected, just show copied message
         if (selectedLanguage == null) {

@@ -14,6 +14,12 @@ export const JOURNEY_DUPLICATE = gql`
   mutation JourneyDuplicate($id: ID!, $teamId: ID!) {
     journeyDuplicate(id: $id, teamId: $teamId) {
       id
+      language {
+        name {
+          primary
+          value
+        }
+      }
     }
   }
 `
