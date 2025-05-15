@@ -76,7 +76,6 @@ test.describe('Teams', () => {
     await journeyLevelActions.verifySnackBarMsg('Copied') //verify toast message
     await journeyPage.validateCopiedValues(dnsContent) //validate the copied DNS value with the value retrieved from the DNS table
     await teamPage.clickCustomDomainDialogCloseIcon() //close Domain Setting dialog popup
-    await page.waitForTimeout(2000) // Added to diagnose timing issue
     await journeyLevelActions.selectCreatedJourney(journeyName) // clicking on the created journey in the journey list
     await journeyPage.clickThreeDotBtnOfCustomJourney() // clicking on the three dot at top right corner of the custom journey page
     await journeyLevelActions.clickThreeDotOptionsOfJourneyCreationPage(
