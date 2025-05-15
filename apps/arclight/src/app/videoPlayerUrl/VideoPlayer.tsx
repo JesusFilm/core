@@ -12,7 +12,9 @@ import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import Slider from '@mui/material/Slider'
 import Stack from '@mui/material/Stack'
+import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
 
@@ -60,6 +62,10 @@ export function VideoPlayer({
     useState<null | HTMLElement>(null)
   const [selectedCaption, setSelectedCaption] = useState<string>('')
   const [hasStarted, setHasStarted] = useState(false)
+
+  // Detect mobile devices
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
 
   const effectiveEndTime = endTime ?? Infinity
 
@@ -238,9 +244,17 @@ export function VideoPlayer({
       clearTimeout(controlsTimeoutRef.current)
     }
 
+    // Use a longer timeout on mobile devices
+    const timeoutDuration = isMobile ? 5000 : 3000
+
+    // On mobile, always make sure controls are visible first
+    if (isMobile && !controlsVisible) {
+      setControlsVisible(true)
+    }
+
     controlsTimeoutRef.current = setTimeout(() => {
       hideControls()
-    }, 3000)
+    }, timeoutDuration)
   }
 
   // Handle various user interactions
@@ -318,6 +332,9 @@ export function VideoPlayer({
       requestAnimationFrame(() => {
         playerInstanceRef.current.currentTime(seekTimeSeconds)
       })
+
+      // Make sure controls stay visible after seeking
+      showControls()
     }
   }
 
@@ -487,6 +504,14 @@ export function VideoPlayer({
       className="video-player-root"
       onMouseMove={showControls}
       onClick={showControls}
+      onTouchStart={showControls}
+      onTouchMove={showControls}
+      onTouchEnd={(event) => {
+        // Don't stop propagation here as we want the event to reach the video element
+        // Prevent auto-hiding controls on touch
+        showControls()
+        resetControlsTimeout()
+      }}
       style={{
         position: 'fixed',
         top: 0,
@@ -526,6 +551,24 @@ export function VideoPlayer({
         /* Custom class for transparent background */
         .vjs-transparent-background {
           background-color: transparent !important;
+        }
+
+        /* Mobile-friendly touch improvements */
+        .MuiSlider-root {
+          touch-action: none !important;
+        }
+
+        .MuiSlider-thumb {
+          width: 16px !important;
+          height: 16px !important;
+        }
+
+        @media (max-width: 600px) {
+          .MuiIconButton-root {
+            padding: 12px !important;
+            min-width: 48px !important;
+            min-height: 48px !important;
+          }
         }
       `}</style>
       {thumbnail && !hasStarted && (
@@ -602,11 +645,28 @@ export function VideoPlayer({
             'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 30%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.2) 100%)',
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'space-between'
+          justifyContent: 'space-between',
+          touchAction: 'manipulation', // Improve touch behavior on mobile
+          WebkitTapHighlightColor: 'rgba(0,0,0,0)' // Remove tap highlight on mobile
         }}
         onMouseEnter={() => setHoveringControls(true)}
         onMouseLeave={() => setHoveringControls(false)}
-        onClick={playing ? handlePlayPause : undefined}
+        onTouchStart={() => {
+          setHoveringControls(true)
+          showControls()
+        }}
+        onClick={(event) => {
+          event.stopPropagation()
+          if (playing) {
+            handlePlayPause()
+          }
+        }}
+        onTouchEnd={(event) => {
+          event.stopPropagation()
+          // Prevent auto-hiding controls on touch
+          showControls()
+          resetControlsTimeout()
+        }}
       >
         {/* Center Play/Pause Button */}
         {!playing && (
@@ -806,7 +866,7 @@ export function VideoPlayer({
                   value={getSegmentProgress()}
                   onChange={handleSeek}
                   aria-label="video-progress"
-                  size="small"
+                  size={isMobile ? 'medium' : 'small'}
                   step={0.001}
                   min={0}
                   max={100}
