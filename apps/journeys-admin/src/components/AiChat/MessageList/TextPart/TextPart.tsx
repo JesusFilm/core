@@ -15,7 +15,10 @@ export function TextPart({ message, part }: TextPartProps): ReactElement {
     <Collapse
       appear={true}
       in={true}
-      sx={{ alignSelf: 'flex-end', maxWidth: '80%' }}
+      sx={{
+        alignSelf: 'flex-end',
+        maxWidth: '80%'
+      }}
     >
       <Box
         className="text-part"
@@ -24,14 +27,21 @@ export function TextPart({ message, part }: TextPartProps): ReactElement {
           py: 2,
           px: 3,
           borderRadius: 2,
-          my: 2
+          my: 4
         }}
       >
         <Typography component="span">{part.text}</Typography>
       </Box>
     </Collapse>
   ) : (
-    <Box sx={{ alignSelf: 'flex-start', maxWidth: '80%', '& > p': { m: 0 } }}>
+    <Box
+      sx={{
+        alignSelf: 'flex-start',
+        maxWidth: '80%',
+        '& > *:first-child': { mt: 0 },
+        '& > *:last-child': { mb: 0 }
+      }}
+    >
       <Markdown>{part.text}</Markdown>
     </Box>
   )

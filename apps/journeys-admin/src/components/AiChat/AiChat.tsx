@@ -122,11 +122,19 @@ export function AiChat({
     <>
       <Box
         sx={{
+          mb: -5,
+          height: 20,
+          background:
+            'linear-gradient(to top, rgba(255, 255, 255, 0), #ffffff)',
+          position: 'relative'
+        }}
+      />
+      <Box
+        sx={{
           display: 'flex',
           flexDirection: 'column-reverse',
           py: 5,
           px: 4,
-          pb: 0,
           maxHeight: variant === 'popup' ? 'calc(100svh - 400px)' : '100%',
           minHeight: 150,
           overflowY: 'auto',
@@ -143,6 +151,15 @@ export function AiChat({
           addToolResult={addToolResult}
         />
       </Box>
+      <Box
+        sx={{
+          mt: -5,
+          height: 20,
+          background:
+            'linear-gradient(to bottom, rgba(255, 255, 255, 0), #ffffff)',
+          position: 'relative'
+        }}
+      />
       <Form
         input={input}
         usage={usage}

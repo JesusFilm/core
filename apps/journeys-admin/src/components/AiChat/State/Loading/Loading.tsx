@@ -14,7 +14,7 @@ export function StateLoading({
   return (
     <>
       <Collapse in={status === 'submitted'} unmountOnExit>
-        <Box>
+        <Box sx={{ height: 24, display: 'flex', alignItems: 'center' }}>
           <CircularProgress size={18} />
         </Box>
       </Collapse>

@@ -37,7 +37,7 @@ export function Form({
   const { t } = useTranslation('apps-journeys-admin')
 
   return (
-    <Box sx={{ p: 4, '&:last-child': { pb: 2 } }}>
+    <Box sx={{ p: 4, pt: 0, '&:last-child': { pb: 2 } }}>
       <form onSubmit={handleSubmit}>
         <Box
           sx={{

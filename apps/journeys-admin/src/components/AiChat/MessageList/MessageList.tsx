@@ -30,6 +30,12 @@ export function MessageList({
             flexDirection: 'column',
             '& > div + div': {
               mt: 2
+            },
+            '&:last-child .text-part': {
+              mt: 0
+            },
+            '&:nth-last-child .text-part': {
+              mb: 0
             }
           }}
         >
