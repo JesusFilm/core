@@ -336,7 +336,7 @@ describe('VideoInformation', () => {
     expect(textbox).toHaveValue('')
 
     const user = userEvent.setup()
-    
+
     await act(async () => {
       await user.type(textbox, 'new title')
       await user.click(screen.getByRole('button', { name: 'Save' }))
