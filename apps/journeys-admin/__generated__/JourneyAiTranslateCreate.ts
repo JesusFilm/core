@@ -7,11 +7,6 @@
 // GraphQL mutation operation: JourneyAiTranslateCreate
 // ====================================================
 
-export interface JourneyAiTranslateCreate_journeyAiTranslateCreate_language {
-  __typename: "Language";
-  id: string;
-}
-
 export interface JourneyAiTranslateCreate_journeyAiTranslateCreate {
   __typename: "Journey";
   id: string;
@@ -20,7 +15,9 @@ export interface JourneyAiTranslateCreate_journeyAiTranslateCreate {
    */
   title: string;
   description: string | null;
-  language: JourneyAiTranslateCreate_journeyAiTranslateCreate_language;
+  languageId: string | null;
+  createdAt: any;
+  updatedAt: any;
 }
 
 export interface JourneyAiTranslateCreate {
