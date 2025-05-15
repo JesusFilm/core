@@ -55,7 +55,7 @@ export function LastModifiedDate({
 
   return (
     <Trans t={t} duration={duration}>
-      <Typography variant="caption">{duration}</Typography>
+      <Typography variant="body2">{duration}</Typography>
     </Trans>
   )
 }
