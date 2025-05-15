@@ -59,8 +59,6 @@ export function VideoPlayer({
   const [captionsMenuAnchor, setCaptionsMenuAnchor] =
     useState<null | HTMLElement>(null)
   const [selectedCaption, setSelectedCaption] = useState<string>('')
-  const [aspectRatio, setAspectRatio] = useState<number | null>(null)
-  const [videoWrapperSize, setVideoWrapperSize] = useState<{ width: string; height: string }>({ width: '100vw', height: '100vh' })
   const [hasStarted, setHasStarted] = useState(false)
 
   const effectiveEndTime = endTime ?? Infinity
@@ -152,15 +150,6 @@ export function VideoPlayer({
     vjsPlayer.on('loadedmetadata', () => {
       const playerDuration = vjsPlayer.duration()
       setDuration((playerDuration ?? 0) * 1000) // Convert to milliseconds
-      if (
-        playerRef.current &&
-        playerRef.current.videoWidth &&
-        playerRef.current.videoHeight
-      ) {
-        setAspectRatio(
-          playerRef.current.videoWidth / playerRef.current.videoHeight
-        )
-      }
     })
 
     vjsPlayer.on('timeupdate', () => {
@@ -491,30 +480,7 @@ export function VideoPlayer({
         }
       }
     }
-  }
-
-  useEffect(() => {
-    if (!aspectRatio) return
-    const handleResize = () => {
-      const windowAspect = window.innerWidth / window.innerHeight
-      if (windowAspect > aspectRatio) {
-        // Window is wider than video: fill height
-        setVideoWrapperSize({
-          width: `${window.innerHeight * aspectRatio}px`,
-          height: `${window.innerHeight}px`
-        })
-      } else {
-        // Window is taller than video: fill width
-        setVideoWrapperSize({
-          width: `${window.innerWidth}px`,
-          height: `${window.innerWidth / aspectRatio}px`
-        })
-      }
-    }
-    handleResize()
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [aspectRatio])
+  }  
 
   return (
     <div
