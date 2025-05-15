@@ -103,7 +103,7 @@ export function ShareDialog({
     <Dialog
       {...dialogProps}
       dialogTitle={{
-        title: 'Share this video',
+        title: t('Share this video'),
         closeButton: true
       }}
       divider
@@ -171,8 +171,8 @@ export function ShareDialog({
                   variant="fullWidth"
                   aria-label="share and embed"
                 >
-                  <Tab label="Share Link" {...tabA11yProps('share', 0)} />
-                  <Tab label="Embed Code" {...tabA11yProps('embed', 1)} />
+                  <Tab label={t('Share Link')} {...tabA11yProps('share', 0)} />
+                  <Tab label={t('Embed Code')} {...tabA11yProps('embed', 1)} />
                 </Tabs>
               </Box>
               <TabPanel name="share" value={value} index={0} sx={{ mt: 4 }}>
