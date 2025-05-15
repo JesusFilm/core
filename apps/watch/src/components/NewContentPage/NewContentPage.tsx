@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
+import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
@@ -17,6 +18,7 @@ import { DiscussionQuestions } from './DiscussionQuestions'
 import { VideoCarousel } from './VideoCarousel'
 
 export function NewContentPage(): ReactElement {
+  const { t } = useTranslation('apps-watch')
   const {
     id,
     container,
@@ -42,8 +44,9 @@ export function NewContentPage(): ReactElement {
       ? studyQuestions
       : ([
           {
-            value:
+            value: t(
               'If you could ask the creator of this video a question, what would it be?'
+            )
           }
         ] as unknown as VideoContentFields_studyQuestions[])
 
