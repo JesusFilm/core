@@ -2,10 +2,8 @@ import { Message, TextUIPart } from '@ai-sdk/ui-utils'
 import Box from '@mui/material/Box'
 import Collapse from '@mui/material/Collapse'
 import Typography from '@mui/material/Typography'
-import { AnimatedMarkdown } from 'flowtoken'
 import { ReactElement } from 'react'
-
-import 'flowtoken/dist/styles.css'
+import Markdown from 'react-markdown'
 
 interface TextPartProps {
   message: Message
@@ -33,15 +31,8 @@ export function TextPart({ message, part }: TextPartProps): ReactElement {
       </Box>
     </Collapse>
   ) : (
-    <Box
-      sx={{
-        alignSelf: 'flex-start',
-        maxWidth: '80%',
-        '& > p': { m: 0 },
-        '& span': { display: 'inline !important' }
-      }}
-    >
-      <AnimatedMarkdown content={part.text} />
+    <Box sx={{ alignSelf: 'flex-start', maxWidth: '80%', '& > p': { m: 0 } }}>
+      <Markdown>{part.text}</Markdown>
     </Box>
   )
 }
