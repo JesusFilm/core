@@ -29,11 +29,10 @@ export function transformAlgoliaVideos(
   locale?: string
 ): CoreVideo[] {
   return items.map((videoVariant) => {
-    // TODO: fix
-    // const defaultTitle = videoVariant.titlesWithLanguages[0]?.value ?? ''
-    // const localizedTitle = videoVariant.titlesWithLanguages.find(
-    //   (title) => title.bcp47 === locale
-    // )?.value
+    const defaultTitle = videoVariant.titlesWithLanguages[0]?.value ?? ''
+    const localizedTitle = videoVariant.titlesWithLanguages.find(
+      (title) => title.bcp47 === locale
+    )?.value
 
     return {
       __typename: 'Video',
@@ -42,9 +41,7 @@ export function transformAlgoliaVideos(
       title: [
         {
           __typename: 'VideoTitle',
-          value: videoVariant.titles[0]
-          // TODO: fix
-          // value: localizedTitle ?? defaultTitle
+          value: localizedTitle ?? defaultTitle
         }
       ],
       images: [
