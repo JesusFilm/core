@@ -22,7 +22,7 @@ export function ContentMetadata({
 
   return (
     <Box
-      data-testid="ChapterMetadata"
+      data-testid="ContentMetadata"
       sx={{
         zIndex: 1,
         position: 'relative'
