@@ -39,7 +39,12 @@ export function Form({
   return (
     <Box sx={{ p: 4, '&:last-child': { pb: 2 } }}>
       <form onSubmit={handleSubmit}>
-        <Stack direction="row" spacing={2}>
+        <Box
+          sx={{
+            border: (theme) => `1px solid ${theme.palette.divider}`,
+            borderRadius: 2
+          }}
+        >
           <TextField
             name="userMessage"
             value={input}
@@ -57,42 +62,66 @@ export function Form({
             }}
             disabled={error != null}
             autoFocus
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                pb: 0,
+                '& fieldset': {
+                  border: 'none'
+                }
+              }
+            }}
           />
-          {status === 'submitted' || status === 'streaming' ? (
-            <Button
-              variant="outlined"
-              onClick={() => {
-                stop()
-              }}
-              disabled={error != null}
-              sx={{
-                borderRadius: 1,
-                borderWidth: '1px'
-              }}
-            >
-              <Box
-                sx={{
-                  width: 18,
-                  height: 18,
-                  backgroundColor: 'primary.main',
-                  borderRadius: 1
-                }}
-              />
-            </Button>
-          ) : (
-            <Button
-              variant="outlined"
-              type="submit"
-              disabled={error != null}
-              sx={{
-                borderRadius: 1,
-                borderWidth: '1px'
-              }}
-            >
-              <ArrowUpIcon />
-            </Button>
-          )}
-        </Stack>
+          <Stack
+            direction="row"
+            spacing={2}
+            justifyContent="space-between"
+            sx={{ px: 2, pb: 2 }}
+          >
+            <Box />
+            <Box>
+              {status === 'submitted' || status === 'streaming' ? (
+                <Button
+                  onClick={() => stop()}
+                  disabled={error != null}
+                  variant="contained"
+                  size="small"
+                  sx={{
+                    minWidth: 32,
+                    width: 32,
+                    height: 32,
+                    borderRadius: '100%',
+                    p: 0
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: 14,
+                      height: 14,
+                      backgroundColor: 'white',
+                      borderRadius: 1
+                    }}
+                  />
+                </Button>
+              ) : (
+                <Button
+                  type="submit"
+                  disabled={error != null}
+                  variant="contained"
+                  size="small"
+                  sx={{
+                    minWidth: 32,
+                    width: 32,
+                    height: 32,
+                    borderRadius: '100%',
+                    p: 0
+                  }}
+                >
+                  <ArrowUpIcon />
+                </Button>
+              )}
+            </Box>
+          </Stack>
+        </Box>
       </form>
       <SystemPrompt
         value={systemPrompt}
