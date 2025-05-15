@@ -113,14 +113,14 @@ export const getStaticProps: GetStaticProps<Part3PageProps> = async (
         query: GET_VIDEO_CONTAINER_PART_2,
         variables: {
           containerId: `${containerId}/${languageId}`,
-          languageId: getLanguageIdFromLocale(languageId)
+          languageId: getLanguageIdFromLocale(context.locale)
         }
       }),
       client.query<GetVideoContentPart3, GetVideoContentPart3Variables>({
         query: GET_VIDEO_CONTENT_PART_3,
         variables: {
           contentId: `${contentId}/${languageId}`,
-          languageId: getLanguageIdFromLocale(languageId)
+          languageId: getLanguageIdFromLocale(context.locale)
         }
       })
     ])
