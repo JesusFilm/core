@@ -72,6 +72,7 @@ export function VideoCard({
   const { t } = useTranslation('apps-watch')
 
   const { label, color, childCountLabel } = getLabelDetails(
+    t,
     video?.label,
     video?.childrenCount ?? 0
   )

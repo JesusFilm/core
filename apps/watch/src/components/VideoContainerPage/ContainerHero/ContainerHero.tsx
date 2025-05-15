@@ -5,6 +5,7 @@ import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { getLabelDetails } from '../../../libs/utils/getLabelDetails/getLabelDetails'
@@ -19,8 +20,13 @@ interface ContainerHeroProps {
 export function ContainerHero({
   openDialog
 }: ContainerHeroProps): ReactElement {
+  const { t } = useTranslation('apps-watch')
   const { label: videoLabel, title, childrenCount, images } = useVideo()
-  const { label, childCountLabel } = getLabelDetails(videoLabel, childrenCount)
+  const { label, childCountLabel } = getLabelDetails(
+    t,
+    videoLabel,
+    childrenCount
+  )
 
   return (
     <Box

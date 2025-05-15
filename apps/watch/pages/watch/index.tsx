@@ -35,11 +35,13 @@ export const GET_HOME_VIDEOS = gql`
 interface HomePageProps {
   initialApolloState?: NormalizedCacheObject
   serverState?: InstantSearchServerState
+  currentLocale?: string
 }
 
 function HomePage({
   initialApolloState,
-  serverState
+  serverState,
+  currentLocale
 }: HomePageProps): ReactElement {
   const client = useApolloClient({
     initialState: initialApolloState
@@ -60,7 +62,7 @@ function HomePage({
           routing={createInstantSearchRouter()}
         >
           <Configure ruleContexts={['home_page']} />
-          <VideoHomePage />
+          <VideoHomePage locale={currentLocale} />
         </InstantSearch>
       </ApolloProvider>
     </InstantSearchSSRProvider>
@@ -75,15 +77,17 @@ export const getStaticProps: GetStaticProps<HomePageProps> = async ({
   })
 
   const apolloClient = createApolloClient()
+  const currentLocale = locale ?? 'en'
 
   return {
     revalidate: 3600,
     props: {
       flags: await getFlags(),
       serverState,
+      currentLocale,
       initialApolloState: apolloClient.cache.extract(),
       ...(await serverSideTranslations(
-        locale ?? 'en',
+        currentLocale,
         ['apps-watch'],
         i18nConfig
       ))

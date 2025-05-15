@@ -7,6 +7,10 @@ describe('transformAlgoliaVideos', () => {
     {
       videoId: 'videoId',
       titles: ['title'],
+      titlesWithLanguages: [
+        { value: 'English Title', bcp47: 'en' },
+        { value: 'Spanish Title', bcp47: 'es' }
+      ],
       description: ['description'],
       duration: 10994,
       languageId: '529',
@@ -43,7 +47,7 @@ describe('transformAlgoliaVideos', () => {
       title: [
         {
           __typename: 'VideoTitle',
-          value: 'title'
+          value: 'English Title'
         }
       ],
       variant: {
@@ -56,7 +60,33 @@ describe('transformAlgoliaVideos', () => {
     }
   ]
 
-  it('should transform algolia video items correctly', () => {
+  it('should use default (English) title when no locale is provided', () => {
+    const result = transformAlgoliaVideos(algoliaVideos)
+    expect(result[0].title[0].value).toBe('English Title')
+  })
+
+  it('should use localized title when matching locale is found', () => {
+    const result = transformAlgoliaVideos(algoliaVideos, 'es')
+    expect(result[0].title[0].value).toBe('Spanish Title')
+  })
+
+  it('should fallback to English title when locale is not found', () => {
+    const result = transformAlgoliaVideos(algoliaVideos, 'fr')
+    expect(result[0].title[0].value).toBe('English Title')
+  })
+
+  it('should fallback to empty string when no titles are available', () => {
+    const videosWithNoTitles = [
+      {
+        ...algoliaVideos[0],
+        titlesWithLanguages: []
+      }
+    ] as unknown as AlgoliaVideo[]
+    const result = transformAlgoliaVideos(videosWithNoTitles)
+    expect(result[0].title[0].value).toBe('')
+  })
+
+  it('should transform all other video properties correctly', () => {
     const result = transformAlgoliaVideos(algoliaVideos)
     expect(result).toEqual(transformedVideos)
   })
