@@ -7,6 +7,8 @@ import { handle } from 'hono/vercel'
 
 import { getApolloClient } from '../../lib/apolloClient'
 
+import { GET_SHORT_LINK_QUERY } from './queries'
+
 export const dynamic = 'force-dynamic'
 
 const app = new OpenAPIHono().basePath('/')
@@ -126,12 +128,6 @@ const downloadRoute = createRoute({
     params: z.object({
       mediaComponentId: z.string().describe('The ID of the media component'),
       languageId: z.string().describe('The ID of the language')
-    }),
-    query: z.object({
-      quality: z
-        .string()
-        .optional()
-        .describe('The desired video quality (defaults to "high")')
     })
   },
   responses: {
@@ -302,7 +298,7 @@ app.openapi(hlsRoute, async (c) => {
     c.header('Access-Control-Allow-Headers', '*')
     c.header('Access-Control-Expose-Headers', '*')
 
-    return c.json({ url: finalUrl }, 200)
+    return c.redirect(finalUrl, 302)
   } catch (error) {
     if (error instanceof HTTPException) {
       if (error.status === 404) {
@@ -366,7 +362,7 @@ app.openapi(watchRoute, async (c) => {
   const { mediaComponentId, languageId } = c.req.param()
   try {
     return c.redirect(
-      `http://jesusfilm.org/bin/jf/watch.html/${mediaComponentId}/${languageId}`
+      `https://jesusfilm.org/bin/jf/watch.html/${mediaComponentId}/${languageId}`
     )
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error)
@@ -376,7 +372,43 @@ app.openapi(watchRoute, async (c) => {
 
 app.openapi(keywordRoute, async (c) => {
   const { keyword } = c.req.param()
-  return c.redirect(`https://arc.gt/${keyword}`, 302)
+
+  try {
+    const { data, error, errors } = await getApolloClient().query<
+      ResultOf<typeof GET_SHORT_LINK_QUERY>
+    >({
+      query: GET_SHORT_LINK_QUERY,
+      variables: {
+        hostname: 'arc.gt',
+        pathname: keyword
+      }
+    })
+
+    if (error != null || errors != null) {
+      console.error('GraphQL error fetching short link:', error ?? errors)
+      throw new HTTPException(500, {
+        message: 'Failed to query short link data'
+      })
+    }
+
+    if (
+      data?.shortLink?.__typename === 'QueryShortLinkByPathSuccess' &&
+      data.shortLink.data.to
+    ) {
+      return c.redirect(data.shortLink.data.to, 302)
+    } else {
+      // Handle cases where shortLink is not found or typename is not success
+      return c.json({ error: 'Keyword not found or invalid' }, 404)
+    }
+  } catch (err) {
+    // Catch errors from Apollo client query or HTTPException
+    if (err instanceof HTTPException) {
+      throw err // Re-throw HTTPException to be handled by Hono's error handler
+    }
+    console.error('Error resolving keyword redirect:', err)
+    const errorMessage = err instanceof Error ? err.message : String(err)
+    return c.json({ error: `Internal server error: ${errorMessage}` }, 500)
+  }
 })
 
 app.options('*', (c) => {
