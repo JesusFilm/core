@@ -1,4 +1,5 @@
 'use client'
+
 import { useEffect, useRef } from 'react'
 import videojs from 'video.js'
 
@@ -47,35 +48,7 @@ export function VideoPlayer({
         video_title: videoTitle
       }
 
-      // Video.js middleware to limit seeking to startTime and endTime range
-      const timeRangeMiddleware = function (player: any) {
-        return {
-          setSource: function (
-            srcObj: any,
-            next: (arg0: null, arg1: any) => void
-          ) {
-            console.log('Middleware: setting source', srcObj)
-            next(null, srcObj)
-          },
-          setCurrentTime: function (time: number) {
-            const effectiveStartTime = startTime
-            const effectiveEndTime = endTime ?? player.duration()
-
-            // Clamp time to allowed range
-            if (time < effectiveStartTime) {
-              return effectiveStartTime
-            }
-            if (time > effectiveEndTime) {
-              return effectiveEndTime
-            }
-            return time
-          }
-        }
-      }
-
-      // Register the middleware
-      videojs.use('*', timeRangeMiddleware)
-
+      // Configure videojs options
       const vjsOptions = {
         enableSmoothSeeking: true,
         experimentalSvgIcons: true,
@@ -109,31 +82,186 @@ export function VideoPlayer({
         }
       }
 
+      // Initialize the player
       const vjsPlayer = videojs(ref.current, vjsOptions)
 
+      // Handle errors
       vjsPlayer.on('error', (e: Error) => {
         console.error('VideoJS error:', e)
       })
 
-      vjsPlayer.on('loadedmetadata', () => {
-        // Set initial time to startTime
-        vjsPlayer.currentTime(startTime)
-      })
+      // Store initial Player.prototype methods before we override them
+      const Player = vjsPlayer.constructor as any
 
-      vjsPlayer.on('timeupdate', () => {
-        const currentTime = vjsPlayer.currentTime()
-        if (currentTime == null) return
-        // Ensure we stay within the clip boundaries
-        if (currentTime < startTime) {
-          vjsPlayer.currentTime(startTime)
-        } else if (endTime && currentTime >= endTime) {
-          vjsPlayer.currentTime(endTime)
-          vjsPlayer.pause()
+      if (!Player.__originalMethods) {
+        Player.__originalMethods = {
+          duration: Player.prototype.duration,
+          currentTime: Player.prototype.currentTime,
+          buffered: Player.prototype.buffered,
+          remainingTime: Player.prototype.remainingTime
+        }
+      }
+
+      // Apply our custom video offset functionality
+      // This mimics what the videojs-offset plugin does
+      const applyOffset = (player: any, start: number, end: number = 0) => {
+        // Store offset values on the player instance
+        player._offsetStart = start
+        player._offsetEnd = end
+        player._restartBeginning = false
+
+        // Override duration method
+        Player.prototype.duration = function (...args: any[]) {
+          if (
+            this._offsetEnd !== undefined &&
+            this._offsetStart !== undefined
+          ) {
+            if (this._offsetEnd > 0) {
+              return this._offsetEnd - this._offsetStart
+            }
+            return (
+              Player.__originalMethods.duration.apply(this, args) -
+              this._offsetStart
+            )
+          }
+          return Player.__originalMethods.duration.apply(this, args)
+        }
+
+        // Override currentTime method
+        Player.prototype.currentTime = function (seconds: number) {
+          if (seconds !== undefined) {
+            if (this._offsetStart !== undefined) {
+              return Player.__originalMethods.currentTime.call(
+                this,
+                seconds + this._offsetStart
+              )
+            }
+            return Player.__originalMethods.currentTime.call(this, seconds)
+          }
+
+          if (this._offsetStart !== undefined) {
+            const time =
+              Player.__originalMethods.currentTime.apply(this) -
+              this._offsetStart
+            return time < 0 ? 0 : time
+          }
+
+          return Player.__originalMethods.currentTime.apply(this)
+        }
+
+        // Override remainingTime method
+        Player.prototype.remainingTime = function () {
+          return this.duration() - this.currentTime()
+        }
+
+        // Add a utility method to get the start offset
+        Player.prototype.startOffset = function () {
+          return this._offsetStart
+        }
+
+        // Add a utility method to get the end offset
+        Player.prototype.endOffset = function () {
+          if (this._offsetEnd > 0) {
+            return this._offsetEnd
+          }
+          return this.duration()
+        }
+
+        // Override buffered to adjust for offsets
+        Player.prototype.buffered = function () {
+          const originalBuffered = Player.__originalMethods.buffered.call(this)
+          const adjustedRanges = []
+
+          for (let i = 0; i < originalBuffered.length; i++) {
+            adjustedRanges[i] = [
+              Math.max(0, originalBuffered.start(i) - this._offsetStart),
+              Math.min(
+                Math.max(0, originalBuffered.end(i) - this._offsetStart),
+                this.duration()
+              )
+            ]
+          }
+
+          return videojs.createTimeRanges(adjustedRanges)
+        }
+
+        // Set initial time to startTime
+        player.one('loadedmetadata', () => {
+          // This will be adjusted by our overridden currentTime method
+          // We need to explicitly set the raw time first before our offset applies
+          Player.__originalMethods.currentTime.call(player, player._offsetStart)
+        })
+
+        // Add an extra check on first play to ensure we're at the right position
+        player.one('play', () => {
+          // Directly set to the raw offset time
+          if (player._offsetStart > 0) {
+            Player.__originalMethods.currentTime.call(
+              player,
+              player._offsetStart
+            )
+          }
+        })
+
+        // Monitor playback to enforce boundaries
+        const onTimeUpdate = function (this: any) {
+          const rawTime = Player.__originalMethods.currentTime.apply(this)
+          const currTime = this.currentTime()
+          const effectiveEnd =
+            this._offsetEnd > 0
+              ? this._offsetEnd - this._offsetStart
+              : this.duration()
+
+          // If the raw time is less than the start offset, reset it
+          if (rawTime < this._offsetStart) {
+            Player.__originalMethods.currentTime.call(this, this._offsetStart)
+            return
+          }
+
+          if (currTime < 0) {
+            this.currentTime(0)
+            this.play()
+          }
+
+          if (effectiveEnd > 0 && currTime > effectiveEnd - 0.1) {
+            this.pause()
+            this.trigger('ended')
+            this.off('timeupdate', onTimeUpdate)
+
+            // Re-bind timeupdate when the video plays again
+            this.one('play', () => {
+              this.on('timeupdate', onTimeUpdate)
+            })
+
+            if (!this._restartBeginning) {
+              this.currentTime(effectiveEnd)
+            } else {
+              this.trigger('loadstart')
+              this.currentTime(0)
+            }
+          }
+        }
+
+        // Add the timeupdate listener when the video first plays
+        player.one('play', () => {
+          player.on('timeupdate', onTimeUpdate)
+        })
+      }
+
+      // Store the player instance
+      playerInstanceRef.current = vjsPlayer
+
+      // When video metadata is loaded, apply our custom offset
+      vjsPlayer.on('loadedmetadata', () => {
+        const duration = vjsPlayer.duration() || 0
+        console.log('Video duration:', duration)
+
+        // Only apply offset if we have a valid start or end time
+        if (startTime > 0 || (endTime && endTime < duration && endTime > 0)) {
+          const effectiveEndTime = endTime && endTime < duration ? endTime : 0
+          applyOffset(vjsPlayer, startTime, effectiveEndTime)
         }
       })
-
-      // Set the player instance reference
-      playerInstanceRef.current = vjsPlayer
     } catch (err) {
       console.error('Error initializing Video.js player:', err)
     }
@@ -153,7 +281,20 @@ export function VideoPlayer({
     return () => {
       clearTimeout(timer)
       if (playerInstanceRef.current) {
-        playerInstanceRef.current.dispose()
+        // Clean up and restore original prototype methods
+        try {
+          const Player = playerInstanceRef.current.constructor
+          if (Player.__originalMethods) {
+            Player.prototype.duration = Player.__originalMethods.duration
+            Player.prototype.currentTime = Player.__originalMethods.currentTime
+            Player.prototype.buffered = Player.__originalMethods.buffered
+            Player.prototype.remainingTime =
+              Player.__originalMethods.remainingTime
+          }
+          playerInstanceRef.current.dispose()
+        } catch (e) {
+          console.error('Error cleaning up player:', e)
+        }
       }
     }
   }, [])
@@ -194,7 +335,7 @@ export function VideoPlayer({
         case 'ArrowLeft': // back 5 seconds
           event.preventDefault()
           time = Math.max(
-            startTime,
+            0, // With our custom implementation, 0 is the corrected start time
             playerInstanceRef.current.currentTime() - 5
           )
           playerInstanceRef.current.currentTime(time)
@@ -202,7 +343,7 @@ export function VideoPlayer({
         case 'ArrowRight': // forward 5 seconds
           event.preventDefault()
           time = Math.min(
-            endTime ?? playerInstanceRef.current.duration(),
+            playerInstanceRef.current.duration(),
             playerInstanceRef.current.currentTime() + 5
           )
           playerInstanceRef.current.currentTime(time)
