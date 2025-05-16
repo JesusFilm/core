@@ -43,6 +43,10 @@ export async function POST(req: NextRequest) {
   })
 
   return result.toDataStreamResponse({
+    headers: {
+      'Transfer-Encoding': 'chunked',
+      Connection: 'keep-alive'
+    },
     getErrorMessage: errorHandler
   })
 }
