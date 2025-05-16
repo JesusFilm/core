@@ -24,58 +24,6 @@ jest.mock('notistack', () => ({
   })
 }))
 
-// Mock Material-UI Select component
-jest.mock('@mui/material/Select', () => {
-  return {
-    __esModule: true,
-    default: ({
-      children,
-      onChange,
-      value,
-      name,
-      labelId,
-      id,
-      label,
-      ...props
-    }) => {
-      const handleChange = (event) => {
-        onChange({ target: { name, value: event.target.value } })
-      }
-
-      return (
-        <div
-          role="combobox"
-          aria-labelledby={labelId}
-          id={id}
-          data-testid={`${id}-wrapper`}
-        >
-          <span>{value}</span>
-          <select
-            data-testid="select-input"
-            value={value}
-            onChange={handleChange}
-            aria-label={label}
-          >
-            {children}
-          </select>
-        </div>
-      )
-    }
-  }
-})
-
-// Mock Material-UI MenuItem component
-jest.mock('@mui/material/MenuItem', () => {
-  return {
-    __esModule: true,
-    default: ({ children, value }) => (
-      <option role="option" value={value}>
-        {children}
-      </option>
-    )
-  }
-})
-
 // Mock the useSuspenseQuery hook
 jest.mock('@apollo/client', () => {
   const originalModule = jest.requireActual('@apollo/client')
@@ -236,10 +184,8 @@ describe('VideoInformation', () => {
     ).not.toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: 'Title' })).toHaveValue('JESUS')
 
-    await act(async () => {
-      fireEvent.change(screen.getByRole('textbox', { name: 'Title' }), {
-        target: { value: 'Hello' }
-      })
+    fireEvent.change(screen.getByRole('textbox', { name: 'Title' }), {
+      target: { value: 'Hello' }
     })
     expect(screen.getByRole('textbox', { name: 'Title' })).toHaveValue('Hello')
     expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
@@ -258,14 +204,10 @@ describe('VideoInformation', () => {
       screen.queryByRole('button', { name: 'Cancel' })
     ).not.toBeInTheDocument()
 
-    // Use our mocked select with data-testid
-    await act(async () => {
-      const selectInput = screen.getAllByTestId('select-input')[0]
-      fireEvent.change(selectInput, { target: { value: 'unpublished' } })
-    })
-
-    expect(screen.getByTestId('status-wrapper')).toHaveTextContent(
-      'unpublished'
+    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Status' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Draft' }))
+    expect(screen.getByRole('combobox', { name: 'Status' })).toHaveTextContent(
+      'Draft'
     )
     expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
@@ -283,13 +225,11 @@ describe('VideoInformation', () => {
       screen.queryByRole('button', { name: 'Cancel' })
     ).not.toBeInTheDocument()
 
-    // Use our mocked select with data-testid
-    await act(async () => {
-      const selectInput = screen.getAllByTestId('select-input')[1]
-      fireEvent.change(selectInput, { target: { value: 'shortFilm' } })
-    })
-
-    expect(screen.getByTestId('label-wrapper')).toHaveTextContent('shortFilm')
+    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Label' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Short Film' }))
+    expect(screen.getByRole('combobox', { name: 'Label' })).toHaveTextContent(
+      'Short Film'
+    )
     expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
   })
@@ -389,11 +329,17 @@ describe('VideoInformation', () => {
     const textbox = screen.getByRole('textbox', { name: 'Title' })
     expect(textbox).toHaveValue('')
 
-    const user = userEvent.setup()
+    // Enter title
+    fireEvent.change(textbox, { target: { value: 'new title' } })
 
-    await act(async () => {
-      await user.type(textbox, 'new title')
-      await user.click(screen.getByRole('button', { name: 'Save' }))
+    // Click save
+    const saveButton = screen.getByRole('button', { name: 'Save' })
+    expect(saveButton).toBeEnabled()
+    fireEvent.click(saveButton)
+
+    // Verify that mocks were called
+    await waitFor(() => {
+      expect(createTitleMock).toHaveBeenCalled()
     })
 
     await waitFor(() => {
@@ -456,19 +402,18 @@ describe('VideoInformation', () => {
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
     expect(screen.getByRole('textbox', { name: 'Title' })).toHaveValue('JESUS')
 
-    await act(async () => {
-      fireEvent.change(screen.getByRole('textbox', { name: 'Title' }), {
-        target: { value: 'new title' }
-      })
+    // Change the title
+    fireEvent.change(screen.getByRole('textbox', { name: 'Title' }), {
+      target: { value: 'new title' }
     })
     expect(screen.getByRole('textbox', { name: 'Title' })).toHaveValue(
       'new title'
     )
-    expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
 
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'Save' }))
-    })
+    // Submit the form
+    const saveButton = screen.getByRole('button', { name: 'Save' })
+    expect(saveButton).toBeEnabled()
+    fireEvent.click(saveButton)
 
     // Verify the mock was called
     await waitFor(() => {
@@ -496,10 +441,8 @@ describe('VideoInformation', () => {
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
     expect(screen.getByRole('textbox', { name: 'Title' })).toHaveValue('JESUS')
 
-    await act(async () => {
-      fireEvent.change(screen.getByRole('textbox', { name: 'Title' }), {
-        target: { value: '' }
-      })
+    fireEvent.change(screen.getByRole('textbox', { name: 'Title' }), {
+      target: { value: '' }
     })
     await waitFor(() =>
       expect(screen.getByText('Title is required')).toBeInTheDocument()
@@ -517,44 +460,30 @@ describe('VideoInformation', () => {
     const user = userEvent.setup()
 
     const title = screen.getByRole('textbox', { name: 'Title' })
-    const statusSelect = screen.getAllByTestId('select-input')[0]
-    const labelSelect = screen.getAllByTestId('select-input')[1]
+    const status = screen.getByRole('combobox', { name: 'Status' })
+    const label = screen.getByRole('combobox', { name: 'Label' })
 
     expect(title).toHaveValue('JESUS')
-    expect(screen.getByRole('combobox', { name: 'Status' })).toHaveTextContent(
-      'published'
-    )
-    expect(screen.getByRole('combobox', { name: 'Label' })).toHaveTextContent(
-      'featureFilm'
-    )
+    expect(status).toHaveTextContent('Published')
+    expect(label).toHaveTextContent('Feature Film')
 
-    await act(async () => {
-      await user.clear(title)
-      await user.type(title, 'Title')
+    await user.clear(title)
+    await user.type(title, 'Title')
 
-      // Change select values using the correct select inputs
-      fireEvent.change(statusSelect, { target: { value: 'unpublished' } })
-      fireEvent.change(labelSelect, { target: { value: 'shortFilm' } })
-    })
+    await user.click(status)
+    await user.click(screen.getByRole('option', { name: 'Draft' }))
+
+    await user.click(label)
+    await user.click(screen.getByRole('option', { name: 'Short Film' }))
 
     expect(title).toHaveValue('Title')
-    expect(screen.getByRole('combobox', { name: 'Status' })).toHaveTextContent(
-      'unpublished'
-    )
-    expect(screen.getByRole('combobox', { name: 'Label' })).toHaveTextContent(
-      'shortFilm'
-    )
+    expect(status).toHaveTextContent('Draft')
+    expect(label).toHaveTextContent('Short Film')
 
-    await act(async () => {
-      await user.click(screen.getByRole('button', { name: 'Cancel' }))
-    })
+    await user.click(screen.getByRole('button', { name: 'Cancel' }))
 
     expect(title).toHaveValue('JESUS')
-    expect(screen.getByRole('combobox', { name: 'Status' })).toHaveTextContent(
-      'published'
-    )
-    expect(screen.getByRole('combobox', { name: 'Label' })).toHaveTextContent(
-      'featureFilm'
-    )
+    expect(status).toHaveTextContent('Published')
+    expect(label).toHaveTextContent('Feature Film')
   })
 })

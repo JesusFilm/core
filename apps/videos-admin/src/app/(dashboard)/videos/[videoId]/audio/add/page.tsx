@@ -97,12 +97,12 @@ export default function AddAudioLanguageDialog({
       values.language.slug,
       values.edition,
       values.published === 'published',
+      videoSlug,
       () => {
         router.push(returnUrl, {
           scroll: false
         })
-      },
-      videoSlug
+      }
     )
   }
 
