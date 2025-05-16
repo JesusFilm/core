@@ -235,7 +235,15 @@ const keywordRoute = createRoute({
   description: 'Returns a short URL keyword to its corresponding long URL.',
   request: {
     params: z.object({
-      keyword: z.string().describe('The short URL keyword')
+      keyword: z
+        .string()
+        .regex(
+          /^[A-Za-z0-9_-]+$/,
+          'Keyword must contain only letters, numbers, dashes or underscores'
+        )
+        .min(3, 'Keyword must be at least 3 characters')
+        .max(32, 'Keyword cannot exceed 32 characters')
+        .describe('The short URL keyword')
     })
   },
   responses: {
