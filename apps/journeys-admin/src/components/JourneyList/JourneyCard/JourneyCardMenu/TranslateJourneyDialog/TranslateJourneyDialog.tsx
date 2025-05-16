@@ -150,6 +150,8 @@ export function TranslateJourneyDialog({
       title={t('Create Translated Copy')}
       loadingText={t('Translating your journey...')}
       testId="TranslateJourneyDialog"
+      divider={false}
+      isTranslation={true}
     >
       <LanguageAutocomplete
         onChange={async (value) => setSelectedLanguage(value)}
