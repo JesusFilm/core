@@ -140,7 +140,10 @@ export function AiChat({
       >
         {/* this component displays it's children in reverse order */}
         <StateLoading status={status} />
-        <StateEmpty messages={messages} append={append} />
+        <StateEmpty
+          messages={messages.filter((message) => message.role !== 'system')}
+          append={append}
+        />
         <StateError error={error} reload={reload} />
         <MessageList messages={messages} addToolResult={addToolResult} />
       </Box>
