@@ -86,15 +86,6 @@ union MediaVideo = MuxVideo | Video | YouTube
 type Mutation {
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
-  journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!): Boolean!
-}
-
-input MutationJourneyLanguageAiDetectInput {
-  journeyId: ID!
-  name: String!
-  journeyLanguageName: String!
-  textLanguageId: ID!
-  textLanguageName: String!
 }
 
 type MuxVideo
