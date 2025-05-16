@@ -19,8 +19,8 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../__generated__/globalTypes'
-import { GET_JOURNEY_FOR_SHARING } from '../../../../../libs/useJourneyForShareLazyQuery/useJourneyForShareLazyQuery'
 import { GET_CUSTOM_DOMAINS } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery'
+import { GET_JOURNEY_FOR_SHARING } from '../../../../../libs/useJourneyForShareLazyQuery/useJourneyForShareLazyQuery'
 
 import { ShareItem } from './ShareItem'
 

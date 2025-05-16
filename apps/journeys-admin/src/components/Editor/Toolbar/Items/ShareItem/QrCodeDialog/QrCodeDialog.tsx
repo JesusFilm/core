@@ -5,6 +5,7 @@ import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
 
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { GetJourneyForSharing_journey as JourneyFromLazyQuery } from '../../../../../../../__generated__/GetJourneyForSharing'
@@ -23,7 +24,6 @@ import { CodeActionButton } from './CodeActionButton'
 import { CodeCanvas } from './CodeCanvas'
 import { QR_CODE_FIELDS } from './qrCodeFields'
 import { ScanCount } from './ScanCount'
-import { useTeam } from '@core/journeys/ui/TeamProvider'
 
 export const GET_JOURNEY_QR_CODES = gql`
   ${QR_CODE_FIELDS}
