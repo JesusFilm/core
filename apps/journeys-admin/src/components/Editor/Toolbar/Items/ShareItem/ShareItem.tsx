@@ -19,8 +19,8 @@ import TransformIcon from '@core/shared/ui/icons/Transform'
 
 import { GetJourneyForSharing_journey as JourneyFromLazyQuery } from '../../../../../../__generated__/GetJourneyForSharing'
 import { JourneyFields as JourneyFromContext } from '../../../../../../__generated__/JourneyFields'
-import { Item } from '../Item/Item'
 import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
+import { Item } from '../Item/Item'
 
 const EmbedJourneyDialog = dynamic(
   async () =>
