@@ -33,6 +33,12 @@
     "prepare": "husky install"
   },
   "private": true,
+  "workspaces": [
+    "apps/*",
+    "libs/*",
+    "apis/*",
+    "workers/*"
+  ],
   "dependencies": {
     "@adobe/apollo-link-mutation-queue": "^1.1.0",
     "@algolia/client-search": "^5.0.0",
