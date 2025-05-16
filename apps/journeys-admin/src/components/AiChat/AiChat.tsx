@@ -3,7 +3,7 @@ import { useApolloClient } from '@apollo/client'
 import Box from '@mui/material/Box'
 import { LanguageModelUsage } from 'ai'
 import { useUser } from 'next-firebase-auth'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useCallback, useMemo, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -30,6 +30,22 @@ export function AiChat({
   } = useEditor()
   const [usage, setUsage] = useState<LanguageModelUsage | null>(null)
   const [systemPrompt, setSystemPrompt] = useState<string>('')
+  const getSystemPromptWithContext = useCallback((): string => {
+    let systemPromptWithContext = systemPrompt
+
+    if (journey == null) return systemPromptWithContext
+
+    systemPromptWithContext = `${systemPromptWithContext}\n\nThe current journey ID is ${journey?.id}. You can use this to get the journey and update it. RUN THE GET JOURNEY TOOL FIRST IF YOU DO NOT HAVE THE JOURNEY ALREADY. \n\n ${JSON.stringify(journey)}`
+
+    if (selectedStepId != null)
+      systemPromptWithContext = `${systemPromptWithContext}\n\nThe current step ID is ${selectedStepId}. You can use this to get the step and update it.`
+
+    if (systemPromptFooter != null)
+      systemPromptWithContext = `${systemPromptWithContext}\n\n${systemPromptFooter}`
+
+    return systemPromptWithContext
+  }, [journey, selectedStepId, systemPrompt, systemPromptFooter])
+
   const {
     messages,
     setMessages,
@@ -43,13 +59,16 @@ export function AiChat({
     error,
     reload
   } = useChat({
-    initialMessages: [
-      {
-        id: uuidv4(),
-        role: 'system',
-        content: getSystemPromptWithContext()
-      }
-    ],
+    initialMessages: useMemo(
+      () => [
+        {
+          id: uuidv4(),
+          role: 'system',
+          content: getSystemPromptWithContext()
+        }
+      ],
+      [getSystemPromptWithContext]
+    ),
     fetch: fetchWithAuthorization,
     maxSteps: 50,
     credentials: 'omit',
@@ -85,22 +104,6 @@ export function AiChat({
         Authorization: `JWT ${token}`
       }
     })
-  }
-
-  function getSystemPromptWithContext(): string {
-    let systemPromptWithContext = systemPrompt
-
-    if (journey == null) return systemPromptWithContext
-
-    systemPromptWithContext = `${systemPromptWithContext}\n\nThe current journey ID is ${journey?.id}. You can use this to get the journey and update it. RUN THE GET JOURNEY TOOL FIRST IF YOU DO NOT HAVE THE JOURNEY ALREADY. \n\n ${JSON.stringify(journey)}`
-
-    if (selectedStepId != null)
-      systemPromptWithContext = `${systemPromptWithContext}\n\nThe current step ID is ${selectedStepId}. You can use this to get the step and update it.`
-
-    if (systemPromptFooter != null)
-      systemPromptWithContext = `${systemPromptWithContext}\n\n${systemPromptFooter}`
-
-    return systemPromptWithContext
   }
 
   function handleSystemPromptChange(systemPrompt: string): void {
