@@ -17,6 +17,7 @@ import {
   GetAdminJourneys,
   GetAdminJourneys_journeys as Journey
 } from '../../../../__generated__/GetAdminJourneys'
+import logoGray from '../../../../public/logo-grayscale.svg'
 
 import { JourneyCardInfo } from './JourneyCardInfo'
 import { JourneyCardMenu } from './JourneyCardMenu'
@@ -158,11 +159,11 @@ export function JourneyCard({
                 borderWidth: 1,
                 borderStyle: 'solid',
                 borderColor: 'rgba(0, 0, 0, 0.02)',
-                bgcolor: 'rgba(0, 0, 0, 0.1)',
+                bgcolor: 'rgba(0, 0, 0, 0.06)',
                 overflow: 'hidden'
               }}
             >
-              {journey.primaryImageBlock?.src != null && (
+              {journey.primaryImageBlock?.src != null ? (
                 <>
                   {isImageLoading && (
                     <Skeleton
@@ -179,7 +180,7 @@ export function JourneyCard({
                     />
                   )}
                   <Image
-                    data-testid="JourneyCard-Image"
+                    data-testid="JourneyCardImage"
                     src={journey.primaryImageBlock.src}
                     alt={journey.primaryImageBlock.alt ?? ''}
                     fill
@@ -194,6 +195,21 @@ export function JourneyCard({
                     onLoadingComplete={() => setIsImageLoading(false)}
                   />
                 </>
+              ) : (
+                <Image
+                  data-testid="JourneyCardNoImage"
+                  src={logoGray}
+                  alt="No Image"
+                  width={50}
+                  height={50}
+                  style={{
+                    objectFit: 'contain',
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)'
+                  }}
+                />
               )}
               <Box
                 aria-hidden

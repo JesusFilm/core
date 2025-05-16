@@ -478,6 +478,16 @@ model VideoOrigin {
   name        String
   description String?
   videos      Video[]
+}
 
-  @@index(name(type: Hash))
+enum DefaultPlatform {
+  ios
+  android
+  web
+}
+
+model ArclightApiKey {
+  key             String          @unique
+  desc            String?
+  defaultPlatform DefaultPlatform
 }
