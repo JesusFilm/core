@@ -1,5 +1,5 @@
-import CssBaseline from '@mui/material/CssBaseline'
 import { ReactNode } from 'react'
+import './globals.css'
 
 export const metadata = {
   title: 'Arclight'
@@ -12,8 +12,7 @@ export default function RootLayout({
 }): ReactNode {
   return (
     <html lang="en">
-      <CssBaseline />
-      <body>{children}</body>
+      <body className="bg-transparent">{children}</body>
     </html>
   )
 }

@@ -130,16 +130,14 @@ export default async function Page({
   }
 
   return (
-    <div className="w-full h-full min-h-[360px]">
-      <VideoPlayer
-        hlsUrl={hlsUrl}
-        videoTitle={videoTitle}
-        thumbnail={thumbnail}
-        startTime={startTime}
-        endTime={endTime}
-        subon={subon}
-        subtitles={subtitles}
-      />
-    </div>
+    <VideoPlayer
+      hlsUrl={hlsUrl}
+      videoTitle={videoTitle}
+      thumbnail={thumbnail}
+      startTime={startTime}
+      endTime={endTime}
+      subon={subon}
+      subtitles={subtitles}
+    />
   )
 }

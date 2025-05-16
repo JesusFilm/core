@@ -1,0 +1,32 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans:
+    'Montserrat', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+  /* Colors */
+  --color-primary: #cb333b;
+  --color-primary-light: #f8485e;
+  --color-primary-dark: #a4343a;
+  --color-secondary: #424a66;
+  --color-secondary-light: #7283be;
+  --color-secondary-dark: #353c55;
+  --color-error: #ef3340;
+  --color-text-primary: #252424;
+  --color-text-secondary: #4d4d4d;
+  --color-text-disabled: #aaacbb;
+  --color-background: #ffffff;
+  --color-background-paper: #ffffff;
+}
+
+@layer utilities {
+  /* Custom styles for video.js container classes */
+  .video-js-container {
+    @apply w-full h-full flex items-center justify-center relative overflow-hidden;
+  }
+
+  .vjs-hd {
+    @apply aspect-video;
+  }
+}
