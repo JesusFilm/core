@@ -135,6 +135,7 @@ describe('Goals', () => {
     description: 'my cool journey',
     status: JourneyStatus.draft,
     createdAt: '2021-11-19T12:34:56.647Z',
+    updatedAt: '2021-11-19T12:34:56.647Z',
     publishedAt: null,
     blocks: [],
     primaryImageBlock: null,

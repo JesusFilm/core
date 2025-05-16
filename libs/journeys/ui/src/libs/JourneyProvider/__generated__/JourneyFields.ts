@@ -604,6 +604,7 @@ export interface JourneyFields {
   status: JourneyStatus;
   language: JourneyFields_language;
   createdAt: any;
+  updatedAt: any;
   featuredAt: any | null;
   publishedAt: any | null;
   themeName: ThemeName;

@@ -53,7 +53,8 @@ describe('OnboardingTemplateCard', () => {
     },
     publishedAt: '2023-08-14T04:24:24.392Z',
     createdAt: '2023-08-14T04:24:24.392Z',
-    featuredAt: '2023-08-14T04:24:24.392Z'
+    featuredAt: '2023-08-14T04:24:24.392Z',
+    updatedAt: '2023-08-14T04:24:24.392Z'
   }
 
   it('should render OnboardingTemplateCard', async () => {

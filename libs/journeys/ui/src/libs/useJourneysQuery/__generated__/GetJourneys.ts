@@ -86,6 +86,7 @@ export interface GetJourneys_journeys {
   publishedAt: any | null;
   featuredAt: any | null;
   trashedAt: any | null;
+  updatedAt: any;
   description: string | null;
   slug: string;
   themeName: ThemeName;

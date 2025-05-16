@@ -604,6 +604,7 @@ export interface GetAdminJourney_journey {
   status: JourneyStatus;
   language: GetAdminJourney_journey_language;
   createdAt: any;
+  updatedAt: any;
   featuredAt: any | null;
   publishedAt: any | null;
   themeName: ThemeName;

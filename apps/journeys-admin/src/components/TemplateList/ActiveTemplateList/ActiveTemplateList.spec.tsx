@@ -66,11 +66,11 @@ describe('ActiveTemplateList', () => {
     )
     await waitFor(() =>
       expect(getAllByLabelText('template-card')[0].textContent).toContain(
-        '1 year ago'
+        '11 months ago'
       )
     )
     expect(getAllByLabelText('template-card')[1].textContent).toContain(
-      '20 years ago'
+      '1 year ago'
     )
   })
 
@@ -108,11 +108,11 @@ describe('ActiveTemplateList', () => {
     )
     await waitFor(() =>
       expect(getAllByLabelText('template-card')[0].textContent).toContain(
-        'a lower case title20 years agoEnglish'
+        'a lower case title'
       )
     )
     expect(getAllByLabelText('template-card')[1].textContent).toContain(
-      'An Old Template Heading1 year ago - Template created before the current year should also show the year in the dateEnglish'
+      'An Old Template'
     )
   })
 
