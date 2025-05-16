@@ -1,4 +1,5 @@
 import { graphql } from 'gql.tada'
+import { z } from 'zod'
 
 import { getApolloClient } from '../../lib/apolloClient'
 
@@ -47,6 +48,51 @@ const GET_VIDEO_TITLE = graphql(`
   }
 `)
 
+const VideoPlayerUrlSchema = z
+  .object({
+    refId: z.string(),
+    start: z
+      .string()
+      .optional()
+      .transform((val) => {
+        const num = val ? Number(val) : undefined
+        return num != null && num >= 0 ? num : undefined
+      }),
+    end: z
+      .string()
+      .optional()
+      .transform((val) => {
+        const num = val ? Number(val) : undefined
+        return num != null && num >= 0 ? num : undefined
+      }),
+    subon: z
+      .string()
+      .optional()
+      .transform((val) => val === 'true'),
+    sublangids: z.string().optional()
+  })
+  .transform((data) => {
+    // If both start and end are defined, ensure start is before end
+    if (data.start != null && data.end != null && data.start >= data.end) {
+      return {
+        ...data,
+        start: undefined,
+        end: undefined
+      }
+    }
+    return data
+  })
+
+function ErrorMessage({ message }: { message: string }) {
+  return (
+    <div className="flex items-center justify-center min-h-[360px] w-full">
+      <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
+        {message}
+      </div>
+    </div>
+  )
+}
+
 export default async function Page({
   searchParams
 }: {
@@ -58,45 +104,23 @@ export default async function Page({
     sublangids?: string
   }
 }) {
-  if (!searchParams.refId) {
-    return {
-      message: 'Missing refId parameter',
-      status: 404
-    }
+  // Validate search params
+  const validationResult = VideoPlayerUrlSchema.safeParse(searchParams)
+
+  if (!validationResult.success) {
+    return <ErrorMessage message="Invalid video reference ID" />
   }
 
-  // Parse start and end times, ensuring they are valid numbers
-  const startTime = searchParams.start ? Number(searchParams.start) : undefined
-  const endTime = searchParams.end ? Number(searchParams.end) : undefined
-  const subon = searchParams.subon === 'true'
-  const sublangids = searchParams.sublangids
+  const { refId, start, end, subon, sublangids } = validationResult.data
 
-  // Validate time parameters
-  if (startTime != null && (isNaN(startTime) || startTime < 0)) {
-    return {
-      message: 'Invalid start time parameter',
-      status: 400
-    }
-  }
-
-  if (endTime != null && (isNaN(endTime) || endTime < 0)) {
-    return {
-      message: 'Invalid end time parameter',
-      status: 400
-    }
-  }
-
-  if (startTime != null && endTime != null && endTime <= startTime) {
-    return {
-      message: 'End time must be greater than start time',
-      status: 400
-    }
+  if (!refId) {
+    return <ErrorMessage message="Missing video reference ID" />
   }
 
   const { data } = await getApolloClient().query({
     query: GET_VIDEO_VARIANT,
     variables: {
-      id: searchParams.refId
+      id: refId
     }
   })
   const { data: videoTitleData } = await getApolloClient().query({
@@ -123,10 +147,7 @@ export default async function Page({
     }))
 
   if (!hlsUrl) {
-    return {
-      message: 'No video URL found for ID: ' + searchParams.refId,
-      status: 404
-    }
+    return <ErrorMessage message={`No video URL found for ID: ${refId}`} />
   }
 
   return (
@@ -135,8 +156,8 @@ export default async function Page({
         hlsUrl={hlsUrl}
         videoTitle={videoTitle}
         thumbnail={thumbnail}
-        startTime={startTime}
-        endTime={endTime}
+        startTime={start}
+        endTime={end}
         subon={subon}
         subtitles={subtitles}
       />
