@@ -228,7 +228,7 @@ describe('TrashedJourneyList', () => {
     })
 
     it('should restore all journeys', async () => {
-      const { getByText } = render(
+      const { getByText, getByRole } = render(
         <MockedProvider
           mocks={[trashedJourneysMock, restoreJourneysMock, noJourneysMock]}
         >
@@ -245,12 +245,12 @@ describe('TrashedJourneyList', () => {
       await waitFor(() =>
         expect(getByText('Default Journey Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Restore'))
+      fireEvent.click(getByRole('button', { name: 'Restore' }))
       await waitFor(() => expect(result).toHaveBeenCalled())
     })
 
     it('should show error', async () => {
-      const { getByText } = render(
+      const { getByText, getByRole } = render(
         <MockedProvider
           mocks={[
             trashedJourneysMock,
@@ -272,7 +272,7 @@ describe('TrashedJourneyList', () => {
       await waitFor(() =>
         expect(getByText('Default Journey Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Restore'))
+      fireEvent.click(getByRole('button', { name: 'Restore' }))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
     })
   })
@@ -307,7 +307,7 @@ describe('TrashedJourneyList', () => {
     })
 
     it('should trash all journeys', async () => {
-      const { getByText } = render(
+      const { getByText, getByRole } = render(
         <MockedProvider
           mocks={[trashedJourneysMock, deleteJourneysMock, noJourneysMock]}
         >
@@ -324,12 +324,12 @@ describe('TrashedJourneyList', () => {
       await waitFor(() =>
         expect(getByText('Default Journey Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Delete Forever'))
+      fireEvent.click(getByRole('button', { name: 'Delete Forever' }))
       await waitFor(() => expect(result).toHaveBeenCalled())
     })
 
     it('should show error', async () => {
-      const { getByText } = render(
+      const { getByText, getByRole } = render(
         <MockedProvider
           mocks={[
             trashedJourneysMock,
@@ -351,7 +351,7 @@ describe('TrashedJourneyList', () => {
       await waitFor(() =>
         expect(getByText('Default Journey Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Delete Forever'))
+      fireEvent.click(getByRole('button', { name: 'Delete Forever' }))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
     })
   })

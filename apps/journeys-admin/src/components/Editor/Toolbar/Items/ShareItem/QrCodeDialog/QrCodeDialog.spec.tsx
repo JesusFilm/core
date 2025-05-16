@@ -6,6 +6,10 @@ import { SnackbarProvider } from 'notistack'
 import { Suspense } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider
+} from '@core/journeys/ui/TeamProvider'
 import { GetJourney_journey as Journey } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 
 import {
@@ -37,6 +41,31 @@ jest.mock('date-fns', () => {
 })
 
 const mockFormatIso = formatISO as jest.MockedFunction<typeof formatISO>
+
+const teamMock = {
+  request: {
+    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+  },
+  result: {
+    data: {
+      teams: [
+        {
+          __typename: 'Team',
+          id: 'team.id',
+          title: 'Test Team',
+          publicTitle: 'Test Team Public',
+          userTeams: [],
+          customDomains: []
+        }
+      ],
+      getJourneyProfile: {
+        __typename: 'JourneyProfile',
+        id: 'journeyProfileId',
+        lastActiveTeamId: 'team.id'
+      }
+    }
+  }
+}
 
 describe('QrCodeDialog', () => {
   beforeEach(() => {
@@ -121,7 +150,7 @@ describe('QrCodeDialog', () => {
         <Suspense>
           <JourneyProvider value={{ journey }}>
             <SnackbarProvider>
-              <QrCodeDialog open onClose={handleClose} />
+              <QrCodeDialog open onClose={handleClose} journey={journey} />
             </SnackbarProvider>
           </JourneyProvider>
         </Suspense>
@@ -141,7 +170,7 @@ describe('QrCodeDialog', () => {
         <Suspense>
           <JourneyProvider value={{ journey }}>
             <SnackbarProvider>
-              <QrCodeDialog open onClose={handleClose} />
+              <QrCodeDialog open onClose={handleClose} journey={journey} />
             </SnackbarProvider>
           </JourneyProvider>
         </Suspense>
@@ -159,7 +188,7 @@ describe('QrCodeDialog', () => {
         <Suspense>
           <JourneyProvider value={{ journey }}>
             <SnackbarProvider>
-              <QrCodeDialog open onClose={handleClose} />
+              <QrCodeDialog open onClose={handleClose} journey={journey} />
             </SnackbarProvider>
           </JourneyProvider>
         </Suspense>
@@ -209,7 +238,7 @@ describe('QrCodeDialog', () => {
         <Suspense>
           <JourneyProvider value={{ journey }}>
             <SnackbarProvider>
-              <QrCodeDialog open onClose={handleClose} />
+              <QrCodeDialog open onClose={handleClose} journey={journey} />
             </SnackbarProvider>
           </JourneyProvider>
         </Suspense>
@@ -240,9 +269,14 @@ describe('QrCodeDialog', () => {
       QrCodeCreateVariables
     > = {
       request: {
-        query: QR_CODE_CREATE
+        query: QR_CODE_CREATE,
+        variables: {
+          input: {
+            journeyId: 'journey.id',
+            teamId: 'team.id'
+          }
+        }
       },
-      variableMatcher: () => true,
       result: jest.fn(() => ({
         data: {
           qrCodeCreate: {
@@ -256,14 +290,16 @@ describe('QrCodeDialog', () => {
     render(
       <MockedProvider
         cache={cache}
-        mocks={[getEmptyQrCodesMock, qrCodeCreateMock]}
+        mocks={[getEmptyQrCodesMock, qrCodeCreateMock, teamMock]}
       >
         <Suspense>
-          <JourneyProvider value={{ journey }}>
-            <SnackbarProvider>
-              <QrCodeDialog open onClose={handleClose} />
-            </SnackbarProvider>
-          </JourneyProvider>
+          <TeamProvider>
+            <JourneyProvider value={{ journey }}>
+              <SnackbarProvider>
+                <QrCodeDialog open onClose={handleClose} journey={journey} />
+              </SnackbarProvider>
+            </JourneyProvider>
+          </TeamProvider>
         </Suspense>
       </MockedProvider>
     )
@@ -297,20 +333,27 @@ describe('QrCodeDialog', () => {
       QrCodeCreateVariables
     > = {
       request: {
-        query: QR_CODE_CREATE
+        query: QR_CODE_CREATE,
+        variables: {
+          input: {
+            journeyId: 'journey.id',
+            teamId: 'team.id'
+          }
+        }
       },
-      variableMatcher: () => true,
       error: new Error('error')
     }
 
     render(
-      <MockedProvider mocks={[getEmptyQrCodesMock, qrCodeCreateMock]}>
+      <MockedProvider mocks={[getEmptyQrCodesMock, qrCodeCreateMock, teamMock]}>
         <Suspense>
-          <JourneyProvider value={{ journey }}>
-            <SnackbarProvider>
-              <QrCodeDialog open onClose={handleClose} />
-            </SnackbarProvider>
-          </JourneyProvider>
+          <TeamProvider>
+            <JourneyProvider value={{ journey }}>
+              <SnackbarProvider>
+                <QrCodeDialog open onClose={handleClose} journey={journey} />
+              </SnackbarProvider>
+            </JourneyProvider>
+          </TeamProvider>
         </Suspense>
       </MockedProvider>
     )

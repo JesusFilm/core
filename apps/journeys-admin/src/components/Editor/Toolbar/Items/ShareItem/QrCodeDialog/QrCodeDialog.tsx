@@ -5,13 +5,15 @@ import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
 
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 
+import { GetJourneyForSharing_journey as JourneyFromLazyQuery } from '../../../../../../../__generated__/GetJourneyForSharing'
 import {
   GetJourneyQrCodes,
   GetJourneyQrCodesVariables
 } from '../../../../../../../__generated__/GetJourneyQrCodes'
+import { JourneyFields as JourneyFromContext } from '../../../../../../../__generated__/JourneyFields'
 import {
   QrCodeCreate,
   QrCodeCreateVariables
@@ -44,15 +46,18 @@ export const QR_CODE_CREATE = gql`
 interface QrCodeDialogProps {
   open: boolean
   onClose: () => void
+
+  journey?: JourneyFromContext | JourneyFromLazyQuery
 }
 
 export function QrCodeDialog({
   open,
-  onClose
+  onClose,
+  journey
 }: QrCodeDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
+  const { activeTeam } = useTeam()
   const [qrCodeCreate, { loading: createLoading }] = useMutation<
     QrCodeCreate,
     QrCodeCreateVariables
@@ -71,7 +76,8 @@ export function QrCodeDialog({
         where: {
           journeyId: journey?.id
         }
-      }
+      },
+      skip: journey?.id == null
     }
   )
 
@@ -91,12 +97,12 @@ export function QrCodeDialog({
   }, [getLoading, createLoading])
 
   async function handleGenerateQrCode(): Promise<void> {
-    if (journey?.id == null || journey?.team?.id == null) return
+    if (journey?.id == null || activeTeam?.id == null) return
     await qrCodeCreate({
       variables: {
         input: {
-          journeyId: journey?.id,
-          teamId: journey?.team.id
+          journeyId: journey.id,
+          teamId: activeTeam.id
         }
       },
       update(cache, { data }) {

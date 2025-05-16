@@ -1,6 +1,11 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
+
+import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
+import { ThemeProvider } from '../../ThemeProvider'
 import {
   defaultTemplate,
   descriptiveTemplate,
@@ -9,6 +14,20 @@ import {
 } from '../data'
 
 import { TemplateListItem } from '.'
+
+const userRoleMock = {
+  request: {
+    query: GET_USER_ROLE
+  },
+  result: {
+    data: {
+      getUserRole: {
+        id: 'user-id',
+        roles: []
+      }
+    }
+  }
+}
 
 describe('TemplateListItem', () => {
   beforeAll(() => {
@@ -21,7 +40,15 @@ describe('TemplateListItem', () => {
   })
 
   it('should render', () => {
-    const { getByText } = render(<TemplateListItem journey={oldTemplate} />)
+    const { getByText } = render(
+      <MockedProvider mocks={[userRoleMock]}>
+        <ThemeProvider>
+          <SnackbarProvider>
+            <TemplateListItem journey={oldTemplate} />
+          </SnackbarProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
     expect(getByText('An Old Template Heading')).toBeInTheDocument()
     expect(getByText('1 year ago')).toBeInTheDocument()
     expect(
@@ -34,7 +61,13 @@ describe('TemplateListItem', () => {
 
   it('should show native and local language', () => {
     const { getByText } = render(
-      <TemplateListItem journey={descriptiveTemplate} />
+      <MockedProvider mocks={[userRoleMock]}>
+        <ThemeProvider>
+          <SnackbarProvider>
+            <TemplateListItem journey={descriptiveTemplate} />
+          </SnackbarProvider>
+        </ThemeProvider>
+      </MockedProvider>
     )
     expect(getByText('普通話 (Chinese, Mandarin)')).toBeInTheDocument()
   })
@@ -59,12 +92,28 @@ describe('TemplateListItem', () => {
         ]
       }
     }
-    const { getByText } = render(<TemplateListItem journey={template} />)
+    const { getByText } = render(
+      <MockedProvider mocks={[userRoleMock]}>
+        <ThemeProvider>
+          <SnackbarProvider>
+            <TemplateListItem journey={template} />
+          </SnackbarProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
     expect(getByText('English')).toBeInTheDocument()
   })
 
   it('should link to template details', () => {
-    const { getByRole } = render(<TemplateListItem journey={defaultTemplate} />)
+    const { getByRole } = render(
+      <MockedProvider mocks={[userRoleMock]}>
+        <ThemeProvider>
+          <SnackbarProvider>
+            <TemplateListItem journey={defaultTemplate} />
+          </SnackbarProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
     expect(getByRole('link')).toHaveAttribute('href', '/publisher/template-id')
   })
 })
