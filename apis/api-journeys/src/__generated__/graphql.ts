@@ -815,6 +815,7 @@ export type Journey = {
   id: Scalars['ID']['output'];
   journeyCollections: Array<JourneyCollection>;
   language: Language;
+  languageId: Scalars['String']['output'];
   logoImageBlock?: Maybe<ImageBlock>;
   menuButtonIcon?: Maybe<JourneyMenuButtonIcon>;
   menuStepBlock?: Maybe<StepBlock>;
