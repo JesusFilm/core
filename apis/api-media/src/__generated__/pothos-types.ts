@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { Prisma, CloudflareImage, MuxVideo, CloudflareR2, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoEdition, VideoSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, TagName, Tag, Tagging, Taxonomy, TaxonomyName, UserMediaRole, ShortLinkDomain, ShortLink, ShortLinkBlocklistDomain } from ".prisma/api-media-client/index.js";
+import type { Prisma, CloudflareImage, MuxVideo, CloudflareR2, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoEdition, VideoSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, TagName, Tag, Tagging, Taxonomy, TaxonomyName, UserMediaRole, ShortLinkDomain, ShortLink, ShortLinkBlocklistDomain, ArclightApiKey } from ".prisma/api-media-client/index.js";
 export default interface PrismaTypes {
     CloudflareImage: {
         Name: "CloudflareImage";
@@ -677,6 +677,20 @@ export default interface PrismaTypes {
         OrderBy: Prisma.ShortLinkBlocklistDomainOrderByWithRelationInput;
         WhereUnique: Prisma.ShortLinkBlocklistDomainWhereUniqueInput;
         Where: Prisma.ShortLinkBlocklistDomainWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: never;
+        ListRelations: never;
+        Relations: {};
+    };
+    ArclightApiKey: {
+        Name: "ArclightApiKey";
+        Shape: ArclightApiKey;
+        Include: never;
+        Select: Prisma.ArclightApiKeySelect;
+        OrderBy: Prisma.ArclightApiKeyOrderByWithRelationInput;
+        WhereUnique: Prisma.ArclightApiKeyWhereUniqueInput;
+        Where: Prisma.ArclightApiKeyWhereInput;
         Create: {};
         Update: {};
         RelationName: never;
