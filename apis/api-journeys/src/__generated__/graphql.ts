@@ -1395,7 +1395,6 @@ export type Mutation = {
   journeyDuplicate: Journey;
   /** Sets journey status to featured */
   journeyFeature?: Maybe<Journey>;
-  journeyLanguageAiDetect: Scalars['Boolean']['output'];
   journeyNotificationUpdate: JourneyNotification;
   journeyProfileCreate: JourneyProfile;
   journeyProfileUpdate: JourneyProfile;
@@ -1851,11 +1850,6 @@ export type MutationJourneyDuplicateArgs = {
 export type MutationJourneyFeatureArgs = {
   feature: Scalars['Boolean']['input'];
   id: Scalars['ID']['input'];
-};
-
-
-export type MutationJourneyLanguageAiDetectArgs = {
-  input: MutationJourneyLanguageAiDetectInput;
 };
 
 
@@ -2405,14 +2399,6 @@ export type MutationBibleCitationUpdateInput = {
   osisId?: InputMaybe<Scalars['String']['input']>;
   verseEnd?: InputMaybe<Scalars['Int']['input']>;
   verseStart?: InputMaybe<Scalars['Int']['input']>;
-};
-
-export type MutationJourneyLanguageAiDetectInput = {
-  journeyId: Scalars['ID']['input'];
-  journeyLanguageName: Scalars['String']['input'];
-  name: Scalars['String']['input'];
-  textLanguageId: Scalars['ID']['input'];
-  textLanguageName: Scalars['String']['input'];
 };
 
 export type MutationShortLinkCreateInput = {
