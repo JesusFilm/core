@@ -174,5 +174,13 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
 
     // Checkly will automatically capture failure screenshots
     throw error
+  } finally {
+    // Ensure resources are cleaned up even on error
+    try {
+      if (page && !page.isClosed()) await page.close()
+      if (context) await context.close()
+    } catch (cleanupError) {
+      console.error('Error during cleanup:', cleanupError)
+    }
   }
 })
