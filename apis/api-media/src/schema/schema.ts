@@ -20,6 +20,7 @@ import './videoVariant'
 import './tag'
 import './taxonomy'
 import './youtube'
+import './arclightApiKey'
 
 import { builder } from './builder'
 

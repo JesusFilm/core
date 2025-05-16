@@ -1,6 +1,14 @@
 extend schema
   @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@shareable"])
 
+type ArclightApiKey
+  @key(fields: "key")
+{
+  key: String!
+  desc: String
+  defaultPlatform: DefaultPlatform!
+}
+
 interface BaseError {
   message: String
 }
@@ -83,6 +91,12 @@ input CloudflareR2CreateInput {
 A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
 scalar Date
+
+enum DefaultPlatform {
+  ios
+  android
+  web
+}
 
 type Error implements BaseError
   @shareable
@@ -458,6 +472,8 @@ type Query {
   videoVariants(input: VideoVariantFilter): [VideoVariant!]!
   tags: [Tag!]!
   taxonomies(category: String, languageCodes: [String!]): [Taxonomy!]!
+  arclightApiKeys: [ArclightApiKey!]!
+  arclightApiKeyByKey(key: String!): ArclightApiKey
 }
 
 union QueryShortLinkByPathResult = NotFoundError | QueryShortLinkByPathSuccess

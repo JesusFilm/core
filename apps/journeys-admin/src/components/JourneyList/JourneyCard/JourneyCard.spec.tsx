@@ -41,7 +41,7 @@ describe('JourneyCard', () => {
 
     expect(
       screen.getByRole('link', {
-        name: 'Default Journey Heading English • 11 months ago'
+        name: 'No Image Default Journey Heading English • 11 months ago'
       })
     ).toHaveAttribute('href', '/journeys/journey-id')
   })
@@ -60,7 +60,7 @@ describe('JourneyCard', () => {
     )
 
     const link = screen.getByRole('link', {
-      name: 'Default Journey Heading English • 11 months ago'
+      name: 'No Image Default Journey Heading English • 11 months ago'
     })
     expect(link).toHaveClass('Mui-disabled')
   })
@@ -81,7 +81,7 @@ describe('JourneyCard', () => {
     ).toBeInTheDocument()
   })
 
-  it('should not show Image element when primaryImageBlock.src is null', () => {
+  it('should not show Image element when primaryImageBlock.src is null. Instead, show a grayscale logo', () => {
     render(
       <SnackbarProvider>
         <MockedProvider>
@@ -92,7 +92,8 @@ describe('JourneyCard', () => {
       </SnackbarProvider>
     )
 
-    expect(screen.queryByTestId('JourneyCard-Image')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('JourneyCardImage')).not.toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'No Image' })).toBeInTheDocument()
   })
 
   it('should show "New" chip for new journey card variant', () => {
