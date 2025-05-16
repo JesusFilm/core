@@ -47,6 +47,14 @@ export const GET_VIDEO_INFORMATION = graphql(`
         id
         value
       }
+      variant {
+        id
+        slug
+        language {
+          id
+          slug
+        }
+      }
     }
   }
 `)
@@ -295,7 +303,7 @@ export function VideoInformation({
                 <Button
                   variant="outlined"
                   color="primary"
-                  href={`${process.env.NEXT_PUBLIC_WATCH_URL ?? ''}/watch/${values.url}.html/english.html`}
+                  href={`${process.env.NEXT_PUBLIC_WATCH_URL ?? ''}/watch/${values.url}.html/${data.adminVideo.variant?.language.slug}.html`}
                   target="_blank"
                   rel="noopener noreferrer"
                   startIcon={<OpenInNewIcon />}
@@ -304,7 +312,9 @@ export function VideoInformation({
                     alignSelf: { xs: 'stretch', sm: 'center' },
                     whiteSpace: 'nowrap'
                   }}
-                  disabled={!data.adminVideo.published}
+                  disabled={
+                    !(data.adminVideo.published && data.adminVideo.variant)
+                  }
                 >
                   View Public Page
                 </Button>
