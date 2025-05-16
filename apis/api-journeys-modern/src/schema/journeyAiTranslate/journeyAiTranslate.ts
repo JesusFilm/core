@@ -1,7 +1,10 @@
 import { google } from '@ai-sdk/google'
 import { generateObject, streamObject } from 'ai'
+import { GraphQLError } from 'graphql'
 import { z } from 'zod'
 
+import { ability, subject } from '../../lib/auth/ability'
+import { Action } from '../../lib/auth/types'
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
@@ -34,12 +37,27 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
           id: input.journeyId
         },
         include: {
-          blocks: true
+          blocks: true,
+          userJourneys: true,
+          team: {
+            include: { userTeams: true }
+          }
         }
       })
 
       if (!journey) {
-        throw new Error('Could not fetch journey for translation')
+        throw new GraphQLError('journey not found', {
+          extensions: { code: 'NOT_FOUND' }
+        })
+      }
+
+      if (!ability(Action.Update, subject('Journey', journey), user)) {
+        throw new GraphQLError(
+          'user does not have permission to update journey',
+          {
+            extensions: { code: 'FORBIDDEN' }
+          }
+        )
       }
 
       // 2. Get the language names
