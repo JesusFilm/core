@@ -40,9 +40,15 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
 
     // Step 2: Login
     const authStart = Date.now()
-    await page.getByPlaceholder('Enter your email address here').click({ timeout })
-    await page.getByPlaceholder('Enter your email address here').fill(email, { timeout })
-    await page.getByRole('button', { name: 'Continue with email' }).click({ timeout })
+    await page
+      .getByPlaceholder('Enter your email address here')
+      .click({ timeout })
+    await page
+      .getByPlaceholder('Enter your email address here')
+      .fill(email, { timeout })
+    await page
+      .getByRole('button', { name: 'Continue with email' })
+      .click({ timeout })
     await page.getByPlaceholder('Enter Password').click({ timeout })
     await page.getByPlaceholder('Enter Password').fill(password, { timeout })
     await page.getByRole('button', { name: 'Sign In' }).click({ timeout })
@@ -50,7 +56,9 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
 
     // Step 3: Wait for and verify dashboard load
     const dashboardStart = Date.now()
-    await expect(page.getByTestId('NavigationListItemTemplates')).toBeVisible({ timeout })
+    await expect(page.getByTestId('NavigationListItemTemplates')).toBeVisible({
+      timeout
+    })
     // await expect(page.getByTestId('NavigationListItemPublisher')).toBeVisible({ timeout })
     // await expect(page.getByTestId('NavigationListItemProfile')).toBeVisible({ timeout })
 
@@ -78,7 +86,9 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
       .getByTestId('JourneysAdminTemplateViewHeader')
       .getByRole('button', { name: 'Use This Template' })
       .click({ timeout })
-    await page.getByRole('combobox', { name: 'Select Team ​' }).click({ timeout })
+    await page
+      .getByRole('combobox', { name: 'Select Team ​' })
+      .click({ timeout })
     await page.getByLabel('Playwright').click({ timeout })
     await page.getByRole('button', { name: 'Add' }).click({ timeout })
     stepTiming['team_selection'] = Date.now() - teamStart
@@ -87,7 +97,9 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
     const editStart = Date.now()
 
     // Wait for the iframe to be present with explicit timeout
-    await page.waitForSelector('[data-testid="CanvasContainer"] iframe', { timeout })
+    await page.waitForSelector('[data-testid="CanvasContainer"] iframe', {
+      timeout
+    })
 
     // Use frameLocator to handle the iframe
     const frame = page
@@ -100,9 +112,13 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
     ).toBeVisible({ timeout })
 
     // Perform the interactions
-    await frame.getByRole('button', { name: 'Watch the story' }).click({ timeout })
+    await frame
+      .getByRole('button', { name: 'Watch the story' })
+      .click({ timeout })
     await frame.getByPlaceholder('Edit text...').click({ timeout })
-    await frame.getByPlaceholder('Edit text...').fill('Changed Button Text', { timeout })
+    await frame
+      .getByPlaceholder('Edit text...')
+      .fill('Changed Button Text', { timeout })
     await page.getByTestId('EditorCanvas').click({ timeout })
 
     stepTiming['journey_editing'] = Date.now() - editStart
