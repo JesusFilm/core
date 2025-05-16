@@ -20,6 +20,7 @@ import {
   ThemeName
 } from '../../../../../../__generated__/globalTypes'
 import { GET_JOURNEY_FOR_SHARING } from '../../../../../libs/useJourneyForShareLazyQuery/useJourneyForShareLazyQuery'
+import { GET_CUSTOM_DOMAINS } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery'
 
 import { ShareItem } from './ShareItem'
 
@@ -86,6 +87,26 @@ describe('ShareItem', () => {
 
   const push = jest.fn()
   const on = jest.fn()
+
+  const getCustomDomainsMock = {
+    request: {
+      query: GET_CUSTOM_DOMAINS,
+      variables: { teamId: 'teamId' }
+    },
+    result: {
+      data: {
+        customDomains: [
+          {
+            __typename: 'CustomDomain',
+            id: 'customDomainId',
+            name: 'custom.domain.com',
+            apexName: 'custom.domain.com',
+            journeyCollection: null
+          }
+        ]
+      }
+    }
+  }
 
   let originalEnv
 
@@ -286,6 +307,16 @@ describe('ShareItem', () => {
       events: { on }
     } as unknown as NextRouter)
 
+    const journeyWithTeam = {
+      ...defaultJourney,
+      team: {
+        __typename: 'Team' as const,
+        id: 'teamId',
+        title: 'Test Team',
+        publicTitle: 'Test Team Public'
+      }
+    }
+
     const teamMock = {
       request: {
         query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
@@ -319,12 +350,14 @@ describe('ShareItem', () => {
 
     render(
       <SnackbarProvider>
-        <MockedProvider mocks={[teamMock, journeyForSharingMock]}>
+        <MockedProvider
+          mocks={[teamMock, journeyForSharingMock, getCustomDomainsMock]}
+        >
           <TeamProvider>
             <JourneyProvider
-              value={{ journey: defaultJourney, variant: 'admin' }}
+              value={{ journey: journeyWithTeam, variant: 'admin' }}
             >
-              <ShareItem variant="button" journey={defaultJourney} />
+              <ShareItem variant="button" journey={journeyWithTeam} />
             </JourneyProvider>
           </TeamProvider>
         </MockedProvider>

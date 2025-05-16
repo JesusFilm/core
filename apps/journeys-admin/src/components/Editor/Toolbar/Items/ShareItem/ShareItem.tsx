@@ -60,16 +60,11 @@ export function ShareItem({
   handleCloseMenu
 }: ShareItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { activeTeam } = useTeam()
-
-  const hostnameActiveTeam = activeTeam?.customDomains[0]?.name
-  console.log('hostnameActiveTeam', hostnameActiveTeam)
 
   const { hostname } = useCustomDomainsQuery({
     variables: { teamId: journey?.team?.id ?? '' },
     skip: journey?.team?.id == null
   })
-  console.log('hostname', hostname)
   const router = useRouter()
   const [showSlugDialog, setShowSlugDialog] = useState<boolean | null>(null)
   const [showEmbedDialog, setShowEmbedDialog] = useState<boolean | null>(null)
@@ -191,7 +186,6 @@ export function ShareItem({
           open={showQrCodeDialog}
           onClose={() => setShowQrCodeDialog(false)}
           journey={journey}
-          teamId={activeTeam?.id}
         />
       )}
     </Box>

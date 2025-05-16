@@ -23,6 +23,7 @@ import { CodeActionButton } from './CodeActionButton'
 import { CodeCanvas } from './CodeCanvas'
 import { QR_CODE_FIELDS } from './qrCodeFields'
 import { ScanCount } from './ScanCount'
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 
 export const GET_JOURNEY_QR_CODES = gql`
   ${QR_CODE_FIELDS}
@@ -45,18 +46,18 @@ export const QR_CODE_CREATE = gql`
 interface QrCodeDialogProps {
   open: boolean
   onClose: () => void
-  teamId?: string
+
   journey?: JourneyFromContext | JourneyFromLazyQuery
 }
 
 export function QrCodeDialog({
   open,
   onClose,
-  journey,
-  teamId
+  journey
 }: QrCodeDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
+  const { activeTeam } = useTeam()
   const [qrCodeCreate, { loading: createLoading }] = useMutation<
     QrCodeCreate,
     QrCodeCreateVariables
@@ -96,12 +97,12 @@ export function QrCodeDialog({
   }, [getLoading, createLoading])
 
   async function handleGenerateQrCode(): Promise<void> {
-    if (journey?.id == null || teamId == null) return
+    if (journey?.id == null || activeTeam?.id == null) return
     await qrCodeCreate({
       variables: {
         input: {
           journeyId: journey.id,
-          teamId: teamId
+          teamId: activeTeam.id
         }
       },
       update(cache, { data }) {
