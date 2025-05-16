@@ -1,12 +1,12 @@
-import { gql, useMutation } from '@apollo/client'
+import { MutationHookOptions, gql, useMutation } from '@apollo/client'
+import { graphql } from 'gql.tada'
 
 import {
-  JourneyAiTranslateCreate_journeyAiTranslateCreate as Journey,
   JourneyAiTranslateCreate,
   JourneyAiTranslateCreateVariables
 } from '../../../__generated__/JourneyAiTranslateCreate'
 
-export const JOURNEY_AI_TRANSLATE_CREATE = gql`
+export const JOURNEY_AI_TRANSLATE_CREATE = graphql(`
   mutation JourneyAiTranslateCreate(
     $journeyId: ID!
     $name: String!
@@ -31,48 +31,44 @@ export const JOURNEY_AI_TRANSLATE_CREATE = gql`
       updatedAt
     }
   }
-`
+`)
 
-/**
- * Hook for translating a journey using AI
- *
- * @returns An object containing:
- * - translateJourney: Function to translate a journey
- * - loading: Boolean indicating if the mutation is in progress
- */
-export function useJourneyAiTranslateMutation(): {
-  translateJourney: (
-    variables: JourneyAiTranslateCreateVariables
-  ) => Promise<Journey | undefined>
-  loading: boolean
-} {
-  const [mutate, { loading }] = useMutation<
+export function useJourneyAiTranslateMutation(
+  options?: MutationHookOptions<
     JourneyAiTranslateCreate,
     JourneyAiTranslateCreateVariables
-  >(JOURNEY_AI_TRANSLATE_CREATE)
+  >
+) {
+  const mutation = useMutation<
+    JourneyAiTranslateCreate,
+    JourneyAiTranslateCreateVariables
+  >(JOURNEY_AI_TRANSLATE_CREATE, {
+    update(cache, { data }) {
+      if (data?.journeyAiTranslateCreate != null) {
+        cache.modify({
+          fields: {
+            adminJourneys(existingAdminJourneyRefs = []) {
+              const translatedJourneyRef = cache.writeFragment({
+                data: data.journeyAiTranslateCreate,
+                fragment: gql`
+                  fragment TranslatedJourney on Journey {
+                    id
+                    title
+                    description
+                    languageId
+                    createdAt
+                    updatedAt
+                  }
+                `
+              })
+              return [...existingAdminJourneyRefs, translatedJourneyRef]
+            }
+          }
+        })
+      }
+    },
+    ...options
+  })
 
-  /**
-   * Translates a journey using AI
-   *
-   * @param variables - The variables needed for translation
-   * @returns A promise that resolves to the job ID if successful, undefined otherwise
-   */
-  const translateJourney = async (
-    variables: JourneyAiTranslateCreateVariables
-  ): Promise<Journey | undefined> => {
-    try {
-      // TODO: Add cache update logic to add the translated journey to adminJourneys
-      // when the backend starts returning the created journey ID
-      const { data } = await mutate({ variables })
-      return data?.journeyAiTranslateCreate
-    } catch (error) {
-      console.error('Error translating journey:', error)
-      return undefined
-    }
-  }
-
-  return {
-    translateJourney,
-    loading
-  }
+  return mutation
 }

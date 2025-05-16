@@ -35,7 +35,7 @@ export function CopyToTeamMenuItem({
   const [duplicateTeamDialogOpen, setDuplicateTeamDialogOpen] =
     useState<boolean>(false)
   const [journeyDuplicate] = useJourneyDuplicateMutation()
-  const { translateJourney } = useJourneyAiTranslateMutation()
+  const [journeyAiTranslate] = useJourneyAiTranslateMutation()
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
   const [loading, setLoading] = useState(false)
@@ -47,26 +47,26 @@ export function CopyToTeamMenuItem({
   ): Promise<void> => {
     if (id == null || journey == null) return
 
-    try {
-      setLoading(true)
-      const { data: duplicateData } = await journeyDuplicate({
+    setLoading(true)
+    const { data: duplicateData } = await journeyDuplicate({
+      variables: {
+        id,
+        teamId
+      }
+    })
+
+    if (duplicateData?.journeyDuplicate?.id) {
+      if (selectedLanguage == null || !showTranslation) {
+        setLoading(false)
+        enqueueSnackbar(t('Journey Copied'), {
+          variant: 'success',
+          preventDuplicate: true
+        })
+        return
+      }
+
+      await journeyAiTranslate({
         variables: {
-          id,
-          teamId
-        }
-      })
-
-      if (duplicateData?.journeyDuplicate?.id) {
-        if (selectedLanguage == null || !showTranslation) {
-          setLoading(false)
-          enqueueSnackbar(t('Journey Copied'), {
-            variant: 'success',
-            preventDuplicate: true
-          })
-          return
-        }
-
-        const translatedJourney = await translateJourney({
           journeyId: duplicateData.journeyDuplicate.id,
           name: journey.title,
           journeyLanguageName:
@@ -74,24 +74,29 @@ export function CopyToTeamMenuItem({
           textLanguageId: selectedLanguage.id,
           textLanguageName:
             selectedLanguage.nativeName ?? selectedLanguage.localName ?? ''
-        })
-        if (translatedJourney) {
+        },
+        onCompleted() {
           enqueueSnackbar(t('Journey Translated'), {
             variant: 'success',
             preventDuplicate: true
           })
-        } else {
-          throw new Error('Failed to translate journey')
+        },
+        onError(error) {
+          enqueueSnackbar(error.message, {
+            variant: 'error',
+            preventDuplicate: true
+          })
         }
-      } else {
-        throw new Error('Journey duplication failed')
-      }
-    } catch (error) {
-      enqueueSnackbar(error.message, {
+      })
+
+      handleCloseMenu()
+      setDuplicateTeamDialogOpen(false)
+      setLoading(false)
+    } else {
+      enqueueSnackbar(t('Journey duplication failed'), {
         variant: 'error',
         preventDuplicate: true
       })
-    } finally {
       handleCloseMenu()
       setDuplicateTeamDialogOpen(false)
       setLoading(false)
