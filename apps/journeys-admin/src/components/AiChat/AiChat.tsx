@@ -114,10 +114,6 @@ export function AiChat({
     )
   }
 
-  const nonSystemMessages = messages
-    .filter((message) => message.role !== 'system')
-    .reverse()
-
   return (
     <>
       <Box
@@ -144,12 +140,9 @@ export function AiChat({
       >
         {/* this component displays it's children in reverse order */}
         <StateLoading status={status} />
-        <StateEmpty messages={nonSystemMessages} append={append} />
+        <StateEmpty messages={messages} append={append} />
         <StateError error={error} reload={reload} />
-        <MessageList
-          messages={nonSystemMessages}
-          addToolResult={addToolResult}
-        />
+        <MessageList messages={messages} addToolResult={addToolResult} />
       </Box>
       <Box
         sx={{

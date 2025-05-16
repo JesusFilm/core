@@ -1,5 +1,6 @@
 import { Message } from '@ai-sdk/react'
 import Box from '@mui/material/Box'
+import reverse from 'lodash/reverse'
 import { ReactElement } from 'react'
 
 import { TextPart } from './TextPart'
@@ -22,40 +23,47 @@ export function MessageList({
 }: MessageListProps): ReactElement {
   return (
     <>
-      {messages.map((message) => (
-        <Box
-          key={message.id}
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            '& > div + div': {
-              mt: 2
-            },
-            '&:last-child .text-part': {
-              mt: 0
-            },
-            '&:nth-last-child .text-part': {
-              mb: 0
-            }
-          }}
-        >
-          {message.parts?.map((part, i) => {
-            switch (part.type) {
-              case 'text':
-                return <TextPart message={message} part={part} />
-              case 'tool-invocation':
-                return (
-                  <ToolInvocationPart
-                    part={part}
-                    addToolResult={addToolResult}
-                  />
-                )
-              default:
-                return null
-            }
-          })}
-        </Box>
-      ))}
+      {reverse(messages).map((message) => {
+        switch (message.role) {
+          case 'system':
+            return null
+          default:
+            return (
+              <Box
+                key={message.id}
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  '& > div + div': {
+                    mt: 2
+                  },
+                  '&:last-child .text-part': {
+                    mt: 0
+                  },
+                  '&:nth-last-child .text-part': {
+                    mb: 0
+                  }
+                }}
+              >
+                {message.parts?.map((part, i) => {
+                  switch (part.type) {
+                    case 'text':
+                      return <TextPart message={message} part={part} />
+                    case 'tool-invocation':
+                      return (
+                        <ToolInvocationPart
+                          part={part}
+                          addToolResult={addToolResult}
+                        />
+                      )
+                    default:
+                      return null
+                  }
+                })}
+              </Box>
+            )
+        }
+      })}
     </>
   )
 }
