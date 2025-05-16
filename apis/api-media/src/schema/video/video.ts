@@ -60,6 +60,9 @@ const Video = builder.prismaObject('Video', {
         orderBy: { order: 'asc' }
       })
     }),
+    origin: t.relation('origin', {
+      nullable: true
+    }),
     source: t.field({
       type: VideoSource,
       shareable: true,
