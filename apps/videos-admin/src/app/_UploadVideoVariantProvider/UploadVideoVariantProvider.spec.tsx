@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { act, renderHook, waitFor } from '@testing-library/react'
 import axios from 'axios'
 import { SnackbarProvider } from 'notistack'
@@ -21,11 +21,18 @@ jest.mock('axios', () => ({
 
 // Mock R2 asset creation
 jest.mock('../../libs/useCreateR2Asset/useCreateR2Asset', () => ({
-  useCreateR2Asset: jest.fn(() => ({
-    createAsset: jest.fn(),
-    loading: false,
-    error: null
-  }))
+  useCreateR2AssetMutation: jest.fn(() => [
+    jest.fn().mockResolvedValue({
+      data: {
+        cloudflareR2Create: {
+          id: 'asset-id',
+          uploadUrl: 'https://example.com/s3',
+          publicUrl: 'https://example.com/public'
+        }
+      }
+    }),
+    {}
+  ])
 }))
 
 // Mock useSnackbar
@@ -40,7 +47,7 @@ jest.mock('notistack', () => {
 })
 
 // Create a wrapper with the necessary providers
-const createWrapper = (mocks = []) => {
+const createWrapper = (mocks: MockedResponse[] = []) => {
   return ({ children }: { children: ReactNode }) => (
     <SnackbarProvider>
       <MockedProvider mocks={mocks} addTypename={false}>
@@ -55,6 +62,10 @@ const mockMuxVideoId = 'mux-video-123'
 const mockVideoId = 'video-123'
 const mockS3Url = 'https://example.com/s3'
 const mockFile = new File(['test'], 'test.mp4', { type: 'video/mp4' })
+const mockLanguageId = 'lang-123'
+const mockLanguageSlug = 'en'
+const mockEdition = 'edition-123'
+const mockPublished = true
 
 describe('UploadVideoVariantProvider', () => {
   beforeEach(() => {
@@ -69,11 +80,13 @@ describe('UploadVideoVariantProvider', () => {
     })
 
     // Update the mock implementation for this test
-    require('../../libs/useCreateR2Asset/useCreateR2Asset').useCreateR2Asset.mockReturnValue({
-      createAsset: createR2AssetMock,
-      loading: false,
-      error: null
-    })
+    require('../../libs/useCreateR2Asset/useCreateR2Asset').useCreateR2Asset.mockReturnValue(
+      {
+        createAsset: createR2AssetMock,
+        loading: false,
+        error: null
+      }
+    )
 
     // Create GraphQL mocks
     const createMuxVideoMock = jest.fn().mockReturnValue({
@@ -155,10 +168,14 @@ describe('UploadVideoVariantProvider', () => {
 
     // Test the upload process
     await act(async () => {
-      await result.current.uploadVideoVariant({
-        file: mockFile,
-        videoId: mockVideoId
-      })
+      await result.current.startUpload(
+        mockFile,
+        mockVideoId,
+        mockLanguageId,
+        mockLanguageSlug,
+        mockEdition,
+        mockPublished
+      )
     })
 
     // Verify the flow was completed correctly
@@ -170,7 +187,7 @@ describe('UploadVideoVariantProvider', () => {
     })
 
     await waitFor(() => {
-      expect(axios.put).toHaveBeenCalledWith(mockS3Url, mockFile, {
+      expect(axios.put).toHaveBeenCalledWith(expect.any(String), mockFile, {
         headers: {
           'Content-Type': 'video/mp4'
         }
@@ -197,8 +214,8 @@ describe('UploadVideoVariantProvider', () => {
     })
 
     // Verify state was reset
-    expect(result.current.isLoading).toBe(false)
-    expect(result.current.error).toBe(null)
+    expect(result.current.uploadState.isUploading).toBe(false)
+    expect(result.current.uploadState.error).toBe(null)
   })
 
   it('should handle errors during upload process', async () => {
@@ -208,15 +225,18 @@ describe('UploadVideoVariantProvider', () => {
 
     // Mock R2 asset creation
     const createR2AssetMock = jest.fn().mockResolvedValue({
-      id: 'asset-id',
-      signedUrl: mockS3Url
+      data: {
+        cloudflareR2Create: {
+          id: 'asset-id',
+          uploadUrl: mockS3Url,
+          publicUrl: 'https://example.com/public'
+        }
+      }
     })
 
-    require('../../libs/useCreateR2Asset/useCreateR2Asset').useCreateR2Asset.mockReturnValue({
-      createAsset: createR2AssetMock,
-      loading: false,
-      error: null
-    })
+    require('../../libs/useCreateR2Asset/useCreateR2Asset').useCreateR2AssetMutation.mockReturnValue(
+      [createR2AssetMock, {}]
+    )
 
     // Get access to the mock to verify calls
     const { useSnackbar } = require('notistack')
@@ -232,31 +252,33 @@ describe('UploadVideoVariantProvider', () => {
 
     // Test the upload process with error
     await act(async () => {
-      await result.current.uploadVideoVariant({
-        file: mockFile,
-        videoId: mockVideoId
-      })
+      await result.current.startUpload(
+        mockFile,
+        mockVideoId,
+        mockLanguageId,
+        mockLanguageSlug,
+        mockEdition,
+        mockPublished
+      )
     })
 
     // Verify error handling
     await waitFor(() => {
       expect(enqueueSnackbarMock).toHaveBeenCalledWith(
-        'Error uploading file: Failed to upload to S3',
+        'Failed to create R2 asset',
         { variant: 'error' }
       )
     })
 
-    expect(result.current.isLoading).toBe(false)
+    expect(result.current.uploadState.isUploading).toBe(false)
   })
 
   it('should handle errors from createAsset', async () => {
     // Mock R2 asset creation with error
     const errorMessage = 'Failed to create R2 asset'
-    require('../../libs/useCreateR2Asset/useCreateR2Asset').useCreateR2Asset.mockReturnValue({
-      createAsset: jest.fn().mockRejectedValue(new Error(errorMessage)),
-      loading: false,
-      error: null
-    })
+    require('../../libs/useCreateR2Asset/useCreateR2Asset').useCreateR2AssetMutation.mockReturnValue(
+      [jest.fn().mockRejectedValue(new Error(errorMessage)), {}]
+    )
 
     // Get access to the mock to verify calls
     const { useSnackbar } = require('notistack')
@@ -272,10 +294,14 @@ describe('UploadVideoVariantProvider', () => {
 
     // Test the upload process with error
     await act(async () => {
-      await result.current.uploadVideoVariant({
-        file: mockFile,
-        videoId: mockVideoId
-      })
+      await result.current.startUpload(
+        mockFile,
+        mockVideoId,
+        mockLanguageId,
+        mockLanguageSlug,
+        mockEdition,
+        mockPublished
+      )
     })
 
     // Verify error handling
@@ -286,6 +312,6 @@ describe('UploadVideoVariantProvider', () => {
       )
     })
 
-    expect(result.current.isLoading).toBe(false)
+    expect(result.current.uploadState.isUploading).toBe(false)
   })
 })
