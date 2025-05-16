@@ -309,7 +309,7 @@ describe('AddAudioLanguageDialog', () => {
       const editionSelect = screen.getAllByTestId('mui-select')[0]
       fireEvent.change(editionSelect, { target: { value: 'edition-1' } })
       fireEvent.change(editionSelect, { target: { value: '' } })
-      
+
       // Click submit to trigger validation
       const submitButton = screen.getByTestId('submit-button')
       fireEvent.click(submitButton)
@@ -319,7 +319,9 @@ describe('AddAudioLanguageDialog', () => {
     await waitFor(() => {
       // Check for specific error messages by adding data-testid to the error elements in the component
       // or check for elements that commonly contain error messages
-      const errorTexts = document.querySelectorAll('[role="alert"], .MuiFormHelperText-root, [data-testid="error-message"]')
+      const errorTexts = document.querySelectorAll(
+        '[role="alert"], .MuiFormHelperText-root, [data-testid="error-message"]'
+      )
       expect(errorTexts.length).toBeGreaterThan(0)
     })
   })

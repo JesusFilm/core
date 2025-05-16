@@ -28,13 +28,27 @@ jest.mock('notistack', () => ({
 jest.mock('@mui/material/Select', () => {
   return {
     __esModule: true,
-    default: ({ children, onChange, value, name, labelId, id, label, ...props }) => {
+    default: ({
+      children,
+      onChange,
+      value,
+      name,
+      labelId,
+      id,
+      label,
+      ...props
+    }) => {
       const handleChange = (event) => {
         onChange({ target: { name, value: event.target.value } })
       }
-      
+
       return (
-        <div role="combobox" aria-labelledby={labelId} id={id} data-testid={`${id}-wrapper`}>
+        <div
+          role="combobox"
+          aria-labelledby={labelId}
+          id={id}
+          data-testid={`${id}-wrapper`}
+        >
           <span>{value}</span>
           <select
             data-testid="select-input"
@@ -249,8 +263,10 @@ describe('VideoInformation', () => {
       const selectInput = screen.getAllByTestId('select-input')[0]
       fireEvent.change(selectInput, { target: { value: 'unpublished' } })
     })
-    
-    expect(screen.getByTestId('status-wrapper')).toHaveTextContent('unpublished')
+
+    expect(screen.getByTestId('status-wrapper')).toHaveTextContent(
+      'unpublished'
+    )
     expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
   })
@@ -272,7 +288,7 @@ describe('VideoInformation', () => {
       const selectInput = screen.getAllByTestId('select-input')[1]
       fireEvent.change(selectInput, { target: { value: 'shortFilm' } })
     })
-    
+
     expect(screen.getByTestId('label-wrapper')).toHaveTextContent('shortFilm')
     expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
@@ -449,7 +465,7 @@ describe('VideoInformation', () => {
       'new title'
     )
     expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
-    
+
     await act(async () => {
       fireEvent.click(screen.getByRole('button', { name: 'Save' }))
     })
@@ -505,28 +521,40 @@ describe('VideoInformation', () => {
     const labelSelect = screen.getAllByTestId('select-input')[1]
 
     expect(title).toHaveValue('JESUS')
-    expect(screen.getByRole('combobox', { name: 'Status' })).toHaveTextContent('published')
-    expect(screen.getByRole('combobox', { name: 'Label' })).toHaveTextContent('featureFilm')
+    expect(screen.getByRole('combobox', { name: 'Status' })).toHaveTextContent(
+      'published'
+    )
+    expect(screen.getByRole('combobox', { name: 'Label' })).toHaveTextContent(
+      'featureFilm'
+    )
 
     await act(async () => {
       await user.clear(title)
       await user.type(title, 'Title')
-      
+
       // Change select values using the correct select inputs
       fireEvent.change(statusSelect, { target: { value: 'unpublished' } })
       fireEvent.change(labelSelect, { target: { value: 'shortFilm' } })
     })
 
     expect(title).toHaveValue('Title')
-    expect(screen.getByRole('combobox', { name: 'Status' })).toHaveTextContent('unpublished')
-    expect(screen.getByRole('combobox', { name: 'Label' })).toHaveTextContent('shortFilm')
+    expect(screen.getByRole('combobox', { name: 'Status' })).toHaveTextContent(
+      'unpublished'
+    )
+    expect(screen.getByRole('combobox', { name: 'Label' })).toHaveTextContent(
+      'shortFilm'
+    )
 
     await act(async () => {
       await user.click(screen.getByRole('button', { name: 'Cancel' }))
     })
 
     expect(title).toHaveValue('JESUS')
-    expect(screen.getByRole('combobox', { name: 'Status' })).toHaveTextContent('published')
-    expect(screen.getByRole('combobox', { name: 'Label' })).toHaveTextContent('featureFilm')
+    expect(screen.getByRole('combobox', { name: 'Status' })).toHaveTextContent(
+      'published'
+    )
+    expect(screen.getByRole('combobox', { name: 'Label' })).toHaveTextContent(
+      'featureFilm'
+    )
   })
 })
