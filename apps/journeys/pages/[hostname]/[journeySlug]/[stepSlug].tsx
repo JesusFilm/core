@@ -136,7 +136,7 @@ export const getStaticProps: GetStaticProps<StepPageProps> = async (
     return {
       props: {
         ...(await serverSideTranslations(
-          context.locale ?? 'en',
+          locale ?? 'en',
           ['apps-journeys', 'libs-journeys-ui'],
           i18nConfig
         )),
