@@ -45,7 +45,6 @@ export function CopyToTeamMenuItem({
     selectedLanguage?: JourneyLanguage,
     showTranslation?: boolean
   ): Promise<void> => {
-    console.log('selectedLanguage', selectedLanguage)
     if (id == null || journey == null) return
 
     try {
@@ -59,6 +58,7 @@ export function CopyToTeamMenuItem({
 
       if (duplicateData?.journeyDuplicate?.id) {
         if (selectedLanguage == null || !showTranslation) {
+          setLoading(false)
           enqueueSnackbar(t('Journey Copied'), {
             variant: 'success',
             preventDuplicate: true
@@ -92,9 +92,9 @@ export function CopyToTeamMenuItem({
         preventDuplicate: true
       })
     } finally {
-      setLoading(false)
       handleCloseMenu()
       setDuplicateTeamDialogOpen(false)
+      setLoading(false)
     }
   }
 

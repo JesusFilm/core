@@ -73,9 +73,11 @@ export function TranslationDialogWrapper({
               </Button>
               <LoadingButton
                 variant="contained"
-                color="secondary"
                 onClick={onTranslate}
                 loading={loading}
+                sx={{
+                  backgroundColor: 'secondary.dark'
+                }}
               >
                 {submitLabel ?? t('Create')}
               </LoadingButton>

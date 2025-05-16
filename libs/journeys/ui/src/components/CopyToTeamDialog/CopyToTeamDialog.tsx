@@ -1,3 +1,4 @@
+import { useMutation } from '@apollo/client'
 import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
 import Stack from '@mui/material/Stack'
@@ -7,14 +8,15 @@ import Typography from '@mui/material/Typography'
 import { Formik, FormikHelpers } from 'formik'
 import sortBy from 'lodash/sortBy'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useState } from 'react'
-import { InferType, boolean, object, string } from 'yup'
+import { ReactElement } from 'react'
+import { boolean, object, string } from 'yup'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
 import { useLanguagesQuery } from '../../libs/useLanguagesQuery'
-import { useUpdateLastActiveTeamIdMutation } from '../../libs/useUpdateLastActiveTeamIdMutation'
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../libs/useUpdateLastActiveTeamIdMutation'
+import { UpdateLastActiveTeamId } from '../../libs/useUpdateLastActiveTeamIdMutation/__generated__/UpdateLastActiveTeamId'
 import { useTeam } from '../TeamProvider'
 import { TranslationDialogWrapper } from '../TranslationDialogWrapper'
 
@@ -54,7 +56,8 @@ export function CopyToTeamDialog({
   const { t } = useTranslation('libs-journeys-ui')
   const { query, setActiveTeam } = useTeam()
   const teams = query?.data?.teams ?? []
-  const updateLastActiveTeamId = useUpdateLastActiveTeamIdMutation()
+  const [updateLastActiveTeamId, { client }] =
+    useMutation<UpdateLastActiveTeamId>(UPDATE_LAST_ACTIVE_TEAM_ID)
 
   // TODO: Update so only the selected AI model + i18n languages are shown.
   const { data: languagesData, loading: languagesLoading } = useLanguagesQuery({
@@ -71,20 +74,19 @@ export function CopyToTeamDialog({
       values.showTranslation
     )
 
-    await updateLastActiveTeamId({
+    setActiveTeam(teams.find((team) => team.id === values.teamSelect) ?? null)
+    void updateLastActiveTeamId({
       variables: {
         input: {
           lastActiveTeamId: values.teamSelect
         }
       },
       onCompleted() {
-        setActiveTeam(
-          teams.find((team) => team.id === values.teamSelect) ?? null
-        )
-        resetForm()
-      },
-      refetchQueries: ['GetAdminJourneys']
+        void client.refetchQueries({ include: ['GetAdminJourneys'] })
+      }
     })
+    resetForm()
+    onClose()
   }
 
   const baseLanguageShape = {
@@ -138,7 +140,15 @@ export function CopyToTeamDialog({
           handleSubmit()
         }
 
-        const handleDialogClose = () => {
+        const handleDialogClose = (
+          _?: object,
+          reason?: 'backdropClick' | 'escapeKeyDown'
+        ): void => {
+          if (
+            loading &&
+            (reason === 'backdropClick' || reason === 'escapeKeyDown')
+          )
+            return
           onClose()
           resetForm()
         }
@@ -203,14 +213,17 @@ export function CopyToTeamDialog({
                   ))}
                 </TextField>
               </FormControl>
-              <Stack direction="row" spacing={2} alignItems="center">
+              <Stack direction="row" alignItems="center">
                 <Switch
                   checked={values.showTranslation}
                   onChange={(e) =>
                     setFieldValue('showTranslation', e.target.checked)
                   }
+                  sx={{
+                    ml: -2
+                  }}
                 />
-                <Typography variant="subtitle2" color="text.secondary">
+                <Typography variant="subtitle2" color="text.primary">
                   {t('Translation')}
                 </Typography>
               </Stack>
