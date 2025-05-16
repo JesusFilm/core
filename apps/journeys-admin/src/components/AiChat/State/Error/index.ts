@@ -1,0 +1,1 @@
+export { StateError } from './Error'
