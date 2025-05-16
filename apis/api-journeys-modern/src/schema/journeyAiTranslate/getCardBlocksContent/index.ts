@@ -1,0 +1,1 @@
+export { getCardBlocksContent } from './getCardBlocksContent'
