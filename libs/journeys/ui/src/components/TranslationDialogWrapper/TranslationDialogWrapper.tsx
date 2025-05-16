@@ -19,6 +19,7 @@ interface TranslationDialogWrapperProps {
   children: ReactNode
   submitLabel?: string
   divider?: boolean
+  isTranslation?: boolean
 }
 
 /**
@@ -38,7 +39,8 @@ export function TranslationDialogWrapper({
   testId,
   children,
   submitLabel,
-  divider
+  divider,
+  isTranslation
 }: TranslationDialogWrapperProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const defaultLoadingText = t('Translating your journey...')
@@ -58,7 +60,7 @@ export function TranslationDialogWrapper({
       }
       dialogActionChildren={
         <>
-          {!loading ? (
+          {!loading && (
             <>
               <Button
                 variant="outlined"
@@ -78,16 +80,12 @@ export function TranslationDialogWrapper({
                 {submitLabel ?? t('Create')}
               </LoadingButton>
             </>
-          ) : (
-            <Button variant="outlined" color="secondary" onClick={onClose}>
-              {t('Cancel')}
-            </Button>
           )}
         </>
       }
       testId={testId}
     >
-      {loading ? (
+      {loading && isTranslation ? (
         <Box display="flex" flexDirection="column" alignItems="center" p={3}>
           <CircularProgress color="primary" />
           <Typography variant="body1" mt={2}>
