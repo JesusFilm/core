@@ -3,8 +3,7 @@ import { generateObject, streamObject } from 'ai'
 import { GraphQLError } from 'graphql'
 import { z } from 'zod'
 
-import { ability, subject } from '../../lib/auth/ability'
-import { Action } from '../../lib/auth/types'
+import { Action, ability, subject } from '../../lib/auth/ability'
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 

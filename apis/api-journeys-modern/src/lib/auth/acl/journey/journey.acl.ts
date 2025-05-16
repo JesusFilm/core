@@ -1,7 +1,7 @@
 import { Prisma } from '.prisma/api-journeys-client'
 import { User } from '@core/yoga/firebaseClient'
 
-import { Action } from '../../types'
+import { Action } from '../../ability'
 
 export type Journey = Prisma.JourneyGetPayload<{
   include: {
