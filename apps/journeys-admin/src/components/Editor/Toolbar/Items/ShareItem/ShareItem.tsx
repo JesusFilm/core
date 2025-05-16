@@ -20,6 +20,7 @@ import TransformIcon from '@core/shared/ui/icons/Transform'
 import { GetJourneyForSharing_journey as JourneyFromLazyQuery } from '../../../../../../__generated__/GetJourneyForSharing'
 import { JourneyFields as JourneyFromContext } from '../../../../../../__generated__/JourneyFields'
 import { Item } from '../Item/Item'
+import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
 
 const EmbedJourneyDialog = dynamic(
   async () =>
@@ -61,8 +62,14 @@ export function ShareItem({
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
 
-  const hostname = activeTeam?.customDomains[0]?.name
+  const hostnameActiveTeam = activeTeam?.customDomains[0]?.name
+  console.log('hostnameActiveTeam', hostnameActiveTeam)
 
+  const { hostname } = useCustomDomainsQuery({
+    variables: { teamId: journey?.team?.id ?? '' },
+    skip: journey?.team?.id == null
+  })
+  console.log('hostname', hostname)
   const router = useRouter()
   const [showSlugDialog, setShowSlugDialog] = useState<boolean | null>(null)
   const [showEmbedDialog, setShowEmbedDialog] = useState<boolean | null>(null)
