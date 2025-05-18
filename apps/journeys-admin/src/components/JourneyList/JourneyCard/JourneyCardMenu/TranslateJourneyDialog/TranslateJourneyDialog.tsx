@@ -60,7 +60,7 @@ export function TranslateJourneyDialog({
   const { activeTeam } = useTeam()
   const journeyData = journey ?? journeyFromContext
   const { enqueueSnackbar } = useSnackbar()
-  const { translateJourney } = useJourneyAiTranslateMutation()
+  const [translateJourney] = useJourneyAiTranslateMutation()
   const [journeyDuplicate] = useJourneyDuplicateMutation()
   const [loading, setLoading] = useState(false)
 
@@ -107,14 +107,16 @@ export function TranslateJourneyDialog({
       if (duplicateData?.journeyDuplicate?.id) {
         // Use the duplicated journey ID for translation
         const translatedJourney = await translateJourney({
-          journeyId: duplicateData.journeyDuplicate.id,
-          name: `${journeyData.title}`,
-          journeyLanguageName:
-            journeyData.language.name.find(({ primary }) => !primary)?.value ??
-            '',
-          textLanguageId: selectedLanguage.id,
-          textLanguageName:
-            selectedLanguage.nativeName ?? selectedLanguage.localName ?? ''
+          variables: {
+            journeyId: duplicateData.journeyDuplicate.id,
+            name: `${journeyData.title}`,
+            journeyLanguageName:
+              journeyData.language.name.find(({ primary }) => !primary)
+                ?.value ?? '',
+            textLanguageId: selectedLanguage.id,
+            textLanguageName:
+              selectedLanguage.nativeName ?? selectedLanguage.localName ?? ''
+          }
         })
 
         if (translatedJourney) {
@@ -150,6 +152,8 @@ export function TranslateJourneyDialog({
       title={t('Create Translated Copy')}
       loadingText={t('Translating your journey...')}
       testId="TranslateJourneyDialog"
+      divider={false}
+      isTranslation={true}
     >
       <LanguageAutocomplete
         onChange={async (value) => setSelectedLanguage(value)}
