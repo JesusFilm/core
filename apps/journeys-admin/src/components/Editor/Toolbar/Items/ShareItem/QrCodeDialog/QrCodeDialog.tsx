@@ -57,7 +57,6 @@ export function QrCodeDialog({
 }: QrCodeDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const { activeTeam } = useTeam()
   const [qrCodeCreate, { loading: createLoading }] = useMutation<
     QrCodeCreate,
     QrCodeCreateVariables
@@ -97,12 +96,12 @@ export function QrCodeDialog({
   }, [getLoading, createLoading])
 
   async function handleGenerateQrCode(): Promise<void> {
-    if (journey?.id == null || activeTeam?.id == null) return
+    if (journey?.id == null || journey?.team?.id == null) return
     await qrCodeCreate({
       variables: {
         input: {
           journeyId: journey.id,
-          teamId: activeTeam.id
+          teamId: journey.team.id
         }
       },
       update(cache, { data }) {
