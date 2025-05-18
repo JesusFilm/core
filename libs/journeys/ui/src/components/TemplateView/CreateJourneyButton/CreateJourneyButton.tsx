@@ -45,7 +45,7 @@ export function CreateJourneyButton({
     journeyId: journey?.id,
     journeyTitle: journey?.title ?? '',
     journeyLanguageName:
-      journey?.language.name.find(({ primary }) => !primary)?.value ?? '',
+      journey?.language.name.find(({ primary }) => primary)?.value ?? '',
     onSuccess: () => {
       setOpenTeamDialog(false)
       setLoadingJourney(false)
