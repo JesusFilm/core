@@ -35,7 +35,7 @@ export function CopyToTeamMenuItem({
   const [duplicateTeamDialogOpen, setDuplicateTeamDialogOpen] =
     useState<boolean>(false)
   const [journeyDuplicate] = useJourneyDuplicateMutation()
-  const [journeyAiTranslate] = useJourneyAiTranslateMutation()
+  const [translateJourney] = useJourneyAiTranslateMutation()
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
   const [loading, setLoading] = useState(false)
@@ -65,7 +65,7 @@ export function CopyToTeamMenuItem({
         return
       }
 
-      await journeyAiTranslate({
+      await translateJourney({
         variables: {
           journeyId: duplicateData.journeyDuplicate.id,
           name: journey.title,
