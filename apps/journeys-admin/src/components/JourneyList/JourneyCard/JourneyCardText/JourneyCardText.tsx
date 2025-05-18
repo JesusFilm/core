@@ -16,7 +16,7 @@ interface JourneyCardTextProps {
 export function JourneyCardText({
   journey
 }: JourneyCardTextProps): ReactElement {
-  const mdNarrow = useMediaQuery(`(min-width:1200px) and (max-width:1400px)`)
+  const md = useMediaQuery(`(min-width:1200px) and (max-width:1400px)`)
   const nativeLanguageName = journey.language.name.find(
     ({ primary }) => primary
   )?.value
@@ -45,10 +45,10 @@ export function JourneyCardText({
         sx={{ width: '100%' }}
       >
         <Globe1Icon
-          sx={{ fontSize: mdNarrow ? 14 : 16, color: 'secondary.light' }}
+          sx={{ fontSize: md ? 14 : 16, color: 'secondary.light' }}
         />
         <Typography
-          variant={mdNarrow ? 'caption' : 'body2'}
+          variant={md ? 'caption' : 'body2'}
           sx={{
             whiteSpace: 'nowrap',
             overflow: 'hidden',
