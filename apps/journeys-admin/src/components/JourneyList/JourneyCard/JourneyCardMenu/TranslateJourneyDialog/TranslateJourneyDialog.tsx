@@ -8,17 +8,15 @@ import { ReactElement, useState } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { TranslationDialogWrapper } from '@core/journeys/ui/TranslationDialogWrapper'
+import { useJourneyAiTranslateMutation } from '@core/journeys/ui/useJourneyAiTranslateMutation'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../../../__generated__/GetAdminJourneys'
-import { useJourneyAiTranslateMutation } from '../../../../../libs/useJourneyAiTranslateMutation'
-
 /**
  * Props for the TranslateJourneyDialog component
  *
- * @property {boolean} open - Controls whether the dialog is displayed
  * @property {() => void} onClose - Function to call when the dialog is closed
  * @property {Journey} [journey] - Optional journey data object. If not provided, uses journey from context
  */

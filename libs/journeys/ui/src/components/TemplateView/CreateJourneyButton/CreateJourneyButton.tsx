@@ -6,6 +6,7 @@ import { useTranslation } from 'next-i18next'
 import { type ReactElement, useCallback, useEffect, useState } from 'react'
 
 import { useJourney } from '../../../libs/JourneyProvider'
+import { useJourneyAiTranslateMutation } from '@core/journeys/ui/useJourneyAiTranslateMutation'
 import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
 import { AccountCheckDialog } from '../AccountCheckDialog'
 
@@ -13,6 +14,12 @@ interface CreateJourneyButtonProps {
   signedIn?: boolean
   openTeamDialog: boolean
   setOpenTeamDialog: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+interface JourneyLanguage {
+  id: string
+  localName?: string
+  nativeName?: string
 }
 
 const DynamicCopyToTeamDialog = dynamic(
@@ -35,18 +42,23 @@ export function CreateJourneyButton({
   const [openAccountDialog, setOpenAccountDialog] = useState(false)
   const [loadingJourney, setLoadingJourney] = useState(false)
   const [journeyDuplicate] = useJourneyDuplicateMutation()
+  const [translateJourney] = useJourneyAiTranslateMutation()
 
   const handleCreateJourney = useCallback(
-    async (teamId: string): Promise<void> => {
+    async (
+      teamId: string,
+      language?: JourneyLanguage,
+      showTranslation?: boolean
+    ): Promise<void> => {
       if (journey == null) return
 
       setLoadingJourney(true)
 
-      const { data } = await journeyDuplicate({
+      const { data: duplicateData } = await journeyDuplicate({
         variables: { id: journey.id, teamId }
       })
 
-      if (data != null) {
+      if (duplicateData?.journeyDuplicate?.id) {
         sendGTMEvent({
           event: 'template_use',
           journeyId: journey.id,
