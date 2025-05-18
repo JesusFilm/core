@@ -178,16 +178,6 @@ export function LanguageAutocomplete({
       slots={{
         listbox: ListboxComponent
       }}
-      slotProps={{
-        popper,
-        paper: {
-          sx: {
-            '& .MuiAutocomplete-option': {
-              color: error ? 'error.main' : 'text.primary'
-            }
-          }
-        }
-      }}
       sx={{
         '& .MuiInputBase-root': {
           '& .MuiInputBase-input::placeholder': {
