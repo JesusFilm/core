@@ -18,7 +18,7 @@ export function LastModifiedDate({
   modifiedDate
 }: LastModifiedDateProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const mdNarrow = useMediaQuery(`(min-width:1200px) and (max-width:1400px)`)
+  const md = useMediaQuery(`(min-width:1200px) and (max-width:1400px)`)
   const secondsDifference = differenceInSeconds(
     new Date(),
     new Date(modifiedDate)
