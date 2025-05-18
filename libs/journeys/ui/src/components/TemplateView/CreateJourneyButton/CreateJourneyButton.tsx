@@ -6,10 +6,8 @@ import { useTranslation } from 'next-i18next'
 import { type ReactElement, useCallback, useEffect, useState } from 'react'
 
 import { useJourney } from '../../../libs/JourneyProvider'
-import { useJourneyAiTranslateMutation } from '@core/journeys/ui/useJourneyAiTranslateMutation'
-import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
+import { useJourneyDuplicateAndTranslate } from '../../../libs/useJourneyDuplicateAndTranslate'
 import { AccountCheckDialog } from '../AccountCheckDialog'
-import { useSnackbar } from 'notistack'
 
 interface CreateJourneyButtonProps {
   signedIn?: boolean
@@ -42,9 +40,21 @@ export function CreateJourneyButton({
   const { journey } = useJourney()
   const [openAccountDialog, setOpenAccountDialog] = useState(false)
   const [loadingJourney, setLoadingJourney] = useState(false)
-  const [journeyDuplicate] = useJourneyDuplicateMutation()
-  const [translateJourney] = useJourneyAiTranslateMutation()
-  const { enqueueSnackbar } = useSnackbar()
+
+  const { duplicateAndTranslate } = useJourneyDuplicateAndTranslate({
+    journeyId: journey?.id,
+    journeyTitle: journey?.title ?? '',
+    journeyLanguageName:
+      journey?.language.name.find(({ primary }) => !primary)?.value ?? '',
+    onSuccess: () => {
+      setOpenTeamDialog(false)
+      setLoadingJourney(false)
+    },
+    onError: () => {
+      setOpenTeamDialog(false)
+      setLoadingJourney(false)
+    }
+  })
 
   const handleCreateJourney = useCallback(
     async (
@@ -56,69 +66,24 @@ export function CreateJourneyButton({
 
       setLoadingJourney(true)
 
-      const { data: duplicateData } = await journeyDuplicate({
-        variables: { id: journey.id, teamId }
-      })
+      const newJourneyId = await duplicateAndTranslate(
+        teamId,
+        selectedLanguage,
+        showTranslation
+      )
 
-      if (duplicateData?.journeyDuplicate?.id) {
-        if (selectedLanguage == null || !showTranslation) {
-          setLoadingJourney(false)
-          enqueueSnackbar(t('Journey Copied'), {
-            variant: 'success',
-            preventDuplicate: true
-          })
-          return
-        }
-
-        await translateJourney({
-          variables: {
-            journeyId: duplicateData.journeyDuplicate.id,
-            name: journey.title,
-            journeyLanguageName:
-              journey?.language.name.find(({ primary }) => !primary)?.value ??
-              '',
-            textLanguageId: selectedLanguage.id,
-            textLanguageName:
-              selectedLanguage.nativeName ?? selectedLanguage.localName ?? ''
-          },
-          onCompleted() {
-            enqueueSnackbar(t('Journey Translated'), {
-              variant: 'success',
-              preventDuplicate: true
-            })
-          },
-          onError(error) {
-            enqueueSnackbar(error.message, {
-              variant: 'error',
-              preventDuplicate: true
-            })
-          }
-        })
-
-        setOpenTeamDialog(false)
-        setLoadingJourney(false)
+      if (newJourneyId != null) {
         sendGTMEvent({
           event: 'template_use',
           journeyId: journey.id,
           journeyTitle: journey.title
         })
-        void router.push(
-          `/journeys/${duplicateData.journeyDuplicate.id}`,
-          undefined,
-          {
-            shallow: true
-          }
-        )
-      } else {
-        enqueueSnackbar(t('Journey duplication failed'), {
-          variant: 'error',
-          preventDuplicate: true
+        void router.push(`/journeys/${newJourneyId}`, undefined, {
+          shallow: true
         })
-        setOpenTeamDialog(false)
-        setLoadingJourney(false)
       }
     },
-    [journey, journeyDuplicate, router]
+    [journey, duplicateAndTranslate, router]
   )
 
   const handleCheckSignIn = (): void => {
