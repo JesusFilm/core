@@ -1,0 +1,166 @@
+/* Layout Containers */
+.video-js-container.vjs-hd {
+  padding-top: 56.25%;
+}
+
+.video-js-container.vjs-sd {
+  padding-top: 75%;
+}
+
+.video-js-container {
+  position: relative;
+  width: 100%;
+}
+
+.video-js-container .video-js {
+  height: 100% !important;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100% !important;
+}
+
+/* Video.js Base Styles */
+.video-js .vjs-poster {
+  background-size: cover !important;
+  height: 100% !important;
+  left: 0 !important;
+  position: absolute !important;
+  top: 0 !important;
+  width: 100% !important;
+}
+
+picture.vjs-poster > img:nth-child(1) {
+  height: 100% !important;
+  left: 0 !important;
+  object-fit: cover !important;
+  position: absolute !important;
+  top: 0 !important;
+  width: 100% !important;
+}
+
+/* Hide captions button */
+.vjs-control-bar .vjs-captions-button {
+  display: none !important;
+}
+
+/* Big Play Button Styles */
+#video_0 .vjs-big-play-button:before {
+  color: #fff;
+  font-size: 1em;
+  margin-left: 30%;
+  margin-top: 35%;
+  opacity: 0.9;
+}
+
+#video_0 .vjs-big-play-button {
+  background-color: none;
+  border: solid #fff;
+  border-radius: 50%;
+  font-size: 4.5em;
+  height: 2em;
+  left: 50%;
+  line-height: 2em;
+  margin-left: -1em;
+  margin-top: -1em;
+  opacity: 0.6;
+  position: absolute;
+  top: 50%;
+  width: 2em;
+  z-index: inherit;
+}
+
+.video-js.vjs-default-skin.vjs-paused .vjs-big-play-button {
+  display: block !important;
+}
+
+/* Text Wrapping */
+.wordwrap {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  white-space: -moz-pre-wrap;
+  white-space: -o-pre-wrap;
+  white-space: -pre-wrap;
+}
+
+/* Arclight Player Base Styles */
+.arclight-player *,
+.arclight-player :after,
+.arclight-player :before {
+  box-sizing: inherit;
+  color: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.arclight-player {
+  font-size: 14px;
+  height: 150px;
+  overflow: hidden;
+  width: 300px;
+}
+
+.arclight-player.vjs-fluid.vjs-16-9:not(.vjs-audio-only-mode),
+.arclight-player.vjs-fluid:not(.vjs-audio-only-mode) {
+  padding-top: 56.25%;
+}
+
+.arclight-player.vjs-fluid.vjs-4-3:not(.vjs-audio-only-mode) {
+  padding-top: 75%;
+}
+
+.arclight-player.vjs-fill:not(.vjs-audio-only-mode) {
+  height: 100%;
+  width: 100%;
+}
+
+.arclight-player.vjs-fullscreen,
+.arclight-player.vjs-fullscreen .vjs-tech {
+  height: 100% !important;
+  width: 100% !important;
+}
+
+/* Track Settings */
+.arclight-player .vjs-track-setting select {
+  background-color: #fff;
+  color: #000;
+}
+
+/* Menu Item Text Transform */
+.arclight-player .vjs-audio-button .vjs-menu-item,
+.arclight-player .vjs-chapters-button .vjs-menu-item,
+.arclight-player .vjs-descriptions-button .vjs-menu-item,
+.arclight-player .vjs-subs-caps-button .vjs-menu-item {
+  text-transform: none;
+}
+
+/* Big Play Button Waiting for Autoplay */
+.arclight-player.vjs-waiting-for-autoplay .vjs-big-play-button {
+  opacity: 0;
+}
+
+/* Progress Control Mouse Display */
+.arclight-player .vjs-progress-control .vjs-mouse-display {
+  z-index: 2;
+}
+
+/* Control Bar Styles */
+.arclight-player .vjs-control-bar {
+  display: flex;
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Volume Slider Handle Alignment */
+.arclight-player .vjs-slider-horizontal .vjs-volume-level:before {
+  line-height: 0.35em;
+  right: -0.5em;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.arclight-player .vjs-slider-horizontal .vjs-volume-level .vjs-svg-icon {
+  right: -0.3em;
+  top: 50%;
+  transform: translateY(-50%);
+}
