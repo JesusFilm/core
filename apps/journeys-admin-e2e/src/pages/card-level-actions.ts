@@ -1566,6 +1566,6 @@ export class CardLevelActionPage {
       .locator(
         `div[data-testid="SettingsDrawer"] div[data-testid="AccordionSummary"]:has(span:text-is("${cardProperty}"))`
       )
-      .click()
+      .click({ timeout: 60000 })
   }
 }
