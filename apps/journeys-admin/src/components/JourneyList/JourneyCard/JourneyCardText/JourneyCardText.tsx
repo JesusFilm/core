@@ -44,7 +44,9 @@ export function JourneyCardText({
         spacing={1.5}
         sx={{ width: '100%' }}
       >
-        <Globe1Icon sx={{ fontSize: mdNarrow ? 14 : 16, color: 'secondary.light' }} />
+        <Globe1Icon
+          sx={{ fontSize: mdNarrow ? 14 : 16, color: 'secondary.light' }}
+        />
         <Typography
           variant={mdNarrow ? 'caption' : 'body2'}
           sx={{
