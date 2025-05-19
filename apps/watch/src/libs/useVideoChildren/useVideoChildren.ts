@@ -38,7 +38,7 @@ export function useVideoChildren(
         variables: { id: slug, languageId }
       })
     }
-  }, [getVideoChildren, slug])
+  }, [getVideoChildren, slug, locale])
 
   return {
     loading,
