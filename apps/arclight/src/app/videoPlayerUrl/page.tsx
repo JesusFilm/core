@@ -51,6 +51,16 @@ function handleSubtitles(
   subonRaw: string | null,
   sublangidsRaw: string | null
 ): { activeSubLangId: string | null; acceptedSubLangIds: string[] } {
+  if (
+    (subonRaw === 'true' && sublangidsRaw === null) ||
+    (sublangidsRaw === null && subonRaw === null)
+  ) {
+    return {
+      activeSubLangId: null,
+      acceptedSubLangIds: DEFAULT_SUB_LANGUAGE_IDS
+    }
+  }
+
   const sublangidsArr = sublangidsRaw
     ? sublangidsRaw.split(',').filter((id) => id !== '')
     : DEFAULT_SUB_LANGUAGE_IDS
