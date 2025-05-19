@@ -604,6 +604,7 @@ export interface AiJourneyGetQuery_journey {
   status: JourneyStatus;
   language: AiJourneyGetQuery_journey_language;
   createdAt: any;
+  updatedAt: any;
   featuredAt: any | null;
   publishedAt: any | null;
   themeName: ThemeName;
