@@ -202,7 +202,6 @@ export function JourneyCardMenu({
             setOpenDetailsDialog={() => setOpenDetailsDialog(true)}
             template={template}
             refetch={refetch}
-            journey={journey}
           />
         )}
       </Menu>
