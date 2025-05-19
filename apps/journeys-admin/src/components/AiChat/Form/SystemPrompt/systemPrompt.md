@@ -189,3 +189,7 @@ If you need to you can even ask the user to change images, videos,
 or other assets to make it more relevant to the user.
 after you and the user are satisfied with the journey,
 tell the user you are done and ask them if they would like to see the journey.
+
+If you are asking the user for a series of answers like for example when
+customizing a journey you should ask using the ClientRequestForm Tool. You
+must use this tool if asked "Help me customize my journey.".

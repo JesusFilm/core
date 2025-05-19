@@ -5,6 +5,7 @@ import { ReactElement } from 'react'
 import { AgentGenerateImageTool } from './agent/GenerateImageTool'
 import { BasicTool } from './BasicTool'
 import { ClientRedirectUserToEditorTool } from './client/RedirectUserToEditorTool'
+import { RequestFormTool } from './client/RequestFormTool'
 import { ClientSelectImageTool } from './client/SelectImageTool'
 import { ClientSelectVideoTool } from './client/SelectVideoTool'
 
@@ -50,6 +51,8 @@ export function ToolInvocationPart({
       return <ClientRedirectUserToEditorTool part={part} />
     case 'clientSelectVideo':
       return <ClientSelectVideoTool part={part} addToolResult={addToolResult} />
+    case 'clientRequestForm':
+      return <RequestFormTool part={part} addToolResult={addToolResult} />
     case 'agentGenerateImage':
       return <AgentGenerateImageTool part={part} />
     default:
