@@ -32,7 +32,7 @@ export function DiscussionQuestions({
   }
 
   return (
-    <Box data-testid="DiscussionQuestions">
+    <Box data-testid="ContentDiscussionQuestions">
       <Box sx={{ pt: 4 }}>
         <Box
           sx={{
