@@ -21,7 +21,7 @@ interface FormProps {
   input: UseChatHelpers['input']
   systemPrompt: string
   onSystemPromptChange: (systemPrompt: string) => void
-  disabled?: boolean
+  waitForToolResult?: boolean
 }
 
 export function Form({
@@ -34,7 +34,7 @@ export function Form({
   stop,
   systemPrompt,
   onSystemPromptChange,
-  disabled
+  waitForToolResult
 }: FormProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -62,7 +62,7 @@ export function Form({
                 void handleSubmit()
               }
             }}
-            disabled={error != null || disabled}
+            disabled={error != null || waitForToolResult}
             autoFocus
             sx={{
               '& .MuiOutlinedInput-root': {
@@ -84,7 +84,7 @@ export function Form({
               {status === 'submitted' || status === 'streaming' ? (
                 <Button
                   onClick={() => stop()}
-                  disabled={error != null || disabled}
+                  disabled={error != null || waitForToolResult}
                   variant="contained"
                   size="small"
                   sx={{
@@ -107,7 +107,7 @@ export function Form({
               ) : (
                 <Button
                   type="submit"
-                  disabled={error != null || disabled}
+                  disabled={error != null || waitForToolResult}
                   variant="contained"
                   size="small"
                   sx={{

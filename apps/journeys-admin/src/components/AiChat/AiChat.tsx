@@ -46,8 +46,7 @@ export function AiChat({
     return systemPromptWithContext
   }, [journey, selectedStepId, systemPrompt, systemPromptFooter])
 
-  const [waitingForToolCallResponse, setWaitingForToolCallResponse] =
-    useState(false)
+  const [waitForToolResult, setWaitForToolResult] = useState(false)
 
   const {
     messages,
@@ -76,8 +75,7 @@ export function AiChat({
     maxSteps: 50,
     credentials: 'omit',
     onToolCall: ({ toolCall }) => {
-      if (toolCall.toolName.startsWith('client'))
-        setWaitingForToolCallResponse(true)
+      if (toolCall.toolName.startsWith('client')) setWaitForToolResult(true)
     },
     onFinish: (result, { usage }) => {
       setUsage(usage)
@@ -99,7 +97,7 @@ export function AiChat({
   })
 
   function handleAddToolResult(response: Parameters<typeof addToolResult>[0]) {
-    setWaitingForToolCallResponse(false)
+    setWaitForToolResult(false)
     addToolResult(response)
   }
 
@@ -181,7 +179,7 @@ export function AiChat({
         stop={stop}
         systemPrompt={systemPrompt}
         onSystemPromptChange={handleSystemPromptChange}
-        disabled={waitingForToolCallResponse}
+        waitForToolResult={waitForToolResult}
       />
     </>
   )
