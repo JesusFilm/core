@@ -1,5 +1,6 @@
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement } from 'react'
 
 import Globe1Icon from '@core/shared/ui/icons/Globe1'
@@ -15,6 +16,7 @@ interface JourneyCardTextProps {
 export function JourneyCardText({
   journey
 }: JourneyCardTextProps): ReactElement {
+  const md = useMediaQuery(`(min-width:1200px) and (max-width:1400px)`)
   const nativeLanguageName = journey.language.name.find(
     ({ primary }) => primary
   )?.value
@@ -42,9 +44,9 @@ export function JourneyCardText({
         spacing={1.5}
         sx={{ width: '100%' }}
       >
-        <Globe1Icon sx={{ fontSize: 16, color: 'secondary.light' }} />
+        <Globe1Icon sx={{ fontSize: md ? 14 : 16, color: 'secondary.light' }} />
         <Typography
-          variant="body2"
+          variant={md ? 'caption' : 'body2'}
           sx={{
             whiteSpace: 'nowrap',
             overflow: 'hidden',

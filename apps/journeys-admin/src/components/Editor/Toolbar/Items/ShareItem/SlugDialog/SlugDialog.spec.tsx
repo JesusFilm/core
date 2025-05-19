@@ -19,7 +19,7 @@ describe('JourneyView/Properties/SlugDialog', () => {
               variant: 'admin'
             }}
           >
-            <SlugDialog open onClose={onClose} />
+            <SlugDialog open onClose={onClose} journey={defaultJourney} />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -68,7 +68,7 @@ describe('JourneyView/Properties/SlugDialog', () => {
               variant: 'admin'
             }}
           >
-            <SlugDialog open />
+            <SlugDialog open journey={defaultJourney} />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -104,7 +104,7 @@ describe('JourneyView/Properties/SlugDialog', () => {
               variant: 'admin'
             }}
           >
-            <SlugDialog open />
+            <SlugDialog open journey={defaultJourney} />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -154,7 +154,7 @@ describe('JourneyView/Properties/SlugDialog', () => {
               variant: 'admin'
             }}
           >
-            <SlugDialog open />
+            <SlugDialog open journey={defaultJourney} />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -184,7 +184,11 @@ describe('JourneyView/Properties/SlugDialog', () => {
               variant: 'admin'
             }}
           >
-            <SlugDialog open hostname="www.customdomain.com" />
+            <SlugDialog
+              open
+              hostname="www.customdomain.com"
+              journey={defaultJourney}
+            />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>

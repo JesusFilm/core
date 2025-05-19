@@ -253,7 +253,7 @@ describe('ArchivedJourneyList', () => {
     })
 
     it('should trash all journeys', async () => {
-      const { getByText } = render(
+      const { getByText, getByRole } = render(
         <MockedProvider
           mocks={[archivedJourneysMock, trashJourneysMock, noJourneysMock]}
         >
@@ -270,12 +270,12 @@ describe('ArchivedJourneyList', () => {
       await waitFor(() =>
         expect(getByText('Default Journey Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Trash'))
+      fireEvent.click(getByRole('button', { name: 'Trash' }))
       await waitFor(() => expect(result).toHaveBeenCalled())
     })
 
     it('should show error', async () => {
-      const { getByText } = render(
+      const { getByText, getByRole } = render(
         <MockedProvider
           mocks={[
             archivedJourneysMock,
@@ -297,7 +297,7 @@ describe('ArchivedJourneyList', () => {
       await waitFor(() =>
         expect(getByText('Default Journey Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Trash'))
+      fireEvent.click(getByRole('button', { name: 'Trash' }))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
     })
   })
