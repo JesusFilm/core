@@ -3,6 +3,16 @@ import { generateObject, streamObject } from 'ai'
 import { z } from 'zod'
 
 import { prisma } from '../../lib/prisma'
+import {
+  castBlock,
+  createTranslationInfo,
+  updateBlockWithTranslation
+} from '../../lib/translation/blockTranslation'
+import {
+  AIBlockTranslationUpdate,
+  AnyBlock,
+  BlockTranslationUpdate
+} from '../../lib/types/block'
 import { builder } from '../builder'
 
 import { getCardBlocksContent } from './getCardBlocksContent'
@@ -245,7 +255,7 @@ You should inform the user about which Bible translation you chose to use.
                   }
                 })
 
-                let partialTranslations = []
+                let partialTranslations: AIBlockTranslationUpdate[] = []
 
                 // Process the stream as chunks arrive
                 for await (const chunk of fullStream) {
@@ -253,7 +263,8 @@ You should inform the user about which Bible translation you chose to use.
                   if (chunk.type === 'object' && chunk.object) {
                     // Handle streaming array building
                     if (Array.isArray(chunk.object)) {
-                      partialTranslations = chunk.object
+                      partialTranslations =
+                        chunk.object as unknown as AIBlockTranslationUpdate[]
                       // Process each block in the array
                       for (const item of partialTranslations) {
                         try {
@@ -276,7 +287,7 @@ You should inform the user about which Bible translation you chose to use.
 
                             // Verify block ID exists in our journey
                             if (!validBlockIds.has(cleanBlockId)) {
-                              return
+                              continue
                             }
                             await prisma.block.update({
                               where: {
