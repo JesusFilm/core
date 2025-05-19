@@ -44,6 +44,7 @@ const GET_VIDEO_VARIANT = graphql(`
         primaryLanguageId
         variant {
           hls
+          share
           lengthInMilliseconds
           downloadable
           downloads {
@@ -52,6 +53,7 @@ const GET_VIDEO_VARIANT = graphql(`
             quality
             size
             bitrate
+            url
           }
           subtitle {
             language {
@@ -219,7 +221,7 @@ mediaComponentLanguage.openapi(route, async (c) => {
     }
   })
 
-  const apiSessionId = '6622f10d2260a8.05128925'
+  const apiSessionId = c.req.query('apiSessionId') ?? '6622f10d2260a8.05128925'
 
   const video = data.video
 
@@ -403,7 +405,9 @@ mediaComponentLanguage.openapi(route, async (c) => {
               low: child.variant?.downloads?.find(
                 (d) => d.quality === 'low'
               ) && {
-                url: `https://arc.gt/${Math.random().toString(36).substring(2, 7)}?apiSessionId=${apiSessionId}`,
+                url:
+                  child.variant.downloads.find((d) => d.quality === 'low')
+                    ?.url ?? '',
                 height:
                   child.variant.downloads.find((d) => d.quality === 'low')
                     ?.height ?? 240,
@@ -417,7 +421,9 @@ mediaComponentLanguage.openapi(route, async (c) => {
               high: child.variant?.downloads?.find(
                 (d) => d.quality === 'high'
               ) && {
-                url: `https://arc.gt/${Math.random().toString(36).substring(2, 7)}?apiSessionId=${apiSessionId}`,
+                url:
+                  child.variant.downloads.find((d) => d.quality === 'high')
+                    ?.url ?? '',
                 height:
                   child.variant.downloads.find((d) => d.quality === 'high')
                     ?.height ?? 720,
@@ -439,7 +445,7 @@ mediaComponentLanguage.openapi(route, async (c) => {
               ],
               http: []
             },
-            shareUrl: `https://arc.gt/${Math.random().toString(36).substring(2, 7)}?apiSessionId=${apiSessionId}`,
+            shareUrl: child.variant?.share ?? '',
             socialMediaUrls: {},
             _links: {
               self: {
