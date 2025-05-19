@@ -15,12 +15,13 @@ interface VideoPlayerProps {
   thumbnail?: string | null
   startTime?: number
   endTime?: number
-  subon: boolean
   subtitles: {
     key: string
     language: string
     bcp47: string | null
     vttSrc: string | null
+    langId: string
+    default: boolean
   }[]
 }
 
@@ -30,7 +31,6 @@ export function VideoPlayer({
   thumbnail,
   startTime = 0,
   endTime,
-  subon,
   subtitles
 }: VideoPlayerProps): JSX.Element {
   const playerRef = useRef<HTMLVideoElement>(null)
@@ -72,7 +72,8 @@ export function VideoPlayer({
             useNetworkInformationApi: true,
             useDevicePixelRatio: true
           },
-          nativeTextTracks: true
+          nativeTextTracks: false,
+          nativeCaptions: false
         },
         plugins: {
           mux: {
@@ -391,7 +392,7 @@ export function VideoPlayer({
             src={track.vttSrc ?? ''}
             srcLang={track.bcp47 ?? undefined}
             label={track.language}
-            default={subon && idx === 0}
+            default={track.default}
           />
         ))}
         <p
