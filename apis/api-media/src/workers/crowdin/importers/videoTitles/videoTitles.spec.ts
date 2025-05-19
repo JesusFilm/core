@@ -23,8 +23,7 @@ const testVideo: Video = {
   noIndex: false,
   childIds: [],
   locked: false,
-  availableLanguages: ['529'],
-  originId: null
+  availableLanguages: ['529']
 }
 
 const testTranslation: ProcessedTranslation = {

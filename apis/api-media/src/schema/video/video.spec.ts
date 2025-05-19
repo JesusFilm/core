@@ -66,8 +66,7 @@ describe('video', () => {
       published: true,
       childIds: [],
       availableLanguages: [],
-      locked: false,
-      originId: null
+      locked: false
     },
     {
       id: 'videoId1',
@@ -78,8 +77,7 @@ describe('video', () => {
       published: true,
       childIds: [],
       availableLanguages: [],
-      locked: false,
-      originId: null
+      locked: false
     }
   ]
 
@@ -93,8 +91,7 @@ describe('video', () => {
       published: true,
       childIds: [],
       availableLanguages: [],
-      locked: false,
-      originId: null
+      locked: false
     },
     {
       id: 'videoId4',
@@ -105,8 +102,7 @@ describe('video', () => {
       published: true,
       childIds: [],
       availableLanguages: [],
-      locked: false,
-      originId: null
+      locked: false
     }
   ]
 
@@ -121,7 +117,6 @@ describe('video', () => {
       childIds: ['videoId1', 'videoId2'],
       availableLanguages: [],
       locked: false,
-      originId: null,
       bibleCitation: [
         {
           id: 'bibleCitationId',
@@ -314,8 +309,7 @@ describe('video', () => {
     noIndex: null,
     childIds: [],
     availableLanguages: [],
-    locked: false,
-    originId: null
+    locked: false
   }
 
   describe('videos', () => {
@@ -1655,8 +1649,7 @@ describe('video', () => {
       noIndex: null,
       childIds: [],
       availableLanguages: [],
-      locked: false,
-      originId: null
+      locked: false
     }
 
     it('should query video', async () => {
@@ -1843,8 +1836,7 @@ describe('video', () => {
           slug: 'slug',
           noIndex: true,
           childIds: [],
-          availableLanguages: [],
-          originId: null
+          availableLanguages: []
         } as unknown as Video)
         const result = await authClient({
           document: CREATE_VIDEO_MUTATION,
@@ -1856,8 +1848,7 @@ describe('video', () => {
               published: true,
               slug: 'slug',
               noIndex: true,
-              childIds: [],
-              originId: null
+              childIds: []
             }
           }
         })
@@ -1869,8 +1860,7 @@ describe('video', () => {
             published: true,
             slug: 'slug',
             noIndex: true,
-            childIds: [],
-            originId: null
+            childIds: []
           }
         })
         expect(result).toHaveProperty('data.videoCreate', {
@@ -1889,8 +1879,7 @@ describe('video', () => {
               published: true,
               slug: 'slug',
               noIndex: true,
-              childIds: [],
-              originId: null
+              childIds: []
             }
           }
         })
@@ -1921,8 +1910,7 @@ describe('video', () => {
           slug: 'slug',
           noIndex: true,
           childIds: [],
-          availableLanguages: [],
-          originId: null
+          availableLanguages: []
         } as unknown as Video)
         const result = await authClient({
           document: VIDEO_UPDATE_MUTATION,
@@ -1934,8 +1922,7 @@ describe('video', () => {
               published: true,
               slug: 'slug',
               noIndex: true,
-              childIds: [],
-              originId: null
+              childIds: []
             }
           }
         })
@@ -1948,8 +1935,7 @@ describe('video', () => {
             published: true,
             slug: 'slug',
             noIndex: true,
-            childIds: [],
-            originId: null
+            childIds: []
           }
         })
         expect(result).toHaveProperty('data.videoUpdate', {
@@ -1968,8 +1954,7 @@ describe('video', () => {
               published: true,
               slug: 'slug',
               noIndex: true,
-              childIds: [],
-              originId: null
+              childIds: []
             }
           }
         })
@@ -2003,8 +1988,7 @@ describe('video', () => {
         published: true,
         childIds: [],
         availableLanguages: [],
-        locked: false,
-        originId: null
+        locked: false
       })
       const data = await client({
         document: VIDEO
