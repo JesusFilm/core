@@ -51,16 +51,16 @@ function handleSubtitles(
   subonRaw: string | null,
   sublangidsRaw: string | null
 ): { activeSubLangId: string | null; acceptedSubLangIds: string[] } {
+  if (sublangidsRaw === null) {
+    return {
+      activeSubLangId: null,
+      acceptedSubLangIds: DEFAULT_SUB_LANGUAGE_IDS
+    }
+  }
+
   const sublangidsArr = sublangidsRaw
     ? sublangidsRaw.split(',').filter((id) => id !== '')
     : DEFAULT_SUB_LANGUAGE_IDS
-
-  if (sublangidsArr.length === 0) {
-    return {
-      activeSubLangId: null,
-      acceptedSubLangIds: sublangidsArr
-    }
-  }
 
   if (!subonRaw) {
     return {
