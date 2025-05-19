@@ -541,6 +541,7 @@ type Journey @join__type(graph: API_JOURNEYS, key: "id")  {
   """
   title: String!
   language: Language!
+  languageId: String!
   themeMode: ThemeMode!
   themeName: ThemeName!
   description: String
@@ -791,6 +792,8 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   videoVariants(input: VideoVariantFilter) : [VideoVariant!]! @join__field(graph: API_MEDIA) 
   tags: [Tag!]! @join__field(graph: API_MEDIA) 
   taxonomies(category: String, languageCodes: [String!]) : [Taxonomy!]! @join__field(graph: API_MEDIA) 
+  arclightApiKeys: [ArclightApiKey!]! @join__field(graph: API_MEDIA) 
+  arclightApiKeyByKey(key: String!) : ArclightApiKey @join__field(graph: API_MEDIA) 
   me(input: MeInput) : User @join__field(graph: API_USERS) 
   user(id: ID!) : User @join__field(graph: API_USERS) 
   userByEmail(email: String!) : User @join__field(graph: API_USERS) 
@@ -2296,6 +2299,12 @@ type LanguageName @join__type(graph: API_LANGUAGES)  {
   language: Language!
 }
 
+type ArclightApiKey @join__type(graph: API_MEDIA, key: "key")  {
+  key: String!
+  desc: String
+  defaultPlatform: DefaultPlatform!
+}
+
 type BibleBook @join__type(graph: API_MEDIA)  {
   id: ID!
   name(languageId: ID, primary: Boolean) : [BibleBookName!]!
@@ -3126,6 +3135,12 @@ enum EventType @join__type(graph: API_JOURNEYS_MODERN)  {
 enum LanguageIdType @join__type(graph: API_LANGUAGES)  {
   databaseId @join__enumValue(graph: API_LANGUAGES) 
   bcp47 @join__enumValue(graph: API_LANGUAGES) 
+}
+
+enum DefaultPlatform @join__type(graph: API_MEDIA)  {
+  ios @join__enumValue(graph: API_MEDIA) 
+  android @join__enumValue(graph: API_MEDIA) 
+  web @join__enumValue(graph: API_MEDIA) 
 }
 
 enum ImageAspectRatio @join__type(graph: API_MEDIA)  {

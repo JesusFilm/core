@@ -24,6 +24,8 @@ import {
 } from '../../../../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
 import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
+import { useJourneyForSharingLazyQuery } from '../../../../../libs/useJourneyForShareLazyQuery'
+import { ShareItem } from '../../../../Editor/Toolbar/Items/ShareItem/ShareItem'
 import { MenuItem } from '../../../../MenuItem'
 import { CopyToTeamMenuItem } from '../../../../Team/CopyToTeamMenuItem/CopyToTeamMenuItem'
 import { DuplicateJourneyMenuItem } from '../DuplicateJourneyMenuItem'
@@ -32,7 +34,7 @@ import { ArchiveJourney } from './ArchiveJourney'
 
 export const GET_JOURNEY_WITH_USER_ROLES = gql`
   query GetJourneyWithUserRoles($id: ID!) {
-    adminJourney(id: $id, idType: databaseId) {
+    adminJourney(id: $id, idType: databaseId) { 
       id
       userJourneys {
         id
@@ -104,7 +106,11 @@ export function DefaultMenu({
 
   const { loadUser, data: currentUser } = useCurrentUserLazyQuery()
 
-  const { data: journeyData } = useQuery(GET_JOURNEY_WITH_USER_ROLES, {
+  // Lazy query for journey data if context is missing
+  const [loadJourney, { data: journeyFromLazyQuery }] =
+    useJourneyForSharingLazyQuery()
+
+  const { data: journeyWithUserRoles } = useQuery(GET_JOURNEY_WITH_USER_ROLES, {
     variables: { id: journeyId },
     skip: currentUser?.id == null
   })
@@ -113,7 +119,6 @@ export function DefaultMenu({
     currentUserId: currentUser?.id,
     userId: user?.id,
     journeyId: journeyId,
-    journeyData: journeyData
   })
 
   const owner = useMemo(
@@ -134,35 +139,39 @@ export function DefaultMenu({
     user: user
   })
 
-  const isOwnerOld = journeyData?.adminJourney?.userJourneys?.some(
-    (userJourney: { user: { id: string }; role: UserJourneyRole }) =>
-      userJourney.user?.id === user?.id &&
-      userJourney.role === UserJourneyRole.owner
-  )
+  // const isOwnerOld = journeyData.adminJourney?.userJourneys?.some(
+  //   (userJourney: { user: { id: string }; role: UserJourneyRole }) =>
+  //     userJourney.user?.id === user?.id &&
+  //     userJourney.role === UserJourneyRole.owner
+  // )
 
-  console.log('Debug - isOwnerOld Check:', {
-    isOwner: isOwnerOld,
-    userJourneys: journeyData?.adminJourney?.userJourneys
-  })
+  // console.log('Debug - isOwnerOld Check:', {
+  //   isOwner: isOwnerOld,
+  //   userJourneys: journeyData?.adminJourney?.userJourneys
+  // })
 
   useEffect(() => {
     void loadUser()
   }, [loadUser])
 
+  useEffect(() => {
+    void loadJourney({ variables: { id: journeyId } })
+  }, [loadJourney, journeyId])
+
   // Determine the current user's role for this journey
   const userRole = useMemo<UserJourneyRole | undefined>(() => {
     if (
-      journeyData?.adminJourney?.userJourneys == null ||
+      journeyWithUserRoles?.journey?.userJourneys == null ||
       currentUser?.id == null
     )
       return undefined
 
-    const userJourney = journeyData.adminJourney.userJourneys.find(
+    const userJourney = journeyWithUserRoles.journey.userJourneys.find(
       (userJourney) => userJourney.user?.id === currentUser.id
     )
 
     return userJourney?.role
-  }, [journeyData?.adminJourney?.userJourneys, currentUser?.id])
+  }, [journeyWithUserRoles?.journey?.userJourneys, currentUser?.id])
 
   // Determine the current user's role in the team
   const teamRole = useMemo<UserTeamRole | undefined>(() => {
@@ -205,6 +214,7 @@ export function DefaultMenu({
           handleCloseMenu()
         }}
       />
+      <Divider />
       {template !== true && (
         <MenuItem
           label={t('Access')}
@@ -229,10 +239,15 @@ export function DefaultMenu({
           openInNew
         />
       </NextLink>
+      <ShareItem
+        variant="menu-item"
+        journey={journeyFromLazyQuery?.journey}
+        handleCloseMenu={handleCloseMenu}
+      />
+      <Divider />
       {template !== true && (
         <DuplicateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />
       )}
-      <Divider />
       <CopyToTeamMenuItem id={id} handleCloseMenu={handleCloseMenu} />
       <ArchiveJourney
         status={status}
