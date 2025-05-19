@@ -196,11 +196,10 @@ export function RequestFormTool({
                           />
                           {showSuggestion && (
                             <Chip
-                              label={`Suggestion: ${item.suggestion}`}
+                              label={item.suggestion}
                               size="small"
-                              color="primary"
                               variant="outlined"
-                              sx={{ mt: 1, cursor: 'pointer' }}
+                              sx={{ mt: 1, mb: 4, ml: 2, cursor: 'pointer' }}
                               onClick={handleSuggestion}
                               aria-label={`Use suggestion for ${item.label}`}
                             />
@@ -341,12 +340,7 @@ export function RequestFormTool({
       if (toolInvocation.result?.cancelled) {
         return (
           <Box maxWidth="80%">
-            <Chip
-              label={t('Form was cancelled')}
-              color="default"
-              variant="outlined"
-              size="small"
-            />
+            <Chip label={t('Form was cancelled')} size="small" />
           </Box>
         )
       }
