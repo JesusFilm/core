@@ -36,6 +36,21 @@ export function ClientSelectVideoTool({
             <Button variant="outlined" onClick={() => setOpen(true)}>
               {t('Open Video Library')}
             </Button>
+            <Button
+              type="button"
+              variant="outlined"
+              color="secondary"
+              sx={{ ml: 2 }}
+              aria-label={t('Cancel')}
+              onClick={() => {
+                addToolResult({
+                  toolCallId: part.toolInvocation.toolCallId,
+                  result: { cancelled: true }
+                })
+              }}
+            >
+              {t('Cancel')}
+            </Button>
             <VideoLibrary
               open={open}
               onClose={() => setOpen(false)}

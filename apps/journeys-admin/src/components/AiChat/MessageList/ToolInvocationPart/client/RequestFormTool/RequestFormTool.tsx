@@ -316,6 +316,21 @@ export function RequestFormTool({
                   >
                     {t('Submit')}
                   </Button>
+                  <Button
+                    type="button"
+                    variant="outlined"
+                    color="secondary"
+                    sx={{ ml: 2 }}
+                    aria-label={t('Cancel form')}
+                    onClick={() => {
+                      addToolResult({
+                        toolCallId: toolInvocation.toolCallId,
+                        result: { cancelled: true }
+                      })
+                    }}
+                  >
+                    {t('Cancel')}
+                  </Button>
                 </Box>
               </Stack>
             </Form>
@@ -323,6 +338,18 @@ export function RequestFormTool({
         </Formik>
       )
     case 'result':
+      if (toolInvocation.result?.cancelled) {
+        return (
+          <Box maxWidth="80%">
+            <Chip
+              label={t('Form was cancelled')}
+              color="default"
+              variant="outlined"
+              size="small"
+            />
+          </Box>
+        )
+      }
       return (
         <List sx={{ p: 0 }}>
           {formItems.map((item) => {
