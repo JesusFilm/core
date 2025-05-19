@@ -48,12 +48,19 @@ export function MessageList({
                   {message.parts?.map((part, i) => {
                     switch (part.type) {
                       case 'text':
-                        return <TextPart message={message} part={part} />
+                        return (
+                          <TextPart
+                            message={message}
+                            part={part}
+                            key={`text-${i}`}
+                          />
+                        )
                       case 'tool-invocation':
                         return (
                           <ToolInvocationPart
                             part={part}
                             addToolResult={addToolResult}
+                            key={`tool-invocation-${i}`}
                           />
                         )
                       default:

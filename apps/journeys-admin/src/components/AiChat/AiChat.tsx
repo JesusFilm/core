@@ -46,6 +46,9 @@ export function AiChat({
     return systemPromptWithContext
   }, [journey, selectedStepId, systemPrompt, systemPromptFooter])
 
+  const [waitingForToolCallResponse, setWaitingForToolCallResponse] =
+    useState(false)
+
   const {
     messages,
     setMessages,
@@ -72,6 +75,10 @@ export function AiChat({
     fetch: fetchWithAuthorization,
     maxSteps: 50,
     credentials: 'omit',
+    onToolCall: ({ toolCall }) => {
+      if (toolCall.toolName.startsWith('client'))
+        setWaitingForToolCallResponse(true)
+    },
     onFinish: (result, { usage }) => {
       setUsage(usage)
       const shouldRefetch = result.parts?.some(
@@ -90,6 +97,11 @@ export function AiChat({
       console.error('useChat error', error)
     }
   })
+
+  function handleAddToolResult(response: Parameters<typeof addToolResult>[0]) {
+    setWaitingForToolCallResponse(false)
+    addToolResult(response)
+  }
 
   async function fetchWithAuthorization(
     url: string,
@@ -148,7 +160,7 @@ export function AiChat({
           append={append}
         />
         <StateError error={error} reload={reload} />
-        <MessageList messages={messages} addToolResult={addToolResult} />
+        <MessageList messages={messages} addToolResult={handleAddToolResult} />
       </Box>
       <Box
         sx={{
@@ -169,6 +181,7 @@ export function AiChat({
         stop={stop}
         systemPrompt={systemPrompt}
         onSystemPromptChange={handleSystemPromptChange}
+        disabled={waitingForToolCallResponse}
       />
     </>
   )
