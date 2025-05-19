@@ -44,6 +44,7 @@ const GET_VIDEO_VARIANT = graphql(`
         primaryLanguageId
         variant {
           hls
+          share
           lengthInMilliseconds
           downloadable
           downloads {
@@ -52,6 +53,7 @@ const GET_VIDEO_VARIANT = graphql(`
             quality
             size
             bitrate
+            url
           }
           subtitle {
             language {
