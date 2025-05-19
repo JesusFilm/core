@@ -22,6 +22,20 @@ import { ContentMetadata } from './ContentMetadata'
 import { DiscussionQuestions } from './DiscussionQuestions'
 import { VideoCarousel } from './VideoCarousel'
 
+const xsmallStyles = {
+  borderRadius: '64px',
+  color: 'text.primary',
+  fontWeight: 'bold',
+  textTransform: 'uppercase',
+  letterSpacing: '0.1em',
+  bgcolor: 'white',
+  '&:hover': {
+    bgcolor: 'primary.main',
+    color: 'common.white'
+  },
+  transition: 'colors 0.2s'
+}
+
 export function NewContentPage(): ReactElement {
   const { t } = useTranslation('apps-watch')
   const {
@@ -172,19 +186,7 @@ export function NewContentPage(): ReactElement {
                     size="xsmall"
                     startIcon={<LinkExternal sx={{ fontSize: 16 }} />}
                     onClick={() => setShowShare(true)}
-                    sx={{
-                      borderRadius: '64px',
-                      color: 'text.primary',
-                      fontWeight: 'bold',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.1em',
-                      bgcolor: 'white',
-                      '&:hover': {
-                        bgcolor: 'primary.main',
-                        color: 'common.white'
-                      },
-                      transition: 'colors 0.2s'
-                    }}
+                    sx={xsmallStyles}
                   >
                     {t('Share')}
                   </Button>
@@ -192,19 +194,7 @@ export function NewContentPage(): ReactElement {
                     size="xsmall"
                     startIcon={<Download2 sx={{ fontSize: 16 }} />}
                     onClick={() => setShowDownload(true)}
-                    sx={{
-                      borderRadius: '64px',
-                      color: 'text.primary',
-                      fontWeight: 'bold',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.1em',
-                      bgcolor: 'white',
-                      '&:hover': {
-                        bgcolor: 'primary.main',
-                        color: 'common.white'
-                      },
-                      transition: 'colors 0.2s'
-                    }}
+                    sx={xsmallStyles}
                   >
                     {t('Download')}
                   </Button>
