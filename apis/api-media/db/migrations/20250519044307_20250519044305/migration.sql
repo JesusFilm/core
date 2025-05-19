@@ -11,9 +11,6 @@ CREATE TABLE "VideoOrigin" (
 );
 
 -- CreateIndex
-CREATE INDEX "VideoOrigin_name_idx" ON "VideoOrigin"("name");
-
--- CreateIndex
 CREATE INDEX "Video_originId_idx" ON "Video"("originId");
 
 -- AddForeignKey
