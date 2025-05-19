@@ -18,7 +18,8 @@ export function JourneyCardText({
 }: JourneyCardTextProps): ReactElement {
   const md = useMediaQuery(`(min-width:1200px) and (max-width:1400px)`)
   const languageName = journey?.language?.name.find(
-    ({ primary }) => primary || journey.language.name.some(({ primary }) => !primary)
+    ({ primary }) =>
+      primary || journey.language.name.some(({ primary }) => !primary)
   )?.value
 
   return (
