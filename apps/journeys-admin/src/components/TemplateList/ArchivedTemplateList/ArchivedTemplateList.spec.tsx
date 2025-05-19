@@ -233,7 +233,7 @@ describe('ArchivedTemplateList', () => {
     })
 
     it('should trash all templates', async () => {
-      const { getByText } = render(
+      const { getByText, getByRole } = render(
         <MockedProvider
           mocks={[archivedJourneysMock, trashJourneysMock, noJourneysMock]}
         >
@@ -247,12 +247,12 @@ describe('ArchivedTemplateList', () => {
       await waitFor(() =>
         expect(getByText('Default Template Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Trash'))
+      fireEvent.click(getByRole('button', { name: 'Trash' }))
       await waitFor(() => expect(result).toHaveBeenCalled())
     })
 
     it('should show error', async () => {
-      const { getByText } = render(
+      const { getByText, getByRole } = render(
         <MockedProvider
           mocks={[
             archivedJourneysMock,
@@ -271,7 +271,7 @@ describe('ArchivedTemplateList', () => {
       await waitFor(() =>
         expect(getByText('Default Template Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Trash'))
+      fireEvent.click(getByRole('button', { name: 'Trash' }))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
     })
   })
