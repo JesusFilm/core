@@ -24,9 +24,25 @@ describe('NewContentPage', () => {
     expect(screen.getByTestId('ContentMetadata')).toBeInTheDocument()
     expect(screen.getByTestId('ContentDiscussionQuestions')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Share' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Download' })).toBeInTheDocument()
   })
 
   it('should render ShareDialog when button is clicked', async () => {
+    render(
+      <MockedProvider>
+        <VideoProvider value={{ content: videos[0] }}>
+          <NewContentPage />
+        </VideoProvider>
+      </MockedProvider>
+    )
+    const user = userEvent.setup()
+
+    await user.click(screen.getByRole('button', { name: 'Share' }))
+
+    expect(screen.getByTestId('ShareDialog')).toBeInTheDocument()
+  })
+
+  it('should render DownloadDialog when button is clicked', async () => {
     render(
       <MockedProvider>
         <VideoProvider value={{ content: videos[0] }}>
