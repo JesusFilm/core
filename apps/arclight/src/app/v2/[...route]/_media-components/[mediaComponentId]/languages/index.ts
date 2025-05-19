@@ -113,7 +113,7 @@ mediaComponentLanguages.openapi(route, async (c) => {
   }
 
   const languageIds = c.req.query('languageIds')?.split(',') ?? []
-  const apiSessionId = '6622f10d2260a8.05128925'
+  const apiSessionId = c.req.query('apiSessionId') ?? '6622f10d2260a8.05128925'
 
   const { data } = await getApolloClient().query<
     ResultOf<typeof GET_VIDEO_LANGUAGES>

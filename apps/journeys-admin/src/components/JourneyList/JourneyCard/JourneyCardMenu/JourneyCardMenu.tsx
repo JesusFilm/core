@@ -174,6 +174,7 @@ export function JourneyCardMenu({
         anchorEl={anchorEl}
         open={open ?? false}
         onClose={handleCloseMenu}
+        keepMounted
         MenuListProps={{
           'aria-labelledby': 'journey-actions'
         }}
@@ -203,6 +204,7 @@ export function JourneyCardMenu({
                 status={status}
                 slug={slug}
                 journeyId={id}
+                journey={journey}
                 published={published}
                 setOpenAccessDialog={() => setOpenAccessDialog(true)}
                 handleCloseMenu={handleCloseMenu}
