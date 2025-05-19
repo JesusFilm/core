@@ -80,8 +80,11 @@ const getTaxonomyByCategoryRoute = createRoute({
 
 taxonomiesWithCategory.openapi(getTaxonomyByCategoryRoute, async (c) => {
   const category = c.req.param('category')
+  const metadataLanguageTagsQuery = c.req.query('metadataLanguageTags')
   const metadataLanguageTags =
-    c.req.query('metadataLanguageTags')?.split(',') ?? []
+    metadataLanguageTagsQuery && metadataLanguageTagsQuery.length > 0
+      ? metadataLanguageTagsQuery.split(',')
+      : ['en']
   const apiKey = c.req.query('apiKey') ?? ''
 
   const { data } = await getApolloClient().query<ResultOf<typeof GET_TAXONOMY>>(
