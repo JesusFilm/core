@@ -53,8 +53,7 @@ export function TranslationDialogWrapper({
       dialogTitle={
         !loading
           ? {
-              title,
-              closeButton: true
+              title
             }
           : undefined
       }
