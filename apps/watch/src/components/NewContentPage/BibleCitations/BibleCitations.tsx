@@ -2,11 +2,11 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import { alpha, styled } from '@mui/material/styles'
+import SvgIcon from '@mui/material/SvgIcon'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import SvgIcon from '@mui/material/SvgIcon'
 
 import { VideoContentFields_bibleCitations } from '../../../../__generated__/VideoContentFields'
 
@@ -22,11 +22,6 @@ const CitationCard = styled(Stack)({
   backgroundColor: 'rgba(0, 0, 0, 0.1)',
   border: '1px solid rgba(255, 255, 255, 0.1)'
 })
-
-interface BibleCitationsProps {
-  bibleCitations: VideoContentFields_bibleCitations[]
-  freeResource: FreeResourceProps
-}
 
 interface FreeResourceProps {
   imageUrl?: string
@@ -80,12 +75,22 @@ function FreeResourceCard({
   )
 }
 
+interface BibleCitationsProps {
+  bibleCitations: VideoContentFields_bibleCitations[]
+  freeResource?: FreeResourceProps
+}
+
 export function BibleCitations({
   bibleCitations,
   freeResource
 }: BibleCitationsProps): ReactElement {
   return (
-    <Stack direction="row" spacing={2} sx={{ zIndex: 1 }}>
+    <Stack
+      direction="row"
+      spacing={2}
+      sx={{ zIndex: 1 }}
+      data-testid="BibleCitations"
+    >
       <StyledSwiper
         modules={[Mousewheel, FreeMode, A11y]}
         grabCursor
