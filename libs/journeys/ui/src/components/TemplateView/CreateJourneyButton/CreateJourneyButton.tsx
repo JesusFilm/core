@@ -115,6 +115,21 @@ export function CreateJourneyButton({
     )
   }
 
+  function handleCloseTeamDialog() {
+    if (setOpenTeamDialog !== undefined) {
+      setOpenTeamDialog(false)
+      const { createNew, ...queryWithoutCreateNew } = router.query
+      void router.replace(
+        {
+          pathname: router.pathname,
+          query: queryWithoutCreateNew
+        },
+        undefined,
+        { shallow: true }
+      )
+    }
+  }
+
   useEffect(() => {
     if (!signedIn) {
       // Prefetch the dashboard page
@@ -127,7 +142,7 @@ export function CreateJourneyButton({
     ) {
       setOpenTeamDialog(true)
     }
-  }, [signedIn, router, handleCreateJourney, setOpenTeamDialog])
+  }, [signedIn, router, setOpenTeamDialog])
 
   return (
     <>
@@ -151,9 +166,7 @@ export function CreateJourneyButton({
           title={t('Add Journey to Team')}
           open={openTeamDialog}
           loading={loadingJourney}
-          onClose={() =>
-            setOpenTeamDialog !== undefined && setOpenTeamDialog(false)
-          }
+          onClose={handleCloseTeamDialog}
           submitAction={handleCreateJourney}
         />
       )}
