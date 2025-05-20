@@ -12,7 +12,6 @@ export async function getBlockContent({
   blocks: Block[]
   block: Block
 }) {
-  let result = ''
   switch (block.typename) {
     case 'ImageBlock':
       return await getImageBlockContent({
@@ -24,11 +23,9 @@ export async function getBlockContent({
         block
       })
     case 'TypographyBlock':
-      result += `## Text: \n ${block.content}\n`
-      break
+      return `## Text: \n ${block.content}\n`
     case 'ButtonBlock':
       return getButtonBlockContent({
-        blocks,
         block
       })
     case 'RadioQuestionBlock':
@@ -39,7 +36,7 @@ export async function getBlockContent({
     case 'SpacerBlock':
       return '### Blank Space\n'
     default:
-      break
+      // Log or handle unknown block types
+      return ''
   }
-  return result
 }

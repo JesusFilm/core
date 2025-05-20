@@ -29,7 +29,6 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
     },
     resolve: async (_query, _root, { input }, { user }) => {
       const originalName = input.name
-      // TODO: check if user has write access
       // 1. First get the journey details using Prisma
       const journey = await prisma.journey.findUnique({
         where: {

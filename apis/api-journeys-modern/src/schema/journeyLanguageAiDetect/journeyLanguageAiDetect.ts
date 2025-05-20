@@ -64,9 +64,9 @@ builder.mutationFields((t) => ({
       For languages that use the western alphabet, do not assume the detected language is English.
       Instead, analyze the content to determine the language.
       Content: ${journeyContent}
-      Return the result in this format:
+      Return the result in this exact JSON format:
       {
-        detectedLanguage: [e.g. "Traditional Chinese", "Simplified Chinese", "Japanese", "English"],
+        language: [e.g. "Traditional Chinese", "Simplified Chinese", "Japanese", "English"],
         isSameLanguage: [whether the detected language is the same as the requested language]
       }`
 
