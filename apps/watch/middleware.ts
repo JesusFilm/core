@@ -18,6 +18,33 @@ const SUPPORTED_LOCALES = [
   'zh-Hans-CN' // Chinese, Simplified
 ]
 
+const COUNTRY_TO_LOCALE: Record<string, string> = {
+  US: 'en', // United States
+  GB: 'en', // United Kingdom
+  AU: 'en', // Australia
+  CA: 'en', // Canada (default to English)
+  ES: 'es', // Spain
+  MX: 'es', // Mexico
+  AR: 'es', // Argentina
+  CO: 'es', // Colombia
+  PE: 'es', // Peru
+  FR: 'fr', // France
+  BE: 'fr', // Belgium (French)
+  ID: 'id', // Indonesia
+  TH: 'th', // Thailand
+  JP: 'ja', // Japan
+  JA: 'ja', // Japan (sometimes JP or JA)
+  KR: 'ko', // South Korea
+  KO: 'ko', // South Korea (sometimes KR or KO)
+  RU: 'ru', // Russia
+  TR: 'tr', // Turkey
+  CN: 'zh', // China (default to Chinese)
+  TW: 'zh', // Taiwan (default to Chinese)
+  HK: 'zh', // Hong Kong (default to Chinese)
+  SG: 'zh-Hans-CN' // Singapore (Simplified Chinese)
+  // Add more mappings as needed for your user base
+}
+
 interface LanguagePriority {
   code: string
   priority: number
@@ -60,6 +87,18 @@ function getSupportedLocale(input?: string): string {
       : DEFAULT_LOCALE
 }
 
+function getLocaleFromGeoHeaders(req: NextRequest): string | undefined {
+  const country =
+    req.headers.get('cf-ipcountry') ||
+    req.headers.get('x-vercel-ip-country') ||
+    undefined
+  if (!country) return undefined
+  const mappedLocale = COUNTRY_TO_LOCALE[country.toUpperCase()]
+  return mappedLocale && SUPPORTED_LOCALES.includes(mappedLocale)
+    ? mappedLocale
+    : undefined
+}
+
 function getBrowserLanguage(req: NextRequest): string {
   const acceptedLanguagesHeader = req.headers.get('accept-language')
   if (acceptedLanguagesHeader == null) return DEFAULT_LOCALE
@@ -95,14 +134,18 @@ export function middleware(req: NextRequest): NextResponse | undefined {
     return
   }
 
-  console.log('---------------- HERE', req.headers.get('accept-language'))
-
   const nextLocaleCookie = req.cookies
     .get('NEXT_LOCALE')
     ?.value?.split('---')[1]
 
   // Redirect if NEXT_LOCALE cookie is not set
   if (nextLocaleCookie == null) {
+    // 1. Try geolocation headers
+    const geoLocale = getLocaleFromGeoHeaders(req)
+    if (geoLocale) {
+      return handleRedirect(req, geoLocale)
+    }
+    // 2. Fallback to browser language
     const browserLanguage = getBrowserLanguage(req)
     return handleRedirect(req, browserLanguage)
   }
