@@ -544,6 +544,7 @@ type Journey @join__type(graph: API_JOURNEYS, key: "id")  {
   """
   title: String!
   language: Language!
+  languageId: String!
   themeMode: ThemeMode!
   themeName: ThemeName!
   description: String
