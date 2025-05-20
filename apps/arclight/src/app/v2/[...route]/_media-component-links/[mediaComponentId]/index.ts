@@ -55,7 +55,7 @@ const GET_VIDEO_CHILDREN = graphql(`
         availableLanguages
         variant {
           hls
-          duration
+          lengthInMilliseconds
           language {
             bcp47
           }
@@ -114,7 +114,7 @@ const GET_VIDEO_CHILDREN = graphql(`
         availableLanguages
         variant {
           hls
-          duration
+          lengthInMilliseconds
           language {
             bcp47
           }
@@ -316,7 +316,7 @@ mediaComponentLinksWithId.openapi(route, async (c) => {
                         (image) => image.mobileCinematicVeryLow != null
                       )?.mobileCinematicVeryLow ?? ''
                   },
-                  lengthInMilliseconds: variant?.duration ?? 0,
+                  lengthInMilliseconds: variant?.lengthInMilliseconds ?? 0,
                   containsCount: childrenCount,
                   isDownloadable: variant?.downloadable ?? false,
                   downloadSizes: {},
@@ -394,7 +394,8 @@ mediaComponentLinksWithId.openapi(route, async (c) => {
                               (image) => image.mobileCinematicVeryLow != null
                             )?.mobileCinematicVeryLow ?? ''
                         },
-                        lengthInMilliseconds: variant?.duration ?? 0,
+                        lengthInMilliseconds:
+                          variant?.lengthInMilliseconds ?? 0,
                         containsCount: childrenCount,
                         isDownloadable: variant?.downloadable ?? false,
                         downloadSizes: {},
