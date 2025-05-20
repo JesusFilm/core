@@ -25,6 +25,7 @@ import {
 import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
 import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
 import { useJourneyForSharingLazyQuery } from '../../../../../libs/useJourneyForShareLazyQuery'
+import { GET_JOURNEY_WITH_PERMISSIONS } from '../../../../AccessDialog/AccessDialog'
 import { ShareItem } from '../../../../Editor/Toolbar/Items/ShareItem/ShareItem'
 import { MenuItem } from '../../../../MenuItem'
 import { CopyToTeamMenuItem } from '../../../../Team/CopyToTeamMenuItem/CopyToTeamMenuItem'
@@ -34,13 +35,14 @@ import { ArchiveJourney } from './ArchiveJourney'
 
 export const GET_JOURNEY_WITH_USER_ROLES = gql`
   query GetJourneyWithUserRoles($id: ID!) {
-    adminJourney(id: $id, idType: databaseId) { 
+    adminJourney(id: $id, idType: databaseId) {
       id
       userJourneys {
         id
         role
         user {
           id
+          email
         }
       }
     }
@@ -97,58 +99,46 @@ export function DefaultMenu({
 }: DefaultMenuProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
-  const user = useUser()
+  //publisher
   const { data: userRoleData } = useUserRoleQuery()
   const { hostname } = useCustomDomainsQuery({
     variables: { teamId: activeTeam?.id ?? '' },
     skip: activeTeam?.id == null
   })
 
+  // get current user
   const { loadUser, data: currentUser } = useCurrentUserLazyQuery()
 
   // Lazy query for journey data if context is missing
   const [loadJourney, { data: journeyFromLazyQuery }] =
     useJourneyForSharingLazyQuery()
 
-  const { data: journeyWithUserRoles } = useQuery(GET_JOURNEY_WITH_USER_ROLES, {
-    variables: { id: journeyId },
-    skip: currentUser?.id == null
-  })
-
-  console.log('Debug - Current User:', {
-    currentUserId: currentUser?.id,
-    userId: user?.id,
-    journeyId: journeyId,
-  })
+  // get journey with user roles
+  const { data: journeyWithUserRoles } = useQuery(
+    GET_JOURNEY_WITH_PERMISSIONS,
+    {
+      variables: { id: journeyId }
+    }
+  )
 
   const owner = useMemo(
     () =>
-      journey?.userJourneys?.find(
+      journeyWithUserRoles?.userJourneys?.find(
         (userJourney) => userJourney.role === UserJourneyRole.owner
       ),
-    [journey?.userJourneys]
+    [journeyWithUserRoles?.userJourneys]
   )
   const isOwner = useMemo(
-    () => owner?.user?.id === user?.id || owner?.user?.id === currentUser?.id,
-    [owner?.user?.id, user?.id]
+    () => owner?.user?.email === currentUser?.email,
+    [currentUser?.email, owner?.user?.email]
   )
 
-  console.log('Debug - isOwnerNew Owner Check:', {
-    isOwner: isOwner,
-    owner: owner,
-    user: user
+  console.log({
+    owner,
+    currentUser,
+    isOwner,
+    journeyId
   })
-
-  // const isOwnerOld = journeyData.adminJourney?.userJourneys?.some(
-  //   (userJourney: { user: { id: string }; role: UserJourneyRole }) =>
-  //     userJourney.user?.id === user?.id &&
-  //     userJourney.role === UserJourneyRole.owner
-  // )
-
-  // console.log('Debug - isOwnerOld Check:', {
-  //   isOwner: isOwnerOld,
-  //   userJourneys: journeyData?.adminJourney?.userJourneys
-  // })
 
   useEffect(() => {
     void loadUser()
@@ -157,21 +147,6 @@ export function DefaultMenu({
   useEffect(() => {
     void loadJourney({ variables: { id: journeyId } })
   }, [loadJourney, journeyId])
-
-  // Determine the current user's role for this journey
-  const userRole = useMemo<UserJourneyRole | undefined>(() => {
-    if (
-      journeyWithUserRoles?.journey?.userJourneys == null ||
-      currentUser?.id == null
-    )
-      return undefined
-
-    const userJourney = journeyWithUserRoles.journey.userJourneys.find(
-      (userJourney) => userJourney.user?.id === currentUser.id
-    )
-
-    return userJourney?.role
-  }, [journeyWithUserRoles?.journey?.userJourneys, currentUser?.id])
 
   // Determine the current user's role in the team
   const teamRole = useMemo<UserTeamRole | undefined>(() => {
@@ -194,15 +169,6 @@ export function DefaultMenu({
     (isPublisher && template === true)
 
   const cantManageJourney = !canManageJourney
-
-  console.log('Debug - Journey Management:', {
-    canManageJourney,
-    cantManageJourney,
-    isOwner,
-    teamRole,
-    isPublisher,
-    template
-  })
 
   return (
     <>
