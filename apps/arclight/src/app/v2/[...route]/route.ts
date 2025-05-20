@@ -59,10 +59,12 @@ app.doc('/doc', {
   openapi: '3.0.0',
   info: {
     version: '2.0.0',
-    title: 'Arclight'
+    title: 'Arclight API v2',
+    description:
+      'This documentation is for Arclight API v2. If you are looking for the redirects (/hls, /dl, /dh ) documentation, please visit <a href="/api/redirects-doc">/api/redirects-doc</a>.'
   }
 })
 
-app.get('/ui', swaggerUI({ url: '/v2/doc' }))
+app.get('/api/doc', swaggerUI({ url: '/v2/doc' }))
 
 export const GET = handle(app)

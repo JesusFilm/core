@@ -1,4 +1,5 @@
 import Typography from '@mui/material/Typography'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { differenceInSeconds } from 'date-fns'
 import { Trans, useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
@@ -17,7 +18,7 @@ export function LastModifiedDate({
   modifiedDate
 }: LastModifiedDateProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-
+  const md = useMediaQuery(`(min-width:1200px) and (max-width:1400px)`)
   const secondsDifference = differenceInSeconds(
     new Date(),
     new Date(modifiedDate)
@@ -55,7 +56,7 @@ export function LastModifiedDate({
 
   return (
     <Trans t={t} duration={duration}>
-      <Typography variant="caption">{duration}</Typography>
+      <Typography variant={md ? 'caption' : 'body2'}>{duration}</Typography>
     </Trans>
   )
 }
