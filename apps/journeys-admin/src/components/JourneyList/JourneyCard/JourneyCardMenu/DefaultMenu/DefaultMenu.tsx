@@ -8,7 +8,6 @@ import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { useUserRoleQuery } from '@core/journeys/ui/useUserRoleQuery'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
-import Globe2Icon from '@core/shared/ui/icons/Globe2'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
@@ -24,6 +23,8 @@ import {
 } from '../../../../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
 import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
+import { useJourneyForSharingLazyQuery } from '../../../../../libs/useJourneyForShareLazyQuery'
+import { ShareItem } from '../../../../Editor/Toolbar/Items/ShareItem/ShareItem'
 import { MenuItem } from '../../../../MenuItem'
 import { CopyToTeamMenuItem } from '../../../../Team/CopyToTeamMenuItem/CopyToTeamMenuItem'
 import { DuplicateJourneyMenuItem } from '../DuplicateJourneyMenuItem'
@@ -77,7 +78,6 @@ interface DefaultMenuProps {
  * @param {() => void} props.handleCloseMenu - Function to close the menu
  * @param {() => void} props.setOpenTrashDialog - Function to open the trash confirmation dialog
  * @param {() => void} props.setOpenDetailsDialog - Function to open the journey details dialog
- * @param {() => void} props.setOpenTranslateDialog - Function to open the translate dialog
  * @param {boolean} [props.template] - Whether the journey is a template
  * @param {() => Promise<ApolloQueryResult<GetAdminJourneys>>} [props.refetch] - Function to refetch journey data
  * @returns {ReactElement} The rendered menu component
@@ -108,7 +108,11 @@ export function DefaultMenu({
 
   const { loadUser, data: currentUser } = useCurrentUserLazyQuery()
 
-  const { data: journeyData } = useQuery(GET_JOURNEY_WITH_USER_ROLES, {
+  // Lazy query for journey data if context is missing
+  const [loadJourney, { data: journeyFromLazyQuery }] =
+    useJourneyForSharingLazyQuery()
+
+  const { data: journeyWithUserRoles } = useQuery(GET_JOURNEY_WITH_USER_ROLES, {
     variables: { id: journeyId },
     skip: currentUser?.id == null
   })
@@ -117,17 +121,24 @@ export function DefaultMenu({
     void loadUser()
   }, [loadUser])
 
+  useEffect(() => {
+    void loadJourney({ variables: { id: journeyId } })
+  }, [loadJourney, journeyId])
+
   // Determine the current user's role for this journey
   const userRole = useMemo<UserJourneyRole | undefined>(() => {
-    if (journeyData?.journey?.userJourneys == null || currentUser?.id == null)
+    if (
+      journeyWithUserRoles?.journey?.userJourneys == null ||
+      currentUser?.id == null
+    )
       return undefined
 
-    const userJourney = journeyData.journey.userJourneys.find(
+    const userJourney = journeyWithUserRoles.journey.userJourneys.find(
       (userJourney) => userJourney.user?.id === currentUser.id
     )
 
     return userJourney?.role
-  }, [journeyData?.journey?.userJourneys, currentUser?.id])
+  }, [journeyWithUserRoles?.journey?.userJourneys, currentUser?.id])
 
   // Determine the current user's role in the team
   const teamRole = useMemo<UserTeamRole | undefined>(() => {
@@ -161,6 +172,7 @@ export function DefaultMenu({
           handleCloseMenu()
         }}
       />
+      <Divider />
       {template !== true && (
         <MenuItem
           label={t('Access')}
@@ -185,19 +197,11 @@ export function DefaultMenu({
           openInNew
         />
       </NextLink>
-      {template !== true && (
-        <>
-          <DuplicateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />
-          <MenuItem
-            label={t('Translate')}
-            icon={<Globe2Icon color="secondary" />}
-            onClick={() => {
-              setOpenTranslateDialog()
-              handleCloseMenu()
-            }}
-          />
-        </>
-      )}
+      <ShareItem
+        variant="menu-item"
+        journey={journeyFromLazyQuery?.journey}
+        handleCloseMenu={handleCloseMenu}
+      />
       <Divider />
       <CopyToTeamMenuItem
         id={id}

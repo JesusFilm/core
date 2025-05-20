@@ -10,14 +10,20 @@ export async function getVideoBlockContent({
   block: Block
   isCoverBlock?: boolean
 }): Promise<string> {
-  const label = isCoverBlock ? 'Video' : 'Background Video'
+  const label = isCoverBlock ? 'Background Video' : 'Video'
   const videoCoverBlock = blocks.find(
     (childBlock) => childBlock.id === block.posterBlockId
   )
   if (videoCoverBlock && videoCoverBlock.src != null) {
-    const videoDescription = await getImageDescription({
-      imageUrl: videoCoverBlock.src
-    })
+    let videoDescription
+    try {
+      videoDescription = await getImageDescription({
+        imageUrl: videoCoverBlock.src
+      })
+    } catch (error) {
+      console.error('Failed to get video image description:', error)
+      videoDescription = null
+    }
     if (videoDescription) {
       return `
 ## ${label}:
