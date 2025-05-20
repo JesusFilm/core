@@ -298,7 +298,7 @@ export function VideoPlayer({
         }
       }
     }
-  }, []) // Empty dependency array to run only once
+  }, [])
 
   // Add keyboard shortcuts
   useEffect(() => {
