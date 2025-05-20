@@ -269,7 +269,7 @@ mediaComponentLinksWithId.openapi(route, async (c) => {
     },
     ...(expand.includes('mediaComponents')
       ? {
-          __embedded: {
+          _embedded: {
             contains: video.children
               .filter(
                 ({ availableLanguages }) =>
