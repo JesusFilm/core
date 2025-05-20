@@ -192,6 +192,7 @@ describe('DefaultMenu', () => {
                 handleCloseMenu={noop}
                 setOpenTrashDialog={noop}
                 setOpenDetailsDialog={noop}
+                setOpenTranslateDialog={noop}
               />
             </TeamProvider>
           </ThemeProvider>
@@ -223,6 +224,7 @@ describe('DefaultMenu', () => {
               template
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
             />
           </ThemeProvider>
         </SnackbarProvider>
@@ -256,6 +258,7 @@ describe('DefaultMenu', () => {
                 handleCloseMenu={handleCloseMenu}
                 setOpenTrashDialog={noop}
                 setOpenDetailsDialog={noop}
+                setOpenTranslateDialog={noop}
               />
             </TeamProvider>
           </ThemeProvider>
@@ -285,6 +288,7 @@ describe('DefaultMenu', () => {
                   handleCloseMenu={noop}
                   setOpenTrashDialog={noop}
                   setOpenDetailsDialog={noop}
+                  setOpenTranslateDialog={noop}
                 />
               </TeamProvider>
             </MockedProvider>
@@ -325,6 +329,7 @@ describe('DefaultMenu', () => {
                   handleCloseMenu={noop}
                   setOpenTrashDialog={noop}
                   setOpenDetailsDialog={noop}
+                  setOpenTranslateDialog={noop}
                 />
               </TeamProvider>
             </MockedProvider>
@@ -365,6 +370,7 @@ describe('DefaultMenu', () => {
                 handleCloseMenu={handleCloseMenu}
                 setOpenTrashDialog={setOpenTrashDialog}
                 setOpenDetailsDialog={noop}
+                setOpenTranslateDialog={noop}
               />
             </TeamProvider>
           </ThemeProvider>
@@ -427,6 +433,7 @@ describe('DefaultMenu', () => {
                 handleCloseMenu={noop}
                 setOpenTrashDialog={noop}
                 setOpenDetailsDialog={noop}
+                setOpenTranslateDialog={noop}
               />
             </TeamProvider>
           </ThemeProvider>
@@ -491,6 +498,7 @@ describe('DefaultMenu', () => {
                 handleCloseMenu={noop}
                 setOpenTrashDialog={noop}
                 setOpenDetailsDialog={noop}
+                setOpenTranslateDialog={noop}
               />
             </TeamProvider>
           </ThemeProvider>
@@ -555,6 +563,7 @@ describe('DefaultMenu', () => {
                 handleCloseMenu={noop}
                 setOpenTrashDialog={noop}
                 setOpenDetailsDialog={noop}
+                setOpenTranslateDialog={noop}
               />
             </TeamProvider>
           </ThemeProvider>
@@ -621,6 +630,7 @@ describe('DefaultMenu', () => {
                 handleCloseMenu={noop}
                 setOpenTrashDialog={noop}
                 setOpenDetailsDialog={noop}
+                setOpenTranslateDialog={noop}
               />
             </TeamProvider>
           </ThemeProvider>
@@ -678,6 +688,7 @@ describe('DefaultMenu', () => {
               template
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
             />
           </ThemeProvider>
         </SnackbarProvider>
@@ -731,6 +742,7 @@ describe('DefaultMenu', () => {
               template={false}
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
             />
           </ThemeProvider>
         </SnackbarProvider>
@@ -786,6 +798,7 @@ describe('DefaultMenu', () => {
               template
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
             />
           </ThemeProvider>
         </SnackbarProvider>
@@ -856,6 +869,7 @@ describe('DefaultMenu', () => {
                 handleCloseMenu={noop}
                 setOpenTrashDialog={noop}
                 setOpenDetailsDialog={noop}
+                setOpenTranslateDialog={noop}
               />
             </TeamProvider>
           </ThemeProvider>
