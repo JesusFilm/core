@@ -8,6 +8,7 @@ import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { useUserRoleQuery } from '@core/journeys/ui/useUserRoleQuery'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
+import Globe2Icon from '@core/shared/ui/icons/Globe2'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
@@ -56,6 +57,7 @@ interface DefaultMenuProps {
   handleCloseMenu: () => void
   setOpenTrashDialog: () => void
   setOpenDetailsDialog: () => void
+  setOpenTranslateDialog: () => void
   template?: boolean
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
   journey?: Journey
@@ -76,6 +78,7 @@ interface DefaultMenuProps {
  * @param {() => void} props.handleCloseMenu - Function to close the menu
  * @param {() => void} props.setOpenTrashDialog - Function to open the trash confirmation dialog
  * @param {() => void} props.setOpenDetailsDialog - Function to open the journey details dialog
+ * @param {() => void} props.setOpenTranslateDialog - Function to open the translate dialog
  * @param {boolean} [props.template] - Whether the journey is a template
  * @param {() => Promise<ApolloQueryResult<GetAdminJourneys>>} [props.refetch] - Function to refetch journey data
  * @returns {ReactElement} The rendered menu component
@@ -90,6 +93,7 @@ export function DefaultMenu({
   handleCloseMenu,
   setOpenTrashDialog,
   setOpenDetailsDialog,
+  setOpenTranslateDialog,
   template,
   refetch
 }: DefaultMenuProps): ReactElement {
@@ -199,7 +203,17 @@ export function DefaultMenu({
       />
       <Divider />
       {template !== true && (
-        <DuplicateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />
+        <>
+          <DuplicateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />
+          <MenuItem
+            label={t('Translate')}
+            icon={<Globe2Icon color="secondary" />}
+            onClick={() => {
+              setOpenTranslateDialog()
+              handleCloseMenu()
+            }}
+          />
+        </>
       )}
       <CopyToTeamMenuItem id={id} handleCloseMenu={handleCloseMenu} />
       <ArchiveJourney
