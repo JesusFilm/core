@@ -60,7 +60,7 @@ export function TranslateJourneyDialog({
   const { activeTeam } = useTeam()
   const journeyData = journey ?? journeyFromContext
   const { enqueueSnackbar } = useSnackbar()
-  const [translateJourney] = useJourneyAiTranslateMutation()
+  const [translate] = useJourneyAiTranslateMutation()
   const [journeyDuplicate] = useJourneyDuplicateMutation()
   const [loading, setLoading] = useState(false)
 
@@ -106,7 +106,7 @@ export function TranslateJourneyDialog({
       // Check if duplication was successful
       if (duplicateData?.journeyDuplicate?.id) {
         // Use the duplicated journey ID for translation
-        const translatedJourney = await translateJourney({
+        const response = await translate({
           variables: {
             journeyId: duplicateData.journeyDuplicate.id,
             name: `${journeyData.title}`,
@@ -119,7 +119,7 @@ export function TranslateJourneyDialog({
           }
         })
 
-        if (translatedJourney) {
+        if (response.data?.journeyAiTranslateCreate) {
           enqueueSnackbar(t('Translation complete'), {
             variant: 'success'
           })

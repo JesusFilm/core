@@ -62,7 +62,6 @@ interface DefaultMenuProps {
   handleKeepMounted?: () => void
   template?: boolean
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
-  journey?: Journey
 }
 
 /**
