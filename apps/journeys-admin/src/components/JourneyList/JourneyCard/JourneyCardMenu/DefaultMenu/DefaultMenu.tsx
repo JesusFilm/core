@@ -97,7 +97,6 @@ export function DefaultMenu({
 }: DefaultMenuProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
-  //publisher
   const { data: userRoleData } = useUserRoleQuery()
   const { hostname } = useCustomDomainsQuery({
     variables: { teamId: activeTeam?.id ?? '' },
