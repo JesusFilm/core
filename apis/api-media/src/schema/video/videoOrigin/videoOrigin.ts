@@ -1,8 +1,6 @@
 import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 
-import { VideoOriginCreateInput, VideoOriginUpdateInput } from './inputs'
-
 builder.prismaObject('VideoOrigin', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
@@ -12,35 +10,38 @@ builder.prismaObject('VideoOrigin', {
 })
 
 builder.mutationFields((t) => ({
-  videoOriginCreate: t.withAuth({ isPublisher: true }).prismaField({
+  videoOriginCreate: t.withAuth({ isPublisher: true }).prismaFieldWithInput({
     type: 'VideoOrigin',
     nullable: false,
-    args: {
-      input: t.arg({ type: VideoOriginCreateInput, required: true })
+    input: {
+      name: t.input.string({ required: true }),
+      description: t.input.string({ required: false })
     },
-    resolve: async (query, _parent, { input }) => {
+    resolve: async (query, _parent, { input: { name, description } }) => {
       return await prisma.videoOrigin.create({
         ...query,
         data: {
-          name: input.name,
-          description: input.description
+          name,
+          description
         }
       })
     }
   }),
-  videoOriginUpdate: t.withAuth({ isPublisher: true }).prismaField({
+  videoOriginUpdate: t.withAuth({ isPublisher: true }).prismaFieldWithInput({
     type: 'VideoOrigin',
     nullable: false,
-    args: {
-      input: t.arg({ type: VideoOriginUpdateInput, required: true })
+    input: {
+      id: t.input.id({ required: true }),
+      name: t.input.string({ required: false }),
+      description: t.input.string({ required: false })
     },
-    resolve: async (query, _parent, { input }) => {
+    resolve: async (query, _parent, { input: { id, name, description } }) => {
       return await prisma.videoOrigin.update({
         ...query,
-        where: { id: input.id },
+        where: { id },
         data: {
-          name: input.name ?? undefined,
-          description: input.description ?? undefined
+          name: name ?? undefined,
+          description: description ?? undefined
         }
       })
     }
