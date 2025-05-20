@@ -75,7 +75,16 @@ function read(journey: Journey, user: User): boolean {
   return userTeam != null || userJourney != null
 }
 
-// team manaers/owners and journeys owners/editors can read the journey
+// team managers/owners and journeys owners/editors can update the journey
 function update(journey: Journey, user: User): boolean {
-  return read(journey, user)
+  const userJourney = journey?.userJourneys.find(
+    (userJourney) => userJourney.userId === user.id
+  )
+  const userTeam = journey?.team?.userTeams.find(
+    (userTeam) => userTeam.userId === user.id
+  )
+  const hasJourneyUpdateAccess =
+    userJourney?.role === 'owner' || userJourney?.role === 'editor'
+  const hasTeamUpdateAccess = userTeam?.role === 'manager'
+  return hasJourneyUpdateAccess || hasTeamUpdateAccess
 }
