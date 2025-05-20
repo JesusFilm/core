@@ -392,7 +392,8 @@ describe('DefaultMenu', () => {
           role: UserJourneyRole.owner,
           user: {
             __typename: 'User',
-            id: 'current-user-id'
+            id: 'current-user-id',
+            email: 'current@example.com'
           }
         }
       ]
@@ -412,7 +413,7 @@ describe('DefaultMenu', () => {
 
     const { getByRole } = render(
       <MockedProvider
-        mocks={[currentUserMock, journeyMock, teamWithMemberMock]}
+        mocks={[currentUserMock, journeyMock, teamWithManagerMock]}
       >
         <SnackbarProvider>
           <ThemeProvider>
