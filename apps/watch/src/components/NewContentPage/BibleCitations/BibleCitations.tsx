@@ -8,7 +8,7 @@ import { ReactElement } from 'react'
 import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
-import { VideoContentFields_bibleCitations } from '../../../../__generated__/VideoContentFields'
+import { VideoContentFields_bibleCitations as BibleCitation } from '../../../../__generated__/VideoContentFields'
 
 const StyledSwiper = styled(Swiper)({})
 const StyledSwiperSlide = styled(SwiperSlide)({ maxWidth: '400px' })
@@ -76,7 +76,7 @@ function FreeResourceCard({
 }
 
 interface BibleCitationsProps {
-  bibleCitations: VideoContentFields_bibleCitations[]
+  bibleCitations: BibleCitation[]
   freeResource?: FreeResourceProps
 }
 
