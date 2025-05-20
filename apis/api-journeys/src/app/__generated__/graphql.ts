@@ -1151,6 +1151,7 @@ export class Journey {
     id: string;
     title: string;
     language: Language;
+    languageId: string;
     themeMode: ThemeMode;
     themeName: ThemeName;
     description?: Nullable<string>;

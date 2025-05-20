@@ -1,9 +1,11 @@
 'use client'
+
 import { useEffect, useRef } from 'react'
 import videojs from 'video.js'
 
 import { MuxMetadata } from '@core/shared/ui/muxMetadataType'
 import 'video.js/dist/video-js.css'
+import './VideoPlayer.css'
 
 import 'videojs-mux'
 
@@ -13,50 +15,53 @@ interface VideoPlayerProps {
   thumbnail?: string | null
   startTime?: number
   endTime?: number
-  subOn: boolean
-  subtitles: { key: string; language: string; bcp47: string; vttSrc: string }[]
+  subtitles: {
+    key: string
+    language: string
+    bcp47: string | null
+    vttSrc: string | null
+    langId: string
+    default: boolean
+  }[]
 }
 
 export function VideoPlayer({
   hlsUrl,
   videoTitle,
   thumbnail,
-  startTime,
+  startTime = 0,
   endTime,
-  subOn,
   subtitles
 }: VideoPlayerProps): JSX.Element {
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const playerRef = useRef<any>(null)
+  const playerRef = useRef<HTMLVideoElement>(null)
+  const playerInstanceRef = useRef<any>(null)
 
-  useEffect(() => {
-    // Make sure Video.js player is only initialized once
-    if (!playerRef.current) {
-      const videoElement = videoRef.current
-      if (!videoElement) return
+  const initPlayer = (ref: typeof playerRef): void => {
+    if (ref.current == null) {
+      return
+    }
 
-      // Enable debug logging
-      videojs.log.level('debug')
-      const logger = videojs.log.createLogger('arclight-player')
-
+    try {
       const muxMetadata: MuxMetadata = {
         env_key: process.env.NEXT_PUBLIC_MUX_DEFAULT_REPORTING_KEY || '',
         player_name: 'arclight',
         video_title: videoTitle
       }
 
-      const playerOptions = {
+      // Configure videojs options
+      const vjsOptions = {
         enableSmoothSeeking: true,
         experimentalSvgIcons: true,
         preload: 'auto',
-        sources: [
-          {
-            src: hlsUrl,
-            type: 'application/x-mpegURL'
-          }
-        ],
+        autoplay: false,
+        controls: true,
+        fluid: true,
+        responsive: true,
+        fill: true,
+        playsinline: true,
+        poster: thumbnail || '',
+        techOrder: ['html5'],
         html5: {
-          nativeTextTracks: false, // Force emulated text tracks
           vhs: {
             limitRenditionByPlayerDimensions: false,
             useNetworkInformationApi: true,
@@ -66,156 +71,232 @@ export function VideoPlayer({
             limitRenditionByPlayerDimensions: false,
             useNetworkInformationApi: true,
             useDevicePixelRatio: true
+          },
+          nativeTextTracks: false,
+          nativeCaptions: false
+        },
+        plugins: {
+          mux: {
+            debug: false,
+            data: muxMetadata
           }
         }
       }
 
-      // Initialize player
-      const initializePlayer = () => {
-        try {
-          const player = videojs(videoElement, playerOptions)
-          playerRef.current = player
+      // Initialize the player
+      const vjsPlayer = videojs(ref.current, vjsOptions)
 
-          // Add event listeners
-          player.on('error', (error: any) => {
-            logger.error('Player error:', error)
-          })
+      // Handle errors
+      vjsPlayer.on('error', (e: Error) => {
+        console.error('VideoJS error:', e)
+      })
 
-          player.on('loadedmetadata', () => {
-            // Load subtitles after video is ready
-            loadSubtitles().catch((error) => {
-              logger.error('Error in subtitle loading:', error)
-            })
-          })
+      // Store initial Player.prototype methods before we override them
+      const Player = vjsPlayer.constructor as any
 
-          // Handle start time
-          if (startTime != null) {
-            player.currentTime(startTime)
-          }
-
-          // Handle end time
-          if (endTime != null) {
-            player.on('timeupdate', () => {
-              if (player.currentTime() >= endTime) {
-                player.currentTime(endTime)
-                player.pause()
-              }
-            })
-            player.on('ended', () => {
-              player.currentTime(endTime)
-              player.pause()
-            })
-          }
-
-          return player
-        } catch (error) {
-          logger.error('Failed to initialize video player:', error)
-          throw error
+      if (!Player.__originalMethods) {
+        Player.__originalMethods = {
+          duration: Player.prototype.duration,
+          currentTime: Player.prototype.currentTime,
+          buffered: Player.prototype.buffered,
+          remainingTime: Player.prototype.remainingTime
         }
       }
 
-      const loadSubtitles = async () => {
-        if (!subOn || subtitles.length === 0) {
-          return
+      // Apply our custom video offset functionality
+      // This mimics what the videojs-offset plugin does
+      const applyOffset = (player: any, start: number, end: number = 0) => {
+        // Store offset values on the player instance
+        player._offsetStart = start
+        player._offsetEnd = end
+        player._restartBeginning = false
+
+        // Override duration method
+        Player.prototype.duration = function (...args: any[]) {
+          if (
+            this._offsetEnd !== undefined &&
+            this._offsetStart !== undefined
+          ) {
+            if (this._offsetEnd > 0) {
+              return this._offsetEnd - this._offsetStart
+            }
+            return (
+              Player.__originalMethods.duration.apply(this, args) -
+              this._offsetStart
+            )
+          }
+          return Player.__originalMethods.duration.apply(this, args)
         }
 
-        try {
-          // Load all available subtitles
-          for (const subtitle of subtitles) {
-            try {
-              // Fetch the subtitle file
-              const response = await fetch(subtitle.vttSrc, {
-                mode: 'cors',
-                credentials: 'omit'
-              })
-
-              if (!response.ok) {
-                throw new Error(
-                  `Failed to fetch subtitle: ${response.statusText}`
-                )
-              }
-
-              const subtitleText = await response.text()
-
-              // Validate VTT format
-              if (!subtitleText.startsWith('WEBVTT')) {
-                logger.error('Invalid VTT format - missing WEBVTT header')
-                throw new Error('Invalid VTT format')
-              }
-
-              // Create a blob URL for the subtitle
-              const blob = new Blob([subtitleText], { type: 'text/vtt' })
-              const blobUrl = URL.createObjectURL(blob)
-
-              // Add the track using the player's API
-              const track = playerRef.current.addRemoteTextTrack(
-                {
-                  kind: 'subtitles',
-                  label: subtitle.language,
-                  srclang: subtitle.bcp47,
-                  src: blobUrl,
-                  default: subtitle.language === 'English' // Set English as default if available
-                },
-                false
-              )
-
-              // Wait for the track to be loaded
-              track.addEventListener('load', () => {
-                // Get the text track
-                const textTracks = playerRef.current.textTracks()
-
-                // Find our subtitle track
-                const subtitleTrack = Array.from(textTracks).find(
-                  (track) =>
-                    track.kind === 'subtitles' &&
-                    track.label === subtitle.language
-                )
-
-                if (subtitleTrack) {
-                  // Only set to showing if it's English (default)
-                  if (subtitle.language === 'English') {
-                    subtitleTrack.mode = 'showing'
-                  }
-                  playerRef.current.trigger('texttrackchange')
-                } else {
-                  logger.warn(
-                    `Could not find ${subtitle.language} subtitle track`
-                  )
-                }
-              })
-
-              // Clean up blob URL when track is removed
-              track.addEventListener('remove', () => {
-                URL.revokeObjectURL(blobUrl)
-              })
-
-              // Add error event listener
-              track.addEventListener('error', (error) => {
-                logger.warn(
-                  `Error loading ${subtitle.language} subtitle track:`,
-                  error
-                )
-              })
-            } catch (error) {
-              logger.error(
-                `Error fetching ${subtitle.language} subtitle:`,
-                error
+        // Override currentTime method
+        Player.prototype.currentTime = function (seconds: number) {
+          if (seconds !== undefined) {
+            if (this._offsetStart !== undefined) {
+              return Player.__originalMethods.currentTime.call(
+                this,
+                seconds + this._offsetStart
               )
             }
+            return Player.__originalMethods.currentTime.call(this, seconds)
           }
-        } catch (error) {
-          logger.warn('Failed to load subtitles:', error)
+
+          if (this._offsetStart !== undefined) {
+            const time =
+              Player.__originalMethods.currentTime.apply(this) -
+              this._offsetStart
+            return time < 0 ? 0 : time
+          }
+
+          return Player.__originalMethods.currentTime.apply(this)
         }
+
+        // Override remainingTime method
+        Player.prototype.remainingTime = function () {
+          return this.duration() - this.currentTime()
+        }
+
+        // Add a utility method to get the start offset
+        Player.prototype.startOffset = function () {
+          return this._offsetStart
+        }
+
+        // Add a utility method to get the end offset
+        Player.prototype.endOffset = function () {
+          if (this._offsetEnd > 0) {
+            return this._offsetEnd
+          }
+          return this.duration()
+        }
+
+        // Override buffered to adjust for offsets
+        Player.prototype.buffered = function () {
+          const originalBuffered = Player.__originalMethods.buffered.call(this)
+          const adjustedRanges = []
+
+          for (let i = 0; i < originalBuffered.length; i++) {
+            adjustedRanges[i] = [
+              Math.max(0, originalBuffered.start(i) - this._offsetStart),
+              Math.min(
+                Math.max(0, originalBuffered.end(i) - this._offsetStart),
+                this.duration()
+              )
+            ]
+          }
+
+          return videojs.createTimeRanges(adjustedRanges)
+        }
+
+        // Set initial time to startTime
+        player.one('loadedmetadata', () => {
+          // This will be adjusted by our overridden currentTime method
+          // We need to explicitly set the raw time first before our offset applies
+          Player.__originalMethods.currentTime.call(player, player._offsetStart)
+        })
+
+        // Add an extra check on first play to ensure we're at the right position
+        player.one('play', () => {
+          // Directly set to the raw offset time
+          if (player._offsetStart > 0) {
+            Player.__originalMethods.currentTime.call(
+              player,
+              player._offsetStart
+            )
+          }
+        })
+
+        // Monitor playback to enforce boundaries
+        const onTimeUpdate = function (this: any) {
+          const rawTime = Player.__originalMethods.currentTime.apply(this)
+          const currTime = this.currentTime()
+          const effectiveEnd =
+            this._offsetEnd > 0
+              ? this._offsetEnd - this._offsetStart
+              : this.duration()
+
+          // If the raw time is less than the start offset, reset it
+          if (rawTime < this._offsetStart) {
+            Player.__originalMethods.currentTime.call(this, this._offsetStart)
+            return
+          }
+
+          if (currTime < 0) {
+            this.currentTime(0)
+            this.play()
+          }
+
+          if (effectiveEnd > 0 && currTime > effectiveEnd - 0.1) {
+            this.pause()
+            this.trigger('ended')
+            this.off('timeupdate', onTimeUpdate)
+
+            // Re-bind timeupdate when the video plays again
+            this.one('play', () => {
+              this.on('timeupdate', onTimeUpdate)
+            })
+
+            if (!this._restartBeginning) {
+              this.currentTime(effectiveEnd)
+            } else {
+              this.trigger('loadstart')
+              this.currentTime(0)
+            }
+          }
+        }
+
+        // Add the timeupdate listener when the video first plays
+        player.one('play', () => {
+          player.on('timeupdate', onTimeUpdate)
+        })
       }
 
-      // Initialize player after a short delay to ensure DOM is ready
-      setTimeout(() => {
-        try {
-          initializePlayer()
-        } catch (error) {
-          logger.error('Failed to initialize player:', error)
+      // Store the player instance
+      playerInstanceRef.current = vjsPlayer
+
+      // When video metadata is loaded, apply our custom offset
+      vjsPlayer.on('loadedmetadata', () => {
+        const duration = vjsPlayer.duration() || 0
+        console.log('Video duration:', duration)
+
+        // Only apply offset if we have a valid start or end time
+        if (startTime > 0 || (endTime && endTime < duration && endTime > 0)) {
+          const effectiveEndTime = endTime && endTime < duration ? endTime : 0
+          applyOffset(vjsPlayer, startTime, effectiveEndTime)
         }
-      }, 0)
+      })
+    } catch (err) {
+      console.error('Error initializing Video.js player:', err)
+    }
+  }
+
+  // Initialize player on mount
+  useEffect(() => {
+    // Small delay before initialization to ensure DOM is ready
+    const timer = setTimeout(() => {
+      if (playerRef.current) {
+        initPlayer(playerRef)
+      } else {
+        console.error('Player ref is still null after delay')
+      }
+    }, 100)
+
+    return () => {
+      clearTimeout(timer)
+      if (playerInstanceRef.current) {
+        // Clean up and restore original prototype methods
+        try {
+          const Player = playerInstanceRef.current.constructor
+          if (Player.__originalMethods) {
+            Player.prototype.duration = Player.__originalMethods.duration
+            Player.prototype.currentTime = Player.__originalMethods.currentTime
+            Player.prototype.buffered = Player.__originalMethods.buffered
+            Player.prototype.remainingTime =
+              Player.__originalMethods.remainingTime
+          }
+          playerInstanceRef.current.dispose()
+        } catch (e) {
+          console.error('Error cleaning up player:', e)
+        }
+      }
     }
 
     return () => {
@@ -230,26 +311,117 @@ export function VideoPlayer({
     }
   }, []) // Empty dependency array to run only once
 
+  // Add keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (!playerInstanceRef.current) return
+
+      let time: number
+      let volume: number
+
+      switch (event.key) {
+        case ' ': // Space - play/pause
+        case 'k': // YouTube style - play/pause
+          event.preventDefault()
+          if (playerInstanceRef.current.paused()) {
+            playerInstanceRef.current.play()
+          } else {
+            playerInstanceRef.current.pause()
+          }
+          break
+        case 'f': // fullscreen
+          event.preventDefault()
+          if (document.fullscreenElement) {
+            document.exitFullscreen().catch((err) => console.error(err))
+          } else if (playerInstanceRef.current.el().requestFullscreen) {
+            playerInstanceRef.current
+              .el()
+              .requestFullscreen()
+              .catch((err: Error) => console.error(err))
+          }
+          break
+        case 'm': // mute
+          event.preventDefault()
+          playerInstanceRef.current.muted(!playerInstanceRef.current.muted())
+          break
+        case 'ArrowLeft': // back 5 seconds
+          event.preventDefault()
+          time = Math.max(
+            0, // With our custom implementation, 0 is the corrected start time
+            playerInstanceRef.current.currentTime() - 5
+          )
+          playerInstanceRef.current.currentTime(time)
+          break
+        case 'ArrowRight': // forward 5 seconds
+          event.preventDefault()
+          time = Math.min(
+            playerInstanceRef.current.duration(),
+            playerInstanceRef.current.currentTime() + 5
+          )
+          playerInstanceRef.current.currentTime(time)
+          break
+        case 'ArrowUp': // volume up
+          event.preventDefault()
+          volume = Math.min(1, playerInstanceRef.current.volume() + 0.1)
+          playerInstanceRef.current.volume(volume)
+          if (playerInstanceRef.current.muted()) {
+            playerInstanceRef.current.muted(false)
+          }
+          break
+        case 'ArrowDown': // volume down
+          event.preventDefault()
+          volume = Math.max(0, playerInstanceRef.current.volume() - 0.1)
+          playerInstanceRef.current.volume(volume)
+          break
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [startTime, endTime])
+
   return (
-    <div className="relative w-full h-full">
-      {thumbnail && (
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${thumbnail})` }}
-        />
-      )}
-      <div data-vjs-player>
-        <video
-          className="video-js vjs-fluid relative z-10"
-          id="arclight-player"
-          ref={videoRef}
-          poster={thumbnail ?? undefined}
-          controls
-          crossOrigin="anonymous"
-          data-play-start={startTime ?? 0}
-          data-play-end={endTime ?? 0}
-        />
-      </div>
+    <div data-vjs-player className="video-js-container vjs-hd">
+      <video
+        className="video-js vjs-default-skin vjs-big-play-centered arclight-player"
+        id="arclight-player"
+        ref={playerRef}
+        data-play-start={startTime ?? 0}
+        data-play-end={endTime ?? 0}
+        playsInline
+        controls
+        preload="auto"
+        crossOrigin="anonymous"
+      >
+        <source src={hlsUrl} type="application/x-mpegURL" />
+        {subtitles.map((track, idx) => (
+          <track
+            key={track.language + track.bcp47 + idx}
+            kind="subtitles"
+            src={track.vttSrc ?? ''}
+            srcLang={track.bcp47 ?? undefined}
+            label={track.language}
+            default={track.default}
+          />
+        ))}
+        <p
+          className="vjs-no-js"
+          // eslint-disable-next-line i18next/no-literal-string
+        >
+          To view this video please enable JavaScript, and consider upgrading to
+          a web browser that{' '}
+          <a
+            href="https://videojs.com/html5-video-support/"
+            target="_blank"
+            rel="noreferrer"
+            // eslint-disable-next-line i18next/no-literal-string
+          >
+            supports HTML5 video
+          </a>
+        </p>
+      </video>
     </div>
   )
 }
