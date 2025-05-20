@@ -1,7 +1,6 @@
 import { ApolloQueryResult, gql, useQuery } from '@apollo/client'
 import Divider from '@mui/material/Divider'
 import NextLink from 'next/link'
-import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useMemo } from 'react'
 
@@ -12,10 +11,11 @@ import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
+import { GetAdminJourneys } from '../../../../../../__generated__/GetAdminJourneys'
 import {
-  GetAdminJourneys,
-  GetAdminJourneys_journeys as Journey
-} from '../../../../../../__generated__/GetAdminJourneys'
+  GetJourneyWithPermissions,
+  GetJourneyWithPermissionsVariables
+} from '../../../../../../__generated__/GetJourneyWithPermissions'
 import {
   JourneyStatus,
   Role,
@@ -61,7 +61,6 @@ interface DefaultMenuProps {
   setOpenDetailsDialog: () => void
   template?: boolean
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
-  journey: Journey
 }
 
 /**
@@ -94,8 +93,7 @@ export function DefaultMenu({
   setOpenTrashDialog,
   setOpenDetailsDialog,
   template,
-  refetch,
-  journey
+  refetch
 }: DefaultMenuProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
@@ -106,39 +104,30 @@ export function DefaultMenu({
     skip: activeTeam?.id == null
   })
 
-  // get current user
   const { loadUser, data: currentUser } = useCurrentUserLazyQuery()
 
   // Lazy query for journey data if context is missing
   const [loadJourney, { data: journeyFromLazyQuery }] =
     useJourneyForSharingLazyQuery()
 
-  // get journey with user roles
-  const { data: journeyWithUserRoles } = useQuery(
-    GET_JOURNEY_WITH_PERMISSIONS,
-    {
-      variables: { id: journeyId }
-    }
-  )
+  const { data: journeyWithUserRoles } = useQuery<
+    GetJourneyWithPermissions,
+    GetJourneyWithPermissionsVariables
+  >(GET_JOURNEY_WITH_PERMISSIONS, {
+    variables: { id: journeyId }
+  })
 
   const owner = useMemo(
     () =>
-      journeyWithUserRoles?.userJourneys?.find(
+      journeyWithUserRoles?.journey?.userJourneys?.find(
         (userJourney) => userJourney.role === UserJourneyRole.owner
       ),
-    [journeyWithUserRoles?.userJourneys]
+    [journeyWithUserRoles?.journey?.userJourneys]
   )
   const isOwner = useMemo(
     () => owner?.user?.email === currentUser?.email,
     [currentUser?.email, owner?.user?.email]
   )
-
-  console.log({
-    owner,
-    currentUser,
-    isOwner,
-    journeyId
-  })
 
   useEffect(() => {
     void loadUser()
