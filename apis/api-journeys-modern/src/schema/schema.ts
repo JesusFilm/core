@@ -5,6 +5,7 @@ import './journey'
 import './journeyAiTranslate'
 import './mediaVideo'
 import './journeyEventsExportLog'
+import './journeyLanguageAiDetect'
 
 import { builder } from './builder'
 

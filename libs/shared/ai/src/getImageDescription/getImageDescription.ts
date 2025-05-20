@@ -27,10 +27,7 @@ export const getImageDescription = async ({
             }
           ]
         }
-      ],
-      onStepFinish: ({ usage }) => {
-        console.log('Image description usage', usage)
-      }
+      ]
     })
     return text
   } catch (error) {
