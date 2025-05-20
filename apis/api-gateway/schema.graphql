@@ -803,24 +803,25 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   userByEmail(email: String!) : User @join__field(graph: API_USERS) 
 }
 
-type ButtonBlock implements Block @join__type(graph: API_JOURNEYS)  @join__implements(graph: API_JOURNEYS, interface: "Block")  {
-  id: ID!
-  journeyId: ID!
+type ButtonBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
+  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
   parentBlockId: ID
   parentOrder: Int
-  label: String!
+  label: String @join__field(graph: API_JOURNEYS, type: "String!")  @join__field(graph: API_JOURNEYS_MODERN, type: "String") 
   variant: ButtonVariant
   color: ButtonColor
   size: ButtonSize
   startIconId: ID
   endIconId: ID
-  action: Action
+  action: Action @join__field(graph: API_JOURNEYS) 
   submitEnabled: Boolean
+  typename: String @join__field(graph: API_JOURNEYS_MODERN) 
 }
 
-type CardBlock implements Block @join__type(graph: API_JOURNEYS)  @join__implements(graph: API_JOURNEYS, interface: "Block")  {
-  id: ID!
-  journeyId: ID!
+type CardBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
+  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
   parentBlockId: ID
   parentOrder: Int
   """
@@ -838,7 +839,7 @@ type CardBlock implements Block @join__type(graph: API_JOURNEYS)  @join__impleme
   is set to true the coverBlock Image should be displayed as a blur in the
   background.
   """
-  fullscreen: Boolean!
+  fullscreen: Boolean @join__field(graph: API_JOURNEYS, type: "Boolean!")  @join__field(graph: API_JOURNEYS_MODERN, type: "Boolean") 
   """
   themeMode can override journey themeMode. If nothing is set then use
   themeMode from journey
@@ -849,95 +850,105 @@ type CardBlock implements Block @join__type(graph: API_JOURNEYS)  @join__impleme
   themeName from journey
   """
   themeName: ThemeName
+  typename: String @join__field(graph: API_JOURNEYS_MODERN) 
 }
 
-type GridContainerBlock implements Block @join__type(graph: API_JOURNEYS)  @join__implements(graph: API_JOURNEYS, interface: "Block")  {
-  id: ID!
-  journeyId: ID!
+type GridContainerBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
+  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
   parentBlockId: ID
   parentOrder: Int
-  gap: Int!
-  direction: GridDirection!
-  justifyContent: GridJustifyContent!
-  alignItems: GridAlignItems!
+  gap: Int @join__field(graph: API_JOURNEYS, type: "Int!")  @join__field(graph: API_JOURNEYS_MODERN, type: "Int") 
+  direction: GridDirection @join__field(graph: API_JOURNEYS, type: "GridDirection!")  @join__field(graph: API_JOURNEYS_MODERN, type: "GridDirection") 
+  justifyContent: GridJustifyContent @join__field(graph: API_JOURNEYS, type: "GridJustifyContent!")  @join__field(graph: API_JOURNEYS_MODERN, type: "GridJustifyContent") 
+  alignItems: GridAlignItems @join__field(graph: API_JOURNEYS, type: "GridAlignItems!")  @join__field(graph: API_JOURNEYS_MODERN, type: "GridAlignItems") 
+  typename: String @join__field(graph: API_JOURNEYS_MODERN) 
 }
 
-type GridItemBlock implements Block @join__type(graph: API_JOURNEYS)  @join__implements(graph: API_JOURNEYS, interface: "Block")  {
-  id: ID!
-  journeyId: ID!
+type GridItemBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
+  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
   parentBlockId: ID
   parentOrder: Int
-  xl: Int!
-  lg: Int!
-  sm: Int!
+  xl: Int @join__field(graph: API_JOURNEYS, type: "Int!")  @join__field(graph: API_JOURNEYS_MODERN, type: "Int") 
+  lg: Int @join__field(graph: API_JOURNEYS, type: "Int!")  @join__field(graph: API_JOURNEYS_MODERN, type: "Int") 
+  sm: Int @join__field(graph: API_JOURNEYS, type: "Int!")  @join__field(graph: API_JOURNEYS_MODERN, type: "Int") 
+  typename: String @join__field(graph: API_JOURNEYS_MODERN) 
 }
 
-type IconBlock implements Block @join__type(graph: API_JOURNEYS)  @join__implements(graph: API_JOURNEYS, interface: "Block")  {
-  id: ID!
-  journeyId: ID!
+type IconBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
+  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
   parentBlockId: ID
   parentOrder: Int
   name: IconName
   color: IconColor
   size: IconSize
+  typename: String @join__field(graph: API_JOURNEYS_MODERN) 
 }
 
-type ImageBlock implements Block @join__type(graph: API_JOURNEYS)  @join__implements(graph: API_JOURNEYS, interface: "Block")  {
-  id: ID!
-  journeyId: ID!
+type ImageBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
+  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
   parentBlockId: ID
   parentOrder: Int
   src: String
-  width: Int!
-  height: Int!
-  alt: String!
+  width: Int @join__field(graph: API_JOURNEYS, type: "Int!")  @join__field(graph: API_JOURNEYS_MODERN, type: "Int") 
+  height: Int @join__field(graph: API_JOURNEYS, type: "Int!")  @join__field(graph: API_JOURNEYS_MODERN, type: "Int") 
+  alt: String @join__field(graph: API_JOURNEYS, type: "String!")  @join__field(graph: API_JOURNEYS_MODERN, type: "String") 
   """
   blurhash is a compact representation of a placeholder for an image.
   Find a frontend implementation at https://github.com/woltapp/blurhash
   """
-  blurhash: String!
+  blurhash: String @join__field(graph: API_JOURNEYS, type: "String!")  @join__field(graph: API_JOURNEYS_MODERN, type: "String") 
   scale: Int
   focalTop: Int
   focalLeft: Int
+  typename: String @join__field(graph: API_JOURNEYS_MODERN) 
 }
 
-type RadioOptionBlock implements Block @join__type(graph: API_JOURNEYS)  @join__implements(graph: API_JOURNEYS, interface: "Block")  {
-  id: ID!
-  journeyId: ID!
+type RadioOptionBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
+  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
   parentBlockId: ID
   parentOrder: Int
-  label: String!
-  action: Action
+  label: String @join__field(graph: API_JOURNEYS, type: "String!")  @join__field(graph: API_JOURNEYS_MODERN, type: "String") 
+  action: Action @join__field(graph: API_JOURNEYS) 
+  typename: String @join__field(graph: API_JOURNEYS_MODERN) 
 }
 
-type RadioQuestionBlock implements Block @join__type(graph: API_JOURNEYS)  @join__implements(graph: API_JOURNEYS, interface: "Block")  {
-  id: ID!
-  journeyId: ID!
+type RadioQuestionBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
+  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
   parentBlockId: ID
   parentOrder: Int
+  typename: String @join__field(graph: API_JOURNEYS_MODERN) 
+  label: String @join__field(graph: API_JOURNEYS_MODERN) 
 }
 
-type SignUpBlock implements Block @join__type(graph: API_JOURNEYS)  @join__implements(graph: API_JOURNEYS, interface: "Block")  {
-  id: ID!
-  journeyId: ID!
+type SignUpBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
+  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
   parentBlockId: ID
   parentOrder: Int
-  action: Action
+  action: Action @join__field(graph: API_JOURNEYS) 
   submitIconId: ID
   submitLabel: String
+  typename: String @join__field(graph: API_JOURNEYS_MODERN) 
 }
 
-type SpacerBlock implements Block @join__type(graph: API_JOURNEYS)  @join__implements(graph: API_JOURNEYS, interface: "Block")  {
-  id: ID!
-  journeyId: ID!
+type SpacerBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
+  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
   parentBlockId: ID
   parentOrder: Int
   spacing: Int
+  typename: String @join__field(graph: API_JOURNEYS_MODERN) 
 }
 
-type StepBlock implements Block @join__type(graph: API_JOURNEYS)  @join__implements(graph: API_JOURNEYS, interface: "Block")  {
-  id: ID!
-  journeyId: ID!
+type StepBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
+  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
   """
   nextBlockId contains the preferred block to navigate to, users will have to
   manually set the next block they want to card to navigate to
@@ -947,7 +958,7 @@ type StepBlock implements Block @join__type(graph: API_JOURNEYS)  @join__impleme
   locked will be set to true if the user should not be able to manually
   advance to the next step.
   """
-  locked: Boolean!
+  locked: Boolean @join__field(graph: API_JOURNEYS, type: "Boolean!")  @join__field(graph: API_JOURNEYS_MODERN, type: "Boolean") 
   parentBlockId: ID
   parentOrder: Int
   """
@@ -968,14 +979,15 @@ type StepBlock implements Block @join__type(graph: API_JOURNEYS)  @join__impleme
   at the end of the slug guaranteeing uniqueness
   """
   slug: String
+  typename: String @join__field(graph: API_JOURNEYS_MODERN) 
 }
 
-type TextResponseBlock implements Block @join__type(graph: API_JOURNEYS)  @join__implements(graph: API_JOURNEYS, interface: "Block")  {
-  id: ID!
-  journeyId: ID!
+type TextResponseBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
+  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
   parentBlockId: ID
   parentOrder: Int
-  label: String!
+  label: String @join__field(graph: API_JOURNEYS, type: "String!")  @join__field(graph: API_JOURNEYS_MODERN, type: "String") 
   placeholder: String
   required: Boolean
   hint: String
@@ -983,17 +995,19 @@ type TextResponseBlock implements Block @join__type(graph: API_JOURNEYS)  @join_
   type: TextResponseType
   routeId: String
   integrationId: String
+  typename: String @join__field(graph: API_JOURNEYS_MODERN) 
 }
 
-type TypographyBlock implements Block @join__type(graph: API_JOURNEYS)  @join__implements(graph: API_JOURNEYS, interface: "Block")  {
-  id: ID!
-  journeyId: ID!
+type TypographyBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
+  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
   parentBlockId: ID
   parentOrder: Int
-  content: String!
+  content: String @join__field(graph: API_JOURNEYS, type: "String!")  @join__field(graph: API_JOURNEYS_MODERN, type: "String") 
   variant: TypographyVariant
   color: TypographyColor
   align: TypographyAlign
+  typename: String @join__field(graph: API_JOURNEYS_MODERN) 
 }
 
 type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId", extension: true)  @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", extension: true)  @join__type(graph: API_MEDIA, key: "id primaryLanguageId")  {
@@ -1033,32 +1047,32 @@ type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId", extensi
   images(aspectRatio: ImageAspectRatio) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
 }
 
-type VideoBlock implements Block @join__type(graph: API_JOURNEYS)  @join__type(
+type VideoBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id", extension: true)  @join__type(
   graph: API_JOURNEYS_MODERN
   key: "id source videoId videoVariantLanguageId"
   extension: true
 ) @join__implements(graph: API_JOURNEYS, interface: "Block")  {
   id: ID!
-  journeyId: ID! @join__field(graph: API_JOURNEYS) 
-  parentBlockId: ID @join__field(graph: API_JOURNEYS) 
-  parentOrder: Int @join__field(graph: API_JOURNEYS) 
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
   """
   startAt dictates at which point of time the video should start playing
   """
-  startAt: Int @join__field(graph: API_JOURNEYS) 
+  startAt: Int
   """
   endAt dictates at which point of time the video should end
   """
-  endAt: Int @join__field(graph: API_JOURNEYS) 
-  muted: Boolean @join__field(graph: API_JOURNEYS) 
-  autoplay: Boolean @join__field(graph: API_JOURNEYS) 
+  endAt: Int
+  muted: Boolean
+  autoplay: Boolean
   """
   posterBlockId is present if a child block should be used as a poster.
   This child block should not be rendered normally, instead it should be used
   as the video poster. PosterBlock should be of type ImageBlock.
   """
-  posterBlockId: ID @join__field(graph: API_JOURNEYS) 
-  fullsize: Boolean @join__field(graph: API_JOURNEYS) 
+  posterBlockId: ID
+  fullsize: Boolean
   """
   internal source videos: video is only populated when videoID and
   videoVariantLanguageId are present
@@ -1086,13 +1100,13 @@ type VideoBlock implements Block @join__type(graph: API_JOURNEYS)  @join__type(
   in the video field.
   For other sources this is automatically populated.
   """
-  title: String @join__field(graph: API_JOURNEYS) 
+  title: String
   """
   internal source videos: this field is not populated and instead only present
   in the video field
   For other sources this is automatically populated.
   """
-  description: String @join__field(graph: API_JOURNEYS) 
+  description: String
   """
   internal source videos: this field is not populated and instead only present
   in the video field
@@ -1113,7 +1127,8 @@ type VideoBlock implements Block @join__type(graph: API_JOURNEYS)  @join__type(
   """
   how the video should display within the VideoBlock
   """
-  objectFit: VideoBlockObjectFit @join__field(graph: API_JOURNEYS) 
+  objectFit: VideoBlockObjectFit
+  typename: String! @join__field(graph: API_JOURNEYS_MODERN) 
   mediaVideo: MediaVideo @join__field(graph: API_JOURNEYS_MODERN) 
 }
 
@@ -1121,17 +1136,18 @@ type VideoBlock implements Block @join__type(graph: API_JOURNEYS)  @join__type(
 VideoTriggerBlock is a block that indicates the video to navigate
 to the next block at the designated time.
 """
-type VideoTriggerBlock implements Block @join__type(graph: API_JOURNEYS)  @join__implements(graph: API_JOURNEYS, interface: "Block")  {
-  id: ID!
-  journeyId: ID!
+type VideoTriggerBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
+  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
   parentBlockId: ID
   parentOrder: Int
   """
   triggerStart sets the time as to when a video navigates to the next block,
   this is the number of seconds since the start of the video
   """
-  triggerStart: Int!
-  action: Action!
+  triggerStart: Int @join__field(graph: API_JOURNEYS, type: "Int!")  @join__field(graph: API_JOURNEYS_MODERN, type: "Int") 
+  action: Action! @join__field(graph: API_JOURNEYS) 
+  typename: String @join__field(graph: API_JOURNEYS_MODERN) 
 }
 
 type ChatButton @join__type(graph: API_JOURNEYS)  {
@@ -2238,6 +2254,26 @@ type MuxVideo @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId
   videoVariants: [VideoVariant!]! @join__field(graph: API_MEDIA) 
 }
 
+type VideoBlockContent implements Block @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
+  id: ID
+  journeyId: ID
+  typename: String
+  parentBlockId: ID
+  parentOrder: Int
+  startAt: Int
+  endAt: Int
+  muted: Boolean
+  autoplay: Boolean
+  posterBlockId: ID
+  fullsize: Boolean
+  videoId: ID
+  videoVariantLanguageId: ID
+  source: VideoBlockSource
+  title: String
+  description: String
+  objectFit: VideoBlockObjectFit
+}
+
 type YouTube @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", extension: true)  {
   id: ID!
   primaryLanguageId: ID
@@ -2789,11 +2825,12 @@ interface Action @join__type(graph: API_JOURNEYS)  {
   gtmEventName: String
 }
 
-interface Block @join__type(graph: API_JOURNEYS)  {
-  id: ID!
-  journeyId: ID!
+interface Block @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  {
+  id: ID
+  journeyId: ID
   parentBlockId: ID
   parentOrder: Int
+  typename: String @join__field(graph: API_JOURNEYS_MODERN) 
 }
 
 interface Event @join__type(graph: API_JOURNEYS)  {
@@ -2832,13 +2869,13 @@ union QueryShortLinkDomainResult @join__type(graph: API_MEDIA)  @join__unionMemb
 
 union QueryShortLinkResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "QueryShortLinkSuccess")  = NotFoundError | QueryShortLinkSuccess
 
-enum ThemeMode @join__type(graph: API_JOURNEYS)  {
-  dark @join__enumValue(graph: API_JOURNEYS) 
-  light @join__enumValue(graph: API_JOURNEYS) 
+enum ThemeMode @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
+  dark @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  light @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
-enum ThemeName @join__type(graph: API_JOURNEYS)  {
-  base @join__enumValue(graph: API_JOURNEYS) 
+enum ThemeName @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
+  base @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
 enum IdType @join__type(graph: API_JOURNEYS)  @join__type(graph: API_MEDIA)  {
@@ -2878,118 +2915,118 @@ enum JourneyVisitorSort @join__type(graph: API_JOURNEYS)  {
   activity @join__enumValue(graph: API_JOURNEYS) 
 }
 
-enum ButtonVariant @join__type(graph: API_JOURNEYS)  {
-  text @join__enumValue(graph: API_JOURNEYS) 
-  contained @join__enumValue(graph: API_JOURNEYS) 
+enum ButtonVariant @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
+  text @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  contained @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
-enum ButtonColor @join__type(graph: API_JOURNEYS)  {
-  primary @join__enumValue(graph: API_JOURNEYS) 
-  secondary @join__enumValue(graph: API_JOURNEYS) 
-  error @join__enumValue(graph: API_JOURNEYS) 
-  inherit @join__enumValue(graph: API_JOURNEYS) 
+enum ButtonColor @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
+  primary @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  secondary @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  error @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  inherit @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
-enum ButtonSize @join__type(graph: API_JOURNEYS)  {
-  small @join__enumValue(graph: API_JOURNEYS) 
-  medium @join__enumValue(graph: API_JOURNEYS) 
-  large @join__enumValue(graph: API_JOURNEYS) 
+enum ButtonSize @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
+  small @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  medium @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  large @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
-enum GridDirection @join__type(graph: API_JOURNEYS)  {
-  columnReverse @join__enumValue(graph: API_JOURNEYS) 
-  column @join__enumValue(graph: API_JOURNEYS) 
-  row @join__enumValue(graph: API_JOURNEYS) 
-  rowReverse @join__enumValue(graph: API_JOURNEYS) 
+enum GridDirection @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
+  columnReverse @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  column @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  row @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  rowReverse @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
-enum GridJustifyContent @join__type(graph: API_JOURNEYS)  {
-  flexStart @join__enumValue(graph: API_JOURNEYS) 
-  flexEnd @join__enumValue(graph: API_JOURNEYS) 
-  center @join__enumValue(graph: API_JOURNEYS) 
+enum GridJustifyContent @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
+  flexStart @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  flexEnd @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  center @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
-enum GridAlignItems @join__type(graph: API_JOURNEYS)  {
-  baseline @join__enumValue(graph: API_JOURNEYS) 
-  flexStart @join__enumValue(graph: API_JOURNEYS) 
-  flexEnd @join__enumValue(graph: API_JOURNEYS) 
-  center @join__enumValue(graph: API_JOURNEYS) 
+enum GridAlignItems @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
+  baseline @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  flexStart @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  flexEnd @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  center @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
 """
 IconName is equivalent to the icons found in @mui/icons-material
 """
-enum IconName @join__type(graph: API_JOURNEYS)  {
-  PlayArrowRounded @join__enumValue(graph: API_JOURNEYS) 
-  TranslateRounded @join__enumValue(graph: API_JOURNEYS) 
-  CheckCircleRounded @join__enumValue(graph: API_JOURNEYS) 
-  RadioButtonUncheckedRounded @join__enumValue(graph: API_JOURNEYS) 
-  FormatQuoteRounded @join__enumValue(graph: API_JOURNEYS) 
-  LockOpenRounded @join__enumValue(graph: API_JOURNEYS) 
-  ArrowForwardRounded @join__enumValue(graph: API_JOURNEYS) 
-  ArrowBackRounded @join__enumValue(graph: API_JOURNEYS) 
-  ChatBubbleOutlineRounded @join__enumValue(graph: API_JOURNEYS) 
-  LiveTvRounded @join__enumValue(graph: API_JOURNEYS) 
-  MenuBookRounded @join__enumValue(graph: API_JOURNEYS) 
-  ChevronRightRounded @join__enumValue(graph: API_JOURNEYS) 
-  ChevronLeftRounded @join__enumValue(graph: API_JOURNEYS) 
-  BeenhereRounded @join__enumValue(graph: API_JOURNEYS) 
-  SendRounded @join__enumValue(graph: API_JOURNEYS) 
-  SubscriptionsRounded @join__enumValue(graph: API_JOURNEYS) 
-  ContactSupportRounded @join__enumValue(graph: API_JOURNEYS) 
-  Launch @join__enumValue(graph: API_JOURNEYS) 
-  MailOutline @join__enumValue(graph: API_JOURNEYS) 
+enum IconName @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
+  PlayArrowRounded @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  TranslateRounded @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  CheckCircleRounded @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  RadioButtonUncheckedRounded @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  FormatQuoteRounded @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  LockOpenRounded @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  ArrowForwardRounded @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  ArrowBackRounded @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  ChatBubbleOutlineRounded @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  LiveTvRounded @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  MenuBookRounded @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  ChevronRightRounded @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  ChevronLeftRounded @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  BeenhereRounded @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  SendRounded @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  SubscriptionsRounded @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  ContactSupportRounded @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  Launch @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  MailOutline @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
-enum IconColor @join__type(graph: API_JOURNEYS)  {
-  primary @join__enumValue(graph: API_JOURNEYS) 
-  secondary @join__enumValue(graph: API_JOURNEYS) 
-  action @join__enumValue(graph: API_JOURNEYS) 
-  error @join__enumValue(graph: API_JOURNEYS) 
-  disabled @join__enumValue(graph: API_JOURNEYS) 
-  inherit @join__enumValue(graph: API_JOURNEYS) 
+enum IconColor @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
+  primary @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  secondary @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  action @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  error @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  disabled @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  inherit @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
-enum IconSize @join__type(graph: API_JOURNEYS)  {
-  sm @join__enumValue(graph: API_JOURNEYS) 
-  md @join__enumValue(graph: API_JOURNEYS) 
-  lg @join__enumValue(graph: API_JOURNEYS) 
-  xl @join__enumValue(graph: API_JOURNEYS) 
-  inherit @join__enumValue(graph: API_JOURNEYS) 
+enum IconSize @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
+  sm @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  md @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  lg @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  xl @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  inherit @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
-enum TextResponseType @join__type(graph: API_JOURNEYS)  {
-  freeForm @join__enumValue(graph: API_JOURNEYS) 
-  name @join__enumValue(graph: API_JOURNEYS) 
-  email @join__enumValue(graph: API_JOURNEYS) 
-  phone @join__enumValue(graph: API_JOURNEYS) 
+enum TextResponseType @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
+  freeForm @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  name @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  email @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  phone @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
-enum TypographyVariant @join__type(graph: API_JOURNEYS)  {
-  h1 @join__enumValue(graph: API_JOURNEYS) 
-  h2 @join__enumValue(graph: API_JOURNEYS) 
-  h3 @join__enumValue(graph: API_JOURNEYS) 
-  h4 @join__enumValue(graph: API_JOURNEYS) 
-  h5 @join__enumValue(graph: API_JOURNEYS) 
-  h6 @join__enumValue(graph: API_JOURNEYS) 
-  subtitle1 @join__enumValue(graph: API_JOURNEYS) 
-  subtitle2 @join__enumValue(graph: API_JOURNEYS) 
-  body1 @join__enumValue(graph: API_JOURNEYS) 
-  body2 @join__enumValue(graph: API_JOURNEYS) 
-  caption @join__enumValue(graph: API_JOURNEYS) 
-  overline @join__enumValue(graph: API_JOURNEYS) 
+enum TypographyVariant @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
+  h1 @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  h2 @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  h3 @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  h4 @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  h5 @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  h6 @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  subtitle1 @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  subtitle2 @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  body1 @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  body2 @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  caption @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  overline @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
-enum TypographyColor @join__type(graph: API_JOURNEYS)  {
-  primary @join__enumValue(graph: API_JOURNEYS) 
-  secondary @join__enumValue(graph: API_JOURNEYS) 
-  error @join__enumValue(graph: API_JOURNEYS) 
+enum TypographyColor @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
+  primary @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  secondary @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  error @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
-enum TypographyAlign @join__type(graph: API_JOURNEYS)  {
-  left @join__enumValue(graph: API_JOURNEYS) 
-  center @join__enumValue(graph: API_JOURNEYS) 
-  right @join__enumValue(graph: API_JOURNEYS) 
+enum TypographyAlign @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
+  left @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  center @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  right @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
 enum VideoBlockSource @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_MEDIA)  {
@@ -2999,20 +3036,20 @@ enum VideoBlockSource @join__type(graph: API_JOURNEYS)  @join__type(graph: API_J
   mux @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN)  @join__enumValue(graph: API_MEDIA) 
 }
 
-enum VideoBlockObjectFit @join__type(graph: API_JOURNEYS)  {
+enum VideoBlockObjectFit @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   """
   The video is scaled to maintain its aspect ratio while filling the
    entire VideoBlock. If the video's aspect ratio does not match the
    aspect ratio of the VideoBlock, then the video will be clipped to fit.
   """
-  fill @join__enumValue(graph: API_JOURNEYS) 
+  fill @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
   """
   The video is scaled to maintain its aspect ratio while fitting within the
    VideoBlock. The entire video is made to fill the VideoBlock, while
    preserving its aspect ratio, so the video will be "letterboxed" if its
    aspect ratio does not match the aspect ratio of the VideoBlock.
   """
-  fit @join__enumValue(graph: API_JOURNEYS) 
+  fit @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
   """
   12.5% of either side of the video is discarded (this has the effect of
    converting a 16:9 aspect ratio to 4:3). The remaining video is scaled to
@@ -3021,7 +3058,7 @@ enum VideoBlockObjectFit @join__type(graph: API_JOURNEYS)  {
    aspect ratio, so the video will be "letterboxed" if its new aspect ratio
    does not match the aspect ratio of the VideoBlock.
   """
-  zoomed @join__enumValue(graph: API_JOURNEYS) 
+  zoomed @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
 enum MessagePlatform @join__type(graph: API_JOURNEYS)  {

@@ -2,6 +2,7 @@ import { VideoBlockSource as PrismaVideoBlockSource } from '.prisma/api-journeys
 
 import { builder } from '../builder'
 
+import { VideoBlockObjectFit } from './enums/videoObjectFit'
 import { VideoBlockSource } from './enums/videoSource'
 
 const MuxVideo = builder.externalRef(
@@ -98,7 +99,8 @@ const MediaVideo = builder.unionType('MediaVideo', {
   }
 })
 
-const VideoBlock = builder.externalRef(
+// Rename VideoBlock to VideoBlockMedia to avoid duplicate type definition
+const VideoBlockMedia = builder.externalRef(
   'VideoBlock',
   builder.selection<{
     id: string
@@ -108,19 +110,41 @@ const VideoBlock = builder.externalRef(
   }>('id source videoId videoVariantLanguageId')
 )
 
-VideoBlock.implement({
+VideoBlockMedia.implement({
   externalFields: (t) => ({
-    id: t.id({ nullable: false }),
+    id: t.id({ nullable: false, directives: { shareable: true } }),
     videoId: t.id({
-      nullable: true
+      nullable: true,
+      directives: { shareable: true }
     }),
     source: t.field({
       type: VideoBlockSource,
-      nullable: false
+      nullable: false,
+      directives: { shareable: true }
     }),
-    videoVariantLanguageId: t.id()
+    videoVariantLanguageId: t.id({ directives: { shareable: true } })
   }),
   fields: (t) => ({
+    journeyId: t.id({
+      nullable: false,
+      directives: { shareable: true },
+      resolve: () => '' // Note: this is a placeholder that should be replaced with actual data
+    }),
+    parentBlockId: t.id({
+      nullable: true,
+      directives: { shareable: true },
+      resolve: () => null
+    }),
+    parentOrder: t.int({
+      nullable: true,
+      directives: { shareable: true },
+      resolve: () => null
+    }),
+    typename: t.string({
+      nullable: false,
+      directives: { shareable: true },
+      resolve: () => 'VideoBlock'
+    }),
     mediaVideo: t.field({
       type: MediaVideo,
       resolve: (video) =>
@@ -131,6 +155,54 @@ VideoBlock.implement({
               primaryLanguageId: video.videoVariantLanguageId
             }
           : null
+    }),
+    // Add the shareable fields from the Video Block type
+    startAt: t.int({
+      nullable: true,
+      directives: { shareable: true },
+      resolve: () => null
+    }),
+    endAt: t.int({
+      nullable: true,
+      directives: { shareable: true },
+      resolve: () => null
+    }),
+    muted: t.boolean({
+      nullable: true,
+      directives: { shareable: true },
+      resolve: () => null
+    }),
+    autoplay: t.boolean({
+      nullable: true,
+      directives: { shareable: true },
+      resolve: () => null
+    }),
+    posterBlockId: t.id({
+      nullable: true,
+      directives: { shareable: true },
+      resolve: () => null
+    }),
+    fullsize: t.boolean({
+      nullable: true,
+      directives: { shareable: true },
+      resolve: () => null
+    }),
+    objectFit: t.field({
+      type: VideoBlockObjectFit,
+      nullable: true,
+      directives: { shareable: true },
+      resolve: () => null
+    }),
+    title: t.string({
+      nullable: true,
+      directives: { shareable: true },
+      resolve: () => null
+    }),
+    description: t.string({
+      nullable: true,
+      directives: { shareable: true },
+      resolve: () => null
     })
-  })
+  }),
+  directives: { key: { fields: 'id' } }
 })

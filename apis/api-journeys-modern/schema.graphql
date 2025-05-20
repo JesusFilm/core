@@ -1,6 +1,66 @@
 extend schema
   @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@shareable"])
 
+interface Block
+  @key(fields: "id")
+{
+  id: ID
+  journeyId: ID
+  typename: String
+  parentBlockId: ID
+  parentOrder: Int
+}
+
+type ButtonBlock implements Block
+  @key(fields: "id")
+{
+  id: ID @shareable
+  journeyId: ID @shareable
+  typename: String
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  label: String @shareable
+  variant: ButtonVariant @shareable
+  color: ButtonColor @shareable
+  size: ButtonSize @shareable
+  startIconId: ID @shareable
+  endIconId: ID @shareable
+  submitEnabled: Boolean @shareable
+}
+
+enum ButtonColor {
+  primary
+  secondary
+  error
+  inherit
+}
+
+enum ButtonSize {
+  small
+  medium
+  large
+}
+
+enum ButtonVariant {
+  text
+  contained
+}
+
+type CardBlock implements Block
+  @key(fields: "id")
+{
+  id: ID @shareable
+  journeyId: ID @shareable
+  typename: String
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  backgroundColor: String @shareable
+  coverBlockId: ID @shareable
+  fullscreen: Boolean @shareable
+  themeMode: ThemeMode @shareable
+  themeName: ThemeName @shareable
+}
+
 """
 A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
@@ -33,6 +93,123 @@ enum EventType {
   VideoExpandEvent
   VideoCollapseEvent
   VideoProgressEvent
+}
+
+enum GridAlignItems {
+  baseline
+  flexStart
+  flexEnd
+  center
+}
+
+type GridContainerBlock implements Block
+  @key(fields: "id")
+{
+  id: ID @shareable
+  journeyId: ID @shareable
+  typename: String
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  gap: Int @shareable
+  direction: GridDirection @shareable
+  justifyContent: GridJustifyContent @shareable
+  alignItems: GridAlignItems @shareable
+}
+
+enum GridDirection {
+  columnReverse
+  column
+  row
+  rowReverse
+}
+
+type GridItemBlock implements Block
+  @key(fields: "id")
+{
+  id: ID @shareable
+  journeyId: ID @shareable
+  typename: String
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  xl: Int @shareable
+  lg: Int @shareable
+  sm: Int @shareable
+}
+
+enum GridJustifyContent {
+  flexStart
+  flexEnd
+  center
+}
+
+type IconBlock implements Block
+  @key(fields: "id")
+{
+  id: ID @shareable
+  journeyId: ID @shareable
+  typename: String
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  name: IconName @shareable
+  color: IconColor @shareable
+  size: IconSize @shareable
+}
+
+enum IconColor {
+  primary
+  secondary
+  action
+  error
+  disabled
+  inherit
+}
+
+enum IconName {
+  PlayArrowRounded
+  TranslateRounded
+  CheckCircleRounded
+  RadioButtonUncheckedRounded
+  FormatQuoteRounded
+  LockOpenRounded
+  ArrowForwardRounded
+  ArrowBackRounded
+  ChatBubbleOutlineRounded
+  LiveTvRounded
+  MenuBookRounded
+  ChevronRightRounded
+  ChevronLeftRounded
+  BeenhereRounded
+  SendRounded
+  SubscriptionsRounded
+  ContactSupportRounded
+  Launch
+  MailOutline
+}
+
+enum IconSize {
+  sm
+  md
+  lg
+  xl
+  inherit
+}
+
+type ImageBlock implements Block
+  @key(fields: "id")
+{
+  id: ID @shareable
+  journeyId: ID @shareable
+  typename: String
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  src: String @shareable
+  width: Int @shareable
+  height: Int @shareable
+  alt: String @shareable
+  blurhash: String @shareable
+  focalTop: Int @shareable
+  focalLeft: Int @shareable
+  scale: Int @shareable
 }
 
 type Journey
@@ -97,6 +274,141 @@ type MuxVideo
   source: VideoBlockSource! @shareable
 }
 
+type RadioOptionBlock implements Block
+  @key(fields: "id")
+{
+  id: ID @shareable
+  journeyId: ID @shareable
+  typename: String
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  label: String @shareable
+}
+
+type RadioQuestionBlock implements Block
+  @key(fields: "id")
+{
+  id: ID @shareable
+  journeyId: ID @shareable
+  typename: String
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  label: String @shareable
+}
+
+type SignUpBlock implements Block
+  @key(fields: "id")
+{
+  id: ID @shareable
+  journeyId: ID @shareable
+  typename: String
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  submitIconId: ID @shareable
+  submitLabel: String @shareable
+}
+
+type SpacerBlock implements Block
+  @key(fields: "id")
+{
+  id: ID @shareable
+  journeyId: ID @shareable
+  typename: String
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  spacing: Int @shareable
+}
+
+type StepBlock implements Block
+  @key(fields: "id")
+{
+  id: ID @shareable
+  journeyId: ID @shareable
+  typename: String
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  nextBlockId: ID @shareable
+  locked: Boolean @shareable
+  x: Int @shareable
+  y: Int @shareable
+  slug: String @shareable
+}
+
+type TextResponseBlock implements Block
+  @key(fields: "id")
+{
+  id: ID @shareable
+  journeyId: ID @shareable
+  typename: String
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  label: String @shareable
+  placeholder: String @shareable
+  required: Boolean @shareable
+  hint: String @shareable
+  minRows: Int @shareable
+  routeId: String @shareable
+  integrationId: String @shareable
+  type: TextResponseType @shareable
+}
+
+enum TextResponseType {
+  freeForm
+  name
+  email
+  phone
+}
+
+enum ThemeMode {
+  dark
+  light
+}
+
+enum ThemeName {
+  base
+}
+
+enum TypographyAlign {
+  left
+  center
+  right
+}
+
+type TypographyBlock implements Block
+  @key(fields: "id")
+{
+  id: ID @shareable
+  journeyId: ID @shareable
+  typename: String
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  content: String @shareable
+  variant: TypographyVariant @shareable
+  color: TypographyColor @shareable
+  align: TypographyAlign @shareable
+}
+
+enum TypographyColor {
+  primary
+  secondary
+  error
+}
+
+enum TypographyVariant {
+  h1
+  h2
+  h3
+  h4
+  h5
+  h6
+  subtitle1
+  subtitle2
+  body1
+  body2
+  caption
+  overline
+}
+
 type Video
   @key(fields: "id primaryLanguageId")
   @extends
@@ -107,14 +419,56 @@ type Video
 }
 
 type VideoBlock
+  @key(fields: "id")
   @key(fields: "id source videoId videoVariantLanguageId")
   @extends
 {
-  id: ID! @external
-  videoId: ID @external
-  source: VideoBlockSource! @external
-  videoVariantLanguageId: ID @external
+  id: ID! @external @shareable
+  videoId: ID @external @shareable
+  source: VideoBlockSource! @external @shareable
+  videoVariantLanguageId: ID @external @shareable
+  journeyId: ID! @shareable
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  typename: String! @shareable
   mediaVideo: MediaVideo
+  startAt: Int @shareable
+  endAt: Int @shareable
+  muted: Boolean @shareable
+  autoplay: Boolean @shareable
+  posterBlockId: ID @shareable
+  fullsize: Boolean @shareable
+  objectFit: VideoBlockObjectFit @shareable
+  title: String @shareable
+  description: String @shareable
+}
+
+type VideoBlockContent implements Block
+  @key(fields: "id")
+{
+  id: ID @shareable
+  journeyId: ID @shareable
+  typename: String
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  startAt: Int @shareable
+  endAt: Int @shareable
+  muted: Boolean @shareable
+  autoplay: Boolean @shareable
+  posterBlockId: ID @shareable
+  fullsize: Boolean @shareable
+  videoId: ID @shareable
+  videoVariantLanguageId: ID @shareable
+  source: VideoBlockSource @shareable
+  title: String @shareable
+  description: String @shareable
+  objectFit: VideoBlockObjectFit @shareable
+}
+
+enum VideoBlockObjectFit {
+  fill
+  fit
+  zoomed
 }
 
 enum VideoBlockSource {
@@ -122,6 +476,17 @@ enum VideoBlockSource {
   internal
   youTube
   mux
+}
+
+type VideoTriggerBlock implements Block
+  @key(fields: "id")
+{
+  id: ID @shareable
+  journeyId: ID @shareable
+  typename: String
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  triggerStart: Int @shareable
 }
 
 type YouTube
