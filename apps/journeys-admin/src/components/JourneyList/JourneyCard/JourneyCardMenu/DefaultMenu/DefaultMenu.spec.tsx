@@ -180,29 +180,28 @@ describe('DefaultMenu', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[userRoleNonPublisherMock, teamWithManagerMock]}>
         <SnackbarProvider>
-          <ThemeProvider>
-            <TeamProvider>
-              <DefaultMenu
-                id="journeyId"
-                slug="journey-slug"
-                status={JourneyStatus.draft}
-                journeyId="journey-id"
-                published={false}
-                setOpenAccessDialog={noop}
-                handleCloseMenu={noop}
-                setOpenTrashDialog={noop}
-                setOpenDetailsDialog={noop}
-                setOpenTranslateDialog={noop}
-              />
-            </TeamProvider>
-          </ThemeProvider>
+          <TeamProvider>
+            <DefaultMenu
+              id="journeyId"
+              slug="journey-slug"
+              status={JourneyStatus.draft}
+              journeyId="journey-id"
+              published={false}
+              setOpenAccessDialog={noop}
+              handleCloseMenu={noop}
+              setOpenTrashDialog={noop}
+              setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
+            />
+          </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
     expect(getByRole('menuitem', { name: 'Edit Details' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Access' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Share' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Duplicate' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Translate' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Copy to ...' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Archive' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Trash' })).toBeInTheDocument()
@@ -212,21 +211,19 @@ describe('DefaultMenu', () => {
     const { queryByRole, getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <ThemeProvider>
-            <DefaultMenu
-              id="template-id"
-              slug="template-slug"
-              status={JourneyStatus.published}
-              journeyId="template-id"
-              published
-              setOpenAccessDialog={noop}
-              handleCloseMenu={noop}
-              template
-              setOpenTrashDialog={noop}
-              setOpenDetailsDialog={noop}
-              setOpenTranslateDialog={noop}
-            />
-          </ThemeProvider>
+          <DefaultMenu
+            id="template-id"
+            slug="template-slug"
+            status={JourneyStatus.published}
+            journeyId="template-id"
+            published
+            setOpenAccessDialog={noop}
+            handleCloseMenu={noop}
+            template
+            setOpenTrashDialog={noop}
+            setOpenDetailsDialog={noop}
+            setOpenTranslateDialog={noop}
+          />
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -246,22 +243,20 @@ describe('DefaultMenu', () => {
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <ThemeProvider>
-            <TeamProvider>
-              <DefaultMenu
-                id="journey-id"
-                slug="journey-slug"
-                status={JourneyStatus.draft}
-                journeyId="journey-id"
-                published={false}
-                setOpenAccessDialog={setOpenAccessDialog}
-                handleCloseMenu={handleCloseMenu}
-                setOpenTrashDialog={noop}
-                setOpenDetailsDialog={noop}
-                setOpenTranslateDialog={noop}
-              />
-            </TeamProvider>
-          </ThemeProvider>
+          <TeamProvider>
+            <DefaultMenu
+              id="journey-id"
+              slug="journey-slug"
+              status={JourneyStatus.draft}
+              journeyId="journey-id"
+              published={false}
+              setOpenAccessDialog={setOpenAccessDialog}
+              handleCloseMenu={handleCloseMenu}
+              setOpenTrashDialog={noop}
+              setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
+            />
+          </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -275,24 +270,22 @@ describe('DefaultMenu', () => {
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <ThemeProvider>
-            <MockedProvider mocks={[getTeams]}>
-              <TeamProvider>
-                <DefaultMenu
-                  id="journey-id"
-                  slug="journey-slug"
-                  status={JourneyStatus.published}
-                  journeyId="journey-id"
-                  published
-                  setOpenAccessDialog={noop}
-                  handleCloseMenu={noop}
-                  setOpenTrashDialog={noop}
-                  setOpenDetailsDialog={noop}
-                  setOpenTranslateDialog={noop}
-                />
-              </TeamProvider>
-            </MockedProvider>
-          </ThemeProvider>
+          <MockedProvider mocks={[getTeams]}>
+            <TeamProvider>
+              <DefaultMenu
+                id="journey-id"
+                slug="journey-slug"
+                status={JourneyStatus.published}
+                journeyId="journey-id"
+                published
+                setOpenAccessDialog={noop}
+                handleCloseMenu={noop}
+                setOpenTrashDialog={noop}
+                setOpenDetailsDialog={noop}
+                setOpenTranslateDialog={noop}
+              />
+            </TeamProvider>
+          </MockedProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -314,26 +307,24 @@ describe('DefaultMenu', () => {
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <ThemeProvider>
-            <MockedProvider
-              mocks={[{ ...getCustomDomainMock, result }, getTeams]}
-            >
-              <TeamProvider>
-                <DefaultMenu
-                  id="journey-id"
-                  slug="journey-slug"
-                  status={JourneyStatus.published}
-                  journeyId="journey-id"
-                  published
-                  setOpenAccessDialog={noop}
-                  handleCloseMenu={noop}
-                  setOpenTrashDialog={noop}
-                  setOpenDetailsDialog={noop}
-                  setOpenTranslateDialog={noop}
-                />
-              </TeamProvider>
-            </MockedProvider>
-          </ThemeProvider>
+          <MockedProvider
+            mocks={[{ ...getCustomDomainMock, result }, getTeams]}
+          >
+            <TeamProvider>
+              <DefaultMenu
+                id="journey-id"
+                slug="journey-slug"
+                status={JourneyStatus.published}
+                journeyId="journey-id"
+                published
+                setOpenAccessDialog={noop}
+                handleCloseMenu={noop}
+                setOpenTrashDialog={noop}
+                setOpenDetailsDialog={noop}
+                setOpenTranslateDialog={noop}
+              />
+            </TeamProvider>
+          </MockedProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -358,22 +349,20 @@ describe('DefaultMenu', () => {
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <ThemeProvider>
-            <TeamProvider>
-              <DefaultMenu
-                id="journey-id"
-                slug="journey-slug"
-                status={JourneyStatus.draft}
-                journeyId="journey-id"
-                published={false}
-                setOpenAccessDialog={noop}
-                handleCloseMenu={handleCloseMenu}
-                setOpenTrashDialog={setOpenTrashDialog}
-                setOpenDetailsDialog={noop}
-                setOpenTranslateDialog={noop}
-              />
-            </TeamProvider>
-          </ThemeProvider>
+          <TeamProvider>
+            <DefaultMenu
+              id="journey-id"
+              slug="journey-slug"
+              status={JourneyStatus.draft}
+              journeyId="journey-id"
+              published={false}
+              setOpenAccessDialog={noop}
+              handleCloseMenu={handleCloseMenu}
+              setOpenTrashDialog={setOpenTrashDialog}
+              setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
+            />
+          </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -421,22 +410,20 @@ describe('DefaultMenu', () => {
         mocks={[currentUserMock, journeyMock, teamWithMemberMock]}
       >
         <SnackbarProvider>
-          <ThemeProvider>
-            <TeamProvider>
-              <DefaultMenu
-                id="journey-id"
-                slug="journey-slug"
-                status={JourneyStatus.draft}
-                journeyId="journey-id"
-                published={false}
-                setOpenAccessDialog={noop}
-                handleCloseMenu={noop}
-                setOpenTrashDialog={noop}
-                setOpenDetailsDialog={noop}
-                setOpenTranslateDialog={noop}
-              />
-            </TeamProvider>
-          </ThemeProvider>
+          <TeamProvider>
+            <DefaultMenu
+              id="journey-id"
+              slug="journey-slug"
+              status={JourneyStatus.draft}
+              journeyId="journey-id"
+              published={false}
+              setOpenAccessDialog={noop}
+              handleCloseMenu={noop}
+              setOpenTrashDialog={noop}
+              setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
+            />
+          </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -486,22 +473,20 @@ describe('DefaultMenu', () => {
         mocks={[currentUserMock, journeyMock, teamWithManagerMock]}
       >
         <SnackbarProvider>
-          <ThemeProvider>
-            <TeamProvider>
-              <DefaultMenu
-                id="journey-id"
-                slug="journey-slug"
-                status={JourneyStatus.draft}
-                journeyId="journey-id"
-                published={false}
-                setOpenAccessDialog={noop}
-                handleCloseMenu={noop}
-                setOpenTrashDialog={noop}
-                setOpenDetailsDialog={noop}
-                setOpenTranslateDialog={noop}
-              />
-            </TeamProvider>
-          </ThemeProvider>
+          <TeamProvider>
+            <DefaultMenu
+              id="journey-id"
+              slug="journey-slug"
+              status={JourneyStatus.draft}
+              journeyId="journey-id"
+              published={false}
+              setOpenAccessDialog={noop}
+              handleCloseMenu={noop}
+              setOpenTrashDialog={noop}
+              setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
+            />
+          </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -551,22 +536,20 @@ describe('DefaultMenu', () => {
         mocks={[currentUserMock, journeyMock, teamWithMemberMock]}
       >
         <SnackbarProvider>
-          <ThemeProvider>
-            <TeamProvider>
-              <DefaultMenu
-                id="journey-id"
-                slug="journey-slug"
-                status={JourneyStatus.draft}
-                journeyId="journey-id"
-                published={false}
-                setOpenAccessDialog={noop}
-                handleCloseMenu={noop}
-                setOpenTrashDialog={noop}
-                setOpenDetailsDialog={noop}
-                setOpenTranslateDialog={noop}
-              />
-            </TeamProvider>
-          </ThemeProvider>
+          <TeamProvider>
+            <DefaultMenu
+              id="journey-id"
+              slug="journey-slug"
+              status={JourneyStatus.draft}
+              journeyId="journey-id"
+              published={false}
+              setOpenAccessDialog={noop}
+              handleCloseMenu={noop}
+              setOpenTrashDialog={noop}
+              setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
+            />
+          </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -618,22 +601,20 @@ describe('DefaultMenu', () => {
         mocks={[currentUserMock, journeyMock, teamWithMemberMock]}
       >
         <SnackbarProvider>
-          <ThemeProvider>
-            <TeamProvider>
-              <DefaultMenu
-                id="journey-id"
-                slug="journey-slug"
-                status={JourneyStatus.draft}
-                journeyId="journey-id"
-                published={false}
-                setOpenAccessDialog={noop}
-                handleCloseMenu={noop}
-                setOpenTrashDialog={noop}
-                setOpenDetailsDialog={noop}
-                setOpenTranslateDialog={noop}
-              />
-            </TeamProvider>
-          </ThemeProvider>
+          <TeamProvider>
+            <DefaultMenu
+              id="journey-id"
+              slug="journey-slug"
+              status={JourneyStatus.draft}
+              journeyId="journey-id"
+              published={false}
+              setOpenAccessDialog={noop}
+              handleCloseMenu={noop}
+              setOpenTrashDialog={noop}
+              setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
+            />
+          </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -676,21 +657,19 @@ describe('DefaultMenu', () => {
         mocks={[userRolePublisherMock, journeyMock, currentUserMock]}
       >
         <SnackbarProvider>
-          <ThemeProvider>
-            <DefaultMenu
-              id="template-id"
-              slug="template-slug"
-              status={JourneyStatus.published}
-              journeyId="template-id"
-              published
-              setOpenAccessDialog={noop}
-              handleCloseMenu={noop}
-              template
-              setOpenTrashDialog={noop}
-              setOpenDetailsDialog={noop}
-              setOpenTranslateDialog={noop}
-            />
-          </ThemeProvider>
+          <DefaultMenu
+            id="template-id"
+            slug="template-slug"
+            status={JourneyStatus.published}
+            journeyId="template-id"
+            published
+            setOpenAccessDialog={noop}
+            handleCloseMenu={noop}
+            template
+            setOpenTrashDialog={noop}
+            setOpenDetailsDialog={noop}
+            setOpenTranslateDialog={noop}
+          />
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -730,21 +709,19 @@ describe('DefaultMenu', () => {
         mocks={[userRolePublisherMock, journeyMock, currentUserMock]}
       >
         <SnackbarProvider>
-          <ThemeProvider>
-            <DefaultMenu
-              id="journey-id"
-              slug="journey-slug"
-              status={JourneyStatus.published}
-              journeyId="journey-id"
-              published
-              setOpenAccessDialog={noop}
-              handleCloseMenu={noop}
-              template={false}
-              setOpenTrashDialog={noop}
-              setOpenDetailsDialog={noop}
-              setOpenTranslateDialog={noop}
-            />
-          </ThemeProvider>
+          <DefaultMenu
+            id="journey-id"
+            slug="journey-slug"
+            status={JourneyStatus.published}
+            journeyId="journey-id"
+            published
+            setOpenAccessDialog={noop}
+            handleCloseMenu={noop}
+            template={false}
+            setOpenTrashDialog={noop}
+            setOpenDetailsDialog={noop}
+            setOpenTranslateDialog={noop}
+          />
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -786,21 +763,19 @@ describe('DefaultMenu', () => {
         mocks={[userRoleNonPublisherMock, journeyMock, currentUserMock]}
       >
         <SnackbarProvider>
-          <ThemeProvider>
-            <DefaultMenu
-              id="template-id"
-              slug="template-slug"
-              status={JourneyStatus.published}
-              journeyId="template-id"
-              published
-              setOpenAccessDialog={noop}
-              handleCloseMenu={noop}
-              template
-              setOpenTrashDialog={noop}
-              setOpenDetailsDialog={noop}
-              setOpenTranslateDialog={noop}
-            />
-          </ThemeProvider>
+          <DefaultMenu
+            id="template-id"
+            slug="template-slug"
+            status={JourneyStatus.published}
+            journeyId="template-id"
+            published
+            setOpenAccessDialog={noop}
+            handleCloseMenu={noop}
+            template
+            setOpenTrashDialog={noop}
+            setOpenDetailsDialog={noop}
+            setOpenTranslateDialog={noop}
+          />
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -857,22 +832,20 @@ describe('DefaultMenu', () => {
         ]}
       >
         <SnackbarProvider>
-          <ThemeProvider>
-            <TeamProvider>
-              <DefaultMenu
-                id="journey-id"
-                slug="journey-slug"
-                status={JourneyStatus.draft}
-                journeyId="journey-id"
-                published={false}
-                setOpenAccessDialog={noop}
-                handleCloseMenu={noop}
-                setOpenTrashDialog={noop}
-                setOpenDetailsDialog={noop}
-                setOpenTranslateDialog={noop}
-              />
-            </TeamProvider>
-          </ThemeProvider>
+          <TeamProvider>
+            <DefaultMenu
+              id="journey-id"
+              slug="journey-slug"
+              status={JourneyStatus.draft}
+              journeyId="journey-id"
+              published={false}
+              setOpenAccessDialog={noop}
+              handleCloseMenu={noop}
+              setOpenTrashDialog={noop}
+              setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
+            />
+          </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )

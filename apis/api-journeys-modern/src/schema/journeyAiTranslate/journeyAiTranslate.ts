@@ -3,6 +3,8 @@ import { generateObject, streamObject } from 'ai'
 import { GraphQLError } from 'graphql'
 import { z } from 'zod'
 
+import { hardenPrompt, systemPrompt } from '@core/shared/ai/prompts'
+
 import { Action, ability, subject } from '../../lib/auth/ability'
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
@@ -75,18 +77,21 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
       // 4. Use Gemini to analyze the journey content and get intent, and translate title/description
       const combinedPrompt = `
 Analyze this journey content and provide the key intent, themes, and target audience.
-Also suggest ways to culturally adapt this content for the target language: ${requestedLanguageName}.
-Then, translate the following journey title and description to ${requestedLanguageName}.
+Also suggest ways to culturally adapt this content for the target language: ${hardenPrompt(requestedLanguageName)}.
+Then, translate the following journey title and description to ${hardenPrompt(requestedLanguageName)}.
 If a description is not provided, do not create one.
 
+${hardenPrompt(`
 The source language is: ${sourceLanguageName}.
 The target language name is: ${requestedLanguageName}.
 
 Journey Title: ${originalName}
 ${journey.description ? `Journey Description: ${journey.description}` : ''}
 
-Journey Content:
+Journey Content: 
 ${cardBlocksContent.join('\n')}
+
+`)}
 
 Return in this format:
 {
@@ -99,7 +104,10 @@ Return in this format:
       try {
         const { object: analysisAndTranslation } = await generateObject({
           model: google('gemini-2.0-flash'),
-          prompt: combinedPrompt,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: combinedPrompt }
+          ],
           schema: z.object({
             analysis: z.string(),
             title: z.string(),
@@ -206,15 +214,19 @@ Return in this format:
               // Create prompt for translation
               const cardAnalysisPrompt = `
 JOURNEY ANALYSIS AND ADAPTATION SUGGESTIONS:
-${journeyAnalysis}
+${hardenPrompt(journeyAnalysis)}
 
-Translate content from ${sourceLanguageName} to ${requestedLanguageName}.
+Translate content
+${hardenPrompt(`
+The source language is: ${sourceLanguageName}.
+The target language name is: ${requestedLanguageName}.
+`)}
 
 CONTEXT:
-${cardContent}
+${hardenPrompt(cardContent)}
 
 TRANSLATE THE FOLLOWING BLOCKS:
-${blocksToTranslateInfo}
+${hardenPrompt(blocksToTranslateInfo)}
 
 IMPORTANT: For each block, use ONLY the EXACT IDs in square brackets [ID].
 Return an array where each item is an object with:
@@ -228,14 +240,14 @@ Field names to translate per block type:
 - RadioQuestionBlock: "label" field
 - TextResponseBlock: "label" and "placeholder" fields
 
-Ensure translations maintain the meaning while being culturally appropriate for ${requestedLanguageName}.
+Ensure translations maintain the meaning while being culturally appropriate for ${hardenPrompt(requestedLanguageName)}.
 Keep translations concise and effective for UI context (e.g., button labels should remain short).
 
 If you are in the process of translating and you recognize passages from the
 Bible you should not translate that content. Instead, you should rely on a Bible
-translation available in ${requestedLanguageName} and use that content directly. 
+translation available in ${hardenPrompt(requestedLanguageName)} and use that content directly. 
 You must never make changes to content from the Bible yourself. 
-If there is no Bible translation available in ${requestedLanguageName}, 
+If there is no Bible translation available in ${hardenPrompt(requestedLanguageName)}, 
 use the the most popular English Bible translation available. 
 You should inform the user about which Bible translation you chose to use.
 `
@@ -243,8 +255,11 @@ You should inform the user about which Bible translation you chose to use.
                 // Stream the translations
                 const { fullStream } = streamObject({
                   model: google('gemini-2.0-flash'),
+                  messages: [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: cardAnalysisPrompt }
+                  ],
                   output: 'no-schema',
-                  prompt: cardAnalysisPrompt,
                   onError: ({ error }) => {
                     console.warn(
                       `Error in translation stream for card ${cardBlock.id}:`,

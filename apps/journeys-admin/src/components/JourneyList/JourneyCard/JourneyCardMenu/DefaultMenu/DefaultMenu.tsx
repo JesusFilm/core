@@ -203,6 +203,20 @@ export function DefaultMenu({
         handleCloseMenu={handleCloseMenu}
       />
       <Divider />
+      {template !== true && (
+        <>
+          <DuplicateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />
+          <MenuItem
+            label={t('Translate')}
+            icon={<Globe2Icon color="secondary" />}
+            onClick={() => {
+              setOpenTranslateDialog()
+              handleCloseMenu()
+            }}
+          />
+        </>
+      )}
+      <Divider />
       <CopyToTeamMenuItem
         id={id}
         handleCloseMenu={handleCloseMenu}
