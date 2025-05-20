@@ -64,17 +64,9 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
       const requestedLanguageName = input.textLanguageName
 
       // 3. Get Cards Content
-      const stepBlocks = journey.blocks
-        .filter((block) => block.typename === 'StepBlock')
+      const cardBlocks = journey.blocks
+        .filter((block) => block.typename === 'CardBlock')
         .sort((a, b) => (a.parentOrder ?? 0) - (b.parentOrder ?? 0))
-      const cardBlocks = stepBlocks
-        .map((block) =>
-          journey.blocks.find(
-            ({ parentBlockId }) =>
-              parentBlockId === block.id && block.typename === 'CardBlock'
-          )
-        )
-        .filter((block) => block !== undefined)
 
       const cardBlocksContent = await getCardBlocksContent({
         blocks: journey.blocks,
