@@ -1,7 +1,18 @@
-import { Prisma } from '.prisma/api-journeys-client'
-import { User } from '@core/yoga/firebaseClient'
+import {
+  JourneyStatus,
+  Prisma,
+  UserJourneyRole,
+  UserTeamRole
+} from '.prisma/api-journeys-client'
+import { User as BaseUser } from '@core/yoga/firebaseClient'
+import { DefaultArgs } from '@prisma/client/runtime/library'
 
 import { Action } from '../../lib/auth/ability'
+
+// Extend the User type to include roles
+interface User extends BaseUser {
+  roles?: string[]
+}
 
 export type Journey = Prisma.JourneyGetPayload<{
   include: {
@@ -12,11 +23,71 @@ export type Journey = Prisma.JourneyGetPayload<{
   }
 }>
 
+export const INCLUDE_JOURNEY_ACL: Prisma.BlockInclude<DefaultArgs> = {
+  journey: {
+    include: {
+      team: { include: { userTeams: true } },
+      userJourneys: true
+    }
+  }
+}
+
 export function journeyAcl(
   action: Action,
   journey: Journey,
   user: User
 ): boolean {
+  // Allow reading published templates
+  if (
+    action === Action.Read &&
+    journey.template === true &&
+    journey.status === JourneyStatus.published
+  ) {
+    return true
+  }
+
+  // Special publisher role permissions
+  if (user.roles?.includes('publisher') === true) {
+    // Publishers can create journeys for jfp-team
+    if (action === Action.Create && journey.teamId === 'jfp-team') {
+      return true
+    }
+
+    // Publishers can manage templates
+    if (action === Action.Manage && journey.template === true) {
+      return true
+    }
+
+    // Publishers can convert journey to template if they're owner/editor
+    if (action === Action.Manage && 'template' in journey) {
+      const userJourney = journey?.userJourneys.find(
+        (userJourney) => userJourney.userId === user.id
+      )
+      if (
+        userJourney?.role === UserJourneyRole.owner ||
+        userJourney?.role === UserJourneyRole.editor
+      ) {
+        return true
+      }
+
+      // Or if they're team manager/member
+      const userTeam = journey?.team?.userTeams.find(
+        (userTeam) => userTeam.userId === user.id
+      )
+      if (
+        userTeam?.role === UserTeamRole.manager ||
+        userTeam?.role === UserTeamRole.member
+      ) {
+        return true
+      }
+    }
+  }
+
+  // Non-publishers cannot manage templates
+  if (action === Action.Manage && 'template' in journey) {
+    return false
+  }
+
   switch (action) {
     case Action.Create:
       return create(journey, user)
@@ -43,11 +114,11 @@ function manage(journey: Journey, user: User): boolean {
     (userTeam) => userTeam.userId === user.id
   )
 
-  const isUserRoleOwnerOrEditor = userJourney?.role === 'owner'
+  const isUserRoleOwner = userJourney?.role === UserJourneyRole.owner
 
-  const isTeamOwner = userTeam?.role === 'manager'
+  const isTeamManager = userTeam?.role === UserTeamRole.manager
 
-  return isUserRoleOwnerOrEditor || isTeamOwner
+  return isUserRoleOwner || isTeamManager
 }
 
 // team managers and team members can create a journey
@@ -56,13 +127,13 @@ function create(journey: Journey, user: User): boolean {
     (userTeam) => userTeam.userId === user.id
   )
 
-  const isTeamManager = userTeam?.role === 'manager'
-  const isTeamMember = userTeam?.role === 'member'
+  const isTeamManager = userTeam?.role === UserTeamRole.manager
+  const isTeamMember = userTeam?.role === UserTeamRole.member
 
   return isTeamManager || isTeamMember
 }
 
-// team manaers/owners and journeys owners/editors can read the journey
+// team managers/members and journeys owners/editors can read the journey
 function read(journey: Journey, user: User): boolean {
   const userJourney = journey?.userJourneys.find(
     (userJourney) => userJourney.userId === user.id
@@ -75,7 +146,7 @@ function read(journey: Journey, user: User): boolean {
   return userTeam != null || userJourney != null
 }
 
-// team managers/owners and journeys owners/editors can update the journey
+// team managers/members and journeys owners/editors can update the journey
 function update(journey: Journey, user: User): boolean {
   const userJourney = journey?.userJourneys.find(
     (userJourney) => userJourney.userId === user.id
@@ -84,7 +155,10 @@ function update(journey: Journey, user: User): boolean {
     (userTeam) => userTeam.userId === user.id
   )
   const hasJourneyUpdateAccess =
-    userJourney?.role === 'owner' || userJourney?.role === 'editor'
-  const hasTeamUpdateAccess = userTeam?.role === 'manager'
+    userJourney?.role === UserJourneyRole.owner ||
+    userJourney?.role === UserJourneyRole.editor
+  const hasTeamUpdateAccess =
+    userTeam?.role === UserTeamRole.manager ||
+    userTeam?.role === UserTeamRole.member
   return hasJourneyUpdateAccess || hasTeamUpdateAccess
 }
