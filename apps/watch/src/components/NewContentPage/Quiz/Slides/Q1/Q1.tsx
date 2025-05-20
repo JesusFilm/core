@@ -5,7 +5,8 @@ import { useTranslation } from 'next-i18next'
 import { useCallback, useEffect, useState } from 'react'
 
 import { useQuiz } from '../../QuizProvider'
-import { Options } from '../../Templates/Options'
+import { Options } from '../../SlideComponents/Options'
+import { SlideWrapper } from '../../SlideComponents/SlideWrapper'
 
 export function Q1() {
   const { t } = useTranslation('apps-watch')
@@ -88,7 +89,7 @@ export function Q1() {
   }, [])
 
   return (
-    <Stack sx={{ height: '100%', alignItems: 'center', gap: 10 }} role="region">
+    <SlideWrapper bgImage="https://cdn-std.droplr.net/files/acc_760170/LKyyc4">
       <Box
         role="presentation"
         sx={{
@@ -101,20 +102,26 @@ export function Q1() {
         }}
       />
       <Stack
-        sx={{ alignItems: 'center', width: '100%', pt: 32, maxWidth: '48rem' }}
+        sx={{
+          alignItems: 'center',
+          width: '100%',
+          pt: 32,
+          maxWidth: '48rem'
+        }}
       >
         {headings.map((heading, i) => (
           <Typography
             key={i}
             variant={heading.variant}
-            sx={{ textAlign: 'center' }}
+            color="white"
+            sx={{ textAlign: 'center', mixBlendMode: 'difference' }}
           >
             {heading.content}
           </Typography>
         ))}
       </Stack>
       <Options actions={actions} />
-    </Stack>
+    </SlideWrapper>
   )
 
   return (

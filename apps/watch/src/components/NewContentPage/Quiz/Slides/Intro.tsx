@@ -1,6 +1,6 @@
 import { useTranslation } from 'next-i18next'
 
-import { useQuiz } from '../../QuizProvider'
+import { useQuiz } from '../QuizProvider'
 
 export function Intro() {
   const { t } = useTranslation('apps-watch')

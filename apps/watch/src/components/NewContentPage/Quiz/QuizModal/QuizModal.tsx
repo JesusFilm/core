@@ -7,18 +7,17 @@ import ArrowLeft from '@core/shared/ui/icons/ArrowLeft'
 import X2Icon from '@core/shared/ui/icons/X2'
 
 import { useQuiz } from '../QuizProvider'
-import { Intro } from '../Slides/Intro'
-import { Name } from '../Slides/Name'
-import { Q1 } from '../Slides/Q1'
+import { SlideLoader } from '../SlideComponents/SlideLoader'
 
 interface QuizModalProps {
   open: boolean
   onClose: () => void
-  content: ReactNode
 }
 
-export function QuizModal({ open, onClose, content }: QuizModalProps) {
+export function QuizModal({ open, onClose }: QuizModalProps) {
   const { history, goBack } = useQuiz()
+  const currentSlide = history[history.length - 1]
+
   return (
     <Modal open={open} onClose={onClose}>
       <Box
@@ -46,23 +45,8 @@ export function QuizModal({ open, onClose, content }: QuizModalProps) {
         >
           <X2Icon />
         </IconButton>
-        <QuizContent />
+        <SlideLoader slideId={currentSlide} />
       </Box>
     </Modal>
   )
-}
-
-function QuizContent() {
-  const { history } = useQuiz()
-
-  switch (history[history.length - 1]) {
-    case 'intro':
-      return <Intro />
-    case 'name':
-      return <Name />
-    case 'q1':
-      return <Q1 />
-    default:
-      return null
-  }
 }
