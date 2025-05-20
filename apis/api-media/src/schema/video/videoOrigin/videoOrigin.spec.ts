@@ -147,8 +147,8 @@ describe('videoOrigin', () => {
         })
       })
 
-      it('should throw if not publisher', async () => {
-        const result = await authClient({
+      it('should reject if not publisher', async () => {
+        const result = await client({
           document: DELETE_VIDEO_ORIGIN_MUTATION,
           variables: {
             id: 'id'
