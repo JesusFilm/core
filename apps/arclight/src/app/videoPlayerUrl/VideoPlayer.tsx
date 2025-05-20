@@ -298,17 +298,6 @@ export function VideoPlayer({
         }
       }
     }
-
-    return () => {
-      if (playerRef.current) {
-        try {
-          playerRef.current.dispose()
-          playerRef.current = null
-        } catch (error) {
-          videojs.log.warn('Error disposing player:', error)
-        }
-      }
-    }
   }, []) // Empty dependency array to run only once
 
   // Add keyboard shortcuts

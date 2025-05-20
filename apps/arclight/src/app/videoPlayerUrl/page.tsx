@@ -14,7 +14,7 @@ const DEFAULT_SUB_LANGUAGE_IDS = [
 ]
 
 const GET_VIDEO_VARIANT = graphql(`
-  query GetVideoVariant($id: ID!, $includeSubtitles: Boolean!) {
+  query GetVideoVariant($id: ID!) {
     videoVariant(id: $id) {
       id
       hls
