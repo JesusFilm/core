@@ -1,12 +1,11 @@
 import { MutationHookOptions, gql, useMutation } from '@apollo/client'
-import { graphql } from 'gql.tada'
 
 import {
   JourneyAiTranslateCreate,
   JourneyAiTranslateCreateVariables
-} from '../../../__generated__/JourneyAiTranslateCreate'
+} from './__generated__/JourneyAiTranslateCreate'
 
-export const JOURNEY_AI_TRANSLATE_CREATE = graphql(`
+export const JOURNEY_AI_TRANSLATE_CREATE = gql`
   mutation JourneyAiTranslateCreate(
     $journeyId: ID!
     $name: String!
@@ -31,7 +30,7 @@ export const JOURNEY_AI_TRANSLATE_CREATE = graphql(`
       updatedAt
     }
   }
-`)
+`
 
 export function useJourneyAiTranslateMutation(
   options?: MutationHookOptions<

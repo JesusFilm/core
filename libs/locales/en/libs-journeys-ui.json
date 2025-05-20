@@ -86,5 +86,8 @@
   "Visit a Website": "Visit a Website",
   "Untitled": "Untitled",
   "Step {{number}}": "Step {{number}}",
+  "Journey duplication failed": "Journey duplication failed",
+  "Journey Copied": "Journey Copied",
+  "Journey Translated": "Journey Translated",
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_zero": "<0>Journey Templates</0><1>in</1><2>All Languages</2>"
 }
