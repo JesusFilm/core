@@ -95,7 +95,6 @@ const GET_VIDEOS_WITH_FALLBACK = graphql(`
       availableLanguages
       variant {
         hls
-        duration
         lengthInMilliseconds
         language {
           bcp47
