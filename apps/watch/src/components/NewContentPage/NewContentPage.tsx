@@ -1,10 +1,14 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { sendGTMEvent } from '@next/third-parties/google'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useState } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 
+import Bible from '@core/shared/ui/icons/Bible'
 import Download2 from '@core/shared/ui/icons/Download2'
 import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 import { ThemeMode } from '@core/shared/ui/themes'
@@ -17,6 +21,7 @@ import { DownloadDialog } from '../DownloadDialog'
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
 
+import { BibleCitations } from './BibleCitations'
 import { ContentHero } from './ContentHero'
 import { ContentMetadata } from './ContentMetadata'
 import { DiscussionQuestions } from './DiscussionQuestions'
@@ -49,7 +54,8 @@ export function NewContentPage(): ReactElement {
     imageAlt,
     label,
     studyQuestions,
-    slug: videoSlug
+    slug: videoSlug,
+    bibleCitations
   } = useVideo()
 
   const [showShare, setShowShare] = useState(false)
@@ -71,6 +77,19 @@ export function NewContentPage(): ReactElement {
             )
           }
         ] as unknown as VideoContentFields_studyQuestions[])
+
+  const handleFreeResourceClick = () => {
+    sendGTMEvent({
+      event: 'join_study_button_click',
+      eventId: uuidv4(),
+      date: new Date().toISOString(),
+      contentId: variantSlug
+    })
+    window.open(
+      'https://join.bsfinternational.org/?utm_source=jesusfilm-watch',
+      '_blank'
+    )
+  }
 
   return (
     <>
@@ -147,7 +166,9 @@ export function NewContentPage(): ReactElement {
               data-testid="ContentPageContent"
               gap={10}
               sx={{
-                py: 10
+                py: 10,
+                zIndex: 1,
+                px: { xs: 4, sm: 6, md: 8, lg: 10, xl: 12 }
               }}
             >
               <VideoCarousel
@@ -161,8 +182,7 @@ export function NewContentPage(): ReactElement {
                   gridTemplateColumns: { xs: '1fr', xl: '3fr 2fr' },
                   flexWrap: 'wrap',
                   zIndex: 1,
-                  gap: 10,
-                  px: { xs: 4, sm: 6, md: 8, lg: 10, xl: 12 }
+                  gap: 10
                 }}
               >
                 <ContentMetadata
@@ -174,13 +194,13 @@ export function NewContentPage(): ReactElement {
               </Box>
               <Stack
                 sx={{
-                  zIndex: 1,
-                  px: { xs: 4, sm: 6, md: 8, lg: 10, xl: 12 }
+                  zIndex: 1
                 }}
                 direction="row"
                 spacing={2}
                 justifyContent="space-between"
               >
+                <Typography>{t('Bible Quotes')}</Typography>
                 <Stack direction="row" spacing={2}>
                   <Button
                     size="xsmall"
@@ -208,6 +228,20 @@ export function NewContentPage(): ReactElement {
                   onClose={() => setShowShare(false)}
                 />
               </Stack>
+              <BibleCitations
+                bibleCitations={bibleCitations}
+                freeResource={{
+                  heading: t('Free Resources'),
+                  text: t(
+                    'Want to grow deep in your understanding of the Bible?'
+                  ),
+                  cta: {
+                    icon: Bible,
+                    label: t('Join Our Bible Study'),
+                    onClick: handleFreeResourceClick
+                  }
+                }}
+              />
             </Stack>
           </Box>
         </Box>

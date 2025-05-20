@@ -23,6 +23,7 @@ describe('NewContentPage', () => {
     expect(screen.getByTestId('VideoCarousel')).toBeInTheDocument()
     expect(screen.getByTestId('ContentMetadata')).toBeInTheDocument()
     expect(screen.getByTestId('ContentDiscussionQuestions')).toBeInTheDocument()
+    expect(screen.getByTestId('BibleCitations')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Share' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Download' })).toBeInTheDocument()
   })
