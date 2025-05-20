@@ -161,7 +161,6 @@ describe('DuplicateJourneys', () => {
       <MockedProvider
         mocks={[
           updateLastActiveTeamIdMock,
-
           mockLanguage,
           translateMock,
           duplicateJourneyMock,
@@ -223,14 +222,9 @@ describe('DuplicateJourneys', () => {
     })
     fireEvent.click(muiSelectOptions)
 
-    // Find the Copy button and click it
     const dialogButtons = await within(
       getByTestId('CopyToTeamDialog')
     ).findAllByRole('button')
-    console.log(
-      'Dialog buttons:',
-      dialogButtons.map((btn) => btn.textContent)
-    )
     const copyButton = dialogButtons.find(
       (button) => button.textContent === 'Copy'
     )
