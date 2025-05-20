@@ -1,7 +1,7 @@
 import { Prisma } from '.prisma/api-journeys-client'
 import { User } from '@core/yoga/firebaseClient'
 
-import { Action } from '../../ability'
+import { Action } from '../../lib/auth/ability'
 
 export type Journey = Prisma.JourneyGetPayload<{
   include: {
@@ -28,6 +28,8 @@ export function journeyAcl(
       return manage(journey, user)
     case Action.Manage:
       return manage(journey, user)
+    default:
+      return false
   }
 }
 
