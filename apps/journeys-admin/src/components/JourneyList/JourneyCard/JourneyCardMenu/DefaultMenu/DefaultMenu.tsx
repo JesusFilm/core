@@ -8,6 +8,7 @@ import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { useUserRoleQuery } from '@core/journeys/ui/useUserRoleQuery'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
+import Globe2Icon from '@core/shared/ui/icons/Globe2'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
