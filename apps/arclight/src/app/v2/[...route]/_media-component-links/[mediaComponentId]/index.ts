@@ -319,7 +319,12 @@ mediaComponentLinksWithId.openapi(route, async (c) => {
                   lengthInMilliseconds: variant?.lengthInMilliseconds ?? 0,
                   containsCount: childrenCount,
                   isDownloadable: variant?.downloadable ?? false,
-                  downloadSizes: {},
+                  downloadSizes: {
+                    approximateSmallDownloadSizeInBytes:
+                      variant?.downloads[0]?.size ?? 0,
+                    approximateLargeDownloadSizeInBytes:
+                      variant?.downloads[1]?.size ?? 0
+                  },
                   bibleCitations: bibleCitations.map((citation) => ({
                     osisBibleBook: citation.osisId,
                     chapterStart: citation.chapterStart,
@@ -398,7 +403,12 @@ mediaComponentLinksWithId.openapi(route, async (c) => {
                           variant?.lengthInMilliseconds ?? 0,
                         containsCount: childrenCount,
                         isDownloadable: variant?.downloadable ?? false,
-                        downloadSizes: {},
+                        downloadSizes: {
+                          approximateSmallDownloadSizeInBytes:
+                            variant?.downloads[0]?.size ?? 0,
+                          approximateLargeDownloadSizeInBytes:
+                            variant?.downloads[1]?.size ?? 0
+                        },
                         bibleCitations: bibleCitations.map((citation) => ({
                           osisBibleBook: citation.osisId,
                           chapterStart: citation.chapterStart,
