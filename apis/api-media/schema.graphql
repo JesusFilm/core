@@ -229,8 +229,8 @@ type Mutation {
   videoTitleCreate(input: VideoTranslationCreateInput!): VideoTitle!
   videoTitleUpdate(input: VideoTranslationUpdateInput!): VideoTitle!
   videoTitleDelete(id: ID!): VideoTitle!
-  videoOriginCreate(input: VideoOriginCreateInput!): VideoOrigin!
-  videoOriginUpdate(input: VideoOriginUpdateInput!): VideoOrigin!
+  videoOriginCreate(input: MutationVideoOriginCreateInput!): VideoOrigin!
+  videoOriginUpdate(input: MutationVideoOriginUpdateInput!): VideoOrigin!
   videoOriginDelete(id: ID!): VideoOrigin!
   videoEditionCreate(input: VideoEditionCreateInput!): VideoEdition!
   videoEditionUpdate(input: VideoEditionUpdateInput!): VideoEdition!
@@ -351,6 +351,17 @@ union MutationShortLinkUpdateResult = ZodError | NotFoundError | MutationShortLi
 
 type MutationShortLinkUpdateSuccess {
   data: ShortLink!
+}
+
+input MutationVideoOriginCreateInput {
+  name: String!
+  description: String
+}
+
+input MutationVideoOriginUpdateInput {
+  id: ID!
+  name: String
+  description: String
 }
 
 type MuxVideo
@@ -853,17 +864,6 @@ enum VideoLabel {
 type VideoOrigin {
   id: ID!
   name: String!
-  description: String
-}
-
-input VideoOriginCreateInput {
-  name: String!
-  description: String
-}
-
-input VideoOriginUpdateInput {
-  id: ID!
-  name: String
   description: String
 }
 
