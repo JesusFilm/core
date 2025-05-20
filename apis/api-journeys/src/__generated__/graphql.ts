@@ -2255,7 +2255,7 @@ export type MutationVideoImageAltUpdateArgs = {
 
 
 export type MutationVideoOriginCreateArgs = {
-  input: VideoOriginCreateInput;
+  input: MutationVideoOriginCreateInput;
 };
 
 
@@ -2265,7 +2265,7 @@ export type MutationVideoOriginDeleteArgs = {
 
 
 export type MutationVideoOriginUpdateArgs = {
-  input: VideoOriginUpdateInput;
+  input: MutationVideoOriginUpdateInput;
 };
 
 
@@ -2496,6 +2496,17 @@ export type MutationSiteCreateResult = Error | MutationSiteCreateSuccess;
 export type MutationSiteCreateSuccess = {
   __typename?: 'MutationSiteCreateSuccess';
   data: Site;
+};
+
+export type MutationVideoOriginCreateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+};
+
+export type MutationVideoOriginUpdateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type MuxVideo = {
@@ -4606,17 +4617,6 @@ export type VideoOrigin = {
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
-};
-
-export type VideoOriginCreateInput = {
-  description?: InputMaybe<Scalars['String']['input']>;
-  name: Scalars['String']['input'];
-};
-
-export type VideoOriginUpdateInput = {
-  description?: InputMaybe<Scalars['String']['input']>;
-  id: Scalars['ID']['input'];
-  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type VideoPauseEvent = Event & {
