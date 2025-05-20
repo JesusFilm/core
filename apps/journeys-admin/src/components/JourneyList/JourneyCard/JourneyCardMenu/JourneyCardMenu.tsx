@@ -75,15 +75,6 @@ const JourneyDetailsDialog = dynamic(
   { ssr: false }
 )
 
-const TranslateJourneyDialog = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "TranslateJourneyDialog" */
-      './TranslateJourneyDialog'
-    ).then((mod) => mod.TranslateJourneyDialog),
-  { ssr: false }
-)
-
 export interface JourneyCardMenuProps {
   id: string
   status: JourneyStatus
@@ -135,9 +126,6 @@ export function JourneyCardMenu({
     boolean | undefined
   >()
   const [openDetailsDialog, setOpenDetailsDialog] = useState<
-    boolean | undefined
-  >()
-  const [openTranslateDialog, setOpenTranslateDialog] = useState<
     boolean | undefined
   >()
 
@@ -212,7 +200,6 @@ export function JourneyCardMenu({
             handleCloseMenu={handleCloseMenu}
             setOpenTrashDialog={() => setOpenTrashDialog(true)}
             setOpenDetailsDialog={() => setOpenDetailsDialog(true)}
-            setOpenTranslateDialog={() => setOpenTranslateDialog(true)}
             template={template}
             refetch={refetch}
           />
@@ -254,13 +241,6 @@ export function JourneyCardMenu({
         <JourneyDetailsDialog
           open={openDetailsDialog}
           onClose={() => setOpenDetailsDialog(false)}
-          journey={journey}
-        />
-      )}
-      {openTranslateDialog != null && (
-        <TranslateJourneyDialog
-          open={openTranslateDialog}
-          onClose={() => setOpenTranslateDialog(false)}
           journey={journey}
         />
       )}
