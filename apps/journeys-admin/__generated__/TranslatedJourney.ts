@@ -4,10 +4,10 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: JourneyAiTranslateCreate
+// GraphQL fragment: TranslatedJourney
 // ====================================================
 
-export interface JourneyAiTranslateCreate_journeyAiTranslateCreate {
+export interface TranslatedJourney {
   __typename: "Journey";
   id: string;
   /**
@@ -18,16 +18,4 @@ export interface JourneyAiTranslateCreate_journeyAiTranslateCreate {
   languageId: string | null;
   createdAt: any;
   updatedAt: any;
-}
-
-export interface JourneyAiTranslateCreate {
-  journeyAiTranslateCreate: JourneyAiTranslateCreate_journeyAiTranslateCreate;
-}
-
-export interface JourneyAiTranslateCreateVariables {
-  journeyId: string;
-  name: string;
-  journeyLanguageName: string;
-  textLanguageId: string;
-  textLanguageName: string;
 }
