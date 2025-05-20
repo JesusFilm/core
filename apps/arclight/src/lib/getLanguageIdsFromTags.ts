@@ -1,5 +1,4 @@
 import { ResultOf, graphql } from 'gql.tada'
-import { HTTPException } from 'hono/http-exception'
 
 import { getApolloClient } from './apolloClient'
 
@@ -63,28 +62,26 @@ async function fetchLanguageId(languageTag: string): Promise<string> {
 
 export async function getLanguageIdsFromTags(
   metadataLanguageTags: string[]
-): Promise<LanguageIds | HTTPException> {
+): Promise<LanguageIds> {
   const DEFAULT_LANGUAGE_ID = '529'
+  let metadataLanguageId = DEFAULT_LANGUAGE_ID
+  const fallbackLanguageId = DEFAULT_LANGUAGE_ID
 
   if (metadataLanguageTags.length === 0) {
     return {
-      metadataLanguageId: DEFAULT_LANGUAGE_ID,
-      fallbackLanguageId: DEFAULT_LANGUAGE_ID
+      metadataLanguageId,
+      fallbackLanguageId
     }
   }
 
   const metadataLanguageTag =
     matchLocales(metadataLanguageTags) ?? metadataLanguageTags[0]
 
-  const metadataLanguageId = await fetchLanguageId(metadataLanguageTag)
+  metadataLanguageId = await fetchLanguageId(metadataLanguageTag)
 
   if (!metadataLanguageId) {
-    throw new HTTPException(400, {
-      message: `Not acceptable metadata language tag(s): ${metadataLanguageTag}`
-    })
+    metadataLanguageId = DEFAULT_LANGUAGE_ID
   }
-
-  const fallbackLanguageId = DEFAULT_LANGUAGE_ID
 
   return { metadataLanguageId, fallbackLanguageId }
 }
