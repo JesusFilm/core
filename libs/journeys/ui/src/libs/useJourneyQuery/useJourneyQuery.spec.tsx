@@ -40,6 +40,7 @@ describe('useJourneyQuery', () => {
       slug: 'default',
       language,
       createdAt: formatISO(startOfYear(new Date())),
+      updatedAt: formatISO(startOfYear(new Date())),
       publishedAt: null,
       status: JourneyStatus.draft,
       seoTitle: null,
