@@ -595,7 +595,7 @@ export class JourneyResolver {
                 publishedAt: new Date(),
                 featuredAt: null,
                 template: false,
-                fromTemplate: fromTemplate ? id : undefined,
+                fromTemplate: fromTemplate ? id : null,
                 team: { connect: { id: teamId } },
                 userJourneys: {
                   create: {
