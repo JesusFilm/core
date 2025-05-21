@@ -178,6 +178,9 @@ export function LanguageAutocomplete({
       slots={{
         listbox: ListboxComponent
       }}
+      slotProps={{
+        popper
+      }}
       sx={{
         '& .MuiInputBase-root': {
           '& .MuiInputBase-input::placeholder': {

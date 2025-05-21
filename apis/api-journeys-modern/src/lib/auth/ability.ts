@@ -1,6 +1,9 @@
 import { User } from '@core/yoga/firebaseClient'
 
-import { Journey as JourneyObject, journeyAcl } from './acl/journey/journey.acl'
+import {
+  Journey as JourneyObject,
+  journeyAcl
+} from '../../schema/journey/journey.acl'
 
 export enum Action {
   Create = 'create',

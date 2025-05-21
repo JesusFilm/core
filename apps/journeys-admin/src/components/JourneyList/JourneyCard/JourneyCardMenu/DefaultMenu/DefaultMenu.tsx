@@ -8,6 +8,7 @@ import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { useUserRoleQuery } from '@core/journeys/ui/useUserRoleQuery'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
+import Globe2Icon from '@core/shared/ui/icons/Globe2'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
@@ -15,6 +16,10 @@ import {
   GetAdminJourneys,
   GetAdminJourneys_journeys as Journey
 } from '../../../../../../__generated__/GetAdminJourneys'
+import {
+  GetJourneyWithPermissions,
+  GetJourneyWithPermissionsVariables
+} from '../../../../../../__generated__/GetJourneyWithPermissions'
 import {
   JourneyStatus,
   Role,
@@ -24,6 +29,7 @@ import {
 import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
 import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
 import { useJourneyForSharingLazyQuery } from '../../../../../libs/useJourneyForShareLazyQuery'
+import { GET_JOURNEY_WITH_PERMISSIONS } from '../../../../AccessDialog/AccessDialog'
 import { ShareItem } from '../../../../Editor/Toolbar/Items/ShareItem/ShareItem'
 import { MenuItem } from '../../../../MenuItem'
 import { CopyToTeamMenuItem } from '../../../../Team/CopyToTeamMenuItem/CopyToTeamMenuItem'
@@ -40,6 +46,7 @@ export const GET_JOURNEY_WITH_USER_ROLES = gql`
         role
         user {
           id
+          email
         }
       }
     }
@@ -78,6 +85,7 @@ interface DefaultMenuProps {
  * @param {() => void} props.handleCloseMenu - Function to close the menu
  * @param {() => void} props.setOpenTrashDialog - Function to open the trash confirmation dialog
  * @param {() => void} props.setOpenDetailsDialog - Function to open the journey details dialog
+ * @param {() => void} props.setOpenTranslateDialog - Function to open the translate dialog
  * @param {boolean} [props.template] - Whether the journey is a template
  * @param {() => Promise<ApolloQueryResult<GetAdminJourneys>>} [props.refetch] - Function to refetch journey data
  * @returns {ReactElement} The rendered menu component
@@ -112,10 +120,24 @@ export function DefaultMenu({
   const [loadJourney, { data: journeyFromLazyQuery }] =
     useJourneyForSharingLazyQuery()
 
-  const { data: journeyWithUserRoles } = useQuery(GET_JOURNEY_WITH_USER_ROLES, {
-    variables: { id: journeyId },
-    skip: currentUser?.id == null
+  const { data: journeyWithUserRoles } = useQuery<
+    GetJourneyWithPermissions,
+    GetJourneyWithPermissionsVariables
+  >(GET_JOURNEY_WITH_PERMISSIONS, {
+    variables: { id: journeyId }
   })
+
+  const owner = useMemo(
+    () =>
+      journeyWithUserRoles?.journey?.userJourneys?.find(
+        (userJourney) => userJourney.role === UserJourneyRole.owner
+      ),
+    [journeyWithUserRoles?.journey?.userJourneys]
+  )
+  const isOwner = useMemo(
+    () => owner?.user?.email === currentUser?.email,
+    [currentUser?.email, owner?.user?.email]
+  )
 
   useEffect(() => {
     void loadUser()
@@ -124,21 +146,6 @@ export function DefaultMenu({
   useEffect(() => {
     void loadJourney({ variables: { id: journeyId } })
   }, [loadJourney, journeyId])
-
-  // Determine the current user's role for this journey
-  const userRole = useMemo<UserJourneyRole | undefined>(() => {
-    if (
-      journeyWithUserRoles?.journey?.userJourneys == null ||
-      currentUser?.id == null
-    )
-      return undefined
-
-    const userJourney = journeyWithUserRoles.journey.userJourneys.find(
-      (userJourney) => userJourney.user?.id === currentUser.id
-    )
-
-    return userJourney?.role
-  }, [journeyWithUserRoles?.journey?.userJourneys, currentUser?.id])
 
   // Determine the current user's role in the team
   const teamRole = useMemo<UserTeamRole | undefined>(() => {
@@ -156,7 +163,7 @@ export function DefaultMenu({
     userRoleData?.getUserRole?.roles?.includes(Role.publisher) === true
 
   const canManageJourney =
-    userRole === UserJourneyRole.owner ||
+    isOwner ||
     teamRole === UserTeamRole.manager ||
     (isPublisher && template === true)
 
@@ -202,6 +209,20 @@ export function DefaultMenu({
         journey={journeyFromLazyQuery?.journey}
         handleCloseMenu={handleCloseMenu}
       />
+      <Divider />
+      {template !== true && (
+        <>
+          <DuplicateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />
+          <MenuItem
+            label={t('Translate')}
+            icon={<Globe2Icon color="secondary" />}
+            onClick={() => {
+              setOpenTranslateDialog()
+              handleCloseMenu()
+            }}
+          />
+        </>
+      )}
       <Divider />
       <CopyToTeamMenuItem
         id={id}

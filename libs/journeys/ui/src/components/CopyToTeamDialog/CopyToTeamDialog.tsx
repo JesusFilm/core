@@ -1,5 +1,6 @@
 import { useMutation } from '@apollo/client'
 import FormControl from '@mui/material/FormControl'
+import FormControlLabel from '@mui/material/FormControlLabel'
 import MenuItem from '@mui/material/MenuItem'
 import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
@@ -214,18 +215,21 @@ export function CopyToTeamDialog({
                 </TextField>
               </FormControl>
               <Stack direction="row" alignItems="center">
-                <Switch
-                  checked={values.showTranslation}
-                  onChange={(e) =>
-                    setFieldValue('showTranslation', e.target.checked)
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={values.showTranslation}
+                      onChange={(e) =>
+                        setFieldValue('showTranslation', e.target.checked)
+                      }
+                    />
                   }
-                  sx={{
-                    ml: -2
-                  }}
+                  label={
+                    <Typography variant="subtitle2" color="text.primary">
+                      {t('Translation')}
+                    </Typography>
+                  }
                 />
-                <Typography variant="subtitle2" color="text.primary">
-                  {t('Translation')}
-                </Typography>
               </Stack>
               {values.showTranslation && (
                 <LanguageAutocomplete
