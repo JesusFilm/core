@@ -1,1 +1,1 @@
-export { systemPrompt } from './system'
+export { hardenPrompt, systemPrompt } from './system'

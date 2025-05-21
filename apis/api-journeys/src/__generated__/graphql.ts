@@ -31,6 +31,13 @@ export type Action = {
   parentBlockId: Scalars['ID']['output'];
 };
 
+export type ArclightApiKey = {
+  __typename?: 'ArclightApiKey';
+  defaultPlatform: DefaultPlatform;
+  desc?: Maybe<Scalars['String']['output']>;
+  key: Scalars['String']['output'];
+};
+
 export type AudioPreview = {
   __typename?: 'AudioPreview';
   bitrate: Scalars['Int']['output'];
@@ -471,6 +478,12 @@ export type CustomDomainVerificationResponse = {
   code: Scalars['String']['output'];
   message: Scalars['String']['output'];
 };
+
+export enum DefaultPlatform {
+  Android = 'android',
+  Ios = 'ios',
+  Web = 'web'
+}
 
 export type Device = {
   __typename?: 'Device';
@@ -1395,6 +1408,7 @@ export type Mutation = {
   journeyDuplicate: Journey;
   /** Sets journey status to featured */
   journeyFeature?: Maybe<Journey>;
+  journeyLanguageAiDetect: Scalars['Boolean']['output'];
   journeyNotificationUpdate: JourneyNotification;
   journeyProfileCreate: JourneyProfile;
   journeyProfileUpdate: JourneyProfile;
@@ -1850,6 +1864,11 @@ export type MutationJourneyDuplicateArgs = {
 export type MutationJourneyFeatureArgs = {
   feature: Scalars['Boolean']['input'];
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationJourneyLanguageAiDetectArgs = {
+  input: MutationJourneyLanguageAiDetectInput;
 };
 
 
@@ -2401,6 +2420,14 @@ export type MutationBibleCitationUpdateInput = {
   verseStart?: InputMaybe<Scalars['Int']['input']>;
 };
 
+export type MutationJourneyLanguageAiDetectInput = {
+  journeyId: Scalars['ID']['input'];
+  journeyLanguageName: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  textLanguageId: Scalars['ID']['input'];
+  textLanguageName: Scalars['String']['input'];
+};
+
 export type MutationShortLinkCreateInput = {
   /** the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to */
   hostname: Scalars['String']['input'];
@@ -2794,6 +2821,8 @@ export type Query = {
   adminVideo: Video;
   adminVideos: Array<Video>;
   adminVideosCount: Scalars['Int']['output'];
+  arclightApiKeyByKey?: Maybe<ArclightApiKey>;
+  arclightApiKeys: Array<ArclightApiKey>;
   bibleBooks: Array<BibleBook>;
   bibleCitation: BibleCitation;
   bibleCitations: Array<BibleCitation>;
@@ -2928,6 +2957,11 @@ export type QueryAdminVideosArgs = {
 
 export type QueryAdminVideosCountArgs = {
   where?: InputMaybe<VideosFilter>;
+};
+
+
+export type QueryArclightApiKeyByKeyArgs = {
+  key: Scalars['String']['input'];
 };
 
 

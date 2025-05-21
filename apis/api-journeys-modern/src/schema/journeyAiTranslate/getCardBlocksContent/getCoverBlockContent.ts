@@ -20,9 +20,14 @@ export async function getCoverBlockContent({
       (block) => block.id === coverBlock.posterBlockId
     )
     if (videoCoverBlock && videoCoverBlock.src != null) {
-      const videoDescription = await getImageDescription({
-        imageUrl: videoCoverBlock.src
-      })
+      let videoDescription
+      try {
+        videoDescription = await getImageDescription({
+          imageUrl: videoCoverBlock.src
+        })
+      } catch (_error) {
+        videoDescription = null
+      }
       if (videoDescription) {
         return `
 ## Background Video:
