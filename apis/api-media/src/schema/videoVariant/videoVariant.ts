@@ -152,7 +152,7 @@ builder.mutationFields((t) => ({
       try {
         void videoVariantCacheReset(newVariant.id)
         void videoCacheReset(newVariant.videoId)
-      // eslint-disable-next-line no-empty
+        // eslint-disable-next-line no-empty
       } catch {}
       return newVariant
     }
@@ -186,7 +186,7 @@ builder.mutationFields((t) => ({
       })
       try {
         void videoVariantCacheReset(updated.id)
-      // eslint-disable-next-line no-empty
+        // eslint-disable-next-line no-empty
       } catch {}
       return updated
     }
@@ -205,7 +205,7 @@ builder.mutationFields((t) => ({
       try {
         void videoVariantCacheReset(deleted.id)
         void videoCacheReset(deleted.videoId)
-      // eslint-disable-next-line no-empty
+        // eslint-disable-next-line no-empty
       } catch {}
       return deleted
     }

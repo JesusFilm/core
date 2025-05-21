@@ -112,7 +112,7 @@ describe('videoCacheReset', () => {
     const slug = 'test-video-slug'
 
     jest.mocked(prisma.video.findUnique).mockResolvedValueOnce({ slug } as any)
-    
+
     mockFetch.mockRejectedValueOnce(new Error('Network error'))
 
     await videoCacheReset(videoId)
@@ -128,8 +128,10 @@ describe('videoCacheReset', () => {
     const slug = 'test-video-slug'
 
     jest.mocked(prisma.video.findUnique).mockResolvedValueOnce({ slug } as any)
-    
-    jest.mocked(cache.invalidate).mockRejectedValueOnce(new Error('Cache error'))
+
+    jest
+      .mocked(cache.invalidate)
+      .mockRejectedValueOnce(new Error('Cache error'))
 
     await expect(videoCacheReset(videoId)).resolves.not.toThrow()
 
@@ -159,7 +161,9 @@ describe('videoVariantCacheReset', () => {
 
     // Since we're only using select: { slug: true } in the function,
     // we can use a type assertion to simplify
-    jest.mocked(prisma.videoVariant.findUnique).mockResolvedValueOnce({ slug } as any)
+    jest
+      .mocked(prisma.videoVariant.findUnique)
+      .mockResolvedValueOnce({ slug } as any)
 
     await videoVariantCacheReset(variantId)
 
@@ -207,7 +211,9 @@ describe('videoVariantCacheReset', () => {
     process.env.WATCH_URL = undefined
     process.env.WATCH_REVALIDATE_SECRET = undefined
 
-    jest.mocked(prisma.videoVariant.findUnique).mockResolvedValueOnce({ slug } as any)
+    jest
+      .mocked(prisma.videoVariant.findUnique)
+      .mockResolvedValueOnce({ slug } as any)
 
     await videoVariantCacheReset(variantId)
 
@@ -226,8 +232,10 @@ describe('videoVariantCacheReset', () => {
     const variantId = 'test-variant-id'
     const slug = 'test-variant-slug'
 
-    jest.mocked(prisma.videoVariant.findUnique).mockResolvedValueOnce({ slug } as any)
-    
+    jest
+      .mocked(prisma.videoVariant.findUnique)
+      .mockResolvedValueOnce({ slug } as any)
+
     mockFetch.mockRejectedValueOnce(new Error('Network error'))
 
     await videoVariantCacheReset(variantId)
@@ -242,13 +250,17 @@ describe('videoVariantCacheReset', () => {
     const variantId = 'test-variant-id'
     const slug = 'test-variant-slug'
 
-    jest.mocked(prisma.videoVariant.findUnique).mockResolvedValueOnce({ slug } as any)
-    
-    jest.mocked(cache.invalidate).mockRejectedValueOnce(new Error('Cache error'))
+    jest
+      .mocked(prisma.videoVariant.findUnique)
+      .mockResolvedValueOnce({ slug } as any)
+
+    jest
+      .mocked(cache.invalidate)
+      .mockRejectedValueOnce(new Error('Cache error'))
 
     await expect(videoVariantCacheReset(variantId)).resolves.not.toThrow()
 
     expect(mockFetch).toHaveBeenCalled()
     expect(cache.invalidate).toHaveBeenCalled()
   })
-}) 
+})

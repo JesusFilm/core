@@ -8,7 +8,10 @@ import {
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
-import { videoCacheReset, videoVariantCacheReset } from '../../lib/videoCacheReset'
+import {
+  videoCacheReset,
+  videoVariantCacheReset
+} from '../../lib/videoCacheReset'
 
 // Mock the cache reset functions
 jest.mock('../../lib/videoCacheReset', () => ({
@@ -486,12 +489,12 @@ describe('videoVariant', () => {
         expect(result).toHaveProperty('data.videoVariantCreate', {
           id: 'id'
         })
-        
+
         // Verify cache reset functions were called
         expect(mockedVideoVariantCacheReset).toHaveBeenCalledWith('id')
         expect(mockedVideoCacheReset).toHaveBeenCalledWith('videoId')
       })
-      
+
       it('should continue even if cache reset functions throw', async () => {
         // Mock cache reset functions to throw errors
         mockedVideoVariantCacheReset.mockImplementation(() => {
@@ -500,7 +503,7 @@ describe('videoVariant', () => {
         mockedVideoCacheReset.mockImplementation(() => {
           throw new Error('Cache reset failed')
         })
-        
+
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
@@ -526,7 +529,7 @@ describe('videoVariant', () => {
           assetId: null,
           version: 1
         })
-        
+
         const result = await authClient({
           document: VIDEO_VARIANT_CREATE_MUTATION,
           variables: {
@@ -545,11 +548,11 @@ describe('videoVariant', () => {
             }
           }
         })
-        
+
         expect(result).toHaveProperty('data.videoVariantCreate', {
           id: 'id'
         })
-        
+
         // Verify cache reset functions were still called despite throwing errors
         expect(mockedVideoVariantCacheReset).toHaveBeenCalledWith('id')
         expect(mockedVideoCacheReset).toHaveBeenCalledWith('videoId')
@@ -575,7 +578,7 @@ describe('videoVariant', () => {
           }
         })
         expect(result).toHaveProperty('data', null)
-        
+
         // Verify cache reset functions were not called
         expect(mockedVideoVariantCacheReset).not.toHaveBeenCalled()
         expect(mockedVideoCacheReset).not.toHaveBeenCalled()
@@ -653,17 +656,17 @@ describe('videoVariant', () => {
         expect(result).toHaveProperty('data.videoVariantUpdate', {
           id: 'id'
         })
-        
+
         // Verify cache reset function was called
         expect(mockedVideoVariantCacheReset).toHaveBeenCalledWith('id')
       })
-      
+
       it('should continue even if cache reset function throws', async () => {
         // Mock cache reset function to throw error
         mockedVideoVariantCacheReset.mockImplementation(() => {
           throw new Error('Cache reset failed')
         })
-        
+
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
@@ -689,7 +692,7 @@ describe('videoVariant', () => {
           assetId: null,
           version: 1
         })
-        
+
         const result = await authClient({
           document: VIDEO_VARIANT_UPDATE_MUTATION,
           variables: {
@@ -708,11 +711,11 @@ describe('videoVariant', () => {
             }
           }
         })
-        
+
         expect(result).toHaveProperty('data.videoVariantUpdate', {
           id: 'id'
         })
-        
+
         // Verify cache reset function was called despite throwing error
         expect(mockedVideoVariantCacheReset).toHaveBeenCalledWith('id')
       })
@@ -737,7 +740,7 @@ describe('videoVariant', () => {
           }
         })
         expect(result).toHaveProperty('data', null)
-        
+
         // Verify cache reset function was not called
         expect(mockedVideoVariantCacheReset).not.toHaveBeenCalled()
       })
@@ -790,12 +793,12 @@ describe('videoVariant', () => {
         expect(result).toHaveProperty('data.videoVariantDelete', {
           id: 'id'
         })
-        
+
         // Verify cache reset functions were called
         expect(mockedVideoVariantCacheReset).toHaveBeenCalledWith('id')
         expect(mockedVideoCacheReset).toHaveBeenCalledWith('videoId')
       })
-      
+
       it('should continue even if cache reset functions throw', async () => {
         // Mock cache reset functions to throw errors
         mockedVideoVariantCacheReset.mockImplementation(() => {
@@ -804,7 +807,7 @@ describe('videoVariant', () => {
         mockedVideoCacheReset.mockImplementation(() => {
           throw new Error('Cache reset failed')
         })
-        
+
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
@@ -830,18 +833,18 @@ describe('videoVariant', () => {
           assetId: null,
           version: 1
         })
-        
+
         const result = await authClient({
           document: VIDEO_VARIANT_DELETE_MUTATION,
           variables: {
             id: 'id'
           }
         })
-        
+
         expect(result).toHaveProperty('data.videoVariantDelete', {
           id: 'id'
         })
-        
+
         // Verify cache reset functions were called despite throwing errors
         expect(mockedVideoVariantCacheReset).toHaveBeenCalledWith('id')
         expect(mockedVideoCacheReset).toHaveBeenCalledWith('videoId')
@@ -855,7 +858,7 @@ describe('videoVariant', () => {
           }
         })
         expect(result).toHaveProperty('data', null)
-        
+
         // Verify cache reset functions were not called
         expect(mockedVideoVariantCacheReset).not.toHaveBeenCalled()
         expect(mockedVideoCacheReset).not.toHaveBeenCalled()
