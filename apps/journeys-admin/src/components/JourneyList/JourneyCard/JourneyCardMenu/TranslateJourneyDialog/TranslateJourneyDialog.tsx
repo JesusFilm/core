@@ -14,21 +14,13 @@ import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../../../__generated__/GetAdminJourneys'
-/**
- * Props for the TranslateJourneyDialog component
- *
- * @property {() => void} onClose - Function to call when the dialog is closed
- * @property {Journey} [journey] - Optional journey data object. If not provided, uses journey from context
- */
-export interface TranslateJourneyDialogProps {
+
+interface TranslateJourneyDialogProps {
   open: boolean
   onClose: () => void
   journey?: Journey
 }
 
-/**
- * Interface for the language object structure used in the component
- */
 interface JourneyLanguage {
   id: string
   localName?: string
@@ -62,7 +54,6 @@ export function TranslateJourneyDialog({
   const [journeyDuplicate] = useJourneyDuplicateMutation()
   const [loading, setLoading] = useState(false)
 
-  // TODO: Update so only the selected AI model + i18n languages are shown.
   const { data: languagesData, loading: languagesLoading } = useLanguagesQuery({
     languageId: '529',
     where: {
@@ -143,7 +134,6 @@ export function TranslateJourneyDialog({
     try {
       setLoading(true)
 
-      // First duplicate the journey
       const { data: duplicateData } = await journeyDuplicate({
         variables: {
           id: journeyData.id,
@@ -151,9 +141,7 @@ export function TranslateJourneyDialog({
         }
       })
 
-      // Check if duplication was successful
       if (duplicateData?.journeyDuplicate?.id) {
-        // Use the duplicated journey ID for translation
         const response = await translate({
           variables: {
             journeyId: duplicateData.journeyDuplicate.id,
