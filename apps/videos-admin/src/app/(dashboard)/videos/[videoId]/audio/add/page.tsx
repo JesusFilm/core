@@ -62,14 +62,6 @@ const GET_ADMIN_VIDEO_VARIANTS = graphql(`
   }
 `)
 
-const GET_VIDEO_SLUG = graphql(`
-  query GetVideoSlug($id: ID!) {
-    adminVideo(id: $id) {
-      slug
-    }
-  }
-`)
-
 export default function AddAudioLanguageDialog({
   params: { videoId }
 }: AddAudioLanguageDialogProps): ReactElement {
@@ -83,10 +75,6 @@ export default function AddAudioLanguageDialog({
   })
 
   const { data: variantsData } = useSuspenseQuery(GET_ADMIN_VIDEO_VARIANTS, {
-    variables: { id: videoId }
-  })
-
-  const { data: videoData } = useSuspenseQuery(GET_VIDEO_SLUG, {
     variables: { id: videoId }
   })
 

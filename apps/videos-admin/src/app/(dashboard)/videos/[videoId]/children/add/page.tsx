@@ -88,19 +88,6 @@ export default function AddChildren({
             newVideoId
           ]
         }
-      },
-      onCompleted: async () => {
-        enqueueSnackbar('Successfully added video as child.', {
-          variant: 'success'
-        })
-        router.push(returnUrl, {
-          scroll: false
-        })
-      },
-      onError: () => {
-        enqueueSnackbar('Failed to add video as child.', {
-          variant: 'error'
-        })
       }
     })
   }
@@ -118,19 +105,6 @@ export default function AddChildren({
             existingVideoId
           ]
         }
-      },
-      onCompleted: async () => {
-        enqueueSnackbar('Successfully added video as child.', {
-          variant: 'success'
-        })
-        router.push(returnUrl, {
-          scroll: false
-        })
-      },
-      onError: () => {
-        enqueueSnackbar('Failed to add video as child.', {
-          variant: 'error'
-        })
       }
     })
   }
