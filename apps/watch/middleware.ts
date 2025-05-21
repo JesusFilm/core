@@ -119,7 +119,8 @@ export function middleware(req: NextRequest): NextResponse | undefined {
 
   if (locale !== DEFAULT_LOCALE) {
     const rewriteUrl = req.nextUrl.clone()
-    rewriteUrl.pathname = `/${locale}${req.nextUrl.pathname}`
+    const cleanPathname = req.nextUrl.pathname.split('?')[0]
+    rewriteUrl.pathname = `/${locale}${cleanPathname}`
     return NextResponse.rewrite(rewriteUrl)
   }
 
