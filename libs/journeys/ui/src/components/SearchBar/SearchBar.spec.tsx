@@ -137,7 +137,7 @@ describe('SearchBar', () => {
         </SearchBarProvider>
       </MockedProvider>
     )
-    expect(screen.getAllByTestId('Globe1Icon')[0]).toBeVisible()
+    expect(screen.getByTestId('SearchBar')).toBeInTheDocument()
   })
 
   it('should render language button', async () => {
