@@ -234,6 +234,12 @@ describe('DefaultMenu', () => {
     expect(getByRole('menuitem', { name: 'Trash' })).toBeInTheDocument()
     expect(queryByRole('menuitem', { name: 'Access' })).not.toBeInTheDocument()
     expect(queryByRole('menuitem', { name: 'Copy to' })).not.toBeInTheDocument()
+    expect(
+      queryByRole('menuitem', { name: 'Duplicate' })
+    ).not.toBeInTheDocument()
+    expect(
+      queryByRole('menuitem', { name: 'Translate' })
+    ).not.toBeInTheDocument()
   })
 
   it('should call correct functions on Access click', () => {
@@ -862,5 +868,35 @@ describe('DefaultMenu', () => {
         'true'
       )
     })
+  })
+
+  it('should call correct functions on Translate click', () => {
+    const setOpenTranslateDialog = jest.fn()
+    const handleCloseMenu = jest.fn()
+
+    const { getByRole } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <TeamProvider>
+            <DefaultMenu
+              id="journey-id"
+              slug="journey-slug"
+              status={JourneyStatus.draft}
+              journeyId="journey-id"
+              published={false}
+              setOpenAccessDialog={noop}
+              handleCloseMenu={handleCloseMenu}
+              setOpenTrashDialog={noop}
+              setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={setOpenTranslateDialog}
+            />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('menuitem', { name: 'Translate' }))
+    expect(setOpenTranslateDialog).toHaveBeenCalled()
+    expect(handleCloseMenu).toHaveBeenCalled()
   })
 })
