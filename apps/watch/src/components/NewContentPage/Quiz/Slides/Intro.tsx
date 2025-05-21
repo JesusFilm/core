@@ -7,7 +7,7 @@ export function Intro() {
   const { goTo } = useQuiz()
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#faf9f6] px-4 font-sans">
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 font-sans">
       <div className="flex flex-col items-center w-full max-w-3xl">
         <div className="mb-8 mt-2">
           <h1 className="text-5xl font-bold text-black leading-tight text-center">

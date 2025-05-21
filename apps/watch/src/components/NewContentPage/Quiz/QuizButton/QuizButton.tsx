@@ -36,7 +36,7 @@ export function QuizButton() {
           </span>
         </div>
       </button>
-      <Button onClick={() => setShowQuiz(true)}>{t('Quiz')}</Button>
+      {/* <Button onClick={() => setShowQuiz(true)}>{t('Quiz')}</Button> */}
       <QuizModal open={showQuiz} onClose={() => setShowQuiz(false)} />
     </>
   )

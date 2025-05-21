@@ -1,22 +1,34 @@
 import { useTranslation } from 'next-i18next'
-import { useState } from 'react'
 
 import { useQuiz } from '../QuizProvider'
+import { Input } from '../Templates/Input'
 
 export function Name() {
   const { t } = useTranslation('apps-watch')
   const { profile, setName, goTo } = useQuiz()
-  const [name, setNameValue] = useState<string>(profile.name ?? '')
 
-  const handleSubmit = () => {
-    if (name.trim()) {
-      setName(name.trim())
-      goTo('q1')
-    }
+  const handleSubmit = (value: string) => {
+    setName(value)
+    goTo('q1')
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#faf9f6] px-4 font-sans">
+    <Input
+      label={t('My name is')}
+      initialValue={profile.name ?? ''}
+      buttonText={t('Next')}
+      headings={[
+        {
+          text: t("OK. Let's get started"),
+          variant: 'h4'
+        }
+      ]}
+      onSubmit={handleSubmit}
+    />
+  )
+
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center  px-4 font-sans">
       <div className="flex flex-col items-center w-full max-w-3xl">
         <div className="mb-8 mt-2">
           <p className="text-center text-xl">{t("OK. Let's get started")}</p>

@@ -1,13 +1,12 @@
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Modal from '@mui/material/Modal'
-import { ReactNode } from 'react'
 
 import ArrowLeft from '@core/shared/ui/icons/ArrowLeft'
 import X2Icon from '@core/shared/ui/icons/X2'
 
 import { useQuiz } from '../QuizProvider'
-import { SlideLoader } from '../SlideComponents/SlideLoader'
+import { SlideLoader } from '../Slides/SlideLoader'
 
 interface QuizModalProps {
   open: boolean
@@ -17,6 +16,8 @@ interface QuizModalProps {
 export function QuizModal({ open, onClose }: QuizModalProps) {
   const { history, goBack } = useQuiz()
   const currentSlide = history[history.length - 1]
+
+  console.log(currentSlide)
 
   return (
     <Modal open={open} onClose={onClose}>

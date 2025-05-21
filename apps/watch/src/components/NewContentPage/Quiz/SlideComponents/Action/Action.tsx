@@ -19,14 +19,14 @@ interface ActionButtonProps extends ActionMetadata {
   onHover: (idx: number | null) => void
 }
 
-export const Action = ({
+export function Action({
   idx,
   label,
   imageUrl,
   tags,
   next,
   onHover
-}: ActionButtonProps) => {
+}: ActionButtonProps) {
   const { addTags, goTo } = useQuiz()
 
   const handleKeyDown = useCallback(
@@ -49,74 +49,73 @@ export const Action = ({
     }
   }
 
-  if (idx != 0) {
-    return (
-      <Stack
-        role="option"
-        onClick={handleClick}
-        onKeyDown={handleKeyDown}
-        onMouseEnter={() => onHover(idx)}
-        onMouseLeave={() => onHover(null)}
-        onFocus={() => onHover(idx)}
-        onBlur={() => onHover(null)}
-        tabIndex={0}
-        aria-label={label}
-        sx={{
-          position: 'relative',
-          width: '320px',
-          height: '320px',
-          overflow: 'hidden',
-          borderRadius: 4,
-          boxShadow: 2,
-          cursor: 'pointer',
-          justifyContent: 'flex-end',
-          p: 4,
-          transition: 'all 150ms ease',
-          '&:hover, &:focus': {
-            outline: '3px solid white',
-            scale: 1.05,
-            boxShadow: 3
-          }
-        }}
-      >
-        {imageUrl && (
-          <Box
-            sx={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
+  return (
+    <Stack
+      role="option"
+      onClick={handleClick}
+      onKeyDown={handleKeyDown}
+      onMouseEnter={() => onHover(idx)}
+      onMouseLeave={() => onHover(null)}
+      onFocus={() => onHover(idx)}
+      onBlur={() => onHover(null)}
+      tabIndex={0}
+      aria-label={label}
+      sx={{
+        position: 'relative',
+        width: '320px',
+        height: '320px',
+        overflow: 'hidden',
+        borderRadius: 4,
+        boxShadow: 2,
+        cursor: 'pointer',
+        justifyContent: 'flex-end',
+        p: 4,
+        transition: 'all 150ms ease',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        '&:hover, &:focus': {
+          outline: '3px solid white',
+          scale: 1.05,
+          boxShadow: 3
+        }
+      }}
+    >
+      {imageUrl && (
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%'
+          }}
+        >
+          <Image
+            src={imageUrl}
+            alt={label}
+            fill
+            style={{
+              objectFit: 'cover',
               width: '100%',
               height: '100%'
             }}
-          >
-            <Image
-              src={imageUrl}
-              alt={label}
-              fill
-              style={{
-                objectFit: 'cover',
-                width: '100%',
-                height: '100%'
-              }}
-            />
-          </Box>
-        )}
-        <Typography
-          variant="h6"
-          color="white"
-          sx={{
-            position: 'relative',
-            zIndex: 10,
-            textAlign: 'center',
-            fontWeight: 'bold',
-            fontSize: '1.25rem',
-            lineHeight: 'calc(1.75rem / 1.25)',
-            fontFamily: 'var(--font-noto-serif)'
-          }}
-        >
-          {label}
-        </Typography>
-      </Stack>
-    )
-  }
+          />
+        </Box>
+      )}
+      <Typography
+        variant="h6"
+        color="white"
+        sx={{
+          position: 'relative',
+          zIndex: 10,
+          textAlign: 'center',
+          fontWeight: 'bold',
+          fontSize: '1.25rem',
+          lineHeight: 'calc(1.75rem / 1.25)',
+          fontFamily: 'var(--font-noto-serif)'
+        }}
+      >
+        {label}
+      </Typography>
+    </Stack>
+  )
 }
