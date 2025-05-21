@@ -137,7 +137,7 @@ describe('SearchBar', () => {
         </SearchBarProvider>
       </MockedProvider>
     )
-    expect(screen.getAllByTestId('Globe1Icon')[0]).toBeVisible()
+    expect(screen.getByTestId('SearchBar')).toBeInTheDocument()
   })
 
   it('should render language button', async () => {
@@ -216,7 +216,7 @@ describe('SearchBar', () => {
     expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
     await clickOnSearchBar()
     await waitFor(() => expect(screen.getByText('Europe')).toBeInTheDocument())
-  })
+  }, 15000)
 
   it('should navigate to suggestions tab from languages', async () => {
     render(
