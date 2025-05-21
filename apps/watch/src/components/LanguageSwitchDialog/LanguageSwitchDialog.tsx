@@ -49,12 +49,8 @@ export function LanguageSwitchDialog({
 
     const cookieFingerprint = '00005'
     document.cookie = `NEXT_LOCALE=${cookieFingerprint}---${languageCode}; path=/`
-    // const path = router.asPath
-    // void router.push(path, path, { locale: languageCode })
     void i18n.changeLanguage(languageCode)
-    console.log('languageCode', i18n.language)
     router.reload()
-    // handleClose()
   }
 
   useEffect(() => {
