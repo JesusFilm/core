@@ -1,5 +1,6 @@
+const isBrowser = typeof window !== 'undefined'
 let localePath
-if (typeof window !== 'undefined') {
+if (isBrowser) {
   // browser
   localePath = './public/locales'
 } else if (process.env.VERCEL == null || process.env.CI != null) {
@@ -43,7 +44,8 @@ const i18nConfig = {
     tr: ['tr-TR'],
     zh: ['zh-Hans-CN']
   },
-  localePath
+  localePath,
+  react: { useSuspense: false }
 }
 
 module.exports = i18nConfig

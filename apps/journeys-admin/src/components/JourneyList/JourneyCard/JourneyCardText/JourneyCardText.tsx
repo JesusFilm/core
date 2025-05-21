@@ -17,8 +17,9 @@ export function JourneyCardText({
   journey
 }: JourneyCardTextProps): ReactElement {
   const md = useMediaQuery(`(min-width:1200px) and (max-width:1400px)`)
-  const nativeLanguageName = journey.language.name.find(
-    ({ primary }) => primary
+  const languageName = journey?.language?.name.find(
+    ({ primary }) =>
+      primary || journey.language.name.some(({ primary }) => !primary)
   )?.value
 
   return (
@@ -53,7 +54,7 @@ export function JourneyCardText({
             textOverflow: 'ellipsis'
           }}
         >
-          {nativeLanguageName}
+          {languageName}
         </Typography>
         <Typography variant="body2" sx={{ mx: 1 }}>
           •
