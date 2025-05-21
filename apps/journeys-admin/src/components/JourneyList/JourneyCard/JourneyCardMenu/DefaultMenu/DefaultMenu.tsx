@@ -85,6 +85,7 @@ interface DefaultMenuProps {
  * @param {() => void} props.handleCloseMenu - Function to close the menu
  * @param {() => void} props.setOpenTrashDialog - Function to open the trash confirmation dialog
  * @param {() => void} props.setOpenDetailsDialog - Function to open the journey details dialog
+ * @param {() => void} props.setOpenTranslateDialog - Function to open the translate dialog
  * @param {boolean} [props.template] - Whether the journey is a template
  * @param {() => Promise<ApolloQueryResult<GetAdminJourneys>>} [props.refetch] - Function to refetch journey data
  * @returns {ReactElement} The rendered menu component
