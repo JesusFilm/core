@@ -1,4 +1,5 @@
 import { ApolloQueryResult, gql, useMutation } from '@apollo/client'
+import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
@@ -47,6 +48,8 @@ export function ArchiveJourney({
   refetch,
   disabled = false
 }: ArchiveJourneyProps): ReactElement {
+  const router = useRouter()
+  const activeTab = router?.query.tab?.toString() ?? 'active'
   const { t } = useTranslation('apps-journeys-admin')
   const previousStatus = published
     ? JourneyStatus.published
@@ -111,7 +114,7 @@ export function ArchiveJourney({
 
   return (
     <>
-      {status !== JourneyStatus.archived ? (
+      {activeTab === 'active' && (
         <MenuItem
           label={t('Archive')}
           icon={<FolderUp1Icon color="secondary" />}
@@ -119,7 +122,8 @@ export function ArchiveJourney({
           testId="Archive"
           disabled={disabled}
         />
-      ) : (
+      )}
+      {activeTab === 'archived' && (
         <MenuItem
           label={t('Unarchive')}
           icon={<FolderDown1Icon color="secondary" />}
