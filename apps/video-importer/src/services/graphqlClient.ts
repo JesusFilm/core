@@ -45,16 +45,21 @@ async function getFirebaseJwtToken(): Promise<string> {
 }
 
 export async function getGraphQLClient(): Promise<GraphQLClient> {
-  const jwtToken = process.env.JWT_TOKEN ?? (await getFirebaseJwtToken())
-  if (cachedGraphQLClient && cachedGraphQLClientToken === jwtToken) {
-    return cachedGraphQLClient
-  }
-  cachedGraphQLClient = new GraphQLClient(GRAPHQL_ENDPOINT!, {
-    headers: {
-      Authorization: `JWT ${jwtToken}`,
-      'x-graphql-client-name': 'video-importer'
+  try {
+    const jwtToken = process.env.JWT_TOKEN ?? (await getFirebaseJwtToken())
+    if (cachedGraphQLClient && cachedGraphQLClientToken === jwtToken) {
+      return cachedGraphQLClient
     }
-  })
-  cachedGraphQLClientToken = jwtToken
-  return cachedGraphQLClient
+    cachedGraphQLClient = new GraphQLClient(GRAPHQL_ENDPOINT!, {
+      headers: {
+        Authorization: `JWT ${jwtToken}`,
+        'x-graphql-client-name': 'video-importer'
+      }
+    })
+    cachedGraphQLClientToken = jwtToken
+    return cachedGraphQLClient
+  } catch (error) {
+    console.error('Error getting GraphQL client:', error)
+    throw error
+  }
 }

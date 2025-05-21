@@ -34,15 +34,27 @@ export async function createAndWaitForMuxVideo(publicUrl: string): Promise<{
   const MAX_ATTEMPTS = BACKOFF_INTERVALS.length
 
   for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
-    const statusResponse = await client.request<MuxVideoStatusResponse>(
-      GET_MUX_VIDEO,
-      {
-        id: muxId,
-        userGenerated: false
-      }
-    )
+    let statusResponse: MuxVideoStatusResponse | undefined
+    try {
+      statusResponse = await client.request<MuxVideoStatusResponse>(
+        GET_MUX_VIDEO,
+        {
+          id: muxId,
+          userGenerated: false
+        }
+      )
+    } catch (error) {
+      console.error(
+        `     [Mux Service] GraphQL error checking Mux video status (attempt ${attempt + 1}/${MAX_ATTEMPTS}):`,
+        error
+      )
+      // Continue polling despite the error - the next attempt might succeed
+      const waitMs = BACKOFF_INTERVALS[attempt]
+      await new Promise((resolve) => setTimeout(resolve, waitMs))
+      continue
+    }
 
-    if (statusResponse.getMyMuxVideo.readyToStream) {
+    if (statusResponse?.getMyMuxVideo.readyToStream) {
       console.log(
         `     [Mux Service] Mux Video ID: ${muxId} is now readyToStream.`
       )
@@ -56,17 +68,41 @@ export async function createAndWaitForMuxVideo(publicUrl: string): Promise<{
     await new Promise((resolve) => setTimeout(resolve, waitMs))
   }
 
-  let attempt = MAX_ATTEMPTS
-  while (true) {
-    const statusResponse = await client.request<MuxVideoStatusResponse>(
-      GET_MUX_VIDEO,
-      {
-        id: muxId,
-        userGenerated: false
-      }
-    )
+  const MAX_EXTENDED_ATTEMPTS = 20
+  const POLLING_START_TIME = Date.now()
+  const MAX_POLLING_TIME_MS = 3 * 60 * 60 * 1000 // 3 hours
 
-    if (statusResponse.getMyMuxVideo.readyToStream) {
+  let attempt = MAX_ATTEMPTS
+  while (attempt < MAX_ATTEMPTS + MAX_EXTENDED_ATTEMPTS) {
+    let statusResponse: MuxVideoStatusResponse | undefined
+    try {
+      statusResponse = await client.request<MuxVideoStatusResponse>(
+        GET_MUX_VIDEO,
+        {
+          id: muxId,
+          userGenerated: false
+        }
+      )
+    } catch (error) {
+      console.error(
+        `     [Mux Service] GraphQL error checking Mux video status (extended polling, attempt ${attempt}):`,
+        error
+      )
+      // Continue polling despite the error
+      const waitMs = BACKOFF_INTERVALS[BACKOFF_INTERVALS.length - 1]
+      await new Promise((resolve) => setTimeout(resolve, waitMs))
+      attempt++
+      // Check if we've exceeded the maximum polling time
+      if (Date.now() - POLLING_START_TIME > MAX_POLLING_TIME_MS) {
+        console.error(
+          `     [Mux Service] Exceeded maximum polling time (${MAX_POLLING_TIME_MS / (60 * 60 * 1000)} hours) for Mux Video ID ${muxId}. Aborting.`
+        )
+        break
+      }
+      continue
+    }
+
+    if (statusResponse?.getMyMuxVideo.readyToStream) {
       console.log(
         `       [Mux Service] Mux Video ID: ${muxId} is now readyToStream (extended polling).`
       )
@@ -76,15 +112,17 @@ export async function createAndWaitForMuxVideo(publicUrl: string): Promise<{
       }
     }
 
-    const waitMs = BACKOFF_INTERVALS[BACKOFF_INTERVALS.length - 1]
-    await new Promise((resolve) => setTimeout(resolve, waitMs))
-    attempt++
-    if (attempt >= 20) {
+    // Check if we've exceeded the maximum polling time
+    if (Date.now() - POLLING_START_TIME > MAX_POLLING_TIME_MS) {
       console.error(
-        `       [Mux Service] Mux Video ID ${muxId} did not become ready after ${attempt} attempts. Aborting.`
+        `     [Mux Service] Exceeded maximum polling time (${MAX_POLLING_TIME_MS / (60 * 60 * 1000)} hours) for Mux Video ID ${muxId}. Aborting.`
       )
       break
     }
+
+    const waitMs = BACKOFF_INTERVALS[BACKOFF_INTERVALS.length - 1]
+    await new Promise((resolve) => setTimeout(resolve, waitMs))
+    attempt++
   }
   throw new Error(
     `       [Mux Service] Mux video ${muxId} not ready after extended polling – aborting.`
