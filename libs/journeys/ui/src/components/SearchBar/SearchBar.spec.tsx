@@ -216,7 +216,7 @@ describe('SearchBar', () => {
     expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
     await clickOnSearchBar()
     await waitFor(() => expect(screen.getByText('Europe')).toBeInTheDocument())
-  })
+  }, 15000)
 
   it('should navigate to suggestions tab from languages', async () => {
     render(

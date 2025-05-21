@@ -50,6 +50,7 @@ describe('TranslationDialogWrapper', () => {
           loading={true}
           title="Test Title"
           testId="test-dialog"
+          isTranslation={true}
         >
           <Typography>Test Children</Typography>
         </TranslationDialogWrapper>
@@ -63,8 +64,7 @@ describe('TranslationDialogWrapper', () => {
       expect(screen.queryByText('Test Title')).not.toBeInTheDocument()
       expect(screen.queryByText('Test Children')).not.toBeInTheDocument()
       expect(screen.queryByText('Create')).not.toBeInTheDocument()
-
-      expect(screen.getByText('Cancel')).toBeInTheDocument()
+      expect(screen.queryByText('Cancel')).not.toBeInTheDocument()
     })
 
     it('should render custom loading text when provided and loading is true', () => {
@@ -77,6 +77,7 @@ describe('TranslationDialogWrapper', () => {
           title="Test Title"
           loadingText="Custom Loading Text"
           testId="test-dialog"
+          isTranslation={true}
         >
           <Typography>Test Children</Typography>
         </TranslationDialogWrapper>
@@ -94,24 +95,6 @@ describe('TranslationDialogWrapper', () => {
           onClose={onClose}
           onTranslate={onTranslate}
           loading={false}
-          title="Test Title"
-          testId="test-dialog"
-        >
-          <Typography>Test Children</Typography>
-        </TranslationDialogWrapper>
-      )
-
-      fireEvent.click(screen.getByText('Cancel'))
-      expect(onClose).toHaveBeenCalled()
-    })
-
-    it('should call onClose when Cancel button is clicked in loading state', () => {
-      render(
-        <TranslationDialogWrapper
-          open
-          onClose={onClose}
-          onTranslate={onTranslate}
-          loading={true}
           title="Test Title"
           testId="test-dialog"
         >

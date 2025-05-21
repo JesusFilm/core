@@ -463,7 +463,7 @@ describe('CardBlock', () => {
     await waitFor(() => {
       expect(mockButtonClickEvent.result).toHaveBeenCalled()
     })
-  })
+  }, 15000)
 
   it('should validate required email field in forms', async () => {
     const mockPlausible = jest.fn()

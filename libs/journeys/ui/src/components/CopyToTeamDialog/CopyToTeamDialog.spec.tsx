@@ -148,7 +148,7 @@ describe('DuplicateJourneys', () => {
       name: 'Team Name'
     })
     fireEvent.click(muiSelectOptions)
-    await waitFor(() => fireEvent.click(getByText('Copy')))
+    await waitFor(() => fireEvent.click(getByText('Create')))
     await waitFor(() =>
       expect(updateLastActiveTeamIdMock.result).toHaveBeenCalled()
     )
@@ -177,7 +177,7 @@ describe('DuplicateJourneys', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    await waitFor(() => fireEvent.click(getByText('Copy')))
+    await waitFor(() => fireEvent.click(getByText('Create')))
     await waitFor(() =>
       expect(getByText('Please select a valid team')).toBeInTheDocument()
     )
