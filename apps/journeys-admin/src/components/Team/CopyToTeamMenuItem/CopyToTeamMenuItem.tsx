@@ -5,6 +5,7 @@ import { ReactElement, useState } from 'react'
 
 import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import { CopyToTeamDialog } from '@core/journeys/ui/CopyToTeamDialog'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useJourneyAiTranslateMutation } from '@core/journeys/ui/useJourneyAiTranslateMutation'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import CopyToIcon from '@core/shared/ui/icons/CopyTo'
@@ -39,13 +40,15 @@ export function CopyToTeamMenuItem({
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
   const [loading, setLoading] = useState(false)
+  const { journey: journeyFromContext } = useJourney()
+  const journeyData = journey ?? journeyFromContext
 
   const handleDuplicateJourney = async (
     teamId: string,
     selectedLanguage?: JourneyLanguage,
     showTranslation?: boolean
   ): Promise<void> => {
-    if (id == null || journey == null) return
+    if (id == null || journeyData == null) return
 
     setLoading(true)
     const { data: duplicateData } = await journeyDuplicate({
@@ -54,7 +57,6 @@ export function CopyToTeamMenuItem({
         teamId
       }
     })
-
     if (duplicateData?.journeyDuplicate?.id) {
       if (selectedLanguage == null || !showTranslation) {
         setLoading(false)
@@ -68,9 +70,10 @@ export function CopyToTeamMenuItem({
       await translate({
         variables: {
           journeyId: duplicateData.journeyDuplicate.id,
-          name: journey.title,
+          name: journeyData.title,
           journeyLanguageName:
-            journey?.language.name.find(({ primary }) => !primary)?.value ?? '',
+            journeyData.language.name.find(({ primary }) => !primary)?.value ??
+            '',
           textLanguageId: selectedLanguage.id,
           textLanguageName:
             selectedLanguage.nativeName ?? selectedLanguage.localName ?? ''
