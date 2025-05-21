@@ -46,10 +46,10 @@ describe('JourneyCardMenu', () => {
     )
     expect(getByRole('menuitem', { name: 'Access' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Archive' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Duplicate' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Translate' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Copy to ...' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Archive' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Trash' })).toBeInTheDocument()
   })
 
