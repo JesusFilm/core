@@ -392,7 +392,8 @@ describe('DefaultMenu', () => {
           role: UserJourneyRole.owner,
           user: {
             __typename: 'User',
-            id: 'current-user-id'
+            id: 'current-user-id',
+            email: 'current@example.com'
           }
         }
       ]
@@ -405,14 +406,14 @@ describe('DefaultMenu', () => {
       },
       result: {
         data: {
-          journey: journeyData
+          adminJourney: journeyData
         }
       }
     }
 
     const { getByRole } = render(
       <MockedProvider
-        mocks={[currentUserMock, journeyMock, teamWithMemberMock]}
+        mocks={[currentUserMock, journeyMock, teamWithManagerMock]}
       >
         <SnackbarProvider>
           <ThemeProvider>
@@ -469,7 +470,7 @@ describe('DefaultMenu', () => {
       },
       result: {
         data: {
-          journey: journeyData
+          adminJourney: journeyData
         }
       }
     }
@@ -533,7 +534,7 @@ describe('DefaultMenu', () => {
       },
       result: {
         data: {
-          journey: journeyData
+          adminJourney: journeyData
         }
       }
     }
@@ -599,7 +600,7 @@ describe('DefaultMenu', () => {
       },
       result: {
         data: {
-          journey: journeyData
+          adminJourney: journeyData
         }
       }
     }
@@ -656,7 +657,7 @@ describe('DefaultMenu', () => {
       },
       result: {
         data: {
-          journey: templateData
+          adminJourney: templateData
         }
       }
     }
@@ -709,7 +710,7 @@ describe('DefaultMenu', () => {
       },
       result: {
         data: {
-          journey: journeyData
+          adminJourney: journeyData
         }
       }
     }
@@ -764,7 +765,7 @@ describe('DefaultMenu', () => {
       },
       result: {
         data: {
-          journey: templateData
+          adminJourney: templateData
         }
       }
     }
@@ -829,7 +830,7 @@ describe('DefaultMenu', () => {
       },
       result: {
         data: {
-          journey: journeyData
+          adminJourney: journeyData
         }
       }
     }
