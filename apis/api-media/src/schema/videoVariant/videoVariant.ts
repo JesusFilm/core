@@ -150,8 +150,9 @@ builder.mutationFields((t) => ({
         data: { availableLanguages: updatedLanguages }
       })
       try {
-        await videoVariantCacheReset(newVariant.id)
-        await videoCacheReset(newVariant.videoId)
+        void videoVariantCacheReset(newVariant.id)
+        void videoCacheReset(newVariant.videoId)
+      // eslint-disable-next-line no-empty
       } catch {}
       return newVariant
     }
@@ -184,7 +185,8 @@ builder.mutationFields((t) => ({
         }
       })
       try {
-        await videoVariantCacheReset(updated.id)
+        void videoVariantCacheReset(updated.id)
+      // eslint-disable-next-line no-empty
       } catch {}
       return updated
     }
@@ -201,8 +203,9 @@ builder.mutationFields((t) => ({
         where: { id }
       })
       try {
-        await videoVariantCacheReset(deleted.id)
-        await videoCacheReset(deleted.videoId)
+        void videoVariantCacheReset(deleted.id)
+        void videoCacheReset(deleted.videoId)
+      // eslint-disable-next-line no-empty
       } catch {}
       return deleted
     }
