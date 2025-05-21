@@ -133,6 +133,7 @@ describe('DuplicateJourneys', () => {
               <CopyToTeamDialog
                 open
                 title="Copy To Journey"
+                submitLabel="Copy"
                 onClose={handleCloseMenuMock}
                 submitAction={handleSubmitActionMock}
               />
@@ -169,6 +170,7 @@ describe('DuplicateJourneys', () => {
               <CopyToTeamDialog
                 open
                 title="Copy To Journey"
+                submitLabel="Copy"
                 onClose={handleCloseMenuMock}
                 submitAction={handleSubmitActionMock}
               />
