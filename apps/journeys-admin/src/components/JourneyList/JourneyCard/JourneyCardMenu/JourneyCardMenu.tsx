@@ -216,8 +216,8 @@ export function JourneyCardMenu({
             setOpenAccessDialog={() => setOpenAccessDialog(true)}
             handleCloseMenu={handleCloseMenu}
             setOpenTrashDialog={() => setOpenTrashDialog(true)}
-            setOpenTranslateDialog={() => setOpenTranslateDialog(true)}
             setOpenDetailsDialog={() => setOpenDetailsDialog(true)}
+            setOpenTranslateDialog={() => setOpenTranslateDialog(true)}
             template={template}
             refetch={refetch}
           />
