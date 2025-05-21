@@ -49,9 +49,12 @@ export function LanguageSwitchDialog({
 
     const cookieFingerprint = '00005'
     document.cookie = `NEXT_LOCALE=${cookieFingerprint}---${languageCode}; path=/`
-    const path = router.asPath
-    void router.push(path, path, { locale: languageCode })
-    handleClose()
+    // const path = router.asPath
+    // void router.push(path, path, { locale: languageCode })
+    void i18n.changeLanguage(languageCode)
+    console.log('languageCode', i18n.language)
+    router.reload()
+    // handleClose()
   }
 
   useEffect(() => {
@@ -78,7 +81,7 @@ export function LanguageSwitchDialog({
       })
     setLanguages(formattedLanguages)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentLanguageCode])
+  }, [currentLanguageCode, i18n.language])
 
   const commonButtonStyles = {
     py: 3,

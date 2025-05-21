@@ -1,3 +1,5 @@
+const { SUPPORTED_LOCALES, DEFAULT_LOCALE } = require('./src/config/locales')
+
 const isBrowser = typeof window !== 'undefined'
 let localePath
 if (isBrowser) {
@@ -16,20 +18,8 @@ if (isBrowser) {
  **/
 const i18nConfig = {
   i18n: {
-    defaultLocale: 'en',
-    locales: [
-      'en', // English
-      'es', // Spanish
-      'fr', // French
-      'id', // `Indonesian
-      'th', // Thai
-      'ja', // Japanese
-      'ko', // Korean
-      'ru', // Russian
-      'tr', // Turkish
-      'zh', // Chinese
-      'zh-Hans-CN' // Chinese, Simplified
-    ]
+    defaultLocale: DEFAULT_LOCALE,
+    locales: SUPPORTED_LOCALES
   },
   localePath,
   fallbackLng: {
