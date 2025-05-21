@@ -16,8 +16,10 @@ describe('videoOrigin', () => {
 
   describe('mutations', () => {
     describe('videoOriginCreate', () => {
-      const CREATE_VIDEO_ORIGIN_MUTATION = graphql(`
-        mutation CreateVideoOrigin($input: VideoOriginCreateInput!) {
+      const VIDEO_ORIGIN_CREATE_MUTATION = graphql(`
+        mutation VideoOriginCreateMutation(
+          $input: MutationVideoOriginCreateInput!
+        ) {
           videoOriginCreate(input: $input) {
             id
           }
@@ -36,7 +38,7 @@ describe('videoOrigin', () => {
           description: 'A test origin.'
         })
         const result = await authClient({
-          document: CREATE_VIDEO_ORIGIN_MUTATION,
+          document: VIDEO_ORIGIN_CREATE_MUTATION,
           variables: {
             input: {
               name: 'Test Origin',
@@ -51,7 +53,7 @@ describe('videoOrigin', () => {
 
       it('should reject if not publisher', async () => {
         const result = await client({
-          document: CREATE_VIDEO_ORIGIN_MUTATION,
+          document: VIDEO_ORIGIN_CREATE_MUTATION,
           variables: {
             input: {
               name: 'Test Origin',
@@ -64,8 +66,10 @@ describe('videoOrigin', () => {
     })
 
     describe('videoOriginUpdate', () => {
-      const UPDATE_VIDEO_ORIGIN_MUTATION = graphql(`
-        mutation UpdateVideoOrigin($input: VideoOriginUpdateInput!) {
+      const VIDEO_ORIGIN_UPDATE_MUTATION = graphql(`
+        mutation VideoOriginUpdateMutation(
+          $input: MutationVideoOriginUpdateInput!
+        ) {
           videoOriginUpdate(input: $input) {
             id
           }
@@ -84,7 +88,7 @@ describe('videoOrigin', () => {
           description: 'Updated description.'
         })
         const result = await authClient({
-          document: UPDATE_VIDEO_ORIGIN_MUTATION,
+          document: VIDEO_ORIGIN_UPDATE_MUTATION,
           variables: {
             input: {
               id: 'id',
@@ -100,7 +104,7 @@ describe('videoOrigin', () => {
 
       it('should reject if not publisher', async () => {
         const result = await client({
-          document: UPDATE_VIDEO_ORIGIN_MUTATION,
+          document: VIDEO_ORIGIN_UPDATE_MUTATION,
           variables: {
             input: {
               id: 'id',
@@ -114,8 +118,8 @@ describe('videoOrigin', () => {
     })
 
     describe('videoOriginDelete', () => {
-      const DELETE_VIDEO_ORIGIN_MUTATION = graphql(`
-        mutation DeleteVideoOrigin($id: ID!) {
+      const VIDEO_ORIGIN_DELETE_MUTATION = graphql(`
+        mutation VideoOriginDeleteMutation($id: ID!) {
           videoOriginDelete(id: $id) {
             id
           }
@@ -134,7 +138,7 @@ describe('videoOrigin', () => {
           description: 'A test origin.'
         })
         const result = await authClient({
-          document: DELETE_VIDEO_ORIGIN_MUTATION,
+          document: VIDEO_ORIGIN_DELETE_MUTATION,
           variables: {
             id: 'id'
           }
@@ -149,7 +153,7 @@ describe('videoOrigin', () => {
 
       it('should reject if not publisher', async () => {
         const result = await client({
-          document: DELETE_VIDEO_ORIGIN_MUTATION,
+          document: VIDEO_ORIGIN_DELETE_MUTATION,
           variables: {
             id: 'id'
           }
