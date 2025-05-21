@@ -7,6 +7,7 @@ import {
   importKeywords,
   importLanguageSlugs,
   importMasterUrls,
+  importShortLinks,
   importVideoChildren,
   importVideoDescriptions,
   importVideoImageAlts,
@@ -42,7 +43,10 @@ export async function service(logger?: Logger): Promise<void> {
     await importBibleCitations(logger),
     // depends on videoVariants
     await importVideoVariantDownloads(logger),
-    await importMasterUrls(logger)
+
+    await importMasterUrls(logger),
+    // run last since it can be slow initially
+    await importShortLinks(logger)
   ]
   cleanup.forEach((fn) => fn?.())
 }
