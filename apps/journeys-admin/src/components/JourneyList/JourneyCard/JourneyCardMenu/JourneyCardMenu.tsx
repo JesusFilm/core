@@ -214,9 +214,9 @@ export function JourneyCardMenu({
             published={published}
             handleKeepMounted={handleKeepMounted}
             setOpenAccessDialog={() => setOpenAccessDialog(true)}
-            setOpenTranslateDialog={() => setOpenTranslateDialog(true)}
             handleCloseMenu={handleCloseMenu}
             setOpenTrashDialog={() => setOpenTrashDialog(true)}
+            setOpenTranslateDialog={() => setOpenTranslateDialog(true)}
             setOpenDetailsDialog={() => setOpenDetailsDialog(true)}
             template={template}
             refetch={refetch}
