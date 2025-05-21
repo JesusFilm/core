@@ -15,12 +15,14 @@ import { JourneyDuplicate } from '@core/journeys/ui/useJourneyDuplicateMutation/
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
 
-import { GetAdminJourneys_journeys as AdminJourney } from '../../../../__generated__/GetAdminJourneys'
-import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
+import { GetAdminJourneys_journeys as GetAdminJourney } from '../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { JourneyFields as JourneyFields } from '../../../../__generated__/JourneyFields'
 import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
 
 import { CopyToTeamMenuItem } from './CopyToTeamMenuItem'
+
+type Journey = GetAdminJourney & JourneyFields
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -168,45 +170,38 @@ describe('DuplicateJourneys', () => {
         ]}
       >
         <SnackbarProvider>
-          <JourneyProvider
-            value={{
-              journey: { id: 'journeyId' } as unknown as Journey,
-              variant: 'admin'
-            }}
-          >
-            <TeamProvider>
-              <CopyToTeamMenuItem
-                id="journeyId"
-                handleCloseMenu={handleCloseMenu}
-                journey={
-                  {
-                    __typename: 'Journey',
-                    id: 'journeyId',
-                    slug: 'journey',
-                    title: 'Journey',
-                    description: null,
-                    language: {
-                      __typename: 'Language',
-                      id: '529',
-                      name: [
-                        {
-                          value: 'English',
-                          primary: true,
-                          __typename: 'LanguageName'
-                        }
-                      ]
-                    },
-                    status: JourneyStatus.draft,
-                    createdAt: '2021-11-19T12:34:56.647Z',
-                    publishedAt: null,
-                    trashedAt: null,
-                    archivedAt: null,
-                    featuredAt: null
-                  } as unknown as AdminJourney
-                }
-              />
-            </TeamProvider>
-          </JourneyProvider>
+          <TeamProvider>
+            <CopyToTeamMenuItem
+              id="journeyId"
+              handleCloseMenu={handleCloseMenu}
+              journey={
+                {
+                  __typename: 'Journey',
+                  id: 'journeyId',
+                  slug: 'journey',
+                  title: 'Journey',
+                  description: null,
+                  language: {
+                    __typename: 'Language',
+                    id: '529',
+                    name: [
+                      {
+                        value: 'English',
+                        primary: true,
+                        __typename: 'LanguageName'
+                      }
+                    ]
+                  },
+                  status: JourneyStatus.draft,
+                  createdAt: '2021-11-19T12:34:56.647Z',
+                  publishedAt: null,
+                  trashedAt: null,
+                  archivedAt: null,
+                  featuredAt: null
+                } as unknown as Journey
+              }
+            />
+          </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
