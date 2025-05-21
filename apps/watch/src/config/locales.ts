@@ -2,10 +2,13 @@ export const DEFAULT_LOCALE = 'en'
 
 export type LocaleMapping = {
   // The locale used for string translations
+  // /watch/next-i18next.config.js
   locale: string
-  // Language audio translations for videos
+  // Language audio translations for videos from languageSlugs
+  // /apis/api-languages/src/__generated__/languageSlugs.ts
   languageSlugs: string[]
   // Geolocation codes for the locale
+  // https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2a
   geoLocations: string[]
 }
 
