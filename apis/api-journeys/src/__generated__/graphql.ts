@@ -30,6 +30,13 @@ export type Action = {
   parentBlockId: Scalars['ID']['output'];
 };
 
+export type ArclightApiKey = {
+  __typename?: 'ArclightApiKey';
+  defaultPlatform: DefaultPlatform;
+  desc?: Maybe<Scalars['String']['output']>;
+  key: Scalars['String']['output'];
+};
+
 export type AudioPreview = {
   __typename?: 'AudioPreview';
   bitrate: Scalars['Int']['output'];
@@ -471,6 +478,12 @@ export type CustomDomainVerificationResponse = {
   message: Scalars['String']['output'];
 };
 
+export enum DefaultPlatform {
+  Android = 'android',
+  Ios = 'ios',
+  Web = 'web'
+}
+
 export type Device = {
   __typename?: 'Device';
   model?: Maybe<Scalars['String']['output']>;
@@ -802,6 +815,7 @@ export type Journey = {
   id: Scalars['ID']['output'];
   journeyCollections: Array<JourneyCollection>;
   language: Language;
+  languageId: Scalars['String']['output'];
   logoImageBlock?: Maybe<ImageBlock>;
   menuButtonIcon?: Maybe<JourneyMenuButtonIcon>;
   menuStepBlock?: Maybe<StepBlock>;
@@ -1356,6 +1370,7 @@ export type Mutation = {
   /** @deprecated use createCloudflareImageFromPrompt */
   createImageBySegmindPrompt: CloudflareImage;
   createJourneyEventsExportLog: JourneyEventsExportLog;
+  createKeyword: Keyword;
   createMuxVideoUploadByFile: MuxVideo;
   createMuxVideoUploadByUrl: MuxVideo;
   createVerificationRequest?: Maybe<Scalars['Boolean']['output']>;
@@ -1679,6 +1694,12 @@ export type MutationCreateImageBySegmindPromptArgs = {
 
 export type MutationCreateJourneyEventsExportLogArgs = {
   input: JourneyEventsExportLogInput;
+};
+
+
+export type MutationCreateKeywordArgs = {
+  languageId: Scalars['String']['input'];
+  value: Scalars['String']['input'];
 };
 
 
@@ -2771,6 +2792,8 @@ export type Query = {
   adminVideo: Video;
   adminVideos: Array<Video>;
   adminVideosCount: Scalars['Int']['output'];
+  arclightApiKeyByKey?: Maybe<ArclightApiKey>;
+  arclightApiKeys: Array<ArclightApiKey>;
   bibleBooks: Array<BibleBook>;
   bibleCitation: BibleCitation;
   bibleCitations: Array<BibleCitation>;
@@ -2905,6 +2928,11 @@ export type QueryAdminVideosArgs = {
 
 export type QueryAdminVideosCountArgs = {
   where?: InputMaybe<VideosFilter>;
+};
+
+
+export type QueryArclightApiKeyByKeyArgs = {
+  key: Scalars['String']['input'];
 };
 
 
@@ -4811,6 +4839,7 @@ export type VideoTriggerBlock = Block & {
 export type VideoUpdateInput = {
   childIds?: InputMaybe<Array<Scalars['String']['input']>>;
   id: Scalars['String']['input'];
+  keywordIds?: InputMaybe<Array<Scalars['String']['input']>>;
   label?: InputMaybe<VideoLabel>;
   noIndex?: InputMaybe<Scalars['Boolean']['input']>;
   primaryLanguageId?: InputMaybe<Scalars['String']['input']>;

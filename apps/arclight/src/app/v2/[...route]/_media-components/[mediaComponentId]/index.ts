@@ -4,6 +4,7 @@ import { HTTPException } from 'hono/http-exception'
 
 import { getApolloClient } from '../../../../../lib/apolloClient'
 import { getLanguageIdsFromTags } from '../../../../../lib/getLanguageIdsFromTags'
+import { getDefaultPlatformForApiKey } from '../../../../../lib/getPlatformFromApiKey'
 import { mediaComponentSchema } from '../../mediaComponent.schema'
 
 import { mediaComponentLanguages } from './languages'
@@ -147,8 +148,17 @@ mediaComponent.openapi(route, async (c) => {
   const mediaComponentId = c.req.param('mediaComponentId')
   const expand = c.req.query('expand') ?? ''
   const filter = c.req.query('filter') ?? ''
-  const platform = c.req.query('platform') ?? 'ios'
-  const apiKey = c.req.query('apiKey') ?? ''
+
+  const apiKey = c.req.query('apiKey')
+
+  let platform = c.req.query('platform')
+  if (!platform && apiKey) {
+    platform = await getDefaultPlatformForApiKey(apiKey)
+  }
+  if (!platform) {
+    platform = 'ios'
+  }
+
   const metadataLanguageTags =
     c.req.query('metadataLanguageTags')?.split(',').filter(Boolean) ?? []
 
@@ -272,7 +282,7 @@ mediaComponent.openapi(route, async (c) => {
         video.studyQuestions.length > 0
           ? video.studyQuestions.map((question) => question.value)
           : video.fallbackStudyQuestions.map((question) => question.value),
-      metadataLanguageTag: metadataLanguageTags[0] ?? 'en',
+      metadataLanguageTag: video.title[0]?.language.bcp47 ?? 'en',
       _links: {
         sampleMediaComponentLanguage: {
           href: `http://api.arclight.org/v2/media-components/${mediaComponentId}/languages/529?platform=${platform}&apiKey=${apiKey}`

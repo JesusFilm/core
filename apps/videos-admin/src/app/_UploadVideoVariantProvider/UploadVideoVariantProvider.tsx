@@ -32,6 +32,7 @@ export const CREATE_VIDEO_VARIANT = graphql(`
       published
       language {
         id
+        slug
         name {
           value
           primary
@@ -76,8 +77,8 @@ interface UploadVideoVariantContextType {
     languageSlug: string,
     edition: string,
     published: boolean,
-    onComplete?: () => void,
-    videoSlug?: string
+    videoSlug?: string,
+    onComplete?: () => void
   ) => Promise<void>
   clearUploadState: () => void
 }
@@ -241,6 +242,7 @@ export function UploadVideoVariantProvider({
                       hls
                       language {
                         id
+                        slug
                         name {
                           value
                           primary
@@ -273,8 +275,8 @@ export function UploadVideoVariantProvider({
     languageSlug: string,
     edition: string,
     published: boolean,
-    onComplete?: () => void,
-    videoSlug?: string
+    videoSlug: string,
+    onComplete?: () => void
   ) => {
     try {
       dispatch({
