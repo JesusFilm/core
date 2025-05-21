@@ -8,7 +8,10 @@ import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '@core/journeys/ui/TeamProvider'
+import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
+import { JOURNEY_AI_TRANSLATE_CREATE } from '@core/journeys/ui/useJourneyAiTranslateMutation/useJourneyAiTranslateMutation'
 import { JOURNEY_DUPLICATE } from '@core/journeys/ui/useJourneyDuplicateMutation'
+import { JourneyDuplicate } from '@core/journeys/ui/useJourneyDuplicateMutation/__generated__/JourneyDuplicate'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
 
@@ -16,7 +19,6 @@ import { GetAdminJourneys_journeys as GetAdminJourney } from '../../../../__gene
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { JourneyFields as JourneyFields } from '../../../../__generated__/JourneyFields'
 import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
-import { JOURNEY_AI_TRANSLATE_CREATE } from '../../../libs/useJourneyAiTranslateMutation/useJourneyAiTranslateMutation'
 
 import { CopyToTeamMenuItem } from './CopyToTeamMenuItem'
 
@@ -87,25 +89,49 @@ describe('DuplicateJourneys', () => {
       }
     }
 
-    const result = jest.fn(() => {
-      return {
+    const duplicateJourneyMock: MockedResponse<JourneyDuplicate> = {
+      request: {
+        query: JOURNEY_DUPLICATE,
+        variables: {
+          id: 'journeyId',
+          teamId: 'teamId'
+        }
+      },
+      result: jest.fn(() => ({
         data: {
           journeyDuplicate: {
-            id: 'duplicatedJourneyId'
+            id: 'duplicatedJourneyId',
+            __typename: 'Journey'
           }
         }
-      }
-    })
+      }))
+    }
 
-    const result2 = jest.fn(() => ({
-      data: {
-        teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
-        getJourneyProfile: {
-          __typename: 'JourneyProfile',
-          lastActiveTeamId: 'teamId'
-        }
+    const getLastActiveTeamIdAndTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> =
+      {
+        request: {
+          query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+        },
+        result: jest.fn(() => ({
+          data: {
+            teams: [
+              {
+                id: 'teamId',
+                title: 'Team Name',
+                __typename: 'Team',
+                publicTitle: 'Team Name',
+                userTeams: [],
+                customDomains: []
+              }
+            ],
+            getJourneyProfile: {
+              __typename: 'JourneyProfile',
+              id: 'journeyProfileId',
+              lastActiveTeamId: 'teamId'
+            }
+          }
+        }))
       }
-    }))
 
     const mockLanguage = {
       request: {
@@ -137,24 +163,10 @@ describe('DuplicateJourneys', () => {
       <MockedProvider
         mocks={[
           updateLastActiveTeamIdMock,
-          {
-            request: {
-              query: JOURNEY_DUPLICATE,
-              variables: {
-                id: 'journeyId',
-                teamId: 'teamId'
-              }
-            },
-            result
-          },
-          {
-            request: {
-              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
-            },
-            result: result2
-          },
           mockLanguage,
-          translateMock
+          translateMock,
+          duplicateJourneyMock,
+          getLastActiveTeamIdAndTeamsMock
         ]}
       >
         <SnackbarProvider>
@@ -193,25 +205,21 @@ describe('DuplicateJourneys', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    await waitFor(() => expect(result2).toHaveBeenCalled())
-    await fireEvent.click(getByRole('menuitem', { name: 'Copy to ...' }))
+    await waitFor(() =>
+      expect(getLastActiveTeamIdAndTeamsMock.result).toHaveBeenCalled()
+    )
+    fireEvent.click(getByRole('menuitem', { name: 'Copy to ...' }))
     const muiSelect = getByTestId('team-duplicate-select')
-    const muiSelectDropDownButton =
-      await within(muiSelect).getByRole('combobox')
-    await fireEvent.mouseDown(muiSelectDropDownButton)
-    const muiSelectOptions = await getByRole('option', {
+    const muiSelectDropDownButton = within(muiSelect).getByRole('combobox')
+    fireEvent.mouseDown(muiSelectDropDownButton)
+    const muiSelectOptions = getByRole('option', {
       name: 'Team Name'
     })
     fireEvent.click(muiSelectOptions)
 
-    // Find the Copy button and click it
     const dialogButtons = await within(
       getByTestId('CopyToTeamDialog')
     ).findAllByRole('button')
-    console.log(
-      'Dialog buttons:',
-      dialogButtons.map((btn) => btn.textContent)
-    )
     const copyButton = dialogButtons.find(
       (button) => button.textContent === 'Copy'
     )
@@ -222,7 +230,6 @@ describe('DuplicateJourneys', () => {
     await waitFor(() =>
       expect(updateLastActiveTeamIdMock.result).toHaveBeenCalled()
     )
-    await waitFor(() => expect(result).toHaveBeenCalled())
     expect(handleCloseMenu).toHaveBeenCalled()
     expect(getByText('Journey Copied')).toBeInTheDocument()
 

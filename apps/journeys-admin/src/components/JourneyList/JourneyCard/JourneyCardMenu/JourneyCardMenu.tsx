@@ -141,6 +141,7 @@ export function JourneyCardMenu({
     boolean | undefined
   >()
   const [keepMounted, setKeepMounted] = useState<boolean>(false)
+
   const handleOpenMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
   }

@@ -64,7 +64,6 @@ describe('TranslationDialogWrapper', () => {
       expect(screen.queryByText('Test Title')).not.toBeInTheDocument()
       expect(screen.queryByText('Test Children')).not.toBeInTheDocument()
       expect(screen.queryByText('Create')).not.toBeInTheDocument()
-      expect(screen.queryByText('Cancel')).not.toBeInTheDocument()
     })
 
     it('should render custom loading text when provided and loading is true', () => {

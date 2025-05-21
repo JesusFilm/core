@@ -3,7 +3,7 @@ import { MutationHookOptions, gql, useMutation } from '@apollo/client'
 import {
   JourneyAiTranslateCreate,
   JourneyAiTranslateCreateVariables
-} from '../../../__generated__/JourneyAiTranslateCreate'
+} from './__generated__/JourneyAiTranslateCreate'
 
 export const JOURNEY_AI_TRANSLATE_CREATE = gql`
   mutation JourneyAiTranslateCreate(
