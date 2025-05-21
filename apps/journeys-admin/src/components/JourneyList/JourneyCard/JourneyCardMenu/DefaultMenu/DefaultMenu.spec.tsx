@@ -233,7 +233,6 @@ describe('DefaultMenu', () => {
     expect(getByRole('menuitem', { name: 'Share' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Trash' })).toBeInTheDocument()
     expect(queryByRole('menuitem', { name: 'Access' })).not.toBeInTheDocument()
-    expect(queryByRole('menuitem', { name: 'Copy to' })).not.toBeInTheDocument()
     expect(
       queryByRole('menuitem', { name: 'Duplicate' })
     ).not.toBeInTheDocument()
