@@ -12,7 +12,10 @@ import Globe2Icon from '@core/shared/ui/icons/Globe2'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
-import { GetAdminJourneys } from '../../../../../../__generated__/GetAdminJourneys'
+import {
+  GetAdminJourneys,
+  GetAdminJourneys_journeys as Journey
+} from '../../../../../../__generated__/GetAdminJourneys'
 import {
   GetJourneyWithPermissions,
   GetJourneyWithPermissionsVariables
