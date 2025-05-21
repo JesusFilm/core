@@ -3,7 +3,7 @@ import { generateObject, streamObject } from 'ai'
 import { GraphQLError } from 'graphql'
 import { z } from 'zod'
 
-import { hardenPrompt, systemPrompt } from '@core/shared/ai/prompts'
+import { hardenPrompt, preSystemPrompt } from '@core/shared/ai/prompts'
 
 import { Action, ability, subject } from '../../lib/auth/ability'
 import { prisma } from '../../lib/prisma'
@@ -105,7 +105,7 @@ Return in this format:
         const { object: analysisAndTranslation } = await generateObject({
           model: google('gemini-2.0-flash'),
           messages: [
-            { role: 'system', content: systemPrompt },
+            { role: 'system', content: preSystemPrompt },
             { role: 'user', content: combinedPrompt }
           ],
           schema: z.object({
@@ -256,7 +256,7 @@ You should inform the user about which Bible translation you chose to use.
                 const { fullStream } = streamObject({
                   model: google('gemini-2.0-flash'),
                   messages: [
-                    { role: 'system', content: systemPrompt },
+                    { role: 'system', content: preSystemPrompt },
                     { role: 'user', content: cardAnalysisPrompt }
                   ],
                   output: 'no-schema',

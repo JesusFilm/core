@@ -210,7 +210,6 @@ export function JourneyCardMenu({
             status={status}
             slug={slug}
             journeyId={id}
-            journey={journey}
             published={published}
             handleKeepMounted={handleKeepMounted}
             setOpenAccessDialog={() => setOpenAccessDialog(true)}

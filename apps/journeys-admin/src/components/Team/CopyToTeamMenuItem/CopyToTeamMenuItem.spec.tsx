@@ -158,68 +158,38 @@ describe('DuplicateJourneys', () => {
         ]}
       >
         <SnackbarProvider>
-          <JourneyProvider
-            value={{
-              journey: {
-                __typename: 'Journey',
-                id: 'journeyId',
-                slug: 'journey',
-                title: 'Journey',
-                description: null,
-                language: {
-                  __typename: 'Language',
-                  id: '529',
-                  name: [
-                    {
-                      value: 'English',
-                      primary: true,
-                      __typename: 'LanguageName'
-                    }
-                  ]
-                },
-                status: JourneyStatus.draft,
-                createdAt: '2021-11-19T12:34:56.647Z',
-                publishedAt: null,
-                trashedAt: null,
-                archivedAt: null,
-                featuredAt: null
-              } as unknown as Journey,
-              variant: 'admin'
-            }}
-          >
-            <TeamProvider>
-              <CopyToTeamMenuItem
-                id="journeyId"
-                handleCloseMenu={handleCloseMenu}
-                journey={
-                  {
-                    __typename: 'Journey',
-                    id: 'journeyId',
-                    slug: 'journey',
-                    title: 'Journey',
-                    description: null,
-                    language: {
-                      __typename: 'Language',
-                      id: '529',
-                      name: [
-                        {
-                          value: 'English',
-                          primary: true,
-                          __typename: 'LanguageName'
-                        }
-                      ]
-                    },
-                    status: JourneyStatus.draft,
-                    createdAt: '2021-11-19T12:34:56.647Z',
-                    publishedAt: null,
-                    trashedAt: null,
-                    archivedAt: null,
-                    featuredAt: null
-                  } as unknown as Journey
-                }
-              />
-            </TeamProvider>
-          </JourneyProvider>
+          <TeamProvider>
+            <CopyToTeamMenuItem
+              id="journeyId"
+              handleCloseMenu={handleCloseMenu}
+              journey={
+                {
+                  __typename: 'Journey',
+                  id: 'journeyId',
+                  slug: 'journey',
+                  title: 'Journey',
+                  description: null,
+                  language: {
+                    __typename: 'Language',
+                    id: '529',
+                    name: [
+                      {
+                        value: 'English',
+                        primary: true,
+                        __typename: 'LanguageName'
+                      }
+                    ]
+                  },
+                  status: JourneyStatus.draft,
+                  createdAt: '2021-11-19T12:34:56.647Z',
+                  publishedAt: null,
+                  trashedAt: null,
+                  archivedAt: null,
+                  featuredAt: null
+                } as unknown as Journey
+              }
+            />
+          </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
