@@ -38,9 +38,6 @@ export const loadJourneyLocaleResources = async (
       )
     ])
 
-    console.log('uiResources', uiResources)
-    console.log('adminResources', adminResources)
-
     // Map directoryLocale to i18n locale key
     // add more mappings here if database locale is not compatible with i18n locale key
     let i18nLocale: string | null = null

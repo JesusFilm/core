@@ -46,8 +46,6 @@ export function JourneyLocaleProvider({
     const namespaces = ['libs-journeys-ui', 'apps-journeys-admin']
     const instance = createInstance()
 
-    console.log('resources', instance)
-
     void instance.init({
       lng: locale,
       fallbackLng: 'en',
