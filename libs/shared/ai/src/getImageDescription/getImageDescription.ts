@@ -11,7 +11,7 @@ export const getImageDescription = async ({
   try {
     // Use Gemini to analyze the image via URL directly
     const { text } = await generateText({
-      model: google('gemini-2.0-flash-lite'),
+      model: google('gemini-2.0-flash'),
       messages: [
         {
           role: 'user',

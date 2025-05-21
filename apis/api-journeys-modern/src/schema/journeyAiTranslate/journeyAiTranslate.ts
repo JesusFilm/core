@@ -81,6 +81,8 @@ Also suggest ways to culturally adapt this content for the target language: ${ha
 Then, translate the following journey title and description to ${hardenPrompt(requestedLanguageName)}.
 If a description is not provided, do not create one.
 
+If possible, find a populare translation of the Bible in the target language to use in follow up steps.
+
 ${hardenPrompt(`
 The source language is: ${sourceLanguageName}.
 The target language name is: ${requestedLanguageName}.
@@ -245,11 +247,9 @@ Keep translations concise and effective for UI context (e.g., button labels shou
 
 If you are in the process of translating and you recognize passages from the
 Bible you should not translate that content. Instead, you should rely on a Bible
-translation available in ${hardenPrompt(requestedLanguageName)} and use that content directly. 
+translation available from the previous journey analysis and use that content directly. 
 You must never make changes to content from the Bible yourself. 
-If there is no Bible translation available in ${hardenPrompt(requestedLanguageName)}, 
-use the the most popular English Bible translation available. 
-You should inform the user about which Bible translation you chose to use.
+If there is no Bible translation was available, use the the most popular English Bible translation available. 
 `
               try {
                 // Stream the translations
@@ -269,6 +269,7 @@ You should inform the user about which Bible translation you chose to use.
                 })
 
                 let partialTranslations = []
+                let blockUpdatesCount = 0
 
                 // Process the stream as chunks arrive
                 for await (const chunk of fullStream) {
@@ -308,6 +309,7 @@ You should inform the user about which Bible translation you chose to use.
                               },
                               data: item.updates
                             })
+                            blockUpdatesCount++
                           }
                         } catch (updateError) {
                           if (
