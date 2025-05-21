@@ -811,6 +811,7 @@ export type Journey = {
   /** public title for viewers */
   displayTitle?: Maybe<Scalars['String']['output']>;
   featuredAt?: Maybe<Scalars['DateTime']['output']>;
+  fromTemplate?: Maybe<Scalars['String']['output']>;
   host?: Maybe<Host>;
   id: Scalars['ID']['output'];
   journeyCollections: Array<JourneyCollection>;
@@ -1840,6 +1841,7 @@ export type MutationJourneyCreateArgs = {
 
 
 export type MutationJourneyDuplicateArgs = {
+  fromTemplate?: InputMaybe<Scalars['Boolean']['input']>;
   id: Scalars['ID']['input'];
   teamId: Scalars['ID']['input'];
 };
