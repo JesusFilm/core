@@ -1,5 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '../../libs/JourneyProvider'
@@ -230,5 +230,131 @@ describe('DuplicateJourneys', () => {
     await waitFor(() => fireEvent.click(getByText('Cancel')))
     await waitFor(() => expect(handleSubmitActionMock).not.toHaveBeenCalled())
     await waitFor(() => expect(handleCloseMenuMock).toHaveBeenCalled())
+  })
+
+  it('should not close dialog if loading', async () => {
+    const { getByTestId } = render(
+      <MockedProvider mocks={[]}>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: { id: 'journeyId' } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <TeamProvider>
+              <CopyToTeamDialog
+                open
+                loading
+                title="Copy To Journey"
+                onClose={handleCloseMenuMock}
+                submitAction={handleSubmitActionMock}
+              />
+            </TeamProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const dialog = getByTestId('CopyToTeamDialog')
+    fireEvent.click(dialog)
+    expect(handleCloseMenuMock).not.toHaveBeenCalled()
+  })
+
+  it('should not close dialog if escape key is pressed', async () => {
+    const { getByTestId } = render(
+      <MockedProvider mocks={[]}>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: { id: 'journeyId' } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <TeamProvider>
+              <CopyToTeamDialog
+                open
+                loading
+                title="Copy To Journey"
+                onClose={handleCloseMenuMock}
+                submitAction={handleSubmitActionMock}
+              />
+            </TeamProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const dialog = getByTestId('CopyToTeamDialog')
+    fireEvent.keyDown(dialog, { key: 'Escape' })
+    expect(handleCloseMenuMock).not.toHaveBeenCalled()
+  })
+
+  it('should show language autocomplete if translation is checked', async () => {
+    render(
+      <MockedProvider mocks={[]}>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: { id: 'journeyId' } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <TeamProvider>
+              <CopyToTeamDialog
+                open
+                title="Copy To Journey"
+                onClose={handleCloseMenuMock}
+                submitAction={handleSubmitActionMock}
+              />
+            </TeamProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(
+      screen.getByRole('checkbox', {
+        name: 'Translation'
+      })
+    )
+    expect(screen.getByPlaceholderText('Search Language')).toBeInTheDocument()
+  })
+
+  it('should not submit if no language is selected and translation is checked', async () => {
+    render(
+      <MockedProvider mocks={[]}>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: { id: 'journeyId' } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <TeamProvider>
+              <CopyToTeamDialog
+                open
+                title="Copy To Journey"
+                submitLabel="Copy"
+                onClose={handleCloseMenuMock}
+                submitAction={handleSubmitActionMock}
+              />
+            </TeamProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(
+      screen.getByRole('checkbox', {
+        name: 'Translation'
+      })
+    )
+    expect(screen.getByPlaceholderText('Search Language')).toBeInTheDocument()
+    fireEvent.click(screen.getByText('Copy'))
+    expect(handleSubmitActionMock).not.toHaveBeenCalled()
+    await waitFor(() =>
+      expect(screen.getByText('Please select a language')).toBeInTheDocument()
+    )
   })
 })
