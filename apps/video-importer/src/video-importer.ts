@@ -68,8 +68,27 @@ async function main() {
       const contentLength = (await promises.stat(filePath)).size
 
       console.log('   🔎 Reading video metadata...')
-      const metadata = await getVideoMetadata(filePath)
-      console.log('      Video metadata:', metadata)
+      let metadata
+      try {
+        metadata = await getVideoMetadata(filePath)
+        console.log('      Video metadata:', metadata)
+        // Validate metadata properties
+        if (
+          metadata.durationMs === undefined ||
+          metadata.width === undefined ||
+          metadata.height === undefined
+        ) {
+          throw new Error('Incomplete metadata: missing required properties')
+        }
+      } catch (error) {
+        console.error(`   ❌ Failed to extract metadata from ${file}:`, error)
+        summary.failed++
+        summary.errors.push({
+          file,
+          error: error instanceof Error ? error.message : String(error)
+        })
+        continue
+      }
 
       if (metadata.durationMs < 500) {
         console.warn(
