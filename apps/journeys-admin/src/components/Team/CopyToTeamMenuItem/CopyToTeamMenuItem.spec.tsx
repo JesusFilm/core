@@ -12,12 +12,15 @@ import { JOURNEY_DUPLICATE } from '@core/journeys/ui/useJourneyDuplicateMutation
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
 
-import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
+import { GetAdminJourneys_journeys as GetAdminJourney } from '../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { JOURNEY_AI_TRANSLATE_CREATE } from '../../../libs/useJourneyAiTranslateMutation/useJourneyAiTranslateMutation'
+import { JourneyFields as JourneyFields } from '../../../../__generated__/JourneyFields'
 import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
+import { JOURNEY_AI_TRANSLATE_CREATE } from '../../../libs/useJourneyAiTranslateMutation/useJourneyAiTranslateMutation'
 
 import { CopyToTeamMenuItem } from './CopyToTeamMenuItem'
+
+type Journey = GetAdminJourney & JourneyFields
 
 jest.mock('next/router', () => ({
   __esModule: true,
