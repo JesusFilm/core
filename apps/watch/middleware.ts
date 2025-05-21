@@ -54,7 +54,7 @@ function getLocaleFromPath(pathname: string): string | undefined {
   const lastPart = pathParts[pathParts.length - 1]
 
   const localeEntry = Object.values(LANGUAGE_MAPPINGS).find((mapping) =>
-    mapping.files.includes(lastPart)
+    mapping.languageSlugs.includes(lastPart)
   )
 
   return localeEntry?.locale
@@ -70,7 +70,7 @@ function getLocaleFromGeoHeaders(req: NextRequest): string | undefined {
 
   const countryCode = country.toUpperCase()
   const localeEntry = Object.values(LANGUAGE_MAPPINGS).find((mapping) =>
-    mapping.countries.includes(countryCode)
+    mapping.geoLocations.includes(countryCode)
   )
 
   return localeEntry?.locale

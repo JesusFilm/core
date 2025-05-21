@@ -69,7 +69,7 @@ describe('middleware', () => {
     })
 
     it('should use URL path locale if no cookie', () => {
-      const req = createMockRequest('/watch/jesus.html/francais.html')
+      const req = createMockRequest('/watch/jesus.html/french.html')
       const result = middleware(req) as NextResponse
       expect(result?.headers.get('x-middleware-rewrite')).toContain('/fr/')
     })
