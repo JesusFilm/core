@@ -239,6 +239,7 @@ describe('DefaultMenu', () => {
     expect(
       queryByRole('menuitem', { name: 'Translate' })
     ).not.toBeInTheDocument()
+    expect(queryByRole('menuitem', { name: 'Copy to' })).not.toBeInTheDocument()
   })
 
   it('should call correct functions on Access click', () => {
