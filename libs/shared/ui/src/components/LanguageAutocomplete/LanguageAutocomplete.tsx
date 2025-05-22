@@ -47,6 +47,7 @@ export interface LanguageAutocompleteProps {
   renderInput?: (params: AutocompleteRenderInputParams) => ReactNode
   renderOption?: (params: HTMLAttributes<HTMLLIElement>) => ReactNode
   popper?: Omit<PopperProps, 'open'>
+  error?: boolean
 }
 
 export function LanguageAutocomplete({
@@ -58,7 +59,8 @@ export function LanguageAutocomplete({
   renderInput,
   renderOption,
   helperText,
-  popper
+  popper,
+  error
 }: LanguageAutocompleteProps): ReactElement {
   const options = useMemo(() => {
     return (
@@ -96,6 +98,7 @@ export function LanguageAutocomplete({
       placeholder="Search Language"
       variant="filled"
       helperText={helperText}
+      error={error}
       InputProps={{
         ...params.InputProps,
         sx: { paddingBottom: 2 },
@@ -177,6 +180,14 @@ export function LanguageAutocomplete({
       }}
       slotProps={{
         popper
+      }}
+      sx={{
+        '& .MuiInputBase-root': {
+          '& .MuiInputBase-input::placeholder': {
+            color: error ? 'error.main' : 'text.secondary',
+            opacity: 1
+          }
+        }
       }}
     />
   )

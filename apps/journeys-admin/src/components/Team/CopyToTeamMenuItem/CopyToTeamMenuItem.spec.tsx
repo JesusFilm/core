@@ -8,13 +8,21 @@ import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '@core/journeys/ui/TeamProvider'
+import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
+import { JOURNEY_AI_TRANSLATE_CREATE } from '@core/journeys/ui/useJourneyAiTranslateMutation/useJourneyAiTranslateMutation'
 import { JOURNEY_DUPLICATE } from '@core/journeys/ui/useJourneyDuplicateMutation'
+import { JourneyDuplicate } from '@core/journeys/ui/useJourneyDuplicateMutation/__generated__/JourneyDuplicate'
+import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
 
-import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
+import { GetAdminJourneys_journeys as GetAdminJourney } from '../../../../__generated__/GetAdminJourneys'
+import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { JourneyFields as JourneyFields } from '../../../../__generated__/JourneyFields'
 import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
 
 import { CopyToTeamMenuItem } from './CopyToTeamMenuItem'
+
+type Journey = GetAdminJourney & JourneyFields
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -56,80 +64,172 @@ describe('DuplicateJourneys', () => {
       }))
     }
 
-    const result = jest.fn(() => {
-      return {
+    const translateMock = {
+      request: {
+        query: JOURNEY_AI_TRANSLATE_CREATE,
+        variables: {
+          journeyId: 'duplicatedJourneyId',
+          name: 'Journey',
+          journeyLanguageName: 'English',
+          textLanguageId: 'es-419',
+          textLanguageName: 'Spanish'
+        }
+      },
+      result: {
         data: {
-          journeyDuplicate: {
-            id: 'duplicatedJourneyId'
+          journeyAiTranslateCreate: {
+            id: 'translatedJourneyId',
+            title: 'Viaje Traducido',
+            description: 'Esta es una descripción traducida',
+            languageId: 'es-419',
+            createdAt: '2023-04-25T12:34:56Z',
+            updatedAt: '2023-04-25T12:34:56Z'
           }
         }
       }
-    })
+    }
 
-    const result2 = jest.fn(() => ({
-      data: {
-        teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
-        getJourneyProfile: {
-          __typename: 'JourneyProfile',
-          lastActiveTeamId: 'teamId'
+    const duplicateJourneyMock: MockedResponse<JourneyDuplicate> = {
+      request: {
+        query: JOURNEY_DUPLICATE,
+        variables: {
+          id: 'journeyId',
+          teamId: 'teamId'
+        }
+      },
+      result: jest.fn(() => ({
+        data: {
+          journeyDuplicate: {
+            id: 'duplicatedJourneyId',
+            __typename: 'Journey'
+          }
+        }
+      }))
+    }
+
+    const getLastActiveTeamIdAndTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> =
+      {
+        request: {
+          query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+        },
+        result: jest.fn(() => ({
+          data: {
+            teams: [
+              {
+                id: 'teamId',
+                title: 'Team Name',
+                __typename: 'Team',
+                publicTitle: 'Team Name',
+                userTeams: [],
+                customDomains: []
+              }
+            ],
+            getJourneyProfile: {
+              __typename: 'JourneyProfile',
+              id: 'journeyProfileId',
+              lastActiveTeamId: 'teamId'
+            }
+          }
+        }))
+      }
+
+    const mockLanguage = {
+      request: {
+        query: GET_LANGUAGES,
+        variables: {
+          languageId: '529'
+        }
+      },
+      result: {
+        data: {
+          languages: [
+            {
+              __typename: 'Language',
+              id: '529',
+              name: [
+                {
+                  value: 'English',
+                  primary: true,
+                  __typename: 'LanguageName'
+                }
+              ]
+            }
+          ]
         }
       }
-    }))
+    }
 
     const { getByRole, getByText, getByTestId } = render(
       <MockedProvider
         mocks={[
           updateLastActiveTeamIdMock,
-          {
-            request: {
-              query: JOURNEY_DUPLICATE,
-              variables: {
-                id: 'journeyId',
-                teamId: 'teamId'
-              }
-            },
-            result
-          },
-          {
-            request: {
-              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
-            },
-            result: result2
-          }
+          mockLanguage,
+          translateMock,
+          duplicateJourneyMock,
+          getLastActiveTeamIdAndTeamsMock
         ]}
       >
         <SnackbarProvider>
-          <JourneyProvider
-            value={{
-              journey: { id: 'journeyId' } as unknown as Journey,
-              variant: 'admin'
-            }}
-          >
-            <TeamProvider>
-              <CopyToTeamMenuItem
-                id="journeyId"
-                handleCloseMenu={handleCloseMenu}
-              />
-            </TeamProvider>
-          </JourneyProvider>
+          <TeamProvider>
+            <CopyToTeamMenuItem
+              id="journeyId"
+              handleCloseMenu={handleCloseMenu}
+              journey={
+                {
+                  __typename: 'Journey',
+                  id: 'journeyId',
+                  slug: 'journey',
+                  title: 'Journey',
+                  description: null,
+                  language: {
+                    __typename: 'Language',
+                    id: '529',
+                    name: [
+                      {
+                        value: 'English',
+                        primary: true,
+                        __typename: 'LanguageName'
+                      }
+                    ]
+                  },
+                  status: JourneyStatus.draft,
+                  createdAt: '2021-11-19T12:34:56.647Z',
+                  publishedAt: null,
+                  trashedAt: null,
+                  archivedAt: null,
+                  featuredAt: null
+                } as unknown as Journey
+              }
+            />
+          </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
-    await waitFor(() => expect(result2).toHaveBeenCalled())
-    await fireEvent.click(getByRole('menuitem', { name: 'Copy to ...' }))
+    await waitFor(() =>
+      expect(getLastActiveTeamIdAndTeamsMock.result).toHaveBeenCalled()
+    )
+    fireEvent.click(getByRole('menuitem', { name: 'Copy to ...' }))
     const muiSelect = getByTestId('team-duplicate-select')
-    const muiSelectDropDownButton =
-      await within(muiSelect).getByRole('combobox')
-    await fireEvent.mouseDown(muiSelectDropDownButton)
-    const muiSelectOptions = await getByRole('option', {
+    const muiSelectDropDownButton = within(muiSelect).getByRole('combobox')
+    fireEvent.mouseDown(muiSelectDropDownButton)
+    const muiSelectOptions = getByRole('option', {
       name: 'Team Name'
     })
     fireEvent.click(muiSelectOptions)
-    await waitFor(() => fireEvent.click(getByText('Copy')))
+
+    const dialogButtons = await within(
+      getByTestId('CopyToTeamDialog')
+    ).findAllByRole('button')
+    const copyButton = dialogButtons.find(
+      (button) => button.textContent === 'Copy'
+    )
+    expect(copyButton).not.toBeUndefined()
+    if (copyButton) {
+      fireEvent.click(copyButton)
+    }
     await waitFor(() =>
       expect(updateLastActiveTeamIdMock.result).toHaveBeenCalled()
     )
-    await waitFor(() => expect(result).toHaveBeenCalled())
     expect(handleCloseMenu).toHaveBeenCalled()
     expect(getByText('Journey Copied')).toBeInTheDocument()
 

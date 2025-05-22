@@ -18,6 +18,7 @@ import {
 } from '../../../../../../__generated__/globalTypes'
 import { GET_CURRENT_USER } from '../../../../../libs/useCurrentUserLazyQuery'
 import { getCustomDomainMock } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
+import { ThemeProvider } from '../../../../ThemeProvider'
 
 import { GET_JOURNEY_WITH_USER_ROLES } from './DefaultMenu'
 
@@ -57,7 +58,10 @@ const currentUserMock = {
       me: {
         __typename: 'User',
         id: 'current-user-id',
-        email: 'current@example.com'
+        email: 'current@example.com',
+        lastName: 'userLastName',
+        firstName: 'userFirstName',
+        imageUrl: 'https://example.com/image.jpg'
       }
     }
   }
@@ -82,6 +86,9 @@ const teamWithManagerMock = {
               user: {
                 id: 'userId',
                 email: 'current@example.com',
+                lastName: 'userLastName',
+                firstName: 'userFirstName',
+                imageUrl: 'https://example.com/image.jpg',
                 __typename: 'User'
               },
               __typename: 'UserTeam'
@@ -118,6 +125,9 @@ const teamWithMemberMock = {
               user: {
                 id: 'userId',
                 email: 'current@example.com',
+                lastName: 'userLastName',
+                firstName: 'userFirstName',
+                imageUrl: 'https://example.com/image.jpg',
                 __typename: 'User'
               },
               __typename: 'UserTeam'
@@ -168,7 +178,7 @@ const userRoleNonPublisherMock = {
 describe('DefaultMenu', () => {
   it('should render menu for journey', () => {
     const { getByRole } = render(
-      <MockedProvider>
+      <MockedProvider mocks={[userRoleNonPublisherMock, teamWithManagerMock]}>
         <SnackbarProvider>
           <TeamProvider>
             <DefaultMenu
@@ -220,6 +230,7 @@ describe('DefaultMenu', () => {
     expect(getByRole('menuitem', { name: 'Edit Details' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Archive' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Share' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Trash' })).toBeInTheDocument()
     expect(queryByRole('menuitem', { name: 'Access' })).not.toBeInTheDocument()
     expect(
@@ -337,7 +348,7 @@ describe('DefaultMenu', () => {
     )
   })
 
-  it('should call correct functions on Delete click', () => {
+  it('should call correct functions on Delete click', async () => {
     const handleCloseMenu = jest.fn()
     const setOpenTrashDialog = jest.fn()
 
@@ -362,7 +373,10 @@ describe('DefaultMenu', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByRole('menuitem', { name: 'Trash' }))
+    await waitFor(() => {
+      fireEvent.click(getByRole('menuitem', { name: 'Trash' }))
+    })
+
     expect(setOpenTrashDialog).toHaveBeenCalled()
     expect(handleCloseMenu).toHaveBeenCalled()
   })
@@ -379,7 +393,8 @@ describe('DefaultMenu', () => {
           role: UserJourneyRole.owner,
           user: {
             __typename: 'User',
-            id: 'current-user-id'
+            id: 'current-user-id',
+            email: 'current@example.com'
           }
         }
       ]
@@ -392,14 +407,14 @@ describe('DefaultMenu', () => {
       },
       result: {
         data: {
-          journey: journeyData
+          adminJourney: journeyData
         }
       }
     }
 
     const { getByRole } = render(
       <MockedProvider
-        mocks={[currentUserMock, journeyMock, teamWithMemberMock]}
+        mocks={[currentUserMock, journeyMock, teamWithManagerMock]}
       >
         <SnackbarProvider>
           <TeamProvider>
@@ -455,7 +470,7 @@ describe('DefaultMenu', () => {
       },
       result: {
         data: {
-          journey: journeyData
+          adminJourney: journeyData
         }
       }
     }
@@ -518,7 +533,7 @@ describe('DefaultMenu', () => {
       },
       result: {
         data: {
-          journey: journeyData
+          adminJourney: journeyData
         }
       }
     }
@@ -583,7 +598,7 @@ describe('DefaultMenu', () => {
       },
       result: {
         data: {
-          journey: journeyData
+          adminJourney: journeyData
         }
       }
     }
@@ -639,7 +654,7 @@ describe('DefaultMenu', () => {
       },
       result: {
         data: {
-          journey: templateData
+          adminJourney: templateData
         }
       }
     }
@@ -691,7 +706,7 @@ describe('DefaultMenu', () => {
       },
       result: {
         data: {
-          journey: journeyData
+          adminJourney: journeyData
         }
       }
     }
@@ -745,7 +760,7 @@ describe('DefaultMenu', () => {
       },
       result: {
         data: {
-          journey: templateData
+          adminJourney: templateData
         }
       }
     }
@@ -809,7 +824,7 @@ describe('DefaultMenu', () => {
       },
       result: {
         data: {
-          journey: journeyData
+          adminJourney: journeyData
         }
       }
     }

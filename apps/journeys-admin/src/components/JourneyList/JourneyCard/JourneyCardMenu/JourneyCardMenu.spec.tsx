@@ -201,7 +201,7 @@ describe('JourneyCardMenu', () => {
   })
 
   it('should show translate dialog on click', async () => {
-    const { getByRole, queryByText, getByTestId } = render(
+    const { getByRole, queryByText } = render(
       <MockedProvider>
         <SnackbarProvider>
           <TeamProvider>
@@ -226,7 +226,7 @@ describe('JourneyCardMenu', () => {
     await waitFor(() =>
       expect(queryByText('Create Translated Copy')).toBeInTheDocument()
     )
-    fireEvent.click(getByTestId('dialog-close-button'))
+    fireEvent.click(getByRole('button', { name: 'Cancel' }))
     await waitFor(() =>
       expect(queryByText('Create Translated Copy')).not.toBeInTheDocument()
     )
