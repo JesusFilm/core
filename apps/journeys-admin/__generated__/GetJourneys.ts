@@ -91,7 +91,7 @@ export interface GetJourneys_journeys {
   slug: string;
   themeName: ThemeName;
   themeMode: ThemeMode;
-  language: GetJourneys_journeys_language;
+  language: GetJourneys_journeys_language | null;
   status: JourneyStatus;
   /**
    * title for seo and sharing

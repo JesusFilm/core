@@ -62,7 +62,7 @@ export interface JourneySettingsUpdate_journeyUpdate {
   title: string;
   description: string | null;
   strategySlug: string | null;
-  language: JourneySettingsUpdate_journeyUpdate_language;
+  language: JourneySettingsUpdate_journeyUpdate_language | null;
   tags: JourneySettingsUpdate_journeyUpdate_tags[];
   website: boolean | null;
   showShareButton: boolean | null;

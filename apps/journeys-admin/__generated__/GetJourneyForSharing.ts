@@ -38,7 +38,7 @@ export interface GetJourneyForSharing_journey {
   __typename: "Journey";
   id: string;
   slug: string;
-  language: GetJourneyForSharing_journey_language;
+  language: GetJourneyForSharing_journey_language | null;
   themeName: ThemeName;
   themeMode: ThemeMode;
   team: GetJourneyForSharing_journey_team | null;

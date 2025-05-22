@@ -602,7 +602,7 @@ export interface GetJourney_journey {
   title: string;
   description: string | null;
   status: JourneyStatus;
-  language: GetJourney_journey_language;
+  language: GetJourney_journey_language | null;
   createdAt: any;
   updatedAt: any;
   featuredAt: any | null;

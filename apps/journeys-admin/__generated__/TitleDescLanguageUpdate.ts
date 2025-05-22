@@ -31,7 +31,7 @@ export interface TitleDescLanguageUpdate_journeyUpdate {
    */
   title: string;
   description: string | null;
-  language: TitleDescLanguageUpdate_journeyUpdate_language;
+  language: TitleDescLanguageUpdate_journeyUpdate_language | null;
 }
 
 export interface TitleDescLanguageUpdate {

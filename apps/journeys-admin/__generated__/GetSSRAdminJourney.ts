@@ -23,7 +23,7 @@ export interface GetSSRAdminJourney_journey {
   id: string;
   template: boolean | null;
   team: GetSSRAdminJourney_journey_team | null;
-  language: GetSSRAdminJourney_journey_language;
+  language: GetSSRAdminJourney_journey_language | null;
 }
 
 export interface GetSSRAdminJourney {

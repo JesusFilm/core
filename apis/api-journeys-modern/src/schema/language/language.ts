@@ -11,4 +11,3 @@ Language.implement({
     id: t.exposeID('id', { nullable: false })
   })
 })
-

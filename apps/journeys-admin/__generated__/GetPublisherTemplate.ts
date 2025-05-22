@@ -602,7 +602,7 @@ export interface GetPublisherTemplate_publisherTemplate {
   title: string;
   description: string | null;
   status: JourneyStatus;
-  language: GetPublisherTemplate_publisherTemplate_language;
+  language: GetPublisherTemplate_publisherTemplate_language | null;
   createdAt: any;
   updatedAt: any;
   featuredAt: any | null;

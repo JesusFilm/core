@@ -602,7 +602,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey {
   title: string;
   description: string | null;
   status: JourneyStatus;
-  language: GetAdminJourneyWithPlausibleToken_journey_language;
+  language: GetAdminJourneyWithPlausibleToken_journey_language | null;
   createdAt: any;
   updatedAt: any;
   featuredAt: any | null;
