@@ -36,7 +36,7 @@ export class MailChimpService {
           `${user.email} looks fake or invalid, please enter a real email address.`
       )
         return
-      throw error
+      throw new Error(JSON.stringify(error))
     }
   }
 }
