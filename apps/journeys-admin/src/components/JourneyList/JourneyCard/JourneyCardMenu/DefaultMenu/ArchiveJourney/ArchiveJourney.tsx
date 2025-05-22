@@ -41,7 +41,6 @@ export interface ArchiveJourneyProps {
 }
 
 export function ArchiveJourney({
-  status,
   id,
   published,
   handleClose,
@@ -85,21 +84,32 @@ export function ArchiveJourney({
 
   const { enqueueSnackbar } = useSnackbar()
 
-  async function handleClick(): Promise<void> {
+  async function handleArchive(): Promise<void> {
     try {
-      if (status !== JourneyStatus.archived) {
-        await archiveJourney()
-        enqueueSnackbar(t('Journey Archived'), {
-          variant: 'success',
-          preventDuplicate: true
-        })
-      } else {
-        await unarchiveJourney()
-        enqueueSnackbar(t('Journey Unarchived'), {
-          variant: 'success',
+      await archiveJourney()
+      enqueueSnackbar(t('Journey Archived'), {
+        variant: 'success',
+        preventDuplicate: true
+      })
+      await refetch?.()
+      handleClose()
+    } catch (error) {
+      if (error instanceof Error) {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
           preventDuplicate: true
         })
       }
+    }
+  }
+
+  async function handleUnarchive(): Promise<void> {
+    try {
+      await unarchiveJourney()
+      enqueueSnackbar(t('Journey Unarchived'), {
+        variant: 'success',
+        preventDuplicate: true
+      })
       await refetch?.()
       handleClose()
     } catch (error) {
@@ -118,7 +128,7 @@ export function ArchiveJourney({
         <MenuItem
           label={t('Archive')}
           icon={<FolderUp1Icon color="secondary" />}
-          onClick={handleClick}
+          onClick={handleArchive}
           testId="Archive"
           disabled={disabled}
         />
@@ -127,7 +137,7 @@ export function ArchiveJourney({
         <MenuItem
           label={t('Unarchive')}
           icon={<FolderDown1Icon color="secondary" />}
-          onClick={handleClick}
+          onClick={handleUnarchive}
           testId="Unarchive"
           disabled={disabled}
         />
