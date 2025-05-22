@@ -32,11 +32,12 @@ export class MailChimpService {
     } catch (error) {
       if (
         process.env.NODE_ENV !== 'production' &&
-        get(error, 'response.body.detail') ===
-          `${user.email} looks fake or invalid, please enter a real email address.`
+        (get(error, 'response.detail') ===
+          `${user.email} looks fake or invalid, please enter a real email address.` ||
+          get(error, 'response.text', '').includes('looks fake or invalid'))
       )
         return
-      throw new Error(JSON.stringify(error))
+      throw error
     }
   }
 }
