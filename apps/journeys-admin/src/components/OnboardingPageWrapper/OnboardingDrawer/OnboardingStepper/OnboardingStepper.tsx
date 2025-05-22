@@ -58,11 +58,6 @@ export function OnboardingStepper({
     {
       label: t('Terms and Conditions')
     },
-    // quick
-    //   ? undefined
-    //   : {
-    //       label: t('Create Your Workspace')
-    //     },
     quick
       ? {
           label: t('Express Setup')
