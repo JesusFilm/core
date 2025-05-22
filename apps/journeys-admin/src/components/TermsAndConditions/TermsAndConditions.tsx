@@ -67,34 +67,7 @@ export function TermsAndConditions(): ReactElement {
       '[TermsAndConditions] Starting journey profile creation process'
     )
     setLoading(true)
-    const {
-      data: journeyProfileCreateData,
-      errors: journeyProfileCreateErrors
-    } = await journeyProfileCreate({
-      onError: (error) => {
-        console.error(
-          '[TermsAndConditions] Journey profile creation failed:',
-          error
-        )
-        enqueueSnackbar(error.message, {
-          variant: 'error'
-        })
-        setLoading(false)
-      }
-    })
-    // do not create team & onboarding journey if journey profile creation fails
-    if (
-      journeyProfileCreateErrors != null ||
-      journeyProfileCreateData == null
-    ) {
-      console.error(
-        '[TermsAndConditions] Journey profile creation failed:',
-        journeyProfileCreateErrors
-      )
-      setLoading(false)
-      return
-    }
-    console.log('[TermsAndConditions] Journey profile created successfully:')
+    await journeyProfileCreate()
 
     const { data: teamCreateData } = await teamCreate({
       variables: {
