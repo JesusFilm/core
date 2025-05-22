@@ -30,6 +30,7 @@ export class MailChimpService {
         }
       )
     } catch (error) {
+      console.log(error)
       if (
         process.env.NODE_ENV !== 'production' &&
         get(error, 'response.body.detail').includes('looks fake or invalid')
