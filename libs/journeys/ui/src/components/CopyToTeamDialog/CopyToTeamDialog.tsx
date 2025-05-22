@@ -15,6 +15,7 @@ import { boolean, object, string } from 'yup'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
+import { SUPPORTED_LANGUAGE_IDS } from '../../libs/useJourneyAiTranslateMutation/supportedLanguages'
 import { useLanguagesQuery } from '../../libs/useLanguagesQuery'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../libs/useUpdateLastActiveTeamIdMutation'
 import { UpdateLastActiveTeamId } from '../../libs/useUpdateLastActiveTeamIdMutation/__generated__/UpdateLastActiveTeamId'
@@ -60,9 +61,11 @@ export function CopyToTeamDialog({
   const [updateLastActiveTeamId, { client }] =
     useMutation<UpdateLastActiveTeamId>(UPDATE_LAST_ACTIVE_TEAM_ID)
 
-  // TODO: Update so only the selected AI model + i18n languages are shown.
   const { data: languagesData, loading: languagesLoading } = useLanguagesQuery({
-    languageId: '529'
+    languageId: '529',
+    where: {
+      ids: [...SUPPORTED_LANGUAGE_IDS]
+    }
   })
 
   async function handleSubmit(
