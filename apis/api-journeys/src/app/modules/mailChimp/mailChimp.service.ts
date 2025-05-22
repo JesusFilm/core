@@ -30,10 +30,15 @@ export class MailChimpService {
         }
       )
     } catch (error) {
-      // Based on the DataDog logs, check for fake email errors
       const responseText = get(error, 'response.text', '')
-      const fakeEmailCheck = responseText.includes('looks fake or invalid')
-
+      let errorMessage = ''
+      if (typeof responseText === 'string') {
+        errorMessage = responseText
+      }
+      if (typeof errorMessage === 'object') {
+        errorMessage = JSON.stringify(errorMessage)
+      }
+      const fakeEmailCheck = errorMessage.includes('looks fake or invalid')
       if (process.env.NODE_ENV !== 'production' && fakeEmailCheck) return
       throw error
     }
