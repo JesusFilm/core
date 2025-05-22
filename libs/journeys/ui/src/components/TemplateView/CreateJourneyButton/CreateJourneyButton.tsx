@@ -43,7 +43,7 @@ export function CreateJourneyButton({
       setLoadingJourney(true)
 
       const { data } = await journeyDuplicate({
-        variables: { id: journey.id, teamId }
+        variables: { id: journey.id, teamId, fromTemplate: true }
       })
 
       if (data != null) {

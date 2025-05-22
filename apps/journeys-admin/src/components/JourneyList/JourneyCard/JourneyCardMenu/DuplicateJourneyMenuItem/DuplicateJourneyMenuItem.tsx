@@ -11,7 +11,6 @@ import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import CopyLeftIcon from '@core/shared/ui/icons/CopyLeft'
 
-import { JourneyDuplicate } from '../../../../../../__generated__/JourneyDuplicate'
 import { MenuItem } from '../../../../MenuItem'
 
 interface DuplicateJourneyMenuItemProps {

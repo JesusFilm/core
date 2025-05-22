@@ -11,8 +11,8 @@ import {
 } from './__generated__/JourneyDuplicate'
 
 export const JOURNEY_DUPLICATE = gql`
-  mutation JourneyDuplicate($id: ID!, $teamId: ID!) {
-    journeyDuplicate(id: $id, teamId: $teamId) {
+  mutation JourneyDuplicate($id: ID!, $teamId: ID!, $fromTemplate: Boolean) {
+    journeyDuplicate(id: $id, teamId: $teamId, fromTemplate: $fromTemplate) {
       id
     }
   }
