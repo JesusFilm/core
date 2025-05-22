@@ -18,11 +18,12 @@ export const VIDEO_CONTENT_FIELDS = gql`
     }
     studyQuestions(languageId: $languageId, primary: true) {
       value
+      primary
     }
     title(languageId: $languageId, primary: true) {
       value
     }
-    variant(languageId: $languageId) {
+    variant {
       id
       duration
       hls
