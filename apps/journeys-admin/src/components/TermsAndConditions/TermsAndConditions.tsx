@@ -126,7 +126,7 @@ export function TermsAndConditions(): ReactElement {
             '[TermsAndConditions] Last active team ID updated successfully'
           )
         ),
-        router
+        await router
           .push(
             router.query.redirect != null
               ? new URL(
