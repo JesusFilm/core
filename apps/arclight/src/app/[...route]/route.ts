@@ -428,7 +428,7 @@ app.openapi(keywordRoute, async (c) => {
 
 app.options('*', (c) => {
   setCorsHeaders(c)
-  return new Response(null, { status: 204 })
+  return c.body(null, 204)
 })
 
 export const GET = handle(app)
