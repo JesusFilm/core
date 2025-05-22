@@ -190,11 +190,15 @@ builder.mutationFields((t) => ({
           version: input.version ?? undefined
         }
       })
+
+      // Store the videoId before the try/catch block
+      const videoId = input.videoId ?? updated.videoId
+
       try {
         void videoVariantCacheReset(updated.id)
-        // If videoId is being updated, we should reset the video cache too
-        if (input.videoId) {
-          void videoCacheReset(input.videoId)
+        // Reset the video cache if we have a videoId
+        if (videoId) {
+          void videoCacheReset(videoId)
         }
       } catch (error) {
         // Log the error but don't throw it
