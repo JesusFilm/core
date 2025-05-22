@@ -152,22 +152,19 @@ describe('TemplateGallery', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'French Français' }))
     fireEvent.click(screen.getByTestId('PresentationLayer'))
-    await waitFor(
-      () => {
-        expect(push).toHaveBeenCalledWith(
-          {
-            query: {
-              languageIds: [],
-              param: 'template-language'
-            }
-          },
-          undefined,
-          { shallow: true }
-        )
-      },
-      { timeout: 10000 }
-    )
-  }, 15000)
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith(
+        {
+          query: {
+            languageIds: [],
+            param: 'template-language'
+          }
+        },
+        undefined,
+        { shallow: true }
+      )
+    })
+  })
 
   it('should render templates with a felt needs tags selected', async () => {
     const push = jest.fn()
@@ -190,36 +187,30 @@ describe('TemplateGallery', () => {
       </MockedProvider>
     )
 
-    await waitFor(
-      () => {
-        expect(
-          screen.getByRole('button', {
-            name: 'Acceptance tag Acceptance Acceptance'
-          })
-        ).toBeInTheDocument()
-      },
-      { timeout: 10000 }
-    )
+    await waitFor(() => {
+      expect(
+        screen.getByRole('button', {
+          name: 'Acceptance tag Acceptance Acceptance'
+        })
+      ).toBeInTheDocument()
+    })
 
     fireEvent.click(
       screen.getByRole('button', {
         name: 'Acceptance tag Acceptance Acceptance'
       })
     )
-    await waitFor(
-      () => {
-        expect(push).toHaveBeenCalledWith(
-          {
-            query: {
-              tagIds: 'acceptanceTagId',
-              languageIds: ['529']
-            }
-          },
-          undefined,
-          { shallow: true }
-        )
-      },
-      { timeout: 10000 }
-    )
-  }, 15000)
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith(
+        {
+          query: {
+            tagIds: 'acceptanceTagId',
+            languageIds: ['529']
+          }
+        },
+        undefined,
+        { shallow: true }
+      )
+    })
+  })
 })
