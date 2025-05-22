@@ -35,7 +35,7 @@ export async function videoCacheReset(videoId: string): Promise<void> {
   try {
     const slug = await prisma.video.findUnique({
       where: { id: videoId },
-      select: { slug: true },      
+      select: { slug: true }
     })
     if (!slug?.slug) return
     // only english since crowdin handles others
