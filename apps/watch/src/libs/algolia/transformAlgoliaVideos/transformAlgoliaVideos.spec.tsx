@@ -8,8 +8,8 @@ describe('transformAlgoliaVideos', () => {
       videoId: 'videoId',
       titles: ['title'],
       titlesWithLanguages: [
-        { value: 'English Title', bcp47: 'en' },
-        { value: 'Spanish Title', bcp47: 'es' }
+        { value: 'English Title', languageId: '529' },
+        { value: 'Spanish Title', languageId: '21028' }
       ],
       description: ['description'],
       duration: 10994,
@@ -66,12 +66,12 @@ describe('transformAlgoliaVideos', () => {
   })
 
   it('should use localized title when matching locale is found', () => {
-    const result = transformAlgoliaVideos(algoliaVideos, 'es')
+    const result = transformAlgoliaVideos(algoliaVideos, '21028')
     expect(result[0].title[0].value).toBe('Spanish Title')
   })
 
   it('should fallback to English title when locale is not found', () => {
-    const result = transformAlgoliaVideos(algoliaVideos, 'fr')
+    const result = transformAlgoliaVideos(algoliaVideos, '496')
     expect(result[0].title[0].value).toBe('English Title')
   })
 

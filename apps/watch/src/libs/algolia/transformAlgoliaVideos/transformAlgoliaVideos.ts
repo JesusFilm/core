@@ -26,12 +26,12 @@ export interface CoreVideo extends Hit<BaseHit> {
 
 export function transformAlgoliaVideos(
   items: AlgoliaVideo[],
-  locale?: string
+  languageId?: string
 ): CoreVideo[] {
   return items.map((videoVariant) => {
     const defaultTitle = videoVariant.titlesWithLanguages[0]?.value ?? ''
     const localizedTitle = videoVariant.titlesWithLanguages.find(
-      (title) => title.bcp47 === locale
+      (title) => title.languageId === languageId
     )?.value
 
     return {

@@ -19,10 +19,12 @@ import { HomeHero } from './HomeHero'
 import { SeeAllVideos } from './SeeAllVideos'
 
 interface WatchHomePageProps {
-  locale?: string | undefined
+  languageId?: string | undefined
 }
 
-export function WatchHomePage({ locale }: WatchHomePageProps): ReactElement {
+export function WatchHomePage({
+  languageId
+}: WatchHomePageProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   useAlgoliaRouter()
 
@@ -50,7 +52,7 @@ export function WatchHomePage({ locale }: WatchHomePageProps): ReactElement {
                   <SearchBar showDropdown showLanguageButton />
                 </SearchBarProvider>
               </Box>
-              <AlgoliaVideoGrid variant="contained" locale={locale} />
+              <AlgoliaVideoGrid variant="contained" languageId={languageId} />
             </Index>
             <SeeAllVideos />
             <Box

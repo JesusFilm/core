@@ -9,9 +9,9 @@ import {
 import { VideoGrid, VideoGridProps } from '../VideoGrid'
 
 export function AlgoliaVideoGrid({
-  locale,
+  languageId,
   ...props
-}: VideoGridProps & { locale?: string | undefined }): ReactElement {
+}: VideoGridProps & { languageId?: string | undefined }): ReactElement {
   const {
     items: algoliaVideos,
     showMore,
@@ -19,7 +19,7 @@ export function AlgoliaVideoGrid({
     loading,
     noResults,
     sendEvent
-  } = useAlgoliaVideos<CoreVideo>({ transformItems, locale })
+  } = useAlgoliaVideos<CoreVideo>({ transformItems, languageId })
 
   const handleClick =
     (videoId?: string) =>
