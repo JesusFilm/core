@@ -17,15 +17,11 @@ import { TemplateEditButton } from './TemplateEditButton/TemplateEditButton'
 interface TemplateViewHeaderProps {
   isPublisher: boolean | undefined
   authUser: User | undefined
-  openTeamDialog: boolean
-  setOpenTeamDialog: Dispatch<SetStateAction<boolean>>
 }
 
 export function TemplateViewHeader({
   isPublisher,
-  authUser,
-  openTeamDialog,
-  setOpenTeamDialog
+  authUser
 }: TemplateViewHeaderProps): ReactElement {
   const { journey } = useJourney()
   const hasCreatorDescription = journey?.creatorDescription != null
@@ -153,11 +149,7 @@ export function TemplateViewHeader({
               marginTop: 'auto'
             }}
           >
-            <CreateJourneyButton
-              signedIn={authUser?.id != null}
-              openTeamDialog={openTeamDialog}
-              setOpenTeamDialog={setOpenTeamDialog}
-            />
+            <CreateJourneyButton signedIn={authUser?.id != null} />
             <PreviewTemplateButton slug={journey?.slug} />
             {journey != null && isPublisher === true && (
               <TemplateEditButton journeyId={journey.id} />
@@ -166,11 +158,7 @@ export function TemplateViewHeader({
         </Stack>
       </Stack>
       <Box sx={{ display: { xs: 'flex', sm: 'none' }, pt: 6 }} gap={2}>
-        <CreateJourneyButton
-          signedIn={authUser?.id != null}
-          openTeamDialog={openTeamDialog}
-          setOpenTeamDialog={setOpenTeamDialog}
-        />
+        <CreateJourneyButton signedIn={authUser?.id != null} />
         <PreviewTemplateButton slug={journey?.slug} />
         {journey != null && isPublisher === true && (
           <TemplateEditButton journeyId={journey.id} />

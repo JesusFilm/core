@@ -30,8 +30,6 @@ import { CreateJourneyButton } from '../../CreateJourneyButton'
 interface TemplateCardPreviewProps {
   steps?: Array<TreeBlock<StepBlock>>
   authUser?: User
-  openTeamDialog: boolean
-  setOpenTeamDialog: Dispatch<SetStateAction<boolean>>
 }
 
 interface TemplateCardPreviewItemProps {
@@ -113,9 +111,7 @@ function TemplateCardPreviewItem({
 
 export function TemplateCardPreview({
   steps,
-  authUser,
-  openTeamDialog,
-  setOpenTeamDialog
+  authUser
 }: TemplateCardPreviewProps): ReactElement {
   const { breakpoints } = useTheme()
   const { t } = useTranslation('libs-journeys-ui')
@@ -202,11 +198,7 @@ export function TemplateCardPreview({
             >
               {t('Use this template to see more!')}
             </Typography>
-            <CreateJourneyButton
-              signedIn={authUser?.id != null}
-              openTeamDialog={openTeamDialog}
-              setOpenTeamDialog={setOpenTeamDialog}
-            />
+            <CreateJourneyButton signedIn={authUser?.id != null} />
           </Stack>
           <Box
             sx={{
