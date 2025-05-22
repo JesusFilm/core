@@ -31,6 +31,41 @@ const slideMap = {
         /* webpackChunkName: "quiz-slide-question-2" */ '../Q2'
       ).then((mod) => mod.Q2),
     { ssr: false }
+  ),
+  rare_view: dynamic(
+    async () =>
+      await import(
+        /* webpackChunkName: "quiz-slide-rare-view" */ '../RareView'
+      ).then((mod) => mod.RareView),
+    { ssr: false }
+  ),
+  branch_bible: dynamic(
+    async () =>
+      await import(
+        /* webpackChunkName: "quiz-slide-branch-bible" */ '../BranchBible'
+      ).then((mod) => mod.BranchBible),
+    { ssr: false }
+  ),
+  question_bible_path: dynamic(
+    async () =>
+      await import(
+        /* webpackChunkName: "quiz-slide-question-bible-path" */ '../QuestionBiblePath'
+      ).then((mod) => mod.QuestionBiblePath),
+    { ssr: false }
+  ),
+  exploring_now: dynamic(
+    async () =>
+      await import(
+        /* webpackChunkName: "quiz-slide-exploring-now" */ '../ExploringNow'
+      ).then((mod) => mod.ExploringNow),
+    { ssr: false }
+  ),
+  recommendation_explore: dynamic(
+    async () =>
+      await import(
+        /* webpackChunkName: "quiz-slide-recommendation-explore" */ '../RecommendationExplore'
+      ).then((mod) => mod.RecommendationExplore),
+    { ssr: false }
   )
 }
 
