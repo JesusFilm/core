@@ -30,16 +30,12 @@ export class MailChimpService {
         }
       )
     } catch (error) {
-      const responseText = get(error, 'response.text', '')
-      let errorMessage = ''
-      if (typeof responseText === 'string') {
-        errorMessage = responseText
-      }
-      if (typeof errorMessage === 'object') {
-        errorMessage = JSON.stringify(errorMessage)
-      }
-      const fakeEmailCheck = errorMessage.includes('looks fake or invalid')
-      if (process.env.NODE_ENV !== 'production' && fakeEmailCheck) return
+      if (
+        process.env.NODE_ENV !== 'production' &&
+        get(error, 'response.text.detail') ===
+          `${user.email} looks fake or invalid, please enter a real email address.`
+      )
+        return
       throw error
     }
   }
