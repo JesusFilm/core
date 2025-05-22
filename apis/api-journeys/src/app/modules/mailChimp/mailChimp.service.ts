@@ -30,13 +30,11 @@ export class MailChimpService {
         }
       )
     } catch (error) {
-      if (
-        process.env.NODE_ENV !== 'production' &&
-        (get(error, 'response.detail') ===
-          `${user.email} looks fake or invalid, please enter a real email address.` ||
-          get(error, 'response.text', '').includes('looks fake or invalid'))
-      )
-        return
+      // Based on the DataDog logs, check for fake email errors
+      const responseText = get(error, 'response.text', '')
+      const fakeEmailCheck = responseText.includes('looks fake or invalid')
+
+      if (process.env.NODE_ENV !== 'production' && fakeEmailCheck) return
       throw error
     }
   }
