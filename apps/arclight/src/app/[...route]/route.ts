@@ -66,6 +66,13 @@ const getVideoVariant = async (
   }
 }
 
+const setCorsHeaders = (c: any) => {
+  c.header('Access-Control-Allow-Origin', '*')
+  c.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+  c.header('Access-Control-Allow-Headers', '*')
+  c.header('Access-Control-Expose-Headers', '*')
+}
+
 const hlsRoute = createRoute({
   method: 'get',
   path: '/hls/:mediaComponentId/:languageId',
@@ -284,6 +291,7 @@ app.doc('/redirects-doc.json', {
 app.get('/api/redirects-doc', swaggerUI({ url: '/redirects-doc.json' }))
 
 app.openapi(hlsRoute, async (c) => {
+  setCorsHeaders(c)
   const { mediaComponentId, languageId } = c.req.param()
   try {
     const variant = await getVideoVariant(mediaComponentId, languageId)
@@ -301,11 +309,6 @@ app.openapi(hlsRoute, async (c) => {
 
     const finalUrl = response.url
 
-    c.header('Access-Control-Allow-Origin', '*')
-    c.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
-    c.header('Access-Control-Allow-Headers', '*')
-    c.header('Access-Control-Expose-Headers', '*')
-
     return c.redirect(finalUrl, 302)
   } catch (error) {
     if (error instanceof HTTPException) {
@@ -319,6 +322,7 @@ app.openapi(hlsRoute, async (c) => {
 })
 
 app.openapi(downloadRoute, async (c) => {
+  setCorsHeaders(c)
   const { mediaComponentId, languageId } = c.req.param()
   const quality = c.req.query('quality') || 'high'
   try {
@@ -345,6 +349,7 @@ app.openapi(downloadRoute, async (c) => {
 })
 
 app.openapi(highQualityRoute, async (c) => {
+  setCorsHeaders(c)
   const { mediaComponentId, languageId } = c.req.param()
   try {
     const variant = await getVideoVariant(mediaComponentId, languageId)
@@ -367,6 +372,7 @@ app.openapi(highQualityRoute, async (c) => {
 })
 
 app.openapi(watchRoute, async (c) => {
+  setCorsHeaders(c)
   const { mediaComponentId, languageId } = c.req.param()
   try {
     return c.redirect(
@@ -379,6 +385,7 @@ app.openapi(watchRoute, async (c) => {
 })
 
 app.openapi(keywordRoute, async (c) => {
+  setCorsHeaders(c)
   const { keyword } = c.req.param()
 
   try {
@@ -420,9 +427,7 @@ app.openapi(keywordRoute, async (c) => {
 })
 
 app.options('*', (c) => {
-  c.header('Access-Control-Allow-Origin', '*')
-  c.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
-  c.header('Access-Control-Allow-Headers', '*')
+  setCorsHeaders(c)
   return new Response(null, { status: 204 })
 })
 
