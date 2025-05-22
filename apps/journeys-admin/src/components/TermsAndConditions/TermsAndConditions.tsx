@@ -74,7 +74,8 @@ export function TermsAndConditions(): ReactElement {
         }
       }
     })
-    if (teamCreateData != null) {
+
+    if (teamCreateData?.teamCreate != null) {
       await Promise.allSettled([
         journeyDuplicate({
           variables: {

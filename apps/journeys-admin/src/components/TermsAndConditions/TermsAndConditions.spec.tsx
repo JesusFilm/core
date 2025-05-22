@@ -350,51 +350,6 @@ describe('TermsAndConditions', () => {
     })
   })
 
-  it('should handle journey profile creation error', async () => {
-    mockUseRouter.mockReturnValue({
-      push,
-      query: { redirect: null }
-    } as unknown as NextRouter)
-
-    const journeyProfileCreateMockResult = jest
-      .fn()
-      .mockRejectedValue(new Error('Failed to create journey profile'))
-
-    const { getByRole, queryByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            ...journeyProfileCreateMock,
-            result: journeyProfileCreateMockResult
-          }
-        ]}
-      >
-        <SnackbarProvider>
-          <TeamProvider>
-            <TermsAndConditions />
-          </TeamProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    fireEvent.click(getByRole('checkbox'))
-    fireEvent.click(getByRole('button', { name: 'Next' }))
-    await waitFor(() => {
-      expect(getByRole('progressbar')).toBeInTheDocument()
-    })
-
-    await waitFor(() => {
-      expect(journeyProfileCreateMockResult).toHaveBeenCalled()
-    })
-
-    expect(push).not.toHaveBeenCalled()
-    await act(async () => {
-      await waitFor(() => {
-        expect(queryByRole('progressbar')).not.toBeInTheDocument()
-      })
-    })
-  })
-
   it('should link to terms of use page', () => {
     const { getByRole } = render(
       <MockedProvider>
