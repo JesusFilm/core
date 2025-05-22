@@ -1,8 +1,12 @@
 // Developers must add an import for every resolver
 // and object type in the schema
 
-import './mediaVideo'
+import './journey'
+import './journeyAiTranslate'
 import './journeyEventsExportLog'
+import './journeyLanguageAiDetect'
+import './language'
+import './mediaVideo'
 
 import { builder } from './builder'
 
