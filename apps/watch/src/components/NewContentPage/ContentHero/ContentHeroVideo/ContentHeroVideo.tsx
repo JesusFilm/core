@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useRef } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 import 'video.js/dist/video-js.css'
@@ -12,7 +12,13 @@ import 'videojs-mux'
 import { useVideo } from '../../../../libs/videoContext'
 import { VideoControls } from '../../../VideoContentPage/VideoHero/VideoPlayer/VideoControls'
 
-export function ContentHeroVideo(): ReactElement {
+interface ContentHeroVideoProps {
+  isFullscreen: boolean
+}
+
+export function ContentHeroVideo({
+  isFullscreen
+}: ContentHeroVideoProps): ReactElement {
   const { variant, ...video } = useVideo()
 
   const title = video.title?.[0]?.value ?? ''
@@ -82,11 +88,13 @@ export function ContentHeroVideo(): ReactElement {
         top: 0,
         left: 0,
         right: 0,
-        height: {
-          xs: '90%',
-          md: '80%'
-        },
-        maxWidth: 1920,
+        height: isFullscreen
+          ? '100%'
+          : {
+              xs: '90%',
+              md: '80%'
+            },
+        maxWidth: isFullscreen ? '100%' : '1920px',
         marginX: 'auto',
         zIndex: 0,
         '.vjs-hidden': { display: 'none' },
