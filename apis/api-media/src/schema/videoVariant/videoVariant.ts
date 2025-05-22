@@ -220,7 +220,7 @@ builder.mutationFields((t) => ({
         select: { videoId: true }
       })
 
-      if (!variant) {
+      if (variant == null) {
         throw new Error(`VideoVariant with id ${id} not found`)
       }
 

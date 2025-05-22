@@ -35,9 +35,10 @@ export async function videoCacheReset(videoId: string): Promise<void> {
   try {
     const slug = await prisma.video.findUnique({
       where: { id: videoId },
-      select: { slug: true }
+      select: { slug: true },      
     })
     if (!slug?.slug) return
+    // only english since crowdin handles others
     await revalidateWatchApp(
       `/watch/${encodeURIComponent(slug.slug)}.html/english.html`
     )
@@ -56,8 +57,11 @@ export async function videoVariantCacheReset(
       select: { slug: true }
     })
     if (!variant?.slug) return
+
+    const slugs = variant.slug.split('/')
+
     await revalidateWatchApp(
-      `/watch/${encodeURIComponent(variant.slug)}.html/english.html`
+      `/watch/${encodeURIComponent(slugs[0])}.html/${encodeURIComponent(slugs[1])}.html`
     )
     await invalidateYogaCache('VideoVariant', videoVariantId)
   } catch {

@@ -157,7 +157,7 @@ describe('videoVariantCacheReset', () => {
 
   it('should call fetch and invalidate cache for valid variant id', async () => {
     const variantId = 'test-variant-id'
-    const slug = 'test-variant-slug'
+    const slug = 'test-variant-slug/english'
 
     // Since we're only using select: { slug: true } in the function,
     // we can use a type assertion to simplify
@@ -178,7 +178,7 @@ describe('videoVariantCacheReset', () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          url: `/watch/${encodeURIComponent(slug)}.html/english.html`
+          url: `/watch/test-variant-slug.html/english.html`
         })
       }
     )
