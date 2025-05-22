@@ -97,17 +97,17 @@ export function TermsAndConditions(): ReactElement {
             }
           }
         }),
-
+        router.push(
+          router.query.redirect != null
+            ? new URL(
+                `${window.location.origin}${router.query.redirect as string}`
+              )
+            : '/?onboarding=true'
+        ),
         // GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
         query.refetch()
       ])
-      void router.push(
-        router.query.redirect != null
-          ? new URL(
-              `${window.location.origin}${router.query.redirect as string}`
-            )
-          : '/?onboarding=true'
-      )
+
       setActiveTeam(teamCreateData.teamCreate)
     }
     setLoading(false)
@@ -169,7 +169,7 @@ export function TermsAndConditions(): ReactElement {
       <Button
         data-testid="TermsAndConditionsNextButton"
         variant="contained"
-        disabled={!accepted}
+        disabled={!accepted || loading}
         onClick={handleJourneyProfileCreate}
         sx={{
           height: 54,
