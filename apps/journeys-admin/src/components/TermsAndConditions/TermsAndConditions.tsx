@@ -11,6 +11,7 @@ import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
+import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
@@ -46,6 +47,7 @@ export function TermsAndConditions(): ReactElement {
   const [journeyProfileCreate] = useMutation<JourneyProfileCreate>(
     JOURNEY_PROFILE_CREATE
   )
+  const { enqueueSnackbar } = useSnackbar()
   const [journeyDuplicate] = useJourneyDuplicateMutation()
   const [updateLastActiveTeamId] = useMutation<UpdateLastActiveTeamId>(
     UPDATE_LAST_ACTIVE_TEAM_ID
@@ -68,7 +70,18 @@ export function TermsAndConditions(): ReactElement {
     const {
       data: journeyProfileCreateData,
       errors: journeyProfileCreateErrors
-    } = await journeyProfileCreate()
+    } = await journeyProfileCreate({
+      onError: (error) => {
+        console.error(
+          '[TermsAndConditions] Journey profile creation failed:',
+          error
+        )
+        enqueueSnackbar(error.message, {
+          variant: 'error'
+        })
+        setLoading(false)
+      }
+    })
     // do not create team & onboarding journey if journey profile creation fails
     if (
       journeyProfileCreateErrors != null ||
