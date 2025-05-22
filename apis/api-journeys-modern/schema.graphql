@@ -46,6 +46,7 @@ type Journey
   updatedAt: DateTime! @shareable
   status: JourneyStatus! @shareable
   languageId: String @shareable
+  language: Language @shareable
 }
 
 input JourneyAiTranslateInput {
@@ -79,6 +80,13 @@ enum JourneyStatus {
   draft
   published
   trashed
+}
+
+type Language
+  @key(fields: "id")
+  @extends
+{
+  id: ID!
 }
 
 union MediaVideo = MuxVideo | Video | YouTube

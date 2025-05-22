@@ -548,7 +548,7 @@ type Journey @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API
   private title for creators
   """
   title: String!
-  language: Language! @join__field(graph: API_JOURNEYS) 
+  language: Language @join__field(graph: API_JOURNEYS, type: "Language!")  @join__field(graph: API_JOURNEYS_MODERN, type: "Language") 
   languageId: String @join__field(graph: API_JOURNEYS, type: "String!")  @join__field(graph: API_JOURNEYS_MODERN, type: "String") 
   themeMode: ThemeMode! @join__field(graph: API_JOURNEYS) 
   themeName: ThemeName! @join__field(graph: API_JOURNEYS) 
@@ -1241,7 +1241,7 @@ type ChatOpenEvent implements Event @join__type(graph: API_JOURNEYS)  @join__imp
   messagePlatform: MessagePlatform
 }
 
-type Language @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_LANGUAGES, key: "id")  @join__type(graph: API_MEDIA, key: "id", extension: true)  {
+type Language @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_JOURNEYS_MODERN, key: "id", extension: true)  @join__type(graph: API_LANGUAGES, key: "id")  @join__type(graph: API_MEDIA, key: "id", extension: true)  {
   id: ID!
   bcp47: String @join__field(graph: API_LANGUAGES) 
   iso3: String @join__field(graph: API_LANGUAGES) 

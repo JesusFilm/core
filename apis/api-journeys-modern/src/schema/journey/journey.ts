@@ -1,5 +1,6 @@
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
+import { Language } from '../language'
 
 // Define JourneyStatus enum to match api-journeys
 builder.enumType('JourneyStatus', {
@@ -31,7 +32,12 @@ const JourneyRef = builder.prismaObject('Journey', {
       shareable: true,
       resolve: (journey) => journey.status
     }),
-    languageId: t.exposeString('languageId', { shareable: true })
+    languageId: t.exposeString('languageId', { shareable: true }),
+    language: t.field({
+      type: Language,
+      shareable: true,
+      resolve: (journey) => ({ id: journey.languageId ?? '529' })
+    })
     // Add more fields as needed for federation compatibility
   })
 })
