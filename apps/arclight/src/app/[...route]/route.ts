@@ -124,7 +124,7 @@ const hlsRoute = createRoute({
   }
 } as const)
 
-const downloadRoute = createRoute({
+const lowQualityRoute = createRoute({
   method: 'get',
   path: '/dl/:mediaComponentId/:languageId',
   tags: ['Redirects by-convention'],
@@ -321,19 +321,15 @@ app.openapi(hlsRoute, async (c) => {
   }
 })
 
-app.openapi(downloadRoute, async (c) => {
+app.openapi(lowQualityRoute, async (c) => {
   setCorsHeaders(c)
   const { mediaComponentId, languageId } = c.req.param()
-  const quality = c.req.query('quality') || 'high'
   try {
     const variant = await getVideoVariant(mediaComponentId, languageId)
-    const download = variant.downloads?.find((d) => d.quality === quality)
+    const download = variant.downloads?.find((d) => d.quality === 'low')
 
     if (!download?.url) {
-      return c.json(
-        { error: `Download URL for quality '${quality}' not available` },
-        404
-      )
+      return c.json({ error: 'Low quality download URL not available' }, 404)
     }
 
     return c.redirect(download.url)
