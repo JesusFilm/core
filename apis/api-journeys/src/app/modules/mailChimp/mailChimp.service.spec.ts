@@ -66,7 +66,7 @@ describe('MailChimpService', () => {
 
       setListMemberMock.mockRejectedValueOnce({
         response: {
-          body: {
+          text: {
             detail:
               'my-nama-yeff@example.com looks fake or invalid, please enter a real email address.'
           }
