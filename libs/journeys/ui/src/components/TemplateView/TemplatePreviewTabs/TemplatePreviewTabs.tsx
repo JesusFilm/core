@@ -4,14 +4,7 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
-import {
-  Dispatch,
-  ReactElement,
-  SetStateAction,
-  SyntheticEvent,
-  useMemo,
-  useState
-} from 'react'
+import { ReactElement, SyntheticEvent, useMemo, useState } from 'react'
 
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 

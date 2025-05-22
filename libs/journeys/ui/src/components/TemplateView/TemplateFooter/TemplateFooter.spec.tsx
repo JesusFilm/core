@@ -16,10 +16,7 @@ describe('TemplateFooter', () => {
     const { getByRole } = render(
       <MockedProvider>
         <JourneyProvider value={{ journey }}>
-          <TemplateFooter
-            openTeamDialog={false}
-            setOpenTeamDialog={jest.fn()}
-          />
+          <TemplateFooter />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -36,10 +33,7 @@ describe('TemplateFooter', () => {
     const { getByRole } = render(
       <MockedProvider>
         <JourneyProvider value={{}}>
-          <TemplateFooter
-            openTeamDialog={false}
-            setOpenTeamDialog={jest.fn()}
-          />
+          <TemplateFooter />
         </JourneyProvider>
       </MockedProvider>
     )

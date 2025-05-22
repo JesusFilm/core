@@ -4,7 +4,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { intlFormat, parseISO } from 'date-fns'
 import { User } from 'next-firebase-auth'
-import { Dispatch, ReactElement, SetStateAction } from 'react'
+import { ReactElement } from 'react'
 
 import { useJourney } from '../../../libs/JourneyProvider'
 import { CreateJourneyButton } from '../CreateJourneyButton'
