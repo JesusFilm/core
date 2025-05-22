@@ -55,7 +55,15 @@ export function TermsAndConditions(): ReactElement {
   const router = useRouter()
 
   const handleJourneyProfileCreate = async (): Promise<void> => {
-    if (user?.displayName == null) return
+    if (user?.displayName == null) {
+      console.log(
+        '[TermsAndConditions] User display name is null, aborting profile creation'
+      )
+      return
+    }
+    console.log(
+      '[TermsAndConditions] Starting journey profile creation process'
+    )
     setLoading(true)
     const {
       data: journeyProfileCreateData,
@@ -66,9 +74,14 @@ export function TermsAndConditions(): ReactElement {
       journeyProfileCreateErrors != null ||
       journeyProfileCreateData == null
     ) {
+      console.error(
+        '[TermsAndConditions] Journey profile creation failed:',
+        journeyProfileCreateErrors
+      )
       setLoading(false)
       return
     }
+    console.log('[TermsAndConditions] Journey profile created successfully:')
 
     const { data: teamCreateData } = await teamCreate({
       variables: {
@@ -83,34 +96,66 @@ export function TermsAndConditions(): ReactElement {
       }
     })
     if (teamCreateData != null) {
+      console.log(
+        '[TermsAndConditions] Team created successfully:',
+        teamCreateData.teamCreate.id
+      )
+      console.log(
+        '[TermsAndConditions] Starting parallel operations: journey duplicate, team update, and navigation'
+      )
+
       await Promise.allSettled([
         journeyDuplicate({
           variables: {
             id: ONBOARDING_TEMPLATE_ID,
             teamId: teamCreateData.teamCreate.id
           }
-        }),
+        }).then(() =>
+          console.log(
+            '[TermsAndConditions] Onboarding journey duplicated successfully'
+          )
+        ),
         updateLastActiveTeamId({
           variables: {
             input: {
               lastActiveTeamId: teamCreateData.teamCreate.id
             }
           }
-        }),
-        router.push(
-          router.query.redirect != null
-            ? new URL(
-                `${window.location.origin}${router.query.redirect as string}`
-              )
-            : '/?onboarding=true'
+        }).then(() =>
+          console.log(
+            '[TermsAndConditions] Last active team ID updated successfully'
+          )
         ),
+        router
+          .push(
+            router.query.redirect != null
+              ? new URL(
+                  `${window.location.origin}${router.query.redirect as string}`
+                )
+              : '/?onboarding=true'
+          )
+          .then(() =>
+            console.log(
+              '[TermsAndConditions] Navigation completed successfully'
+            )
+          ),
         // GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
-        query.refetch()
+        query
+          .refetch()
+          .then(() =>
+            console.log('[TermsAndConditions] Team data refetched successfully')
+          )
       ])
 
       setActiveTeam(teamCreateData.teamCreate)
+      console.log('[TermsAndConditions] Active team set successfully')
+    } else {
+      console.error(
+        '[TermsAndConditions] Team creation failed - no team data returned'
+      )
     }
     setLoading(false)
+    console.log('[TermsAndConditions] Profile creation process completed')
   }
   const { t } = useTranslation('apps-journeys-admin')
 
