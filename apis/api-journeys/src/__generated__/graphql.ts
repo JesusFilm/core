@@ -815,7 +815,7 @@ export type Journey = {
   host?: Maybe<Host>;
   id: Scalars['ID']['output'];
   journeyCollections: Array<JourneyCollection>;
-  language?: Maybe<Language>;
+  language: Language;
   languageId?: Maybe<Scalars['String']['output']>;
   logoImageBlock?: Maybe<ImageBlock>;
   menuButtonIcon?: Maybe<JourneyMenuButtonIcon>;

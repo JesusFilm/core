@@ -602,7 +602,7 @@ export interface GetAdminJourney_journey {
   title: string;
   description: string | null;
   status: JourneyStatus;
-  language: GetAdminJourney_journey_language | null;
+  language: GetAdminJourney_journey_language;
   createdAt: any;
   updatedAt: any;
   featuredAt: any | null;

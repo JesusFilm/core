@@ -48,7 +48,7 @@ export interface CreateJourney_journeyCreate {
   slug: string;
   themeName: ThemeName;
   themeMode: ThemeMode;
-  language: CreateJourney_journeyCreate_language | null;
+  language: CreateJourney_journeyCreate_language;
   status: JourneyStatus;
   userJourneys: CreateJourney_journeyCreate_userJourneys[] | null;
 }

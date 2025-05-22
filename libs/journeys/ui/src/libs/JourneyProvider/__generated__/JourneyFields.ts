@@ -602,7 +602,7 @@ export interface JourneyFields {
   title: string;
   description: string | null;
   status: JourneyStatus;
-  language: JourneyFields_language | null;
+  language: JourneyFields_language;
   createdAt: any;
   updatedAt: any;
   featuredAt: any | null;

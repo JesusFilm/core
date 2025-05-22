@@ -548,7 +548,7 @@ type Journey @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API
   private title for creators
   """
   title: String!
-  language: Language @join__field(graph: API_JOURNEYS, type: "Language!")  @join__field(graph: API_JOURNEYS_MODERN, type: "Language") 
+  language: Language!
   languageId: String @join__field(graph: API_JOURNEYS, type: "String!")  @join__field(graph: API_JOURNEYS_MODERN, type: "String") 
   themeMode: ThemeMode! @join__field(graph: API_JOURNEYS) 
   themeName: ThemeName! @join__field(graph: API_JOURNEYS) 

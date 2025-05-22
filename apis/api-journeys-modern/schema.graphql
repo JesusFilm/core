@@ -46,7 +46,7 @@ type Journey
   updatedAt: DateTime! @shareable
   status: JourneyStatus! @shareable
   languageId: String @shareable
-  language: Language @shareable
+  language: Language! @shareable
 }
 
 input JourneyAiTranslateInput {

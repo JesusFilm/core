@@ -36,6 +36,7 @@ const JourneyRef = builder.prismaObject('Journey', {
     language: t.field({
       type: Language,
       shareable: true,
+      nullable: false,
       resolve: (journey) => ({ id: journey.languageId ?? '529' })
     })
     // Add more fields as needed for federation compatibility
