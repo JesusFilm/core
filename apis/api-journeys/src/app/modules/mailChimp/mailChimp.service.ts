@@ -30,9 +30,18 @@ export class MailChimpService {
         }
       )
     } catch (error) {
+      console.log('the mailchip error message', error)
+
+      // Check if response.text is a JSON string and parse it
+      let responseTextData = {}
+      const responseText = get(error, 'response.text')
+      if (typeof responseText === 'string') {
+        responseTextData = JSON.parse(responseText)
+      }
+
       const errorDetail =
         get(error, 'response.body.detail') ||
-        get(error, 'response.text') ||
+        get(responseTextData, 'detail') ||
         get(error, 'detail')
 
       let errorMessage = ''
