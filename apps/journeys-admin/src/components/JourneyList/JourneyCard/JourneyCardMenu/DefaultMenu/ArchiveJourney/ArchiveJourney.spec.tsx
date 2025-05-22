@@ -32,7 +32,7 @@ describe('ArchiveJourney', () => {
 
     it('should show archive journey button', () => {
       const { getByRole } = render(
-        <MockedProvider mocks={[]}>
+        <MockedProvider>
           <SnackbarProvider>
             <ArchiveJourney
               status={JourneyStatus.draft}
@@ -122,7 +122,7 @@ describe('ArchiveJourney', () => {
 
     it('should not show unarchive journey button', () => {
       const { queryByRole } = render(
-        <MockedProvider mocks={[]}>
+        <MockedProvider>
           <SnackbarProvider>
             <ArchiveJourney
               status={JourneyStatus.archived}
@@ -148,7 +148,7 @@ describe('ArchiveJourney', () => {
 
     it('should show unarchive journey button', () => {
       const { getByRole } = render(
-        <MockedProvider mocks={[]}>
+        <MockedProvider>
           <SnackbarProvider>
             <ArchiveJourney
               status={JourneyStatus.archived}
