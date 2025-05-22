@@ -30,24 +30,14 @@ export class MailChimpService {
         }
       )
     } catch (error) {
-      // Skip fake email errors in non-production environments
-      if (process.env.NODE_ENV !== 'production') {
-        // Check for fake email error in different possible locations
-        const errorDetail =
-          get(error, 'response.body.detail') ||
-          (error.text && JSON.parse(error.text)?.detail) ||
-          get(error, 'response.text.detail') ||
-          error.message
-
-        if (
-          errorDetail &&
-          errorDetail.includes(
-            'looks fake or invalid, please enter a real email address'
-          )
-        ) {
-          return
-        }
-      }
+      if (
+        process.env.NODE_ENV !== 'production' &&
+        (get(error, 'response.body.detail', '').includes(
+          'looks fake or invalid'
+        ) ||
+          get(error, 'response.text', '').includes('looks fake or invalid'))
+      )
+        return
       throw error
     }
   }
