@@ -30,34 +30,12 @@ export class MailChimpService {
         }
       )
     } catch (error) {
-      console.log('the mailchip error message', error)
-
-      // Check if response.text is a JSON string and parse it
-      let responseTextData = {}
-      const responseText = get(error, 'response.text')
-      if (typeof responseText === 'string') {
-        responseTextData = JSON.parse(responseText)
-      }
-
-      const errorDetail =
-        get(error, 'response.body.detail') ||
-        get(responseTextData, 'detail') ||
-        get(error, 'detail')
-
-      let errorMessage = ''
-      if (typeof errorDetail === 'string') {
-        errorMessage = errorDetail
-      } else if (typeof errorDetail === 'object') {
-        errorMessage = JSON.stringify(errorDetail)
-      }
-
       if (
         process.env.NODE_ENV !== 'production' &&
-        errorMessage.includes('looks fake or invalid')
-      ) {
+        get(error, 'response.body.detail') ===
+          `${user.email} looks fake or invalid, please enter a real email address.`
+      )
         return
-      }
-
       throw error
     }
   }
