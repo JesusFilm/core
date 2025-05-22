@@ -83,7 +83,7 @@ export function TermsAndConditions(): ReactElement {
       }
     })
     if (teamCreateData != null) {
-      await Promise.all([
+      await Promise.allSettled([
         journeyDuplicate({
           variables: {
             id: ONBOARDING_TEMPLATE_ID,
