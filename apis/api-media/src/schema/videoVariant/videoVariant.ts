@@ -149,11 +149,17 @@ builder.mutationFields((t) => ({
         where: { id: newVariant.videoId },
         data: { availableLanguages: updatedLanguages }
       })
+
+      // Save the videoId before the try/catch block
+      const { id, videoId } = newVariant
+
       try {
-        void videoVariantCacheReset(newVariant.id)
-        void videoCacheReset(newVariant.videoId)
-        // eslint-disable-next-line no-empty
-      } catch {}
+        void videoVariantCacheReset(id)
+        void videoCacheReset(videoId)
+      } catch (error) {
+        // Log the error but don't throw it
+        console.error('Cache reset error:', error)
+      }
       return newVariant
     }
   }),
@@ -186,8 +192,14 @@ builder.mutationFields((t) => ({
       })
       try {
         void videoVariantCacheReset(updated.id)
-        // eslint-disable-next-line no-empty
-      } catch {}
+        // If videoId is being updated, we should reset the video cache too
+        if (input.videoId) {
+          void videoCacheReset(input.videoId)
+        }
+      } catch (error) {
+        // Log the error but don't throw it
+        console.error('Cache reset error:', error)
+      }
       return updated
     }
   }),
@@ -198,15 +210,31 @@ builder.mutationFields((t) => ({
       id: t.arg.id({ required: true })
     },
     resolve: async (query, _parent, { id }) => {
+      // Get the video variant first to ensure we have videoId for cache reset
+      const variant = await prisma.videoVariant.findUnique({
+        where: { id },
+        select: { videoId: true }
+      })
+
+      if (!variant) {
+        throw new Error(`VideoVariant with id ${id} not found`)
+      }
+
+      // Store videoId to use later
+      const { videoId } = variant
+
       const deleted = await prisma.videoVariant.delete({
         ...query,
         where: { id }
       })
+
       try {
-        void videoVariantCacheReset(deleted.id)
-        void videoCacheReset(deleted.videoId)
-        // eslint-disable-next-line no-empty
-      } catch {}
+        void videoVariantCacheReset(id)
+        void videoCacheReset(videoId)
+      } catch (error) {
+        // Log the error but don't throw it
+        console.error('Cache reset error:', error)
+      }
       return deleted
     }
   })
