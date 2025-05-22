@@ -282,7 +282,7 @@ mediaComponent.openapi(route, async (c) => {
         video.studyQuestions.length > 0
           ? video.studyQuestions.map((question) => question.value)
           : video.fallbackStudyQuestions.map((question) => question.value),
-      metadataLanguageTag: metadataLanguageTags[0] ?? 'en',
+      metadataLanguageTag: video.title[0]?.language.bcp47 ?? 'en',
       _links: {
         sampleMediaComponentLanguage: {
           href: `http://api.arclight.org/v2/media-components/${mediaComponentId}/languages/529?platform=${platform}&apiKey=${apiKey}`

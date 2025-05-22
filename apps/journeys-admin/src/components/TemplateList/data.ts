@@ -63,6 +63,7 @@ export const oldTemplate: Journey = {
   description:
     'Template created before the current year should also show the year in the date',
   createdAt: '2020-11-19T12:34:56.647Z',
+  updatedAt: '2020-11-19T12:34:56.647Z',
   publishedAt: '2020-12-19T12:34:56.647Z',
   status: JourneyStatus.published,
   primaryImageBlock: {
