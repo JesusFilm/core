@@ -66,6 +66,13 @@ const getVideoVariant = async (
   }
 }
 
+const setCorsHeaders = (c: any) => {
+  c.header('Access-Control-Allow-Origin', '*')
+  c.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+  c.header('Access-Control-Allow-Headers', '*')
+  c.header('Access-Control-Expose-Headers', '*')
+}
+
 const hlsRoute = createRoute({
   method: 'get',
   path: '/hls/:mediaComponentId/:languageId',
@@ -117,7 +124,7 @@ const hlsRoute = createRoute({
   }
 } as const)
 
-const downloadRoute = createRoute({
+const lowQualityRoute = createRoute({
   method: 'get',
   path: '/dl/:mediaComponentId/:languageId',
   tags: ['Redirects by-convention'],
@@ -284,6 +291,7 @@ app.doc('/redirects-doc.json', {
 app.get('/api/redirects-doc', swaggerUI({ url: '/redirects-doc.json' }))
 
 app.openapi(hlsRoute, async (c) => {
+  setCorsHeaders(c)
   const { mediaComponentId, languageId } = c.req.param()
   try {
     const variant = await getVideoVariant(mediaComponentId, languageId)
@@ -301,11 +309,6 @@ app.openapi(hlsRoute, async (c) => {
 
     const finalUrl = response.url
 
-    c.header('Access-Control-Allow-Origin', '*')
-    c.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
-    c.header('Access-Control-Allow-Headers', '*')
-    c.header('Access-Control-Expose-Headers', '*')
-
     return c.redirect(finalUrl, 302)
   } catch (error) {
     if (error instanceof HTTPException) {
@@ -318,18 +321,15 @@ app.openapi(hlsRoute, async (c) => {
   }
 })
 
-app.openapi(downloadRoute, async (c) => {
+app.openapi(lowQualityRoute, async (c) => {
+  setCorsHeaders(c)
   const { mediaComponentId, languageId } = c.req.param()
-  const quality = c.req.query('quality') || 'high'
   try {
     const variant = await getVideoVariant(mediaComponentId, languageId)
-    const download = variant.downloads?.find((d) => d.quality === quality)
+    const download = variant.downloads?.find((d) => d.quality === 'low')
 
     if (!download?.url) {
-      return c.json(
-        { error: `Download URL for quality '${quality}' not available` },
-        404
-      )
+      return c.json({ error: 'Low quality download URL not available' }, 404)
     }
 
     return c.redirect(download.url)
@@ -345,6 +345,7 @@ app.openapi(downloadRoute, async (c) => {
 })
 
 app.openapi(highQualityRoute, async (c) => {
+  setCorsHeaders(c)
   const { mediaComponentId, languageId } = c.req.param()
   try {
     const variant = await getVideoVariant(mediaComponentId, languageId)
@@ -367,6 +368,7 @@ app.openapi(highQualityRoute, async (c) => {
 })
 
 app.openapi(watchRoute, async (c) => {
+  setCorsHeaders(c)
   const { mediaComponentId, languageId } = c.req.param()
   try {
     return c.redirect(
@@ -379,6 +381,7 @@ app.openapi(watchRoute, async (c) => {
 })
 
 app.openapi(keywordRoute, async (c) => {
+  setCorsHeaders(c)
   const { keyword } = c.req.param()
 
   try {
@@ -420,10 +423,8 @@ app.openapi(keywordRoute, async (c) => {
 })
 
 app.options('*', (c) => {
-  c.header('Access-Control-Allow-Origin', '*')
-  c.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
-  c.header('Access-Control-Allow-Headers', '*')
-  return new Response(null, { status: 204 })
+  setCorsHeaders(c)
+  return c.body(null, 204)
 })
 
 export const GET = handle(app)
