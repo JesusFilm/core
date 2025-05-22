@@ -6,6 +6,7 @@ import orderBy from 'lodash/orderBy'
 import { Prisma } from '.prisma/api-media-client'
 
 import { prisma } from '../../lib/prisma'
+import { videoCacheReset } from '../../lib/videoCacheReset'
 import { builder } from '../builder'
 import { ImageAspectRatio } from '../cloudflare/image/enums'
 import { IdType, IdTypeShape } from '../enums/idType'
@@ -494,10 +495,14 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoCreateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
-      return await prisma.video.create({
+      const video = await prisma.video.create({
         ...query,
         data: input
       })
+      try {
+        await videoCacheReset(video.id)
+      } catch {}
+      return video
     }
   }),
   videoUpdate: t.withAuth({ isPublisher: true }).prismaField({
@@ -507,7 +512,7 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoUpdateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
-      return await prisma.video.update({
+      const video = await prisma.video.update({
         ...query,
         where: { id: input.id },
         data: {
@@ -526,6 +531,10 @@ builder.mutationFields((t) => ({
           children: true
         }
       })
+      try {
+        await videoCacheReset(video.id)
+      } catch {}
+      return video
     }
   })
 }))
