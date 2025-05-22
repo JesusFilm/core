@@ -34,22 +34,19 @@ export function CopyToTeamMenuItem({
   const [duplicateTeamDialogOpen, setDuplicateTeamDialogOpen] =
     useState<boolean>(false)
   const { t } = useTranslation('apps-journeys-admin')
-  const [loading, setLoading] = useState(false)
   const { journey: journeyFromContext } = useJourney()
   const journeyData = journey ?? journeyFromContext
 
-  const { duplicateAndTranslate } = useJourneyDuplicateAndTranslate({
+  const { duplicateAndTranslate, loading } = useJourneyDuplicateAndTranslate({
     journeyId: journeyData?.id,
     journeyTitle: journeyData?.title ?? '',
     journeyLanguageName:
       journeyData?.language.name.find(({ primary }) => primary)?.value ?? '',
     onSuccess: () => {
       setDuplicateTeamDialogOpen(false)
-      setLoading(false)
     },
     onError: () => {
       setDuplicateTeamDialogOpen(false)
-      setLoading(false)
     }
   })
 
@@ -60,8 +57,11 @@ export function CopyToTeamMenuItem({
   ): Promise<void> => {
     if (id == null || journeyData == null) return
 
-    setLoading(true)
-    await duplicateAndTranslate(teamId, selectedLanguage, showTranslation)
+    await duplicateAndTranslate({
+      teamId,
+      selectedLanguage,
+      shouldTranslate: showTranslation
+    })
   }
 
   function setRoute(param: string): void {

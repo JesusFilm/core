@@ -2,15 +2,13 @@ import { Theme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTranslation } from 'next-i18next'
-import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { TranslationDialogWrapper } from '@core/journeys/ui/TranslationDialogWrapper'
-import { useJourneyAiTranslateMutation } from '@core/journeys/ui/useJourneyAiTranslateMutation'
 import { SUPPORTED_LANGUAGE_IDS } from '@core/journeys/ui/useJourneyAiTranslateMutation/supportedLanguages'
-import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
+import { useJourneyDuplicateAndTranslate } from '@core/journeys/ui/useJourneyDuplicateAndTranslate'
 import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
@@ -50,15 +48,21 @@ export function TranslateJourneyDialog({
   const { journey: journeyFromContext } = useJourney()
   const { activeTeam } = useTeam()
   const journeyData = journey ?? journeyFromContext
-  const { enqueueSnackbar } = useSnackbar()
-  const [translate] = useJourneyAiTranslateMutation()
-  const [journeyDuplicate] = useJourneyDuplicateMutation()
-  const [loading, setLoading] = useState(false)
 
   const { data: languagesData, loading: languagesLoading } = useLanguagesQuery({
     languageId: '529',
     where: {
       ids: [...SUPPORTED_LANGUAGE_IDS]
+    }
+  })
+
+  const { duplicateAndTranslate, loading } = useJourneyDuplicateAndTranslate({
+    journeyId: journeyData?.id,
+    journeyTitle: journeyData?.title ?? '',
+    journeyLanguageName:
+      journeyData?.language.name.find(({ primary }) => primary)?.value ?? '',
+    onSuccess: () => {
+      onClose()
     }
   })
 
@@ -77,6 +81,15 @@ export function TranslateJourneyDialog({
     JourneyLanguage | undefined
   >(journeyLanguage)
 
+  function handleDialogClose(
+    _?: object,
+    reason?: 'backdropClick' | 'escapeKeyDown'
+  ): void {
+    if (loading && (reason === 'backdropClick' || reason === 'escapeKeyDown'))
+      return
+    onClose()
+  }
+
   const handleTranslate = async (): Promise<void> => {
     if (
       selectedLanguage == null ||
@@ -85,58 +98,17 @@ export function TranslateJourneyDialog({
     )
       return
 
-    try {
-      setLoading(true)
-
-      const { data: duplicateData } = await journeyDuplicate({
-        variables: {
-          id: journeyData.id,
-          teamId: activeTeam.id
-        }
-      })
-
-      if (duplicateData?.journeyDuplicate?.id) {
-        const response = await translate({
-          variables: {
-            journeyId: duplicateData.journeyDuplicate.id,
-            name: `${journeyData.title}`,
-            journeyLanguageName:
-              journeyData.language.name.find(({ primary }) => !primary)
-                ?.value ?? '',
-            textLanguageId: selectedLanguage.id,
-            textLanguageName:
-              selectedLanguage.nativeName ?? selectedLanguage.localName ?? ''
-          }
-        })
-
-        if (response.data?.journeyAiTranslateCreate) {
-          enqueueSnackbar(t('Translation complete'), {
-            variant: 'success'
-          })
-          onClose()
-        } else {
-          throw new Error('Failed to start translation')
-        }
-      } else {
-        throw new Error('Journey duplication failed')
-      }
-    } catch (error) {
-      console.error('Error in translation process:', error)
-      enqueueSnackbar(
-        t('Failed to process translation request. Please try again.'),
-        {
-          variant: 'error'
-        }
-      )
-    } finally {
-      setLoading(false)
-    }
+    await duplicateAndTranslate({
+      teamId: activeTeam.id,
+      selectedLanguage,
+      shouldTranslate: true
+    })
   }
 
   return (
     <TranslationDialogWrapper
       open={open}
-      onClose={onClose}
+      onClose={handleDialogClose}
       onTranslate={handleTranslate}
       loading={loading}
       title={t('Create Translated Copy')}
