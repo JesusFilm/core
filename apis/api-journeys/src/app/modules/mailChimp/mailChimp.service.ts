@@ -1,13 +1,11 @@
 import mailchimp from '@mailchimp/mailchimp_marketing'
-import { Injectable, Logger } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import get from 'lodash/get'
 
 import { User } from '@core/nest/common/firebaseClient'
 
 @Injectable()
 export class MailChimpService {
-  private readonly logger = new Logger(MailChimpService.name)
-
   async syncUser(user: User): Promise<void> {
     try {
       mailchimp.setConfig({
@@ -32,16 +30,25 @@ export class MailChimpService {
         }
       )
     } catch (error) {
-      this.logger.debug(`MailChimp error: ${JSON.stringify(error)}`)
+      const errorDetail =
+        get(error, 'response.body.detail') ||
+        get(error, 'response.text') ||
+        get(error, 'detail')
+
+      let errorMessage = ''
+      if (typeof errorDetail === 'string') {
+        errorMessage = errorDetail
+      } else if (typeof errorDetail === 'object') {
+        errorMessage = JSON.stringify(errorDetail)
+      }
 
       if (
         process.env.NODE_ENV !== 'production' &&
-        (get(error, 'response.body.detail', '').includes(
-          'looks fake or invalid'
-        ) ||
-          get(error, 'response.text', '').includes('looks fake or invalid'))
-      )
+        errorMessage.includes('looks fake or invalid')
+      ) {
         return
+      }
+
       throw error
     }
   }
