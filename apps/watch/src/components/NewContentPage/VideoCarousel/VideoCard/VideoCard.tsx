@@ -1,19 +1,20 @@
 import Box from '@mui/material/Box'
 import ButtonBase from '@mui/material/ButtonBase'
-import Link from '@mui/material/Link'
-import Stack from '@mui/material/Stack'
 import Fade from '@mui/material/Fade'
 import IconButton from '@mui/material/IconButton'
+import Link from '@mui/material/Link'
+import Stack from '@mui/material/Stack'
 import { lighten, styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { ReactElement, useState } from 'react'
 
+import Play3 from '@core/shared/ui/icons/Play3'
+
 import { VideoChildFields } from '../../../../../__generated__/VideoChildFields'
 import { getLabelDetails } from '../../../../libs/utils/getLabelDetails/getLabelDetails'
 import { getWatchUrl } from '../../../../libs/utils/getWatchUrl'
-import Play3 from '@core/shared/ui/icons/Play3'
 
 const ImageButton = styled(ButtonBase)(() => ({
   borderRadius: 8,
