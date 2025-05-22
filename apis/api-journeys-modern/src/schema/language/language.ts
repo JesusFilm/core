@@ -8,6 +8,6 @@ export const Language = builder.externalRef(
 Language.implement({
   externalFields: (t) => ({ id: t.id({ nullable: false }) }),
   fields: (t) => ({
-    id: t.exposeID('id', { nullable: false })
+    // No additional fields needed - this is just the external reference
   })
 })

@@ -86,7 +86,7 @@ type Language
   @key(fields: "id")
   @extends
 {
-  id: ID!
+  id: ID! @external
 }
 
 union MediaVideo = MuxVideo | Video | YouTube
