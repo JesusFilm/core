@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "../../dist/video-importer"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "jest.config.ts", "**/*.spec.ts"]
+}

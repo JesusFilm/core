@@ -116,6 +116,7 @@
     "cache-manager": "^6.4.1",
     "cloudflare": "^4.0.0",
     "clsx": "^2.0.0",
+    "commander": "^13.1.0",
     "cors": "^2.8.5",
     "cross-fetch": "^4.0.0",
     "csv": "^6.3.11",
