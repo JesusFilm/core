@@ -67,7 +67,7 @@ export function TermsAndConditions(): ReactElement {
       '[TermsAndConditions] Starting journey profile creation process'
     )
     setLoading(true)
-    await journeyProfileCreate()
+    void journeyProfileCreate()
 
     const { data: teamCreateData } = await teamCreate({
       variables: {
