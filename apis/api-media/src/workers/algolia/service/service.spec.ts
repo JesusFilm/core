@@ -162,13 +162,13 @@ describe('algolia/service', () => {
             titlesWithLanguages: [
               {
                 value: 'title2',
-                languageId: '529',
-                bcp47: ''
+                languageId: '529'
+                // bcp47: ''
               },
               {
                 value: 'title',
-                languageId: '555',
-                bcp47: ''
+                languageId: '555'
+                // bcp47: ''
               }
             ],
             videoId: 'videoId',

@@ -128,6 +128,22 @@ export async function service(logger?: Logger): Promise<void> {
         break
       }
 
+      if (logger && offset % 1000 === 0) {
+        const used = process.memoryUsage()
+        logger.info(
+          {
+            offset,
+            memory: {
+              heapTotal: `${Math.round(used.heapTotal / 1024 / 1024)} MB`,
+              heapUsed: `${Math.round(used.heapUsed / 1024 / 1024)} MB`,
+              rss: `${Math.round(used.rss / 1024 / 1024)} MB`,
+              external: `${Math.round(used.external / 1024 / 1024)} MB`
+            }
+          },
+          'Memory usage during video variant processing'
+        )
+      }
+
       const transformedVideos = videoVariants.map((videoVariant) => {
         const cfImage = videoVariant.video?.images.find(
           ({ aspectRatio }) => aspectRatio === 'banner'
@@ -138,19 +154,18 @@ export async function service(logger?: Logger): Promise<void> {
             process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
           }/${cfImage.id}/f=jpg,w=1280,h=600,q=95`
 
+        const sortedTitles =
+          videoVariant.video?.title.sort(sortByEnglishFirst) ?? []
+
         return {
           objectID: videoVariant.id,
           videoId: videoVariant.videoId,
-          titles: videoVariant.video?.title
-            .sort(sortByEnglishFirst)
-            .map((title) => title?.value),
-          titlesWithLanguages: videoVariant.video?.title
-            .sort(sortByEnglishFirst)
-            .map((title) => ({
-              value: title.value,
-              languageId: title.languageId,
-              bcp47: languages[title.languageId]?.bcp47 ?? ''
-            })),
+          titles: sortedTitles.map((title) => title?.value),
+          titlesWithLanguages: sortedTitles.map((title) => ({
+            value: title?.value ?? '',
+            languageId: title?.languageId ?? ''
+            // bcp47: languages[title.languageId]?.bcp47 ?? ''
+          })),
           description: videoVariant.video?.description
             ?.sort(sortByEnglishFirst)
             .map((description) => description?.value),
@@ -178,6 +193,23 @@ export async function service(logger?: Logger): Promise<void> {
           objects: transformedVideos,
           waitForTasks: true
         })
+
+        if (logger) {
+          const used = process.memoryUsage()
+          logger.info(
+            {
+              batchSize: transformedVideos.length,
+              memory: {
+                heapTotal: `${Math.round(used.heapTotal / 1024 / 1024)} MB`,
+                heapUsed: `${Math.round(used.heapUsed / 1024 / 1024)} MB`,
+                rss: `${Math.round(used.rss / 1024 / 1024)} MB`,
+                external: `${Math.round(used.external / 1024 / 1024)} MB`
+              }
+            },
+            'Memory usage after Algolia batch upload'
+          )
+        }
+
         logger?.info(`exported ${offset} videos to algolia`)
       } catch (error) {
         logger?.error(error, 'unable to export videos to algolia')
