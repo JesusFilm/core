@@ -278,7 +278,7 @@ async function indexVideos(
   try {
     // Get total count first to implement pagination
     const totalCount = await prisma.video.count()
-    const batchSize = 500 // Smaller batch size for videos due to larger objects
+    const batchSize = 100 // Smaller batch size for videos due to larger objects
     let offset = 0
 
     logger?.info(`indexing ${totalCount} videos in batches of ${batchSize}`)
@@ -287,20 +287,75 @@ async function indexVideos(
       const videos = await prisma.video.findMany({
         take: batchSize,
         skip: offset,
-        include: {
-          title: true,
-          description: true,
-          imageAlt: true,
-          snippet: true,
-          subtitles: true,
-          images: true,
-          studyQuestions: true,
-          bibleCitation: true,
-          keywords: true,
-          variants: {
-            include: {
-              downloads: true
+        select: {
+          id: true,
+          label: true,
+          primaryLanguageId: true,
+          childIds: true,
+          title: {
+            select: {
+              value: true,
+              languageId: true
             }
+          },
+          description: {
+            select: {
+              value: true,
+              languageId: true
+            }
+          },
+          studyQuestions: {
+            select: {
+              value: true,
+              languageId: true
+            }
+          },
+          bibleCitation: {
+            select: {
+              osisId: true,
+              chapterStart: true,
+              verseStart: true,
+              chapterEnd: true,
+              verseEnd: true
+            }
+          },
+          keywords: {
+            select: {
+              value: true
+            }
+          },
+          images: {
+            select: {
+              id: true,
+              aspectRatio: true
+            },
+            where: {
+              aspectRatio: {
+                in: ['banner', 'hd']
+              }
+            }
+          },
+          variants: {
+            select: {
+              hls: true,
+              lengthInMilliseconds: true,
+              downloadable: true,
+              downloads: {
+                select: {
+                  quality: true,
+                  size: true
+                },
+                where: {
+                  quality: {
+                    in: ['low', 'high']
+                  }
+                }
+              }
+            },
+            where: {
+              languageId: '529'
+            },
+            take: 1
           }
         }
       })
