@@ -1,14 +1,40 @@
 import Box from '@mui/material/Box'
-import { ReactElement } from 'react'
+import fscreen from 'fscreen'
+import { ReactElement, useEffect, useState } from 'react'
 
 import { ContentHeader } from './ContentHeader'
 import { ContentHeroVideo } from './ContentHeroVideo'
 
 export function ContentHero(): ReactElement {
+  const [isFullscreen, setIsFullscreen] = useState(false)
+
+  /**
+   * Effect to handle fullscreen changes.
+   * Adds and removes event listeners for fullscreen state changes.
+   */
+  useEffect(() => {
+    /**
+     * Handler for fullscreen change events.
+     * Updates component state and scrolls to top when entering fullscreen.
+     */
+    function fullscreenchange(): void {
+      const isFullscreen = fscreen.fullscreenElement != null
+      setIsFullscreen(isFullscreen)
+      if (isFullscreen) {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      }
+    }
+
+    fscreen.addEventListener('fullscreenchange', fullscreenchange)
+
+    return () =>
+      fscreen.removeEventListener('fullscreenchange', fullscreenchange)
+  }, [setIsFullscreen])
+
   return (
     <Box
       sx={{
-        height: { xs: '90svh', md: '80svh' },
+        height: isFullscreen ? '100svh' : { xs: '90svh', md: '80svh' },
         width: '100%',
         display: 'flex',
         alignItems: 'flex-end',
@@ -19,8 +45,8 @@ export function ContentHero(): ReactElement {
       }}
       data-testid="ContentHero"
     >
-      <ContentHeader />
-      <ContentHeroVideo />
+      {!isFullscreen && <ContentHeader />}
+      <ContentHeroVideo isFullscreen={isFullscreen} />
       <Box
         data-testid="ContainerHeroTitleContainer"
         sx={{

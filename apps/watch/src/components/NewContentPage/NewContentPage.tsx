@@ -136,7 +136,7 @@ export function NewContentPage(): ReactElement {
         <Box
           data-testid="ContentPage"
           sx={{
-            bgcolor: 'common.black',
+            backgroundColor: '#131111',
             color: 'common.white',
             position: 'relative',
             minHeight: '100svh'
@@ -158,8 +158,10 @@ export function NewContentPage(): ReactElement {
           <Box
             data-testid="ContentPageContainer"
             sx={{
+              maxWidth: '1920px',
               width: '100%',
-              mt: '-100vh'
+              mt: '-100vh',
+              mx: 'auto'
             }}
           >
             <Stack

@@ -38,8 +38,7 @@ export function VideoCarousel({
         sx={{
           display: 'flex',
           gap: 2,
-          pl: 10,
-          pr: 4
+          pr: 2
         }}
       >
         {videos?.map((video) => (
