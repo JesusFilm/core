@@ -30,20 +30,12 @@ export class MailChimpService {
         }
       )
     } catch (error) {
-      console.log('node env', process.env.NODE_ENV)
-      console.log(
-        'response body check',
-        get(error, 'response.body.detail') ===
-          `${user.email} looks fake or invalid, please enter a real email address.`
-      )
-      console.log('current branch', process.env.GIT_BRANCH)
-
       if (
         process.env.GIT_BRANCH !== 'main' &&
         get(error, 'response.body.detail') ===
           `${user.email} looks fake or invalid, please enter a real email address.`
       )
-        return Promise.resolve()
+        return
       throw error
     }
   }
