@@ -26,6 +26,13 @@ export const JOURNEY_AI_TRANSLATE_CREATE = gql`
       title
       description
       languageId
+      language {
+        id
+        name {
+          value
+          primary
+        }
+      }
       createdAt
       updatedAt
     }
@@ -41,33 +48,7 @@ export function useJourneyAiTranslateMutation(
   const mutation = useMutation<
     JourneyAiTranslateCreate,
     JourneyAiTranslateCreateVariables
-  >(JOURNEY_AI_TRANSLATE_CREATE, {
-    update(cache, { data }) {
-      if (data?.journeyAiTranslateCreate != null) {
-        cache.modify({
-          fields: {
-            adminJourneys(existingAdminJourneyRefs = []) {
-              const translatedJourneyRef = cache.writeFragment({
-                data: data.journeyAiTranslateCreate,
-                fragment: gql`
-                  fragment TranslatedJourney on Journey {
-                    id
-                    title
-                    description
-                    languageId
-                    createdAt
-                    updatedAt
-                  }
-                `
-              })
-              return [...existingAdminJourneyRefs, translatedJourneyRef]
-            }
-          }
-        })
-      }
-    },
-    ...options
-  })
+  >(JOURNEY_AI_TRANSLATE_CREATE, options)
 
   return mutation
 }
