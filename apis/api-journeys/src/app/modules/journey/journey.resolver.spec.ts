@@ -104,7 +104,8 @@ describe('JourneyResolver', () => {
     showDisplayTitle: null,
     menuButtonIcon: null,
     logoImageBlockId: null,
-    menuStepBlockId: null
+    menuStepBlockId: null,
+    fromTemplate: null
   }
   const journeyWithUserTeam = {
     ...journey,
@@ -1282,7 +1283,13 @@ describe('JourneyResolver', () => {
         code: ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED
       })
 
-      await resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
+      await resolver.journeyDuplicate(
+        ability,
+        'journeyId',
+        'userId',
+        'teamId',
+        true
+      )
 
       const data = {
         ...omit(journey, [
@@ -1305,6 +1312,7 @@ describe('JourneyResolver', () => {
         slug: journey.title,
         title: journey.title,
         featuredAt: null,
+        fromTemplate: 'journeyId',
         template: false,
         team: {
           connect: { id: 'teamId' }

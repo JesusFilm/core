@@ -125,7 +125,8 @@ describe('fetchEmailDetails', () => {
     showDisplayTitle: null,
     menuButtonIcon: null,
     logoImageBlockId: null,
-    menuStepBlockId: null
+    menuStepBlockId: null,
+    fromTemplate: null
   }
 
   const event: Event = {
