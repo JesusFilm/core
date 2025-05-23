@@ -150,7 +150,7 @@ export function HeaderTabButtons(): ReactElement {
               <Stack direction="row" alignItems="center" width="100%" px={2.5}>
                 <ListItemIcon>{icon}</ListItemIcon>
                 <ListItemText
-                  primary={t(label)}
+                  primary={label}
                   primaryTypographyProps={{
                     variant: 'h6',
                     sx: {

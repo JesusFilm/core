@@ -86,7 +86,7 @@ describe('VideoContainerPage', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[getVideoChildrenMock]}>
         <SnackbarProvider>
-          <VideoProvider value={{ content: videos[0] }}>
+          <VideoProvider value={{ content: videos[5] }}>
             <VideoContainerPage />
           </VideoProvider>
         </SnackbarProvider>

@@ -49,6 +49,7 @@ const journey: Journey = {
   },
   status: JourneyStatus.published,
   createdAt: '2021-11-19T12:34:56.647Z',
+  updatedAt: '2021-11-19T12:34:56.647Z',
   publishedAt: '2021-11-19T12:34:56.647Z',
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,

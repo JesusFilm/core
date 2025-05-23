@@ -168,6 +168,7 @@ export function JourneyCardMenu({
         anchorEl={anchorEl}
         open={open}
         onClose={handleCloseMenu}
+        keepMounted
         MenuListProps={{
           'aria-labelledby': 'journey-actions'
         }}
