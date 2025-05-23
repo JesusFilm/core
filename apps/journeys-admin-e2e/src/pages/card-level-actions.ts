@@ -404,12 +404,11 @@ export class CardLevelActionPage {
   }
 
   async getVideoNameVideoFromLibraryTabOfVideoLibraryPage() {
-    this.seletedVideo = await this.page
-      .locator(
-        'div[data-testid="VideoList"] div[data-testid*="VideoListItem"] span[class*="MuiListItemText-primary"]'
-      )
-      .first()
-      .innerText()
+    const videoList = this.page.locator(
+      'div[data-testid="VideoList"] div[data-testid*="VideoListItem"] span[class*="MuiListItemText-primary"]'
+    );
+    await expect(videoList.first()).toBeVisible({ timeout: sixtySecondsTimeout });
+    this.seletedVideo = await videoList.first().innerText();
   }
 
   async clickVideoDeleteIconInDrawer() {
