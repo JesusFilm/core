@@ -26,6 +26,7 @@ const nextConfig = {
       { protocol: 'https', hostname: 'd3s4plubcuq0w9.cloudfront.net' },
       // cloudflare
       { protocol: 'https', hostname: 'imagedelivery.net' },
+      { protocol: 'https', hostname: 'cdn-std.droplr.net' },
       {
         protocol: 'https',
         hostname: `customer-${
