@@ -11,6 +11,7 @@ export interface CreateMuxVideoUploadByFileMutation_createMuxVideoUploadByFile {
   __typename: "MuxVideo";
   uploadUrl: string | null;
   id: string;
+  uploadId: string | null;
 }
 
 export interface CreateMuxVideoUploadByFileMutation {

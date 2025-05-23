@@ -4,6 +4,7 @@ import { ReactElement } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { AnalyticsItem } from './AnalyticsItem'
+import { BackgroundUploadsItem } from './BackgroundUploads'
 import { ResponsesItem } from './ResponsesItem'
 import { ShareItem } from './ShareItem'
 import { StrategyItem } from './StrategyItem'
@@ -19,6 +20,7 @@ export function Items(): ReactElement {
       alignItems="center"
     >
       <Stack flexDirection="row" gap={2}>
+        <BackgroundUploadsItem />
         <ResponsesItem variant="icon-button" />
         <AnalyticsItem variant="icon-button" />
       </Stack>

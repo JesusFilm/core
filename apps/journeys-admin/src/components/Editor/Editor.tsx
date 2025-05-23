@@ -10,6 +10,7 @@ import { transformer } from '@core/journeys/ui/transformer'
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 
+import { BackgroundUploadProvider } from './BackgroundUpload'
 import { Fab } from './Fab'
 import { Hotkeys } from './Hotkeys'
 import { Slider } from './Slider'
@@ -53,9 +54,11 @@ export function Editor({
       >
         <HotkeysProvider>
           <Hotkeys />
-          <Toolbar user={user} />
-          <Slider />
-          <Fab variant="mobile" />
+          <BackgroundUploadProvider>
+            <Toolbar user={user} />
+            <Slider />
+            <Fab variant="mobile" />
+          </BackgroundUploadProvider>
         </HotkeysProvider>
       </EditorProvider>
     </JourneyProvider>
