@@ -1,8 +1,9 @@
 import { ApolloQueryResult, gql, useMutation } from '@apollo/client'
+import CircularProgress from '@mui/material/CircularProgress'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 
 import FolderDown1Icon from '@core/shared/ui/icons/FolderDown1'
 import FolderUp1Icon from '@core/shared/ui/icons/FolderUp1'
@@ -50,6 +51,7 @@ export function ArchiveJourney({
   const router = useRouter()
   const activeTab = router?.query.tab?.toString() ?? 'active'
   const { t } = useTranslation('apps-journeys-admin')
+  const [loading, setLoading] = useState(false)
   const previousStatus = published
     ? JourneyStatus.published
     : JourneyStatus.draft
@@ -85,6 +87,7 @@ export function ArchiveJourney({
   const { enqueueSnackbar } = useSnackbar()
 
   async function handleArchive(): Promise<void> {
+    setLoading(true)
     try {
       await archiveJourney()
       enqueueSnackbar(t('Journey Archived'), {
@@ -100,10 +103,13 @@ export function ArchiveJourney({
           preventDuplicate: true
         })
       }
+    } finally {
+      setLoading(false)
     }
   }
 
   async function handleUnarchive(): Promise<void> {
+    setLoading(true)
     try {
       await unarchiveJourney()
       enqueueSnackbar(t('Journey Unarchived'), {
@@ -119,6 +125,8 @@ export function ArchiveJourney({
           preventDuplicate: true
         })
       }
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -127,19 +135,31 @@ export function ArchiveJourney({
       {activeTab === 'active' && (
         <MenuItem
           label={t('Archive')}
-          icon={<FolderUp1Icon color="secondary" />}
+          icon={
+            loading ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              <FolderUp1Icon color="secondary" />
+            )
+          }
           onClick={handleArchive}
           testId="Archive"
-          disabled={disabled}
+          disabled={disabled || loading}
         />
       )}
       {activeTab === 'archived' && (
         <MenuItem
           label={t('Unarchive')}
-          icon={<FolderDown1Icon color="secondary" />}
+          icon={
+            loading ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              <FolderDown1Icon color="secondary" />
+            )
+          }
           onClick={handleUnarchive}
           testId="Unarchive"
-          disabled={disabled}
+          disabled={disabled || loading}
         />
       )}
     </>
