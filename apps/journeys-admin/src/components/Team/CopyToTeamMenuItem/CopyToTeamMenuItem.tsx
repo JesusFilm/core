@@ -1,13 +1,11 @@
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
 import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import { CopyToTeamDialog } from '@core/journeys/ui/CopyToTeamDialog'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { useJourneyAiTranslateMutation } from '@core/journeys/ui/useJourneyAiTranslateMutation'
-import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
+import { useJourneyDuplicateAndTranslate } from '@core/journeys/ui/useJourneyDuplicateAndTranslate'
 import CopyToIcon from '@core/shared/ui/icons/CopyTo'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
@@ -35,13 +33,22 @@ export function CopyToTeamMenuItem({
   const router = useRouter()
   const [duplicateTeamDialogOpen, setDuplicateTeamDialogOpen] =
     useState<boolean>(false)
-  const [journeyDuplicate] = useJourneyDuplicateMutation()
-  const [translate] = useJourneyAiTranslateMutation()
-  const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
-  const [loading, setLoading] = useState(false)
   const { journey: journeyFromContext } = useJourney()
   const journeyData = journey ?? journeyFromContext
+
+  const { duplicateAndTranslate, loading } = useJourneyDuplicateAndTranslate({
+    journeyId: journeyData?.id,
+    journeyTitle: journeyData?.title ?? '',
+    journeyLanguageName:
+      journeyData?.language.name.find(({ primary }) => primary)?.value ?? '',
+    onSuccess: () => {
+      setDuplicateTeamDialogOpen(false)
+    },
+    onError: () => {
+      setDuplicateTeamDialogOpen(false)
+    }
+  })
 
   const handleDuplicateJourney = async (
     teamId: string,
@@ -50,60 +57,11 @@ export function CopyToTeamMenuItem({
   ): Promise<void> => {
     if (id == null || journeyData == null) return
 
-    setLoading(true)
-    const { data: duplicateData } = await journeyDuplicate({
-      variables: {
-        id,
-        teamId
-      }
+    await duplicateAndTranslate({
+      teamId,
+      selectedLanguage,
+      shouldTranslate: showTranslation
     })
-    if (duplicateData?.journeyDuplicate?.id) {
-      if (selectedLanguage == null || !showTranslation) {
-        setLoading(false)
-        enqueueSnackbar(t('Journey Copied'), {
-          variant: 'success',
-          preventDuplicate: true
-        })
-        return
-      }
-
-      await translate({
-        variables: {
-          journeyId: duplicateData.journeyDuplicate.id,
-          name: journeyData.title,
-          journeyLanguageName:
-            journeyData.language.name.find(({ primary }) => !primary)?.value ??
-            '',
-          textLanguageId: selectedLanguage.id,
-          textLanguageName:
-            selectedLanguage.nativeName ?? selectedLanguage.localName ?? ''
-        },
-        onCompleted() {
-          enqueueSnackbar(t('Journey Translated'), {
-            variant: 'success',
-            preventDuplicate: true
-          })
-        },
-        onError(error) {
-          enqueueSnackbar(error.message, {
-            variant: 'error',
-            preventDuplicate: true
-          })
-        }
-      })
-
-      handleCloseMenu()
-      setDuplicateTeamDialogOpen(false)
-      setLoading(false)
-    } else {
-      enqueueSnackbar(t('Journey duplication failed'), {
-        variant: 'error',
-        preventDuplicate: true
-      })
-      handleCloseMenu()
-      setDuplicateTeamDialogOpen(false)
-      setLoading(false)
-    }
   }
 
   function setRoute(param: string): void {
