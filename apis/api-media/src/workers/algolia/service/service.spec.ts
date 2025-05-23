@@ -130,8 +130,14 @@ describe('algolia/service', () => {
       prismaMock.video.count.mockResolvedValueOnce(0)
       prismaMock.video.findMany.mockResolvedValueOnce([])
 
+      prismaMock.video.count.mockResolvedValueOnce(0)
+      prismaMock.video.findMany.mockResolvedValueOnce([])
+
       await service()
-      expect(mockQuery).toHaveBeenCalledWith({ query: GET_LANGUAGES, fetchPolicy: 'no-cache' })
+      expect(mockQuery).toHaveBeenCalledWith({
+        query: GET_LANGUAGES,
+        fetchPolicy: 'no-cache'
+      })
       expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith({
         take: 1000,
         skip: 0,
