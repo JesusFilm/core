@@ -75,6 +75,15 @@ const JourneyDetailsDialog = dynamic(
   { ssr: false }
 )
 
+const TranslateJourneyDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "TranslateJourneyDialog" */
+      './TranslateJourneyDialog'
+    ).then((mod) => mod.TranslateJourneyDialog),
+  { ssr: false }
+)
+
 export interface JourneyCardMenuProps {
   id: string
   status: JourneyStatus
@@ -128,6 +137,10 @@ export function JourneyCardMenu({
   const [openDetailsDialog, setOpenDetailsDialog] = useState<
     boolean | undefined
   >()
+  const [openTranslateDialog, setOpenTranslateDialog] = useState<
+    boolean | undefined
+  >()
+  const [keepMounted, setKeepMounted] = useState<boolean>(false)
 
   const handleOpenMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
@@ -135,6 +148,10 @@ export function JourneyCardMenu({
   const handleCloseMenu = (): void => {
     setAnchorEl(null)
     onMenuClose?.()
+  }
+
+  const handleKeepMounted = (): void => {
+    setKeepMounted(true)
   }
 
   return (
@@ -168,7 +185,7 @@ export function JourneyCardMenu({
         anchorEl={anchorEl}
         open={open}
         onClose={handleCloseMenu}
-        keepMounted
+        keepMounted={keepMounted}
         MenuListProps={{
           'aria-labelledby': 'journey-actions'
         }}
@@ -195,10 +212,12 @@ export function JourneyCardMenu({
             slug={slug}
             journeyId={id}
             published={published}
+            handleKeepMounted={handleKeepMounted}
             setOpenAccessDialog={() => setOpenAccessDialog(true)}
             handleCloseMenu={handleCloseMenu}
             setOpenTrashDialog={() => setOpenTrashDialog(true)}
             setOpenDetailsDialog={() => setOpenDetailsDialog(true)}
+            setOpenTranslateDialog={() => setOpenTranslateDialog(true)}
             template={template}
             refetch={refetch}
           />
@@ -240,6 +259,13 @@ export function JourneyCardMenu({
         <JourneyDetailsDialog
           open={openDetailsDialog}
           onClose={() => setOpenDetailsDialog(false)}
+          journey={journey}
+        />
+      )}
+      {openTranslateDialog != null && (
+        <TranslateJourneyDialog
+          open={openTranslateDialog}
+          onClose={() => setOpenTranslateDialog(false)}
           journey={journey}
         />
       )}

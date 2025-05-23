@@ -1,6 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
-import noop from 'lodash/noop'
 import { ComponentProps } from 'react'
 
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
@@ -24,7 +23,7 @@ const Template: StoryObj<
     return (
       <MockedProvider>
         <JourneyProvider value={{ journey: args.journey }}>
-          <TemplateFooter openTeamDialog={false} setOpenTeamDialog={noop} />
+          <TemplateFooter />
         </JourneyProvider>
       </MockedProvider>
     )

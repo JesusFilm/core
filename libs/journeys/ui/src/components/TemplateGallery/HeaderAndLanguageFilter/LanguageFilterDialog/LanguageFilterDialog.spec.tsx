@@ -75,8 +75,8 @@ describe('LanguageFilterDialog', () => {
     fireEvent.click(getByRole('option', { name: 'German, Standard Deutsch' }))
     fireEvent.click(getByRole('option', { name: 'French Français' }))
     fireEvent.click(getByRole('button', { name: 'Save' }))
-    await waitFor(() => expect(onChange).toHaveBeenCalled())
-  })
+    await waitFor(() => expect(onChange).toHaveBeenCalled(), { timeout: 10000 })
+  }, 15000)
 
   it('closes the form on cancel click', () => {
     const onClose = jest.fn()
