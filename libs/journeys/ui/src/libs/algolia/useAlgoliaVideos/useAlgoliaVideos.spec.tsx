@@ -60,7 +60,7 @@ describe('useAlgoliaVideos', () => {
       renderHook(() =>
         useAlgoliaVideos({
           transformItems: mockTransform,
-          locale: 'es'
+          languageId: 'es'
         })
       )
       expect(mockTransform).toHaveBeenCalledWith(items, 'es')
