@@ -47,6 +47,46 @@ const GET_VIDEO_TITLE = graphql(`
   }
 `)
 
+function handleSubtitles(
+  subonRaw: string | null,
+  sublangidsRaw: string | null
+): { activeSubLangId: string | null; acceptedSubLangIds: string[] } {
+  if (
+    (subonRaw === 'true' && sublangidsRaw === null) ||
+    (sublangidsRaw === null && subonRaw === null)
+  ) {
+    return {
+      activeSubLangId: null,
+      acceptedSubLangIds: DEFAULT_SUB_LANGUAGE_IDS
+    }
+  }
+
+  const sublangidsArr = sublangidsRaw
+    ? sublangidsRaw.split(',').filter((id) => id !== '')
+    : DEFAULT_SUB_LANGUAGE_IDS
+
+  if (!subonRaw) {
+    return {
+      activeSubLangId: null,
+      acceptedSubLangIds: sublangidsArr
+    }
+  }
+
+  if (subonRaw === 'true' && sublangidsArr.length > 0) {
+    return {
+      activeSubLangId: sublangidsArr[0],
+      acceptedSubLangIds: sublangidsArr
+    }
+  }
+
+  const activeSubLangId = subonRaw
+  const acceptedSubLangIds = sublangidsArr.includes(activeSubLangId)
+    ? sublangidsArr
+    : [activeSubLangId, ...sublangidsArr]
+
+  return { activeSubLangId, acceptedSubLangIds }
+}
+
 export default async function Page({
   searchParams
 }: {
@@ -68,8 +108,8 @@ export default async function Page({
   // Parse start and end times, ensuring they are valid numbers
   const startTime = searchParams.start ? Number(searchParams.start) : undefined
   const endTime = searchParams.end ? Number(searchParams.end) : undefined
-  const subon = searchParams.subon === 'true'
-  const sublangids = searchParams.sublangids
+  const subonRaw = searchParams.subon ?? null
+  const sublangidsRaw = searchParams.sublangids ?? null
 
   // Validate time parameters
   if (startTime != null && (isNaN(startTime) || startTime < 0)) {
@@ -104,8 +144,9 @@ export default async function Page({
     variables: { id: data?.videoVariant?.videoId ?? '' }
   })
 
-  const acceptedSubLangIds = DEFAULT_SUB_LANGUAGE_IDS.concat(
-    sublangids?.split(',') ?? []
+  const { activeSubLangId, acceptedSubLangIds } = handleSubtitles(
+    subonRaw,
+    sublangidsRaw
   )
 
   const hlsUrl = data?.videoVariant?.hls
@@ -119,7 +160,9 @@ export default async function Page({
       key: subtitle.id,
       language: subtitle.language?.name?.[0]?.value,
       bcp47: subtitle.language?.bcp47,
-      vttSrc: subtitle.vttSrc
+      vttSrc: subtitle.vttSrc,
+      langId: subtitle.language?.id ?? '',
+      default: activeSubLangId === subtitle.language?.id
     }))
 
   if (!hlsUrl) {
@@ -130,16 +173,13 @@ export default async function Page({
   }
 
   return (
-    <div className="w-full h-full min-h-[360px]">
-      <VideoPlayer
-        hlsUrl={hlsUrl}
-        videoTitle={videoTitle}
-        thumbnail={thumbnail}
-        startTime={startTime}
-        endTime={endTime}
-        subon={subon}
-        subtitles={subtitles}
-      />
-    </div>
+    <VideoPlayer
+      hlsUrl={hlsUrl}
+      videoTitle={videoTitle}
+      thumbnail={thumbnail}
+      startTime={startTime}
+      endTime={endTime}
+      subtitles={subtitles}
+    />
   )
 }

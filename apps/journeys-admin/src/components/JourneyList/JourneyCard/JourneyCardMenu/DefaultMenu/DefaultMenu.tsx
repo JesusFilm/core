@@ -13,6 +13,10 @@ import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 import { GetAdminJourneys } from '../../../../../../__generated__/GetAdminJourneys'
 import {
+  GetJourneyWithPermissions,
+  GetJourneyWithPermissionsVariables
+} from '../../../../../../__generated__/GetJourneyWithPermissions'
+import {
   JourneyStatus,
   Role,
   UserJourneyRole,
@@ -20,6 +24,9 @@ import {
 } from '../../../../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
 import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
+import { useJourneyForSharingLazyQuery } from '../../../../../libs/useJourneyForShareLazyQuery'
+import { GET_JOURNEY_WITH_PERMISSIONS } from '../../../../AccessDialog/AccessDialog'
+import { ShareItem } from '../../../../Editor/Toolbar/Items/ShareItem/ShareItem'
 import { MenuItem } from '../../../../MenuItem'
 import { CopyToTeamMenuItem } from '../../../../Team/CopyToTeamMenuItem/CopyToTeamMenuItem'
 import { DuplicateJourneyMenuItem } from '../DuplicateJourneyMenuItem'
@@ -35,6 +42,7 @@ export const GET_JOURNEY_WITH_USER_ROLES = gql`
         role
         user {
           id
+          email
         }
       }
     }
@@ -97,26 +105,36 @@ export function DefaultMenu({
 
   const { loadUser, data: currentUser } = useCurrentUserLazyQuery()
 
-  const { data: journeyData } = useQuery(GET_JOURNEY_WITH_USER_ROLES, {
-    variables: { id: journeyId },
-    skip: currentUser?.id == null
+  // Lazy query for journey data if context is missing
+  const [loadJourney, { data: journeyFromLazyQuery }] =
+    useJourneyForSharingLazyQuery()
+
+  const { data: journeyWithUserRoles } = useQuery<
+    GetJourneyWithPermissions,
+    GetJourneyWithPermissionsVariables
+  >(GET_JOURNEY_WITH_PERMISSIONS, {
+    variables: { id: journeyId }
   })
+
+  const owner = useMemo(
+    () =>
+      journeyWithUserRoles?.journey?.userJourneys?.find(
+        (userJourney) => userJourney.role === UserJourneyRole.owner
+      ),
+    [journeyWithUserRoles?.journey?.userJourneys]
+  )
+  const isOwner = useMemo(
+    () => owner?.user?.email === currentUser?.email,
+    [currentUser?.email, owner?.user?.email]
+  )
 
   useEffect(() => {
     void loadUser()
   }, [loadUser])
 
-  // Determine the current user's role for this journey
-  const userRole = useMemo<UserJourneyRole | undefined>(() => {
-    if (journeyData?.journey?.userJourneys == null || currentUser?.id == null)
-      return undefined
-
-    const userJourney = journeyData.journey.userJourneys.find(
-      (userJourney) => userJourney.user?.id === currentUser.id
-    )
-
-    return userJourney?.role
-  }, [journeyData?.journey?.userJourneys, currentUser?.id])
+  useEffect(() => {
+    void loadJourney({ variables: { id: journeyId } })
+  }, [loadJourney, journeyId])
 
   // Determine the current user's role in the team
   const teamRole = useMemo<UserTeamRole | undefined>(() => {
@@ -134,7 +152,7 @@ export function DefaultMenu({
     userRoleData?.getUserRole?.roles?.includes(Role.publisher) === true
 
   const canManageJourney =
-    userRole === UserJourneyRole.owner ||
+    isOwner ||
     teamRole === UserTeamRole.manager ||
     (isPublisher && template === true)
 
@@ -150,6 +168,7 @@ export function DefaultMenu({
           handleCloseMenu()
         }}
       />
+      <Divider />
       {template !== true && (
         <MenuItem
           label={t('Access')}
@@ -174,10 +193,15 @@ export function DefaultMenu({
           openInNew
         />
       </NextLink>
+      <ShareItem
+        variant="menu-item"
+        journey={journeyFromLazyQuery?.journey}
+        handleCloseMenu={handleCloseMenu}
+      />
+      <Divider />
       {template !== true && (
         <DuplicateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />
       )}
-      <Divider />
       <CopyToTeamMenuItem id={id} handleCloseMenu={handleCloseMenu} />
       <ArchiveJourney
         status={status}

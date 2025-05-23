@@ -54,6 +54,7 @@ describe('video', () => {
     variants: VideoVariant[]
     videoEditions: VideoEdition[]
     availableLanguages: string[]
+    originId: string | null
   }
 
   const children: Video[] = [
@@ -66,7 +67,8 @@ describe('video', () => {
       published: true,
       childIds: [],
       availableLanguages: [],
-      locked: false
+      locked: false,
+      originId: null
     },
     {
       id: 'videoId1',
@@ -77,7 +79,8 @@ describe('video', () => {
       published: true,
       childIds: [],
       availableLanguages: [],
-      locked: false
+      locked: false,
+      originId: null
     }
   ]
 
@@ -91,7 +94,8 @@ describe('video', () => {
       published: true,
       childIds: [],
       availableLanguages: [],
-      locked: false
+      locked: false,
+      originId: null
     },
     {
       id: 'videoId4',
@@ -102,7 +106,8 @@ describe('video', () => {
       published: true,
       childIds: [],
       availableLanguages: [],
-      locked: false
+      locked: false,
+      originId: null
     }
   ]
 
@@ -116,6 +121,7 @@ describe('video', () => {
       published: true,
       childIds: ['videoId1', 'videoId2'],
       availableLanguages: [],
+      originId: 'originId',
       locked: false,
       bibleCitation: [
         {
@@ -309,6 +315,7 @@ describe('video', () => {
     noIndex: null,
     childIds: [],
     availableLanguages: [],
+    originId: null,
     locked: false
   }
 
@@ -1649,6 +1656,7 @@ describe('video', () => {
       noIndex: null,
       childIds: [],
       availableLanguages: [],
+      originId: null,
       locked: false
     }
 
@@ -1836,7 +1844,8 @@ describe('video', () => {
           slug: 'slug',
           noIndex: true,
           childIds: [],
-          availableLanguages: []
+          availableLanguages: [],
+          originId: null
         } as unknown as Video)
         const result = await authClient({
           document: CREATE_VIDEO_MUTATION,
@@ -1910,7 +1919,8 @@ describe('video', () => {
           slug: 'slug',
           noIndex: true,
           childIds: [],
-          availableLanguages: []
+          availableLanguages: [],
+          originId: null
         } as unknown as Video)
         const result = await authClient({
           document: VIDEO_UPDATE_MUTATION,
@@ -1988,7 +1998,8 @@ describe('video', () => {
         published: true,
         childIds: [],
         availableLanguages: [],
-        locked: false
+        locked: false,
+        originId: null
       })
       const data = await client({
         document: VIDEO
