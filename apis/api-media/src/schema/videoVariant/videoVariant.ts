@@ -1,6 +1,10 @@
 import compact from 'lodash/compact'
 
 import { prisma } from '../../lib/prisma'
+import {
+  videoCacheReset,
+  videoVariantCacheReset
+} from '../../lib/videoCacheReset'
 import { builder } from '../builder'
 import { Language } from '../language'
 
@@ -133,22 +137,29 @@ builder.mutationFields((t) => ({
           version: input.version ?? undefined
         }
       })
-
       const video = await prisma.video.findUnique({
         where: { id: newVariant.videoId },
         select: { availableLanguages: true }
       })
-
       const currentLanguages = video?.availableLanguages || []
       const updatedLanguages = Array.from(
         new Set([...currentLanguages, newVariant.languageId])
       )
-
       await prisma.video.update({
         where: { id: newVariant.videoId },
         data: { availableLanguages: updatedLanguages }
       })
 
+      // Save the videoId before the try/catch block
+      const { id, videoId } = newVariant
+
+      try {
+        void videoVariantCacheReset(id)
+        void videoCacheReset(videoId)
+      } catch (error) {
+        // Log the error but don't throw it
+        console.error('Cache reset error:', error)
+      }
       return newVariant
     }
   }),
@@ -159,7 +170,7 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoVariantUpdateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
-      return await prisma.videoVariant.update({
+      const updated = await prisma.videoVariant.update({
         ...query,
         where: { id: input.id },
         data: {
@@ -179,6 +190,21 @@ builder.mutationFields((t) => ({
           version: input.version ?? undefined
         }
       })
+
+      // Store the videoId before the try/catch block
+      const videoId = input.videoId ?? updated.videoId
+
+      try {
+        void videoVariantCacheReset(updated.id)
+        // Reset the video cache if we have a videoId
+        if (videoId) {
+          void videoCacheReset(videoId)
+        }
+      } catch (error) {
+        // Log the error but don't throw it
+        console.error('Cache reset error:', error)
+      }
+      return updated
     }
   }),
   videoVariantDelete: t.withAuth({ isPublisher: true }).prismaField({
@@ -188,10 +214,32 @@ builder.mutationFields((t) => ({
       id: t.arg.id({ required: true })
     },
     resolve: async (query, _parent, { id }) => {
-      return await prisma.videoVariant.delete({
+      // Get the video variant first to ensure we have videoId for cache reset
+      const variant = await prisma.videoVariant.findUnique({
+        where: { id },
+        select: { videoId: true }
+      })
+
+      if (variant == null) {
+        throw new Error(`VideoVariant with id ${id} not found`)
+      }
+
+      // Store videoId to use later
+      const { videoId } = variant
+
+      const deleted = await prisma.videoVariant.delete({
         ...query,
         where: { id }
       })
+
+      try {
+        void videoVariantCacheReset(id)
+        void videoCacheReset(videoId)
+      } catch (error) {
+        // Log the error but don't throw it
+        console.error('Cache reset error:', error)
+      }
+      return deleted
     }
   })
 }))
