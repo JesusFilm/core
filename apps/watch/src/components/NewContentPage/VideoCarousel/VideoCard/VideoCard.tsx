@@ -1,12 +1,16 @@
 import Box from '@mui/material/Box'
 import ButtonBase from '@mui/material/ButtonBase'
+import Fade from '@mui/material/Fade'
+import IconButton from '@mui/material/IconButton'
 import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
 import { lighten, styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import NextLink from 'next/link'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
+
+import Play3 from '@core/shared/ui/icons/Play3'
 
 import { VideoChildFields } from '../../../../../__generated__/VideoChildFields'
 import { getLabelDetails } from '../../../../libs/utils/getLabelDetails/getLabelDetails'
@@ -42,6 +46,7 @@ export function VideoCard({
 }: VideoCardProps): ReactElement {
   const { label } = getLabelDetails(video.label)
   const href = getWatchUrl(containerSlug, video.label, video.variant?.slug)
+  const [isHovered, setIsHovered] = useState(false)
 
   return (
     <NextLink href={href} passHref legacyBehavior scroll={false}>
@@ -72,6 +77,8 @@ export function VideoCard({
               role="button"
               data-testid={`CarouselItem-${video.slug}`}
               aria-label={`Navigate to ${video.slug}`}
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
             >
               <Layer>
                 <Image
@@ -90,11 +97,31 @@ export function VideoCard({
               <Layer
                 sx={{
                   overflow: 'visible',
-                  boxShadow: active ? 'inset 0 0 0 4px #fff' : undefined,
+                  boxShadow:
+                    active || isHovered ? 'inset 0 0 0 4px #fff' : undefined,
+                  transition: 'box-shadow 100ms ease-in-out',
                   pointerEvents: 'none'
                 }}
                 data-testid="ActiveLayer"
               />
+              <Fade in={!active && isHovered}>
+                <IconButton
+                  sx={{
+                    padding: 5,
+                    position: 'absolute',
+                    top: '50%',
+                    right: '50%',
+                    transform: 'translate(50%, -50%)',
+                    color: 'common.white',
+                    bgcolor: 'rgba(0, 0, 0, 0.5)',
+                    '&:hover': {
+                      bgcolor: 'primary.main'
+                    }
+                  }}
+                >
+                  <Play3 sx={{ fontSize: 48 }} />
+                </IconButton>
+              </Fade>
               <Box sx={{ p: 4, fontFamily: 'Inter' }}>
                 <Typography
                   sx={{
