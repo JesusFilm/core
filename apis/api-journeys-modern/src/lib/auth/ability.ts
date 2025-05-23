@@ -26,6 +26,7 @@ export function ability(
   subjectObject: SubjectFnReturn,
   user: User
 ): boolean {
+  if (!subjectObject) return false
   const { subject, object } = subjectObject
 
   switch (subject) {
