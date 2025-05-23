@@ -137,7 +137,9 @@ describe('SearchBar', () => {
         </SearchBarProvider>
       </MockedProvider>
     )
-    expect(screen.getAllByTestId('Globe1Icon')[0]).toBeVisible()
+    await waitFor(() =>
+      expect(screen.getAllByTestId('Globe1Icon')[0]).toBeVisible()
+    )
   })
 
   it('should render language button', async () => {
