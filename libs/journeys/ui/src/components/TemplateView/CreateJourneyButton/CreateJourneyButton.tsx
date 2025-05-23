@@ -11,8 +11,6 @@ import { AccountCheckDialog } from '../AccountCheckDialog'
 
 interface CreateJourneyButtonProps {
   signedIn?: boolean
-  openTeamDialog: boolean
-  setOpenTeamDialog: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 interface JourneyLanguage {
@@ -30,15 +28,14 @@ const DynamicCopyToTeamDialog = dynamic(
 )
 
 export function CreateJourneyButton({
-  signedIn = false,
-  openTeamDialog,
-  setOpenTeamDialog
+  signedIn = false
 }: CreateJourneyButtonProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
 
   const router = useRouter()
   const { journey } = useJourney()
   const [openAccountDialog, setOpenAccountDialog] = useState(false)
+  const [openTeamDialog, setOpenTeamDialog] = useState(false)
 
   const { duplicateAndTranslate, loading } = useJourneyDuplicateAndTranslate({
     journeyId: journey?.id,
