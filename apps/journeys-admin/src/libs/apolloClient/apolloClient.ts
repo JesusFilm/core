@@ -3,14 +3,17 @@ import {
   ApolloClient,
   ApolloLink,
   HttpLink,
-  NormalizedCacheObject
+  NormalizedCacheObject,
+  split
 } from '@apollo/client'
 import { EntityStore, StoreObject } from '@apollo/client/cache'
 import { setContext } from '@apollo/client/link/context'
+import { getMainDefinition } from '@apollo/client/utilities'
 import DebounceLink from 'apollo-link-debounce'
 import { getApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
 import { useMemo } from 'react'
+import { Observable } from 'zen-observable-ts'
 
 import { cache } from './cache'
 
@@ -19,12 +22,122 @@ let apolloClient: ApolloClient<NormalizedCacheObject>
 
 const DEFAULT_DEBOUNCE_TIMEOUT = 500
 
+// Custom SSE Link for subscriptions
+class SSELink extends ApolloLink {
+  private uri: string
+
+  constructor(uri: string) {
+    super()
+    this.uri = uri
+  }
+
+  public request(operation: any) {
+    return new Observable((observer) => {
+      const { query, variables } = operation
+
+      // Create the subscription request
+      const body = JSON.stringify({
+        query: query.loc?.source?.body || '',
+        variables
+      })
+
+      // Get auth headers from context
+      const headers = operation.getContext().headers || {}
+
+      fetch(this.uri, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'text/event-stream',
+          ...headers
+        },
+        body
+      })
+        .then((response) => {
+          if (!response.ok) {
+            observer.error(
+              new Error(`HTTP ${response.status}: ${response.statusText}`)
+            )
+            return
+          }
+
+          if (!response.body) {
+            observer.error(new Error('No response body'))
+            return
+          }
+
+          const reader = response.body.getReader()
+          const decoder = new TextDecoder()
+          let buffer = ''
+
+          const readStream = () => {
+            reader
+              .read()
+              .then(({ done, value }) => {
+                if (done) {
+                  observer.complete()
+                  return
+                }
+
+                buffer += decoder.decode(value, { stream: true })
+                const lines = buffer.split('\n')
+
+                // Keep the last incomplete line in the buffer
+                buffer = lines.pop() || ''
+
+                for (const line of lines) {
+                  if (line.startsWith('data: ')) {
+                    const data = line.slice(6).trim()
+                    if (data && data !== '') {
+                      try {
+                        const parsed = JSON.parse(data)
+                        if (parsed.data || parsed.errors) {
+                          observer.next({
+                            data: parsed.data,
+                            errors: parsed.errors
+                          })
+                        }
+                      } catch (e) {
+                        console.warn('Failed to parse SSE data:', data, e)
+                      }
+                    }
+                  } else if (line.startsWith('event: complete')) {
+                    observer.complete()
+                    return
+                  }
+                }
+
+                readStream()
+              })
+              .catch((error) => observer.error(error))
+          }
+
+          readStream()
+        })
+        .catch((error) => observer.error(error))
+
+      // Return cleanup function
+      return () => {
+        // Cleanup if needed
+      }
+    })
+  }
+}
+
 export function createApolloClient(
   token?: string
 ): ApolloClient<NormalizedCacheObject> {
+  const gatewayUrl =
+    process.env.NEXT_PUBLIC_GATEWAY_URL || 'http://localhost:4000'
+
+  // Create HTTP link for queries and mutations
   const httpLink = new HttpLink({
-    uri: process.env.NEXT_PUBLIC_GATEWAY_URL
+    uri: gatewayUrl
   })
+
+  // Create SSE link for subscriptions
+  const sseLink = new SSELink(gatewayUrl)
+
   const authLink = setContext(async (_, { headers }) => {
     const firebaseToken = ssrMode
       ? token
@@ -41,14 +154,28 @@ export function createApolloClient(
       }
     }
   })
+
   const mutationQueueLink = new MutationQueueLink()
   const debounceLink = new DebounceLink(DEFAULT_DEBOUNCE_TIMEOUT)
+
+  // Split link: use SSE for subscriptions, HTTP for queries/mutations
+  const splitLink = split(
+    ({ query }) => {
+      const definition = getMainDefinition(query)
+      return (
+        definition.kind === 'OperationDefinition' &&
+        definition.operation === 'subscription'
+      )
+    },
+    sseLink,
+    httpLink
+  )
 
   const link = ApolloLink.from([
     debounceLink,
     mutationQueueLink,
     authLink,
-    httpLink
+    splitLink
   ])
 
   return new ApolloClient({

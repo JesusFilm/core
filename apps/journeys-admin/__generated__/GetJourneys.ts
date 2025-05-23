@@ -46,14 +46,14 @@ export interface GetJourneys_journeys_primaryImageBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string;
-  width: number;
-  height: number;
+  alt: string | null;
+  width: number | null;
+  height: number | null;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string;
+  blurhash: string | null;
 }
 
 export interface GetJourneys_journeys_tags_name_language {

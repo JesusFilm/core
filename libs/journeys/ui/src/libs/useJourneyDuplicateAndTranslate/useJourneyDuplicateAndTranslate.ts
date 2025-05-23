@@ -1,7 +1,6 @@
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 
-import { useJourneyAiTranslateMutation } from '../useJourneyAiTranslateMutation'
 import { useJourneyDuplicateMutation } from '../useJourneyDuplicateMutation'
 
 interface JourneyLanguage {
@@ -27,7 +26,6 @@ export function useJourneyDuplicateAndTranslate({
 }: UseJourneyDuplicateAndTranslateProps) {
   const { t } = useTranslation('libs-journeys-ui')
   const { enqueueSnackbar } = useSnackbar()
-  const [translateJourney] = useJourneyAiTranslateMutation()
   const [journeyDuplicate] = useJourneyDuplicateMutation()
 
   const duplicateAndTranslate = async (
@@ -59,33 +57,29 @@ export function useJourneyDuplicateAndTranslate({
       return duplicateData.journeyDuplicate.id
     }
 
-    await translateJourney({
-      variables: {
-        journeyId: duplicateData.journeyDuplicate.id,
-        name: journeyTitle,
-        journeyLanguageName,
-        textLanguageId: selectedLanguage.id,
-        textLanguageName:
-          selectedLanguage.nativeName ?? selectedLanguage.localName ?? ''
-      },
-      onCompleted() {
-        enqueueSnackbar(t('Journey Translated'), {
-          variant: 'success',
-          preventDuplicate: true
-        })
-        onSuccess?.()
-      },
-      onError(error) {
-        enqueueSnackbar(error.message, {
-          variant: 'error',
-          preventDuplicate: true
-        })
-        onError?.()
-      }
+    // Note: Translation is now handled via subscription in the component that calls this
+    // The subscription should be set up separately to handle the translation process
+    enqueueSnackbar(t('Journey Copied - Translation will begin shortly'), {
+      variant: 'success',
+      preventDuplicate: true
     })
+    onSuccess?.()
 
     return duplicateData.journeyDuplicate.id
   }
 
-  return { duplicateAndTranslate }
+  // Helper function to get translation variables for use with subscription
+  const getTranslationVariables = (
+    duplicatedJourneyId: string,
+    selectedLanguage: JourneyLanguage
+  ) => ({
+    journeyId: duplicatedJourneyId,
+    name: journeyTitle,
+    journeyLanguageName,
+    textLanguageId: selectedLanguage.id,
+    textLanguageName:
+      selectedLanguage.nativeName ?? selectedLanguage.localName ?? ''
+  })
+
+  return { duplicateAndTranslate, getTranslationVariables }
 }

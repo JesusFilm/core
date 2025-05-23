@@ -4,8 +4,8 @@ extend schema
 interface Block
   @key(fields: "id")
 {
-  id: ID
-  journeyId: ID
+  id: ID!
+  journeyId: ID!
   typename: String
   parentBlockId: ID
   parentOrder: Int
@@ -14,8 +14,8 @@ interface Block
 type ButtonBlock implements Block
   @key(fields: "id")
 {
-  id: ID @shareable
-  journeyId: ID @shareable
+  id: ID! @shareable
+  journeyId: ID! @shareable
   typename: String
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
@@ -49,8 +49,8 @@ enum ButtonVariant {
 type CardBlock implements Block
   @key(fields: "id")
 {
-  id: ID @shareable
-  journeyId: ID @shareable
+  id: ID! @shareable
+  journeyId: ID! @shareable
   typename: String
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
@@ -105,8 +105,8 @@ enum GridAlignItems {
 type GridContainerBlock implements Block
   @key(fields: "id")
 {
-  id: ID @shareable
-  journeyId: ID @shareable
+  id: ID! @shareable
+  journeyId: ID! @shareable
   typename: String
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
@@ -126,8 +126,8 @@ enum GridDirection {
 type GridItemBlock implements Block
   @key(fields: "id")
 {
-  id: ID @shareable
-  journeyId: ID @shareable
+  id: ID! @shareable
+  journeyId: ID! @shareable
   typename: String
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
@@ -145,8 +145,8 @@ enum GridJustifyContent {
 type IconBlock implements Block
   @key(fields: "id")
 {
-  id: ID @shareable
-  journeyId: ID @shareable
+  id: ID! @shareable
+  journeyId: ID! @shareable
   typename: String
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
@@ -197,8 +197,8 @@ enum IconSize {
 type ImageBlock implements Block
   @key(fields: "id")
 {
-  id: ID @shareable
-  journeyId: ID @shareable
+  id: ID! @shareable
+  journeyId: ID! @shareable
   typename: String
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
@@ -233,6 +233,17 @@ input JourneyAiTranslateInput {
   textLanguageName: String!
 }
 
+type JourneyAiTranslateProgress {
+  """Translation progress as a percentage (0-100)"""
+  progress: Float
+
+  """Current translation step message"""
+  message: String
+
+  """The journey being translated (only present when complete)"""
+  journey: Journey
+}
+
 type JourneyEventsExportLog {
   id: ID!
   createdAt: DateTimeISO!
@@ -261,7 +272,6 @@ enum JourneyStatus {
 union MediaVideo = MuxVideo | Video | YouTube
 
 type Mutation {
-  journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!): Boolean!
 }
@@ -286,8 +296,8 @@ type MuxVideo
 type RadioOptionBlock implements Block
   @key(fields: "id")
 {
-  id: ID @shareable
-  journeyId: ID @shareable
+  id: ID! @shareable
+  journeyId: ID! @shareable
   typename: String
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
@@ -297,8 +307,8 @@ type RadioOptionBlock implements Block
 type RadioQuestionBlock implements Block
   @key(fields: "id")
 {
-  id: ID @shareable
-  journeyId: ID @shareable
+  id: ID! @shareable
+  journeyId: ID! @shareable
   typename: String
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
@@ -308,8 +318,8 @@ type RadioQuestionBlock implements Block
 type SignUpBlock implements Block
   @key(fields: "id")
 {
-  id: ID @shareable
-  journeyId: ID @shareable
+  id: ID! @shareable
+  journeyId: ID! @shareable
   typename: String
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
@@ -320,8 +330,8 @@ type SignUpBlock implements Block
 type SpacerBlock implements Block
   @key(fields: "id")
 {
-  id: ID @shareable
-  journeyId: ID @shareable
+  id: ID! @shareable
+  journeyId: ID! @shareable
   typename: String
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
@@ -331,8 +341,8 @@ type SpacerBlock implements Block
 type StepBlock implements Block
   @key(fields: "id")
 {
-  id: ID @shareable
-  journeyId: ID @shareable
+  id: ID! @shareable
+  journeyId: ID! @shareable
   typename: String
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
@@ -343,11 +353,15 @@ type StepBlock implements Block
   slug: String @shareable
 }
 
+type Subscription {
+  journeyAiTranslateCreate(input: JourneyAiTranslateInput!): JourneyAiTranslateProgress!
+}
+
 type TextResponseBlock implements Block
   @key(fields: "id")
 {
-  id: ID @shareable
-  journeyId: ID @shareable
+  id: ID! @shareable
+  journeyId: ID! @shareable
   typename: String
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
@@ -386,8 +400,8 @@ enum TypographyAlign {
 type TypographyBlock implements Block
   @key(fields: "id")
 {
-  id: ID @shareable
-  journeyId: ID @shareable
+  id: ID! @shareable
+  journeyId: ID! @shareable
   typename: String
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
@@ -455,8 +469,8 @@ type VideoBlock
 type VideoBlockContent implements Block
   @key(fields: "id")
 {
-  id: ID @shareable
-  journeyId: ID @shareable
+  id: ID! @shareable
+  journeyId: ID! @shareable
   typename: String
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
@@ -490,8 +504,8 @@ enum VideoBlockSource {
 type VideoTriggerBlock implements Block
   @key(fields: "id")
 {
-  id: ID @shareable
-  journeyId: ID @shareable
+  id: ID! @shareable
+  journeyId: ID! @shareable
   typename: String
   parentBlockId: ID @shareable
   parentOrder: Int @shareable

@@ -37,7 +37,7 @@ export interface ButtonBlockCreate_buttonBlockCreate {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string;
+  label: string | null;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
   size: ButtonSize | null;
@@ -95,7 +95,7 @@ export interface ButtonBlockCreate_buttonBlockUpdate {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string;
+  label: string | null;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
   size: ButtonSize | null;

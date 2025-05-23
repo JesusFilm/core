@@ -9,7 +9,7 @@ import {
   TeamProvider
 } from '@core/journeys/ui/TeamProvider'
 import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
-import { JOURNEY_AI_TRANSLATE_CREATE } from '@core/journeys/ui/useJourneyAiTranslateMutation/useJourneyAiTranslateMutation'
+import { JOURNEY_AI_TRANSLATE_CREATE } from '@core/journeys/ui/useJourneyAiTranslateSubscription/useJourneyAiTranslateSubscription'
 import { JOURNEY_DUPLICATE } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import { JourneyDuplicate } from '@core/journeys/ui/useJourneyDuplicateMutation/__generated__/JourneyDuplicate'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'

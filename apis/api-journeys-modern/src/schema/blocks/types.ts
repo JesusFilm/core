@@ -86,8 +86,8 @@ builder.objectType(TypographyBlockRef, {
   interfaces: [BlockRef],
   isTypeOf: (obj: any) => obj.typename === 'TypographyBlock',
   fields: (t) => ({
-    id: t.exposeID('id', { directives: { shareable: true } }),
-    journeyId: t.exposeID('journeyId', { directives: { shareable: true } }),
+    id: t.exposeID('id', { nullable: false, directives: { shareable: true } }),
+    journeyId: t.exposeID('journeyId', { nullable: false, directives: { shareable: true } }),
     parentBlockId: t.exposeID('parentBlockId', {
       nullable: true,
       directives: { shareable: true }
@@ -127,8 +127,8 @@ builder.objectType(ButtonBlockRef, {
   interfaces: [BlockRef],
   isTypeOf: (obj: any) => obj.typename === 'ButtonBlock',
   fields: (t) => ({
-    id: t.exposeID('id', { directives: { shareable: true } }),
-    journeyId: t.exposeID('journeyId', { directives: { shareable: true } }),
+    id: t.exposeID('id', { nullable: false, directives: { shareable: true } }),
+    journeyId: t.exposeID('journeyId', { nullable: false, directives: { shareable: true } }),
     parentBlockId: t.exposeID('parentBlockId', {
       nullable: true,
       directives: { shareable: true }
@@ -180,8 +180,8 @@ builder.objectType(CardBlockRef, {
   interfaces: [BlockRef],
   isTypeOf: (obj: any) => obj.typename === 'CardBlock',
   fields: (t) => ({
-    id: t.exposeID('id', { directives: { shareable: true } }),
-    journeyId: t.exposeID('journeyId', { directives: { shareable: true } }),
+    id: t.exposeID('id', { nullable: false, directives: { shareable: true } }),
+    journeyId: t.exposeID('journeyId', { nullable: false, directives: { shareable: true } }),
     parentBlockId: t.exposeID('parentBlockId', {
       nullable: true,
       directives: { shareable: true }
@@ -223,8 +223,8 @@ builder.objectType(GridContainerBlockRef, {
   interfaces: [BlockRef],
   isTypeOf: (obj: any) => obj.typename === 'GridContainerBlock',
   fields: (t) => ({
-    id: t.exposeID('id', { directives: { shareable: true } }),
-    journeyId: t.exposeID('journeyId', { directives: { shareable: true } }),
+    id: t.exposeID('id', { nullable: false, directives: { shareable: true } }),
+    journeyId: t.exposeID('journeyId', { nullable: false, directives: { shareable: true } }),
     parentBlockId: t.exposeID('parentBlockId', {
       nullable: true,
       directives: { shareable: true }
@@ -264,8 +264,8 @@ builder.objectType(GridItemBlockRef, {
   interfaces: [BlockRef],
   isTypeOf: (obj: any) => obj.typename === 'GridItemBlock',
   fields: (t) => ({
-    id: t.exposeID('id', { directives: { shareable: true } }),
-    journeyId: t.exposeID('journeyId', { directives: { shareable: true } }),
+    id: t.exposeID('id', { nullable: false, directives: { shareable: true } }),
+    journeyId: t.exposeID('journeyId', { nullable: false, directives: { shareable: true } }),
     parentBlockId: t.exposeID('parentBlockId', {
       nullable: true,
       directives: { shareable: true }
@@ -295,8 +295,8 @@ builder.objectType(IconBlockRef, {
   interfaces: [BlockRef],
   isTypeOf: (obj: any) => obj.typename === 'IconBlock',
   fields: (t) => ({
-    id: t.exposeID('id', { directives: { shareable: true } }),
-    journeyId: t.exposeID('journeyId', { directives: { shareable: true } }),
+    id: t.exposeID('id', { nullable: false, directives: { shareable: true } }),
+    journeyId: t.exposeID('journeyId', { nullable: false, directives: { shareable: true } }),
     parentBlockId: t.exposeID('parentBlockId', {
       nullable: true,
       directives: { shareable: true }
@@ -332,8 +332,8 @@ builder.objectType(ImageBlockRef, {
   interfaces: [BlockRef],
   isTypeOf: (obj: any) => obj.typename === 'ImageBlock',
   fields: (t) => ({
-    id: t.exposeID('id', { directives: { shareable: true } }),
-    journeyId: t.exposeID('journeyId', { directives: { shareable: true } }),
+    id: t.exposeID('id', { nullable: false, directives: { shareable: true } }),
+    journeyId: t.exposeID('journeyId', { nullable: false, directives: { shareable: true } }),
     parentBlockId: t.exposeID('parentBlockId', {
       nullable: true,
       directives: { shareable: true }
@@ -383,8 +383,8 @@ builder.objectType(RadioOptionBlockRef, {
   interfaces: [BlockRef],
   isTypeOf: (obj: any) => obj.typename === 'RadioOptionBlock',
   fields: (t) => ({
-    id: t.exposeID('id', { directives: { shareable: true } }),
-    journeyId: t.exposeID('journeyId', { directives: { shareable: true } }),
+    id: t.exposeID('id', { nullable: false, directives: { shareable: true } }),
+    journeyId: t.exposeID('journeyId', { nullable: false, directives: { shareable: true } }),
     parentBlockId: t.exposeID('parentBlockId', {
       nullable: true,
       directives: { shareable: true }
@@ -406,8 +406,8 @@ builder.objectType(RadioQuestionBlockRef, {
   interfaces: [BlockRef],
   isTypeOf: (obj: any) => obj.typename === 'RadioQuestionBlock',
   fields: (t) => ({
-    id: t.exposeID('id', { directives: { shareable: true } }),
-    journeyId: t.exposeID('journeyId', { directives: { shareable: true } }),
+    id: t.exposeID('id', { nullable: false, directives: { shareable: true } }),
+    journeyId: t.exposeID('journeyId', { nullable: false, directives: { shareable: true } }),
     parentBlockId: t.exposeID('parentBlockId', {
       nullable: true,
       directives: { shareable: true }
@@ -429,8 +429,8 @@ builder.objectType(SignUpBlockRef, {
   interfaces: [BlockRef],
   isTypeOf: (obj: any) => obj.typename === 'SignUpBlock',
   fields: (t) => ({
-    id: t.exposeID('id', { directives: { shareable: true } }),
-    journeyId: t.exposeID('journeyId', { directives: { shareable: true } }),
+    id: t.exposeID('id', { nullable: false, directives: { shareable: true } }),
+    journeyId: t.exposeID('journeyId', { nullable: false, directives: { shareable: true } }),
     parentBlockId: t.exposeID('parentBlockId', {
       nullable: true,
       directives: { shareable: true }
@@ -456,8 +456,8 @@ builder.objectType(SpacerBlockRef, {
   interfaces: [BlockRef],
   isTypeOf: (obj: any) => obj.typename === 'SpacerBlock',
   fields: (t) => ({
-    id: t.exposeID('id', { directives: { shareable: true } }),
-    journeyId: t.exposeID('journeyId', { directives: { shareable: true } }),
+    id: t.exposeID('id', { nullable: false, directives: { shareable: true } }),
+    journeyId: t.exposeID('journeyId', { nullable: false, directives: { shareable: true } }),
     parentBlockId: t.exposeID('parentBlockId', {
       nullable: true,
       directives: { shareable: true }
@@ -479,8 +479,8 @@ builder.objectType(StepBlockRef, {
   interfaces: [BlockRef],
   isTypeOf: (obj: any) => obj.typename === 'StepBlock',
   fields: (t) => ({
-    id: t.exposeID('id', { directives: { shareable: true } }),
-    journeyId: t.exposeID('journeyId', { directives: { shareable: true } }),
+    id: t.exposeID('id', { nullable: false, directives: { shareable: true } }),
+    journeyId: t.exposeID('journeyId', { nullable: false, directives: { shareable: true } }),
     parentBlockId: t.exposeID('parentBlockId', {
       nullable: true,
       directives: { shareable: true }
@@ -512,8 +512,8 @@ builder.objectType(TextResponseBlockRef, {
   interfaces: [BlockRef],
   isTypeOf: (obj: any) => obj.typename === 'TextResponseBlock',
   fields: (t) => ({
-    id: t.exposeID('id', { directives: { shareable: true } }),
-    journeyId: t.exposeID('journeyId', { directives: { shareable: true } }),
+    id: t.exposeID('id', { nullable: false, directives: { shareable: true } }),
+    journeyId: t.exposeID('journeyId', { nullable: false, directives: { shareable: true } }),
     parentBlockId: t.exposeID('parentBlockId', {
       nullable: true,
       directives: { shareable: true }
@@ -565,8 +565,8 @@ builder.objectType(VideoBlockRef, {
   interfaces: [BlockRef],
   isTypeOf: (obj: any) => obj.typename === 'VideoBlock',
   fields: (t) => ({
-    id: t.exposeID('id', { directives: { shareable: true } }),
-    journeyId: t.exposeID('journeyId', { directives: { shareable: true } }),
+    id: t.exposeID('id', { nullable: false, directives: { shareable: true } }),
+    journeyId: t.exposeID('journeyId', { nullable: false, directives: { shareable: true } }),
     parentBlockId: t.exposeID('parentBlockId', {
       nullable: true,
       directives: { shareable: true }
@@ -636,8 +636,8 @@ builder.objectType(VideoTriggerBlockRef, {
   interfaces: [BlockRef],
   isTypeOf: (obj: any) => obj.typename === 'VideoTriggerBlock',
   fields: (t) => ({
-    id: t.exposeID('id', { directives: { shareable: true } }),
-    journeyId: t.exposeID('journeyId', { directives: { shareable: true } }),
+    id: t.exposeID('id', { nullable: false, directives: { shareable: true } }),
+    journeyId: t.exposeID('journeyId', { nullable: false, directives: { shareable: true } }),
     parentBlockId: t.exposeID('parentBlockId', {
       nullable: true,
       directives: { shareable: true }

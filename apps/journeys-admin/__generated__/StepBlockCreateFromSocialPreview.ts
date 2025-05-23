@@ -18,7 +18,7 @@ export interface StepBlockCreateFromSocialPreview_stepBlockCreate {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean;
+  locked: boolean | null;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to
@@ -74,11 +74,11 @@ export interface StepBlockCreateFromSocialPreview_cardBlockCreate {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean;
+  fullscreen: boolean | null;
 }
 
 export interface StepBlockCreateFromSocialPreview_blockOrderUpdate {
-  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock" | "VideoBlockContent";
   id: string;
   parentOrder: number | null;
 }

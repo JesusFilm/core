@@ -11,7 +11,7 @@ schema
 {
   query: Query
   mutation: Mutation
-  
+  subscription: Subscription
 }
 
 
@@ -399,7 +399,6 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   Allow current user to update specific allowable fields of their visitor record
   """
   visitorUpdateForCurrentUser(input: VisitorUpdateInput!) : Visitor! @join__field(graph: API_JOURNEYS) 
-  journeyAiTranslateCreate(input: JourneyAiTranslateInput!) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!) : JourneyEventsExportLog! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!) : Boolean! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -805,8 +804,8 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
 }
 
 type ButtonBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
-  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
-  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  id: ID!
+  journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
   label: String @join__field(graph: API_JOURNEYS, type: "String!")  @join__field(graph: API_JOURNEYS_MODERN, type: "String") 
@@ -821,8 +820,8 @@ type ButtonBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @
 }
 
 type CardBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
-  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
-  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  id: ID!
+  journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
   """
@@ -855,8 +854,8 @@ type CardBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @jo
 }
 
 type GridContainerBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
-  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
-  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  id: ID!
+  journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
   gap: Int @join__field(graph: API_JOURNEYS, type: "Int!")  @join__field(graph: API_JOURNEYS_MODERN, type: "Int") 
@@ -867,8 +866,8 @@ type GridContainerBlock implements Block @join__type(graph: API_JOURNEYS, key: "
 }
 
 type GridItemBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
-  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
-  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  id: ID!
+  journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
   xl: Int @join__field(graph: API_JOURNEYS, type: "Int!")  @join__field(graph: API_JOURNEYS_MODERN, type: "Int") 
@@ -878,8 +877,8 @@ type GridItemBlock implements Block @join__type(graph: API_JOURNEYS, key: "id") 
 }
 
 type IconBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
-  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
-  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  id: ID!
+  journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
   name: IconName
@@ -889,8 +888,8 @@ type IconBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @jo
 }
 
 type ImageBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
-  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
-  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  id: ID!
+  journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
   src: String
@@ -909,8 +908,8 @@ type ImageBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @j
 }
 
 type RadioOptionBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
-  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
-  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  id: ID!
+  journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
   label: String @join__field(graph: API_JOURNEYS, type: "String!")  @join__field(graph: API_JOURNEYS_MODERN, type: "String") 
@@ -919,8 +918,8 @@ type RadioOptionBlock implements Block @join__type(graph: API_JOURNEYS, key: "id
 }
 
 type RadioQuestionBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
-  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
-  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  id: ID!
+  journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
   typename: String @join__field(graph: API_JOURNEYS_MODERN) 
@@ -928,8 +927,8 @@ type RadioQuestionBlock implements Block @join__type(graph: API_JOURNEYS, key: "
 }
 
 type SignUpBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
-  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
-  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  id: ID!
+  journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
   action: Action @join__field(graph: API_JOURNEYS) 
@@ -939,8 +938,8 @@ type SignUpBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @
 }
 
 type SpacerBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
-  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
-  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  id: ID!
+  journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
   spacing: Int
@@ -948,8 +947,8 @@ type SpacerBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @
 }
 
 type StepBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
-  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
-  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  id: ID!
+  journeyId: ID!
   """
   nextBlockId contains the preferred block to navigate to, users will have to
   manually set the next block they want to card to navigate to
@@ -984,8 +983,8 @@ type StepBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @jo
 }
 
 type TextResponseBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
-  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
-  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  id: ID!
+  journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
   label: String @join__field(graph: API_JOURNEYS, type: "String!")  @join__field(graph: API_JOURNEYS_MODERN, type: "String") 
@@ -1000,8 +999,8 @@ type TextResponseBlock implements Block @join__type(graph: API_JOURNEYS, key: "i
 }
 
 type TypographyBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
-  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
-  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  id: ID!
+  journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
   content: String @join__field(graph: API_JOURNEYS, type: "String!")  @join__field(graph: API_JOURNEYS_MODERN, type: "String") 
@@ -1138,8 +1137,8 @@ VideoTriggerBlock is a block that indicates the video to navigate
 to the next block at the designated time.
 """
 type VideoTriggerBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
-  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
-  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  id: ID!
+  journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
   """
@@ -2228,6 +2227,21 @@ type Translation @join__type(graph: API_JOURNEYS)  {
   primary: Boolean!
 }
 
+type JourneyAiTranslateProgress @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  Translation progress as a percentage (0-100)
+  """
+  progress: Float
+  """
+  Current translation step message
+  """
+  message: String
+  """
+  The journey being translated (only present when complete)
+  """
+  journey: Journey
+}
+
 type JourneyEventsExportLog @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID!
   createdAt: DateTimeISO!
@@ -2255,9 +2269,13 @@ type MuxVideo @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId
   videoVariants: [VideoVariant!]! @join__field(graph: API_MEDIA) 
 }
 
+type Subscription @join__type(graph: API_JOURNEYS_MODERN)  {
+  journeyAiTranslateCreate(input: JourneyAiTranslateInput!) : JourneyAiTranslateProgress!
+}
+
 type VideoBlockContent implements Block @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
-  id: ID
-  journeyId: ID
+  id: ID!
+  journeyId: ID!
   typename: String
   parentBlockId: ID
   parentOrder: Int
@@ -2827,8 +2845,8 @@ interface Action @join__type(graph: API_JOURNEYS)  {
 }
 
 interface Block @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  {
-  id: ID
-  journeyId: ID
+  id: ID!
+  journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
   typename: String @join__field(graph: API_JOURNEYS_MODERN) 

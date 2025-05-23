@@ -18,7 +18,7 @@ export interface MenuBlockCreate_step {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean;
+  locked: boolean | null;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to
@@ -74,7 +74,7 @@ export interface MenuBlockCreate_card {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean;
+  fullscreen: boolean | null;
 }
 
 export interface MenuBlockCreate_heading {
@@ -84,7 +84,7 @@ export interface MenuBlockCreate_heading {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string;
+  content: string | null;
   variant: TypographyVariant | null;
 }
 
@@ -95,7 +95,7 @@ export interface MenuBlockCreate_subHeading {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string;
+  content: string | null;
   variant: TypographyVariant | null;
 }
 
@@ -127,7 +127,7 @@ export interface MenuBlockCreate_button1 {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string;
+  label: string | null;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
   size: ButtonSize | null;
@@ -165,7 +165,7 @@ export interface MenuBlockCreate_button2 {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string;
+  label: string | null;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
   size: ButtonSize | null;
@@ -203,7 +203,7 @@ export interface MenuBlockCreate_button3 {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string;
+  label: string | null;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
   size: ButtonSize | null;
@@ -222,7 +222,7 @@ export interface MenuBlockCreate_journeyUpdate_menuStepBlock {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean;
+  locked: boolean | null;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to

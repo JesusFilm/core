@@ -5,8 +5,8 @@ import { builder } from '../builder'
 const BlockRef = builder.interfaceRef<Block>('Block')
 builder.interfaceType(BlockRef, {
   fields: (t) => ({
-    id: t.exposeID('id'),
-    journeyId: t.exposeID('journeyId'),
+    id: t.exposeID('id', { nullable: false }),
+    journeyId: t.exposeID('journeyId', { nullable: false }),
     typename: t.exposeString('typename'),
     parentBlockId: t.exposeID('parentBlockId', {
       nullable: true

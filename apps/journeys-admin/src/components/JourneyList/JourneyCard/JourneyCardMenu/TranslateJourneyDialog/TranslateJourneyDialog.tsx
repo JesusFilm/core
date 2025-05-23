@@ -8,7 +8,8 @@ import { ReactElement, useState } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { TranslationDialogWrapper } from '@core/journeys/ui/TranslationDialogWrapper'
-import { useJourneyAiTranslateMutation } from '@core/journeys/ui/useJourneyAiTranslateMutation'
+import { TranslationProgressBar } from '@core/journeys/ui/TranslationProgressBar'
+import { useJourneyAiTranslateSubscription } from '@core/journeys/ui/useJourneyAiTranslateSubscription'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
@@ -50,9 +51,61 @@ export function TranslateJourneyDialog({
   const { activeTeam } = useTeam()
   const journeyData = journey ?? journeyFromContext
   const { enqueueSnackbar } = useSnackbar()
-  const [translate] = useJourneyAiTranslateMutation()
   const [journeyDuplicate] = useJourneyDuplicateMutation()
   const [loading, setLoading] = useState(false)
+  const [translationProgress, setTranslationProgress] = useState<{
+    progress: number
+    message: string
+  } | null>(null)
+  const [translationVariables, setTranslationVariables] = useState<
+    | {
+        journeyId: string
+        name: string
+        journeyLanguageName: string
+        textLanguageId: string
+        textLanguageName: string
+      }
+    | undefined
+  >(undefined)
+
+  // Set up the subscription for translation
+  const { data: translationData, error: translationError } =
+    useJourneyAiTranslateSubscription({
+      variables: translationVariables,
+      skip: !translationVariables,
+      onData: ({ data }) => {
+        if (data.data?.journeyAiTranslateCreate) {
+          const progressData = data.data.journeyAiTranslateCreate
+
+          // Update progress
+          setTranslationProgress({
+            progress: progressData.progress,
+            message: progressData.message
+          })
+
+          // Check if translation is complete
+          if (progressData.journey && progressData.progress === 100) {
+            enqueueSnackbar(t('Translation complete'), {
+              variant: 'success'
+            })
+            setLoading(false)
+            setTranslationProgress(null)
+            setTranslationVariables(undefined)
+            onClose()
+          }
+        }
+      }
+    })
+
+  // Handle translation errors
+  if (translationError) {
+    enqueueSnackbar(translationError.message, {
+      variant: 'error'
+    })
+    setLoading(false)
+    setTranslationProgress(null)
+    setTranslationVariables(undefined)
+  }
 
   const { data: languagesData, loading: languagesLoading } = useLanguagesQuery({
     languageId: '529',
@@ -142,27 +195,19 @@ export function TranslateJourneyDialog({
       })
 
       if (duplicateData?.journeyDuplicate?.id) {
-        const response = await translate({
-          variables: {
-            journeyId: duplicateData.journeyDuplicate.id,
-            name: `${journeyData.title}`,
-            journeyLanguageName:
-              journeyData.language.name.find(({ primary }) => !primary)
-                ?.value ?? '',
-            textLanguageId: selectedLanguage.id,
-            textLanguageName:
-              selectedLanguage.nativeName ?? selectedLanguage.localName ?? ''
-          }
+        // Start the translation subscription
+        setTranslationVariables({
+          journeyId: duplicateData.journeyDuplicate.id,
+          name: `${journeyData.title}`,
+          journeyLanguageName:
+            journeyData.language.name.find(({ primary }) => !primary)?.value ??
+            '',
+          textLanguageId: selectedLanguage.id,
+          textLanguageName:
+            selectedLanguage.nativeName ?? selectedLanguage.localName ?? ''
         })
 
-        if (response.data?.journeyAiTranslateCreate) {
-          enqueueSnackbar(t('Translation complete'), {
-            variant: 'success'
-          })
-          onClose()
-        } else {
-          throw new Error('Failed to start translation')
-        }
+        // The subscription will handle the completion and success message
       } else {
         throw new Error('Journey duplication failed')
       }
@@ -208,6 +253,14 @@ export function TranslateJourneyDialog({
           placement: !smUp ? 'top' : 'bottom'
         }}
       />
+
+      {/* Show progress bar when translation is in progress */}
+      {translationProgress && (
+        <TranslationProgressBar
+          progress={translationProgress.progress}
+          message={translationProgress.message}
+        />
+      )}
     </TranslationDialogWrapper>
   )
 }

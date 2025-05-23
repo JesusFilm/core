@@ -10,7 +10,7 @@ import { CardBlockUpdateInput, ButtonVariant, ButtonColor, ButtonSize, ThemeMode
 // ====================================================
 
 export interface CardQuoteRestore_image_GridContainerBlock {
-  __typename: "GridContainerBlock" | "GridItemBlock";
+  __typename: "GridContainerBlock" | "GridItemBlock" | "VideoBlockContent";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -44,7 +44,7 @@ export interface CardQuoteRestore_image_ButtonBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string;
+  label: string | null;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
   size: ButtonSize | null;
@@ -84,7 +84,7 @@ export interface CardQuoteRestore_image_CardBlock {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean;
+  fullscreen: boolean | null;
 }
 
 export interface CardQuoteRestore_image_IconBlock {
@@ -103,14 +103,14 @@ export interface CardQuoteRestore_image_ImageBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string;
-  width: number;
-  height: number;
+  alt: string | null;
+  width: number | null;
+  height: number | null;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string;
+  blurhash: string | null;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
@@ -144,7 +144,7 @@ export interface CardQuoteRestore_image_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string;
+  label: string | null;
   action: CardQuoteRestore_image_RadioOptionBlock_action | null;
 }
 
@@ -205,7 +205,7 @@ export interface CardQuoteRestore_image_StepBlock {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean;
+  locked: boolean | null;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to
@@ -227,7 +227,7 @@ export interface CardQuoteRestore_image_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   required: boolean | null;
-  label: string;
+  label: string | null;
   placeholder: string | null;
   hint: string | null;
   minRows: number | null;
@@ -243,7 +243,7 @@ export interface CardQuoteRestore_image_TypographyBlock {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string;
+  content: string | null;
   variant: TypographyVariant | null;
 }
 
@@ -428,14 +428,14 @@ export interface CardQuoteRestore_image_VideoTriggerBlock {
    * triggerStart sets the time as to when a video navigates to the next block,
    * this is the number of seconds since the start of the video
    */
-  triggerStart: number;
+  triggerStart: number | null;
   triggerAction: CardQuoteRestore_image_VideoTriggerBlock_triggerAction;
 }
 
 export type CardQuoteRestore_image = CardQuoteRestore_image_GridContainerBlock | CardQuoteRestore_image_ButtonBlock | CardQuoteRestore_image_CardBlock | CardQuoteRestore_image_IconBlock | CardQuoteRestore_image_ImageBlock | CardQuoteRestore_image_RadioOptionBlock | CardQuoteRestore_image_RadioQuestionBlock | CardQuoteRestore_image_SignUpBlock | CardQuoteRestore_image_SpacerBlock | CardQuoteRestore_image_StepBlock | CardQuoteRestore_image_TextResponseBlock | CardQuoteRestore_image_TypographyBlock | CardQuoteRestore_image_VideoBlock | CardQuoteRestore_image_VideoTriggerBlock;
 
 export interface CardQuoteRestore_subtitle_GridContainerBlock {
-  __typename: "GridContainerBlock" | "GridItemBlock";
+  __typename: "GridContainerBlock" | "GridItemBlock" | "VideoBlockContent";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -469,7 +469,7 @@ export interface CardQuoteRestore_subtitle_ButtonBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string;
+  label: string | null;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
   size: ButtonSize | null;
@@ -509,7 +509,7 @@ export interface CardQuoteRestore_subtitle_CardBlock {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean;
+  fullscreen: boolean | null;
 }
 
 export interface CardQuoteRestore_subtitle_IconBlock {
@@ -528,14 +528,14 @@ export interface CardQuoteRestore_subtitle_ImageBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string;
-  width: number;
-  height: number;
+  alt: string | null;
+  width: number | null;
+  height: number | null;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string;
+  blurhash: string | null;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
@@ -569,7 +569,7 @@ export interface CardQuoteRestore_subtitle_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string;
+  label: string | null;
   action: CardQuoteRestore_subtitle_RadioOptionBlock_action | null;
 }
 
@@ -630,7 +630,7 @@ export interface CardQuoteRestore_subtitle_StepBlock {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean;
+  locked: boolean | null;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to
@@ -652,7 +652,7 @@ export interface CardQuoteRestore_subtitle_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   required: boolean | null;
-  label: string;
+  label: string | null;
   placeholder: string | null;
   hint: string | null;
   minRows: number | null;
@@ -668,7 +668,7 @@ export interface CardQuoteRestore_subtitle_TypographyBlock {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string;
+  content: string | null;
   variant: TypographyVariant | null;
 }
 
@@ -853,14 +853,14 @@ export interface CardQuoteRestore_subtitle_VideoTriggerBlock {
    * triggerStart sets the time as to when a video navigates to the next block,
    * this is the number of seconds since the start of the video
    */
-  triggerStart: number;
+  triggerStart: number | null;
   triggerAction: CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction;
 }
 
 export type CardQuoteRestore_subtitle = CardQuoteRestore_subtitle_GridContainerBlock | CardQuoteRestore_subtitle_ButtonBlock | CardQuoteRestore_subtitle_CardBlock | CardQuoteRestore_subtitle_IconBlock | CardQuoteRestore_subtitle_ImageBlock | CardQuoteRestore_subtitle_RadioOptionBlock | CardQuoteRestore_subtitle_RadioQuestionBlock | CardQuoteRestore_subtitle_SignUpBlock | CardQuoteRestore_subtitle_SpacerBlock | CardQuoteRestore_subtitle_StepBlock | CardQuoteRestore_subtitle_TextResponseBlock | CardQuoteRestore_subtitle_TypographyBlock | CardQuoteRestore_subtitle_VideoBlock | CardQuoteRestore_subtitle_VideoTriggerBlock;
 
 export interface CardQuoteRestore_title_GridContainerBlock {
-  __typename: "GridContainerBlock" | "GridItemBlock";
+  __typename: "GridContainerBlock" | "GridItemBlock" | "VideoBlockContent";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -894,7 +894,7 @@ export interface CardQuoteRestore_title_ButtonBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string;
+  label: string | null;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
   size: ButtonSize | null;
@@ -934,7 +934,7 @@ export interface CardQuoteRestore_title_CardBlock {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean;
+  fullscreen: boolean | null;
 }
 
 export interface CardQuoteRestore_title_IconBlock {
@@ -953,14 +953,14 @@ export interface CardQuoteRestore_title_ImageBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string;
-  width: number;
-  height: number;
+  alt: string | null;
+  width: number | null;
+  height: number | null;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string;
+  blurhash: string | null;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
@@ -994,7 +994,7 @@ export interface CardQuoteRestore_title_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string;
+  label: string | null;
   action: CardQuoteRestore_title_RadioOptionBlock_action | null;
 }
 
@@ -1055,7 +1055,7 @@ export interface CardQuoteRestore_title_StepBlock {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean;
+  locked: boolean | null;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to
@@ -1077,7 +1077,7 @@ export interface CardQuoteRestore_title_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   required: boolean | null;
-  label: string;
+  label: string | null;
   placeholder: string | null;
   hint: string | null;
   minRows: number | null;
@@ -1093,7 +1093,7 @@ export interface CardQuoteRestore_title_TypographyBlock {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string;
+  content: string | null;
   variant: TypographyVariant | null;
 }
 
@@ -1278,14 +1278,14 @@ export interface CardQuoteRestore_title_VideoTriggerBlock {
    * triggerStart sets the time as to when a video navigates to the next block,
    * this is the number of seconds since the start of the video
    */
-  triggerStart: number;
+  triggerStart: number | null;
   triggerAction: CardQuoteRestore_title_VideoTriggerBlock_triggerAction;
 }
 
 export type CardQuoteRestore_title = CardQuoteRestore_title_GridContainerBlock | CardQuoteRestore_title_ButtonBlock | CardQuoteRestore_title_CardBlock | CardQuoteRestore_title_IconBlock | CardQuoteRestore_title_ImageBlock | CardQuoteRestore_title_RadioOptionBlock | CardQuoteRestore_title_RadioQuestionBlock | CardQuoteRestore_title_SignUpBlock | CardQuoteRestore_title_SpacerBlock | CardQuoteRestore_title_StepBlock | CardQuoteRestore_title_TextResponseBlock | CardQuoteRestore_title_TypographyBlock | CardQuoteRestore_title_VideoBlock | CardQuoteRestore_title_VideoTriggerBlock;
 
 export interface CardQuoteRestore_body_GridContainerBlock {
-  __typename: "GridContainerBlock" | "GridItemBlock";
+  __typename: "GridContainerBlock" | "GridItemBlock" | "VideoBlockContent";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -1319,7 +1319,7 @@ export interface CardQuoteRestore_body_ButtonBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string;
+  label: string | null;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
   size: ButtonSize | null;
@@ -1359,7 +1359,7 @@ export interface CardQuoteRestore_body_CardBlock {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean;
+  fullscreen: boolean | null;
 }
 
 export interface CardQuoteRestore_body_IconBlock {
@@ -1378,14 +1378,14 @@ export interface CardQuoteRestore_body_ImageBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string;
-  width: number;
-  height: number;
+  alt: string | null;
+  width: number | null;
+  height: number | null;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string;
+  blurhash: string | null;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
@@ -1419,7 +1419,7 @@ export interface CardQuoteRestore_body_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string;
+  label: string | null;
   action: CardQuoteRestore_body_RadioOptionBlock_action | null;
 }
 
@@ -1480,7 +1480,7 @@ export interface CardQuoteRestore_body_StepBlock {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean;
+  locked: boolean | null;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to
@@ -1502,7 +1502,7 @@ export interface CardQuoteRestore_body_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   required: boolean | null;
-  label: string;
+  label: string | null;
   placeholder: string | null;
   hint: string | null;
   minRows: number | null;
@@ -1518,7 +1518,7 @@ export interface CardQuoteRestore_body_TypographyBlock {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string;
+  content: string | null;
   variant: TypographyVariant | null;
 }
 
@@ -1703,7 +1703,7 @@ export interface CardQuoteRestore_body_VideoTriggerBlock {
    * triggerStart sets the time as to when a video navigates to the next block,
    * this is the number of seconds since the start of the video
    */
-  triggerStart: number;
+  triggerStart: number | null;
   triggerAction: CardQuoteRestore_body_VideoTriggerBlock_triggerAction;
 }
 
@@ -1739,7 +1739,7 @@ export interface CardQuoteRestore_cardBlockUpdate {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean;
+  fullscreen: boolean | null;
 }
 
 export interface CardQuoteRestore {

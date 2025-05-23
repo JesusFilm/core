@@ -21,9 +21,40 @@ import { builder } from '../builder'
 
 import { getCardBlocksContent } from './getCardBlocksContent'
 
-builder.mutationField('journeyAiTranslateCreate', (t) =>
-  t.withAuth({ isAuthenticated: true }).prismaField({
-    type: 'Journey',
+// Define the translation progress interface
+interface JourneyAiTranslateProgress {
+  progress: number
+  message: string
+  journey: any | null
+}
+
+// Define the translation progress type
+const JourneyAiTranslateProgressRef =
+  builder.objectRef<JourneyAiTranslateProgress>('JourneyAiTranslateProgress')
+
+builder.objectType(JourneyAiTranslateProgressRef, {
+  fields: (t) => ({
+    progress: t.exposeFloat('progress', {
+      description: 'Translation progress as a percentage (0-100)'
+    }),
+    message: t.exposeString('message', {
+      description: 'Current translation step message'
+    }),
+    journey: t.prismaField({
+      type: 'Journey',
+      nullable: true,
+      description: 'The journey being translated (only present when complete)',
+      resolve: (query, parent) => {
+        // Return the journey if it exists, otherwise null
+        return parent.journey ? { ...query, ...parent.journey } : null
+      }
+    })
+  })
+})
+
+builder.subscriptionField('journeyAiTranslateCreate', (t) =>
+  t.withAuth({ isAuthenticated: true }).field({
+    type: JourneyAiTranslateProgressRef,
     nullable: false,
     args: {
       input: t.arg({
@@ -39,53 +70,77 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
         required: true
       })
     },
-    resolve: async (_query, _root, { input }, { user }) => {
-      const originalName = input.name
-      // 1. First get the journey details using Prisma
-      const journey = await prisma.journey.findUnique({
-        where: {
-          id: input.journeyId
-        },
-        include: {
-          blocks: true,
-          userJourneys: true,
-          team: {
-            include: { userTeams: true }
-          }
+    subscribe: async (_root, { input }, { user }) => {
+      // Create an async generator to yield progress updates
+      async function* translateJourney() {
+        // Yield initial progress
+        yield {
+          progress: 0,
+          message: 'Starting translation...',
+          journey: null
         }
-      })
 
-      if (!journey) {
-        throw new GraphQLError('journey not found', {
-          extensions: { code: 'NOT_FOUND' }
-        })
-      }
+        const originalName = input.name
 
-      if (!ability(Action.Update, subject('Journey', journey), user)) {
-        throw new GraphQLError(
-          'user does not have permission to update journey',
-          {
-            extensions: { code: 'FORBIDDEN' }
+        // Yield progress for journey validation
+        yield {
+          progress: 10,
+          message: 'Validating journey...',
+          journey: null
+        }
+
+        // 1. First get the journey details using Prisma
+        const journey = await prisma.journey.findUnique({
+          where: {
+            id: input.journeyId
+          },
+          include: {
+            blocks: true,
+            userJourneys: true,
+            team: {
+              include: { userTeams: true }
+            }
           }
-        )
-      }
+        })
 
-      // 2. Get the language names
-      const sourceLanguageName = input.journeyLanguageName
-      const requestedLanguageName = input.textLanguageName
+        if (!journey) {
+          throw new GraphQLError('journey not found', {
+            extensions: { code: 'NOT_FOUND' }
+          })
+        }
 
-      // 3. Get Cards Content
-      const cardBlocks = journey.blocks
-        .filter((block) => block.typename === 'CardBlock')
-        .sort((a, b) => (a.parentOrder ?? 0) - (b.parentOrder ?? 0))
+        if (!ability(Action.Update, subject('Journey', journey), user)) {
+          throw new GraphQLError(
+            'user does not have permission to update journey',
+            {
+              extensions: { code: 'FORBIDDEN' }
+            }
+          )
+        }
 
-      const cardBlocksContent = await getCardBlocksContent({
-        blocks: journey.blocks,
-        cardBlocks
-      })
+        // Yield progress for content analysis
+        yield {
+          progress: 20,
+          message: 'Analyzing journey content...',
+          journey: null
+        }
 
-      // 4. Use Gemini to analyze the journey content and get intent, and translate title/description
-      const combinedPrompt = `
+        // 2. Get the language names
+        const sourceLanguageName = input.journeyLanguageName
+        const requestedLanguageName = input.textLanguageName
+
+        // 3. Get Cards Content
+        const cardBlocks = journey.blocks
+          .filter((block) => block.typename === 'CardBlock')
+          .sort((a, b) => (a.parentOrder ?? 0) - (b.parentOrder ?? 0))
+
+        const cardBlocksContent = await getCardBlocksContent({
+          blocks: journey.blocks,
+          cardBlocks
+        })
+
+        // 4. Use Gemini to analyze the journey content and get intent, and translate title/description
+        const combinedPrompt = `
 Analyze this journey content and provide the key intent, themes, and target audience.
 Also suggest ways to culturally adapt this content for the target language: ${hardenPrompt(requestedLanguageName)}.
 Then, translate the following journey title and description to ${hardenPrompt(requestedLanguageName)}.
@@ -113,56 +168,97 @@ Return in this format:
 }
 `
 
-      try {
-        const { object: analysisAndTranslation } = await generateObject({
-          model: google('gemini-2.0-flash'),
-          messages: [
-            { role: 'system', content: preSystemPrompt },
-            { role: 'user', content: combinedPrompt }
-          ],
-          schema: z.object({
-            analysis: z.string(),
-            title: z.string(),
-            description: z.string()
+        // Yield progress for AI analysis
+        yield {
+          progress: 30,
+          message: 'Translating journey title and description...',
+          journey: null
+        }
+
+        try {
+          const { object: analysisAndTranslation } = await generateObject({
+            model: google('gemini-2.0-flash'),
+            messages: [
+              { role: 'system', content: preSystemPrompt },
+              { role: 'user', content: combinedPrompt }
+            ],
+            schema: z.object({
+              analysis: z.string(),
+              title: z.string(),
+              description: z.string()
+            })
           })
-        })
 
-        if (!analysisAndTranslation.title)
-          throw new Error('Failed to translate journey title')
+          if (!analysisAndTranslation.title)
+            throw new Error('Failed to translate journey title')
 
-        // Only validate description if the original journey had one
-        if (journey.description && !analysisAndTranslation.description)
-          throw new Error('Failed to translate journey description')
+          // Only validate description if the original journey had one
+          if (journey.description && !analysisAndTranslation.description)
+            throw new Error('Failed to translate journey description')
 
-        // Update the journey using Prisma
-        await prisma.journey.update({
-          where: {
-            id: input.journeyId
-          },
-          data: {
-            title: analysisAndTranslation.title,
-            // Only update description if the original journey had one
-            ...(journey.description
-              ? { description: analysisAndTranslation.description }
-              : {}),
-            languageId: input.textLanguageId
+          // Yield progress for journey update
+          yield {
+            progress: 50,
+            message: 'Updating journey with translated title...',
+            journey: null
           }
-        })
 
-        // Use analysisAndTranslation.analysis for card translation context
-        const journeyAnalysis = analysisAndTranslation.analysis
+          // Update the journey using Prisma
+          const updatedJourney = await prisma.journey.update({
+            where: {
+              id: input.journeyId
+            },
+            data: {
+              title: analysisAndTranslation.title,
+              // Only update description if the original journey had one
+              ...(journey.description
+                ? { description: analysisAndTranslation.description }
+                : {}),
+              languageId: input.textLanguageId
+            },
+            include: {
+              blocks: true,
+              userJourneys: true,
+              team: {
+                include: { userTeams: true }
+              }
+            }
+          })
 
-        // 5. Translate each card
-        const cardBlocks = journey.blocks.filter(
-          (block) => block.typename === 'CardBlock'
-        )
+          // Use analysisAndTranslation.analysis for card translation context
+          const journeyAnalysis = analysisAndTranslation.analysis
 
-        // Create a map of valid block IDs for quick lookup
-        const validBlockIds = new Set(journey.blocks.map((block) => block.id))
+          // 5. Translate each card
+          const cardBlocksToTranslate = journey.blocks.filter(
+            (block) => block.typename === 'CardBlock'
+          )
 
-        await Promise.all(
-          cardBlocks.map(async (cardBlock, i) => {
+          // Yield progress for card translation start
+          yield {
+            progress: 60,
+            message: `Translating ${cardBlocksToTranslate.length} cards...`,
+            journey: null
+          }
+
+          // Create a map of valid block IDs for quick lookup
+          const validBlockIds = new Set(journey.blocks.map((block) => block.id))
+
+          // Track progress for each card
+          let completedCards = 0
+          const totalCards = cardBlocksToTranslate.length
+
+          // Process cards sequentially to provide better progress updates
+          for (let i = 0; i < cardBlocksToTranslate.length; i++) {
+            const cardBlock = cardBlocksToTranslate[i]
             const cardContent = cardBlocksContent[i]
+
+            // Yield progress for current card
+            yield {
+              progress: 60 + (i / totalCards) * 30, // 60-90% for card translation
+              message: `Translating card ${i + 1} of ${totalCards}...`,
+              journey: null
+            }
+
             try {
               // Get all child blocks of this card
               const cardBlocksChildren = journey.blocks.filter(
@@ -171,7 +267,7 @@ Return in this format:
 
               // Skip if no children to translate
               if (cardBlocksChildren.length === 0) {
-                return
+                continue
               }
 
               // Get radio question blocks to find their radio option blocks
@@ -198,7 +294,7 @@ Return in this format:
 
               // Skip if no blocks to translate
               if (allBlocksToTranslate.length === 0) {
-                return
+                continue
               }
 
               // Create a more concise representation of blocks to translate
@@ -357,24 +453,46 @@ If there is no Bible translation was available, use the the most popular English
               )
               // Continue with other cards
             }
+
+            completedCards++
+          }
+
+          // Yield progress for completion
+          yield {
+            progress: 95,
+            message: 'Finalizing translation...',
+            journey: null
+          }
+
+          // Fetch and return the final updated journey with all necessary relations
+          const finalJourney = await prisma.journey.findUnique({
+            where: { id: input.journeyId },
+            include: {
+              blocks: true
+              // Add other relations as needed for the full object
+            }
           })
-        )
-      } catch (error: unknown) {
-        console.error('Error analyzing journey with Gemini:', error)
-        const errorMessage =
-          error instanceof Error ? error.message : 'Unknown error occurred'
-        throw new Error(`Failed to analyze journey: ${errorMessage}`)
-      }
-      // Fetch and return the updated journey with all necessary relations
-      const updatedJourney = await prisma.journey.findUnique({
-        where: { id: input.journeyId },
-        include: {
-          blocks: true
-          // Add other relations as needed for the full object
+
+          if (!finalJourney) throw new Error('Could not fetch updated journey')
+
+          // Yield the final result with 100% progress
+          yield {
+            progress: 100,
+            message: 'Translation completed!',
+            journey: finalJourney
+          }
+        } catch (error: unknown) {
+          console.error('Error analyzing journey with Gemini:', error)
+          const errorMessage =
+            error instanceof Error ? error.message : 'Unknown error occurred'
+          throw new Error(`Failed to analyze journey: ${errorMessage}`)
         }
-      })
-      if (!updatedJourney) throw new Error('Could not fetch updated journey')
-      return updatedJourney
+      }
+
+      return translateJourney()
+    },
+    resolve: (progressUpdate) => {
+      return progressUpdate
     }
   })
 )

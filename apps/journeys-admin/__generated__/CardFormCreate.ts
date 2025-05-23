@@ -15,14 +15,14 @@ export interface CardFormCreate_image {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string;
-  width: number;
-  height: number;
+  alt: string | null;
+  width: number | null;
+  height: number | null;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string;
+  blurhash: string | null;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
@@ -35,7 +35,7 @@ export interface CardFormCreate_subtitle {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string;
+  content: string | null;
   variant: TypographyVariant | null;
 }
 
@@ -46,7 +46,7 @@ export interface CardFormCreate_title {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string;
+  content: string | null;
   variant: TypographyVariant | null;
 }
 
@@ -56,7 +56,7 @@ export interface CardFormCreate_textResponse {
   parentBlockId: string | null;
   parentOrder: number | null;
   required: boolean | null;
-  label: string;
+  label: string | null;
   placeholder: string | null;
   hint: string | null;
   minRows: number | null;
@@ -93,7 +93,7 @@ export interface CardFormCreate_button {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string;
+  label: string | null;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
   size: ButtonSize | null;
@@ -151,7 +151,7 @@ export interface CardFormCreate_buttonUpdate {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string;
+  label: string | null;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
   size: ButtonSize | null;
@@ -168,7 +168,7 @@ export interface CardFormCreate_body {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string;
+  content: string | null;
   variant: TypographyVariant | null;
 }
 
@@ -202,7 +202,7 @@ export interface CardFormCreate_cardBlockUpdate {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean;
+  fullscreen: boolean | null;
 }
 
 export interface CardFormCreate {

@@ -17,7 +17,7 @@ export interface CardBlockLayoutUpdate_cardBlockUpdate {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean;
+  fullscreen: boolean | null;
 }
 
 export interface CardBlockLayoutUpdate {

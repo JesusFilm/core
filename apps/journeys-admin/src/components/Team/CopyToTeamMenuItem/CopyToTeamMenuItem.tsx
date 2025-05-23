@@ -6,7 +6,8 @@ import { ReactElement, useState } from 'react'
 import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import { CopyToTeamDialog } from '@core/journeys/ui/CopyToTeamDialog'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { useJourneyAiTranslateMutation } from '@core/journeys/ui/useJourneyAiTranslateMutation'
+import { TranslationProgressBar } from '@core/journeys/ui/TranslationProgressBar'
+import { useJourneyAiTranslateSubscription } from '@core/journeys/ui/useJourneyAiTranslateSubscription'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import CopyToIcon from '@core/shared/ui/icons/CopyTo'
 
@@ -36,12 +37,65 @@ export function CopyToTeamMenuItem({
   const [duplicateTeamDialogOpen, setDuplicateTeamDialogOpen] =
     useState<boolean>(false)
   const [journeyDuplicate] = useJourneyDuplicateMutation()
-  const [translate] = useJourneyAiTranslateMutation()
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
   const [loading, setLoading] = useState(false)
+  const [translationProgress, setTranslationProgress] = useState<{
+    progress: number
+    message: string
+  } | null>(null)
+  const [translationVariables, setTranslationVariables] = useState<
+    | {
+        journeyId: string
+        name: string
+        journeyLanguageName: string
+        textLanguageId: string
+        textLanguageName: string
+      }
+    | undefined
+  >(undefined)
   const { journey: journeyFromContext } = useJourney()
   const journeyData = journey ?? journeyFromContext
+
+  // Set up the subscription for translation
+  const { data: translationData, error: translationError } =
+    useJourneyAiTranslateSubscription({
+      variables: translationVariables,
+      skip: !translationVariables,
+      onData: ({ data }) => {
+        if (data.data?.journeyAiTranslateCreate) {
+          const progressData = data.data.journeyAiTranslateCreate
+
+          // Update progress
+          setTranslationProgress({
+            progress: progressData.progress,
+            message: progressData.message
+          })
+
+          // Check if translation is complete
+          if (progressData.journey && progressData.progress === 100) {
+            enqueueSnackbar(t('Journey Translated'), {
+              variant: 'success',
+              preventDuplicate: true
+            })
+            setLoading(false)
+            setTranslationProgress(null)
+            setTranslationVariables(undefined) // Reset to stop subscription
+          }
+        }
+      }
+    })
+
+  // Handle translation errors
+  if (translationError) {
+    enqueueSnackbar(translationError.message, {
+      variant: 'error',
+      preventDuplicate: true
+    })
+    setLoading(false)
+    setTranslationProgress(null)
+    setTranslationVariables(undefined)
+  }
 
   const handleDuplicateJourney = async (
     teamId: string,
@@ -67,29 +121,16 @@ export function CopyToTeamMenuItem({
         return
       }
 
-      await translate({
-        variables: {
-          journeyId: duplicateData.journeyDuplicate.id,
-          name: journeyData.title,
-          journeyLanguageName:
-            journeyData.language.name.find(({ primary }) => !primary)?.value ??
-            '',
-          textLanguageId: selectedLanguage.id,
-          textLanguageName:
-            selectedLanguage.nativeName ?? selectedLanguage.localName ?? ''
-        },
-        onCompleted() {
-          enqueueSnackbar(t('Journey Translated'), {
-            variant: 'success',
-            preventDuplicate: true
-          })
-        },
-        onError(error) {
-          enqueueSnackbar(error.message, {
-            variant: 'error',
-            preventDuplicate: true
-          })
-        }
+      // Start the translation subscription
+      setTranslationVariables({
+        journeyId: duplicateData.journeyDuplicate.id,
+        name: journeyData.title,
+        journeyLanguageName:
+          journeyData.language.name.find(({ primary }) => !primary)?.value ??
+          '',
+        textLanguageId: selectedLanguage.id,
+        textLanguageName:
+          selectedLanguage.nativeName ?? selectedLanguage.localName ?? ''
       })
 
       handleCloseMenu()
@@ -138,6 +179,14 @@ export function CopyToTeamMenuItem({
         }}
         submitAction={handleDuplicateJourney}
       />
+
+      {/* Show progress bar when translation is in progress */}
+      {translationProgress && (
+        <TranslationProgressBar
+          progress={translationProgress.progress}
+          message={translationProgress.message}
+        />
+      )}
     </>
   )
 }

@@ -16,7 +16,7 @@ export interface TypographyBlockCreate_typographyBlockCreate {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string;
+  content: string | null;
   variant: TypographyVariant | null;
 }
 

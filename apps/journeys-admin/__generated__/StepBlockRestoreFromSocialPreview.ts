@@ -10,7 +10,7 @@ import { ButtonVariant, ButtonColor, ButtonSize, ThemeMode, ThemeName, IconName,
 // ====================================================
 
 export interface StepBlockRestoreFromSocialPreview_blockRestore_GridContainerBlock {
-  __typename: "GridContainerBlock" | "GridItemBlock";
+  __typename: "GridContainerBlock" | "GridItemBlock" | "VideoBlockContent";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -44,7 +44,7 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string;
+  label: string | null;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
   size: ButtonSize | null;
@@ -84,7 +84,7 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_CardBlock {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean;
+  fullscreen: boolean | null;
 }
 
 export interface StepBlockRestoreFromSocialPreview_blockRestore_IconBlock {
@@ -103,14 +103,14 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_ImageBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string;
-  width: number;
-  height: number;
+  alt: string | null;
+  width: number | null;
+  height: number | null;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string;
+  blurhash: string | null;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
@@ -144,7 +144,7 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_RadioOptionBlock
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string;
+  label: string | null;
   action: StepBlockRestoreFromSocialPreview_blockRestore_RadioOptionBlock_action | null;
 }
 
@@ -205,7 +205,7 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_StepBlock {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean;
+  locked: boolean | null;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to
@@ -237,7 +237,7 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_TextResponseBloc
   parentBlockId: string | null;
   parentOrder: number | null;
   required: boolean | null;
-  label: string;
+  label: string | null;
   placeholder: string | null;
   hint: string | null;
   minRows: number | null;
@@ -253,7 +253,7 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_TypographyBlock 
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string;
+  content: string | null;
   variant: TypographyVariant | null;
 }
 
@@ -438,14 +438,14 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoTriggerBloc
    * triggerStart sets the time as to when a video navigates to the next block,
    * this is the number of seconds since the start of the video
    */
-  triggerStart: number;
+  triggerStart: number | null;
   triggerAction: StepBlockRestoreFromSocialPreview_blockRestore_VideoTriggerBlock_triggerAction;
 }
 
 export type StepBlockRestoreFromSocialPreview_blockRestore = StepBlockRestoreFromSocialPreview_blockRestore_GridContainerBlock | StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock | StepBlockRestoreFromSocialPreview_blockRestore_CardBlock | StepBlockRestoreFromSocialPreview_blockRestore_IconBlock | StepBlockRestoreFromSocialPreview_blockRestore_ImageBlock | StepBlockRestoreFromSocialPreview_blockRestore_RadioOptionBlock | StepBlockRestoreFromSocialPreview_blockRestore_RadioQuestionBlock | StepBlockRestoreFromSocialPreview_blockRestore_SignUpBlock | StepBlockRestoreFromSocialPreview_blockRestore_SpacerBlock | StepBlockRestoreFromSocialPreview_blockRestore_StepBlock | StepBlockRestoreFromSocialPreview_blockRestore_TextResponseBlock | StepBlockRestoreFromSocialPreview_blockRestore_TypographyBlock | StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock | StepBlockRestoreFromSocialPreview_blockRestore_VideoTriggerBlock;
 
 export interface StepBlockRestoreFromSocialPreview_blockOrderUpdate {
-  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock" | "VideoBlockContent";
   id: string;
   parentOrder: number | null;
 }

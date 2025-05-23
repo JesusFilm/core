@@ -13,7 +13,7 @@ export interface TextResponseTypeUpdate_textResponseBlockUpdate {
   __typename: "TextResponseBlock";
   id: string;
   type: TextResponseType | null;
-  label: string;
+  label: string | null;
   integrationId: string | null;
   routeId: string | null;
 }

@@ -1,0 +1,1 @@
+export { useJourneyAiTranslateSubscription } from './useJourneyAiTranslateSubscription'
