@@ -57,10 +57,10 @@ interface LanguageRecord {
 
 async function getLanguages(logger?: Logger): Promise<LanguageRecord> {
   let apollo: ApolloClient<any> | null = null
-  
+
   try {
     apollo = createApolloClient()
-    
+
     const { data } = await apollo.query({
       query: GET_LANGUAGES,
       fetchPolicy: 'no-cache'
@@ -159,6 +159,22 @@ export async function service(logger?: Logger): Promise<void> {
         break
       }
 
+      if (logger && offset % 1000 === 0) {
+        const used = process.memoryUsage()
+        logger.info(
+          {
+            offset,
+            memory: {
+              heapTotal: `${Math.round(used.heapTotal / 1024 / 1024)} MB`,
+              heapUsed: `${Math.round(used.heapUsed / 1024 / 1024)} MB`,
+              rss: `${Math.round(used.rss / 1024 / 1024)} MB`,
+              external: `${Math.round(used.external / 1024 / 1024)} MB`
+            }
+          },
+          'Memory usage during video variant processing'
+        )
+      }
+
       const transformedVideos = videoVariants.map((videoVariant) => {
         const cfImage = videoVariant.video?.images.find(
           ({ aspectRatio }) => aspectRatio === 'banner'
@@ -169,19 +185,18 @@ export async function service(logger?: Logger): Promise<void> {
             process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
           }/${cfImage.id}/f=jpg,w=1280,h=600,q=95`
 
+        const sortedTitles =
+          videoVariant.video?.title.sort(sortByEnglishFirst) ?? []
+
         return {
           objectID: videoVariant.id,
           videoId: videoVariant.videoId,
-          titles: videoVariant.video?.title
-            .sort(sortByEnglishFirst)
-            .map((title) => title?.value),
-          titlesWithLanguages: videoVariant.video?.title
-            .sort(sortByEnglishFirst)
-            .map((title) => ({
-              value: title.value,
-              languageId: title.languageId,
-              bcp47: languages[title.languageId]?.bcp47 ?? ''
-            })),
+          titles: sortedTitles.map((title) => title?.value),
+          titlesWithLanguages: sortedTitles.map((title) => ({
+            value: title?.value ?? '',
+            languageId: title?.languageId ?? ''
+            // bcp47: languages[title.languageId]?.bcp47 ?? ''
+          })),
           description: videoVariant.video?.description
             ?.sort(sortByEnglishFirst)
             .map((description) => description?.value),
@@ -209,27 +224,47 @@ export async function service(logger?: Logger): Promise<void> {
           objects: transformedVideos,
           waitForTasks: true
         })
-        logger?.info(`exported ${offset + videoVariants.length} videos to algolia`)
+
+        if (logger) {
+          const used = process.memoryUsage()
+          logger.info(
+            {
+              batchSize: transformedVideos.length,
+              memory: {
+                heapTotal: `${Math.round(used.heapTotal / 1024 / 1024)} MB`,
+                heapUsed: `${Math.round(used.heapUsed / 1024 / 1024)} MB`,
+                rss: `${Math.round(used.rss / 1024 / 1024)} MB`,
+                external: `${Math.round(used.external / 1024 / 1024)} MB`
+              }
+            },
+            'Memory usage after Algolia batch upload'
+          )
+        }
+
+        logger?.info(
+          `exported ${offset + videoVariants.length} videos to algolia`
+        )
       } catch (error) {
         logger?.error(error, 'unable to export videos to algolia')
       }
 
       offset += batchSize
-      
+
       // Force garbage collection every 10 batches to prevent memory buildup
       if (offset % (batchSize * 10) === 0) {
         forceGarbageCollection()
-        logger?.info(`processed ${offset} video variants, forcing garbage collection`)
+        logger?.info(
+          `processed ${offset} video variants, forcing garbage collection`
+        )
       }
-      
     } catch (error) {
       logger?.error(error, 'unable to complete video processing loop')
       break
     }
   }
-  
+
   await indexVideos(client, languages, videosIndex, logger)
-  
+
   // Final cleanup
   forceGarbageCollection()
 }
@@ -245,9 +280,9 @@ async function indexVideos(
     const totalCount = await prisma.video.count()
     const batchSize = 500 // Smaller batch size for videos due to larger objects
     let offset = 0
-    
+
     logger?.info(`indexing ${totalCount} videos in batches of ${batchSize}`)
-    
+
     while (offset < totalCount) {
       const videos = await prisma.video.findMany({
         take: batchSize,
@@ -350,7 +385,8 @@ async function indexVideos(
         return {
           objectID: video.id,
           mediaComponentId: video.id,
-          componentType: video.variants[0]?.hls != null ? 'content' : 'container',
+          componentType:
+            video.variants[0]?.hls != null ? 'content' : 'container',
           subType: video.label,
           contentType: video.variants[0]?.hls != null ? 'video' : 'none',
           lengthInMilliseconds: video.variants[0]?.lengthInMilliseconds ?? 0,
@@ -384,20 +420,22 @@ async function indexVideos(
           objects: transformedVideos,
           waitForTasks: true
         })
-        logger?.info(`indexed batch ${Math.floor(offset / batchSize) + 1}: ${transformedVideos.length} videos to algolia`)
+        logger?.info(
+          `indexed batch ${Math.floor(offset / batchSize) + 1}: ${transformedVideos.length} videos to algolia`
+        )
       } catch (error) {
         logger?.error(error, 'unable to export video records to algolia')
       }
 
       offset += batchSize
-      
+
       // Force garbage collection every 5 batches for video indexing
       if (offset % (batchSize * 5) === 0) {
         forceGarbageCollection()
         logger?.info(`processed ${offset} videos, forcing garbage collection`)
       }
     }
-    
+
     logger?.info(`completed indexing ${totalCount} videos to algolia`)
   } catch (error) {
     logger?.error(error, 'unable to complete video processing loop')
