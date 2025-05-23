@@ -18,7 +18,8 @@ describe('LanguageSwitchDialog', () => {
   const mockHandleClose = jest.fn()
   const mockRouter = {
     asPath: '/test-path',
-    push: jest.fn()
+    push: jest.fn(),
+    reload: jest.fn()
   }
 
   beforeEach(() => {
@@ -30,7 +31,8 @@ describe('LanguageSwitchDialog', () => {
         language: 'en',
         options: {
           locales: ['en', 'es', 'fr', 'de']
-        }
+        },
+        changeLanguage: jest.fn()
       }
     })
   })
@@ -45,15 +47,25 @@ describe('LanguageSwitchDialog', () => {
   })
 
   it('handles language change correctly', () => {
+    const mockChangeLanguage = jest.fn()
+    ;(useTranslation as jest.Mock).mockReturnValue({
+      t: (key: string) => key,
+      i18n: {
+        language: 'en',
+        options: {
+          locales: ['en', 'es', 'fr', 'de']
+        },
+        changeLanguage: mockChangeLanguage
+      }
+    })
+
     render(<LanguageSwitchDialog open={true} handleClose={mockHandleClose} />)
 
     const spanishButton = screen.getByTestId('language-button-es')
     fireEvent.click(spanishButton)
 
-    expect(mockRouter.push).toHaveBeenCalledWith('/test-path', '/test-path', {
-      locale: 'es'
-    })
-    expect(mockHandleClose).toHaveBeenCalled()
+    expect(mockChangeLanguage).toHaveBeenCalledWith('es')
+    expect(mockRouter.reload).toHaveBeenCalled()
   })
 
   it('renders contact button with correct link', () => {
