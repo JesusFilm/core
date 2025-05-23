@@ -36,7 +36,6 @@ export async function getBlockContent({
     case 'SpacerBlock':
       return '### Blank Space\n'
     default:
-      // Log or handle unknown block types
       return ''
   }
 }
