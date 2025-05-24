@@ -49,11 +49,18 @@ class SSELink extends ApolloLink {
         headers: {
           'Content-Type': 'application/json',
           Accept: 'text/event-stream',
+          'Cache-Control': 'no-cache',
           ...headers
         },
         body
       })
         .then((response) => {
+          console.log('SSE Link: Response status:', response.status)
+          console.log(
+            'SSE Link: Response headers:',
+            Object.fromEntries(response.headers.entries())
+          )
+
           if (!response.ok) {
             observer.error(
               new Error(`HTTP ${response.status}: ${response.statusText}`)
@@ -86,11 +93,13 @@ class SSELink extends ApolloLink {
                 buffer = lines.pop() || ''
 
                 for (const line of lines) {
+                  console.log('SSE Link: Processing line:', line)
                   if (line.startsWith('data: ')) {
                     const data = line.slice(6).trim()
                     if (data && data !== '') {
                       try {
                         const parsed = JSON.parse(data)
+                        console.log('SSE Link: Parsed data:', parsed)
                         if (parsed.data || parsed.errors) {
                           observer.next({
                             data: parsed.data,
@@ -102,6 +111,7 @@ class SSELink extends ApolloLink {
                       }
                     }
                   } else if (line.startsWith('event: complete')) {
+                    console.log('SSE Link: Received complete event')
                     observer.complete()
                     return
                   }
@@ -135,7 +145,7 @@ export function createApolloClient(
     uri: gatewayUrl
   })
 
-  // Create SSE link for subscriptions
+  // Create SSE link for subscriptions - temporarily use direct service URL to bypass gateway
   const sseLink = new SSELink(gatewayUrl)
 
   const authLink = setContext(async (_, { headers }) => {

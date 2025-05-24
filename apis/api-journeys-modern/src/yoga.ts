@@ -29,6 +29,10 @@ export const yoga = createYoga<
 >({
   schema,
   logging: logger,
+  // cors: {
+  //   origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+  //   credentials: true
+  // },
   context: async ({ request, params }) => {
     const payload = get(params, 'extensions.jwt.payload')
     const user = getUserFromPayload(payload, logger)

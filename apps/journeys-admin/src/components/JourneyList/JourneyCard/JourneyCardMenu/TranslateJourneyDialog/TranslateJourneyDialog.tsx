@@ -1,9 +1,10 @@
+import { gql } from '@apollo/client'
 import { Theme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
@@ -17,7 +18,7 @@ import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 import { GetAdminJourneys_journeys as Journey } from '../../../../../../__generated__/GetAdminJourneys'
 
 interface TranslateJourneyDialogProps {
-  open: boolean
+  open?: boolean
   onClose: () => void
   journey?: Journey
 }
@@ -35,7 +36,7 @@ interface JourneyLanguage {
  * language for translation. It gets the current journey either from props or from context.
  *
  * @param {TranslateJourneyDialogProps} props - The component props
- * @param {boolean} props.open - Controls whether the dialog is displayed
+ * @param {boolean} [props.open] - Controls whether the dialog is displayed
  * @param {() => void} props.onClose - Function to call when the dialog is closed
  * @param {Journey} [props.journey] - Optional journey data object. If not provided, uses journey from context
  * @returns {ReactElement} The rendered dialog component
@@ -212,21 +213,19 @@ export function TranslateJourneyDialog({
         throw new Error('Journey duplication failed')
       }
     } catch (error) {
-      console.error('Error in translation process:', error)
       enqueueSnackbar(
         t('Failed to process translation request. Please try again.'),
         {
           variant: 'error'
         }
       )
-    } finally {
       setLoading(false)
     }
   }
 
   return (
     <TranslationDialogWrapper
-      open={open}
+      open={open ?? false}
       onClose={onClose}
       onTranslate={handleTranslate}
       loading={loading}
