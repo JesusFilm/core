@@ -248,6 +248,7 @@ export function CopyToTeamDialog({
                     touched.languageSelect && Boolean(errors.languageSelect)
                   }
                   value={values.languageSelect}
+                  data-testid="language-select"
                 />
               )}
             </Stack>
