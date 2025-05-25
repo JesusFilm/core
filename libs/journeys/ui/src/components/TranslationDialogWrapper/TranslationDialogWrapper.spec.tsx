@@ -84,6 +84,24 @@ describe('TranslationDialogWrapper', () => {
 
       expect(screen.getByText('Custom Loading Text')).toBeInTheDocument()
     })
+
+    it('should not render loading UI if not being translated', () => {
+      render(
+        <TranslationDialogWrapper
+          open
+          onClose={onClose}
+          onTranslate={onTranslate}
+          loading={true}
+          title="Test Title"
+          testId="test-dialog"
+          isTranslation={false}
+        >
+          <Typography>Test Children</Typography>
+        </TranslationDialogWrapper>
+      )
+
+      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
+    })
   })
 
   describe('interactions', () => {
