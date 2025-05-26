@@ -97,7 +97,6 @@ export function TermsAndConditions(): ReactElement {
               )
             : '/?onboarding=true'
         ),
-        // GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
         query
           .refetch()
           .then(() =>
