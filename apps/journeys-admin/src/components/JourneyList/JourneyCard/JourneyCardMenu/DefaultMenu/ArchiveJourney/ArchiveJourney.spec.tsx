@@ -117,7 +117,9 @@ describe('ArchiveJourney', () => {
       )
 
       fireEvent.click(getByRole('menuitem', { name: 'Archive' }))
-      await waitFor(() => expect(getByText('error')).toBeInTheDocument())
+      await waitFor(() =>
+        expect(getByText('Journey Archive failed')).toBeInTheDocument()
+      )
     })
 
     it('should not show unarchive journey button', () => {
@@ -277,7 +279,9 @@ describe('ArchiveJourney', () => {
       )
 
       fireEvent.click(getByRole('menuitem', { name: 'Unarchive' }))
-      await waitFor(() => expect(getByText('error')).toBeInTheDocument())
+      await waitFor(() =>
+        expect(getByText('Journey Unarchive failed')).toBeInTheDocument()
+      )
     })
   })
 })
