@@ -35,12 +35,6 @@ export class Register {
     await this.verifyPageNavigatedBeforeStartPage()
     await this.clickIAgreeBtn()
     await this.clickNextBtn()
-    await this.retryCreateYourWorkSpacePage()
-    // await this.verifyPageNavigatedFewQuestionsPage()
-    // await this.clickNextBtnInFewQuestionPage()
-    await this.verifyCreateYourWorkspacePage()
-    await this.entetTeamName()
-    await this.clickCreateBtn()
     await this.waitUntilDiscoverPageLoaded()
     await this.waitUntilTheToestMsgDisappear()
   }
