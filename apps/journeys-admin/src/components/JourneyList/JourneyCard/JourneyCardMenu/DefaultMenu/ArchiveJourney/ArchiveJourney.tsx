@@ -89,7 +89,7 @@ export function ArchiveJourney({
   async function handleArchive(): Promise<void> {
     setLoading(true)
     await archiveJourney({
-      onError: async () => {
+      onError: () => {
         enqueueSnackbar(t('Journey Archive failed'), {
           variant: 'error',
           preventDuplicate: true
@@ -111,7 +111,7 @@ export function ArchiveJourney({
   async function handleUnarchive(): Promise<void> {
     setLoading(true)
     await unarchiveJourney({
-      onError: async () => {
+      onError: () => {
         enqueueSnackbar(t('Journey Unarchive failed'), {
           variant: 'error',
           preventDuplicate: true
