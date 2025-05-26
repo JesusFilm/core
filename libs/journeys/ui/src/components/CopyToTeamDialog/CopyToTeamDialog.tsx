@@ -78,8 +78,7 @@ export function CopyToTeamDialog({
       values.showTranslation
     )
 
-    setActiveTeam(teams.find((team) => team.id === values.teamSelect) ?? null)
-    void updateLastActiveTeamId({
+    await updateLastActiveTeamId({
       variables: {
         input: {
           lastActiveTeamId: values.teamSelect
@@ -87,6 +86,9 @@ export function CopyToTeamDialog({
       },
       onCompleted() {
         void client.refetchQueries({ include: ['GetAdminJourneys'] })
+        setActiveTeam(
+          teams.find((team) => team.id === values.teamSelect) ?? null
+        )
       }
     })
     resetForm()
