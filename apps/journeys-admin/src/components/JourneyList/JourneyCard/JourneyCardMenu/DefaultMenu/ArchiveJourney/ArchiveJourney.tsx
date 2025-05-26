@@ -88,46 +88,46 @@ export function ArchiveJourney({
 
   async function handleArchive(): Promise<void> {
     setLoading(true)
-    try {
-      await archiveJourney()
-      enqueueSnackbar(t('Journey Archived'), {
-        variant: 'success',
-        preventDuplicate: true
-      })
-      await refetch?.()
-      handleClose()
-    } catch (error) {
-      if (error instanceof Error) {
-        enqueueSnackbar(error.message, {
+    await archiveJourney({
+      onError: async () => {
+        enqueueSnackbar(t('Journey Archive failed'), {
           variant: 'error',
           preventDuplicate: true
         })
+        setLoading(false)
+      },
+      onCompleted: async () => {
+        enqueueSnackbar(t('Journey Archived'), {
+          variant: 'success',
+          preventDuplicate: true
+        })
+        await refetch?.()
+        handleClose()
+        setLoading(false)
       }
-    } finally {
-      setLoading(false)
-    }
+    })
   }
 
   async function handleUnarchive(): Promise<void> {
     setLoading(true)
-    try {
-      await unarchiveJourney()
-      enqueueSnackbar(t('Journey Unarchived'), {
-        variant: 'success',
-        preventDuplicate: true
-      })
-      await refetch?.()
-      handleClose()
-    } catch (error) {
-      if (error instanceof Error) {
-        enqueueSnackbar(error.message, {
+    await unarchiveJourney({
+      onError: async () => {
+        enqueueSnackbar(t('Journey Unarchive failed'), {
           variant: 'error',
           preventDuplicate: true
         })
+        setLoading(false)
+      },
+      onCompleted: async () => {
+        enqueueSnackbar(t('Journey Unarchived'), {
+          variant: 'success',
+          preventDuplicate: true
+        })
+        await refetch?.()
+        handleClose()
+        setLoading(false)
       }
-    } finally {
-      setLoading(false)
-    }
+    })
   }
 
   return (
