@@ -416,6 +416,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   bibleCitationCreate(input: MutationBibleCitationCreateInput!) : BibleCitation @join__field(graph: API_MEDIA) 
   bibleCitationUpdate(input: MutationBibleCitationUpdateInput!) : BibleCitation @join__field(graph: API_MEDIA) 
   bibleCitationDelete(id: ID!) : Boolean @join__field(graph: API_MEDIA) 
+  createKeyword(value: String!, languageId: String!) : Keyword! @join__field(graph: API_MEDIA) 
   createMuxVideoUploadByFile(name: String!, userGenerated: Boolean) : MuxVideo! @join__field(graph: API_MEDIA) 
   createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean) : MuxVideo! @join__field(graph: API_MEDIA) 
   enableMuxDownload(id: ID!, resolution: String) : MuxVideo @join__field(graph: API_MEDIA) 
@@ -464,6 +465,9 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   videoTitleCreate(input: VideoTranslationCreateInput!) : VideoTitle! @join__field(graph: API_MEDIA) 
   videoTitleUpdate(input: VideoTranslationUpdateInput!) : VideoTitle! @join__field(graph: API_MEDIA) 
   videoTitleDelete(id: ID!) : VideoTitle! @join__field(graph: API_MEDIA) 
+  videoOriginCreate(input: MutationVideoOriginCreateInput!) : VideoOrigin! @join__field(graph: API_MEDIA) 
+  videoOriginUpdate(input: MutationVideoOriginUpdateInput!) : VideoOrigin! @join__field(graph: API_MEDIA) 
+  videoOriginDelete(id: ID!) : VideoOrigin! @join__field(graph: API_MEDIA) 
   videoEditionCreate(input: VideoEditionCreateInput!) : VideoEdition! @join__field(graph: API_MEDIA) 
   videoEditionUpdate(input: VideoEditionUpdateInput!) : VideoEdition! @join__field(graph: API_MEDIA) 
   videoEditionDelete(id: ID!) : VideoEdition! @join__field(graph: API_MEDIA) 
@@ -540,6 +544,7 @@ type Journey @join__type(graph: API_JOURNEYS, key: "id")  {
   """
   title: String!
   language: Language!
+  languageId: String!
   themeMode: ThemeMode!
   themeName: ThemeName!
   description: String
@@ -790,6 +795,8 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   videoVariants(input: VideoVariantFilter) : [VideoVariant!]! @join__field(graph: API_MEDIA) 
   tags: [Tag!]! @join__field(graph: API_MEDIA) 
   taxonomies(category: String, languageCodes: [String!]) : [Taxonomy!]! @join__field(graph: API_MEDIA) 
+  arclightApiKeys: [ArclightApiKey!]! @join__field(graph: API_MEDIA) 
+  arclightApiKeyByKey(key: String!) : ArclightApiKey @join__field(graph: API_MEDIA) 
   me(input: MeInput) : User @join__field(graph: API_USERS) 
   user(id: ID!) : User @join__field(graph: API_USERS) 
   userByEmail(email: String!) : User @join__field(graph: API_USERS) 
@@ -993,6 +1000,7 @@ type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId", extensi
   primaryLanguageId: ID!
   source: VideoBlockSource @join__field(graph: API_JOURNEYS_MODERN, type: "VideoBlockSource!")  @join__field(graph: API_MEDIA, type: "VideoBlockSource") 
   bibleCitations: [BibleCitation!]! @join__field(graph: API_MEDIA) 
+  origin: VideoOrigin @join__field(graph: API_MEDIA) 
   keywords(languageId: ID) : [Keyword!]! @join__field(graph: API_MEDIA) 
   label: VideoLabel! @join__field(graph: API_MEDIA) 
   locked: Boolean! @join__field(graph: API_MEDIA) 
@@ -2295,6 +2303,12 @@ type LanguageName @join__type(graph: API_LANGUAGES)  {
   language: Language!
 }
 
+type ArclightApiKey @join__type(graph: API_MEDIA, key: "key")  {
+  key: String!
+  desc: String
+  defaultPlatform: DefaultPlatform!
+}
+
 type BibleBook @join__type(graph: API_MEDIA)  {
   id: ID!
   name(languageId: ID, primary: Boolean) : [BibleBookName!]!
@@ -2649,6 +2663,12 @@ type VideoImageAlt @join__type(graph: API_MEDIA)  {
   value: String!
   primary: Boolean!
   language: Language!
+}
+
+type VideoOrigin @join__type(graph: API_MEDIA)  {
+  id: ID!
+  name: String!
+  description: String
 }
 
 type VideoSnippet @join__type(graph: API_MEDIA)  {
@@ -3125,6 +3145,12 @@ enum EventType @join__type(graph: API_JOURNEYS_MODERN)  {
 enum LanguageIdType @join__type(graph: API_LANGUAGES)  {
   databaseId @join__enumValue(graph: API_LANGUAGES) 
   bcp47 @join__enumValue(graph: API_LANGUAGES) 
+}
+
+enum DefaultPlatform @join__type(graph: API_MEDIA)  {
+  ios @join__enumValue(graph: API_MEDIA) 
+  android @join__enumValue(graph: API_MEDIA) 
+  web @join__enumValue(graph: API_MEDIA) 
 }
 
 enum ImageAspectRatio @join__type(graph: API_MEDIA)  {
@@ -4388,6 +4414,17 @@ input MutationShortLinkUpdateInput @join__type(graph: API_MEDIA)  {
   to: String!
 }
 
+input MutationVideoOriginCreateInput @join__type(graph: API_MEDIA)  {
+  name: String!
+  description: String
+}
+
+input MutationVideoOriginUpdateInput @join__type(graph: API_MEDIA)  {
+  id: ID!
+  name: String
+  description: String
+}
+
 input TranscodeVideoInput @join__type(graph: API_MEDIA)  {
   r2AssetId: String!
   resolution: String!
@@ -4491,6 +4528,7 @@ input VideoUpdateInput @join__type(graph: API_MEDIA)  {
   slug: String
   noIndex: Boolean
   childIds: [String!]
+  keywordIds: [String!]
 }
 
 input VideoVariantCreateInput @join__type(graph: API_MEDIA)  {

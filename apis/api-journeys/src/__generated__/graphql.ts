@@ -30,6 +30,13 @@ export type Action = {
   parentBlockId: Scalars['ID']['output'];
 };
 
+export type ArclightApiKey = {
+  __typename?: 'ArclightApiKey';
+  defaultPlatform: DefaultPlatform;
+  desc?: Maybe<Scalars['String']['output']>;
+  key: Scalars['String']['output'];
+};
+
 export type AudioPreview = {
   __typename?: 'AudioPreview';
   bitrate: Scalars['Int']['output'];
@@ -471,6 +478,12 @@ export type CustomDomainVerificationResponse = {
   message: Scalars['String']['output'];
 };
 
+export enum DefaultPlatform {
+  Android = 'android',
+  Ios = 'ios',
+  Web = 'web'
+}
+
 export type Device = {
   __typename?: 'Device';
   model?: Maybe<Scalars['String']['output']>;
@@ -802,6 +815,7 @@ export type Journey = {
   id: Scalars['ID']['output'];
   journeyCollections: Array<JourneyCollection>;
   language: Language;
+  languageId: Scalars['String']['output'];
   logoImageBlock?: Maybe<ImageBlock>;
   menuButtonIcon?: Maybe<JourneyMenuButtonIcon>;
   menuStepBlock?: Maybe<StepBlock>;
@@ -1356,6 +1370,7 @@ export type Mutation = {
   /** @deprecated use createCloudflareImageFromPrompt */
   createImageBySegmindPrompt: CloudflareImage;
   createJourneyEventsExportLog: JourneyEventsExportLog;
+  createKeyword: Keyword;
   createMuxVideoUploadByFile: MuxVideo;
   createMuxVideoUploadByUrl: MuxVideo;
   createVerificationRequest?: Maybe<Scalars['Boolean']['output']>;
@@ -1480,6 +1495,9 @@ export type Mutation = {
   videoImageAltCreate: VideoImageAlt;
   videoImageAltDelete: VideoImageAlt;
   videoImageAltUpdate: VideoImageAlt;
+  videoOriginCreate: VideoOrigin;
+  videoOriginDelete: VideoOrigin;
+  videoOriginUpdate: VideoOrigin;
   videoPauseEventCreate: VideoPauseEvent;
   videoPlayEventCreate: VideoPlayEvent;
   videoProgressEventCreate: VideoProgressEvent;
@@ -1679,6 +1697,12 @@ export type MutationCreateImageBySegmindPromptArgs = {
 
 export type MutationCreateJourneyEventsExportLogArgs = {
   input: JourneyEventsExportLogInput;
+};
+
+
+export type MutationCreateKeywordArgs = {
+  languageId: Scalars['String']['input'];
+  value: Scalars['String']['input'];
 };
 
 
@@ -2230,6 +2254,21 @@ export type MutationVideoImageAltUpdateArgs = {
 };
 
 
+export type MutationVideoOriginCreateArgs = {
+  input: MutationVideoOriginCreateInput;
+};
+
+
+export type MutationVideoOriginDeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationVideoOriginUpdateArgs = {
+  input: MutationVideoOriginUpdateInput;
+};
+
+
 export type MutationVideoPauseEventCreateArgs = {
   input: VideoPauseEventCreateInput;
 };
@@ -2457,6 +2496,17 @@ export type MutationSiteCreateResult = Error | MutationSiteCreateSuccess;
 export type MutationSiteCreateSuccess = {
   __typename?: 'MutationSiteCreateSuccess';
   data: Site;
+};
+
+export type MutationVideoOriginCreateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+};
+
+export type MutationVideoOriginUpdateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type MuxVideo = {
@@ -2771,6 +2821,8 @@ export type Query = {
   adminVideo: Video;
   adminVideos: Array<Video>;
   adminVideosCount: Scalars['Int']['output'];
+  arclightApiKeyByKey?: Maybe<ArclightApiKey>;
+  arclightApiKeys: Array<ArclightApiKey>;
   bibleBooks: Array<BibleBook>;
   bibleCitation: BibleCitation;
   bibleCitations: Array<BibleCitation>;
@@ -2905,6 +2957,11 @@ export type QueryAdminVideosArgs = {
 
 export type QueryAdminVideosCountArgs = {
   where?: InputMaybe<VideosFilter>;
+};
+
+
+export type QueryArclightApiKeyByKeyArgs = {
+  key: Scalars['String']['input'];
 };
 
 
@@ -4136,6 +4193,7 @@ export type Video = {
   label: VideoLabel;
   locked: Scalars['Boolean']['output'];
   noIndex?: Maybe<Scalars['Boolean']['output']>;
+  origin?: Maybe<VideoOrigin>;
   parents: Array<Video>;
   primaryLanguageId: Scalars['ID']['output'];
   published: Scalars['Boolean']['output'];
@@ -4554,6 +4612,13 @@ export enum VideoLabel {
   Trailer = 'trailer'
 }
 
+export type VideoOrigin = {
+  __typename?: 'VideoOrigin';
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+};
+
 export type VideoPauseEvent = Event & {
   __typename?: 'VideoPauseEvent';
   /** time event was created */
@@ -4811,6 +4876,7 @@ export type VideoTriggerBlock = Block & {
 export type VideoUpdateInput = {
   childIds?: InputMaybe<Array<Scalars['String']['input']>>;
   id: Scalars['String']['input'];
+  keywordIds?: InputMaybe<Array<Scalars['String']['input']>>;
   label?: InputMaybe<VideoLabel>;
   noIndex?: InputMaybe<Scalars['Boolean']['input']>;
   primaryLanguageId?: InputMaybe<Scalars['String']['input']>;

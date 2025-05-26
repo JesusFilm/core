@@ -125,10 +125,13 @@ model Video {
   cloudflareAssets   CloudflareR2[]
   videoEditions      VideoEdition[]
   availableLanguages String[]
+  origin             VideoOrigin?         @relation(fields: [originId], references: [id])
+  originId           String?
 
   @@index(label)
   @@index(childIds)
   @@index(published(type: Hash))
+  @@index(originId(type: Hash))
 }
 
 model VideoTitle {
@@ -468,4 +471,23 @@ model ShortLink {
 model ShortLinkBlocklistDomain {
   /// the hostname including subdomain, domain, and TLD, but excluding port
   hostname String @id
+}
+
+model VideoOrigin {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  videos      Video[]
+}
+
+enum DefaultPlatform {
+  ios
+  android
+  web
+}
+
+model ArclightApiKey {
+  key             String          @unique
+  desc            String?
+  defaultPlatform DefaultPlatform
 }
