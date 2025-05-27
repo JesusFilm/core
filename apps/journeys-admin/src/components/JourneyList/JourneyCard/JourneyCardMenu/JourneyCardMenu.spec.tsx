@@ -2,17 +2,84 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
-import { TeamProvider } from '@core/journeys/ui/TeamProvider'
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider
+} from '@core/journeys/ui/TeamProvider'
 
-import { JourneyStatus } from '../../../../../__generated__/globalTypes'
+import {
+  JourneyStatus,
+  UserTeamRole
+} from '../../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../../ThemeProvider'
 
+import { JOURNEY_ARCHIVE } from './DefaultMenu/ArchiveJourney/ArchiveJourney'
+
 import { JourneyCardMenu } from '.'
+
+// Simple team mock to ensure Archive/Trash menu items appear
+const teamMock = {
+  request: {
+    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+  },
+  result: {
+    data: {
+      getJourneyProfile: {
+        id: 'profileId',
+        lastActiveTeamId: 'teamId',
+        __typename: 'JourneyProfile'
+      },
+      teams: [
+        {
+          id: 'teamId',
+          title: 'Test Team',
+          publicTitle: 'Test Team Public',
+          userTeams: [
+            {
+              id: 'userTeamId',
+              user: {
+                id: 'userId',
+                firstName: 'Test',
+                lastName: 'User',
+                imageUrl: null,
+                email: 'test@example.com',
+                __typename: 'User'
+              },
+              role: UserTeamRole.manager,
+              __typename: 'UserTeam'
+            }
+          ],
+          customDomains: [],
+          __typename: 'Team'
+        }
+      ]
+    }
+  }
+}
+
+// Simple archive mutation mock
+const archiveMock = {
+  request: {
+    query: JOURNEY_ARCHIVE,
+    variables: { ids: ['journeyId'] }
+  },
+  result: {
+    data: {
+      journeysArchive: [
+        {
+          id: 'journeyId',
+          status: JourneyStatus.archived,
+          __typename: 'Journey'
+        }
+      ]
+    }
+  }
+}
 
 describe('JourneyCardMenu', () => {
   it('should open default menu on click', async () => {
     const { getByRole } = render(
-      <MockedProvider>
+      <MockedProvider mocks={[teamMock]}>
         <SnackbarProvider>
           <TeamProvider>
             <ThemeProvider>
@@ -49,13 +116,15 @@ describe('JourneyCardMenu', () => {
     expect(getByRole('menuitem', { name: 'Duplicate' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Translate' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Copy to ...' })).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Archive' })).toBeInTheDocument()
+    await waitFor(() =>
+      expect(getByRole('menuitem', { name: 'Archive' })).toBeInTheDocument()
+    )
     expect(getByRole('menuitem', { name: 'Trash' })).toBeInTheDocument()
   })
 
   it('should open trash menu on click', async () => {
     const { getByRole } = render(
-      <MockedProvider>
+      <MockedProvider mocks={[teamMock]}>
         <SnackbarProvider>
           <ThemeProvider>
             <JourneyCardMenu
@@ -90,7 +159,7 @@ describe('JourneyCardMenu', () => {
 
   it('should show access dialog on click', async () => {
     const { getByRole, queryByText, getByTestId } = render(
-      <MockedProvider>
+      <MockedProvider mocks={[teamMock]}>
         <SnackbarProvider>
           <TeamProvider>
             <ThemeProvider>
@@ -119,7 +188,7 @@ describe('JourneyCardMenu', () => {
 
   it('should show trash dialog on click', async () => {
     const { getByRole, queryByText, getByTestId } = render(
-      <MockedProvider>
+      <MockedProvider mocks={[teamMock, archiveMock]}>
         <SnackbarProvider>
           <TeamProvider>
             <ThemeProvider>
@@ -135,6 +204,9 @@ describe('JourneyCardMenu', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
+    await waitFor(() =>
+      expect(getByRole('menuitem', { name: 'Trash' })).toBeInTheDocument()
+    )
     fireEvent.click(getByRole('menuitem', { name: 'Trash' }))
 
     await waitFor(() =>
@@ -148,7 +220,7 @@ describe('JourneyCardMenu', () => {
 
   it('should show restore dialog on click', async () => {
     const { getByRole, queryByText, getByTestId } = render(
-      <MockedProvider>
+      <MockedProvider mocks={[teamMock]}>
         <SnackbarProvider>
           <ThemeProvider>
             <JourneyCardMenu
@@ -175,7 +247,7 @@ describe('JourneyCardMenu', () => {
 
   it('should show delete forever dialog on click', async () => {
     const { getByRole, queryByText, getByTestId } = render(
-      <MockedProvider>
+      <MockedProvider mocks={[teamMock]}>
         <SnackbarProvider>
           <ThemeProvider>
             <JourneyCardMenu

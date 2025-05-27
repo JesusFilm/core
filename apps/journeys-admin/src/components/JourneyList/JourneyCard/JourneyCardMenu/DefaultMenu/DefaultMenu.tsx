@@ -213,7 +213,7 @@ export function DefaultMenu({
         handleKeepMounted={handleKeepMounted}
       />
       <Divider />
-      {template !== true && (
+      {template !== true && activeTeam != null && (
         <>
           <DuplicateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />
           <MenuItem
@@ -233,23 +233,27 @@ export function DefaultMenu({
         handleKeepMounted={handleKeepMounted}
         journey={journey}
       />
-      <ArchiveJourney
-        status={status}
-        id={journeyId}
-        published={published}
-        handleClose={handleCloseMenu}
-        refetch={refetch}
-        disabled={cantManageJourney}
-      />
-      <MenuItem
-        label={t('Trash')}
-        icon={<Trash2Icon color="secondary" />}
-        onClick={() => {
-          setOpenTrashDialog()
-          handleCloseMenu()
-        }}
-        disabled={cantManageJourney}
-      />
+      {activeTeam != null && (
+        <>
+          <ArchiveJourney
+            status={status}
+            id={journeyId}
+            published={published}
+            handleClose={handleCloseMenu}
+            refetch={refetch}
+            disabled={cantManageJourney}
+          />
+          <MenuItem
+            label={t('Trash')}
+            icon={<Trash2Icon color="secondary" />}
+            onClick={() => {
+              setOpenTrashDialog()
+              handleCloseMenu()
+            }}
+            disabled={cantManageJourney}
+          />
+        </>
+      )}
     </>
   )
 }
