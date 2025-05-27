@@ -1283,13 +1283,7 @@ describe('JourneyResolver', () => {
         code: ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED
       })
 
-      await resolver.journeyDuplicate(
-        ability,
-        'journeyId',
-        'userId',
-        'teamId',
-        true
-      )
+      await resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
 
       const data = {
         ...omit(journey, [
