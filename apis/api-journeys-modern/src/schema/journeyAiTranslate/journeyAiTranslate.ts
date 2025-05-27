@@ -269,7 +269,6 @@ If there is no Bible translation was available, use the the most popular English
                 })
 
                 let partialTranslations = []
-                let blockUpdatesCount = 0
 
                 // Process the stream as chunks arrive
                 for await (const chunk of fullStream) {
@@ -309,7 +308,6 @@ If there is no Bible translation was available, use the the most popular English
                               },
                               data: item.updates
                             })
-                            blockUpdatesCount++
                           }
                         } catch (updateError) {
                           if (

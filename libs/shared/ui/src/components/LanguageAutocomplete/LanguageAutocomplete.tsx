@@ -158,6 +158,7 @@ export function LanguageAutocomplete({
   return (
     <Autocomplete
       disableClearable
+      data-testid="LanguageAutocomplete"
       value={value}
       isOptionEqualToValue={(option, value) => option.id === value.id}
       getOptionLabel={({ localName, nativeName }) =>
