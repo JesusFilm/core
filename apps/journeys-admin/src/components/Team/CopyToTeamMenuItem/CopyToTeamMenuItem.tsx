@@ -24,6 +24,24 @@ interface JourneyLanguage {
   nativeName?: string
 }
 
+/**
+ * CopyToTeamMenuItem component provides a menu item for copying journeys between teams.
+ *
+ * This component:
+ * - Renders a menu item that triggers a journey copy dialog
+ * - Handles the journey duplication process with optional translation
+ * - Integrates with the router for URL parameter management
+ * - Tracks page views through beacon analytics
+ * - Supports both direct journey props and context-based journey data
+ *
+ * @param {Object} props - The component props
+ * @param {string} [props.id] - Optional unique identifier for the journey to be copied
+ * @param {() => void} props.handleCloseMenu - Callback function to close the parent menu
+ * @param {() => void} [props.handleKeepMounted] - Optional callback to keep the component mounted in the DOM
+ * @param {Journey} [props.journey] - Optional journey object. If not provided, the component will use
+ *                                   journey data from the JourneyProvider context
+ * @returns {ReactElement} A menu item component that triggers a journey copy dialog
+ */
 export function CopyToTeamMenuItem({
   id,
   handleCloseMenu,

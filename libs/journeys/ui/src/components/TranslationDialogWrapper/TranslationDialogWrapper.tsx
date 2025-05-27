@@ -23,11 +23,28 @@ interface TranslationDialogWrapperProps {
 }
 
 /**
- * A wrapper component that provides a consistent UI for translation dialogs
- * with loading state handling and standard buttons.
+ * TranslationDialogWrapper provides a consistent dialog interface for translation-related operations.
  *
- * @param {TranslationDialogWrapperProps} props - The component props
- * @returns {ReactElement} The rendered component
+ * This component:
+ * - Renders a modal dialog with customizable header and content
+ * - Handles loading states with progress indicator and custom loading text
+ * - Provides standard action buttons (Cancel and Submit)
+ * - Supports both translation and non-translation modes
+ * - Manages dialog visibility and close actions
+ *
+ * @param {Object} props - The component props
+ * @param {boolean} props.open - Controls the visibility of the dialog
+ * @param {() => void} props.onClose - Callback function invoked when the dialog should close
+ * @param {() => Promise<void>} props.onTranslate - Async callback function triggered when the submit button is clicked
+ * @param {string} props.title - The title to display in the dialog header
+ * @param {string} [props.loadingText] - Optional custom text to display during loading state
+ * @param {boolean} props.loading - Flag indicating whether the dialog is in a loading state
+ * @param {string} [props.testId] - Optional test ID for testing purposes
+ * @param {ReactNode} props.children - The content to render within the dialog
+ * @param {string} [props.submitLabel] - Optional custom label for the submit button (defaults to "Create")
+ * @param {boolean} [props.divider] - Optional flag to show a divider between header and content
+ * @param {boolean} [props.isTranslation] - Optional flag to indicate if this is a translation operation
+ * @returns {ReactElement} A dialog component with standardized translation UI elements
  */
 export function TranslationDialogWrapper({
   open,

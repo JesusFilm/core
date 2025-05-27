@@ -27,16 +27,21 @@ interface JourneyLanguage {
 }
 
 /**
- * TranslateJourneyDialog component provides a dialog interface for translating journeys.
+ * TranslateJourneyDialog component provides a dialog interface for translating journeys into different languages.
  *
- * The component fetches the list of available languages and allows users to select a target
- * language for translation. It gets the current journey either from props or from context.
+ * This component:
+ * - Displays a modal dialog with language selection functionality
+ * - Fetches and displays a list of supported languages for translation
+ * - Allows users to search and select a target language
+ * - Handles the journey translation process through the duplicateAndTranslate mutation
+ * - Shows loading states during the translation process
  *
- * @param {TranslateJourneyDialogProps} props - The component props
- * @param {boolean} props.open - Controls whether the dialog is displayed
- * @param {() => void} props.onClose - Function to call when the dialog is closed
- * @param {Journey} [props.journey] - Optional journey data object. If not provided, uses journey from context
- * @returns {ReactElement} The rendered dialog component
+ * @param {Object} props - The component props
+ * @param {boolean} props.open - Controls the visibility of the dialog
+ * @param {() => void} props.onClose - Callback function invoked when the dialog should close
+ * @param {Journey} [props.journey] - Optional journey object containing journey data. If not provided,
+ *                                   the component will attempt to use journey data from the JourneyProvider context
+ * @returns {ReactElement} A dialog component with language selection and translation functionality
  */
 export function TranslateJourneyDialog({
   open,
