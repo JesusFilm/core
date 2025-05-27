@@ -67,7 +67,8 @@ const currentUserMock = {
   }
 }
 
-const teamWithManagerMock = {
+// Base team mock with manager role
+const baseTeamMock = {
   request: {
     query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
   },
@@ -106,41 +107,27 @@ const teamWithManagerMock = {
   }
 }
 
+// Team mock with manager role (for clarity)
+const teamWithManagerMock = baseTeamMock
+
+// Team mock with member role (override the role)
 const teamWithMemberMock = {
-  request: {
-    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
-  },
+  ...baseTeamMock,
   result: {
+    ...baseTeamMock.result,
     data: {
+      ...baseTeamMock.result.data,
       teams: [
         {
-          id: 'teamId',
-          title: 'Team Title',
-          publicTitle: null,
-          __typename: 'Team',
+          ...baseTeamMock.result.data.teams[0],
           userTeams: [
             {
-              id: 'userTeamId',
-              role: UserTeamRole.member,
-              user: {
-                id: 'userId',
-                email: 'current@example.com',
-                lastName: 'userLastName',
-                firstName: 'userFirstName',
-                imageUrl: 'https://example.com/image.jpg',
-                __typename: 'User'
-              },
-              __typename: 'UserTeam'
+              ...baseTeamMock.result.data.teams[0].userTeams[0],
+              role: UserTeamRole.member
             }
-          ],
-          customDomains: []
+          ]
         }
-      ],
-      getJourneyProfile: {
-        __typename: 'JourneyProfile',
-        id: 'journeyProfileId',
-        lastActiveTeamId: 'teamId'
-      }
+      ]
     }
   }
 }
@@ -175,40 +162,25 @@ const userRoleNonPublisherMock = {
   }
 }
 
-// Simple team mock to ensure Archive/Trash menu items appear
-const teamMock = {
-  request: {
-    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
-  },
+// Simple team mock (just an alias of baseTeamMock for templates)
+const teamMock = baseTeamMock
+
+// Team mock for tests that need a non-manager user (for testing disabled Archive/Trash)
+const teamMockForNonManager = {
+  ...baseTeamMock,
   result: {
+    ...baseTeamMock.result,
     data: {
-      getJourneyProfile: {
-        id: 'profileId',
-        lastActiveTeamId: 'teamId',
-        __typename: 'JourneyProfile'
-      },
+      ...baseTeamMock.result.data,
       teams: [
         {
-          id: 'teamId',
-          title: 'Test Team',
-          publicTitle: 'Test Team Public',
+          ...baseTeamMock.result.data.teams[0],
           userTeams: [
             {
-              id: 'userTeamId',
-              user: {
-                id: 'userId',
-                firstName: 'Test',
-                lastName: 'User',
-                imageUrl: null,
-                email: 'test@example.com',
-                __typename: 'User'
-              },
-              role: UserTeamRole.manager,
-              __typename: 'UserTeam'
+              ...baseTeamMock.result.data.teams[0].userTeams[0],
+              role: UserTeamRole.member
             }
-          ],
-          customDomains: [],
-          __typename: 'Team'
+          ]
         }
       ]
     }
@@ -766,7 +738,12 @@ describe('DefaultMenu', () => {
 
     const { getByRole } = render(
       <MockedProvider
-        mocks={[userRolePublisherMock, journeyMock, currentUserMock, teamMock]}
+        mocks={[
+          userRolePublisherMock,
+          journeyMock,
+          currentUserMock,
+          teamMockForNonManager
+        ]}
       >
         <SnackbarProvider>
           <ThemeProvider>
@@ -827,7 +804,7 @@ describe('DefaultMenu', () => {
           userRoleNonPublisherMock,
           journeyMock,
           currentUserMock,
-          teamMock
+          teamMockForNonManager
         ]}
       >
         <SnackbarProvider>
