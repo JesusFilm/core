@@ -1,11 +1,13 @@
+import Button from '@mui/material/Button'
 import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
+import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { Formik, FormikHelpers } from 'formik'
 import sortBy from 'lodash/sortBy'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { InferType, object, string } from 'yup'
+import { InferType, boolean, object, string } from 'yup'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
@@ -19,7 +21,7 @@ interface CopyToTeamDialogProps {
   open: boolean
   loading?: boolean
   onClose: () => void
-  submitAction: (teamId: string) => Promise<void>
+  submitAction: (teamId: string, createWithAi: boolean) => Promise<void>
 }
 
 export function CopyToTeamDialog({
@@ -39,7 +41,8 @@ export function CopyToTeamDialog({
   }
 
   const copyToSchema = object({
-    teamSelect: string().required(t('Please select a valid team'))
+    teamSelect: string().required(t('Please select a valid team')),
+    createWithAi: boolean().required()
   })
 
   const updateLastActiveTeamId = useUpdateLastActiveTeamIdMutation()
@@ -56,30 +59,66 @@ export function CopyToTeamDialog({
       }
     })
     // submit action goes before setActiveTeam for proper loading states to be shown
-    await submitAction(values.teamSelect)
+    await submitAction(values.teamSelect, values.createWithAi)
     setActiveTeam(teams.find((team) => team.id === values.teamSelect) ?? null)
     resetForm()
   }
   return (
     <Formik
-      initialValues={{ teamSelect: teams.length === 1 ? teams[0].id : '' }}
+      initialValues={{
+        teamSelect: teams.length === 1 ? teams[0].id : '',
+        createWithAi: false
+      }}
       enableReinitialize
       onSubmit={handleSubmit}
       validationSchema={copyToSchema}
     >
-      {({ values, errors, handleChange, handleSubmit, isSubmitting }) => (
+      {({
+        values,
+        errors,
+        handleChange,
+        handleSubmit,
+        isSubmitting,
+        setFieldValue
+      }) => (
         <Dialog
           open={open}
           onClose={handleClose}
           dialogTitle={{ title: t(title) }}
           loading={loading ?? isSubmitting}
-          dialogAction={{
-            onSubmit: () => {
-              if (!isSubmitting) handleSubmit()
-            },
-            closeLabel: t('Cancel'),
-            submitLabel: submitLabel === 'Add' ? t('Add') : t('Copy')
-          }}
+          dialogActionChildren={
+            <Stack direction="row" spacing={2} justifyContent="flex-end">
+              <Button
+                onClick={handleClose}
+                variant="outlined"
+                disabled={isSubmitting}
+              >
+                {t('Cancel')}
+              </Button>
+              <Button
+                name="createWithAi"
+                onClick={async () => {
+                  if (!isSubmitting) {
+                    await setFieldValue('createWithAi', true)
+                    handleSubmit()
+                  }
+                }}
+                variant="outlined"
+                disabled={isSubmitting}
+              >
+                {t('Create with AI')}
+              </Button>
+              <Button
+                onClick={() => {
+                  if (!isSubmitting) handleSubmit()
+                }}
+                variant="contained"
+                disabled={isSubmitting}
+              >
+                {submitLabel === 'Add' ? t('Add') : t('Copy')}
+              </Button>
+            </Stack>
+          }
           testId="CopyToTeamDialog"
         >
           <FormControl variant="filled" hiddenLabel fullWidth>
