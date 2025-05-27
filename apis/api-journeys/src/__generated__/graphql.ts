@@ -1844,7 +1844,6 @@ export type MutationJourneyCreateArgs = {
 
 
 export type MutationJourneyDuplicateArgs = {
-  fromTemplate?: InputMaybe<Scalars['Boolean']['input']>;
   id: Scalars['ID']['input'];
   teamId: Scalars['ID']['input'];
 };
