@@ -1,5 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
 import { LocalAppBar } from './LocalAppBar'
 
 describe('LocalAppBar', () => {
@@ -50,5 +52,17 @@ describe('LocalAppBar', () => {
     const menuButton = screen.getByRole('button', { name: 'open header menu' })
     expect(menuButton).not.toHaveClass('expanded')
     expect(menuButton).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  it('should open the language switcher dialog when language selector is clicked', async () => {
+    render(
+      <FlagsProvider flags={{ watchLanguageSwitcher: true }}>
+        <LocalAppBar onMenuClick={mockOnMenuClick} />
+      </FlagsProvider>
+    )
+
+    fireEvent.click(screen.getByTestId('LanguageSelector'))
+    // Adjust the below line if the dialog has a different test id or text
+    expect(await screen.findByRole('dialog')).toBeInTheDocument()
   })
 })
