@@ -224,7 +224,7 @@ input JourneyTemplateInput {
 
 extend type Mutation {
   journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey!
-  journeyDuplicate(id: ID!, teamId: ID!, fromTemplate: Boolean): Journey!
+  journeyDuplicate(id: ID!, teamId: ID!): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
   """
   Sets journey status to published

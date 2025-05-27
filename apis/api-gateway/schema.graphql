@@ -323,7 +323,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpacesUpdateInput!) : IntegrationGrowthSpaces! @join__field(graph: API_JOURNEYS) 
   integrationDelete(id: ID!) : Integration! @join__field(graph: API_JOURNEYS) 
   journeyCreate(input: JourneyCreateInput!, teamId: ID!) : Journey! @join__field(graph: API_JOURNEYS) 
-  journeyDuplicate(id: ID!, teamId: ID!, fromTemplate: Boolean) : Journey! @join__field(graph: API_JOURNEYS) 
+  journeyDuplicate(id: ID!, teamId: ID!) : Journey! @join__field(graph: API_JOURNEYS) 
   journeyUpdate(id: ID!, input: JourneyUpdateInput!) : Journey! @join__field(graph: API_JOURNEYS) 
   """
   Sets journey status to published
