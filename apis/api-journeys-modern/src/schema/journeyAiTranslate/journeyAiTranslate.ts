@@ -92,87 +92,85 @@ builder.subscriptionField('journeyAiTranslateCreate', (t) =>
         required: true
       })
     },
-    subscribe: async (_root, { input }, context) => {
+    subscribe: async function* (_root, { input }, context) {
       // Create async iterable for real AI translation
-      return {
-        [Symbol.asyncIterator]: async function* () {
-          try {
-            // Initial progress
-            yield {
-              progress: 0,
-              message: 'Starting translation...',
-              journey: null
-            }
+      try {
+        // Initial progress
+        yield {
+          progress: 0,
+          message: 'Starting translation...',
+          journey: null
+        }
 
-            // Validate journey exists and user has permission
-            const journey = await prisma.journey.findUnique({
-              where: { id: input.journeyId },
+        // Validate journey exists and user has permission
+        const journey = await prisma.journey.findUnique({
+          where: { id: input.journeyId },
+          include: {
+            blocks: true,
+            userJourneys: true,
+            team: {
               include: {
-                blocks: true,
-                userJourneys: true,
-                team: {
-                  include: {
-                    userTeams: true
-                  }
-                }
+                userTeams: true
               }
-            })
-
-            if (journey == null) {
-              throw new GraphQLError('journey not found')
             }
+          }
+        })
 
-            // Check permissions
-            const hasPermission = ability(
-              Action.Update,
-              subject('Journey', journey),
-              context.user
-            )
+        if (journey == null) {
+          throw new GraphQLError('journey not found')
+        }
 
-            if (!hasPermission) {
-              throw new GraphQLError(
-                'user does not have permission to update journey'
-              )
-            }
+        // Check permissions
+        const hasPermission = ability(
+          Action.Update,
+          subject('Journey', journey),
+          context.user
+        )
 
-            yield {
-              progress: 10,
-              message: 'Validating journey permissions...',
-              journey: null
-            }
+        if (!hasPermission) {
+          throw new GraphQLError(
+            'user does not have permission to update journey'
+          )
+        }
 
-            // Get card blocks and their content
-            const cardBlocks = journey.blocks.filter(
-              (block) => block.typename === 'CardBlock'
-            )
+        yield {
+          progress: 10,
+          message: 'Validating journey permissions...',
+          journey: null
+        }
 
-            yield {
-              progress: 20,
-              message: 'Analyzing journey content...',
-              journey: null
-            }
+        // Get card blocks and their content
+        const cardBlocks = journey.blocks.filter(
+          (block) => block.typename === 'CardBlock'
+        )
 
-            // Get content for AI analysis
-            const cardBlocksContent = await getCardBlocksContent({
-              blocks: journey.blocks,
-              cardBlocks
-            })
+        yield {
+          progress: 20,
+          message: 'Analyzing journey content...',
+          journey: null
+        }
 
-            const journeyContent = `
+        // Get content for AI analysis
+        const cardBlocksContent = await getCardBlocksContent({
+          blocks: journey.blocks,
+          cardBlocks
+        })
+
+        const journeyContent = `
 Journey Title: ${journey.title}
 Journey Description: ${journey.description ?? 'No description'}
 
 ${cardBlocksContent.join('\n\n')}
               `.trim()
 
-            yield {
-              progress: 30,
-              message: 'Translating journey title and description...',
-              journey: null
-            }
+        yield {
+          progress: 30,
+          message: 'Translating journey title and description...',
+          journey: null
+        }
 
-            // Step 1: Translate journey title and description
-            const analysisPrompt = `
+        // Step 1: Translate journey title and description
+        const analysisPrompt = `
 You are a professional translator specializing in religious and spiritual content. 
 Translate the following journey from ${input.journeyLanguageName} to ${input.textLanguageName}.
 
@@ -187,81 +185,81 @@ Journey to translate:
 ${hardenPrompt(journeyContent)}
               `.trim()
 
-            const analysisResult = await generateObject({
-              model: google('gemini-1.5-flash'),
-              messages: [
-                { role: 'system', content: preSystemPrompt },
-                { role: 'user', content: analysisPrompt }
-              ],
-              schema: JourneyAnalysisSchema
+        const analysisResult = await generateObject({
+          model: google('gemini-1.5-flash'),
+          messages: [
+            { role: 'system', content: preSystemPrompt },
+            { role: 'user', content: analysisPrompt }
+          ],
+          schema: JourneyAnalysisSchema
+        })
+
+        if (!analysisResult.object.title) {
+          throw new GraphQLError('Failed to translate journey title')
+        }
+
+        yield {
+          progress: 50,
+          message: 'Updating journey with translated title...',
+          journey: null
+        }
+
+        // Update journey with translated title and description
+        const updateData: any = {
+          title: analysisResult.object.title,
+          languageId: input.textLanguageId
+        }
+
+        if (journey.description && analysisResult.object.description) {
+          updateData.description = analysisResult.object.description
+        }
+
+        const updatedJourney = await prisma.journey.update({
+          where: { id: input.journeyId },
+          data: updateData
+        })
+
+        yield {
+          progress: 60,
+          message: `Translating card content (${cardBlocks.length} cards)...`,
+          journey: updatedJourney
+        }
+
+        // Step 2: Translate blocks for each card
+        let cardIndex = 0
+        for (const cardContent of cardBlocksContent) {
+          cardIndex++
+          const progressPercent = 60 + (cardIndex / cardBlocks.length) * 30
+
+          yield {
+            progress: progressPercent,
+            message: `Translating card ${cardIndex} of ${cardBlocks.length}...`,
+            journey: null
+          }
+
+          try {
+            // Get translatable blocks for this card
+            const cardBlock = cardBlocks[cardIndex - 1]
+            const cardChildren = journey.blocks.filter(
+              (block) => block.parentBlockId === cardBlock.id
+            )
+
+            const translatableBlocks = cardChildren.filter((block) => {
+              const typedBlock = castBlock(block)
+              const fields = Object.keys(getTranslatableFields(typedBlock))
+              return fields.length > 0
             })
 
-            if (!analysisResult.object.title) {
-              throw new GraphQLError('Failed to translate journey title')
+            if (translatableBlocks.length === 0) {
+              continue
             }
 
-            yield {
-              progress: 50,
-              message: 'Updating journey with translated title...',
-              journey: null
-            }
+            // Create translation info for each block
+            const blockInfos = translatableBlocks.map((block) =>
+              createTranslationInfo(castBlock(block))
+            )
 
-            // Update journey with translated title and description
-            const updateData: any = {
-              title: analysisResult.object.title,
-              languageId: input.textLanguageId
-            }
-
-            if (journey.description && analysisResult.object.description) {
-              updateData.description = analysisResult.object.description
-            }
-
-            const updatedJourney = await prisma.journey.update({
-              where: { id: input.journeyId },
-              data: updateData
-            })
-
-            yield {
-              progress: 60,
-              message: `Translating card content (${cardBlocks.length} cards)...`,
-              journey: updatedJourney
-            }
-
-            // Step 2: Translate blocks for each card
-            let cardIndex = 0
-            for (const cardContent of cardBlocksContent) {
-              cardIndex++
-              const progressPercent = 60 + (cardIndex / cardBlocks.length) * 30
-
-              yield {
-                progress: progressPercent,
-                message: `Translating card ${cardIndex} of ${cardBlocks.length}...`,
-                journey: null
-              }
-
-              try {
-                // Get translatable blocks for this card
-                const cardBlock = cardBlocks[cardIndex - 1]
-                const cardChildren = journey.blocks.filter(
-                  (block) => block.parentBlockId === cardBlock.id
-                )
-
-                const translatableBlocks = cardChildren.filter((block) => {
-                  const typedBlock = castBlock(block)
-                  const fields = Object.keys(getTranslatableFields(typedBlock))
-                  return fields.length > 0
-                })
-
-                if (translatableBlocks.length === 0) {
-                  continue
-                }
-
-                // Create translation info for each block
-                const blockInfos = translatableBlocks.map((block) =>
-                  createTranslationInfo(castBlock(block))
-                )
-
-                const blockTranslationPrompt = `
+            const blockTranslationPrompt = `
 Translate the following blocks from ${input.journeyLanguageName} to ${input.textLanguageName}.
 
 Context: ${hardenPrompt(analysisResult.object.analysis)}
@@ -277,65 +275,66 @@ Only include fields that need translation (content, label, placeholder).
 Maintain the spiritual and religious context appropriately.
                   `.trim()
 
-                // Stream the block translations
-                const blockTranslationResult = await streamObject({
-                  model: google('gemini-1.5-flash'),
-                  messages: [
-                    { role: 'system', content: preSystemPrompt },
-                    { role: 'user', content: blockTranslationPrompt }
-                  ],
-                  schema: BlockTranslationSchema
-                })
-
-                // Process the streamed translations
-                for await (const chunk of blockTranslationResult.fullStream) {
-                  if (chunk.type === 'object' && chunk.object) {
-                    // Apply translations to blocks
-                    for (const translation of chunk.object) {
-                      await updateBlockWithTranslation(
-                        prisma,
-                        input.journeyId,
-                        translation as BlockTranslationUpdate
-                      )
-                    }
-                  }
-                }
-              } catch (error) {
-                console.error(`Error translating card ${cardIndex}:`, error)
-                // Continue with other cards even if one fails
-              }
-            }
-
-            yield {
-              progress: 95,
-              message: 'Finalizing translation...',
-              journey: null
-            }
-
-            // Get the final updated journey with all translated blocks
-            const finalJourney = await prisma.journey.findUnique({
-              where: { id: input.journeyId },
-              include: {
-                blocks: true
-              }
+            // Stream the block translations
+            const blockTranslationResult = await streamObject({
+              model: google('gemini-1.5-flash'),
+              messages: [
+                { role: 'system', content: preSystemPrompt },
+                { role: 'user', content: blockTranslationPrompt }
+              ],
+              schema: BlockTranslationSchema
             })
 
-            yield {
-              progress: 100,
-              message: 'Translation completed!',
-              journey: finalJourney
+            // Process the streamed translations
+            for await (const chunk of blockTranslationResult.fullStream) {
+              if (chunk.type === 'object' && chunk.object) {
+                // Apply translations to blocks
+                for (const translation of chunk.object) {
+                  await updateBlockWithTranslation(
+                    prisma,
+                    input.journeyId,
+                    translation as BlockTranslationUpdate
+                  )
+                }
+              }
             }
           } catch (error) {
-            console.error('Translation error:', error)
-            yield {
-              progress: 100,
-              message: 'Translation failed: ' + (error as Error).message,
-              journey: null
-            }
+            console.error(`Error translating card ${cardIndex}:`, error)
+            // Continue with other cards even if one fails
           }
+        }
+
+        yield {
+          progress: 95,
+          message: 'Finalizing translation...',
+          journey: null
+        }
+
+        // Get the final updated journey with all translated blocks
+        const finalJourney = await prisma.journey.findUnique({
+          where: { id: input.journeyId },
+          include: {
+            blocks: true
+          }
+        })
+
+        return {
+          progress: 100,
+          message: 'Translation completed!',
+          journey: finalJourney
+        }
+      } catch (error) {
+        console.error('Translation error:', error)
+        return {
+          progress: 100,
+          message: 'Translation failed: ' + (error as Error).message,
+          journey: null
         }
       }
     },
-    resolve: (progressUpdate) => progressUpdate
+    resolve: (progressUpdate) => {
+      console.log('progressUpdate', progressUpdate)
+      return progressUpdate
+    }
   })
 )

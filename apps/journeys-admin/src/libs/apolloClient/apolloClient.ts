@@ -2,8 +2,12 @@ import MutationQueueLink from '@adobe/apollo-link-mutation-queue'
 import {
   ApolloClient,
   ApolloLink,
+  FetchResult,
   HttpLink,
+  NextLink,
   NormalizedCacheObject,
+  Operation,
+  from,
   split
 } from '@apollo/client'
 import { EntityStore, StoreObject } from '@apollo/client/cache'
@@ -12,6 +16,7 @@ import { getMainDefinition } from '@apollo/client/utilities'
 import DebounceLink from 'apollo-link-debounce'
 import { getApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
+import { createClient } from 'graphql-sse'
 import { useMemo } from 'react'
 import { Observable } from 'zen-observable-ts'
 
@@ -22,113 +27,61 @@ let apolloClient: ApolloClient<NormalizedCacheObject>
 
 const DEFAULT_DEBOUNCE_TIMEOUT = 500
 
-// Custom SSE Link for subscriptions
+// Custom Apollo Link for Server-Sent Events using graphql-sse
 class SSELink extends ApolloLink {
-  private uri: string
+  private url: string
+  private options: any
 
-  constructor(uri: string) {
+  constructor(url: string, options?: any) {
     super()
-    this.uri = uri
+    this.url = url
+    this.options = options || {}
   }
 
-  public request(operation: any) {
-    return new Observable((observer) => {
-      const { query, variables } = operation
+  public request(
+    operation: Operation,
+    forward?: NextLink
+  ): Observable<FetchResult> | null {
+    return new Observable<FetchResult>((observer) => {
+      // Get headers from operation context
+      const context = operation.getContext()
+      const headers = context.headers || {}
 
-      // Create the subscription request
-      const body = JSON.stringify({
-        query: query.loc?.source?.body || '',
-        variables
-      })
-
-      // Get auth headers from context
-      const headers = operation.getContext().headers || {}
-
-      fetch(this.uri, {
-        method: 'POST',
+      // Create a new client instance with current headers
+      const client = createClient({
+        url: this.url,
+        ...this.options,
         headers: {
+          ...headers,
           'Content-Type': 'application/json',
-          Accept: 'text/event-stream',
-          'Cache-Control': 'no-cache',
-          ...headers
-        },
-        body
+          Accept: 'text/event-stream'
+        }
       })
-        .then((response) => {
-          console.log('SSE Link: Response status:', response.status)
-          console.log(
-            'SSE Link: Response headers:',
-            Object.fromEntries(response.headers.entries())
-          )
 
-          if (!response.ok) {
+      const unsubscribe = client.subscribe(
+        {
+          query: operation.query.loc?.source?.body || '',
+          variables: operation.variables,
+          operationName: operation.operationName
+        },
+        {
+          next: (data) => {
+            observer.next(data as FetchResult)
+          },
+          error: (error) => {
             observer.error(
-              new Error(`HTTP ${response.status}: ${response.statusText}`)
+              error instanceof Error ? error : new Error(String(error))
             )
-            return
+          },
+          complete: () => {
+            observer.complete()
           }
-
-          if (!response.body) {
-            observer.error(new Error('No response body'))
-            return
-          }
-
-          const reader = response.body.getReader()
-          const decoder = new TextDecoder()
-          let buffer = ''
-
-          const readStream = () => {
-            reader
-              .read()
-              .then(({ done, value }) => {
-                if (done) {
-                  observer.complete()
-                  return
-                }
-
-                buffer += decoder.decode(value, { stream: true })
-                const lines = buffer.split('\n')
-
-                // Keep the last incomplete line in the buffer
-                buffer = lines.pop() || ''
-
-                for (const line of lines) {
-                  console.log('SSE Link: Processing line:', line)
-                  if (line.startsWith('data: ')) {
-                    const data = line.slice(6).trim()
-                    if (data && data !== '') {
-                      try {
-                        const parsed = JSON.parse(data)
-                        console.log('SSE Link: Parsed data:', parsed)
-                        if (parsed.data || parsed.errors) {
-                          observer.next({
-                            data: parsed.data,
-                            errors: parsed.errors
-                          })
-                        }
-                      } catch (e) {
-                        console.warn('Failed to parse SSE data:', data, e)
-                      }
-                    }
-                  } else if (line.startsWith('event: complete')) {
-                    console.log('SSE Link: Received complete event')
-                    observer.complete()
-                    return
-                  }
-                }
-
-                readStream()
-              })
-              .catch((error) => observer.error(error))
-          }
-
-          readStream()
-        })
-        .catch((error) => observer.error(error))
+        }
+      )
 
       // Return cleanup function
       return () => {
-        // Cleanup if needed
+        unsubscribe()
       }
     })
   }
@@ -145,7 +98,7 @@ export function createApolloClient(
     uri: gatewayUrl
   })
 
-  // Create SSE link for subscriptions - temporarily use direct service URL to bypass gateway
+  // Create SSE link for subscriptions using graphql-sse
   const sseLink = new SSELink(gatewayUrl)
 
   const authLink = setContext(async (_, { headers }) => {
@@ -181,12 +134,7 @@ export function createApolloClient(
     httpLink
   )
 
-  const link = ApolloLink.from([
-    debounceLink,
-    mutationQueueLink,
-    authLink,
-    splitLink
-  ])
+  const link = from([debounceLink, mutationQueueLink, authLink, splitLink])
 
   return new ApolloClient({
     ssrMode,
