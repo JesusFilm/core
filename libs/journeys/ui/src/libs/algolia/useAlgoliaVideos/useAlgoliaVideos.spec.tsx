@@ -55,6 +55,17 @@ describe('useAlgoliaVideos', () => {
       expect(result.current.items).toEqual(transformedItems)
     })
 
+    it('should pass locale to transform function', () => {
+      const mockTransform = jest.fn()
+      renderHook(() =>
+        useAlgoliaVideos({
+          transformItems: mockTransform,
+          languageId: 'es'
+        })
+      )
+      expect(mockTransform).toHaveBeenCalledWith(items, 'es')
+    })
+
     it('should return correct loading state', () => {
       mockUseInstantSearch.mockReturnValue({
         status: 'loading',
