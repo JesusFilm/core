@@ -55,7 +55,7 @@ export function CopyToTeamMenuItem({
     selectedLanguage?: JourneyLanguage,
     showTranslation?: boolean
   ): Promise<void> => {
-    if (id == null || journeyData == null) return
+    if (id == null || journeyData == null || teamId == null) return
 
     await duplicateAndTranslate({
       teamId,

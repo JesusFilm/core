@@ -89,9 +89,9 @@ export function CopyToTeamDialog({
         setActiveTeam(
           teams.find((team) => team.id === values.teamSelect) ?? null
         )
+        resetForm()
       }
     })
-    resetForm()
     onClose()
   }
 
