@@ -274,7 +274,7 @@ describe('JourneyCardMenu', () => {
 
   it('should show translate dialog on click', async () => {
     const { getByRole, queryByText } = render(
-      <MockedProvider>
+      <MockedProvider mocks={[teamMock]}>
         <SnackbarProvider>
           <TeamProvider>
             <ThemeProvider>
