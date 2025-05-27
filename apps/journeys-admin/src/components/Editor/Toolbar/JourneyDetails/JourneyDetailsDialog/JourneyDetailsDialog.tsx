@@ -96,7 +96,7 @@ export function JourneyDetailsDialog({
               }
             ]
           },
-          updatedAt: new Date().toISOString() 
+          updatedAt: new Date().toISOString()
         }
       },
       onError(error) {
