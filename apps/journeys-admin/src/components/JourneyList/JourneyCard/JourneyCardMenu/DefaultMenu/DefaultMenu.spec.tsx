@@ -1,6 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { template } from 'lodash'
 import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
 
@@ -19,8 +18,6 @@ import {
 } from '../../../../../../__generated__/globalTypes'
 import { GET_CURRENT_USER } from '../../../../../libs/useCurrentUserLazyQuery'
 import { getCustomDomainMock } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
-import { GET_JOURNEY_FOR_SHARING } from '../../../../../libs/useJourneyForShareLazyQuery/useJourneyForShareLazyQuery'
-import { GET_JOURNEY_WITH_PERMISSIONS } from '../../../../AccessDialog/AccessDialog'
 import { ThemeProvider } from '../../../../ThemeProvider'
 
 import { GET_JOURNEY_WITH_USER_ROLES } from './DefaultMenu'
