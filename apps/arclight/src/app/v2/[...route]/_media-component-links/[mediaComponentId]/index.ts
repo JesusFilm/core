@@ -55,7 +55,7 @@ const GET_VIDEO_CHILDREN = graphql(`
         availableLanguages
         variant {
           hls
-          duration
+          lengthInMilliseconds
           language {
             bcp47
           }
@@ -114,7 +114,7 @@ const GET_VIDEO_CHILDREN = graphql(`
         availableLanguages
         variant {
           hls
-          duration
+          lengthInMilliseconds
           language {
             bcp47
           }
@@ -269,7 +269,7 @@ mediaComponentLinksWithId.openapi(route, async (c) => {
     },
     ...(expand.includes('mediaComponents')
       ? {
-          __embedded: {
+          _embedded: {
             contains: video.children
               .filter(
                 ({ availableLanguages }) =>
@@ -316,10 +316,15 @@ mediaComponentLinksWithId.openapi(route, async (c) => {
                         (image) => image.mobileCinematicVeryLow != null
                       )?.mobileCinematicVeryLow ?? ''
                   },
-                  lengthInMilliseconds: variant?.duration ?? 0,
+                  lengthInMilliseconds: variant?.lengthInMilliseconds ?? 0,
                   containsCount: childrenCount,
                   isDownloadable: variant?.downloadable ?? false,
-                  downloadSizes: {},
+                  downloadSizes: {
+                    approximateSmallDownloadSizeInBytes:
+                      variant?.downloads[0]?.size ?? 0,
+                    approximateLargeDownloadSizeInBytes:
+                      variant?.downloads[1]?.size ?? 0
+                  },
                   bibleCitations: bibleCitations.map((citation) => ({
                     osisBibleBook: citation.osisId,
                     chapterStart: citation.chapterStart,
@@ -394,10 +399,16 @@ mediaComponentLinksWithId.openapi(route, async (c) => {
                               (image) => image.mobileCinematicVeryLow != null
                             )?.mobileCinematicVeryLow ?? ''
                         },
-                        lengthInMilliseconds: variant?.duration ?? 0,
+                        lengthInMilliseconds:
+                          variant?.lengthInMilliseconds ?? 0,
                         containsCount: childrenCount,
                         isDownloadable: variant?.downloadable ?? false,
-                        downloadSizes: {},
+                        downloadSizes: {
+                          approximateSmallDownloadSizeInBytes:
+                            variant?.downloads[0]?.size ?? 0,
+                          approximateLargeDownloadSizeInBytes:
+                            variant?.downloads[1]?.size ?? 0
+                        },
                         bibleCitations: bibleCitations.map((citation) => ({
                           osisBibleBook: citation.osisId,
                           chapterStart: citation.chapterStart,

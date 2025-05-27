@@ -101,20 +101,19 @@ test.describe('GET /v2/media-languages/[languageId]', () => {
     })
   })
 
-  test('returns 400 for invalid metadata language', async ({ request }) => {
+  test('returns 200 and defaults to english for invalid metadata language', async ({
+    request
+  }) => {
     const response = await getMediaLanguage(request, {
       languageId: '529',
       params: { metadataLanguageTags: 'invalid' }
     })
 
-    expect(response.ok()).toBeFalsy()
-    expect(response.status()).toBe(400)
+    expect(response.ok()).toBeTruthy()
+    expect(response.status()).toBe(200)
     const data = await response.json()
     expect(data).toMatchObject({
-      message: expect.stringContaining(
-        'Not acceptable metadata language tag(s): invalid'
-      ),
-      logref: 400
+      languageId: 529
     })
   })
 })
