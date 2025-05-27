@@ -18,7 +18,6 @@ import {
 } from '../../../../../../__generated__/globalTypes'
 import { GET_CURRENT_USER } from '../../../../../libs/useCurrentUserLazyQuery'
 import { getCustomDomainMock } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
-import { ThemeProvider } from '../../../../ThemeProvider'
 
 import { GET_JOURNEY_WITH_USER_ROLES } from './DefaultMenu'
 
@@ -209,7 +208,10 @@ describe('DefaultMenu', () => {
     expect(getByRole('menuitem', { name: 'Edit Details' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Access' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Duplicate' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Share' })).toBeInTheDocument()
+    await waitFor(() =>
+      expect(getByRole('menuitem', { name: 'Duplicate' })).toBeInTheDocument()
+    )
     expect(getByRole('menuitem', { name: 'Translate' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Copy to ...' })).toBeInTheDocument()
     await waitFor(() => {
@@ -907,12 +909,12 @@ describe('DefaultMenu', () => {
     })
   })
 
-  it('should call correct functions on Translate click', () => {
+  it('should call correct functions on Translate click', async () => {
     const setOpenTranslateDialog = jest.fn()
     const handleCloseMenu = jest.fn()
 
     const { getByRole } = render(
-      <MockedProvider>
+      <MockedProvider mocks={[teamWithManagerMock]}>
         <SnackbarProvider>
           <TeamProvider>
             <DefaultMenu
@@ -932,7 +934,9 @@ describe('DefaultMenu', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByRole('menuitem', { name: 'Translate' }))
+    await waitFor(() => {
+      fireEvent.click(getByRole('menuitem', { name: 'Translate' }))
+    })
     expect(setOpenTranslateDialog).toHaveBeenCalled()
     expect(handleCloseMenu).toHaveBeenCalled()
   })
