@@ -10,6 +10,8 @@ export type LocaleMapping = {
   // Geolocation codes for the locale
   // https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2a
   geoLocations: string[]
+  // Language ID for the locale
+  languageId: string
 }
 
 export const LANGUAGE_MAPPINGS: Record<string, LocaleMapping> = {
@@ -25,7 +27,8 @@ export const LANGUAGE_MAPPINGS: Record<string, LocaleMapping> = {
       'IE', // Ireland
       'ZA', // South Africa
       'IN' // India
-    ]
+    ],
+    languageId: '529'
   },
   es: {
     locale: 'es',
@@ -52,7 +55,8 @@ export const LANGUAGE_MAPPINGS: Record<string, LocaleMapping> = {
       'UY', // Uruguay
       'PR', // Puerto Rico
       'GQ' // Equatorial Guinea
-    ]
+    ],
+    languageId: '21028'
   },
   fr: {
     locale: 'fr',
@@ -76,7 +80,8 @@ export const LANGUAGE_MAPPINGS: Record<string, LocaleMapping> = {
       'BI', // Burundi
       'GN', // Guinea
       'HT' // Haiti
-    ]
+    ],
+    languageId: '496'
   },
   id: {
     locale: 'id',
@@ -84,21 +89,24 @@ export const LANGUAGE_MAPPINGS: Record<string, LocaleMapping> = {
     geoLocations: [
       'ID', // Indonesia
       'TL' // Timor-Leste (East Timor)
-    ]
+    ],
+    languageId: '16639'
   },
   th: {
     locale: 'th',
     languageSlugs: ['thai.html', 'thai-southern.html', 'thai-northern.html'],
     geoLocations: [
       'TH' // Thailand
-    ]
+    ],
+    languageId: '13169'
   },
   ja: {
     locale: 'ja',
     languageSlugs: ['japanese.html', 'japanese-sign-language.html'],
     geoLocations: [
       'JP' // Japan
-    ]
+    ],
+    languageId: '7083'
   },
   ko: {
     locale: 'ko',
@@ -110,7 +118,8 @@ export const LANGUAGE_MAPPINGS: Record<string, LocaleMapping> = {
     geoLocations: [
       'KR', // South Korea
       'KP' // North Korea
-    ]
+    ],
+    languageId: '3804'
   },
   ru: {
     locale: 'ru',
@@ -129,7 +138,8 @@ export const LANGUAGE_MAPPINGS: Record<string, LocaleMapping> = {
       'UZ', // Uzbekistan
       'TJ', // Tajikistan
       'TM' // Turkmenistan
-    ]
+    ],
+    languageId: '3934'
   },
   tr: {
     locale: 'tr',
@@ -137,7 +147,8 @@ export const LANGUAGE_MAPPINGS: Record<string, LocaleMapping> = {
     geoLocations: [
       'TR', // Turkey
       'CY' // Cyprus
-    ]
+    ],
+    languageId: '1942'
   },
   zh: {
     locale: 'zh',
@@ -150,7 +161,8 @@ export const LANGUAGE_MAPPINGS: Record<string, LocaleMapping> = {
       'TW', // Taiwan
       'HK', // Hong Kong
       'MO' // Macau
-    ]
+    ],
+    languageId: '20615'
   },
   'zh-Hans-CN': {
     locale: 'zh-Hans-CN',
@@ -159,7 +171,8 @@ export const LANGUAGE_MAPPINGS: Record<string, LocaleMapping> = {
       'CN', // China
       'SG', // Singapore
       'MY' // Malaysia
-    ]
+    ],
+    languageId: '21754'
   }
 }
 
