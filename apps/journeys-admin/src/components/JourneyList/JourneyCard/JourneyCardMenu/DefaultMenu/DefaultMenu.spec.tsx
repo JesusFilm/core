@@ -162,9 +162,6 @@ const userRoleNonPublisherMock = {
   }
 }
 
-// Simple team mock (just an alias of baseTeamMock for templates)
-const teamMock = baseTeamMock
-
 // Team mock for tests that need a non-manager user (for testing disabled Archive/Trash)
 const teamMockForNonManager = {
   ...baseTeamMock,
@@ -223,7 +220,7 @@ describe('DefaultMenu', () => {
 
   it('should render menu for templates', async () => {
     const { queryByRole, getByRole } = render(
-      <MockedProvider mocks={[teamMock, userRolePublisherMock]}>
+      <MockedProvider mocks={[teamWithManagerMock, userRolePublisherMock]}>
         <SnackbarProvider>
           <ThemeProvider>
             <TeamProvider>
@@ -370,7 +367,7 @@ describe('DefaultMenu', () => {
     const setOpenTrashDialog = jest.fn()
 
     const { getByRole } = render(
-      <MockedProvider mocks={[teamMock]}>
+      <MockedProvider mocks={[teamWithManagerMock]}>
         <SnackbarProvider>
           <ThemeProvider>
             <TeamProvider>
@@ -683,7 +680,12 @@ describe('DefaultMenu', () => {
 
     const { getByRole } = render(
       <MockedProvider
-        mocks={[userRolePublisherMock, journeyMock, currentUserMock, teamMock]}
+        mocks={[
+          userRolePublisherMock,
+          journeyMock,
+          currentUserMock,
+          teamWithManagerMock
+        ]}
       >
         <SnackbarProvider>
           <ThemeProvider>
