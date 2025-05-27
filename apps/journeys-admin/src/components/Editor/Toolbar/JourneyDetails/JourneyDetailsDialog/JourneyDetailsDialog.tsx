@@ -95,8 +95,7 @@ export function JourneyDetailsDialog({
                 primary: values.language.nativeName != null
               }
             ]
-          },
-          updatedAt: new Date().toISOString()
+          }
         }
       },
       onError(error) {
