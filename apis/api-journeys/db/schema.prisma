@@ -420,7 +420,7 @@ model Journey {
   qrCode                    QrCode[]
   Event                     Event[]
   journeyEventsExportLogs   JourneyEventsExportLog[]
-  fromTemplate              String?
+  fromTemplateId            String?
 
   @@index(title)
 }

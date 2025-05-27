@@ -72,7 +72,7 @@ describe('PlausibleResolver', () => {
     menuButtonIcon: null,
     logoImageBlockId: null,
     menuStepBlockId: null,
-    fromTemplate: null
+    fromTemplateId: null
   }
 
   const journeyWithUserTeam = {

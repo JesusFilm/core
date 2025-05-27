@@ -68,7 +68,7 @@ type Journey @key(fields: "id") {
   showMenu: Boolean
   showDisplayTitle: Boolean
   menuButtonIcon: JourneyMenuButtonIcon
-  fromTemplate: String
+  fromTemplateId: String
 }
 
 enum IdType {

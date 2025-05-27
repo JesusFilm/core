@@ -438,7 +438,7 @@ type Journey
   showMenu: Boolean
   showDisplayTitle: Boolean
   menuButtonIcon: JourneyMenuButtonIcon
-  fromTemplate: String
+  fromTemplateId: String
   userJourneys: [UserJourney!]
 }
 
