@@ -210,6 +210,7 @@ export function DefaultMenu({
         variant="menu-item"
         journey={journeyFromLazyQuery?.journey}
         handleCloseMenu={handleCloseMenu}
+        handleKeepMounted={handleKeepMounted}
       />
       <Divider />
       {template !== true && (
