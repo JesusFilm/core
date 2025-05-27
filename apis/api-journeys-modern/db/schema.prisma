@@ -474,6 +474,8 @@ model Block {
   parentBlockId           String?
   parentOrder             Int?
   label                   String?
+  placeholder             String?
+  required                Boolean?             @default(false)
   variant                 String?
   color                   String?
   size                    String?
@@ -486,6 +488,7 @@ model Block {
   themeMode               String?
   themeName               String?
   spacing                 Int?
+  gap                     Int?
   direction               String?
   justifyContent          String?
   alignItems              String?
@@ -500,6 +503,7 @@ model Block {
   blurhash                String?
   submitIconId            String?
   submitLabel             String?
+  submitEnabled           Boolean?             @default(true)
   nextBlockId             String?
   locked                  Boolean?
   hint                    String?
