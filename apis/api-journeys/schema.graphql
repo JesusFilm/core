@@ -396,7 +396,7 @@ type Journey
 
   """private title for creators"""
   title: String! @shareable
-  language: Language!
+  language: Language! @shareable
   languageId: String! @shareable
   themeMode: ThemeMode!
   themeName: ThemeName!
