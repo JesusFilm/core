@@ -184,7 +184,7 @@ export function CopyToTeamDialog({
             onClose={handleDialogClose}
             onTranslate={handleFormSubmit}
             title={title}
-            loading={loading ?? isSubmitting}
+            loading={loading || isSubmitting}
             isTranslation={values.showTranslation}
             submitLabel={submitLabel}
             divider={false}
