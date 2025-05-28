@@ -22,6 +22,13 @@ export interface VideoVariantResponse {
     videoId: string
     slug: string
     hls: string
+    share: string
+    published: boolean
+    lengthInMilliseconds: number
+    duration: number
+    masterUrl: string
+    masterHeight: number
+    masterWidth: number
     language: {
       id: string
       name: {
@@ -38,6 +45,19 @@ export interface VideoVariantUpdateResponse {
     videoId: string
     slug: string
     hls: string
+    published: boolean
+    lengthInMilliseconds: number
+    duration: number
+    masterUrl: string
+    masterHeight: number
+    masterWidth: number
+    language: {
+      id: string
+      name: {
+        value: string
+        primary: boolean
+      }
+    }
   }
 }
 
