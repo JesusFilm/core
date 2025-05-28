@@ -90,6 +90,9 @@ The target language name is: ${requestedLanguageName}.
 Journey Title: ${originalName}
 ${journey.description ? `Journey Description: ${journey.description}` : ''}
 
+Seo Title: ${journey.seoTitle ?? ''}
+Seo Description: ${journey.seoDescription ?? ''}
+
 Journey Content: 
 ${cardBlocksContent.join('\n')}
 
@@ -100,6 +103,8 @@ Return in this format:
   analysis: [analysis and adaptation suggestions],
   title: [translated title],
   description: [translated description or empty string if no description was provided]
+  seoTitle: [translated seo title or empty string if no seo title was provided]
+  seoDescription: [translated seo description or empty string if no seo description was provided]
 }
 `
 
@@ -113,7 +118,9 @@ Return in this format:
           schema: z.object({
             analysis: z.string(),
             title: z.string(),
-            description: z.string()
+            description: z.string(),
+            seoTitle: z.string(),
+            seoDescription: z.string()
           })
         })
 
@@ -134,6 +141,14 @@ Return in this format:
             // Only update description if the original journey had one
             ...(journey.description
               ? { description: analysisAndTranslation.description }
+              : {}),
+            // Only update seoTitle if the original journey had one
+            ...(journey.seoTitle
+              ? { seoTitle: analysisAndTranslation.seoTitle }
+              : {}),
+            // Only update seoDescription if the original journey had one
+            ...(journey.seoDescription
+              ? { seoDescription: analysisAndTranslation.seoDescription }
               : {}),
             languageId: input.textLanguageId
           }
