@@ -11,18 +11,17 @@ export const GET_MUX_VIDEO = graphql(`
   }
 `)
 
-export const GET_LANGUAGE_SLUG = graphql(`
-  query GetLanguageSlug($id: ID!) {
-    language(id: $id) {
+export const GET_VIDEO_DETAILS_FOR_VARIANT_UPSERT = graphql(`
+  query GetVideoDetailsForVariantUpsert($videoId: ID!, $languageId: ID!) {
+    video(id: $videoId) {
       id
       slug
+      variant(languageId: $languageId) {
+        id
+        slug
+      }
     }
-  }
-`)
-
-export const GET_VIDEO_SLUG = graphql(`
-  query GetVideoSlug($id: ID!) {
-    video(id: $id) {
+    language(id: $languageId) {
       id
       slug
     }
