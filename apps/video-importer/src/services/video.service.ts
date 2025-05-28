@@ -1,18 +1,13 @@
 import type {
-  GetLanguageSlugResponse,
-  GetVideoSlugResponse,
+  GetVideoDetailsForVariantUpsertResponse,
   VideoMetadata,
   VideoVariantInput,
   VideoVariantResponse,
   VideoVariantUpdateResponse
 } from '../types'
 
-import {
-  CREATE_VIDEO_EDITION,
-  CREATE_VIDEO_VARIANT,
-  UPDATE_VIDEO_VARIANT
-} from './gql/mutations'
-import { GET_LANGUAGE_SLUG, GET_VIDEO_SLUG } from './gql/queries'
+import { CREATE_VIDEO_VARIANT, UPDATE_VIDEO_VARIANT } from './gql/mutations'
+import { GET_VIDEO_DETAILS_FOR_VARIANT_UPSERT } from './gql/queries'
 import { getGraphQLClient } from './graphqlClient'
 
 export async function getVideoVariantInput({
@@ -54,32 +49,33 @@ export async function getVideoVariantInput({
   }
   const client = await getGraphQLClient()
 
-  // Get video slug
-  const videoResponse = await client.request<GetVideoSlugResponse>(
-    GET_VIDEO_SLUG,
-    {
-      id: videoId
-    }
-  )
+  const videoDetails =
+    await client.request<GetVideoDetailsForVariantUpsertResponse>(
+      GET_VIDEO_DETAILS_FOR_VARIANT_UPSERT,
+      {
+        videoId,
+        languageId
+      }
+    )
 
-  if (!videoResponse.video?.slug) {
+  const videoSlug = videoDetails.video.slug
+  const languageSlug = videoDetails.language.slug
+  const variantId = videoDetails.video.variant?.id
+  const variantSlug = videoDetails.video.variant?.slug
+
+  if (!videoSlug) {
     throw new Error(`No slug found for video ID: ${videoId}`)
   }
 
-  // Get language slug
-  const languageResponse = await client.request<GetLanguageSlugResponse>(
-    GET_LANGUAGE_SLUG,
-    { id: languageId }
-  )
-
-  if (!languageResponse.language?.slug) {
+  if (!languageSlug) {
     throw new Error(`No language slug found for language ID: ${languageId}`)
   }
 
-  const slug = `${videoResponse.video.slug}/${languageResponse.language.slug}`
+  const slug = variantSlug ?? `${videoSlug}/${languageSlug}`
 
   return {
-    id: `${source}_${languageId}_${restOfId}`,
+    existingVariantId: variantId ?? null,
+    id: variantId ?? `${source}_${languageId}-${restOfId}`,
     videoId,
     edition,
     languageId,
@@ -143,30 +139,6 @@ export async function updateVideoVariant({
   })
 }
 
-export async function createVideoEdition(
-  videoId: string,
-  edition: string
-): Promise<void> {
-  const client = await getGraphQLClient()
-  try {
-    await client.request(CREATE_VIDEO_EDITION, {
-      input: {
-        name: edition,
-        videoId
-      }
-    })
-    console.log(
-      `     [Variant Service] Created edition "${edition}" for video ${videoId}`
-    )
-  } catch (error) {
-    // If edition already exists, we can ignore the error
-    const errorMessage = error?.toString() ?? ''
-    if (!errorMessage.includes('Unique constraint failed')) {
-      throw error
-    }
-  }
-}
-
 export async function createVideoVariant({
   videoId,
   languageId,
@@ -185,7 +157,8 @@ export async function createVideoVariant({
   metadata: VideoMetadata
 }): Promise<'created' | 'updated'> {
   const client = await getGraphQLClient()
-  const input = await getVideoVariantInput({
+  // Generate all input details first, including the potential client-side composite ID
+  const { existingVariantId, ...input } = await getVideoVariantInput({
     videoId,
     languageId,
     edition,
@@ -195,56 +168,65 @@ export async function createVideoVariant({
     metadata
   })
 
-  // First try to update
-  try {
-    console.log('[Variant Service] Attempting to update existing variant...')
-    await updateVideoVariant({
-      videoId,
-      languageId,
-      edition,
-      muxId,
-      playbackId,
-      r2PublicUrl,
-      metadata
+  if (existingVariantId) {
+    console.log(
+      `[Variant Service] Existing variant found for videoId: ${input.videoId} and languageId: ${input.languageId}. DB ID: ${existingVariantId}. Attempting to update...`
+    )
+
+    await client.request<VideoVariantUpdateResponse>(UPDATE_VIDEO_VARIANT, {
+      input: {
+        id: existingVariantId,
+        videoId: input.videoId,
+        edition: input.edition,
+        languageId: input.languageId,
+        slug: input.slug,
+        downloadable: input.downloadable,
+        published: input.published,
+        muxVideoId: input.muxVideoId,
+        hls: input.hls,
+        share: input.share,
+        duration: input.duration,
+        lengthInMilliseconds: input.lengthInMilliseconds,
+        masterUrl: input.masterUrl,
+        masterHeight: input.masterHeight,
+        masterWidth: input.masterWidth,
+        version: input.version
+      }
     })
     return 'updated'
-  } catch (error) {
-    // If update fails because record doesn't exist, create it
-    const errorMessage = error?.toString() ?? ''
-    if (errorMessage.includes('Record to update not found')) {
-      console.log(
-        '[Variant Service] No existing variant found, creating new one...'
-      )
+  } else {
+    console.log(
+      `[Variant Service] No existing variant found for videoId: ${input.videoId} and languageId: ${input.languageId}. Creating new one with ID: ${input.id}...`
+    )
 
-      // Create the edition first if it doesn't exist
-      await createVideoEdition(videoId, edition)
-
-      const response = await client.request<VideoVariantResponse>(
-        CREATE_VIDEO_VARIANT,
-        {
-          input: {
-            id: input.id,
-            videoId: input.videoId,
-            edition: input.edition,
-            languageId: input.languageId,
-            slug: input.slug,
-            downloadable: input.downloadable,
-            published: input.published,
-            muxVideoId: input.muxVideoId,
-            hls: input.hls,
-            share: input.share,
-            duration: input.duration,
-            lengthInMilliseconds: input.lengthInMilliseconds
-          }
+    const response = await client.request<VideoVariantResponse>(
+      CREATE_VIDEO_VARIANT,
+      {
+        input: {
+          id: input.id,
+          videoId: input.videoId,
+          edition: input.edition,
+          languageId: input.languageId,
+          slug: input.slug,
+          downloadable: input.downloadable,
+          published: input.published,
+          muxVideoId: input.muxVideoId,
+          hls: input.hls,
+          share: input.share,
+          duration: input.duration,
+          lengthInMilliseconds: input.lengthInMilliseconds,
+          masterUrl: input.masterUrl,
+          masterHeight: input.masterHeight,
+          masterWidth: input.masterWidth,
+          version: input.version
         }
-      )
-
-      if (!response.videoVariantCreate) {
-        throw new Error('Failed to create video variant')
       }
+    )
 
-      return 'created'
+    if (!response.videoVariantCreate) {
+      throw new Error('Failed to create video variant')
     }
-    throw error
+
+    return 'created'
   }
 }
