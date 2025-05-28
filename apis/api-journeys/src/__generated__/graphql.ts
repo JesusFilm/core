@@ -4901,7 +4901,6 @@ export type VideoTriggerBlock = Block & {
    * this is the number of seconds since the start of the video
    */
   triggerStart: Scalars['Int']['output'];
-  typename: Scalars['String']['output'];
 };
 
 export type VideoUpdateInput = {

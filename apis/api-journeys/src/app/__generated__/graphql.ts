@@ -1450,7 +1450,6 @@ export class VideoTriggerBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
-    typename: string;
     triggerStart: number;
     action: Action;
 }

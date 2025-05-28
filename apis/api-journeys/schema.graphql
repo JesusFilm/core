@@ -1368,7 +1368,6 @@ type VideoTriggerBlock implements Block
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
-  typename: String! @shareable
 
   """
   triggerStart sets the time as to when a video navigates to the next block,
