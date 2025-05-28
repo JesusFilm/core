@@ -56,17 +56,23 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
 
     // Step 3: Wait for and verify dashboard load
     const dashboardStart = Date.now()
-    await expect(page.getByTestId('NavigationListItemDiscover')).toBeVisible({ timeout })
+    await expect(page.getByTestId('NavigationListItemDiscover')).toBeVisible({
+      timeout
+    })
     stepTiming['dashboard_load'] = Date.now() - dashboardStart
 
     // Step 4: Journeys 'Trash All' then 'Delete All Forever'
     const trashAllStart = Date.now()
     // Trash all journeys
-    await expect(page.getByTestId('NavigationListItemDiscover')).toBeVisible();
-    await page.getByTestId('journey-list').getByRole('button').filter({ hasText: /^$/ }).click();
-    await page.getByText('Trash All').click();
-    await page.getByRole('button', { name: 'Trash' }).click();
-    await page.getByRole('tab', { name: 'Trash' }).click();
+    await expect(page.getByTestId('NavigationListItemDiscover')).toBeVisible()
+    await page
+      .getByTestId('journey-list')
+      .getByRole('button')
+      .filter({ hasText: /^$/ })
+      .click()
+    await page.getByText('Trash All').click()
+    await page.getByRole('button', { name: 'Trash' }).click()
+    await page.getByRole('tab', { name: 'Trash' }).click()
     stepTiming['trash_all'] = Date.now() - trashAllStart
 
     // Step 5: Template selection
