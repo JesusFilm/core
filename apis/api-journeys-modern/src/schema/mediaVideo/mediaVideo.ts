@@ -100,109 +100,109 @@ const MediaVideo = builder.unionType('MediaVideo', {
 })
 
 // Rename VideoBlock to VideoBlockMedia to avoid duplicate type definition
-const VideoBlockMedia = builder.externalRef(
-  'VideoBlock',
-  builder.selection<{
-    id: string
-    source: PrismaVideoBlockSource
-    videoId: string | null
-    videoVariantLanguageId: string | null
-  }>('id source videoId videoVariantLanguageId')
-)
+// const VideoBlockMedia = builder.externalRef(
+//   'VideoBlock',
+//   builder.selection<{
+//     id: string
+//     source: PrismaVideoBlockSource
+//     videoId: string | null
+//     videoVariantLanguageId: string | null
+//   }>('id source videoId videoVariantLanguageId')
+// )
 
-VideoBlockMedia.implement({
-  externalFields: (t) => ({
-    id: t.id({ nullable: false, directives: { shareable: true } }),
-    videoId: t.id({
-      nullable: true,
-      directives: { shareable: true }
-    }),
-    source: t.field({
-      type: VideoBlockSource,
-      nullable: false,
-      directives: { shareable: true }
-    }),
-    videoVariantLanguageId: t.id({ directives: { shareable: true } })
-  }),
-  fields: (t) => ({
-    journeyId: t.id({
-      nullable: false,
-      directives: { shareable: true },
-      resolve: () => '' // Note: this is a placeholder that should be replaced with actual data
-    }),
-    parentBlockId: t.id({
-      nullable: true,
-      directives: { shareable: true },
-      resolve: () => null
-    }),
-    parentOrder: t.int({
-      nullable: true,
-      directives: { shareable: true },
-      resolve: () => null
-    }),
-    typename: t.string({
-      nullable: false,
-      directives: { shareable: true },
-      resolve: () => 'VideoBlock'
-    }),
-    mediaVideo: t.field({
-      type: MediaVideo,
-      resolve: (video) =>
-        video.videoId != null && video.source !== 'cloudflare'
-          ? {
-              id: video.videoId,
-              source: video.source,
-              primaryLanguageId: video.videoVariantLanguageId
-            }
-          : null
-    }),
-    // Add the shareable fields from the Video Block type
-    startAt: t.int({
-      nullable: true,
-      directives: { shareable: true },
-      resolve: () => null
-    }),
-    endAt: t.int({
-      nullable: true,
-      directives: { shareable: true },
-      resolve: () => null
-    }),
-    muted: t.boolean({
-      nullable: true,
-      directives: { shareable: true },
-      resolve: () => null
-    }),
-    autoplay: t.boolean({
-      nullable: true,
-      directives: { shareable: true },
-      resolve: () => null
-    }),
-    posterBlockId: t.id({
-      nullable: true,
-      directives: { shareable: true },
-      resolve: () => null
-    }),
-    fullsize: t.boolean({
-      nullable: true,
-      directives: { shareable: true },
-      resolve: () => null
-    }),
-    objectFit: t.field({
-      type: VideoBlockObjectFit,
-      nullable: true,
-      directives: { shareable: true },
-      resolve: () => null
-    }),
-    title: t.string({
-      nullable: true,
-      directives: { shareable: true },
-      resolve: () => null
-    }),
-    description: t.string({
-      nullable: true,
-      directives: { shareable: true },
-      resolve: () => null
-    })
-  }),
-  directives: { key: { fields: 'id' } }
-})
+// VideoBlockMedia.implement({
+//   externalFields: (t) => ({
+//     id: t.id({ nullable: false, directives: { shareable: true } }),
+//     videoId: t.id({
+//       nullable: true,
+//       directives: { shareable: true }
+//     }),
+//     source: t.field({
+//       type: VideoBlockSource,
+//       nullable: false,
+//       directives: { shareable: true }
+//     }),
+//     videoVariantLanguageId: t.id({ directives: { shareable: true } })
+//   }),
+//   fields: (t) => ({
+//     journeyId: t.id({
+//       nullable: false,
+//       directives: { shareable: true },
+//       resolve: () => '' // Note: this is a placeholder that should be replaced with actual data
+//     }),
+//     parentBlockId: t.id({
+//       nullable: true,
+//       directives: { shareable: true },
+//       resolve: () => null
+//     }),
+//     parentOrder: t.int({
+//       nullable: true,
+//       directives: { shareable: true },
+//       resolve: () => null
+//     }),
+//     typename: t.string({
+//       nullable: false,
+//       directives: { shareable: true },
+//       resolve: () => 'VideoBlock'
+//     }),
+//     mediaVideo: t.field({
+//       type: MediaVideo,
+//       resolve: (video) =>
+//         video.videoId != null && video.source !== 'cloudflare'
+//           ? {
+//               id: video.videoId,
+//               source: video.source,
+//               primaryLanguageId: video.videoVariantLanguageId
+//             }
+//           : null
+//     }),
+//     // Add the shareable fields from the Video Block type
+//     startAt: t.int({
+//       nullable: true,
+//       directives: { shareable: true },
+//       resolve: () => null
+//     }),
+//     endAt: t.int({
+//       nullable: true,
+//       directives: { shareable: true },
+//       resolve: () => null
+//     }),
+//     muted: t.boolean({
+//       nullable: true,
+//       directives: { shareable: true },
+//       resolve: () => null
+//     }),
+//     autoplay: t.boolean({
+//       nullable: true,
+//       directives: { shareable: true },
+//       resolve: () => null
+//     }),
+//     posterBlockId: t.id({
+//       nullable: true,
+//       directives: { shareable: true },
+//       resolve: () => null
+//     }),
+//     fullsize: t.boolean({
+//       nullable: true,
+//       directives: { shareable: true },
+//       resolve: () => null
+//     }),
+//     objectFit: t.field({
+//       type: VideoBlockObjectFit,
+//       nullable: true,
+//       directives: { shareable: true },
+//       resolve: () => null
+//     }),
+//     title: t.string({
+//       nullable: true,
+//       directives: { shareable: true },
+//       resolve: () => null
+//     }),
+//     description: t.string({
+//       nullable: true,
+//       directives: { shareable: true },
+//       resolve: () => null
+//     })
+//   }),
+//   directives: { key: { fields: 'id' } }
+// })

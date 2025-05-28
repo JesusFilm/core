@@ -6,7 +6,6 @@ interface Block
 {
   id: ID!
   journeyId: ID!
-  typename: String
   parentBlockId: ID
   parentOrder: Int
 }
@@ -16,7 +15,6 @@ type ButtonBlock implements Block
 {
   id: ID! @shareable
   journeyId: ID! @shareable
-  typename: String
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
   label: String @shareable
@@ -51,7 +49,6 @@ type CardBlock implements Block
 {
   id: ID! @shareable
   journeyId: ID! @shareable
-  typename: String
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
   backgroundColor: String @shareable
@@ -107,7 +104,6 @@ type GridContainerBlock implements Block
 {
   id: ID! @shareable
   journeyId: ID! @shareable
-  typename: String
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
   gap: Int @shareable
@@ -128,7 +124,6 @@ type GridItemBlock implements Block
 {
   id: ID! @shareable
   journeyId: ID! @shareable
-  typename: String
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
   xl: Int @shareable
@@ -147,7 +142,6 @@ type IconBlock implements Block
 {
   id: ID! @shareable
   journeyId: ID! @shareable
-  typename: String
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
   name: IconName @shareable
@@ -199,13 +193,12 @@ type ImageBlock implements Block
 {
   id: ID! @shareable
   journeyId: ID! @shareable
-  typename: String
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
   src: String @shareable
+  alt: String @shareable
   width: Int @shareable
   height: Int @shareable
-  alt: String @shareable
   blurhash: String @shareable
   focalTop: Int @shareable
   focalLeft: Int @shareable
@@ -298,7 +291,6 @@ type RadioOptionBlock implements Block
 {
   id: ID! @shareable
   journeyId: ID! @shareable
-  typename: String
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
   label: String @shareable
@@ -309,10 +301,8 @@ type RadioQuestionBlock implements Block
 {
   id: ID! @shareable
   journeyId: ID! @shareable
-  typename: String
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
-  label: String @shareable
 }
 
 type SignUpBlock implements Block
@@ -320,7 +310,6 @@ type SignUpBlock implements Block
 {
   id: ID! @shareable
   journeyId: ID! @shareable
-  typename: String
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
   submitIconId: ID @shareable
@@ -332,7 +321,6 @@ type SpacerBlock implements Block
 {
   id: ID! @shareable
   journeyId: ID! @shareable
-  typename: String
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
   spacing: Int @shareable
@@ -343,11 +331,10 @@ type StepBlock implements Block
 {
   id: ID! @shareable
   journeyId: ID! @shareable
-  typename: String
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
-  nextBlockId: ID @shareable
   locked: Boolean @shareable
+  nextBlockId: ID @shareable
   x: Int @shareable
   y: Int @shareable
   slug: String @shareable
@@ -362,7 +349,6 @@ type TextResponseBlock implements Block
 {
   id: ID! @shareable
   journeyId: ID! @shareable
-  typename: String
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
   label: String @shareable
@@ -370,9 +356,9 @@ type TextResponseBlock implements Block
   required: Boolean @shareable
   hint: String @shareable
   minRows: Int @shareable
+  type: TextResponseType @shareable
   routeId: String @shareable
   integrationId: String @shareable
-  type: TextResponseType @shareable
 }
 
 enum TextResponseType {
@@ -402,7 +388,6 @@ type TypographyBlock implements Block
 {
   id: ID! @shareable
   journeyId: ID! @shareable
-  typename: String
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
   content: String @shareable
@@ -441,37 +426,11 @@ type Video
   source: VideoBlockSource! @shareable
 }
 
-type VideoBlock
-  @key(fields: "id")
-  @key(fields: "id source videoId videoVariantLanguageId")
-  @extends
-{
-  id: ID! @external @shareable
-  videoId: ID @external @shareable
-  source: VideoBlockSource! @external @shareable
-  videoVariantLanguageId: ID @external @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
-  typename: String! @shareable
-  mediaVideo: MediaVideo
-  startAt: Int @shareable
-  endAt: Int @shareable
-  muted: Boolean @shareable
-  autoplay: Boolean @shareable
-  posterBlockId: ID @shareable
-  fullsize: Boolean @shareable
-  objectFit: VideoBlockObjectFit @shareable
-  title: String @shareable
-  description: String @shareable
-}
-
-type VideoBlockContent implements Block
+type VideoBlock implements Block
   @key(fields: "id")
 {
   id: ID! @shareable
   journeyId: ID! @shareable
-  typename: String
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
   startAt: Int @shareable
@@ -483,9 +442,9 @@ type VideoBlockContent implements Block
   videoId: ID @shareable
   videoVariantLanguageId: ID @shareable
   source: VideoBlockSource @shareable
+  objectFit: VideoBlockObjectFit @shareable
   title: String @shareable
   description: String @shareable
-  objectFit: VideoBlockObjectFit @shareable
 }
 
 enum VideoBlockObjectFit {
@@ -506,7 +465,6 @@ type VideoTriggerBlock implements Block
 {
   id: ID! @shareable
   journeyId: ID! @shareable
-  typename: String
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
   triggerStart: Int @shareable

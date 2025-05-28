@@ -13,11 +13,6 @@ import {
   getTranslatableFields,
   updateBlockWithTranslation
 } from '../../lib/translation/blockTranslation'
-import {
-  AIBlockTranslationUpdate,
-  AnyBlock,
-  BlockTranslationUpdate
-} from '../../lib/types/block'
 import { builder } from '../builder'
 
 import { getCardBlocksContent } from './getCardBlocksContent'
@@ -293,7 +288,7 @@ Maintain the spiritual and religious context appropriately.
                   await updateBlockWithTranslation(
                     prisma,
                     input.journeyId,
-                    translation as BlockTranslationUpdate
+                    translation as any
                   )
                 }
               }

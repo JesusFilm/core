@@ -1,7 +1,7 @@
 // Developers must add an import for every resolver
 // and object type in the schema
 
-import './blocks' // Import blocks module
+import './block' // Import blocks module
 import './journey'
 import './journeyAiTranslate'
 import './mediaVideo'
