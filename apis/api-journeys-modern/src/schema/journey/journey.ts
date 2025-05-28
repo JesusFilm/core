@@ -38,6 +38,10 @@ const JourneyRef = builder.prismaObject('Journey', {
       shareable: true,
       nullable: false,
       resolve: (journey) => ({ id: journey.languageId ?? '529' })
+    }),
+    blocks: t.relation('blocks', {
+      shareable: true,
+      nullable: true
     })
     // Add more fields as needed for federation compatibility
   })
