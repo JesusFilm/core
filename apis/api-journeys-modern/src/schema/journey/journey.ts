@@ -7,7 +7,7 @@ builder.enumType('JourneyStatus', {
   values: ['archived', 'deleted', 'draft', 'published', 'trashed'] as const
 })
 
-const JourneyRef = builder.prismaObject('Journey', {
+export const JourneyRef = builder.prismaObject('Journey', {
   fields: (t) => ({
     id: t.exposeID('id', { shareable: true, nullable: false }),
     title: t.exposeString('title', { shareable: true, nullable: false }),

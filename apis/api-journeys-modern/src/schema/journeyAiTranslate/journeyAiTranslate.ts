@@ -8,8 +8,10 @@ import { hardenPrompt, preSystemPrompt } from '@core/shared/ai/prompts'
 import { Action, ability, subject } from '../../lib/auth/ability'
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
+import { JourneyRef } from '../journey/journey'
 
 import {
+  BlockTranslationUpdate,
   castBlock,
   createTranslationInfo,
   getTranslatableFields,
@@ -21,7 +23,7 @@ import { getCardBlocksContent } from './getCardBlocksContent'
 interface JourneyAiTranslateProgress {
   progress: number
   message: string
-  journey: any | null
+  journey: typeof JourneyRef.$inferType | null
 }
 
 // Define the translation progress type
@@ -80,7 +82,6 @@ const JourneyAiTranslateInput = builder.inputType('JourneyAiTranslateInput', {
 })
 
 builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
-  // TODO: Re-enable auth after testing - t.withAuth({ isAuthenticated: true })
   t.withAuth({ isAuthenticated: true }).field({
     type: JourneyAiTranslateProgressRef,
     nullable: false,
@@ -292,7 +293,7 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
                   await updateBlockWithTranslation(
                     prisma,
                     input.journeyId,
-                    translation as any
+                    translation as unknown as BlockTranslationUpdate
                   )
 
                   // Update the in-memory journey blocks
@@ -586,7 +587,6 @@ Return in this format:
                       break
                     case 'ButtonBlock':
                     case 'RadioOptionBlock':
-                    case 'RadioQuestionBlock':
                       fieldInfo = `Label: "${block.label || ''}"`
                       break
                     case 'TextResponseBlock':
@@ -624,7 +624,6 @@ Field names to translate per block type:
 - TypographyBlock: "content" field
 - ButtonBlock: "label" field
 - RadioOptionBlock: "label" field
-- RadioQuestionBlock: "label" field
 - TextResponseBlock: "label" and "placeholder" fields
 
 Ensure translations maintain the meaning while being culturally appropriate for ${hardenPrompt(requestedLanguageName)}.
