@@ -131,6 +131,14 @@ Return in this format:
         if (journey.description && !analysisAndTranslation.description)
           throw new Error('Failed to translate journey description')
 
+        // Only validate seoTitle if the original journey had one
+        if (journey.seoTitle && !analysisAndTranslation.seoTitle)
+          throw new Error('Failed to translate journey seo title')
+
+        // Only validate seoDescription if the original journey had one
+        if (journey.seoDescription && !analysisAndTranslation.seoDescription)
+          throw new Error('Failed to translate journey seo description')
+
         // Update the journey using Prisma
         await prisma.journey.update({
           where: {
