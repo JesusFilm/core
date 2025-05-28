@@ -158,26 +158,28 @@ export function NewContentPage(): ReactElement {
           <Box
             data-testid="ContentPageContainer"
             sx={{
-              maxWidth: '1920px',
               width: '100%',
               mt: '-100vh',
               mx: 'auto'
             }}
           >
+            <VideoCarousel
+              videos={realChildren}
+              containerSlug={container?.slug ?? videoSlug}
+              activeVideoId={id}
+            />
             <Stack
               data-testid="ContentPageContent"
               gap={10}
               sx={{
                 py: 10,
                 zIndex: 1,
-                px: { xs: 4, sm: 6, md: 8, lg: 10, xl: 12 }
+                px: { xs: 4, sm: 6, md: 8, lg: 10, xl: 12 },
+                maxWidth: '1920px',
+                width: '100%',
+                mx: 'auto'
               }}
             >
-              <VideoCarousel
-                videos={realChildren}
-                containerSlug={container?.slug ?? videoSlug}
-                activeVideoId={id}
-              />
               <Box
                 sx={{
                   display: 'grid',

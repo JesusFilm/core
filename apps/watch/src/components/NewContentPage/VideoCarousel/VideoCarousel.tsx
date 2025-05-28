@@ -6,6 +6,7 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
 
 import { VideoCard } from './VideoCard'
+import Box from '@mui/material/Box'
 
 const StyledSwiper = styled(Swiper)(() => ({}))
 const StyledSwiperSlide = styled(SwiperSlide)(() => ({}))
@@ -22,8 +23,9 @@ export function VideoCarousel({
   activeVideoId
 }: VideoCarouselProps): ReactElement {
   return (
-    <div data-testid="VideoCarousel">
+    <Box data-testid="VideoCarousel" sx={{ my: 7 }}>
       <StyledSwiper
+        data-testid="VideoCarouselSwiper"
         modules={[Mousewheel, FreeMode, A11y]}
         mousewheel={{
           forceToAxis: true
@@ -31,15 +33,11 @@ export function VideoCarousel({
         observeParents
         slidesPerView={'auto'}
         pagination={{ clickable: true }}
-        spaceBetween={20}
         draggable
         watchOverflow
-        data-testid="VideoCarouselSwiper"
-        sx={{
-          display: 'flex',
-          gap: 2,
-          pr: 2
-        }}
+        spaceBetween={20}
+        slidesOffsetBefore={28}
+        slidesOffsetAfter={28}
       >
         {videos?.map((video) => (
           <StyledSwiperSlide
@@ -59,6 +57,6 @@ export function VideoCarousel({
           </StyledSwiperSlide>
         ))}
       </StyledSwiper>
-    </div>
+    </Box>
   )
 }
