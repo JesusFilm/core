@@ -135,7 +135,8 @@ const journey: JourneyWithTeamAndUserJourney = {
   showDisplayTitle: null,
   menuButtonIcon: null,
   logoImageBlockId: null,
-  menuStepBlockId: null
+  menuStepBlockId: null,
+  fromTemplateId: null
 }
 
 const event: Event = {
