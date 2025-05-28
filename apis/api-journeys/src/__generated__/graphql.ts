@@ -133,7 +133,7 @@ export type ButtonBlock = Block & {
   endIconId?: Maybe<Scalars['ID']['output']>;
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
-  label: Scalars['String']['output'];
+  label?: Maybe<Scalars['String']['output']>;
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
   size?: Maybe<ButtonSize>;
@@ -238,7 +238,7 @@ export type CardBlock = Block & {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: Scalars['Boolean']['output'];
+  fullscreen?: Maybe<Scalars['Boolean']['output']>;
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
@@ -570,12 +570,12 @@ export enum GridAlignItems {
 
 export type GridContainerBlock = Block & {
   __typename?: 'GridContainerBlock';
-  alignItems: GridAlignItems;
-  direction: GridDirection;
-  gap: Scalars['Int']['output'];
+  alignItems?: Maybe<GridAlignItems>;
+  direction?: Maybe<GridDirection>;
+  gap?: Maybe<Scalars['Int']['output']>;
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
-  justifyContent: GridJustifyContent;
+  justifyContent?: Maybe<GridJustifyContent>;
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
 };
@@ -591,11 +591,11 @@ export type GridItemBlock = Block & {
   __typename?: 'GridItemBlock';
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
-  lg: Scalars['Int']['output'];
+  lg?: Maybe<Scalars['Int']['output']>;
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
-  sm: Scalars['Int']['output'];
-  xl: Scalars['Int']['output'];
+  sm?: Maybe<Scalars['Int']['output']>;
+  xl?: Maybe<Scalars['Int']['output']>;
 };
 
 export enum GridJustifyContent {
@@ -708,22 +708,22 @@ export enum ImageAspectRatio {
 
 export type ImageBlock = Block & {
   __typename?: 'ImageBlock';
-  alt: Scalars['String']['output'];
+  alt?: Maybe<Scalars['String']['output']>;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https://github.com/woltapp/blurhash
    */
-  blurhash: Scalars['String']['output'];
+  blurhash?: Maybe<Scalars['String']['output']>;
   focalLeft?: Maybe<Scalars['Int']['output']>;
   focalTop?: Maybe<Scalars['Int']['output']>;
-  height: Scalars['Int']['output'];
+  height?: Maybe<Scalars['Int']['output']>;
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
   scale?: Maybe<Scalars['Int']['output']>;
   src?: Maybe<Scalars['String']['output']>;
-  width: Scalars['Int']['output'];
+  width?: Maybe<Scalars['Int']['output']>;
 };
 
 export type ImageBlockCreateInput = {
@@ -859,6 +859,16 @@ export type JourneyAiTranslateInput = {
   name: Scalars['String']['input'];
   textLanguageId: Scalars['ID']['input'];
   textLanguageName: Scalars['String']['input'];
+};
+
+export type JourneyAiTranslateProgress = {
+  __typename?: 'JourneyAiTranslateProgress';
+  /** The journey being translated (only present when complete) */
+  journey?: Maybe<Journey>;
+  /** Current translation step message */
+  message?: Maybe<Scalars['String']['output']>;
+  /** Translation progress as a percentage (0-100) */
+  progress?: Maybe<Scalars['Float']['output']>;
 };
 
 export type JourneyCollection = {
@@ -3389,7 +3399,7 @@ export type RadioOptionBlock = Block & {
   action?: Maybe<Action>;
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
-  label: Scalars['String']['output'];
+  label?: Maybe<Scalars['String']['output']>;
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
 };
@@ -3631,7 +3641,7 @@ export type StepBlock = Block & {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: Scalars['Boolean']['output'];
+  locked?: Maybe<Scalars['Boolean']['output']>;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to
@@ -3779,6 +3789,16 @@ export type StepViewEventCreateInput = {
   value?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type Subscription = {
+  __typename?: 'Subscription';
+  journeyAiTranslateCreateSubscription: JourneyAiTranslateProgress;
+};
+
+
+export type SubscriptionJourneyAiTranslateCreateSubscriptionArgs = {
+  input: JourneyAiTranslateInput;
+};
+
 export type Tag = {
   __typename?: 'Tag';
   id: Scalars['ID']['output'];
@@ -3853,7 +3873,7 @@ export type TextResponseBlock = Block & {
   id: Scalars['ID']['output'];
   integrationId?: Maybe<Scalars['String']['output']>;
   journeyId: Scalars['ID']['output'];
-  label: Scalars['String']['output'];
+  label?: Maybe<Scalars['String']['output']>;
   minRows?: Maybe<Scalars['Int']['output']>;
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
@@ -3950,7 +3970,7 @@ export type TypographyBlock = Block & {
   __typename?: 'TypographyBlock';
   align?: Maybe<TypographyAlign>;
   color?: Maybe<TypographyColor>;
-  content: Scalars['String']['output'];
+  content?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
@@ -4354,7 +4374,7 @@ export type VideoBlock = Block & {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource;
+  source?: Maybe<VideoBlockSource>;
   /** startAt dictates at which point of time the video should start playing */
   startAt?: Maybe<Scalars['Int']['output']>;
   /**
@@ -4900,7 +4920,7 @@ export type VideoTriggerBlock = Block & {
    * triggerStart sets the time as to when a video navigates to the next block,
    * this is the number of seconds since the start of the video
    */
-  triggerStart: Scalars['Int']['output'];
+  triggerStart?: Maybe<Scalars['Int']['output']>;
 };
 
 export type VideoUpdateInput = {

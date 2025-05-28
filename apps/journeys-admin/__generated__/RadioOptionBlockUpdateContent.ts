@@ -12,7 +12,7 @@ import { RadioOptionBlockUpdateInput } from "./globalTypes";
 export interface RadioOptionBlockUpdateContent_radioOptionBlockUpdate {
   __typename: "RadioOptionBlock";
   id: string;
-  label: string;
+  label: string | null;
 }
 
 export interface RadioOptionBlockUpdateContent {

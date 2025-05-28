@@ -18,7 +18,7 @@ export interface StepBlockCreateFromAction_stepBlockCreate {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean;
+  locked: boolean | null;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to
@@ -74,7 +74,7 @@ export interface StepBlockCreateFromAction_cardBlockCreate {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean;
+  fullscreen: boolean | null;
 }
 
 export interface StepBlockCreateFromAction_blockUpdateAction_parentBlock {

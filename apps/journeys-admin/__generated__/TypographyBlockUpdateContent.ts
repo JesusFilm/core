@@ -10,7 +10,7 @@
 export interface TypographyBlockUpdateContent_typographyBlockUpdate {
   __typename: "TypographyBlock";
   id: string;
-  content: string;
+  content: string | null;
 }
 
 export interface TypographyBlockUpdateContent {

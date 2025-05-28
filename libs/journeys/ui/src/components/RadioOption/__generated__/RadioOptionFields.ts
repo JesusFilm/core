@@ -35,6 +35,6 @@ export interface RadioOptionFields {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string;
+  label: string | null;
   action: RadioOptionFields_action | null;
 }
