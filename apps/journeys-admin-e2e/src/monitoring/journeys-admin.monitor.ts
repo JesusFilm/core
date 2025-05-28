@@ -1,21 +1,9 @@
 import { expect, test } from '@playwright/test'
 
-/*  
-NS Admin: Monitoring
-https://www.checklyhq.com/docs/cli/
-*/
-
 // Set 3 minutes timeout for this monitoring test
-test.setTimeout(180000) // 3 minutes
+test.setTimeout(180000)
 
-/**
- * @check
- * @name NS Admin Monitoring
- * @retries 8 // Will retry the test 8 times
- * @retryInterval 10 // Will wait 10 seconds between retries
- * @maxRetryTime 600 // Will stop retrying after 10 minutes
- */
-test('NS Admin Monitoring: Check user can login and create a journey via template', async ({
+test('@monitor NS Admin Monitoring: Check user can login and create a journey via template', async ({
   browser
 }) => {
   if (!process.env.PLAYWRIGHT_EMAIL || !process.env.PLAYWRIGHT_PASSWORD) {
