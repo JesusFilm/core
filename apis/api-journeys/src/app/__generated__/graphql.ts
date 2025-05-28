@@ -1186,6 +1186,7 @@ export class Journey {
     showMenu?: Nullable<boolean>;
     showDisplayTitle?: Nullable<boolean>;
     menuButtonIcon?: Nullable<JourneyMenuButtonIcon>;
+    fromTemplateId?: Nullable<string>;
     userJourneys?: Nullable<UserJourney[]>;
 }
 
