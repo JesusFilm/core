@@ -14,7 +14,7 @@ import {
   type TypographyVariantType
 } from './enums/typographyVariant'
 
-builder.prismaObject('Block', {
+export const TypographyBlock = builder.prismaObject('Block', {
   variant: 'TypographyBlock',
   interfaces: [Block],
   isTypeOf: (obj: any) => obj.typename === 'TypographyBlock',

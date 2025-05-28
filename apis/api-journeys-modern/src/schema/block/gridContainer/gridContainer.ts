@@ -8,7 +8,7 @@ import {
   type GridJustifyContentType
 } from './enums/gridJustifyContent'
 
-builder.prismaObject('Block', {
+export const GridContainerBlock = builder.prismaObject('Block', {
   interfaces: [Block],
   variant: 'GridContainerBlock',
   isTypeOf: (obj: any) => obj.typename === 'GridContainerBlock',

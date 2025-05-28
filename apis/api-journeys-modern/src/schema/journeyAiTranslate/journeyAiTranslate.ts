@@ -7,14 +7,14 @@ import { hardenPrompt, preSystemPrompt } from '@core/shared/ai/prompts'
 
 import { Action, ability, subject } from '../../lib/auth/ability'
 import { prisma } from '../../lib/prisma'
+import { builder } from '../builder'
+
 import {
   castBlock,
   createTranslationInfo,
   getTranslatableFields,
   updateBlockWithTranslation
-} from '../../lib/translation/blockTranslation'
-import { builder } from '../builder'
-
+} from './blockTranslation'
 import { getCardBlocksContent } from './getCardBlocksContent'
 
 // Define the translation progress interface

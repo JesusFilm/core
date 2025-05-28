@@ -1,7 +1,7 @@
 import { builder } from '../../builder'
 import { Block } from '../block'
 
-builder.prismaObject('Block', {
+export const RadioOptionBlock = builder.prismaObject('Block', {
   interfaces: [Block],
   variant: 'RadioOptionBlock',
   isTypeOf: (obj: any) => obj.typename === 'RadioOptionBlock',

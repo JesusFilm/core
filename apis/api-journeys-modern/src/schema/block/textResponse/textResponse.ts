@@ -6,7 +6,7 @@ import {
   type TextResponseTypeType
 } from './enums/textResponseType'
 
-builder.prismaObject('Block', {
+export const TextResponseBlock = builder.prismaObject('Block', {
   interfaces: [Block],
   variant: 'TextResponseBlock',
   isTypeOf: (obj: any) => obj.typename === 'TextResponseBlock',

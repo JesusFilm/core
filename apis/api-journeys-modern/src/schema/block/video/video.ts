@@ -5,7 +5,7 @@ import { Block } from '../block'
 
 import { VideoBlockObjectFit } from './enums/videoObjectFit'
 
-builder.prismaObject('Block', {
+export const VideoBlock = builder.prismaObject('Block', {
   interfaces: [Block],
   variant: 'VideoBlock',
   isTypeOf: (obj: any) => obj.typename === 'VideoBlock',

@@ -1,15 +1,10 @@
-// import {
-//   ThemeMode as PrismaThemeMode,
-//   ThemeName as PrismaThemeName
-// } from '.prisma/api-media-client'
-
 import { builder } from '../../builder'
 import { Block } from '../block'
 
 import { ThemeMode, type ThemeModeType } from './enums/themeMode'
 import { ThemeName, type ThemeNameType } from './enums/themeName'
 
-builder.prismaObject('Block', {
+export const CardBlock = builder.prismaObject('Block', {
   interfaces: [Block],
   variant: 'CardBlock',
   isTypeOf: (obj: any) => obj.typename === 'CardBlock',

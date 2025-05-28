@@ -5,7 +5,7 @@ import { ButtonColor, type ButtonColorType } from './enums/buttonColor'
 import { ButtonSize, type ButtonSizeType } from './enums/buttonSize'
 import { ButtonVariant, type ButtonVariantType } from './enums/buttonVariant'
 
-builder.prismaObject('Block', {
+export const ButtonBlock = builder.prismaObject('Block', {
   variant: 'ButtonBlock',
   interfaces: [Block],
   isTypeOf: (obj: any) => obj.typename === 'ButtonBlock',
