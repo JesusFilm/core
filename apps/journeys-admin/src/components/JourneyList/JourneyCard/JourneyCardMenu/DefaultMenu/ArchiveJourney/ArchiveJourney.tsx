@@ -1,7 +1,9 @@
 import { ApolloQueryResult, gql, useMutation } from '@apollo/client'
+import CircularProgress from '@mui/material/CircularProgress'
+import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 
 import FolderDown1Icon from '@core/shared/ui/icons/FolderDown1'
 import FolderUp1Icon from '@core/shared/ui/icons/FolderUp1'
@@ -40,14 +42,16 @@ export interface ArchiveJourneyProps {
 }
 
 export function ArchiveJourney({
-  status,
   id,
   published,
   handleClose,
   refetch,
   disabled = false
 }: ArchiveJourneyProps): ReactElement {
+  const router = useRouter()
+  const activeTab = router?.query.tab?.toString() ?? 'active'
   const { t } = useTranslation('apps-journeys-admin')
+  const [loading, setLoading] = useState(false)
   const previousStatus = published
     ? JourneyStatus.published
     : JourneyStatus.draft
@@ -82,50 +86,80 @@ export function ArchiveJourney({
 
   const { enqueueSnackbar } = useSnackbar()
 
-  async function handleClick(): Promise<void> {
-    try {
-      if (status !== JourneyStatus.archived) {
-        await archiveJourney()
+  async function handleArchive(): Promise<void> {
+    setLoading(true)
+    await archiveJourney({
+      onError: () => {
+        enqueueSnackbar(t('Journey Archive failed'), {
+          variant: 'error',
+          preventDuplicate: true
+        })
+        setLoading(false)
+      },
+      onCompleted: async () => {
         enqueueSnackbar(t('Journey Archived'), {
           variant: 'success',
           preventDuplicate: true
         })
-      } else {
-        await unarchiveJourney()
+        await refetch?.()
+        handleClose()
+        setLoading(false)
+      }
+    })
+  }
+
+  async function handleUnarchive(): Promise<void> {
+    setLoading(true)
+    await unarchiveJourney({
+      onError: () => {
+        enqueueSnackbar(t('Journey Unarchive failed'), {
+          variant: 'error',
+          preventDuplicate: true
+        })
+        setLoading(false)
+      },
+      onCompleted: async () => {
         enqueueSnackbar(t('Journey Unarchived'), {
           variant: 'success',
           preventDuplicate: true
         })
+        await refetch?.()
+        handleClose()
+        setLoading(false)
       }
-      await refetch?.()
-      handleClose()
-    } catch (error) {
-      if (error instanceof Error) {
-        enqueueSnackbar(error.message, {
-          variant: 'error',
-          preventDuplicate: true
-        })
-      }
-    }
+    })
   }
 
   return (
     <>
-      {status !== JourneyStatus.archived ? (
+      {activeTab === 'active' && (
         <MenuItem
           label={t('Archive')}
-          icon={<FolderUp1Icon color="secondary" />}
-          onClick={handleClick}
+          icon={
+            loading ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              <FolderUp1Icon color="secondary" />
+            )
+          }
+          onClick={handleArchive}
           testId="Archive"
-          disabled={disabled}
+          disabled={disabled || loading}
         />
-      ) : (
+      )}
+      {activeTab === 'archived' && (
         <MenuItem
           label={t('Unarchive')}
-          icon={<FolderDown1Icon color="secondary" />}
-          onClick={handleClick}
+          icon={
+            loading ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              <FolderDown1Icon color="secondary" />
+            )
+          }
+          onClick={handleUnarchive}
           testId="Unarchive"
-          disabled={disabled}
+          disabled={disabled || loading}
         />
       )}
     </>

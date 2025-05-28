@@ -31,7 +31,7 @@ export class MailChimpService {
       )
     } catch (error) {
       if (
-        process.env.NODE_ENV !== 'production' &&
+        process.env.GIT_BRANCH !== 'main' &&
         get(error, 'response.body.detail') ===
           `${user.email} looks fake or invalid, please enter a real email address.`
       )

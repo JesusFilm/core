@@ -57,6 +57,15 @@ const JourneyDetailsDialog = dynamic(
   { ssr: false }
 )
 
+const TranslateJourneyDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "TranslateJourneyDialog" */
+      './TranslateJourneyDialog'
+    ).then((mod) => mod.TranslateJourneyDialog),
+  { ssr: false }
+)
+
 export interface JourneyCardMenuProps {
   id: string
   status: JourneyStatus
@@ -70,17 +79,21 @@ export interface JourneyCardMenuProps {
 }
 
 /**
- * JourneyCardMenu component provides a menu for managing journey actions.
- * It includes options for accessing, deleting, restoring, and editing journey details.
+ * JourneyCardMenu component provides a menu interface for managing journey actions through a dropdown menu.
+ * It dynamically loads different menu components based on the journey status and provides various dialogs
+ * for journey management operations like access control, details editing, translation, and deletion.
  *
- * @param {JourneyCardMenuProps} props - The component props
+ * @param {Object} props - Component props
  * @param {string} props.id - The unique identifier for the journey
- * @param {JourneyStatus} props.status - The status of the journey
- * @param {string} props.slug - The slug of the journey
- * @param {boolean} props.published - Whether the journey is published
- * @param {boolean} [props.template] - Whether the journey is a template
- * @param {() => Promise<ApolloQueryResult<GetAdminJourneys>>} [props.refetch] - Function to refetch journey data
- * @param {Journey} [props.journey] - The journey data object
+ * @param {JourneyStatus} props.status - The current status of the journey (e.g., draft, published, archived)
+ * @param {string} props.slug - The URL slug used for journey navigation and preview
+ * @param {boolean} props.published - Whether the journey is currently published
+ * @param {boolean} [props.template] - Optional flag indicating if the journey is a template
+ * @param {() => Promise<ApolloQueryResult<GetAdminJourneys>>} [props.refetch] - Optional callback to refetch journey data after operations
+ * @param {Journey} [props.journey] - Optional journey object containing additional journey data
+ * @param {boolean} [props.hovered] - Optional flag indicating if the menu button is being hovered over
+ * @param {() => void} [props.onMenuClose] - Optional callback function triggered when the menu closes
+ * @returns {ReactElement} A menu button that opens a dropdown with journey management options
  */
 
 export function JourneyCardMenu({
@@ -110,6 +123,10 @@ export function JourneyCardMenu({
   const [openDetailsDialog, setOpenDetailsDialog] = useState<
     boolean | undefined
   >()
+  const [openTranslateDialog, setOpenTranslateDialog] = useState<
+    boolean | undefined
+  >()
+  const [keepMounted, setKeepMounted] = useState<boolean>(false)
 
   const [DefaultMenuComponent, setDefaultMenuComponent] = useState<any>(null)
   const [TrashMenuComponent, setTrashMenuComponent] = useState<any>(null)
@@ -143,6 +160,10 @@ export function JourneyCardMenu({
     onMenuClose?.()
   }
 
+  const handleKeepMounted = (): void => {
+    setKeepMounted(true)
+  }
+
   return (
     <>
       <IconButton
@@ -174,7 +195,7 @@ export function JourneyCardMenu({
         anchorEl={anchorEl}
         open={open ?? false}
         onClose={handleCloseMenu}
-        keepMounted
+        keepMounted={keepMounted}
         MenuListProps={{
           'aria-labelledby': 'journey-actions'
         }}
@@ -206,9 +227,11 @@ export function JourneyCardMenu({
                 journeyId={id}
                 journey={journey}
                 published={published}
+                handleKeepMounted={handleKeepMounted}
                 setOpenAccessDialog={() => setOpenAccessDialog(true)}
                 handleCloseMenu={handleCloseMenu}
                 setOpenTrashDialog={() => setOpenTrashDialog(true)}
+                setOpenTranslateDialog={() => setOpenTranslateDialog(true)}
                 setOpenDetailsDialog={() => setOpenDetailsDialog(true)}
                 template={template}
                 refetch={refetch}
@@ -251,6 +274,13 @@ export function JourneyCardMenu({
         <JourneyDetailsDialog
           open={openDetailsDialog}
           onClose={() => setOpenDetailsDialog(false)}
+          journey={journey}
+        />
+      )}
+      {openTranslateDialog != null && (
+        <TranslateJourneyDialog
+          open={openTranslateDialog}
+          onClose={() => setOpenTranslateDialog(false)}
           journey={journey}
         />
       )}

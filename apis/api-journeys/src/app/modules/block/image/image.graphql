@@ -1,20 +1,20 @@
-type ImageBlock implements Block {
-  id: ID!
-  journeyId: ID!
-  parentBlockId: ID
-  parentOrder: Int
-  src: String
-  width: Int!
-  height: Int!
-  alt: String!
+type ImageBlock implements Block @key(fields: "id") {
+  id: ID! @shareable
+  journeyId: ID! @shareable
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  src: String @shareable
+  width: Int! @shareable
+  height: Int! @shareable
+  alt: String! @shareable
   """
   blurhash is a compact representation of a placeholder for an image.
   Find a frontend implementation at https://github.com/woltapp/blurhash
   """
-  blurhash: String!
-  scale: Int
-  focalTop: Int
-  focalLeft: Int
+  blurhash: String! @shareable
+  scale: Int @shareable
+  focalTop: Int @shareable
+  focalLeft: Int @shareable
 }
 
 input ImageBlockCreateInput {

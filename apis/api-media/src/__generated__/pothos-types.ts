@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { Prisma, CloudflareImage, MuxVideo, CloudflareR2, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoEdition, VideoSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, TagName, Tag, Tagging, Taxonomy, TaxonomyName, UserMediaRole, ShortLinkDomain, ShortLink, ShortLinkBlocklistDomain, ArclightApiKey } from ".prisma/api-media-client/index.js";
+import type { Prisma, CloudflareImage, MuxVideo, CloudflareR2, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoEdition, VideoSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, TagName, Tag, Tagging, Taxonomy, TaxonomyName, UserMediaRole, ShortLinkDomain, ShortLink, ShortLinkBlocklistDomain, VideoOrigin, ArclightApiKey } from ".prisma/api-media-client/index.js";
 export default interface PrismaTypes {
     CloudflareImage: {
         Name: "CloudflareImage";
@@ -91,7 +91,7 @@ export default interface PrismaTypes {
         Where: Prisma.VideoWhereInput;
         Create: {};
         Update: {};
-        RelationName: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets" | "videoEditions";
+        RelationName: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets" | "videoEditions" | "origin";
         ListRelations: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets" | "videoEditions";
         Relations: {
             title: {
@@ -163,6 +163,11 @@ export default interface PrismaTypes {
                 Shape: VideoEdition[];
                 Name: "VideoEdition";
                 Nullable: false;
+            };
+            origin: {
+                Shape: VideoOrigin | null;
+                Name: "VideoOrigin";
+                Nullable: true;
             };
         };
     };
@@ -682,6 +687,26 @@ export default interface PrismaTypes {
         RelationName: never;
         ListRelations: never;
         Relations: {};
+    };
+    VideoOrigin: {
+        Name: "VideoOrigin";
+        Shape: VideoOrigin;
+        Include: Prisma.VideoOriginInclude;
+        Select: Prisma.VideoOriginSelect;
+        OrderBy: Prisma.VideoOriginOrderByWithRelationInput;
+        WhereUnique: Prisma.VideoOriginWhereUniqueInput;
+        Where: Prisma.VideoOriginWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: "videos";
+        ListRelations: "videos";
+        Relations: {
+            videos: {
+                Shape: Video[];
+                Name: "Video";
+                Nullable: false;
+            };
+        };
     };
     ArclightApiKey: {
         Name: "ArclightApiKey";
