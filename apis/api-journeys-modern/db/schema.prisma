@@ -418,6 +418,7 @@ model Journey {
   menuButtonIcon            JourneyMenuButtonIcon?
   qrCode                    QrCode[]
   journeyEventsExportLogs   JourneyEventsExportLog[]
+  fromTemplateId            String?
 
   @@index(title)
 }
