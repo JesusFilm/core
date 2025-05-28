@@ -216,6 +216,7 @@ type Journey
   updatedAt: DateTime! @shareable
   status: JourneyStatus! @shareable
   languageId: String @shareable
+  blocks: [Block!] @shareable
 }
 
 input JourneyAiTranslateInput {
@@ -445,6 +446,7 @@ type VideoBlock implements Block
   objectFit: VideoBlockObjectFit @shareable
   title: String @shareable
   description: String @shareable
+  mediaVideo: MediaVideo
 }
 
 enum VideoBlockObjectFit {

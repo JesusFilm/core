@@ -1,4 +1,4 @@
-import { builder } from '../../builder'
+import { builder } from '../../../builder'
 
 // Create enum type for VideoBlockObjectFit
 const objectFitValues = ['fill', 'fit', 'zoomed'] as const

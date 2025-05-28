@@ -8,6 +8,8 @@ import { ReactElement, ReactNode } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
+import { TranslationProgressBar } from '../TranslationProgressBar'
+
 interface TranslationDialogWrapperProps {
   open: boolean
   onClose: () => void
@@ -20,6 +22,10 @@ interface TranslationDialogWrapperProps {
   submitLabel?: string
   divider?: boolean
   isTranslation?: boolean
+  translationProgress?: {
+    progress: number
+    message: string
+  } | null
 }
 
 /**
@@ -40,7 +46,8 @@ export function TranslationDialogWrapper({
   children,
   submitLabel,
   divider,
-  isTranslation
+  isTranslation,
+  translationProgress
 }: TranslationDialogWrapperProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const defaultLoadingText = t('Translating your journey...')
@@ -55,7 +62,9 @@ export function TranslationDialogWrapper({
           ? {
               title
             }
-          : undefined
+          : {
+              title: loadingText ?? defaultLoadingText
+            }
       }
       dialogActionChildren={
         <>
@@ -88,10 +97,28 @@ export function TranslationDialogWrapper({
     >
       {loading && isTranslation ? (
         <Box display="flex" flexDirection="column" alignItems="center" p={3}>
-          <CircularProgress color="primary" />
-          <Typography variant="body1" mt={2}>
-            {loadingText ?? defaultLoadingText}
-          </Typography>
+          {translationProgress ? (
+            <>
+              <TranslationProgressBar
+                progress={translationProgress.progress}
+                message={translationProgress.message}
+              />
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ mt: 2, fontStyle: 'italic' }}
+              >
+                {t('Please keep this window open during translation')}
+              </Typography>
+            </>
+          ) : (
+            <>
+              <CircularProgress color="primary" />
+              <Typography variant="body1" mt={2}>
+                {t('Preparing translation...')}
+              </Typography>
+            </>
+          )}
         </Box>
       ) : (
         children

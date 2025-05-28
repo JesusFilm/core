@@ -48,9 +48,6 @@ export const JOURNEY_AI_TRANSLATE_CREATE = gql`
           ... on RadioOptionBlock {
             label
           }
-          ... on RadioQuestionBlock {
-            label
-          }
           ... on TextResponseBlock {
             label
             placeholder
@@ -94,9 +91,6 @@ export function updateCacheWithTranslatedJourney(
             ... on RadioOptionBlock {
               label
             }
-            ... on RadioQuestionBlock {
-              label
-            }
             ... on TextResponseBlock {
               label
               placeholder
@@ -133,9 +127,6 @@ export function updateCacheWithTranslatedJourney(
               label
             }
             ... on RadioOptionBlock {
-              label
-            }
-            ... on RadioQuestionBlock {
               label
             }
             ... on TextResponseBlock {

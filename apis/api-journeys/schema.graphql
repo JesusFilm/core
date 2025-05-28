@@ -376,7 +376,9 @@ type Mutation {
   visitorUpdateForCurrentUser(input: VisitorUpdateInput!): Visitor!
 }
 
-interface Block {
+interface Block
+  @key(fields: "id")
+{
   id: ID!
   journeyId: ID!
   parentBlockId: ID
@@ -386,7 +388,7 @@ interface Block {
 type Journey
   @key(fields: "id")
 {
-  blocks: [Block!]
+  blocks: [Block!] @shareable
   primaryImageBlock: ImageBlock
   creatorImageBlock: ImageBlock
   logoImageBlock: ImageBlock
@@ -1109,6 +1111,7 @@ type TypographyBlock implements Block
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
+  typename: String! @shareable
   content: String! @shareable
   variant: TypographyVariant @shareable
   color: TypographyColor @shareable
@@ -1181,6 +1184,7 @@ type VideoBlock implements Block
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
+  typename: String! @shareable
 
   """startAt dictates at which point of time the video should start playing"""
   startAt: Int @shareable
@@ -1365,6 +1369,7 @@ type VideoTriggerBlock implements Block
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
+  typename: String! @shareable
 
   """
   triggerStart sets the time as to when a video navigates to the next block,

@@ -313,23 +313,20 @@ Maintain the spiritual and religious context appropriately.
           }
         })
 
-        return {
+        yield {
           progress: 100,
           message: 'Translation completed!',
           journey: finalJourney
         }
       } catch (error) {
         console.error('Translation error:', error)
-        return {
+        yield {
           progress: 100,
           message: 'Translation failed: ' + (error as Error).message,
           journey: null
         }
       }
     },
-    resolve: (progressUpdate) => {
-      console.log('progressUpdate', progressUpdate)
-      return progressUpdate
-    }
+    resolve: (progressUpdate) => progressUpdate
   })
 )

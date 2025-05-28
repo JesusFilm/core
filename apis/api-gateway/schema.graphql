@@ -534,7 +534,7 @@ type EmailAction implements Action @join__type(graph: API_JOURNEYS)  @join__impl
 
 type Journey @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  {
   id: ID!
-  blocks: [Block!] @join__field(graph: API_JOURNEYS) 
+  blocks: [Block!]
   primaryImageBlock: ImageBlock @join__field(graph: API_JOURNEYS) 
   creatorImageBlock: ImageBlock @join__field(graph: API_JOURNEYS) 
   logoImageBlock: ImageBlock @join__field(graph: API_JOURNEYS) 
@@ -990,6 +990,7 @@ type TypographyBlock implements Block @join__type(graph: API_JOURNEYS, key: "id"
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
+  typename: String! @join__field(graph: API_JOURNEYS) 
   content: String @join__field(graph: API_JOURNEYS, type: "String!")  @join__field(graph: API_JOURNEYS_MODERN, type: "String") 
   variant: TypographyVariant
   color: TypographyColor
@@ -1038,6 +1039,7 @@ type VideoBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @j
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
+  typename: String! @join__field(graph: API_JOURNEYS) 
   """
   startAt dictates at which point of time the video should start playing
   """
@@ -1110,6 +1112,7 @@ type VideoBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @j
   how the video should display within the VideoBlock
   """
   objectFit: VideoBlockObjectFit
+  mediaVideo: MediaVideo @join__field(graph: API_JOURNEYS_MODERN) 
 }
 
 """
@@ -1121,6 +1124,7 @@ type VideoTriggerBlock implements Block @join__type(graph: API_JOURNEYS, key: "i
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
+  typename: String! @join__field(graph: API_JOURNEYS) 
   """
   triggerStart sets the time as to when a video navigates to the next block,
   this is the number of seconds since the start of the video
@@ -2803,7 +2807,7 @@ interface Action @join__type(graph: API_JOURNEYS)  {
   gtmEventName: String
 }
 
-interface Block @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  {
+interface Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  {
   id: ID!
   journeyId: ID!
   parentBlockId: ID

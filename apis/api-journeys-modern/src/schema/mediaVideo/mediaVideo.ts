@@ -2,7 +2,7 @@ import { VideoBlockSource as PrismaVideoBlockSource } from '.prisma/api-journeys
 
 import { builder } from '../builder'
 
-import { VideoBlockObjectFit } from './enums/videoObjectFit'
+// import { VideoBlockObjectFit } from './enums/videoObjectFit'
 import { VideoBlockSource } from './enums/videoSource'
 
 const MuxVideo = builder.externalRef(
@@ -83,7 +83,7 @@ Video.implement({
   })
 })
 
-const MediaVideo = builder.unionType('MediaVideo', {
+export const MediaVideo = builder.unionType('MediaVideo', {
   types: [MuxVideo, Video, YouTube],
   resolveType: (video) => {
     switch (video.source) {

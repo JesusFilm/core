@@ -1,7 +1,9 @@
 import { builder } from '../../builder'
-import { VideoBlockObjectFit } from '../../mediaVideo/enums/videoObjectFit'
 import { VideoBlockSource } from '../../mediaVideo/enums/videoSource'
+import { MediaVideo } from '../../mediaVideo/mediaVideo'
 import { Block } from '../block'
+
+import { VideoBlockObjectFit } from './enums/videoObjectFit'
 
 builder.prismaObject('Block', {
   interfaces: [Block],
@@ -73,6 +75,19 @@ builder.prismaObject('Block', {
     description: t.exposeString('description', {
       nullable: true,
       directives: { shareable: true }
+    }),
+    mediaVideo: t.field({
+      type: MediaVideo,
+      resolve: (video) =>
+        video.videoId != null &&
+        video.source !== 'cloudflare' &&
+        video.source !== null
+          ? {
+              id: video.videoId,
+              source: video.source,
+              primaryLanguageId: video.videoVariantLanguageId
+            }
+          : null
     })
   })
 })

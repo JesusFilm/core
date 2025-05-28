@@ -10,7 +10,7 @@ import { ButtonVariant, ButtonColor, ButtonSize, ThemeMode, ThemeName, IconName,
 // ====================================================
 
 export interface CardIntroRestore_subtitle_GridContainerBlock {
-  __typename: "GridContainerBlock" | "GridItemBlock" | "VideoBlockContent";
+  __typename: "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -359,7 +359,7 @@ export interface CardIntroRestore_subtitle_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource;
+  source: VideoBlockSource | null;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -435,7 +435,7 @@ export interface CardIntroRestore_subtitle_VideoTriggerBlock {
 export type CardIntroRestore_subtitle = CardIntroRestore_subtitle_GridContainerBlock | CardIntroRestore_subtitle_ButtonBlock | CardIntroRestore_subtitle_CardBlock | CardIntroRestore_subtitle_IconBlock | CardIntroRestore_subtitle_ImageBlock | CardIntroRestore_subtitle_RadioOptionBlock | CardIntroRestore_subtitle_RadioQuestionBlock | CardIntroRestore_subtitle_SignUpBlock | CardIntroRestore_subtitle_SpacerBlock | CardIntroRestore_subtitle_StepBlock | CardIntroRestore_subtitle_TextResponseBlock | CardIntroRestore_subtitle_TypographyBlock | CardIntroRestore_subtitle_VideoBlock | CardIntroRestore_subtitle_VideoTriggerBlock;
 
 export interface CardIntroRestore_title_GridContainerBlock {
-  __typename: "GridContainerBlock" | "GridItemBlock" | "VideoBlockContent";
+  __typename: "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -784,7 +784,7 @@ export interface CardIntroRestore_title_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource;
+  source: VideoBlockSource | null;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -860,7 +860,7 @@ export interface CardIntroRestore_title_VideoTriggerBlock {
 export type CardIntroRestore_title = CardIntroRestore_title_GridContainerBlock | CardIntroRestore_title_ButtonBlock | CardIntroRestore_title_CardBlock | CardIntroRestore_title_IconBlock | CardIntroRestore_title_ImageBlock | CardIntroRestore_title_RadioOptionBlock | CardIntroRestore_title_RadioQuestionBlock | CardIntroRestore_title_SignUpBlock | CardIntroRestore_title_SpacerBlock | CardIntroRestore_title_StepBlock | CardIntroRestore_title_TextResponseBlock | CardIntroRestore_title_TypographyBlock | CardIntroRestore_title_VideoBlock | CardIntroRestore_title_VideoTriggerBlock;
 
 export interface CardIntroRestore_body_GridContainerBlock {
-  __typename: "GridContainerBlock" | "GridItemBlock" | "VideoBlockContent";
+  __typename: "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -1209,7 +1209,7 @@ export interface CardIntroRestore_body_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource;
+  source: VideoBlockSource | null;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -1285,7 +1285,7 @@ export interface CardIntroRestore_body_VideoTriggerBlock {
 export type CardIntroRestore_body = CardIntroRestore_body_GridContainerBlock | CardIntroRestore_body_ButtonBlock | CardIntroRestore_body_CardBlock | CardIntroRestore_body_IconBlock | CardIntroRestore_body_ImageBlock | CardIntroRestore_body_RadioOptionBlock | CardIntroRestore_body_RadioQuestionBlock | CardIntroRestore_body_SignUpBlock | CardIntroRestore_body_SpacerBlock | CardIntroRestore_body_StepBlock | CardIntroRestore_body_TextResponseBlock | CardIntroRestore_body_TypographyBlock | CardIntroRestore_body_VideoBlock | CardIntroRestore_body_VideoTriggerBlock;
 
 export interface CardIntroRestore_button_GridContainerBlock {
-  __typename: "GridContainerBlock" | "GridItemBlock" | "VideoBlockContent";
+  __typename: "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -1634,7 +1634,7 @@ export interface CardIntroRestore_button_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource;
+  source: VideoBlockSource | null;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -1710,7 +1710,7 @@ export interface CardIntroRestore_button_VideoTriggerBlock {
 export type CardIntroRestore_button = CardIntroRestore_button_GridContainerBlock | CardIntroRestore_button_ButtonBlock | CardIntroRestore_button_CardBlock | CardIntroRestore_button_IconBlock | CardIntroRestore_button_ImageBlock | CardIntroRestore_button_RadioOptionBlock | CardIntroRestore_button_RadioQuestionBlock | CardIntroRestore_button_SignUpBlock | CardIntroRestore_button_SpacerBlock | CardIntroRestore_button_StepBlock | CardIntroRestore_button_TextResponseBlock | CardIntroRestore_button_TypographyBlock | CardIntroRestore_button_VideoBlock | CardIntroRestore_button_VideoTriggerBlock;
 
 export interface CardIntroRestore_startIcon_GridContainerBlock {
-  __typename: "GridContainerBlock" | "GridItemBlock" | "VideoBlockContent";
+  __typename: "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -2059,7 +2059,7 @@ export interface CardIntroRestore_startIcon_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource;
+  source: VideoBlockSource | null;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -2135,7 +2135,7 @@ export interface CardIntroRestore_startIcon_VideoTriggerBlock {
 export type CardIntroRestore_startIcon = CardIntroRestore_startIcon_GridContainerBlock | CardIntroRestore_startIcon_ButtonBlock | CardIntroRestore_startIcon_CardBlock | CardIntroRestore_startIcon_IconBlock | CardIntroRestore_startIcon_ImageBlock | CardIntroRestore_startIcon_RadioOptionBlock | CardIntroRestore_startIcon_RadioQuestionBlock | CardIntroRestore_startIcon_SignUpBlock | CardIntroRestore_startIcon_SpacerBlock | CardIntroRestore_startIcon_StepBlock | CardIntroRestore_startIcon_TextResponseBlock | CardIntroRestore_startIcon_TypographyBlock | CardIntroRestore_startIcon_VideoBlock | CardIntroRestore_startIcon_VideoTriggerBlock;
 
 export interface CardIntroRestore_endIcon_GridContainerBlock {
-  __typename: "GridContainerBlock" | "GridItemBlock" | "VideoBlockContent";
+  __typename: "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -2484,7 +2484,7 @@ export interface CardIntroRestore_endIcon_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource;
+  source: VideoBlockSource | null;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -2560,7 +2560,7 @@ export interface CardIntroRestore_endIcon_VideoTriggerBlock {
 export type CardIntroRestore_endIcon = CardIntroRestore_endIcon_GridContainerBlock | CardIntroRestore_endIcon_ButtonBlock | CardIntroRestore_endIcon_CardBlock | CardIntroRestore_endIcon_IconBlock | CardIntroRestore_endIcon_ImageBlock | CardIntroRestore_endIcon_RadioOptionBlock | CardIntroRestore_endIcon_RadioQuestionBlock | CardIntroRestore_endIcon_SignUpBlock | CardIntroRestore_endIcon_SpacerBlock | CardIntroRestore_endIcon_StepBlock | CardIntroRestore_endIcon_TextResponseBlock | CardIntroRestore_endIcon_TypographyBlock | CardIntroRestore_endIcon_VideoBlock | CardIntroRestore_endIcon_VideoTriggerBlock;
 
 export interface CardIntroRestore_video_GridContainerBlock {
-  __typename: "GridContainerBlock" | "GridItemBlock" | "VideoBlockContent";
+  __typename: "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -2909,7 +2909,7 @@ export interface CardIntroRestore_video_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource;
+  source: VideoBlockSource | null;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.

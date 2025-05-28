@@ -8,7 +8,7 @@
 // ====================================================
 
 export interface TranslatedJourney_blocks_ImageBlock {
-  __typename: "ImageBlock" | "StepBlock" | "CardBlock" | "IconBlock" | "SignUpBlock" | "SpacerBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock" | "VideoBlockContent";
+  __typename: "ImageBlock" | "StepBlock" | "CardBlock" | "IconBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
 }
 
@@ -30,12 +30,6 @@ export interface TranslatedJourney_blocks_RadioOptionBlock {
   label: string | null;
 }
 
-export interface TranslatedJourney_blocks_RadioQuestionBlock {
-  __typename: "RadioQuestionBlock";
-  id: string;
-  label: string | null;
-}
-
 export interface TranslatedJourney_blocks_TextResponseBlock {
   __typename: "TextResponseBlock";
   id: string;
@@ -43,7 +37,7 @@ export interface TranslatedJourney_blocks_TextResponseBlock {
   placeholder: string | null;
 }
 
-export type TranslatedJourney_blocks = TranslatedJourney_blocks_ImageBlock | TranslatedJourney_blocks_TypographyBlock | TranslatedJourney_blocks_ButtonBlock | TranslatedJourney_blocks_RadioOptionBlock | TranslatedJourney_blocks_RadioQuestionBlock | TranslatedJourney_blocks_TextResponseBlock;
+export type TranslatedJourney_blocks = TranslatedJourney_blocks_ImageBlock | TranslatedJourney_blocks_TypographyBlock | TranslatedJourney_blocks_ButtonBlock | TranslatedJourney_blocks_RadioOptionBlock | TranslatedJourney_blocks_TextResponseBlock;
 
 export interface TranslatedJourney {
   __typename: "Journey";

@@ -8,7 +8,7 @@
 // ====================================================
 
 export interface JourneyAiTranslateCreate_journeyAiTranslateCreate_journey_blocks_ImageBlock {
-  __typename: "ImageBlock" | "StepBlock" | "CardBlock" | "IconBlock" | "SignUpBlock" | "SpacerBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock" | "VideoBlockContent";
+  __typename: "ImageBlock" | "StepBlock" | "CardBlock" | "IconBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
 }
 
@@ -30,12 +30,6 @@ export interface JourneyAiTranslateCreate_journeyAiTranslateCreate_journey_block
   label: string | null;
 }
 
-export interface JourneyAiTranslateCreate_journeyAiTranslateCreate_journey_blocks_RadioQuestionBlock {
-  __typename: "RadioQuestionBlock";
-  id: string;
-  label: string | null;
-}
-
 export interface JourneyAiTranslateCreate_journeyAiTranslateCreate_journey_blocks_TextResponseBlock {
   __typename: "TextResponseBlock";
   id: string;
@@ -43,7 +37,7 @@ export interface JourneyAiTranslateCreate_journeyAiTranslateCreate_journey_block
   placeholder: string | null;
 }
 
-export type JourneyAiTranslateCreate_journeyAiTranslateCreate_journey_blocks = JourneyAiTranslateCreate_journeyAiTranslateCreate_journey_blocks_ImageBlock | JourneyAiTranslateCreate_journeyAiTranslateCreate_journey_blocks_TypographyBlock | JourneyAiTranslateCreate_journeyAiTranslateCreate_journey_blocks_ButtonBlock | JourneyAiTranslateCreate_journeyAiTranslateCreate_journey_blocks_RadioOptionBlock | JourneyAiTranslateCreate_journeyAiTranslateCreate_journey_blocks_RadioQuestionBlock | JourneyAiTranslateCreate_journeyAiTranslateCreate_journey_blocks_TextResponseBlock;
+export type JourneyAiTranslateCreate_journeyAiTranslateCreate_journey_blocks = JourneyAiTranslateCreate_journeyAiTranslateCreate_journey_blocks_ImageBlock | JourneyAiTranslateCreate_journeyAiTranslateCreate_journey_blocks_TypographyBlock | JourneyAiTranslateCreate_journeyAiTranslateCreate_journey_blocks_ButtonBlock | JourneyAiTranslateCreate_journeyAiTranslateCreate_journey_blocks_RadioOptionBlock | JourneyAiTranslateCreate_journeyAiTranslateCreate_journey_blocks_TextResponseBlock;
 
 export interface JourneyAiTranslateCreate_journeyAiTranslateCreate_journey {
   __typename: "Journey";

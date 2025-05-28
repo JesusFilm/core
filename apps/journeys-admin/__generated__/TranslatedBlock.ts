@@ -8,7 +8,7 @@
 // ====================================================
 
 export interface TranslatedBlock_ImageBlock {
-  __typename: "ImageBlock" | "StepBlock" | "CardBlock" | "IconBlock" | "SignUpBlock" | "SpacerBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock" | "VideoBlockContent";
+  __typename: "ImageBlock" | "StepBlock" | "CardBlock" | "IconBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
 }
 
@@ -30,12 +30,6 @@ export interface TranslatedBlock_RadioOptionBlock {
   label: string | null;
 }
 
-export interface TranslatedBlock_RadioQuestionBlock {
-  __typename: "RadioQuestionBlock";
-  id: string;
-  label: string | null;
-}
-
 export interface TranslatedBlock_TextResponseBlock {
   __typename: "TextResponseBlock";
   id: string;
@@ -43,4 +37,4 @@ export interface TranslatedBlock_TextResponseBlock {
   placeholder: string | null;
 }
 
-export type TranslatedBlock = TranslatedBlock_ImageBlock | TranslatedBlock_TypographyBlock | TranslatedBlock_ButtonBlock | TranslatedBlock_RadioOptionBlock | TranslatedBlock_RadioQuestionBlock | TranslatedBlock_TextResponseBlock;
+export type TranslatedBlock = TranslatedBlock_ImageBlock | TranslatedBlock_TypographyBlock | TranslatedBlock_ButtonBlock | TranslatedBlock_RadioOptionBlock | TranslatedBlock_TextResponseBlock;

@@ -1,15 +1,13 @@
-import { gql } from '@apollo/client'
 import { Theme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { TranslationDialogWrapper } from '@core/journeys/ui/TranslationDialogWrapper'
-import { TranslationProgressBar } from '@core/journeys/ui/TranslationProgressBar'
 import { useJourneyAiTranslateSubscription } from '@core/journeys/ui/useJourneyAiTranslateSubscription'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
@@ -54,10 +52,6 @@ export function TranslateJourneyDialog({
   const { enqueueSnackbar } = useSnackbar()
   const [journeyDuplicate] = useJourneyDuplicateMutation()
   const [loading, setLoading] = useState(false)
-  const [translationProgress, setTranslationProgress] = useState<{
-    progress: number
-    message: string
-  } | null>(null)
   const [translationVariables, setTranslationVariables] = useState<
     | {
         journeyId: string
@@ -69,33 +63,37 @@ export function TranslateJourneyDialog({
     | undefined
   >(undefined)
 
+  const journeyLanguage: JourneyLanguage | undefined = useMemo(
+    () =>
+      journeyData != null
+        ? {
+            id: journeyData.language.id,
+            localName: journeyData.language.name.find(({ primary }) => !primary)
+              ?.value,
+            nativeName: journeyData.language.name.find(({ primary }) => primary)
+              ?.value
+          }
+        : undefined,
+    [journeyData]
+  )
+
+  const [selectedLanguage, setSelectedLanguage] = useState<
+    JourneyLanguage | undefined
+  >(journeyLanguage)
+
+  const handleClose = useCallback((): void => {
+    // Reset all dialog state when closing
+    setLoading(false)
+    setTranslationVariables(undefined)
+    setSelectedLanguage(journeyLanguage)
+    onClose()
+  }, [journeyLanguage, onClose])
+
   // Set up the subscription for translation
   const { data: translationData, error: translationError } =
     useJourneyAiTranslateSubscription({
       variables: translationVariables,
-      skip: !translationVariables,
-      onData: ({ data }) => {
-        if (data.data?.journeyAiTranslateCreate) {
-          const progressData = data.data.journeyAiTranslateCreate
-
-          // Update progress
-          setTranslationProgress({
-            progress: progressData.progress,
-            message: progressData.message
-          })
-
-          // Check if translation is complete
-          if (progressData.journey && progressData.progress === 100) {
-            enqueueSnackbar(t('Translation complete'), {
-              variant: 'success'
-            })
-            setLoading(false)
-            setTranslationProgress(null)
-            setTranslationVariables(undefined)
-            onClose()
-          }
-        }
-      }
+      skip: !translationVariables
     })
 
   // Handle translation errors
@@ -104,7 +102,6 @@ export function TranslateJourneyDialog({
       variant: 'error'
     })
     setLoading(false)
-    setTranslationProgress(null)
     setTranslationVariables(undefined)
   }
 
@@ -162,21 +159,6 @@ export function TranslateJourneyDialog({
     }
   })
 
-  const journeyLanguage: JourneyLanguage | undefined =
-    journeyData != null
-      ? {
-          id: journeyData.language.id,
-          localName: journeyData.language.name.find(({ primary }) => !primary)
-            ?.value,
-          nativeName: journeyData.language.name.find(({ primary }) => primary)
-            ?.value
-        }
-      : undefined
-
-  const [selectedLanguage, setSelectedLanguage] = useState<
-    JourneyLanguage | undefined
-  >(journeyLanguage)
-
   const handleTranslate = async (): Promise<void> => {
     if (
       selectedLanguage == null ||
@@ -223,10 +205,16 @@ export function TranslateJourneyDialog({
     }
   }
 
+  useEffect(() => {
+    if (translationData?.journeyAiTranslateCreate.progress === 100) {
+      handleClose()
+    }
+  }, [translationData?.journeyAiTranslateCreate.progress, handleClose])
+
   return (
     <TranslationDialogWrapper
       open={open ?? false}
-      onClose={onClose}
+      onClose={handleClose}
       onTranslate={handleTranslate}
       loading={loading}
       title={t('Create Translated Copy')}
@@ -234,6 +222,10 @@ export function TranslateJourneyDialog({
       testId="TranslateJourneyDialog"
       divider={false}
       isTranslation={true}
+      translationProgress={{
+        progress: translationData?.journeyAiTranslateCreate.progress ?? 0,
+        message: translationData?.journeyAiTranslateCreate.message ?? ''
+      }}
     >
       <LanguageAutocomplete
         onChange={async (value) => setSelectedLanguage(value)}
@@ -252,14 +244,6 @@ export function TranslateJourneyDialog({
           placement: !smUp ? 'top' : 'bottom'
         }}
       />
-
-      {/* Show progress bar when translation is in progress */}
-      {translationProgress && (
-        <TranslationProgressBar
-          progress={translationProgress.progress}
-          message={translationProgress.message}
-        />
-      )}
     </TranslationDialogWrapper>
   )
 }

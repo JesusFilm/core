@@ -10,7 +10,7 @@ import { JourneyUpdateInput, ButtonVariant, ButtonColor, ButtonSize, ThemeMode, 
 // ====================================================
 
 export interface MenuBlockRestore_stepRestore_GridContainerBlock {
-  __typename: "GridContainerBlock" | "GridItemBlock" | "VideoBlockContent";
+  __typename: "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -369,7 +369,7 @@ export interface MenuBlockRestore_stepRestore_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource;
+  source: VideoBlockSource | null;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
