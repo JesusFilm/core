@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
 import { ReactElement } from 'react'
 import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
@@ -6,7 +7,6 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
 
 import { VideoCard } from './VideoCard'
-import Box from '@mui/material/Box'
 
 const StyledSwiper = styled(Swiper)(() => ({}))
 const StyledSwiperSlide = styled(SwiperSlide)(() => ({}))
