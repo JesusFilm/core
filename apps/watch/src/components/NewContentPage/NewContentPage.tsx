@@ -139,7 +139,8 @@ export function NewContentPage(): ReactElement {
             backgroundColor: '#131111',
             color: 'common.white',
             position: 'relative',
-            minHeight: '100svh'
+            minHeight: '100svh',
+            fontFamily: 'var(--font-sans)'
           }}
         >
           <Box
@@ -204,7 +205,9 @@ export function NewContentPage(): ReactElement {
                 spacing={2}
                 justifyContent="space-between"
               >
-                <Typography>{t('Bible Quotes')}</Typography>
+                <h3 className="text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-red-100/70">
+                  {t('Bible Quotes')}
+                </h3>
                 <Stack direction="row" spacing={2}>
                   <Button
                     size="xsmall"

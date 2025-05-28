@@ -32,24 +32,17 @@ export function ContentMetadata({
         <Typography variant="overline2" color={color}>
           {labelText}
         </Typography>
-        <Typography variant="h5">{title}</Typography>
-        <Typography
-          variant="body1"
-          sx={{
-            color: ({ palette }) => lighten(palette.text.secondary, 0.5)
-          }}
-        >
-          <Typography
-            component="span"
-            variant="body1"
-            sx={{ fontWeight: 'bold', color: 'common.white' }}
-          >
+        <h2 className="text-2xl xl:text-3xl 2xl:text-4xl font-bold mb-0">
+          {title}
+        </h2>
+        <p className="text-lg xl:text-xl mt-2 leading-relaxed text-stone-200/80">
+          <span className="font-bold text-white">
             {description.split(' ').slice(0, 3).join(' ')}
-          </Typography>
+          </span>
           {description.slice(
             description.split(' ').slice(0, 3).join(' ').length
           )}
-        </Typography>
+        </p>
       </Stack>
     </Box>
   )

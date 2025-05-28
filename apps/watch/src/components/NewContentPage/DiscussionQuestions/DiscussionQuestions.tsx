@@ -44,7 +44,9 @@ export function DiscussionQuestions({
             px: 2
           }}
         >
-          <Typography variant="overline2">{t('Related questions')}</Typography>
+          <h4 className="text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-red-100/70">
+            {t('Related questions')}
+          </h4>
           <a
             href="https://issuesiface.com/talk?utm_source=jesusfilm-watch"
             target="_blank"

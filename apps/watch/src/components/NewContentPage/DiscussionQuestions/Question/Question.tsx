@@ -64,8 +64,7 @@ export function Question({
       expanded={isOpen}
       onChange={onToggle}
       sx={{
-        bgcolor: 'transparent',
-        color: 'common.white'
+        bgcolor: 'transparent'
       }}
     >
       <AccordionSummary>
@@ -73,13 +72,16 @@ export function Question({
           sx={{
             opacity: 0.2,
             mr: 6,
-            mt: 1
+            mt: 1,
+            color: 'common.white'
           }}
         />
-        <Typography sx={{ color: 'common.white' }}>{question}</Typography>
+        <p className="text-md md:text-lg font-semibold text-stone-100 sm:pr-4 md:text-balance leading-[1.6]">
+          {question}
+        </p>
       </AccordionSummary>
       <AccordionDetails>
-        <Typography sx={{ color: 'common.white' }}>{answer}</Typography>
+        <p className="text-stone-200/80">{answer}</p>
       </AccordionDetails>
     </Accordion>
   )
