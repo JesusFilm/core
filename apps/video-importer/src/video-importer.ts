@@ -13,7 +13,10 @@ import type { ProcessingSummary } from './types'
 const program = new Command()
 
 program
-  .requiredOption('-f, --folder <path>', 'Folder containing video files')
+  .option(
+    '-f, --folder <path>',
+    "Folder containing video files. Defaults to the executable's directory."
+  )
   .option('--dry-run', 'Print actions without uploading', false)
   .parse(process.argv)
 
@@ -23,7 +26,14 @@ const VIDEO_FILENAME_REGEX =
   /^([a-zA-Z0-9_-]+)---([a-zA-Z0-9_-]+)---([a-zA-Z0-9_-]+)\.mp4$/
 
 async function main() {
-  const folderPath = path.resolve(options.folder)
+  const runningInPkg = !!(process as any).pkg
+  const defaultFolderPath = runningInPkg
+    ? path.dirname(process.execPath)
+    : process.cwd()
+
+  const folderPath = options.folder
+    ? path.resolve(options.folder)
+    : defaultFolderPath
   let files: string[]
   try {
     files = await promises.readdir(folderPath)

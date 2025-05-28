@@ -3,7 +3,8 @@
   "compilerOptions": {
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "outDir": "../../dist/video-importer"
+    "outDir": "../../dist/video-importer",
+    "rootDir": "src"
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "jest.config.ts", "**/*.spec.ts"]

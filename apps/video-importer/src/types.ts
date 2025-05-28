@@ -56,6 +56,7 @@ export interface VideoMetadata {
 }
 
 export interface VideoVariantInput {
+  existingVariantId: string | null
   id: string
   videoId: string
   edition: string
@@ -74,15 +75,16 @@ export interface VideoVariantInput {
   version?: number
 }
 
-export interface GetLanguageSlugResponse {
-  language: {
+export interface GetVideoDetailsForVariantUpsertResponse {
+  video: {
     id: string
     slug: string
+    variant: {
+      id: string
+      slug: string
+    } | null
   }
-}
-
-export interface GetVideoSlugResponse {
-  video: {
+  language: {
     id: string
     slug: string
   }
