@@ -342,7 +342,7 @@ type StepBlock implements Block
 }
 
 type Subscription {
-  journeyAiTranslateCreate(input: JourneyAiTranslateInput!): JourneyAiTranslateProgress!
+  journeyAiTranslateCreateSubscription(input: JourneyAiTranslateInput!): JourneyAiTranslateProgress!
 }
 
 type TextResponseBlock implements Block

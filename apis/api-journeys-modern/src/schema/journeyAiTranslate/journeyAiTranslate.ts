@@ -68,7 +68,7 @@ const BlockTranslationSchema = z.array(
   })
 )
 
-builder.subscriptionField('journeyAiTranslateCreate', (t) =>
+builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
   // TODO: Re-enable auth after testing - t.withAuth({ isAuthenticated: true })
   t.withAuth({ isAuthenticated: true }).field({
     type: JourneyAiTranslateProgressRef,

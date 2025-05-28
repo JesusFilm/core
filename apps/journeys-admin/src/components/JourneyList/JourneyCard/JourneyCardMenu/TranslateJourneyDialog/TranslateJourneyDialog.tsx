@@ -206,10 +206,15 @@ export function TranslateJourneyDialog({
   }
 
   useEffect(() => {
-    if (translationData?.journeyAiTranslateCreate.progress === 100) {
+    if (
+      translationData?.journeyAiTranslateCreateSubscription.progress === 100
+    ) {
       handleClose()
     }
-  }, [translationData?.journeyAiTranslateCreate.progress, handleClose])
+  }, [
+    translationData?.journeyAiTranslateCreateSubscription.progress,
+    handleClose
+  ])
 
   return (
     <TranslationDialogWrapper
@@ -223,8 +228,10 @@ export function TranslateJourneyDialog({
       divider={false}
       isTranslation={true}
       translationProgress={{
-        progress: translationData?.journeyAiTranslateCreate.progress ?? 0,
-        message: translationData?.journeyAiTranslateCreate.message ?? ''
+        progress:
+          translationData?.journeyAiTranslateCreateSubscription.progress ?? 0,
+        message:
+          translationData?.journeyAiTranslateCreateSubscription.message ?? ''
       }}
     >
       <LanguageAutocomplete

@@ -2253,7 +2253,7 @@ type MuxVideo @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId
 }
 
 type Subscription @join__type(graph: API_JOURNEYS_MODERN)  {
-  journeyAiTranslateCreate(input: JourneyAiTranslateInput!) : JourneyAiTranslateProgress!
+  journeyAiTranslateCreateSubscription(input: JourneyAiTranslateInput!) : JourneyAiTranslateProgress!
 }
 
 type YouTube @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", extension: true)  {

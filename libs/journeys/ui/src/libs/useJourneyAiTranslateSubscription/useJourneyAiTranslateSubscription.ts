@@ -6,19 +6,19 @@ import {
 } from '@apollo/client'
 
 import {
-  JourneyAiTranslateCreate,
-  JourneyAiTranslateCreateVariables
-} from './__generated__/JourneyAiTranslateCreate'
+  JourneyAiTranslateCreateSubscription,
+  JourneyAiTranslateCreateSubscriptionVariables
+} from './__generated__/JourneyAiTranslateCreateSubscription'
 
-export const JOURNEY_AI_TRANSLATE_CREATE = gql`
-  subscription JourneyAiTranslateCreate(
+export const JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION = gql`
+  subscription JourneyAiTranslateCreateSubscription(
     $journeyId: ID!
     $name: String!
     $journeyLanguageName: String!
     $textLanguageId: ID!
     $textLanguageName: String!
   ) {
-    journeyAiTranslateCreate(
+    journeyAiTranslateCreateSubscription(
       input: {
         journeyId: $journeyId
         name: $name
@@ -61,7 +61,7 @@ export const JOURNEY_AI_TRANSLATE_CREATE = gql`
 // Helper function to update the cache with translated journey data
 export function updateCacheWithTranslatedJourney(
   client: ReturnType<typeof useApolloClient>,
-  translatedJourney: JourneyAiTranslateCreate['journeyAiTranslateCreate']['journey']
+  translatedJourney: JourneyAiTranslateCreateSubscription['journeyAiTranslateCreateSubscription']['journey']
 ) {
   if (!translatedJourney) return
 
@@ -148,23 +148,23 @@ export function updateCacheWithTranslatedJourney(
 
 export function useJourneyAiTranslateSubscription(
   options?: SubscriptionHookOptions<
-    JourneyAiTranslateCreate,
-    JourneyAiTranslateCreateVariables
+    JourneyAiTranslateCreateSubscription,
+    JourneyAiTranslateCreateSubscriptionVariables
   >
 ) {
   const client = useApolloClient()
 
   const subscription = useSubscription<
-    JourneyAiTranslateCreate,
-    JourneyAiTranslateCreateVariables
-  >(JOURNEY_AI_TRANSLATE_CREATE, {
+    JourneyAiTranslateCreateSubscription,
+    JourneyAiTranslateCreateSubscriptionVariables
+  >(JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION, {
     ...options,
     onData: ({ data }) => {
       // Update the Apollo cache with the translated journey (only when complete)
-      if (data.data?.journeyAiTranslateCreate?.journey) {
+      if (data.data?.journeyAiTranslateCreateSubscription?.journey) {
         updateCacheWithTranslatedJourney(
           client,
-          data.data.journeyAiTranslateCreate.journey
+          data.data.journeyAiTranslateCreateSubscription.journey
         )
       }
 
