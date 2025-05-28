@@ -25,7 +25,7 @@ RUN echo 'Acquire::http::Pipeline-Depth 0;' > /etc/apt/apt.conf.d/99fixbadproxy 
     echo 'Acquire::http::No-Cache true;' >> /etc/apt/apt.conf.d/99fixbadproxy && \
     echo 'Acquire::BrokenProxy true;' >> /etc/apt/apt.conf.d/99fixbadproxy
     
-# [Optional] Uncomment this section to install additional OS packages.
+# Install additional OS packages.
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends gnupg2 libpixman-1-dev libcairo2-dev \
     libpango1.0-dev postgresql-client-13 chromium apt-transport-https ca-certificates curl \
@@ -35,7 +35,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 # ARG EXTRA_NODE_VERSION=20
 # RUN su node -c "source /usr/local/share/nvm/nvm.sh && nvm install ${EXTRA_NODE_VERSION}"
 
-# [Optional] Uncomment if you want to install more global node modules
+# install global node modules
 RUN su node -c "npm install -g npm@latest"
 
 WORKDIR /home/node
