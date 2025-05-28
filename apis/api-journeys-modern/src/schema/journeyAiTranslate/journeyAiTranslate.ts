@@ -211,7 +211,10 @@ ${hardenPrompt(journeyContent)}
 
         const updatedJourney = await prisma.journey.update({
           where: { id: input.journeyId },
-          data: updateData
+          data: updateData,
+          include: {
+            blocks: true
+          }
         })
 
         yield {
@@ -220,7 +223,8 @@ ${hardenPrompt(journeyContent)}
           journey: updatedJourney
         }
 
-        // Step 2: Translate blocks for all cards in parallel
+        // Step 2: Translate blocks for each card with progress updates
+        // Use updatedJourney as the working journey object to update with translated blocks
         const translateCard = async (
           cardContent: string,
           cardIndex: number
@@ -228,7 +232,7 @@ ${hardenPrompt(journeyContent)}
           try {
             // Get translatable blocks for this card
             const cardBlock = cardBlocks[cardIndex]
-            const cardChildren = journey.blocks.filter(
+            const cardChildren = updatedJourney.blocks.filter(
               (block) => block.parentBlockId === cardBlock.id
             )
 
@@ -276,13 +280,28 @@ Maintain the spiritual and religious context appropriately.
             // Process the streamed translations
             for await (const chunk of blockTranslationResult.fullStream) {
               if (chunk.type === 'object' && chunk.object) {
-                // Apply translations to blocks
+                // Apply translations to blocks in database
                 for (const translation of chunk.object) {
+                  if (!translation || !translation.blockId) {
+                    continue
+                  }
+
                   await updateBlockWithTranslation(
                     prisma,
                     input.journeyId,
                     translation as any
                   )
+
+                  // Update the in-memory journey blocks
+                  const blockIndex = updatedJourney.blocks.findIndex(
+                    (block) => block.id === translation.blockId
+                  )
+                  if (blockIndex !== -1 && translation.updates) {
+                    updatedJourney.blocks[blockIndex] = {
+                      ...updatedJourney.blocks[blockIndex],
+                      ...translation.updates
+                    }
+                  }
                 }
               }
             }
@@ -292,12 +311,40 @@ Maintain the spiritual and religious context appropriately.
           }
         }
 
-        // Process all cards in parallel
-        await Promise.all(
-          cardBlocksContent.map((cardContent, index) =>
-            translateCard(cardContent, index)
+        // Process cards in batches of 5 for parallel processing with progress updates
+        const batchSize = 5
+        let completedCards = 0
+
+        for (
+          let batchStart = 0;
+          batchStart < cardBlocksContent.length;
+          batchStart += batchSize
+        ) {
+          const batchEnd = Math.min(
+            batchStart + batchSize,
+            cardBlocksContent.length
           )
-        )
+          const currentBatch = cardBlocksContent.slice(batchStart, batchEnd)
+
+          // Create batch of translation promises
+          const batchPromises = currentBatch.map((cardContent, index) => {
+            const cardIndex = batchStart + index
+            return translateCard(cardContent, cardIndex)
+          })
+
+          // Process batch in parallel
+          await Promise.allSettled(batchPromises)
+
+          // Update completed count and progress
+          completedCards += currentBatch.length
+          const progressPercent = 80 + (completedCards / cardBlocks.length) * 15
+
+          yield {
+            progress: progressPercent,
+            message: `Translated ${completedCards} of ${cardBlocks.length} cards`,
+            journey: updatedJourney
+          }
+        }
 
         yield {
           progress: 95,
