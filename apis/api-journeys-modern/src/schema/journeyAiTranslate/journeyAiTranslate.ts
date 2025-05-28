@@ -159,7 +159,7 @@ ${cardBlocksContent.join('\n\n')}
               `.trim()
 
         yield {
-          progress: 30,
+          progress: 40,
           message: 'Translating journey title and description...',
           journey: null
         }
@@ -194,7 +194,7 @@ ${hardenPrompt(journeyContent)}
         }
 
         yield {
-          progress: 50,
+          progress: 70,
           message: 'Updating journey with translated title...',
           journey: null
         }
@@ -215,26 +215,19 @@ ${hardenPrompt(journeyContent)}
         })
 
         yield {
-          progress: 60,
+          progress: 80,
           message: `Translating card content (${cardBlocks.length} cards)...`,
           journey: updatedJourney
         }
 
-        // Step 2: Translate blocks for each card
-        let cardIndex = 0
-        for (const cardContent of cardBlocksContent) {
-          cardIndex++
-          const progressPercent = 60 + (cardIndex / cardBlocks.length) * 30
-
-          yield {
-            progress: progressPercent,
-            message: `Translating card ${cardIndex} of ${cardBlocks.length}...`,
-            journey: null
-          }
-
+        // Step 2: Translate blocks for all cards in parallel
+        const translateCard = async (
+          cardContent: string,
+          cardIndex: number
+        ) => {
           try {
             // Get translatable blocks for this card
-            const cardBlock = cardBlocks[cardIndex - 1]
+            const cardBlock = cardBlocks[cardIndex]
             const cardChildren = journey.blocks.filter(
               (block) => block.parentBlockId === cardBlock.id
             )
@@ -246,7 +239,7 @@ ${hardenPrompt(journeyContent)}
             })
 
             if (translatableBlocks.length === 0) {
-              continue
+              return
             }
 
             // Create translation info for each block
@@ -294,10 +287,17 @@ Maintain the spiritual and religious context appropriately.
               }
             }
           } catch (error) {
-            console.error(`Error translating card ${cardIndex}:`, error)
+            console.error(`Error translating card ${cardIndex + 1}:`, error)
             // Continue with other cards even if one fails
           }
         }
+
+        // Process all cards in parallel
+        await Promise.all(
+          cardBlocksContent.map((cardContent, index) =>
+            translateCard(cardContent, index)
+          )
+        )
 
         yield {
           progress: 95,
