@@ -39,7 +39,6 @@ type VideoBlock implements Block @key(fields: "id") {
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
-  typename: String! @shareable
   """
   startAt dictates at which point of time the video should start playing
   """
