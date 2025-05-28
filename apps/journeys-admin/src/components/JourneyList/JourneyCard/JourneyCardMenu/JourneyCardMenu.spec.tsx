@@ -113,6 +113,9 @@ describe('JourneyCardMenu', () => {
     )
     expect(getByRole('menuitem', { name: 'Access' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Duplicate' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Translate' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Copy to ...' })).toBeInTheDocument()
     await waitFor(() =>
       expect(getByRole('menuitem', { name: 'Archive' })).toBeInTheDocument()
     )
@@ -266,6 +269,38 @@ describe('JourneyCardMenu', () => {
     fireEvent.click(getByTestId('dialog-close-button'))
     await waitFor(() =>
       expect(queryByText('Delete Forever?')).not.toBeInTheDocument()
+    )
+  })
+
+  it('should show translate dialog on click', async () => {
+    const { getByRole, queryByText } = render(
+      <MockedProvider mocks={[teamMock]}>
+        <SnackbarProvider>
+          <TeamProvider>
+            <ThemeProvider>
+              <JourneyCardMenu
+                id="journeyId"
+                status={JourneyStatus.published}
+                slug="published-journey"
+                published
+              />
+            </ThemeProvider>
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button'))
+    await waitFor(() =>
+      expect(getByRole('menuitem', { name: 'Translate' })).toBeInTheDocument()
+    )
+    fireEvent.click(getByRole('menuitem', { name: 'Translate' }))
+
+    await waitFor(() =>
+      expect(queryByText('Create Translated Copy')).toBeInTheDocument()
+    )
+    fireEvent.click(getByRole('button', { name: 'Cancel' }))
+    await waitFor(() =>
+      expect(queryByText('Create Translated Copy')).not.toBeInTheDocument()
     )
   })
 })
