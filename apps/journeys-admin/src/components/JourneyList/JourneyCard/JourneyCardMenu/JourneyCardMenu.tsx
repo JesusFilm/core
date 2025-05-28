@@ -136,7 +136,7 @@ export function JourneyCardMenu({
   ): Promise<void> => {
     setAnchorEl(event.currentTarget)
     if (status === JourneyStatus.trashed) {
-      if (!TrashMenuComponent) {
+      if (TrashMenuComponent == null) {
         const mod = await import(
           /* webpackChunkName: "TrashMenu" */
           './TrashMenu'
@@ -144,7 +144,7 @@ export function JourneyCardMenu({
         setTrashMenuComponent(() => mod.TrashMenu)
       }
     } else {
-      if (!DefaultMenuComponent) {
+      if (DefaultMenuComponent == null) {
         const mod = await import(
           /* webpackChunkName: "DefaultMenu" */
           './DefaultMenu'
