@@ -16,6 +16,7 @@ export type Scalars = {
   Float: { input: number; output: number; }
   /** A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
   Date: { input: any; output: any; }
+  /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
   DateTime: { input: any; output: any; }
   /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.This scalar is serialized to a string in ISO 8601 format and parsed from a string in ISO 8601 format. */
   DateTimeISO: { input: any; output: any; }
@@ -811,11 +812,12 @@ export type Journey = {
   /** public title for viewers */
   displayTitle?: Maybe<Scalars['String']['output']>;
   featuredAt?: Maybe<Scalars['DateTime']['output']>;
+  fromTemplateId?: Maybe<Scalars['String']['output']>;
   host?: Maybe<Host>;
   id: Scalars['ID']['output'];
   journeyCollections: Array<JourneyCollection>;
   language: Language;
-  languageId: Scalars['String']['output'];
+  languageId?: Maybe<Scalars['String']['output']>;
   logoImageBlock?: Maybe<ImageBlock>;
   menuButtonIcon?: Maybe<JourneyMenuButtonIcon>;
   menuStepBlock?: Maybe<StepBlock>;
@@ -849,6 +851,14 @@ export type Journey = {
   updatedAt: Scalars['DateTime']['output'];
   userJourneys?: Maybe<Array<UserJourney>>;
   website?: Maybe<Scalars['Boolean']['output']>;
+};
+
+export type JourneyAiTranslateInput = {
+  journeyId: Scalars['ID']['input'];
+  journeyLanguageName: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  textLanguageId: Scalars['ID']['input'];
+  textLanguageName: Scalars['String']['input'];
 };
 
 export type JourneyCollection = {
@@ -1391,6 +1401,7 @@ export type Mutation = {
   integrationDelete: Integration;
   integrationGrowthSpacesCreate: IntegrationGrowthSpaces;
   integrationGrowthSpacesUpdate: IntegrationGrowthSpaces;
+  journeyAiTranslateCreate: Journey;
   journeyCollectionCreate: JourneyCollection;
   journeyCollectionDelete: JourneyCollection;
   journeyCollectionUpdate: JourneyCollection;
@@ -1398,6 +1409,7 @@ export type Mutation = {
   journeyDuplicate: Journey;
   /** Sets journey status to featured */
   journeyFeature?: Maybe<Journey>;
+  journeyLanguageAiDetect: Scalars['Boolean']['output'];
   journeyNotificationUpdate: JourneyNotification;
   journeyProfileCreate: JourneyProfile;
   journeyProfileUpdate: JourneyProfile;
@@ -1495,6 +1507,9 @@ export type Mutation = {
   videoImageAltCreate: VideoImageAlt;
   videoImageAltDelete: VideoImageAlt;
   videoImageAltUpdate: VideoImageAlt;
+  videoOriginCreate: VideoOrigin;
+  videoOriginDelete: VideoOrigin;
+  videoOriginUpdate: VideoOrigin;
   videoPauseEventCreate: VideoPauseEvent;
   videoPlayEventCreate: VideoPlayEvent;
   videoProgressEventCreate: VideoProgressEvent;
@@ -1817,6 +1832,11 @@ export type MutationIntegrationGrowthSpacesUpdateArgs = {
 };
 
 
+export type MutationJourneyAiTranslateCreateArgs = {
+  input: JourneyAiTranslateInput;
+};
+
+
 export type MutationJourneyCollectionCreateArgs = {
   input: JourneyCollectionCreateInput;
 };
@@ -1848,6 +1868,11 @@ export type MutationJourneyDuplicateArgs = {
 export type MutationJourneyFeatureArgs = {
   feature: Scalars['Boolean']['input'];
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationJourneyLanguageAiDetectArgs = {
+  input: MutationJourneyLanguageAiDetectInput;
 };
 
 
@@ -2251,6 +2276,21 @@ export type MutationVideoImageAltUpdateArgs = {
 };
 
 
+export type MutationVideoOriginCreateArgs = {
+  input: MutationVideoOriginCreateInput;
+};
+
+
+export type MutationVideoOriginDeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationVideoOriginUpdateArgs = {
+  input: MutationVideoOriginUpdateInput;
+};
+
+
 export type MutationVideoPauseEventCreateArgs = {
   input: VideoPauseEventCreateInput;
 };
@@ -2399,6 +2439,14 @@ export type MutationBibleCitationUpdateInput = {
   verseStart?: InputMaybe<Scalars['Int']['input']>;
 };
 
+export type MutationJourneyLanguageAiDetectInput = {
+  journeyId: Scalars['ID']['input'];
+  journeyLanguageName: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  textLanguageId: Scalars['ID']['input'];
+  textLanguageName: Scalars['String']['input'];
+};
+
 export type MutationShortLinkCreateInput = {
   /** the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to */
   hostname: Scalars['String']['input'];
@@ -2478,6 +2526,17 @@ export type MutationSiteCreateResult = Error | MutationSiteCreateSuccess;
 export type MutationSiteCreateSuccess = {
   __typename?: 'MutationSiteCreateSuccess';
   data: Site;
+};
+
+export type MutationVideoOriginCreateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+};
+
+export type MutationVideoOriginUpdateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type MuxVideo = {
@@ -4164,6 +4223,7 @@ export type Video = {
   label: VideoLabel;
   locked: Scalars['Boolean']['output'];
   noIndex?: Maybe<Scalars['Boolean']['output']>;
+  origin?: Maybe<VideoOrigin>;
   parents: Array<Video>;
   primaryLanguageId: Scalars['ID']['output'];
   published: Scalars['Boolean']['output'];
@@ -4581,6 +4641,13 @@ export enum VideoLabel {
   ShortFilm = 'shortFilm',
   Trailer = 'trailer'
 }
+
+export type VideoOrigin = {
+  __typename?: 'VideoOrigin';
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+};
 
 export type VideoPauseEvent = Event & {
   __typename?: 'VideoPauseEvent';
