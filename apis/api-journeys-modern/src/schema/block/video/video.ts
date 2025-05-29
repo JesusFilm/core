@@ -1,3 +1,4 @@
+import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 import { MediaVideo } from '../../mediaVideo/mediaVideo'
 import { Block } from '../block'
@@ -120,3 +121,10 @@ For other sources this is automatically populated.`
     })
   })
 })
+
+builder.asEntity(VideoBlock, {
+  key: builder.selection<{ id: string }>('id'),
+  resolveReference: async (ref) => {
+    return await prisma.block.findUnique({ where: { id: ref.id } });
+  }
+});
