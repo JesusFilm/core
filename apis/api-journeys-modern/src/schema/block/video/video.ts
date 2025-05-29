@@ -7,8 +7,10 @@ import { VideoBlockObjectFit } from './enums/videoObjectFit'
 import { VideoBlockSource } from './enums/videoSource'
 
 // Type guard for allowed media video sources
-function isMediaVideoSource(source: string): source is 'internal' | 'mux' | 'youTube' {
-  return source === 'internal' || source === 'mux' || source === 'youTube';
+function isMediaVideoSource(
+  source: string
+): source is 'internal' | 'mux' | 'youTube' {
+  return source === 'internal' || source === 'mux' || source === 'youTube'
 }
 
 export const VideoBlock = builder.prismaObject('Block', {
@@ -105,11 +107,9 @@ For other sources this is automatically populated.`
     mediaVideo: t.field({
       type: MediaVideo,
       resolve: (video) => {
-        const source = typeof video.source === 'string' ? video.source : String(video.source)
-        if (
-          video.videoId != null &&
-          isMediaVideoSource(source)
-        ) {
+        const source =
+          typeof video.source === 'string' ? video.source : String(video.source)
+        if (video.videoId != null && isMediaVideoSource(source)) {
           return {
             id: video.videoId,
             source,
@@ -125,6 +125,6 @@ For other sources this is automatically populated.`
 builder.asEntity(VideoBlock, {
   key: builder.selection<{ id: string }>('id'),
   resolveReference: async (ref) => {
-    return await prisma.block.findUnique({ where: { id: ref.id } });
+    return await prisma.block.findUnique({ where: { id: ref.id } })
   }
-});
+})
