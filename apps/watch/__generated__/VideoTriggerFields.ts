@@ -38,6 +38,6 @@ export interface VideoTriggerFields {
    * triggerStart sets the time as to when a video navigates to the next block,
    * this is the number of seconds since the start of the video
    */
-  triggerStart: number | null;
+  triggerStart: number;
   triggerAction: VideoTriggerFields_triggerAction;
 }

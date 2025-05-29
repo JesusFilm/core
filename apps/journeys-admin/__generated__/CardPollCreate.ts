@@ -15,14 +15,14 @@ export interface CardPollCreate_image {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string | null;
-  width: number | null;
-  height: number | null;
+  alt: string;
+  width: number;
+  height: number;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string | null;
+  blurhash: string;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
@@ -35,7 +35,7 @@ export interface CardPollCreate_subtitle {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string | null;
+  content: string;
   variant: TypographyVariant | null;
 }
 
@@ -46,7 +46,7 @@ export interface CardPollCreate_title {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string | null;
+  content: string;
   variant: TypographyVariant | null;
 }
 
@@ -85,7 +85,7 @@ export interface CardPollCreate_radioOption1 {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string | null;
+  label: string;
   action: CardPollCreate_radioOption1_action | null;
 }
 
@@ -117,7 +117,7 @@ export interface CardPollCreate_radioOption2 {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string | null;
+  label: string;
   action: CardPollCreate_radioOption2_action | null;
 }
 
@@ -149,7 +149,7 @@ export interface CardPollCreate_radioOption3 {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string | null;
+  label: string;
   action: CardPollCreate_radioOption3_action | null;
 }
 
@@ -181,7 +181,7 @@ export interface CardPollCreate_radioOption4 {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string | null;
+  label: string;
   action: CardPollCreate_radioOption4_action | null;
 }
 
@@ -192,7 +192,7 @@ export interface CardPollCreate_body {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string | null;
+  content: string;
   variant: TypographyVariant | null;
 }
 
@@ -226,7 +226,7 @@ export interface CardPollCreate_cardBlockUpdate {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean | null;
+  fullscreen: boolean;
 }
 
 export interface CardPollCreate {

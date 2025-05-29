@@ -549,7 +549,7 @@ type Journey @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API
   """
   title: String!
   language: Language!
-  languageId: String @join__field(graph: API_JOURNEYS, type: "String!")  @join__field(graph: API_JOURNEYS_MODERN, type: "String") 
+  languageId: String!
   themeMode: ThemeMode! @join__field(graph: API_JOURNEYS) 
   themeName: ThemeName! @join__field(graph: API_JOURNEYS) 
   description: String
@@ -843,7 +843,7 @@ type CardBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @jo
   is set to true the coverBlock Image should be displayed as a blur in the
   background.
   """
-  fullscreen: Boolean @join__field(graph: API_JOURNEYS, type: "Boolean!")  @join__field(graph: API_JOURNEYS_MODERN, type: "Boolean") 
+  fullscreen: Boolean!
   """
   themeMode can override journey themeMode. If nothing is set then use
   themeMode from journey
@@ -861,10 +861,10 @@ type GridContainerBlock implements Block @join__type(graph: API_JOURNEYS, key: "
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  gap: Int @join__field(graph: API_JOURNEYS, type: "Int!")  @join__field(graph: API_JOURNEYS_MODERN, type: "Int") 
-  direction: GridDirection @join__field(graph: API_JOURNEYS, type: "GridDirection!")  @join__field(graph: API_JOURNEYS_MODERN, type: "GridDirection") 
-  justifyContent: GridJustifyContent @join__field(graph: API_JOURNEYS, type: "GridJustifyContent!")  @join__field(graph: API_JOURNEYS_MODERN, type: "GridJustifyContent") 
-  alignItems: GridAlignItems @join__field(graph: API_JOURNEYS, type: "GridAlignItems!")  @join__field(graph: API_JOURNEYS_MODERN, type: "GridAlignItems") 
+  gap: Int!
+  direction: GridDirection!
+  justifyContent: GridJustifyContent!
+  alignItems: GridAlignItems!
 }
 
 type GridItemBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -872,9 +872,9 @@ type GridItemBlock implements Block @join__type(graph: API_JOURNEYS, key: "id") 
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  xl: Int @join__field(graph: API_JOURNEYS, type: "Int!")  @join__field(graph: API_JOURNEYS_MODERN, type: "Int") 
-  lg: Int @join__field(graph: API_JOURNEYS, type: "Int!")  @join__field(graph: API_JOURNEYS_MODERN, type: "Int") 
-  sm: Int @join__field(graph: API_JOURNEYS, type: "Int!")  @join__field(graph: API_JOURNEYS_MODERN, type: "Int") 
+  xl: Int!
+  lg: Int!
+  sm: Int!
 }
 
 type IconBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -893,14 +893,14 @@ type ImageBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @j
   parentBlockId: ID
   parentOrder: Int
   src: String
-  width: Int @join__field(graph: API_JOURNEYS, type: "Int!")  @join__field(graph: API_JOURNEYS_MODERN, type: "Int") 
-  height: Int @join__field(graph: API_JOURNEYS, type: "Int!")  @join__field(graph: API_JOURNEYS_MODERN, type: "Int") 
-  alt: String @join__field(graph: API_JOURNEYS, type: "String!")  @join__field(graph: API_JOURNEYS_MODERN, type: "String") 
+  width: Int!
+  height: Int!
+  alt: String!
   """
   blurhash is a compact representation of a placeholder for an image.
   Find a frontend implementation at https://github.com/woltapp/blurhash
   """
-  blurhash: String @join__field(graph: API_JOURNEYS, type: "String!")  @join__field(graph: API_JOURNEYS_MODERN, type: "String") 
+  blurhash: String!
   scale: Int
   focalTop: Int
   focalLeft: Int
@@ -911,7 +911,7 @@ type RadioOptionBlock implements Block @join__type(graph: API_JOURNEYS, key: "id
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  label: String @join__field(graph: API_JOURNEYS, type: "String!")  @join__field(graph: API_JOURNEYS_MODERN, type: "String") 
+  label: String!
   action: Action @join__field(graph: API_JOURNEYS) 
 }
 
@@ -952,7 +952,7 @@ type StepBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @jo
   locked will be set to true if the user should not be able to manually
   advance to the next step.
   """
-  locked: Boolean @join__field(graph: API_JOURNEYS, type: "Boolean!")  @join__field(graph: API_JOURNEYS_MODERN, type: "Boolean") 
+  locked: Boolean!
   parentBlockId: ID
   parentOrder: Int
   """
@@ -980,7 +980,7 @@ type TextResponseBlock implements Block @join__type(graph: API_JOURNEYS, key: "i
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  label: String @join__field(graph: API_JOURNEYS, type: "String!")  @join__field(graph: API_JOURNEYS_MODERN, type: "String") 
+  label: String!
   placeholder: String
   required: Boolean
   hint: String
@@ -995,7 +995,7 @@ type TypographyBlock implements Block @join__type(graph: API_JOURNEYS, key: "id"
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  content: String @join__field(graph: API_JOURNEYS, type: "String!")  @join__field(graph: API_JOURNEYS_MODERN, type: "String") 
+  content: String!
   variant: TypographyVariant
   color: TypographyColor
   align: TypographyAlign
@@ -1132,7 +1132,7 @@ type VideoTriggerBlock implements Block @join__type(graph: API_JOURNEYS, key: "i
   triggerStart sets the time as to when a video navigates to the next block,
   this is the number of seconds since the start of the video
   """
-  triggerStart: Int @join__field(graph: API_JOURNEYS, type: "Int!")  @join__field(graph: API_JOURNEYS_MODERN, type: "Int") 
+  triggerStart: Int!
   action: Action! @join__field(graph: API_JOURNEYS) 
 }
 

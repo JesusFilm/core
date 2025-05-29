@@ -84,7 +84,7 @@ export interface CardCtaRestore_imageRestore_CardBlock {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean | null;
+  fullscreen: boolean;
 }
 
 export interface CardCtaRestore_imageRestore_IconBlock {
@@ -103,14 +103,14 @@ export interface CardCtaRestore_imageRestore_ImageBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string | null;
-  width: number | null;
-  height: number | null;
+  alt: string;
+  width: number;
+  height: number;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string | null;
+  blurhash: string;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
@@ -144,7 +144,7 @@ export interface CardCtaRestore_imageRestore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string | null;
+  label: string;
   action: CardCtaRestore_imageRestore_RadioOptionBlock_action | null;
 }
 
@@ -205,7 +205,7 @@ export interface CardCtaRestore_imageRestore_StepBlock {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean | null;
+  locked: boolean;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to
@@ -227,7 +227,7 @@ export interface CardCtaRestore_imageRestore_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   required: boolean | null;
-  label: string | null;
+  label: string;
   placeholder: string | null;
   hint: string | null;
   minRows: number | null;
@@ -243,7 +243,7 @@ export interface CardCtaRestore_imageRestore_TypographyBlock {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string | null;
+  content: string;
   variant: TypographyVariant | null;
 }
 
@@ -428,7 +428,7 @@ export interface CardCtaRestore_imageRestore_VideoTriggerBlock {
    * triggerStart sets the time as to when a video navigates to the next block,
    * this is the number of seconds since the start of the video
    */
-  triggerStart: number | null;
+  triggerStart: number;
   triggerAction: CardCtaRestore_imageRestore_VideoTriggerBlock_triggerAction;
 }
 
@@ -509,7 +509,7 @@ export interface CardCtaRestore_subtitleRestore_CardBlock {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean | null;
+  fullscreen: boolean;
 }
 
 export interface CardCtaRestore_subtitleRestore_IconBlock {
@@ -528,14 +528,14 @@ export interface CardCtaRestore_subtitleRestore_ImageBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string | null;
-  width: number | null;
-  height: number | null;
+  alt: string;
+  width: number;
+  height: number;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string | null;
+  blurhash: string;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
@@ -569,7 +569,7 @@ export interface CardCtaRestore_subtitleRestore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string | null;
+  label: string;
   action: CardCtaRestore_subtitleRestore_RadioOptionBlock_action | null;
 }
 
@@ -630,7 +630,7 @@ export interface CardCtaRestore_subtitleRestore_StepBlock {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean | null;
+  locked: boolean;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to
@@ -652,7 +652,7 @@ export interface CardCtaRestore_subtitleRestore_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   required: boolean | null;
-  label: string | null;
+  label: string;
   placeholder: string | null;
   hint: string | null;
   minRows: number | null;
@@ -668,7 +668,7 @@ export interface CardCtaRestore_subtitleRestore_TypographyBlock {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string | null;
+  content: string;
   variant: TypographyVariant | null;
 }
 
@@ -853,7 +853,7 @@ export interface CardCtaRestore_subtitleRestore_VideoTriggerBlock {
    * triggerStart sets the time as to when a video navigates to the next block,
    * this is the number of seconds since the start of the video
    */
-  triggerStart: number | null;
+  triggerStart: number;
   triggerAction: CardCtaRestore_subtitleRestore_VideoTriggerBlock_triggerAction;
 }
 
@@ -934,7 +934,7 @@ export interface CardCtaRestore_titleRestore_CardBlock {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean | null;
+  fullscreen: boolean;
 }
 
 export interface CardCtaRestore_titleRestore_IconBlock {
@@ -953,14 +953,14 @@ export interface CardCtaRestore_titleRestore_ImageBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string | null;
-  width: number | null;
-  height: number | null;
+  alt: string;
+  width: number;
+  height: number;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string | null;
+  blurhash: string;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
@@ -994,7 +994,7 @@ export interface CardCtaRestore_titleRestore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string | null;
+  label: string;
   action: CardCtaRestore_titleRestore_RadioOptionBlock_action | null;
 }
 
@@ -1055,7 +1055,7 @@ export interface CardCtaRestore_titleRestore_StepBlock {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean | null;
+  locked: boolean;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to
@@ -1077,7 +1077,7 @@ export interface CardCtaRestore_titleRestore_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   required: boolean | null;
-  label: string | null;
+  label: string;
   placeholder: string | null;
   hint: string | null;
   minRows: number | null;
@@ -1093,7 +1093,7 @@ export interface CardCtaRestore_titleRestore_TypographyBlock {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string | null;
+  content: string;
   variant: TypographyVariant | null;
 }
 
@@ -1278,7 +1278,7 @@ export interface CardCtaRestore_titleRestore_VideoTriggerBlock {
    * triggerStart sets the time as to when a video navigates to the next block,
    * this is the number of seconds since the start of the video
    */
-  triggerStart: number | null;
+  triggerStart: number;
   triggerAction: CardCtaRestore_titleRestore_VideoTriggerBlock_triggerAction;
 }
 
@@ -1359,7 +1359,7 @@ export interface CardCtaRestore_button1Restore_CardBlock {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean | null;
+  fullscreen: boolean;
 }
 
 export interface CardCtaRestore_button1Restore_IconBlock {
@@ -1378,14 +1378,14 @@ export interface CardCtaRestore_button1Restore_ImageBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string | null;
-  width: number | null;
-  height: number | null;
+  alt: string;
+  width: number;
+  height: number;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string | null;
+  blurhash: string;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
@@ -1419,7 +1419,7 @@ export interface CardCtaRestore_button1Restore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string | null;
+  label: string;
   action: CardCtaRestore_button1Restore_RadioOptionBlock_action | null;
 }
 
@@ -1480,7 +1480,7 @@ export interface CardCtaRestore_button1Restore_StepBlock {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean | null;
+  locked: boolean;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to
@@ -1502,7 +1502,7 @@ export interface CardCtaRestore_button1Restore_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   required: boolean | null;
-  label: string | null;
+  label: string;
   placeholder: string | null;
   hint: string | null;
   minRows: number | null;
@@ -1518,7 +1518,7 @@ export interface CardCtaRestore_button1Restore_TypographyBlock {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string | null;
+  content: string;
   variant: TypographyVariant | null;
 }
 
@@ -1703,7 +1703,7 @@ export interface CardCtaRestore_button1Restore_VideoTriggerBlock {
    * triggerStart sets the time as to when a video navigates to the next block,
    * this is the number of seconds since the start of the video
    */
-  triggerStart: number | null;
+  triggerStart: number;
   triggerAction: CardCtaRestore_button1Restore_VideoTriggerBlock_triggerAction;
 }
 
@@ -1784,7 +1784,7 @@ export interface CardCtaRestore_startIcon1Restore_CardBlock {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean | null;
+  fullscreen: boolean;
 }
 
 export interface CardCtaRestore_startIcon1Restore_IconBlock {
@@ -1803,14 +1803,14 @@ export interface CardCtaRestore_startIcon1Restore_ImageBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string | null;
-  width: number | null;
-  height: number | null;
+  alt: string;
+  width: number;
+  height: number;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string | null;
+  blurhash: string;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
@@ -1844,7 +1844,7 @@ export interface CardCtaRestore_startIcon1Restore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string | null;
+  label: string;
   action: CardCtaRestore_startIcon1Restore_RadioOptionBlock_action | null;
 }
 
@@ -1905,7 +1905,7 @@ export interface CardCtaRestore_startIcon1Restore_StepBlock {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean | null;
+  locked: boolean;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to
@@ -1927,7 +1927,7 @@ export interface CardCtaRestore_startIcon1Restore_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   required: boolean | null;
-  label: string | null;
+  label: string;
   placeholder: string | null;
   hint: string | null;
   minRows: number | null;
@@ -1943,7 +1943,7 @@ export interface CardCtaRestore_startIcon1Restore_TypographyBlock {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string | null;
+  content: string;
   variant: TypographyVariant | null;
 }
 
@@ -2128,7 +2128,7 @@ export interface CardCtaRestore_startIcon1Restore_VideoTriggerBlock {
    * triggerStart sets the time as to when a video navigates to the next block,
    * this is the number of seconds since the start of the video
    */
-  triggerStart: number | null;
+  triggerStart: number;
   triggerAction: CardCtaRestore_startIcon1Restore_VideoTriggerBlock_triggerAction;
 }
 
@@ -2209,7 +2209,7 @@ export interface CardCtaRestore_endIcon1Restore_CardBlock {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean | null;
+  fullscreen: boolean;
 }
 
 export interface CardCtaRestore_endIcon1Restore_IconBlock {
@@ -2228,14 +2228,14 @@ export interface CardCtaRestore_endIcon1Restore_ImageBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string | null;
-  width: number | null;
-  height: number | null;
+  alt: string;
+  width: number;
+  height: number;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string | null;
+  blurhash: string;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
@@ -2269,7 +2269,7 @@ export interface CardCtaRestore_endIcon1Restore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string | null;
+  label: string;
   action: CardCtaRestore_endIcon1Restore_RadioOptionBlock_action | null;
 }
 
@@ -2330,7 +2330,7 @@ export interface CardCtaRestore_endIcon1Restore_StepBlock {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean | null;
+  locked: boolean;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to
@@ -2352,7 +2352,7 @@ export interface CardCtaRestore_endIcon1Restore_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   required: boolean | null;
-  label: string | null;
+  label: string;
   placeholder: string | null;
   hint: string | null;
   minRows: number | null;
@@ -2368,7 +2368,7 @@ export interface CardCtaRestore_endIcon1Restore_TypographyBlock {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string | null;
+  content: string;
   variant: TypographyVariant | null;
 }
 
@@ -2553,7 +2553,7 @@ export interface CardCtaRestore_endIcon1Restore_VideoTriggerBlock {
    * triggerStart sets the time as to when a video navigates to the next block,
    * this is the number of seconds since the start of the video
    */
-  triggerStart: number | null;
+  triggerStart: number;
   triggerAction: CardCtaRestore_endIcon1Restore_VideoTriggerBlock_triggerAction;
 }
 
@@ -2634,7 +2634,7 @@ export interface CardCtaRestore_button2Restore_CardBlock {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean | null;
+  fullscreen: boolean;
 }
 
 export interface CardCtaRestore_button2Restore_IconBlock {
@@ -2653,14 +2653,14 @@ export interface CardCtaRestore_button2Restore_ImageBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string | null;
-  width: number | null;
-  height: number | null;
+  alt: string;
+  width: number;
+  height: number;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string | null;
+  blurhash: string;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
@@ -2694,7 +2694,7 @@ export interface CardCtaRestore_button2Restore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string | null;
+  label: string;
   action: CardCtaRestore_button2Restore_RadioOptionBlock_action | null;
 }
 
@@ -2755,7 +2755,7 @@ export interface CardCtaRestore_button2Restore_StepBlock {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean | null;
+  locked: boolean;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to
@@ -2777,7 +2777,7 @@ export interface CardCtaRestore_button2Restore_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   required: boolean | null;
-  label: string | null;
+  label: string;
   placeholder: string | null;
   hint: string | null;
   minRows: number | null;
@@ -2793,7 +2793,7 @@ export interface CardCtaRestore_button2Restore_TypographyBlock {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string | null;
+  content: string;
   variant: TypographyVariant | null;
 }
 
@@ -2978,7 +2978,7 @@ export interface CardCtaRestore_button2Restore_VideoTriggerBlock {
    * triggerStart sets the time as to when a video navigates to the next block,
    * this is the number of seconds since the start of the video
    */
-  triggerStart: number | null;
+  triggerStart: number;
   triggerAction: CardCtaRestore_button2Restore_VideoTriggerBlock_triggerAction;
 }
 
@@ -3059,7 +3059,7 @@ export interface CardCtaRestore_startIcon2Restore_CardBlock {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean | null;
+  fullscreen: boolean;
 }
 
 export interface CardCtaRestore_startIcon2Restore_IconBlock {
@@ -3078,14 +3078,14 @@ export interface CardCtaRestore_startIcon2Restore_ImageBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string | null;
-  width: number | null;
-  height: number | null;
+  alt: string;
+  width: number;
+  height: number;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string | null;
+  blurhash: string;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
@@ -3119,7 +3119,7 @@ export interface CardCtaRestore_startIcon2Restore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string | null;
+  label: string;
   action: CardCtaRestore_startIcon2Restore_RadioOptionBlock_action | null;
 }
 
@@ -3180,7 +3180,7 @@ export interface CardCtaRestore_startIcon2Restore_StepBlock {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean | null;
+  locked: boolean;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to
@@ -3202,7 +3202,7 @@ export interface CardCtaRestore_startIcon2Restore_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   required: boolean | null;
-  label: string | null;
+  label: string;
   placeholder: string | null;
   hint: string | null;
   minRows: number | null;
@@ -3218,7 +3218,7 @@ export interface CardCtaRestore_startIcon2Restore_TypographyBlock {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string | null;
+  content: string;
   variant: TypographyVariant | null;
 }
 
@@ -3403,7 +3403,7 @@ export interface CardCtaRestore_startIcon2Restore_VideoTriggerBlock {
    * triggerStart sets the time as to when a video navigates to the next block,
    * this is the number of seconds since the start of the video
    */
-  triggerStart: number | null;
+  triggerStart: number;
   triggerAction: CardCtaRestore_startIcon2Restore_VideoTriggerBlock_triggerAction;
 }
 
@@ -3484,7 +3484,7 @@ export interface CardCtaRestore_endIcon2Restore_CardBlock {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean | null;
+  fullscreen: boolean;
 }
 
 export interface CardCtaRestore_endIcon2Restore_IconBlock {
@@ -3503,14 +3503,14 @@ export interface CardCtaRestore_endIcon2Restore_ImageBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string | null;
-  width: number | null;
-  height: number | null;
+  alt: string;
+  width: number;
+  height: number;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string | null;
+  blurhash: string;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
@@ -3544,7 +3544,7 @@ export interface CardCtaRestore_endIcon2Restore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string | null;
+  label: string;
   action: CardCtaRestore_endIcon2Restore_RadioOptionBlock_action | null;
 }
 
@@ -3605,7 +3605,7 @@ export interface CardCtaRestore_endIcon2Restore_StepBlock {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean | null;
+  locked: boolean;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to
@@ -3627,7 +3627,7 @@ export interface CardCtaRestore_endIcon2Restore_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   required: boolean | null;
-  label: string | null;
+  label: string;
   placeholder: string | null;
   hint: string | null;
   minRows: number | null;
@@ -3643,7 +3643,7 @@ export interface CardCtaRestore_endIcon2Restore_TypographyBlock {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string | null;
+  content: string;
   variant: TypographyVariant | null;
 }
 
@@ -3828,7 +3828,7 @@ export interface CardCtaRestore_endIcon2Restore_VideoTriggerBlock {
    * triggerStart sets the time as to when a video navigates to the next block,
    * this is the number of seconds since the start of the video
    */
-  triggerStart: number | null;
+  triggerStart: number;
   triggerAction: CardCtaRestore_endIcon2Restore_VideoTriggerBlock_triggerAction;
 }
 
@@ -3909,7 +3909,7 @@ export interface CardCtaRestore_button3Restore_CardBlock {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean | null;
+  fullscreen: boolean;
 }
 
 export interface CardCtaRestore_button3Restore_IconBlock {
@@ -3928,14 +3928,14 @@ export interface CardCtaRestore_button3Restore_ImageBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string | null;
-  width: number | null;
-  height: number | null;
+  alt: string;
+  width: number;
+  height: number;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string | null;
+  blurhash: string;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
@@ -3969,7 +3969,7 @@ export interface CardCtaRestore_button3Restore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string | null;
+  label: string;
   action: CardCtaRestore_button3Restore_RadioOptionBlock_action | null;
 }
 
@@ -4030,7 +4030,7 @@ export interface CardCtaRestore_button3Restore_StepBlock {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean | null;
+  locked: boolean;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to
@@ -4052,7 +4052,7 @@ export interface CardCtaRestore_button3Restore_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   required: boolean | null;
-  label: string | null;
+  label: string;
   placeholder: string | null;
   hint: string | null;
   minRows: number | null;
@@ -4068,7 +4068,7 @@ export interface CardCtaRestore_button3Restore_TypographyBlock {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string | null;
+  content: string;
   variant: TypographyVariant | null;
 }
 
@@ -4253,7 +4253,7 @@ export interface CardCtaRestore_button3Restore_VideoTriggerBlock {
    * triggerStart sets the time as to when a video navigates to the next block,
    * this is the number of seconds since the start of the video
    */
-  triggerStart: number | null;
+  triggerStart: number;
   triggerAction: CardCtaRestore_button3Restore_VideoTriggerBlock_triggerAction;
 }
 
@@ -4334,7 +4334,7 @@ export interface CardCtaRestore_startIcon3Restore_CardBlock {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean | null;
+  fullscreen: boolean;
 }
 
 export interface CardCtaRestore_startIcon3Restore_IconBlock {
@@ -4353,14 +4353,14 @@ export interface CardCtaRestore_startIcon3Restore_ImageBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string | null;
-  width: number | null;
-  height: number | null;
+  alt: string;
+  width: number;
+  height: number;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string | null;
+  blurhash: string;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
@@ -4394,7 +4394,7 @@ export interface CardCtaRestore_startIcon3Restore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string | null;
+  label: string;
   action: CardCtaRestore_startIcon3Restore_RadioOptionBlock_action | null;
 }
 
@@ -4455,7 +4455,7 @@ export interface CardCtaRestore_startIcon3Restore_StepBlock {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean | null;
+  locked: boolean;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to
@@ -4477,7 +4477,7 @@ export interface CardCtaRestore_startIcon3Restore_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   required: boolean | null;
-  label: string | null;
+  label: string;
   placeholder: string | null;
   hint: string | null;
   minRows: number | null;
@@ -4493,7 +4493,7 @@ export interface CardCtaRestore_startIcon3Restore_TypographyBlock {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string | null;
+  content: string;
   variant: TypographyVariant | null;
 }
 
@@ -4678,7 +4678,7 @@ export interface CardCtaRestore_startIcon3Restore_VideoTriggerBlock {
    * triggerStart sets the time as to when a video navigates to the next block,
    * this is the number of seconds since the start of the video
    */
-  triggerStart: number | null;
+  triggerStart: number;
   triggerAction: CardCtaRestore_startIcon3Restore_VideoTriggerBlock_triggerAction;
 }
 
@@ -4759,7 +4759,7 @@ export interface CardCtaRestore_endIcon3Restore_CardBlock {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean | null;
+  fullscreen: boolean;
 }
 
 export interface CardCtaRestore_endIcon3Restore_IconBlock {
@@ -4778,14 +4778,14 @@ export interface CardCtaRestore_endIcon3Restore_ImageBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string | null;
-  width: number | null;
-  height: number | null;
+  alt: string;
+  width: number;
+  height: number;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string | null;
+  blurhash: string;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
@@ -4819,7 +4819,7 @@ export interface CardCtaRestore_endIcon3Restore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string | null;
+  label: string;
   action: CardCtaRestore_endIcon3Restore_RadioOptionBlock_action | null;
 }
 
@@ -4880,7 +4880,7 @@ export interface CardCtaRestore_endIcon3Restore_StepBlock {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean | null;
+  locked: boolean;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to
@@ -4902,7 +4902,7 @@ export interface CardCtaRestore_endIcon3Restore_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   required: boolean | null;
-  label: string | null;
+  label: string;
   placeholder: string | null;
   hint: string | null;
   minRows: number | null;
@@ -4918,7 +4918,7 @@ export interface CardCtaRestore_endIcon3Restore_TypographyBlock {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string | null;
+  content: string;
   variant: TypographyVariant | null;
 }
 
@@ -5103,7 +5103,7 @@ export interface CardCtaRestore_endIcon3Restore_VideoTriggerBlock {
    * triggerStart sets the time as to when a video navigates to the next block,
    * this is the number of seconds since the start of the video
    */
-  triggerStart: number | null;
+  triggerStart: number;
   triggerAction: CardCtaRestore_endIcon3Restore_VideoTriggerBlock_triggerAction;
 }
 
@@ -5139,7 +5139,7 @@ export interface CardCtaRestore_cardBlockUpdate {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean | null;
+  fullscreen: boolean;
 }
 
 export interface CardCtaRestore {

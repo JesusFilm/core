@@ -15,7 +15,7 @@ export interface TextResponseWithButtonCreate_textResponse {
   parentBlockId: string | null;
   parentOrder: number | null;
   required: boolean | null;
-  label: string | null;
+  label: string;
   placeholder: string | null;
   hint: string | null;
   minRows: number | null;

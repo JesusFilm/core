@@ -98,7 +98,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_CardBlock {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean | null;
+  fullscreen: boolean;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_IconBlock {
@@ -117,14 +117,14 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_ImageBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string | null;
-  width: number | null;
-  height: number | null;
+  alt: string;
+  width: number;
+  height: number;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string | null;
+  blurhash: string;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
@@ -158,7 +158,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock 
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string | null;
+  label: string;
   action: GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action | null;
 }
 
@@ -219,7 +219,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_StepBlock {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean | null;
+  locked: boolean;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to
@@ -241,7 +241,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock
   parentBlockId: string | null;
   parentOrder: number | null;
   required: boolean | null;
-  label: string | null;
+  label: string;
   placeholder: string | null;
   hint: string | null;
   minRows: number | null;
@@ -257,7 +257,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_TypographyBlock {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string | null;
+  content: string;
   variant: TypographyVariant | null;
 }
 
@@ -442,7 +442,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock
    * triggerStart sets the time as to when a video navigates to the next block,
    * this is the number of seconds since the start of the video
    */
-  triggerStart: number | null;
+  triggerStart: number;
   triggerAction: GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction;
 }
 
@@ -454,14 +454,14 @@ export interface GetPublisherTemplate_publisherTemplate_primaryImageBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string | null;
-  width: number | null;
-  height: number | null;
+  alt: string;
+  width: number;
+  height: number;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string | null;
+  blurhash: string;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
@@ -473,14 +473,14 @@ export interface GetPublisherTemplate_publisherTemplate_creatorImageBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string | null;
-  width: number | null;
-  height: number | null;
+  alt: string;
+  width: number;
+  height: number;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string | null;
+  blurhash: string;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
@@ -554,14 +554,14 @@ export interface GetPublisherTemplate_publisherTemplate_logoImageBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string | null;
-  width: number | null;
-  height: number | null;
+  alt: string;
+  width: number;
+  height: number;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string | null;
+  blurhash: string;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
@@ -576,7 +576,7 @@ export interface GetPublisherTemplate_publisherTemplate_menuStepBlock {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean | null;
+  locked: boolean;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to

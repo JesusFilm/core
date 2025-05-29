@@ -238,7 +238,7 @@ export type CardBlock = Block & {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen?: Maybe<Scalars['Boolean']['output']>;
+  fullscreen: Scalars['Boolean']['output'];
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
@@ -570,12 +570,12 @@ export enum GridAlignItems {
 
 export type GridContainerBlock = Block & {
   __typename?: 'GridContainerBlock';
-  alignItems?: Maybe<GridAlignItems>;
-  direction?: Maybe<GridDirection>;
-  gap?: Maybe<Scalars['Int']['output']>;
+  alignItems: GridAlignItems;
+  direction: GridDirection;
+  gap: Scalars['Int']['output'];
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
-  justifyContent?: Maybe<GridJustifyContent>;
+  justifyContent: GridJustifyContent;
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
 };
@@ -591,11 +591,11 @@ export type GridItemBlock = Block & {
   __typename?: 'GridItemBlock';
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
-  lg?: Maybe<Scalars['Int']['output']>;
+  lg: Scalars['Int']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
-  sm?: Maybe<Scalars['Int']['output']>;
-  xl?: Maybe<Scalars['Int']['output']>;
+  sm: Scalars['Int']['output'];
+  xl: Scalars['Int']['output'];
 };
 
 export enum GridJustifyContent {
@@ -708,22 +708,22 @@ export enum ImageAspectRatio {
 
 export type ImageBlock = Block & {
   __typename?: 'ImageBlock';
-  alt?: Maybe<Scalars['String']['output']>;
+  alt: Scalars['String']['output'];
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https://github.com/woltapp/blurhash
    */
-  blurhash?: Maybe<Scalars['String']['output']>;
+  blurhash: Scalars['String']['output'];
   focalLeft?: Maybe<Scalars['Int']['output']>;
   focalTop?: Maybe<Scalars['Int']['output']>;
-  height?: Maybe<Scalars['Int']['output']>;
+  height: Scalars['Int']['output'];
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
   scale?: Maybe<Scalars['Int']['output']>;
   src?: Maybe<Scalars['String']['output']>;
-  width?: Maybe<Scalars['Int']['output']>;
+  width: Scalars['Int']['output'];
 };
 
 export type ImageBlockCreateInput = {
@@ -817,7 +817,7 @@ export type Journey = {
   id: Scalars['ID']['output'];
   journeyCollections: Array<JourneyCollection>;
   language: Language;
-  languageId?: Maybe<Scalars['String']['output']>;
+  languageId: Scalars['String']['output'];
   logoImageBlock?: Maybe<ImageBlock>;
   menuButtonIcon?: Maybe<JourneyMenuButtonIcon>;
   menuStepBlock?: Maybe<StepBlock>;
@@ -3399,7 +3399,7 @@ export type RadioOptionBlock = Block & {
   action?: Maybe<Action>;
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
-  label?: Maybe<Scalars['String']['output']>;
+  label: Scalars['String']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
 };
@@ -3641,7 +3641,7 @@ export type StepBlock = Block & {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked?: Maybe<Scalars['Boolean']['output']>;
+  locked: Scalars['Boolean']['output'];
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to
@@ -3873,7 +3873,7 @@ export type TextResponseBlock = Block & {
   id: Scalars['ID']['output'];
   integrationId?: Maybe<Scalars['String']['output']>;
   journeyId: Scalars['ID']['output'];
-  label?: Maybe<Scalars['String']['output']>;
+  label: Scalars['String']['output'];
   minRows?: Maybe<Scalars['Int']['output']>;
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
@@ -3970,7 +3970,7 @@ export type TypographyBlock = Block & {
   __typename?: 'TypographyBlock';
   align?: Maybe<TypographyAlign>;
   color?: Maybe<TypographyColor>;
-  content?: Maybe<Scalars['String']['output']>;
+  content: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
@@ -4920,7 +4920,7 @@ export type VideoTriggerBlock = Block & {
    * triggerStart sets the time as to when a video navigates to the next block,
    * this is the number of seconds since the start of the video
    */
-  triggerStart?: Maybe<Scalars['Int']['output']>;
+  triggerStart: Scalars['Int']['output'];
 };
 
 export type VideoUpdateInput = {

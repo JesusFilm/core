@@ -84,7 +84,7 @@ export interface TextResponseWithButtonRestore_textResponse_CardBlock {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean | null;
+  fullscreen: boolean;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_IconBlock {
@@ -103,14 +103,14 @@ export interface TextResponseWithButtonRestore_textResponse_ImageBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string | null;
-  width: number | null;
-  height: number | null;
+  alt: string;
+  width: number;
+  height: number;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string | null;
+  blurhash: string;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
@@ -144,7 +144,7 @@ export interface TextResponseWithButtonRestore_textResponse_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string | null;
+  label: string;
   action: TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action | null;
 }
 
@@ -205,7 +205,7 @@ export interface TextResponseWithButtonRestore_textResponse_StepBlock {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean | null;
+  locked: boolean;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to
@@ -227,7 +227,7 @@ export interface TextResponseWithButtonRestore_textResponse_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   required: boolean | null;
-  label: string | null;
+  label: string;
   placeholder: string | null;
   hint: string | null;
   minRows: number | null;
@@ -243,7 +243,7 @@ export interface TextResponseWithButtonRestore_textResponse_TypographyBlock {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string | null;
+  content: string;
   variant: TypographyVariant | null;
 }
 
@@ -428,7 +428,7 @@ export interface TextResponseWithButtonRestore_textResponse_VideoTriggerBlock {
    * triggerStart sets the time as to when a video navigates to the next block,
    * this is the number of seconds since the start of the video
    */
-  triggerStart: number | null;
+  triggerStart: number;
   triggerAction: TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction;
 }
 
@@ -509,7 +509,7 @@ export interface TextResponseWithButtonRestore_button_CardBlock {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean | null;
+  fullscreen: boolean;
 }
 
 export interface TextResponseWithButtonRestore_button_IconBlock {
@@ -528,14 +528,14 @@ export interface TextResponseWithButtonRestore_button_ImageBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string | null;
-  width: number | null;
-  height: number | null;
+  alt: string;
+  width: number;
+  height: number;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string | null;
+  blurhash: string;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
@@ -569,7 +569,7 @@ export interface TextResponseWithButtonRestore_button_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string | null;
+  label: string;
   action: TextResponseWithButtonRestore_button_RadioOptionBlock_action | null;
 }
 
@@ -630,7 +630,7 @@ export interface TextResponseWithButtonRestore_button_StepBlock {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean | null;
+  locked: boolean;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to
@@ -652,7 +652,7 @@ export interface TextResponseWithButtonRestore_button_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   required: boolean | null;
-  label: string | null;
+  label: string;
   placeholder: string | null;
   hint: string | null;
   minRows: number | null;
@@ -668,7 +668,7 @@ export interface TextResponseWithButtonRestore_button_TypographyBlock {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string | null;
+  content: string;
   variant: TypographyVariant | null;
 }
 
@@ -853,7 +853,7 @@ export interface TextResponseWithButtonRestore_button_VideoTriggerBlock {
    * triggerStart sets the time as to when a video navigates to the next block,
    * this is the number of seconds since the start of the video
    */
-  triggerStart: number | null;
+  triggerStart: number;
   triggerAction: TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction;
 }
 
@@ -934,7 +934,7 @@ export interface TextResponseWithButtonRestore_startIcon_CardBlock {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean | null;
+  fullscreen: boolean;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_IconBlock {
@@ -953,14 +953,14 @@ export interface TextResponseWithButtonRestore_startIcon_ImageBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string | null;
-  width: number | null;
-  height: number | null;
+  alt: string;
+  width: number;
+  height: number;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string | null;
+  blurhash: string;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
@@ -994,7 +994,7 @@ export interface TextResponseWithButtonRestore_startIcon_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string | null;
+  label: string;
   action: TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action | null;
 }
 
@@ -1055,7 +1055,7 @@ export interface TextResponseWithButtonRestore_startIcon_StepBlock {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean | null;
+  locked: boolean;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to
@@ -1077,7 +1077,7 @@ export interface TextResponseWithButtonRestore_startIcon_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   required: boolean | null;
-  label: string | null;
+  label: string;
   placeholder: string | null;
   hint: string | null;
   minRows: number | null;
@@ -1093,7 +1093,7 @@ export interface TextResponseWithButtonRestore_startIcon_TypographyBlock {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string | null;
+  content: string;
   variant: TypographyVariant | null;
 }
 
@@ -1278,7 +1278,7 @@ export interface TextResponseWithButtonRestore_startIcon_VideoTriggerBlock {
    * triggerStart sets the time as to when a video navigates to the next block,
    * this is the number of seconds since the start of the video
    */
-  triggerStart: number | null;
+  triggerStart: number;
   triggerAction: TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction;
 }
 
@@ -1359,7 +1359,7 @@ export interface TextResponseWithButtonRestore_endIcon_CardBlock {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean | null;
+  fullscreen: boolean;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_IconBlock {
@@ -1378,14 +1378,14 @@ export interface TextResponseWithButtonRestore_endIcon_ImageBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string | null;
-  width: number | null;
-  height: number | null;
+  alt: string;
+  width: number;
+  height: number;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string | null;
+  blurhash: string;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
@@ -1419,7 +1419,7 @@ export interface TextResponseWithButtonRestore_endIcon_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string | null;
+  label: string;
   action: TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action | null;
 }
 
@@ -1480,7 +1480,7 @@ export interface TextResponseWithButtonRestore_endIcon_StepBlock {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean | null;
+  locked: boolean;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to
@@ -1502,7 +1502,7 @@ export interface TextResponseWithButtonRestore_endIcon_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   required: boolean | null;
-  label: string | null;
+  label: string;
   placeholder: string | null;
   hint: string | null;
   minRows: number | null;
@@ -1518,7 +1518,7 @@ export interface TextResponseWithButtonRestore_endIcon_TypographyBlock {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string | null;
+  content: string;
   variant: TypographyVariant | null;
 }
 
@@ -1703,7 +1703,7 @@ export interface TextResponseWithButtonRestore_endIcon_VideoTriggerBlock {
    * triggerStart sets the time as to when a video navigates to the next block,
    * this is the number of seconds since the start of the video
    */
-  triggerStart: number | null;
+  triggerStart: number;
   triggerAction: TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction;
 }
 

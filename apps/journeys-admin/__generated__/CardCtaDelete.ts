@@ -39,7 +39,7 @@ export interface CardCtaDelete_cardBlockUpdate {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean | null;
+  fullscreen: boolean;
 }
 
 export interface CardCtaDelete_endIcon3Delete {

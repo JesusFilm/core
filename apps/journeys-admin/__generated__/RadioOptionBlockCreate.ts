@@ -35,7 +35,7 @@ export type RadioOptionBlockCreate_radioOptionBlockCreate_action = RadioOptionBl
 export interface RadioOptionBlockCreate_radioOptionBlockCreate {
   __typename: "RadioOptionBlock";
   id: string;
-  label: string | null;
+  label: string;
   parentBlockId: string | null;
   parentOrder: number | null;
   action: RadioOptionBlockCreate_radioOptionBlockCreate_action | null;

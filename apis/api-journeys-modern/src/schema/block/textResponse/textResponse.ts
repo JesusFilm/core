@@ -25,9 +25,10 @@ export const TextResponseBlock = builder.prismaObject('Block', {
       nullable: true,
       directives: { shareable: true }
     }),
-    label: t.exposeString('label', {
-      nullable: true,
-      directives: { shareable: true }
+    label: t.string({
+      nullable: false,
+      directives: { shareable: true },
+      resolve: (block) => block.label ?? ''
     }),
     placeholder: t.exposeString('placeholder', {
       nullable: true,

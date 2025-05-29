@@ -24,7 +24,7 @@ export interface MenuBlockDelete_journeyUpdate_menuStepBlock {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean | null;
+  locked: boolean;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to

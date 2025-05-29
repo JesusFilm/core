@@ -84,7 +84,7 @@ export interface CardPollRestore_imageRestore_CardBlock {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean | null;
+  fullscreen: boolean;
 }
 
 export interface CardPollRestore_imageRestore_IconBlock {
@@ -103,14 +103,14 @@ export interface CardPollRestore_imageRestore_ImageBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string | null;
-  width: number | null;
-  height: number | null;
+  alt: string;
+  width: number;
+  height: number;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string | null;
+  blurhash: string;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
@@ -144,7 +144,7 @@ export interface CardPollRestore_imageRestore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string | null;
+  label: string;
   action: CardPollRestore_imageRestore_RadioOptionBlock_action | null;
 }
 
@@ -205,7 +205,7 @@ export interface CardPollRestore_imageRestore_StepBlock {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean | null;
+  locked: boolean;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to
@@ -227,7 +227,7 @@ export interface CardPollRestore_imageRestore_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   required: boolean | null;
-  label: string | null;
+  label: string;
   placeholder: string | null;
   hint: string | null;
   minRows: number | null;
@@ -243,7 +243,7 @@ export interface CardPollRestore_imageRestore_TypographyBlock {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string | null;
+  content: string;
   variant: TypographyVariant | null;
 }
 
@@ -428,7 +428,7 @@ export interface CardPollRestore_imageRestore_VideoTriggerBlock {
    * triggerStart sets the time as to when a video navigates to the next block,
    * this is the number of seconds since the start of the video
    */
-  triggerStart: number | null;
+  triggerStart: number;
   triggerAction: CardPollRestore_imageRestore_VideoTriggerBlock_triggerAction;
 }
 
@@ -509,7 +509,7 @@ export interface CardPollRestore_subtitleRestore_CardBlock {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean | null;
+  fullscreen: boolean;
 }
 
 export interface CardPollRestore_subtitleRestore_IconBlock {
@@ -528,14 +528,14 @@ export interface CardPollRestore_subtitleRestore_ImageBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string | null;
-  width: number | null;
-  height: number | null;
+  alt: string;
+  width: number;
+  height: number;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string | null;
+  blurhash: string;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
@@ -569,7 +569,7 @@ export interface CardPollRestore_subtitleRestore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string | null;
+  label: string;
   action: CardPollRestore_subtitleRestore_RadioOptionBlock_action | null;
 }
 
@@ -630,7 +630,7 @@ export interface CardPollRestore_subtitleRestore_StepBlock {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean | null;
+  locked: boolean;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to
@@ -652,7 +652,7 @@ export interface CardPollRestore_subtitleRestore_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   required: boolean | null;
-  label: string | null;
+  label: string;
   placeholder: string | null;
   hint: string | null;
   minRows: number | null;
@@ -668,7 +668,7 @@ export interface CardPollRestore_subtitleRestore_TypographyBlock {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string | null;
+  content: string;
   variant: TypographyVariant | null;
 }
 
@@ -853,7 +853,7 @@ export interface CardPollRestore_subtitleRestore_VideoTriggerBlock {
    * triggerStart sets the time as to when a video navigates to the next block,
    * this is the number of seconds since the start of the video
    */
-  triggerStart: number | null;
+  triggerStart: number;
   triggerAction: CardPollRestore_subtitleRestore_VideoTriggerBlock_triggerAction;
 }
 
@@ -934,7 +934,7 @@ export interface CardPollRestore_titleRestore_CardBlock {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean | null;
+  fullscreen: boolean;
 }
 
 export interface CardPollRestore_titleRestore_IconBlock {
@@ -953,14 +953,14 @@ export interface CardPollRestore_titleRestore_ImageBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string | null;
-  width: number | null;
-  height: number | null;
+  alt: string;
+  width: number;
+  height: number;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string | null;
+  blurhash: string;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
@@ -994,7 +994,7 @@ export interface CardPollRestore_titleRestore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string | null;
+  label: string;
   action: CardPollRestore_titleRestore_RadioOptionBlock_action | null;
 }
 
@@ -1055,7 +1055,7 @@ export interface CardPollRestore_titleRestore_StepBlock {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean | null;
+  locked: boolean;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to
@@ -1077,7 +1077,7 @@ export interface CardPollRestore_titleRestore_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   required: boolean | null;
-  label: string | null;
+  label: string;
   placeholder: string | null;
   hint: string | null;
   minRows: number | null;
@@ -1093,7 +1093,7 @@ export interface CardPollRestore_titleRestore_TypographyBlock {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string | null;
+  content: string;
   variant: TypographyVariant | null;
 }
 
@@ -1278,7 +1278,7 @@ export interface CardPollRestore_titleRestore_VideoTriggerBlock {
    * triggerStart sets the time as to when a video navigates to the next block,
    * this is the number of seconds since the start of the video
    */
-  triggerStart: number | null;
+  triggerStart: number;
   triggerAction: CardPollRestore_titleRestore_VideoTriggerBlock_triggerAction;
 }
 
@@ -1359,7 +1359,7 @@ export interface CardPollRestore_radioQuestionRestore_CardBlock {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean | null;
+  fullscreen: boolean;
 }
 
 export interface CardPollRestore_radioQuestionRestore_IconBlock {
@@ -1378,14 +1378,14 @@ export interface CardPollRestore_radioQuestionRestore_ImageBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string | null;
-  width: number | null;
-  height: number | null;
+  alt: string;
+  width: number;
+  height: number;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string | null;
+  blurhash: string;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
@@ -1419,7 +1419,7 @@ export interface CardPollRestore_radioQuestionRestore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string | null;
+  label: string;
   action: CardPollRestore_radioQuestionRestore_RadioOptionBlock_action | null;
 }
 
@@ -1480,7 +1480,7 @@ export interface CardPollRestore_radioQuestionRestore_StepBlock {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean | null;
+  locked: boolean;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to
@@ -1502,7 +1502,7 @@ export interface CardPollRestore_radioQuestionRestore_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   required: boolean | null;
-  label: string | null;
+  label: string;
   placeholder: string | null;
   hint: string | null;
   minRows: number | null;
@@ -1518,7 +1518,7 @@ export interface CardPollRestore_radioQuestionRestore_TypographyBlock {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string | null;
+  content: string;
   variant: TypographyVariant | null;
 }
 
@@ -1703,7 +1703,7 @@ export interface CardPollRestore_radioQuestionRestore_VideoTriggerBlock {
    * triggerStart sets the time as to when a video navigates to the next block,
    * this is the number of seconds since the start of the video
    */
-  triggerStart: number | null;
+  triggerStart: number;
   triggerAction: CardPollRestore_radioQuestionRestore_VideoTriggerBlock_triggerAction;
 }
 
@@ -1784,7 +1784,7 @@ export interface CardPollRestore_radioOption1Restore_CardBlock {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean | null;
+  fullscreen: boolean;
 }
 
 export interface CardPollRestore_radioOption1Restore_IconBlock {
@@ -1803,14 +1803,14 @@ export interface CardPollRestore_radioOption1Restore_ImageBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string | null;
-  width: number | null;
-  height: number | null;
+  alt: string;
+  width: number;
+  height: number;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string | null;
+  blurhash: string;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
@@ -1844,7 +1844,7 @@ export interface CardPollRestore_radioOption1Restore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string | null;
+  label: string;
   action: CardPollRestore_radioOption1Restore_RadioOptionBlock_action | null;
 }
 
@@ -1905,7 +1905,7 @@ export interface CardPollRestore_radioOption1Restore_StepBlock {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean | null;
+  locked: boolean;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to
@@ -1927,7 +1927,7 @@ export interface CardPollRestore_radioOption1Restore_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   required: boolean | null;
-  label: string | null;
+  label: string;
   placeholder: string | null;
   hint: string | null;
   minRows: number | null;
@@ -1943,7 +1943,7 @@ export interface CardPollRestore_radioOption1Restore_TypographyBlock {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string | null;
+  content: string;
   variant: TypographyVariant | null;
 }
 
@@ -2128,7 +2128,7 @@ export interface CardPollRestore_radioOption1Restore_VideoTriggerBlock {
    * triggerStart sets the time as to when a video navigates to the next block,
    * this is the number of seconds since the start of the video
    */
-  triggerStart: number | null;
+  triggerStart: number;
   triggerAction: CardPollRestore_radioOption1Restore_VideoTriggerBlock_triggerAction;
 }
 
@@ -2209,7 +2209,7 @@ export interface CardPollRestore_radioOption2Restore_CardBlock {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean | null;
+  fullscreen: boolean;
 }
 
 export interface CardPollRestore_radioOption2Restore_IconBlock {
@@ -2228,14 +2228,14 @@ export interface CardPollRestore_radioOption2Restore_ImageBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string | null;
-  width: number | null;
-  height: number | null;
+  alt: string;
+  width: number;
+  height: number;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string | null;
+  blurhash: string;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
@@ -2269,7 +2269,7 @@ export interface CardPollRestore_radioOption2Restore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string | null;
+  label: string;
   action: CardPollRestore_radioOption2Restore_RadioOptionBlock_action | null;
 }
 
@@ -2330,7 +2330,7 @@ export interface CardPollRestore_radioOption2Restore_StepBlock {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean | null;
+  locked: boolean;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to
@@ -2352,7 +2352,7 @@ export interface CardPollRestore_radioOption2Restore_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   required: boolean | null;
-  label: string | null;
+  label: string;
   placeholder: string | null;
   hint: string | null;
   minRows: number | null;
@@ -2368,7 +2368,7 @@ export interface CardPollRestore_radioOption2Restore_TypographyBlock {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string | null;
+  content: string;
   variant: TypographyVariant | null;
 }
 
@@ -2553,7 +2553,7 @@ export interface CardPollRestore_radioOption2Restore_VideoTriggerBlock {
    * triggerStart sets the time as to when a video navigates to the next block,
    * this is the number of seconds since the start of the video
    */
-  triggerStart: number | null;
+  triggerStart: number;
   triggerAction: CardPollRestore_radioOption2Restore_VideoTriggerBlock_triggerAction;
 }
 
@@ -2634,7 +2634,7 @@ export interface CardPollRestore_radioOption3Restore_CardBlock {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean | null;
+  fullscreen: boolean;
 }
 
 export interface CardPollRestore_radioOption3Restore_IconBlock {
@@ -2653,14 +2653,14 @@ export interface CardPollRestore_radioOption3Restore_ImageBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string | null;
-  width: number | null;
-  height: number | null;
+  alt: string;
+  width: number;
+  height: number;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string | null;
+  blurhash: string;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
@@ -2694,7 +2694,7 @@ export interface CardPollRestore_radioOption3Restore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string | null;
+  label: string;
   action: CardPollRestore_radioOption3Restore_RadioOptionBlock_action | null;
 }
 
@@ -2755,7 +2755,7 @@ export interface CardPollRestore_radioOption3Restore_StepBlock {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean | null;
+  locked: boolean;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to
@@ -2777,7 +2777,7 @@ export interface CardPollRestore_radioOption3Restore_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   required: boolean | null;
-  label: string | null;
+  label: string;
   placeholder: string | null;
   hint: string | null;
   minRows: number | null;
@@ -2793,7 +2793,7 @@ export interface CardPollRestore_radioOption3Restore_TypographyBlock {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string | null;
+  content: string;
   variant: TypographyVariant | null;
 }
 
@@ -2978,7 +2978,7 @@ export interface CardPollRestore_radioOption3Restore_VideoTriggerBlock {
    * triggerStart sets the time as to when a video navigates to the next block,
    * this is the number of seconds since the start of the video
    */
-  triggerStart: number | null;
+  triggerStart: number;
   triggerAction: CardPollRestore_radioOption3Restore_VideoTriggerBlock_triggerAction;
 }
 
@@ -3059,7 +3059,7 @@ export interface CardPollRestore_radioOption4Restore_CardBlock {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean | null;
+  fullscreen: boolean;
 }
 
 export interface CardPollRestore_radioOption4Restore_IconBlock {
@@ -3078,14 +3078,14 @@ export interface CardPollRestore_radioOption4Restore_ImageBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string | null;
-  width: number | null;
-  height: number | null;
+  alt: string;
+  width: number;
+  height: number;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string | null;
+  blurhash: string;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
@@ -3119,7 +3119,7 @@ export interface CardPollRestore_radioOption4Restore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string | null;
+  label: string;
   action: CardPollRestore_radioOption4Restore_RadioOptionBlock_action | null;
 }
 
@@ -3180,7 +3180,7 @@ export interface CardPollRestore_radioOption4Restore_StepBlock {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean | null;
+  locked: boolean;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to
@@ -3202,7 +3202,7 @@ export interface CardPollRestore_radioOption4Restore_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   required: boolean | null;
-  label: string | null;
+  label: string;
   placeholder: string | null;
   hint: string | null;
   minRows: number | null;
@@ -3218,7 +3218,7 @@ export interface CardPollRestore_radioOption4Restore_TypographyBlock {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string | null;
+  content: string;
   variant: TypographyVariant | null;
 }
 
@@ -3403,7 +3403,7 @@ export interface CardPollRestore_radioOption4Restore_VideoTriggerBlock {
    * triggerStart sets the time as to when a video navigates to the next block,
    * this is the number of seconds since the start of the video
    */
-  triggerStart: number | null;
+  triggerStart: number;
   triggerAction: CardPollRestore_radioOption4Restore_VideoTriggerBlock_triggerAction;
 }
 
@@ -3484,7 +3484,7 @@ export interface CardPollRestore_bodyRestore_CardBlock {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean | null;
+  fullscreen: boolean;
 }
 
 export interface CardPollRestore_bodyRestore_IconBlock {
@@ -3503,14 +3503,14 @@ export interface CardPollRestore_bodyRestore_ImageBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string | null;
-  width: number | null;
-  height: number | null;
+  alt: string;
+  width: number;
+  height: number;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string | null;
+  blurhash: string;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
@@ -3544,7 +3544,7 @@ export interface CardPollRestore_bodyRestore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string | null;
+  label: string;
   action: CardPollRestore_bodyRestore_RadioOptionBlock_action | null;
 }
 
@@ -3605,7 +3605,7 @@ export interface CardPollRestore_bodyRestore_StepBlock {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean | null;
+  locked: boolean;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to
@@ -3627,7 +3627,7 @@ export interface CardPollRestore_bodyRestore_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   required: boolean | null;
-  label: string | null;
+  label: string;
   placeholder: string | null;
   hint: string | null;
   minRows: number | null;
@@ -3643,7 +3643,7 @@ export interface CardPollRestore_bodyRestore_TypographyBlock {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string | null;
+  content: string;
   variant: TypographyVariant | null;
 }
 
@@ -3828,7 +3828,7 @@ export interface CardPollRestore_bodyRestore_VideoTriggerBlock {
    * triggerStart sets the time as to when a video navigates to the next block,
    * this is the number of seconds since the start of the video
    */
-  triggerStart: number | null;
+  triggerStart: number;
   triggerAction: CardPollRestore_bodyRestore_VideoTriggerBlock_triggerAction;
 }
 

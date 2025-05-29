@@ -10,7 +10,11 @@ builder.enumType('JourneyStatus', {
 export const JourneyRef = builder.prismaObject('Journey', {
   fields: (t) => ({
     id: t.exposeID('id', { shareable: true, nullable: false }),
-    title: t.exposeString('title', { shareable: true, nullable: false }),
+    title: t.exposeString('title', {
+      shareable: true,
+      nullable: false,
+      description: 'private title for creators'
+    }),
     description: t.exposeString('description', {
       nullable: true,
       shareable: true
@@ -32,7 +36,10 @@ export const JourneyRef = builder.prismaObject('Journey', {
       shareable: true,
       resolve: (journey) => journey.status
     }),
-    languageId: t.exposeString('languageId', { shareable: true }),
+    languageId: t.exposeString('languageId', {
+      shareable: true,
+      nullable: false
+    }),
     language: t.field({
       type: Language,
       shareable: true,
