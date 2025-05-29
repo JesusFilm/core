@@ -10,7 +10,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": ["nx build video-importer", "playwright test"],
-        "parallel": false
+        "cwd": "apps/video-importer-e2e"
       }
     },
     "update-snapshots": {
