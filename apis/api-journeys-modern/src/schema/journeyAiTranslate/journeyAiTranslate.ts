@@ -203,7 +203,11 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
         }
 
         // Update journey with translated title and description
-        const updateData: any = {
+        const updateData: {
+          title: string
+          languageId: string
+          description?: string
+        } = {
           title: analysisResult.object.title,
           languageId: input.textLanguageId
         }
