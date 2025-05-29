@@ -28,7 +28,8 @@ export const commonConfig = defineConfig({
     }
   },
   hmacSignature: {
-    secret: process.env.GATEWAY_HMAC_SECRET ?? ''
+    secret: hmacSecret ?? '',
+    extensionName: 'hmac-signature'
   },
   jwt: {
     tokenLookupLocations: [
