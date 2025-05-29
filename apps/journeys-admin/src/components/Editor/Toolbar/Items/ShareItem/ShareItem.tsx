@@ -73,10 +73,10 @@ export function ShareItem({
   const [showSlugDialog, setShowSlugDialog] = useState<boolean | null>(null)
   const [showEmbedDialog, setShowEmbedDialog] = useState<boolean | null>(null)
   const [showQrCodeDialog, setShowQrCodeDialog] = useState<boolean | null>(null)
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
+  const [showShareDialog, setShowShareDialog] = useState<boolean | null>(null)
 
-  function handleShowMenu(event: MouseEvent<HTMLElement>): void {
-    setAnchorEl(event.currentTarget)
+  function handleShowMenu(): void {
+    setShowShareDialog(true)
     handleKeepMounted?.()
     handleCloseMenu?.()
   }
@@ -114,15 +114,17 @@ export function ShareItem({
         onClick={handleShowMenu}
         ButtonProps={{ variant: 'contained' }}
       />
-      <ShareDialog
-        open={Boolean(anchorEl)}
-        onClose={() => setAnchorEl(null)}
-        journey={journey}
-        hostname={hostname}
-        onEditUrlClick={handleEditUrlClick}
-        onEmbedJourneyClick={handleEmbedJourneyClick}
-        onQrCodeClick={handleQrCodeClick}
-      />
+      {showShareDialog && (
+        <ShareDialog
+          open={showShareDialog}
+          onClose={() => setShowShareDialog(false)}
+          journey={journey}
+          hostname={hostname}
+          onEditUrlClick={handleEditUrlClick}
+          onEmbedJourneyClick={handleEmbedJourneyClick}
+          onQrCodeClick={handleQrCodeClick}
+        />
+      )}
       {showSlugDialog != null && (
         <SlugDialog
           open={showSlugDialog}
