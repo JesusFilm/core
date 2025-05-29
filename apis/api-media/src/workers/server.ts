@@ -79,8 +79,8 @@ async function main(): Promise<void> {
     )
     run(
       await import(
-        /* webpackChunkName: "big-query" */
-        './bigQuery'
+        /* webpackChunkName: "video-children" */
+        './videoChildren'
       )
     )
   }

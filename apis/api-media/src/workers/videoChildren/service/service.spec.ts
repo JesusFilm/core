@@ -1,21 +1,21 @@
 import { Video } from '.prisma/api-media-client'
 
-import { prismaMock } from '../../../../../test/prismaMock'
+import { prismaMock } from '../../../../test/prismaMock'
 
-import { importVideoChildren } from './videoChildren'
+import { service } from './service'
 
-jest.mock('../videos', () => ({
-  getVideoIds: jest.fn().mockReturnValue(['video1', 'video2', 'video3'])
-}))
-
-describe('bigQuery/importers/videoChildren', () => {
-  describe('importVideoChildren', () => {
+describe('videoChildren/service', () => {
+  describe('service', () => {
     it('should turn child ids array into video parent relationship', async () => {
-      prismaMock.video.findMany.mockResolvedValue([
+      prismaMock.video.findMany.mockResolvedValueOnce([
+        { id: 'video1', childIds: [] } as unknown as Video,
+        { id: 'video2', childIds: [] } as unknown as Video,
+        { id: 'video3', childIds: [] } as unknown as Video,
+      ]).mockResolvedValueOnce([
         { id: 'video1', childIds: ['video2', 'video3'] } as unknown as Video,
         { id: 'video2', childIds: ['video3'] } as unknown as Video
       ])
-      await importVideoChildren()
+      await service()
       expect(prismaMock.video.update).toHaveBeenCalledWith({
         where: { id: 'video1' },
         data: {
