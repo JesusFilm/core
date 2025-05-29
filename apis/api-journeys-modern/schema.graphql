@@ -498,7 +498,6 @@ type Video
 
 type VideoBlock implements Block
   @key(fields: "id")
-  @key(fields: "id")
 {
   id: ID! @shareable
   journeyId: ID! @shareable
