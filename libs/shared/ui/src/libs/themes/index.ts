@@ -3,8 +3,8 @@ import { Theme } from '@mui/material/styles'
 import { getBaseDark, getBaseLight } from './base/theme'
 import { adminLight } from './journeysAdmin/theme'
 import { getJourneyUiDark, getJourneyUiLight } from './journeyUi/theme'
-import { websiteDark, websiteLight } from './website/theme'
 import { watchDark } from './watch/theme'
+import { websiteDark, websiteLight } from './website/theme'
 
 export enum ThemeMode {
   dark = 'dark',

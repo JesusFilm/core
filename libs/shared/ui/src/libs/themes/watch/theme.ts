@@ -5,9 +5,10 @@ import { deepmerge } from '@mui/utils'
 
 import { baseBreakpoints } from '../base/tokens/breakpoints'
 import { baseSpacing } from '../base/tokens/spacing'
+import { websiteComponents } from '../website/tokens/components'
+
 import { watchColorsDark } from './tokens/colors'
 import { watchTypography } from './tokens/typography'
-import { websiteComponents } from '../website/tokens/components'
 
 const watchTheme = {
   ...baseSpacing,
