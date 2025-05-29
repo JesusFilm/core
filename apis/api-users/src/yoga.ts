@@ -46,8 +46,7 @@ export const yoga = createYoga<Record<string, unknown>, Context>({
     useForwardedJWT({}),
     process.env.NODE_ENV !== 'test'
       ? useHmacSignatureValidation({
-          secret: process.env.GATEWAY_HMAC_SECRET ?? '',
-          extensionName: 'hmac-signature'
+          secret: process.env.GATEWAY_HMAC_SECRET ?? ''
         })
       : {},
     useReadinessCheck({

@@ -21,8 +21,7 @@ export const yoga = createYoga({
     tracingPlugin,
     process.env.NODE_ENV !== 'test'
       ? useHmacSignatureValidation({
-          secret: process.env.GATEWAY_HMAC_SECRET ?? '',
-          extensionName: 'hmac-signature'
+          secret: process.env.GATEWAY_HMAC_SECRET ?? ''
         })
       : {},
     useReadinessCheck({
