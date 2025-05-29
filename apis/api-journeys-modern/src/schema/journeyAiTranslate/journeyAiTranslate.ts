@@ -154,9 +154,12 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
           cardBlocks
         })
 
+        const trimmedDescription = journey.description?.trim() ?? ''
+        const hasDescription = Boolean(trimmedDescription)
+
         const journeyContent = `
   Journey Title: ${journey.title}
-  Journey Description: ${journey.description ?? 'No description'}
+  Journey Description: ${hasDescription ? trimmedDescription : 'No description'}
   
   ${cardBlocksContent.join('\n\n')}
                 `.trim()
@@ -196,6 +199,10 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
           throw new GraphQLError('Failed to translate journey title')
         }
 
+        if (hasDescription && !analysisResult.object.description) {
+          throw new GraphQLError('Failed to translate journey description')
+        }
+
         yield {
           progress: 70,
           message: 'Updating journey with translated title...',
@@ -212,7 +219,7 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
           languageId: input.textLanguageId
         }
 
-        if (journey.description && analysisResult.object.description) {
+        if (hasDescription && analysisResult.object.description) {
           updateData.description = analysisResult.object.description
         }
 
@@ -416,6 +423,9 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
         })
       }
 
+      const trimmedDescription = journey.description?.trim() ?? ''
+      const hasDescription = Boolean(trimmedDescription)
+
       if (!ability(Action.Update, subject('Journey', journey), user)) {
         throw new GraphQLError(
           'user does not have permission to update journey',
@@ -453,7 +463,7 @@ The source language is: ${sourceLanguageName}.
 The target language name is: ${requestedLanguageName}.
 
 Journey Title: ${originalName}
-${journey.description ? `Journey Description: ${journey.description}` : ''}
+${hasDescription ? `Journey Description: ${trimmedDescription}` : ''}
 
 Seo Title: ${journey.seoTitle ?? ''}
 Seo Description: ${journey.seoDescription ?? ''}
@@ -493,7 +503,7 @@ Return in this format:
           throw new Error('Failed to translate journey title')
 
         // Only validate description if the original journey had one
-        if (journey.description && !analysisAndTranslation.description)
+        if (hasDescription && !analysisAndTranslation.description)
           throw new Error('Failed to translate journey description')
 
         // Only validate seoTitle if the original journey had one
@@ -512,7 +522,7 @@ Return in this format:
           data: {
             title: analysisAndTranslation.title,
             // Only update description if the original journey had one
-            ...(journey.description
+            ...(hasDescription
               ? { description: analysisAndTranslation.description }
               : {}),
             // Only update seoTitle if the original journey had one
