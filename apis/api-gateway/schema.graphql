@@ -2755,6 +2755,9 @@ type VideoVariant @join__type(graph: API_MEDIA)  {
   version control for master video file
   """
   version: Int!
+  masterUrl: String
+  masterHeight: Int
+  masterWidth: Int
 }
 
 type VideoVariantDownload @join__type(graph: API_MEDIA)  {

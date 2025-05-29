@@ -1013,6 +1013,9 @@ type VideoVariant {
 
   """version control for master video file"""
   version: Int!
+  masterUrl: String
+  masterHeight: Int
+  masterWidth: Int
 }
 
 input VideoVariantCreateInput {

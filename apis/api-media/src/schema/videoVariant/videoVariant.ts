@@ -82,7 +82,10 @@ builder.prismaObject('VideoVariant', {
     version: t.withAuth({ isPublisher: true }).exposeInt('version', {
       nullable: false,
       description: 'version control for master video file'
-    })
+    }),
+    masterUrl: t.exposeString('masterUrl', { nullable: true }),
+    masterHeight: t.exposeInt('masterHeight', { nullable: true }),
+    masterWidth: t.exposeInt('masterWidth', { nullable: true })
   })
 })
 
@@ -187,7 +190,10 @@ builder.mutationFields((t) => ({
           published: input.published ?? undefined,
           muxVideoId: input.muxVideoId ?? undefined,
           assetId: input.assetId ?? undefined,
-          version: input.version ?? undefined
+          version: input.version ?? undefined,
+          masterUrl: input.masterUrl ?? undefined,
+          masterHeight: input.masterHeight ?? undefined,
+          masterWidth: input.masterWidth ?? undefined
         }
       })
 
