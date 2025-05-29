@@ -4926,6 +4926,9 @@ export type VideoVariant = {
   id: Scalars['ID']['output'];
   language: Language;
   lengthInMilliseconds: Scalars['Int']['output'];
+  masterHeight?: Maybe<Scalars['Int']['output']>;
+  masterUrl?: Maybe<Scalars['String']['output']>;
+  masterWidth?: Maybe<Scalars['Int']['output']>;
   muxVideo?: Maybe<MuxVideo>;
   published: Scalars['Boolean']['output'];
   share?: Maybe<Scalars['String']['output']>;
