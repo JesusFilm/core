@@ -68,7 +68,7 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
     await page
       .getByTestId('journey-list')
       .getByRole('button')
-      .filter({ hasText: /^$/ })
+      .getByTestId('MoreIcon')
       .click()
     await page.getByText('Trash All').click()
     await page.getByRole('button', { name: 'Trash' }).click()
