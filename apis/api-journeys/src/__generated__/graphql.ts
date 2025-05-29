@@ -133,7 +133,7 @@ export type ButtonBlock = Block & {
   endIconId?: Maybe<Scalars['ID']['output']>;
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
-  label?: Maybe<Scalars['String']['output']>;
+  label: Scalars['String']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
   size?: Maybe<ButtonSize>;

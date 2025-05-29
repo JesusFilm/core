@@ -813,7 +813,7 @@ type ButtonBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  label: String @join__field(graph: API_JOURNEYS, type: "String!")  @join__field(graph: API_JOURNEYS_MODERN, type: "String") 
+  label: String!
   variant: ButtonVariant
   color: ButtonColor
   size: ButtonSize
