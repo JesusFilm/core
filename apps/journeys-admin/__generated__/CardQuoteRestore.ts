@@ -359,7 +359,7 @@ export interface CardQuoteRestore_image_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource | null;
+  source: VideoBlockSource;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -784,7 +784,7 @@ export interface CardQuoteRestore_subtitle_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource | null;
+  source: VideoBlockSource;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -1209,7 +1209,7 @@ export interface CardQuoteRestore_title_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource | null;
+  source: VideoBlockSource;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -1634,7 +1634,7 @@ export interface CardQuoteRestore_body_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource | null;
+  source: VideoBlockSource;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.

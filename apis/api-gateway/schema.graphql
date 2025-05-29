@@ -1082,7 +1082,7 @@ type VideoBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @j
   internal source: videoId, videoVariantLanguageId, and video present
   youTube source: videoId, title, description, and duration present
   """
-  source: VideoBlockSource @join__field(graph: API_JOURNEYS, type: "VideoBlockSource!")  @join__field(graph: API_JOURNEYS_MODERN, type: "VideoBlockSource") 
+  source: VideoBlockSource!
   """
   internal source videos: this field is not populated and instead only present
   in the video field.

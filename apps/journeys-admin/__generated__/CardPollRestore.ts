@@ -359,7 +359,7 @@ export interface CardPollRestore_imageRestore_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource | null;
+  source: VideoBlockSource;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -784,7 +784,7 @@ export interface CardPollRestore_subtitleRestore_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource | null;
+  source: VideoBlockSource;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -1209,7 +1209,7 @@ export interface CardPollRestore_titleRestore_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource | null;
+  source: VideoBlockSource;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -1634,7 +1634,7 @@ export interface CardPollRestore_radioQuestionRestore_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource | null;
+  source: VideoBlockSource;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -2059,7 +2059,7 @@ export interface CardPollRestore_radioOption1Restore_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource | null;
+  source: VideoBlockSource;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -2484,7 +2484,7 @@ export interface CardPollRestore_radioOption2Restore_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource | null;
+  source: VideoBlockSource;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -2909,7 +2909,7 @@ export interface CardPollRestore_radioOption3Restore_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource | null;
+  source: VideoBlockSource;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -3334,7 +3334,7 @@ export interface CardPollRestore_radioOption4Restore_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource | null;
+  source: VideoBlockSource;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -3759,7 +3759,7 @@ export interface CardPollRestore_bodyRestore_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource | null;
+  source: VideoBlockSource;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.

@@ -69,11 +69,11 @@ For other sources only videoId needs to be set.`
     }),
     source: t.field({
       type: VideoBlockSource,
-      nullable: true,
+      nullable: false,
       directives: { shareable: true },
       description: `internal source: videoId, videoVariantLanguageId, and video present
 youTube source: videoId, title, description, and duration present`,
-      resolve: (block) => block.source
+      resolve: (block) => block.source ?? 'internal'
     }),
     objectFit: t.field({
       type: VideoBlockObjectFit,

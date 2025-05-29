@@ -538,7 +538,7 @@ type VideoBlock implements Block
   internal source: videoId, videoVariantLanguageId, and video present
   youTube source: videoId, title, description, and duration present
   """
-  source: VideoBlockSource @shareable
+  source: VideoBlockSource! @shareable
 
   """how the video should display within the VideoBlock"""
   objectFit: VideoBlockObjectFit @shareable
