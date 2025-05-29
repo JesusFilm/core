@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { ComponentProps, MouseEvent, ReactElement, useState } from 'react'
+import { ComponentProps, ReactElement, useState } from 'react'
 
 import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import ShareIcon from '@core/shared/ui/icons/Share'
