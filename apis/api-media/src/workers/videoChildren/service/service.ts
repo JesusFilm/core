@@ -4,7 +4,7 @@ import { prisma } from '../../../lib/prisma'
 
 async function getVideoIds(): Promise<string[]> {
   const videos = await prisma.video.findMany({
-    select: { id: true },
+    select: { id: true }
   })
   return videos.map((video) => video.id)
 }
