@@ -12,7 +12,6 @@ import { JourneyRef } from '../journey/journey'
 
 import {
   BlockTranslationUpdate,
-  castBlock,
   createTranslationInfo,
   getTranslatableFields,
   updateBlockWithTranslation
@@ -241,8 +240,7 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
             )
 
             const translatableBlocks = cardChildren.filter((block) => {
-              const typedBlock = castBlock(block)
-              const fields = Object.keys(getTranslatableFields(typedBlock))
+              const fields = Object.keys(getTranslatableFields(block))
               return fields.length > 0
             })
 
@@ -252,7 +250,7 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
 
             // Create translation info for each block
             const blockInfos = translatableBlocks.map((block) =>
-              createTranslationInfo(castBlock(block))
+              createTranslationInfo(block)
             )
 
             const blockTranslationPrompt = `

@@ -3,55 +3,14 @@
  * Provides helper functions for translation operations on journey blocks
  */
 
-import { PrismaClient } from '.prisma/api-journeys-modern-client'
-
-import { Block } from '../block/block'
-import { ButtonBlock } from '../block/button/button'
-import { CardBlock } from '../block/card/card'
-import { GridContainerBlock } from '../block/gridContainer/gridContainer'
-import { GridItemBlock } from '../block/gridItem/gridItem'
-import { IconBlock } from '../block/icon/icon'
-import { ImageBlock } from '../block/image/image'
-import { RadioOptionBlock } from '../block/radioOption/radioOption'
-import { RadioQuestionBlock } from '../block/radioQuestion/radioQuestion'
-import { SpacerBlock } from '../block/spacer/spacer'
-import { StepBlock } from '../block/step/step'
-import { TextResponseBlock } from '../block/textResponse/textResponse'
-import { TypographyBlock } from '../block/typography/typography'
-import { VideoBlock } from '../block/video/video'
-
-export type Block = typeof Block.$inferType
-
-/**
- * Type union for all translatable block types
- */
-export type TranslatableBlock =
-  | typeof TypographyBlock.$inferType
-  | typeof ButtonBlock.$inferType
-  | typeof TextResponseBlock.$inferType
-  | typeof RadioOptionBlock.$inferType
-
-/**
- * Type union for all block types
- */
-export type AnyBlock =
-  | TranslatableBlock
-  | typeof CardBlock.$inferType
-  | typeof RadioQuestionBlock.$inferType
-  | typeof StepBlock.$inferType
-  | typeof ImageBlock.$inferType
-  | typeof VideoBlock.$inferType
-  | typeof SpacerBlock.$inferType
-  | typeof GridContainerBlock.$inferType
-  | typeof GridItemBlock.$inferType
-  | typeof IconBlock.$inferType
+import { Block, PrismaClient } from '.prisma/api-journeys-modern-client'
 
 /**
  * Interface for translation updates for a block
  */
 export interface BlockTranslationUpdate {
   blockId: string
-  updates: Partial<TranslatableBlock>
+  updates: Partial<Block>
 }
 
 /**
@@ -64,17 +23,10 @@ export interface AIBlockTranslationUpdate {
 }
 
 /**
- * Converts a Prisma Block to a typed AnyBlock
- */
-export function castBlock(block: Block): AnyBlock {
-  return block as unknown as AnyBlock
-}
-
-/**
  * Maps blocks that contain translatable fields
  */
 export function getTranslatableFields(
-  block: AnyBlock
+  block: Block
 ): Record<string, string | null | undefined> {
   if (block.typename === 'TypographyBlock') {
     return {
@@ -107,7 +59,7 @@ export function getTranslatableFields(
 /**
  * Creates translation info string for a block
  */
-export function createTranslationInfo(block: AnyBlock): string {
+export function createTranslationInfo(block: Block): string {
   const fieldInfo = []
   const translateableFields = getTranslatableFields(block)
 
