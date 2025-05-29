@@ -1,9 +1,14 @@
 import { builder } from '../../builder'
-import { VideoBlockSource } from '../../mediaVideo/enums/videoSource'
 import { MediaVideo } from '../../mediaVideo/mediaVideo'
 import { Block } from '../block'
 
 import { VideoBlockObjectFit } from './enums/videoObjectFit'
+import { VideoBlockSource } from './enums/videoSource'
+
+// Type guard for allowed media video sources
+function isMediaVideoSource(source: string): source is 'internal' | 'mux' | 'youTube' {
+  return source === 'internal' || source === 'mux' || source === 'youTube';
+}
 
 export const VideoBlock = builder.prismaObject('Block', {
   interfaces: [Block],
@@ -98,16 +103,20 @@ For other sources this is automatically populated.`
     }),
     mediaVideo: t.field({
       type: MediaVideo,
-      resolve: (video) =>
-        video.videoId != null &&
-        video.source !== 'cloudflare' &&
-        video.source !== null
-          ? {
-              id: video.videoId,
-              source: video.source,
-              primaryLanguageId: video.videoVariantLanguageId
-            }
-          : null
+      resolve: (video) => {
+        const source = typeof video.source === 'string' ? video.source : String(video.source)
+        if (
+          video.videoId != null &&
+          isMediaVideoSource(source)
+        ) {
+          return {
+            id: video.videoId,
+            source,
+            primaryLanguageId: video.videoVariantLanguageId
+          }
+        }
+        return null
+      }
     })
   })
 })

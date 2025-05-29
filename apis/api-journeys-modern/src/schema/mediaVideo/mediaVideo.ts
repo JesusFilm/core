@@ -1,8 +1,7 @@
 import { VideoBlockSource as PrismaVideoBlockSource } from '.prisma/api-journeys-modern-client'
 
+import { VideoBlockSource } from '../block/video/enums/videoSource'
 import { builder } from '../builder'
-
-import { VideoBlockSource } from './enums/videoSource'
 
 const MuxVideo = builder.externalRef(
   'MuxVideo',
