@@ -1,0 +1,1 @@
+export { ContentHeroMuteButton } from './ContentHeroMuteButton'

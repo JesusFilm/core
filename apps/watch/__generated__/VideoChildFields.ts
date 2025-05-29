@@ -40,6 +40,13 @@ export interface VideoChildFields_variant {
   slug: string;
 }
 
+export interface VideoChildFields_studyQuestions {
+  __typename: "VideoStudyQuestion";
+  id: string;
+  value: string;
+  order: number;
+}
+
 export interface VideoChildFields {
   __typename: "Video";
   id: string;
@@ -53,6 +60,7 @@ export interface VideoChildFields {
    */
   slug: string;
   variant: VideoChildFields_variant | null;
+  studyQuestions: VideoChildFields_studyQuestions[];
   /**
    * the number value of the amount of children on a video
    */
