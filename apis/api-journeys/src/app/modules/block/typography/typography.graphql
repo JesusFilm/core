@@ -30,7 +30,6 @@ type TypographyBlock implements Block @key(fields: "id") {
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
-  typename: String! @shareable
   content: String! @shareable
   variant: TypographyVariant @shareable
   color: TypographyColor @shareable

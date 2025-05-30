@@ -1,7 +1,7 @@
+import { VideoBlockObjectFit as PrismaVideoBlockObjectFit } from '.prisma/api-journeys-modern-client'
+
 import { builder } from '../../../builder'
 
-// Create enum type for VideoBlockObjectFit
-const objectFitValues = ['fill', 'fit', 'zoomed'] as const
-export const VideoBlockObjectFit = builder.enumType('VideoBlockObjectFit', {
-  values: objectFitValues
+export const VideoBlockObjectFit = builder.enumType(PrismaVideoBlockObjectFit, {
+  name: 'VideoBlockObjectFit'
 })

@@ -6,7 +6,7 @@ import {
   type TextResponseTypeType
 } from './enums/textResponseType'
 
-builder.prismaObject('Block', {
+export const TextResponseBlock = builder.prismaObject('Block', {
   interfaces: [Block],
   variant: 'TextResponseBlock',
   isTypeOf: (obj: any) => obj.typename === 'TextResponseBlock',
@@ -25,9 +25,10 @@ builder.prismaObject('Block', {
       nullable: true,
       directives: { shareable: true }
     }),
-    label: t.exposeString('label', {
-      nullable: true,
-      directives: { shareable: true }
+    label: t.string({
+      nullable: false,
+      directives: { shareable: true },
+      resolve: (block) => block.label ?? ''
     }),
     placeholder: t.exposeString('placeholder', {
       nullable: true,

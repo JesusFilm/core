@@ -1,7 +1,7 @@
 import { builder } from '../../builder'
 import { Block } from '../block'
 
-builder.prismaObject('Block', {
+export const GridItemBlock = builder.prismaObject('Block', {
   interfaces: [Block],
   variant: 'GridItemBlock',
   isTypeOf: (obj: any) => obj.typename === 'GridItemBlock',
@@ -20,8 +20,20 @@ builder.prismaObject('Block', {
       nullable: true,
       directives: { shareable: true }
     }),
-    xl: t.exposeInt('xl', { nullable: true, directives: { shareable: true } }),
-    lg: t.exposeInt('lg', { nullable: true, directives: { shareable: true } }),
-    sm: t.exposeInt('sm', { nullable: true, directives: { shareable: true } })
+    xl: t.int({
+      nullable: false,
+      directives: { shareable: true },
+      resolve: (block) => block.xl ?? 12
+    }),
+    lg: t.int({
+      nullable: false,
+      directives: { shareable: true },
+      resolve: (block) => block.lg ?? 12
+    }),
+    sm: t.int({
+      nullable: false,
+      directives: { shareable: true },
+      resolve: (block) => block.sm ?? 12
+    })
   })
 })

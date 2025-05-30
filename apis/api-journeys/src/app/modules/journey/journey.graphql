@@ -23,7 +23,7 @@ type Journey @key(fields: "id") {
   private title for creators
   """
   title: String! @shareable
-  language: Language!
+  language: Language! @shareable
   languageId: String! @shareable
   themeMode: ThemeMode!
   themeName: ThemeName!
@@ -68,6 +68,7 @@ type Journey @key(fields: "id") {
   showMenu: Boolean
   showDisplayTitle: Boolean
   menuButtonIcon: JourneyMenuButtonIcon
+  fromTemplateId: String
 }
 
 enum IdType {

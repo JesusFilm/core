@@ -5,7 +5,7 @@ import { IconColor, type IconColorType } from './enums/iconColor'
 import { IconName, type IconNameType } from './enums/iconName'
 import { IconSize, type IconSizeType } from './enums/iconSize'
 
-builder.prismaObject('Block', {
+export const IconBlock = builder.prismaObject('Block', {
   interfaces: [Block],
   variant: 'IconBlock',
   isTypeOf: (obj: any) => obj.typename === 'IconBlock',

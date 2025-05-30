@@ -4,9 +4,10 @@
 import './block' // Import blocks module
 import './journey'
 import './journeyAiTranslate'
-import './mediaVideo'
 import './journeyEventsExportLog'
 import './journeyLanguageAiDetect'
+import './language'
+import './mediaVideo'
 
 import { builder } from './builder'
 

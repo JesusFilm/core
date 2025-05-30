@@ -14,7 +14,7 @@ import {
   type TypographyVariantType
 } from './enums/typographyVariant'
 
-builder.prismaObject('Block', {
+export const TypographyBlock = builder.prismaObject('Block', {
   variant: 'TypographyBlock',
   interfaces: [Block],
   isTypeOf: (obj: any) => obj.typename === 'TypographyBlock',
@@ -35,9 +35,10 @@ builder.prismaObject('Block', {
       nullable: true,
       directives: { shareable: true }
     }),
-    content: t.exposeString('content', {
-      nullable: true,
-      directives: { shareable: true }
+    content: t.string({
+      nullable: false,
+      directives: { shareable: true },
+      resolve: (block) => block.content ?? ''
     }),
     variant: t.field({
       type: TypographyVariant,

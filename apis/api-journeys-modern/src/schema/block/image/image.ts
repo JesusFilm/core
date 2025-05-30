@@ -1,7 +1,7 @@
 import { builder } from '../../builder'
 import { Block } from '../block'
 
-builder.prismaObject('Block', {
+export const ImageBlock = builder.prismaObject('Block', {
   interfaces: [Block],
   variant: 'ImageBlock',
   isTypeOf: (obj: any) => obj.typename === 'ImageBlock',
@@ -24,21 +24,28 @@ builder.prismaObject('Block', {
       nullable: true,
       directives: { shareable: true }
     }),
-    alt: t.exposeString('alt', {
-      nullable: true,
-      directives: { shareable: true }
+    alt: t.string({
+      nullable: false,
+      directives: { shareable: true },
+      resolve: (block) => block.alt ?? ''
     }),
-    width: t.exposeInt('width', {
-      nullable: true,
-      directives: { shareable: true }
+    width: t.int({
+      nullable: false,
+      directives: { shareable: true },
+      resolve: (block) => block.width ?? 0
     }),
-    height: t.exposeInt('height', {
-      nullable: true,
-      directives: { shareable: true }
+    height: t.int({
+      nullable: false,
+      directives: { shareable: true },
+      resolve: (block) => block.height ?? 0
     }),
-    blurhash: t.exposeString('blurhash', {
-      nullable: true,
-      directives: { shareable: true }
+    blurhash: t.string({
+      nullable: false,
+      directives: { shareable: true },
+      description: `blurhash is a compact representation of a placeholder for an image.
+Find a frontend implementation at https://github.com/woltapp/blurhash
+  `,
+      resolve: (block) => block.blurhash ?? ''
     }),
     focalTop: t.exposeInt('focalTop', {
       nullable: true,

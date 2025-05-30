@@ -5,7 +5,7 @@ import { ButtonColor, type ButtonColorType } from './enums/buttonColor'
 import { ButtonSize, type ButtonSizeType } from './enums/buttonSize'
 import { ButtonVariant, type ButtonVariantType } from './enums/buttonVariant'
 
-builder.prismaObject('Block', {
+export const ButtonBlock = builder.prismaObject('Block', {
   variant: 'ButtonBlock',
   interfaces: [Block],
   isTypeOf: (obj: any) => obj.typename === 'ButtonBlock',
@@ -24,9 +24,10 @@ builder.prismaObject('Block', {
       nullable: true,
       directives: { shareable: true }
     }),
-    label: t.exposeString('label', {
-      nullable: true,
-      directives: { shareable: true }
+    label: t.string({
+      nullable: false,
+      directives: { shareable: true },
+      resolve: (block) => block.label ?? ''
     }),
     variant: t.field({
       type: ButtonVariant,

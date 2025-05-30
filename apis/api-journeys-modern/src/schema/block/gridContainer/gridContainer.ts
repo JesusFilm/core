@@ -8,7 +8,7 @@ import {
   type GridJustifyContentType
 } from './enums/gridJustifyContent'
 
-builder.prismaObject('Block', {
+export const GridContainerBlock = builder.prismaObject('Block', {
   interfaces: [Block],
   variant: 'GridContainerBlock',
   isTypeOf: (obj: any) => obj.typename === 'GridContainerBlock',
@@ -27,27 +27,30 @@ builder.prismaObject('Block', {
       nullable: true,
       directives: { shareable: true }
     }),
-    gap: t.exposeInt('gap', {
-      nullable: true,
-      directives: { shareable: true }
+    gap: t.int({
+      nullable: false,
+      directives: { shareable: true },
+      resolve: (block) => block.gap ?? 0
     }),
     direction: t.field({
       type: GridDirection,
-      nullable: true,
+      nullable: false,
       directives: { shareable: true },
-      resolve: (block) => block.direction as GridDirectionType
+      resolve: (block) => (block.direction as GridDirectionType) ?? 'column'
     }),
     justifyContent: t.field({
       type: GridJustifyContent,
-      nullable: true,
+      nullable: false,
       directives: { shareable: true },
-      resolve: (block) => block.justifyContent as GridJustifyContentType
+      resolve: (block) =>
+        (block.justifyContent as GridJustifyContentType) ?? 'flexStart'
     }),
     alignItems: t.field({
       type: GridAlignItems,
-      nullable: true,
+      nullable: false,
       directives: { shareable: true },
-      resolve: (block) => block.alignItems as GridAlignItemsType
+      resolve: (block) =>
+        (block.alignItems as GridAlignItemsType) ?? 'flexStart'
     })
   })
 })
