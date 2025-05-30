@@ -2,6 +2,10 @@ import { gql, useQuery } from '@apollo/client'
 import { useMemo } from 'react'
 
 import { GetAdminJourneys_journeys as AdminJourney } from '../../../../../../../__generated__/GetAdminJourneys'
+import {
+  GetJourneyInternalVideos,
+  GetJourneyInternalVideosVariables
+} from '../../../../../../../__generated__/GetJourneyInternalVideos'
 import { JourneyFields } from '../../../../../../../__generated__/JourneyFields'
 
 const GET_JOURNEY_INTERNAL_VIDEOS = gql`
@@ -37,21 +41,22 @@ export function useCommonVideoVariantLanguages(
 ) {
   // First query - gets journey internal videos
   const { data: journeyInternalVideos, loading: journeyVideosLoading } =
-    useQuery(GET_JOURNEY_INTERNAL_VIDEOS, {
-      variables: {
-        journeyId: journey?.id
-      },
-      skip: !journey?.id
-    })
+    useQuery<GetJourneyInternalVideos, GetJourneyInternalVideosVariables>(
+      GET_JOURNEY_INTERNAL_VIDEOS,
+      {
+        variables: {
+          journeyId: journey?.id ?? ''
+        },
+        skip: !journey?.id
+      }
+    )
 
   const videoIds = useMemo(() => {
     if (!journeyInternalVideos) return []
 
     const ids = journeyInternalVideos.journey.blocks
-      .filter(
-        (block: any) => block.__typename === 'VideoBlock' && block.videoId
-      )
-      .map((block: any) => block.videoId)
+      ?.filter((block) => block.__typename === 'VideoBlock')
+      .map((block) => block.videoId)
 
     return Array.from(new Set(ids))
   }, [journeyInternalVideos])
