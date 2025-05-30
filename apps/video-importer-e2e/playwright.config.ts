@@ -18,9 +18,6 @@ export default defineConfig({
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    /* Use URL that has been set part of app-deploy.yml */
-    baseURL: process.env.DEPLOYMENT_URL ?? 'http://localhost:4100',
-
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
     screenshot: 'only-on-failure'
