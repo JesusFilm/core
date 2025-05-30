@@ -75,3 +75,9 @@ export interface VerifyUserJob {
   token: string
   redirect: string | undefined
 }
+
+export interface RevalidateJob {
+  slug: string
+  hostname?: string
+  fbReScrape?: boolean
+}

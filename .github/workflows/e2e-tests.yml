@@ -27,17 +27,27 @@ on:
 jobs:
   E2E_Tests:
     timeout-minutes: 60
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
       - uses: oven-sh/setup-bun@v1
         with:
           bun-version: 1.2.2
-      - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
+      - name: Mount Bun Cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-bun-cache
+          path: ~/.bun
+      - name: Mount node_modules
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-bun-modules
+          path: ./node_modules
+      - name: Mount playwright cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-playwright-cache
+          path: ~/.cache/ms-playwright
       - name: bun install
         run: bun install --silent --frozen-lockfile
       - name: Install Playwright Browsers

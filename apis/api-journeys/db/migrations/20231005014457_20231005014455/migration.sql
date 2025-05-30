@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE "JourneyProfile" ADD COLUMN     "formFilledAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;

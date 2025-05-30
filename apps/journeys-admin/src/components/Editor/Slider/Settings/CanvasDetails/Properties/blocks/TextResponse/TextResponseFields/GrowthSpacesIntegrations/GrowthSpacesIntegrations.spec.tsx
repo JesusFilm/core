@@ -46,11 +46,13 @@ describe('GrowthSpacesIntegrations', () => {
     parentBlockId: '0',
     parentOrder: 0,
     label: 'Your answer here',
+    placeholder: null,
     hint: null,
     minRows: null,
     integrationId: null,
     routeId: null,
     type: TextResponseType.email,
+    required: null,
     children: []
   }
 

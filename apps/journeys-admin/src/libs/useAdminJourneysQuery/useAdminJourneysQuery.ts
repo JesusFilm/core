@@ -21,13 +21,14 @@ export const GET_ADMIN_JOURNEYS = gql`
       createdAt
       publishedAt
       trashedAt
+      updatedAt
       description
       slug
       themeName
       themeMode
       language {
         id
-        name(primary: true) {
+        name {
           value
           primary
         }
@@ -45,13 +46,6 @@ export const GET_ADMIN_JOURNEYS = gql`
           firstName
           lastName
           imageUrl
-        }
-      }
-      language {
-        id
-        name(primary: true) {
-          value
-          primary
         }
       }
       primaryImageBlock {

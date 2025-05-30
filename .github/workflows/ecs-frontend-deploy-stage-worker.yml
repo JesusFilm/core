@@ -58,10 +58,9 @@ jobs:
       ECR_REPOSITORY: jfp-${{ inputs.name }}-${{ inputs.env }}
       IMAGE_TAG: ${{ github.sha }}
       DOPPLER_CONFIG: ${{ inputs.env == 'prod' && 'prd' || 'stg' }}
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     strategy:
       matrix:
-        node-version: [22]
         bun-version: [1.2.2]
     steps:
       - name: Checkout current branch
@@ -69,17 +68,26 @@ jobs:
         with:
           fetch-depth: 0
       - uses: nrwl/nx-set-shas@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
 
       - uses: oven-sh/setup-bun@v1
         with:
           bun-version: ${{ matrix.bun-version }}
 
-      - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
-
+      - name: Mount Bun Cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-bun-cache
+          path: ~/.bun
+      - name: Mount node_modules
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-bun-modules
+          path: ./node_modules
+      - name: Mount next cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-${{ inputs.name }}-next-cache
+          path: ./apps/${{ inputs.name }}/.next
       - name: bun install
         run: bun install --silent --frozen-lockfile
 

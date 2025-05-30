@@ -44,19 +44,6 @@ model CloudflareImage {
   @@index([userId])
 }
 
-model CloudflareVideo {
-  id            String   @id @default(uuid())
-  uploadUrl     String?
-  userId        String
-  name          String?
-  createdAt     DateTime @default(now())
-  readyToStream Boolean  @default(false)
-  updatedAt     DateTime @default(now()) @updatedAt
-  downloadable  Boolean  @default(false)
-
-  @@index([userId])
-}
-
 model MuxVideo {
   id            String         @id @default(uuid())
   playbackId    String?        @unique
@@ -77,15 +64,22 @@ model MuxVideo {
 }
 
 model CloudflareR2 {
-  id        String   @id @default(uuid())
-  fileName  String
-  uploadUrl String?
-  userId    String
-  publicUrl String?
-  videoId   String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-  video     Video?   @relation(fields: [videoId], references: [id])
+  id                   String                @id @default(uuid())
+  fileName             String
+  originalFilename     String?
+  uploadUrl            String?
+  userId               String
+  publicUrl            String?
+  videoId              String?
+  contentType          String                @default("application/octet-stream")
+  contentLength        Int                   @default(0)
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @default(now()) @updatedAt
+  video                Video?                @relation(fields: [videoId], references: [id])
+  videoVariant         VideoVariant?
+  videoVariantDownload VideoVariantDownload?
+  videoSubtitleSrt     VideoSubtitle?        @relation("SrtAsset")
+  videoSubtitleVtt     VideoSubtitle?        @relation("VttAsset")
 
   @@index(videoId(type: Hash))
   @@index(userId(type: Hash))
@@ -131,10 +125,13 @@ model Video {
   cloudflareAssets   CloudflareR2[]
   videoEditions      VideoEdition[]
   availableLanguages String[]
+  origin             VideoOrigin?         @relation(fields: [originId], references: [id])
+  originId           String?
 
   @@index(label)
   @@index(childIds)
   @@index(published(type: Hash))
+  @@index(originId(type: Hash))
 }
 
 model VideoTitle {
@@ -152,8 +149,9 @@ model VideoTitle {
 }
 
 enum VideoVariantDownloadQuality {
-  low
-  high
+  low // 2x0p
+  sd // 360p
+  high // 720p
 }
 
 model VideoVariantDownload {
@@ -162,7 +160,11 @@ model VideoVariantDownload {
   size           Float?
   height         Int?
   width          Int?
+  bitrate        Int?
+  version        Int                         @default(1)
   url            String
+  assetId        String?                     @unique
+  asset          CloudflareR2?               @relation(fields: [assetId], references: [id])
   videoVariantId String?
   videoVariant   VideoVariant?               @relation(fields: [videoVariantId], references: [id], onDelete: Cascade)
 
@@ -184,11 +186,14 @@ model VideoVariant {
   masterWidth          Int?
   masterHeight         Int?
   published            Boolean                @default(true)
+  version              Int                    @default(1)
   edition              String                 @default("base")
   videoEdition         VideoEdition           @relation(fields: [edition, videoId], references: [name, videoId])
   slug                 String                 @unique
   video                Video?                 @relation(fields: [videoId], references: [id], onDelete: Cascade)
   videoId              String
+  assetId              String?                @unique
+  asset                CloudflareR2?          @relation(fields: [assetId], references: [id])
   muxVideoId           String?
   muxVideo             MuxVideo?              @relation(fields: [muxVideoId], references: [id])
 
@@ -209,15 +214,22 @@ model VideoEdition {
 }
 
 model VideoSubtitle {
-  id           String       @id @default(uuid())
+  id String @id @default(uuid())
+
   videoId      String
-  edition      String       @default("base")
+  edition      String        @default("base")
+  vttAssetId   String?       @unique
   vttSrc       String?
+  vttVersion   Int           @default(1)
+  srtAssetId   String?       @unique
   srtSrc       String?
+  srtVersion   Int           @default(1)
   primary      Boolean
   languageId   String
-  video        Video        @relation(fields: [videoId], references: [id], onDelete: Cascade)
-  videoEdition VideoEdition @relation(fields: [edition, videoId], references: [name, videoId])
+  srtAsset     CloudflareR2? @relation("SrtAsset", fields: [srtAssetId], references: [id])
+  vttAsset     CloudflareR2? @relation("VttAsset", fields: [vttAssetId], references: [id])
+  video        Video         @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  videoEdition VideoEdition  @relation(fields: [edition, videoId], references: [name, videoId])
 
   @@unique([videoId, edition, languageId])
   @@index(languageId(type: Hash))
@@ -294,14 +306,17 @@ model BibleCitation {
   id           String    @id @default(uuid())
   bibleBookId  String
   osisId       String
-  chapterStart Int
-  chapterEnd   Int?
-  verseStart   Int?
-  verseEnd     Int?
+  chapterStart Int       @default(-1)
+  chapterEnd   Int       @default(-1)
+  verseStart   Int       @default(-1)
+  verseEnd     Int       @default(-1)
   videoId      String
   order        Int
   video        Video     @relation(fields: [videoId], references: [id])
   bibleBook    BibleBook @relation(fields: [bibleBookId], references: [id])
+
+  @@unique([videoId, bibleBookId, chapterStart, chapterEnd, verseStart, verseEnd])
+  @@index([order])
 }
 
 model BibleBook {
@@ -456,4 +471,23 @@ model ShortLink {
 model ShortLinkBlocklistDomain {
   /// the hostname including subdomain, domain, and TLD, but excluding port
   hostname String @id
+}
+
+model VideoOrigin {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  videos      Video[]
+}
+
+enum DefaultPlatform {
+  ios
+  android
+  web
+}
+
+model ArclightApiKey {
+  key             String          @unique
+  desc            String?
+  defaultPlatform DefaultPlatform
 }

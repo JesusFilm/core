@@ -1,7 +1,8 @@
+import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { ResultOf, graphql } from 'gql.tada'
-import { Hono } from 'hono'
 
 import { getApolloClient } from '../../../../../../../lib/apolloClient'
+import { getDefaultPlatformForApiKey } from '../../../../../../../lib/getPlatformFromApiKey'
 import {
   getWebEmbedPlayer,
   getWebEmbedSharePlayer
@@ -33,6 +34,7 @@ const GET_VIDEO_VARIANT = graphql(`
           width
           quality
           size
+          bitrate
           url
         }
       }
@@ -42,6 +44,7 @@ const GET_VIDEO_VARIANT = graphql(`
         primaryLanguageId
         variant {
           hls
+          share
           lengthInMilliseconds
           downloadable
           downloads {
@@ -49,6 +52,8 @@ const GET_VIDEO_VARIANT = graphql(`
             width
             quality
             size
+            bitrate
+            url
           }
           subtitle {
             language {
@@ -94,12 +99,117 @@ const GET_VIDEO_VARIANT = graphql(`
   }
 `)
 
-export const mediaComponentLanguage = new Hono()
+export const mediaComponentLanguage = new OpenAPIHono()
 
-mediaComponentLanguage.get('/', async (c) => {
+const QuerySchema = z.object({
+  apiKey: z.string().optional().describe('API key'),
+  platform: z.string().optional().describe('Platform (ios, android, web)'),
+  languageIds: z
+    .string()
+    .optional()
+    .describe('Filter by language IDs (comma separated)')
+})
+
+const ParamsSchema = z.object({
+  mediaComponentId: z.string(),
+  languageId: z.string()
+})
+
+const SubtitleSchema = z.object({
+  languageId: z.number(),
+  languageName: z.string(),
+  languageTag: z.string(),
+  url: z.string()
+})
+
+const DownloadUrlSchema = z.object({
+  url: z.string(),
+  height: z.number(),
+  width: z.number(),
+  sizeInBytes: z.number()
+})
+
+const ResponseSchema = z.object({
+  mediaComponentId: z.string(),
+  languageId: z.string(),
+  refId: z.string(),
+  apiSessionId: z.string(),
+  platform: z.string(),
+  lengthInMilliseconds: z.number(),
+  subtitleUrls: z.object({
+    vtt: z.array(SubtitleSchema),
+    srt: z.array(SubtitleSchema)
+  }),
+  downloadUrls: z.object({
+    low: DownloadUrlSchema,
+    high: DownloadUrlSchema
+  }),
+  streamingUrls: z.record(z.string(), z.string()),
+  shareUrl: z.string(),
+  socialMediaUrls: z.record(z.string(), z.string()),
+  _embedded: z.object({
+    contains: z.array(
+      z.object({
+        mediaComponentId: z.string(),
+        languageId: z.number(),
+        refId: z.string(),
+        apiSessionId: z.string(),
+        lengthInMilliseconds: z.number()
+      })
+    )
+  }),
+  _links: z.object({
+    self: z.object({
+      href: z.string().url()
+    }),
+    mediaComponent: z.object({
+      href: z.string().url()
+    }),
+    mediaLanguage: z.object({
+      href: z.string().url()
+    })
+  })
+})
+
+const route = createRoute({
+  method: 'get',
+  path: '/',
+  tags: ['Media Component Languages'],
+  summary: 'Get media component language by media component id and language id',
+  description:
+    'Get media component language by media component id and language id',
+  request: {
+    query: QuerySchema,
+    params: ParamsSchema
+  },
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: ResponseSchema
+        }
+      },
+      description: 'Media component language'
+    },
+    404: {
+      description: 'Not found'
+    }
+  }
+})
+
+mediaComponentLanguage.openapi(route, async (c) => {
   const mediaComponentId = c.req.param('mediaComponentId')
   const languageId = c.req.param('languageId')
   const expand = c.req.query('expand') ?? ''
+  const apiKey = c.req.query('apiKey')
+
+  let platform = c.req.query('platform')
+  if (!platform && apiKey) {
+    platform = await getDefaultPlatformForApiKey(apiKey)
+  }
+  if (!platform) {
+    platform = 'ios' // Default platform for this route
+  }
 
   const { data } = await getApolloClient().query<
     ResultOf<typeof GET_VIDEO_VARIANT>
@@ -111,10 +221,7 @@ mediaComponentLanguage.get('/', async (c) => {
     }
   })
 
-  const apiKey = c.req.query('apiKey') ?? '616db012e9a951.51499299'
-  const platform = c.req.query('platform') ?? 'ios'
-  // TODO: implement
-  const apiSessionId = '6622f10d2260a8.05128925'
+  const apiSessionId = c.req.query('apiSessionId') ?? '6622f10d2260a8.05128925'
 
   const video = data.video
 
@@ -125,6 +232,9 @@ mediaComponentLanguage.get('/', async (c) => {
   )
   const downloadHigh = video.variant?.downloads?.find(
     (download) => download.quality === 'high'
+  )
+  const downloadSd = video.variant?.downloads?.find(
+    (download) => download.quality === 'sd'
   )
 
   const downloadUrls = {
@@ -196,7 +306,38 @@ mediaComponentLanguage.get('/', async (c) => {
         streamingUrls = {
           dash: [{ videoBitrate: 0, url: video.variant?.dash }],
           hls: [{ videoBitrate: 0, url: video.variant?.hls }],
-          http: []
+          http: [
+            {
+              videoBitrate: downloadLow?.bitrate ?? 0,
+              videoContainer: 'MP4',
+              url: downloadLow?.url
+            },
+            {
+              videoBitrate: downloadSd?.bitrate ?? 0,
+              videoContainer: 'MP4',
+              url: downloadSd?.url
+            },
+            {
+              videoBitrate: downloadSd?.bitrate ?? 0,
+              videoContainer: 'MP4',
+              url: downloadSd?.url
+            },
+            {
+              videoBitrate: downloadSd?.bitrate ?? 0,
+              videoContainer: 'MP4',
+              url: downloadSd?.url
+            },
+            {
+              videoBitrate: downloadSd?.bitrate ?? 0,
+              videoContainer: 'MP4',
+              url: downloadSd?.url
+            },
+            {
+              videoBitrate: downloadHigh?.bitrate ?? 0,
+              videoContainer: 'MP4',
+              url: downloadHigh?.url
+            }
+          ]
         }
         break
       case 'ios':
@@ -264,7 +405,9 @@ mediaComponentLanguage.get('/', async (c) => {
               low: child.variant?.downloads?.find(
                 (d) => d.quality === 'low'
               ) && {
-                url: `https://arc.gt/${Math.random().toString(36).substring(2, 7)}?apiSessionId=${apiSessionId}`,
+                url:
+                  child.variant.downloads.find((d) => d.quality === 'low')
+                    ?.url ?? '',
                 height:
                   child.variant.downloads.find((d) => d.quality === 'low')
                     ?.height ?? 240,
@@ -278,7 +421,9 @@ mediaComponentLanguage.get('/', async (c) => {
               high: child.variant?.downloads?.find(
                 (d) => d.quality === 'high'
               ) && {
-                url: `https://arc.gt/${Math.random().toString(36).substring(2, 7)}?apiSessionId=${apiSessionId}`,
+                url:
+                  child.variant.downloads.find((d) => d.quality === 'high')
+                    ?.url ?? '',
                 height:
                   child.variant.downloads.find((d) => d.quality === 'high')
                     ?.height ?? 720,
@@ -300,7 +445,7 @@ mediaComponentLanguage.get('/', async (c) => {
               ],
               http: []
             },
-            shareUrl: `https://arc.gt/${Math.random().toString(36).substring(2, 7)}?apiSessionId=${apiSessionId}`,
+            shareUrl: child.variant?.share ?? '',
             socialMediaUrls: {},
             _links: {
               self: {

@@ -41,11 +41,13 @@ export interface LanguageAutocompleteProps {
   onChange: (value?: LanguageOption) => void
   value?: LanguageOption
   languages?: Language[]
-  loading: boolean
+  loading?: boolean
+  disabled?: boolean
   helperText?: string
   renderInput?: (params: AutocompleteRenderInputParams) => ReactNode
   renderOption?: (params: HTMLAttributes<HTMLLIElement>) => ReactNode
   popper?: Omit<PopperProps, 'open'>
+  error?: boolean
 }
 
 export function LanguageAutocomplete({
@@ -53,10 +55,12 @@ export function LanguageAutocomplete({
   value,
   languages,
   loading,
+  disabled = false,
   renderInput,
   renderOption,
   helperText,
-  popper
+  popper,
+  error
 }: LanguageAutocompleteProps): ReactElement {
   const options = useMemo(() => {
     return (
@@ -94,6 +98,7 @@ export function LanguageAutocomplete({
       placeholder="Search Language"
       variant="filled"
       helperText={helperText}
+      error={error}
       InputProps={{
         ...params.InputProps,
         sx: { paddingBottom: 2 },
@@ -153,6 +158,7 @@ export function LanguageAutocomplete({
   return (
     <Autocomplete
       disableClearable
+      data-testid="LanguageAutocomplete"
       value={value}
       isOptionEqualToValue={(option, value) => option.id === value.id}
       getOptionLabel={({ localName, nativeName }) =>
@@ -164,6 +170,7 @@ export function LanguageAutocomplete({
       }}
       options={sortedOptions}
       loading={loading}
+      disabled={disabled}
       disablePortal={process.env.NODE_ENV === 'test'}
       renderInput={renderInput != null ? renderInput : defaultRenderInput}
       renderOption={(props, option, state) => {
@@ -174,6 +181,14 @@ export function LanguageAutocomplete({
       }}
       slotProps={{
         popper
+      }}
+      sx={{
+        '& .MuiInputBase-root': {
+          '& .MuiInputBase-input::placeholder': {
+            color: error ? 'error.main' : 'text.secondary',
+            opacity: 1
+          }
+        }
       }}
     />
   )

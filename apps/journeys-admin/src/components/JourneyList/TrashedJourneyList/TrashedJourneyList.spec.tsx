@@ -77,12 +77,20 @@ const noJourneysMock: MockedResponse<
 }
 
 describe('TrashedJourneyList', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
   beforeAll(() => {
     jest.useFakeTimers()
     jest.setSystemTime(new Date(fakeDate))
   })
 
-  it('should render journeys in descending createdAt date by default', async () => {
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
+  it('should render journeys in descending updatedAt date by default', async () => {
     const { getAllByLabelText } = render(
       <MockedProvider mocks={[trashedJourneysMock]}>
         <ThemeProvider>
@@ -94,11 +102,11 @@ describe('TrashedJourneyList', () => {
     )
     await waitFor(() =>
       expect(getAllByLabelText('journey-card')[0].textContent).toContain(
-        'January 1'
+        '11 months ago'
       )
     )
     expect(getAllByLabelText('journey-card')[1].textContent).toContain(
-      'November 19, 2020'
+      '1 year ago'
     )
   })
 
@@ -142,11 +150,11 @@ describe('TrashedJourneyList', () => {
     )
     await waitFor(() =>
       expect(getAllByLabelText('journey-card')[0].textContent).toContain(
-        `a lower case titleJanuary 1English`
+        'a lower case titleEnglish•11 months ago00'
       )
     )
     expect(getAllByLabelText('journey-card')[1].textContent).toContain(
-      'An Old Journey HeadingNovember 19, 2020 - Journey created before the current year should also show the year in the dateEnglish'
+      'An Old Journey HeadingEnglish•1 year ago00'
     )
   })
 
@@ -220,7 +228,7 @@ describe('TrashedJourneyList', () => {
     })
 
     it('should restore all journeys', async () => {
-      const { getByText } = render(
+      const { getByText, getByRole } = render(
         <MockedProvider
           mocks={[trashedJourneysMock, restoreJourneysMock, noJourneysMock]}
         >
@@ -237,12 +245,12 @@ describe('TrashedJourneyList', () => {
       await waitFor(() =>
         expect(getByText('Default Journey Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Restore'))
+      fireEvent.click(getByRole('button', { name: 'Restore' }))
       await waitFor(() => expect(result).toHaveBeenCalled())
     })
 
     it('should show error', async () => {
-      const { getByText } = render(
+      const { getByText, getByRole } = render(
         <MockedProvider
           mocks={[
             trashedJourneysMock,
@@ -264,7 +272,7 @@ describe('TrashedJourneyList', () => {
       await waitFor(() =>
         expect(getByText('Default Journey Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Restore'))
+      fireEvent.click(getByRole('button', { name: 'Restore' }))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
     })
   })
@@ -299,7 +307,7 @@ describe('TrashedJourneyList', () => {
     })
 
     it('should trash all journeys', async () => {
-      const { getByText } = render(
+      const { getByText, getByRole } = render(
         <MockedProvider
           mocks={[trashedJourneysMock, deleteJourneysMock, noJourneysMock]}
         >
@@ -316,12 +324,12 @@ describe('TrashedJourneyList', () => {
       await waitFor(() =>
         expect(getByText('Default Journey Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Delete Forever'))
+      fireEvent.click(getByRole('button', { name: 'Delete Forever' }))
       await waitFor(() => expect(result).toHaveBeenCalled())
     })
 
     it('should show error', async () => {
-      const { getByText } = render(
+      const { getByText, getByRole } = render(
         <MockedProvider
           mocks={[
             trashedJourneysMock,
@@ -343,7 +351,7 @@ describe('TrashedJourneyList', () => {
       await waitFor(() =>
         expect(getByText('Default Journey Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Delete Forever'))
+      fireEvent.click(getByRole('button', { name: 'Delete Forever' }))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
     })
   })

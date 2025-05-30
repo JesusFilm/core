@@ -56,3 +56,7 @@ data "aws_ssm_parameter" "doppler_journeys_admin_stage_token" {
 data "aws_ssm_parameter" "doppler_core_stage_token" {
   name = "/terraform/prd/DOPPLER_CORE_STAGE_TOKEN"
 }
+
+data "aws_ssm_parameter" "doppler_media_transcoder_stage_token" {
+  name = "/terraform/prd/DOPPLER_MEDIA_TRANSCODER_STAGE_TOKEN"
+}

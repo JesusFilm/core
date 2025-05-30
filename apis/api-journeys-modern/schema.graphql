@@ -1,7 +1,109 @@
 extend schema
   @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@shareable"])
 
+"""
+A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar Date
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.This scalar is serialized to a string in ISO 8601 format and parsed from a string in ISO 8601 format.
+"""
+scalar DateTimeISO
+
+enum EventType {
+  ButtonClickEvent
+  ChatOpenEvent
+  JourneyViewEvent
+  RadioQuestionSubmissionEvent
+  SignUpSubmissionEvent
+  StepViewEvent
+  StepNextEvent
+  StepPreviousEvent
+  TextResponseSubmissionEvent
+  VideoStartEvent
+  VideoPlayEvent
+  VideoPauseEvent
+  VideoCompleteEvent
+  VideoExpandEvent
+  VideoCollapseEvent
+  VideoProgressEvent
+}
+
+type Journey
+  @key(fields: "id")
+{
+  id: ID! @shareable
+  title: String! @shareable
+  description: String @shareable
+  slug: String! @shareable
+  createdAt: DateTime! @shareable
+  updatedAt: DateTime! @shareable
+  status: JourneyStatus! @shareable
+  languageId: String @shareable
+  language: Language! @shareable
+}
+
+input JourneyAiTranslateInput {
+  journeyId: ID!
+  name: String!
+  journeyLanguageName: String!
+  textLanguageId: ID!
+  textLanguageName: String!
+}
+
+type JourneyEventsExportLog {
+  id: ID!
+  createdAt: DateTimeISO!
+  userId: ID!
+  journeyId: ID!
+  eventsFilter: [String!]!
+  dateRangeStart: DateTimeISO
+  dateRangeEnd: DateTimeISO
+}
+
+input JourneyEventsExportLogInput {
+  journeyId: ID!
+  eventsFilter: [EventType!]!
+  dateRangeStart: DateTimeISO
+  dateRangeEnd: DateTimeISO
+}
+
+enum JourneyStatus {
+  archived
+  deleted
+  draft
+  published
+  trashed
+}
+
+type Language
+  @key(fields: "id")
+  @extends
+{
+  id: ID! @external
+}
+
 union MediaVideo = MuxVideo | Video | YouTube
+
+type Mutation {
+  journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
+  createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
+  journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!): Boolean!
+}
+
+input MutationJourneyLanguageAiDetectInput {
+  journeyId: ID!
+  name: String!
+  journeyLanguageName: String!
+  textLanguageId: ID!
+  textLanguageName: String!
+}
 
 type MuxVideo
   @key(fields: "id primaryLanguageId")

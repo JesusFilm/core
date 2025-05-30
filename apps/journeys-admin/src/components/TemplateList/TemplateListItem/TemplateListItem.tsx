@@ -9,7 +9,6 @@ import IconButton from '@mui/material/IconButton'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
@@ -24,6 +23,7 @@ import {
 } from '../../../../__generated__/GetAdminJourneys'
 import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
 import { JourneyCardMenu } from '../../JourneyList/JourneyCard/JourneyCardMenu'
+import { LastModifiedDate } from '../../JourneyList/JourneyCard/JourneyCardText/LastModifiedDate'
 
 export interface TemplateListItemProps {
   journey?: AdminJourney | Journey
@@ -47,17 +47,6 @@ export function TemplateListItem({
           nativeLanguage,
           localLanguage
         })
-
-  const date =
-    journey != null
-      ? intlFormat(parseISO(String(journey.createdAt)), {
-          day: 'numeric',
-          month: 'long',
-          year: isThisYear(parseISO(String(journey.createdAt)))
-            ? undefined
-            : 'numeric'
-        })
-      : ''
 
   return (
     <Card
@@ -135,7 +124,7 @@ export function TemplateListItem({
                     sx={{ fontSize: 12 }}
                     suppressHydrationWarning
                   >
-                    {date}
+                    <LastModifiedDate modifiedDate={journey?.updatedAt} />
                     {journey?.description != null
                       ? t(' - {{ description }}', {
                           description: journey.description

@@ -76,7 +76,7 @@ async function visitorEventEmails(
         process.env.JOURNEYS_ADMIN_URL ?? ''
       }/journeys/${journey.id}?manageAccess=true`
 
-      const text = render(
+      const text = await render(
         VisitorInteraction({
           title: journey.title,
           recipient: data.user,
@@ -87,15 +87,14 @@ async function visitorEventEmails(
         { plainText: true }
       )
 
-      const html = render(
+      const html = await render(
         VisitorInteraction({
           title: journey.title,
           recipient: data.user,
           analyticsUrl,
           unsubscribeUrl,
           visitor
-        }),
-        { pretty: true }
+        })
       )
 
       await sendEmail({

@@ -33,6 +33,7 @@ export const journey: Journey = {
   description: 'my cool journey',
   status: JourneyStatus.draft,
   createdAt: '2021-11-19T12:34:56.647Z',
+  updatedAt: '2021-11-19T12:34:56.647Z',
   publishedAt: null,
   blocks: [
     // step 1
@@ -72,6 +73,7 @@ export const journey: Journey = {
       size: ButtonSize.medium,
       startIconId: null,
       endIconId: null,
+      submitEnabled: null,
       action: {
         __typename: 'LinkAction',
         parentBlockId: 'button1.id',

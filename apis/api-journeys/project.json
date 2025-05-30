@@ -53,7 +53,7 @@
     "watcher": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm run ts-node tools/scripts/generate-typings.ts api-journeys --transpileOnly"
+        "command": "bun run ts-node tools/scripts/generate-typings.ts api-journeys --transpileOnly"
       }
     },
     "lint": {
@@ -108,7 +108,7 @@
         "parallel": false,
         "commands": [
           "bun run prisma generate --schema apis/api-journeys/db/schema.prisma",
-          "npm run ts-node apis/api-journeys/src/app/lib/casl/caslPrismaGenerator.ts"
+          "bun run ts-node apis/api-journeys/src/app/lib/casl/caslPrismaGenerator.ts"
         ]
       }
     },
@@ -122,23 +122,31 @@
       "configurations": {
         "production": {
           "commands": [
-            "bun run prisma migrate deploy --schema apis/api-journeys/db/schema.prisma"
+            "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_JOURNEYS=postgresql://postgres:postgres@db:5432/journeys?schema=public \"bun run prisma migrate deploy --schema apis/api-journeys/db/schema.prisma\""
           ]
         }
+      }
+    },
+    "prisma-resolve-squash": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "bun run prisma migrate resolve --schema apis/api-journeys/db/schema.prisma --applied 000000000000_squashed_migrations"
+        ]
       }
     },
     "prisma-reset": {
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "bun run prisma migrate reset --schema apis/api-journeys/db/schema.prisma --force"
+          "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_JOURNEYS=postgresql://postgres:postgres@db:5432/journeys?schema=public \"bun run prisma migrate reset --schema apis/api-journeys/db/schema.prisma --force\""
         ]
       }
     },
     "prisma-seed": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["npm run ts-node apis/api-journeys/db/seed.ts"]
+        "commands": ["bun run ts-node apis/api-journeys/db/seed.ts"]
       }
     },
     "prisma-studio": {

@@ -1,13 +1,14 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing'
 import { sendGTMEvent } from '@next/third-parties/google'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
+import { SnackbarProvider } from 'notistack'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
+  TextResponseType,
   ThemeMode,
-  ThemeName,
-  VideoBlockSource
+  ThemeName
 } from '../../../__generated__/globalTypes'
 import {
   type TreeBlock,
@@ -16,20 +17,33 @@ import {
 } from '../../libs/block'
 import {
   BlockFields_CardBlock as CardBlock,
-  BlockFields_StepBlock as StepBlock
+  BlockFields_StepBlock as StepBlock,
+  BlockFields_TextResponseBlock as TextResponseBlock
 } from '../../libs/block/__generated__/BlockFields'
 import { blurImage } from '../../libs/blurImage'
 import { JourneyProvider } from '../../libs/JourneyProvider'
-import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
-import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
-import { ImageFields } from '../Image/__generated__/ImageFields'
-import { StepViewEventCreate } from '../Step/__generated__/StepViewEventCreate'
-import { STEP_VIEW_EVENT_CREATE } from '../Step/Step'
-import { VideoFields } from '../Video/__generated__/VideoFields'
 
-import { StepNextEventCreate } from './__generated__/StepNextEventCreate'
-import { StepPreviousEventCreate } from './__generated__/StepPreviousEventCreate'
-import { STEP_NEXT_EVENT_CREATE, STEP_PREVIOUS_EVENT_CREATE } from './Card'
+import {
+  action,
+  block,
+  buttonBlock,
+  card1,
+  card2,
+  createMockButtonClickEvent,
+  getStepViewEventMock,
+  imageBlock,
+  journey,
+  mockStepNextEventCreate,
+  mockTextResponse1SubmissionEventCreate,
+  mockTextResponse2SubmissionEventCreate,
+  mockTextResponseEmailSubmissionEventCreate,
+  mockTextResponseSubmissionEventCreate,
+  step1,
+  step2,
+  step3,
+  textResponseBlock,
+  videoBlock
+} from './Card.mock'
 
 import { Card } from '.'
 
@@ -58,10 +72,6 @@ jest.mock('@next/third-parties/google', () => ({
   sendGTMEvent: jest.fn()
 }))
 
-const mockedSendGTMEvent = sendGTMEvent as jest.MockedFunction<
-  typeof sendGTMEvent
->
-
 jest.mock('next-plausible', () => ({
   __esModule: true,
   usePlausible: jest.fn()
@@ -72,9 +82,6 @@ const mockUsePlausible = usePlausible as jest.MockedFunction<
 >
 
 describe('CardBlock', () => {
-  const leftSide = { clientX: 0 }
-  const rightSide = { clientX: 1000 }
-
   const originalLocation = window.location
   const mockOrigin = 'https://example.com'
 
@@ -87,6 +94,9 @@ describe('CardBlock', () => {
   })
 
   beforeEach(() => {
+    jest.clearAllMocks()
+    treeBlocksVar([])
+    blockHistoryVar([])
     mockUuidv4.mockReturnValue('uuid')
     const blurImageMock = blurImage as jest.Mock
     blurImageMock.mockReturnValue(
@@ -96,245 +106,6 @@ describe('CardBlock', () => {
 
   afterAll(() => {
     Object.defineProperty(window, 'location', originalLocation)
-  })
-
-  const step1: TreeBlock<StepBlock> = {
-    id: 'step1.id',
-    __typename: 'StepBlock',
-    parentBlockId: 'card1.id',
-    parentOrder: 0,
-    locked: false,
-    nextBlockId: 'step2.id',
-    slug: null,
-    children: []
-  }
-  const step2: TreeBlock<StepBlock> = {
-    id: 'step2.id',
-    __typename: 'StepBlock',
-    parentBlockId: 'card2.id',
-    parentOrder: 0,
-    locked: false,
-    nextBlockId: 'step3.id',
-    slug: null,
-    children: []
-  }
-  const step3: TreeBlock<StepBlock> = {
-    id: 'step3.id',
-    __typename: 'StepBlock',
-    parentBlockId: 'card3.id',
-    parentOrder: 0,
-    locked: false,
-    nextBlockId: null,
-    slug: null,
-    children: []
-  }
-  const card1: TreeBlock<CardBlock> = {
-    id: 'card1.id',
-    __typename: 'CardBlock',
-    parentOrder: 0,
-    parentBlockId: null,
-    backgroundColor: null,
-    coverBlockId: null,
-    themeName: null,
-    themeMode: null,
-    fullscreen: false,
-    children: [step1]
-  }
-
-  const card2: TreeBlock<CardBlock> = {
-    id: 'card2.id',
-    __typename: 'CardBlock',
-    parentOrder: 1,
-    parentBlockId: null,
-    backgroundColor: null,
-    coverBlockId: null,
-    themeName: null,
-    themeMode: null,
-    fullscreen: false,
-    children: [step2]
-  }
-  const card3: TreeBlock<CardBlock> = {
-    id: 'card3.id',
-    __typename: 'CardBlock',
-    parentOrder: 2,
-    parentBlockId: null,
-    backgroundColor: null,
-    coverBlockId: null,
-    themeName: null,
-    themeMode: null,
-    fullscreen: false,
-    children: [step3]
-  }
-
-  const block: TreeBlock = {
-    __typename: 'CardBlock',
-    id: 'card',
-    parentBlockId: null,
-    backgroundColor: null,
-    coverBlockId: null,
-    parentOrder: 0,
-    themeMode: null,
-    themeName: null,
-    fullscreen: false,
-    children: [
-      {
-        id: 'typographyBlockId',
-        __typename: 'TypographyBlock',
-        parentBlockId: null,
-        parentOrder: 0,
-        align: null,
-        color: null,
-        content: 'How did we get here?',
-        variant: null,
-        children: []
-      }
-    ]
-  }
-
-  const imageBlock: TreeBlock<ImageFields> = {
-    id: 'imageBlockId',
-    __typename: 'ImageBlock',
-    src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
-    alt: 'random image from unsplash',
-    width: 1600,
-    height: 1067,
-    blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
-    parentBlockId: 'card',
-    parentOrder: 0,
-    scale: null,
-    focalLeft: 50,
-    focalTop: 50,
-    children: []
-  }
-
-  const videoBlock: TreeBlock<VideoFields> = {
-    __typename: 'VideoBlock',
-    id: 'videoBlockId',
-    parentBlockId: 'card',
-    parentOrder: 0,
-    muted: true,
-    autoplay: true,
-    startAt: null,
-    endAt: null,
-    posterBlockId: 'posterBlockId',
-    fullsize: null,
-    action: null,
-    videoId: '2_0-FallingPlates',
-    videoVariantLanguageId: '529',
-    source: VideoBlockSource.internal,
-    title: null,
-    description: null,
-    duration: null,
-    image: null,
-    objectFit: null,
-    mediaVideo: {
-      __typename: 'Video',
-      id: '2_0-FallingPlates',
-      title: [
-        {
-          __typename: 'VideoTitle',
-          value: 'FallingPlates'
-        }
-      ],
-      images: [
-        {
-          __typename: 'CloudflareImage',
-          mobileCinematicHigh:
-            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
-        }
-      ],
-      variant: {
-        __typename: 'VideoVariant',
-        id: '2_0-FallingPlates-529',
-        hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-      },
-      variantLanguages: []
-    },
-    children: [
-      {
-        ...imageBlock,
-        id: 'posterBlockId',
-        alt: 'random image from unsplash - video',
-        parentBlockId: 'videoBlockId'
-      }
-    ]
-  }
-
-  const journey = {
-    id: 'journey.id',
-    language: {
-      bcp: 'en'
-    }
-  } as unknown as Journey
-
-  const mockStepPreviousEventCreate: MockedResponse<StepPreviousEventCreate> = {
-    request: {
-      query: STEP_PREVIOUS_EVENT_CREATE,
-      variables: {
-        input: {
-          id: 'uuid',
-          blockId: 'step2.id',
-          previousStepId: 'step1.id',
-          label: 'Step {{number}}',
-          value: 'Step {{number}}'
-        }
-      }
-    },
-    result: jest.fn(() => ({
-      data: {
-        stepPreviousEventCreate: {
-          id: 'uuid',
-          __typename: 'StepPreviousEvent'
-        }
-      }
-    }))
-  }
-
-  const mockStepNextEventCreate: MockedResponse<StepNextEventCreate> = {
-    request: {
-      query: STEP_NEXT_EVENT_CREATE,
-      variables: {
-        input: {
-          id: 'uuid',
-          blockId: 'step1.id',
-          nextStepId: 'step2.id',
-          label: 'Step {{number}}',
-          value: 'Step {{number}}'
-        }
-      }
-    },
-    result: jest.fn(() => ({
-      data: {
-        stepNextEventCreate: {
-          id: 'uuid',
-          __typename: 'StepNextEvent'
-        }
-      }
-    }))
-  }
-
-  const getStepViewEventMock = (
-    blockId: string,
-    value?: string
-  ): MockedResponse<StepViewEventCreate> => ({
-    request: {
-      query: STEP_VIEW_EVENT_CREATE,
-      variables: {
-        input: {
-          id: 'uuid',
-          blockId,
-          value: value ?? 'Step {{number}}'
-        }
-      }
-    },
-    result: {
-      data: {
-        stepViewEventCreate: {
-          id: 'uuid',
-          __typename: 'StepViewEvent'
-        }
-      }
-    }
   })
 
   it('should render card with theme background color', async () => {
@@ -458,218 +229,355 @@ describe('CardBlock', () => {
     expect(queryAllByText('How did we get here?')[0]).toBeInTheDocument()
   })
 
-  it('should navigate to next card', async () => {
-    mockUuidv4.mockReturnValue('uuid')
+  it('should have formik context for submissions', async () => {
     treeBlocksVar([step1, step2, step3])
-    blockHistoryVar([step1])
-    const mockPlausible = jest.fn()
-    mockUsePlausible.mockReturnValue(mockPlausible)
+    blockHistoryVar([step2])
+
+    const stepViewEventMock = getStepViewEventMock(step2.id)
 
     const { getByTestId } = render(
-      <MockedProvider mocks={[mockStepNextEventCreate]}>
-        <JourneyProvider value={{ journey }}>
-          <Card {...card1} />
-        </JourneyProvider>
-      </MockedProvider>
-    )
-
-    fireEvent.click(getByTestId('JourneysCard-card1.id'), rightSide)
-
-    expect(blockHistoryVar()).toHaveLength(2)
-    expect(blockHistoryVar()[1].id).toBe('step2.id')
-
-    await waitFor(() =>
-      expect(mockStepNextEventCreate.result).toHaveBeenCalled()
-    )
-    expect(mockPlausible).toHaveBeenCalledWith('navigateNextStep', {
-      u: `${mockOrigin}/journey.id/step1.id`,
-      props: {
-        id: 'uuid',
-        blockId: 'step1.id',
-        label: 'Step {{number}}',
-        value: 'Step {{number}}',
-        nextStepId: 'step2.id',
-        key: keyify({
-          stepId: 'step1.id',
-          event: 'navigateNextStep',
-          blockId: 'step1.id',
-          target: 'step2.id'
-        }),
-        simpleKey: keyify({
-          stepId: 'step1.id',
-          event: 'navigateNextStep',
-          blockId: 'step1.id'
-        })
-      }
-    })
-    expect(mockedSendGTMEvent).toHaveBeenCalledWith({
-      event: 'step_next',
-      eventId: 'uuid',
-      blockId: 'step1.id',
-      stepName: 'Step {{number}}',
-      targetStepId: 'step2.id',
-      targetStepName: 'Step {{number}}'
-    })
-  })
-
-  it('should navigate to previous card', async () => {
-    mockUuidv4.mockReturnValue('uuid')
-    treeBlocksVar([step1, step2, step3])
-    blockHistoryVar([step1, step2])
-    const mockPlausible = jest.fn()
-    mockUsePlausible.mockReturnValue(mockPlausible)
-
-    const { getByTestId } = render(
-      <MockedProvider
-        mocks={[getStepViewEventMock(step2.id), mockStepPreviousEventCreate]}
-      >
-        <JourneyProvider value={{ journey }}>
+      <MockedProvider mocks={[stepViewEventMock]}>
+        <JourneyProvider value={{ variant: 'default' }}>
           <Card {...card2} />
         </JourneyProvider>
       </MockedProvider>
     )
 
-    fireEvent.click(getByTestId('JourneysCard-card2.id'), leftSide)
-
-    expect(blockHistoryVar()).toHaveLength(1)
-    expect(blockHistoryVar()[0].id).toBe('step1.id')
-
-    await waitFor(() =>
-      expect(mockStepPreviousEventCreate.result).toHaveBeenCalled()
-    )
-    expect(mockPlausible).toHaveBeenCalledWith('navigatePreviousStep', {
-      u: `${mockOrigin}/journey.id/step2.id`,
-      props: {
-        id: 'uuid',
-        blockId: 'step2.id',
-        label: 'Step {{number}}',
-        value: 'Step {{number}}',
-        previousStepId: 'step1.id',
-        key: keyify({
-          stepId: 'step2.id',
-          event: 'navigatePreviousStep',
-          blockId: 'step2.id',
-          target: 'step1.id'
-        }),
-        simpleKey: keyify({
-          stepId: 'step2.id',
-          event: 'navigatePreviousStep',
-          blockId: 'step2.id'
-        })
-      }
-    })
-    expect(mockedSendGTMEvent).toHaveBeenCalledWith({
-      event: 'step_prev',
-      eventId: 'uuid',
-      blockId: 'step2.id',
-      stepName: 'Step {{number}}',
-      targetStepId: 'step1.id',
-      targetStepName: 'Step {{number}}'
-    })
+    const cardFormElement = getByTestId(`card-form-${card2.id}`)
+    expect(cardFormElement).toBeInTheDocument()
+    expect(cardFormElement.tagName).toBe('FORM')
   })
 
-  it('should block navigate next for locked cards', () => {
-    const stepBlock: TreeBlock<StepBlock> = {
-      ...step1,
-      locked: true
-    }
-    const lockedCard: TreeBlock<CardBlock> = {
+  it('should handle formik submission', async () => {
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
+
+    const textResponseCard: TreeBlock<CardBlock> = {
       ...card1,
-      children: [stepBlock]
+      children: [{ ...textResponseBlock, parentBlockId: card1.id }]
     }
-    treeBlocksVar([lockedCard, step2, step3])
-    blockHistoryVar([stepBlock])
-
-    const { getByTestId } = render(
-      <MockedProvider mocks={[getStepViewEventMock(step1.id, 'Untitled')]}>
-        <Card {...lockedCard} />
-      </MockedProvider>
-    )
-
-    fireEvent.click(getByTestId('JourneysCard-card1.id'), rightSide)
-
-    expect(blockHistoryVar()).toHaveLength(1)
-  })
-
-  it('should block navigate previous on the first card', () => {
-    treeBlocksVar([step1, step2, step3])
-    blockHistoryVar([step1])
-
-    const { getByTestId } = render(
-      <MockedProvider mocks={[getStepViewEventMock(step1.id)]}>
-        <Card {...card1} />
-      </MockedProvider>
-    )
-
-    fireEvent.click(getByTestId('JourneysCard-card1.id'), leftSide)
-
-    expect(blockHistoryVar()).toHaveLength(1)
-  })
-
-  it('should block navigate next on the last card', () => {
-    treeBlocksVar([step1, step2, step3])
-    blockHistoryVar([step1, step2, step3])
-
-    const { getByTestId } = render(
-      <MockedProvider mocks={[getStepViewEventMock(step3.id)]}>
-        <Card {...card3} />
-      </MockedProvider>
-    )
-
-    fireEvent.click(getByTestId('JourneysCard-card3.id'), rightSide)
-
-    expect(blockHistoryVar()).toHaveLength(3)
-  })
-
-  it('should navigate next on rtl', () => {
-    mockUsePlausible.mockReturnValue(jest.fn())
-    const journey = {
-      language: {
-        bcp47: 'ar'
-      }
-    } as unknown as Journey
 
     treeBlocksVar([step1, step2, step3])
     blockHistoryVar([step1])
+
+    const { getByTestId, getByLabelText } = render(
+      <MockedProvider
+        mocks={[
+          mockStepNextEventCreate,
+          mockTextResponseSubmissionEventCreate,
+          getStepViewEventMock(step1.id, 'Step {{number}}'),
+          getStepViewEventMock(step2.id, 'Step {{number}}'),
+          getStepViewEventMock(step3.id, 'Step {{number}}')
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey }}>
+            <Card {...textResponseCard} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      const textInput = getByLabelText('Text Response')
+      fireEvent.change(textInput, { target: { value: 'Test response' } })
+    })
+
+    const form = getByTestId(`card-form-${card1.id}`)
+    fireEvent.submit(form)
+
+    await waitFor(() =>
+      expect(mockTextResponseSubmissionEventCreate.result).toHaveBeenCalled()
+    )
+  })
+
+  it('should handle empty formik submission', async () => {
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
+
+    const textResponseStep: TreeBlock<StepBlock> = {
+      ...step1,
+      children: [],
+      locked: false
+    }
+    const textResponseCard: TreeBlock<CardBlock> = {
+      ...card1,
+      children: [
+        textResponseStep,
+        { ...textResponseBlock, parentBlockId: card1.id }
+      ]
+    }
+
+    treeBlocksVar([textResponseCard, step2, step3])
+    blockHistoryVar([textResponseStep])
 
     const { getByTestId } = render(
       <MockedProvider
-        mocks={[getStepViewEventMock(step1.id), mockStepNextEventCreate]}
+        mocks={[
+          mockStepNextEventCreate,
+          mockTextResponseSubmissionEventCreate,
+          getStepViewEventMock(step1.id, 'Untitled')
+        ]}
       >
-        <JourneyProvider value={{ journey }}>
-          <Card {...card1} />
-        </JourneyProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey }}>
+            <Card {...textResponseCard} />
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
-    fireEvent.click(getByTestId('JourneysCard-card1.id'), leftSide)
+    const form = getByTestId(`card-form-${card1.id}`)
+    fireEvent.submit(form)
 
-    expect(blockHistoryVar()).toHaveLength(2)
-    expect(blockHistoryVar()[1].id).toBe('step2.id')
+    await waitFor(() =>
+      expect(
+        mockTextResponseSubmissionEventCreate.result
+      ).not.toHaveBeenCalled()
+    )
   })
 
-  it('should navigate previous on rtl', () => {
-    mockUsePlausible.mockReturnValue(jest.fn())
-    const journey = {
-      language: {
-        bcp47: 'ar'
-      }
-    } as unknown as Journey
+  it('should validate required fields in forms', async () => {
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
+
+    const textResponseCard: TreeBlock<CardBlock> = {
+      ...card1,
+      children: [
+        step1,
+        {
+          ...textResponseBlock,
+          id: 'textResponse1',
+          label: 'Text Response 1',
+          parentBlockId: card1.id,
+          required: true
+        },
+        {
+          ...textResponseBlock,
+          id: 'textResponse2',
+          label: 'Text Response 2',
+          parentBlockId: card1.id,
+          required: true
+        },
+        { ...buttonBlock, parentBlockId: card1.id, submitEnabled: true }
+      ]
+    }
 
     treeBlocksVar([step1, step2, step3])
-    blockHistoryVar([step1, step2])
+    blockHistoryVar([step1])
 
-    const { getByTestId } = render(
-      <MockedProvider mocks={[mockStepPreviousEventCreate]}>
-        <JourneyProvider value={{ journey }}>
-          <Card {...card2} />
-        </JourneyProvider>
+    const mockButtonClickEvent = createMockButtonClickEvent(
+      'button',
+      'step1.id',
+      buttonBlock.label,
+      action.__typename,
+      action.url
+    )
+
+    render(
+      <MockedProvider
+        mocks={[
+          mockStepNextEventCreate,
+          mockButtonClickEvent,
+          mockTextResponse1SubmissionEventCreate,
+          mockTextResponse2SubmissionEventCreate,
+          getStepViewEventMock(step1.id, 'Step {{number}}')
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey }}>
+            <Card {...textResponseCard} />
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
-    fireEvent.click(getByTestId('JourneysCard-card2.id'), rightSide)
+    await waitFor(() => {
+      expect(
+        screen.getByRole('button', { name: 'This is a button' })
+      ).toBeInTheDocument()
+    })
 
-    expect(blockHistoryVar()).toHaveLength(1)
-    expect(blockHistoryVar()[0].id).toBe('step1.id')
+    await waitFor(() => {
+      expect(
+        screen.getByRole('textbox', { name: 'Text Response 1*' })
+      ).toBeInTheDocument()
+    })
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('textbox', { name: 'Text Response 2*' })
+      ).toBeInTheDocument()
+    })
+
+    fireEvent.change(
+      screen.getByRole('textbox', { name: 'Text Response 2*' }),
+      {
+        target: { value: 'Test response for field 2' }
+      }
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'This is a button' }))
+
+    await waitFor(() => {
+      expect(
+        mockTextResponse1SubmissionEventCreate.result
+      ).not.toHaveBeenCalled()
+    })
+
+    await waitFor(() => {
+      expect(
+        mockTextResponse2SubmissionEventCreate.result
+      ).not.toHaveBeenCalled()
+    })
+
+    await waitFor(() => {
+      expect(mockButtonClickEvent.result).not.toHaveBeenCalled()
+    })
+
+    await waitFor(() => {
+      expect(screen.getByText('This field is required')).toBeInTheDocument()
+    })
+
+    fireEvent.change(
+      screen.getByRole('textbox', { name: 'Text Response 1*' }),
+      {
+        target: { value: 'Test response for field 1' }
+      }
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'This is a button' }))
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText('This field is required')
+      ).not.toBeInTheDocument()
+    })
+
+    await waitFor(() => {
+      expect(mockTextResponse1SubmissionEventCreate.result).toHaveBeenCalled()
+    })
+    await waitFor(() => {
+      expect(mockTextResponse2SubmissionEventCreate.result).toHaveBeenCalled()
+    })
+    await waitFor(() => {
+      expect(mockButtonClickEvent.result).toHaveBeenCalled()
+    })
+  }, 15000)
+
+  it('should validate required email field in forms', async () => {
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
+
+    const requiredTextResponseBlock = {
+      ...textResponseBlock,
+      required: true
+    }
+
+    const textResponseCard: TreeBlock<CardBlock> = {
+      ...card1,
+      children: [
+        step1,
+        {
+          ...(requiredTextResponseBlock as unknown as TreeBlock<TextResponseBlock>),
+          id: 'textResponse1',
+          label: 'Text Response 1',
+          parentBlockId: card1.id,
+          type: TextResponseType.email
+        },
+
+        { ...buttonBlock, parentBlockId: card1.id, submitEnabled: true }
+      ]
+    }
+
+    treeBlocksVar([step1, step2, step3])
+    blockHistoryVar([step1])
+
+    const mockButtonClickEvent = createMockButtonClickEvent(
+      'button',
+      'step1.id',
+      buttonBlock.label,
+      action.__typename,
+      action.url
+    )
+
+    render(
+      <MockedProvider
+        mocks={[
+          mockStepNextEventCreate,
+          mockButtonClickEvent,
+          mockTextResponseEmailSubmissionEventCreate,
+          getStepViewEventMock(step1.id, 'Step {{number}}')
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey }}>
+            <Card {...textResponseCard} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('button', { name: 'This is a button' })
+      ).toBeInTheDocument()
+    })
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('textbox', { name: 'Text Response 1*' })
+      ).toBeInTheDocument()
+    })
+
+    fireEvent.change(
+      screen.getByRole('textbox', { name: 'Text Response 1*' }),
+      {
+        target: { value: 'Test response for field 2' }
+      }
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'This is a button' }))
+
+    await waitFor(() => {
+      expect(
+        mockTextResponseEmailSubmissionEventCreate.result
+      ).not.toHaveBeenCalled()
+    })
+
+    await waitFor(() => {
+      expect(mockButtonClickEvent.result).not.toHaveBeenCalled()
+    })
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Please enter a valid email address')
+      ).toBeInTheDocument()
+    })
+
+    fireEvent.change(
+      screen.getByRole('textbox', { name: 'Text Response 1*' }),
+      {
+        target: { value: 'test@example.com' }
+      }
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'This is a button' }))
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText('Please enter a valid email address')
+      ).not.toBeInTheDocument()
+    })
+
+    await waitFor(() => {
+      expect(
+        mockTextResponseEmailSubmissionEventCreate.result
+      ).toHaveBeenCalled()
+    })
+
+    await waitFor(() => {
+      expect(mockButtonClickEvent.result).toHaveBeenCalled()
+    })
   })
 })

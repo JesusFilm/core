@@ -9,7 +9,7 @@ on:
     branches: [main]
 jobs:
   lint:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     strategy:
       matrix:
         node-version: [22]
@@ -33,17 +33,31 @@ jobs:
       - name: Fetch other branches
         if: ${{ github.event_name == 'pull_request' }}
         run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
 
       - uses: oven-sh/setup-bun@v1
         with:
           bun-version: ${{ matrix.bun-version }}
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install -y build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
+
+      - name: Mount Bun Cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-bun-cache
+          path: ~/.bun
+      - name: Mount node_modules
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-bun-modules
+          path: ./node_modules
+      - name: Mount lint cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-lint
+          path: ./.cache
       - name: bun install
         run: bun install --silent --frozen-lockfile
+
       - name: generate prisma imports
         uses: mansagroup/nrwl-nx-action@v3
         with:
@@ -60,7 +74,7 @@ jobs:
           targets: codegen
           all: true
       - name: Run Prettier
-        run: bun run prettier:fix
+        run: bun run prettier:fix --check '!./.cache'
       - name: Run ESLint
         uses: mansagroup/nrwl-nx-action@v3
         with:
@@ -72,8 +86,6 @@ jobs:
           targets: type-check,extract-translations,subgraph-check
         env:
           HIVE_TOKEN: ${{ secrets.HIVE_PROD_READ_ONLY_TOKEN }}
-      - name: lint commit messages
-        run: bun commitlint --from 9a45682 # earliest good commit to main
       - name: lint branch name
         if: ${{ github.event_name == 'pull_request' }}
         run: bun validate-branch-name -t $GITHUB_HEAD_REF

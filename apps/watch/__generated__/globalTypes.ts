@@ -151,6 +151,7 @@ export enum TextResponseType {
   email = "email",
   freeForm = "freeForm",
   name = "name",
+  phone = "phone",
 }
 
 export enum ThemeMode {
@@ -227,6 +228,7 @@ export enum VideoLabel {
 export enum VideoVariantDownloadQuality {
   high = "high",
   low = "low",
+  sd = "sd",
 }
 
 export interface ButtonClickEventCreateInput {

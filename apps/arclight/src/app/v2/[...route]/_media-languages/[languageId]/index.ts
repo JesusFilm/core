@@ -1,5 +1,5 @@
+import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { ResultOf, graphql } from 'gql.tada'
-import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
 
 import { getApolloClient } from '../../../../../lib/apolloClient'
@@ -54,9 +54,92 @@ const GET_LANGUAGE = graphql(`
   }
 `)
 
-export const mediaLanguage = new Hono()
+const QuerySchema = z.object({
+  metadataLanguageTags: z
+    .string()
+    .optional()
+    .describe('Filter by metadata language tags'),
+  apiKey: z.string().optional().describe('API key')
+})
 
-mediaLanguage.get('/', async (c) => {
+const ResponseSchema = z.object({
+  languageId: z.number(),
+  iso3: z.string(),
+  bcp47: z.string(),
+  counts: z.object({
+    speakerCount: z.object({
+      value: z.number(),
+      description: z.string()
+    }),
+    countriesCount: z.object({
+      value: z.number(),
+      description: z.string()
+    }),
+    series: z.object({
+      value: z.number(),
+      description: z.string()
+    }),
+    featureFilm: z.object({
+      value: z.number(),
+      description: z.string()
+    }),
+    shortFilm: z.object({
+      value: z.number(),
+      description: z.string()
+    })
+  }),
+  audioPreview: z.object({
+    url: z.string(),
+    audioBitrate: z.number(),
+    audioContainer: z.string(),
+    sizeInBytes: z.number()
+  }),
+  primaryCountryId: z.string(),
+  name: z.string(),
+  nameNative: z.string(),
+  alternateLanguageName: z.string(),
+  alternateLanguageNameNative: z.string(),
+  metadataLanguageTag: z.string(),
+  _links: z.object({
+    self: z.object({
+      href: z.string()
+    })
+  })
+})
+
+const route = createRoute({
+  method: 'get',
+  path: '/',
+  tags: ['Media Languages'],
+  summary: 'Get media language by language ID',
+  description: 'Get media language by language ID',
+  request: {
+    params: z.object({
+      languageId: z.string()
+    }),
+    query: QuerySchema
+  },
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: ResponseSchema
+        }
+      },
+      description: 'Media language'
+    },
+    400: {
+      description: 'Bad Request'
+    },
+    404: {
+      description: 'Not Found'
+    }
+  }
+})
+
+export const mediaLanguage = new OpenAPIHono()
+
+mediaLanguage.openapi(route, async (c) => {
   const languageId = c.req.param('languageId')
   const metadataLanguageTags =
     c.req.query('metadataLanguageTags')?.split(',') ?? []
@@ -156,10 +239,14 @@ mediaLanguage.get('/', async (c) => {
       language.countryLanguages.find(({ primary }) => primary)?.country.id ??
       '',
     name: language.name[0]?.value ?? language.fallbackName[0]?.value ?? '',
-    nameNative: language.nameNative.find(({ primary }) => primary)?.value,
+    nameNative:
+      language.nameNative.find(({ primary }) => primary)?.value ??
+      language.name[0]?.value ??
+      language.fallbackName[0]?.value ??
+      '',
     alternateLanguageName: '',
     alternateLanguageNameNative: '',
-    metadataLanguageTag: language.name[0]?.language.bcp47 ?? '',
+    metadataLanguageTag: metadataLanguageTags[0] ?? 'en',
     _links: {
       self: {
         href: `http://api.arclight.org/v2/media-languages/${languageId}?${queryString}`

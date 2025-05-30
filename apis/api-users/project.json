@@ -89,7 +89,7 @@
       "configurations": {
         "production": {
           "commands": [
-            "bun run prisma migrate deploy --schema apis/api-users/db/schema.prisma"
+            "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_USERS=postgresql://postgres:postgres@db:5432/users?schema=public \"bun run prisma migrate deploy --schema apis/api-users/db/schema.prisma\""
           ]
         }
       }
@@ -98,7 +98,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "bun run prisma migrate reset --schema apis/api-users/db/schema.prisma --force"
+          "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_USERS=postgresql://postgres:postgres@db:5432/users?schema=public \"bun run prisma migrate reset --schema apis/api-users/db/schema.prisma --force\""
         ]
       }
     },

@@ -92,7 +92,7 @@
       "configurations": {
         "production": {
           "commands": [
-            "bun run prisma migrate deploy --schema apis/api-media/db/schema.prisma"
+            "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_MEDIA=postgresql://postgres:postgres@db:5432/media?schema=public \"bun run prisma migrate deploy --schema apis/api-media/db/schema.prisma\""
           ]
         }
       }
@@ -101,14 +101,22 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "bun run prisma migrate reset --schema apis/api-media/db/schema.prisma --force"
+          "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_MEDIA=postgresql://postgres:postgres@db:5432/media?schema=public \"bun run prisma migrate reset --schema apis/api-media/db/schema.prisma --force\""
+        ]
+      }
+    },
+    "prisma-resolve-squash": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "bun run prisma migrate resolve --schema apis/api-media/db/schema.prisma --applied 000000000000_squashed_migrations"
         ]
       }
     },
     "prisma-seed": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["npm run ts-node apis/api-media/db/seed.ts"]
+        "commands": ["bun run ts-node apis/api-media/db/seed.ts"]
       }
     },
     "prisma-studio": {
@@ -142,38 +150,38 @@
     "queue-ingest": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm run ts-node apis/api-media/src/workers/cli.ts big-query"
+        "command": "bun run ts-node apis/api-media/src/workers/cli.ts big-query"
       }
     },
     "queue-crowdin": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm run ts-node apis/api-media/src/workers/cli.ts crowdin"
+        "command": "bun run ts-node apis/api-media/src/workers/cli.ts crowdin"
       }
     },
     "queue-algolia": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm run ts-node apis/api-media/src/workers/cli.ts algolia"
+        "command": "bun run ts-node apis/api-media/src/workers/cli.ts algolia"
       }
     },
     "queue-blocklist": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm run ts-node apis/api-media/src/workers/cli.ts blocklist"
+        "command": "bun run ts-node apis/api-media/src/workers/cli.ts blocklist"
       }
     },
     "queue-seed": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm run ts-node apis/api-media/src/workers/cli.ts seed"
+        "command": "bun run ts-node apis/api-media/src/workers/cli.ts seed"
       }
     },
     "export-language-slugs": {
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npm run ts-node apis/api-media/src/lib/exportExistingLanguageSlugs.ts",
+          "bun run ts-node apis/api-media/src/lib/exportExistingLanguageSlugs.ts",
           "bun run prettier apis/api-languages/src/__generated__/languageSlugs.ts --write"
         ],
         "parallel": false
@@ -183,6 +191,18 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "gql.tada generate output --tsconfig apis/api-media/tsconfig.json"
+      }
+    },
+    "data-export": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bun run ts-node apis/api-media/src/workers/cli.ts data-export"
+      }
+    },
+    "data-import": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bun run ts-node apis/api-media/src/scripts/data-import.ts"
       }
     }
   }

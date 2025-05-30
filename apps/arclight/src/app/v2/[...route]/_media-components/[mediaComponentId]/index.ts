@@ -1,9 +1,11 @@
+import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { ResultOf, graphql } from 'gql.tada'
-import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
 
 import { getApolloClient } from '../../../../../lib/apolloClient'
 import { getLanguageIdsFromTags } from '../../../../../lib/getLanguageIdsFromTags'
+import { getDefaultPlatformForApiKey } from '../../../../../lib/getPlatformFromApiKey'
+import { mediaComponentSchema } from '../../mediaComponent.schema'
 
 import { mediaComponentLanguages } from './languages'
 
@@ -83,15 +85,80 @@ const GET_VIDEO = graphql(`
   }
 `)
 
-export const mediaComponent = new Hono()
+export const mediaComponent = new OpenAPIHono()
 mediaComponent.route('/languages', mediaComponentLanguages)
 
-mediaComponent.get('/', async (c) => {
+const QuerySchema = z.object({
+  expand: z.string().optional(),
+  filter: z.string().optional(),
+  platform: z.string().optional(),
+  apiKey: z.string().optional()
+})
+
+const ParamsSchema = z.object({
+  mediaComponentId: z.string()
+})
+
+const ResponseSchema = z.object({
+  ...mediaComponentSchema.shape,
+  _links: z.object({
+    self: z.object({
+      href: z.string()
+    }),
+    mediaComponentLinks: z.object({
+      href: z.string().url()
+    }),
+    mediaComponent: z.array(
+      z.object({
+        href: z.string().url()
+      })
+    ),
+    sampleMediaComponentLanguage: z.object({
+      href: z.string().url()
+    }),
+    osisBibleBooks: z.object({
+      href: z.string().url()
+    })
+  })
+})
+
+const route = createRoute({
+  method: 'get',
+  path: '/',
+  tags: ['Media Components'],
+  summary: 'Get media component by media component id',
+  description: 'Get media component by media component id',
+  request: { query: QuerySchema, params: ParamsSchema },
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: ResponseSchema
+        }
+      },
+      description: 'Media component'
+    },
+    404: {
+      description: 'Not found'
+    }
+  }
+})
+
+mediaComponent.openapi(route, async (c) => {
   const mediaComponentId = c.req.param('mediaComponentId')
   const expand = c.req.query('expand') ?? ''
   const filter = c.req.query('filter') ?? ''
-  const platform = c.req.query('platform') ?? 'ios'
-  const apiKey = c.req.query('apiKey') ?? ''
+
+  const apiKey = c.req.query('apiKey')
+
+  let platform = c.req.query('platform')
+  if (!platform && apiKey) {
+    platform = await getDefaultPlatformForApiKey(apiKey)
+  }
+  if (!platform) {
+    platform = 'ios'
+  }
+
   const metadataLanguageTags =
     c.req.query('metadataLanguageTags')?.split(',').filter(Boolean) ?? []
 
@@ -133,12 +200,6 @@ mediaComponent.get('/', async (c) => {
       )
     }
 
-    const queryObject = c.req.query()
-    const queryString = new URLSearchParams(queryObject).toString()
-    const mediaComponentLinksQuerystring = new URLSearchParams(
-      queryObject
-    ).toString()
-
     const descriptorsonlyResponse = {
       mediaComponentId,
       title: video.title[0]?.value ?? video.fallbackTitle[0]?.value ?? '',
@@ -148,7 +209,10 @@ mediaComponent.get('/', async (c) => {
         video.description[0]?.value ??
         video.fallbackDescription[0]?.value ??
         '',
-      studyQuestions: video.studyQuestions.map((question) => question.value),
+      studyQuestions:
+        video.studyQuestions.length > 0
+          ? video.studyQuestions.map((question) => question.value)
+          : video.fallbackStudyQuestions.map((question) => question.value),
       metadataLanguageTag: video.title[0]?.language.bcp47 ?? 'en',
       _links: {
         self: {
@@ -214,8 +278,11 @@ mediaComponent.get('/', async (c) => {
         video.description[0]?.value ??
         video.fallbackDescription[0]?.value ??
         '',
-      studyQuestions: video.studyQuestions.map((question) => question.value),
-      metadataLanguageTag: metadataLanguageTags[0] ?? 'en',
+      studyQuestions:
+        video.studyQuestions.length > 0
+          ? video.studyQuestions.map((question) => question.value)
+          : video.fallbackStudyQuestions.map((question) => question.value),
+      metadataLanguageTag: video.title[0]?.language.bcp47 ?? 'en',
       _links: {
         sampleMediaComponentLanguage: {
           href: `http://api.arclight.org/v2/media-components/${mediaComponentId}/languages/529?platform=${platform}&apiKey=${apiKey}`

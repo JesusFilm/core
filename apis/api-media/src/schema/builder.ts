@@ -2,6 +2,7 @@
 import { tracer } from '@core/yoga/tracer'
 
 import SchemaBuilder from '@pothos/core'
+import DataloaderPlugin from '@pothos/plugin-dataloader'
 import DirectivesPlugin from '@pothos/plugin-directives'
 import ErrorsPlugin from '@pothos/plugin-errors'
 import FederationPlugin from '@pothos/plugin-federation'
@@ -73,7 +74,8 @@ export const builder = new SchemaBuilder<{
     ZodPlugin,
     WithInputPlugin,
     DirectivesPlugin,
-    FederationPlugin
+    FederationPlugin,
+    DataloaderPlugin
   ],
   tracing: {
     default: (config) => isRootField(config),

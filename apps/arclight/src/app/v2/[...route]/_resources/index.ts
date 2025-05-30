@@ -1,5 +1,6 @@
+import { OpenAPIHono, RouteConfig, createRoute } from '@hono/zod-openapi'
 import { SearchClient, algoliasearch } from 'algoliasearch'
-import { Hono } from 'hono'
+import { z } from 'zod'
 
 type AlgoliaVideoHit = {
   mediaComponentId: string
@@ -36,8 +37,8 @@ type AlgoliaVideoHit = {
   }
   bibleCitations?: Array<{
     osisBibleBook: string
-    chapterStart: number
-    verseStart: number
+    chapterStart: number | null
+    verseStart: number | null
     chapterEnd: number | null
     verseEnd: number | null
   }>
@@ -157,6 +158,7 @@ async function searchAlgoliaLanguages(
 
   return response.hits.map((hit) => ({
     objectID: hit.objectID,
+    languageId: hit.languageId,
     iso3: hit.iso3,
     bcp47: hit.bcp47,
     primaryCountryId: hit.primaryCountryId,
@@ -195,22 +197,175 @@ async function searchAlgoliaCountries(
   return response.hits ?? []
 }
 
-export const resources = new Hono()
+const QuerySchema = z.object({
+  term: z.string().describe('Search term for resources - cannot be empty'),
+  bulk: z.string().optional().describe('If true, only returns ids and links'),
+  metadataLanguageTags: z
+    .string()
+    .optional()
+    .describe(
+      'Comma-separated list of metadata language tags. ( bcp47 codes in core )'
+    ),
+  apiKey: z.string().optional().describe('API key for authentication')
+})
 
-resources.get('/', async (c) => {
+const ErrorResponseSchema = z.object({
+  message: z.string().describe('Error message'),
+  logref: z.number().describe('Error reference code')
+})
+
+const VideoSchema = z.object({
+  mediaComponentId: z
+    .string()
+    .describe('Unique identifier for the media component. ( videoId in core )'),
+  componentType: z
+    .string()
+    .describe('Type of the component. ( content or container )'),
+  subType: z
+    .string()
+    .optional()
+    .describe(
+      'Subtype of the component. ( collection, episode, featureFilm, segment, series, shortFilm )'
+    ),
+  contentType: z.string().describe('Content type. ( video or none )'),
+  imageUrls: z
+    .object({
+      thumbnail: z.string().optional(),
+      videoStill: z.string().optional(),
+      mobileCinematicHigh: z.string().optional(),
+      mobileCinematicLow: z.string().optional(),
+      mobileCinematicVeryLow: z.string().optional()
+    })
+    .describe('URLs for various image formats'),
+  lengthInMilliseconds: z
+    .number()
+    .describe('Duration of the media in milliseconds'),
+  containsCount: z.number().describe('Number of contained items'),
+  isDownloadable: z.boolean().describe('Whether the media can be downloaded'),
+  downloadSizes: z
+    .object({
+      approximateSmallDownloadSizeInBytes: z.number().optional(),
+      approximateLargeDownloadSizeInBytes: z.number().optional()
+    })
+    .optional()
+    .describe('Download size information'),
+  bibleCitations: z
+    .array(
+      z.object({
+        osisBibleBook: z.string(),
+        chapterStart: z.number().nullable(),
+        verseStart: z.number().nullable(),
+        chapterEnd: z.number().nullable(),
+        verseEnd: z.number().nullable()
+      })
+    )
+    .optional()
+    .describe('Bible citations'),
+  primaryLanguageId: z.number().describe('Primary language id'),
+  studyQuestions: z.array(z.string()).optional().describe('Study questions'),
+  languageIds: z.array(z.number()).optional().describe('Language ids')
+})
+
+const CountrySchema = z.object({
+  countryId: z.string(),
+  name: z.string(),
+  continentName: z.string(),
+  longitude: z.number(),
+  latitude: z.number()
+})
+
+const LanguageSchema = z.object({
+  languageId: z.number(),
+  iso3: z.string(),
+  bcp47: z.string(),
+  primaryCountryId: z.string(),
+  nameNative: z.string(),
+  name: z.string()
+})
+
+const ResourcesResponseSchema = z.object({
+  _links: z.object({
+    self: z.object({
+      href: z.string().url()
+    })
+  }),
+  _embedded: z.object({
+    resources: z.object({
+      resourceCount: z.number(),
+      mediaComponents: z.array(VideoSchema).optional(),
+      mediaCountries: z.array(CountrySchema).optional(),
+      mediaLanguages: z.array(LanguageSchema).optional(),
+      alternateLanguages: z.array(z.unknown()).optional(),
+      countryIds: z.array(z.string()).optional(),
+      languageIds: z.array(z.number()).optional(),
+      alternateLanguageIds: z.array(z.unknown()).optional(),
+      mediaComponentIds: z.array(z.string()).optional()
+    })
+  })
+})
+
+const searchRoute = createRoute({
+  method: 'get',
+  path: '/',
+  tags: ['Resources'],
+  summary: 'Search for resources',
+  description:
+    'Search across media components, countries, and languages using Algolia search',
+  request: {
+    query: QuerySchema
+  },
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: ResourcesResponseSchema
+        }
+      },
+      description: 'Successful search results'
+    },
+    400: {
+      content: {
+        'application/json': {
+          schema: ErrorResponseSchema
+        }
+      },
+      description: 'Bad Request - Empty search term'
+    },
+    403: {
+      content: {
+        'application/json': {
+          schema: ErrorResponseSchema
+        }
+      },
+      description: 'Algolia API Error'
+    },
+    500: {
+      content: {
+        'application/json': {
+          schema: ErrorResponseSchema
+        }
+      },
+      description: 'Internal Server Error'
+    }
+  }
+}) satisfies RouteConfig
+
+export const resources = new OpenAPIHono()
+
+resources.openapi(searchRoute, async (c) => {
   const apiKey = c.req.query('apiKey') ?? ''
-  const term = c.req.query('term') ?? ''
+  const term = c.req.query('term')
   const bulk = c.req.query('bulk') ?? 'false'
   const metadataLanguageTags =
     c.req.query('metadataLanguageTags')?.split(',') ?? []
 
-  if (term === '') {
+  if (!term || term === '') {
     return c.json(
       {
         message:
           'Parameter "term" of value "" violated a constraint. This value should not be empty.',
         logref: 400
-      },
+      } as const satisfies z.infer<typeof ErrorResponseSchema>,
       400
     )
   }
@@ -248,10 +403,11 @@ resources.get('/', async (c) => {
       bibleCitations:
         hit.bibleCitations?.map((citation) => ({
           osisBibleBook: citation.osisBibleBook,
-          chapterStart: citation.chapterStart,
-          verseStart: citation.verseStart,
-          chapterEnd: citation.chapterEnd,
-          verseEnd: citation.verseEnd
+          chapterStart:
+            citation.chapterStart === -1 ? null : citation.chapterStart,
+          verseStart: citation.verseStart === -1 ? null : citation.verseStart,
+          chapterEnd: citation.chapterEnd === -1 ? null : citation.chapterEnd,
+          verseEnd: citation.verseEnd === -1 ? null : citation.verseEnd
         })) ?? [],
       primaryLanguageId: hit.primaryLanguageId,
       title:
@@ -279,7 +435,7 @@ resources.get('/', async (c) => {
     const transformedLanguages = languageHits.map((hit) => ({
       languageId: Number(hit.objectID),
       iso3: hit.iso3,
-      bcp47: hit.bcp47,
+      bcp47: hit.bcp47 ?? hit.iso3 ?? '',
       primaryCountryId: hit.primaryCountryId,
       name:
         hit.names.find((n) => n.bcp47 === metadataLanguageTags[0])?.value ??
@@ -311,6 +467,11 @@ resources.get('/', async (c) => {
       }
     }))
 
+    const resourceCount =
+      transformedVideos.length +
+      countryHits.length +
+      transformedLanguages.length
+
     const transformedResponse = {
       _links: {
         self: {
@@ -319,10 +480,7 @@ resources.get('/', async (c) => {
       },
       _embedded: {
         resources: {
-          resourceCount:
-            transformedVideos.length +
-            countryHits.length +
-            transformedLanguages.length,
+          resourceCount,
           ...(bulk === 'true'
             ? {
                 countryIds: countryHits.map((country) => country.countryId),
@@ -339,8 +497,7 @@ resources.get('/', async (c) => {
                 mediaLanguages: transformedLanguages,
                 alternateLanguages: [],
                 mediaComponents: transformedVideos
-              }),
-          _links: {}
+              })
         }
       }
     }
@@ -369,7 +526,7 @@ resources.get('/', async (c) => {
       {
         message: `Internal server error: ${errorMessage}`,
         logref: 500
-      },
+      } as const satisfies z.infer<typeof ErrorResponseSchema>,
       500
     )
   }

@@ -46,6 +46,7 @@ Thumbs.db
 # local .env files
 .env
 .env*local
+.dev.vars
 
 # nx generated files
 migrations.json
@@ -76,9 +77,6 @@ terraform.tfstate.backup
 # ignore old locale files
 /libs/locales/**/*_old.json
 
-# ignore app router locale files
-/apps/**/src/locales
-
 .nx/cache
 .nx/workspace-data
 
@@ -87,3 +85,10 @@ terraform.tfstate.backup
 
 # bun
 .bun/
+
+.cursor/rules/*.dev.mdc
+
+# ignore exports
+/exports/*
+/imports/*
+

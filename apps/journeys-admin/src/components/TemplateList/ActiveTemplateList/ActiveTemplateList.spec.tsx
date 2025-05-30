@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, getByRole, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
@@ -10,7 +10,7 @@ import {
 } from '../../JourneyList/ActiveJourneyList/ActiveJourneyList'
 import { SortOrder } from '../../JourneyList/JourneySort'
 import { ThemeProvider } from '../../ThemeProvider'
-import { defaultTemplate, oldTemplate } from '../data'
+import { defaultTemplate, fakeDate, oldTemplate } from '../data'
 
 import { ActiveTemplateList } from '.'
 
@@ -45,7 +45,16 @@ const noTemplatesMock = {
 }
 
 describe('ActiveTemplateList', () => {
-  it('should render templates in descending createdAt date by default', async () => {
+  beforeAll(() => {
+    jest.useFakeTimers()
+    jest.setSystemTime(new Date(fakeDate))
+  })
+
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
+  it('should render templates in descending updatedAt date by default', async () => {
     const { getAllByLabelText } = render(
       <MockedProvider mocks={[ActiveTemplateListMock]}>
         <ThemeProvider>
@@ -57,11 +66,11 @@ describe('ActiveTemplateList', () => {
     )
     await waitFor(() =>
       expect(getAllByLabelText('template-card')[0].textContent).toContain(
-        'January 1'
+        '11 months ago'
       )
     )
     expect(getAllByLabelText('template-card')[1].textContent).toContain(
-      'November 19, 2020'
+      '1 year ago'
     )
   })
 
@@ -99,11 +108,11 @@ describe('ActiveTemplateList', () => {
     )
     await waitFor(() =>
       expect(getAllByLabelText('template-card')[0].textContent).toContain(
-        'a lower case titleJanuary 1, 2021English'
+        'a lower case title'
       )
     )
     expect(getAllByLabelText('template-card')[1].textContent).toContain(
-      'An Old Template HeadingNovember 19, 2020 - Template created before the current year should also show the year in the dateEnglish'
+      'An Old Template'
     )
   })
 
@@ -171,7 +180,7 @@ describe('ActiveTemplateList', () => {
     })
 
     it('should archive all journeys', async () => {
-      const { getByText } = render(
+      const { getByText, getByRole } = render(
         <MockedProvider mocks={[ActiveTemplateListMock, archiveJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
@@ -183,12 +192,12 @@ describe('ActiveTemplateList', () => {
       await waitFor(() =>
         expect(getByText('Default Template Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Archive'))
+      fireEvent.click(getByRole('button', { name: 'Archive' }))
       await waitFor(() => expect(result).toHaveBeenCalled())
     })
 
     it('should show error', async () => {
-      const { getByText } = render(
+      const { getByText, getByRole } = render(
         <MockedProvider
           mocks={[
             ActiveTemplateListMock,
@@ -207,7 +216,7 @@ describe('ActiveTemplateList', () => {
       await waitFor(() =>
         expect(getByText('Default Template Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Archive'))
+      fireEvent.click(getByRole('button', { name: 'Archive' }))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
     })
   })
@@ -243,7 +252,7 @@ describe('ActiveTemplateList', () => {
     })
 
     it('should trash all journeys', async () => {
-      const { getByText } = render(
+      const { getByText, getByRole } = render(
         <MockedProvider
           mocks={[ActiveTemplateListMock, trashTemplatesMock, noTemplatesMock]}
         >
@@ -257,12 +266,12 @@ describe('ActiveTemplateList', () => {
       await waitFor(() =>
         expect(getByText('Default Template Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Trash'))
+      fireEvent.click(getByRole('button', { name: 'Trash' }))
       await waitFor(() => expect(result).toHaveBeenCalled())
     })
 
     it('should show error', async () => {
-      const { getByText } = render(
+      const { getByText, getByRole } = render(
         <MockedProvider
           mocks={[
             ActiveTemplateListMock,
@@ -281,7 +290,7 @@ describe('ActiveTemplateList', () => {
       await waitFor(() =>
         expect(getByText('Default Template Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Trash'))
+      fireEvent.click(getByRole('button', { name: 'Trash' }))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
     })
   })

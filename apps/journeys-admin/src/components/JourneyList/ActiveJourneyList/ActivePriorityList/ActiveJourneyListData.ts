@@ -70,6 +70,7 @@ export const defaultJourney: Journey = {
       }
     ]
   },
+  updatedAt: '2020-02-01T00:00:00Z',
   createdAt: '2020-02-01T00:00:00Z',
   publishedAt: null,
   status: JourneyStatus.draft,
@@ -103,4 +104,11 @@ export const pendingActionJourney: Journey = {
   id: 'journey4.id',
   title: 'Pending Action Journey',
   userJourneys: [ownerUserJourney, newUserJourney, editorUserJourney]
+}
+
+export const journeyWithLongTitle: Journey = {
+  ...defaultJourney,
+  id: 'journey5.id',
+  title:
+    'This is a journey with an extremely long title that should be wrapped to two lines and then truncated with the ellipsis'
 }

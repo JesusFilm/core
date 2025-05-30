@@ -48,13 +48,16 @@ const noJourneysMock = {
 }
 
 describe('TrashedTemplateList', () => {
-  // fake timers not working correctly with
   beforeAll(() => {
     jest.useFakeTimers()
     jest.setSystemTime(new Date(fakeDate))
   })
 
-  it('should render templates in descending createdAt date by default', async () => {
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
+  it('should render templates in descending updatedAt date by default', async () => {
     const { getAllByLabelText } = render(
       <MockedProvider mocks={[trashedJourneysMock]}>
         <ThemeProvider>
@@ -66,11 +69,11 @@ describe('TrashedTemplateList', () => {
     )
     await waitFor(() =>
       expect(getAllByLabelText('template-card')[0].textContent).toContain(
-        'January 1'
+        '11 months ago'
       )
     )
     expect(getAllByLabelText('template-card')[1].textContent).toContain(
-      'November 19, 2020'
+      '1 year ago'
     )
   })
 
@@ -112,11 +115,11 @@ describe('TrashedTemplateList', () => {
     )
     await waitFor(() =>
       expect(getAllByLabelText('template-card')[0].textContent).toContain(
-        `a lower case titleJanuary 1English`
+        'a lower case title'
       )
     )
     expect(getAllByLabelText('template-card')[1].textContent).toContain(
-      'An Old Template HeadingNovember 19, 2020 - Template created before the current year should also show the year in the dateEnglish'
+      'An Old Template'
     )
   })
 

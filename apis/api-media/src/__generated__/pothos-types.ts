@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { Prisma, CloudflareImage, CloudflareVideo, MuxVideo, CloudflareR2, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoEdition, VideoSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, TagName, Tag, Tagging, Taxonomy, TaxonomyName, UserMediaRole, ShortLinkDomain, ShortLink, ShortLinkBlocklistDomain } from ".prisma/api-media-client";
+import type { Prisma, CloudflareImage, MuxVideo, CloudflareR2, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoEdition, VideoSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, TagName, Tag, Tagging, Taxonomy, TaxonomyName, UserMediaRole, ShortLinkDomain, ShortLink, ShortLinkBlocklistDomain, VideoOrigin, ArclightApiKey } from ".prisma/api-media-client/index.js";
 export default interface PrismaTypes {
     CloudflareImage: {
         Name: "CloudflareImage";
@@ -20,20 +20,6 @@ export default interface PrismaTypes {
                 Nullable: true;
             };
         };
-    };
-    CloudflareVideo: {
-        Name: "CloudflareVideo";
-        Shape: CloudflareVideo;
-        Include: never;
-        Select: Prisma.CloudflareVideoSelect;
-        OrderBy: Prisma.CloudflareVideoOrderByWithRelationInput;
-        WhereUnique: Prisma.CloudflareVideoWhereUniqueInput;
-        Where: Prisma.CloudflareVideoWhereInput;
-        Create: {};
-        Update: {};
-        RelationName: never;
-        ListRelations: never;
-        Relations: {};
     };
     MuxVideo: {
         Name: "MuxVideo";
@@ -65,12 +51,32 @@ export default interface PrismaTypes {
         Where: Prisma.CloudflareR2WhereInput;
         Create: {};
         Update: {};
-        RelationName: "video";
+        RelationName: "video" | "videoVariant" | "videoVariantDownload" | "videoSubtitleSrt" | "videoSubtitleVtt";
         ListRelations: never;
         Relations: {
             video: {
                 Shape: Video | null;
                 Name: "Video";
+                Nullable: true;
+            };
+            videoVariant: {
+                Shape: VideoVariant | null;
+                Name: "VideoVariant";
+                Nullable: true;
+            };
+            videoVariantDownload: {
+                Shape: VideoVariantDownload | null;
+                Name: "VideoVariantDownload";
+                Nullable: true;
+            };
+            videoSubtitleSrt: {
+                Shape: VideoSubtitle | null;
+                Name: "VideoSubtitle";
+                Nullable: true;
+            };
+            videoSubtitleVtt: {
+                Shape: VideoSubtitle | null;
+                Name: "VideoSubtitle";
                 Nullable: true;
             };
         };
@@ -85,7 +91,7 @@ export default interface PrismaTypes {
         Where: Prisma.VideoWhereInput;
         Create: {};
         Update: {};
-        RelationName: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets" | "videoEditions";
+        RelationName: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets" | "videoEditions" | "origin";
         ListRelations: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets" | "videoEditions";
         Relations: {
             title: {
@@ -158,6 +164,11 @@ export default interface PrismaTypes {
                 Name: "VideoEdition";
                 Nullable: false;
             };
+            origin: {
+                Shape: VideoOrigin | null;
+                Name: "VideoOrigin";
+                Nullable: true;
+            };
         };
     };
     VideoTitle: {
@@ -190,9 +201,14 @@ export default interface PrismaTypes {
         Where: Prisma.VideoVariantDownloadWhereInput;
         Create: {};
         Update: {};
-        RelationName: "videoVariant";
+        RelationName: "asset" | "videoVariant";
         ListRelations: never;
         Relations: {
+            asset: {
+                Shape: CloudflareR2 | null;
+                Name: "CloudflareR2";
+                Nullable: true;
+            };
             videoVariant: {
                 Shape: VideoVariant | null;
                 Name: "VideoVariant";
@@ -210,7 +226,7 @@ export default interface PrismaTypes {
         Where: Prisma.VideoVariantWhereInput;
         Create: {};
         Update: {};
-        RelationName: "downloads" | "videoEdition" | "video" | "muxVideo";
+        RelationName: "downloads" | "videoEdition" | "video" | "asset" | "muxVideo";
         ListRelations: "downloads";
         Relations: {
             downloads: {
@@ -226,6 +242,11 @@ export default interface PrismaTypes {
             video: {
                 Shape: Video | null;
                 Name: "Video";
+                Nullable: true;
+            };
+            asset: {
+                Shape: CloudflareR2 | null;
+                Name: "CloudflareR2";
                 Nullable: true;
             };
             muxVideo: {
@@ -275,9 +296,19 @@ export default interface PrismaTypes {
         Where: Prisma.VideoSubtitleWhereInput;
         Create: {};
         Update: {};
-        RelationName: "video" | "videoEdition";
+        RelationName: "srtAsset" | "vttAsset" | "video" | "videoEdition";
         ListRelations: never;
         Relations: {
+            srtAsset: {
+                Shape: CloudflareR2 | null;
+                Name: "CloudflareR2";
+                Nullable: true;
+            };
+            vttAsset: {
+                Shape: CloudflareR2 | null;
+                Name: "CloudflareR2";
+                Nullable: true;
+            };
             video: {
                 Shape: Video;
                 Name: "Video";
@@ -651,6 +682,40 @@ export default interface PrismaTypes {
         OrderBy: Prisma.ShortLinkBlocklistDomainOrderByWithRelationInput;
         WhereUnique: Prisma.ShortLinkBlocklistDomainWhereUniqueInput;
         Where: Prisma.ShortLinkBlocklistDomainWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: never;
+        ListRelations: never;
+        Relations: {};
+    };
+    VideoOrigin: {
+        Name: "VideoOrigin";
+        Shape: VideoOrigin;
+        Include: Prisma.VideoOriginInclude;
+        Select: Prisma.VideoOriginSelect;
+        OrderBy: Prisma.VideoOriginOrderByWithRelationInput;
+        WhereUnique: Prisma.VideoOriginWhereUniqueInput;
+        Where: Prisma.VideoOriginWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: "videos";
+        ListRelations: "videos";
+        Relations: {
+            videos: {
+                Shape: Video[];
+                Name: "Video";
+                Nullable: false;
+            };
+        };
+    };
+    ArclightApiKey: {
+        Name: "ArclightApiKey";
+        Shape: ArclightApiKey;
+        Include: never;
+        Select: Prisma.ArclightApiKeySelect;
+        OrderBy: Prisma.ArclightApiKeyOrderByWithRelationInput;
+        WhereUnique: Prisma.ArclightApiKeyWhereUniqueInput;
+        Where: Prisma.ArclightApiKeyWhereInput;
         Create: {};
         Update: {};
         RelationName: never;

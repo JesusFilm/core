@@ -1,7 +1,6 @@
+import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { ResultOf, graphql } from 'gql.tada'
-import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
-import { NextRequest } from 'next/server'
 
 import { getApolloClient } from '../../../../../lib/apolloClient'
 import { getLanguageIdsFromTags } from '../../../../../lib/getLanguageIdsFromTags'
@@ -101,13 +100,81 @@ const GET_COUNTRY = graphql(`
   }
 `)
 
-interface GetParams {
-  params: { countryId: string }
-}
+export const mediaCountry = new OpenAPIHono()
 
-export const mediaCountry = new Hono()
+const QuerySchema = z.object({
+  expand: z.string().optional(),
+  metadataLanguageTags: z.string().optional()
+})
 
-mediaCountry.get('/', async (c) => {
+const ResponseSchema = z.object({
+  countryId: z.string(),
+  name: z.string(),
+  continentName: z.string(),
+  metadataLanguageTag: z.string(),
+  longitude: z.number().optional(),
+  latitude: z.number().optional(),
+  counts: z.object({
+    languageCount: z.object({
+      value: z.number(),
+      description: z.string()
+    }),
+    population: z.object({
+      value: z.number(),
+      description: z.string()
+    }),
+    languageHavingMediaCount: z.object({
+      value: z.number(),
+      description: z.string()
+    })
+  }),
+  assets: z.object({
+    flagUrls: z.object({
+      png8: z.string().optional(),
+      webpLossy50: z.string().optional()
+    })
+  }),
+  _links: z.object({
+    self: z.object({
+      href: z.string()
+    })
+  }),
+  _embedded: z.object({
+    mediaLanguages: z.array(
+      z.object({
+        languageId: z.number(),
+        iso3: z.string().optional(),
+        bcp47: z.string().optional()
+      })
+    )
+  })
+})
+
+const route = createRoute({
+  method: 'get',
+  path: '/',
+  tags: ['Media Countries'],
+  summary: 'Get media country by country id',
+  description: 'Get media country by country id',
+  request: {
+    query: QuerySchema
+  },
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: ResponseSchema
+        }
+      },
+      description: 'Media country'
+    },
+    404: {
+      description: 'Not found'
+    }
+  }
+})
+
+mediaCountry.openapi(route, async (c) => {
   const countryId = c.req.param('countryId') as string
   const expand = c.req.query('expand')
   const metadataLanguageTags =
@@ -137,22 +204,6 @@ mediaCountry.get('/', async (c) => {
         logref: 404
       },
       404
-    )
-  }
-
-  if (
-    metadataLanguageTags.length > 0 &&
-    country.name[0]?.value == null &&
-    country.fallbackName[0]?.value == null
-  ) {
-    return new Response(
-      JSON.stringify({
-        message: `Unable to generate metadata for media country [${countryId}] acceptable according to metadata language(s) [${metadataLanguageTags.join(
-          ','
-        )}]`,
-        logref: 406
-      }),
-      { status: 400 }
     )
   }
 

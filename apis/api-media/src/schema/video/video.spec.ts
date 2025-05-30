@@ -54,6 +54,7 @@ describe('video', () => {
     variants: VideoVariant[]
     videoEditions: VideoEdition[]
     availableLanguages: string[]
+    originId: string | null
   }
 
   const children: Video[] = [
@@ -66,7 +67,8 @@ describe('video', () => {
       published: true,
       childIds: [],
       availableLanguages: [],
-      locked: false
+      locked: false,
+      originId: null
     },
     {
       id: 'videoId1',
@@ -77,7 +79,8 @@ describe('video', () => {
       published: true,
       childIds: [],
       availableLanguages: [],
-      locked: false
+      locked: false,
+      originId: null
     }
   ]
 
@@ -91,7 +94,8 @@ describe('video', () => {
       published: true,
       childIds: [],
       availableLanguages: [],
-      locked: false
+      locked: false,
+      originId: null
     },
     {
       id: 'videoId4',
@@ -102,7 +106,8 @@ describe('video', () => {
       published: true,
       childIds: [],
       availableLanguages: [],
-      locked: false
+      locked: false,
+      originId: null
     }
   ]
 
@@ -116,6 +121,7 @@ describe('video', () => {
       published: true,
       childIds: ['videoId1', 'videoId2'],
       availableLanguages: [],
+      originId: 'originId',
       locked: false,
       bibleCitation: [
         {
@@ -123,9 +129,9 @@ describe('video', () => {
           osisId: 'Gen',
           bibleBookId: 'bibleBookId',
           chapterStart: 1,
-          chapterEnd: null,
+          chapterEnd: -1,
           verseStart: 1,
-          verseEnd: null,
+          verseEnd: -1,
           videoId: 'videoId',
           order: 0
         }
@@ -194,7 +200,11 @@ describe('video', () => {
           vttSrc: null,
           srtSrc: null,
           videoId: 'videoId',
-          primary: true
+          primary: true,
+          vttAssetId: null,
+          vttVersion: 1,
+          srtAssetId: null,
+          srtVersion: 1
         },
         {
           id: 'subtitleId1',
@@ -203,7 +213,11 @@ describe('video', () => {
           vttSrc: 'vttSrc',
           srtSrc: null,
           videoId: 'videoId',
-          primary: true
+          primary: true,
+          vttAssetId: null,
+          vttVersion: 1,
+          srtAssetId: null,
+          srtVersion: 1
         },
         {
           id: 'subtitleId2',
@@ -212,7 +226,11 @@ describe('video', () => {
           vttSrc: null,
           srtSrc: 'srtSrc',
           videoId: 'videoId',
-          primary: true
+          primary: true,
+          vttAssetId: null,
+          vttVersion: 1,
+          srtAssetId: null,
+          srtVersion: 1
         }
       ],
       images: [
@@ -236,7 +254,10 @@ describe('video', () => {
           userId: 'testUserId',
           publicUrl: 'https://assets.jesusfilm.org/assetFileName',
           createdAt: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
+          contentType: 'application/octet-stream',
+          contentLength: 0,
+          originalFilename: null
         }
       ],
       videoEditions: [{ id: 'edition', name: 'base', videoId: 'videoId' }],
@@ -257,7 +278,9 @@ describe('video', () => {
           muxVideoId: 'muxVideoId',
           masterUrl: 'masterUrl',
           masterWidth: 320,
-          masterHeight: 180
+          masterHeight: 180,
+          assetId: null,
+          version: 1
         },
         {
           id: 'variantId1',
@@ -275,7 +298,9 @@ describe('video', () => {
           muxVideoId: 'muxVideoId1',
           masterUrl: 'masterUrl1',
           masterWidth: 320,
-          masterHeight: 180
+          masterHeight: 180,
+          assetId: null,
+          version: 1
         }
       ]
     }
@@ -290,6 +315,7 @@ describe('video', () => {
     noIndex: null,
     childIds: [],
     availableLanguages: [],
+    originId: null,
     locked: false
   }
 
@@ -1630,6 +1656,7 @@ describe('video', () => {
       noIndex: null,
       childIds: [],
       availableLanguages: [],
+      originId: null,
       locked: false
     }
 
@@ -1817,7 +1844,8 @@ describe('video', () => {
           slug: 'slug',
           noIndex: true,
           childIds: [],
-          availableLanguages: []
+          availableLanguages: [],
+          originId: null
         } as unknown as Video)
         const result = await authClient({
           document: CREATE_VIDEO_MUTATION,
@@ -1891,7 +1919,8 @@ describe('video', () => {
           slug: 'slug',
           noIndex: true,
           childIds: [],
-          availableLanguages: []
+          availableLanguages: [],
+          originId: null
         } as unknown as Video)
         const result = await authClient({
           document: VIDEO_UPDATE_MUTATION,
@@ -1969,7 +1998,8 @@ describe('video', () => {
         published: true,
         childIds: [],
         availableLanguages: [],
-        locked: false
+        locked: false,
+        originId: null
       })
       const data = await client({
         document: VIDEO

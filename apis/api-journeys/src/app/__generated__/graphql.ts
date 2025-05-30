@@ -97,7 +97,8 @@ export enum IconSize {
 export enum TextResponseType {
     freeForm = "freeForm",
     name = "name",
-    email = "email"
+    email = "email",
+    phone = "phone"
 }
 
 export enum TypographyVariant {
@@ -303,6 +304,7 @@ export class ButtonBlockCreateInput {
     variant?: Nullable<ButtonVariant>;
     color?: Nullable<ButtonColor>;
     size?: Nullable<ButtonSize>;
+    submitEnabled?: Nullable<boolean>;
 }
 
 export class ButtonBlockUpdateInput {
@@ -313,6 +315,7 @@ export class ButtonBlockUpdateInput {
     size?: Nullable<ButtonSize>;
     startIconId?: Nullable<string>;
     endIconId?: Nullable<string>;
+    submitEnabled?: Nullable<boolean>;
 }
 
 export class CardBlockCreateInput {
@@ -407,6 +410,18 @@ export class SignUpBlockUpdateInput {
     submitLabel?: Nullable<string>;
 }
 
+export class SpacerBlockCreateInput {
+    id?: Nullable<string>;
+    journeyId: string;
+    parentBlockId: string;
+    spacing?: Nullable<number>;
+}
+
+export class SpacerBlockUpdateInput {
+    parentBlockId?: Nullable<string>;
+    spacing?: Nullable<number>;
+}
+
 export class StepBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
@@ -440,6 +455,8 @@ export class TextResponseBlockCreateInput {
 export class TextResponseBlockUpdateInput {
     parentBlockId?: Nullable<string>;
     label?: Nullable<string>;
+    placeholder?: Nullable<string>;
+    required?: Nullable<boolean>;
     hint?: Nullable<string>;
     minRows?: Nullable<number>;
     routeId?: Nullable<string>;
@@ -754,6 +771,12 @@ export class JourneyCollectionUpdateInput {
     journeyIds?: Nullable<string[]>;
 }
 
+export class JourneyEventsFilter {
+    typenames?: Nullable<string[]>;
+    periodRangeStart?: Nullable<DateTime>;
+    periodRangeEnd?: Nullable<DateTime>;
+}
+
 export class JourneyNotificationUpdateInput {
     journeyId: string;
     visitorInteractionEmail: boolean;
@@ -856,6 +879,7 @@ export class VisitorUpdateInput {
     status?: Nullable<VisitorStatus>;
     countryCode?: Nullable<string>;
     referrer?: Nullable<string>;
+    phone?: Nullable<string>;
 }
 
 export interface Action {
@@ -958,6 +982,10 @@ export abstract class IMutation {
     abstract signUpBlockCreate(input: SignUpBlockCreateInput): SignUpBlock | Promise<SignUpBlock>;
 
     abstract signUpBlockUpdate(id: string, input: SignUpBlockUpdateInput, journeyId?: Nullable<string>): Nullable<SignUpBlock> | Promise<Nullable<SignUpBlock>>;
+
+    abstract spacerBlockCreate(input: SpacerBlockCreateInput): SpacerBlock | Promise<SpacerBlock>;
+
+    abstract spacerBlockUpdate(id: string, input: SpacerBlockUpdateInput): SpacerBlock | Promise<SpacerBlock>;
 
     abstract stepBlockCreate(input: StepBlockCreateInput): StepBlock | Promise<StepBlock>;
 
@@ -1123,6 +1151,7 @@ export class Journey {
     id: string;
     title: string;
     language: Language;
+    languageId: string;
     themeMode: ThemeMode;
     themeName: ThemeName;
     description?: Nullable<string>;
@@ -1157,6 +1186,7 @@ export class Journey {
     showMenu?: Nullable<boolean>;
     showDisplayTitle?: Nullable<boolean>;
     menuButtonIcon?: Nullable<JourneyMenuButtonIcon>;
+    fromTemplateId?: Nullable<string>;
     userJourneys?: Nullable<UserJourney[]>;
 }
 
@@ -1188,6 +1218,10 @@ export abstract class IQuery {
     abstract journeyCollection(id: string): JourneyCollection | Promise<JourneyCollection>;
 
     abstract journeyCollections(teamId: string): Nullable<JourneyCollection>[] | Promise<Nullable<JourneyCollection>[]>;
+
+    abstract journeyEventsConnection(journeyId: string, filter?: Nullable<JourneyEventsFilter>, first?: Nullable<number>, after?: Nullable<string>): JourneyEventsConnection | Promise<JourneyEventsConnection>;
+
+    abstract journeyEventsCount(journeyId: string, filter?: Nullable<JourneyEventsFilter>): number | Promise<number>;
 
     abstract getJourneyProfile(): Nullable<JourneyProfile> | Promise<Nullable<JourneyProfile>>;
 
@@ -1241,6 +1275,7 @@ export class ButtonBlock implements Block {
     startIconId?: Nullable<string>;
     endIconId?: Nullable<string>;
     action?: Nullable<Action>;
+    submitEnabled?: Nullable<boolean>;
 }
 
 export class CardBlock implements Block {
@@ -1262,7 +1297,7 @@ export class GridContainerBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
-    spacing: number;
+    gap: number;
     direction: GridDirection;
     justifyContent: GridJustifyContent;
     alignItems: GridAlignItems;
@@ -1335,6 +1370,15 @@ export class SignUpBlock implements Block {
     submitLabel?: Nullable<string>;
 }
 
+export class SpacerBlock implements Block {
+    __typename?: 'SpacerBlock';
+    id: string;
+    journeyId: string;
+    parentBlockId?: Nullable<string>;
+    parentOrder?: Nullable<number>;
+    spacing?: Nullable<number>;
+}
+
 export class StepBlock implements Block {
     __typename?: 'StepBlock';
     id: string;
@@ -1355,6 +1399,8 @@ export class TextResponseBlock implements Block {
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
     label: string;
+    placeholder?: Nullable<string>;
+    required?: Nullable<boolean>;
     hint?: Nullable<string>;
     minRows?: Nullable<number>;
     type?: Nullable<TextResponseType>;
@@ -1666,6 +1712,42 @@ export class JourneyCollection {
     title?: Nullable<string>;
     customDomains?: Nullable<CustomDomain[]>;
     journeys?: Nullable<Journey[]>;
+}
+
+export class JourneyEvent implements Event {
+    __typename?: 'JourneyEvent';
+    id: string;
+    journeyId: string;
+    createdAt: DateTime;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
+    action?: Nullable<ButtonAction>;
+    actionValue?: Nullable<string>;
+    messagePlatform?: Nullable<MessagePlatform>;
+    language?: Nullable<Language>;
+    email?: Nullable<string>;
+    blockId?: Nullable<string>;
+    position?: Nullable<number>;
+    source?: Nullable<VideoBlockSource>;
+    progress?: Nullable<number>;
+    typename?: Nullable<string>;
+    visitorId?: Nullable<string>;
+    journeySlug?: Nullable<string>;
+    visitorName?: Nullable<string>;
+    visitorEmail?: Nullable<string>;
+    visitorPhone?: Nullable<string>;
+}
+
+export class JourneyEventEdge {
+    __typename?: 'JourneyEventEdge';
+    cursor: string;
+    node: JourneyEvent;
+}
+
+export class JourneyEventsConnection {
+    __typename?: 'JourneyEventsConnection';
+    edges: JourneyEventEdge[];
+    pageInfo: PageInfo;
 }
 
 export class JourneyNotification {

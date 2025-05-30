@@ -64,6 +64,7 @@ export interface GetJourney_journey_blocks_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: GetJourney_journey_blocks_ButtonBlock_action | null;
 }
 
@@ -239,7 +240,9 @@ export interface GetJourney_journey_blocks_TextResponseBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;
@@ -601,6 +604,7 @@ export interface GetJourney_journey {
   status: JourneyStatus;
   language: GetJourney_journey_language;
   createdAt: any;
+  updatedAt: any;
   featuredAt: any | null;
   publishedAt: any | null;
   themeName: ThemeName;

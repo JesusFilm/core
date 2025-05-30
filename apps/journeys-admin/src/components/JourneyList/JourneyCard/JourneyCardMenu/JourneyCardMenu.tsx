@@ -6,7 +6,10 @@ import { ReactElement, useState } from 'react'
 
 import MoreIcon from '@core/shared/ui/icons/More'
 
-import { GetAdminJourneys } from '../../../../../__generated__/GetAdminJourneys'
+import {
+  GetAdminJourneys,
+  GetAdminJourneys_journeys as Journey
+} from '../../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 
 const AccessDialog = dynamic(
@@ -63,6 +66,24 @@ const TrashMenu = dynamic(
   { ssr: false }
 )
 
+const JourneyDetailsDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "JourneyDetailsDialog" */
+      '../../../Editor/Toolbar/JourneyDetails/JourneyDetailsDialog'
+    ).then((mod) => mod.JourneyDetailsDialog),
+  { ssr: false }
+)
+
+const TranslateJourneyDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "TranslateJourneyDialog" */
+      './TranslateJourneyDialog'
+    ).then((mod) => mod.TranslateJourneyDialog),
+  { ssr: false }
+)
+
 export interface JourneyCardMenuProps {
   id: string
   status: JourneyStatus
@@ -70,7 +91,28 @@ export interface JourneyCardMenuProps {
   published: boolean
   template?: boolean
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
+  journey?: Journey
+  hovered?: boolean
+  onMenuClose?: () => void
 }
+
+/**
+ * JourneyCardMenu component provides a menu interface for managing journey actions through a dropdown menu.
+ * It dynamically loads different menu components based on the journey status and provides various dialogs
+ * for journey management operations like access control, details editing, translation, and deletion.
+ *
+ * @param {Object} props - Component props
+ * @param {string} props.id - The unique identifier for the journey
+ * @param {JourneyStatus} props.status - The current status of the journey (e.g., draft, published, archived)
+ * @param {string} props.slug - The URL slug used for journey navigation and preview
+ * @param {boolean} props.published - Whether the journey is currently published
+ * @param {boolean} [props.template] - Optional flag indicating if the journey is a template
+ * @param {() => Promise<ApolloQueryResult<GetAdminJourneys>>} [props.refetch] - Optional callback to refetch journey data after operations
+ * @param {Journey} [props.journey] - Optional journey object containing additional journey data
+ * @param {boolean} [props.hovered] - Optional flag indicating if the menu button is being hovered over
+ * @param {() => void} [props.onMenuClose] - Optional callback function triggered when the menu closes
+ * @returns {ReactElement} A menu button that opens a dropdown with journey management options
+ */
 
 export function JourneyCardMenu({
   id,
@@ -78,7 +120,10 @@ export function JourneyCardMenu({
   slug,
   published,
   template,
-  refetch
+  refetch,
+  journey,
+  hovered,
+  onMenuClose
 }: JourneyCardMenuProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
@@ -93,12 +138,24 @@ export function JourneyCardMenu({
   const [openDeleteDialog, setOpenDeleteDialog] = useState<
     boolean | undefined
   >()
+  const [openDetailsDialog, setOpenDetailsDialog] = useState<
+    boolean | undefined
+  >()
+  const [openTranslateDialog, setOpenTranslateDialog] = useState<
+    boolean | undefined
+  >()
+  const [keepMounted, setKeepMounted] = useState<boolean>(false)
 
   const handleOpenMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
   }
   const handleCloseMenu = (): void => {
     setAnchorEl(null)
+    onMenuClose?.()
+  }
+
+  const handleKeepMounted = (): void => {
+    setKeepMounted(true)
   }
 
   return (
@@ -110,6 +167,20 @@ export function JourneyCardMenu({
         aria-expanded={open ? 'true' : 'false'}
         onClick={handleOpenMenu}
         edge="end"
+        sx={{
+          color: hovered ? 'gray.400' : 'white',
+          '& svg': {
+            filter: 'drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.4))'
+          },
+          '&:hover': {
+            backgroundColor: '#FFF'
+          },
+          backgroundColor: hovered ? 'white' : 'transparent',
+          transition: 'background-color 0.3s, color 0.3s',
+          borderRadius: '10px',
+          width: '20px',
+          height: '30px'
+        }}
       >
         <MoreIcon />
       </IconButton>
@@ -118,6 +189,7 @@ export function JourneyCardMenu({
         anchorEl={anchorEl}
         open={open}
         onClose={handleCloseMenu}
+        keepMounted={keepMounted}
         MenuListProps={{
           'aria-labelledby': 'journey-actions'
         }}
@@ -144,9 +216,12 @@ export function JourneyCardMenu({
             slug={slug}
             journeyId={id}
             published={published}
+            handleKeepMounted={handleKeepMounted}
             setOpenAccessDialog={() => setOpenAccessDialog(true)}
             handleCloseMenu={handleCloseMenu}
             setOpenTrashDialog={() => setOpenTrashDialog(true)}
+            setOpenDetailsDialog={() => setOpenDetailsDialog(true)}
+            setOpenTranslateDialog={() => setOpenTranslateDialog(true)}
             template={template}
             refetch={refetch}
           />
@@ -182,6 +257,20 @@ export function JourneyCardMenu({
           open={openDeleteDialog}
           handleClose={() => setOpenDeleteDialog(false)}
           refetch={refetch}
+        />
+      )}
+      {openDetailsDialog != null && (
+        <JourneyDetailsDialog
+          open={openDetailsDialog}
+          onClose={() => setOpenDetailsDialog(false)}
+          journey={journey}
+        />
+      )}
+      {openTranslateDialog != null && (
+        <TranslateJourneyDialog
+          open={openTranslateDialog}
+          onClose={() => setOpenTranslateDialog(false)}
+          journey={journey}
         />
       )}
     </>

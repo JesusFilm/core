@@ -5,7 +5,6 @@ import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 
 import { CloudflareR2CreateInput } from './inputs/cloudflareR2Create'
-import { CloudflareR2UpdateInput } from './inputs/cloudflareR2Update'
 
 export function getClient(): S3Client {
   if (process.env.CLOUDFLARE_R2_ENDPOINT == null)
@@ -25,7 +24,10 @@ export function getClient(): S3Client {
   })
 }
 
-export async function getPresignedUrl(fileName: string): Promise<string> {
+export async function getPresignedUrl(
+  fileName: string,
+  contentType: string
+): Promise<string> {
   if (process.env.CLOUDFLARE_R2_BUCKET == null)
     throw new Error('Missing CLOUDFLARE_R2_BUCKET')
 
@@ -33,7 +35,8 @@ export async function getPresignedUrl(fileName: string): Promise<string> {
     getClient(),
     new PutObjectCommand({
       Bucket: process.env.CLOUDFLARE_R2_BUCKET,
-      Key: fileName
+      Key: fileName,
+      ContentType: contentType
     })
   )
 }
@@ -41,7 +44,10 @@ export async function getPresignedUrl(fileName: string): Promise<string> {
 builder.prismaObject('CloudflareR2', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
+    contentLength: t.exposeInt('contentLength', { nullable: false }),
+    contentType: t.exposeString('contentType', { nullable: false }),
     fileName: t.exposeString('fileName', { nullable: false }),
+    originalFilename: t.exposeString('originalFilename'),
     uploadUrl: t.withAuth({ isPublisher: true }).exposeString('uploadUrl'),
     userId: t
       .withAuth({ isPublisher: true })
@@ -61,43 +67,26 @@ builder.prismaObject('CloudflareR2', {
 builder.mutationFields((t) => ({
   cloudflareR2Create: t.withAuth({ isPublisher: true }).prismaField({
     type: 'CloudflareR2',
+    description: 'The endpoint to upload a file to Cloudflare R2',
     nullable: false,
     args: {
       input: t.arg({ type: CloudflareR2CreateInput, required: true })
     },
     resolve: async (query, _parent, { input }, { user }) => {
       if (user == null) throw new Error('User not found')
-      const uploadUrl = await getPresignedUrl(input.fileName)
+      const uploadUrl = await getPresignedUrl(input.fileName, input.contentType)
       return await prisma.cloudflareR2.create({
         ...query,
         data: {
-          ...input,
           id: input.id ?? undefined,
+          videoId: input.videoId,
           userId: user.id,
           fileName: input.fileName,
-          uploadUrl,
-          publicUrl: `${process.env.CLOUDFLARE_R2_CUSTOM_DOMAIN}/${input.fileName}`
-        }
-      })
-    }
-  }),
-  cloudflareR2Update: t.withAuth({ isPublisher: true }).prismaField({
-    type: 'CloudflareR2',
-    nullable: false,
-    args: {
-      input: t.arg({ type: CloudflareR2UpdateInput, required: true })
-    },
-    resolve: async (query, _parent, { input }, { user }) => {
-      if (user == null) throw new Error('User not found')
-      const uploadUrl = await getPresignedUrl(input.fileName)
-      return await prisma.cloudflareR2.update({
-        ...query,
-        where: { id: input.id },
-        data: {
-          fileName: input.fileName ?? undefined,
+          originalFilename: input.originalFilename,
           uploadUrl,
           publicUrl: `${process.env.CLOUDFLARE_R2_CUSTOM_DOMAIN}/${input.fileName}`,
-          userId: user.id
+          contentType: input.contentType,
+          contentLength: input.contentLength
         }
       })
     }

@@ -1,5 +1,5 @@
+import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { ResultOf, graphql } from 'gql.tada'
-import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
 
 import { getApolloClient } from '../../../../lib/apolloClient'
@@ -45,12 +45,104 @@ const GET_COUNTRIES = graphql(`
   }
 `)
 
-export const mediaCountries = new Hono()
+export const mediaCountries = new OpenAPIHono()
 mediaCountries.route('/:countryId', mediaCountry)
 
-mediaCountries.get('/', async (c) => {
-  const page = Number(c.req.query('page') ?? 1)
-  const limit = Number(c.req.query('limit') ?? 10)
+const QuerySchema = z.object({
+  page: z.coerce.number().optional(),
+  limit: z.coerce.number().optional(),
+  ids: z.string().optional(),
+  expand: z.string().optional(),
+  metadataLanguageTags: z.string().optional()
+})
+
+const ResponseSchema = z.object({
+  page: z.number(),
+  limit: z.number(),
+  pages: z.number(),
+  total: z.number(),
+  _links: z.object({
+    self: z.object({
+      href: z.string()
+    }),
+    first: z.object({
+      href: z.string()
+    }),
+    last: z.object({
+      href: z.string()
+    }),
+    next: z
+      .object({
+        href: z.string()
+      })
+      .optional(),
+    previous: z
+      .object({
+        href: z.string()
+      })
+      .optional()
+  }),
+  _embedded: z.object({
+    mediaCountries: z.array(
+      z.object({
+        countryId: z.string(),
+        name: z.string(),
+        continentName: z.string(),
+        metadataLanguageTag: z.string(),
+        longitude: z.number(),
+        latitude: z.number(),
+        counts: z.object({
+          languageCount: z.object({
+            value: z.number(),
+            description: z.string()
+          }),
+          population: z.object({
+            value: z.number(),
+            description: z.string()
+          }),
+          languageHavingMediaCount: z.object({
+            value: z.number(),
+            description: z.string()
+          })
+        }),
+        assets: z.object({
+          flagUrls: z.object({
+            png8: z.string().nullable(),
+            webpLossy50: z.string().nullable()
+          })
+        }),
+        _links: z.object({
+          self: z.object({
+            href: z.string()
+          })
+        })
+      })
+    )
+  })
+})
+
+const route = createRoute({
+  method: 'get',
+  path: '/',
+  tags: ['Media Countries'],
+  summary: 'Get media countries',
+  description: 'Get media countries',
+  request: { query: QuerySchema },
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: ResponseSchema
+        }
+      },
+      description: 'Media countries'
+    }
+  }
+})
+
+mediaCountries.openapi(route, async (c) => {
+  const page = c.req.query('page') ? Number(c.req.query('page')) : 1
+  const limit = c.req.query('limit') ? Number(c.req.query('limit')) : 10
   const idsParam = c.req.query('ids')
   const ids = idsParam ? idsParam.split(',') : undefined
   const expand = c.req.query('expand')
@@ -95,6 +187,10 @@ mediaCountries.get('/', async (c) => {
     ...queryObject,
     page: (page + 1).toString()
   }).toString()
+  const previousQueryString = new URLSearchParams({
+    ...queryObject,
+    page: (page - 1).toString()
+  }).toString()
 
   const mediaCountries = data.countries
     .slice(offset, offset + limit)
@@ -114,15 +210,15 @@ mediaCountries.get('/', async (c) => {
       latitude: country.latitude ? country.latitude : 0,
       counts: {
         languageCount: {
-          value: country.languageCount,
+          value: country.languageCount ?? 0,
           description: 'Number of spoken languages'
         },
         population: {
-          value: country.population,
+          value: country.population ?? 0,
           description: 'Country population'
         },
         languageHavingMediaCount: {
-          value: country.languageHavingMediaCount,
+          value: country.languageHavingMediaCount ?? 0,
           description: 'Number of languages having media'
         }
       },
@@ -168,6 +264,12 @@ mediaCountries.get('/', async (c) => {
         page < totalPages
           ? {
               href: `http://api.arclight.org/v2/media-countries?${nextQueryString}`
+            }
+          : undefined,
+      previous:
+        page > 1
+          ? {
+              href: `http://api.arclight.org/v2/media-countries?${previousQueryString}`
             }
           : undefined
     },
