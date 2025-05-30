@@ -1,4 +1,4 @@
-import { exec } from 'child_process'
+import { execFile } from 'child_process'
 import { mkdtemp, rm, writeFile } from 'fs/promises'
 import { tmpdir } from 'os'
 import { join, resolve } from 'path'
@@ -6,7 +6,7 @@ import { promisify } from 'util'
 
 import { expect, test } from '@playwright/test'
 
-const execAsync = promisify(exec)
+const execFileAsync = promisify(execFile)
 
 const projectRoot = resolve(__dirname, '../../../../')
 const videoImporterScriptPath = join(
@@ -32,9 +32,18 @@ test.describe('Video Importer E2E', () => {
     const dummyVideoPath = join(tempTestDir, videoFileName)
     await writeFile(dummyVideoPath, 'dummy video content')
 
-    const command = `npx ts-node ${videoImporterScriptPath} --folder ${tempTestDir} --dry-run`
+    const command = 'npx'
+    const args = [
+      'ts-node',
+      videoImporterScriptPath,
+      '--folder',
+      tempTestDir,
+      '--dry-run'
+    ]
 
-    const { stdout, stderr } = await execAsync(command, { cwd: projectRoot })
+    const { stdout, stderr } = await execFileAsync(command, args, {
+      cwd: projectRoot
+    })
 
     expect(stderr).toBe('')
     expect(stdout).toContain(`🎬 Processing: ${videoFileName}`)
@@ -46,11 +55,17 @@ test.describe('Video Importer E2E', () => {
 
   test('should report error for non-existent folder', async () => {
     const nonExistentFolder = join(tempTestDir, 'non_existent_folder')
-    const command = `npx ts-node ${videoImporterScriptPath} --folder ${nonExistentFolder}`
+    const command = 'npx'
+    const args = [
+      'ts-node',
+      videoImporterScriptPath,
+      '--folder',
+      nonExistentFolder
+    ]
 
-    const result = await execAsync(command, { cwd: projectRoot }).catch(
-      (e) => e
-    )
+    const result = await execFileAsync(command, args, {
+      cwd: projectRoot
+    }).catch((e) => e)
 
     expect(result).toHaveProperty('code')
 
@@ -69,8 +84,11 @@ test.describe('Video Importer E2E', () => {
     const dummyInvalidVideoPath = join(tempTestDir, invalidFileName)
     await writeFile(dummyInvalidVideoPath, 'dummy content')
 
-    const command = `npx ts-node ${videoImporterScriptPath} --folder ${tempTestDir}`
-    const { stdout, stderr } = await execAsync(command, { cwd: projectRoot })
+    const command = 'npx'
+    const args = ['ts-node', videoImporterScriptPath, '--folder', tempTestDir]
+    const { stdout, stderr } = await execFileAsync(command, args, {
+      cwd: projectRoot
+    })
 
     expect(stderr).toBe('')
     expect(stdout.trim()).toBe('No valid video files found in the folder.')
