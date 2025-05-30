@@ -32,7 +32,7 @@ const GET_VIDEOS_VARIANT_LANGUAGES = gql`
   }
 `
 
-export function useGetCommonVideoVariantLangauges(
+export function useCommonVideoVariantLanguages(
   journey?: AdminJourney | JourneyFields
 ) {
   // First query - gets journey internal videos

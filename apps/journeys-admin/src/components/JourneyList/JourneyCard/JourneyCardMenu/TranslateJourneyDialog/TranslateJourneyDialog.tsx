@@ -14,7 +14,7 @@ import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../../../__generated__/GetAdminJourneys'
 
-import { useGetCommonVideoVariantLangauges } from './utils/useGetCommonVideoVariantLangauges'
+import { useCommonVideoVariantLanguages } from './utils/useCommonVideoVariantLanguages'
 
 interface TranslateJourneyDialogProps {
   open: boolean
@@ -57,7 +57,7 @@ export function TranslateJourneyDialog({
   const journeyData = journey ?? journeyFromContext
 
   const { commonLanguages, loading: commonLanguagesLoading } =
-    useGetCommonVideoVariantLangauges(journeyData)
+    useCommonVideoVariantLanguages(journeyData)
 
   console.log('commonLanguages', commonLanguages)
 
