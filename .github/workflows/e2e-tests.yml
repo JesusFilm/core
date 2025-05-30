@@ -28,8 +28,15 @@ jobs:
   E2E_Tests:
     timeout-minutes: 60
     runs-on: blacksmith-2vcpu-ubuntu-2204
+    strategy:
+      matrix:
+        node-version: [22]
+        bun-version: [1.2.2]
     steps:
       - uses: actions/checkout@v4
+      - uses: useblacksmith/setup-node@v5
+        with:
+          node-version: ${{ matrix.node-version }}
       - uses: oven-sh/setup-bun@v1
         with:
           bun-version: 1.2.2

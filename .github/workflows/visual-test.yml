@@ -15,6 +15,7 @@ jobs:
     runs-on: blacksmith-2vcpu-ubuntu-2204
     strategy:
       matrix:
+        node-version: [22]
         bun-version: [1.2.2]
     steps:
       - uses: actions/checkout@v4
@@ -22,6 +23,9 @@ jobs:
           fetch-depth: 0
       - name: Check branch up to date with base
         run: ./tools/scripts/check-git-diff.sh
+      - uses: useblacksmith/setup-node@v5
+        with:
+          node-version: ${{ matrix.node-version }}
       - uses: oven-sh/setup-bun@v1
         with:
           bun-version: ${{ matrix.bun-version }}

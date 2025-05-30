@@ -34,9 +34,13 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
         run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
 
+      - uses: useblacksmith/setup-node@v5
+        with:
+          node-version: ${{ matrix.node-version }}
       - uses: oven-sh/setup-bun@v1
         with:
           bun-version: ${{ matrix.bun-version }}
+
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install -y build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
 

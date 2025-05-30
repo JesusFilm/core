@@ -33,6 +33,7 @@ jobs:
     strategy:
       matrix:
         node-version: [22]
+        bun-version: [1.2.2]
     steps:
       - name: Checkout current branch
         uses: actions/checkout@v4
@@ -42,31 +43,30 @@ jobs:
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-
-      - name: Get Node Version
-        id: node-version
-        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: ${{ matrix.bun-version }}
 
       - name: Mount NPM Cache
         uses: useblacksmith/stickydisk@v1
         with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache
-          path: ~/.npm
+          key: ${{ github.repository }}-bun-cache
+          path: ~/.bun
       - name: Mount node_modules
         uses: useblacksmith/stickydisk@v1
         with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
+          key: ${{ github.repository }}-bun-modules
           path: ./node_modules
 
-      - name: NPM Install
-        run: npm install --silent
+      - name: bun install
+        run: bun install --silent --frozen-lockfile
 
       - name: nx Install
-        run: npm install -g nx --silent
+        run: bun install -g nx --silent
 
       - name: Get affected apps
         run: |
-          echo "apps=$(npx ts-node tools/scripts/affected-apps.ts --projects apis/*)" >> $GITHUB_OUTPUT
+          echo "apps=$(bun run ts-node tools/scripts/affected-apps.ts --projects apis/*)" >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT
         id: affected-apps
 

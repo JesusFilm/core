@@ -355,6 +355,12 @@
   "msw": {
     "workerDirectory": "./.storybook/static"
   },
+  "workspaces": [
+    "apis/*",
+    "apps/*",
+    "libs/*",
+    "workers/*"
+  ],
   "trustedDependencies": [
     "@apollo/protobufjs",
     "@datadog/native-appsec",
