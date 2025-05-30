@@ -45,6 +45,18 @@ export async function uploadToR2(
   contentLength: number
 ) {
   const fileStream = createReadStream(filePath)
+  let bytesSent = 0
+  let lastLoggedPercent = 0
+  fileStream.on('data', (chunk) => {
+    bytesSent += chunk.length
+    const percent = Math.floor((bytesSent / contentLength) * 100)
+    if (percent >= lastLoggedPercent + 25) {
+      console.log(
+        `     [R2 Service] Upload progress: ${percent}% (${bytesSent}/${contentLength} bytes)`
+      )
+      lastLoggedPercent = percent
+    }
+  })
   fileStream.on('error', (err) => {
     throw new Error(`Failed to read file stream: ${err.message}`)
   })
