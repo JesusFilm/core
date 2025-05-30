@@ -1,4 +1,4 @@
-import { promises } from 'fs'
+import { promises, statSync } from 'fs'
 import path from 'path'
 import 'dotenv/config'
 
@@ -75,7 +75,7 @@ async function main() {
       const filePath = path.join(folderPath, file)
       const contentType = 'video/mp4'
       const originalFilename = file
-      const contentLength = (await promises.stat(filePath)).size
+      const contentLength = statSync(filePath).size
 
       console.log('   🔎 Reading video metadata...')
       let metadata
