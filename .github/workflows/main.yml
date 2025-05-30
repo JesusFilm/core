@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   build:
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: blacksmith-4vcpu-ubuntu-2204
     strategy:
       matrix:
         node-version: [22]
@@ -118,7 +118,7 @@ jobs:
         with:
           targets: fetch-secrets,build
   test:
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: blacksmith-4vcpu-ubuntu-2204
     strategy:
       fail-fast: false
       matrix:
