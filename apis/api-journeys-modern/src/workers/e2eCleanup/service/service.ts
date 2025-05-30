@@ -63,24 +63,9 @@ export async function service(
   const cutoffDate = new Date(Date.now() - olderThanHours * 60 * 60 * 1000)
 
   // Define patterns that indicate test data based on actual e2e test patterns
-  const journeyPatterns = [
-    'First journey',
-    'Second journey',
-    'Renamed journey',
-    'Test Journey', // generic test pattern
-    'E2E',
-    'Automation',
-    'Playwright'
-  ]
+  const journeyPatterns = ['First journey', 'Second journey', 'Renamed journey']
 
-  const teamPatterns = [
-    'Automation TeamName',
-    'Renamed Team',
-    'Playwright Test Team', // generic test pattern
-    'Test Team',
-    'E2E',
-    'Automation'
-  ]
+  const teamPatterns = ['Automation TeamName', 'Renamed Team']
 
   // Helper function to check if user email matches playwright pattern
   const playwrightUserCache = new Map<string, boolean>()
@@ -335,120 +320,156 @@ export async function service(
       return
     }
 
-    // Clean up test journeys and related data
+    // Wrap all cleanup operations in a single transaction for atomicity
+    const results = await prisma.$transaction(async (tx) => {
+      let deletedJourneysCount = 0
+      let deletedTeamsCount = 0
+      let deletedTeamInvitesCount = 0
+      let deletedJourneyInvitesCount = 0
+
+      // Clean up test journeys and related data
+      if (testJourneys.length > 0) {
+        const journeyIds = testJourneys.map((j) => j.id)
+
+        // Delete related data first due to foreign key constraints
+        await tx.userJourney.deleteMany({
+          where: { journeyId: { in: journeyIds } }
+        })
+
+        await tx.journeyVisitor.deleteMany({
+          where: { journeyId: { in: journeyIds } }
+        })
+
+        await tx.event.deleteMany({
+          where: { journeyId: { in: journeyIds } }
+        })
+
+        // Delete blocks associated with journeys
+        await tx.block.deleteMany({
+          where: { journeyId: { in: journeyIds } }
+        })
+
+        // Delete user invites for these journeys
+        await tx.userInvite.deleteMany({
+          where: { journeyId: { in: journeyIds } }
+        })
+
+        // Finally delete the journeys
+        const deletedJourneys = await tx.journey.deleteMany({
+          where: { id: { in: journeyIds } }
+        })
+
+        deletedJourneysCount = deletedJourneys.count
+      }
+
+      // Clean up test teams and related data
+      if (testTeams.length > 0) {
+        const teamIds = testTeams.map((t) => t.id)
+
+        // Delete related data first
+        await tx.userTeam.deleteMany({
+          where: { teamId: { in: teamIds } }
+        })
+
+        await tx.userTeamInvite.deleteMany({
+          where: { teamId: { in: teamIds } }
+        })
+
+        // Delete journeys owned by these teams
+        const teamJourneys = await tx.journey.findMany({
+          where: { teamId: { in: teamIds } },
+          select: { id: true }
+        })
+
+        if (teamJourneys.length > 0) {
+          const teamJourneyIds = teamJourneys.map((j) => j.id)
+
+          await tx.userJourney.deleteMany({
+            where: { journeyId: { in: teamJourneyIds } }
+          })
+
+          await tx.journeyVisitor.deleteMany({
+            where: { journeyId: { in: teamJourneyIds } }
+          })
+
+          await tx.event.deleteMany({
+            where: { journeyId: { in: teamJourneyIds } }
+          })
+
+          await tx.block.deleteMany({
+            where: { journeyId: { in: teamJourneyIds } }
+          })
+
+          await tx.userInvite.deleteMany({
+            where: { journeyId: { in: teamJourneyIds } }
+          })
+
+          await tx.journey.deleteMany({
+            where: { id: { in: teamJourneyIds } }
+          })
+        }
+
+        // Finally delete the teams
+        const deletedTeams = await tx.team.deleteMany({
+          where: { id: { in: teamIds } }
+        })
+
+        deletedTeamsCount = deletedTeams.count
+      }
+
+      // Clean up test invitations
+      if (testTeamInvites.length > 0) {
+        const inviteIds = testTeamInvites.map((i) => i.id)
+        const deletedTeamInvites = await tx.userTeamInvite.deleteMany({
+          where: { id: { in: inviteIds } }
+        })
+
+        deletedTeamInvitesCount = deletedTeamInvites.count
+      }
+
+      if (testJourneyInvites.length > 0) {
+        const inviteIds = testJourneyInvites.map((i) => i.id)
+        const deletedJourneyInvites = await tx.userInvite.deleteMany({
+          where: { id: { in: inviteIds } }
+        })
+
+        deletedJourneyInvitesCount = deletedJourneyInvites.count
+      }
+
+      // Return counts for logging outside transaction
+      return {
+        deletedJourneysCount,
+        deletedTeamsCount,
+        deletedTeamInvitesCount,
+        deletedJourneyInvitesCount
+      }
+    })
+
+    // Log results after successful transaction
     if (testJourneys.length > 0) {
-      const journeyIds = testJourneys.map((j) => j.id)
-
-      // Delete related data first due to foreign key constraints
-      await prisma.userJourney.deleteMany({
-        where: { journeyId: { in: journeyIds } }
-      })
-
-      await prisma.journeyVisitor.deleteMany({
-        where: { journeyId: { in: journeyIds } }
-      })
-
-      await prisma.event.deleteMany({
-        where: { journeyId: { in: journeyIds } }
-      })
-
-      // Delete blocks associated with journeys
-      await prisma.block.deleteMany({
-        where: { journeyId: { in: journeyIds } }
-      })
-
-      // Delete user invites for these journeys
-      await prisma.userInvite.deleteMany({
-        where: { journeyId: { in: journeyIds } }
-      })
-
-      // Finally delete the journeys
-      const deletedJourneys = await prisma.journey.deleteMany({
-        where: { id: { in: journeyIds } }
-      })
-
       logger?.info(
-        { deletedJourneys: deletedJourneys.count },
+        { deletedJourneys: results.deletedJourneysCount },
         'Deleted test journeys'
       )
     }
 
-    // Clean up test teams and related data
     if (testTeams.length > 0) {
-      const teamIds = testTeams.map((t) => t.id)
-
-      // Delete related data first
-      await prisma.userTeam.deleteMany({
-        where: { teamId: { in: teamIds } }
-      })
-
-      await prisma.userTeamInvite.deleteMany({
-        where: { teamId: { in: teamIds } }
-      })
-
-      // Delete journeys owned by these teams
-      const teamJourneys = await prisma.journey.findMany({
-        where: { teamId: { in: teamIds } },
-        select: { id: true }
-      })
-
-      if (teamJourneys.length > 0) {
-        const teamJourneyIds = teamJourneys.map((j) => j.id)
-
-        await prisma.userJourney.deleteMany({
-          where: { journeyId: { in: teamJourneyIds } }
-        })
-
-        await prisma.journeyVisitor.deleteMany({
-          where: { journeyId: { in: teamJourneyIds } }
-        })
-
-        await prisma.event.deleteMany({
-          where: { journeyId: { in: teamJourneyIds } }
-        })
-
-        await prisma.block.deleteMany({
-          where: { journeyId: { in: teamJourneyIds } }
-        })
-
-        await prisma.userInvite.deleteMany({
-          where: { journeyId: { in: teamJourneyIds } }
-        })
-
-        await prisma.journey.deleteMany({
-          where: { id: { in: teamJourneyIds } }
-        })
-      }
-
-      // Finally delete the teams
-      const deletedTeams = await prisma.team.deleteMany({
-        where: { id: { in: teamIds } }
-      })
-
-      logger?.info({ deletedTeams: deletedTeams.count }, 'Deleted test teams')
+      logger?.info(
+        { deletedTeams: results.deletedTeamsCount },
+        'Deleted test teams'
+      )
     }
 
-    // Clean up test invitations
     if (testTeamInvites.length > 0) {
-      const inviteIds = testTeamInvites.map((i) => i.id)
-      const deletedTeamInvites = await prisma.userTeamInvite.deleteMany({
-        where: { id: { in: inviteIds } }
-      })
-
       logger?.info(
-        { deletedTeamInvites: deletedTeamInvites.count },
+        { deletedTeamInvites: results.deletedTeamInvitesCount },
         'Deleted test team invitations'
       )
     }
 
     if (testJourneyInvites.length > 0) {
-      const inviteIds = testJourneyInvites.map((i) => i.id)
-      const deletedJourneyInvites = await prisma.userInvite.deleteMany({
-        where: { id: { in: inviteIds } }
-      })
-
       logger?.info(
-        { deletedJourneyInvites: deletedJourneyInvites.count },
+        { deletedJourneyInvites: results.deletedJourneyInvitesCount },
         'Deleted test journey invitations'
       )
     }

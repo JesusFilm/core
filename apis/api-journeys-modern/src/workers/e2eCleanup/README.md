@@ -16,6 +16,7 @@ The e2e cleanup service automatically identifies and removes test data based on 
 - **Conditional Logging**: Detailed logs during dry runs, quiet operation during actual cleanup
 - **Comprehensive Cleanup**: Removes journeys, teams, invitations, and all related data (blocks, events, user associations, etc.)
 - **Foreign Key Aware**: Deletes data in the correct order to respect database constraints
+- **Atomic Operations**: All cleanup operations are wrapped in a single database transaction for consistency
 
 ## Detection Patterns
 
@@ -28,10 +29,6 @@ The service identifies test data by looking for these actual patterns used in e2
    - `First journey` (+ random numbers)
    - `Second journey` (+ random numbers)
    - `Renamed journey` (+ random numbers)
-   - `Test Journey` (generic fallback)
-   - `E2E`
-   - `Automation`
-   - `Playwright`
 
 2. **Owner Email Patterns**:
    - Journeys owned by users with emails containing `playwright` AND `@example.com`
@@ -41,10 +38,6 @@ The service identifies test data by looking for these actual patterns used in e2
 
 - `Automation TeamName` (+ timestamp patterns)
 - `Renamed Team` (+ random numbers)
-- `Playwright Test Team` (generic fallback)
-- `Test Team` (generic fallback)
-- `E2E`
-- `Automation`
 
 ### Email Patterns (invitations):
 
@@ -96,7 +89,7 @@ nx run api-journeys-modern:worker e2e-cleanup --dry-run --hours 12
 
 ## Data Cleanup Order
 
-The service deletes data in this order to respect foreign key constraints:
+The service deletes data within a single database transaction to ensure atomicity. All operations either succeed completely or are rolled back entirely. The deletion order respects foreign key constraints:
 
 ### For Journeys:
 
@@ -119,6 +112,12 @@ The service deletes data in this order to respect foreign key constraints:
 1. UserTeamInvite records (team invitations with test email patterns)
 2. UserInvite records (journey invitations with test email patterns)
 
+**Transaction Benefits:**
+
+- **Atomicity**: All cleanup operations succeed or fail together
+- **Consistency**: Database remains in a consistent state even if errors occur
+- **Rollback Safety**: Partial cleanup is prevented - if any operation fails, all changes are rolled back
+
 ## Safety Features
 
 - **Time Threshold**: Only removes data older than the specified threshold
@@ -128,6 +127,7 @@ The service deletes data in this order to respect foreign key constraints:
 - **Comprehensive Logging**: Detailed logging in dry run mode, essential logging in production
 - **Error Handling**: Graceful error handling with detailed logging
 - **Performance Monitoring**: Cache effectiveness metrics in dry run mode
+- **Transaction Safety**: All cleanup operations are atomic - either all succeed or all are rolled back
 
 ## Example Output
 
@@ -190,7 +190,8 @@ The service includes comprehensive error handling:
 - **User Service Failures**: Failed user email lookups are cached and logged as warnings
 - **Database Issues**: Connection and query errors are caught and logged
 - **Foreign Key Constraints**: Prevented by proper deletion order
-- **Partial Failures**: Individual failures don't stop the entire cleanup process
+- **Transaction Failures**: Any database error during cleanup causes complete rollback
+- **Partial Failures**: Individual user lookup failures don't stop the cleanup process
 
 ## Integration with Testing
 
