@@ -645,13 +645,24 @@ describe('E2E Cleanup Service', () => {
         },
         {
           id: 'team-3',
-          title: 'Regular Team',
+          title: 'Production Group',
           createdAt: new Date('2023-01-01')
         }
       ]
 
       prismaMock.journey.findMany.mockResolvedValue(testJourneys as any)
-      prismaMock.team.findMany.mockResolvedValue(testTeams as any)
+      prismaMock.team.findMany.mockResolvedValue([
+        {
+          id: 'team-1',
+          title: 'Automation TeamName240124-143022123',
+          createdAt: new Date('2023-01-01')
+        },
+        {
+          id: 'team-2',
+          title: 'Renamed Team456789',
+          createdAt: new Date('2023-01-01')
+        }
+      ] as any)
       prismaMock.userTeamInvite.findMany.mockResolvedValue([])
       prismaMock.userInvite.findMany.mockResolvedValue([])
 
