@@ -27,24 +27,16 @@ export async function getVideoVariantInput({
   r2PublicUrl: string
   metadata: VideoMetadata
 }): Promise<VideoVariantInput> {
-  // Parse source from videoId (e.g., "0_JesusVisionLumo" -> source="0")
-  let source: string
-  let restOfId: string
-  if (videoId.includes('_')) {
-    ;[source, restOfId = ''] = videoId.split('_', 2)
-    if (restOfId === '') {
-      console.warn(
-        `[video-importer] Expected an '_' in videoId "${videoId}".` +
-          ' The variant id/slug will use the plain videoId which may collide.'
-      )
-      source = '0'
-      restOfId = videoId
-    }
-  } else {
-    source = '0'
-    restOfId = videoId
+  // Parse source from videoId (e.g., "0_JesusVisionLumo" -> source="0" videoId="JesusVisionLumo")
+  const [source, ...restParts] = videoId.split('_')
+  const restOfId = restParts.join('_') || videoId
+
+  if (
+    !videoId.includes('_') ||
+    (videoId.includes('_') && restParts.join('_') === '')
+  ) {
     console.warn(
-      `[video-importer] No '_' found in videoId "${videoId}". Using source='0' and restOfId=videoId. The variant id/slug will use the plain videoId which may collide.`
+      `[video-importer] No '_' found in videoId "${videoId}" or missing content after '_'. Using source='${source}' and restOfId='${restOfId}'. The variant id/slug may collide.`
     )
   }
   const client = await getGraphQLClient()
