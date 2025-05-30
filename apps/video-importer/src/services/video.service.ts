@@ -91,51 +91,6 @@ export async function getVideoVariantInput({
   }
 }
 
-export async function updateVideoVariant({
-  videoId,
-  languageId,
-  edition,
-  muxId,
-  playbackId,
-  r2PublicUrl,
-  metadata
-}: {
-  videoId: string
-  languageId: string
-  edition: string
-  muxId: string
-  playbackId: string
-  r2PublicUrl: string
-  metadata: VideoMetadata
-}): Promise<void> {
-  const client = await getGraphQLClient()
-  const input = await getVideoVariantInput({
-    videoId,
-    languageId,
-    edition,
-    muxId,
-    playbackId,
-    r2PublicUrl,
-    metadata
-  })
-  await client.request<VideoVariantUpdateResponse>(UPDATE_VIDEO_VARIANT, {
-    input: {
-      id: input.id,
-      videoId: input.videoId,
-      edition: input.edition,
-      languageId: input.languageId,
-      slug: input.slug,
-      downloadable: input.downloadable,
-      published: input.published,
-      muxVideoId: input.muxVideoId,
-      hls: input.hls,
-      share: input.share,
-      duration: input.duration,
-      lengthInMilliseconds: input.lengthInMilliseconds
-    }
-  })
-}
-
 export async function createVideoVariant({
   videoId,
   languageId,
