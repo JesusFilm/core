@@ -50,6 +50,14 @@ export async function getVideoVariantInput({
       }
     )
 
+  if (!videoDetails.video) {
+    throw new Error(`No video found for ID: ${videoId}`)
+  }
+
+  if (!videoDetails.language) {
+    throw new Error(`No language found for ID: ${languageId}`)
+  }
+
   const videoSlug = videoDetails.video.slug
   const languageSlug = videoDetails.language.slug
   const variantId = videoDetails.video.variant?.id
