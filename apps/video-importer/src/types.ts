@@ -26,9 +26,6 @@ export interface VideoVariantResponse {
     published: boolean
     lengthInMilliseconds: number
     duration: number
-    masterUrl: string
-    masterHeight: number
-    masterWidth: number
     language: {
       id: string
       name: {
@@ -48,9 +45,6 @@ export interface VideoVariantUpdateResponse {
     published: boolean
     lengthInMilliseconds: number
     duration: number
-    masterUrl: string
-    masterHeight: number
-    masterWidth: number
     language: {
       id: string
       name: {
@@ -87,9 +81,6 @@ export interface VideoVariantInput {
   muxVideoId: string
   hls: string
   share: string
-  masterUrl: string
-  masterHeight: number
-  masterWidth: number
   lengthInMilliseconds: number
   duration: number
   version?: number

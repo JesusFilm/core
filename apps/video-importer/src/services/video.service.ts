@@ -85,9 +85,6 @@ export async function getVideoVariantInput({
     muxVideoId: muxId,
     hls: `https://stream.mux.com/${playbackId}.m3u8`,
     share: `http://jesusfilm.org/watch/${slug}`,
-    masterUrl: r2PublicUrl,
-    masterHeight: metadata.height,
-    masterWidth: metadata.width,
     lengthInMilliseconds: metadata.durationMs,
     duration: metadata.duration,
     version: 1

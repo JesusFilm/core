@@ -31,9 +31,6 @@ export const CREATE_VIDEO_VARIANT = graphql(`
       published
       lengthInMilliseconds
       duration
-      masterUrl
-      masterHeight
-      masterWidth
       language {
         id
         name {
@@ -55,9 +52,6 @@ export const UPDATE_VIDEO_VARIANT = graphql(`
       published
       lengthInMilliseconds
       duration
-      masterUrl
-      masterHeight
-      masterWidth
       language {
         id
         name {
