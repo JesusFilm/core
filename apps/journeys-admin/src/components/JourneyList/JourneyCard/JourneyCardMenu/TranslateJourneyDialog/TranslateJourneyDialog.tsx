@@ -14,6 +14,8 @@ import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../../../__generated__/GetAdminJourneys'
 
+import { useGetCommonVideoVariantLangauges } from './utils/useGetCommonVideoVariantLangauges'
+
 interface TranslateJourneyDialogProps {
   open: boolean
   onClose: () => void
@@ -53,6 +55,11 @@ export function TranslateJourneyDialog({
   const { journey: journeyFromContext } = useJourney()
   const { activeTeam } = useTeam()
   const journeyData = journey ?? journeyFromContext
+
+  const { commonLanguages, loading: commonLanguagesLoading } =
+    useGetCommonVideoVariantLangauges(journeyData)
+
+  console.log('commonLanguages', commonLanguages)
 
   const { data: languagesData, loading: languagesLoading } = useLanguagesQuery({
     languageId: '529',
