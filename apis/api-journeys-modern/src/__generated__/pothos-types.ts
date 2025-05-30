@@ -31,7 +31,7 @@ export default interface PrismaTypes {
         Where: Prisma.EventWhereInput;
         Create: {};
         Update: {};
-        RelationName: "visitor" | "journeyVisitor";
+        RelationName: "visitor" | "journeyVisitor" | "journey";
         ListRelations: never;
         Relations: {
             visitor: {
@@ -42,6 +42,11 @@ export default interface PrismaTypes {
             journeyVisitor: {
                 Shape: JourneyVisitor | null;
                 Name: "JourneyVisitor";
+                Nullable: true;
+            };
+            journey: {
+                Shape: Journey | null;
+                Name: "Journey";
                 Nullable: true;
             };
         };
@@ -311,8 +316,8 @@ export default interface PrismaTypes {
         Where: Prisma.JourneyWhereInput;
         Create: {};
         Update: {};
-        RelationName: "userJourneys" | "team" | "userInvites" | "blocks" | "chatButtons" | "host" | "journeyTags" | "actions" | "primaryImageBlock" | "creatorImageBlock" | "journeyVisitors" | "journeyCollectionJourneys" | "journeyNotifications" | "logoImageBlock" | "menuStepBlock" | "qrCode" | "journeyEventsExportLogs";
-        ListRelations: "userJourneys" | "userInvites" | "blocks" | "chatButtons" | "journeyTags" | "actions" | "journeyVisitors" | "journeyCollectionJourneys" | "journeyNotifications" | "qrCode" | "journeyEventsExportLogs";
+        RelationName: "userJourneys" | "team" | "userInvites" | "blocks" | "chatButtons" | "host" | "journeyTags" | "actions" | "primaryImageBlock" | "creatorImageBlock" | "journeyVisitors" | "journeyCollectionJourneys" | "journeyNotifications" | "logoImageBlock" | "menuStepBlock" | "qrCode" | "Event" | "journeyEventsExportLogs";
+        ListRelations: "userJourneys" | "userInvites" | "blocks" | "chatButtons" | "journeyTags" | "actions" | "journeyVisitors" | "journeyCollectionJourneys" | "journeyNotifications" | "qrCode" | "Event" | "journeyEventsExportLogs";
         Relations: {
             userJourneys: {
                 Shape: UserJourney[];
@@ -392,6 +397,11 @@ export default interface PrismaTypes {
             qrCode: {
                 Shape: QrCode[];
                 Name: "QrCode";
+                Nullable: false;
+            };
+            Event: {
+                Shape: Event[];
+                Name: "Event";
                 Nullable: false;
             };
             journeyEventsExportLogs: {

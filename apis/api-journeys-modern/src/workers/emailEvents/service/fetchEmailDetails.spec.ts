@@ -176,6 +176,7 @@ describe('fetchEmailDetails', () => {
     lastTextResponse: null,
     lastRadioQuestion: null,
     lastRadioOptionSubmission: null,
+    phone: null,
     referrer: null,
     userId: 'visitorUserId',
     updatedAt: new Date('2021-11-19T12:34:56.647Z'),
