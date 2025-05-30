@@ -45,6 +45,10 @@ export async function uploadToR2(
   contentLength: number
 ) {
   const fileStream = createReadStream(filePath)
+  fileStream.on('error', (err) => {
+    throw new Error(`Failed to read file stream: ${err.message}`)
+  })
+
   const response = await fetch(uploadUrl, {
     method: 'PUT',
     headers: {
