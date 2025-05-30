@@ -1,6 +1,9 @@
 import { gql, useQuery } from '@apollo/client'
 import { useMemo } from 'react'
 
+import { SUPPORTED_LANGUAGE_IDS } from '@core/journeys/ui/useJourneyAiTranslateMutation/supportedLanguages'
+import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
+
 import { GetAdminJourneys_journeys as AdminJourney } from '../../../../../../../../__generated__/GetAdminJourneys'
 import {
   GetJourneyInternalVideos,
@@ -55,7 +58,7 @@ export function useCommonVideoVariantLanguages(
         variables: {
           journeyId: journey?.id ?? ''
         },
-        skip: !journey?.id
+        skip: journey == null
       }
     )
 
@@ -80,7 +83,7 @@ export function useCommonVideoVariantLanguages(
         variables: {
           ids: videoIds
         },
-        skip: videoIds == null || !journey?.id
+        skip: videoIds == null || videoIds.length === 0 || !journey?.id
       }
     )
 
@@ -97,7 +100,24 @@ export function useCommonVideoVariantLanguages(
     )
   }, [videosVariantLanguages])
 
-  const loading = journeyVideosLoading || variantLanguagesLoading
+  const intersection = commonLanguages.filter((id) =>
+    SUPPORTED_LANGUAGE_IDS.includes(
+      id as (typeof SUPPORTED_LANGUAGE_IDS)[number]
+    )
+  )
 
-  return { commonLanguages, loading }
+  const { data: languagesData, loading: languagesLoading } = useLanguagesQuery({
+    variables: {
+      languageId: '529',
+      where: {
+        ids: [...intersection]
+      }
+    },
+    skip: intersection.length === 0
+  })
+
+  const loading =
+    journeyVideosLoading || variantLanguagesLoading || languagesLoading
+
+  return { commonLanguages: languagesData, loading }
 }

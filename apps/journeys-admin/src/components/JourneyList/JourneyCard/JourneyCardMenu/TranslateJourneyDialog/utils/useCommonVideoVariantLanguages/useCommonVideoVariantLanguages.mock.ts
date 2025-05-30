@@ -1,4 +1,5 @@
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
+import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
 import {
   GET_JOURNEY_INTERNAL_VIDEOS,
@@ -11,17 +12,62 @@ export const journey = {
   title: 'My journey'
 } as unknown as Journey
 
+export const languagesMock = {
+  request: {
+    query: GET_LANGUAGES,
+    variables: {
+      languageId: '529',
+      where: {
+        ids: ['529', '21028'] // assuming these are in SUPPORTED_LANGUAGE_IDS
+      }
+    }
+  },
+  result: {
+    data: {
+      languages: [
+        {
+          id: '529',
+          slug: 'english',
+          name: [
+            {
+              value: 'English',
+              primary: true,
+              __typename: 'LanguageName'
+            }
+          ]
+        },
+        {
+          id: '21028',
+          slug: 'spanish-latin-american',
+          name: [
+            {
+              value: 'Español',
+              primary: true,
+              __typename: 'LanguageName'
+            },
+            {
+              value: 'Spanish, Latin American',
+              primary: false,
+              __typename: 'LanguageName'
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
+
 export const journeyInternalVideosMock = {
   request: {
     query: GET_JOURNEY_INTERNAL_VIDEOS,
     variables: {
-      journeyId: journey.id
+      journeyId: 'journeyId'
     }
   },
   result: {
     data: {
       journey: {
-        id: journey.id,
+        id: 'journeyId',
         blocks: [
           {
             __typename: 'VideoBlock',
@@ -51,13 +97,13 @@ export const journeyInternalWithoutVideosMock = {
   request: {
     query: GET_JOURNEY_INTERNAL_VIDEOS,
     variables: {
-      journeyId: journey.id
+      journeyId: 'journeyId'
     }
   },
   result: {
     data: {
       journey: {
-        id: journey.id,
+        id: 'journeyId',
         blocks: [
           {
             __typename: 'TypographyBlock',
@@ -92,7 +138,7 @@ export const videosVariantLanguagesMock = {
             },
             {
               language: {
-                id: '584'
+                id: '21028'
               }
             }
           ]
@@ -110,7 +156,7 @@ export const videosVariantLanguagesMock = {
             },
             {
               language: {
-                id: '584'
+                id: '21028'
               }
             },
             {

@@ -63,7 +63,9 @@ describe('useLanguagesQuery', () => {
     renderHook(
       () =>
         useLanguagesQuery({
-          languageId: '529'
+          variables: {
+            languageId: '529'
+          }
         }),
       {
         wrapper: ({ children }) => (
@@ -101,9 +103,11 @@ describe('useLanguagesQuery', () => {
     renderHook(
       () =>
         useLanguagesQuery({
-          languageId: '529',
-          where: {
-            ids: ['529', '496']
+          variables: {
+            languageId: '529',
+            where: {
+              ids: ['529', '496']
+            }
           }
         }),
       {

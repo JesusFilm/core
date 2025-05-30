@@ -83,9 +83,11 @@ export function CopyToTeamDialog({
     useMutation<UpdateLastActiveTeamId>(UPDATE_LAST_ACTIVE_TEAM_ID)
 
   const { data: languagesData, loading: languagesLoading } = useLanguagesQuery({
-    languageId: '529',
-    where: {
-      ids: [...SUPPORTED_LANGUAGE_IDS]
+    variables: {
+      languageId: '529',
+      where: {
+        ids: [...SUPPORTED_LANGUAGE_IDS]
+      }
     }
   })
 

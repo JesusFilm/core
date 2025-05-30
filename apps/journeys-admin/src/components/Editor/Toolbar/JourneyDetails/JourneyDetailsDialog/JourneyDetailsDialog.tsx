@@ -50,7 +50,11 @@ export function JourneyDetailsDialog({
   const { journey: journeyFromContext } = useJourney()
   const journeyData = journey ?? journeyFromContext
   const { enqueueSnackbar } = useSnackbar()
-  const { data, loading } = useLanguagesQuery({ languageId: '529' })
+  const { data, loading } = useLanguagesQuery({
+    variables: {
+      languageId: '529'
+    }
+  })
   const titleSchema = object().shape({
     title: string().required(t('Required'))
   })

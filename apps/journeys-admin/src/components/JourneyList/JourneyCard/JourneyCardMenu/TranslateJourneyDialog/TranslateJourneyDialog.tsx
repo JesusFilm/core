@@ -62,9 +62,11 @@ export function TranslateJourneyDialog({
   console.log('commonLanguages', commonLanguages)
 
   const { data: languagesData, loading: languagesLoading } = useLanguagesQuery({
-    languageId: '529',
-    where: {
-      ids: [...SUPPORTED_LANGUAGE_IDS]
+    variables: {
+      languageId: '529',
+      where: {
+        ids: [...SUPPORTED_LANGUAGE_IDS]
+      }
     }
   })
 
@@ -92,6 +94,10 @@ export function TranslateJourneyDialog({
   const [selectedLanguage, setSelectedLanguage] = useState<
     JourneyLanguage | undefined
   >(journeyLanguage)
+
+  const [selectedVideoLanguage, setSelectedVideoLanguage] = useState<
+    JourneyLanguage | undefined
+  >()
 
   function handleDialogClose(
     _?: object,
@@ -146,6 +152,23 @@ export function TranslateJourneyDialog({
           placement: !smUp ? 'top' : 'bottom'
         }}
       />
+      {/* <LanguageAutocomplete
+        onChange={async (value) => setSelectedVideoLanguage(value)}
+        value={selectedVideoLanguage}
+        languages={languagesData?.languages}
+        loading={languagesLoading}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            placeholder={t('Search Language')}
+            label={t('Select Language')}
+            variant="filled"
+          />
+        )}
+        popper={{
+          placement: !smUp ? 'top' : 'bottom'
+        }}
+      /> */}
     </TranslationDialogWrapper>
   )
 }

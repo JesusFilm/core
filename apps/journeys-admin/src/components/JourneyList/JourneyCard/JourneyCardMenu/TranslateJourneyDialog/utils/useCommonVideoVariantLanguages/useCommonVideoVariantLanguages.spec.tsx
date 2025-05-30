@@ -6,6 +6,7 @@ import {
   journey,
   journeyInternalVideosMock,
   journeyInternalWithoutVideosMock,
+  languagesMock,
   videosVariantLanguagesMock,
   videosVariantLanguagesWithoutVideosMock
 } from './useCommonVideoVariantLanguages.mock'
@@ -17,7 +18,11 @@ describe('useCommonVideoVariantLanguages', () => {
       {
         wrapper: ({ children }) => (
           <MockedProvider
-            mocks={[journeyInternalVideosMock, videosVariantLanguagesMock]}
+            mocks={[
+              journeyInternalVideosMock,
+              videosVariantLanguagesMock,
+              languagesMock
+            ]}
           >
             {children}
           </MockedProvider>
@@ -26,13 +31,35 @@ describe('useCommonVideoVariantLanguages', () => {
     )
 
     expect(result.current.loading).toBe(true)
-    expect(result.current.commonLanguages).toEqual([])
+    expect(result.current.commonLanguages).toEqual(undefined)
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false)
     })
 
-    expect(result.current.commonLanguages).toEqual(['529', '584'])
+    expect(result.current.commonLanguages).toEqual({
+      languages: [
+        {
+          id: '529',
+          slug: 'english',
+          name: [
+            { value: 'English', primary: true, __typename: 'LanguageName' }
+          ]
+        },
+        {
+          id: '21028',
+          slug: 'spanish-latin-american',
+          name: [
+            { value: 'Español', primary: true, __typename: 'LanguageName' },
+            {
+              value: 'Spanish, Latin American',
+              primary: false,
+              __typename: 'LanguageName'
+            }
+          ]
+        }
+      ]
+    })
   })
 
   it('should handle journey with no videos', async () => {
