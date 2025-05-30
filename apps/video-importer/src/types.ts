@@ -45,6 +45,7 @@ export interface VideoVariantUpdateResponse {
     published: boolean
     lengthInMilliseconds: number
     duration: number
+    share: string
     language: {
       id: string
       name: {
