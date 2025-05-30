@@ -65,6 +65,11 @@ export async function getVideoVariantInput({
 
   const slug = variantSlug ?? `${videoSlug}/${languageSlug}`
 
+  const muxStreamBaseUrl =
+    process.env.MUX_STREAM_BASE_URL || 'https://stream.mux.com/'
+  const watchPageBaseUrl =
+    process.env.WATCH_PAGE_BASE_URL || 'http://jesusfilm.org/watch/'
+
   return {
     existingVariantId: variantId ?? null,
     id: variantId ?? `${source}_${languageId}-${restOfId}`,
@@ -75,8 +80,8 @@ export async function getVideoVariantInput({
     downloadable: true,
     published: true,
     muxVideoId: muxId,
-    hls: `https://stream.mux.com/${playbackId}.m3u8`,
-    share: `http://jesusfilm.org/watch/${slug}`,
+    hls: `${muxStreamBaseUrl}${playbackId}.m3u8`,
+    share: `${watchPageBaseUrl}${slug}`,
     lengthInMilliseconds: metadata.durationMs,
     duration: metadata.duration,
     version: 1
