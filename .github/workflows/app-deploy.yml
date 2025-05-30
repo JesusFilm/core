@@ -110,7 +110,7 @@ jobs:
       - name: Mount Next.js Cache for ${{ matrix.app }}
         uses: useblacksmith/stickydisk@v1
         with:
-          key: ${{ matrix.app }}-nextjs-cache
+          key: ${{ github.repository }}-${{ matrix.app }}-nextjs-cache
           path: apps/${{ matrix.app }}/.next
       - name: Mount playwright cache
         uses: useblacksmith/stickydisk@v1
@@ -274,7 +274,7 @@ jobs:
       - name: Mount Next.js Cache for ${{ matrix.app }}
         uses: useblacksmith/stickydisk@v1
         with:
-          key: ${{ matrix.app }}-nextjs-cache
+          key: ${{ github.repository }}-${{ matrix.app }}-nextjs-cache
           path: apps/${{ matrix.app }}/.next
       - name: NPM Install
         run: npm install --silent
