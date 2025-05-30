@@ -1,18 +1,23 @@
 import { gql, useQuery } from '@apollo/client'
 import { useMemo } from 'react'
 
-import { GetAdminJourneys_journeys as AdminJourney } from '../../../../../../../__generated__/GetAdminJourneys'
+import { GetAdminJourneys_journeys as AdminJourney } from '../../../../../../../../__generated__/GetAdminJourneys'
 import {
   GetJourneyInternalVideos,
   GetJourneyInternalVideosVariables
-} from '../../../../../../../__generated__/GetJourneyInternalVideos'
-import { JourneyFields } from '../../../../../../../__generated__/JourneyFields'
+} from '../../../../../../../../__generated__/GetJourneyInternalVideos'
+import {
+  GetVideosVariantLanguages,
+  GetVideosVariantLanguagesVariables
+} from '../../../../../../../../__generated__/GetVideosVariantLanguages'
+import { JourneyFields } from '../../../../../../../../__generated__/JourneyFields'
 
-const GET_JOURNEY_INTERNAL_VIDEOS = gql`
+export const GET_JOURNEY_INTERNAL_VIDEOS = gql`
   query GetJourneyInternalVideos($journeyId: ID!) {
     journey(id: $journeyId, idType: databaseId) {
       id
       blocks {
+        id
         ... on VideoBlock {
           id
           videoId
@@ -24,9 +29,13 @@ const GET_JOURNEY_INTERNAL_VIDEOS = gql`
   }
 `
 
-const GET_VIDEOS_VARIANT_LANGUAGES = gql`
+export const GET_VIDEOS_VARIANT_LANGUAGES = gql`
   query GetVideosVariantLanguages($ids: [ID!]) {
     videos(where: { ids: $ids }) {
+      id
+      variant {
+        id
+      }
       variants {
         language {
           id
@@ -39,7 +48,6 @@ const GET_VIDEOS_VARIANT_LANGUAGES = gql`
 export function useCommonVideoVariantLanguages(
   journey?: AdminJourney | JourneyFields
 ) {
-  // First query - gets journey internal videos
   const { data: journeyInternalVideos, loading: journeyVideosLoading } =
     useQuery<GetJourneyInternalVideos, GetJourneyInternalVideosVariables>(
       GET_JOURNEY_INTERNAL_VIDEOS,
@@ -54,42 +62,40 @@ export function useCommonVideoVariantLanguages(
   const videoIds = useMemo(() => {
     if (!journeyInternalVideos) return []
 
-    const ids = journeyInternalVideos.journey.blocks
-      ?.filter((block) => block.__typename === 'VideoBlock')
-      .map((block) => block.videoId)
-
-    return Array.from(new Set(ids))
+    return journeyInternalVideos.journey.blocks?.reduce<string[]>(
+      (videoIds, block) => {
+        if (block.__typename === 'VideoBlock' && block.videoId != null) {
+          videoIds.push(block.videoId)
+        }
+        return videoIds
+      },
+      []
+    )
   }, [journeyInternalVideos])
 
-  console.log('videoIds', videoIds)
-
-  // Second query - depends on the result of the first
   const { data: videosVariantLanguages, loading: variantLanguagesLoading } =
-    useQuery(GET_VIDEOS_VARIANT_LANGUAGES, {
-      variables: {
-        ids: videoIds
-      },
-      skip: videoIds.length === 0 || !journey?.id
-    })
+    useQuery<GetVideosVariantLanguages, GetVideosVariantLanguagesVariables>(
+      GET_VIDEOS_VARIANT_LANGUAGES,
+      {
+        variables: {
+          ids: videoIds
+        },
+        skip: videoIds == null || !journey?.id
+      }
+    )
 
   const commonLanguages = useMemo(() => {
     if (!videosVariantLanguages?.videos) return []
 
-    return (
-      console.log('videosVariantLanguages', videosVariantLanguages),
-      videosVariantLanguages.videos.reduce((common, video, index) => {
-        console.log('HERE')
+    return videosVariantLanguages.videos.reduce<string[]>(
+      (commonLanguageIds, video, index) => {
         const languageIds = video.variants.map((variant) => variant.language.id)
-        console.log('index', index, 'languageIds', languageIds)
-        // If it's the first video, use its language IDs as the initial set
         if (index === 0) return languageIds
-        // Otherwise, return only the IDs that exist in both the current video and the accumulated common set
-        return common.filter((id) => languageIds.includes(id))
-      }, [] as string[]) ?? []
+        return commonLanguageIds.filter((id) => languageIds.includes(id))
+      },
+      []
     )
   }, [videosVariantLanguages])
-
-  console.log('commonLanguages', commonLanguages)
 
   const loading = journeyVideosLoading || variantLanguagesLoading
 
