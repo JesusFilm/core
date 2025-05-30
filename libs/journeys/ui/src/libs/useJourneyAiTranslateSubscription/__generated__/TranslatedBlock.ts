@@ -15,25 +15,25 @@ export interface TranslatedBlock_ImageBlock {
 export interface TranslatedBlock_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
-  content: string | null;
+  content: string;
 }
 
 export interface TranslatedBlock_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
-  label: string | null;
+  label: string;
 }
 
 export interface TranslatedBlock_RadioOptionBlock {
   __typename: "RadioOptionBlock";
   id: string;
-  label: string | null;
+  label: string;
 }
 
 export interface TranslatedBlock_TextResponseBlock {
   __typename: "TextResponseBlock";
   id: string;
-  label: string | null;
+  label: string;
   placeholder: string | null;
 }
 

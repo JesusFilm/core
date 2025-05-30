@@ -10,7 +10,7 @@
 export interface TextResponseLabelUpdate_textResponseBlockUpdate {
   __typename: "TextResponseBlock";
   id: string;
-  label: string | null;
+  label: string;
 }
 
 export interface TextResponseLabelUpdate {

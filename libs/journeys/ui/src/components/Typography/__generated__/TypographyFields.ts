@@ -16,6 +16,6 @@ export interface TypographyFields {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string | null;
+  content: string;
   variant: TypographyVariant | null;
 }

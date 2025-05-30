@@ -44,7 +44,7 @@ export interface RadioQuestionBlockCreate_radioOption1 {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string | null;
+  label: string;
   action: RadioQuestionBlockCreate_radioOption1_action | null;
 }
 
@@ -76,7 +76,7 @@ export interface RadioQuestionBlockCreate_radioOption2 {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string | null;
+  label: string;
   action: RadioQuestionBlockCreate_radioOption2_action | null;
 }
 

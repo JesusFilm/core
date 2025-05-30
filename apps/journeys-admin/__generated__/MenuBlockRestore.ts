@@ -44,7 +44,7 @@ export interface MenuBlockRestore_stepRestore_ButtonBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string | null;
+  label: string;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
   size: ButtonSize | null;
@@ -84,7 +84,7 @@ export interface MenuBlockRestore_stepRestore_CardBlock {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean | null;
+  fullscreen: boolean;
 }
 
 export interface MenuBlockRestore_stepRestore_IconBlock {
@@ -103,14 +103,14 @@ export interface MenuBlockRestore_stepRestore_ImageBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string | null;
-  width: number | null;
-  height: number | null;
+  alt: string;
+  width: number;
+  height: number;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string | null;
+  blurhash: string;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
@@ -144,7 +144,7 @@ export interface MenuBlockRestore_stepRestore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string | null;
+  label: string;
   action: MenuBlockRestore_stepRestore_RadioOptionBlock_action | null;
 }
 
@@ -205,7 +205,7 @@ export interface MenuBlockRestore_stepRestore_StepBlock {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean | null;
+  locked: boolean;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to
@@ -237,7 +237,7 @@ export interface MenuBlockRestore_stepRestore_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   required: boolean | null;
-  label: string | null;
+  label: string;
   placeholder: string | null;
   hint: string | null;
   minRows: number | null;
@@ -253,7 +253,7 @@ export interface MenuBlockRestore_stepRestore_TypographyBlock {
   parentOrder: number | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
-  content: string | null;
+  content: string;
   variant: TypographyVariant | null;
 }
 
@@ -369,7 +369,7 @@ export interface MenuBlockRestore_stepRestore_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource | null;
+  source: VideoBlockSource;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -438,7 +438,7 @@ export interface MenuBlockRestore_stepRestore_VideoTriggerBlock {
    * triggerStart sets the time as to when a video navigates to the next block,
    * this is the number of seconds since the start of the video
    */
-  triggerStart: number | null;
+  triggerStart: number;
   triggerAction: MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction;
 }
 
@@ -453,7 +453,7 @@ export interface MenuBlockRestore_journeyUpdate_menuStepBlock {
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
    */
-  locked: boolean | null;
+  locked: boolean;
   /**
    * nextBlockId contains the preferred block to navigate to, users will have to
    * manually set the next block they want to card to navigate to

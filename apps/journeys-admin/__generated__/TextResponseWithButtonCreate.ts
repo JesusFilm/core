@@ -15,7 +15,7 @@ export interface TextResponseWithButtonCreate_textResponse {
   parentBlockId: string | null;
   parentOrder: number | null;
   required: boolean | null;
-  label: string | null;
+  label: string;
   placeholder: string | null;
   hint: string | null;
   minRows: number | null;
@@ -52,7 +52,7 @@ export interface TextResponseWithButtonCreate_button {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string | null;
+  label: string;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
   size: ButtonSize | null;
@@ -110,7 +110,7 @@ export interface TextResponseWithButtonCreate_buttonUpdate {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string | null;
+  label: string;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
   size: ButtonSize | null;

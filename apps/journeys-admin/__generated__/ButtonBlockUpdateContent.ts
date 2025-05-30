@@ -10,7 +10,7 @@
 export interface ButtonBlockUpdateContent_buttonBlockUpdate {
   __typename: "ButtonBlock";
   id: string;
-  label: string | null;
+  label: string;
 }
 
 export interface ButtonBlockUpdateContent {

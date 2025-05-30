@@ -13,14 +13,14 @@ export interface ImageFields {
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
-  alt: string | null;
-  width: number | null;
-  height: number | null;
+  alt: string;
+  width: number;
+  height: number;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
-  blurhash: string | null;
+  blurhash: string;
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;

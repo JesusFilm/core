@@ -15,25 +15,25 @@ export interface TranslatedJourney_blocks_ImageBlock {
 export interface TranslatedJourney_blocks_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
-  content: string | null;
+  content: string;
 }
 
 export interface TranslatedJourney_blocks_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
-  label: string | null;
+  label: string;
 }
 
 export interface TranslatedJourney_blocks_RadioOptionBlock {
   __typename: "RadioOptionBlock";
   id: string;
-  label: string | null;
+  label: string;
 }
 
 export interface TranslatedJourney_blocks_TextResponseBlock {
   __typename: "TextResponseBlock";
   id: string;
-  label: string | null;
+  label: string;
   placeholder: string | null;
 }
 
@@ -47,7 +47,7 @@ export interface TranslatedJourney {
    */
   title: string;
   description: string | null;
-  languageId: string | null;
+  languageId: string;
   updatedAt: any;
   blocks: TranslatedJourney_blocks[] | null;
 }
