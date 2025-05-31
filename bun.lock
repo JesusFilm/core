@@ -661,7 +661,7 @@
     "dd-trace",
   ],
   "overrides": {
-    "canvas": "^3.0.0",
+    "canvas": "^3.1.0",
   },
   "packages": {
     "@0no-co/graphql.web": ["@0no-co/graphql.web@1.0.8", "", { "peerDependencies": { "graphql": "^14.0.0 || ^15.0.0 || ^16.0.0" } }, "sha512-8BG6woLtDMvXB9Ajb/uE+Zr/U7y4qJ3upXi0JQHZmsKUJa7HjF/gFvmL2f3/mSmfZoQGRr9VoY97LCX2uaFMzA=="],

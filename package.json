@@ -143,7 +143,7 @@
     "vue-demi",
     "yarn"
   ],
-  "overrides": {
-    "canvas": "^3.0.0"
+  "resolutions": {
+    "canvas": "^3.1.0"
   }
 }
