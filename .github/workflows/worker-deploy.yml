@@ -29,13 +29,8 @@ jobs:
           key: ${{ github.repository }}-bun-cache
           path: ~/.bun
       - uses: useblacksmith/setup-bun@v2
-      - name: Mount node_modules
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-bun-modules
-          path: ./node_modules
       - name: bun install
-        run: bun install --silent --frozen-lockfile
+        run: bun install --frozen-lockfile
       - uses: nrwl/nx-set-shas@v4
       - id: set-matrix
         name: set matrix worker to affected array
@@ -70,13 +65,8 @@ jobs:
           key: ${{ github.repository }}-bun-cache
           path: ~/.bun
       - uses: useblacksmith/setup-bun@v2
-      - name: Mount node_modules
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-bun-modules
-          path: ./node_modules
       - name: bun install
-        run: bun install --silent --frozen-lockfile
+        run: bun install --frozen-lockfile
       - uses: nrwl/nx-set-shas@v4
       - name: worker deployment
         env:
@@ -111,13 +101,8 @@ jobs:
           key: ${{ github.repository }}-bun-cache
           path: ~/.bun
       - uses: useblacksmith/setup-bun@v2
-      - name: Mount node_modules
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-bun-modules
-          path: ./node_modules
       - name: bun install
-        run: bun install --silent --frozen-lockfile
+        run: bun install --frozen-lockfile
       - uses: nrwl/nx-set-shas@v4
       - name: worker deployment
         env:

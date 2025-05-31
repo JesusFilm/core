@@ -43,13 +43,8 @@ jobs:
           key: ${{ github.repository }}-bun-cache
           path: ~/.bun
       - uses: useblacksmith/setup-bun@v2
-      - name: Mount node_modules
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-bun-modules
-          path: ./node_modules
       - name: bun install
-        run: bun install --silent --frozen-lockfile
+        run: bun install --frozen-lockfile
       - name: generate prisma imports
         uses: mansagroup/nrwl-nx-action@v3
         with:
@@ -121,14 +116,8 @@ jobs:
           key: ${{ github.repository }}-bun-cache
           path: ~/.bun
       - uses: useblacksmith/setup-bun@v2
-      - name: Mount node_modules
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-bun-modules
-          path: ./node_modules
       - name: bun install
-        run: bun install --silent --frozen-lockfile
-
+        run: bun install --frozen-lockfile
       - name: generate prisma imports
         uses: mansagroup/nrwl-nx-action@v3
         with:

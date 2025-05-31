@@ -35,12 +35,6 @@ jobs:
           path: ~/.bun
       - uses: useblacksmith/setup-bun@v2
 
-      - name: Mount node_modules
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-bun-modules
-          path: ./node_modules
-
       - name: nx Install
         run: bun install -g nx --silent
 
