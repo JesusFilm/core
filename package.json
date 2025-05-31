@@ -114,9 +114,6 @@
     "libs/*",
     "workers/*"
   ],
-  "overrides": {
-    "graphql": "^16.9.0"
-  },
   "trustedDependencies": [
     "@apollo/protobufjs",
     "@datadog/native-appsec",
@@ -145,5 +142,8 @@
     "sharp",
     "vue-demi",
     "yarn"
-  ]
+  ],
+  "overrides": {
+    "canvas": "^3.0.0"
+  }
 }
