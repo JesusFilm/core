@@ -33,7 +33,6 @@ jobs:
     strategy:
       matrix:
         node-version: [22]
-        bun-version: [1.2.15]
     steps:
       - name: Checkout current branch
         uses: actions/checkout@v4
@@ -43,15 +42,13 @@ jobs:
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-      - uses: useblacksmith/setup-bun@v2
-        with:
-          bun-version: ${{ matrix.bun-version }}
-
       - name: Mount NPM Cache
         uses: useblacksmith/stickydisk@v1
         with:
           key: ${{ github.repository }}-bun-cache
           path: ~/.bun
+      - uses: useblacksmith/setup-bun@v2
+
       - name: Mount node_modules
         uses: useblacksmith/stickydisk@v1
         with:

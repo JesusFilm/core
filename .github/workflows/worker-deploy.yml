@@ -14,7 +14,6 @@ jobs:
     strategy:
       matrix:
         node-version: [22]
-        bun-version: [1.2.15]
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
@@ -24,14 +23,12 @@ jobs:
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-      - uses: useblacksmith/setup-bun@v2
-        with:
-          bun-version: ${{ matrix.bun-version }}
       - name: Mount Bun Cache
         uses: useblacksmith/stickydisk@v1
         with:
           key: ${{ github.repository }}-bun-cache
           path: ~/.bun
+      - uses: useblacksmith/setup-bun@v2
       - name: Mount node_modules
         uses: useblacksmith/stickydisk@v1
         with:
@@ -59,7 +56,6 @@ jobs:
         app: ${{fromJson(needs.affected.outputs.matrix)}}
         github-ref-name: ['${{ github.ref_name }}']
         node-version: [22]
-        bun-version: [1.2.15]
     runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
@@ -68,14 +64,12 @@ jobs:
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-      - uses: useblacksmith/setup-bun@v2
-        with:
-          bun-version: ${{ matrix.bun-version }}
       - name: Mount Bun Cache
         uses: useblacksmith/stickydisk@v1
         with:
           key: ${{ github.repository }}-bun-cache
           path: ~/.bun
+      - uses: useblacksmith/setup-bun@v2
       - name: Mount node_modules
         uses: useblacksmith/stickydisk@v1
         with:
@@ -103,7 +97,6 @@ jobs:
         app: ${{fromJson(needs.affected.outputs.matrix)}}
         github-ref-name: ['${{ github.ref_name }}']
         node-version: [22]
-        bun-version: [1.2.15]
     runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
@@ -112,14 +105,12 @@ jobs:
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-      - uses: useblacksmith/setup-bun@v2
-        with:
-          bun-version: ${{ matrix.bun-version }}
       - name: Mount Bun Cache
         uses: useblacksmith/stickydisk@v1
         with:
           key: ${{ github.repository }}-bun-cache
           path: ~/.bun
+      - uses: useblacksmith/setup-bun@v2
       - name: Mount node_modules
         uses: useblacksmith/stickydisk@v1
         with:
