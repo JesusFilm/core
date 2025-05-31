@@ -28,6 +28,7 @@ jobs:
       - uses: oven-sh/setup-bun@v1
         with:
           bun-version: ${{ matrix.bun-version }}
+          no-cache: true
       - name: Mount NPM Cache
         uses: useblacksmith/stickydisk@v1
         with:
@@ -100,6 +101,7 @@ jobs:
       - uses: oven-sh/setup-bun@v1
         with:
           bun-version: ${{ matrix.bun-version }}
+          no-cache: true
       - name: Get Node Version
         id: node-version
         run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
@@ -266,6 +268,7 @@ jobs:
       - uses: oven-sh/setup-bun@v1
         with:
           bun-version: ${{ matrix.bun-version }}
+          no-cache: true
 
       - name: Mount Bun Cache
         uses: useblacksmith/stickydisk@v1
