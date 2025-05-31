@@ -72,7 +72,6 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
       .click()
     await page.getByText('Trash All').click()
     await page.getByRole('button', { name: 'Trash' }).click()
-    await page.getByRole('tab', { name: 'Trash' }).click()
     stepTiming['trash_all'] = Date.now() - trashAllStart
 
     // Step 5: Template selection
