@@ -13,9 +13,10 @@ RUN apk add --no-cache g++ make python3 py3-pip curl-dev postgresql-client
 
 WORKDIR /app
 COPY ./dist/apps/api-languages .
-COPY ./package.json .
+COPY ./apis/api-languages/package.json .
 COPY ./bun.lock .
 
+RUN curl -fsSL https://bun.sh/install | bash -s "bun-v1.2.155"
 # dependencies that nestjs needs
 RUN bun install --production --frozen-lockfile
 

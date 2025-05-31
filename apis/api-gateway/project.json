@@ -19,7 +19,7 @@
             "command": "echo 'This command is no longer supported. Please run `nf start` instead.'"
           },
           {
-            "command": "echo 'If `bash: nf: command not found` returns please run `npm i -g foreman` then try again.'"
+            "command": "echo 'If `bash: nf: command not found` returns please run `bun i -g foreman` then try again.'"
           }
         ]
       }

@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         node-version: [22]
-        bun-version: [1.2.2]
+        bun-version: [1.2.15]
     steps:
       - uses: actions/checkout@v4
         with:

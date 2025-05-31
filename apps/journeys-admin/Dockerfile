@@ -8,9 +8,10 @@ ENV VERCEL=true
 
 WORKDIR /app
 COPY ./dist/apps/journeys-admin .
-COPY ./package.json .
+COPY ./apps/journeys-admin/package.json .
 COPY ./bun.lock .
 
+RUN curl -fsSL https://bun.sh/install | bash -s "bun-v1.2.15"
 # dependencies
 RUN bun install -g next
 RUN bun install --production --frozen-lockfile

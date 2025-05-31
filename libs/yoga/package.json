@@ -1,0 +1,26 @@
+{
+  "name": "yoga",
+  "dependencies": {
+    "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/exporter-trace-otlp-grpc": "^0.54.2",
+    "@opentelemetry/instrumentation": "^0.54.2",
+    "@opentelemetry/instrumentation-http": "^0.54.2",
+    "@opentelemetry/resources": "^1.28.0",
+    "@opentelemetry/sdk-trace-base": "^1.28.0",
+    "@opentelemetry/sdk-trace-node": "^1.28.0",
+    "@opentelemetry/semantic-conventions": "^1.28.0",
+    "@pothos/tracing-opentelemetry": "^1.1.0",
+    "@prisma/instrumentation": "^6.0.0",
+    "firebase-admin": "^11.11.1",
+    "graphql": "^15.10.0",
+    "graphql-yoga": "^5.3.1",
+    "nodemailer": "^6.9.8",
+    "pino": "^9.3.2",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "22.15.17",
+    "@types/nodemailer": "^6.4.14",
+    "typescript": "^5.5.4"
+  }
+}

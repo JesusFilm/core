@@ -8,9 +8,10 @@ ENV VERCEL=true
 
 WORKDIR /app
 COPY ./dist/apps/arclight .
-COPY ./package.json .
+COPY ./apps/arclight/package.json .
 COPY ./bun.lock .
 
+RUN curl -fsSL https://bun.sh/install | bash -s "bun-v1.2.15"
 # dependencies
 RUN bun install --production --frozen-lockfile
 

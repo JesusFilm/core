@@ -1,0 +1,20 @@
+{
+  "name": "media-transcoder",
+  "dependencies": {
+    "@nestjs/common": "^11.0.1",
+    "@nestjs/core": "^11.0.1",
+    "@nestjs/platform-express": "^11.0.1",
+    "dd-trace": "^5.25.0",
+    "nestjs-ddtrace": "6.0.0",
+    "nestjs-pino": "^4.0.0",
+    "pino": "^9.3.2",
+    "pino-http": "^10.0.0",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^7.1.0"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "11.0.12",
+    "@types/node": "22.15.17",
+    "typescript": "^5.5.4"
+  }
+}

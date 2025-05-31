@@ -1,0 +1,23 @@
+{
+  "name": "shared-ui",
+  "dependencies": {
+    "@emotion/cache": "^11.13.1",
+    "@emotion/react": "^11.13.3",
+    "@mui/icons-material": "^6.0.1",
+    "@mui/material": "^6.0.1",
+    "@mui/system": "^6.0.1",
+    "@mui/utils": "^6.0.1",
+    "firebase": "^9.16.0",
+    "firebaseui": "^6.1.0",
+    "launchdarkly-node-server-sdk": "^7.0.3",
+    "react": "18.3.1",
+    "react-window": "^1.8.10",
+    "stylis": "^4.3.0",
+    "stylis-plugin-rtl": "^2.1.1"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.20",
+    "@types/react-window": "^1.8.8",
+    "typescript": "^5.5.4"
+  }
+}

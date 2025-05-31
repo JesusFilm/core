@@ -12,10 +12,10 @@ RUN apk upgrade --update-cache --available && \
 
 WORKDIR /app
 COPY ./dist/apps/api-analytics .
-COPY ./package.json .
+COPY ./apis/api-analytics/package.json .
 COPY ./bun.lock .
 
-RUN 
+RUN curl -fsSL https://bun.sh/install | bash -s "bun-v1.2.15"
 # dependencies that nestjs needs
 RUN bun install --production --frozen-lockfile
 

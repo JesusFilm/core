@@ -1,0 +1,29 @@
+{
+  "name": "api-journeys-modern",
+  "dependencies": {
+    "@graphql-hive/gateway": "^1.0.7",
+    "@graphql-yoga/plugin-response-cache": "^3.8.0",
+    "@pothos/core": "^4.0.0",
+    "@pothos/plugin-dataloader": "^4.3.0",
+    "@pothos/plugin-directives": "^4.0.0",
+    "@pothos/plugin-errors": "^4.0.0",
+    "@pothos/plugin-federation": "^4.0.0",
+    "@pothos/plugin-prisma": "^4.0.0",
+    "@pothos/plugin-relay": "^4.3.0",
+    "@pothos/plugin-scope-auth": "^4.1.0",
+    "@pothos/plugin-with-input": "^4.1.0",
+    "@pothos/plugin-zod": "^4.1.0",
+    "@pothos/tracing-opentelemetry": "^1.1.0",
+    "@prisma/client": "^6.0.0",
+    "@prisma/instrumentation": "^6.0.0",
+    "graphql": "^15.10.0",
+    "graphql-yoga": "^5.3.1",
+    "pino": "^9.3.2",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "22.15.17",
+    "prisma": "^6.0.0",
+    "typescript": "^5.5.4"
+  }
+}

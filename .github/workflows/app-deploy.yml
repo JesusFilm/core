@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         node-version: [22]
-        bun-version: [1.2.2]
+        bun-version: [1.2.15]
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
@@ -63,7 +63,7 @@ jobs:
         github-ref-name: ['${{ github.ref_name }}']
         github-event-name: ['${{ github.event_name }}']
         node-version: [22]
-        bun-version: [1.2.2]
+        bun-version: [1.2.15]
         exclude:
           # handled by production job below
           - app: journeys
@@ -233,7 +233,7 @@ jobs:
         app: ${{fromJson(needs.affected.outputs.matrix)}}
         github-ref-name: ['${{ github.ref_name }}']
         node-version: [22]
-        bun-version: [1.2.2]
+        bun-version: [1.2.15]
         exclude:
           # handled by ecs-frontend-deploy-prod
           - app: journeys-admin

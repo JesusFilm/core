@@ -7,7 +7,7 @@ sudo chown node:node -R /home/node
 cd /workspaces/core
 
 # install bun CLI tool
-curl -fsSL https://bun.sh/install | bash -s "bun-v1.2.2"
+curl -fsSL https://bun.sh/install | bash -s "bun-v1.2.15"
 
 # add default user to postgres
 psql -c "CREATE USER \"test-user\" WITH PASSWORD 'test-password' CREATEDB;"

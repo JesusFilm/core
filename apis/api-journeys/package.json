@@ -1,0 +1,40 @@
+{
+  "name": "api-journeys",
+  "dependencies": {
+    "@apollo/subgraph": "^2.8.0",
+    "@casl/ability": "^6.5.0",
+    "@casl/prisma": "^1.4.1",
+    "@nestjs/apollo": "^13.0.0",
+    "@nestjs/bullmq": "^11.0.0",
+    "@nestjs/cache-manager": "^3.0.0",
+    "@nestjs/common": "^11.0.1",
+    "@nestjs/core": "^11.0.1",
+    "@nestjs/graphql": "^13.0.0",
+    "@nestjs/platform-express": "^11.0.1",
+    "@prisma/client": "^6.0.0",
+    "@prisma/instrumentation": "^6.0.0",
+    "bullmq": "^5.1.11",
+    "cache-manager": "^6.4.1",
+    "dataloader": "^2.2.2",
+    "dd-trace": "^5.25.0",
+    "graphql": "^15.10.0",
+    "graphql-scalars": "^1.23.0",
+    "ioredis": "^5.3.2",
+    "lodash": "^4.17.21",
+    "nestjs-ddtrace": "6.0.0",
+    "nestjs-pino": "^4.0.0",
+    "pino": "^9.3.2",
+    "pino-http": "^10.0.0",
+    "qrcode.react": "^4.2.0",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^7.1.0"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "11.0.12",
+    "@types/lodash": "^4.14.198",
+    "@types/node": "22.15.17",
+    "jest-mock-extended": "^3.0.5",
+    "prisma": "^6.0.0",
+    "typescript": "^5.5.4"
+  }
+}

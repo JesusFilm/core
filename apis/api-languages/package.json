@@ -1,0 +1,21 @@
+{
+  "name": "api-languages",
+  "dependencies": {
+    "@google-cloud/bigquery": "^7.6.0",
+    "@graphql-hive/gateway": "^1.0.7",
+    "@graphql-yoga/plugin-response-cache": "^3.8.0",
+    "@prisma/client": "^6.0.0",
+    "@prisma/instrumentation": "^6.0.0",
+    "graphql": "^15.10.0",
+    "graphql-yoga": "^5.3.1",
+    "lodash": "^4.17.21",
+    "pino": "^9.3.2",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.198",
+    "@types/node": "22.15.17",
+    "prisma": "^6.0.0",
+    "typescript": "^5.5.4"
+  }
+}

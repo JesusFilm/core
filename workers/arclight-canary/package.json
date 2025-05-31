@@ -1,4 +1,10 @@
 {
   "name": "arclight-canary",
-  "private": true
+  "dependencies": {
+    "hono": "^4.7.1"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240512.0",
+    "typescript": "^5.5.4"
+  }
 }

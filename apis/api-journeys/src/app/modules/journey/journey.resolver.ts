@@ -10,7 +10,7 @@ import {
   Resolver
 } from '@nestjs/graphql'
 import { Queue } from 'bullmq'
-import { GraphQLError } from 'graphql'
+import { GraphQLError } from 'graphql/error'
 import filter from 'lodash/filter'
 import isEmpty from 'lodash/isEmpty'
 import omit from 'lodash/omit'

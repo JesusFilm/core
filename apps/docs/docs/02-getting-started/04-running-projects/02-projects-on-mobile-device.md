@@ -53,5 +53,5 @@ Sometimes, errors similar to these may appear when trying to run the server:
 
 In most situations, cancelling and re-running `nf start` and `nx serve [PROJECT-NAME]` should fix the issue. If it does not, try the following:
 
-- Run `npm i`, then restart the server.
+- Run `bun i`, then restart the server.
 - If that doesn't work, re-run the commands at [3. Microservice Databases](../03-microservice-databases.mdx). Then restart the server.

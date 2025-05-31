@@ -1,0 +1,32 @@
+{
+  "name": "api-media",
+  "dependencies": {
+    "@apollo/subgraph": "^2.8.0",
+    "@aws-sdk/client-s3": "^3.679.0",
+    "@aws-sdk/s3-request-presigner": "^3.679.0",
+    "@nestjs/apollo": "^13.0.0",
+    "@nestjs/common": "^11.0.1",
+    "@nestjs/core": "^11.0.1",
+    "@nestjs/graphql": "^13.0.0",
+    "@nestjs/platform-express": "^11.0.1",
+    "@prisma/client": "^6.0.0",
+    "@prisma/instrumentation": "^6.0.0",
+    "cloudflare": "^4.0.0",
+    "dd-trace": "^5.25.0",
+    "graphql": "^15.10.0",
+    "graphql-scalars": "^1.23.0",
+    "nestjs-ddtrace": "6.0.0",
+    "nestjs-pino": "^4.0.0",
+    "pino": "^9.3.2",
+    "pino-http": "^10.0.0",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^7.1.0",
+    "short-unique-id": "^5.2.0"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "11.0.12",
+    "@types/node": "22.15.17",
+    "prisma": "^6.0.0",
+    "typescript": "^5.5.4"
+  }
+}
