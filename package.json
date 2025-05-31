@@ -146,8 +146,6 @@
     "yarn"
   ],
   "overrides": {
-    "jest-environment-jsdom": {
-      "canvas": "$canvas"
-    }
+    "canvas": "$canvas"
   }
 }

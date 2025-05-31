@@ -16,6 +16,7 @@
     "@types/lodash": "^4.14.198",
     "@types/node": "22.15.17",
     "prisma": "^6.0.0",
+    "prisma-erd-generator": "^2.0.0",
     "typescript": "^5.5.4"
   }
 }

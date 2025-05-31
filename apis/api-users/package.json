@@ -21,6 +21,7 @@
   "devDependencies": {
     "@nestjs/testing": "11.0.12",
     "@types/node": "22.15.17",
+    "prisma-erd-generator": "^2.0.0",
     "typescript": "^5.5.4"
   }
 }
