@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 
-import { UserTeam, UserTeamRole } from '.prisma/api-journeys-client'
+import { UserTeam, UserTeamRole } from '@core/prisma-journeys/client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
 import { UserTeamRole as GraphQlUserTeamRole } from '../../__generated__/graphql'

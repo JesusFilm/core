@@ -1,4 +1,4 @@
-import { Taxonomy, TaxonomyName } from '.prisma/api-media-client'
+import { Taxonomy, TaxonomyName } from '@core/prisma-media/client'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'

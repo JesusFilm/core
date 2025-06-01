@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { Block, Journey, UserTeamRole } from '.prisma/api-journeys-client'
+import { Block, Journey, UserTeamRole } from '@core/prisma-journeys/client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
 import { RadioQuestionBlockCreateInput } from '../../../__generated__/graphql'

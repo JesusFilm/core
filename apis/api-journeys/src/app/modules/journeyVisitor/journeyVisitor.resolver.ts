@@ -7,7 +7,7 @@ import {
   JourneyVisitor,
   Prisma,
   Visitor
-} from '.prisma/api-journeys-client'
+} from '@core/prisma-journeys/client'
 import { CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 

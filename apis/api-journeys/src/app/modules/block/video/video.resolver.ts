@@ -12,7 +12,7 @@ import omit from 'lodash/omit'
 import fetch from 'node-fetch'
 import { object, string } from 'yup'
 
-import { Block, VideoBlockSource } from '.prisma/api-journeys-client'
+import { Block, VideoBlockSource } from '@core/prisma-journeys/client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 
 import {

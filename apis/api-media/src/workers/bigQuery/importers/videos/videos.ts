@@ -1,9 +1,9 @@
 import { Logger } from 'pino'
 import { z } from 'zod'
 
-import { Prisma, VideoLabel } from '.prisma/api-media-client'
+import { Prisma, VideoLabel } from '@core/prisma-media/client'
 
-import { prisma } from '../../../../lib/prisma'
+import { prisma } from '@core/prisma-media/client'
 import { slugify } from '../../../../lib/slugify'
 import { parse, parseMany, processTable } from '../../importer'
 

@@ -1,7 +1,7 @@
-import { Prisma } from '.prisma/api-languages-client'
+import { Prisma } from '@core/prisma-languages/client'
 
 import { parseFullTextSearch } from '../../lib/parseFullTextSearch'
-import { prisma } from '../../lib/prisma'
+import { prisma } from '@core/prisma-languages/client'
 import { builder } from '../builder'
 import { Language } from '../language/language'
 

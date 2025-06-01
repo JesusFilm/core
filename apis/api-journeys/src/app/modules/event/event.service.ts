@@ -8,7 +8,7 @@ import {
   JourneyVisitor,
   Prisma,
   Visitor
-} from '.prisma/api-journeys-client'
+} from '@core/prisma-journeys/client'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 import { EventsNotificationJob } from '@core/yoga/emailEvents/types'
 

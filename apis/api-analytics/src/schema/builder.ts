@@ -11,9 +11,8 @@ import TracingPlugin, { isRootField } from '@pothos/plugin-tracing'
 import { createOpenTelemetryWrapper } from '@pothos/tracing-opentelemetry'
 
 import { Prisma, users as User } from '.prisma/api-analytics-client'
-
-import type PrismaTypes from '../__generated__/pothos-types'
-import { prisma } from '../lib/prisma'
+import type PrismaTypes from '@core/prisma-analytics/__generated__/pothos-types'
+import { prisma } from '@core/prisma-analytics/client'
 
 const PrismaPlugin = pluginName
 

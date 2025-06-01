@@ -1,4 +1,4 @@
-import { Language } from '.prisma/api-languages-client'
+import { Language } from '@core/prisma-languages/client'
 
 import { prismaMock } from '../../../../../test/prismaMock'
 import { processTable } from '../../importer'

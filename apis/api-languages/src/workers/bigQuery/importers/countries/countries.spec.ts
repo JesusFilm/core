@@ -1,4 +1,4 @@
-import { Continent, Country } from '.prisma/api-languages-client'
+import { Continent, Country } from '@core/prisma-languages/client'
 
 import { prismaMock } from '../../../../../test/prismaMock'
 import { processTable } from '../../importer'

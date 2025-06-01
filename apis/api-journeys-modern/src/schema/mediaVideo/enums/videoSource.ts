@@ -1,4 +1,4 @@
-import { VideoBlockSource as PrismaVideoSource } from '.prisma/api-journeys-modern-client'
+import { VideoBlockSource as PrismaVideoSource } from '@core/prisma-journeys/client'
 
 import { builder } from '../../builder'
 

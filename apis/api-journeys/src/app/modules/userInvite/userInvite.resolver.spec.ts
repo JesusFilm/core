@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { Journey, UserInvite, UserTeamRole } from '.prisma/api-journeys-client'
+import { Journey, UserInvite, UserTeamRole } from '@core/prisma-journeys/client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
 import { UserInviteCreateInput } from '../../__generated__/graphql'

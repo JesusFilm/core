@@ -2,7 +2,7 @@ import { InjectQueue } from '@nestjs/bullmq'
 import { Injectable } from '@nestjs/common'
 import { Queue } from 'bullmq'
 
-import { Team } from '.prisma/api-journeys-client'
+import { Team } from '@core/prisma-journeys/client'
 import { User } from '@core/nest/common/firebaseClient'
 
 import {

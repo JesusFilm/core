@@ -3,7 +3,7 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 
-import { JourneyNotification } from '.prisma/api-journeys-client'
+import { JourneyNotification } from '@core/prisma-journeys/client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 

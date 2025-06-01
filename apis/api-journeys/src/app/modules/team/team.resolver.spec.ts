@@ -7,7 +7,7 @@ import {
   Team,
   UserTeam,
   UserTeamRole
-} from '.prisma/api-journeys-client'
+} from '@core/prisma-journeys/client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'

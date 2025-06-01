@@ -16,7 +16,7 @@ import get from 'lodash/get'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 import { getInteropContext } from '@core/yoga/interop'
 
-import { prisma } from './lib/prisma'
+import { prisma } from '@core/prisma-media/client'
 import { logger } from './logger'
 import { schema } from './schema'
 import { Context } from './schema/builder'

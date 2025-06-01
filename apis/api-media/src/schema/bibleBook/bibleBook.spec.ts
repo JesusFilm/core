@@ -1,4 +1,4 @@
-import { BibleBook, BibleBookName } from '.prisma/api-media-client'
+import { BibleBook, BibleBookName } from '@core/prisma-media/client'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'

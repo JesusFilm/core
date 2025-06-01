@@ -16,7 +16,7 @@ import {
   Journey,
   JourneyCollection,
   Prisma
-} from '.prisma/api-journeys-client'
+} from '@core/prisma-journeys/client'
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 
 import {

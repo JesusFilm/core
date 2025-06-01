@@ -1,8 +1,7 @@
 import { GraphQLError } from 'graphql'
 
-import { Prisma } from '.prisma/api-media-client'
+import { prisma, Prisma } from '@core/prisma-media/client'
 
-import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 import { VideoSource, VideoSourceShape } from '../../videoSource/videoSource'
 

@@ -13,7 +13,7 @@ import compact from 'lodash/compact'
 import pick from 'lodash/pick'
 import { IResult, UAParser } from 'ua-parser-js'
 
-import { Event, Prisma, Visitor } from '.prisma/api-journeys-client'
+import { Event, Prisma, Visitor } from '@core/prisma-journeys/client'
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'

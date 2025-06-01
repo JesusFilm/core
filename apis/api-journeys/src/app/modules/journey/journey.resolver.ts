@@ -28,7 +28,7 @@ import {
   Team,
   UserJourney,
   UserJourneyRole
-} from '.prisma/api-journeys-client'
+} from '@core/prisma-journeys/client'
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'

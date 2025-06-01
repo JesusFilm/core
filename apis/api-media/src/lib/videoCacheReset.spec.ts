@@ -2,7 +2,7 @@ import fetch from 'node-fetch'
 
 import { cache } from '../yoga'
 
-import { prisma } from './prisma'
+import { prisma } from '@core/prisma-media/client'
 import { videoCacheReset, videoVariantCacheReset } from './videoCacheReset'
 
 // Mock dependencies

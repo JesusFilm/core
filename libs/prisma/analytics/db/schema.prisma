@@ -1,0 +1,551 @@
+generator client {
+  provider      = "prisma-client-js"
+  output        = "../src/.prisma/client"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+generator pothos {
+  provider     = "prisma-pothos-types"
+  output       = "../src/__generated__/pothos-types.ts"
+  clientOutput = "../.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("PG_DATABASE_URL_ANALYTICS")
+}
+
+model api_keys {
+  id                   BigInt   @id @default(autoincrement())
+  user_id              BigInt
+  name                 String   @db.VarChar(255)
+  key_prefix           String   @db.VarChar(255)
+  key_hash             String   @unique(map: "api_keys_key_hash_index") @db.VarChar(255)
+  inserted_at          DateTime @db.Timestamp(0)
+  updated_at           DateTime @db.Timestamp(0)
+  scopes               String[]
+  hourly_request_limit Int      @default(1000)
+  users                users    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([scopes], map: "api_keys_scopes_index", type: Gin)
+}
+
+model check_stats_emails {
+  id        BigInt    @id @default(autoincrement())
+  user_id   BigInt
+  timestamp DateTime? @db.Timestamp(0)
+  users     users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model create_site_emails {
+  id        BigInt    @id @default(autoincrement())
+  user_id   BigInt
+  timestamp DateTime? @db.Timestamp(0)
+  users     users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model email_activation_codes {
+  id        BigInt   @id @default(autoincrement())
+  code      String
+  user_id   BigInt   @unique(map: "email_activation_codes_user_id_index")
+  issued_at DateTime @db.Timestamp(0)
+  users     users    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model email_verification_codes {
+  code      Int
+  user_id   BigInt?
+  issued_at DateTime? @db.Timestamp(0)
+  users     users?    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@ignore
+}
+
+model enterprise_plans {
+  id                       BigInt           @id @default(autoincrement())
+  user_id                  BigInt
+  paddle_plan_id           String           @db.VarChar(255)
+  billing_interval         billing_interval
+  monthly_pageview_limit   Int
+  hourly_api_request_limit Int
+  inserted_at              DateTime         @db.Timestamp(0)
+  updated_at               DateTime         @db.Timestamp(0)
+  site_limit               Int
+  team_member_limit        Int              @default(-1)
+  features                 String[]         @default(["props", "stats_api"]) @db.VarChar(255)
+  users                    users            @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model feedback_emails {
+  id        BigInt   @id @default(autoincrement())
+  user_id   BigInt
+  timestamp DateTime @db.Timestamp(0)
+  users     users    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model fun_with_flags_toggles {
+  id        BigInt  @id @default(autoincrement())
+  flag_name String  @db.VarChar(255)
+  gate_type String  @db.VarChar(255)
+  target    String  @db.VarChar(255)
+  enabled   Boolean
+
+  @@unique([flag_name, gate_type, target], map: "fwf_flag_name_gate_target_idx")
+}
+
+model funnel_steps {
+  id          BigInt   @id @default(autoincrement())
+  goal_id     BigInt
+  funnel_id   BigInt
+  step_order  Int
+  inserted_at DateTime @db.Timestamp(0)
+  updated_at  DateTime @db.Timestamp(0)
+  funnels     funnels  @relation(fields: [funnel_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  goals       goals    @relation(fields: [goal_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([goal_id, funnel_id], map: "funnel_steps_goal_id_funnel_id_index")
+}
+
+model funnels {
+  id           BigInt         @id @default(autoincrement())
+  name         String         @db.VarChar(255)
+  site_id      BigInt
+  inserted_at  DateTime       @db.Timestamp(0)
+  updated_at   DateTime       @db.Timestamp(0)
+  funnel_steps funnel_steps[]
+  sites        sites          @relation(fields: [site_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([name, site_id], map: "funnels_name_site_id_index")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model goals {
+  id           BigInt         @id @default(autoincrement())
+  event_name   String?
+  page_path    String?
+  inserted_at  DateTime       @db.Timestamp(0)
+  updated_at   DateTime       @db.Timestamp(0)
+  site_id      BigInt
+  currency     String?        @db.VarChar(3)
+  funnel_steps funnel_steps[]
+  sites        sites          @relation(fields: [site_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model google_auth {
+  id            BigInt   @id @default(autoincrement())
+  user_id       BigInt
+  email         String   @db.VarChar(255)
+  refresh_token String   @db.VarChar(255)
+  access_token  String   @db.VarChar(255)
+  expires       DateTime @db.Timestamp(0)
+  inserted_at   DateTime @db.Timestamp(0)
+  updated_at    DateTime @db.Timestamp(0)
+  site_id       BigInt   @unique(map: "google_auth_site_id_index")
+  property      String?
+  sites         sites    @relation(fields: [site_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users         users    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model intro_emails {
+  id        BigInt    @id @default(autoincrement())
+  user_id   BigInt
+  timestamp DateTime? @db.Timestamp(0)
+  users     users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model invitations {
+  id            BigInt               @id @default(autoincrement())
+  email         String               @db.Citext
+  site_id       BigInt
+  inviter_id    BigInt
+  role          site_membership_role
+  invitation_id String?              @unique(map: "invitations_invitation_id_index") @db.VarChar(255)
+  inserted_at   DateTime             @db.Timestamp(0)
+  updated_at    DateTime             @db.Timestamp(0)
+  users         users                @relation(fields: [inviter_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  sites         sites                @relation(fields: [site_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([site_id, email], map: "invitations_site_id_email_index")
+}
+
+model monthly_reports {
+  id          BigInt   @id @default(autoincrement())
+  site_id     BigInt   @unique(map: "monthly_reports_site_id_index")
+  inserted_at DateTime @db.Timestamp(0)
+  updated_at  DateTime @db.Timestamp(0)
+  recipients  String[] @default([]) @db.Citext
+  sites       sites    @relation(fields: [site_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model oban_jobs {
+  id           BigInt         @id @default(autoincrement())
+  state        oban_job_state @default(available)
+  queue        String         @default("default")
+  worker       String
+  args         Json           @default("{}")
+  errors       Json[]         @default([])
+  attempt      Int            @default(0)
+  max_attempts Int            @default(20)
+  inserted_at  DateTime       @default(dbgenerated("timezone('UTC'::text, now())")) @db.Timestamp(6)
+  scheduled_at DateTime       @default(dbgenerated("timezone('UTC'::text, now())")) @db.Timestamp(6)
+  attempted_at DateTime?      @db.Timestamp(6)
+  completed_at DateTime?      @db.Timestamp(6)
+  attempted_by String[]
+  discarded_at DateTime?      @db.Timestamp(6)
+  priority     Int            @default(0)
+  tags         String[]       @default([]) @db.VarChar(255)
+  meta         Json?          @default("{}")
+  cancelled_at DateTime?      @db.Timestamp(6)
+
+  @@index([args], map: "oban_jobs_args_index", type: Gin)
+  @@index([meta], map: "oban_jobs_meta_index", type: Gin)
+  @@index([state, queue, priority, scheduled_at, id], map: "oban_jobs_state_queue_priority_scheduled_at_id_index")
+}
+
+model oban_peers {
+  name       String   @id
+  node       String
+  started_at DateTime @db.Timestamp(6)
+  expires_at DateTime @db.Timestamp(6)
+}
+
+model plugins_api_tokens {
+  id           String    @id @db.Uuid
+  site_id      BigInt
+  token_hash   Bytes
+  hint         String    @db.VarChar(255)
+  description  String    @db.VarChar(255)
+  inserted_at  DateTime  @db.Timestamp(0)
+  updated_at   DateTime  @db.Timestamp(0)
+  last_used_at DateTime? @db.Timestamp(0)
+  sites        sites     @relation(fields: [site_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([site_id, token_hash], map: "plugins_api_tokens_site_id_token_hash_index")
+}
+
+model salts {
+  id          BigInt   @id @default(autoincrement())
+  salt        Bytes
+  inserted_at DateTime @db.Timestamp(0)
+}
+
+model schema_migrations {
+  version     BigInt    @id
+  inserted_at DateTime? @db.Timestamp(0)
+}
+
+model sent_accept_traffic_until_notifications {
+  id      BigInt   @id @default(autoincrement())
+  user_id BigInt
+  sent_on DateTime @db.Date
+  users   users    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([user_id, sent_on], map: "sent_accept_traffic_until_notifications_user_id_sent_on_index")
+}
+
+model sent_monthly_reports {
+  id        BigInt    @id @default(autoincrement())
+  site_id   BigInt
+  year      Int
+  month     Int
+  timestamp DateTime? @db.Timestamp(0)
+  sites     sites     @relation(fields: [site_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model sent_renewal_notifications {
+  id        BigInt    @id @default(autoincrement())
+  user_id   BigInt
+  timestamp DateTime? @db.Timestamp(0)
+  users     users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model sent_weekly_reports {
+  id        BigInt    @id @default(autoincrement())
+  site_id   BigInt
+  year      Int?
+  week      Int?
+  timestamp DateTime? @db.Timestamp(0)
+  sites     sites     @relation(fields: [site_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model setup_help_emails {
+  id        BigInt    @id @default(autoincrement())
+  site_id   BigInt
+  timestamp DateTime? @db.Timestamp(0)
+  sites     sites     @relation(fields: [site_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model setup_success_emails {
+  id        BigInt    @id @default(autoincrement())
+  site_id   BigInt
+  timestamp DateTime? @db.Timestamp(0)
+  sites     sites     @relation(fields: [site_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model shared_links {
+  id            BigInt   @id @default(autoincrement())
+  site_id       BigInt
+  slug          String   @db.VarChar(255)
+  password_hash String?  @db.VarChar(255)
+  inserted_at   DateTime @db.Timestamp(0)
+  updated_at    DateTime @db.Timestamp(0)
+  name          String   @db.VarChar(255)
+  sites         sites    @relation(fields: [site_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([site_id, name], map: "shared_links_site_id_name_index")
+}
+
+model shield_rules_country {
+  id           String   @id @db.Uuid
+  site_id      BigInt
+  country_code String
+  action       String   @default("deny") @db.VarChar(255)
+  added_by     String?  @db.VarChar(255)
+  inserted_at  DateTime @db.Timestamp(0)
+  updated_at   DateTime @db.Timestamp(0)
+  sites        sites    @relation(fields: [site_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([site_id, country_code], map: "shield_rules_country_site_id_country_code_index")
+}
+
+model shield_rules_hostname {
+  id               String   @id @db.Uuid
+  site_id          BigInt
+  hostname         String
+  hostname_pattern String
+  action           String   @default("allow") @db.VarChar(255)
+  added_by         String?  @db.VarChar(255)
+  inserted_at      DateTime @db.Timestamp(0)
+  updated_at       DateTime @db.Timestamp(0)
+  sites            sites    @relation(fields: [site_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([site_id, hostname_pattern], map: "shield_rules_hostname_site_id_hostname_pattern_index")
+}
+
+model shield_rules_ip {
+  id          String   @id @db.Uuid
+  site_id     BigInt
+  inet        String?  @db.Inet
+  action      String   @default("deny") @db.VarChar(255)
+  description String?  @db.VarChar(255)
+  added_by    String?  @db.VarChar(255)
+  inserted_at DateTime @db.Timestamp(0)
+  updated_at  DateTime @db.Timestamp(0)
+  sites       sites    @relation(fields: [site_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([site_id, inet], map: "shield_rules_ip_site_id_inet_index")
+}
+
+model shield_rules_page {
+  id                String   @id @db.Uuid
+  site_id           BigInt
+  page_path         String
+  page_path_pattern String
+  action            String   @default("deny") @db.VarChar(255)
+  added_by          String?  @db.VarChar(255)
+  inserted_at       DateTime @db.Timestamp(0)
+  updated_at        DateTime @db.Timestamp(0)
+  sites             sites    @relation(fields: [site_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([site_id, page_path_pattern], map: "shield_rules_page_site_id_page_path_pattern_index")
+}
+
+model site_imports {
+  id             BigInt   @id @default(autoincrement())
+  start_date     DateTime @db.Date
+  end_date       DateTime @db.Date
+  source         String   @db.VarChar(255)
+  status         String   @db.VarChar(255)
+  site_id        BigInt
+  imported_by_id BigInt?
+  inserted_at    DateTime @db.Timestamp(0)
+  updated_at     DateTime @db.Timestamp(0)
+  legacy         Boolean  @default(true)
+  label          String?  @db.VarChar(255)
+  users          users?   @relation(fields: [imported_by_id], references: [id], onUpdate: NoAction)
+  sites          sites    @relation(fields: [site_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([imported_by_id], map: "site_imports_imported_by_id_index")
+  @@index([site_id, start_date], map: "site_imports_site_id_start_date_index")
+}
+
+model site_memberships {
+  id          BigInt               @id @default(autoincrement())
+  site_id     BigInt
+  user_id     BigInt
+  inserted_at DateTime             @db.Timestamp(0)
+  updated_at  DateTime             @db.Timestamp(0)
+  role        site_membership_role @default(owner)
+  sites       sites                @relation(fields: [site_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users       users                @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([site_id, user_id], map: "site_memberships_site_id_user_id_index")
+}
+
+model site_user_preferences {
+  id          BigInt    @id @default(autoincrement())
+  pinned_at   DateTime? @db.Timestamp(0)
+  user_id     BigInt
+  site_id     BigInt
+  inserted_at DateTime  @db.Timestamp(0)
+  updated_at  DateTime  @db.Timestamp(0)
+  sites       sites     @relation(fields: [site_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users       users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([user_id, site_id], map: "site_user_preferences_user_id_site_id_index")
+}
+
+model sites {
+  id                              BigInt                  @id @default(autoincrement())
+  domain                          String                  @unique(map: "sites_domain_index") @db.VarChar(255)
+  inserted_at                     DateTime                @db.Timestamp(0)
+  updated_at                      DateTime                @db.Timestamp(0)
+  timezone                        String                  @db.VarChar(255)
+  public                          Boolean                 @default(false)
+  locked                          Boolean                 @default(false)
+  has_stats                       Boolean                 @default(false)
+  imported_data                   Json?
+  stats_start_date                DateTime?               @db.Date
+  ingest_rate_limit_scale_seconds Int                     @default(60)
+  ingest_rate_limit_threshold     Int?
+  native_stats_start_at           DateTime                @default(now()) @db.Timestamp(0)
+  domain_changed_from             String?                 @unique(map: "sites_domain_changed_from_index") @db.VarChar(255)
+  domain_changed_at               DateTime?               @db.Timestamp(0)
+  allowed_event_props             String[]                @db.VarChar(300)
+  conversions_enabled             Boolean                 @default(true)
+  funnels_enabled                 Boolean                 @default(true)
+  props_enabled                   Boolean                 @default(true)
+  accept_traffic_until            DateTime?               @db.Timestamp(0)
+  funnels                         funnels[]
+  goals                           goals[]
+  google_auth                     google_auth?
+  invitations                     invitations[]
+  monthly_reports                 monthly_reports?
+  plugins_api_tokens              plugins_api_tokens[]
+  sent_monthly_reports            sent_monthly_reports[]
+  sent_weekly_reports             sent_weekly_reports[]
+  setup_help_emails               setup_help_emails[]
+  setup_success_emails            setup_success_emails[]
+  shared_links                    shared_links[]
+  shield_rules_country            shield_rules_country[]
+  shield_rules_hostname           shield_rules_hostname[]
+  shield_rules_ip                 shield_rules_ip[]
+  shield_rules_page               shield_rules_page[]
+  site_imports                    site_imports[]
+  site_memberships                site_memberships[]
+  site_user_preferences           site_user_preferences[]
+  spike_notifications             spike_notifications?
+  weekly_reports                  weekly_reports?
+
+  @@index([domain_changed_at], map: "sites_domain_changed_at_index")
+  @@index([updated_at], map: "sites_updated_at_index")
+}
+
+model spike_notifications {
+  id          BigInt    @id @default(autoincrement())
+  site_id     BigInt    @unique(map: "spike_notifications_site_id_index")
+  threshold   Int
+  last_sent   DateTime? @db.Timestamp(0)
+  recipients  String[]  @default([]) @db.Citext
+  inserted_at DateTime  @db.Timestamp(0)
+  updated_at  DateTime  @db.Timestamp(0)
+  sites       sites     @relation(fields: [site_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model subscriptions {
+  id                     BigInt    @id @default(autoincrement())
+  paddle_subscription_id String?   @unique(map: "subscriptions_paddle_subscription_id_index") @db.VarChar(255)
+  paddle_plan_id         String    @db.VarChar(255)
+  user_id                BigInt
+  update_url             String?
+  cancel_url             String?
+  status                 String    @db.VarChar(255)
+  next_bill_amount       String    @db.VarChar(255)
+  next_bill_date         DateTime? @db.Date
+  inserted_at            DateTime  @db.Timestamp(0)
+  updated_at             DateTime  @db.Timestamp(0)
+  last_bill_date         DateTime? @db.Date
+  currency_code          String    @db.VarChar(255)
+  users                  users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model totp_recovery_codes {
+  id          BigInt   @id @default(autoincrement())
+  code_digest Bytes
+  user_id     BigInt
+  inserted_at DateTime @db.Timestamp(0)
+  users       users    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([user_id], map: "totp_recovery_codes_user_id_index")
+}
+
+model users {
+  id                                      BigInt                                    @id @default(autoincrement())
+  email                                   String                                    @unique(map: "users_email_index") @db.Citext
+  inserted_at                             DateTime                                  @db.Timestamp(0)
+  updated_at                              DateTime                                  @db.Timestamp(0)
+  name                                    String?                                   @db.VarChar(255)
+  last_seen                               DateTime?                                 @default(now()) @db.Timestamp(0)
+  password_hash                           String?                                   @db.VarChar(255)
+  trial_expiry_date                       DateTime?                                 @db.Date
+  email_verified                          Boolean                                   @default(false)
+  theme                                   String?                                   @default("system") @db.VarChar(255)
+  grace_period                            Json?
+  previous_email                          String?                                   @db.Citext
+  totp_secret                             Bytes?
+  totp_enabled                            Boolean                                   @default(false)
+  totp_last_used_at                       DateTime?                                 @db.Timestamp(0)
+  allow_next_upgrade_override             Boolean                                   @default(false)
+  totp_token                              String?                                   @db.VarChar(255)
+  accept_traffic_until                    DateTime?                                 @db.Date
+  api_keys                                api_keys[]
+  check_stats_emails                      check_stats_emails[]
+  create_site_emails                      create_site_emails[]
+  email_activation_codes                  email_activation_codes?
+  email_verification_codes                email_verification_codes[]                @ignore
+  enterprise_plans                        enterprise_plans[]
+  feedback_emails                         feedback_emails[]
+  google_auth                             google_auth[]
+  intro_emails                            intro_emails[]
+  invitations                             invitations[]
+  sent_accept_traffic_until_notifications sent_accept_traffic_until_notifications[]
+  sent_renewal_notifications              sent_renewal_notifications[]
+  site_imports                            site_imports[]
+  site_memberships                        site_memberships[]
+  site_user_preferences                   site_user_preferences[]
+  subscriptions                           subscriptions[]
+  totp_recovery_codes                     totp_recovery_codes[]
+}
+
+model weekly_reports {
+  id          BigInt   @id @default(autoincrement())
+  site_id     BigInt   @unique(map: "weekly_reports_site_id_index")
+  inserted_at DateTime @db.Timestamp(0)
+  updated_at  DateTime @db.Timestamp(0)
+  recipients  String[] @default([]) @db.Citext
+  sites       sites    @relation(fields: [site_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+enum billing_interval {
+  monthly
+  yearly
+}
+
+enum oban_job_state {
+  available
+  scheduled
+  executing
+  retryable
+  completed
+  discarded
+  cancelled
+}
+
+enum site_membership_role {
+  owner
+  admin
+  viewer
+}

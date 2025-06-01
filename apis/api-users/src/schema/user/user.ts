@@ -2,7 +2,7 @@ import { GraphQLError } from 'graphql'
 
 import { impersonateUser } from '@core/yoga/firebaseClient'
 
-import { prisma } from '../../lib/prisma'
+import { prisma } from '@core/prisma-users/client'
 import { builder } from '../builder'
 
 import { findOrFetchUser } from './findOrFetchUser'

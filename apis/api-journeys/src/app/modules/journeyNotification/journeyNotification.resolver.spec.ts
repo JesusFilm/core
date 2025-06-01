@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { Journey, JourneyNotification } from '.prisma/api-journeys-client'
+import { Journey, JourneyNotification } from '@core/prisma-journeys/client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'

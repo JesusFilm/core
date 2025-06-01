@@ -18,7 +18,7 @@ import {
   Prisma,
   Team,
   UserTeam
-} from '.prisma/api-journeys-client'
+} from '@core/prisma-journeys/client'
 import {
   CaslAbility,
   CaslAccessible,

@@ -8,7 +8,7 @@ import {
   ThemeMode,
   ThemeName,
   UserTeamRole
-} from '.prisma/api-journeys-client'
+} from '@core/prisma-journeys/client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
 import {

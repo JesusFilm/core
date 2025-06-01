@@ -3,7 +3,7 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 
-import { Host, Prisma } from '.prisma/api-journeys-client'
+import { Host, Prisma } from '@core/prisma-journeys/client'
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 
 import { HostCreateInput, HostUpdateInput } from '../../__generated__/graphql'

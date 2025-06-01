@@ -10,7 +10,7 @@ import {
 } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 
-import { Prisma, UserTeam } from '.prisma/api-journeys-client'
+import { Prisma, UserTeam } from '@core/prisma-journeys/client'
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 
 import {

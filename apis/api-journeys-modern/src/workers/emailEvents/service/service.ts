@@ -10,7 +10,7 @@ import {
 } from '@core/yoga/emailEvents/types'
 
 import { VisitorInteraction } from '../../../emails/templates/VisitorInteraction'
-import { prisma } from '../../../lib/prisma'
+import { prisma } from '@core/prisma-journeys/client'
 
 import { fetchEmailDetails } from './fetchEmailDetails'
 import { processUserIds } from './processUserIds'

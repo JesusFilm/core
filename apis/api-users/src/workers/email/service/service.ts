@@ -5,7 +5,7 @@ import { Logger } from 'pino'
 import { sendEmail } from '@core/yoga/email'
 
 import { EmailVerifyEmail } from '../../../emails/templates/EmailVerify/EmailVerify'
-import { prisma } from '../../../lib/prisma'
+import { prisma } from '@core/prisma-users/client'
 
 export interface VerifyUserJob {
   userId: string

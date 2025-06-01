@@ -7,10 +7,10 @@ import {
   UserJourneyRole,
   UserTeamRole,
   Visitor
-} from '.prisma/api-journeys-modern-client'
+} from '@core/prisma-journeys/client'
 
 import { prismaMock } from '../../../../test/prismaMock'
-import { prisma } from '../../../lib/prisma'
+import { prisma } from '@core/prisma-journeys/client'
 
 import { fetchEmailDetails } from './fetchEmailDetails'
 import { JourneyWithTeamAndUserJourney } from './prisma.types'

@@ -1,4 +1,4 @@
-import { CloudflareImage, Video } from '.prisma/api-media-client'
+import { CloudflareImage, Video } from '@core/prisma-media/client'
 
 import { prismaMock } from '../../../../../test/prismaMock'
 import { getClient } from '../../../../schema/cloudflare/image/service'

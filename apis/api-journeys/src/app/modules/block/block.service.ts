@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import omit from 'lodash/omit'
 import { v4 as uuidv4 } from 'uuid'
 
-import { Action, Block, Prisma } from '.prisma/api-journeys-client'
+import { Action, Block, Prisma } from '@core/prisma-journeys/client'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 import { ToPostgresql } from '@core/nest/decorators/ToPostgresql'
 

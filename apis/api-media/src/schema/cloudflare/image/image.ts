@@ -1,6 +1,6 @@
-import { Prisma } from '.prisma/api-media-client'
+import { Prisma } from '@core/prisma-media/client'
 
-import { prisma } from '../../../lib/prisma'
+import { prisma } from '@core/prisma-media/client'
 import { builder } from '../../builder'
 
 import { ImageAspectRatio } from './enums'

@@ -3,7 +3,7 @@ import { Job } from 'bullmq'
 import { graphql } from 'gql.tada'
 import { Logger } from 'pino'
 
-import { prisma } from '../../../lib/prisma'
+import { prisma } from '@core/prisma-journeys/client'
 
 // GraphQL queries for ShortLink operations
 export const GET_SHORT_LINK = graphql(`

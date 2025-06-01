@@ -2,7 +2,7 @@ import compact from 'lodash/compact'
 import { Logger } from 'pino'
 import { z } from 'zod'
 
-import { prisma } from '../../../../lib/prisma'
+import { prisma } from '@core/prisma-media/client'
 import { parse, parseMany, processTable } from '../../importer'
 import { getLanguageSlugs } from '../languageSlugs'
 import { getVideoIds, getVideoSlugs } from '../videos'

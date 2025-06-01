@@ -1,4 +1,4 @@
-import { MediaRole } from '.prisma/api-media-client'
+import { MediaRole } from '@core/prisma-media/client'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'

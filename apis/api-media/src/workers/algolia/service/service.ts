@@ -3,7 +3,7 @@ import { algoliasearch } from 'algoliasearch'
 import { Logger } from 'pino'
 
 import { graphql } from '../../../lib/graphql/gatewayGraphql'
-import { prisma } from '../../../lib/prisma'
+import { prisma } from '@core/prisma-media/client'
 
 import { LANGUAGES_TO_INCLUDE } from './languages'
 

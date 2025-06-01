@@ -6,7 +6,7 @@ import { z } from 'zod'
 import { hardenPrompt, preSystemPrompt } from '@core/shared/ai/prompts'
 
 import { Action, ability, subject } from '../../lib/auth/ability'
-import { prisma } from '../../lib/prisma'
+import { prisma } from '@core/prisma-journeys/client'
 import { builder } from '../builder'
 
 import { getCardBlocksContent } from './getCardBlocksContent'

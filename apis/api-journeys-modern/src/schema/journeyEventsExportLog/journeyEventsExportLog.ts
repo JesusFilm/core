@@ -1,6 +1,6 @@
 import { GraphQLError } from 'graphql'
 
-import { prisma } from '../../lib/prisma'
+import { prisma } from '@core/prisma-journeys/client'
 import { builder } from '../builder'
 
 import { JourneyEventsExportLogInput } from './inputs'
