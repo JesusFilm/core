@@ -15,12 +15,10 @@ import ZodPlugin from '@pothos/plugin-zod'
 import { createOpenTelemetryWrapper } from '@pothos/tracing-opentelemetry'
 import { DateResolver } from 'graphql-scalars'
 
-import { MediaRole, Prisma } from '@core/prisma-media/client'
+import type PrismaTypes from '@core/prisma-media/__generated__/pothos-types'
+import { MediaRole, Prisma, prisma } from '@core/prisma-media/client'
 import { User } from '@core/yoga/firebaseClient'
 import { InteropContext } from '@core/yoga/interop'
-
-import type PrismaTypes from '@core/prisma-media/__generated__/pothos-types'
-import { prisma } from '@core/prisma-media/client'
 
 const PrismaPlugin = pluginName
 

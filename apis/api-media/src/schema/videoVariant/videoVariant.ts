@@ -1,6 +1,7 @@
 import compact from 'lodash/compact'
 
 import { prisma } from '@core/prisma-media/client'
+
 import {
   videoCacheReset,
   videoVariantCacheReset

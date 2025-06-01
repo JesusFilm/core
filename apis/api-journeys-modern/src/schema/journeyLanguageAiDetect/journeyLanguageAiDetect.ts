@@ -3,6 +3,7 @@ import { generateObject } from 'ai'
 import { z } from 'zod'
 
 import { prisma } from '@core/prisma-journeys/client'
+
 import { builder } from '../builder'
 
 builder.mutationFields((t) => ({

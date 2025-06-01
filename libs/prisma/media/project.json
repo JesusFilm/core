@@ -5,6 +5,15 @@
   "projectType": "library",
   "tags": ["type:prisma", "scope:media"],
   "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/prisma-media/eslint",
+        "cacheStrategy": "content"
+      }
+    },
     "prisma-generate": {
       "executor": "nx:run-commands",
       "options": {

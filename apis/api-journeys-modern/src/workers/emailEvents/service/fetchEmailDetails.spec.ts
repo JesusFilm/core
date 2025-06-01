@@ -6,11 +6,11 @@ import {
   ThemeName,
   UserJourneyRole,
   UserTeamRole,
-  Visitor
+  Visitor,
+  prisma
 } from '@core/prisma-journeys/client'
 
 import { prismaMock } from '../../../../test/prismaMock'
-import { prisma } from '@core/prisma-journeys/client'
 
 import { fetchEmailDetails } from './fetchEmailDetails'
 import { JourneyWithTeamAndUserJourney } from './prisma.types'

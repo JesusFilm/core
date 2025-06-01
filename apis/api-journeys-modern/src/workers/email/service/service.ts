@@ -3,7 +3,11 @@ import { render } from '@react-email/render'
 import { Job } from 'bullmq'
 import { graphql } from 'gql.tada'
 
-import { UserJourneyRole, UserTeamRole } from '@core/prisma-journeys/client'
+import {
+  UserJourneyRole,
+  UserTeamRole,
+  prisma
+} from '@core/prisma-journeys/client'
 import { sendEmail } from '@core/yoga/email'
 
 import { JourneyAccessRequestEmail } from '../../../emails/templates/JourneyAccessRequest'
@@ -13,7 +17,6 @@ import { TeamInviteEmail } from '../../../emails/templates/TeamInvite'
 import { TeamInviteNoAccountEmail } from '../../../emails/templates/TeamInvite/TeamInviteNoAccount'
 import { TeamInviteAcceptedEmail } from '../../../emails/templates/TeamInviteAccepted'
 import { TeamRemovedEmail } from '../../../emails/templates/TeamRemoved'
-import { prisma } from '@core/prisma-journeys/client'
 
 import {
   ApiJourneysJob,

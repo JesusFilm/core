@@ -1,6 +1,7 @@
 import { Logger } from 'pino'
 
 import { prisma } from '@core/prisma-media/client'
+
 import { getVideoIds } from '../videos'
 
 export async function importVideoChildren(logger?: Logger): Promise<void> {

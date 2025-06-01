@@ -1,7 +1,5 @@
-import { Prisma, User } from '@core/prisma-users/client'
+import { Prisma, User, prisma } from '@core/prisma-users/client'
 import { auth } from '@core/yoga/firebaseClient'
-
-import { prisma } from '@core/prisma-users/client'
 
 import { verifyUser } from './verifyUser'
 

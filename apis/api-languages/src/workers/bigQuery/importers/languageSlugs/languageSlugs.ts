@@ -1,6 +1,6 @@
 import { Logger } from 'pino'
 
-import { prisma, Prisma } from '@core/prisma-languages/client'
+import { Prisma, prisma } from '@core/prisma-languages/client'
 
 import { languageSlugs } from '../../../../__generated__/languageSlugs'
 import { slugify } from '../../../../lib/slugify'

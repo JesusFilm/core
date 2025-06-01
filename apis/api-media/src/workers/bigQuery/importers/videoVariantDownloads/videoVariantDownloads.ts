@@ -2,9 +2,8 @@ import omit from 'lodash/omit'
 import { Logger } from 'pino'
 import { z } from 'zod'
 
-import { VideoVariantDownloadQuality } from '@core/prisma-media/client'
+import { VideoVariantDownloadQuality, prisma } from '@core/prisma-media/client'
 
-import { prisma } from '@core/prisma-media/client'
 import { parse, parseMany, processTable } from '../../importer'
 import { getVideoVariantIds } from '../videoVariants'
 

@@ -9,6 +9,7 @@ import {
 import { createYoga, useReadinessCheck } from 'graphql-yoga'
 
 import { prisma } from '@core/prisma-languages/client'
+
 import { logger } from './logger'
 import { schema } from './schema'
 
