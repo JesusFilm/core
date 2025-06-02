@@ -138,6 +138,12 @@
       "options": {
         "command": "npx ts-node -P apis/api-journeys-modern/tsconfig.app.json apis/api-journeys-modern/src/workers/cli.ts shortlink-updater"
       }
+    },
+    "playwright-cleanup": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx ts-node -P apis/api-journeys-modern/tsconfig.app.json apis/api-journeys-modern/src/workers/cli.ts"
+      }
     }
   }
 }

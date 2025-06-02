@@ -75,6 +75,12 @@ async function main(): Promise<void> {
       './shortlinkUpdater'
     )
   )
+  run(
+    await import(
+      /* webpackChunkName: "e2eCleanup" */
+      './e2eCleanup'
+    )
+  )
 }
 
 // avoid running on test environment

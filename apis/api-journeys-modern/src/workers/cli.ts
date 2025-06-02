@@ -20,6 +20,16 @@ export async function cli(argv = process.argv): Promise<void> {
       queue = new Queue(queueName, { connection })
       break
     }
+    case 'e2e-cleanup': {
+      const config = await import(
+        /* webpackChunkName: "e2eCleanup" */
+        './e2eCleanup'
+      )
+      queueName = config.queueName
+      jobName = config.jobName
+      queue = new Queue(queueName, { connection })
+      break
+    }
     default:
       throw new Error('unknown queue')
   }
@@ -31,6 +41,31 @@ export async function cli(argv = process.argv): Promise<void> {
   if (argv[2] === 'shortlink-updater') {
     // Default to updating all shortlinks - no options needed
     options.__typename = 'updateAllShortlinks'
+  }
+
+  // For e2e-cleanup, parse command line options
+  if (argv[2] === 'e2e-cleanup') {
+    options.__typename = 'e2eCleanup'
+
+    // Check for --dry-run flag
+    if (argv.includes('--dry-run')) {
+      options.dryRun = true
+      console.log(
+        chalk.yellow('Running in DRY RUN mode - no data will be deleted')
+      )
+    }
+
+    // Check for --hours parameter
+    const hoursIndex = argv.indexOf('--hours')
+    if (hoursIndex !== -1 && argv[hoursIndex + 1]) {
+      const hours = parseInt(argv[hoursIndex + 1], 10)
+      if (!isNaN(hours) && hours > 0) {
+        options.olderThanHours = hours
+        console.log(
+          chalk.blue(`Will clean up test data older than ${hours} hours`)
+        )
+      }
+    }
   }
 
   const jobs = await queue.getJobs()
