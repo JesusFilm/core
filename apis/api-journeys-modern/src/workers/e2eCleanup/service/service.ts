@@ -1,7 +1,8 @@
 import { Job } from 'bullmq'
 import { Logger } from 'pino'
 
-import { prisma } from '../../../lib/prisma'
+import { Prisma, type UserJourney, UserJourneyRole, prisma } from '@core/prisma-journeys/client'
+import { prismaUsers } from '@core/prisma-users/client'
 
 interface E2eCleanupJob {
   __typename: 'e2eCleanup'
@@ -20,6 +21,7 @@ const DEFAULT_CLEANUP_HOURS = 24
  * - Teams: "Automation TeamName" + timestamps, "Renamed Team" + numbers
  * - Invitations with test email patterns like "playwright123@example.com"
  * - Data older than specified hours (default: 24 hours)
+ * - Journeys created by users with playwright*@example.com email addresses
  */
 export async function service(
   job: Job<E2eCleanupJob>,
@@ -32,27 +34,44 @@ export async function service(
   const cutoffDate = new Date(Date.now() - olderThanHours * 60 * 60 * 1000)
 
   // Define patterns that indicate test data based on actual e2e test patterns
-  const journeyPatterns = [
-    'First journey',
-    'Second journey',
-    'Renamed journey',
-    'Test Journey', // generic test pattern
-    'E2E',
-    'Automation',
-    'Playwright'
-  ]
+  const journeyPatterns = ['First journey', 'Second journey', 'Renamed journey']
 
-  const teamPatterns = [
-    'Automation TeamName',
-    'Renamed Team',
-    'Playwright Test Team', // generic test pattern
-    'Test Team',
-    'E2E',
-    'Automation'
-  ]
+  const teamPatterns = ['Automation TeamName', 'Renamed Team']
+
+  // Helper function to check if user email matches playwright pattern
+  const playwrightUserCache = new Map<string, boolean>()
+
+  async function isPlaywrightUser(userId: string): Promise<boolean> {
+    // Check cache first
+    if (playwrightUserCache.has(userId)) {
+      return playwrightUserCache.get(userId)!
+    }
+
+    try {
+      const user = await prismaUsers.user.findUnique({
+        where: { id: userId }
+      })
+
+      const email = user?.email
+      if (!email) {
+        playwrightUserCache.set(userId, false)
+        return false
+      }
+
+      const isPlaywright =
+        email.toLowerCase().includes('playwright') &&
+        email.includes('@example.com')
+      playwrightUserCache.set(userId, isPlaywright)
+      return isPlaywright
+    } catch (error) {
+      logger?.warn({ userId, error }, 'Failed to fetch user email')
+      playwrightUserCache.set(userId, false)
+      return false
+    }
+  }
 
   // Initialize variables
-  let testJourneys: Array<{ id: string; title: string; createdAt: Date }> = []
+  const testJourneys: Array<{ id: string; title: string; createdAt: Date }> = []
   let testTeams: Array<{ id: string; title: string; createdAt: Date }> = []
   let testTeamInvites: Array<{ id: string; email: string; createdAt: Date }> =
     []
@@ -63,31 +82,84 @@ export async function service(
   }> = []
 
   try {
-    // Find test journeys
-    testJourneys = await prisma.journey.findMany({
+    // Find all journeys older than cutoff date that could be test journeys
+    const candidateJourneys = await prisma.journey.findMany({
       where: {
-        AND: [
-          {
-            createdAt: {
-              lt: cutoffDate
-            }
-          },
-          {
-            OR: journeyPatterns.map((pattern) => ({
-              title: {
-                contains: pattern,
-                mode: 'insensitive'
-              }
-            }))
-          }
-        ]
+        createdAt: {
+          lt: cutoffDate
+        }
       },
-      select: {
-        id: true,
-        title: true,
-        createdAt: true
+      include: {
+        userJourneys: {
+          where: {
+            role: UserJourneyRole.owner
+          }
+        }
       }
     })
+
+    // Filter journeys by title patterns OR owner emails
+    let journeysByTitle = 0
+    let journeysByPlaywrightUser = 0
+
+    for (const journey of candidateJourneys) {
+      const owners = journey.userJourneys.filter(
+        (uj: UserJourney) => uj.role === UserJourneyRole.owner
+      )
+
+      let isTestJourney = false
+      let reason = ''
+
+      // Check if journey matches title patterns
+      const matchesTitle = journeyPatterns.some((pattern) =>
+        journey.title.toLowerCase().includes(pattern.toLowerCase())
+      )
+
+      if (matchesTitle) {
+        isTestJourney = true
+        reason = 'title pattern'
+        journeysByTitle++
+      } else {
+        // Check if any owner has a playwright email
+        for (const owner of owners) {
+          if (await isPlaywrightUser(owner.userId)) {
+            isTestJourney = true
+            reason = 'playwright user owner'
+            journeysByPlaywrightUser++
+            break
+          }
+        }
+      }
+
+      if (isTestJourney) {
+        if (dryRun) {
+          logger?.debug(
+            `Adding journey "${journey.title}" (${journey.id}) - Reason: ${reason}`
+          )
+        }
+        testJourneys.push({
+          id: journey.id,
+          title: journey.title,
+          createdAt: journey.createdAt
+        })
+      }
+    }
+
+    if (dryRun) {
+      logger?.info(
+        {
+          totalCandidates: candidateJourneys.length,
+          journeysByTitle,
+          journeysByPlaywrightUser,
+          totalSelected: testJourneys.length,
+          uniqueUsersChecked: playwrightUserCache.size,
+          playwrightUsersFound: Array.from(playwrightUserCache.values()).filter(
+            Boolean
+          ).length
+        },
+        'Journey filtering completed'
+      )
+    }
 
     // Find test teams
     testTeams = await prisma.team.findMany({
@@ -180,16 +252,18 @@ export async function service(
       }
     })
 
-    logger?.info(
-      {
-        journeysFound: testJourneys.length,
-        teamsFound: testTeams.length,
-        teamInvitesFound: testTeamInvites.length,
-        journeyInvitesFound: testJourneyInvites.length,
-        cutoffDate: cutoffDate.toISOString()
-      },
-      'Found test data to clean up'
-    )
+    if (dryRun) {
+      logger?.info(
+        {
+          journeysFound: testJourneys.length,
+          teamsFound: testTeams.length,
+          teamInvitesFound: testTeamInvites.length,
+          journeyInvitesFound: testJourneyInvites.length,
+          cutoffDate: cutoffDate.toISOString()
+        },
+        'Found test data to clean up'
+      )
+    }
 
     if (dryRun) {
       logger?.info('DRY RUN: Would delete the following test data:')
@@ -216,120 +290,156 @@ export async function service(
       return
     }
 
-    // Clean up test journeys and related data
+    // Wrap all cleanup operations in a single transaction for atomicity
+    const results = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+      let deletedJourneysCount = 0
+      let deletedTeamsCount = 0
+      let deletedTeamInvitesCount = 0
+      let deletedJourneyInvitesCount = 0
+
+      // Clean up test journeys and related data
+      if (testJourneys.length > 0) {
+        const journeyIds = testJourneys.map((j) => j.id)
+
+        // Delete related data first due to foreign key constraints
+        await tx.userJourney.deleteMany({
+          where: { journeyId: { in: journeyIds } }
+        })
+
+        await tx.journeyVisitor.deleteMany({
+          where: { journeyId: { in: journeyIds } }
+        })
+
+        await tx.event.deleteMany({
+          where: { journeyId: { in: journeyIds } }
+        })
+
+        // Delete blocks associated with journeys
+        await tx.block.deleteMany({
+          where: { journeyId: { in: journeyIds } }
+        })
+
+        // Delete user invites for these journeys
+        await tx.userInvite.deleteMany({
+          where: { journeyId: { in: journeyIds } }
+        })
+
+        // Finally delete the journeys
+        const deletedJourneys = await tx.journey.deleteMany({
+          where: { id: { in: journeyIds } }
+        })
+
+        deletedJourneysCount = deletedJourneys.count
+      }
+
+      // Clean up test teams and related data
+      if (testTeams.length > 0) {
+        const teamIds = testTeams.map((t) => t.id)
+
+        // Delete related data first
+        await tx.userTeam.deleteMany({
+          where: { teamId: { in: teamIds } }
+        })
+
+        await tx.userTeamInvite.deleteMany({
+          where: { teamId: { in: teamIds } }
+        })
+
+        // Delete journeys owned by these teams
+        const teamJourneys = await tx.journey.findMany({
+          where: { teamId: { in: teamIds } },
+          select: { id: true }
+        })
+
+        if (teamJourneys.length > 0) {
+          const teamJourneyIds = teamJourneys.map((j: { id: string }) => j.id)
+
+          await tx.userJourney.deleteMany({
+            where: { journeyId: { in: teamJourneyIds } }
+          })
+
+          await tx.journeyVisitor.deleteMany({
+            where: { journeyId: { in: teamJourneyIds } }
+          })
+
+          await tx.event.deleteMany({
+            where: { journeyId: { in: teamJourneyIds } }
+          })
+
+          await tx.block.deleteMany({
+            where: { journeyId: { in: teamJourneyIds } }
+          })
+
+          await tx.userInvite.deleteMany({
+            where: { journeyId: { in: teamJourneyIds } }
+          })
+
+          await tx.journey.deleteMany({
+            where: { id: { in: teamJourneyIds } }
+          })
+        }
+
+        // Finally delete the teams
+        const deletedTeams = await tx.team.deleteMany({
+          where: { id: { in: teamIds } }
+        })
+
+        deletedTeamsCount = deletedTeams.count
+      }
+
+      // Clean up test invitations
+      if (testTeamInvites.length > 0) {
+        const inviteIds = testTeamInvites.map((i) => i.id)
+        const deletedTeamInvites = await tx.userTeamInvite.deleteMany({
+          where: { id: { in: inviteIds } }
+        })
+
+        deletedTeamInvitesCount = deletedTeamInvites.count
+      }
+
+      if (testJourneyInvites.length > 0) {
+        const inviteIds = testJourneyInvites.map((i) => i.id)
+        const deletedJourneyInvites = await tx.userInvite.deleteMany({
+          where: { id: { in: inviteIds } }
+        })
+
+        deletedJourneyInvitesCount = deletedJourneyInvites.count
+      }
+
+      // Return counts for logging outside transaction
+      return {
+        deletedJourneysCount,
+        deletedTeamsCount,
+        deletedTeamInvitesCount,
+        deletedJourneyInvitesCount
+      }
+    })
+
+    // Log results after successful transaction
     if (testJourneys.length > 0) {
-      const journeyIds = testJourneys.map((j) => j.id)
-
-      // Delete related data first due to foreign key constraints
-      await prisma.userJourney.deleteMany({
-        where: { journeyId: { in: journeyIds } }
-      })
-
-      await prisma.journeyVisitor.deleteMany({
-        where: { journeyId: { in: journeyIds } }
-      })
-
-      await prisma.event.deleteMany({
-        where: { journeyId: { in: journeyIds } }
-      })
-
-      // Delete blocks associated with journeys
-      await prisma.block.deleteMany({
-        where: { journeyId: { in: journeyIds } }
-      })
-
-      // Delete user invites for these journeys
-      await prisma.userInvite.deleteMany({
-        where: { journeyId: { in: journeyIds } }
-      })
-
-      // Finally delete the journeys
-      const deletedJourneys = await prisma.journey.deleteMany({
-        where: { id: { in: journeyIds } }
-      })
-
       logger?.info(
-        { deletedJourneys: deletedJourneys.count },
+        { deletedJourneys: results.deletedJourneysCount },
         'Deleted test journeys'
       )
     }
 
-    // Clean up test teams and related data
     if (testTeams.length > 0) {
-      const teamIds = testTeams.map((t) => t.id)
-
-      // Delete related data first
-      await prisma.userTeam.deleteMany({
-        where: { teamId: { in: teamIds } }
-      })
-
-      await prisma.userTeamInvite.deleteMany({
-        where: { teamId: { in: teamIds } }
-      })
-
-      // Delete journeys owned by these teams
-      const teamJourneys = await prisma.journey.findMany({
-        where: { teamId: { in: teamIds } },
-        select: { id: true }
-      })
-
-      if (teamJourneys.length > 0) {
-        const teamJourneyIds = teamJourneys.map((j) => j.id)
-
-        await prisma.userJourney.deleteMany({
-          where: { journeyId: { in: teamJourneyIds } }
-        })
-
-        await prisma.journeyVisitor.deleteMany({
-          where: { journeyId: { in: teamJourneyIds } }
-        })
-
-        await prisma.event.deleteMany({
-          where: { journeyId: { in: teamJourneyIds } }
-        })
-
-        await prisma.block.deleteMany({
-          where: { journeyId: { in: teamJourneyIds } }
-        })
-
-        await prisma.userInvite.deleteMany({
-          where: { journeyId: { in: teamJourneyIds } }
-        })
-
-        await prisma.journey.deleteMany({
-          where: { id: { in: teamJourneyIds } }
-        })
-      }
-
-      // Finally delete the teams
-      const deletedTeams = await prisma.team.deleteMany({
-        where: { id: { in: teamIds } }
-      })
-
-      logger?.info({ deletedTeams: deletedTeams.count }, 'Deleted test teams')
+      logger?.info(
+        { deletedTeams: results.deletedTeamsCount },
+        'Deleted test teams'
+      )
     }
 
-    // Clean up test invitations
     if (testTeamInvites.length > 0) {
-      const inviteIds = testTeamInvites.map((i) => i.id)
-      const deletedTeamInvites = await prisma.userTeamInvite.deleteMany({
-        where: { id: { in: inviteIds } }
-      })
-
       logger?.info(
-        { deletedTeamInvites: deletedTeamInvites.count },
+        { deletedTeamInvites: results.deletedTeamInvitesCount },
         'Deleted test team invitations'
       )
     }
 
     if (testJourneyInvites.length > 0) {
-      const inviteIds = testJourneyInvites.map((i) => i.id)
-      const deletedJourneyInvites = await prisma.userInvite.deleteMany({
-        where: { id: { in: inviteIds } }
-      })
-
       logger?.info(
-        { deletedJourneyInvites: deletedJourneyInvites.count },
+        { deletedJourneyInvites: results.deletedJourneyInvitesCount },
         'Deleted test journey invitations'
       )
     }
