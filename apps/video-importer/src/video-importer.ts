@@ -75,7 +75,7 @@ async function main() {
       const filePath = path.join(folderPath, file)
       const contentType = 'video/mp4'
       const originalFilename = file
-      const contentLength = statSync(filePath).size
+      const { size: contentLength } = await promises.stat(filePath)
 
       console.log('   🔎 Reading video metadata...')
       let metadata
