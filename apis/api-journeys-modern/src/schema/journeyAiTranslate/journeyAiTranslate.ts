@@ -3,6 +3,7 @@ import { generateObject, streamObject } from 'ai'
 import { GraphQLError } from 'graphql'
 import { z } from 'zod'
 
+import { VideoBlockSource } from '.prisma/api-journeys-modern-client'
 import { hardenPrompt, preSystemPrompt } from '@core/shared/ai/prompts'
 
 import { Action, ability, subject } from '../../lib/auth/ability'
@@ -162,6 +163,20 @@ Return in this format:
             languageId: input.textLanguageId
           }
         })
+
+        // Update video blocks' videoVariantLanguageId if videoLanguageId is provided
+        if (input.videoLanguageId) {
+          await prisma.block.updateMany({
+            where: {
+              journeyId: input.journeyId,
+              typename: 'VideoBlock',
+              source: VideoBlockSource.internal
+            },
+            data: {
+              videoVariantLanguageId: input.videoLanguageId
+            }
+          })
+        }
 
         // Use analysisAndTranslation.analysis for card translation context
         const journeyAnalysis = analysisAndTranslation.analysis
