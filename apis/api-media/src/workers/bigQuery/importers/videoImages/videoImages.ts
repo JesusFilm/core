@@ -1,8 +1,7 @@
 import { Logger } from 'pino'
 
-import { ImageAspectRatio } from '.prisma/api-media-client'
+import { ImageAspectRatio, prisma } from '@core/prisma-media/client'
 
-import { prisma } from '../../../../lib/prisma'
 import { getClient } from '../../../../schema/cloudflare/image/service'
 import { client as bqClient } from '../../importer'
 

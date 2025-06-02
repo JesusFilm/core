@@ -3,6 +3,7 @@ import { render } from '@react-email/render'
 import { Job } from 'bullmq'
 import { graphql } from 'gql.tada'
 
+import { prisma } from '@core/prisma-journeys/client'
 import { sendEmail } from '@core/yoga/email'
 import {
   ApiUsersJob,
@@ -10,7 +11,6 @@ import {
 } from '@core/yoga/emailEvents/types'
 
 import { VisitorInteraction } from '../../../emails/templates/VisitorInteraction'
-import { prisma } from '../../../lib/prisma'
 
 import { fetchEmailDetails } from './fetchEmailDetails'
 import { processUserIds } from './processUserIds'

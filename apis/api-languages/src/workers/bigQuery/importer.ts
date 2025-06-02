@@ -3,7 +3,7 @@ import get from 'lodash/get'
 import { Logger } from 'pino'
 import { ZodSchema, z } from 'zod'
 
-import { prisma } from '../../lib/prisma'
+import { prisma } from '@core/prisma-languages/client'
 
 let logger: Logger | undefined
 

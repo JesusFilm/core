@@ -1,4 +1,4 @@
-import { VideoSnippet } from '.prisma/api-media-client'
+import { VideoSnippet } from '@core/prisma-media/client'
 
 import { prismaMock } from '../../../../../test/prismaMock'
 import { processTable } from '../../importer'

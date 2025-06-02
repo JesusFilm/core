@@ -1,4 +1,4 @@
-import { Keyword } from '.prisma/api-media-client'
+import { Keyword } from '@core/prisma-media/client'
 
 import { prismaMock } from '../../../../../test/prismaMock'
 import { processTable } from '../../importer'

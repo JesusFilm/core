@@ -1,6 +1,6 @@
 import { Response } from 'node-fetch'
 
-import { CloudflareImage, ImageAspectRatio } from '.prisma/api-media-client'
+import { CloudflareImage, ImageAspectRatio } from '@core/prisma-media/client'
 
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'

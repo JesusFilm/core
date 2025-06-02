@@ -3,9 +3,8 @@ import compact from 'lodash/compact'
 import isEmpty from 'lodash/isEmpty'
 import orderBy from 'lodash/orderBy'
 
-import { Prisma } from '.prisma/api-media-client'
+import { Prisma, prisma } from '@core/prisma-media/client'
 
-import { prisma } from '../../lib/prisma'
 import { videoCacheReset } from '../../lib/videoCacheReset'
 import { builder } from '../builder'
 import { ImageAspectRatio } from '../cloudflare/image/enums'

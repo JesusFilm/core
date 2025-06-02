@@ -1,4 +1,4 @@
-import { VideoVariantDownload } from '.prisma/api-media-client'
+import { VideoVariantDownload } from '@core/prisma-media/client'
 
 import { prismaMock } from '../../../../../test/prismaMock'
 import { processTable } from '../../importer'

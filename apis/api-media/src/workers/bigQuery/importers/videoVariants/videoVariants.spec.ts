@@ -1,4 +1,4 @@
-import { VideoVariant } from '.prisma/api-media-client'
+import { VideoVariant } from '@core/prisma-media/client'
 import { Prisma } from '@prisma/client'
 
 import { prismaMock } from '../../../../../test/prismaMock'

@@ -1,14 +1,10 @@
 import { spawn } from 'child_process'
 import { promises as fs } from 'fs'
-import { join } from 'path'
-import { pipeline } from 'stream/promises'
-import { createGzip } from 'zlib'
 
 import {
   CopyObjectCommand,
   HeadObjectCommand,
-  PutObjectCommand,
-  S3Client
+  PutObjectCommand
 } from '@aws-sdk/client-s3'
 import { Logger } from 'pino'
 

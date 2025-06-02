@@ -3,7 +3,7 @@ import {
   VideoEdition,
   VideoVariant,
   VideoVariantDownload
-} from '.prisma/api-media-client'
+} from '@core/prisma-media/client'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'

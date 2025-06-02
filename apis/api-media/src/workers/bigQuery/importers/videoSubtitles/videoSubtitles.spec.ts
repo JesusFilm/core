@@ -1,4 +1,4 @@
-import { VideoSubtitle } from '.prisma/api-media-client'
+import { VideoSubtitle } from '@core/prisma-media/client'
 
 import { prismaMock } from '../../../../../test/prismaMock'
 import { processTable } from '../../importer'

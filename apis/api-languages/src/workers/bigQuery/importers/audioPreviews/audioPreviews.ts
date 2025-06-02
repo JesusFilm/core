@@ -2,7 +2,8 @@ import omit from 'lodash/omit'
 import { Logger } from 'pino'
 import { z } from 'zod'
 
-import { prisma } from '../../../../lib/prisma'
+import { prisma } from '@core/prisma-languages/client'
+
 import { parse, parseMany, processTable } from '../../importer'
 import { getLanguageIds } from '../languages'
 

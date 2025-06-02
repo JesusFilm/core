@@ -2,8 +2,9 @@ import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
 import { algoliasearch } from 'algoliasearch'
 import { Logger } from 'pino'
 
+import { prisma } from '@core/prisma-media/client'
+
 import { graphql } from '../../../lib/graphql/gatewayGraphql'
-import { prisma } from '../../../lib/prisma'
 
 import { LANGUAGES_TO_INCLUDE } from './languages'
 

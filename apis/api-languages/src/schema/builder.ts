@@ -8,10 +8,8 @@ import pluginName from '@pothos/plugin-prisma'
 import TracingPlugin, { isRootField } from '@pothos/plugin-tracing'
 import { createOpenTelemetryWrapper } from '@pothos/tracing-opentelemetry'
 
-import { Prisma } from '.prisma/api-languages-client'
-
-import type PrismaTypes from '../__generated__/pothos-types'
-import { prisma } from '../lib/prisma'
+import type PrismaTypes from '@core/prisma-languages/__generated__/pothos-types'
+import { Prisma, prisma } from '@core/prisma-languages/client'
 
 const PrismaPlugin = pluginName
 
