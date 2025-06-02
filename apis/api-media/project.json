@@ -85,10 +85,10 @@
         "command": "codecov -f coverage/apis/api-media/cobertura-coverage.xml -F apps.api-media"
       }
     },
-    "queue-ingest": {
+    "queue-video-children": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm run ts-node apis/api-media/src/workers/cli.ts big-query"
+        "command": "npm run ts-node apis/api-media/src/workers/cli.ts video-children"
       }
     },
     "queue-crowdin": {

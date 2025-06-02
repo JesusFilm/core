@@ -2,10 +2,22 @@ import { Logger } from 'pino'
 
 import { prisma } from '@core/prisma-media/client'
 
-import { getVideoIds } from '../videos'
+async function getVideoIds(): Promise<string[]> {
+  const videos = await prisma.video.findMany({
+    select: { id: true }
+  })
+  return videos.map((video) => video.id)
+}
 
-export async function importVideoChildren(logger?: Logger): Promise<void> {
+export async function service(logger?: Logger): Promise<void> {
   logger?.info('video children import started')
+
+  const videoIds = await getVideoIds()
+
+  if (videoIds.length === 0) {
+    logger?.info('no video ids found')
+    return
+  }
 
   const children = await prisma.video.findMany({
     select: { id: true, childIds: true },
@@ -18,7 +30,7 @@ export async function importVideoChildren(logger?: Logger): Promise<void> {
         data: {
           children: {
             connect: video.childIds
-              .filter((id) => getVideoIds().includes(id))
+              .filter((id) => videoIds.includes(id))
               .map((id) => ({ id }))
           }
         }
