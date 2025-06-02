@@ -111,6 +111,12 @@
           "quiet": true
         }
       }
+    },
+    "prisma-generate-ci": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nx prisma-generate prisma-users"
+      }
     }
   }
 }
