@@ -104,6 +104,8 @@ export function TranslateJourneyDialog({
   ): void {
     if (loading && (reason === 'backdropClick' || reason === 'escapeKeyDown'))
       return
+    setSelectedLanguage(journeyLanguage)
+    setSelectedVideoLanguage(undefined)
     onClose()
   }
 
@@ -118,6 +120,7 @@ export function TranslateJourneyDialog({
     await duplicateAndTranslate({
       teamId: activeTeam.id,
       selectedLanguage,
+      selectedVideoLanguage,
       shouldTranslate: true
     })
   }

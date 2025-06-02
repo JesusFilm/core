@@ -55,6 +55,7 @@ input JourneyAiTranslateInput {
   journeyLanguageName: String!
   textLanguageId: ID!
   textLanguageName: String!
+  videoLanguageId: ID
 }
 
 type JourneyEventsExportLog {

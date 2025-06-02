@@ -23,7 +23,8 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
             name: t.string({ required: true }),
             journeyLanguageName: t.string({ required: true }),
             textLanguageId: t.id({ required: true }),
-            textLanguageName: t.string({ required: true })
+            textLanguageName: t.string({ required: true }),
+            videoLanguageId: t.id()
           })
         }),
         required: true

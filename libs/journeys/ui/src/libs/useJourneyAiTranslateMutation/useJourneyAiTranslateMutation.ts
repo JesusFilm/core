@@ -12,6 +12,7 @@ export const JOURNEY_AI_TRANSLATE_CREATE = gql`
     $journeyLanguageName: String!
     $textLanguageId: ID!
     $textLanguageName: String!
+    $videoLanguageId: ID
   ) {
     journeyAiTranslateCreate(
       input: {
@@ -20,6 +21,7 @@ export const JOURNEY_AI_TRANSLATE_CREATE = gql`
         journeyLanguageName: $journeyLanguageName
         textLanguageId: $textLanguageId
         textLanguageName: $textLanguageName
+        videoLanguageId: $videoLanguageId
       }
     ) {
       id
