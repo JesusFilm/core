@@ -70,16 +70,16 @@ You can manually trigger the cleanup job using the CLI:
 
 ```bash
 # Basic cleanup (removes test data older than 24 hours)
-nx run api-journeys-modern:worker e2e-cleanup
+nx run api-journeys-modern:playwright-cleanup e2e-cleanup
 
 # Dry run to see what would be deleted
-nx run api-journeys-modern:worker e2e-cleanup --dry-run
+nx run api-journeys-modern:playwright-cleanup e2e-cleanup --dry-run
 
 # Cleanup data older than 48 hours
-nx run api-journeys-modern:worker e2e-cleanup --hours 48
+nx run api-journeys-modern:playwright-cleanup e2e-cleanup --hours 48
 
 # Dry run for data older than 12 hours
-nx run api-journeys-modern:worker e2e-cleanup --dry-run --hours 12
+nx run api-journeys-modern:playwright-cleanup e2e-cleanup --dry-run --hours 12
 ```
 
 ### CLI Options

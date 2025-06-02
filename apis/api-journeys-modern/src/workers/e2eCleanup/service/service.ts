@@ -1,11 +1,8 @@
-import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
 import { Job } from 'bullmq'
-import { graphql } from 'gql.tada'
 import { Logger } from 'pino'
 
-import { UserJourneyRole } from '.prisma/api-journeys-modern-client'
-
-import { prisma } from '../../../lib/prisma'
+import { Prisma, type UserJourney, UserJourneyRole, prisma } from '@core/prisma-journeys/client'
+import { prismaUsers } from '@core/prisma-users/client'
 
 interface E2eCleanupJob {
   __typename: 'e2eCleanup'
@@ -14,32 +11,6 @@ interface E2eCleanupJob {
 }
 
 const DEFAULT_CLEANUP_HOURS = 24
-
-// Apollo Client setup for user queries
-const httpLink = createHttpLink({
-  uri: process.env.GATEWAY_URL,
-  headers: {
-    'interop-token': process.env.INTEROP_TOKEN ?? '',
-    'x-graphql-client-name': 'api-journeys-modern',
-    'x-graphql-client-version': process.env.SERVICE_VERSION ?? ''
-  }
-})
-
-const apollo = new ApolloClient({
-  link: httpLink,
-  cache: new InMemoryCache()
-})
-
-const GET_USER = graphql(`
-  query GetUser($userId: ID!) {
-    user(id: $userId) {
-      id
-      email
-      firstName
-      imageUrl
-    }
-  }
-`)
 
 /**
  * E2E Cleanup Service
@@ -77,12 +48,11 @@ export async function service(
     }
 
     try {
-      const { data } = await apollo.query({
-        query: GET_USER,
-        variables: { userId }
+      const user = await prismaUsers.user.findUnique({
+        where: { id: userId }
       })
 
-      const email = data?.user?.email
+      const email = user?.email
       if (!email) {
         playwrightUserCache.set(userId, false)
         return false
@@ -134,7 +104,7 @@ export async function service(
 
     for (const journey of candidateJourneys) {
       const owners = journey.userJourneys.filter(
-        (uj) => uj.role === UserJourneyRole.owner
+        (uj: UserJourney) => uj.role === UserJourneyRole.owner
       )
 
       let isTestJourney = false
@@ -321,7 +291,7 @@ export async function service(
     }
 
     // Wrap all cleanup operations in a single transaction for atomicity
-    const results = await prisma.$transaction(async (tx) => {
+    const results = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       let deletedJourneysCount = 0
       let deletedTeamsCount = 0
       let deletedTeamInvitesCount = 0
@@ -382,7 +352,7 @@ export async function service(
         })
 
         if (teamJourneys.length > 0) {
-          const teamJourneyIds = teamJourneys.map((j) => j.id)
+          const teamJourneyIds = teamJourneys.map((j: { id: string }) => j.id)
 
           await tx.userJourney.deleteMany({
             where: { journeyId: { in: teamJourneyIds } }

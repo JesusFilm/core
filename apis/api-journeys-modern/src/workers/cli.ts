@@ -22,8 +22,8 @@ export async function cli(argv = process.argv): Promise<void> {
     }
     case 'e2e-cleanup': {
       const config = await import(
-        /* webpackChunkName: "e2eCleanup" */
-        './e2eCleanup'
+        /* webpackChunkName: "e2eCleanupConfig" */
+        './e2eCleanup/config'
       )
       queueName = config.queueName
       jobName = config.jobName
