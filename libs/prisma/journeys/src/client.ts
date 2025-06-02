@@ -4,5 +4,7 @@ export * from './.prisma/client'
 export { PrismaClient as PrismaClientJourneys }
 export { Prisma as PrismaJourneys }
 
-export const prisma = new PrismaClient()
-export const prismaJourneys = new PrismaClient()
+const globalForPrisma = global as unknown as { prisma: PrismaClient }
+
+export const prisma = globalForPrisma.prisma || new PrismaClient()
+export const prismaJourneys = globalForPrisma.prisma || new PrismaClient()

@@ -4,5 +4,7 @@ export * from './.prisma/client'
 export { Prisma as PrismaMedia }
 export { PrismaClient as PrismaClientMedia }
 
-export const prisma = new PrismaClient()
-export const prismaMedia = new PrismaClient()
+const globalForPrisma = global as unknown as { prisma: PrismaClient }
+
+export const prisma = globalForPrisma.prisma || new PrismaClient()
+export const prismaMedia = globalForPrisma.prisma || new PrismaClient()
