@@ -1,3 +1,4 @@
+import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import useMediaQuery from '@mui/material/useMediaQuery'
@@ -58,8 +59,6 @@ export function TranslateJourneyDialog({
 
   const { commonLanguages, loading: commonLanguagesLoading } =
     useCommonVideoVariantLanguages(journeyData)
-
-  console.log('commonLanguages', commonLanguages)
 
   const { data: languagesData, loading: languagesLoading } = useLanguagesQuery({
     variables: {
@@ -135,40 +134,42 @@ export function TranslateJourneyDialog({
       divider={false}
       isTranslation={true}
     >
-      <LanguageAutocomplete
-        onChange={async (value) => setSelectedLanguage(value)}
-        value={selectedLanguage}
-        languages={languagesData?.languages}
-        loading={languagesLoading}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            placeholder={t('Search Language')}
-            label={t('Select Language')}
-            variant="filled"
-          />
-        )}
-        popper={{
-          placement: !smUp ? 'top' : 'bottom'
-        }}
-      />
-      {/* <LanguageAutocomplete
-        onChange={async (value) => setSelectedVideoLanguage(value)}
-        value={selectedVideoLanguage}
-        languages={languagesData?.languages}
-        loading={languagesLoading}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            placeholder={t('Search Language')}
-            label={t('Select Language')}
-            variant="filled"
-          />
-        )}
-        popper={{
-          placement: !smUp ? 'top' : 'bottom'
-        }}
-      /> */}
+      <Stack spacing={4}>
+        <LanguageAutocomplete
+          onChange={async (value) => setSelectedLanguage(value)}
+          value={selectedLanguage}
+          languages={languagesData?.languages}
+          loading={languagesLoading}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              placeholder={t('Search Language')}
+              label={t('Select Journey Language')}
+              variant="filled"
+            />
+          )}
+          popper={{
+            placement: !smUp ? 'top' : 'bottom'
+          }}
+        />
+        <LanguageAutocomplete
+          onChange={async (value) => setSelectedVideoLanguage(value)}
+          value={selectedVideoLanguage}
+          languages={commonLanguages?.languages}
+          loading={commonLanguagesLoading}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              placeholder={t('Search Language')}
+              label={t('Select Video Language')}
+              variant="filled"
+            />
+          )}
+          popper={{
+            placement: !smUp ? 'top' : 'bottom'
+          }}
+        />
+      </Stack>
     </TranslationDialogWrapper>
   )
 }
