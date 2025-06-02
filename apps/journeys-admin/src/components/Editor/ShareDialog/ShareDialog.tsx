@@ -1,15 +1,22 @@
+import TabContext from '@mui/lab/TabContext'
+import TabPanel from '@mui/lab/TabPanel'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
+import Tab from '@mui/material/Tab'
+import Tabs from '@mui/material/Tabs'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { CopyTextField } from '@core/shared/ui/CopyTextField'
 import { Dialog } from '@core/shared/ui/Dialog'
 import Code1Icon from '@core/shared/ui/icons/Code1'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
+import Embed from '@core/shared/ui/icons/Embed'
+import ImageFocus from '@core/shared/ui/icons/ImageFocus'
+import LinkAngled from '@core/shared/ui/icons/LinkAngled'
 import TransformIcon from '@core/shared/ui/icons/Transform'
 
 import { GetJourneyForSharing_journey as JourneyFromLazyQuery } from '../../../../__generated__/GetJourneyForSharing'
@@ -49,6 +56,11 @@ export function ShareDialog({
   onQrCodeClick
 }: ShareDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const [value, setValue] = useState('0')
+
+  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+    setValue(newValue)
+  }
 
   return (
     <Dialog open={open} onClose={onClose}>
@@ -66,47 +78,62 @@ export function ShareDialog({
           <Typography variant="subtitle2" gutterBottom>
             {t('Share This Journey')}
           </Typography>
-          <CopyTextField
-            value={
-              journey?.slug != null
-                ? `${
-                    hostname != null
-                      ? `https://${hostname}`
-                      : (process.env.NEXT_PUBLIC_JOURNEYS_URL ??
-                        'https://your.nextstep.is')
-                  }/${journey?.slug}`
-                : undefined
-            }
-          />
-          <Stack direction="row" spacing={6}>
-            <Button
-              onClick={onEditUrlClick}
-              size="small"
-              startIcon={<Edit2Icon />}
-              disabled={journey == null}
-              style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
-            >
-              {t('Edit URL')}
-            </Button>
-            <Button
-              onClick={onEmbedJourneyClick}
-              size="small"
-              startIcon={<Code1Icon />}
-              disabled={journey == null}
-              style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
-            >
-              {t('Embed Journey')}
-            </Button>
-            <Button
-              onClick={onQrCodeClick}
-              size="small"
-              startIcon={<TransformIcon />}
-              disabled={journey == null}
-              style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
-            >
-              {t('QR Code')}
-            </Button>
-          </Stack>
+          <TabContext value={value}>
+            <Tabs variant="fullWidth" value={value} onChange={handleChange}>
+              <Tab icon={<LinkAngled />} label={t('Link')} value="0" />
+              <Tab icon={<ImageFocus />} label={t('QR Code')} value="1" />
+              <Tab icon={<Embed />} label={t('Embed')} value="2" />
+            </Tabs>
+
+            <TabPanel value="0">
+              <CopyTextField
+                value={
+                  journey?.slug != null && journey.slug !== ''
+                    ? `${
+                        hostname != null
+                          ? `https://${hostname}`
+                          : (process.env.NEXT_PUBLIC_JOURNEYS_URL ??
+                            'https://your.nextstep.is')
+                      }/${journey?.slug}`
+                    : undefined
+                }
+              />
+              <Box sx={{ mt: 2 }}>
+                <Button
+                  onClick={onEditUrlClick}
+                  size="small"
+                  startIcon={<Edit2Icon />}
+                  disabled={journey == null}
+                >
+                  {t('Edit URL')}
+                </Button>
+              </Box>
+            </TabPanel>
+
+            <TabPanel value="1">
+              <Button
+                onClick={onQrCodeClick}
+                size="small"
+                startIcon={<TransformIcon />}
+                disabled={journey == null}
+                fullWidth
+              >
+                {t('Generate QR Code')}
+              </Button>
+            </TabPanel>
+            
+            <TabPanel value="2">
+              <Button
+                onClick={onEmbedJourneyClick}
+                size="small"
+                startIcon={<Code1Icon />}
+                disabled={journey == null}
+                fullWidth
+              >
+                {t('Get Embed Code')}
+              </Button>
+            </TabPanel>
+          </TabContext>
         </Stack>
       )}
     </Dialog>
