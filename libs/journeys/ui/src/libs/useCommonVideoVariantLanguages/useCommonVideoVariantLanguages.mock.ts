@@ -1,4 +1,3 @@
-import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
 import {
@@ -7,10 +6,8 @@ import {
 } from './useCommonVideoVariantLanguages'
 
 export const journey = {
-  __typename: 'Journey',
-  id: 'journey-id',
-  title: 'My journey'
-} as unknown as Journey
+  id: 'journey-id'
+}
 
 export const languagesMock = {
   request: {
