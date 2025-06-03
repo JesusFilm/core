@@ -135,7 +135,8 @@ const journey: JourneyWithTeamAndUserJourney = {
   showDisplayTitle: null,
   menuButtonIcon: null,
   logoImageBlockId: null,
-  menuStepBlockId: null
+  menuStepBlockId: null,
+  fromTemplateId: null
 }
 
 const event: Event = {
@@ -174,6 +175,7 @@ const visitor: Visitor & { events: Event[] } = {
   messagePlatform: MessagePlatform.whatsApp,
   name: 'Bob Smith',
   notes: 'Bob called this afternoon to arrange a meet-up.',
+  phone: null,
   status: 'star',
   teamId: 'teamId',
   userAgent: null,

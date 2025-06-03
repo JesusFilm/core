@@ -19,6 +19,7 @@ import {
   CREATE_EVENTS_EXPORT_LOG,
   GET_JOURNEY_EVENTS_EXPORT
 } from '../../../../libs/useJourneyEventsExport/useJourneyEventsExport'
+import { getMockGetJourneyEventsCountQuery } from '../../../../libs/useJourneyEventsExport/useJourneyEventsExport.mock'
 import { FILTERED_EVENTS } from '../../../../libs/useJourneyEventsExport/utils/constants'
 
 import { ExportDialog, GET_JOURNEY_CREATED_AT } from './ExportDialog'
@@ -48,6 +49,15 @@ const mockJourneyCreatedAt: MockedResponse<
     }
   }
 }
+
+const mockGetJourneyEventsCountQuery = getMockGetJourneyEventsCountQuery({
+  journeyId: 'journey1',
+  filter: {
+    typenames: FILTERED_EVENTS,
+    periodRangeStart: journeyCreatedAt,
+    periodRangeEnd: '2023-12-31T00:00:00.000Z'
+  }
+})
 
 const defaultProps = {
   open: true,
@@ -181,7 +191,13 @@ describe('ExportDialog', () => {
 
   it('should render correctly with initial state', async () => {
     render(
-      <MockedProvider mocks={[mockJourneyCreatedAt, getJourneyEventsMock]}>
+      <MockedProvider
+        mocks={[
+          mockGetJourneyEventsCountQuery,
+          mockJourneyCreatedAt,
+          getJourneyEventsMock
+        ]}
+      >
         <SnackbarProvider>
           <ExportDialog {...defaultProps} />
         </SnackbarProvider>
@@ -204,6 +220,7 @@ describe('ExportDialog', () => {
     render(
       <MockedProvider
         mocks={[
+          mockGetJourneyEventsCountQuery,
           mockCreateEventsExportLogMutation,
           { ...mockJourneyCreatedAt, result: mockJourneyCreatedAtResult },
           { ...getJourneyEventsMock, result: mockExportJourneyEventsResult }
@@ -222,6 +239,7 @@ describe('ExportDialog', () => {
     await act(async () => {
       fireEvent.click(exportButton)
     })
+    expect(screen.getByRole('progressbar')).toBeInTheDocument()
     await waitFor(() => {
       expect(mockExportJourneyEventsResult).toHaveBeenCalled()
     })

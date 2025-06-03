@@ -12,10 +12,11 @@ import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
+import { GetJourneyForSharing_journey as JourneyFromLazyQuery } from '../../../../../../../__generated__/GetJourneyForSharing'
+import { JourneyFields as JourneyFromContext } from '../../../../../../../__generated__/JourneyFields'
 import { useCustomDomainsQuery } from '../../../../../../libs/useCustomDomainsQuery'
 
 import { EmbedCardPreview } from './EmbedCardPreview'
@@ -23,15 +24,16 @@ import { EmbedCardPreview } from './EmbedCardPreview'
 interface EmbedJourneyDialogProps {
   open: boolean
   onClose: () => void
+  journey?: JourneyFromContext | JourneyFromLazyQuery
 }
 
 export function EmbedJourneyDialog({
   open,
-  onClose
+  onClose,
+  journey
 }: EmbedJourneyDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const { journey } = useJourney()
   const { hostname } = useCustomDomainsQuery({
     variables: { teamId: journey?.team?.id ?? '' },
     skip: journey?.team?.id == null
@@ -44,7 +46,7 @@ export function EmbedJourneyDialog({
     hostname != null
       ? `https://${hostname}`
       : (process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'https://your.nextstep.is')
-  const embedUrl = `${providerUrl}/embed/${journey?.slug as string}`
+  const embedUrl = `${providerUrl}/embed/${journey?.slug}`
 
   // Self-closing iframe tag breaks embed on WordPress
   const iframeLink = `<iframe src="${embedUrl}" style="border: 0; width: 360px; height: 640px;" allow="fullscreen; autoplay" allowfullscreen></iframe>`
@@ -85,7 +87,7 @@ export function EmbedJourneyDialog({
               overflowX: 'hidden'
             }}
           >
-            <EmbedCardPreview />
+            <EmbedCardPreview journey={journey} />
           </Box>
         ) : (
           <Accordion
@@ -106,7 +108,7 @@ export function EmbedJourneyDialog({
               <Typography variant="subtitle2">{t('Show Preview')}</Typography>
             </AccordionSummary>
             <AccordionDetails sx={{ p: 0, pb: 2, ml: -4 }}>
-              <EmbedCardPreview />
+              <EmbedCardPreview journey={journey} />
             </AccordionDetails>
           </Accordion>
         )}

@@ -1,6 +1,14 @@
 extend schema
   @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@shareable"])
 
+type ArclightApiKey
+  @key(fields: "key")
+{
+  key: String!
+  desc: String
+  defaultPlatform: DefaultPlatform!
+}
+
 interface BaseError {
   message: String
 }
@@ -27,6 +35,7 @@ type BibleCitation {
   bibleBook: BibleBook!
   chapterStart: Int!
   chapterEnd: Int
+  order: Int!
   verseStart: Int
   verseEnd: Int
   video: Video!
@@ -82,6 +91,12 @@ input CloudflareR2CreateInput {
 A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
 scalar Date
+
+enum DefaultPlatform {
+  ios
+  android
+  web
+}
 
 type Error implements BaseError
   @shareable
@@ -153,7 +168,6 @@ enum MediaRole {
 type Mutation {
   """Transcode an asset. Returns the bullmq job ID."""
   transcodeAsset(input: TranscodeVideoInput!): String
-  getTranscodeAssetProgress(jobId: String!): Int
   createCloudflareUploadByFile(input: ImageInput): CloudflareImage!
   createCloudflareUploadByUrl(url: String!, input: ImageInput): CloudflareImage!
   createCloudflareImageFromPrompt(prompt: String!, input: ImageInput): CloudflareImage!
@@ -165,10 +179,14 @@ type Mutation {
   cloudflareR2Delete(id: ID!): CloudflareR2!
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!): CloudflareImage! @deprecated(reason: "use createCloudflareImageFromPrompt")
   triggerUnsplashDownload(url: String!): Boolean!
-  createMuxVideoUploadByFile(name: String!): MuxVideo!
-  createMuxVideoUploadByUrl(url: String!): MuxVideo!
-  enableMuxDownload(id: ID!): MuxVideo
-  deleteMuxVideo(id: ID!): Boolean!
+  bibleCitationCreate(input: MutationBibleCitationCreateInput!): BibleCitation
+  bibleCitationUpdate(input: MutationBibleCitationUpdateInput!): BibleCitation
+  bibleCitationDelete(id: ID!): Boolean
+  createKeyword(value: String!, languageId: String!): Keyword!
+  createMuxVideoUploadByFile(name: String!, userGenerated: Boolean): MuxVideo!
+  createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean): MuxVideo!
+  enableMuxDownload(id: ID!, resolution: String): MuxVideo
+  deleteMuxVideo(id: ID!, userGenerated: Boolean): Boolean!
 
   """
   Create a new short link domain that can be used for short links (this domain must have a CNAME record pointing to the short link service)
@@ -211,6 +229,9 @@ type Mutation {
   videoTitleCreate(input: VideoTranslationCreateInput!): VideoTitle!
   videoTitleUpdate(input: VideoTranslationUpdateInput!): VideoTitle!
   videoTitleDelete(id: ID!): VideoTitle!
+  videoOriginCreate(input: MutationVideoOriginCreateInput!): VideoOrigin!
+  videoOriginUpdate(input: MutationVideoOriginUpdateInput!): VideoOrigin!
+  videoOriginDelete(id: ID!): VideoOrigin!
   videoEditionCreate(input: VideoEditionCreateInput!): VideoEdition!
   videoEditionUpdate(input: VideoEditionUpdateInput!): VideoEdition!
   videoEditionDelete(id: ID!): VideoEdition!
@@ -220,6 +241,29 @@ type Mutation {
   videoVariantDownloadCreate(input: VideoVariantDownloadCreateInput!): VideoVariantDownload!
   videoVariantDownloadUpdate(input: VideoVariantDownloadUpdateInput!): VideoVariantDownload!
   videoVariantDownloadDelete(id: ID!): VideoVariantDownload!
+}
+
+input MutationBibleCitationCreateInput {
+  id: ID
+  osisId: String!
+  videoId: ID!
+  bibleBookId: ID!
+  chapterStart: Int!
+  chapterEnd: Int
+  verseStart: Int
+  verseEnd: Int
+  order: Int!
+}
+
+input MutationBibleCitationUpdateInput {
+  id: ID!
+  osisId: String
+  bibleBookId: ID
+  chapterStart: Int
+  chapterEnd: Int
+  verseStart: Int
+  verseEnd: Int
+  order: Int
 }
 
 input MutationShortLinkCreateInput {
@@ -309,6 +353,17 @@ type MutationShortLinkUpdateSuccess {
   data: ShortLink!
 }
 
+input MutationVideoOriginCreateInput {
+  name: String!
+  description: String
+}
+
+input MutationVideoOriginUpdateInput {
+  id: ID!
+  name: String
+  description: String
+}
+
 type MuxVideo
   @key(fields: "id primaryLanguageId")
 {
@@ -372,16 +427,18 @@ type PageInfo
 }
 
 type Query {
+  getTranscodeAssetProgress(jobId: String!): Int
   getMyCloudflareImages(offset: Int, limit: Int): [CloudflareImage!]!
   getMyCloudflareImage(id: ID!): CloudflareImage!
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]!
   searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String!], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse!
   bibleBooks: [BibleBook!]!
-  bibleCitations: [BibleCitation!]!
+  bibleCitations(videoId: ID): [BibleCitation!]!
+  bibleCitation(id: ID!): BibleCitation!
   keywords: [Keyword!]!
   getMyMuxVideos(offset: Int, limit: Int): [MuxVideo!]!
-  getMyMuxVideo(id: ID!): MuxVideo!
-  getMuxVideo(id: ID!): MuxVideo
+  getMyMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo!
+  getMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo
 
   """List of short link domains that can be used for short links"""
   shortLinkDomains(
@@ -429,6 +486,8 @@ type Query {
   videoVariants(input: VideoVariantFilter): [VideoVariant!]!
   tags: [Tag!]!
   taxonomies(category: String, languageCodes: [String!]): [Taxonomy!]!
+  arclightApiKeys: [ArclightApiKey!]!
+  arclightApiKeyByKey(key: String!): ArclightApiKey
 }
 
 union QueryShortLinkByPathResult = NotFoundError | QueryShortLinkByPathSuccess
@@ -708,6 +767,7 @@ type Video
   @shareable
 {
   bibleCitations: [BibleCitation!]!
+  origin: VideoOrigin
   source: VideoBlockSource @shareable
   keywords(languageId: ID): [Keyword!]!
   id: ID!
@@ -799,6 +859,12 @@ enum VideoLabel {
   shortFilm
   trailer
   behindTheScenes
+}
+
+type VideoOrigin {
+  id: ID!
+  name: String!
+  description: String
 }
 
 type VideoSnippet {
@@ -919,6 +985,7 @@ input VideoUpdateInput {
   slug: String
   noIndex: Boolean
   childIds: [String!]
+  keywordIds: [String!]
 }
 
 type VideoVariant {
@@ -975,6 +1042,7 @@ type VideoVariantDownload {
   size: Float!
   height: Int!
   width: Int!
+  bitrate: Int!
   url: String!
 
   """master video file version"""
@@ -989,12 +1057,14 @@ input VideoVariantDownloadCreateInput {
   size: Float
   height: Int
   width: Int
+  bitrate: Int
   url: String!
   version: Int
 }
 
 enum VideoVariantDownloadQuality {
   low
+  sd
   high
 }
 
@@ -1006,6 +1076,7 @@ input VideoVariantDownloadUpdateInput {
   size: Float
   height: Int
   width: Int
+  bitrate: Int
   url: String
   version: Int
 }

@@ -39,7 +39,8 @@ const props = {
   withIcon: false,
   hideInteractive: false,
   handleClearAll: jest.fn(),
-  handleChange: jest.fn((e) => e.target.value)
+  handleChange: jest.fn((e) => e.target.value),
+  disableExportButton: false
 }
 
 describe('FilterDrawer', () => {
@@ -98,6 +99,20 @@ describe('FilterDrawer', () => {
       expect(
         screen.queryByRole('button', { name: 'Export Data' })
       ).not.toBeInTheDocument()
+    })
+
+    it('should disable export button if disableExportButton is true', async () => {
+      const { disableExportButton, ...rest } = props
+
+      render(
+        <MockedProvider>
+          <FilterDrawer {...rest} disableExportButton />
+        </MockedProvider>
+      )
+
+      expect(
+        screen.queryByRole('button', { name: 'Export Data' })
+      ).toBeDisabled()
     })
 
     it('opens the export dialog when export button is clicked', async () => {
