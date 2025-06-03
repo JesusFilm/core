@@ -14,6 +14,11 @@ import { JOURNEY_DUPLICATE } from '@core/journeys/ui/useJourneyDuplicateMutation
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
 import { TranslateJourneyDialog } from './TranslateJourneyDialog'
+import {
+  languagesMock as commonLanguagesMock,
+  journeyInternalVideosMock,
+  videosVariantLanguagesMock
+} from './utils/useCommonVideoVariantLanguages/useCommonVideoVariantLanguages.mock'
 
 jest.mock('@mui/material/useMediaQuery')
 
@@ -105,7 +110,8 @@ describe('TranslateJourneyDialog', () => {
         name: defaultJourney.title,
         journeyLanguageName: 'English',
         textLanguageId: '496',
-        textLanguageName: 'Français'
+        textLanguageName: 'Français',
+        videoLanguageId: '496'
       }
     },
     result: jest.fn(() => ({
@@ -132,9 +138,20 @@ describe('TranslateJourneyDialog', () => {
 
   const handleClose = jest.fn()
 
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
   it('should render correctly', () => {
     render(
-      <MockedProvider mocks={[getLanguagesMock]}>
+      <MockedProvider
+        mocks={[
+          getLanguagesMock,
+          journeyInternalVideosMock,
+          videosVariantLanguagesMock,
+          commonLanguagesMock
+        ]}
+      >
         <JourneyProvider value={{ journey: defaultJourney }}>
           <TranslateJourneyDialog open={true} onClose={handleClose} />
         </JourneyProvider>
@@ -142,7 +159,8 @@ describe('TranslateJourneyDialog', () => {
     )
 
     expect(screen.getByText('Create Translated Copy')).toBeInTheDocument()
-    expect(screen.getByText('Select Language')).toBeInTheDocument()
+    expect(screen.getByText('Select Journey Language')).toBeInTheDocument()
+    expect(screen.getByText('Select Video Language')).toBeInTheDocument()
     expect(screen.getByText('Create')).toBeInTheDocument()
     expect(screen.getByText('Cancel')).toBeInTheDocument()
   })
@@ -151,7 +169,14 @@ describe('TranslateJourneyDialog', () => {
     const handleClose = jest.fn()
 
     render(
-      <MockedProvider mocks={[getLanguagesMock]}>
+      <MockedProvider
+        mocks={[
+          getLanguagesMock,
+          journeyInternalVideosMock,
+          videosVariantLanguagesMock,
+          commonLanguagesMock
+        ]}
+      >
         <JourneyProvider value={{ journey: defaultJourney }}>
           <TranslateJourneyDialog open={true} onClose={handleClose} />
         </JourneyProvider>
@@ -167,6 +192,9 @@ describe('TranslateJourneyDialog', () => {
       <MockedProvider
         mocks={[
           getLanguagesMock,
+          journeyInternalVideosMock,
+          videosVariantLanguagesMock,
+          commonLanguagesMock,
           getLastActiveTeamIdAndTeamsMock,
           journeyDuplicateMock,
           journeyAiTranslateCreateMock
@@ -184,16 +212,31 @@ describe('TranslateJourneyDialog', () => {
       </MockedProvider>
     )
 
+    const journeyLanguageSelect = screen.getByRole('combobox', {
+      name: 'Select Journey Language'
+    })
     await waitFor(() => {
-      expect(screen.getByRole('combobox')).not.toHaveAttribute(
-        'aria-disabled',
-        'true'
-      )
+      expect(journeyLanguageSelect).not.toHaveAttribute('aria-disabled', 'true')
     })
 
-    fireEvent.focus(screen.getByRole('combobox'))
-    fireEvent.keyDown(screen.getByRole('combobox'), { key: 'ArrowDown' })
-    fireEvent.click(screen.getByRole('option', { name: 'French Français' }))
+    fireEvent.focus(journeyLanguageSelect)
+    fireEvent.keyDown(journeyLanguageSelect, { key: 'ArrowDown' })
+
+    await waitFor(() => {
+      fireEvent.click(screen.getByRole('option', { name: 'French Français' }))
+    })
+
+    const videoLanguageSelect = screen.getByRole('combobox', {
+      name: 'Select Video Language'
+    })
+
+    fireEvent.focus(videoLanguageSelect)
+    fireEvent.keyDown(videoLanguageSelect, { key: 'ArrowDown' })
+
+    await waitFor(() => {
+      fireEvent.click(screen.getByRole('option', { name: 'French Français' }))
+    })
+
     fireEvent.click(screen.getByRole('button', { name: 'Create' }))
     await waitFor(() => {
       expect(journeyDuplicateMock.result).toHaveBeenCalled()

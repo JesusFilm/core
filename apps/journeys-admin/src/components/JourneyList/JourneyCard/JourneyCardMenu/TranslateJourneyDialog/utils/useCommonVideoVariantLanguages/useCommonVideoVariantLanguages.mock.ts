@@ -8,7 +8,7 @@ import {
 
 export const journey = {
   __typename: 'Journey',
-  id: 'journeyId',
+  id: 'journey-id',
   title: 'My journey'
 } as unknown as Journey
 
@@ -18,7 +18,7 @@ export const languagesMock = {
     variables: {
       languageId: '529',
       where: {
-        ids: ['529', '21028'] // assuming these are in SUPPORTED_LANGUAGE_IDS
+        ids: ['529', '496', '21028'] // assuming these are in SUPPORTED_LANGUAGE_IDS
       }
     }
   },
@@ -51,6 +51,22 @@ export const languagesMock = {
               __typename: 'LanguageName'
             }
           ]
+        },
+        {
+          id: '496',
+          slug: 'french',
+          name: [
+            {
+              value: 'Français',
+              primary: true,
+              __typename: 'LanguageName'
+            },
+            {
+              value: 'French',
+              primary: false,
+              __typename: 'LanguageName'
+            }
+          ]
         }
       ]
     }
@@ -61,13 +77,13 @@ export const journeyInternalVideosMock = {
   request: {
     query: GET_JOURNEY_INTERNAL_VIDEOS,
     variables: {
-      journeyId: 'journeyId'
+      journeyId: 'journey-id'
     }
   },
   result: {
     data: {
       journey: {
-        id: 'journeyId',
+        id: 'journey-id',
         blocks: [
           {
             __typename: 'VideoBlock',
@@ -97,13 +113,13 @@ export const journeyInternalWithoutVideosMock = {
   request: {
     query: GET_JOURNEY_INTERNAL_VIDEOS,
     variables: {
-      journeyId: 'journeyId'
+      journeyId: 'journey-id'
     }
   },
   result: {
     data: {
       journey: {
-        id: 'journeyId',
+        id: 'journey-id',
         blocks: [
           {
             __typename: 'TypographyBlock',
@@ -138,6 +154,11 @@ export const videosVariantLanguagesMock = {
             },
             {
               language: {
+                id: '496'
+              }
+            },
+            {
+              language: {
                 id: '21028'
               }
             }
@@ -152,6 +173,11 @@ export const videosVariantLanguagesMock = {
             {
               language: {
                 id: '529'
+              }
+            },
+            {
+              language: {
+                id: '496'
               }
             },
             {

@@ -57,6 +57,14 @@ describe('useCommonVideoVariantLanguages', () => {
               __typename: 'LanguageName'
             }
           ]
+        },
+        {
+          id: '496',
+          slug: 'french',
+          name: [
+            { value: 'Français', primary: true, __typename: 'LanguageName' },
+            { value: 'French', primary: false, __typename: 'LanguageName' }
+          ]
         }
       ]
     })
@@ -80,13 +88,13 @@ describe('useCommonVideoVariantLanguages', () => {
     )
 
     expect(result.current.loading).toBe(true)
-    expect(result.current.commonLanguages).toEqual([])
+    expect(result.current.commonLanguages).toEqual(undefined)
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false)
     })
 
-    expect(result.current.commonLanguages).toEqual([])
+    expect(result.current.commonLanguages).toEqual(undefined)
   })
 
   it('should handle undefined journey', () => {
@@ -95,6 +103,6 @@ describe('useCommonVideoVariantLanguages', () => {
     })
 
     expect(result.current.loading).toBe(false)
-    expect(result.current.commonLanguages).toEqual([])
+    expect(result.current.commonLanguages).toEqual(undefined)
   })
 })
