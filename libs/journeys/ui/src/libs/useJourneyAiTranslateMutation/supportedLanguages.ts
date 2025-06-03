@@ -8,7 +8,7 @@
  * - The "Copy to Team" dialog:
  * `/workspaces/core/libs/journeys/ui/src/components/CopyToTeamDialog/CopyToTeamDialog.tsx`
  * - The 'useCommonVideoVariantLanguages' hook:
- * `/workspaces/core/apps/journeys-admin/src/components/JourneyList/JourneyCard/JourneyCardMenu/TranslateJourneyDialog/utils/useCommonVideoVariantLanguages/useCommonVideoVariantLanguages.ts`
+ * `/workspaces/core/libs/journeys/ui/src/libs/useCommonVideoVariantLanguages/useCommonVideoVariantLanguages.ts`
  *
  * The IDs are sourced from both the i18n supported languages and the Gemini supported languages.
  */
