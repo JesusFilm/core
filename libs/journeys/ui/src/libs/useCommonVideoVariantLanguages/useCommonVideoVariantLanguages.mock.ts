@@ -1,4 +1,4 @@
-import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
+import { GET_LANGUAGES } from '../useLanguagesQuery'
 
 import {
   GET_JOURNEY_INTERNAL_VIDEOS,
