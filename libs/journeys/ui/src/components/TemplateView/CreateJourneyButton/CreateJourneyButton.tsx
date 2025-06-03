@@ -54,6 +54,7 @@ export function CreateJourneyButton({
     async (
       teamId: string,
       selectedLanguage?: JourneyLanguage,
+      selectedVideoLanguage?: JourneyLanguage,
       showTranslation?: boolean
     ): Promise<void> => {
       if (journey == null) return
@@ -61,6 +62,7 @@ export function CreateJourneyButton({
       const newJourneyId = await duplicateAndTranslate({
         teamId,
         selectedLanguage,
+        selectedVideoLanguage,
         shouldTranslate: showTranslation
       })
 
