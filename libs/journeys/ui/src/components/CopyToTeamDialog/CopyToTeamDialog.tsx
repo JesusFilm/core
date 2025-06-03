@@ -13,7 +13,10 @@ import { ReactElement } from 'react'
 import { boolean, object, string } from 'yup'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
-import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
+import {
+  Language,
+  LanguageAutocomplete
+} from '@core/shared/ui/LanguageAutocomplete'
 
 import { SUPPORTED_LANGUAGE_IDS } from '../../libs/useJourneyAiTranslateMutation/supportedLanguages'
 import { useLanguagesQuery } from '../../libs/useLanguagesQuery'
@@ -22,50 +25,51 @@ import { UpdateLastActiveTeamId } from '../../libs/useUpdateLastActiveTeamIdMuta
 import { useTeam } from '../TeamProvider'
 import { TranslationDialogWrapper } from '../TranslationDialogWrapper'
 
-interface CopyToTeamDialogProps {
-  title: string
-  submitLabel?: string
-  open: boolean
-  loading?: boolean
-  onClose: () => void
-  submitAction: (
-    teamId: string,
-    language?: JourneyLanguage,
-    showTranslation?: boolean
-  ) => Promise<void>
-}
-
 interface JourneyLanguage {
   id: string
   localName?: string
   nativeName?: string
 }
 
+interface CopyToTeamDialogProps {
+  title: string
+  submitLabel?: string
+  open: boolean
+  loading?: boolean
+  videoLanguages?: {
+    languages: Language[]
+  }
+  videoLanguagesLoading?: boolean
+  onClose: () => void
+  submitAction: (
+    teamId: string,
+    language?: JourneyLanguage,
+    videoLanguage?: JourneyLanguage,
+    showTranslation?: boolean
+  ) => Promise<void>
+}
+
 interface FormValues {
   teamSelect: string
   languageSelect?: JourneyLanguage
+  videoLanguageSelect?: JourneyLanguage
   showTranslation: boolean
 }
 
 /**
  * CopyToTeamDialog component provides a dialog interface for copying journeys to different teams with optional translation.
  *
- * This component:
- * - Displays a form dialog for selecting a target team
- * - Provides language selection when translation is enabled
- * - Handles form validation using Formik and Yup
- * - Manages team selection and updates the last active team
- * - Supports customizable dialog title and submit button label
- * - Shows loading states during submission
- *
  * @param {Object} props - The component props
  * @param {string} props.title - The title to display in the dialog header
  * @param {string} [props.submitLabel] - Optional custom label for the submit button
  * @param {boolean} props.open - Controls the visibility of the dialog
  * @param {boolean} [props.loading] - Optional flag to indicate loading state
+ * @param {Object} [props.videoLanguages] - Optional object containing available video languages
+ * @param {Language[]} [props.videoLanguages.languages] - Array of available video languages
+ * @param {boolean} [props.videoLanguagesLoading] - Optional flag to indicate video languages loading state
  * @param {() => void} props.onClose - Callback function invoked when the dialog should close
- * @param {(teamId: string, language?: JourneyLanguage, showTranslation?: boolean) => Promise<void>} props.submitAction -
- *        Callback function that handles the form submission with selected team, optional language, and translation preference
+ * @param {(teamId: string, language?: JourneyLanguage, videoLanguage?: JourneyLanguage, showTranslation?: boolean) => Promise<void>} props.submitAction -
+ *        Callback function that handles the form submission with selected team, optional language, optional video language, and translation preference
  * @returns {ReactElement} A dialog component with team selection and optional translation settings
  */
 export function CopyToTeamDialog({
@@ -73,6 +77,8 @@ export function CopyToTeamDialog({
   submitLabel,
   open,
   loading,
+  videoLanguages,
+  videoLanguagesLoading,
   onClose,
   submitAction
 }: CopyToTeamDialogProps): ReactElement {
@@ -98,6 +104,7 @@ export function CopyToTeamDialog({
     await submitAction(
       values.teamSelect,
       values.languageSelect,
+      values.videoLanguageSelect,
       values.showTranslation
     )
 
@@ -134,7 +141,8 @@ export function CopyToTeamDialog({
             id: string().required(t('Please select a language'))
           }),
         otherwise: (schema) => schema.nullable().optional()
-      })
+      }),
+    videoLanguageSelect: object(baseLanguageShape).nullable().optional()
   })
 
   return (
@@ -142,6 +150,7 @@ export function CopyToTeamDialog({
       initialValues={{
         teamSelect: teams.length === 1 ? teams[0].id : '',
         languageSelect: undefined,
+        videoLanguageSelect: undefined,
         showTranslation: false
       }}
       enableReinitialize
@@ -258,21 +267,48 @@ export function CopyToTeamDialog({
                 />
               </Stack>
               {values.showTranslation && (
-                <LanguageAutocomplete
-                  languages={languagesData?.languages}
-                  loading={languagesLoading}
-                  helperText={
-                    touched.languageSelect && errors.languageSelect
-                      ? (errors.languageSelect as { id?: string })?.id
-                      : ''
-                  }
-                  onChange={(value) => setFieldValue('languageSelect', value)}
-                  error={
-                    touched.languageSelect && Boolean(errors.languageSelect)
-                  }
-                  value={values.languageSelect}
-                  data-testid="language-select"
-                />
+                <Stack spacing={4}>
+                  <LanguageAutocomplete
+                    languages={languagesData?.languages}
+                    loading={languagesLoading}
+                    helperText={
+                      touched.languageSelect && errors.languageSelect
+                        ? (errors.languageSelect as { id?: string })?.id
+                        : ''
+                    }
+                    onChange={(value) => setFieldValue('languageSelect', value)}
+                    error={
+                      touched.languageSelect && Boolean(errors.languageSelect)
+                    }
+                    value={values.languageSelect}
+                    data-testid="language-select"
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        placeholder={t('Search Language')}
+                        label={t('Select Journey Language')}
+                        variant="filled"
+                      />
+                    )}
+                  />
+                  <LanguageAutocomplete
+                    languages={videoLanguages?.languages}
+                    loading={videoLanguagesLoading}
+                    onChange={(value) =>
+                      setFieldValue('videoLanguageSelect', value)
+                    }
+                    value={values.videoLanguageSelect}
+                    data-testid="video-language-select"
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        placeholder={t('Search Language')}
+                        label={t('Select Video Language')}
+                        variant="filled"
+                      />
+                    )}
+                  />
+                </Stack>
               )}
             </Stack>
           </TranslationDialogWrapper>

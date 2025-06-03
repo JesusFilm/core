@@ -5,6 +5,7 @@ import { ReactElement, useState } from 'react'
 import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import { CopyToTeamDialog } from '@core/journeys/ui/CopyToTeamDialog'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useCommonVideoVariantLanguages } from '@core/journeys/ui/useCommonVideoVariantLanguages'
 import { useJourneyDuplicateAndTranslate } from '@core/journeys/ui/useJourneyDuplicateAndTranslate'
 import CopyToIcon from '@core/shared/ui/icons/CopyTo'
 
@@ -27,13 +28,6 @@ interface JourneyLanguage {
 /**
  * CopyToTeamMenuItem component provides a menu item for copying journeys between teams.
  *
- * This component:
- * - Renders a menu item that triggers a journey copy dialog
- * - Handles the journey duplication process with optional translation
- * - Integrates with the router for URL parameter management
- * - Tracks page views through beacon analytics
- * - Supports both direct journey props and context-based journey data
- *
  * @param {Object} props - The component props
  * @param {string} [props.id] - Optional unique identifier for the journey to be copied
  * @param {() => void} props.handleCloseMenu - Callback function to close the parent menu
@@ -55,6 +49,9 @@ export function CopyToTeamMenuItem({
   const { journey: journeyFromContext } = useJourney()
   const journeyData = journey ?? journeyFromContext
 
+  const { commonLanguages, loading: commonLanguagesLoading } =
+    useCommonVideoVariantLanguages(journeyData)
+
   const { duplicateAndTranslate, loading } = useJourneyDuplicateAndTranslate({
     journeyId: journeyData?.id,
     journeyTitle: journeyData?.title ?? '',
@@ -71,6 +68,7 @@ export function CopyToTeamMenuItem({
   const handleDuplicateJourney = async (
     teamId: string,
     selectedLanguage?: JourneyLanguage,
+    selectedVideoLanguage?: JourneyLanguage,
     showTranslation?: boolean
   ): Promise<void> => {
     if (id == null || journeyData == null) return
@@ -78,6 +76,7 @@ export function CopyToTeamMenuItem({
     await duplicateAndTranslate({
       teamId,
       selectedLanguage,
+      selectedVideoLanguage,
       shouldTranslate: showTranslation
     })
   }
@@ -109,6 +108,8 @@ export function CopyToTeamMenuItem({
         submitLabel={t('Copy')}
         open={duplicateTeamDialogOpen}
         loading={loading}
+        videoLanguages={commonLanguages}
+        videoLanguagesLoading={commonLanguagesLoading}
         onClose={() => {
           setDuplicateTeamDialogOpen(false)
         }}
