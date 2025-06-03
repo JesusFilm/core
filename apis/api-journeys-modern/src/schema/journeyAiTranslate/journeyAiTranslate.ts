@@ -237,7 +237,7 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
         if (input.videoLanguageId) {
           yield {
             progress: 70,
-            message: 'Updating video language settings...',
+            message: 'Updating the language of videos...',
             journey: updatedJourney
           }
 
