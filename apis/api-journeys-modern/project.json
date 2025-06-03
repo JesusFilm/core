@@ -113,5 +113,5 @@
         "command": "nx prisma-generate prisma-journeys"
       }
     }
-  } 
+  }
 }
