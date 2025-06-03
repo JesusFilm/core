@@ -1,8 +1,8 @@
 import { gql, useQuery } from '@apollo/client'
 import { useMemo } from 'react'
 
-import { SUPPORTED_LANGUAGE_IDS } from '@core/journeys/ui/useJourneyAiTranslateMutation/supportedLanguages'
-import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
+import { SUPPORTED_LANGUAGE_IDS } from '../useJourneyAiTranslateMutation/supportedLanguages'
+import { useLanguagesQuery } from '../useLanguagesQuery'
 
 import {
   GetJourneyInternalVideos,
