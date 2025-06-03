@@ -3,6 +3,7 @@ import { generateObject, streamObject } from 'ai'
 import { GraphQLError } from 'graphql'
 import { z } from 'zod'
 
+import { VideoBlockSource } from '.prisma/api-journeys-modern-client'
 import { hardenPrompt, preSystemPrompt } from '@core/shared/ai/prompts'
 
 import { Action, ability, subject } from '../../lib/auth/ability'
@@ -23,7 +24,8 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
             name: t.string({ required: true }),
             journeyLanguageName: t.string({ required: true }),
             textLanguageId: t.id({ required: true }),
-            textLanguageName: t.string({ required: true })
+            textLanguageName: t.string({ required: true }),
+            videoLanguageId: t.id()
           })
         }),
         required: true
@@ -164,6 +166,20 @@ Return in this format:
 
         // Use analysisAndTranslation.analysis for card translation context
         const journeyAnalysis = analysisAndTranslation.analysis
+
+        // Update video blocks' videoVariantLanguageId if videoLanguageId is provided
+        if (input.videoLanguageId) {
+          await prisma.block.updateMany({
+            where: {
+              journeyId: input.journeyId,
+              typename: 'VideoBlock',
+              source: VideoBlockSource.internal
+            },
+            data: {
+              videoVariantLanguageId: input.videoLanguageId
+            }
+          })
+        }
 
         // 5. Translate each card
         const cardBlocks = journey.blocks.filter(
