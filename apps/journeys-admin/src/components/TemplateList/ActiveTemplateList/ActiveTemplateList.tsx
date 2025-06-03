@@ -132,7 +132,7 @@ export function ActiveTemplateList({
       }}
     >
       {sortedJourneys != null ? (
-        <Box>
+        <>
           <Grid container spacing={4} rowSpacing={{ xs: 2.5, sm: 4 }}>
             {sortedJourneys.map((journey) => (
               <Grid
@@ -167,7 +167,7 @@ export function ActiveTemplateList({
               </Typography>
             </Box>
           )}
-        </Box>
+        </>
       ) : (
         <LoadingJourneyList hideHelperText />
       )}
