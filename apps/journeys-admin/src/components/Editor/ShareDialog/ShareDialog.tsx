@@ -6,21 +6,18 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
-import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
-import { CopyTextField } from '@core/shared/ui/CopyTextField'
 import { Dialog } from '@core/shared/ui/Dialog'
 import Code1Icon from '@core/shared/ui/icons/Code1'
-import Edit2Icon from '@core/shared/ui/icons/Edit2'
-import Embed from '@core/shared/ui/icons/Embed'
-import ImageFocus from '@core/shared/ui/icons/ImageFocus'
 import LinkAngled from '@core/shared/ui/icons/LinkAngled'
 import TransformIcon from '@core/shared/ui/icons/Transform'
 
 import { GetJourneyForSharing_journey as JourneyFromLazyQuery } from '../../../../__generated__/GetJourneyForSharing'
 import { JourneyFields as JourneyFromContext } from '../../../../__generated__/JourneyFields'
+
+import { LinkTab } from './tabs/LinkTab'
 
 interface ShareDialogProps {
   open: boolean
@@ -51,7 +48,6 @@ export function ShareDialog({
   onClose,
   journey,
   hostname,
-  onEditUrlClick,
   onEmbedJourneyClick,
   onQrCodeClick
 }: ShareDialogProps): ReactElement {
@@ -63,7 +59,16 @@ export function ShareDialog({
   }
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      dialogTitle={{ title: t('Share This Journey'), closeButton: true }}
+      sx={{
+        '& .MuiDialogContent-root': {
+          paddingBottom: 0
+        }
+      }}
+    >
       {journey == null ? (
         <Box
           display="flex"
@@ -75,40 +80,14 @@ export function ShareDialog({
         </Box>
       ) : (
         <Stack direction="column" spacing={4}>
-          <Typography variant="subtitle2" gutterBottom>
-            {t('Share This Journey')}
-          </Typography>
           <TabContext value={value}>
             <Tabs variant="fullWidth" value={value} onChange={handleChange}>
               <Tab icon={<LinkAngled />} label={t('Link')} value="0" />
-              <Tab icon={<ImageFocus />} label={t('QR Code')} value="1" />
-              <Tab icon={<Embed />} label={t('Embed')} value="2" />
+              <Tab icon={<TransformIcon />} label={t('QR Code')} value="1" />
+              <Tab icon={<Code1Icon />} label={t('Embed')} value="2" />
             </Tabs>
 
-            <TabPanel value="0">
-              <CopyTextField
-                value={
-                  journey?.slug != null && journey.slug !== ''
-                    ? `${
-                        hostname != null
-                          ? `https://${hostname}`
-                          : (process.env.NEXT_PUBLIC_JOURNEYS_URL ??
-                            'https://your.nextstep.is')
-                      }/${journey?.slug}`
-                    : undefined
-                }
-              />
-              <Box sx={{ mt: 2 }}>
-                <Button
-                  onClick={onEditUrlClick}
-                  size="small"
-                  startIcon={<Edit2Icon />}
-                  disabled={journey == null}
-                >
-                  {t('Edit URL')}
-                </Button>
-              </Box>
-            </TabPanel>
+            <LinkTab journey={journey} hostname={hostname} />
 
             <TabPanel value="1">
               <Button
@@ -121,7 +100,7 @@ export function ShareDialog({
                 {t('Generate QR Code')}
               </Button>
             </TabPanel>
-            
+
             <TabPanel value="2">
               <Button
                 onClick={onEmbedJourneyClick}
