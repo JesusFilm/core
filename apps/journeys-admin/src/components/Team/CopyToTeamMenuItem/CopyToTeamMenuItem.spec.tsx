@@ -14,6 +14,11 @@ import {
   TeamProvider
 } from '@core/journeys/ui/TeamProvider'
 import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
+import {
+  languagesMock as commonLanguagesMock,
+  journeyInternalVideosMock,
+  videosVariantLanguagesMock
+} from '@core/journeys/ui/useCommonVideoVariantLanguages/useCommonVideoVariantLanguages.mock'
 import { SUPPORTED_LANGUAGE_IDS } from '@core/journeys/ui/useJourneyAiTranslateMutation/supportedLanguages'
 import { JOURNEY_AI_TRANSLATE_CREATE } from '@core/journeys/ui/useJourneyAiTranslateMutation/useJourneyAiTranslateMutation'
 import { JOURNEY_DUPLICATE } from '@core/journeys/ui/useJourneyDuplicateMutation'
@@ -76,21 +81,22 @@ describe('DuplicateJourneys', () => {
         journeyId: 'duplicatedJourneyId',
         name: 'Journey',
         journeyLanguageName: 'English',
-        textLanguageId: '528',
-        textLanguageName: 'Español'
+        textLanguageId: '496',
+        textLanguageName: 'Français',
+        videoLanguageId: '496'
       }
     },
     result: jest.fn(() => ({
       data: {
         journeyAiTranslateCreate: {
           id: 'translatedJourneyId',
-          title: 'Viaje Traducido',
-          description: 'Esta es una descripción traducida',
-          languageId: '528',
+          title: 'Some french title',
+          description: 'some french description',
+          languageId: '496',
           language: {
-            id: '528',
+            id: '496',
             name: {
-              value: 'Español',
+              value: 'Français',
               primary: true
             }
           },
@@ -105,7 +111,7 @@ describe('DuplicateJourneys', () => {
     request: {
       query: JOURNEY_DUPLICATE,
       variables: {
-        id: 'journeyId',
+        id: 'journey-id',
         teamId: 'teamId'
       }
     },
@@ -185,6 +191,23 @@ describe('DuplicateJourneys', () => {
                 __typename: 'LanguageName'
               }
             ]
+          },
+          {
+            __typename: 'Language',
+            id: '496',
+            slug: 'french',
+            name: [
+              {
+                value: 'Français',
+                primary: true,
+                __typename: 'LanguageName'
+              },
+              {
+                value: 'French',
+                primary: false,
+                __typename: 'LanguageName'
+              }
+            ]
           }
         ]
       }
@@ -210,7 +233,7 @@ describe('DuplicateJourneys', () => {
               journey={
                 {
                   __typename: 'Journey',
-                  id: 'journeyId',
+                  id: 'journey-id',
                   slug: 'journey',
                   title: 'Journey',
                   description: null,
@@ -285,7 +308,10 @@ describe('DuplicateJourneys', () => {
           mockLanguage,
           translateMock,
           duplicateJourneyMock,
-          getLastActiveTeamIdAndTeamsMock
+          getLastActiveTeamIdAndTeamsMock,
+          journeyInternalVideosMock,
+          videosVariantLanguagesMock,
+          commonLanguagesMock
         ]}
       >
         <SnackbarProvider>
@@ -296,7 +322,7 @@ describe('DuplicateJourneys', () => {
               journey={
                 {
                   __typename: 'Journey',
-                  id: 'journeyId',
+                  id: 'journey-id',
                   slug: 'journey',
                   title: 'Journey',
                   description: null,
@@ -338,18 +364,31 @@ describe('DuplicateJourneys', () => {
     fireEvent.click(muiSelectOptions)
     fireEvent.click(screen.getByRole('checkbox', { name: 'Translation' }))
 
+    const journeyLanguageSelect = screen.getByRole('combobox', {
+      name: 'Select Journey Language'
+    })
     await waitFor(() => {
-      expect(screen.getByTestId('LanguageAutocomplete')).not.toHaveAttribute(
-        'aria-disabled',
-        'true'
-      )
+      expect(journeyLanguageSelect).not.toHaveAttribute('aria-disabled', 'true')
     })
 
-    fireEvent.focus(screen.getByTestId('LanguageAutocomplete'))
-    fireEvent.keyDown(screen.getByTestId('LanguageAutocomplete'), {
-      key: 'ArrowDown'
+    fireEvent.focus(journeyLanguageSelect)
+    fireEvent.keyDown(journeyLanguageSelect, { key: 'ArrowDown' })
+
+    await waitFor(() => {
+      fireEvent.click(screen.getByRole('option', { name: 'French Français' }))
     })
-    fireEvent.click(screen.getByRole('option', { name: 'Spanish Español' }))
+
+    const videoLanguageSelect = screen.getByRole('combobox', {
+      name: 'Select Video Language'
+    })
+
+    fireEvent.focus(videoLanguageSelect)
+    fireEvent.keyDown(videoLanguageSelect, { key: 'ArrowDown' })
+
+    await waitFor(() => {
+      fireEvent.click(screen.getByRole('option', { name: 'French Français' }))
+    })
+
     fireEvent.click(screen.getByRole('button', { name: 'Copy' }))
     await waitFor(() => {
       expect(duplicateJourneyMock.result).toHaveBeenCalled()

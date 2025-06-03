@@ -8,17 +8,17 @@ import {
   TeamProvider
 } from '@core/journeys/ui/TeamProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
+import {
+  languagesMock as commonLanguagesMock,
+  journeyInternalVideosMock,
+  videosVariantLanguagesMock
+} from '@core/journeys/ui/useCommonVideoVariantLanguages/useCommonVideoVariantLanguages.mock'
 import { JOURNEY_AI_TRANSLATE_CREATE } from '@core/journeys/ui/useJourneyAiTranslateMutation'
 import { SUPPORTED_LANGUAGE_IDS } from '@core/journeys/ui/useJourneyAiTranslateMutation/supportedLanguages'
 import { JOURNEY_DUPLICATE } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
 import { TranslateJourneyDialog } from './TranslateJourneyDialog'
-import {
-  languagesMock as commonLanguagesMock,
-  journeyInternalVideosMock,
-  videosVariantLanguagesMock
-} from './utils/useCommonVideoVariantLanguages/useCommonVideoVariantLanguages.mock'
 
 jest.mock('@mui/material/useMediaQuery')
 

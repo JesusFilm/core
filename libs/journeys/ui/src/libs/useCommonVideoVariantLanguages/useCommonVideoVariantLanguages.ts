@@ -4,8 +4,6 @@ import { useMemo } from 'react'
 import { SUPPORTED_LANGUAGE_IDS } from '@core/journeys/ui/useJourneyAiTranslateMutation/supportedLanguages'
 import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
 
-import { GetAdminJourneys_journeys as AdminJourney } from '../../../../../../apps/journeys-admin/__generated__/GetAdminJourneys'
-import { JourneyFields } from '../../../../../../apps/journeys-admin/__generated__/JourneyFields'
 import {
   GetJourneyInternalVideos,
   GetJourneyInternalVideosVariables
@@ -48,9 +46,7 @@ export const GET_VIDEOS_VARIANT_LANGUAGES = gql`
   }
 `
 
-export function useCommonVideoVariantLanguages(
-  journey?: AdminJourney | JourneyFields
-) {
+export function useCommonVideoVariantLanguages(journey?: { id: string }) {
   const { data: journeyInternalVideos, loading: journeyVideosLoading } =
     useQuery<GetJourneyInternalVideos, GetJourneyInternalVideosVariables>(
       GET_JOURNEY_INTERNAL_VIDEOS,
