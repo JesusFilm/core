@@ -27,7 +27,7 @@ export interface JourneyAiTranslateCreate_journeyAiTranslateCreate {
    */
   title: string;
   description: string | null;
-  languageId: string;
+  languageId: string | null;
   language: JourneyAiTranslateCreate_journeyAiTranslateCreate_language;
   createdAt: any;
   updatedAt: any;
