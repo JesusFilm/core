@@ -86,8 +86,6 @@ const teamResult = jest.fn(() => ({
   }
 }))
 
-const setOpenTeamDialogMock = jest.fn()
-
 const createJourneyButton = (
   <MockedProvider
     mocks={[

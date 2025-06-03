@@ -22,6 +22,7 @@ interface UseJourneyDuplicateAndTranslateProps {
 interface DuplicateAndTranslateProps {
   teamId: string
   selectedLanguage?: JourneyLanguage
+  selectedVideoLanguage?: JourneyLanguage
   shouldTranslate?: boolean
 }
 
@@ -52,6 +53,7 @@ export function useJourneyDuplicateAndTranslate({
   const duplicateAndTranslate = async ({
     teamId,
     selectedLanguage,
+    selectedVideoLanguage,
     shouldTranslate
   }: DuplicateAndTranslateProps): Promise<string | undefined> => {
     if (journeyId == null) return
@@ -87,6 +89,7 @@ export function useJourneyDuplicateAndTranslate({
         name: journeyTitle,
         journeyLanguageName,
         textLanguageId: selectedLanguage.id,
+        videoLanguageId: selectedVideoLanguage?.id,
         textLanguageName:
           selectedLanguage.nativeName ?? selectedLanguage.localName ?? ''
       },

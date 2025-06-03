@@ -71,7 +71,9 @@ export default function AddAudioLanguageDialog({
   const formikRef = useRef<FormikProps<FormikValues>>(null)
 
   const { data, loading: languagesLoading } = useLanguagesQuery({
-    languageId: '529'
+    variables: {
+      languageId: '529'
+    }
   })
 
   const { data: variantsData } = useSuspenseQuery(GET_ADMIN_VIDEO_VARIANTS, {

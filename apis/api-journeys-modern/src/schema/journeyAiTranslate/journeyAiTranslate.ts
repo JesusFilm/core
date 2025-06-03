@@ -3,6 +3,7 @@ import { generateObject, streamObject } from 'ai'
 import { GraphQLError } from 'graphql'
 import { z } from 'zod'
 
+import { VideoBlockSource } from '.prisma/api-journeys-modern-client'
 import { hardenPrompt, preSystemPrompt } from '@core/shared/ai/prompts'
 
 import { Action, ability, subject } from '../../lib/auth/ability'
@@ -76,7 +77,8 @@ const JourneyAiTranslateInput = builder.inputType('JourneyAiTranslateInput', {
     name: t.string({ required: true }),
     journeyLanguageName: t.string({ required: true }),
     textLanguageId: t.id({ required: true }),
-    textLanguageName: t.string({ required: true })
+    textLanguageName: t.string({ required: true }),
+    videoLanguageId: t.id()
   })
 })
 
@@ -204,7 +206,7 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
         }
 
         yield {
-          progress: 70,
+          progress: 60,
           message: 'Updating journey with translated title...',
           journey: null
         }
@@ -231,14 +233,44 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
           }
         })
 
+        // Update video blocks' videoVariantLanguageId if videoLanguageId is provided
+        if (input.videoLanguageId) {
+          yield {
+            progress: 70,
+            message: 'Updating the language of videos...',
+            journey: updatedJourney
+          }
+
+          await prisma.block.updateMany({
+            where: {
+              journeyId: input.journeyId,
+              typename: 'VideoBlock',
+              source: VideoBlockSource.internal
+            },
+            data: {
+              videoVariantLanguageId: input.videoLanguageId
+            }
+          })
+        }
+
+        // Refetch journey to include updated video blocks
+        const journeyWithUpdatedVideos = await prisma.journey.findUnique({
+          where: { id: input.journeyId },
+          include: {
+            blocks: true
+          }
+        })
+
+        const journeyToTranslate = journeyWithUpdatedVideos ?? updatedJourney
+
         yield {
           progress: 80,
           message: `Translating card content (${cardBlocks.length} cards)...`,
-          journey: updatedJourney
+          journey: journeyToTranslate
         }
 
         // Step 2: Translate blocks for each card with progress updates
-        // Use updatedJourney as the working journey object to update with translated blocks
+        // Use journeyToTranslate as the working journey object to update with translated blocks
         const translateCard = async (
           cardContent: string,
           cardIndex: number
@@ -246,7 +278,7 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
           try {
             // Get translatable blocks for this card
             const cardBlock = cardBlocks[cardIndex]
-            const cardChildren = updatedJourney.blocks.filter(
+            const cardChildren = journeyToTranslate.blocks.filter(
               (block) => block.parentBlockId === cardBlock.id
             )
 
@@ -306,12 +338,12 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
                   )
 
                   // Update the in-memory journey blocks
-                  const blockIndex = updatedJourney.blocks.findIndex(
+                  const blockIndex = journeyToTranslate.blocks.findIndex(
                     (block) => block.id === translation.blockId
                   )
                   if (blockIndex !== -1 && translation.updates) {
-                    updatedJourney.blocks[blockIndex] = {
-                      ...updatedJourney.blocks[blockIndex],
+                    journeyToTranslate.blocks[blockIndex] = {
+                      ...journeyToTranslate.blocks[blockIndex],
                       ...translation.updates
                     }
                   }
@@ -355,7 +387,7 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
           yield {
             progress: progressPercent,
             message: `Translated ${completedCards} of ${cardBlocks.length} cards`,
-            journey: updatedJourney
+            journey: journeyToTranslate
           }
         }
 
@@ -537,8 +569,36 @@ Return in this format:
           }
         })
 
+        // Update video blocks' videoVariantLanguageId if videoLanguageId is provided
+        if (input.videoLanguageId) {
+          await prisma.block.updateMany({
+            where: {
+              journeyId: input.journeyId,
+              typename: 'VideoBlock',
+              source: VideoBlockSource.internal
+            },
+            data: {
+              videoVariantLanguageId: input.videoLanguageId
+            }
+          })
+        }
+
         // Use analysisAndTranslation.analysis for card translation context
         const journeyAnalysis = analysisAndTranslation.analysis
+
+        // Update video blocks' videoVariantLanguageId if videoLanguageId is provided
+        if (input.videoLanguageId) {
+          await prisma.block.updateMany({
+            where: {
+              journeyId: input.journeyId,
+              typename: 'VideoBlock',
+              source: VideoBlockSource.internal
+            },
+            data: {
+              videoVariantLanguageId: input.videoLanguageId
+            }
+          })
+        }
 
         // 5. Translate each card
         const cardBlocks = journey.blocks.filter(

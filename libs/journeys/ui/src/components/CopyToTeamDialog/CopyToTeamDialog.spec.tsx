@@ -318,7 +318,9 @@ describe('DuplicateJourneys', () => {
         name: 'Translation'
       })
     )
-    expect(screen.getByPlaceholderText('Search Language')).toBeInTheDocument()
+    expect(
+      screen.getByRole('combobox', { name: 'Select Journey Language' })
+    ).toBeInTheDocument()
   })
 
   it('should not submit if no language is selected and translation is checked', async () => {
@@ -350,7 +352,9 @@ describe('DuplicateJourneys', () => {
         name: 'Translation'
       })
     )
-    expect(screen.getByPlaceholderText('Search Language')).toBeInTheDocument()
+    expect(
+      screen.getByRole('combobox', { name: 'Select Journey Language' })
+    ).toBeInTheDocument()
     fireEvent.click(screen.getByText('Copy'))
     expect(handleSubmitActionMock).not.toHaveBeenCalled()
     await waitFor(() =>

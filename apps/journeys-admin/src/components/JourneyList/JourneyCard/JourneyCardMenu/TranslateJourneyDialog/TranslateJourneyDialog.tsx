@@ -1,3 +1,4 @@
+import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import useMediaQuery from '@mui/material/useMediaQuery'
@@ -7,6 +8,7 @@ import { ReactElement, useState } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { TranslationDialogWrapper } from '@core/journeys/ui/TranslationDialogWrapper'
+import { useCommonVideoVariantLanguages } from '@core/journeys/ui/useCommonVideoVariantLanguages'
 import { SUPPORTED_LANGUAGE_IDS } from '@core/journeys/ui/useJourneyAiTranslateMutation/supportedLanguages'
 import { useJourneyDuplicateAndTranslate } from '@core/journeys/ui/useJourneyDuplicateAndTranslate'
 import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
@@ -54,10 +56,15 @@ export function TranslateJourneyDialog({
   const { activeTeam } = useTeam()
   const journeyData = journey ?? journeyFromContext
 
+  const { commonLanguages, loading: commonLanguagesLoading } =
+    useCommonVideoVariantLanguages(journeyData)
+
   const { data: languagesData, loading: languagesLoading } = useLanguagesQuery({
-    languageId: '529',
-    where: {
-      ids: [...SUPPORTED_LANGUAGE_IDS]
+    variables: {
+      languageId: '529',
+      where: {
+        ids: [...SUPPORTED_LANGUAGE_IDS]
+      }
     }
   })
 
@@ -86,12 +93,18 @@ export function TranslateJourneyDialog({
     JourneyLanguage | undefined
   >(journeyLanguage)
 
+  const [selectedVideoLanguage, setSelectedVideoLanguage] = useState<
+    JourneyLanguage | undefined
+  >()
+
   function handleDialogClose(
     _?: object,
     reason?: 'backdropClick' | 'escapeKeyDown'
   ): void {
     if (loading && (reason === 'backdropClick' || reason === 'escapeKeyDown'))
       return
+    setSelectedLanguage(journeyLanguage)
+    setSelectedVideoLanguage(undefined)
     onClose()
   }
 
@@ -106,6 +119,7 @@ export function TranslateJourneyDialog({
     await duplicateAndTranslate({
       teamId: activeTeam.id,
       selectedLanguage,
+      selectedVideoLanguage,
       shouldTranslate: true
     })
   }
@@ -122,23 +136,42 @@ export function TranslateJourneyDialog({
       divider={false}
       isTranslation={true}
     >
-      <LanguageAutocomplete
-        onChange={async (value) => setSelectedLanguage(value)}
-        value={selectedLanguage}
-        languages={languagesData?.languages}
-        loading={languagesLoading}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            placeholder={t('Search Language')}
-            label={t('Select Language')}
-            variant="filled"
-          />
-        )}
-        popper={{
-          placement: !smUp ? 'top' : 'bottom'
-        }}
-      />
+      <Stack spacing={4}>
+        <LanguageAutocomplete
+          onChange={async (value) => setSelectedLanguage(value)}
+          value={selectedLanguage}
+          languages={languagesData?.languages}
+          loading={languagesLoading}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              placeholder={t('Search Language')}
+              label={t('Select Journey Language')}
+              variant="filled"
+            />
+          )}
+          popper={{
+            placement: !smUp ? 'top' : 'bottom'
+          }}
+        />
+        <LanguageAutocomplete
+          onChange={async (value) => setSelectedVideoLanguage(value)}
+          value={selectedVideoLanguage}
+          languages={commonLanguages?.languages}
+          loading={commonLanguagesLoading}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              placeholder={t('Search Language')}
+              label={t('Select Video Language')}
+              variant="filled"
+            />
+          )}
+          popper={{
+            placement: !smUp ? 'top' : 'bottom'
+          }}
+        />
+      </Stack>
     </TranslationDialogWrapper>
   )
 }

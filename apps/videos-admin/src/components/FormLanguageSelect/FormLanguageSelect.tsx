@@ -22,7 +22,11 @@ export function FormLanguageSelect({
   parentObjectId?: string
 }): ReactElement {
   // TODO: provide correct languageId
-  const { data, loading } = useLanguagesQuery({ languageId: '529' })
+  const { data, loading } = useLanguagesQuery({
+    variables: {
+      languageId: '529'
+    }
+  })
   const [formikProps, meta, helpers] = useField(name)
   const [selectedLanguage, setSelectedLanguage] = useState<
     LanguageOption | undefined

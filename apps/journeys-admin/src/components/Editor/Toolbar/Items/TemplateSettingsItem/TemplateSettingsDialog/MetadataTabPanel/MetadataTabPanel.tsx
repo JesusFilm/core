@@ -18,7 +18,11 @@ import { useTemplateSettingsForm } from '../useTemplateSettingsForm'
 
 export function MetadataTabPanel(): ReactElement {
   const { values, handleChange, setFieldValue } = useTemplateSettingsForm()
-  const { data, loading } = useLanguagesQuery({ languageId: '529' })
+  const { data, loading } = useLanguagesQuery({
+    variables: {
+      languageId: '529'
+    }
+  })
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
 
