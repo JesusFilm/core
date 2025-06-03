@@ -12,14 +12,14 @@ import { GetJourneyForSharing_journey as JourneyFromLazyQuery } from '../../../.
 import { JourneyFields as JourneyFromContext } from '../../../../../../../__generated__/JourneyFields'
 import { JourneySlugUpdate } from '../../../../../../../__generated__/JourneySlugUpdate'
 
-export const JOURNEY_SLUG_UPDATE = gql`
-  mutation JourneySlugUpdate($id: ID!, $input: JourneyUpdateInput!) {
-    journeyUpdate(id: $id, input: $input) {
-      id
-      slug
-    }
-  }
-`
+// export const JOURNEY_SLUG_UPDATE = gql`
+//   mutation JourneySlugUpdate($id: ID!, $input: JourneyUpdateInput!) {
+//     journeyUpdate(id: $id, input: $input) {
+//       id
+//       slug
+//     }
+//   }
+// `
 
 interface SlugDialogProps {
   open?: boolean
@@ -35,7 +35,7 @@ export function SlugDialog({
   journey
 }: SlugDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [journeyUpdate] = useMutation<JourneySlugUpdate>(JOURNEY_SLUG_UPDATE)
+  // const [journeyUpdate] = useMutation<JourneySlugUpdate>(JOURNEY_SLUG_UPDATE)
   const { enqueueSnackbar } = useSnackbar()
   const slugSchema = object().shape({
     slug: string().required(t('Required'))
@@ -49,10 +49,10 @@ export function SlugDialog({
     if (id == null) return
 
     try {
-      const response = await journeyUpdate({
-        variables: { id, input: { slug: values.slug } }
-      })
-      await setValues({ slug: response?.data?.journeyUpdate.slug })
+      // const response = await journeyUpdate({
+      //   variables: { id, input: { slug: values.slug } }
+      // })
+      // await setValues({ slug: response?.data?.journeyUpdate.slug })
       onClose?.()
     } catch (error) {
       if (error instanceof ApolloError) {

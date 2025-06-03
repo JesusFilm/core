@@ -2,9 +2,11 @@ import { gql, useMutation } from '@apollo/client'
 import TabPanel from '@mui/lab/TabPanel'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import Skeleton from '@mui/material/Skeleton'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, Formik, FormikHelpers, FormikValues } from 'formik'
+import Image from 'next/image'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
@@ -36,6 +38,10 @@ export function LinkTab({ journey, hostname }: LinkTabProps): ReactElement {
   const [journeyUpdate] = useMutation<JourneySlugUpdate>(JOURNEY_SLUG_UPDATE)
   const { enqueueSnackbar } = useSnackbar()
   const [isEditing, setIsEditing] = useState(false)
+
+  const previewTitle = 'Aliquam pellentesque ultrices faucibus nulla'
+  const previewDescription =
+    'Lorem ipsum dolor sit amet consectetur. Habitant feuegiat sit pulvinar mauris elit luctus malesuada non dignissim.'
 
   const slugSchema = object().shape({
     slug: string().required(t('Required'))
@@ -106,8 +112,49 @@ export function LinkTab({ journey, hostname }: LinkTabProps): ReactElement {
       : undefined
 
   return (
-    <TabPanel value="0">
+    <TabPanel value="0" sx={{ padding: 0 }}>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+        <Box>
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 2,
+              borderRadius: 1,
+              backgroundColor: 'background.paper'
+            }}
+          >
+            {/* Image placeholder */}
+            <Box
+              sx={{
+                width: '33%',
+                minHeight: 130,
+                borderRadius: 1,
+                overflow: 'hidden',
+                position: 'relative'
+              }}
+            >
+              {journey?.primaryImageBlock?.src != null ? (
+                <Image
+                  src={journey?.primaryImageBlock?.src ?? ''}
+                  alt="Journey Image"
+                  fill
+                  style={{ objectFit: 'cover' }}
+                />
+              ) : (
+                <Skeleton variant="rectangular" width="100%" height="100%" />
+              )}
+            </Box>
+            {/* Content */}
+            <Box sx={{ flex: 1, paddingLeft: 4 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+                {journey?.title}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {journey?.description}
+              </Typography>
+            </Box>
+          </Box>
+        </Box>
         {!isEditing ? (
           <>
             {/* Header with Action Buttons - Non-editing */}

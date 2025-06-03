@@ -55,6 +55,8 @@ describe('ShareItem', () => {
           __typename: 'Journey',
           id: 'journeyId',
           slug: 'default',
+          title: 'Journey Title',
+          description: 'Journey Description',
           language: {
             __typename: 'Language',
             id: 'languageId',
@@ -70,6 +72,20 @@ describe('ShareItem', () => {
           },
           themeName: ThemeName.base,
           themeMode: ThemeMode.light,
+          primaryImageBlock: {
+            __typename: 'ImageBlock',
+            id: 'imageBlockId',
+            parentBlockId: 'parentBlockId',
+            parentOrder: 1,
+            src: 'https://example.com/image.jpg',
+            alt: 'Journey Image',
+            width: 100,
+            height: 100,
+            blurhash: 'blurhash',
+            scale: 1,
+            focalTop: 0.5,
+            focalLeft: 0.5
+          },
           team: {
             __typename: 'Team',
             id: 'teamId',
