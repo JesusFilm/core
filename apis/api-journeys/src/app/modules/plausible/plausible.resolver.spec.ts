@@ -73,7 +73,8 @@ describe('PlausibleResolver', () => {
     logoImageBlockId: null,
     menuStepBlockId: null,
     socialNodeX: null,
-    socialNodeY: null
+    socialNodeY: null,
+    fromTemplateId: null
   }
 
   const journeyWithUserTeam = {

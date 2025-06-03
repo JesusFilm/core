@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { type NextRouter, useRouter } from 'next/router'
 
 import {
@@ -49,6 +49,7 @@ const journey: Journey = {
   },
   status: JourneyStatus.published,
   createdAt: '2021-11-19T12:34:56.647Z',
+  updatedAt: '2021-11-19T12:34:56.647Z',
   publishedAt: '2021-11-19T12:34:56.647Z',
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
@@ -101,10 +102,7 @@ const createJourneyButton = (
     ]}
   >
     <JourneyProvider value={{ journey }}>
-      <CreateJourneyButton
-        openTeamDialog={false}
-        setOpenTeamDialog={setOpenTeamDialogMock}
-      />
+      <CreateJourneyButton />
     </JourneyProvider>
   </MockedProvider>
 )
@@ -139,15 +137,13 @@ describe('CreateJourneyButton', () => {
           }
         ]}
       >
-        <CreateJourneyButton
-          signedIn
-          openTeamDialog={false}
-          setOpenTeamDialog={setOpenTeamDialogMock}
-        />
+        <CreateJourneyButton signedIn />
       </MockedProvider>
     )
 
-    expect(setOpenTeamDialogMock).toHaveBeenCalledWith(true)
+    await waitFor(() =>
+      expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
+    )
   })
 
   it('should open team dialog on button click if signed in', async () => {
@@ -167,18 +163,16 @@ describe('CreateJourneyButton', () => {
         ]}
       >
         <JourneyProvider value={{ journey }}>
-          <CreateJourneyButton
-            signedIn
-            openTeamDialog={false}
-            setOpenTeamDialog={setOpenTeamDialogMock}
-          />
+          <CreateJourneyButton signedIn />
         </JourneyProvider>
       </MockedProvider>
     )
 
     fireEvent.click(getByRole('button', { name: 'Use This Template' }))
 
-    expect(setOpenTeamDialogMock).toHaveBeenCalledWith(true)
+    await waitFor(() =>
+      expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
+    )
   })
 
   describe('if not signed in', () => {
@@ -397,11 +391,7 @@ describe('CreateJourneyButton', () => {
       >
         <TeamProvider>
           <JourneyProvider value={{}}>
-            <CreateJourneyButton
-              signedIn
-              openTeamDialog={false}
-              setOpenTeamDialog={setOpenTeamDialogMock}
-            />
+            <CreateJourneyButton signedIn />
           </JourneyProvider>
         </TeamProvider>
       </MockedProvider>

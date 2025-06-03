@@ -260,7 +260,8 @@ describe('HostResolver', () => {
       logoImageBlockId: null,
       menuStepBlockId: null,
       socialNodeX: null,
-      socialNodeY: null
+      socialNodeY: null,
+      fromTemplateId: null
     }
 
     it('deletes an existing host', async () => {

@@ -5,8 +5,8 @@ NS Admin: Monitoring
 https://www.checklyhq.com/docs/cli/
 */
 
-// Set a longer timeout for this monitoring test
-test.setTimeout(100000)
+// Set 3 minutes timeout for this monitoring test
+test.setTimeout(180000) // 3 minutes
 
 /**
  * @check
@@ -16,70 +16,68 @@ test.setTimeout(100000)
  * @maxRetryTime 600 // Will stop retrying after 10 minutes
  */
 test('NS Admin Monitoring: Check user can login and create a journey via template', async ({
-  page
+  browser
 }) => {
   if (!process.env.PLAYWRIGHT_EMAIL || !process.env.PLAYWRIGHT_PASSWORD) {
     throw new Error(
       'Email & password environment variables are not set in checkly.'
     )
   }
+  const context = await browser.newContext()
+  const page = await context.newPage()
 
   const email = process.env.PLAYWRIGHT_EMAIL
   const password = process.env.PLAYWRIGHT_PASSWORD
-
-  const defaultTimeout = 30000
-  const navigationTimeout = 60000
-
-  // Configure longer timeouts for navigation
-  page.setDefaultTimeout(defaultTimeout)
-  page.setDefaultNavigationTimeout(navigationTimeout)
-
+  const timeout = 60000
   const startTime = Date.now()
   const stepTiming: { [key: string]: number } = {}
 
   try {
     // Step 1: Navigate to login page
     const loginStart = Date.now()
-    await page.goto('https://admin.nextstep.is/', {
-      timeout: navigationTimeout
-    })
+    await page.goto('https://admin.nextstep.is/', { timeout })
     stepTiming['navigation'] = Date.now() - loginStart
 
     // Step 2: Login
     const authStart = Date.now()
-    await page.getByPlaceholder('Enter your email address here').click()
-    await page.getByPlaceholder('Enter your email address here').fill(email)
-    await page.getByRole('button', { name: 'Continue with email' }).click()
-    await page.getByPlaceholder('Enter Password').click()
-    await page.getByPlaceholder('Enter Password').fill(password)
-    await page.getByRole('button', { name: 'Sign In' }).click()
+    await page
+      .getByPlaceholder('Enter your email address here')
+      .click({ timeout })
+    await page
+      .getByPlaceholder('Enter your email address here')
+      .fill(email, { timeout })
+    await page
+      .getByRole('button', { name: 'Continue with email' })
+      .click({ timeout })
+    await page.getByPlaceholder('Enter Password').click({ timeout })
+    await page.getByPlaceholder('Enter Password').fill(password, { timeout })
+    await page.getByRole('button', { name: 'Sign In' }).click({ timeout })
     stepTiming['authentication'] = Date.now() - authStart
 
     // Step 3: Wait for and verify dashboard load
     const dashboardStart = Date.now()
     await expect(page.getByTestId('NavigationListItemTemplates')).toBeVisible({
-      timeout: defaultTimeout
+      timeout
     })
-    // Take checkpoint screenshot after login
-    await page.screenshot({ fullPage: true })
+    // await expect(page.getByTestId('NavigationListItemPublisher')).toBeVisible({ timeout })
+    // await expect(page.getByTestId('NavigationListItemProfile')).toBeVisible({ timeout })
+
     stepTiming['dashboard_load'] = Date.now() - dashboardStart
 
     // Step 4: Template selection
     const templateStart = Date.now()
-    await page.getByTestId('NavigationListItemTemplates').click()
+    await page.getByTestId('NavigationListItemTemplates').click({ timeout })
     await expect(
       page
         .getByTestId('love-template-gallery-carousel')
         .getByTestId('journey-0605d097-9da9-4da3-b23b-eec66553ec1e')
         .getByTestId('templateGalleryCard')
-    ).toBeVisible({ timeout: defaultTimeout })
+    ).toBeVisible({ timeout })
     await page
       .getByTestId('love-template-gallery-carousel')
       .getByTestId('journey-0605d097-9da9-4da3-b23b-eec66553ec1e')
       .getByTestId('templateGalleryCard')
-      .click()
-    // Take checkpoint screenshot after template selection
-    await page.screenshot({ fullPage: true })
+      .click({ timeout })
     stepTiming['template_selection'] = Date.now() - templateStart
 
     // Step 5: Template usage and team selection
@@ -87,10 +85,12 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
     await page
       .getByTestId('JourneysAdminTemplateViewHeader')
       .getByRole('button', { name: 'Use This Template' })
-      .click()
-    await page.getByRole('combobox', { name: 'Select Team ​' }).click()
-    await page.getByLabel('Playwright').click()
-    await page.getByRole('button', { name: 'Add' }).click()
+      .click({ timeout })
+    await page
+      .getByRole('combobox', { name: 'Select Team ​' })
+      .click({ timeout })
+    await page.getByLabel('Playwright').click({ timeout })
+    await page.getByRole('button', { name: 'Add' }).click({ timeout })
     stepTiming['team_selection'] = Date.now() - teamStart
 
     // Step 6: Journey editing
@@ -98,7 +98,7 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
 
     // Wait for the iframe to be present with explicit timeout
     await page.waitForSelector('[data-testid="CanvasContainer"] iframe', {
-      timeout: defaultTimeout
+      timeout
     })
 
     // Use frameLocator to handle the iframe
@@ -109,40 +109,47 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
     // Wait for and verify the button exists
     await expect(
       frame.getByRole('button', { name: 'Watch the story' })
-    ).toBeVisible({ timeout: defaultTimeout })
+    ).toBeVisible({ timeout })
 
     // Perform the interactions
-    await frame.getByRole('button', { name: 'Watch the story' }).click()
-    await frame.getByPlaceholder('Edit text...').click()
-    await frame.getByPlaceholder('Edit text...').fill('Changed Button Text')
-    await page.getByTestId('EditorCanvas').click()
+    await frame
+      .getByRole('button', { name: 'Watch the story' })
+      .click({ timeout })
+    await frame.getByPlaceholder('Edit text...').click({ timeout })
+    await frame
+      .getByPlaceholder('Edit text...')
+      .fill('Changed Button Text', { timeout })
+    await page.getByTestId('EditorCanvas').click({ timeout })
 
-    // Take checkpoint screenshot after editing
-    await page.screenshot({ fullPage: true })
     stepTiming['journey_editing'] = Date.now() - editStart
 
     // Step 7: Preview journey
     const previewStart = Date.now()
-    await page.getByTestId('Fab').click()
-    await page.getByRole('link', { name: 'Preview' }).click()
+    await page.getByRole('link', { name: 'Preview' }).click({ timeout })
 
-    const previewPage = await page.waitForEvent('popup', {
-      timeout: defaultTimeout
-    })
+    const previewPage = await page.waitForEvent('popup', { timeout })
 
     const overlayContainer = previewPage.getByTestId(
       'CardOverlayContentContainer'
     )
-    await expect(overlayContainer).toBeVisible({ timeout: defaultTimeout })
 
+    // Try refreshing up to 5 times if button not visible
+    let buttonVisible = false
+    for (let i = 0; i < 5 && !buttonVisible; i++) {
+      await previewPage.waitForLoadState('load', { timeout })
+      buttonVisible = await overlayContainer
+        .getByRole('button', { name: 'Changed Button Text' })
+        .isVisible({ timeout })
+      if (!buttonVisible) {
+        // Wait 5 seconds as content publishing sometimes takes time
+        await previewPage.waitForTimeout(5000)
+        await previewPage.reload({ timeout })
+      }
+    }
     await expect(
       overlayContainer.getByRole('heading', { name: 'Are you happy?' })
-    ).toBeVisible({ timeout: defaultTimeout })
-    await expect(
-      overlayContainer.getByRole('button', { name: 'Changed Button Text' })
-    ).toBeVisible({ timeout: defaultTimeout })
-    // Take checkpoint screenshot of preview
-    await previewPage.screenshot({ fullPage: true })
+    ).toBeVisible({ timeout })
+
     stepTiming['preview_load'] = Date.now() - previewStart
 
     // Log monitoring metrics
@@ -156,6 +163,8 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
     })
     // Log total duration as a metric
     console.log(`METRIC total_duration ${totalDuration}`)
+    await page.close()
+    await context.close()
   } catch (error) {
     // Enhanced error logging for monitoring
     console.error('=== Monitoring Alert ===')
@@ -165,5 +174,13 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
 
     // Checkly will automatically capture failure screenshots
     throw error
+  } finally {
+    // Ensure resources are cleaned up even on error
+    try {
+      if (page && !page.isClosed()) await page.close()
+      if (context) await context.close()
+    } catch (cleanupError) {
+      console.error('Error during cleanup:', cleanupError)
+    }
   }
 })

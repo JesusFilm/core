@@ -4,23 +4,15 @@ import { styled, useTheme } from '@mui/material/styles'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { Form, Formik, FormikHelpers, FormikValues } from 'formik'
 import { useTranslation } from 'next-i18next'
-import { usePlausible } from 'next-plausible'
 import { useSnackbar } from 'notistack'
-import { MouseEvent, ReactElement, useEffect, useMemo } from 'react'
+import { ReactElement, useEffect, useMemo } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
-import {
-  StepNextEventCreateInput,
-  StepPreviousEventCreateInput
-} from '../../../__generated__/globalTypes'
 import { TreeBlock, useBlocks } from '../../libs/block'
 import { blurImage } from '../../libs/blurImage'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { getTextResponseLabel } from '../../libs/getTextResponseLabel'
 import { useJourney } from '../../libs/JourneyProvider'
-import { JourneyPlausibleEvents } from '../../libs/plausibleHelpers'
-import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
-import { getJourneyRTL } from '../../libs/rtl'
 // eslint-disable-next-line import/no-cycle
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { ImageFields } from '../Image/__generated__/ImageFields'
@@ -30,14 +22,6 @@ import { TEXT_RESPONSE_SUBMISSION_EVENT_CREATE } from '../TextResponse/TextRespo
 import { VideoFields } from '../Video/__generated__/VideoFields'
 
 import { CardFields } from './__generated__/CardFields'
-import {
-  StepNextEventCreate,
-  StepNextEventCreateVariables
-} from './__generated__/StepNextEventCreate'
-import {
-  StepPreviousEventCreate,
-  StepPreviousEventCreateVariables
-} from './__generated__/StepPreviousEventCreate'
 import { ContainedCover } from './ContainedCover'
 import { ExpandedCover } from './ExpandedCover'
 import { getFormInitialValues } from './utils/getFormInitialValues'
@@ -98,31 +82,16 @@ export function Card({
   wrappers
 }: CardProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
-  const [stepNextEventCreate] = useMutation<
-    StepNextEventCreate,
-    StepNextEventCreateVariables
-  >(STEP_NEXT_EVENT_CREATE)
-  const [stepPreviousEventCreate] = useMutation<
-    StepPreviousEventCreate,
-    StepPreviousEventCreateVariables
-  >(STEP_PREVIOUS_EVENT_CREATE)
+
   const [textResponseSubmissionEventCreate] =
     useMutation<TextResponseSubmissionEventCreate>(
       TEXT_RESPONSE_SUBMISSION_EVENT_CREATE
     )
 
   const { t } = useTranslation('journeys-ui')
-  const plausible = usePlausible<JourneyPlausibleEvents>()
   const theme = useTheme()
-  const {
-    nextActiveBlock,
-    previousActiveBlock,
-    blockHistory,
-    treeBlocks,
-    getNextBlock
-  } = useBlocks()
-  const { journey, variant } = useJourney()
-  const { rtl } = getJourneyRTL(journey)
+  const { blockHistory, treeBlocks } = useBlocks()
+  const { variant } = useJourney()
   const activeBlock = blockHistory[
     blockHistory.length - 1
   ] as TreeBlock<StepFields>
@@ -244,164 +213,6 @@ export function Card({
       })
   }
 
-  // should always be called with nextActiveBlock()
-  // should match with other handleNextNavigationEventCreate functions
-  // places used:
-  // libs/journeys/ui/src/components/Card/Card.tsx
-  // journeys/src/components/Conductor/NavigationButton/NavigationButton.tsx
-  // journeys/src/components/Conductor/SwipeNavigation/SwipeNavigation.tsx
-  // journeys/src/components/Conductor/HotkeyNavigation/HotkeyNavigation.tsx
-  function handleNextNavigationEventCreate(): void {
-    const id = uuidv4()
-    const stepName = getStepHeading(
-      activeBlock.id,
-      activeBlock.children,
-      treeBlocks,
-      t
-    )
-    const targetBlock = getNextBlock({ id: undefined, activeBlock })
-    if (targetBlock == null) return
-    const targetStepName = getStepHeading(
-      targetBlock.id,
-      targetBlock.children,
-      treeBlocks,
-      t
-    )
-    const input: StepNextEventCreateInput = {
-      id,
-      blockId: activeBlock.id,
-      label: stepName,
-      value: targetStepName,
-      nextStepId: targetBlock.id
-    }
-    void stepNextEventCreate({
-      variables: {
-        input
-      }
-    })
-    if (journey != null)
-      plausible('navigateNextStep', {
-        u: `${window.location.origin}/${journey.id}/${input.blockId}`,
-        props: {
-          ...input,
-          key: keyify({
-            stepId: input.blockId,
-            event: 'navigateNextStep',
-            blockId: input.blockId,
-            target: input.nextStepId
-          }),
-          simpleKey: keyify({
-            stepId: input.blockId,
-            event: 'navigateNextStep',
-            blockId: input.blockId
-          })
-        }
-      })
-    sendGTMEvent({
-      event: 'step_next',
-      eventId: id,
-      blockId: activeBlock.id,
-      stepName,
-      targetStepId: targetBlock.id,
-      targetStepName
-    })
-  }
-  // should always be called with previousActiveBlock()
-  // should match with other handlePreviousNavigationEventCreate functions
-  // places used:
-  // libs/journeys/ui/src/components/Card/Card.tsx
-  // journeys/src/components/Conductor/NavigationButton/NavigationButton.tsx
-  // journeys/src/components/Conductor/SwipeNavigation/SwipeNavigation.tsx
-  // journeys/src/components/Conductor/HotkeyNavigation/HotkeyNavigation.tsx
-  function handlePreviousNavigationEventCreate(): void {
-    const id = uuidv4()
-    const stepName = getStepHeading(
-      activeBlock.id,
-      activeBlock.children,
-      treeBlocks,
-      t
-    )
-    const targetBlock = blockHistory[
-      blockHistory.length - 2
-    ] as TreeBlock<StepFields>
-    if (targetBlock == null) return
-    const targetStepName = getStepHeading(
-      targetBlock.id,
-      targetBlock.children,
-      treeBlocks,
-      t
-    )
-    const input: StepPreviousEventCreateInput = {
-      id,
-      blockId: activeBlock.id,
-      label: stepName,
-      value: targetStepName,
-      previousStepId: targetBlock.id
-    }
-    void stepPreviousEventCreate({
-      variables: {
-        input
-      }
-    })
-    if (journey != null)
-      plausible('navigatePreviousStep', {
-        u: `${window.location.origin}/${journey.id}/${input.blockId}`,
-        props: {
-          ...input,
-          key: keyify({
-            stepId: input.blockId,
-            event: 'navigatePreviousStep',
-            blockId: input.blockId,
-            target: input.previousStepId
-          }),
-          simpleKey: keyify({
-            stepId: input.blockId,
-            event: 'navigatePreviousStep',
-            blockId: input.blockId
-          })
-        }
-      })
-    sendGTMEvent({
-      event: 'step_prev',
-      eventId: id,
-      blockId: activeBlock.id,
-      stepName,
-      targetStepId: targetBlock.id,
-      targetStepName
-    })
-  }
-  const handleNavigation = (e: MouseEvent): void => {
-    if (variant === 'admin') return
-    const screenWidth = window.innerWidth
-    if (rtl) {
-      const divide = screenWidth * 0.66
-      if (e.clientX <= divide) {
-        if (!activeBlock?.locked && activeBlock?.nextBlockId != null) {
-          handleNextNavigationEventCreate()
-          nextActiveBlock()
-        }
-      } else {
-        if (blockHistory.length > 1) {
-          handlePreviousNavigationEventCreate()
-          previousActiveBlock()
-        }
-      }
-    } else {
-      const divide = screenWidth * 0.33
-      if (e.clientX >= divide) {
-        if (!activeBlock?.locked && activeBlock?.nextBlockId != null) {
-          handleNextNavigationEventCreate()
-          nextActiveBlock()
-        }
-      } else {
-        if (blockHistory.length > 1) {
-          handlePreviousNavigationEventCreate()
-          previousActiveBlock()
-        }
-      }
-    }
-  }
-
   return (
     <Formik
       initialValues={formikInitialValues}
@@ -438,7 +249,6 @@ export function Card({
               transform: 'translateZ(0)' // safari glitch with border radius
             }}
             elevation={3}
-            onClick={handleNavigation}
           >
             {(coverBlock != null && !fullscreen) || videoBlock != null ? (
               <ContainedCover

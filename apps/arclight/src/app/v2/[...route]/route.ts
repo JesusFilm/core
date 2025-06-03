@@ -1,5 +1,6 @@
 import { swaggerUI } from '@hono/swagger-ui'
 import { OpenAPIHono } from '@hono/zod-openapi'
+import { compress } from 'hono/compress'
 import { etag } from 'hono/etag'
 import { HTTPException } from 'hono/http-exception'
 import { handle } from 'hono/vercel'
@@ -13,9 +14,16 @@ import { metadataLanguageTags } from './_metadata-language-tags'
 import { resources } from './_resources'
 import { taxonomies } from './_taxonomies'
 
-export const dynamic = 'force-dynamic'
-
 const app = new OpenAPIHono().basePath('/v2')
+
+// Apply compression for responses larger than 1KB
+app.use(
+  '*',
+  compress({
+    threshold: 1024 // Only compress responses > 1KB
+  })
+)
+
 app.use(etag())
 
 app.onError((err, c) => {
@@ -51,10 +59,12 @@ app.doc('/doc', {
   openapi: '3.0.0',
   info: {
     version: '2.0.0',
-    title: 'Arclight'
+    title: 'Arclight API v2',
+    description:
+      'This documentation is for Arclight API v2. If you are looking for the redirects (/hls, /dl, /dh ) documentation, please visit <a href="/api/redirects-doc">/api/redirects-doc</a>.'
   }
 })
 
-app.get('/ui', swaggerUI({ url: '/v2/doc' }))
+app.get('/api/doc', swaggerUI({ url: '/v2/doc' }))
 
 export const GET = handle(app)

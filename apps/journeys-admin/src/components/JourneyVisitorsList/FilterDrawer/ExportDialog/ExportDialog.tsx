@@ -1,6 +1,6 @@
 import { gql, useQuery } from '@apollo/client'
+import LoadingButton from '@mui/lab/LoadingButton'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
@@ -41,7 +41,7 @@ export function ExportDialog({
 }: ExportDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const { exportJourneyEvents } = useJourneyEventsExport()
+  const { exportJourneyEvents, downloading } = useJourneyEventsExport()
   const { data: journeyData } = useQuery(GET_JOURNEY_CREATED_AT, {
     variables: { id: journeyId }
   })
@@ -86,7 +86,8 @@ export function ExportDialog({
       }}
       divider={false}
       dialogActionChildren={
-        <Button
+        <LoadingButton
+          loading={downloading}
           variant="contained"
           color="secondary"
           onClick={handleExport}
@@ -97,7 +98,7 @@ export function ExportDialog({
           }}
         >
           {t('Export (CSV)')}
-        </Button>
+        </LoadingButton>
       }
     >
       <DateRangePicker
