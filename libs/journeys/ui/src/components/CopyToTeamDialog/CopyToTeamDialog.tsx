@@ -271,15 +271,7 @@ export function CopyToTeamDialog({
                   <LanguageAutocomplete
                     languages={languagesData?.languages}
                     loading={languagesLoading}
-                    helperText={
-                      touched.languageSelect && errors.languageSelect
-                        ? (errors.languageSelect as { id?: string })?.id
-                        : ''
-                    }
                     onChange={(value) => setFieldValue('languageSelect', value)}
-                    error={
-                      touched.languageSelect && Boolean(errors.languageSelect)
-                    }
                     value={values.languageSelect}
                     data-testid="language-select"
                     renderInput={(params) => (
@@ -288,6 +280,15 @@ export function CopyToTeamDialog({
                         placeholder={t('Search Language')}
                         label={t('Select Journey Language')}
                         variant="filled"
+                        helperText={
+                          touched.languageSelect && errors.languageSelect
+                            ? (errors.languageSelect as { id?: string })?.id
+                            : ''
+                        }
+                        error={
+                          touched.languageSelect &&
+                          Boolean(errors.languageSelect)
+                        }
                       />
                     )}
                   />
