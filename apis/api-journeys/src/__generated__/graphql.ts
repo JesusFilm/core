@@ -859,6 +859,7 @@ export type JourneyAiTranslateInput = {
   name: Scalars['String']['input'];
   textLanguageId: Scalars['ID']['input'];
   textLanguageName: Scalars['String']['input'];
+  videoLanguageId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type JourneyCollection = {
