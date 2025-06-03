@@ -56,11 +56,13 @@ export function TemplateList(): ReactElement {
   }
 
   return (
-    <Box 
-      sx={{ 
+    <Box
+      sx={{
         mx: { xs: 0, sm: 0 },
         mt: { xs: 0, sm: -5 }
-      }} data-testid="JourneysAdminTemplateList">
+      }}
+      data-testid="JourneysAdminTemplateList"
+    >
       <Container disableGutters>
         <StatusTabPanel
           activeList={<ActiveTemplateList {...journeyListProps} />}

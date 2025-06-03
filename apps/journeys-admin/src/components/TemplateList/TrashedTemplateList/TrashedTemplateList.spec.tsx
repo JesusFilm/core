@@ -189,7 +189,9 @@ describe('TrashedTemplateList', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getByText('Your trashed templates will appear here.')).toBeInTheDocument()
+      expect(
+        getByText('Your trashed templates will appear here.')
+      ).toBeInTheDocument()
     )
   })
 

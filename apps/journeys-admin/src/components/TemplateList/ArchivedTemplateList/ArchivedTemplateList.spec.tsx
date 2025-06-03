@@ -146,7 +146,7 @@ describe('ArchivedTemplateList', () => {
       expect(getByText('No archived templates.')).toBeInTheDocument()
     )
   })
-  
+
   describe('Unarchive All', () => {
     const result = jest.fn(() => ({
       data: {
