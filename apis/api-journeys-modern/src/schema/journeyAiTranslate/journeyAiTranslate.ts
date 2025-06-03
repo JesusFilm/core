@@ -206,7 +206,7 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
         }
 
         yield {
-          progress: 70,
+          progress: 60,
           message: 'Updating journey with translated title...',
           journey: null
         }
@@ -233,10 +233,38 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
           }
         })
 
+        // Update video blocks' videoVariantLanguageId if videoLanguageId is provided
+        if (input.videoLanguageId) {
+          yield {
+            progress: 70,
+            message: 'Updating video language settings...',
+            journey: updatedJourney
+          }
+
+          await prisma.block.updateMany({
+            where: {
+              journeyId: input.journeyId,
+              typename: 'VideoBlock',
+              source: VideoBlockSource.internal
+            },
+            data: {
+              videoVariantLanguageId: input.videoLanguageId
+            }
+          })
+        }
+
+        // Refetch journey to include updated video blocks
+        const journeyWithUpdatedVideos = await prisma.journey.findUnique({
+          where: { id: input.journeyId },
+          include: {
+            blocks: true
+          }
+        })
+
         yield {
           progress: 80,
           message: `Translating card content (${cardBlocks.length} cards)...`,
-          journey: updatedJourney
+          journey: journeyWithUpdatedVideos
         }
 
         // Step 2: Translate blocks for each card with progress updates
