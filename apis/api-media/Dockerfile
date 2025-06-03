@@ -18,7 +18,7 @@ COPY ./package-lock.json .
 RUN npm install --production
 
 WORKDIR /prisma
-COPY ./libs/prisma-media/db .
+COPY ./libs/prisma/media/db .
 RUN npx prisma@6 generate --generator client
 
 WORKDIR /app

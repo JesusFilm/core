@@ -19,7 +19,7 @@ COPY ./package-lock.json .
 RUN npm install --production
 
 WORKDIR /prisma
-COPY ./apis/api-languages/db .
+COPY ./libs/prisma/languages/db .
 RUN npx prisma@6 generate --generator client
 
 WORKDIR /app
