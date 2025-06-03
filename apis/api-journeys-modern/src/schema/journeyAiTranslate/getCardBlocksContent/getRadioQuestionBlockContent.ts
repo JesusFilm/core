@@ -10,7 +10,7 @@ export function getRadioQuestionBlockContent({
   let result = `
 ## Radio Question List:
 - Block ID: ${block.id}
-- Text: ${block.label}
+
 ### Questions:
 `
   const questions = blocks.filter(
