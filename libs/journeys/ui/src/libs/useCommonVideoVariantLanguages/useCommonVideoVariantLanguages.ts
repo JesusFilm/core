@@ -4,16 +4,16 @@ import { useMemo } from 'react'
 import { SUPPORTED_LANGUAGE_IDS } from '@core/journeys/ui/useJourneyAiTranslateMutation/supportedLanguages'
 import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
 
-import { GetAdminJourneys_journeys as AdminJourney } from '../../../../../../../../__generated__/GetAdminJourneys'
+import { GetAdminJourneys_journeys as AdminJourney } from '../../../../../../apps/journeys-admin/__generated__/GetAdminJourneys'
+import { JourneyFields } from '../../../../../../apps/journeys-admin/__generated__/JourneyFields'
 import {
   GetJourneyInternalVideos,
   GetJourneyInternalVideosVariables
-} from '../../../../../../../../__generated__/GetJourneyInternalVideos'
+} from './__generated__/GetJourneyInternalVideos'
 import {
   GetVideosVariantLanguages,
   GetVideosVariantLanguagesVariables
-} from '../../../../../../../../__generated__/GetVideosVariantLanguages'
-import { JourneyFields } from '../../../../../../../../__generated__/JourneyFields'
+} from './__generated__/GetVideosVariantLanguages'
 
 export const GET_JOURNEY_INTERNAL_VIDEOS = gql`
   query GetJourneyInternalVideos($journeyId: ID!) {

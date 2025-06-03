@@ -8,14 +8,13 @@ import { ReactElement, useState } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { TranslationDialogWrapper } from '@core/journeys/ui/TranslationDialogWrapper'
+import { useCommonVideoVariantLanguages } from '@core/journeys/ui/useCommonVideoVariantLanguages'
 import { SUPPORTED_LANGUAGE_IDS } from '@core/journeys/ui/useJourneyAiTranslateMutation/supportedLanguages'
 import { useJourneyDuplicateAndTranslate } from '@core/journeys/ui/useJourneyDuplicateAndTranslate'
 import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../../../__generated__/GetAdminJourneys'
-
-import { useCommonVideoVariantLanguages } from './utils/useCommonVideoVariantLanguages'
 
 interface TranslateJourneyDialogProps {
   open: boolean
