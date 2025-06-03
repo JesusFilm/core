@@ -261,14 +261,16 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
           }
         })
 
+        const journeyToTranslate = journeyWithUpdatedVideos ?? updatedJourney
+
         yield {
           progress: 80,
           message: `Translating card content (${cardBlocks.length} cards)...`,
-          journey: journeyWithUpdatedVideos
+          journey: journeyToTranslate
         }
 
         // Step 2: Translate blocks for each card with progress updates
-        // Use updatedJourney as the working journey object to update with translated blocks
+        // Use journeyToTranslate as the working journey object to update with translated blocks
         const translateCard = async (
           cardContent: string,
           cardIndex: number
@@ -276,7 +278,7 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
           try {
             // Get translatable blocks for this card
             const cardBlock = cardBlocks[cardIndex]
-            const cardChildren = updatedJourney.blocks.filter(
+            const cardChildren = journeyToTranslate.blocks.filter(
               (block) => block.parentBlockId === cardBlock.id
             )
 
@@ -336,12 +338,12 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
                   )
 
                   // Update the in-memory journey blocks
-                  const blockIndex = updatedJourney.blocks.findIndex(
+                  const blockIndex = journeyToTranslate.blocks.findIndex(
                     (block) => block.id === translation.blockId
                   )
                   if (blockIndex !== -1 && translation.updates) {
-                    updatedJourney.blocks[blockIndex] = {
-                      ...updatedJourney.blocks[blockIndex],
+                    journeyToTranslate.blocks[blockIndex] = {
+                      ...journeyToTranslate.blocks[blockIndex],
                       ...translation.updates
                     }
                   }
@@ -385,7 +387,7 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
           yield {
             progress: progressPercent,
             message: `Translated ${completedCards} of ${cardBlocks.length} cards`,
-            journey: updatedJourney
+            journey: journeyToTranslate
           }
         }
 
