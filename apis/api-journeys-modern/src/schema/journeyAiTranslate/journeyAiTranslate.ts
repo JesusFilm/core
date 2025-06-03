@@ -9,8 +9,389 @@ import { hardenPrompt, preSystemPrompt } from '@core/shared/ai/prompts'
 import { Action, ability, subject } from '../../lib/auth/ability'
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
+import { JourneyRef } from '../journey/journey'
 
+import {
+  BlockTranslationUpdate,
+  createTranslationInfo,
+  getTranslatableFields,
+  updateBlockWithTranslation
+} from './blockTranslation'
 import { getCardBlocksContent } from './getCardBlocksContent'
+
+// Define the translation progress interface
+interface JourneyAiTranslateProgress {
+  progress: number
+  message: string
+  journey: typeof JourneyRef.$inferType | null
+}
+
+// Define the translation progress type
+const JourneyAiTranslateProgressRef =
+  builder.objectRef<JourneyAiTranslateProgress>('JourneyAiTranslateProgress')
+
+builder.objectType(JourneyAiTranslateProgressRef, {
+  fields: (t) => ({
+    progress: t.float({
+      description: 'Translation progress as a percentage (0-100)',
+      resolve: (parent) => parent.progress
+    }),
+    message: t.string({
+      description: 'Current translation step message',
+      resolve: (parent) => parent.message
+    }),
+    journey: t.prismaField({
+      type: 'Journey',
+      nullable: true,
+      description: 'The journey being translated (only present when complete)',
+      resolve: (query, parent) => {
+        // Return the journey if it exists, otherwise null
+        return parent.journey ? { ...query, ...parent.journey } : null
+      }
+    })
+  })
+})
+
+// Define Zod schemas for AI responses
+const JourneyAnalysisSchema = z.object({
+  analysis: z
+    .string()
+    .describe('Analysis of the journey content and cultural considerations'),
+  title: z.string().describe('Translated journey title'),
+  description: z.string().describe('Translated journey description')
+})
+
+const BlockTranslationSchema = z.array(
+  z.object({
+    blockId: z.string().describe('The ID of the block to update'),
+    updates: z
+      .record(z.string())
+      .describe('Key-value pairs of fields to update')
+  })
+)
+
+// Define the shared input type
+const JourneyAiTranslateInput = builder.inputType('JourneyAiTranslateInput', {
+  fields: (t) => ({
+    journeyId: t.id({ required: true }),
+    name: t.string({ required: true }),
+    journeyLanguageName: t.string({ required: true }),
+    textLanguageId: t.id({ required: true }),
+    textLanguageName: t.string({ required: true }),
+    videoLanguageId: t.id()
+  })
+})
+
+builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
+  t.withAuth({ isAuthenticated: true }).field({
+    type: JourneyAiTranslateProgressRef,
+    nullable: false,
+    args: {
+      input: t.arg({
+        type: JourneyAiTranslateInput,
+        required: true
+      })
+    },
+    subscribe: async function* (_root, { input }, context) {
+      // Create async iterable for real AI translation
+      try {
+        // Initial progress
+        yield {
+          progress: 0,
+          message: 'Starting translation...',
+          journey: null
+        }
+
+        // Validate journey exists and user has permission
+        const journey = await prisma.journey.findUnique({
+          where: { id: input.journeyId },
+          include: {
+            blocks: true,
+            userJourneys: true,
+            team: {
+              include: {
+                userTeams: true
+              }
+            }
+          }
+        })
+
+        if (journey == null) {
+          throw new GraphQLError('journey not found')
+        }
+
+        // Check permissions
+        const hasPermission = ability(
+          Action.Update,
+          subject('Journey', journey),
+          context.user
+        )
+
+        if (!hasPermission) {
+          throw new GraphQLError(
+            'user does not have permission to update journey'
+          )
+        }
+
+        yield {
+          progress: 10,
+          message: 'Validating journey permissions...',
+          journey: null
+        }
+
+        // Get card blocks and their content
+        const cardBlocks = journey.blocks.filter(
+          (block) => block.typename === 'CardBlock'
+        )
+
+        yield {
+          progress: 20,
+          message: 'Analyzing journey content...',
+          journey: null
+        }
+
+        // Get content for AI analysis
+        const cardBlocksContent = await getCardBlocksContent({
+          blocks: journey.blocks,
+          cardBlocks
+        })
+
+        const trimmedDescription = journey.description?.trim() ?? ''
+        const hasDescription = Boolean(trimmedDescription)
+
+        const journeyContent = `
+  Journey Title: ${journey.title}
+  Journey Description: ${hasDescription ? trimmedDescription : 'No description'}
+  
+  ${cardBlocksContent.join('\n\n')}
+                `.trim()
+
+        yield {
+          progress: 40,
+          message: 'Translating journey title and description...',
+          journey: null
+        }
+
+        // Step 1: Translate journey title and description
+        const analysisPrompt = `
+  You are a professional translator specializing in religious and spiritual content. 
+  Translate the following journey from ${input.journeyLanguageName} to ${input.textLanguageName}.
+  
+  Please provide:
+  1. A brief analysis of the content and any cultural considerations
+  2. A translated title that maintains the original meaning and impact
+  3. A translated description (if one exists)
+  
+  Ensure the translation is culturally appropriate and maintains the spiritual context.
+  
+  Journey to translate:
+  ${hardenPrompt(journeyContent)}
+                `.trim()
+
+        const analysisResult = await generateObject({
+          model: google('gemini-1.5-flash'),
+          messages: [
+            { role: 'system', content: preSystemPrompt },
+            { role: 'user', content: analysisPrompt }
+          ],
+          schema: JourneyAnalysisSchema
+        })
+
+        if (!analysisResult.object.title) {
+          throw new GraphQLError('Failed to translate journey title')
+        }
+
+        if (hasDescription && !analysisResult.object.description) {
+          throw new GraphQLError('Failed to translate journey description')
+        }
+
+        yield {
+          progress: 70,
+          message: 'Updating journey with translated title...',
+          journey: null
+        }
+
+        // Update journey with translated title and description
+        const updateData: {
+          title: string
+          languageId: string
+          description?: string
+        } = {
+          title: analysisResult.object.title,
+          languageId: input.textLanguageId
+        }
+
+        if (hasDescription && analysisResult.object.description) {
+          updateData.description = analysisResult.object.description
+        }
+
+        const updatedJourney = await prisma.journey.update({
+          where: { id: input.journeyId },
+          data: updateData,
+          include: {
+            blocks: true
+          }
+        })
+
+        yield {
+          progress: 80,
+          message: `Translating card content (${cardBlocks.length} cards)...`,
+          journey: updatedJourney
+        }
+
+        // Step 2: Translate blocks for each card with progress updates
+        // Use updatedJourney as the working journey object to update with translated blocks
+        const translateCard = async (
+          cardContent: string,
+          cardIndex: number
+        ) => {
+          try {
+            // Get translatable blocks for this card
+            const cardBlock = cardBlocks[cardIndex]
+            const cardChildren = updatedJourney.blocks.filter(
+              (block) => block.parentBlockId === cardBlock.id
+            )
+
+            const translatableBlocks = cardChildren.filter((block) => {
+              const fields = Object.keys(getTranslatableFields(block))
+              return fields.length > 0
+            })
+
+            if (translatableBlocks.length === 0) {
+              return
+            }
+
+            // Create translation info for each block
+            const blockInfos = translatableBlocks.map((block) =>
+              createTranslationInfo(block)
+            )
+
+            const blockTranslationPrompt = `
+  Translate the following blocks from ${input.journeyLanguageName} to ${input.textLanguageName}.
+  
+  Context: ${hardenPrompt(analysisResult.object.analysis)}
+  
+  Card content:
+  ${hardenPrompt(cardContent)}
+  
+  Blocks to translate:
+  ${hardenPrompt(blockInfos.join('\n'))}
+  
+  For each block, provide the blockId and the translated field values.
+  Only include fields that need translation (content, label, placeholder).
+  Maintain the spiritual and religious context appropriately.
+                    `.trim()
+
+            // Stream the block translations
+            const blockTranslationResult = await streamObject({
+              model: google('gemini-1.5-flash'),
+              messages: [
+                { role: 'system', content: preSystemPrompt },
+                { role: 'user', content: blockTranslationPrompt }
+              ],
+              schema: BlockTranslationSchema
+            })
+
+            // Process the streamed translations
+            for await (const chunk of blockTranslationResult.fullStream) {
+              if (chunk.type === 'object' && chunk.object) {
+                // Apply translations to blocks in database
+                for (const translation of chunk.object) {
+                  if (!translation || !translation.blockId) {
+                    continue
+                  }
+
+                  await updateBlockWithTranslation(
+                    prisma,
+                    input.journeyId,
+                    translation as unknown as BlockTranslationUpdate
+                  )
+
+                  // Update the in-memory journey blocks
+                  const blockIndex = updatedJourney.blocks.findIndex(
+                    (block) => block.id === translation.blockId
+                  )
+                  if (blockIndex !== -1 && translation.updates) {
+                    updatedJourney.blocks[blockIndex] = {
+                      ...updatedJourney.blocks[blockIndex],
+                      ...translation.updates
+                    }
+                  }
+                }
+              }
+            }
+          } catch (error) {
+            console.error(`Error translating card ${cardIndex + 1}:`, error)
+            // Continue with other cards even if one fails
+          }
+        }
+
+        // Process cards in batches of 5 for parallel processing with progress updates
+        const batchSize = 5
+        let completedCards = 0
+
+        for (
+          let batchStart = 0;
+          batchStart < cardBlocksContent.length;
+          batchStart += batchSize
+        ) {
+          const batchEnd = Math.min(
+            batchStart + batchSize,
+            cardBlocksContent.length
+          )
+          const currentBatch = cardBlocksContent.slice(batchStart, batchEnd)
+
+          // Create batch of translation promises
+          const batchPromises = currentBatch.map((cardContent, index) => {
+            const cardIndex = batchStart + index
+            return translateCard(cardContent, cardIndex)
+          })
+
+          // Process batch in parallel
+          await Promise.allSettled(batchPromises)
+
+          // Update completed count and progress
+          completedCards += currentBatch.length
+          const progressPercent = 80 + (completedCards / cardBlocks.length) * 15
+
+          yield {
+            progress: progressPercent,
+            message: `Translated ${completedCards} of ${cardBlocks.length} cards`,
+            journey: updatedJourney
+          }
+        }
+
+        yield {
+          progress: 95,
+          message: 'Finalizing translation...',
+          journey: null
+        }
+
+        // Get the final updated journey with all translated blocks
+        const finalJourney = await prisma.journey.findUnique({
+          where: { id: input.journeyId },
+          include: {
+            blocks: true
+          }
+        })
+
+        yield {
+          progress: 100,
+          message: 'Translation completed!',
+          journey: finalJourney
+        }
+      } catch (error) {
+        console.error('Translation error:', error)
+        yield {
+          progress: 100,
+          message: 'Translation failed: ' + (error as Error).message,
+          journey: null
+        }
+      }
+    },
+    resolve: (progressUpdate) => progressUpdate
+  })
+)
 
 builder.mutationField('journeyAiTranslateCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
@@ -18,16 +399,7 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
     nullable: false,
     args: {
       input: t.arg({
-        type: builder.inputType('JourneyAiTranslateInput', {
-          fields: (t) => ({
-            journeyId: t.id({ required: true }),
-            name: t.string({ required: true }),
-            journeyLanguageName: t.string({ required: true }),
-            textLanguageId: t.id({ required: true }),
-            textLanguageName: t.string({ required: true }),
-            videoLanguageId: t.id()
-          })
-        }),
+        type: JourneyAiTranslateInput,
         required: true
       })
     },
@@ -52,6 +424,9 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
           extensions: { code: 'NOT_FOUND' }
         })
       }
+
+      const trimmedDescription = journey.description?.trim() ?? ''
+      const hasDescription = Boolean(trimmedDescription)
 
       if (!ability(Action.Update, subject('Journey', journey), user)) {
         throw new GraphQLError(
@@ -90,7 +465,7 @@ The source language is: ${sourceLanguageName}.
 The target language name is: ${requestedLanguageName}.
 
 Journey Title: ${originalName}
-${journey.description ? `Journey Description: ${journey.description}` : ''}
+${hasDescription ? `Journey Description: ${trimmedDescription}` : ''}
 
 Seo Title: ${journey.seoTitle ?? ''}
 Seo Description: ${journey.seoDescription ?? ''}
@@ -130,7 +505,7 @@ Return in this format:
           throw new Error('Failed to translate journey title')
 
         // Only validate description if the original journey had one
-        if (journey.description && !analysisAndTranslation.description)
+        if (hasDescription && !analysisAndTranslation.description)
           throw new Error('Failed to translate journey description')
 
         // Only validate seoTitle if the original journey had one
@@ -149,7 +524,7 @@ Return in this format:
           data: {
             title: analysisAndTranslation.title,
             // Only update description if the original journey had one
-            ...(journey.description
+            ...(hasDescription
               ? { description: analysisAndTranslation.description }
               : {}),
             // Only update seoTitle if the original journey had one
@@ -240,7 +615,6 @@ Return in this format:
                       break
                     case 'ButtonBlock':
                     case 'RadioOptionBlock':
-                    case 'RadioQuestionBlock':
                       fieldInfo = `Label: "${block.label || ''}"`
                       break
                     case 'TextResponseBlock':
@@ -278,7 +652,6 @@ Field names to translate per block type:
 - TypographyBlock: "content" field
 - ButtonBlock: "label" field
 - RadioOptionBlock: "label" field
-- RadioQuestionBlock: "label" field
 - TextResponseBlock: "label" and "placeholder" fields
 
 Ensure translations maintain the meaning while being culturally appropriate for ${hardenPrompt(requestedLanguageName)}.
