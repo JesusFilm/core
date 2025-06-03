@@ -15,6 +15,7 @@ import { boolean, object, string } from 'yup'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
+import { SUPPORTED_LANGUAGE_IDS } from '../../libs/useJourneyAiTranslateMutation/supportedLanguages'
 import { useLanguagesQuery } from '../../libs/useLanguagesQuery'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../libs/useUpdateLastActiveTeamIdMutation'
 import { UpdateLastActiveTeamId } from '../../libs/useUpdateLastActiveTeamIdMutation/__generated__/UpdateLastActiveTeamId'
@@ -46,6 +47,27 @@ interface FormValues {
   showTranslation: boolean
 }
 
+/**
+ * CopyToTeamDialog component provides a dialog interface for copying journeys to different teams with optional translation.
+ *
+ * This component:
+ * - Displays a form dialog for selecting a target team
+ * - Provides language selection when translation is enabled
+ * - Handles form validation using Formik and Yup
+ * - Manages team selection and updates the last active team
+ * - Supports customizable dialog title and submit button label
+ * - Shows loading states during submission
+ *
+ * @param {Object} props - The component props
+ * @param {string} props.title - The title to display in the dialog header
+ * @param {string} [props.submitLabel] - Optional custom label for the submit button
+ * @param {boolean} props.open - Controls the visibility of the dialog
+ * @param {boolean} [props.loading] - Optional flag to indicate loading state
+ * @param {() => void} props.onClose - Callback function invoked when the dialog should close
+ * @param {(teamId: string, language?: JourneyLanguage, showTranslation?: boolean) => Promise<void>} props.submitAction -
+ *        Callback function that handles the form submission with selected team, optional language, and translation preference
+ * @returns {ReactElement} A dialog component with team selection and optional translation settings
+ */
 export function CopyToTeamDialog({
   title,
   submitLabel,
@@ -60,9 +82,11 @@ export function CopyToTeamDialog({
   const [updateLastActiveTeamId, { client }] =
     useMutation<UpdateLastActiveTeamId>(UPDATE_LAST_ACTIVE_TEAM_ID)
 
-  // TODO: Update so only the selected AI model + i18n languages are shown.
   const { data: languagesData, loading: languagesLoading } = useLanguagesQuery({
-    languageId: '529'
+    languageId: '529',
+    where: {
+      ids: [...SUPPORTED_LANGUAGE_IDS]
+    }
   })
 
   async function handleSubmit(
@@ -160,7 +184,7 @@ export function CopyToTeamDialog({
             onClose={handleDialogClose}
             onTranslate={handleFormSubmit}
             title={title}
-            loading={loading ?? isSubmitting}
+            loading={loading || isSubmitting}
             isTranslation={values.showTranslation}
             submitLabel={submitLabel}
             divider={false}
@@ -245,6 +269,7 @@ export function CopyToTeamDialog({
                     touched.languageSelect && Boolean(errors.languageSelect)
                   }
                   value={values.languageSelect}
+                  data-testid="language-select"
                 />
               )}
             </Stack>

@@ -57,8 +57,11 @@ describe('TranslationDialogWrapper', () => {
       )
 
       expect(screen.getByRole('progressbar')).toBeInTheDocument()
-      expect(screen.getByText('Preparing translation...')).toBeInTheDocument()
+      expect(
+        screen.getByText('Translating your journey...')
+      ).toBeInTheDocument()
 
+      expect(screen.queryByText('Test Title')).not.toBeInTheDocument()
       expect(screen.queryByText('Test Children')).not.toBeInTheDocument()
       expect(screen.queryByText('Create')).not.toBeInTheDocument()
     })
@@ -82,12 +85,7 @@ describe('TranslationDialogWrapper', () => {
       expect(screen.getByText('Custom Loading Text')).toBeInTheDocument()
     })
 
-    it('should render progress bar when translationProgress is provided', () => {
-      const mockProgress = {
-        progress: 45,
-        message: 'Translating step 3 of 5...'
-      }
-
+    it('should not render loading UI if not being translated', () => {
       render(
         <TranslationDialogWrapper
           open
@@ -96,51 +94,13 @@ describe('TranslationDialogWrapper', () => {
           loading={true}
           title="Test Title"
           testId="test-dialog"
-          isTranslation={true}
-          translationProgress={mockProgress}
+          isTranslation={false}
         >
           <Typography>Test Children</Typography>
         </TranslationDialogWrapper>
       )
 
-      expect(screen.getByText('45%')).toBeInTheDocument()
-      expect(screen.getByText('Translating step 3 of 5...')).toBeInTheDocument()
-      expect(
-        screen.getByText('Please keep this window open during translation')
-      ).toBeInTheDocument()
-
-      // Should not show the circular progress when progress bar is shown
       expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
-      expect(
-        screen.queryByText('Preparing translation...')
-      ).not.toBeInTheDocument()
-    })
-
-    it('should show loading title during translation with progress', () => {
-      const mockProgress = {
-        progress: 75,
-        message: 'Almost done...'
-      }
-
-      render(
-        <TranslationDialogWrapper
-          open
-          onClose={onClose}
-          onTranslate={onTranslate}
-          loading={true}
-          title="Test Title"
-          loadingText="Custom Loading Text"
-          testId="test-dialog"
-          isTranslation={true}
-          translationProgress={mockProgress}
-        >
-          <Typography>Test Children</Typography>
-        </TranslationDialogWrapper>
-      )
-
-      expect(screen.getByText('Custom Loading Text')).toBeInTheDocument()
-      expect(screen.getByText('75%')).toBeInTheDocument()
-      expect(screen.getByText('Almost done...')).toBeInTheDocument()
     })
   })
 

@@ -11,8 +11,12 @@ import { AccountCheckDialog } from '../AccountCheckDialog'
 
 interface CreateJourneyButtonProps {
   signedIn?: boolean
-  openTeamDialog: boolean
-  setOpenTeamDialog: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+interface JourneyLanguage {
+  id: string
+  localName?: string
+  nativeName?: string
 }
 
 interface JourneyLanguage {
@@ -30,29 +34,25 @@ const DynamicCopyToTeamDialog = dynamic(
 )
 
 export function CreateJourneyButton({
-  signedIn = false,
-  openTeamDialog,
-  setOpenTeamDialog
+  signedIn = false
 }: CreateJourneyButtonProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
 
   const router = useRouter()
   const { journey } = useJourney()
   const [openAccountDialog, setOpenAccountDialog] = useState(false)
-  const [loadingJourney, setLoadingJourney] = useState(false)
+  const [openTeamDialog, setOpenTeamDialog] = useState(false)
 
-  const { duplicateAndTranslate } = useJourneyDuplicateAndTranslate({
+  const { duplicateAndTranslate, loading } = useJourneyDuplicateAndTranslate({
     journeyId: journey?.id,
     journeyTitle: journey?.title ?? '',
     journeyLanguageName:
       journey?.language.name.find(({ primary }) => primary)?.value ?? '',
     onSuccess: () => {
       setOpenTeamDialog(false)
-      setLoadingJourney(false)
     },
     onError: () => {
       setOpenTeamDialog(false)
-      setLoadingJourney(false)
     }
   })
 
@@ -64,13 +64,11 @@ export function CreateJourneyButton({
     ): Promise<void> => {
       if (journey == null) return
 
-      setLoadingJourney(true)
-
-      const newJourneyId = await duplicateAndTranslate(
+      const newJourneyId = await duplicateAndTranslate({
         teamId,
         selectedLanguage,
-        showTranslation
-      )
+        shouldTranslate: showTranslation
+      })
 
       if (newJourneyId != null) {
         sendGTMEvent({
@@ -165,7 +163,7 @@ export function CreateJourneyButton({
           submitLabel={t('Add')}
           title={t('Add Journey to Team')}
           open={openTeamDialog}
-          loading={loadingJourney}
+          loading={loading}
           onClose={handleCloseTeamDialog}
           submitAction={handleCreateJourney}
         />
