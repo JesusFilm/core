@@ -77,7 +77,7 @@ jobs:
           cat $GITHUB_OUTPUT
         id: affected-apps
 
-      - name: Prisma Migrate        
+      - name: Prisma Migrate
         uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: prisma-generate-ci
