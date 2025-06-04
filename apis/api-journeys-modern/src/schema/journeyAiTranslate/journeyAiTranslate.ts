@@ -1,5 +1,7 @@
 import { google } from '@ai-sdk/google'
+import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
 import { generateObject, streamObject } from 'ai'
+import { graphql } from 'gql.tada'
 import { GraphQLError } from 'graphql'
 import { z } from 'zod'
 
@@ -25,6 +27,17 @@ interface JourneyAiTranslateProgress {
   message: string
   journey: typeof JourneyRef.$inferType | null
 }
+
+const GET_VIDEO_VARIANT_LANGUAGES = graphql(`
+  query GetVideoVariantLanguages($videoIds: [ID!]) {
+    videos(where: { ids: $videoIds }) {
+      id
+      variantLanguages {
+        id
+      }
+    }
+  }
+`)
 
 // Define the translation progress type
 const JourneyAiTranslateProgressRef =
@@ -574,16 +587,71 @@ Return in this format:
 
         // Update video blocks' videoVariantLanguageId if videoLanguageId is provided
         if (input.videoLanguageId) {
-          await prisma.block.updateMany({
-            where: {
-              journeyId: input.journeyId,
-              typename: 'VideoBlock',
-              source: VideoBlockSource.internal
-            },
-            data: {
-              videoVariantLanguageId: input.videoLanguageId
+          const httpLink = createHttpLink({
+            uri: process.env.GATEWAY_URL,
+            headers: {
+              'x-graphql-client-name': 'api-journeys-modern',
+              'x-graphql-client-version': process.env.SERVICE_VERSION ?? ''
             }
           })
+          const apollo = new ApolloClient({
+            link: httpLink,
+            cache: new InMemoryCache()
+          })
+
+          const videoIds = journey.blocks
+            .filter(
+              (block) =>
+                block.typename === 'VideoBlock' &&
+                block.source === VideoBlockSource.internal &&
+                block.videoId != null
+            )
+            .map((block) => block.videoId as string)
+
+          console.log('videoIds', videoIds)
+
+          if (videoIds.length > 0) {
+            const { data } = await apollo.query({
+              query: GET_VIDEO_VARIANT_LANGUAGES,
+              variables: {
+                videoIds: videoIds
+              }
+            })
+
+            console.log('data', JSON.stringify(data, null, 2))
+
+            const commonVideoIds = data.videos.reduce<string[]>(
+              (common, video, index) => {
+                const languageIds = video.variantLanguages.map(
+                  (variant) => variant.id
+                )
+                if (index === 0) {
+                  return languageIds
+                }
+                return common.filter((id) => languageIds.includes(id))
+              },
+              []
+            )
+
+            console.log('commonVideoIds', commonVideoIds)
+            const hasCommonVariant = commonVideoIds.find(
+              (id) => id === input.videoLanguageId
+            )
+            if (!hasCommonVariant) {
+              throw new Error('No video variant in common')
+            } else {
+              await prisma.block.updateMany({
+                where: {
+                  journeyId: input.journeyId,
+                  typename: 'VideoBlock',
+                  source: VideoBlockSource.internal
+                },
+                data: {
+                  videoVariantLanguageId: input.videoLanguageId
+                }
+              })
+            }
+          }
         }
 
         // 5. Translate each card
