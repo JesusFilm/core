@@ -3,7 +3,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { act, renderHook } from '@testing-library/react'
 
 import {
-  JOURNEY_AI_TRANSLATE_CREATE,
+  JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION,
   useJourneyAiTranslateSubscription
 } from './useJourneyAiTranslateSubscription'
 
@@ -26,7 +26,11 @@ const translatedJourney = {
 }
 
 const data = {
-  journeyAiTranslateCreate: translatedJourney
+  journeyAiTranslateCreateSubscription: {
+    progress: 100,
+    message: 'Translation complete',
+    journey: translatedJourney
+  }
 }
 
 describe('useJourneyAiTranslateSubscription', () => {
@@ -45,7 +49,7 @@ describe('useJourneyAiTranslateSubscription', () => {
             mocks={[
               {
                 request: {
-                  query: JOURNEY_AI_TRANSLATE_CREATE,
+                  query: JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION,
                   variables
                 },
                 result: { data }
@@ -60,9 +64,9 @@ describe('useJourneyAiTranslateSubscription', () => {
 
     await act(async () => {
       // For subscriptions, we check the data property directly
-      expect(result.current.data?.journeyAiTranslateCreate).toEqual(
-        translatedJourney
-      )
+      expect(
+        result.current.data?.journeyAiTranslateCreateSubscription.journey
+      ).toEqual(translatedJourney)
     })
   })
 
@@ -79,7 +83,7 @@ describe('useJourneyAiTranslateSubscription', () => {
             mocks={[
               {
                 request: {
-                  query: JOURNEY_AI_TRANSLATE_CREATE,
+                  query: JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION,
                   variables
                 },
                 error: new Error('An error occurred')
@@ -110,7 +114,7 @@ describe('useJourneyAiTranslateSubscription', () => {
             mocks={[
               {
                 request: {
-                  query: JOURNEY_AI_TRANSLATE_CREATE,
+                  query: JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION,
                   variables
                 },
                 result: { data }

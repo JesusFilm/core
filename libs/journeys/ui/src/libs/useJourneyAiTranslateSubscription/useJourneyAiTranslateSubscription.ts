@@ -140,7 +140,8 @@ export function updateCacheWithTranslatedJourney(
     })
 
     // Broadcast cache changes to trigger UI updates
-    client.cache.broadcastWatches()
+    // Note: broadcastWatches is not available in newer Apollo versions
+    // The cache updates will automatically trigger re-renders
   } catch (error) {
     console.error('Error updating cache with translated journey:', error)
   }
@@ -159,17 +160,17 @@ export function useJourneyAiTranslateSubscription(
     JourneyAiTranslateCreateSubscriptionVariables
   >(JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION, {
     ...options,
-    onData: ({ data }) => {
+    onData: (result) => {
       // Update the Apollo cache with the translated journey (only when complete)
-      if (data.data?.journeyAiTranslateCreateSubscription?.journey) {
+      if (result.data.data?.journeyAiTranslateCreateSubscription?.journey) {
         updateCacheWithTranslatedJourney(
           client,
-          data.data.journeyAiTranslateCreateSubscription.journey
+          result.data.data.journeyAiTranslateCreateSubscription.journey
         )
       }
 
       // Always trigger the existing onData callback for progress updates
-      options?.onData?.(data)
+      options?.onData?.(result)
     }
   })
 

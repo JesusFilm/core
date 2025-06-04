@@ -233,12 +233,18 @@ export function TranslateJourneyDialog({
       testId="TranslateJourneyDialog"
       divider={false}
       isTranslation={true}
-      translationProgress={{
-        progress:
-          translationData?.journeyAiTranslateCreateSubscription.progress ?? 0,
-        message:
-          translationData?.journeyAiTranslateCreateSubscription.message ?? ''
-      }}
+      translationProgress={
+        translationData?.journeyAiTranslateCreateSubscription
+          ? {
+              progress:
+                translationData.journeyAiTranslateCreateSubscription.progress ??
+                0,
+              message:
+                translationData.journeyAiTranslateCreateSubscription.message ??
+                ''
+            }
+          : undefined
+      }
     >
       <LanguageAutocomplete
         onChange={async (value) => setSelectedLanguage(value)}

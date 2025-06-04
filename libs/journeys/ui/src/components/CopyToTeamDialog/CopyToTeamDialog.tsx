@@ -33,6 +33,10 @@ interface CopyToTeamDialogProps {
     language?: JourneyLanguage,
     showTranslation?: boolean
   ) => Promise<void>
+  translationProgress?: {
+    progress: number
+    message: string
+  }
 }
 
 interface JourneyLanguage {
@@ -74,7 +78,8 @@ export function CopyToTeamDialog({
   open,
   loading,
   onClose,
-  submitAction
+  submitAction,
+  translationProgress
 }: CopyToTeamDialogProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const { query, setActiveTeam } = useTeam()
@@ -189,6 +194,7 @@ export function CopyToTeamDialog({
             submitLabel={submitLabel}
             divider={false}
             testId="CopyToTeamDialog"
+            translationProgress={translationProgress}
           >
             <Stack direction="column" spacing={4}>
               <FormControl variant="filled" hiddenLabel fullWidth>

@@ -6,7 +6,6 @@ import { ReactElement, useState } from 'react'
 import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import { CopyToTeamDialog } from '@core/journeys/ui/CopyToTeamDialog'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { TranslationProgressBar } from '@core/journeys/ui/TranslationProgressBar'
 import { useJourneyAiTranslateSubscription } from '@core/journeys/ui/useJourneyAiTranslateSubscription'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import CopyToIcon from '@core/shared/ui/icons/CopyTo'
@@ -197,15 +196,8 @@ export function CopyToTeamMenuItem({
           setDuplicateTeamDialogOpen(false)
         }}
         submitAction={handleDuplicateJourney}
+        translationProgress={translationProgress ?? undefined}
       />
-
-      {/* Show progress bar when translation is in progress */}
-      {translationProgress && (
-        <TranslationProgressBar
-          progress={translationProgress.progress}
-          message={translationProgress.message}
-        />
-      )}
     </>
   )
 }
