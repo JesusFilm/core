@@ -31,7 +31,7 @@ function PublisherIndexPage(): ReactElement {
   const { query, activeTeam, refetch } = useTeam()
 
   const { data } = useUserRoleQuery()
-  
+
   // Ensure team is refetched if user is not loaded before provider
   useEffect(() => {
     if (activeTeam == null) {
