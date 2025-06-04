@@ -40,7 +40,7 @@ import {
 import logo from '../../../../public/taskbar-icon.svg'
 import { HelpScoutBeacon } from '../../HelpScoutBeacon'
 import { NotificationPopover } from '../../NotificationPopover'
-import { EDIT_TOOLBAR_HEIGHT } from '../constants'
+import { EDIT_TOOLBAR_HEIGHT, EDIT_TOOLBAR_MARGIN } from '../constants'
 
 import { Items } from './Items'
 import { CommandRedoItem } from './Items/CommandRedoItem'
@@ -170,10 +170,16 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
       alignItems="center"
       spacing={{ xs: 2, sm: 4 }}
       sx={{
+        position: 'absolute',
+        zIndex: (theme) => theme.zIndex.appBar,
+        width: 'calc(100vw - 32px)',
         height: EDIT_TOOLBAR_HEIGHT,
         backgroundColor: 'background.paper',
-        px: { xs: 2, sm: 4 },
-        flexShrink: 0
+        m: `${EDIT_TOOLBAR_MARGIN}px`,
+        px: 3,
+        flexShrink: 0,
+        borderRadius: 4,
+        border: (theme) => `1px solid ${theme.palette.divider}`
       }}
     >
       <NextLink href="/" passHref legacyBehavior>
@@ -210,7 +216,11 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
         direction="row"
         gap={2}
         data-testid="JourneyDetails"
-        sx={{ minWidth: 0, display: { xs: 'none', md: 'inline-flex' } }}
+        sx={{
+          minWidth: 0,
+          display: { xs: 'none', md: 'inline-flex' },
+          alignItems: 'center'
+        }}
       >
         <Tooltip
           title={t('Social Image')}
