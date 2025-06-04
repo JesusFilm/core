@@ -146,7 +146,6 @@ export function JourneyFlow(): ReactElement {
     (input: Array<{ id: string; x: number; y: number }>): void => {
       // check if first element is social preview node
       const socialPreview = input[0]?.id === 'SocialPreview' ? input[0] : null
-      //
       // Filter the remaining blocks as step blocks
       const stepBlocks = socialPreview ? input.slice(1) : input
 
