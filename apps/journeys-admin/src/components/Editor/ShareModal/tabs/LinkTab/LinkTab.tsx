@@ -3,8 +3,10 @@ import TabPanel from '@mui/lab/TabPanel'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Skeleton from '@mui/material/Skeleton'
+import type { Theme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { Form, Formik, FormikHelpers, FormikValues } from 'formik'
 import Image from 'next/image'
 import { useTranslation } from 'next-i18next'
@@ -38,10 +40,7 @@ export function LinkTab({ journey, hostname }: LinkTabProps): ReactElement {
   const [journeyUpdate] = useMutation<JourneySlugUpdate>(JOURNEY_SLUG_UPDATE)
   const { enqueueSnackbar } = useSnackbar()
   const [isEditing, setIsEditing] = useState(false)
-
-  const previewTitle = 'Aliquam pellentesque ultrices faucibus nulla'
-  const previewDescription =
-    'Lorem ipsum dolor sit amet consectetur. Habitant feuegiat sit pulvinar mauris elit luctus malesuada non dignissim.'
+  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
 
   const slugSchema = object().shape({
     slug: string().required(t('Required'))
@@ -113,11 +112,19 @@ export function LinkTab({ journey, hostname }: LinkTabProps): ReactElement {
 
   return (
     <TabPanel value="0" sx={{ padding: 0 }}>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 3,
+          px: mdUp ? 0 : 4
+        }}
+      >
         <Box>
           <Box
             sx={{
               display: 'flex',
+              flexDirection: mdUp ? 'row' : 'column',
               gap: 2,
               borderRadius: 1,
               backgroundColor: 'background.paper'
@@ -126,7 +133,7 @@ export function LinkTab({ journey, hostname }: LinkTabProps): ReactElement {
             {/* Image placeholder */}
             <Box
               sx={{
-                width: '33%',
+                width: mdUp ? '33%' : '100%',
                 minHeight: 130,
                 borderRadius: 1,
                 overflow: 'hidden',
@@ -145,7 +152,7 @@ export function LinkTab({ journey, hostname }: LinkTabProps): ReactElement {
               )}
             </Box>
             {/* Content */}
-            <Box sx={{ flex: 1, paddingLeft: 4 }}>
+            <Box sx={{ flex: 1, paddingLeft: mdUp ? 4 : 0 }}>
               <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
                 {journey?.title}
               </Typography>
@@ -172,6 +179,7 @@ export function LinkTab({ journey, hostname }: LinkTabProps): ReactElement {
                   onClick={handleStartEdit}
                   size="small"
                   variant="outlined"
+                  color="secondary"
                   sx={{ minWidth: '6ch', px: 2 }}
                 >
                   {t('Edit')}
@@ -180,6 +188,7 @@ export function LinkTab({ journey, hostname }: LinkTabProps): ReactElement {
                   onClick={handleCopyClick}
                   size="small"
                   variant="contained"
+                  color="secondary"
                   disabled={!journeyUrl}
                   sx={{ minWidth: '6ch', px: 2 }}
                 >
@@ -233,29 +242,33 @@ export function LinkTab({ journey, hostname }: LinkTabProps): ReactElement {
                   >
                     {JourneyLinkTitle()}
 
-                    <Box sx={{ display: 'flex', gap: 1 }}>
-                      <Button
-                        onClick={() => {
-                          resetForm({ values: { slug: journey.slug } })
-                          setIsEditing(false)
-                        }}
-                        size="small"
-                        variant="outlined"
-                        disabled={isSubmitting}
-                        sx={{ minWidth: '6ch', px: 2 }}
-                      >
-                        {t('Cancel')}
-                      </Button>
-                      <Button
-                        onClick={() => handleSubmit()}
-                        variant="contained"
-                        size="small"
-                        disabled={isSubmitting}
-                        sx={{ minWidth: '6ch', px: 2 }}
-                      >
-                        {t('Save')}
-                      </Button>
-                    </Box>
+                    {mdUp === true && (
+                      <Box sx={{ display: 'flex', gap: 1 }}>
+                        <Button
+                          onClick={() => {
+                            resetForm({ values: { slug: journey.slug } })
+                            setIsEditing(false)
+                          }}
+                          size="small"
+                          variant="outlined"
+                          color="secondary"
+                          disabled={isSubmitting}
+                          sx={{ minWidth: '6ch', px: 2 }}
+                        >
+                          {t('Cancel')}
+                        </Button>
+                        <Button
+                          onClick={() => handleSubmit()}
+                          variant="contained"
+                          size="small"
+                          color="secondary"
+                          disabled={isSubmitting}
+                          sx={{ minWidth: '6ch', px: 2 }}
+                        >
+                          {t('Save')}
+                        </Button>
+                      </Box>
+                    )}
                   </Box>
 
                   {/* Edit Form */}
@@ -271,7 +284,11 @@ export function LinkTab({ journey, hostname }: LinkTabProps): ReactElement {
                       onChange={handleChange}
                       disabled={isSubmitting}
                       autoFocus
-                      InputLabelProps={{ shrink: true }}
+                      slotProps={{
+                        inputLabel: {
+                          shrink: true
+                        }
+                      }}
                       helperText={
                         values.slug !== '' ? (
                           <>

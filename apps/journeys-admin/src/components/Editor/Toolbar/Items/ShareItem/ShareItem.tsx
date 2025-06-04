@@ -10,7 +10,7 @@ import ShareIcon from '@core/shared/ui/icons/Share'
 import { GetJourneyForSharing_journey as JourneyFromLazyQuery } from '../../../../../../__generated__/GetJourneyForSharing'
 import { JourneyFields as JourneyFromContext } from '../../../../../../__generated__/JourneyFields'
 import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
-import { ShareDialog } from '../../../ShareDialog'
+import { ShareModal } from '../../../ShareModal'
 import { Item } from '../Item/Item'
 
 const EmbedJourneyDialog = dynamic(
@@ -19,14 +19,6 @@ const EmbedJourneyDialog = dynamic(
       /* webpackChunkName: "Editor/EditorToolbar/ShareButton/EmbedJourneyDialog" */
       './EmbedJourneyDialog'
     ).then((mod) => mod.EmbedJourneyDialog),
-  { ssr: false }
-)
-const SlugDialog = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "Editor/EditorToolbar/ShareButton/SlugDialog" */
-      './SlugDialog'
-    ).then((mod) => mod.SlugDialog),
   { ssr: false }
 )
 
@@ -55,7 +47,7 @@ interface ShareItemProps {
  * @param {(JourneyFromContext | JourneyFromLazyQuery)} [props.journey] - Journey data for sharing
  * @param {() => void} [props.handleCloseMenu] - Closes the parent menu
  * @param {() => void} [props.handleKeepMounted] - Keeps component mounted in DOM
- * @returns {ReactElement} Share button/menu item with sharing dialog
+ * @returns {ReactElement} Share button/menu item with sharing modal
  */
 export function ShareItem({
   variant,
@@ -70,13 +62,12 @@ export function ShareItem({
     skip: journey?.team?.id == null
   })
   const router = useRouter()
-  const [showSlugDialog, setShowSlugDialog] = useState<boolean | null>(null)
   const [showEmbedDialog, setShowEmbedDialog] = useState<boolean | null>(null)
   const [showQrCodeDialog, setShowQrCodeDialog] = useState<boolean | null>(null)
-  const [showShareDialog, setShowShareDialog] = useState<boolean | null>(null)
+  const [showShareModal, setShowShareModal] = useState<boolean | null>(null)
 
   function handleShowMenu(): void {
-    setShowShareDialog(true)
+    setShowShareModal(true)
     handleKeepMounted?.()
     handleCloseMenu?.()
   }
@@ -91,7 +82,6 @@ export function ShareItem({
   }
 
   function handleEditUrlClick(): void {
-    setShowSlugDialog(true)
     setRoute('edit-url')
   }
 
@@ -114,23 +104,15 @@ export function ShareItem({
         onClick={handleShowMenu}
         ButtonProps={{ variant: 'contained' }}
       />
-      {showShareDialog && (
-        <ShareDialog
-          open={showShareDialog}
-          onClose={() => setShowShareDialog(false)}
+      {showShareModal && (
+        <ShareModal
+          open={showShareModal}
+          onClose={() => setShowShareModal(false)}
           journey={journey}
           hostname={hostname}
           onEditUrlClick={handleEditUrlClick}
           onEmbedJourneyClick={handleEmbedJourneyClick}
           onQrCodeClick={handleQrCodeClick}
-        />
-      )}
-      {showSlugDialog != null && (
-        <SlugDialog
-          open={showSlugDialog}
-          onClose={() => setShowSlugDialog(false)}
-          hostname={hostname}
-          journey={journey}
         />
       )}
       {showEmbedDialog != null && (

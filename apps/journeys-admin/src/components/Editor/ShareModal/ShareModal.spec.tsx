@@ -4,10 +4,15 @@ import { SnackbarProvider } from 'notistack'
 
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
-import { ShareDialog } from './ShareDialog'
+import { ShareModal } from './ShareModal'
 
 jest.mock('next-i18next', () => ({
   useTranslation: jest.fn()
+}))
+
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: jest.fn(() => true)
 }))
 
 const mockUseTranslation = useTranslation as jest.MockedFunction<
@@ -16,7 +21,7 @@ const mockUseTranslation = useTranslation as jest.MockedFunction<
 
 Object.assign(navigator, { clipboard: { writeText: jest.fn() } })
 
-describe('ShareDialog', () => {
+describe('ShareModal', () => {
   const mockOnClose = jest.fn()
   const mockOnEditUrlClick = jest.fn()
   const mockOnEmbedJourneyClick = jest.fn()
@@ -48,28 +53,28 @@ describe('ShareDialog', () => {
     }
   })
 
-  it('should render dialog when open', () => {
-    render(<ShareDialog {...defaultProps} />)
+  it('should render modal when open', () => {
+    render(<ShareModal {...defaultProps} />)
 
     expect(screen.getByRole('dialog')).toBeInTheDocument()
     expect(screen.getByText('Share This Journey')).toBeInTheDocument()
   })
 
-  it('should not render dialog when closed', () => {
-    render(<ShareDialog {...defaultProps} open={false} />)
+  it('should not render modal when closed', () => {
+    render(<ShareModal {...defaultProps} open={false} />)
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 
   it('should show loading state when journey is null', () => {
-    render(<ShareDialog {...defaultProps} journey={undefined} />)
+    render(<ShareModal {...defaultProps} journey={undefined} />)
 
     expect(screen.getByRole('progressbar')).toBeInTheDocument()
     expect(screen.queryByText('Share This Journey')).not.toBeInTheDocument()
   })
 
   it('should display journey URL with default domain', () => {
-    render(<ShareDialog {...defaultProps} />)
+    render(<ShareModal {...defaultProps} />)
 
     const copyField = screen.getByDisplayValue(
       'https://default.domain.com/default'
@@ -78,7 +83,7 @@ describe('ShareDialog', () => {
   })
 
   it('should display journey URL with custom domain', () => {
-    render(<ShareDialog {...defaultProps} hostname="custom.domain.com" />)
+    render(<ShareModal {...defaultProps} hostname="custom.domain.com" />)
 
     const copyField = screen.getByDisplayValue(
       'https://custom.domain.com/default'
@@ -89,7 +94,7 @@ describe('ShareDialog', () => {
   it('should display fallback URL when NEXT_PUBLIC_JOURNEYS_URL is not set', () => {
     delete process.env.NEXT_PUBLIC_JOURNEYS_URL
 
-    render(<ShareDialog {...defaultProps} />)
+    render(<ShareModal {...defaultProps} />)
 
     const copyField = screen.getByDisplayValue(
       'https://your.nextstep.is/default'
@@ -98,7 +103,7 @@ describe('ShareDialog', () => {
   })
 
   it('should call onEditUrlClick when Edit URL button is clicked', () => {
-    render(<ShareDialog {...defaultProps} />)
+    render(<ShareModal {...defaultProps} />)
 
     fireEvent.click(screen.getByRole('button', { name: 'Edit URL' }))
 
@@ -106,7 +111,7 @@ describe('ShareDialog', () => {
   })
 
   it('should call onEmbedJourneyClick when Embed Journey button is clicked', () => {
-    render(<ShareDialog {...defaultProps} />)
+    render(<ShareModal {...defaultProps} />)
 
     fireEvent.click(screen.getByRole('button', { name: 'Embed Journey' }))
 
@@ -114,7 +119,7 @@ describe('ShareDialog', () => {
   })
 
   it('should call onQrCodeClick when QR Code button is clicked', () => {
-    render(<ShareDialog {...defaultProps} />)
+    render(<ShareModal {...defaultProps} />)
 
     fireEvent.click(screen.getByRole('button', { name: 'QR Code' }))
 
@@ -122,7 +127,7 @@ describe('ShareDialog', () => {
   })
 
   it('should disable buttons when journey is null', () => {
-    render(<ShareDialog {...defaultProps} journey={undefined} />)
+    render(<ShareModal {...defaultProps} journey={undefined} />)
 
     // Even though the buttons don't show in loading state, test the prop behavior
     expect(mockOnEditUrlClick).not.toHaveBeenCalled()
@@ -130,10 +135,10 @@ describe('ShareDialog', () => {
     expect(mockOnQrCodeClick).not.toHaveBeenCalled()
   })
 
-  it('should call onClose when dialog is closed', () => {
-    render(<ShareDialog {...defaultProps} />)
+  it('should call onClose when modal is closed', () => {
+    render(<ShareModal {...defaultProps} />)
 
-    // The dialog close functionality would be tested through user interactions
+    // The modal close functionality would be tested through user interactions
     // This ensures the onClose prop is passed correctly
     expect(mockOnClose).not.toHaveBeenCalled()
   })
@@ -141,7 +146,7 @@ describe('ShareDialog', () => {
   it('should copy URL to clipboard when copy button is clicked', async () => {
     render(
       <SnackbarProvider>
-        <ShareDialog {...defaultProps} />
+        <ShareModal {...defaultProps} />
       </SnackbarProvider>
     )
 
@@ -155,7 +160,7 @@ describe('ShareDialog', () => {
   it('should copy custom domain URL to clipboard', async () => {
     render(
       <SnackbarProvider>
-        <ShareDialog {...defaultProps} hostname="custom.domain.com" />
+        <ShareModal {...defaultProps} hostname="custom.domain.com" />
       </SnackbarProvider>
     )
 
