@@ -817,7 +817,7 @@ export type Journey = {
   id: Scalars['ID']['output'];
   journeyCollections: Array<JourneyCollection>;
   language: Language;
-  languageId?: Maybe<Scalars['String']['output']>;
+  languageId: Scalars['String']['output'];
   logoImageBlock?: Maybe<ImageBlock>;
   menuButtonIcon?: Maybe<JourneyMenuButtonIcon>;
   menuStepBlock?: Maybe<StepBlock>;
@@ -859,6 +859,16 @@ export type JourneyAiTranslateInput = {
   name: Scalars['String']['input'];
   textLanguageId: Scalars['ID']['input'];
   textLanguageName: Scalars['String']['input'];
+};
+
+export type JourneyAiTranslateProgress = {
+  __typename?: 'JourneyAiTranslateProgress';
+  /** The journey being translated (only present when complete) */
+  journey?: Maybe<Journey>;
+  /** Current translation step message */
+  message?: Maybe<Scalars['String']['output']>;
+  /** Translation progress as a percentage (0-100) */
+  progress?: Maybe<Scalars['Float']['output']>;
 };
 
 export type JourneyCollection = {
@@ -3777,6 +3787,16 @@ export type StepViewEventCreateInput = {
   id?: InputMaybe<Scalars['ID']['input']>;
   /** stepName of the current stepBlock */
   value?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type Subscription = {
+  __typename?: 'Subscription';
+  journeyAiTranslateCreateSubscription: JourneyAiTranslateProgress;
+};
+
+
+export type SubscriptionJourneyAiTranslateCreateSubscriptionArgs = {
+  input: JourneyAiTranslateInput;
 };
 
 export type Tag = {
