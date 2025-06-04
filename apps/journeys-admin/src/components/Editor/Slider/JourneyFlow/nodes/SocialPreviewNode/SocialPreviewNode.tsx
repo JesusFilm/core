@@ -47,26 +47,19 @@ export function SocialPreviewNode(): ReactElement {
   }, [showTooltip])
 
   function handleClick(): void {
-    if (activeContent !== ActiveContent.Social) {
-      dispatch({
-        type: 'SetSelectedBlockAction',
-        selectedBlock: undefined
-      })
-      dispatch({ type: 'SetSelectedStepAction', selectedStep: undefined })
-      dispatch({
-        type: 'SetActiveSlideAction',
-        activeSlide: ActiveSlide.JourneyFlow
-      })
-      dispatch({
-        type: 'SetActiveContentAction',
-        activeContent: ActiveContent.Social
-      })
-    } else {
-      dispatch({
-        type: 'SetActiveSlideAction',
-        activeSlide: ActiveSlide.Content
-      })
-    }
+    dispatch({
+      type: 'SetSelectedBlockAction',
+      selectedBlock: undefined
+    })
+    dispatch({ type: 'SetSelectedStepAction', selectedStep: undefined })
+    dispatch({
+      type: 'SetActiveSlideAction',
+      activeSlide: ActiveSlide.Content
+    })
+    dispatch({
+      type: 'SetActiveContentAction',
+      activeContent: ActiveContent.Social
+    })
   }
 
   async function handleSourceConnect(
