@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import { CopyToTeamDialog } from '@core/journeys/ui/CopyToTeamDialog'
@@ -105,15 +105,17 @@ export function CopyToTeamMenuItem({
     })
 
   // Handle translation errors
-  if (translationError) {
-    enqueueSnackbar(translationError.message, {
-      variant: 'error',
-      preventDuplicate: true
-    })
-    setLoading(false)
-    setTranslationProgress(null)
-    setTranslationVariables(undefined)
-  }
+  useEffect(() => {
+    if (translationError) {
+      enqueueSnackbar(translationError.message, {
+        variant: 'error',
+        preventDuplicate: true
+      })
+      setLoading(false)
+      setTranslationProgress(null)
+      setTranslationVariables(undefined)
+    }
+  }, [translationError, enqueueSnackbar])
 
   const handleDuplicateJourney = async (
     teamId: string,
@@ -123,45 +125,60 @@ export function CopyToTeamMenuItem({
     if (id == null || journeyData == null) return
 
     setLoading(true)
-    const { data: duplicateData } = await journeyDuplicate({
-      variables: {
-        id,
-        teamId
-      }
-    })
-    if (duplicateData?.journeyDuplicate?.id) {
-      if (selectedLanguage == null || !showTranslation) {
-        setLoading(false)
-        enqueueSnackbar(t('Journey Copied'), {
-          variant: 'success',
-          preventDuplicate: true
-        })
-        return
-      }
 
-      // Start the translation subscription
-      setTranslationVariables({
-        journeyId: duplicateData.journeyDuplicate.id,
-        name: journeyData.title,
-        journeyLanguageName:
-          journeyData.language.name.find(({ primary }) => !primary)?.value ??
-          '',
-        textLanguageId: selectedLanguage.id,
-        textLanguageName:
-          selectedLanguage.nativeName ?? selectedLanguage.localName ?? ''
+    try {
+      const { data: duplicateData } = await journeyDuplicate({
+        variables: {
+          id,
+          teamId
+        }
       })
 
-      handleCloseMenu()
-      setDuplicateTeamDialogOpen(false)
+      if (duplicateData?.journeyDuplicate?.id) {
+        if (selectedLanguage == null || !showTranslation) {
+          setLoading(false)
+          enqueueSnackbar(t('Journey Copied'), {
+            variant: 'success',
+            preventDuplicate: true
+          })
+          return
+        }
+
+        // Start the translation subscription
+        setTranslationVariables({
+          journeyId: duplicateData.journeyDuplicate.id,
+          name: journeyData.title,
+          journeyLanguageName:
+            journeyData.language.name.find(({ primary }) => !primary)?.value ??
+            '',
+          textLanguageId: selectedLanguage.id,
+          textLanguageName:
+            selectedLanguage.nativeName ?? selectedLanguage.localName ?? ''
+        })
+
+        handleCloseMenu()
+        setDuplicateTeamDialogOpen(false)
+      } else {
+        setLoading(false)
+        setTranslationProgress(null)
+        setTranslationVariables(undefined)
+        enqueueSnackbar(t('Journey duplication failed'), {
+          variant: 'error',
+          preventDuplicate: true
+        })
+        handleCloseMenu()
+        setDuplicateTeamDialogOpen(false)
+      }
+    } catch (error) {
       setLoading(false)
-    } else {
+      setTranslationProgress(null)
+      setTranslationVariables(undefined)
       enqueueSnackbar(t('Journey duplication failed'), {
         variant: 'error',
         preventDuplicate: true
       })
       handleCloseMenu()
       setDuplicateTeamDialogOpen(false)
-      setLoading(false)
     }
   }
 

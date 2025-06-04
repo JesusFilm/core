@@ -16,6 +16,7 @@ import {
 import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
 import { SUPPORTED_LANGUAGE_IDS } from '@core/journeys/ui/useJourneyAiTranslateMutation/supportedLanguages'
 import { JOURNEY_AI_TRANSLATE_CREATE } from '@core/journeys/ui/useJourneyAiTranslateMutation/useJourneyAiTranslateMutation'
+import { JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION } from '@core/journeys/ui/useJourneyAiTranslateSubscription/useJourneyAiTranslateSubscription'
 import { JOURNEY_DUPLICATE } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import { JourneyDuplicate } from '@core/journeys/ui/useJourneyDuplicateMutation/__generated__/JourneyDuplicate'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
@@ -96,6 +97,38 @@ describe('DuplicateJourneys', () => {
           },
           createdAt: '2023-04-25T12:34:56Z',
           updatedAt: '2023-04-25T12:34:56Z'
+        }
+      }
+    }))
+  }
+
+  const translateSubscriptionMock = {
+    request: {
+      query: JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION,
+      variables: {
+        journeyId: 'duplicatedJourneyId',
+        name: 'Journey',
+        journeyLanguageName: '',
+        textLanguageId: '528',
+        textLanguageName: 'Español'
+      }
+    },
+    result: jest.fn(() => ({
+      data: {
+        journeyAiTranslateCreateSubscription: {
+          progress: 100,
+          message: 'Translation completed',
+          journey: {
+            id: 'duplicatedJourneyId',
+            title: 'Viaje Traducido',
+            description: 'Esta es una descripción traducida',
+            languageId: '528',
+            createdAt: '2023-04-25T12:34:56Z',
+            updatedAt: '2023-04-25T12:34:56Z',
+            blocks: [],
+            __typename: 'Journey'
+          },
+          __typename: 'JourneyAiTranslateCreateSubscriptionPayload'
         }
       }
     }))
@@ -198,6 +231,7 @@ describe('DuplicateJourneys', () => {
           updateLastActiveTeamIdMock,
           mockLanguage,
           translateMock,
+          translateSubscriptionMock,
           duplicateJourneyMock,
           getLastActiveTeamIdAndTeamsMock
         ]}
@@ -283,7 +317,7 @@ describe('DuplicateJourneys', () => {
         mocks={[
           updateLastActiveTeamIdMock,
           mockLanguage,
-          translateMock,
+          translateSubscriptionMock,
           duplicateJourneyMock,
           getLastActiveTeamIdAndTeamsMock
         ]}
@@ -355,7 +389,7 @@ describe('DuplicateJourneys', () => {
       expect(duplicateJourneyMock.result).toHaveBeenCalled()
     })
     await waitFor(() => {
-      expect(translateMock.result).toHaveBeenCalled()
+      expect(translateSubscriptionMock.result).toHaveBeenCalled()
     })
     expect(handleCloseMenu).toHaveBeenCalled()
     expect(screen.getByText('Journey Translated')).toBeInTheDocument()
@@ -368,5 +402,92 @@ describe('DuplicateJourneys', () => {
         { shallow: true }
       )
     })
+  })
+
+  it('should handle journey duplication errors', async () => {
+    const duplicateJourneyErrorMock: MockedResponse<JourneyDuplicate> = {
+      request: {
+        query: JOURNEY_DUPLICATE,
+        variables: {
+          id: 'journeyId',
+          teamId: 'teamId'
+        }
+      },
+      error: new Error('Network error occurred')
+    }
+
+    render(
+      <MockedProvider
+        mocks={[
+          updateLastActiveTeamIdMock,
+          mockLanguage,
+          duplicateJourneyErrorMock,
+          getLastActiveTeamIdAndTeamsMock
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <CopyToTeamMenuItem
+              id="journeyId"
+              handleCloseMenu={handleCloseMenu}
+              journey={
+                {
+                  __typename: 'Journey',
+                  id: 'journeyId',
+                  slug: 'journey',
+                  title: 'Journey',
+                  description: null,
+                  language: {
+                    __typename: 'Language',
+                    id: '529',
+                    name: [
+                      {
+                        value: 'English',
+                        primary: true,
+                        __typename: 'LanguageName'
+                      }
+                    ]
+                  },
+                  status: JourneyStatus.draft,
+                  createdAt: '2021-11-19T12:34:56.647Z',
+                  publishedAt: null,
+                  trashedAt: null,
+                  archivedAt: null,
+                  featuredAt: null
+                } as unknown as Journey
+              }
+            />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(getLastActiveTeamIdAndTeamsMock.result).toHaveBeenCalled()
+    })
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Copy to ...' }))
+    const muiSelect = screen.getByTestId('team-duplicate-select')
+    const muiSelectDropDownButton = within(muiSelect).getByRole('combobox')
+    fireEvent.mouseDown(muiSelectDropDownButton)
+    const muiSelectOptions = screen.getByRole('option', {
+      name: 'Team Name'
+    })
+    fireEvent.click(muiSelectOptions)
+
+    const dialogButtons = await within(
+      screen.getByTestId('CopyToTeamDialog')
+    ).findAllByRole('button')
+    const copyButton = dialogButtons.find(
+      (button) => button.textContent === 'Copy'
+    )
+    expect(copyButton).not.toBeUndefined()
+    if (copyButton) {
+      fireEvent.click(copyButton)
+    }
+
+    await waitFor(() => {
+      expect(screen.getByText('Journey duplication failed')).toBeInTheDocument()
+    })
+    expect(handleCloseMenu).toHaveBeenCalled()
   })
 })

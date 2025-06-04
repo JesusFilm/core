@@ -109,36 +109,6 @@ export function updateCacheWithTranslatedJourney(
       }
     })
 
-    // Also update individual blocks in the cache
-    translatedJourney.blocks?.forEach((block) => {
-      client.cache.writeFragment({
-        id: client.cache.identify({
-          __typename: block.__typename,
-          id: block.id
-        }),
-        fragment: gql`
-          fragment TranslatedBlock on Block {
-            id
-            __typename
-            ... on TypographyBlock {
-              content
-            }
-            ... on ButtonBlock {
-              label
-            }
-            ... on RadioOptionBlock {
-              label
-            }
-            ... on TextResponseBlock {
-              label
-              placeholder
-            }
-          }
-        `,
-        data: block
-      })
-    })
-
     // Broadcast cache changes to trigger UI updates
     // Note: broadcastWatches is not available in newer Apollo versions
     // The cache updates will automatically trigger re-renders

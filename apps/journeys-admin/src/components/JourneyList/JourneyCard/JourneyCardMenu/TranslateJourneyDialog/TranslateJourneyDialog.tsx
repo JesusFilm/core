@@ -103,13 +103,15 @@ export function TranslateJourneyDialog({
     })
 
   // Handle translation errors
-  if (translationError) {
-    enqueueSnackbar(translationError.message, {
-      variant: 'error'
-    })
-    setLoading(false)
-    setTranslationVariables(undefined)
-  }
+  useEffect(() => {
+    if (translationError) {
+      enqueueSnackbar(translationError.message, {
+        variant: 'error'
+      })
+      setLoading(false)
+      setTranslationVariables(undefined)
+    }
+  }, [translationError, enqueueSnackbar])
 
   const { data: languagesData, loading: languagesLoading } = useLanguagesQuery({
     languageId: '529',

@@ -1,6 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
-import { act, renderHook } from '@testing-library/react'
+import { act, renderHook, waitFor } from '@testing-library/react'
 
 import {
   JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION,
@@ -22,14 +22,27 @@ const translatedJourney = {
   description: 'Esta es una descripción traducida', // "This is a translated description"
   languageId: 'es-419',
   createdAt: '2023-04-25T12:34:56Z',
-  updatedAt: '2023-04-25T12:34:56Z'
+  updatedAt: '2023-04-25T12:34:56Z',
+  blocks: [
+    {
+      id: 'block-1',
+      __typename: 'TypographyBlock',
+      content: 'Contenido traducido'
+    },
+    {
+      id: 'block-2',
+      __typename: 'ButtonBlock',
+      label: 'Botón traducido'
+    }
+  ]
 }
 
 const data = {
   journeyAiTranslateCreateSubscription: {
     progress: 100,
     message: 'Translation complete',
-    journey: translatedJourney
+    journey: translatedJourney,
+    __typename: 'JourneyAiTranslateCreateSubscriptionPayload'
   }
 }
 
@@ -62,8 +75,7 @@ describe('useJourneyAiTranslateSubscription', () => {
       }
     )
 
-    await act(async () => {
-      // For subscriptions, we check the data property directly
+    await waitFor(() => {
       expect(
         result.current.data?.journeyAiTranslateCreateSubscription.journey
       ).toEqual(translatedJourney)
@@ -96,7 +108,7 @@ describe('useJourneyAiTranslateSubscription', () => {
       }
     )
 
-    await act(async () => {
+    await waitFor(() => {
       expect(result.current.error).toBeDefined()
     })
   })
