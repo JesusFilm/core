@@ -2,6 +2,7 @@ import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { ResultOf, graphql } from 'gql.tada'
 
 import { getApolloClient } from '../../../../../../../lib/apolloClient'
+import { getDefaultPlatformForApiKey } from '../../../../../../../lib/getPlatformFromApiKey'
 import {
   getWebEmbedPlayer,
   getWebEmbedSharePlayer
@@ -33,6 +34,7 @@ const GET_VIDEO_VARIANT = graphql(`
           width
           quality
           size
+          bitrate
           url
         }
       }
@@ -42,6 +44,7 @@ const GET_VIDEO_VARIANT = graphql(`
         primaryLanguageId
         variant {
           hls
+          share
           lengthInMilliseconds
           downloadable
           downloads {
@@ -49,6 +52,8 @@ const GET_VIDEO_VARIANT = graphql(`
             width
             quality
             size
+            bitrate
+            url
           }
           subtitle {
             language {
@@ -196,6 +201,15 @@ mediaComponentLanguage.openapi(route, async (c) => {
   const mediaComponentId = c.req.param('mediaComponentId')
   const languageId = c.req.param('languageId')
   const expand = c.req.query('expand') ?? ''
+  const apiKey = c.req.query('apiKey')
+
+  let platform = c.req.query('platform')
+  if (!platform && apiKey) {
+    platform = await getDefaultPlatformForApiKey(apiKey)
+  }
+  if (!platform) {
+    platform = 'ios' // Default platform for this route
+  }
 
   const { data } = await getApolloClient().query<
     ResultOf<typeof GET_VIDEO_VARIANT>
@@ -207,10 +221,7 @@ mediaComponentLanguage.openapi(route, async (c) => {
     }
   })
 
-  const apiKey = c.req.query('apiKey') ?? '616db012e9a951.51499299'
-  const platform = c.req.query('platform') ?? 'ios'
-  // TODO: implement
-  const apiSessionId = '6622f10d2260a8.05128925'
+  const apiSessionId = c.req.query('apiSessionId') ?? '6622f10d2260a8.05128925'
 
   const video = data.video
 
@@ -221,6 +232,9 @@ mediaComponentLanguage.openapi(route, async (c) => {
   )
   const downloadHigh = video.variant?.downloads?.find(
     (download) => download.quality === 'high'
+  )
+  const downloadSd = video.variant?.downloads?.find(
+    (download) => download.quality === 'sd'
   )
 
   const downloadUrls = {
@@ -292,7 +306,38 @@ mediaComponentLanguage.openapi(route, async (c) => {
         streamingUrls = {
           dash: [{ videoBitrate: 0, url: video.variant?.dash }],
           hls: [{ videoBitrate: 0, url: video.variant?.hls }],
-          http: []
+          http: [
+            {
+              videoBitrate: downloadLow?.bitrate ?? 0,
+              videoContainer: 'MP4',
+              url: downloadLow?.url
+            },
+            {
+              videoBitrate: downloadSd?.bitrate ?? 0,
+              videoContainer: 'MP4',
+              url: downloadSd?.url
+            },
+            {
+              videoBitrate: downloadSd?.bitrate ?? 0,
+              videoContainer: 'MP4',
+              url: downloadSd?.url
+            },
+            {
+              videoBitrate: downloadSd?.bitrate ?? 0,
+              videoContainer: 'MP4',
+              url: downloadSd?.url
+            },
+            {
+              videoBitrate: downloadSd?.bitrate ?? 0,
+              videoContainer: 'MP4',
+              url: downloadSd?.url
+            },
+            {
+              videoBitrate: downloadHigh?.bitrate ?? 0,
+              videoContainer: 'MP4',
+              url: downloadHigh?.url
+            }
+          ]
         }
         break
       case 'ios':
@@ -360,7 +405,9 @@ mediaComponentLanguage.openapi(route, async (c) => {
               low: child.variant?.downloads?.find(
                 (d) => d.quality === 'low'
               ) && {
-                url: `https://arc.gt/${Math.random().toString(36).substring(2, 7)}?apiSessionId=${apiSessionId}`,
+                url:
+                  child.variant.downloads.find((d) => d.quality === 'low')
+                    ?.url ?? '',
                 height:
                   child.variant.downloads.find((d) => d.quality === 'low')
                     ?.height ?? 240,
@@ -374,7 +421,9 @@ mediaComponentLanguage.openapi(route, async (c) => {
               high: child.variant?.downloads?.find(
                 (d) => d.quality === 'high'
               ) && {
-                url: `https://arc.gt/${Math.random().toString(36).substring(2, 7)}?apiSessionId=${apiSessionId}`,
+                url:
+                  child.variant.downloads.find((d) => d.quality === 'high')
+                    ?.url ?? '',
                 height:
                   child.variant.downloads.find((d) => d.quality === 'high')
                     ?.height ?? 720,
@@ -396,7 +445,7 @@ mediaComponentLanguage.openapi(route, async (c) => {
               ],
               http: []
             },
-            shareUrl: `https://arc.gt/${Math.random().toString(36).substring(2, 7)}?apiSessionId=${apiSessionId}`,
+            shareUrl: child.variant?.share ?? '',
             socialMediaUrls: {},
             _links: {
               self: {

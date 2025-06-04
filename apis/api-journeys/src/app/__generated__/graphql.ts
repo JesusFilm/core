@@ -1151,6 +1151,7 @@ export class Journey {
     id: string;
     title: string;
     language: Language;
+    languageId: string;
     themeMode: ThemeMode;
     themeName: ThemeName;
     description?: Nullable<string>;
@@ -1185,6 +1186,7 @@ export class Journey {
     showMenu?: Nullable<boolean>;
     showDisplayTitle?: Nullable<boolean>;
     menuButtonIcon?: Nullable<JourneyMenuButtonIcon>;
+    fromTemplateId?: Nullable<string>;
     userJourneys?: Nullable<UserJourney[]>;
 }
 

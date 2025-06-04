@@ -29,6 +29,7 @@ export class CardLevelActionPage {
   }
 
   async clickOnJourneyCard() {
+    await this.page.waitForLoadState('load')
     await this.page
       .frameLocator(this.journeyCardFrame)
       .first()
@@ -38,6 +39,7 @@ export class CardLevelActionPage {
   }
 
   async clickOnVideoJourneyCard() {
+    await this.page.waitForLoadState('load')
     await this.page
       .frameLocator(this.journeyCardFrame)
       .first()
@@ -187,6 +189,7 @@ export class CardLevelActionPage {
   }
 
   async waitUntilJourneyCardLoaded() {
+    await this.page.waitForLoadState('load')
     await expect(
       this.page.locator('div[data-testid="StrategyItem"] button')
     ).toBeVisible({ timeout: sixtySecondsTimeout })
@@ -1563,6 +1566,6 @@ export class CardLevelActionPage {
       .locator(
         `div[data-testid="SettingsDrawer"] div[data-testid="AccordionSummary"]:has(span:text-is("${cardProperty}"))`
       )
-      .click()
+      .click({ timeout: 60000 })
   }
 }
