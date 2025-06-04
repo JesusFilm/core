@@ -104,6 +104,7 @@ export function JourneyCard({
             journey={journey}
             hovered={isCardHovered}
             onMenuClose={() => setIsCardHovered(false)}
+            template={journey.template ?? false}
           />
         </Box>
         <NextLink
