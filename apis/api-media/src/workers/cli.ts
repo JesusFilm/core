@@ -20,10 +20,10 @@ export async function cli(argv = process.argv): Promise<void> {
       queue = new Queue(queueName, { connection })
       break
     }
-    case 'big-query': {
+    case 'video-children': {
       const config = await import(
-        /* webpackChunkName: "big-query" */
-        './bigQuery'
+        /* webpackChunkName: "video-children" */
+        './videoChildren'
       )
       queueName = config.queueName
       jobName = config.jobName

@@ -1,1 +1,0 @@
-export { service } from './service'
