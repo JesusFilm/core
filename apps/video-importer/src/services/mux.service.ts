@@ -64,7 +64,11 @@ export async function createAndWaitForMuxVideo(publicUrl: string): Promise<{
         id: muxId,
         userGenerated: false
       }),
-    (response) => response?.getMyMuxVideo.readyToStream === true
+    (response) => response?.getMyMuxVideo.readyToStream === true,
+    {
+      maxAttempts: 61, // 10 minutes total: 61 attempts at 10s intervals
+      intervalMs: 10_000 // 10 seconds between attempts
+    }
   )
 
   console.log(`[Mux Service] Mux Video ID: ${muxId} is now readyToStream`)

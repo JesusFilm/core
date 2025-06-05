@@ -1,10 +1,13 @@
 import { graphql } from 'gql.tada'
 
-export const CREATE_R2_ASSET = graphql(`
-  mutation CreateR2Asset($input: CloudflareR2CreateInput!) {
+export const CREATE_CLOUDFLARE_R2_ASSET = graphql(`
+  mutation CreateCloudflareR2Asset($input: CloudflareR2CreateInput!) {
     cloudflareR2Create(input: $input) {
+      id
       uploadUrl
       publicUrl
+      originalFilename
+      fileName
     }
   }
 `)

@@ -1,8 +1,9 @@
-import { promises, statSync } from 'fs'
+import { promises } from 'fs'
 import path from 'path'
 import 'dotenv/config'
 
 import { Command } from 'commander'
+import { v4 as uuidv4 } from 'uuid'
 
 import { getVideoMetadata } from './services/metadata.service'
 import { createAndWaitForMuxVideo } from './services/mux.service'
@@ -113,12 +114,15 @@ async function main() {
       }
 
       console.log('   ☁️  Preparing Cloudflare R2 asset...')
+
+      const videoVariantId = `${languageId}_${videoId}`
+
       const r2Asset = await createR2Asset({
-        fileName: `${videoId}/variants/${languageId}/videos/${videoId}_${languageId}.mp4`,
+        fileName: `${videoId}/variants/${languageId}/videos/${uuidv4()}/${videoVariantId}.mp4`,
         contentType,
         originalFilename,
-        contentLength,
-        videoId
+        videoId,
+        contentLength
       })
 
       console.log('      R2 Public URL:', r2Asset.publicUrl)

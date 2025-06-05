@@ -2,37 +2,32 @@ import { createReadStream } from 'fs'
 
 import fetch from 'node-fetch'
 
-import { CREATE_R2_ASSET } from './gql/mutations'
+import { CREATE_CLOUDFLARE_R2_ASSET } from './gql/mutations'
 import { getGraphQLClient } from './graphqlClient'
 
 export async function createR2Asset({
   fileName,
   contentType,
   originalFilename,
-  contentLength,
-  videoId
+  videoId,
+  contentLength
 }: {
   fileName: string
   contentType: string
   originalFilename: string
-  contentLength: number
   videoId: string
+  contentLength: number
 }) {
   const client = await getGraphQLClient()
-
-  // Convert to string to handle large numbers
-  const contentLengthStr = contentLength.toString()
-
-  console.log(`     [R2 Service] File size: ${contentLengthStr} bytes`)
-
+  const safeContentLength = contentLength > 2_147_483_647 ? -1 : contentLength
   const data: { cloudflareR2Create: { uploadUrl: string; publicUrl: string } } =
-    await client.request(CREATE_R2_ASSET, {
+    await client.request(CREATE_CLOUDFLARE_R2_ASSET, {
       input: {
         fileName,
         contentType,
         originalFilename,
-        contentLength: parseInt(contentLengthStr),
-        videoId
+        videoId,
+        contentLength: safeContentLength
       }
     })
   return data.cloudflareR2Create
