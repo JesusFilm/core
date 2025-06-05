@@ -14,8 +14,7 @@ import {
   TeamProvider
 } from '@core/journeys/ui/TeamProvider'
 import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
-import { SUPPORTED_LANGUAGE_IDS } from '@core/journeys/ui/useJourneyAiTranslateMutation/supportedLanguages'
-import { JOURNEY_AI_TRANSLATE_CREATE } from '@core/journeys/ui/useJourneyAiTranslateMutation/useJourneyAiTranslateMutation'
+import { SUPPORTED_LANGUAGE_IDS } from '@core/journeys/ui/useJourneyAiTranslateSubscription/supportedLanguages'
 import { JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION } from '@core/journeys/ui/useJourneyAiTranslateSubscription/useJourneyAiTranslateSubscription'
 import { JOURNEY_DUPLICATE } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import { JourneyDuplicate } from '@core/journeys/ui/useJourneyDuplicateMutation/__generated__/JourneyDuplicate'
@@ -65,38 +64,6 @@ describe('DuplicateJourneys', () => {
         journeyProfileUpdate: {
           __typename: 'JourneyProfile',
           id: 'teamId'
-        }
-      }
-    }))
-  }
-
-  const translateMock = {
-    request: {
-      query: JOURNEY_AI_TRANSLATE_CREATE,
-      variables: {
-        journeyId: 'duplicatedJourneyId',
-        name: 'Journey',
-        journeyLanguageName: 'English',
-        textLanguageId: '528',
-        textLanguageName: 'Español'
-      }
-    },
-    result: jest.fn(() => ({
-      data: {
-        journeyAiTranslateCreate: {
-          id: 'translatedJourneyId',
-          title: 'Viaje Traducido',
-          description: 'Esta es una descripción traducida',
-          languageId: '528',
-          language: {
-            id: '528',
-            name: {
-              value: 'Español',
-              primary: true
-            }
-          },
-          createdAt: '2023-04-25T12:34:56Z',
-          updatedAt: '2023-04-25T12:34:56Z'
         }
       }
     }))
@@ -230,7 +197,6 @@ describe('DuplicateJourneys', () => {
         mocks={[
           updateLastActiveTeamIdMock,
           mockLanguage,
-          translateMock,
           translateSubscriptionMock,
           duplicateJourneyMock,
           getLastActiveTeamIdAndTeamsMock

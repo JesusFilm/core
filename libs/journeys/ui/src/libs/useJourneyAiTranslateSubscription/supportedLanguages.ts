@@ -1,15 +1,3 @@
-/**
- * This is the list of supported languages for translating journeys.
- *
- * @remarks
- * This list of language IDs is utilized in:
- * - The "Translate Journey" dialog:
- * `/workspaces/core/apps/journeys-admin/src/components/JourneyList/JourneyCard/JourneyCardMenu/TranslateJourneyDialog/TranslateJourneyDialog.tsx`
- * - The "Copy to Team" dialog:
- * `/workspaces/core/libs/journeys/ui/src/components/CopyToTeamDialog/CopyToTeamDialog.tsx`
- *
- * The IDs are sourced from both the i18n supported languages and the Gemini supported languages.
- */
 export const SUPPORTED_LANGUAGE_IDS = [
   // in i18n:
   '529', // English
@@ -57,4 +45,4 @@ export const SUPPORTED_LANGUAGE_IDS = [
   '1112', // Slovenian
   '23178', // Swahili, Tanzania
   '4823' // Swedish
-] as const
+] 

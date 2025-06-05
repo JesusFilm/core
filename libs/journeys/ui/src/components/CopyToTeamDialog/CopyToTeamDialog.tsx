@@ -15,7 +15,7 @@ import { boolean, object, string } from 'yup'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
-import { SUPPORTED_LANGUAGE_IDS } from '../../libs/useJourneyAiTranslateMutation/supportedLanguages'
+import { SUPPORTED_LANGUAGE_IDS } from '../../libs/useJourneyAiTranslateSubscription/supportedLanguages'
 import { useLanguagesQuery } from '../../libs/useLanguagesQuery'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../libs/useUpdateLastActiveTeamIdMutation'
 import { UpdateLastActiveTeamId } from '../../libs/useUpdateLastActiveTeamIdMutation/__generated__/UpdateLastActiveTeamId'

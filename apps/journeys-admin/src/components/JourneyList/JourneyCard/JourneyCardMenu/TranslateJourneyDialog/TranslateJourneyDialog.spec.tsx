@@ -8,7 +8,7 @@ import {
   TeamProvider
 } from '@core/journeys/ui/TeamProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
-import { SUPPORTED_LANGUAGE_IDS } from '@core/journeys/ui/useJourneyAiTranslateMutation/supportedLanguages'
+import { SUPPORTED_LANGUAGE_IDS } from '@core/journeys/ui/useJourneyAiTranslateSubscription/supportedLanguages'
 import { JOURNEY_DUPLICATE } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
