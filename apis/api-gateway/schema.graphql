@@ -593,6 +593,8 @@ type Journey @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API
   showMenu: Boolean @join__field(graph: API_JOURNEYS) 
   showDisplayTitle: Boolean @join__field(graph: API_JOURNEYS) 
   menuButtonIcon: JourneyMenuButtonIcon @join__field(graph: API_JOURNEYS) 
+  socialNodeX: Int @join__field(graph: API_JOURNEYS) 
+  socialNodeY: Int @join__field(graph: API_JOURNEYS) 
   fromTemplateId: String @join__field(graph: API_JOURNEYS) 
   userJourneys: [UserJourney!] @join__field(graph: API_JOURNEYS) 
 }
@@ -4085,6 +4087,8 @@ input JourneyUpdateInput @join__type(graph: API_JOURNEYS)  {
   menuButtonIcon: JourneyMenuButtonIcon
   menuStepBlockId: ID
   logoImageBlockId: ID
+  socialNodeX: Int
+  socialNodeY: Int
 }
 
 input JourneyTemplateInput @join__type(graph: API_JOURNEYS)  {
