@@ -45,4 +45,4 @@ export const SUPPORTED_LANGUAGE_IDS = [
   '1112', // Slovenian
   '23178', // Swahili, Tanzania
   '4823' // Swedish
-] 
+]
