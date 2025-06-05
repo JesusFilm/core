@@ -13,15 +13,6 @@ import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery
 import { ShareModal } from '../../../ShareModal'
 import { Item } from '../Item/Item'
 
-const EmbedJourneyDialog = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "Editor/EditorToolbar/ShareButton/EmbedJourneyDialog" */
-      './EmbedJourneyDialog'
-    ).then((mod) => mod.EmbedJourneyDialog),
-  { ssr: false }
-)
-
 const QrCodeDialog = dynamic(
   async () =>
     await import(
@@ -62,7 +53,6 @@ export function ShareItem({
     skip: journey?.team?.id == null
   })
   const router = useRouter()
-  const [showEmbedDialog, setShowEmbedDialog] = useState<boolean | null>(null)
   const [showQrCodeDialog, setShowQrCodeDialog] = useState<boolean | null>(null)
   const [showShareModal, setShowShareModal] = useState<boolean | null>(null)
 
@@ -81,18 +71,8 @@ export function ShareItem({
     })
   }
 
-  function handleEditUrlClick(): void {
-    setRoute('edit-url')
-  }
-
-  function handleEmbedJourneyClick(): void {
-    setShowEmbedDialog(true)
-    setRoute('embed-journey')
-  }
-
-  function handleQrCodeClick(): void {
-    setShowQrCodeDialog(true)
-    setRoute('qr-code')
+  function handleRouteChange(param: string): void {
+    setRoute(param)
   }
 
   return (
@@ -110,16 +90,6 @@ export function ShareItem({
           onClose={() => setShowShareModal(false)}
           journey={journey}
           hostname={hostname}
-          onEditUrlClick={handleEditUrlClick}
-          onEmbedJourneyClick={handleEmbedJourneyClick}
-          onQrCodeClick={handleQrCodeClick}
-        />
-      )}
-      {showEmbedDialog != null && (
-        <EmbedJourneyDialog
-          open={showEmbedDialog}
-          onClose={() => setShowEmbedDialog(false)}
-          journey={journey}
         />
       )}
       {showQrCodeDialog != null && (

@@ -1,7 +1,5 @@
 import TabContext from '@mui/lab/TabContext'
-import TabPanel from '@mui/lab/TabPanel'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
@@ -23,16 +21,15 @@ import X2 from '@core/shared/ui/icons/X2'
 import { GetJourneyForSharing_journey as JourneyFromLazyQuery } from '../../../../__generated__/GetJourneyForSharing'
 import { JourneyFields as JourneyFromContext } from '../../../../__generated__/JourneyFields'
 
+import { EmbedTab } from './tabs/EmbedTab'
 import { LinkTab } from './tabs/LinkTab'
+import { QrCodeTab } from './tabs/QrCodeTab'
 
 interface ShareModalProps {
   open: boolean
   onClose: () => void
   journey?: JourneyFromContext | JourneyFromLazyQuery
   hostname?: string
-  onEditUrlClick: () => void
-  onEmbedJourneyClick: () => void
-  onQrCodeClick: () => void
 }
 
 /**
@@ -45,24 +42,19 @@ interface ShareModalProps {
  * @param {() => void} props.onClose - Function to close the modal
  * @param {(JourneyFromContext | JourneyFromLazyQuery)} [props.journey] - Journey data for sharing
  * @param {string} [props.hostname] - Custom domain hostname
- * @param {() => void} props.onEditUrlClick - Handler for edit URL button click
- * @param {() => void} props.onEmbedJourneyClick - Handler for embed journey button click
- * @param {() => void} props.onQrCodeClick - Handler for QR code button click
  * @returns {ReactElement} Share modal with sharing options
  */
 export function ShareModal({
   open,
   onClose,
   journey,
-  hostname,
-  onEmbedJourneyClick,
-  onQrCodeClick
+  hostname
 }: ShareModalProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [value, setValue] = useState('0')
-  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
+  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+  const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue)
   }
 
@@ -80,44 +72,22 @@ export function ShareModal({
       ) : (
         <Stack direction="column" spacing={4}>
           <TabContext value={value}>
-            <Tabs variant="fullWidth" value={value} onChange={handleChange}>
+            <Tabs variant="fullWidth" value={value} onChange={handleTabChange}>
               <Tab icon={<LinkAngled />} label={t('Link')} value="0" />
               <Tab icon={<TransformIcon />} label={t('QR Code')} value="1" />
               <Tab icon={<Code1Icon />} label={t('Embed')} value="2" />
             </Tabs>
 
             <LinkTab journey={journey} hostname={hostname} />
-
-            <TabPanel value="1">
-              <Button
-                onClick={onQrCodeClick}
-                size="small"
-                startIcon={<TransformIcon />}
-                disabled={journey == null}
-                fullWidth
-              >
-                {t('Generate QR Code')}
-              </Button>
-            </TabPanel>
-
-            <TabPanel value="2">
-              <Button
-                onClick={onEmbedJourneyClick}
-                size="small"
-                startIcon={<Code1Icon />}
-                disabled={journey == null}
-                fullWidth
-              >
-                {t('Get Embed Code')}
-              </Button>
-            </TabPanel>
+            <QrCodeTab journey={journey} />
+            <EmbedTab journey={journey} />
           </TabContext>
         </Stack>
       )}
     </>
   )
 
-  if (mdUp) {
+  if (smUp) {
     // Desktop: Use Dialog
     return (
       <Dialog
@@ -150,7 +120,7 @@ export function ShareModal({
         }
       }}
     >
-      <Box sx={{ p: 3 }}>
+      <Box sx={{ p: { xs: 2, sm: 3 } }}>
         {/* Mobile Header */}
         <Box
           sx={{
@@ -158,7 +128,7 @@ export function ShareModal({
             alignItems: 'center',
             justifyContent: 'space-between',
             mb: 3,
-            px: 4
+            px: { xs: 1, sm: 4 }
           }}
         >
           <Typography variant="h6" sx={{ fontWeight: 600 }}>
