@@ -1,4 +1,5 @@
 import { ApolloQueryResult } from '@apollo/client'
+import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import dynamic from 'next/dynamic'
@@ -146,7 +147,7 @@ export function JourneyCardMenu({
   >()
   const [keepMounted, setKeepMounted] = useState<boolean>(false)
 
-  const handleOpenMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
+  const handleOpenMenu = (event: React.MouseEvent<HTMLElement>): void => {
     setAnchorEl(event.currentTarget)
   }
   const handleCloseMenu = (): void => {
@@ -160,30 +161,42 @@ export function JourneyCardMenu({
 
   return (
     <>
-      <IconButton
-        id="journey-actions"
-        aria-controls="journey-actions"
-        aria-haspopup="true"
-        aria-expanded={open ? 'true' : 'false'}
+      <Box
         onClick={handleOpenMenu}
-        edge="end"
         sx={{
-          color: hovered ? 'gray.400' : 'white',
-          '& svg': {
-            filter: 'drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.4))'
-          },
-          '&:hover': {
-            backgroundColor: '#FFF'
-          },
-          backgroundColor: hovered ? 'white' : 'transparent',
-          transition: 'background-color 0.3s, color 0.3s',
-          borderRadius: '10px',
-          width: '20px',
-          height: '30px'
+          width: { xs: '44px', sm: '20px' },
+          height: { xs: '44px', sm: '30px' },
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          position: 'relative'
         }}
       >
-        <MoreIcon />
-      </IconButton>
+        <IconButton
+          id="journey-actions"
+          aria-controls="journey-actions"
+          aria-haspopup="true"
+          aria-expanded={open ? 'true' : 'false'}
+          sx={{
+            color: hovered ? 'gray.400' : 'white',
+            '& svg': {
+              filter: 'drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.4))'
+            },
+            '&:hover': {
+              backgroundColor: '#FFF'
+            },
+            backgroundColor: hovered ? 'white' : 'transparent',
+            transition: 'background-color 0.3s, color 0.3s',
+            borderRadius: '10px',
+            width: '20px',
+            height: '30px',
+            pointerEvents: 'none'
+          }}
+        >
+          <MoreIcon />
+        </IconButton>
+      </Box>
       <Menu
         id="journey-actions"
         anchorEl={anchorEl}
