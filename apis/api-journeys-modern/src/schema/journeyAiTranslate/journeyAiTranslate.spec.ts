@@ -89,6 +89,8 @@ describe('journeyAiTranslateCreate mutation', () => {
     id: mockJourneyId,
     title: 'Original Journey Title',
     description: 'Original journey description',
+    seoTitle: 'Original SEO Title',
+    seoDescription: 'Original SEO Description',
     blocks: [
       {
         id: 'card1',
@@ -140,7 +142,9 @@ describe('journeyAiTranslateCreate mutation', () => {
     analysis:
       'This journey is about example content. Cultural adaptations include...',
     title: 'Título del Viaje Traducido',
-    description: 'Descripción del viaje traducida'
+    description: 'Descripción del viaje traducida',
+    seoTitle: 'Título SEO Traducido',
+    seoDescription: 'Descripción SEO traducida'
   }
 
   const mockTranslatedBlocks = [
@@ -197,7 +201,9 @@ describe('journeyAiTranslateCreate mutation', () => {
     prismaMock.journey.update.mockResolvedValue({
       ...mockJourney,
       title: mockAnalysisAndTranslation.title,
-      description: mockAnalysisAndTranslation.description
+      description: mockAnalysisAndTranslation.description,
+      seoTitle: mockAnalysisAndTranslation.seoTitle,
+      seoDescription: mockAnalysisAndTranslation.seoDescription
     } as any)
 
     prismaMock.block.update.mockResolvedValue({} as any)
@@ -268,6 +274,8 @@ describe('journeyAiTranslateCreate mutation', () => {
         data: expect.objectContaining({
           title: mockAnalysisAndTranslation.title,
           description: mockAnalysisAndTranslation.description,
+          seoTitle: mockAnalysisAndTranslation.seoTitle,
+          seoDescription: mockAnalysisAndTranslation.seoDescription,
           languageId: mockInput.textLanguageId
         })
       })
@@ -383,16 +391,20 @@ describe('journeyAiTranslateCreate mutation', () => {
   })
 
   it('should not require description translation if original has no description', async () => {
-    // Update mock journey to have no description
+    // Update mock journey to have no description, seoTitle, or seoDescription
     prismaMock.journey.findUnique.mockResolvedValueOnce({
       ...mockJourney,
-      description: null
+      description: null,
+      seoTitle: null,
+      seoDescription: null
     } as any)
 
     // Make sure the update function returns the right data
     prismaMock.journey.update.mockResolvedValueOnce({
       ...mockJourney,
       description: null,
+      seoTitle: null,
+      seoDescription: null,
       title: mockAnalysisAndTranslation.title,
       languageId: mockInput.textLanguageId
     } as any)
@@ -400,7 +412,9 @@ describe('journeyAiTranslateCreate mutation', () => {
     mockGenerateObject.mockResolvedValueOnce({
       object: {
         ...mockAnalysisAndTranslation,
-        description: '' // Empty description
+        description: '', // Empty description
+        seoTitle: '', // Empty seoTitle
+        seoDescription: '' // Empty seoDescription
       },
       usage: {
         totalTokens: 1000,
@@ -434,7 +448,9 @@ describe('journeyAiTranslateCreate mutation', () => {
       expect.objectContaining({
         where: { id: mockInput.journeyId },
         data: expect.not.objectContaining({
-          description: expect.anything()
+          description: expect.anything(),
+          seoTitle: expect.anything(),
+          seoDescription: expect.anything()
         })
       })
     )
