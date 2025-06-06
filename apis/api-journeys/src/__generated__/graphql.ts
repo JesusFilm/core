@@ -838,6 +838,8 @@ export type Journey = {
   showReactionButtons?: Maybe<Scalars['Boolean']['output']>;
   showShareButton?: Maybe<Scalars['Boolean']['output']>;
   slug: Scalars['String']['output'];
+  socialNodeX?: Maybe<Scalars['Int']['output']>;
+  socialNodeY?: Maybe<Scalars['Int']['output']>;
   status: JourneyStatus;
   strategySlug?: Maybe<Scalars['String']['output']>;
   tags: Array<Tag>;
@@ -1060,6 +1062,8 @@ export type JourneyUpdateInput = {
   showReactionButtons?: InputMaybe<Scalars['Boolean']['input']>;
   showShareButton?: InputMaybe<Scalars['Boolean']['input']>;
   slug?: InputMaybe<Scalars['String']['input']>;
+  socialNodeX?: InputMaybe<Scalars['Int']['input']>;
+  socialNodeY?: InputMaybe<Scalars['Int']['input']>;
   strategySlug?: InputMaybe<Scalars['String']['input']>;
   tagIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   themeMode?: InputMaybe<ThemeMode>;
