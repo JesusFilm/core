@@ -767,8 +767,6 @@
   "Unarchive Templates": "إلغاء أرشفة القوالب",
   "Are you sure you would like to unarchive all archived templates immediately?": "هل تريد بالتأكيد إلغاء أرشفة جميع القوالب المؤرشفة على الفور؟",
   "Are you sure you would like to trash all archived templates immediately?": "هل تريد بالتأكيد التخلص من جميع القوالب المؤرشفة على الفور؟",
-  "{{ nativeLanguage }} ({{ localLanguage }})": "{{ nativeLanguage }} ({{ localLanguage }})",
-  " - {{ description }}": " - {{ description }}",
   "Your trashed templates will appear here.": "ستظهر القوالب المحذوفة هنا.",
   "Trashed templates are moved here for up to 40 days.": "يتم نقل القوالب المهملة هنا لمدة تصل إلى 40 يوماً.",
   "Restore Templates": "استعادة القوالب",
