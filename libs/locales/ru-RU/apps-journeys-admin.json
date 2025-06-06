@@ -767,8 +767,6 @@
   "Unarchive Templates": "Разархивировать шаблоны",
   "Are you sure you would like to unarchive all archived templates immediately?": "Вы уверены, что хотите разархивировать все заархивированные шаблоны?",
   "Are you sure you would like to trash all archived templates immediately?": "Вы уверены, что хотите удалить все заархивированные шаблоны?",
-  "{{ nativeLanguage }} ({{ localLanguage }})": "{{ nativeLanguage }} ({{ localLanguage }})",
-  " - {{ description }}": " - {{ description }}",
   "Your trashed templates will appear here.": "Здесь появятся ваши удаленные шаблоны.",
   "Trashed templates are moved here for up to 40 days.": "Удаленные шаблоны перемещаются сюда на срок до 40 дней.",
   "Restore Templates": "Восстановить шаблоны",
