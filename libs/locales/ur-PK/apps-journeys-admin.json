@@ -767,8 +767,6 @@
   "Unarchive Templates": "Unarchive Templates",
   "Are you sure you would like to unarchive all archived templates immediately?": "Are you sure you would like to unarchive all archived templates immediately?",
   "Are you sure you would like to trash all archived templates immediately?": "Are you sure you would like to trash all archived templates immediately?",
-  "{{ nativeLanguage }} ({{ localLanguage }})": "{{ nativeLanguage }} ({{ localLanguage }})",
-  " - {{ description }}": " - {{ description }}",
   "Your trashed templates will appear here.": "Your trashed templates will appear here.",
   "Trashed templates are moved here for up to 40 days.": "Trashed templates are moved here for up to 40 days.",
   "Restore Templates": "Restore Templates",
