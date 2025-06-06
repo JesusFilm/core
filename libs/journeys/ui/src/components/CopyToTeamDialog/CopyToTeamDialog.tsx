@@ -37,6 +37,8 @@ interface CopyToTeamDialogProps {
     progress: number
     message: string
   }
+  shouldUpdateTeamState?: boolean
+  isTranslating?: boolean
 }
 
 interface JourneyLanguage {
@@ -79,7 +81,9 @@ export function CopyToTeamDialog({
   loading,
   onClose,
   submitAction,
-  translationProgress
+  translationProgress,
+  shouldUpdateTeamState = true,
+  isTranslating = false
 }: CopyToTeamDialogProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const { query, setActiveTeam } = useTeam()
@@ -94,6 +98,22 @@ export function CopyToTeamDialog({
     }
   })
 
+  const updateTeamState = (teamId: string): void => {
+    if (!shouldUpdateTeamState) return
+
+    setActiveTeam(teams.find((team) => team.id === teamId) ?? null)
+    void updateLastActiveTeamId({
+      variables: {
+        input: {
+          lastActiveTeamId: teamId
+        }
+      },
+      onCompleted() {
+        void client.refetchQueries({ include: ['GetAdminJourneys'] })
+      }
+    })
+  }
+
   async function handleSubmit(
     values: FormValues,
     { resetForm }: FormikHelpers<FormValues>
@@ -104,19 +124,17 @@ export function CopyToTeamDialog({
       values.showTranslation
     )
 
-    setActiveTeam(teams.find((team) => team.id === values.teamSelect) ?? null)
-    void updateLastActiveTeamId({
-      variables: {
-        input: {
-          lastActiveTeamId: values.teamSelect
-        }
-      },
-      onCompleted() {
-        void client.refetchQueries({ include: ['GetAdminJourneys'] })
-      }
-    })
+    // Update team state based on shouldUpdateTeamState prop and translation status
+    updateTeamState(values.teamSelect)
+
+    // Always reset the form after submission
     resetForm()
-    onClose()
+
+    // Only close dialog immediately if translation is not enabled
+    // If translation is enabled, the dialog will be closed when translation completes
+    if (!values.showTranslation) {
+      onClose()
+    }
   }
 
   const baseLanguageShape = {
@@ -190,7 +208,7 @@ export function CopyToTeamDialog({
             onTranslate={handleFormSubmit}
             title={title}
             loading={loading || isSubmitting}
-            isTranslation={values.showTranslation}
+            isTranslation={values.showTranslation || isTranslating}
             submitLabel={submitLabel}
             divider={false}
             testId="CopyToTeamDialog"
