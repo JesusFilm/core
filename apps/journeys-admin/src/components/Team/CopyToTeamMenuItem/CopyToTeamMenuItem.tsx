@@ -172,6 +172,7 @@ export function CopyToTeamMenuItem({
             variant: 'success',
             preventDuplicate: true
           })
+          updateTeamState(teamId) // Update team state immediately for non-translation scenarios
           handleCloseMenu()
           setDuplicateTeamDialogOpen(false)
           return
