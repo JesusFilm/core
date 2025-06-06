@@ -10,6 +10,7 @@ import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useEffect } from 'react'
 
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { useUserRoleQuery } from '@core/journeys/ui/useUserRoleQuery'
 
 import {
@@ -27,8 +28,17 @@ function PublisherIndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const user = useUser()
   const router = useRouter()
+  const { query, activeTeam, refetch } = useTeam()
 
   const { data } = useUserRoleQuery()
+
+  // Ensure team is refetched if user is not loaded before provider
+  useEffect(() => {
+    if (activeTeam == null) {
+      void refetch()
+    }
+  }, [user.id, query, activeTeam, refetch])
+
   useEffect(() => {
     if (
       data != null &&

@@ -94,7 +94,15 @@ export function JourneyCard({
       onMouseLeave={() => setIsCardHovered(false)}
     >
       <>
-        <Box sx={{ position: 'absolute', top: 12, right: 25, zIndex: 3 }}>
+        <Box
+          data-testid="JourneyCardMenuBox"
+          sx={{
+            position: 'absolute',
+            top: { xs: 10, sm: 12 },
+            right: { xs: 8, sm: 13 },
+            zIndex: 3
+          }}
+        >
           <JourneyCardMenu
             id={journey.id}
             status={journey.status}
@@ -104,6 +112,7 @@ export function JourneyCard({
             journey={journey}
             hovered={isCardHovered}
             onMenuClose={() => setIsCardHovered(false)}
+            template={journey.template ?? false}
           />
         </Box>
         <NextLink

@@ -151,7 +151,7 @@ export function ActiveJourneyList({
       {data?.journeys == null ? (
         <LoadingJourneyList hideHelperText />
       ) : (
-        <Box>
+        <>
           <ActivePriorityList
             journeys={data.journeys}
             sortOrder={sortOrder}
@@ -180,7 +180,7 @@ export function ActiveJourneyList({
               <AddJourneyButton />
             </Card>
           )}
-        </Box>
+        </>
       )}
       <Stack alignItems="center">
         <Typography

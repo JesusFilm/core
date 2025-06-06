@@ -66,8 +66,8 @@ const JourneyAnalysisSchema = z.object({
     .describe('Analysis of the journey content and cultural considerations'),
   title: z.string().describe('Translated journey title'),
   description: z.string().describe('Translated journey description'),
-  seoTitle: z.string().describe('Translated SEO title'),
-  seoDescription: z.string().describe('Translated SEO description')
+  seoTitle: z.string().describe('Translated journey SEO title'),
+  seoDescription: z.string().describe('Translated journey SEO description')
 })
 
 // Define the shared input type
@@ -159,48 +159,50 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
         const trimmedDescription = journey.description?.trim() ?? ''
         const hasDescription = Boolean(trimmedDescription)
 
-        const journeyContent = `
-  Journey Title: ${journey.title}
-  Journey Description: ${hasDescription ? trimmedDescription : 'No description'}
-  
-  ${cardBlocksContent.join('\n\n')}
-                `.trim()
-
         yield {
           progress: 40,
           message: 'Translating journey title and description...',
           journey: null
         }
 
-        // Step 1: Translate journey title and description
-        const analysisPrompt = `
-  You are a professional translator specializing in religious and spiritual content. 
-  Translate the following journey from ${input.journeyLanguageName} to ${input.textLanguageName}.
-  
-  Please provide:
-  1. A brief analysis of the content and any cultural considerations
-  2. A translated title that maintains the original meaning and impact
-  3. A translated description (if one exists)
-  4. A translated SEO title (if one exists)
-  5. A translated SEO description (if one exists)
-  
-  Ensure the translation is culturally appropriate and maintains the spiritual context.
-  
-  Journey to translate:
-  Journey Title: ${journey.title}
-  Journey Description: ${hasDescription ? trimmedDescription : 'No description'}
-  SEO Title: ${journey.seoTitle ?? 'No SEO title'}
-  SEO Description: ${journey.seoDescription ?? 'No SEO description'}
-  
-  Content:
-  ${hardenPrompt(journeyContent)}
-                `.trim()
+        // Step 1: Analyze and translate journey title, description, and SEO fields
+        const combinedPrompt = `
+Analyze this journey content and provide the key intent, themes, and target audience.
+Also suggest ways to culturally adapt this content for the target language: ${hardenPrompt(input.textLanguageName)}.
+Then, translate the following journey title and description to ${hardenPrompt(input.textLanguageName)}.
+If a description is not provided, do not create one.
 
+If possible, find a populare translation of the Bible in the target language to use in follow up steps.
+
+${hardenPrompt(`
+The source language is: ${input.journeyLanguageName}.
+The target language name is: ${input.textLanguageName}.
+
+Journey Title: ${input.name}
+${hasDescription ? `Journey Description: ${trimmedDescription}` : ''}
+
+Seo Title: ${journey.seoTitle ?? ''}
+Seo Description: ${journey.seoDescription ?? ''}
+
+Journey Content: 
+${cardBlocksContent.join('\n')}
+
+`)}
+
+Return in this format:
+{
+  analysis: [analysis and adaptation suggestions],
+  title: [translated title],
+  description: [translated description or empty string if no description was provided]
+  seoTitle: [translated seo title or empty string if no seo title was provided]
+  seoDescription: [translated seo description or empty string if no seo description was provided]
+}
+`
         const analysisResult = await generateObject({
-          model: google('gemini-1.5-flash'),
+          model: google('gemini-2.0-flash'),
           messages: [
             { role: 'system', content: preSystemPrompt },
-            { role: 'user', content: analysisPrompt }
+            { role: 'user', content: combinedPrompt }
           ],
           schema: JourneyAnalysisSchema
         })
@@ -213,12 +215,14 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
           throw new GraphQLError('Failed to translate journey description')
         }
 
+        // Only validate seoTitle if the original journey had one
         if (journey.seoTitle && !analysisResult.object.seoTitle) {
-          throw new GraphQLError('Failed to translate journey SEO title')
+          throw new GraphQLError('Failed to translate journey seo title')
         }
 
+        // Only validate seoDescription if the original journey had one
         if (journey.seoDescription && !analysisResult.object.seoDescription) {
-          throw new GraphQLError('Failed to translate journey SEO description')
+          throw new GraphQLError('Failed to translate journey seo description')
         }
 
         yield {
@@ -227,7 +231,7 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
           journey: null
         }
 
-        // Update journey with translated title and description
+        // Update journey with translated title, description, and SEO fields
         const updateData: {
           title: string
           languageId: string
@@ -243,10 +247,12 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
           updateData.description = analysisResult.object.description
         }
 
+        // Only update seoTitle if the original journey had one
         if (journey.seoTitle && analysisResult.object.seoTitle) {
           updateData.seoTitle = analysisResult.object.seoTitle
         }
 
+        // Only update seoDescription if the original journey had one
         if (journey.seoDescription && analysisResult.object.seoDescription) {
           updateData.seoDescription = analysisResult.object.seoDescription
         }
