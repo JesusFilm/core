@@ -11,7 +11,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
   blocks,
   blocksWithStepBlockPosition,
-  defaultJourney,
+  defaultJourney as coreDefaultJourney,
   edges,
   nodes
 } from '@core/journeys/ui/TemplateView/data'
@@ -24,14 +24,25 @@ import {
 } from '../../../../../__generated__/GetStepBlocksWithPosition'
 import { StepFields as StepBlock } from '../../../../../__generated__/StepFields'
 import { mockReactFlow } from '../../../../../test/mockReactFlow'
+import { useJourneyUpdateMutation } from '../../../../libs/useJourneyUpdateMutation'
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
 import { CommandRedoItem } from '../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../Toolbar/Items/CommandUndoItem'
 
 import { GET_STEP_BLOCKS_WITH_POSITION } from './JourneyFlow'
 import { transformSteps } from './libs/transformSteps'
+import {
+  DEFAULT_SOCIAL_NODE_X,
+  DEFAULT_SOCIAL_NODE_Y
+} from './nodes/SocialPreviewNode/libs/positions'
 
 import { JourneyFlow } from '.'
+
+const defaultJourney = {
+  ...coreDefaultJourney,
+  socialNodeX: DEFAULT_SOCIAL_NODE_X,
+  socialNodeY: DEFAULT_SOCIAL_NODE_Y
+}
 
 jest.mock('next/compat/router', () => ({
   __esModule: true,
@@ -51,6 +62,17 @@ jest.mock('../../../../libs/useStepBlockPositionUpdateMutation', () => {
 const mockUseStepBlockPositionUpdateMutation =
   useStepBlockPositionUpdateMutation as jest.MockedFunction<
     typeof useStepBlockPositionUpdateMutation
+  >
+
+jest.mock('../../../../libs/useJourneyUpdateMutation', () => {
+  return {
+    useJourneyUpdateMutation: jest.fn().mockReturnValue([jest.fn(), null])
+  }
+})
+
+const mockUseJourneyUpdateMutation =
+  useJourneyUpdateMutation as jest.MockedFunction<
+    typeof useJourneyUpdateMutation
   >
 
 jest.mock('./libs/transformSteps', () => {
@@ -116,6 +138,7 @@ describe('JourneyFlow', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
 
     expect(screen.getByTestId('JourneyFlow')).toBeInTheDocument()
+    expect(screen.getByTestId('SocialPreviewNode')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Add Step' })).not.toBeDisabled()
     await waitFor(() =>
       expect(screen.getAllByTestId('StepBlockNodeCard')).toHaveLength(7)
@@ -141,7 +164,13 @@ describe('JourneyFlow', () => {
 
     render(
       <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
-        <JourneyProvider value={{ journey: defaultJourney }}>
+        <JourneyProvider
+          value={{
+            journey: {
+              ...defaultJourney
+            }
+          }}
+        >
           <EditorProvider
             initialState={{
               steps,
@@ -198,7 +227,13 @@ describe('JourneyFlow', () => {
 
     render(
       <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
-        <JourneyProvider value={{ journey: defaultJourney }}>
+        <JourneyProvider
+          value={{
+            journey: {
+              ...defaultJourney
+            }
+          }}
+        >
           <EditorProvider
             initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
           >
@@ -273,6 +308,94 @@ describe('JourneyFlow', () => {
     expect(mockUpdate).toHaveBeenCalledWith(mockUpdateExecute)
   })
 
+  it('should update social preview node position during reset/undo/redo', async () => {
+    const result = jest
+      .fn()
+      .mockReturnValue(mockGetStepBlocksWithPosition.result)
+
+    // Mock for journey update
+    const mockJourneyUpdate = jest.fn()
+    const mockJourneyResult = jest.fn() as unknown as MutationResult
+    mockUseJourneyUpdateMutation.mockReturnValue([
+      mockJourneyUpdate,
+      mockJourneyResult
+    ])
+
+    const initialSocialNodeX = 100
+    const initialSocialNodeY = 200
+
+    render(
+      <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
+        <JourneyProvider
+          value={{
+            journey: {
+              ...defaultJourney,
+              socialNodeX: initialSocialNodeX,
+              socialNodeY: initialSocialNodeY
+            }
+          }}
+        >
+          <EditorProvider
+            initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
+          >
+            <Box sx={{ width: '100vw', height: '100vh' }}>
+              <CommandUndoItem variant="button" />
+              <CommandRedoItem variant="button" />
+              <JourneyFlow />
+            </Box>
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const mockJourneyUpdateExecute = {
+      variables: {
+        id: defaultJourney.id,
+        input: {
+          socialNodeX: DEFAULT_SOCIAL_NODE_X,
+          socialNodeY: DEFAULT_SOCIAL_NODE_Y
+        }
+      },
+      optimisticResponse: {
+        journeyUpdate: {
+          ...defaultJourney,
+          socialNodeX: DEFAULT_SOCIAL_NODE_X,
+          socialNodeY: DEFAULT_SOCIAL_NODE_Y
+        }
+      }
+    }
+
+    const mockJourneyUpdateUndo = {
+      variables: {
+        id: defaultJourney.id,
+        input: {
+          socialNodeX: initialSocialNodeX,
+          socialNodeY: initialSocialNodeY
+        }
+      },
+      optimisticResponse: {
+        journeyUpdate: {
+          ...defaultJourney,
+          socialNodeX: initialSocialNodeX,
+          socialNodeY: initialSocialNodeY
+        }
+      }
+    }
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByTestId('ArrowRefresh6Icon'))
+    expect(mockJourneyUpdate).toHaveBeenCalledWith(mockJourneyUpdateExecute)
+    mockJourneyUpdate.mockClear()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    expect(mockJourneyUpdate).toHaveBeenCalledWith(mockJourneyUpdateUndo)
+    mockJourneyUpdate.mockClear()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+    expect(mockJourneyUpdate).toHaveBeenCalledWith(mockJourneyUpdateExecute)
+  })
+
   it('should hide new step button if in analytics mode', async () => {
     const result = jest
       .fn()
@@ -305,7 +428,7 @@ describe('JourneyFlow', () => {
 
   it('should change background color when in analytics mode', () => {
     render(
-      <MockedProvider mocks={[]}>
+      <MockedProvider mocks={[mockGetStepBlocksWithPosition]}>
         <JourneyProvider value={{ journey: defaultJourney }}>
           <EditorProvider
             initialState={{
