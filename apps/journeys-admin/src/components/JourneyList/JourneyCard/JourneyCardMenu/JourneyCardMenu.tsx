@@ -162,6 +162,7 @@ export function JourneyCardMenu({
   return (
     <>
       <Box
+        data-testid="JourneyCardMenuButton"
         onClick={handleOpenMenu}
         sx={{
           width: { xs: '44px', sm: '20px' },
