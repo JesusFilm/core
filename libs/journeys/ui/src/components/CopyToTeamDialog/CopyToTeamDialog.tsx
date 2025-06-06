@@ -193,7 +193,7 @@ export function CopyToTeamDialog({
           reason?: 'backdropClick' | 'escapeKeyDown'
         ): void => {
           if (
-            loading &&
+            (loading || isTranslating) &&
             (reason === 'backdropClick' || reason === 'escapeKeyDown')
           )
             return

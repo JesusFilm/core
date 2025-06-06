@@ -168,4 +168,20 @@ describe('TranslateJourneyDialog', () => {
     // For now, we'll just test that the duplication was called
     // The subscription testing can be added later with more complex mocking
   })
+
+  it('should close dialog normally when not in loading/translation state', () => {
+    const handleClose = jest.fn()
+
+    render(
+      <MockedProvider mocks={[getLanguagesMock]}>
+        <JourneyProvider value={{ journey: defaultJourney }}>
+          <TranslateJourneyDialog open={true} onClose={handleClose} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const dialog = screen.getByTestId('TranslateJourneyDialog')
+    fireEvent.keyDown(dialog, { key: 'Escape' })
+    expect(handleClose).toHaveBeenCalled()
+  })
 })

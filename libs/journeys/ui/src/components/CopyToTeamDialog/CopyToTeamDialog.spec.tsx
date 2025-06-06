@@ -430,6 +430,64 @@ describe('CopyToTeamDialog', () => {
     expect(handleCloseMenuMock).not.toHaveBeenCalled()
   })
 
+  it('should not close dialog if backdrop is clicked during translation', async () => {
+    const { getByTestId } = render(
+      <MockedProvider mocks={[]}>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: { id: 'journeyId' } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <TeamProvider>
+              <CopyToTeamDialog
+                open
+                isTranslating
+                title="Copy To Journey"
+                onClose={handleCloseMenuMock}
+                submitAction={handleSubmitActionMock}
+              />
+            </TeamProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const dialog = getByTestId('CopyToTeamDialog')
+    fireEvent.click(dialog)
+    expect(handleCloseMenuMock).not.toHaveBeenCalled()
+  })
+
+  it('should not close dialog if escape key is pressed during translation', async () => {
+    const { getByTestId } = render(
+      <MockedProvider mocks={[]}>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: { id: 'journeyId' } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <TeamProvider>
+              <CopyToTeamDialog
+                open
+                isTranslating
+                title="Copy To Journey"
+                onClose={handleCloseMenuMock}
+                submitAction={handleSubmitActionMock}
+              />
+            </TeamProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const dialog = getByTestId('CopyToTeamDialog')
+    fireEvent.keyDown(dialog, { key: 'Escape' })
+    expect(handleCloseMenuMock).not.toHaveBeenCalled()
+  })
+
   it('should show language autocomplete if translation is checked', async () => {
     render(
       <MockedProvider mocks={[]}>

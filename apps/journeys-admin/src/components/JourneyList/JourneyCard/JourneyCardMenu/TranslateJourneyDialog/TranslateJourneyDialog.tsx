@@ -88,13 +88,23 @@ export function TranslateJourneyDialog({
     JourneyLanguage | undefined
   >(journeyLanguage)
 
-  const handleClose = useCallback((): void => {
-    // Reset all dialog state when closing
-    setLoading(false)
-    setTranslationVariables(undefined)
-    setSelectedLanguage(journeyLanguage)
-    onClose()
-  }, [journeyLanguage, onClose])
+  const handleClose = useCallback(
+    (_?: object, reason?: 'backdropClick' | 'escapeKeyDown'): void => {
+      // Prevent closing during translation if clicked outside or escape key pressed
+      if (
+        (loading || translationVariables != null) &&
+        (reason === 'backdropClick' || reason === 'escapeKeyDown')
+      )
+        return
+
+      // Reset all dialog state when closing
+      setLoading(false)
+      setTranslationVariables(undefined)
+      setSelectedLanguage(journeyLanguage)
+      onClose()
+    },
+    [journeyLanguage, onClose, loading, translationVariables]
+  )
 
   // Set up the subscription for translation
   const { data: translationData, error: translationError } =
