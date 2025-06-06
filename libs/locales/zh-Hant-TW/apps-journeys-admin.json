@@ -767,8 +767,6 @@
   "Unarchive Templates": "取消歸檔模板",
   "Are you sure you would like to unarchive all archived templates immediately?": "您確定要立即取消存檔所有已存檔的範本嗎？",
   "Are you sure you would like to trash all archived templates immediately?": "您確定要立即刪除所有已存檔的範本嗎？",
-  "{{ nativeLanguage }} ({{ localLanguage }})": "{{ nativeLanguage }} ({{ localLanguage }})",
-  " - {{ description }}": " - {{ description }}",
   "Your trashed templates will appear here.": "您已刪除的範本將顯示在此。",
   "Trashed templates are moved here for up to 40 days.": "已廢棄的模板將移至此處最多 40 天。",
   "Restore Templates": "恢復模板",
