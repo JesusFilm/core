@@ -19,6 +19,12 @@ interface JourneyLanguage {
   nativeName?: string
 }
 
+interface JourneyLanguage {
+  id: string
+  localName?: string
+  nativeName?: string
+}
+
 const DynamicCopyToTeamDialog = dynamic(
   async () =>
     await import(

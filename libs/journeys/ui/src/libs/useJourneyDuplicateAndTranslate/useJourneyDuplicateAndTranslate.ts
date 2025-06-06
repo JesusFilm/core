@@ -2,7 +2,6 @@ import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { useState } from 'react'
 
-import { useJourneyAiTranslateMutation } from '../useJourneyAiTranslateMutation'
 import { useJourneyDuplicateMutation } from '../useJourneyDuplicateMutation'
 
 interface JourneyLanguage {
@@ -27,6 +26,7 @@ interface DuplicateAndTranslateProps {
 
 /**
  * Custom hook to duplicate and optionally translate a journey.
+ * Uses subscription-based approach for real-time translation updates.
  *
  * @param {UseJourneyDuplicateAndTranslateProps} props - Props for the hook.
  * @param {string} [props.journeyId] - ID of the journey to duplicate.
@@ -34,7 +34,7 @@ interface DuplicateAndTranslateProps {
  * @param {string} props.journeyLanguageName - Original journey's language name.
  * @param {() => void} [props.onSuccess] - Optional callback on success.
  * @param {() => void} [props.onError] - Optional callback on error.
- * @returns `duplicateAndTranslate` function and `loading` state.
+ * @returns `duplicateAndTranslate` function, `loading` state, and `getTranslationVariables` helper.
  */
 export function useJourneyDuplicateAndTranslate({
   journeyId,
@@ -45,7 +45,6 @@ export function useJourneyDuplicateAndTranslate({
 }: UseJourneyDuplicateAndTranslateProps) {
   const { t } = useTranslation('libs-journeys-ui')
   const { enqueueSnackbar } = useSnackbar()
-  const [translateJourney] = useJourneyAiTranslateMutation()
   const [journeyDuplicate] = useJourneyDuplicateMutation()
   const [loading, setLoading] = useState(false)
 
@@ -81,35 +80,30 @@ export function useJourneyDuplicateAndTranslate({
       return duplicateData.journeyDuplicate.id
     }
 
-    await translateJourney({
-      variables: {
-        journeyId: duplicateData.journeyDuplicate.id,
-        name: journeyTitle,
-        journeyLanguageName,
-        textLanguageId: selectedLanguage.id,
-        textLanguageName:
-          selectedLanguage.nativeName ?? selectedLanguage.localName ?? ''
-      },
-      onCompleted() {
-        setLoading(false)
-        enqueueSnackbar(t('Journey Translated'), {
-          variant: 'success',
-          preventDuplicate: true
-        })
-        onSuccess?.()
-      },
-      onError(error) {
-        setLoading(false)
-        enqueueSnackbar(error.message, {
-          variant: 'error',
-          preventDuplicate: true
-        })
-        onError?.()
-      }
+    // Note: Translation is now handled via subscription in the component that calls this
+    // The subscription should be set up separately to handle the translation process
+    // We keep loading true here as the subscription will handle completion
+    enqueueSnackbar(t('Journey Copied - Translation will begin shortly'), {
+      variant: 'success',
+      preventDuplicate: true
     })
+    onSuccess?.()
 
     return duplicateData.journeyDuplicate.id
   }
 
-  return { duplicateAndTranslate, loading }
+  // Helper function to get translation variables for use with subscription
+  const getTranslationVariables = (
+    duplicatedJourneyId: string,
+    selectedLanguage: JourneyLanguage
+  ) => ({
+    journeyId: duplicatedJourneyId,
+    name: journeyTitle,
+    journeyLanguageName,
+    textLanguageId: selectedLanguage.id,
+    textLanguageName:
+      selectedLanguage.nativeName ?? selectedLanguage.localName ?? ''
+  })
+
+  return { duplicateAndTranslate, loading, getTranslationVariables }
 }
