@@ -4950,6 +4950,9 @@ export type VideoVariant = {
   id: Scalars['ID']['output'];
   language: Language;
   lengthInMilliseconds: Scalars['Int']['output'];
+  masterHeight?: Maybe<Scalars['Int']['output']>;
+  masterUrl?: Maybe<Scalars['String']['output']>;
+  masterWidth?: Maybe<Scalars['Int']['output']>;
   muxVideo?: Maybe<MuxVideo>;
   published: Scalars['Boolean']['output'];
   share?: Maybe<Scalars['String']['output']>;
@@ -4979,6 +4982,9 @@ export type VideoVariantCreateInput = {
   id: Scalars['String']['input'];
   languageId: Scalars['String']['input'];
   lengthInMilliseconds?: InputMaybe<Scalars['Int']['input']>;
+  masterHeight?: InputMaybe<Scalars['Int']['input']>;
+  masterUrl?: InputMaybe<Scalars['String']['input']>;
+  masterWidth?: InputMaybe<Scalars['Int']['input']>;
   muxVideoId?: InputMaybe<Scalars['String']['input']>;
   published?: InputMaybe<Scalars['Boolean']['input']>;
   share?: InputMaybe<Scalars['String']['input']>;
@@ -5048,6 +5054,9 @@ export type VideoVariantUpdateInput = {
   id: Scalars['String']['input'];
   languageId?: InputMaybe<Scalars['String']['input']>;
   lengthInMilliseconds?: InputMaybe<Scalars['Int']['input']>;
+  masterHeight?: InputMaybe<Scalars['Int']['input']>;
+  masterUrl?: InputMaybe<Scalars['String']['input']>;
+  masterWidth?: InputMaybe<Scalars['Int']['input']>;
   muxVideoId?: InputMaybe<Scalars['String']['input']>;
   published?: InputMaybe<Scalars['Boolean']['input']>;
   share?: InputMaybe<Scalars['String']['input']>;

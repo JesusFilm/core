@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "sourceMap": false,
+    "outDir": "../../dist/out-tsc",
+    "allowJs": true,
+    "types": ["node"]
+  },
+  "include": ["src/**/*.ts", "src/**/*.js", "playwright.config.ts"],
+  "tsBuildInfoFile": "../../.cache/video-importer-e2e/tsc/.tsbuildinfo"
+}
