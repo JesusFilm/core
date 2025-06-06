@@ -767,8 +767,6 @@
   "Unarchive Templates": "Şablonları Arşivden Çıkarın",
   "Are you sure you would like to unarchive all archived templates immediately?": "Arşivlenmiş tüm şablonları hemen arşivden çıkarmak istediğinizden emin misiniz?",
   "Are you sure you would like to trash all archived templates immediately?": "Arşivlenmiş tüm şablonları hemen çöpe atmak istediğinizden emin misiniz?",
-  "{{ nativeLanguage }} ({{ localLanguage }})": "{{ nativeLanguage }} ({{ localLanguage }})",
-  " - {{ description }}": " - {{ description }}",
   "Your trashed templates will appear here.": "Çöpe atılan şablonlarınız burada görünecektir.",
   "Trashed templates are moved here for up to 40 days.": "Çöpe atılan şablonlar 40 güne kadar buraya taşınır.",
   "Restore Templates": "Şablonları Geri Yükle",
