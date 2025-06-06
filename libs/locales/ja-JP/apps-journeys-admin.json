@@ -767,8 +767,6 @@
   "Unarchive Templates": "テンプレートのアーカイブ解除",
   "Are you sure you would like to unarchive all archived templates immediately?": "アーカイブされたすべてのテンプレートをすぐにアーカイブ解除してもよろしいですか？",
   "Are you sure you would like to trash all archived templates immediately?": "アーカイブされたすべてのテンプレートをすぐにゴミ箱に捨ててもよろしいですか？",
-  "{{ nativeLanguage }} ({{ localLanguage }})": "{{ nativeLanguage }} ({{ localLanguage }})",
-  " - {{ description }}": " - {{ description }}",
   "Your trashed templates will appear here.": "破棄されたテンプレートはここに表示されます。",
   "Trashed templates are moved here for up to 40 days.": "ゴミになったテンプレートは、最大40日間ここに移動される。",
   "Restore Templates": "テンプレートの復元",
