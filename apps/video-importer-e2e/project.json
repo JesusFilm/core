@@ -1,0 +1,55 @@
+{
+  "name": "video-importer-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/video-importer-e2e/src",
+  "projectType": "application",
+  "tags": [],
+  "implicitDependencies": ["docs", "video-importer"],
+  "targets": {
+    "e2e": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["nx build video-importer", "playwright test"],
+        "cwd": "apps/video-importer-e2e"
+      }
+    },
+    "update-snapshots": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["playwright test --update-snapshots"],
+        "cwd": "apps/video-importer-e2e"
+      }
+    },
+    "debug": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "PWDEBUG=1 xvfb-run playwright test --project=chromium --timeout=0"
+        ],
+        "cwd": "apps/video-importer-e2e"
+      }
+    },
+    "show-report": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["playwright show-report"],
+        "cwd": "apps/video-importer-e2e"
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsc -b apps/video-importer-e2e/tsconfig.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/video-importer-e2e/eslint",
+        "cacheStrategy": "content"
+      }
+    }
+  }
+}
