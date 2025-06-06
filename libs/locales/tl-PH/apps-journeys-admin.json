@@ -767,8 +767,6 @@
   "Unarchive Templates": "Alisin sa archive ang Mga Template",
   "Are you sure you would like to unarchive all archived templates immediately?": "Sigurado ka bang gusto mong alisin agad sa archive ang lahat ng naka-archive na template?",
   "Are you sure you would like to trash all archived templates immediately?": "Sigurado ka bang gusto mong itapon kaagad ang lahat ng naka-archive na template?",
-  "{{ nativeLanguage }} ({{ localLanguage }})": "{{ nativeLanguage }} ({{ localLanguage }})",
-  " - {{ description }}": " - {{ description }}",
   "Your trashed templates will appear here.": "Lalabas dito ang iyong mga binasura na template.",
   "Trashed templates are moved here for up to 40 days.": "Ang mga ibinasura na template ay inililipat dito nang hanggang 40 araw.",
   "Restore Templates": "Ibalik ang Mga Template",
