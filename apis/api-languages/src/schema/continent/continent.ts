@@ -1,6 +1,5 @@
-import { Prisma } from '.prisma/api-languages-client'
+import { Prisma, prisma } from '@core/prisma-languages/client'
 
-import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
 builder.prismaObject('Continent', {

@@ -1,6 +1,6 @@
 import { graphql } from 'gql.tada'
 
-import { MuxVideo } from '.prisma/api-media-client'
+import { MuxVideo } from '@core/prisma-media/client'
 
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'

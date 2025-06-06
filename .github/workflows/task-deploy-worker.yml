@@ -70,21 +70,6 @@ jobs:
           cat $GITHUB_OUTPUT
         id: affected-apps
 
-      - name: Has Prisma
-        id: has_prisma
-        uses: andstor/file-existence-action@v3
-        with:
-          files: 'apis/${{inputs.name}}/db/schema.prisma'
-
-      - name: Prisma Migrate
-        if: steps.has_prisma.outputs.files_exists == 'true' && contains(steps.affected-apps.outputs.apps, inputs.name)
-        uses: mansagroup/nrwl-nx-action@v3
-        with:
-          targets: prisma-generate
-          projects: ${{ inputs.name }}
-          parallel: 1
-        env:
-          DISABLE_ERD: true
       - name: Build ${{ inputs.name }}
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
         uses: mansagroup/nrwl-nx-action@v3
