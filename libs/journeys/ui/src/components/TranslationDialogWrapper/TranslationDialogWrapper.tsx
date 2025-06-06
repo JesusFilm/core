@@ -112,9 +112,19 @@ export function TranslationDialogWrapper({
       testId={testId}
     >
       {loading && isTranslation ? (
-        <Box display="flex" flexDirection="column" alignItems="center" p={3}>
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          sx={{
+            py: 6,
+            px: 4,
+            minHeight: 200
+          }}
+        >
           {translationProgress ? (
-            <Box sx={{ width: '100%', maxWidth: 400 }}>
+            <Box sx={{ width: '100%', maxWidth: 500 }}>
               <TranslationProgressBar
                 progress={translationProgress.progress}
                 message={translationProgress.message}
@@ -122,10 +132,17 @@ export function TranslationDialogWrapper({
             </Box>
           ) : (
             <>
-              <CircularProgress color="primary" />
-              <Typography variant="body1" mt={2}>
+              <Typography
+                variant="h6"
+                sx={{
+                  mb: 4,
+                  color: 'text.primary',
+                  fontWeight: 500
+                }}
+              >
                 {loadingText ?? defaultLoadingText}
               </Typography>
+              <CircularProgress color="primary" />
             </>
           )}
         </Box>

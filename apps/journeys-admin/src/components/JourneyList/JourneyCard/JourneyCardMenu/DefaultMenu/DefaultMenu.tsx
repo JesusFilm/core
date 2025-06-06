@@ -226,6 +226,7 @@ export function DefaultMenu({
           />
         </>
       )}
+
       <Divider />
       <CopyToTeamMenuItem
         id={id}

@@ -4,6 +4,7 @@ import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { GetJourney_journey as Journey } from '../../libs/useJourneyQuery/__generated__/GetJourney'
+import { GET_LANGUAGES } from '../../libs/useLanguagesQuery'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../libs/useUpdateLastActiveTeamIdMutation'
 import { UpdateLastActiveTeamId } from '../../libs/useUpdateLastActiveTeamIdMutation/__generated__/UpdateLastActiveTeamId'
 import {
@@ -291,8 +292,8 @@ describe('CopyToTeamDialog', () => {
     // Should show translation progress when isTranslating is true
     expect(getByTestId('CopyToTeamDialog')).toBeInTheDocument()
     // The TranslationDialogWrapper should be in translation mode
-    expect(screen.getByText('50%')).toBeInTheDocument()
-    expect(screen.getByText('Translating...')).toBeInTheDocument()
+    expect(screen.getByText('Translating your journey...')).toBeInTheDocument()
+    expect(screen.getByRole('progressbar')).toBeInTheDocument()
   })
 
   it('should validate if no option is selected', async () => {
@@ -497,7 +498,7 @@ describe('CopyToTeamDialog', () => {
     )
   })
 
-  it('should not close dialog immediately when translation is enabled', async () => {
+  it('should close dialog normally when translation is not enabled', async () => {
     const result = jest.fn(() => ({
       data: {
         teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
@@ -508,6 +509,25 @@ describe('CopyToTeamDialog', () => {
       }
     }))
 
+    const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> = {
+      request: {
+        query: UPDATE_LAST_ACTIVE_TEAM_ID,
+        variables: {
+          input: {
+            lastActiveTeamId: 'teamId'
+          }
+        }
+      },
+      result: jest.fn(() => ({
+        data: {
+          journeyProfileUpdate: {
+            __typename: 'JourneyProfile',
+            id: 'teamId'
+          }
+        }
+      }))
+    }
+
     const { getByRole } = render(
       <MockedProvider
         mocks={[
@@ -516,7 +536,8 @@ describe('CopyToTeamDialog', () => {
               query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
             },
             result
-          }
+          },
+          updateLastActiveTeamIdMock
         ]}
       >
         <SnackbarProvider>
@@ -542,13 +563,6 @@ describe('CopyToTeamDialog', () => {
 
     await waitFor(() => expect(result).toHaveBeenCalled())
 
-    // Enable translation
-    fireEvent.click(
-      screen.getByRole('checkbox', {
-        name: 'Translation'
-      })
-    )
-
     // Select team
     await fireEvent.mouseDown(getByRole('combobox', { name: 'Select Team' }))
     const muiSelectOptions = await getByRole('option', {
@@ -556,12 +570,12 @@ describe('CopyToTeamDialog', () => {
     })
     fireEvent.click(muiSelectOptions)
 
-    // Submit form
+    // Submit form without translation
     fireEvent.click(screen.getByText('Copy'))
 
     await waitFor(() => expect(handleSubmitActionMock).toHaveBeenCalled())
 
-    // Dialog should not close immediately when translation is enabled
-    expect(handleCloseMenuMock).not.toHaveBeenCalled()
+    // Dialog should close normally when translation is not enabled
+    expect(handleCloseMenuMock).toHaveBeenCalled()
   })
 })
