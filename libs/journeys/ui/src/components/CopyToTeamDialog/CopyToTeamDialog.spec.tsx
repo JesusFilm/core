@@ -292,7 +292,7 @@ describe('CopyToTeamDialog', () => {
     // Should show translation progress when isTranslating is true
     expect(getByTestId('CopyToTeamDialog')).toBeInTheDocument()
     // The TranslationDialogWrapper should be in translation mode
-    expect(screen.getByText('Translating your journey...')).toBeInTheDocument()
+    expect(screen.getByText('Translating...')).toBeInTheDocument()
     expect(screen.getByRole('progressbar')).toBeInTheDocument()
   })
 

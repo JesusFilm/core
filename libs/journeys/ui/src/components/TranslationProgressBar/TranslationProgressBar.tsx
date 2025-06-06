@@ -26,7 +26,7 @@ export function TranslationProgressBar({
           fontWeight: 500
         }}
       >
-        Translating your journey...
+        {message}
       </Typography>
       <LinearProgress
         variant={variant}
