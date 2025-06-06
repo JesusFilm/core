@@ -56,15 +56,6 @@ const JourneyAnalysisSchema = z.object({
   seoDescription: z.string().describe('Translated journey SEO description')
 })
 
-const BlockTranslationSchema = z.array(
-  z.object({
-    blockId: z.string().describe('The ID of the block to update'),
-    updates: z
-      .record(z.string())
-      .describe('Key-value pairs of fields to update')
-  })
-)
-
 // Define the shared input type
 const JourneyAiTranslateInput = builder.inputType('JourneyAiTranslateInput', {
   fields: (t) => ({
