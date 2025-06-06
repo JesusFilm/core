@@ -767,8 +767,6 @@
   "Unarchive Templates": "Désarchiver les modèles",
   "Are you sure you would like to unarchive all archived templates immediately?": "Es-tu sûr de vouloir désarchiver tous les modèles archivés immédiatement ?",
   "Are you sure you would like to trash all archived templates immediately?": "Es-tu sûr de vouloir mettre immédiatement à la poubelle tous les modèles archivés ?",
-  "{{ nativeLanguage }} ({{ localLanguage }})": "{{ nativeLanguage }} ({{ localLanguage }})",
-  " - {{ description }}": " - {{ description }}",
   "Your trashed templates will appear here.": "Tes modèles mis à la poubelle apparaîtront ici.",
   "Trashed templates are moved here for up to 40 days.": "Les modèles mis à la poubelle sont déplacés ici pour une durée maximale de 40 jours.",
   "Restore Templates": "Restaurer les modèles",
