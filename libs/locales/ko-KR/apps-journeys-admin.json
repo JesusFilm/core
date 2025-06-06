@@ -767,8 +767,6 @@
   "Unarchive Templates": "템플릿 보관 해제",
   "Are you sure you would like to unarchive all archived templates immediately?": "보관된 모든 템플릿을 즉시 보관 해제하시겠습니까?",
   "Are you sure you would like to trash all archived templates immediately?": "보관된 모든 템플릿을 즉시 휴지통에 버리시겠습니까?",
-  "{{ nativeLanguage }} ({{ localLanguage }})": "{{ nativeLanguage }} ({{ localLanguage }})",
-  " - {{ description }}": " - {{ description }}",
   "Your trashed templates will appear here.": "휴지통에 버려진 템플릿이 여기에 표시됩니다.",
   "Trashed templates are moved here for up to 40 days.": "휴지통에 버려진 템플릿은 최대 40일 동안 이곳으로 이동됩니다.",
   "Restore Templates": "템플릿 복원",
