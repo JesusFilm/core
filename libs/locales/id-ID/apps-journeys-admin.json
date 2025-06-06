@@ -767,8 +767,6 @@
   "Unarchive Templates": "Templat yang Tidak Diarsipkan",
   "Are you sure you would like to unarchive all archived templates immediately?": "Apakah Anda yakin ingin segera menghapus arsip semua templat yang telah diarsipkan?",
   "Are you sure you would like to trash all archived templates immediately?": "Apakah Anda yakin ingin segera membuang semua templat yang diarsipkan?",
-  "{{ nativeLanguage }} ({{ localLanguage }})": "{{ nativeLanguage }} ({{ localLanguage }})",
-  " - {{ description }}": " - {{ description }}",
   "Your trashed templates will appear here.": "Templat Anda yang dibuang akan muncul di sini.",
   "Trashed templates are moved here for up to 40 days.": "Templat yang dibuang akan dipindahkan ke sini hingga 40 hari.",
   "Restore Templates": "Mengembalikan Templat",
