@@ -767,8 +767,6 @@
   "Unarchive Templates": "ยกเลิกการเก็บรักษาเทมเพลต",
   "Are you sure you would like to unarchive all archived templates immediately?": "คุณแน่ใจหรือไม่ว่าคุณต้องการยกเลิกการเก็บรักษาเทมเพลตทั้งหมดที่ถูกเก็บรักษาอยู่ทันที?",
   "Are you sure you would like to trash all archived templates immediately?": "คุณแน่ใจหรือไม่ว่าคุณต้องการลบเทมเพลตทั้งหมดที่ถูกเก็บรักษาอยู่ทันที?",
-  "{{ nativeLanguage }} ({{ localLanguage }})": "{{ nativeLanguage }} ({{ localLanguage }})",
-  " - {{ description }}": " - {{ description }}",
   "Your trashed templates will appear here.": "เทมเพลตที่ถูกลบขวางจะปรากฎที่นี่",
   "Trashed templates are moved here for up to 40 days.": "เทมเพลตที่ถูกลบขวางจะถูกย้ายมาที่นี่ไว้สูงสุด 40 วัน",
   "Restore Templates": "กู้คืนเทมเพลต",
