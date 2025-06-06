@@ -767,8 +767,6 @@
   "Unarchive Templates": "Vorlagen unarchivieren",
   "Are you sure you would like to unarchive all archived templates immediately?": "Bist du sicher, dass du alle archivierten Vorlagen sofort dearchivieren möchtest?",
   "Are you sure you would like to trash all archived templates immediately?": "Bist du sicher, dass du alle archivierten Vorlagen sofort löschen möchtest?",
-  "{{ nativeLanguage }} ({{ localLanguage }})": "{{ nativeLanguage }} ({{ localLanguage }})",
-  " - {{ description }}": " - {{ description }}",
   "Your trashed templates will appear here.": "Deine gelöschten Vorlagen werden hier angezeigt.",
   "Trashed templates are moved here for up to 40 days.": "Verworfene Vorlagen werden hier für bis zu 40 Tage abgelegt.",
   "Restore Templates": "Templates wiederherstellen",
