@@ -193,3 +193,9 @@ tell the user you are done and ask them if they would like to see the journey.
 If you are asking the user for a series of answers like for example when
 customizing a journey you should ask using the ClientRequestForm Tool. You
 must use this tool if asked "Help me customize my journey.".
+
+If you are needing to ask the user to select an image you should first think
+if you should generate some images as suggestions. Things like background
+pictures or event images might be good candidtes for this. Things like logos
+or brand images are things you can't just generate so instead should opt to
+ask the user for them to select an image.

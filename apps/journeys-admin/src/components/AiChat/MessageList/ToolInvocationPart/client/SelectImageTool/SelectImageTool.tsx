@@ -1,7 +1,9 @@
 import { ToolInvocationUIPart } from '@ai-sdk/ui-utils'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import Image from 'next/image'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
@@ -19,20 +21,39 @@ interface ClientSelectImageToolProps {
 }
 
 export function ClientSelectImageTool({
-  part,
+  part: {
+    toolInvocation: { toolCallId, args, state }
+  },
   addToolResult
 }: ClientSelectImageToolProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
   const [open, setOpen] = useState(false)
 
-  switch (part.toolInvocation.state) {
+  switch (state) {
     case 'call':
       return (
         <Box>
           <Typography variant="body2" color="text.secondary">
-            {part.toolInvocation.args.message}
+            {args.message}
           </Typography>
           <Box>
+            <Stack direction="row" gap={2}>
+              {args.generatedImageUrls?.map((url) => (
+                <Image
+                  src={url}
+                  alt="Generated image"
+                  width={100}
+                  height={100}
+                  style={{ borderRadius: 5 }}
+                  onClick={() => {
+                    addToolResult({
+                      toolCallId,
+                      result: `update the image block to use this url: ${url}`
+                    })
+                  }}
+                />
+              ))}
+            </Stack>
             <Button
               variant="outlined"
               onClick={() => {
@@ -49,7 +70,7 @@ export function ClientSelectImageTool({
               aria-label={t('Cancel')}
               onClick={() => {
                 addToolResult({
-                  toolCallId: part.toolInvocation.toolCallId,
+                  toolCallId,
                   result: { cancelled: true }
                 })
               }}
@@ -63,8 +84,8 @@ export function ClientSelectImageTool({
               }}
               onChange={async (selectedImage) => {
                 addToolResult({
-                  toolCallId: part.toolInvocation.toolCallId,
-                  result: `here is the image the new image. Update the old image block to this image: ${JSON.stringify(
+                  toolCallId,
+                  result: `update the image block using this object: ${JSON.stringify(
                     selectedImage
                   )}`
                 })
