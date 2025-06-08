@@ -17,14 +17,15 @@ import { VideoContentFields_studyQuestions } from '../../../__generated__/VideoC
 import { useVideoChildren } from '../../libs/useVideoChildren'
 import { getWatchUrl } from '../../libs/utils/getWatchUrl'
 import { useVideo } from '../../libs/videoContext'
+import { BibleQuotes } from '../BibleQuotes'
 import { DownloadDialog } from '../DownloadDialog'
 import { PageWrapper } from '../PageWrapper'
+import { RelatedQuestions } from '../RelatedQuestions'
 import { ShareDialog } from '../ShareDialog'
+import { VideoDescription } from '../VideoDescription'
 
 import { BibleCitations } from './BibleCitations'
 import { ContentHero } from './ContentHero'
-import { ContentMetadata } from './ContentMetadata'
-import { DiscussionQuestions } from './DiscussionQuestions'
 import { VideoCarousel } from './VideoCarousel'
 
 const xsmallStyles = {
@@ -178,22 +179,25 @@ export function NewContentPage(): ReactElement {
                 containerSlug={container?.slug ?? videoSlug}
                 activeVideoId={id}
               />
-              <Box
-                sx={{
-                  display: 'grid',
-                  gridTemplateColumns: { xs: '1fr', xl: '3fr 2fr' },
-                  flexWrap: 'wrap',
-                  zIndex: 1,
-                  gap: 10
-                }}
-              >
-                <ContentMetadata
+
+              <div className="xl:flex w-full z-1 relative">
+                <VideoDescription
                   title={title[0].value}
                   description={description[0].value}
                   label={label}
                 />
-                <DiscussionQuestions questions={questions} />
-              </Box>
+                {questions.length > 0 && (
+                  <RelatedQuestions
+                    questions={questions}
+                    contentId={variantSlug ?? ''}
+                  />
+                )}
+              </div>
+              <>
+                {bibleCitations.length > 0 && (
+                  <BibleQuotes bibleCitations={bibleCitations} />
+                )}
+              </>
               <Stack
                 sx={{
                   zIndex: 1
@@ -230,7 +234,7 @@ export function NewContentPage(): ReactElement {
                   onClose={() => setShowShare(false)}
                 />
               </Stack>
-              <BibleCitations
+              {/* <BibleCitations
                 bibleCitations={bibleCitations}
                 freeResource={{
                   heading: t('Free Resources'),
@@ -243,7 +247,7 @@ export function NewContentPage(): ReactElement {
                     onClick: handleFreeResourceClick
                   }
                 }}
-              />
+              /> */}
             </Stack>
           </Box>
         </Box>

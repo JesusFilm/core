@@ -1,0 +1,1 @@
+export { BibleQuotes } from './BibleQuotes'
