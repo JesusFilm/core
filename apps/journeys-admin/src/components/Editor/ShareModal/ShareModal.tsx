@@ -111,16 +111,19 @@ export function ShareModal({
       anchor="bottom"
       open={open}
       onClose={onClose}
-      onOpen={() => undefined}
+      onOpen={() => {
+        // SwipeableDrawer requires onOpen for accessibility
+      }}
+      disableSwipeToOpen={false}
       sx={{
         '& .MuiDrawer-paper': {
           borderTopLeftRadius: 16,
           borderTopRightRadius: 16,
-          height: '70vh'
+          overflow: 'visible'
         }
       }}
     >
-      <Box sx={{ p: { xs: 2, sm: 3 } }}>
+      <Box sx={{ p: { xs: 2, sm: 3 }, overflow: 'auto', flex: 1 }}>
         {/* Mobile Header */}
         <Box
           sx={{

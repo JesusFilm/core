@@ -53,7 +53,6 @@ export function ShareItem({
     skip: journey?.team?.id == null
   })
   const router = useRouter()
-  const [showQrCodeDialog, setShowQrCodeDialog] = useState<boolean | null>(null)
   const [showShareModal, setShowShareModal] = useState<boolean | null>(null)
 
   function handleShowMenu(): void {
@@ -90,13 +89,6 @@ export function ShareItem({
           onClose={() => setShowShareModal(false)}
           journey={journey}
           hostname={hostname}
-        />
-      )}
-      {showQrCodeDialog != null && (
-        <QrCodeDialog
-          open={showQrCodeDialog}
-          onClose={() => setShowQrCodeDialog(false)}
-          journey={journey}
         />
       )}
     </Box>

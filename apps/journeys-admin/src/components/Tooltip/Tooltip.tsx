@@ -40,6 +40,7 @@ interface TooltipProps
   offset?: number
   placement?: 'top' | 'bottom'
   light?: boolean
+  leaveTouchDelay?: number
 }
 
 export function Tooltip({
@@ -48,6 +49,7 @@ export function Tooltip({
   placement = 'top',
   offset = 0,
   light = false,
+  leaveTouchDelay,
   ...rest
 }: TooltipProps): ReactElement {
   return (
@@ -57,6 +59,7 @@ export function Tooltip({
       placement={placement}
       arrow
       enterTouchDelay={0}
+      leaveTouchDelay={leaveTouchDelay}
       sx={
         light
           ? {

@@ -7,6 +7,7 @@ import type { Theme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import Stack from '@mui/system/Stack'
 import { Form, Formik, FormikHelpers, FormikValues } from 'formik'
 import Image from 'next/image'
 import { useTranslation } from 'next-i18next'
@@ -174,27 +175,13 @@ export function LinkTab({ journey, hostname }: LinkTabProps): ReactElement {
             >
               {JourneyLinkTitle()}
 
-              <Box sx={{ display: 'flex', gap: 1 }}>
-                <Button
-                  onClick={handleStartEdit}
-                  size="small"
-                  variant="outlined"
-                  color="secondary"
-                  sx={{ minWidth: '6ch', px: 2 }}
-                >
-                  {t('Edit')}
-                </Button>
-                <Button
-                  onClick={handleCopyClick}
-                  size="small"
-                  variant="contained"
-                  color="secondary"
-                  disabled={!journeyUrl}
-                  sx={{ minWidth: '6ch', px: 2 }}
-                >
-                  {t('Copy')}
-                </Button>
-              </Box>
+              {mdUp && (
+                <JourneyLinkEditCopyButtons
+                  handleStartEdit={handleStartEdit}
+                  handleCopyClick={handleCopyClick}
+                  journeyUrl={journeyUrl}
+                />
+              )}
             </Box>
 
             {/* Copy View */}
@@ -214,6 +201,15 @@ export function LinkTab({ journey, hostname }: LinkTabProps): ReactElement {
               disabled={!journeyUrl}
               helperText=" "
             />
+
+            {/* Mobile buttons below TextField */}
+            {!mdUp && (
+              <JourneyLinkEditCopyButtons
+                handleStartEdit={handleStartEdit}
+                handleCopyClick={handleCopyClick}
+                journeyUrl={journeyUrl}
+              />
+            )}
           </>
         ) : (
           // Edit View with Formik
@@ -242,32 +238,13 @@ export function LinkTab({ journey, hostname }: LinkTabProps): ReactElement {
                   >
                     {JourneyLinkTitle()}
 
-                    {mdUp === true && (
-                      <Box sx={{ display: 'flex', gap: 1 }}>
-                        <Button
-                          onClick={() => {
-                            resetForm({ values: { slug: journey.slug } })
-                            setIsEditing(false)
-                          }}
-                          size="small"
-                          variant="outlined"
-                          color="secondary"
-                          disabled={isSubmitting}
-                          sx={{ minWidth: '6ch', px: 2 }}
-                        >
-                          {t('Cancel')}
-                        </Button>
-                        <Button
-                          onClick={() => handleSubmit()}
-                          variant="contained"
-                          size="small"
-                          color="secondary"
-                          disabled={isSubmitting}
-                          sx={{ minWidth: '6ch', px: 2 }}
-                        >
-                          {t('Save')}
-                        </Button>
-                      </Box>
+                    {mdUp && (
+                      <JourneyLinkCancelSaveButtons
+                        resetForm={resetForm}
+                        journey={journey}
+                        isSubmitting={isSubmitting}
+                        handleSubmit={handleSubmit}
+                      />
                     )}
                   </Box>
 
@@ -304,6 +281,16 @@ export function LinkTab({ journey, hostname }: LinkTabProps): ReactElement {
                       }
                     />
                   </Form>
+
+                  {/* Mobile buttons below Form */}
+                  {!mdUp && (
+                    <JourneyLinkCancelSaveButtons
+                      resetForm={resetForm}
+                      journey={journey}
+                      isSubmitting={isSubmitting}
+                      handleSubmit={handleSubmit}
+                    />
+                  )}
                 </>
               )}
             </Formik>
@@ -322,7 +309,13 @@ export function LinkTab({ journey, hostname }: LinkTabProps): ReactElement {
 
   function JourneyLinkTitle(): ReactElement {
     return (
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent={mdUp ? 'flex-start' : 'space-between'}
+        gap={1}
+        sx={{ width: '100%', paddingRight: mdUp ? 0 : 1 }}
+      >
         <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
           {t('Journey Link')}
         </Typography>
@@ -332,11 +325,92 @@ export function LinkTab({ journey, hostname }: LinkTabProps): ReactElement {
           )}
           placement="top"
           light
+          leaveTouchDelay={0}
         >
           <InformationCircleContained
             sx={{ fontSize: 16, color: 'text.secondary' }}
           />
         </Tooltip>
+      </Stack>
+    )
+  }
+
+  function JourneyLinkEditCopyButtons({
+    handleStartEdit,
+    handleCopyClick,
+    journeyUrl
+  }: {
+    handleStartEdit: () => void
+    handleCopyClick: () => void
+    journeyUrl: string | undefined
+  }): ReactElement {
+    return (
+      <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+        <Button
+          onClick={handleStartEdit}
+          size="small"
+          variant="outlined"
+          color="secondary"
+          sx={{ minWidth: '6ch', px: 2 }}
+        >
+          {t('Edit')}
+        </Button>
+        <Button
+          onClick={handleCopyClick}
+          size="small"
+          variant="contained"
+          color="secondary"
+          disabled={!journeyUrl}
+          sx={{ minWidth: '6ch', px: 2 }}
+        >
+          {t('Copy')}
+        </Button>
+      </Box>
+    )
+  }
+
+  function JourneyLinkCancelSaveButtons({
+    resetForm,
+    journey,
+    isSubmitting,
+    handleSubmit
+  }: {
+    resetForm: (values: FormikValues) => void
+    journey: JourneyFromContext | JourneyFromLazyQuery
+    isSubmitting: boolean
+    handleSubmit: () => void
+  }): ReactElement {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          gap: 1,
+          justifyContent: 'flex-end'
+        }}
+      >
+        <Button
+          onClick={() => {
+            resetForm({ values: { slug: journey.slug } })
+            setIsEditing(false)
+          }}
+          size="small"
+          variant="outlined"
+          color="secondary"
+          disabled={isSubmitting}
+          sx={{ minWidth: '6ch', px: 2 }}
+        >
+          {t('Cancel')}
+        </Button>
+        <Button
+          onClick={() => handleSubmit()}
+          variant="contained"
+          size="small"
+          color="secondary"
+          disabled={isSubmitting}
+          sx={{ minWidth: '6ch', px: 2 }}
+        >
+          {t('Save')}
+        </Button>
       </Box>
     )
   }
