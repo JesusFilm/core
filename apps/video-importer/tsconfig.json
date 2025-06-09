@@ -3,7 +3,7 @@
   "compilerOptions": {
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "outDir": "../../dist/video-importer",
+    "outDir": "../../dist/apps/video-importer",
     "rootDir": "src"
   },
   "include": ["src/**/*"],
