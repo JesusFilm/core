@@ -23,8 +23,8 @@ program
 
 const options = program.opts()
 
-const VIDEO_FILENAME_REGEX =
-  /^([a-zA-Z0-9_-]+)---([a-zA-Z0-9_-]+)---([a-zA-Z0-9_-]+)(?:---[a-zA-Z0-9_-]+)*\.mp4$/
+export const VIDEO_FILENAME_REGEX =
+  /^([^.]+?)---([^.]+?)---([^-]+)(?:---([^-]+))*\.mp4$/
 
 async function main() {
   const runningInPkg = !!(process as any).pkg
@@ -60,12 +60,17 @@ async function main() {
   for (const file of videoFiles) {
     const match = file.match(VIDEO_FILENAME_REGEX)
     if (!match) continue
-    const [, languageId, edition, videoId] = match
+    const [, videoId, edition, languageId, ...extraFields] = match
 
     console.log(`\n🎬 Processing: ${file}`)
     console.log(
-      `   └── IDs: Video=${videoId}, Lang=${languageId}, Edition=${edition}`
+      `   └── IDs: Video=${videoId}, Edition=${edition}, Lang=${languageId}`
     )
+    if (extraFields.length > 0) {
+      console.log(
+        `   └── Extra fields: ${extraFields.filter(Boolean).join(', ')}`
+      )
+    }
 
     if (options.dryRun) {
       console.log(`[DRY RUN] Would process file: ${file}`)
