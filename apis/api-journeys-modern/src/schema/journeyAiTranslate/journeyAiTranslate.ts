@@ -157,7 +157,7 @@ Also suggest ways to culturally adapt this content for the target language: ${ha
 Then, translate the following journey title and description to ${hardenPrompt(input.textLanguageName)}.
 If a description is not provided, do not create one.
 
-If possible, find a populare translation of the Bible in the target language to use in follow up steps.
+If possible, find a popular translation of the Bible in the target language for Bible translations and include it in the analysis.
 
 ${hardenPrompt(`
 The source language is: ${input.journeyLanguageName}.
@@ -605,7 +605,7 @@ Also suggest ways to culturally adapt this content for the target language: ${ha
 Then, translate the following journey title and description to ${hardenPrompt(requestedLanguageName)}.
 If a description is not provided, do not create one.
 
-If possible, find a populare translation of the Bible in the target language to use in follow up steps.
+If possible, find a popular translation of the Bible in the target language to use in follow up steps.
 
 ${hardenPrompt(`
 The source language is: ${sourceLanguageName}.
@@ -639,13 +639,7 @@ Return in this format:
             { role: 'system', content: preSystemPrompt },
             { role: 'user', content: combinedPrompt }
           ],
-          schema: z.object({
-            analysis: z.string(),
-            title: z.string(),
-            description: z.string(),
-            seoTitle: z.string(),
-            seoDescription: z.string()
-          })
+          schema: JourneyAnalysisSchema
         })
 
         if (!analysisAndTranslation.title)

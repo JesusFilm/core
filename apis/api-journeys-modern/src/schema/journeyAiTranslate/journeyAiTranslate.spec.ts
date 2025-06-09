@@ -4,7 +4,7 @@ import { hardenPrompt, preSystemPrompt } from '@core/shared/ai/prompts'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
-import { Action, ability } from '../../lib/auth/ability'
+import { Action, ability, subject } from '../../lib/auth/ability'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
 import { getCardBlocksContent } from './getCardBlocksContent'
@@ -29,7 +29,7 @@ jest.mock('../../lib/auth/ability', () => ({
     Update: 'update'
   },
   ability: jest.fn(),
-  subject: jest.fn()
+  subject: jest.fn((type, object) => ({ subject: type, object }))
 }))
 
 jest.mock('./getCardBlocksContent', () => ({
@@ -55,6 +55,7 @@ function createMockAsyncIterator<T>(items: T[]): AsyncIterable<T> {
 
 describe('journeyAiTranslateCreate mutation', () => {
   const mockAbility = ability as jest.MockedFunction<typeof ability>
+  const mockSubject = subject as jest.MockedFunction<typeof subject>
   const mockGenerateObject = generateObject as jest.MockedFunction<
     typeof generateObject
   >
@@ -248,7 +249,11 @@ describe('journeyAiTranslateCreate mutation', () => {
     })
 
     // Verify permissions were checked
-    expect(mockAbility).toHaveBeenCalledWith(Action.Update, undefined, mockUser)
+    expect(mockAbility).toHaveBeenCalledWith(
+      Action.Update,
+      { subject: 'Journey', object: mockJourney },
+      mockUser
+    )
 
     // Verify AI analysis was requested
     expect(mockGenerateObject).toHaveBeenCalledWith(
@@ -534,6 +539,7 @@ describe('journeyAiTranslateCreate mutation', () => {
 
 describe('journeyAiTranslateCreateSubscription', () => {
   const mockAbility = ability as jest.MockedFunction<typeof ability>
+  const mockSubject = subject as jest.MockedFunction<typeof subject>
   const mockGenerateObject = generateObject as jest.MockedFunction<
     typeof generateObject
   >
