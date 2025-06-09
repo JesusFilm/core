@@ -6,7 +6,10 @@ import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
-import { CopyToTeamDialog } from '@core/journeys/ui/CopyToTeamDialog'
+import {
+  CopyToTeamDialog,
+  JourneyForCopyDialog
+} from '@core/journeys/ui/CopyToTeamDialog'
 import { useJourneyDuplicateAndTranslate } from '@core/journeys/ui/useJourneyDuplicateAndTranslate'
 import MoreIcon from '@core/shared/ui/icons/More'
 
@@ -331,10 +334,13 @@ export function JourneyCardMenu({
         <CopyToTeamDialog
           title={t('Copy to Another Team')}
           submitLabel={t('Copy')}
+          // journey={journey}
+          journeyId={journey?.id}
+          journeyTitle={journey?.title}
+          journeyLanguageName={journey?.language?.name}
           open={openCopyToTeamDialog}
           onClose={() => setOpenCopyToTeamDialog(false)}
           submitAction={handleDuplicateJourney}
-          loading={loading}
         />
       )}
     </>

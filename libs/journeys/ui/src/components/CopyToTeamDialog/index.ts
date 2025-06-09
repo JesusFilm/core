@@ -1,1 +1,1 @@
-export { CopyToTeamDialog } from './CopyToTeamDialog'
+export { CopyToTeamDialog, JourneyForCopyDialog } from './CopyToTeamDialog'

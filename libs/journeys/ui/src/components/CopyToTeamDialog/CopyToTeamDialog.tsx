@@ -16,6 +16,8 @@ import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
 import { SUPPORTED_LANGUAGE_IDS } from '../../libs/useJourneyAiTranslateMutation/supportedLanguages'
+import { useJourneyDuplicateAndTranslate } from '../../libs/useJourneyDuplicateAndTranslate'
+import { GetJourney_journey_language_name as JourneyLanguageName } from '../../libs/useJourneyQuery/__generated__/GetJourney'
 import { useLanguagesQuery } from '../../libs/useLanguagesQuery'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../libs/useUpdateLastActiveTeamIdMutation'
 import { UpdateLastActiveTeamId } from '../../libs/useUpdateLastActiveTeamIdMutation/__generated__/UpdateLastActiveTeamId'
@@ -25,8 +27,10 @@ import { TranslationDialogWrapper } from '../TranslationDialogWrapper'
 interface CopyToTeamDialogProps {
   title: string
   submitLabel?: string
+  journeyId?: string
+  journeyTitle?: string
+  journeyLanguageName?: JourneyLanguageName[]
   open: boolean
-  loading?: boolean
   onClose: () => void
   submitAction: (
     teamId: string,
@@ -61,6 +65,7 @@ interface FormValues {
  * @param {Object} props - The component props
  * @param {string} props.title - The title to display in the dialog header
  * @param {string} [props.submitLabel] - Optional custom label for the submit button
+ * @param {JourneyForCopyDialog} props.journey - The journey object containing id, title, and language information
  * @param {boolean} props.open - Controls the visibility of the dialog
  * @param {boolean} [props.loading] - Optional flag to indicate loading state
  * @param {() => void} props.onClose - Callback function invoked when the dialog should close
@@ -71,8 +76,10 @@ interface FormValues {
 export function CopyToTeamDialog({
   title,
   submitLabel,
+  journeyId,
+  journeyTitle,
+  journeyLanguageName,
   open,
-  loading,
   onClose,
   submitAction
 }: CopyToTeamDialogProps): ReactElement {
@@ -88,6 +95,33 @@ export function CopyToTeamDialog({
       ids: [...SUPPORTED_LANGUAGE_IDS]
     }
   })
+
+  const { duplicateAndTranslate, loading } = useJourneyDuplicateAndTranslate({
+    journeyId: journeyId,
+    journeyTitle: journeyTitle ?? '',
+    journeyLanguageName:
+      journeyLanguageName?.find(({ primary }) => primary)?.value ?? '',
+    onSuccess: () => {
+      onClose()
+    },
+    onError: () => {
+      onClose()
+    }
+  })
+
+  const handleDuplicateJourney = async (
+    teamId: string,
+    selectedLanguage?: JourneyLanguage,
+    showTranslation?: boolean
+  ): Promise<void> => {
+    if (journeyId == null) return
+
+    await duplicateAndTranslate({
+      teamId,
+      selectedLanguage,
+      shouldTranslate: showTranslation
+    })
+  }
 
   async function handleSubmit(
     values: FormValues,
