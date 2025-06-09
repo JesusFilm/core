@@ -144,10 +144,12 @@ export function LinkTab({ journey, hostname }: LinkTabProps): ReactElement {
             >
               {journey?.primaryImageBlock?.src != null ? (
                 <Image
-                  src={journey?.primaryImageBlock?.src ?? ''}
-                  alt="Journey Image"
+                  src={journey.primaryImageBlock?.src ?? ''}
+                  alt={journey.primaryImageBlock?.alt ?? 'Journey Image'}
                   fill
                   style={{ objectFit: 'cover' }}
+                  placeholder="blur"
+                  blurDataURL={journey.primaryImageBlock?.blurhash ?? ''}
                 />
               ) : (
                 <Skeleton variant="rectangular" width="100%" height="100%" />
