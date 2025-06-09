@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import Skeleton from '@mui/material/Skeleton'
 import { styled } from '@mui/material/styles'
 import { ReactElement } from 'react'
 import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
@@ -39,23 +40,36 @@ export function VideoCarousel({
         slidesOffsetBefore={28}
         slidesOffsetAfter={28}
       >
-        {videos?.map((video) => (
-          <StyledSwiperSlide
-            key={video.id}
-            className="max-w-[200px]"
-            data-testid={`CarouselSlide-${video.id}`}
-            sx={{
-              maxWidth: '200px'
-            }}
-          >
-            <VideoCard
-              key={video.id}
-              containerSlug={containerSlug}
-              video={video}
-              active={activeVideoId === video.id}
-            />
-          </StyledSwiperSlide>
-        ))}
+        {videos.length > 0
+          ? videos?.map((video) => (
+              <StyledSwiperSlide
+                key={video.id}
+                className="max-w-[200px]"
+                data-testid={`CarouselSlide-${video.id}`}
+                sx={{
+                  maxWidth: '200px'
+                }}
+              >
+                <VideoCard
+                  key={video.id}
+                  containerSlug={containerSlug}
+                  video={video}
+                  active={activeVideoId === video.id}
+                />
+              </StyledSwiperSlide>
+            ))
+          : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
+              <StyledSwiperSlide key={i} className="max-w-[200px]">
+                <Skeleton
+                  variant="rectangular"
+                  width={200}
+                  height={240}
+                  sx={{
+                    borderRadius: 3
+                  }}
+                />
+              </StyledSwiperSlide>
+            ))}
       </StyledSwiper>
     </Box>
   )

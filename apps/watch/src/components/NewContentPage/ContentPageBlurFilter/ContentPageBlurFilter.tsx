@@ -19,7 +19,7 @@ export function ContentPageBlurFilter({
         style={{ backdropFilter: 'brightness(.6) blur(40px)' }}
       />
       <div
-        className="w-full mx-auto"
+        className="max-w-[1920px] mx-auto overflow-hidden"
         data-testid="ContentPageContainer"
         style={{ marginTop: '-100vh' }}
       >
