@@ -1,6 +1,4 @@
-import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
-import { styled } from '@mui/material/styles'
 import { ReactElement } from 'react'
 import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -8,9 +6,6 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
 
 import { VideoCard } from './VideoCard'
-
-const StyledSwiper = styled(Swiper)(() => ({}))
-const StyledSwiperSlide = styled(SwiperSlide)(() => ({}))
 
 interface VideoCarouselProps {
   videos: VideoChildFields[]
@@ -24,8 +19,8 @@ export function VideoCarousel({
   activeVideoId
 }: VideoCarouselProps): ReactElement {
   return (
-    <Box data-testid="VideoCarousel" sx={{ my: 7 }}>
-      <StyledSwiper
+    <div data-testid="VideoCarousel" className="my-7">
+      <Swiper
         data-testid="VideoCarouselSwiper"
         modules={[Mousewheel, FreeMode, A11y]}
         mousewheel={{
@@ -42,13 +37,10 @@ export function VideoCarousel({
       >
         {videos.length > 0
           ? videos?.map((video) => (
-              <StyledSwiperSlide
+              <SwiperSlide
                 key={video.id}
                 className="max-w-[200px]"
                 data-testid={`CarouselSlide-${video.id}`}
-                sx={{
-                  maxWidth: '200px'
-                }}
               >
                 <VideoCard
                   key={video.id}
@@ -56,10 +48,10 @@ export function VideoCarousel({
                   video={video}
                   active={activeVideoId === video.id}
                 />
-              </StyledSwiperSlide>
+              </SwiperSlide>
             ))
           : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
-              <StyledSwiperSlide key={i} className="max-w-[200px]">
+              <SwiperSlide key={i} className="max-w-[200px]">
                 <Skeleton
                   variant="rectangular"
                   width={200}
@@ -68,9 +60,9 @@ export function VideoCarousel({
                     borderRadius: 3
                   }}
                 />
-              </StyledSwiperSlide>
+              </SwiperSlide>
             ))}
-      </StyledSwiper>
-    </Box>
+      </Swiper>
+    </div>
   )
 }
