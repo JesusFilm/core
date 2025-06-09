@@ -17,7 +17,7 @@ const DynamicLanguageSwitchDialog = dynamic(
   () =>
     import(
       /* webpackChunkName: "LanguageSwitchDialog" */
-      '../../LanguageSwitchDialog'
+      '../../LanguageSwitchDialogNew'
     ).then((mod) => mod.LanguageSwitchDialog),
   { ssr: false }
 )
@@ -87,27 +87,28 @@ export function LocalAppBar({
             </Box>
           </NextLink>
           <Box data-testid="MenuBox">
-            {watchLanguageSwitcher && (
-              <>
-                <IconButton
-                  color="inherit"
-                  aria-label="open language selector"
-                  data-testid="LanguageSelector"
-                  onClick={() => setOpenLanguagesDialog(true)}
-                  sx={{
-                    mr: 8
-                  }}
-                >
-                  <LanguageRoundedIcon
-                    sx={{ fontSize: 39, color: 'text.secondary' }}
-                  />
-                </IconButton>
-                <DynamicLanguageSwitchDialog
-                  open={openLanguagesDialog}
-                  handleClose={() => setOpenLanguagesDialog(false)}
+            {/* {watchLanguageSwitcher && ( */}
+            <>
+              <IconButton
+                color="inherit"
+                aria-label="open language selector"
+                data-testid="LanguageSelector"
+                onClick={() => setOpenLanguagesDialog(true)}
+                sx={{
+                  mr: 8,
+                  zIndex: (theme) => theme.zIndex.drawer + 1
+                }}
+              >
+                <LanguageRoundedIcon
+                  sx={{ fontSize: 39, color: 'text.secondary' }}
                 />
-              </>
-            )}
+              </IconButton>
+              <DynamicLanguageSwitchDialog
+                open={openLanguagesDialog}
+                handleClose={() => setOpenLanguagesDialog(false)}
+              />
+            </>
+            {/* )} */}
 
             <IconButton
               data-testid="MenuIcon"
