@@ -160,10 +160,12 @@ export class JourneyLevelActions {
         .first()
     ).toHaveAttribute('data-testid', 'bullet-active')
     for (let slide = 1; slide < slidesCount; slide++) {
-      await newPage
-        .locator('button[data-testid="ConductorNavigationButtonNext"]')
-        // eslint-disable-next-line playwright/no-force-option
-        .hover({ force: true })
+      const nextButton = newPage.locator(
+        'button[data-testid="ConductorNavigationButtonNext"]'
+      )
+      await nextButton.waitFor({ state: 'visible' })
+      await nextButton.scrollIntoViewIfNeeded()
+      await nextButton.hover()
       await newPage
         .locator('button[data-testid="ConductorNavigationButtonNext"]')
         .click()
@@ -200,24 +202,70 @@ export class JourneyLevelActions {
   }
 
   async clickSelectTeamDropDownIcon(): Promise<void> {
-    await this.page
-      .locator('div[role="dialog"] div[aria-haspopup="listbox"]')
-      .click()
+    const dropdown = this.page.locator(
+      'div[role="dialog"] div[aria-haspopup="listbox"]'
+    )
+    await dropdown.waitFor({ state: 'visible' })
+    await dropdown.click()
+
+    await expect(
+      this.page.locator('div[id="menu-teamSelect"] ul[role="listbox"]')
+    ).toBeVisible({ timeout: thirtySecondsTimeout })
   }
 
   async selectTeamToCopyTheJourney(): Promise<void> {
-    this.selectedTeam = await this.page
-      .locator('div[id="menu-teamSelect"] ul[role="listbox"] li')
-      .last()
-      .getAttribute('aria-label')
-    await this.page
-      .locator('div[id="menu-teamSelect"] ul[role="listbox"] li')
-      .last()
-      .click()
+    await expect(
+      this.page.locator('div[id="menu-teamSelect"] ul[role="listbox"]')
+    ).toBeVisible()
+
     await expect(
       this.page
         .locator('div[id="menu-teamSelect"] ul[role="listbox"] li')
         .first()
+    ).toBeVisible()
+
+    await this.page.waitForFunction(() => {
+      const items = document.querySelectorAll(
+        'div[id="menu-teamSelect"] ul[role="listbox"] li'
+      )
+      return items.length > 0
+    })
+
+    const menuItems = this.page.locator(
+      'div[id="menu-teamSelect"] ul[role="listbox"] li'
+    )
+
+    await menuItems.first().waitFor({ state: 'visible' })
+
+    const itemCount = await menuItems.count()
+
+    if (itemCount === 0) {
+      throw new Error('No team options found in dropdown')
+    }
+
+    const lastItem = menuItems.nth(itemCount - 1)
+
+    await lastItem.waitFor({ state: 'attached' })
+    await lastItem.waitFor({ state: 'visible' })
+
+    await lastItem.scrollIntoViewIfNeeded()
+
+    await expect(lastItem).toBeEnabled()
+
+    await expect(lastItem).toBeInViewport()
+
+    await this.page.waitForLoadState('domcontentloaded')
+
+    await expect(
+      this.page.locator('div[id="menu-teamSelect"] ul[role="listbox"]')
+    ).toBeVisible()
+
+    this.selectedTeam = await lastItem.getAttribute('aria-label')
+
+    await lastItem.click({ timeout: thirtySecondsTimeout })
+
+    await expect(
+      this.page.locator('div[id="menu-teamSelect"] ul[role="listbox"]')
     ).toBeHidden({ timeout: thirtySecondsTimeout })
   }
 
@@ -317,8 +365,9 @@ export class JourneyLevelActions {
         .locator("div[class *='MuiAutocomplete-popper'] li")
         .last()
         .waitFor({ state: 'attached' })
-      // eslint-disable-next-line playwright/no-wait-for-timeout
-      await this.page.waitForTimeout(600)
+
+      // Wait for the dropdown to stabilize after loading new items
+      await this.page.waitForLoadState('domcontentloaded')
       await expect(
         this.page.locator("div[class *='MuiAutocomplete-popper'] li").last()
       ).toBeAttached()
