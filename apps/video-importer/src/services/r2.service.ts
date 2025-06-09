@@ -8,13 +8,28 @@ import { CREATE_CLOUDFLARE_R2_ASSET } from './gql/mutations'
 import { getGraphQLClient } from './graphqlClient'
 
 const MULTIPART_THRESHOLD = 100 * 1024 * 1024 // 100MB
+const MULTIPART_PART_SIZE = 10 * 1024 * 1024 // 10MB
+
+if (!process.env.CLOUDFLARE_R2_ENDPOINT) {
+  throw new Error('R2_ENDPOINT environment variable is required')
+}
+if (!process.env.CLOUDFLARE_R2_ACCESS_KEY_ID) {
+  throw new Error(
+    'CLOUDFLARE_R2_ACCESS_KEY_ID environment variable is required'
+  )
+}
+if (!process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY) {
+  throw new Error(
+    'CLOUDFLARE_R2_SECRET_ACCESS_KEY environment variable is required'
+  )
+}
 
 const s3Client = new S3Client({
   region: 'auto',
-  endpoint: process.env.R2_ENDPOINT,
+  endpoint: process.env.CLOUDFLARE_R2_ENDPOINT,
   credentials: {
-    accessKeyId: process.env.CLOUDFLARE_R2_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY!
+    accessKeyId: process.env.CLOUDFLARE_R2_ACCESS_KEY_ID,
+    secretAccessKey: process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY
   }
 })
 
@@ -119,16 +134,22 @@ export async function uploadToR2({
 
   // Multipart upload for large files
   console.log('[R2 Service] Using multipart upload for large file.')
+  const multipartStream = createReadStream(filePath)
+  multipartStream.on('error', (err) => {
+    throw new Error(
+      `Failed to read file stream for multipart upload: ${err.message}`
+    )
+  })
   const upload = new Upload({
     client: s3Client,
     params: {
       Bucket: bucket,
       Key: key,
-      Body: createReadStream(filePath),
+      Body: multipartStream,
       ContentType: contentType
     },
-    queueSize: 4, // concurrency
-    partSize: 10 * 1024 * 1024 // 10MB
+    queueSize: 4,
+    partSize: MULTIPART_PART_SIZE
   })
   upload.on('httpUploadProgress', (progress) => {
     if (progress.loaded && progress.total) {
