@@ -24,7 +24,7 @@ program
 const options = program.opts()
 
 const VIDEO_FILENAME_REGEX =
-  /^([a-zA-Z0-9_-]+)---([a-zA-Z0-9_-]+)---([a-zA-Z0-9_-]+)\.mp4$/
+  /^([a-zA-Z0-9_-]+)---([a-zA-Z0-9_-]+)---([a-zA-Z0-9_-]+)(?:---[a-zA-Z0-9_-]+)*\.mp4$/
 
 async function main() {
   const runningInPkg = !!(process as any).pkg
