@@ -3,7 +3,6 @@ import { Theme } from '@mui/material/styles'
 import { getBaseDark, getBaseLight } from './base/theme'
 import { adminLight } from './journeysAdmin/theme'
 import { getJourneyUiDark, getJourneyUiLight } from './journeyUi/theme'
-import { watchDark } from './watch/theme'
 import { websiteDark, websiteLight } from './website/theme'
 
 export enum ThemeMode {
@@ -15,8 +14,7 @@ export enum ThemeName {
   base = 'base',
   website = 'website',
   journeyUi = 'journeyUi',
-  journeysAdmin = 'journeysAdmin',
-  watch = 'watch'
+  journeysAdmin = 'journeysAdmin'
 }
 
 interface ThemeProps {
@@ -38,8 +36,7 @@ export const getTheme = ({
       light: getJourneyUiLight(rtl, locale),
       dark: getJourneyUiDark(rtl, locale)
     },
-    website: { light: websiteLight, dark: websiteDark },
-    watch: { light: websiteLight, dark: watchDark }
+    website: { light: websiteLight, dark: websiteDark }
   }
 
   if (themeName === ThemeName.journeysAdmin) {
