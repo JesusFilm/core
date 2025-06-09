@@ -10,8 +10,8 @@ import { getGraphQLClient } from './graphqlClient'
 const MULTIPART_THRESHOLD = 100 * 1024 * 1024 // 100MB
 const MULTIPART_PART_SIZE = 10 * 1024 * 1024 // 10MB
 
-if (!process.env.CLOUDFLARE_R2_ENDPOINT) {
-  throw new Error('R2_ENDPOINT environment variable is required')
+if (!process.env.CLOUFLARE_R2_ENDPOINT) {
+  throw new Error('CLOUDFLARE_R2_ENDPOINT environment variable is required')
 }
 if (!process.env.CLOUDFLARE_R2_ACCESS_KEY_ID) {
   throw new Error(
