@@ -24,6 +24,7 @@ import { ShareDialog } from '../ShareDialog'
 import { BibleCitations } from './BibleCitations'
 import { ContentHero } from './ContentHero'
 import { ContentMetadata } from './ContentMetadata'
+import { ContentPageBlurFilter } from './ContentPageBlurFilter'
 import { DiscussionQuestions } from './DiscussionQuestions'
 import { VideoCarousel } from './VideoCarousel'
 
@@ -133,125 +134,94 @@ export function NewContentPage(): ReactElement {
         hideHeader
         hideFooter
       >
-        <Box
-          data-testid="ContentPage"
-          sx={{
-            backgroundColor: '#131111',
-            color: 'common.white',
-            position: 'relative',
-            minHeight: '100svh',
-            fontFamily: 'var(--font-sans)'
-          }}
-        >
-          <Box
-            data-testid="ContentPageBlurFilter"
-            sx={{
-              maxWidth: '1920px',
-              zIndex: 1,
-              mx: 'auto',
-              position: 'sticky',
-              height: '100vh',
-              top: 0,
-              bgcolor: 'rgba(0, 0, 0, 0.1)',
-              backdropFilter: 'brightness(.6) blur(40px)'
-            }}
+        <ContentPageBlurFilter>
+          <VideoCarousel
+            videos={realChildren}
+            containerSlug={container?.slug ?? videoSlug}
+            activeVideoId={id}
           />
-          <Box
-            data-testid="ContentPageContainer"
+          <Stack
+            data-testid="ContentPageContent"
+            gap={10}
             sx={{
+              py: 10,
+              zIndex: 1,
+              px: { xs: 4, sm: 6, md: 8, lg: 10, xl: 12 },
+              maxWidth: '1920px',
               width: '100%',
-              mt: '-100vh',
               mx: 'auto'
             }}
           >
-            <VideoCarousel
-              videos={realChildren}
-              containerSlug={container?.slug ?? videoSlug}
-              activeVideoId={id}
-            />
-            <Stack
-              data-testid="ContentPageContent"
-              gap={10}
+            <Box
               sx={{
-                py: 10,
+                display: 'grid',
+                gridTemplateColumns: { xs: '1fr', xl: '3fr 2fr' },
+                flexWrap: 'wrap',
                 zIndex: 1,
-                px: { xs: 4, sm: 6, md: 8, lg: 10, xl: 12 },
-                maxWidth: '1920px',
-                width: '100%',
-                mx: 'auto'
+                gap: 10
               }}
             >
-              <Box
-                sx={{
-                  display: 'grid',
-                  gridTemplateColumns: { xs: '1fr', xl: '3fr 2fr' },
-                  flexWrap: 'wrap',
-                  zIndex: 1,
-                  gap: 10
-                }}
-              >
-                <ContentMetadata
-                  title={title[0].value}
-                  description={description[0].value}
-                  label={label}
-                />
-                <DiscussionQuestions questions={questions} />
-              </Box>
-              <Stack
-                sx={{
-                  zIndex: 1
-                }}
-                direction="row"
-                spacing={2}
-                justifyContent="space-between"
-              >
-                <h3 className="text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-red-100/70">
-                  {t('Bible Quotes')}
-                </h3>
-                <Stack direction="row" spacing={2}>
-                  <Button
-                    size="xsmall"
-                    startIcon={<LinkExternal sx={{ fontSize: 16 }} />}
-                    onClick={() => setShowShare(true)}
-                    sx={xsmallStyles}
-                  >
-                    {t('Share')}
-                  </Button>
-                  <Button
-                    size="xsmall"
-                    startIcon={<Download2 sx={{ fontSize: 16 }} />}
-                    onClick={() => setShowDownload(true)}
-                    sx={xsmallStyles}
-                  >
-                    {t('Download')}
-                  </Button>
-                </Stack>
-                <DownloadDialog
-                  open={showDownload}
-                  onClose={() => setShowDownload(false)}
-                />
-                <ShareDialog
-                  open={showShare}
-                  onClose={() => setShowShare(false)}
-                />
+              <ContentMetadata
+                title={title[0].value}
+                description={description[0].value}
+                label={label}
+              />
+              <DiscussionQuestions questions={questions} />
+            </Box>
+            <Stack
+              sx={{
+                zIndex: 1
+              }}
+              direction="row"
+              spacing={2}
+              justifyContent="space-between"
+            >
+              <h3 className="text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-red-100/70">
+                {t('Bible Quotes')}
+              </h3>
+              <Stack direction="row" spacing={2}>
+                <Button
+                  size="xsmall"
+                  startIcon={<LinkExternal sx={{ fontSize: 16 }} />}
+                  onClick={() => setShowShare(true)}
+                  sx={xsmallStyles}
+                >
+                  {t('Share')}
+                </Button>
+                <Button
+                  size="xsmall"
+                  startIcon={<Download2 sx={{ fontSize: 16 }} />}
+                  onClick={() => setShowDownload(true)}
+                  sx={xsmallStyles}
+                >
+                  {t('Download')}
+                </Button>
               </Stack>
-              <BibleCitations
-                bibleCitations={bibleCitations}
-                freeResource={{
-                  heading: t('Free Resources'),
-                  text: t(
-                    'Want to grow deep in your understanding of the Bible?'
-                  ),
-                  cta: {
-                    icon: Bible,
-                    label: t('Join Our Bible Study'),
-                    onClick: handleFreeResourceClick
-                  }
-                }}
+              <DownloadDialog
+                open={showDownload}
+                onClose={() => setShowDownload(false)}
+              />
+              <ShareDialog
+                open={showShare}
+                onClose={() => setShowShare(false)}
               />
             </Stack>
-          </Box>
-        </Box>
+            <BibleCitations
+              bibleCitations={bibleCitations}
+              freeResource={{
+                heading: t('Free Resources'),
+                text: t(
+                  'Want to grow deep in your understanding of the Bible?'
+                ),
+                cta: {
+                  icon: Bible,
+                  label: t('Join Our Bible Study'),
+                  onClick: handleFreeResourceClick
+                }
+              }}
+            />
+          </Stack>
+        </ContentPageBlurFilter>
       </PageWrapper>
     </>
   )
