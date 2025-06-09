@@ -110,6 +110,7 @@ export function JourneyCardMenu({
 }: JourneyCardMenuProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const [open, setOpen] = useState<boolean | null>(null)
+  const [showMenuContent, setShowMenuContent] = useState<boolean>(false)
 
   const [openAccessDialog, setOpenAccessDialog] = useState<
     boolean | undefined
@@ -154,11 +155,16 @@ export function JourneyCardMenu({
       }
     }
     setOpen(true)
+    setShowMenuContent(true)
   }
   const handleCloseMenu = (): void => {
     setAnchorEl(null)
     setOpen(false)
     onMenuClose?.()
+  }
+
+  const handleMenuExited = (): void => {
+    setShowMenuContent(false)
   }
 
   const handleKeepMounted = (): void => {
@@ -210,6 +216,9 @@ export function JourneyCardMenu({
         open={open ?? false}
         onClose={handleCloseMenu}
         keepMounted={keepMounted}
+        TransitionProps={{
+          onExited: handleMenuExited
+        }}
         MenuListProps={{
           'aria-labelledby': 'journey-actions'
         }}
@@ -225,7 +234,7 @@ export function JourneyCardMenu({
       >
         {status === JourneyStatus.trashed
           ? TrashMenuComponent &&
-            open && (
+            showMenuContent && (
               <TrashMenuComponent
                 setOpenRestoreDialog={() => setOpenRestoreDialog(true)}
                 setOpenDeleteDialog={() => setOpenDeleteDialog(true)}
@@ -233,7 +242,7 @@ export function JourneyCardMenu({
               />
             )
           : DefaultMenuComponent &&
-            open && (
+            showMenuContent && (
               <DefaultMenuComponent
                 id={id}
                 status={status}
