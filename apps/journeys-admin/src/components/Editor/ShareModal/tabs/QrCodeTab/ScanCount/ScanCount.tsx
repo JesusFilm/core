@@ -69,9 +69,7 @@ export function ScanCount({ shortLinkId }: ScanCountProps): ReactElement {
     return () => debouncedQuery.cancel()
   }, [shortLinkId, journey, debouncedQuery, loadPlausibleVisitors])
 
-  console.log('data', data)
   const scans = data?.journeysPlausibleStatsAggregate?.visitors?.value ?? 0
-  console.log('scans', scans)
   const scanCount = scans === 1 ? t('1 scan') : t('{{scans}} scans', { scans })
   const showLoading =
     loading ||

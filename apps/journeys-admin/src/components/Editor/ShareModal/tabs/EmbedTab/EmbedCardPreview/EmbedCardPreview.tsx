@@ -38,14 +38,6 @@ export function EmbedCardPreview({
     return iframeSlug ? `${embedBaseUrl}/embed/${iframeSlug}` : null
   }, [embedBaseUrl, iframeSlug])
 
-  // Debug information
-  console.log('EmbedCardPreview Debug:', {
-    journey: journey?.id,
-    slug: journey?.slug,
-    iframeSrc,
-    embedBaseUrl
-  })
-
   // Consistent dimensions to prevent layout shift
   const dimensions = {
     width: 130,
