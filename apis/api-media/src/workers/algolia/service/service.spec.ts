@@ -6,7 +6,7 @@ import { VideoVariant } from '.prisma/api-media-client'
 import { prismaMock } from '../../../../test/prismaMock'
 
 import { LANGUAGES_TO_INCLUDE } from './languages'
-import { GET_LANGUAGES, apollo } from './service'
+import { GET_LANGUAGES } from './service'
 
 import { service } from '.'
 
@@ -14,37 +14,48 @@ const saveObjectsSpy = jest
   .fn()
   .mockReturnValue({ wait: jest.fn().mockResolvedValue({}) })
 
+const mockQuery = jest.fn().mockResolvedValue({
+  data: {
+    languages: [
+      {
+        id: '21754',
+        name: [
+          {
+            value: 'Chinese, Simplified',
+            primary: false,
+            language: {
+              id: '529'
+            }
+          },
+          {
+            value: '简体中文',
+            primary: true,
+            language: {
+              id: '21754'
+            }
+          }
+        ]
+      }
+    ]
+  }
+})
+
+const mockClearStore = jest.fn().mockResolvedValue({})
+const mockCacheReset = jest.fn().mockResolvedValue({})
+const mockStop = jest.fn().mockResolvedValue({})
+
 jest.mock('@apollo/client', () => {
   const originalModule = jest.requireActual('@apollo/client')
   return {
     ...originalModule,
     __esModule: true,
     ApolloClient: jest.fn().mockImplementation(() => ({
-      query: jest.fn().mockResolvedValue({
-        data: {
-          languages: [
-            {
-              id: '21754',
-              name: [
-                {
-                  value: 'Chinese, Simplified',
-                  primary: false,
-                  language: {
-                    id: '529'
-                  }
-                },
-                {
-                  value: '简体中文',
-                  primary: true,
-                  language: {
-                    id: '21754'
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      })
+      query: mockQuery,
+      clearStore: mockClearStore,
+      cache: {
+        reset: mockCacheReset
+      },
+      stop: mockStop
     })),
     InMemoryCache: jest.fn()
   }
@@ -116,8 +127,14 @@ describe('algolia/service', () => {
         ])
         .mockResolvedValueOnce([])
 
+      prismaMock.video.count.mockResolvedValueOnce(0)
+      prismaMock.video.findMany.mockResolvedValueOnce([])
+
       await service()
-      expect(apollo.query).toHaveBeenCalledWith({ query: GET_LANGUAGES })
+      expect(mockQuery).toHaveBeenCalledWith({
+        query: GET_LANGUAGES,
+        fetchPolicy: 'no-cache'
+      })
       expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith({
         take: 1000,
         skip: 0,
@@ -159,6 +176,18 @@ describe('algolia/service', () => {
             slug: 'slug',
             subtitles: ['21754'],
             titles: ['title2', 'title'],
+            titlesWithLanguages: [
+              {
+                value: 'title2',
+                languageId: '529'
+                // bcp47: ''
+              },
+              {
+                value: 'title',
+                languageId: '555'
+                // bcp47: ''
+              }
+            ],
             videoId: 'videoId',
             manualRanking: 1
           }
@@ -173,6 +202,8 @@ describe('algolia/service', () => {
       process.env.ALGOLIA_INDEX_VIDEO_VARIANTS = 'video-variants-prd'
       process.env.ALGOLIA_INDEX_VIDEOS = 'videos'
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([])
+      prismaMock.video.count.mockResolvedValueOnce(0)
+      prismaMock.video.findMany.mockResolvedValueOnce([])
       await service()
       expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith({
         take: 1000,

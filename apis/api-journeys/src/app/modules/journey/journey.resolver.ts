@@ -594,6 +594,9 @@ export class JourneyResolver {
                 publishedAt: new Date(),
                 featuredAt: null,
                 template: false,
+                fromTemplateId: journey.template
+                  ? id
+                  : (journey.fromTemplateId ?? null),
                 team: { connect: { id: teamId } },
                 userJourneys: {
                   create: {
