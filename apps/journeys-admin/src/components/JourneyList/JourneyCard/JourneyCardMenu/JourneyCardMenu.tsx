@@ -129,28 +129,30 @@ export function JourneyCardMenu({
   >()
   const [keepMounted, setKeepMounted] = useState<boolean>(false)
 
-  const [DefaultMenuComponent, setDefaultMenuComponent] = useState<any>(null)
-  const [TrashMenuComponent, setTrashMenuComponent] = useState<any>(null)
+  const [DefaultMenuItemsComponent, setDefaultMenuItemsComponent] =
+    useState<any>(null)
+  const [TrashMenuItemsComponent, setTrashMenuItemsComponent] =
+    useState<any>(null)
 
   const handleOpenMenu = async (
     event: React.MouseEvent<HTMLElement>
   ): Promise<void> => {
     setAnchorEl(event.currentTarget)
     if (status === JourneyStatus.trashed) {
-      if (TrashMenuComponent == null) {
+      if (TrashMenuItemsComponent == null) {
         const mod = await import(
           /* webpackChunkName: "TrashMenu" */
           './TrashMenu'
         )
-        setTrashMenuComponent(() => mod.TrashMenu)
+        setTrashMenuItemsComponent(() => mod.TrashMenu)
       }
     } else {
-      if (DefaultMenuComponent == null) {
+      if (DefaultMenuItemsComponent == null) {
         const mod = await import(
           /* webpackChunkName: "DefaultMenu" */
           './DefaultMenu'
         )
-        setDefaultMenuComponent(() => mod.DefaultMenu)
+        setDefaultMenuItemsComponent(() => mod.DefaultMenu)
       }
     }
     setOpen(true)
@@ -224,15 +226,15 @@ export function JourneyCardMenu({
         data-testid="JourneyCardMenu"
       >
         {status === JourneyStatus.trashed
-          ? TrashMenuComponent && (
-              <TrashMenuComponent
+          ? TrashMenuItemsComponent && (
+              <TrashMenuItemsComponent
                 setOpenRestoreDialog={() => setOpenRestoreDialog(true)}
                 setOpenDeleteDialog={() => setOpenDeleteDialog(true)}
                 handleCloseMenu={handleCloseMenu}
               />
             )
-          : DefaultMenuComponent && (
-              <DefaultMenuComponent
+          : DefaultMenuItemsComponent && (
+              <DefaultMenuItemsComponent
                 id={id}
                 status={status}
                 slug={slug}
