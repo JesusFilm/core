@@ -66,6 +66,7 @@ interface DefaultMenuProps {
   setOpenDetailsDialog: () => void
   setOpenTranslateDialog: () => void
   handleKeepMounted?: () => void
+  setOpenCopyToTeamDialog: () => void
   template?: boolean
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
 }
@@ -88,6 +89,7 @@ interface DefaultMenuProps {
  * @param {() => void} props.setOpenDetailsDialog - Function to open the journey details dialog
  * @param {() => void} props.setOpenTranslateDialog - Function to open the translate dialog
  * @param {() => void} [props.handleKeepMounted] - Optional function to handle keeping the component mounted
+ * @param {() => void} props.setOpenCopyToTeamDialog - Function to open the copy to team dialog
  * @param {boolean} [props.template] - Whether the journey is a template, affects available menu options
  * @param {() => Promise<ApolloQueryResult<GetAdminJourneys>>} [props.refetch] - Optional function to refetch journey data after operations
  * @returns {ReactElement} The rendered menu component with conditional menu items based on user permissions
@@ -105,6 +107,7 @@ export function DefaultMenu({
   setOpenDetailsDialog,
   setOpenTranslateDialog,
   handleKeepMounted,
+  setOpenCopyToTeamDialog,
   template,
   refetch
 }: DefaultMenuProps): ReactElement {
@@ -229,9 +232,8 @@ export function DefaultMenu({
 
       <Divider />
       <CopyToTeamMenuItem
-        id={id}
         handleCloseMenu={handleCloseMenu}
-        handleKeepMounted={handleKeepMounted}
+        setOpenCopyToTeamDialog={setOpenCopyToTeamDialog}
         journey={journey}
       />
       {activeTeam != null && (

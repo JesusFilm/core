@@ -3,8 +3,11 @@ import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import dynamic from 'next/dynamic'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
+import { CopyToTeamDialog } from '@core/journeys/ui/CopyToTeamDialog'
+import { useJourneyDuplicateAndTranslate } from '@core/journeys/ui/useJourneyDuplicateAndTranslate'
 import MoreIcon from '@core/shared/ui/icons/More'
 
 import {
@@ -84,6 +87,11 @@ const TranslateJourneyDialog = dynamic(
     ).then((mod) => mod.TranslateJourneyDialog),
   { ssr: false }
 )
+interface JourneyLanguage {
+  id: string
+  localName?: string
+  nativeName?: string
+}
 
 export interface JourneyCardMenuProps {
   id: string
@@ -126,6 +134,7 @@ export function JourneyCardMenu({
   hovered,
   onMenuClose
 }: JourneyCardMenuProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
 
@@ -145,6 +154,9 @@ export function JourneyCardMenu({
   const [openTranslateDialog, setOpenTranslateDialog] = useState<
     boolean | undefined
   >()
+  const [openCopyToTeamDialog, setOpenCopyToTeamDialog] = useState<
+    boolean | undefined
+  >()
   const [keepMounted, setKeepMounted] = useState<boolean>(false)
 
   const handleOpenMenu = (event: React.MouseEvent<HTMLElement>): void => {
@@ -157,6 +169,33 @@ export function JourneyCardMenu({
 
   const handleKeepMounted = (): void => {
     setKeepMounted(true)
+  }
+
+  const { duplicateAndTranslate, loading } = useJourneyDuplicateAndTranslate({
+    journeyId: journey?.id,
+    journeyTitle: journey?.title ?? '',
+    journeyLanguageName:
+      journey?.language.name.find(({ primary }) => primary)?.value ?? '',
+    onSuccess: () => {
+      setOpenCopyToTeamDialog(false)
+    },
+    onError: () => {
+      setOpenCopyToTeamDialog(false)
+    }
+  })
+
+  const handleDuplicateJourney = async (
+    teamId: string,
+    selectedLanguage?: JourneyLanguage,
+    showTranslation?: boolean
+  ): Promise<void> => {
+    if (id == null || journey == null) return
+
+    await duplicateAndTranslate({
+      teamId,
+      selectedLanguage,
+      shouldTranslate: showTranslation
+    })
   }
 
   return (
@@ -236,6 +275,7 @@ export function JourneyCardMenu({
             setOpenTrashDialog={() => setOpenTrashDialog(true)}
             setOpenDetailsDialog={() => setOpenDetailsDialog(true)}
             setOpenTranslateDialog={() => setOpenTranslateDialog(true)}
+            setOpenCopyToTeamDialog={() => setOpenCopyToTeamDialog(true)}
             template={template}
             refetch={refetch}
           />
@@ -285,6 +325,16 @@ export function JourneyCardMenu({
           open={openTranslateDialog}
           onClose={() => setOpenTranslateDialog(false)}
           journey={journey}
+        />
+      )}
+      {openCopyToTeamDialog != null && (
+        <CopyToTeamDialog
+          title={t('Copy to Another Team')}
+          submitLabel={t('Copy')}
+          open={openCopyToTeamDialog}
+          onClose={() => setOpenCopyToTeamDialog(false)}
+          submitAction={handleDuplicateJourney}
+          loading={loading}
         />
       )}
     </>
