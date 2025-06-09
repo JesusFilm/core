@@ -127,7 +127,14 @@ async function main() {
 
       console.log('      R2 Public URL:', r2Asset.publicUrl)
       console.log('   📤 Uploading to R2...')
-      await uploadToR2(r2Asset.uploadUrl, filePath, contentType, contentLength)
+      await uploadToR2({
+        uploadUrl: r2Asset.uploadUrl,
+        bucket: process.env.CLOUDFLARE_R2_BUCKET!,
+        key: originalFilename,
+        filePath,
+        contentType,
+        contentLength
+      })
 
       console.log('   🎞️  Preparing Mux asset...')
       const muxVideo = await createAndWaitForMuxVideo(r2Asset.publicUrl)
