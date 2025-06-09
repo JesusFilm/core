@@ -2,6 +2,7 @@ import { gql, useMutation } from '@apollo/client'
 import TabPanel from '@mui/lab/TabPanel'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import FormHelperText from '@mui/material/FormHelperText'
 import Skeleton from '@mui/material/Skeleton'
 import type { Theme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
@@ -266,20 +267,27 @@ export function LinkTab({ journey, hostname }: LinkTabProps): ReactElement {
                           shrink: true
                         }
                       }}
-                      helperText={
-                        values.slug !== '' ? (
-                          <>
-                            {hostname != null
-                              ? `https://${hostname}`
-                              : (process.env.NEXT_PUBLIC_JOURNEYS_URL ??
-                                'https://your.nextstep.is')}
-                            /<strong>{values.slug}</strong>
-                          </>
-                        ) : (
-                          (errors.slug as string)
-                        )
-                      }
                     />
+                    <FormHelperText
+                      sx={{
+                        whiteSpace: 'normal',
+                        wordWrap: 'break-word',
+                        wordBreak: 'break-word',
+                        maxWidth: '100%'
+                      }}
+                    >
+                      {values.slug !== '' ? (
+                        <>
+                          {hostname != null
+                            ? `https://${hostname}`
+                            : (process.env.NEXT_PUBLIC_JOURNEYS_URL ??
+                              'https://your.nextstep.is')}
+                          /<strong>{values.slug}</strong>
+                        </>
+                      ) : (
+                        (errors.slug as string)
+                      )}
+                    </FormHelperText>
                   </Form>
 
                   {/* Mobile buttons below Form */}

@@ -133,7 +133,8 @@ export function EmbedTab({ journey }: EmbedTabProps): ReactElement {
           flexDirection: { xs: 'column', sm: 'row' },
           alignItems: 'center',
           justifyContent: 'space-between',
-          gap: { xs: 2, sm: 0 }
+          gap: { xs: 2, sm: 0 },
+          pt: 5
         }}
       >
         <Box

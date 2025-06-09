@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box'
-import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement, useState } from 'react'
@@ -12,15 +11,6 @@ import { JourneyFields as JourneyFromContext } from '../../../../../../__generat
 import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
 import { ShareModal } from '../../../ShareModal'
 import { Item } from '../Item/Item'
-
-const QrCodeDialog = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "Editor/EditorToolbar/ShareButton/QrCodeDialog" */
-      './QrCodeDialog'
-    ).then((mod) => mod.QrCodeDialog),
-  { ssr: false }
-)
 
 interface ShareItemProps {
   variant: ComponentProps<typeof Item>['variant']

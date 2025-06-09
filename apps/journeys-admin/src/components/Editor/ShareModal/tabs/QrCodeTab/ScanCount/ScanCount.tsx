@@ -13,8 +13,8 @@ import BarChartSquare3Icon from '@core/shared/ui/icons/BarChartSquare3'
 import {
   GetPlausibleJourneyQrCodeScans,
   GetPlausibleJourneyQrCodeScansVariables
-} from '../../../../../../../../__generated__/GetPlausibleJourneyQrCodeScans'
-import { earliestStatsCollected } from '../../../../../Slider/JourneyFlow/AnalyticsOverlaySwitch'
+} from '../../../../../../../__generated__/GetPlausibleJourneyQrCodeScans'
+import { earliestStatsCollected } from '../../../../Slider/JourneyFlow/AnalyticsOverlaySwitch'
 
 export const GET_PLAUSIBLE_JOURNEY_QR_CODE_SCANS = gql`
   query GetPlausibleJourneyQrCodeScans(
@@ -47,6 +47,7 @@ export function ScanCount({ shortLinkId }: ScanCountProps): ReactElement {
     GetPlausibleJourneyQrCodeScansVariables
   >(GET_PLAUSIBLE_JOURNEY_QR_CODE_SCANS)
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedQuery = useCallback(
     debounce((journeyId?: string, shortLinkId?: string) => {
       if (journeyId != null && shortLinkId != null) {
@@ -68,7 +69,9 @@ export function ScanCount({ shortLinkId }: ScanCountProps): ReactElement {
     return () => debouncedQuery.cancel()
   }, [shortLinkId, journey, debouncedQuery, loadPlausibleVisitors])
 
+  console.log('data', data)
   const scans = data?.journeysPlausibleStatsAggregate?.visitors?.value ?? 0
+  console.log('scans', scans)
   const scanCount = scans === 1 ? t('1 scan') : t('{{scans}} scans', { scans })
   const showLoading =
     loading ||

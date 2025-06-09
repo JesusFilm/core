@@ -96,7 +96,7 @@ export function ShareModal({
         dialogTitle={{ title: t('Share This Journey'), closeButton: true }}
         sx={{
           '& .MuiDialogContent-root': {
-            paddingBottom: 0
+            paddingBottom: 4
           }
         }}
       >
@@ -113,6 +113,11 @@ export function ShareModal({
       onClose={onClose}
       onOpen={() => {
         // SwipeableDrawer requires onOpen for accessibility
+      }}
+      PaperProps={{
+        style: {
+          minHeight: '75vh'
+        }
       }}
       disableSwipeToOpen={false}
       sx={{
