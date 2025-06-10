@@ -1,11 +1,16 @@
+import { AutocompleteRenderInputParams } from '@mui/material/Autocomplete'
+import ListItem from '@mui/material/ListItem'
+import { ThemeProvider } from '@mui/material/styles'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useRef, useState } from 'react'
+import { ListChildComponentProps } from 'react-window'
 
-import ChevronDown from '@core/shared/ui/icons/ChevronDown'
-import ChevronUp from '@core/shared/ui/icons/ChevronUp'
-import Globe from '@core/shared/ui/icons/Globe'
-import MediaStrip1 from '@core/shared/ui/icons/MediaStrip1'
-import Type3 from '@core/shared/ui/icons/Type3'
+import { SiteLanguageSelect } from './SiteLanguageSelect'
+import { AudioTrackSelect } from './AudioTrackSelect'
+import { SubtitlesSelect } from './SubtitlesSelect'
+import { websiteLight } from 'libs/shared/ui/src/libs/themes/website/theme'
 
 interface LanguageSwitchDialogProps {
   open: boolean
@@ -112,359 +117,149 @@ export function LanguageSwitchDialog({
     (lang) => lang.code === selectedLanguage
   )?.name
 
+  // Custom renderInput for all selects
+  const renderInput =
+    (helperText?: string) => (params: AutocompleteRenderInputParams) => (
+      <TextField
+        {...params}
+        hiddenLabel
+        variant="filled"
+        helperText={helperText}
+        data-testid="LanguageSwitchDialog-Select"
+      />
+    )
+
+  // Custom renderOption for all selects
+  const renderOption = (props: ListChildComponentProps) => {
+    const { data, index, style } = props
+    const { id, localName, nativeName } = data[index][1]
+    const { key, ...optionProps } = data[index][0]
+    return (
+      <ListItem
+        {...optionProps}
+        key={id}
+        style={style}
+        tabIndex={1}
+        sx={{
+          display: 'block',
+          cursor: 'pointer',
+          '&:hover': {
+            backgroundColor: '#f3f4f6' // Tailwind's gray-100
+          }
+        }}
+      >
+        <Typography variant="h6">{localName ?? nativeName}</Typography>
+        {localName != null && nativeName != null && (
+          <Typography variant="body2" color="text.secondary">
+            {nativeName}
+          </Typography>
+        )}
+      </ListItem>
+    )
+  }
+
   return !open ? (
     <></>
   ) : (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-gray-900/10 backdrop-blur-sm transition-opacity"
-        onClick={handleClose}
-        aria-hidden="true"
-      />
-
-      {/* Dialog */}
-      <div className="flex min-h-full items-center justify-center p-4">
+    <ThemeProvider theme={websiteLight}>
+      <div className="fixed inset-0 z-50 overflow-y-auto">
+        {/* Backdrop */}
         <div
-          className="relative w-full max-w-md transform rounded-lg bg-white shadow-xl transition-all"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="dialog-title"
-        >
-          <div className="absolute right-4 top-4">
-            <button
-              onClick={handleClose}
-              className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-              aria-label="Close dialog"
-            >
-              <span className="sr-only">{t('Close')}</span>
-              <svg
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
+          className="fixed inset-0 bg-gray-900/10 backdrop-blur-sm transition-opacity"
+          onClick={handleClose}
+          aria-hidden="true"
+        />
 
-          <div className="mt-8 mb-6 mx-6">
-            <h3
-              id="dialog-title"
-              className="text-lg font-medium leading-6 text-gray-900"
-            >
-              {t('Language Settings')}
-            </h3>
-            <div className="mt-6">
-              <label
-                htmlFor="language-select"
-                className="block text-sm font-medium text-gray-700 ml-7"
+        {/* Dialog */}
+        <div className="flex min-h-full items-center justify-center p-4">
+          <div
+            className="relative w-full max-w-md transform rounded-lg bg-white shadow-xl transition-all"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="dialog-title"
+          >
+            <div className="mt-8 mb-6 flex items-center justify-between">
+              <h3
+                id="dialog-title"
+                className="text-lg font-medium leading-6 text-gray-900 mx-6"
               >
-                {t('Site Language')}
-              </label>
-              <div
-                className="relative mt-1 flex items-center gap-2"
-                ref={languageDropdownRef}
+                {t('Language Settings')}
+              </h3>
+              <button
+                onClick={handleClose}
+                className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 mx-6"
+                aria-label="Close dialog"
               >
-                <Globe fontSize="small" />
-                <div className="relative w-full">
-                  <button
-                    type="button"
-                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    className="w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 sm:text-sm flex items-center"
-                    aria-haspopup="listbox"
-                    aria-expanded={isDropdownOpen}
-                    aria-labelledby="language-select-label"
-                  >
-                    <span className="block truncate flex-1">
-                      {selectedLanguageName}
-                    </span>
-                    <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                      {isDropdownOpen ? (
-                        <ChevronUp fontSize="small" color="inherit" />
-                      ) : (
-                        <ChevronDown fontSize="small" color="inherit" />
-                      )}
-                    </span>
-                  </button>
-
-                  {isDropdownOpen && (
-                    <ul
-                      className="absolute z-[100] left-0 top-full mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
-                      role="listbox"
-                      aria-labelledby="language-select-label"
-                    >
-                      {languages.map((language) => (
-                        <li
-                          key={language.code}
-                          className={`relative cursor-default select-none py-2 pl-3 pr-9 hover:bg-gray-100 ${
-                            language.code === selectedLanguage
-                              ? 'bg-gray-50'
-                              : ''
-                          }`}
-                          role="option"
-                          aria-selected={language.code === selectedLanguage}
-                          onClick={() => {
-                            setSelectedLanguage(language.code)
-                            setIsDropdownOpen(false)
-                          }}
-                        >
-                          <span
-                            className={`block truncate ${
-                              language.code === selectedLanguage
-                                ? 'font-medium'
-                                : 'font-normal'
-                            }`}
-                          >
-                            {language.name}
-                          </span>
-                          {language.code === selectedLanguage && (
-                            <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-600">
-                              <svg
-                                className="h-5 w-5"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                            </span>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-          <hr className="border-t border-gray-200 w-full" />
-          <div className="mt-6 mx-6">
-            {/* Audio Track Select */}
-            <div className="mb-4">
-              <div className="flex items-center justify-between">
-                <label
-                  htmlFor="audio-select"
-                  className="block text-sm font-medium text-gray-700 ml-7"
+                <span className="sr-only">{t('Close')}</span>
+                <svg
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
                 >
-                  {t('Audio Track')}
-                </label>
-                <span className="text-sm text-gray-400 opacity-60">
-                  {
-                    audioTracks.find((track) => track.code === selectedAudio)
-                      ?.name
-                  }
-                </span>
-              </div>
-              <div
-                className="relative mt-1 flex items-center gap-2"
-                ref={audioDropdownRef}
-              >
-                <MediaStrip1 fontSize="small" />
-                <div className="relative w-full">
-                  <button
-                    type="button"
-                    onClick={() => setIsAudioDropdownOpen(!isAudioDropdownOpen)}
-                    className="w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 sm:text-sm flex items-center"
-                    aria-haspopup="listbox"
-                    aria-expanded={isAudioDropdownOpen}
-                    aria-labelledby="audio-select-label"
-                  >
-                    <span className="block truncate flex-1">
-                      {
-                        audioTracks.find(
-                          (track) => track.code === selectedAudio
-                        )?.name
-                      }
-                    </span>
-                    <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                      {isAudioDropdownOpen ? (
-                        <ChevronUp fontSize="small" color="inherit" />
-                      ) : (
-                        <ChevronDown fontSize="small" color="inherit" />
-                      )}
-                    </span>
-                  </button>
-
-                  {isAudioDropdownOpen && (
-                    <ul
-                      className="absolute z-[100] left-0 top-full mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
-                      role="listbox"
-                      aria-labelledby="audio-select-label"
-                    >
-                      {audioTracks.map((track) => (
-                        <li
-                          key={track.code}
-                          className={`relative cursor-default select-none py-2 pl-3 pr-9 hover:bg-gray-100 ${
-                            track.code === selectedAudio ? 'bg-gray-50' : ''
-                          }`}
-                          role="option"
-                          aria-selected={track.code === selectedAudio}
-                          onClick={() => {
-                            setSelectedAudio(track.code)
-                            setIsAudioDropdownOpen(false)
-                          }}
-                        >
-                          <span
-                            className={`block truncate ${
-                              track.code === selectedAudio
-                                ? 'font-medium'
-                                : 'font-normal'
-                            }`}
-                          >
-                            {track.name}
-                          </span>
-                          {track.code === selectedAudio && (
-                            <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-600">
-                              <svg
-                                className="h-5 w-5"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                            </span>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Subtitles Select */}
-            <div className="mb-4">
-              <div className="flex items-center justify-between">
-                <label
-                  htmlFor="subtitle-select"
-                  className="block text-sm font-medium text-gray-700 ml-7"
-                >
-                  {t('Subtitles')}
-                </label>
-                <div className="flex items-center">
-                  <input
-                    id="no-subtitles-checkbox"
-                    type="checkbox"
-                    checked={noSubtitles}
-                    onChange={() => setNoSubtitles((prev) => !prev)}
-                    className="h-4 w-4 rounded border-gray-300 text-gray-900 focus:ring-2 focus:ring-gray-400"
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
                   />
-                  <label
-                    htmlFor="no-subtitles-checkbox"
-                    className="ml-2 text-sm text-gray-700"
-                  >
-                    {noSubtitles ? t('On') : t('Off')}
-                  </label>
-                </div>
-              </div>
-              <div
-                className="relative mt-1 flex items-center gap-2"
-                ref={subtitleDropdownRef}
-              >
-                <Type3 fontSize="small" />
-                <div className="relative w-full">
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setIsSubtitleDropdownOpen(!isSubtitleDropdownOpen)
-                    }
-                    className={`w-full rounded-md border border-gray-300 py-2 pl-3 pr-10 text-left shadow-sm focus:border-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 sm:text-sm flex items-center ${!noSubtitles ? 'bg-gray-100 text-gray-400 cursor-not-allowed opacity-60' : 'bg-white cursor-default'}`}
-                    aria-haspopup="listbox"
-                    aria-expanded={isSubtitleDropdownOpen}
-                    aria-labelledby="subtitle-select-label"
-                    disabled={!noSubtitles}
-                  >
-                    <span className="block truncate flex-1">
-                      {
-                        subtitles.find((sub) => sub.code === selectedSubtitle)
-                          ?.name
-                      }
-                    </span>
-                    <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                      {isSubtitleDropdownOpen ? (
-                        <ChevronUp fontSize="small" color="inherit" />
-                      ) : (
-                        <ChevronDown fontSize="small" color="inherit" />
-                      )}
-                    </span>
-                  </button>
-                  {isSubtitleDropdownOpen && noSubtitles && (
-                    <ul
-                      className="absolute z-[100] left-0 top-full mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
-                      role="listbox"
-                      aria-labelledby="subtitle-select-label"
-                    >
-                      {subtitles.map((sub) => (
-                        <li
-                          key={sub.code}
-                          className={`relative cursor-default select-none py-2 pl-3 pr-9 hover:bg-gray-100 ${
-                            sub.code === selectedSubtitle ? 'bg-gray-50' : ''
-                          }`}
-                          role="option"
-                          aria-selected={sub.code === selectedSubtitle}
-                          onClick={() => {
-                            setSelectedSubtitle(sub.code)
-                            setIsSubtitleDropdownOpen(false)
-                          }}
-                        >
-                          <span
-                            className={`block truncate ${
-                              sub.code === selectedSubtitle
-                                ? 'font-medium'
-                                : 'font-normal'
-                            }`}
-                          >
-                            {sub.name}
-                          </span>
-                          {sub.code === selectedSubtitle && (
-                            <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-600">
-                              <svg
-                                className="h-5 w-5"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                            </span>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              </div>
+                </svg>
+              </button>
             </div>
-          </div>
-          <div className="mt-8 mx-6 mb-6 flex justify-end">
-            <button
-              type="button"
-              onClick={handleClose}
-              className="inline-flex items-center rounded-md bg-gray-900 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-              aria-label={t('Close dialog')}
-            >
-              {t('Done')}
-            </button>
+
+            <div className="mt-6">
+              <SiteLanguageSelect
+                value={selectedLanguage}
+                onChange={setSelectedLanguage}
+                languages={languages}
+                t={t}
+                dropdownRef={languageDropdownRef}
+                renderInput={renderInput(t('11 languages'))}
+                renderOption={renderOption}
+              />
+              <hr className="border-t border-gray-200 w-full my-8" />
+              {/* Audio Track & Subtitles Section */}
+              <AudioTrackSelect
+                value={selectedAudio}
+                onChange={setSelectedAudio}
+                languages={audioTracks}
+                t={t}
+                dropdownRef={audioDropdownRef}
+                currentTrackName={
+                  audioTracks.find((track) => track.code === selectedAudio)
+                    ?.name || ''
+                }
+                renderInput={renderInput(t('2000 translations'))}
+                renderOption={renderOption}
+              />
+
+              {/* Subtitles Select */}
+              <SubtitlesSelect
+                value={selectedSubtitle}
+                onChange={setSelectedSubtitle}
+                languages={subtitles}
+                t={t}
+                dropdownRef={subtitleDropdownRef}
+                noSubtitles={noSubtitles}
+                setNoSubtitles={setNoSubtitles}
+                disabled={!noSubtitles}
+                renderInput={renderInput(t('2000 translations'))}
+                renderOption={renderOption}
+              />
+            </div>
+            <div className="mt-8 mx-6 mb-6 flex justify-end">
+              <button
+                type="button"
+                onClick={handleClose}
+                className="inline-flex items-center rounded-md bg-gray-900 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                aria-label={t('Close dialog')}
+              >
+                {t('Done')}
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </ThemeProvider>
   )
 }
