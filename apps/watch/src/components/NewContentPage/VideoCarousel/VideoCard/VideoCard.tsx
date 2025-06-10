@@ -122,7 +122,13 @@ export function VideoCard({
                   <Play3 sx={{ fontSize: 48 }} />
                 </IconButton>
               </Fade>
-              <Box sx={{ p: 4, fontFamily: 'Inter' }}>
+              <Box
+                sx={{
+                  p: 4,
+                  fontFamily: 'Inter',
+                  zIndex: 1
+                }}
+              >
                 <Typography
                   sx={{
                     fontFamily: 'var(--font-apercu-pro)',
@@ -130,7 +136,7 @@ export function VideoCard({
                     fontWeight: 500,
                     letterSpacing: '0.1em',
                     textTransform: 'uppercase',
-                    color: ({ palette }) => lighten(palette.text.secondary, 1)
+                    opacity: 0.5
                   }}
                   data-testid="CarouselItemCategory"
                 >
@@ -141,11 +147,11 @@ export function VideoCard({
                     fontFamily: 'var(--font-apercu-pro)',
                     fontSize: '1rem',
                     fontWeight: 700,
-                    color: 'common.white',
                     lineHeight: 'tight',
                     display: '-webkit-box',
                     WebkitLineClamp: 3,
-                    WebkitBoxOrient: 'vertical'
+                    WebkitBoxOrient: 'vertical',
+                    opacity: 0.7
                   }}
                   data-testid={`CarouselItemTitle-${video.slug}`}
                 >
