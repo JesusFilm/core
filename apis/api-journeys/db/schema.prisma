@@ -554,6 +554,7 @@ model Block {
   menuStepBlockParent     Journey?             @relation("MenuStepBlock")
   logoImageBlockParent    Journey?             @relation("LogoImageBlock")
   slug                    String?
+  style                   String? // css style for the block
 
   @@unique([slug, journeyId])
   @@index(journeyId)

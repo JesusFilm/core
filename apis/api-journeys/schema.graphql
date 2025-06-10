@@ -599,6 +599,9 @@ type ButtonBlock implements Block
   endIconId: ID @shareable
   action: Action
   submitEnabled: Boolean @shareable
+
+  """style is a css style for the button"""
+  style: String @shareable
 }
 
 input ButtonBlockCreateInput {
@@ -610,6 +613,7 @@ input ButtonBlockCreateInput {
   color: ButtonColor
   size: ButtonSize
   submitEnabled: Boolean
+  style: String
 }
 
 input ButtonBlockUpdateInput {
@@ -621,6 +625,7 @@ input ButtonBlockUpdateInput {
   startIconId: ID
   endIconId: ID
   submitEnabled: Boolean
+  style: String
 }
 
 type CardBlock implements Block
@@ -648,6 +653,9 @@ type CardBlock implements Block
   """
   fullscreen: Boolean! @shareable
 
+  """style is a css style for the block"""
+  style: String @shareable
+
   """
   themeMode can override journey themeMode. If nothing is set then use
   themeMode from journey
@@ -669,6 +677,7 @@ input CardBlockCreateInput {
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
+  style: String
 }
 
 input CardBlockUpdateInput {
@@ -678,6 +687,7 @@ input CardBlockUpdateInput {
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
+  style: String
 }
 
 enum GridDirection {
@@ -775,6 +785,9 @@ type IconBlock implements Block
   name: IconName @shareable
   color: IconColor @shareable
   size: IconSize @shareable
+
+  """style is a css style for the icon"""
+  style: String @shareable
 }
 
 input IconBlockCreateInput {
@@ -787,12 +800,14 @@ input IconBlockCreateInput {
   name: IconName
   color: IconColor
   size: IconSize
+  style: String
 }
 
 input IconBlockUpdateInput {
   name: IconName
   color: IconColor
   size: IconSize
+  style: String
 }
 
 type ImageBlock implements Block
@@ -815,6 +830,9 @@ type ImageBlock implements Block
   scale: Int @shareable
   focalTop: Int @shareable
   focalLeft: Int @shareable
+
+  """style is a css style for the image"""
+  style: String @shareable
 }
 
 input ImageBlockCreateInput {
@@ -841,6 +859,7 @@ input ImageBlockCreateInput {
   scale: Int
   focalTop: Int
   focalLeft: Int
+  style: String
 }
 
 input ImageBlockUpdateInput {
@@ -857,6 +876,7 @@ input ImageBlockUpdateInput {
   scale: Int
   focalTop: Int
   focalLeft: Int
+  style: String
 }
 
 type RadioOptionBlock implements Block
@@ -868,6 +888,9 @@ type RadioOptionBlock implements Block
   parentOrder: Int @shareable
   label: String! @shareable
   action: Action
+
+  """style is a css style for the radio option"""
+  style: String @shareable
 }
 
 input RadioOptionBlockCreateInput {
@@ -875,11 +898,13 @@ input RadioOptionBlockCreateInput {
   journeyId: ID!
   parentBlockId: ID!
   label: String!
+  style: String
 }
 
 input RadioOptionBlockUpdateInput {
   parentBlockId: ID
   label: String
+  style: String
 }
 
 type RadioQuestionBlock implements Block
@@ -889,12 +914,16 @@ type RadioQuestionBlock implements Block
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
+
+  """style is a css style for the radio question container"""
+  style: String @shareable
 }
 
 input RadioQuestionBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
+  style: String
 }
 
 type SignUpBlock implements Block
@@ -907,6 +936,9 @@ type SignUpBlock implements Block
   action: Action
   submitIconId: ID @shareable
   submitLabel: String @shareable
+
+  """style is a css style for the sign up block"""
+  style: String @shareable
 }
 
 input SignUpBlockCreateInput {
@@ -914,12 +946,14 @@ input SignUpBlockCreateInput {
   journeyId: ID!
   parentBlockId: ID!
   submitLabel: String!
+  style: String
 }
 
 input SignUpBlockUpdateInput {
   parentBlockId: ID
   submitIconId: ID
   submitLabel: String
+  style: String
 }
 
 type SpacerBlock implements Block
@@ -930,6 +964,9 @@ type SpacerBlock implements Block
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
   spacing: Int @shareable
+
+  """style is a css style for the spacer block"""
+  style: String @shareable
 }
 
 input SpacerBlockCreateInput {
@@ -937,11 +974,13 @@ input SpacerBlockCreateInput {
   journeyId: ID!
   parentBlockId: ID!
   spacing: Int
+  style: String
 }
 
 input SpacerBlockUpdateInput {
   parentBlockId: ID
   spacing: Int
+  style: String
 }
 
 type StepBlock implements Block
@@ -1052,6 +1091,9 @@ type TextResponseBlock implements Block
   type: TextResponseType @shareable
   routeId: String @shareable
   integrationId: String @shareable
+
+  """style is a css style for the text response block"""
+  style: String @shareable
 }
 
 enum TextResponseType {
@@ -1066,6 +1108,7 @@ input TextResponseBlockCreateInput {
   journeyId: ID!
   parentBlockId: ID!
   label: String!
+  style: String
 }
 
 input TextResponseBlockUpdateInput {
@@ -1078,6 +1121,7 @@ input TextResponseBlockUpdateInput {
   routeId: String
   type: TextResponseType
   integrationId: String
+  style: String
 }
 
 enum TypographyVariant {
@@ -1118,6 +1162,9 @@ type TypographyBlock implements Block
   variant: TypographyVariant @shareable
   color: TypographyColor @shareable
   align: TypographyAlign @shareable
+
+  """style is a css style for the typography block"""
+  style: String @shareable
 }
 
 input TypographyBlockCreateInput {
@@ -1128,6 +1175,7 @@ input TypographyBlockCreateInput {
   variant: TypographyVariant
   color: TypographyColor
   align: TypographyAlign
+  style: String
 }
 
 input TypographyBlockUpdateInput {
@@ -1136,6 +1184,7 @@ input TypographyBlockUpdateInput {
   variant: TypographyVariant
   color: TypographyColor
   align: TypographyAlign
+  style: String
 }
 
 extend type Video
@@ -1263,6 +1312,9 @@ type VideoBlock implements Block
 
   """how the video should display within the VideoBlock"""
   objectFit: VideoBlockObjectFit @shareable
+
+  """style is a css style for the video block"""
+  style: String @shareable
 }
 
 input VideoBlockCreateInput {
@@ -1315,6 +1367,7 @@ input VideoBlockCreateInput {
 
   """how the video should display within the VideoBlock"""
   objectFit: VideoBlockObjectFit
+  style: String
 }
 
 input VideoBlockUpdateInput {
@@ -1357,6 +1410,7 @@ input VideoBlockUpdateInput {
 
   """how the video should display within the VideoBlock"""
   objectFit: VideoBlockObjectFit
+  style: String
 }
 
 """

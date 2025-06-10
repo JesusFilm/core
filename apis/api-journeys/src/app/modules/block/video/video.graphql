@@ -111,6 +111,10 @@ type VideoBlock implements Block @key(fields: "id") {
   how the video should display within the VideoBlock
   """
   objectFit: VideoBlockObjectFit @shareable
+  """
+  style is a css style for the video block
+  """
+  style: String @shareable
 }
 
 input VideoBlockCreateInput {
@@ -161,6 +165,7 @@ input VideoBlockCreateInput {
   how the video should display within the VideoBlock
   """
   objectFit: VideoBlockObjectFit
+  style: String
 }
 
 input VideoBlockUpdateInput {
@@ -204,6 +209,7 @@ input VideoBlockUpdateInput {
   how the video should display within the VideoBlock
   """
   objectFit: VideoBlockObjectFit
+  style: String
 }
 
 extend type Mutation {

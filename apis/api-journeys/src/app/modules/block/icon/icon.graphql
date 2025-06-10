@@ -48,6 +48,10 @@ type IconBlock implements Block @key(fields: "id") {
   name: IconName @shareable
   color: IconColor @shareable
   size: IconSize @shareable
+  """
+  style is a css style for the icon
+  """
+  style: String @shareable
 }
 
 input IconBlockCreateInput {
@@ -60,12 +64,14 @@ input IconBlockCreateInput {
   name: IconName
   color: IconColor
   size: IconSize
+  style: String
 }
 
 input IconBlockUpdateInput {
   name: IconName
   color: IconColor
   size: IconSize
+  style: String
 }
 
 extend type Mutation {

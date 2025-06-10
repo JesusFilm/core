@@ -11,6 +11,10 @@ type TextResponseBlock implements Block @key(fields: "id") {
   type: TextResponseType @shareable
   routeId: String @shareable
   integrationId: String @shareable
+  """
+  style is a css style for the text response block
+  """
+  style: String @shareable
 }
 
 enum TextResponseType {
@@ -25,7 +29,9 @@ input TextResponseBlockCreateInput {
   journeyId: ID!
   parentBlockId: ID!
   label: String!
+  style: String
 }
+
 input TextResponseBlockUpdateInput {
   parentBlockId: ID
   label: String
@@ -36,7 +42,9 @@ input TextResponseBlockUpdateInput {
   routeId: String
   type: TextResponseType
   integrationId: String
+  style: String
 }
+
 extend type Mutation {
   textResponseBlockCreate(
     input: TextResponseBlockCreateInput!

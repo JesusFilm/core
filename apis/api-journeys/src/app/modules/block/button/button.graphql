@@ -29,6 +29,10 @@ type ButtonBlock implements Block @key(fields: "id") {
   endIconId: ID @shareable
   action: Action
   submitEnabled: Boolean @shareable
+  """
+  style is a css style for the button
+  """
+  style: String @shareable
 }
 
 input ButtonBlockCreateInput {
@@ -40,6 +44,7 @@ input ButtonBlockCreateInput {
   color: ButtonColor
   size: ButtonSize
   submitEnabled: Boolean
+  style: String
 }
 
 input ButtonBlockUpdateInput {
@@ -51,6 +56,7 @@ input ButtonBlockUpdateInput {
   startIconId: ID
   endIconId: ID
   submitEnabled: Boolean
+  style: String
 }
 
 extend type Mutation {

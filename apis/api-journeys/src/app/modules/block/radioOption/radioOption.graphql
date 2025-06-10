@@ -5,6 +5,10 @@ type RadioOptionBlock implements Block @key(fields: "id") {
   parentOrder: Int @shareable
   label: String! @shareable
   action: Action
+  """
+  style is a css style for the radio option
+  """
+  style: String @shareable
 }
 
 input RadioOptionBlockCreateInput {
@@ -12,11 +16,13 @@ input RadioOptionBlockCreateInput {
   journeyId: ID!
   parentBlockId: ID!
   label: String!
+  style: String
 }
 
 input RadioOptionBlockUpdateInput {
   parentBlockId: ID
   label: String
+  style: String
 }
 
 extend type Mutation {

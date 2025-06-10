@@ -20,6 +20,10 @@ type CardBlock implements Block @key(fields: "id") {
   """
   fullscreen: Boolean! @shareable
   """
+  style is a css style for the block
+  """
+  style: String @shareable
+  """
   themeMode can override journey themeMode. If nothing is set then use
   themeMode from journey
   """
@@ -39,6 +43,7 @@ input CardBlockCreateInput {
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
+  style: String
 }
 
 input CardBlockUpdateInput {
@@ -48,6 +53,7 @@ input CardBlockUpdateInput {
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
+  style: String
 }
 
 extend type Mutation {

@@ -15,6 +15,10 @@ type ImageBlock implements Block @key(fields: "id") {
   scale: Int @shareable
   focalTop: Int @shareable
   focalLeft: Int @shareable
+  """
+  style is a css style for the image
+  """
+  style: String @shareable
 }
 
 input ImageBlockCreateInput {
@@ -40,6 +44,7 @@ input ImageBlockCreateInput {
   scale: Int
   focalTop: Int
   focalLeft: Int
+  style: String
 }
 
 input ImageBlockUpdateInput {
@@ -55,6 +60,7 @@ input ImageBlockUpdateInput {
   scale: Int
   focalTop: Int
   focalLeft: Int
+  style: String
 }
 
 extend type Mutation {

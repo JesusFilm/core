@@ -34,6 +34,10 @@ type TypographyBlock implements Block @key(fields: "id") {
   variant: TypographyVariant @shareable
   color: TypographyColor @shareable
   align: TypographyAlign @shareable
+  """
+  style is a css style for the typography block
+  """
+  style: String @shareable
 }
 
 input TypographyBlockCreateInput {
@@ -44,6 +48,7 @@ input TypographyBlockCreateInput {
   variant: TypographyVariant
   color: TypographyColor
   align: TypographyAlign
+  style: String
 }
 
 input TypographyBlockUpdateInput {
@@ -52,6 +57,7 @@ input TypographyBlockUpdateInput {
   variant: TypographyVariant
   color: TypographyColor
   align: TypographyAlign
+  style: String
 }
 
 extend type Mutation {

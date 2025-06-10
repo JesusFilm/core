@@ -4,6 +4,10 @@ type SpacerBlock implements Block @key(fields: "id") {
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
   spacing: Int @shareable
+  """
+  style is a css style for the spacer block
+  """
+  style: String @shareable
 }
 
 input SpacerBlockCreateInput {
@@ -11,11 +15,13 @@ input SpacerBlockCreateInput {
   journeyId: ID!
   parentBlockId: ID!
   spacing: Int
+  style: String
 }
 
 input SpacerBlockUpdateInput {
   parentBlockId: ID
   spacing: Int
+  style: String
 }
 
 extend type Mutation {
