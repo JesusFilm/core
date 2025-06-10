@@ -170,14 +170,7 @@ export function CopyToTeamMenuItem({
 
         // Don't close menu or dialog yet - wait for translation to complete
       } else {
-        setLoading(false)
-        setTranslationVariables(undefined)
-        enqueueSnackbar(t('Journey duplication failed'), {
-          variant: 'error',
-          preventDuplicate: true
-        })
-        handleCloseMenu()
-        setDuplicateTeamDialogOpen(false)
+        throw new Error('Journey duplication failed')
       }
     } catch (error) {
       setLoading(false)
@@ -218,7 +211,6 @@ export function CopyToTeamMenuItem({
           message:
             translationData?.journeyAiTranslateCreateSubscription.message ?? ''
         }}
-        shouldUpdateTeamState={false}
         isTranslating={translationVariables != null}
       />
     </>
