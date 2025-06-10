@@ -58,6 +58,10 @@ Find a frontend implementation at https://github.com/woltapp/blurhash
     scale: t.exposeInt('scale', {
       nullable: true,
       directives: { shareable: true }
+    }),
+    style: t.exposeString('style', {
+      nullable: true,
+      directives: { shareable: true }
     })
   })
 })

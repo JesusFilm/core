@@ -59,6 +59,10 @@ export const TextResponseBlock = builder.prismaObject('Block', {
     integrationId: t.exposeString('integrationId', {
       nullable: true,
       directives: { shareable: true }
+    }),
+    style: t.exposeString('style', {
+      nullable: true,
+      directives: { shareable: true }
     })
   })
 })

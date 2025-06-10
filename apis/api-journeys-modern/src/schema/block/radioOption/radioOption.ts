@@ -24,6 +24,10 @@ export const RadioOptionBlock = builder.prismaObject('Block', {
       nullable: false,
       directives: { shareable: true },
       resolve: (block) => block.label ?? ''
+    }),
+    style: t.exposeString('style', {
+      nullable: true,
+      directives: { shareable: true }
     })
   })
 })

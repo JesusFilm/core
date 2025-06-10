@@ -117,6 +117,10 @@ For other sources this is automatically populated.`
         }
         return null
       }
+    }),
+    style: t.exposeString('style', {
+      nullable: true,
+      directives: { shareable: true }
     })
   })
 })

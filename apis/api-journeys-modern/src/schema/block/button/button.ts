@@ -58,6 +58,10 @@ export const ButtonBlock = builder.prismaObject('Block', {
     submitEnabled: t.exposeBoolean('submitEnabled', {
       nullable: true,
       directives: { shareable: true }
+    }),
+    style: t.exposeString('style', {
+      nullable: true,
+      directives: { shareable: true }
     })
   })
 })

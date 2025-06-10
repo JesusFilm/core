@@ -27,6 +27,10 @@ builder.prismaObject('Block', {
     submitLabel: t.exposeString('submitLabel', {
       nullable: true,
       directives: { shareable: true }
+    }),
+    style: t.exposeString('style', {
+      nullable: true,
+      directives: { shareable: true }
     })
   })
 })

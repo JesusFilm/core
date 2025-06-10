@@ -41,6 +41,10 @@ export const IconBlock = builder.prismaObject('Block', {
       nullable: true,
       directives: { shareable: true },
       resolve: (block) => block.size as IconSizeType
+    }),
+    style: t.exposeString('style', {
+      nullable: true,
+      directives: { shareable: true }
     })
   })
 })

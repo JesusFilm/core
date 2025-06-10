@@ -823,6 +823,10 @@ type ButtonBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @
   endIconId: ID
   action: Action @join__field(graph: API_JOURNEYS) 
   submitEnabled: Boolean
+  """
+  style is a css style for the button
+  """
+  style: String
 }
 
 type CardBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -846,6 +850,10 @@ type CardBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @jo
   background.
   """
   fullscreen: Boolean!
+  """
+  style is a css style for the block
+  """
+  style: String
   """
   themeMode can override journey themeMode. If nothing is set then use
   themeMode from journey
@@ -887,6 +895,10 @@ type IconBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @jo
   name: IconName
   color: IconColor
   size: IconSize
+  """
+  style is a css style for the icon
+  """
+  style: String
 }
 
 type ImageBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -906,6 +918,10 @@ type ImageBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @j
   scale: Int
   focalTop: Int
   focalLeft: Int
+  """
+  style is a css style for the image
+  """
+  style: String
 }
 
 type RadioOptionBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -915,6 +931,10 @@ type RadioOptionBlock implements Block @join__type(graph: API_JOURNEYS, key: "id
   parentOrder: Int
   label: String!
   action: Action @join__field(graph: API_JOURNEYS) 
+  """
+  style is a css style for the radio option
+  """
+  style: String
 }
 
 type RadioQuestionBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -922,6 +942,10 @@ type RadioQuestionBlock implements Block @join__type(graph: API_JOURNEYS, key: "
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
+  """
+  style is a css style for the radio question container
+  """
+  style: String
 }
 
 type SignUpBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -932,6 +956,10 @@ type SignUpBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @
   action: Action @join__field(graph: API_JOURNEYS) 
   submitIconId: ID
   submitLabel: String
+  """
+  style is a css style for the sign up block
+  """
+  style: String
 }
 
 type SpacerBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -940,6 +968,10 @@ type SpacerBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @
   parentBlockId: ID
   parentOrder: Int
   spacing: Int
+  """
+  style is a css style for the spacer block
+  """
+  style: String
 }
 
 type StepBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -990,6 +1022,10 @@ type TextResponseBlock implements Block @join__type(graph: API_JOURNEYS, key: "i
   type: TextResponseType
   routeId: String
   integrationId: String
+  """
+  style is a css style for the text response block
+  """
+  style: String
 }
 
 type TypographyBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -1001,6 +1037,10 @@ type TypographyBlock implements Block @join__type(graph: API_JOURNEYS, key: "id"
   variant: TypographyVariant
   color: TypographyColor
   align: TypographyAlign
+  """
+  style is a css style for the typography block
+  """
+  style: String
 }
 
 type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId", extension: true)  @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", extension: true)  @join__type(graph: API_MEDIA, key: "id primaryLanguageId")  {
@@ -1118,6 +1158,10 @@ type VideoBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @j
   how the video should display within the VideoBlock
   """
   objectFit: VideoBlockObjectFit
+  """
+  style is a css style for the video block
+  """
+  style: String
   mediaVideo: MediaVideo @join__field(graph: API_JOURNEYS_MODERN) 
 }
 
@@ -3297,6 +3341,7 @@ input ButtonBlockCreateInput @join__type(graph: API_JOURNEYS)  {
   color: ButtonColor
   size: ButtonSize
   submitEnabled: Boolean
+  style: String
 }
 
 input ButtonBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
@@ -3308,6 +3353,7 @@ input ButtonBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
   startIconId: ID
   endIconId: ID
   submitEnabled: Boolean
+  style: String
 }
 
 input CardBlockCreateInput @join__type(graph: API_JOURNEYS)  {
@@ -3318,6 +3364,7 @@ input CardBlockCreateInput @join__type(graph: API_JOURNEYS)  {
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
+  style: String
 }
 
 input CardBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
@@ -3327,6 +3374,7 @@ input CardBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
+  style: String
 }
 
 input IconBlockCreateInput @join__type(graph: API_JOURNEYS)  {
@@ -3339,12 +3387,14 @@ input IconBlockCreateInput @join__type(graph: API_JOURNEYS)  {
   name: IconName
   color: IconColor
   size: IconSize
+  style: String
 }
 
 input IconBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
   name: IconName
   color: IconColor
   size: IconSize
+  style: String
 }
 
 input ImageBlockCreateInput @join__type(graph: API_JOURNEYS)  {
@@ -3369,6 +3419,7 @@ input ImageBlockCreateInput @join__type(graph: API_JOURNEYS)  {
   scale: Int
   focalTop: Int
   focalLeft: Int
+  style: String
 }
 
 input ImageBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
@@ -3384,6 +3435,7 @@ input ImageBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
   scale: Int
   focalTop: Int
   focalLeft: Int
+  style: String
 }
 
 input RadioOptionBlockCreateInput @join__type(graph: API_JOURNEYS)  {
@@ -3391,17 +3443,20 @@ input RadioOptionBlockCreateInput @join__type(graph: API_JOURNEYS)  {
   journeyId: ID!
   parentBlockId: ID!
   label: String!
+  style: String
 }
 
 input RadioOptionBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
   parentBlockId: ID
   label: String
+  style: String
 }
 
 input RadioQuestionBlockCreateInput @join__type(graph: API_JOURNEYS)  {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
+  style: String
 }
 
 input SignUpBlockCreateInput @join__type(graph: API_JOURNEYS)  {
@@ -3409,12 +3464,14 @@ input SignUpBlockCreateInput @join__type(graph: API_JOURNEYS)  {
   journeyId: ID!
   parentBlockId: ID!
   submitLabel: String!
+  style: String
 }
 
 input SignUpBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
   parentBlockId: ID
   submitIconId: ID
   submitLabel: String
+  style: String
 }
 
 input SpacerBlockCreateInput @join__type(graph: API_JOURNEYS)  {
@@ -3422,11 +3479,13 @@ input SpacerBlockCreateInput @join__type(graph: API_JOURNEYS)  {
   journeyId: ID!
   parentBlockId: ID!
   spacing: Int
+  style: String
 }
 
 input SpacerBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
   parentBlockId: ID
   spacing: Int
+  style: String
 }
 
 input StepBlockCreateInput @join__type(graph: API_JOURNEYS)  {
@@ -3480,6 +3539,7 @@ input TextResponseBlockCreateInput @join__type(graph: API_JOURNEYS)  {
   journeyId: ID!
   parentBlockId: ID!
   label: String!
+  style: String
 }
 
 input TextResponseBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
@@ -3492,6 +3552,7 @@ input TextResponseBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
   routeId: String
   type: TextResponseType
   integrationId: String
+  style: String
 }
 
 input TypographyBlockCreateInput @join__type(graph: API_JOURNEYS)  {
@@ -3502,6 +3563,7 @@ input TypographyBlockCreateInput @join__type(graph: API_JOURNEYS)  {
   variant: TypographyVariant
   color: TypographyColor
   align: TypographyAlign
+  style: String
 }
 
 input TypographyBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
@@ -3510,6 +3572,7 @@ input TypographyBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
   variant: TypographyVariant
   color: TypographyColor
   align: TypographyAlign
+  style: String
 }
 
 input VideoBlockCreateInput @join__type(graph: API_JOURNEYS)  {
@@ -3560,6 +3623,7 @@ input VideoBlockCreateInput @join__type(graph: API_JOURNEYS)  {
   how the video should display within the VideoBlock
   """
   objectFit: VideoBlockObjectFit
+  style: String
 }
 
 input VideoBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
@@ -3602,6 +3666,7 @@ input VideoBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
   how the video should display within the VideoBlock
   """
   objectFit: VideoBlockObjectFit
+  style: String
 }
 
 input ChatButtonCreateInput @join__type(graph: API_JOURNEYS)  {

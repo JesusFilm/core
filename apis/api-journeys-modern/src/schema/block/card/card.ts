@@ -57,6 +57,10 @@ themeMode from journey`,
       description: `themeName can override journey themeName. If nothing is set then use
 themeName from journey`,
       resolve: (block) => block.themeName as ThemeNameType
+    }),
+    style: t.exposeString('style', {
+      nullable: true,
+      directives: { shareable: true }
     })
   }),
   directives: { key: { fields: 'id' } }

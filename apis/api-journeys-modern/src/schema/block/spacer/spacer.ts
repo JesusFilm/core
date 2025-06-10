@@ -23,6 +23,10 @@ export const SpacerBlock = builder.prismaObject('Block', {
     spacing: t.exposeInt('spacing', {
       nullable: true,
       directives: { shareable: true }
+    }),
+    style: t.exposeString('style', {
+      nullable: true,
+      directives: { shareable: true }
     })
   })
 })

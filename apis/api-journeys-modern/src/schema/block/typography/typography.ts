@@ -57,6 +57,10 @@ export const TypographyBlock = builder.prismaObject('Block', {
       nullable: true,
       directives: { shareable: true },
       resolve: (block) => block.align as TypographyAlignType
+    }),
+    style: t.exposeString('style', {
+      nullable: true,
+      directives: { shareable: true }
     })
   })
 })

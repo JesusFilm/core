@@ -24,6 +24,7 @@ type ButtonBlock implements Block
   startIconId: ID @shareable
   endIconId: ID @shareable
   submitEnabled: Boolean @shareable
+  style: String @shareable
 }
 
 enum ButtonColor {
@@ -80,6 +81,7 @@ type CardBlock implements Block
   themeName from journey
   """
   themeName: ThemeName @shareable
+  style: String @shareable
 }
 
 """
@@ -171,6 +173,7 @@ type IconBlock implements Block
   name: IconName @shareable
   color: IconColor @shareable
   size: IconSize @shareable
+  style: String @shareable
 }
 
 enum IconColor {
@@ -233,6 +236,7 @@ type ImageBlock implements Block
   focalTop: Int @shareable
   focalLeft: Int @shareable
   scale: Int @shareable
+  style: String @shareable
 }
 
 type Journey
@@ -336,6 +340,7 @@ type RadioOptionBlock implements Block
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
   label: String! @shareable
+  style: String @shareable
 }
 
 type RadioQuestionBlock implements Block
@@ -345,6 +350,7 @@ type RadioQuestionBlock implements Block
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
+  style: String @shareable
 }
 
 type SignUpBlock implements Block
@@ -356,6 +362,7 @@ type SignUpBlock implements Block
   parentOrder: Int @shareable
   submitIconId: ID @shareable
   submitLabel: String @shareable
+  style: String @shareable
 }
 
 type SpacerBlock implements Block
@@ -366,6 +373,7 @@ type SpacerBlock implements Block
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
   spacing: Int @shareable
+  style: String @shareable
 }
 
 type StepBlock implements Block
@@ -429,6 +437,7 @@ type TextResponseBlock implements Block
   type: TextResponseType @shareable
   routeId: String @shareable
   integrationId: String @shareable
+  style: String @shareable
 }
 
 enum TextResponseType {
@@ -464,6 +473,7 @@ type TypographyBlock implements Block
   variant: TypographyVariant @shareable
   color: TypographyColor @shareable
   align: TypographyAlign @shareable
+  style: String @shareable
 }
 
 enum TypographyColor {
@@ -557,6 +567,7 @@ type VideoBlock implements Block
   """
   description: String @shareable
   mediaVideo: MediaVideo
+  style: String @shareable
 }
 
 enum VideoBlockObjectFit {
