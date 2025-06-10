@@ -1,5 +1,11 @@
-import { ReactElement, useEffect, useState, useRef } from 'react'
-import { Icon } from 'libs/shared/ui/src/components/icons/Icon'
+import { useTranslation } from 'next-i18next'
+import { ReactElement, useEffect, useRef, useState } from 'react'
+
+import ChevronDown from '@core/shared/ui/icons/ChevronDown'
+import ChevronUp from '@core/shared/ui/icons/ChevronUp'
+import Globe from '@core/shared/ui/icons/Globe'
+import MediaStrip1 from '@core/shared/ui/icons/MediaStrip1'
+import Type3 from '@core/shared/ui/icons/Type3'
 
 interface LanguageSwitchDialogProps {
   open: boolean
@@ -21,7 +27,6 @@ const audioTracks = [
 ]
 
 const subtitles = [
-  { code: 'none', name: 'None' },
   { code: 'en', name: 'English Subtitles' },
   { code: 'es', name: 'Spanish Subtitles' },
   { code: 'fr', name: 'French Subtitles' }
@@ -31,12 +36,14 @@ export function LanguageSwitchDialog({
   open,
   handleClose
 }: LanguageSwitchDialogProps): ReactElement {
+  const { t } = useTranslation()
   const [selectedLanguage, setSelectedLanguage] = useState(languages[0].code)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [selectedAudio, setSelectedAudio] = useState(audioTracks[0].code)
   const [isAudioDropdownOpen, setIsAudioDropdownOpen] = useState(false)
   const [selectedSubtitle, setSelectedSubtitle] = useState(subtitles[0].code)
   const [isSubtitleDropdownOpen, setIsSubtitleDropdownOpen] = useState(false)
+  const [noSubtitles, setNoSubtitles] = useState(false)
 
   const languageDropdownRef = useRef<HTMLDivElement>(null)
   const audioDropdownRef = useRef<HTMLDivElement>(null)
@@ -130,7 +137,7 @@ export function LanguageSwitchDialog({
               className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
               aria-label="Close dialog"
             >
-              <span className="sr-only">Close</span>
+              <span className="sr-only">{t('Close')}</span>
               <svg
                 className="h-6 w-6"
                 fill="none"
@@ -152,20 +159,20 @@ export function LanguageSwitchDialog({
               id="dialog-title"
               className="text-lg font-medium leading-6 text-gray-900"
             >
-              Language Settings
+              {t('Language Settings')}
             </h3>
             <div className="mt-6">
               <label
                 htmlFor="language-select"
                 className="block text-sm font-medium text-gray-700 ml-7"
               >
-                Site Language
+                {t('Site Language')}
               </label>
               <div
                 className="relative mt-1 flex items-center gap-2"
                 ref={languageDropdownRef}
               >
-                <Icon name="Globe" fontSize="small" />
+                <Globe fontSize="small" />
                 <div className="relative w-full">
                   <button
                     type="button"
@@ -179,11 +186,11 @@ export function LanguageSwitchDialog({
                       {selectedLanguageName}
                     </span>
                     <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                      <Icon
-                        name={isDropdownOpen ? 'ChevronUp' : 'ChevronDown'}
-                        fontSize="small"
-                        color="inherit"
-                      />
+                      {isDropdownOpen ? (
+                        <ChevronUp fontSize="small" color="inherit" />
+                      ) : (
+                        <ChevronDown fontSize="small" color="inherit" />
+                      )}
                     </span>
                   </button>
 
@@ -244,17 +251,25 @@ export function LanguageSwitchDialog({
           <div className="mt-6 mx-6">
             {/* Audio Track Select */}
             <div className="mb-4">
-              <label
-                htmlFor="audio-select"
-                className="block text-sm font-medium text-gray-700 ml-7"
-              >
-                Audio Track
-              </label>
+              <div className="flex items-center justify-between">
+                <label
+                  htmlFor="audio-select"
+                  className="block text-sm font-medium text-gray-700 ml-7"
+                >
+                  {t('Audio Track')}
+                </label>
+                <span className="text-sm text-gray-400 opacity-60">
+                  {
+                    audioTracks.find((track) => track.code === selectedAudio)
+                      ?.name
+                  }
+                </span>
+              </div>
               <div
                 className="relative mt-1 flex items-center gap-2"
                 ref={audioDropdownRef}
               >
-                <Icon name="MediaStrip1" fontSize="small" />
+                <MediaStrip1 fontSize="small" />
                 <div className="relative w-full">
                   <button
                     type="button"
@@ -272,11 +287,11 @@ export function LanguageSwitchDialog({
                       }
                     </span>
                     <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                      <Icon
-                        name={isAudioDropdownOpen ? 'ChevronUp' : 'ChevronDown'}
-                        fontSize="small"
-                        color="inherit"
-                      />
+                      {isAudioDropdownOpen ? (
+                        <ChevronUp fontSize="small" color="inherit" />
+                      ) : (
+                        <ChevronDown fontSize="small" color="inherit" />
+                      )}
                     </span>
                   </button>
 
@@ -333,27 +348,45 @@ export function LanguageSwitchDialog({
 
             {/* Subtitles Select */}
             <div className="mb-4">
-              <label
-                htmlFor="subtitle-select"
-                className="block text-sm font-medium text-gray-700 ml-7"
-              >
-                Subtitles
-              </label>
+              <div className="flex items-center justify-between">
+                <label
+                  htmlFor="subtitle-select"
+                  className="block text-sm font-medium text-gray-700 ml-7"
+                >
+                  {t('Subtitles')}
+                </label>
+                <div className="flex items-center">
+                  <input
+                    id="no-subtitles-checkbox"
+                    type="checkbox"
+                    checked={noSubtitles}
+                    onChange={() => setNoSubtitles((prev) => !prev)}
+                    className="h-4 w-4 rounded border-gray-300 text-gray-900 focus:ring-2 focus:ring-gray-400"
+                  />
+                  <label
+                    htmlFor="no-subtitles-checkbox"
+                    className="ml-2 text-sm text-gray-700"
+                  >
+                    {noSubtitles ? t('On') : t('Off')}
+                  </label>
+                </div>
+              </div>
               <div
                 className="relative mt-1 flex items-center gap-2"
                 ref={subtitleDropdownRef}
               >
-                <Icon name="Type3" fontSize="small" />
+                <Type3 fontSize="small" />
                 <div className="relative w-full">
                   <button
                     type="button"
                     onClick={() =>
                       setIsSubtitleDropdownOpen(!isSubtitleDropdownOpen)
                     }
-                    className="w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 sm:text-sm flex items-center"
+                    className={`w-full rounded-md border border-gray-300 py-2 pl-3 pr-10 text-left shadow-sm focus:border-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 sm:text-sm flex items-center ${!noSubtitles ? 'bg-gray-100 text-gray-400 cursor-not-allowed opacity-60' : 'bg-white cursor-default'}`}
                     aria-haspopup="listbox"
                     aria-expanded={isSubtitleDropdownOpen}
                     aria-labelledby="subtitle-select-label"
+                    disabled={!noSubtitles}
                   >
                     <span className="block truncate flex-1">
                       {
@@ -362,17 +395,14 @@ export function LanguageSwitchDialog({
                       }
                     </span>
                     <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                      <Icon
-                        name={
-                          isSubtitleDropdownOpen ? 'ChevronUp' : 'ChevronDown'
-                        }
-                        fontSize="small"
-                        color="inherit"
-                      />
+                      {isSubtitleDropdownOpen ? (
+                        <ChevronUp fontSize="small" color="inherit" />
+                      ) : (
+                        <ChevronDown fontSize="small" color="inherit" />
+                      )}
                     </span>
                   </button>
-
-                  {isSubtitleDropdownOpen && (
+                  {isSubtitleDropdownOpen && noSubtitles && (
                     <ul
                       className="absolute z-[100] left-0 top-full mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
                       role="listbox"
@@ -428,8 +458,9 @@ export function LanguageSwitchDialog({
               type="button"
               onClick={handleClose}
               className="inline-flex items-center rounded-md bg-gray-900 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+              aria-label={t('Close dialog')}
             >
-              Done
+              {t('Done')}
             </button>
           </div>
         </div>
