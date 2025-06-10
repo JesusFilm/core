@@ -60,6 +60,7 @@ const journey: Journey = {
   },
   status: JourneyStatus.draft,
   createdAt: '2021-11-19T12:34:56.647Z',
+  updatedAt: '2021-11-19T12:34:56.647Z',
   publishedAt: null,
   primaryImageBlock: null,
   creatorDescription: null,
@@ -127,7 +128,7 @@ export const SocialPreview = {
     await userEvent.click(socialPreviewNode)
 
     await waitFor(async () => {
-      await screen.getByText('Social App View')
+      await screen.getByText('Social Post View')
     })
   }
 }

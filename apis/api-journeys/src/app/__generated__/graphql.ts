@@ -753,6 +753,8 @@ export class JourneyUpdateInput {
     menuButtonIcon?: Nullable<JourneyMenuButtonIcon>;
     menuStepBlockId?: Nullable<string>;
     logoImageBlockId?: Nullable<string>;
+    socialNodeX?: Nullable<number>;
+    socialNodeY?: Nullable<number>;
 }
 
 export class JourneyTemplateInput {
@@ -1151,6 +1153,7 @@ export class Journey {
     id: string;
     title: string;
     language: Language;
+    languageId: string;
     themeMode: ThemeMode;
     themeName: ThemeName;
     description?: Nullable<string>;
@@ -1185,6 +1188,9 @@ export class Journey {
     showMenu?: Nullable<boolean>;
     showDisplayTitle?: Nullable<boolean>;
     menuButtonIcon?: Nullable<JourneyMenuButtonIcon>;
+    socialNodeX?: Nullable<number>;
+    socialNodeY?: Nullable<number>;
+    fromTemplateId?: Nullable<string>;
     userJourneys?: Nullable<UserJourney[]>;
 }
 

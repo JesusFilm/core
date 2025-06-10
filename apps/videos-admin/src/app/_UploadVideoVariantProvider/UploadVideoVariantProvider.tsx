@@ -11,8 +11,8 @@ import { getExtension } from '../(dashboard)/videos/[videoId]/audio/add/_utils/g
 import { useCreateR2AssetMutation } from '../../libs/useCreateR2Asset/useCreateR2Asset'
 
 export const CREATE_MUX_VIDEO_UPLOAD_BY_URL = graphql(`
-  mutation CreateMuxVideoUploadByUrl($url: String!) {
-    createMuxVideoUploadByUrl(url: $url) {
+  mutation CreateMuxVideoUploadByUrl($url: String!, $userGenerated: Boolean) {
+    createMuxVideoUploadByUrl(url: $url, userGenerated: $userGenerated) {
       id
       assetId
       playbackId
@@ -32,6 +32,7 @@ export const CREATE_VIDEO_VARIANT = graphql(`
       published
       language {
         id
+        slug
         name {
           value
           primary
@@ -42,8 +43,8 @@ export const CREATE_VIDEO_VARIANT = graphql(`
 `)
 
 export const GET_MY_MUX_VIDEO = graphql(`
-  query GetMyMuxVideo($id: ID!) {
-    getMyMuxVideo(id: $id) {
+  query GetMyMuxVideo($id: ID!, $userGenerated: Boolean) {
+    getMyMuxVideo(id: $id, userGenerated: $userGenerated) {
       id
       assetId
       playbackId
@@ -62,6 +63,7 @@ interface UploadVideoVariantState {
   languageId: string | null
   languageSlug: string | null
   videoId: string | null
+  videoSlug: string | null
   published: boolean | null
   onComplete?: () => void
 }
@@ -75,6 +77,7 @@ interface UploadVideoVariantContextType {
     languageSlug: string,
     edition: string,
     published: boolean,
+    videoSlug?: string,
     onComplete?: () => void
   ) => Promise<void>
   clearUploadState: () => void
@@ -90,6 +93,7 @@ const initialState: UploadVideoVariantState = {
   languageId: null,
   languageSlug: null,
   videoId: null,
+  videoSlug: null,
   published: null,
   onComplete: undefined
 }
@@ -107,6 +111,7 @@ type UploadAction =
       edition: string
       published: boolean
       onComplete?: () => void
+      videoSlug?: string
     }
   | { type: 'SET_PROGRESS'; progress: number }
   | { type: 'START_PROCESSING'; muxVideoId: string }
@@ -127,7 +132,9 @@ function uploadReducer(
         languageId: action.languageId,
         languageSlug: action.languageSlug,
         edition: action.edition,
-        onComplete: action.onComplete
+        published: action.published,
+        onComplete: action.onComplete,
+        videoSlug: action.videoSlug ?? null
       }
     case 'SET_PROGRESS':
       return { ...state, uploadProgress: action.progress }
@@ -143,7 +150,7 @@ function uploadReducer(
     case 'SET_ERROR':
       return { ...initialState, error: action.error }
     case 'CLEAR':
-      return initialState
+      return { ...state, error: null }
     default:
       return state
   }
@@ -193,7 +200,8 @@ export function UploadVideoVariantProvider({
       state.videoId == null ||
       state.languageId == null ||
       state.languageSlug == null ||
-      state.edition == null
+      state.edition == null ||
+      state.videoSlug == null
     )
       return
 
@@ -205,7 +213,7 @@ export function UploadVideoVariantProvider({
             videoId: state.videoId,
             edition: state.edition,
             languageId: state.languageId,
-            slug: `${state.videoId}/${state.languageSlug}`,
+            slug: `${state.videoSlug}/${state.languageSlug}`,
             downloadable: true,
             published: true,
             muxVideoId: muxId,
@@ -234,6 +242,7 @@ export function UploadVideoVariantProvider({
                       hls
                       language {
                         id
+                        slug
                         name {
                           value
                           primary
@@ -266,6 +275,7 @@ export function UploadVideoVariantProvider({
     languageSlug: string,
     edition: string,
     published: boolean,
+    videoSlug: string,
     onComplete?: () => void
   ) => {
     try {
@@ -276,7 +286,8 @@ export function UploadVideoVariantProvider({
         languageSlug,
         edition,
         published,
-        onComplete
+        onComplete,
+        videoSlug
       })
 
       const videoVariantId = `${languageId}_${videoId}`
@@ -320,7 +331,8 @@ export function UploadVideoVariantProvider({
       // Create Mux video
       const muxResponse = await createMuxVideo({
         variables: {
-          url: r2Response.data.cloudflareR2Create.publicUrl
+          url: r2Response.data.cloudflareR2Create.publicUrl,
+          userGenerated: false
         }
       })
 
@@ -338,7 +350,10 @@ export function UploadVideoVariantProvider({
 
       // Start polling for Mux video status
       void getMyMuxVideo({
-        variables: { id: muxResponse.data.createMuxVideoUploadByUrl.id }
+        variables: {
+          id: muxResponse.data.createMuxVideoUploadByUrl.id,
+          userGenerated: false
+        }
       })
     } catch (error) {
       let errorMessage: string

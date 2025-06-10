@@ -1,12 +1,15 @@
 import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
 
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import { AnalyticsItem } from './AnalyticsItem'
 import { ResponsesItem } from './ResponsesItem'
 import { ShareItem } from './ShareItem'
 import { StrategyItem } from './StrategyItem'
 
 export function Items(): ReactElement {
+  const { journey } = useJourney()
   return (
     <Stack
       sx={{ display: { xs: 'none', md: 'flex' } }}
@@ -20,7 +23,7 @@ export function Items(): ReactElement {
         <AnalyticsItem variant="icon-button" />
       </Stack>
       <StrategyItem variant="button" />
-      <ShareItem variant="button" />
+      <ShareItem variant="button" journey={journey} />
     </Stack>
   )
 }

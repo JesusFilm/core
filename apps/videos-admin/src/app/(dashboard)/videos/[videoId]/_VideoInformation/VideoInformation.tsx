@@ -1,6 +1,9 @@
 'use client'
 
 import { useMutation, useSuspenseQuery } from '@apollo/client'
+import OpenInNewIcon from '@mui/icons-material/OpenInNew'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import FormControl from '@mui/material/FormControl'
 import InputAdornment from '@mui/material/InputAdornment'
@@ -19,23 +22,10 @@ import { object, string } from 'yup'
 
 import { CancelButton } from '../../../../../components/CancelButton'
 import { SaveButton } from '../../../../../components/SaveButton'
+import { videoLabels, videoStatuses } from '../../../../../constants'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
 
-const videoStatuses = [
-  { label: 'Published', value: 'published' },
-  { label: 'Draft', value: 'unpublished' }
-]
-
-const videoLabels = [
-  { label: 'Collection', value: 'collection' },
-  { label: 'Episode', value: 'episode' },
-  { label: 'Feature Film', value: 'featureFilm' },
-  { label: 'Clip', value: 'segment' },
-  { label: 'Series', value: 'series' },
-  { label: 'Short Film', value: 'shortFilm' },
-  { label: 'Trailer', value: 'trailer' },
-  { label: 'Behind The Scenes', value: 'behindTheScenes' }
-]
+import { VideoKeywords } from './VideoKeywords'
 
 interface VideoInformationProps {
   videoId: string
@@ -48,9 +38,22 @@ export const GET_VIDEO_INFORMATION = graphql(`
       label
       published
       slug
+      primaryLanguageId
+      keywords(languageId: $languageId) {
+        id
+        value
+      }
       title(languageId: $languageId) {
         id
         value
+      }
+      variant {
+        id
+        slug
+        language {
+          id
+          slug
+        }
       }
     }
   }
@@ -149,7 +152,8 @@ export function VideoInformation({
           id: videoId,
           slug: values.url,
           published: values.published === 'published',
-          label: values.label
+          label: values.label,
+          keywordIds: values.keywords.map((k) => k.id)
         },
         titleInput: {
           id: titleId,
@@ -178,7 +182,8 @@ export function VideoInformation({
         url: data.adminVideo.slug,
         published:
           data.adminVideo.published === true ? 'published' : 'unpublished',
-        label: data.adminVideo.label ?? ''
+        label: data.adminVideo.label ?? '',
+        keywords: data.adminVideo.keywords ?? []
       }}
       onSubmit={handleUpdateVideoInformation}
       validationSchema={validationSchema}
@@ -211,6 +216,7 @@ export function VideoInformation({
                 onChange={handleChange}
                 helperText={errors.title as string}
                 sx={{ flexGrow: 1 }}
+                spellCheck={true}
               />
               <TextField
                 id="url"
@@ -255,7 +261,8 @@ export function VideoInformation({
               gap={2}
               sx={{
                 flexDirection: { xs: 'col', sm: 'row' },
-                alignItems: { xs: 'start', sm: 'end' }
+                alignItems: { xs: 'start', sm: 'end' },
+                justifyContent: { sm: 'flex-end' }
               }}
             >
               <FormControl variant="standard">
@@ -292,7 +299,34 @@ export function VideoInformation({
                   ))}
                 </Select>
               </FormControl>
+              <Box sx={{ ml: 'auto' }}>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  href={`${process.env.NEXT_PUBLIC_WATCH_URL ?? ''}/watch/${values.url}.html/${data.adminVideo.variant?.language.slug}.html`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  startIcon={<OpenInNewIcon />}
+                  aria-label="View public watch page"
+                  sx={{
+                    alignSelf: { xs: 'stretch', sm: 'center' },
+                    whiteSpace: 'nowrap'
+                  }}
+                  disabled={
+                    !(data.adminVideo.published && data.adminVideo.variant)
+                  }
+                >
+                  View Public Page
+                </Button>
+              </Box>
             </Stack>
+            <VideoKeywords
+              primaryLanguageId={data.adminVideo.primaryLanguageId}
+              initialKeywords={values.keywords}
+              onChange={(keywords) =>
+                handleChange({ target: { name: 'keywords', value: keywords } })
+              }
+            />
             <Divider sx={{ mx: -4 }} />
             <Stack direction="row" justifyContent="flex-end" gap={1}>
               <CancelButton show={dirty} handleCancel={() => resetForm()} />

@@ -23,7 +23,6 @@ import {
   JourneyImageBlockUpdateVariables
 } from '../../../../../../../__generated__/JourneyImageBlockUpdate'
 import { blockDeleteUpdate } from '../../../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
-import { revalidateJourney } from '../../../../../../libs/revalidateJourney'
 
 import { Large } from './Large'
 import { Small } from './Small'
@@ -155,10 +154,6 @@ export function ImageEdit({
                 }
         }
       })
-      await revalidateJourney({
-        slug: journey.slug,
-        hostname: journey.host?.title
-      })
     }
   }
 
@@ -171,10 +166,6 @@ export function ImageEdit({
         journeyId: journey.id,
         input
       }
-    })
-    await revalidateJourney({
-      slug: journey.slug,
-      hostname: journey.host?.title
     })
   }
 
@@ -217,10 +208,6 @@ export function ImageEdit({
                   creatorImageBlockId: null
                 }
         }
-      })
-      await revalidateJourney({
-        slug: journey.slug,
-        hostname: journey.host?.title
       })
     }
   }
