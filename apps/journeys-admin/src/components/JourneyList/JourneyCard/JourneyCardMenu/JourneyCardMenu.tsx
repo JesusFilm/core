@@ -129,10 +129,12 @@ export function JourneyCardMenu({
   >()
   const [keepMounted, setKeepMounted] = useState<boolean>(false)
 
-  const [DefaultMenuItemsComponent, setDefaultMenuItemsComponent] =
-    useState<any>(null)
-  const [TrashMenuItemsComponent, setTrashMenuItemsComponent] =
-    useState<any>(null)
+  const [DefaultMenuItemsComponent, setDefaultMenuItemsComponent] = useState<
+    ((args: any) => ReactElement) | null
+  >(null)
+  const [TrashMenuItemsComponent, setTrashMenuItemsComponent] = useState<
+    ((args: any) => ReactElement) | null
+  >(null)
 
   const handleOpenMenu = async (
     event: React.MouseEvent<HTMLElement>
