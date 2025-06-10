@@ -297,6 +297,7 @@ export interface ButtonBlockCreateInput {
   color?: ButtonColor | null;
   size?: ButtonSize | null;
   submitEnabled?: boolean | null;
+  style?: string | null;
 }
 
 export interface ButtonBlockUpdateInput {
@@ -308,6 +309,7 @@ export interface ButtonBlockUpdateInput {
   startIconId?: string | null;
   endIconId?: string | null;
   submitEnabled?: boolean | null;
+  style?: string | null;
 }
 
 export interface ButtonClickEventCreateInput {
@@ -328,6 +330,7 @@ export interface CardBlockCreateInput {
   fullscreen?: boolean | null;
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
+  style?: string | null;
 }
 
 export interface CardBlockUpdateInput {
@@ -337,6 +340,7 @@ export interface CardBlockUpdateInput {
   fullscreen?: boolean | null;
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
+  style?: string | null;
 }
 
 export interface ChatButtonCreateInput {
@@ -399,6 +403,7 @@ export interface IconBlockCreateInput {
   name?: IconName | null;
   color?: IconColor | null;
   size?: IconSize | null;
+  style?: string | null;
 }
 
 export interface ImageBlockCreateInput {
@@ -414,6 +419,7 @@ export interface ImageBlockCreateInput {
   scale?: number | null;
   focalTop?: number | null;
   focalLeft?: number | null;
+  style?: string | null;
 }
 
 export interface ImageBlockUpdateInput {
@@ -426,6 +432,7 @@ export interface ImageBlockUpdateInput {
   scale?: number | null;
   focalTop?: number | null;
   focalLeft?: number | null;
+  style?: string | null;
 }
 
 export interface IntegrationGrowthSpacesCreateInput {
@@ -576,17 +583,20 @@ export interface RadioOptionBlockCreateInput {
   journeyId: string;
   parentBlockId: string;
   label: string;
+  style?: string | null;
 }
 
 export interface RadioOptionBlockUpdateInput {
   parentBlockId?: string | null;
   label?: string | null;
+  style?: string | null;
 }
 
 export interface RadioQuestionBlockCreateInput {
   id?: string | null;
   journeyId: string;
   parentBlockId: string;
+  style?: string | null;
 }
 
 export interface RadioQuestionSubmissionEventCreateInput {
@@ -603,12 +613,14 @@ export interface SignUpBlockCreateInput {
   journeyId: string;
   parentBlockId: string;
   submitLabel: string;
+  style?: string | null;
 }
 
 export interface SignUpBlockUpdateInput {
   parentBlockId?: string | null;
   submitIconId?: string | null;
   submitLabel?: string | null;
+  style?: string | null;
 }
 
 export interface SignUpSubmissionEventCreateInput {
@@ -624,6 +636,7 @@ export interface SpacerBlockCreateInput {
   journeyId: string;
   parentBlockId: string;
   spacing?: number | null;
+  style?: string | null;
 }
 
 export interface StepBlockCreateInput {
@@ -686,6 +699,7 @@ export interface TextResponseBlockCreateInput {
   journeyId: string;
   parentBlockId: string;
   label: string;
+  style?: string | null;
 }
 
 export interface TextResponseBlockUpdateInput {
@@ -698,6 +712,7 @@ export interface TextResponseBlockUpdateInput {
   routeId?: string | null;
   type?: TextResponseType | null;
   integrationId?: string | null;
+  style?: string | null;
 }
 
 export interface TextResponseSubmissionEventCreateInput {
@@ -716,6 +731,7 @@ export interface TypographyBlockCreateInput {
   variant?: TypographyVariant | null;
   color?: TypographyColor | null;
   align?: TypographyAlign | null;
+  style?: string | null;
 }
 
 export interface TypographyBlockUpdateInput {
@@ -724,6 +740,7 @@ export interface TypographyBlockUpdateInput {
   variant?: TypographyVariant | null;
   color?: TypographyColor | null;
   align?: TypographyAlign | null;
+  style?: string | null;
 }
 
 export interface UserInviteCreateInput {
@@ -759,6 +776,7 @@ export interface VideoBlockCreateInput {
   fullsize?: boolean | null;
   isCover?: boolean | null;
   objectFit?: VideoBlockObjectFit | null;
+  style?: string | null;
 }
 
 export interface VideoBlockUpdateInput {
@@ -773,6 +791,7 @@ export interface VideoBlockUpdateInput {
   posterBlockId?: string | null;
   fullsize?: boolean | null;
   objectFit?: VideoBlockObjectFit | null;
+  style?: string | null;
 }
 
 export interface VideoCollapseEventCreateInput {

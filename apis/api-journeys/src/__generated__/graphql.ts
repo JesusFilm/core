@@ -138,6 +138,8 @@ export type ButtonBlock = Block & {
   parentOrder?: Maybe<Scalars['Int']['output']>;
   size?: Maybe<ButtonSize>;
   startIconId?: Maybe<Scalars['ID']['output']>;
+  /** style is a css style for the button */
+  style?: Maybe<Scalars['String']['output']>;
   submitEnabled?: Maybe<Scalars['Boolean']['output']>;
   variant?: Maybe<ButtonVariant>;
 };
@@ -149,6 +151,7 @@ export type ButtonBlockCreateInput = {
   label: Scalars['String']['input'];
   parentBlockId: Scalars['ID']['input'];
   size?: InputMaybe<ButtonSize>;
+  style?: InputMaybe<Scalars['String']['input']>;
   submitEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   variant?: InputMaybe<ButtonVariant>;
 };
@@ -160,6 +163,7 @@ export type ButtonBlockUpdateInput = {
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   size?: InputMaybe<ButtonSize>;
   startIconId?: InputMaybe<Scalars['ID']['input']>;
+  style?: InputMaybe<Scalars['String']['input']>;
   submitEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   variant?: InputMaybe<ButtonVariant>;
 };
@@ -243,6 +247,8 @@ export type CardBlock = Block & {
   journeyId: Scalars['ID']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
+  /** style is a css style for the block */
+  style?: Maybe<Scalars['String']['output']>;
   /**
    * themeMode can override journey themeMode. If nothing is set then use
    * themeMode from journey
@@ -261,6 +267,7 @@ export type CardBlockCreateInput = {
   id?: InputMaybe<Scalars['ID']['input']>;
   journeyId: Scalars['ID']['input'];
   parentBlockId: Scalars['ID']['input'];
+  style?: InputMaybe<Scalars['String']['input']>;
   themeMode?: InputMaybe<ThemeMode>;
   themeName?: InputMaybe<ThemeName>;
 };
@@ -270,6 +277,7 @@ export type CardBlockUpdateInput = {
   coverBlockId?: InputMaybe<Scalars['ID']['input']>;
   fullscreen?: InputMaybe<Scalars['Boolean']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
+  style?: InputMaybe<Scalars['String']['input']>;
   themeMode?: InputMaybe<ThemeMode>;
   themeName?: InputMaybe<ThemeName>;
 };
@@ -638,6 +646,8 @@ export type IconBlock = Block & {
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
   size?: Maybe<IconSize>;
+  /** style is a css style for the icon */
+  style?: Maybe<Scalars['String']['output']>;
 };
 
 export type IconBlockCreateInput = {
@@ -648,12 +658,14 @@ export type IconBlockCreateInput = {
   name?: InputMaybe<IconName>;
   parentBlockId: Scalars['ID']['input'];
   size?: InputMaybe<IconSize>;
+  style?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type IconBlockUpdateInput = {
   color?: InputMaybe<IconColor>;
   name?: InputMaybe<IconName>;
   size?: InputMaybe<IconSize>;
+  style?: InputMaybe<Scalars['String']['input']>;
 };
 
 export enum IconColor {
@@ -723,6 +735,8 @@ export type ImageBlock = Block & {
   parentOrder?: Maybe<Scalars['Int']['output']>;
   scale?: Maybe<Scalars['Int']['output']>;
   src?: Maybe<Scalars['String']['output']>;
+  /** style is a css style for the image */
+  style?: Maybe<Scalars['String']['output']>;
   width: Scalars['Int']['output'];
 };
 
@@ -741,6 +755,7 @@ export type ImageBlockCreateInput = {
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   scale?: InputMaybe<Scalars['Int']['input']>;
   src?: InputMaybe<Scalars['String']['input']>;
+  style?: InputMaybe<Scalars['String']['input']>;
   width?: InputMaybe<Scalars['Int']['input']>;
 };
 
@@ -754,6 +769,7 @@ export type ImageBlockUpdateInput = {
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   scale?: InputMaybe<Scalars['Int']['input']>;
   src?: InputMaybe<Scalars['String']['input']>;
+  style?: InputMaybe<Scalars['String']['input']>;
   width?: InputMaybe<Scalars['Int']['input']>;
 };
 
@@ -3406,6 +3422,8 @@ export type RadioOptionBlock = Block & {
   label: Scalars['String']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
+  /** style is a css style for the radio option */
+  style?: Maybe<Scalars['String']['output']>;
 };
 
 export type RadioOptionBlockCreateInput = {
@@ -3413,11 +3431,13 @@ export type RadioOptionBlockCreateInput = {
   journeyId: Scalars['ID']['input'];
   label: Scalars['String']['input'];
   parentBlockId: Scalars['ID']['input'];
+  style?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type RadioOptionBlockUpdateInput = {
   label?: InputMaybe<Scalars['String']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
+  style?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type RadioQuestionBlock = Block & {
@@ -3426,12 +3446,15 @@ export type RadioQuestionBlock = Block & {
   journeyId: Scalars['ID']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
+  /** style is a css style for the radio question container */
+  style?: Maybe<Scalars['String']['output']>;
 };
 
 export type RadioQuestionBlockCreateInput = {
   id?: InputMaybe<Scalars['ID']['input']>;
   journeyId: Scalars['ID']['input'];
   parentBlockId: Scalars['ID']['input'];
+  style?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type RadioQuestionSubmissionEvent = Event & {
@@ -3540,6 +3563,8 @@ export type SignUpBlock = Block & {
   journeyId: Scalars['ID']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
+  /** style is a css style for the sign up block */
+  style?: Maybe<Scalars['String']['output']>;
   submitIconId?: Maybe<Scalars['ID']['output']>;
   submitLabel?: Maybe<Scalars['String']['output']>;
 };
@@ -3548,11 +3573,13 @@ export type SignUpBlockCreateInput = {
   id?: InputMaybe<Scalars['ID']['input']>;
   journeyId: Scalars['ID']['input'];
   parentBlockId: Scalars['ID']['input'];
+  style?: InputMaybe<Scalars['String']['input']>;
   submitLabel: Scalars['String']['input'];
 };
 
 export type SignUpBlockUpdateInput = {
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
+  style?: InputMaybe<Scalars['String']['input']>;
   submitIconId?: InputMaybe<Scalars['ID']['input']>;
   submitLabel?: InputMaybe<Scalars['String']['input']>;
 };
@@ -3623,6 +3650,8 @@ export type SpacerBlock = Block & {
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
   spacing?: Maybe<Scalars['Int']['output']>;
+  /** style is a css style for the spacer block */
+  style?: Maybe<Scalars['String']['output']>;
 };
 
 export type SpacerBlockCreateInput = {
@@ -3630,11 +3659,13 @@ export type SpacerBlockCreateInput = {
   journeyId: Scalars['ID']['input'];
   parentBlockId: Scalars['ID']['input'];
   spacing?: InputMaybe<Scalars['Int']['input']>;
+  style?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type SpacerBlockUpdateInput = {
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   spacing?: InputMaybe<Scalars['Int']['input']>;
+  style?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type StepBlock = Block & {
@@ -3884,6 +3915,8 @@ export type TextResponseBlock = Block & {
   placeholder?: Maybe<Scalars['String']['output']>;
   required?: Maybe<Scalars['Boolean']['output']>;
   routeId?: Maybe<Scalars['String']['output']>;
+  /** style is a css style for the text response block */
+  style?: Maybe<Scalars['String']['output']>;
   type?: Maybe<TextResponseType>;
 };
 
@@ -3892,6 +3925,7 @@ export type TextResponseBlockCreateInput = {
   journeyId: Scalars['ID']['input'];
   label: Scalars['String']['input'];
   parentBlockId: Scalars['ID']['input'];
+  style?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type TextResponseBlockUpdateInput = {
@@ -3903,6 +3937,7 @@ export type TextResponseBlockUpdateInput = {
   placeholder?: InputMaybe<Scalars['String']['input']>;
   required?: InputMaybe<Scalars['Boolean']['input']>;
   routeId?: InputMaybe<Scalars['String']['input']>;
+  style?: InputMaybe<Scalars['String']['input']>;
   type?: InputMaybe<TextResponseType>;
 };
 
@@ -3979,6 +4014,8 @@ export type TypographyBlock = Block & {
   journeyId: Scalars['ID']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
+  /** style is a css style for the typography block */
+  style?: Maybe<Scalars['String']['output']>;
   variant?: Maybe<TypographyVariant>;
 };
 
@@ -3989,6 +4026,7 @@ export type TypographyBlockCreateInput = {
   id?: InputMaybe<Scalars['ID']['input']>;
   journeyId: Scalars['ID']['input'];
   parentBlockId: Scalars['ID']['input'];
+  style?: InputMaybe<Scalars['String']['input']>;
   variant?: InputMaybe<TypographyVariant>;
 };
 
@@ -3997,6 +4035,7 @@ export type TypographyBlockUpdateInput = {
   color?: InputMaybe<TypographyColor>;
   content?: InputMaybe<Scalars['String']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
+  style?: InputMaybe<Scalars['String']['input']>;
   variant?: InputMaybe<TypographyVariant>;
 };
 
@@ -4381,6 +4420,8 @@ export type VideoBlock = Block & {
   source: VideoBlockSource;
   /** startAt dictates at which point of time the video should start playing */
   startAt?: Maybe<Scalars['Int']['output']>;
+  /** style is a css style for the video block */
+  style?: Maybe<Scalars['String']['output']>;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -4435,6 +4476,7 @@ export type VideoBlockCreateInput = {
   source?: InputMaybe<VideoBlockSource>;
   /** startAt dictates at which point of time the video should start playing */
   startAt?: InputMaybe<Scalars['Int']['input']>;
+  style?: InputMaybe<Scalars['String']['input']>;
   /**
    * internal source videos: videoId and videoVariantLanguageId both need to be set
    * to select a video.
@@ -4503,6 +4545,7 @@ export type VideoBlockUpdateInput = {
   source?: InputMaybe<VideoBlockSource>;
   /** startAt dictates at which point of time the video should start playing */
   startAt?: InputMaybe<Scalars['Int']['input']>;
+  style?: InputMaybe<Scalars['String']['input']>;
   /**
    * internal source videos: videoId and videoVariantLanguageId both need to be set
    * to select a video.
