@@ -66,7 +66,7 @@ export function NewContentPage(): ReactElement {
   const watchUrl = getWatchUrl(container?.slug, label, variant?.slug)
 
   const { loading, children } = useVideoChildren(variantSlug)
-  const realChildren = children.filter((video) => video.variant !== null)
+  const filteredChildren = children.filter((video) => video.variant !== null)
 
   const questions =
     studyQuestions.length > 0
@@ -136,7 +136,7 @@ export function NewContentPage(): ReactElement {
       >
         <ContentPageBlurFilter>
           <VideoCarousel
-            videos={realChildren}
+            videos={filteredChildren}
             containerSlug={container?.slug ?? videoSlug}
             activeVideoId={id}
           />

@@ -4,11 +4,14 @@ import Stack from '@mui/material/Stack'
 import { alpha, styled } from '@mui/material/styles'
 import SvgIcon from '@mui/material/SvgIcon'
 import Typography from '@mui/material/Typography'
+import Image from 'next/image'
 import { ReactElement } from 'react'
 import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { VideoContentFields_bibleCitations as BibleCitation } from '../../../../__generated__/VideoContentFields'
+
+const DEFAULT_COLLECTION_ID = '4924556'
 
 const StyledSwiper = styled(Swiper)({})
 const StyledSwiperSlide = styled(SwiperSlide)({ maxWidth: '400px' })
@@ -110,6 +113,16 @@ export function BibleCitations({
           <StyledSwiperSlide key={i}>
             <CitationCard>
               <Box sx={{ p: 8 }}>
+                {/* <Image
+                  fill
+                  src={`https://source.unsplash.com/random`}
+                  alt="Bible Citation"
+                  style={{
+                    objectFit: 'cover'
+                  }}
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                /> */}
+
                 <Typography
                   sx={{
                     fontFamily: 'Montserrat',
