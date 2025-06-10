@@ -65,9 +65,8 @@ export async function createR2Asset({
  * Uploads a file to R2 using the best method for the file size.
  * For files <100MB, uses a single PUT to the pre-signed URL.
  * For files >=100MB, uses multipart upload via S3 API.
- * @param uploadUrl Pre-signed PUT URL (for small files)
+ * @param uploadUrl Pre-signed PUT URL (for small files and key extraction)
  * @param bucket R2 bucket name (for multipart)
- * @param key R2 object key (for multipart)
  * @param filePath Local file path
  * @param contentType MIME type
  * @param contentLength File size in bytes
@@ -75,18 +74,19 @@ export async function createR2Asset({
 export async function uploadToR2({
   uploadUrl,
   bucket,
-  key,
   filePath,
   contentType,
   contentLength
 }: {
   uploadUrl: string
   bucket: string
-  key: string
   filePath: string
   contentType: string
   contentLength: number
 }) {
+  // Extract the key from the uploadUrl for multipart uploads
+  const url = new URL(uploadUrl)
+  const key = url.pathname.substring(1) // Remove leading slash
   if (contentLength < MULTIPART_THRESHOLD) {
     // Single PUT for small files
     console.log('[R2 Service] Using single PUT upload.')

@@ -122,9 +122,10 @@ async function main() {
       console.log('   ☁️  Preparing Cloudflare R2 asset...')
 
       const videoVariantId = `${languageId}_${videoId}`
+      const fileName = `${videoId}/variants/${languageId}/videos/${uuidv4()}/${videoVariantId}.mp4`
 
       const r2Asset = await createR2Asset({
-        fileName: `${videoId}/variants/${languageId}/videos/${uuidv4()}/${videoVariantId}.mp4`,
+        fileName,
         contentType,
         originalFilename,
         videoId,
@@ -136,7 +137,6 @@ async function main() {
       await uploadToR2({
         uploadUrl: r2Asset.uploadUrl,
         bucket: process.env.CLOUDFLARE_R2_BUCKET!,
-        key: originalFilename,
         filePath,
         contentType,
         contentLength
