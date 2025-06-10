@@ -27,8 +27,9 @@ export const VIDEO_FILENAME_REGEX =
   /^([^.]+?)---([^.]+?)---([^-]+)(?:---([^-]+))*\.mp4$/
 
 async function main() {
-  const runningInPkg = !!(process as any).pkg
-  const defaultFolderPath = runningInPkg
+  // Check if running in a Single Executable Application
+  const runningInSEA = require('node:sea').isSea()
+  const defaultFolderPath = runningInSEA
     ? path.dirname(process.execPath)
     : process.cwd()
 

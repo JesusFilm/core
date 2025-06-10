@@ -17,10 +17,20 @@
         "command": "npx ts-node apps/video-importer/src/video-importer.ts --folder apps/video-importer/test-videos"
       }
     },
+    "bundle": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "esbuild apps/video-importer/src/video-importer.ts --bundle --outfile=dist/apps/video-importer/video-importer-bundled.js --platform=node --target=node22 --format=cjs"
+      }
+    },
     "package": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "nx run video-importer:build && pkg dist/apps/video-importer/video-importer.js --targets node18-macos-x64,node18-win-x64 --compress GZip --out-path dist/apps/video-importer-executable"
+        "commands": [
+          "nx run video-importer:bundle",
+          "cd apps/video-importer && ./build-scripts/build-cross-platform.sh"
+        ],
+        "parallel": false
       }
     }
   },
