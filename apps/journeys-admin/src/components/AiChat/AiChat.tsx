@@ -1,9 +1,14 @@
 import { useChat } from '@ai-sdk/react'
 import { useApolloClient } from '@apollo/client'
 import Box from '@mui/material/Box'
-import { LanguageModelUsage } from 'ai'
+import {
+  ChatRequestOptions,
+  CreateMessage,
+  LanguageModelUsage,
+  Message
+} from 'ai'
 import { useUser } from 'next-firebase-auth'
-import { ReactElement, useCallback, useMemo, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -30,22 +35,6 @@ export function AiChat({
   } = useEditor()
   const [usage, setUsage] = useState<LanguageModelUsage | null>(null)
   const [systemPrompt, setSystemPrompt] = useState<string>('')
-  const getSystemPromptWithContext = useCallback((): string => {
-    let systemPromptWithContext = systemPrompt
-
-    if (journey == null) return systemPromptWithContext
-
-    systemPromptWithContext = `${systemPromptWithContext}\n\nThe current journey ID is ${journey?.id}. You can use this to get the journey and update it. RUN THE GET JOURNEY TOOL FIRST IF YOU DO NOT HAVE THE JOURNEY ALREADY. \n\n ${JSON.stringify(journey)}`
-
-    if (selectedStepId != null)
-      systemPromptWithContext = `${systemPromptWithContext}\n\nThe current step ID is ${selectedStepId}. You can use this to get the step and update it.`
-
-    if (systemPromptFooter != null)
-      systemPromptWithContext = `${systemPromptWithContext}\n\n${systemPromptFooter}`
-
-    return systemPromptWithContext
-  }, [journey, selectedStepId, systemPrompt, systemPromptFooter])
-
   const [waitForToolResult, setWaitForToolResult] = useState(false)
 
   const {
@@ -61,16 +50,13 @@ export function AiChat({
     error,
     reload
   } = useChat({
-    initialMessages: useMemo(
-      () => [
-        {
-          id: uuidv4(),
-          role: 'system',
-          content: getSystemPromptWithContext()
-        }
-      ],
-      [getSystemPromptWithContext]
-    ),
+    initialMessages: [
+      {
+        id: uuidv4(),
+        role: 'system',
+        content: ''
+      }
+    ],
     fetch: fetchWithAuthorization,
     maxSteps: 50,
     credentials: 'omit',
@@ -116,15 +102,36 @@ export function AiChat({
     })
   }
 
-  function handleSystemPromptChange(systemPrompt: string): void {
-    setSystemPrompt(systemPrompt)
-    setMessages(
-      messages.map((message) =>
-        message.role === 'system'
-          ? { ...message, content: getSystemPromptWithContext() }
-          : message
-      )
-    )
+  function updateSystemPromptMessage(): void {
+    let content = systemPrompt
+
+    if (journey != null)
+      content = `${content}\n\nThe current journey ID is ${journey?.id}. You can use this to get the journey and update it. RUN THE GET JOURNEY TOOL FIRST IF YOU DO NOT HAVE THE JOURNEY ALREADY. \n\n ${JSON.stringify(journey)}`
+
+    if (selectedStepId != null)
+      content = `${content}\n\nThe current step ID is ${selectedStepId}. You can use this to get the step and update it.`
+
+    if (systemPromptFooter != null)
+      content = `${content}\n\n${systemPromptFooter}`
+
+    const [systemMessage, ...rest] = messages
+    setMessages([{ ...systemMessage, content }, ...rest])
+  }
+
+  function handleSubmitBeforeUseChat(
+    event?: { preventDefault?: () => void },
+    chatRequestOptions?: ChatRequestOptions
+  ): void {
+    updateSystemPromptMessage()
+    handleSubmit(event, chatRequestOptions)
+  }
+
+  function handleAppendBeforeUseChat(
+    message: Message | CreateMessage,
+    chatRequestOptions?: ChatRequestOptions
+  ): Promise<string | null | undefined> {
+    updateSystemPromptMessage()
+    return append(message, chatRequestOptions)
   }
 
   return (
@@ -155,7 +162,7 @@ export function AiChat({
         <StateLoading status={status} />
         <StateEmpty
           messages={messages.filter((message) => message.role !== 'system')}
-          append={append}
+          append={handleAppendBeforeUseChat}
         />
         <StateError error={error} reload={reload} />
         <MessageList messages={messages} addToolResult={handleAddToolResult} />
@@ -172,13 +179,13 @@ export function AiChat({
       <Form
         input={input}
         usage={usage}
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmitBeforeUseChat}
         onInputChange={handleInputChange}
         error={error}
         status={status}
         stop={stop}
         systemPrompt={systemPrompt}
-        onSystemPromptChange={handleSystemPromptChange}
+        onSystemPromptChange={setSystemPrompt}
         waitForToolResult={waitForToolResult}
       />
     </>
