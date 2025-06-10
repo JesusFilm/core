@@ -93,7 +93,6 @@ export const CollectionsVideoContent = ({
             questions={questions}
             questionsTitle={questionsTitle}
             askButtonText={askButtonText}
-            onOpenDialog={onOpenDialog}
           />
         )}
       </div>

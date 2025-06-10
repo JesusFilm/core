@@ -1,6 +1,3 @@
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
@@ -24,61 +21,31 @@ export function DiscussionQuestions({
     setOpenQuestion(openQuestion === idx ? null : idx)
   }
 
-  const handleAskQuestionClick = (): void => {
-    window.open(
-      'https://issuesiface.com/talk?utm_source=jesusfilm-watch',
-      '_blank'
-    )
-  }
-
   return (
-    <Box data-testid="ContentDiscussionQuestions">
-      <Box sx={{ pt: 4 }}>
-        <Box
-          sx={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            mb: 6,
-            px: 2
-          }}
-        >
+    <div data-testid="ContentDiscussionQuestions">
+      <div className="pt-4">
+        <div className="flex flex-wrap items-center justify-between mb-6 px-2">
           <h4 className="text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-red-100/70">
             {t('Related questions')}
           </h4>
           <a
             href="https://issuesiface.com/talk?utm_source=jesusfilm-watch"
             target="_blank"
+            rel="noopener noreferrer"
           >
-            <Button
-              size="xsmall"
-              onClick={handleAskQuestionClick}
+            <button
               data-testid="AskQuestionButton"
-              rel="noopener noreferrer"
               aria-label={t('Ask a question')}
               tabIndex={0}
-              startIcon={<MessageCircle sx={{ fontSize: 16 }} />}
-              sx={{
-                borderRadius: '64px',
-                color: 'text.primary',
-                fontWeight: 'bold',
-                textTransform: 'uppercase',
-                letterSpacing: '0.1em',
-                bgcolor: 'white',
-                '&:hover': {
-                  bgcolor: 'primary.main',
-                  color: 'common.white'
-                },
-                transition: 'colors 0.2s'
-              }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white text-gray-900 font-bold text-xs uppercase tracking-wider transition-colors duration-200 hover:bg-blue-600 hover:text-white"
             >
+              <MessageCircle className="w-4 h-4" />
               {t('Ask yours')}
-            </Button>
+            </button>
           </a>
-        </Box>
+        </div>
 
-        <Box sx={{ position: 'relative' }}>
+        <div className="relative">
           {questions.map((q, i) => (
             <Question
               key={i}
@@ -90,8 +57,8 @@ export function DiscussionQuestions({
               )}
             />
           ))}
-        </Box>
-      </Box>
-    </Box>
+        </div>
+      </div>
+    </div>
   )
 }
