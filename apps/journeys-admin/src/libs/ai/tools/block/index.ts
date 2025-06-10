@@ -4,6 +4,10 @@ import { blockCardUpdate } from './card'
 import { blockDelete } from './delete'
 import { blockImageCreate, blockImageUpdate } from './image'
 import { blockRadioOptionCreate, blockRadioOptionUpdate } from './radioOption'
+import {
+  blockRadioQuestionCreate,
+  blockRadioQuestionUpdate
+} from './radioQuestion'
 import { blockStepCreate, blockStepUpdate } from './step'
 import { blockTypographyCreate, blockTypographyUpdate } from './typography'
 import { blockVideoCreate, blockVideoUpdate } from './video'
@@ -18,6 +22,8 @@ export const tools = {
   blockImageUpdate,
   blockRadioOptionCreate,
   blockRadioOptionUpdate,
+  blockRadioQuestionCreate,
+  blockRadioQuestionUpdate,
   blockStepCreate,
   blockStepUpdate,
   blockTypographyCreate,

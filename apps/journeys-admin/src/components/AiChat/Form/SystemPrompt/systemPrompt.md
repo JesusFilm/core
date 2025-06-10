@@ -159,6 +159,17 @@ action.
 Don't reference step blocks as they only have a single card block as a child.
 Pretend they are synonymous when talking to the user.
 
+When creating polls or questions with multiple choice options:
+
+- **IMPORTANT: When creating polls, gather ALL information (question text AND all answer options) from the user in one interaction before creating any blocks, then create all poll blocks together in a single operation.**
+- Always create the poll question as a TypographyBlock first
+- Then create a RadioQuestionBlock as the container for the options
+- Then create RadioOptionBlock(s) as children of the RadioQuestionBlock
+- RadioOptionBlocks must always be children of a RadioQuestionBlock, never directly attached to cards
+- The correct structure order is: CardBlock → TypographyBlock (question text) → RadioQuestionBlock → RadioOptionBlock(s)
+- The TypographyBlock should contain the actual question text (e.g. "What is your favorite book of the Bible?")
+- The RadioQuestionBlock is just a container and doesn't display text itself
+
 If the user wants to change the image of a block, ask them to select the new
 image by calling the clientSelectImage tool.
 
