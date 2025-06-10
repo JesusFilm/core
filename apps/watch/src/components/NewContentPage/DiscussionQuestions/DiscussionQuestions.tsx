@@ -37,7 +37,7 @@ export function DiscussionQuestions({
               data-testid="AskQuestionButton"
               aria-label={t('Ask a question')}
               tabIndex={0}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white text-gray-900 font-bold text-xs uppercase tracking-wider transition-colors duration-200 hover:bg-blue-600 hover:text-white"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white text-gray-900 font-bold text-xs uppercase tracking-wider transition-colors duration-200 hover:bg-[#cb333b] hover:text-white cursor-pointer"
             >
               <MessageCircle className="w-4 h-4" />
               {t('Ask yours')}

@@ -1,7 +1,3 @@
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
@@ -27,20 +23,6 @@ import { ContentMetadata } from './ContentMetadata'
 import { ContentPageBlurFilter } from './ContentPageBlurFilter'
 import { DiscussionQuestions } from './DiscussionQuestions'
 import { VideoCarousel } from './VideoCarousel'
-
-const xsmallStyles = {
-  borderRadius: '64px',
-  color: 'text.primary',
-  fontWeight: 'bold',
-  textTransform: 'uppercase',
-  letterSpacing: '0.1em',
-  bgcolor: 'white',
-  '&:hover': {
-    bgcolor: 'primary.main',
-    color: 'common.white'
-  },
-  transition: 'colors 0.2s'
-}
 
 export function NewContentPage(): ReactElement {
   const { t } = useTranslation('apps-watch')
@@ -140,63 +122,38 @@ export function NewContentPage(): ReactElement {
             containerSlug={container?.slug ?? videoSlug}
             activeVideoId={id}
           />
-          <Stack
+          <div
             data-testid="ContentPageContent"
-            gap={10}
-            sx={{
-              py: 10,
-              zIndex: 1,
-              px: { xs: 4, sm: 6, md: 8, lg: 10, xl: 12 },
-              maxWidth: '1920px',
-              width: '100%',
-              mx: 'auto'
-            }}
+            className="flex flex-col gap-20 py-20 z-10 px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 max-w-[1920px] w-full mx-auto"
           >
-            <Box
-              sx={{
-                display: 'grid',
-                gridTemplateColumns: { xs: '1fr', xl: '3fr 2fr' },
-                flexWrap: 'wrap',
-                zIndex: 1,
-                gap: 10
-              }}
-            >
+            <div className="grid grid-cols-1 xl:grid-cols-[3fr_2fr] z-10 gap-20">
               <ContentMetadata
                 title={title[0].value}
                 description={description[0].value}
                 label={label}
               />
               <DiscussionQuestions questions={questions} />
-            </Box>
-            <Stack
-              sx={{
-                zIndex: 1
-              }}
-              direction="row"
-              spacing={2}
-              justifyContent="space-between"
-            >
+            </div>
+            <div className="z-10 flex flex-row gap-2 justify-between">
               <h3 className="text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-red-100/70">
                 {t('Bible Quotes')}
               </h3>
-              <Stack direction="row" spacing={2}>
-                <Button
-                  size="xsmall"
-                  startIcon={<LinkExternal sx={{ fontSize: 16 }} />}
+              <div className="flex flex-row gap-2">
+                <button
                   onClick={() => setShowShare(true)}
-                  sx={xsmallStyles}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-gray-900 font-bold uppercase tracking-wider bg-white hover:bg-[#cb333b] hover:text-white transition-colors duration-200 text-sm cursor-pointer"
                 >
+                  <LinkExternal className="w-4 h-4" />
                   {t('Share')}
-                </Button>
-                <Button
-                  size="xsmall"
-                  startIcon={<Download2 sx={{ fontSize: 16 }} />}
+                </button>
+                <button
                   onClick={() => setShowDownload(true)}
-                  sx={xsmallStyles}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-gray-900 font-bold uppercase tracking-wider bg-white hover:bg-[#cb333b] hover:text-white transition-colors duration-200 text-sm cursor-pointer"
                 >
+                  <Download2 className="w-4 h-4" />
                   {t('Download')}
-                </Button>
-              </Stack>
+                </button>
+              </div>
               <DownloadDialog
                 open={showDownload}
                 onClose={() => setShowDownload(false)}
@@ -205,7 +162,7 @@ export function NewContentPage(): ReactElement {
                 open={showShare}
                 onClose={() => setShowShare(false)}
               />
-            </Stack>
+            </div>
             <BibleCitations
               bibleCitations={bibleCitations}
               freeResource={{
@@ -220,7 +177,7 @@ export function NewContentPage(): ReactElement {
                 }
               }}
             />
-          </Stack>
+          </div>
         </ContentPageBlurFilter>
       </PageWrapper>
     </>
