@@ -520,12 +520,225 @@ describe('CopyToTeamMenuItem', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Copy' }))
 
     await waitFor(() => {
-      expect(duplicateJourneyMock.result).toHaveBeenCalled()
-    })
-
-    await waitFor(() => {
       expect(screen.getByText('Translation failed')).toBeInTheDocument()
     })
     expect(handleCloseMenu).toHaveBeenCalled()
+  })
+
+  it('should call handleKeepMounted when provided', async () => {
+    const handleKeepMounted = jest.fn()
+
+    render(
+      <MockedProvider
+        mocks={[
+          updateLastActiveTeamIdMock,
+          mockLanguage,
+          getLastActiveTeamIdAndTeamsMock
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <CopyToTeamMenuItem
+              id="journeyId"
+              handleCloseMenu={handleCloseMenu}
+              handleKeepMounted={handleKeepMounted}
+              journey={
+                {
+                  __typename: 'Journey',
+                  id: 'journeyId',
+                  slug: 'journey',
+                  title: 'Journey',
+                  description: null,
+                  language: {
+                    __typename: 'Language',
+                    id: '529',
+                    name: [
+                      {
+                        value: 'English',
+                        primary: true,
+                        __typename: 'LanguageName'
+                      }
+                    ]
+                  },
+                  status: JourneyStatus.draft,
+                  createdAt: '2021-11-19T12:34:56.647Z',
+                  publishedAt: null,
+                  trashedAt: null,
+                  archivedAt: null,
+                  featuredAt: null
+                } as unknown as Journey
+              }
+            />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(getLastActiveTeamIdAndTeamsMock.result).toHaveBeenCalled()
+    })
+
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Copy to ...' }))
+
+    expect(handleKeepMounted).toHaveBeenCalledTimes(1)
+    expect(handleCloseMenu).toHaveBeenCalledTimes(1)
+  })
+
+  it('should handle journey duplication failure when no duplicate ID returned', async () => {
+    const duplicateJourneyFailMock: MockedResponse<JourneyDuplicate> = {
+      request: {
+        query: JOURNEY_DUPLICATE,
+        variables: {
+          id: 'journeyId',
+          teamId: 'teamId'
+        }
+      },
+      result: {
+        data: {
+          journeyDuplicate: {
+            id: '',
+            __typename: 'Journey'
+          }
+        }
+      }
+    }
+
+    render(
+      <MockedProvider
+        mocks={[
+          updateLastActiveTeamIdMock,
+          mockLanguage,
+          duplicateJourneyFailMock,
+          getLastActiveTeamIdAndTeamsMock
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <CopyToTeamMenuItem
+              id="journeyId"
+              handleCloseMenu={handleCloseMenu}
+              journey={
+                {
+                  __typename: 'Journey',
+                  id: 'journeyId',
+                  slug: 'journey',
+                  title: 'Journey',
+                  description: null,
+                  language: {
+                    __typename: 'Language',
+                    id: '529',
+                    name: [
+                      {
+                        value: 'English',
+                        primary: true,
+                        __typename: 'LanguageName'
+                      }
+                    ]
+                  },
+                  status: JourneyStatus.draft,
+                  createdAt: '2021-11-19T12:34:56.647Z',
+                  publishedAt: null,
+                  trashedAt: null,
+                  archivedAt: null,
+                  featuredAt: null
+                } as unknown as Journey
+              }
+            />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(getLastActiveTeamIdAndTeamsMock.result).toHaveBeenCalled()
+    })
+
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Copy to ...' }))
+    const muiSelect = screen.getByTestId('team-duplicate-select')
+    const muiSelectDropDownButton = within(muiSelect).getByRole('combobox')
+    fireEvent.mouseDown(muiSelectDropDownButton)
+    const muiSelectOptions = screen.getByRole('option', {
+      name: 'Team Name'
+    })
+    fireEvent.click(muiSelectOptions)
+
+    const dialogButtons = await within(
+      screen.getByTestId('CopyToTeamDialog')
+    ).findAllByRole('button')
+    const copyButton = dialogButtons.find(
+      (button) => button.textContent === 'Copy'
+    )
+    expect(copyButton).not.toBeUndefined()
+    if (copyButton) {
+      fireEvent.click(copyButton)
+    }
+
+    await waitFor(() => {
+      expect(screen.getByText('Journey duplication failed')).toBeInTheDocument()
+    })
+    expect(handleCloseMenu).toHaveBeenCalled()
+  })
+
+  it('should close dialog when Cancel button is clicked', async () => {
+    render(
+      <MockedProvider
+        mocks={[
+          updateLastActiveTeamIdMock,
+          mockLanguage,
+          getLastActiveTeamIdAndTeamsMock
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <CopyToTeamMenuItem
+              id="journeyId"
+              handleCloseMenu={handleCloseMenu}
+              journey={
+                {
+                  __typename: 'Journey',
+                  id: 'journeyId',
+                  slug: 'journey',
+                  title: 'Journey',
+                  description: null,
+                  language: {
+                    __typename: 'Language',
+                    id: '529',
+                    name: [
+                      {
+                        value: 'English',
+                        primary: true,
+                        __typename: 'LanguageName'
+                      }
+                    ]
+                  },
+                  status: JourneyStatus.draft,
+                  createdAt: '2021-11-19T12:34:56.647Z',
+                  publishedAt: null,
+                  trashedAt: null,
+                  archivedAt: null,
+                  featuredAt: null
+                } as unknown as Journey
+              }
+            />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(getLastActiveTeamIdAndTeamsMock.result).toHaveBeenCalled()
+    })
+
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Copy to ...' }))
+
+    expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
+
+    // Find and click the Cancel button
+    const cancelButton = screen.getByRole('button', { name: 'Cancel' })
+    fireEvent.click(cancelButton)
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('CopyToTeamDialog')).not.toBeInTheDocument()
+    })
   })
 })

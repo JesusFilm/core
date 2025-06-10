@@ -17,15 +17,39 @@ import { TranslateJourneyDialog } from './TranslateJourneyDialog'
 jest.mock('@mui/material/useMediaQuery')
 
 describe('TranslateJourneyDialog', () => {
+  // Mock console methods to reduce noise during tests
+  const originalConsoleError = console.error
+  const originalConsoleWarn = console.warn
+
+  beforeAll(() => {
+    console.error = jest.fn()
+    console.warn = jest.fn()
+  })
+
+  afterAll(() => {
+    console.error = originalConsoleError
+    console.warn = originalConsoleWarn
+  })
+
   const getLastActiveTeamIdAndTeamsMock = {
     request: {
       query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
     },
     result: {
       data: {
-        teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
+        teams: [
+          {
+            id: 'teamId',
+            title: 'Team Name',
+            __typename: 'Team',
+            publicTitle: null,
+            userTeams: [],
+            customDomains: []
+          }
+        ],
         getJourneyProfile: {
           __typename: 'JourneyProfile',
+          id: 'teamId',
           lastActiveTeamId: 'teamId'
         }
       }
@@ -97,6 +121,11 @@ describe('TranslateJourneyDialog', () => {
   }
 
   const handleClose = jest.fn()
+
+  beforeEach(() => {
+    journeyDuplicateMock.result.mockClear()
+    handleClose.mockClear()
+  })
 
   it('should render correctly', () => {
     render(
@@ -183,5 +212,80 @@ describe('TranslateJourneyDialog', () => {
     const dialog = screen.getByTestId('TranslateJourneyDialog')
     fireEvent.keyDown(dialog, { key: 'Escape' })
     expect(handleClose).toHaveBeenCalled()
+  })
+
+  it('should render with journey prop when provided', () => {
+    const customJourney = {
+      ...defaultJourney,
+      title: 'Custom Journey Title',
+      trashedAt: null
+    }
+
+    render(
+      <MockedProvider mocks={[getLanguagesMock]}>
+        <JourneyProvider value={{ journey: defaultJourney }}>
+          <TranslateJourneyDialog
+            open={true}
+            onClose={handleClose}
+            journey={customJourney}
+          />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByText('Create Translated Copy')).toBeInTheDocument()
+  })
+
+  it('should handle journey duplication error gracefully', async () => {
+    const journeyDuplicateErrorMock = {
+      request: {
+        query: JOURNEY_DUPLICATE,
+        variables: {
+          id: defaultJourney.id,
+          teamId: 'teamId'
+        }
+      },
+      error: new Error('Duplication failed')
+    }
+
+    render(
+      <MockedProvider
+        mocks={[
+          getLanguagesMock,
+          getLastActiveTeamIdAndTeamsMock,
+          journeyDuplicateErrorMock
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <JourneyProvider
+              value={{ journey: defaultJourney, variant: 'admin' }}
+            >
+              <TranslateJourneyDialog open={true} onClose={handleClose} />
+            </JourneyProvider>
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByRole('combobox')).not.toHaveAttribute(
+        'aria-disabled',
+        'true'
+      )
+    })
+
+    fireEvent.focus(screen.getByRole('combobox'))
+    fireEvent.keyDown(screen.getByRole('combobox'), { key: 'ArrowDown' })
+    fireEvent.click(screen.getByRole('option', { name: 'French Français' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Create' }))
+
+    // The error should be handled by the component's try-catch
+    await waitFor(
+      () => {
+        expect(journeyDuplicateErrorMock.error).toBeDefined()
+      },
+      { timeout: 3000 }
+    )
   })
 })

@@ -1,7 +1,7 @@
 import { useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { CopyToTeamDialog } from '@core/journeys/ui/CopyToTeamDialog'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -62,10 +62,6 @@ export function CopyToTeamMenuItem({
   const [updateLastActiveTeamId, { client }] =
     useMutation<UpdateLastActiveTeamId>(UPDATE_LAST_ACTIVE_TEAM_ID)
   const [loading, setLoading] = useState(false)
-  const [translationProgress, setTranslationProgress] = useState<{
-    progress: number
-    message: string
-  } | null>(null)
   const [translationVariables, setTranslationVariables] = useState<
     | {
         journeyId: string
@@ -95,58 +91,37 @@ export function CopyToTeamMenuItem({
   }
 
   // Set up the subscription for translation
-  const { data: translationData, error: translationError } =
-    useJourneyAiTranslateSubscription({
-      variables: translationVariables,
-      skip: !translationVariables,
-      onData: ({ data }) => {
-        if (data.data?.journeyAiTranslateCreateSubscription) {
-          const progressData = data.data.journeyAiTranslateCreateSubscription
+  const { data: translationData } = useJourneyAiTranslateSubscription({
+    variables: translationVariables,
+    skip: !translationVariables,
+    onComplete: () => {
+      enqueueSnackbar(t('Journey Translated'), {
+        variant: 'success',
+        preventDuplicate: true
+      })
+      setLoading(false)
+      setTranslationVariables(undefined) // Reset to stop subscription
 
-          // Update progress
-          setTranslationProgress({
-            progress: progressData.progress ?? 0,
-            message: progressData.message ?? ''
-          })
-
-          // Check if translation is complete
-          if (progressData.journey && progressData.progress === 100) {
-            enqueueSnackbar(t('Journey Translated'), {
-              variant: 'success',
-              preventDuplicate: true
-            })
-            setLoading(false)
-            setTranslationProgress(null)
-            setTranslationVariables(undefined) // Reset to stop subscription
-
-            // Update team state when translation completes
-            if (selectedTeamId) {
-              updateTeamState(selectedTeamId)
-            }
-
-            handleCloseMenu() // Close menu when translation completes
-            setDuplicateTeamDialogOpen(false) // Close dialog when translation completes
-            setSelectedTeamId(null) // Reset selected team
-          }
-        }
+      // Update team state when translation completes
+      if (selectedTeamId) {
+        updateTeamState(selectedTeamId)
       }
-    })
-
-  // Handle translation errors
-  useEffect(() => {
-    if (translationError) {
-      enqueueSnackbar(translationError.message, {
+      handleCloseMenu() // Close menu when translation completes
+      setDuplicateTeamDialogOpen(false) // Close dialog when translation completes
+      setSelectedTeamId(null) // Reset selected team
+    },
+    onError(error) {
+      enqueueSnackbar(error.message, {
         variant: 'error',
         preventDuplicate: true
       })
       setLoading(false)
-      setTranslationProgress(null)
       setTranslationVariables(undefined)
       handleCloseMenu() // Close menu on translation error
       setDuplicateTeamDialogOpen(false) // Close dialog on translation error
       setSelectedTeamId(null) // Reset selected team
     }
-  }, [translationError, enqueueSnackbar, handleCloseMenu])
+  })
 
   const handleDuplicateJourney = async (
     teamId: string,
@@ -196,7 +171,6 @@ export function CopyToTeamMenuItem({
         // Don't close menu or dialog yet - wait for translation to complete
       } else {
         setLoading(false)
-        setTranslationProgress(null)
         setTranslationVariables(undefined)
         enqueueSnackbar(t('Journey duplication failed'), {
           variant: 'error',
@@ -207,7 +181,6 @@ export function CopyToTeamMenuItem({
       }
     } catch (error) {
       setLoading(false)
-      setTranslationProgress(null)
       setTranslationVariables(undefined)
       enqueueSnackbar(t('Journey duplication failed'), {
         variant: 'error',
@@ -239,7 +212,12 @@ export function CopyToTeamMenuItem({
           setDuplicateTeamDialogOpen(false)
         }}
         submitAction={handleDuplicateJourney}
-        translationProgress={translationProgress ?? undefined}
+        translationProgress={{
+          progress:
+            translationData?.journeyAiTranslateCreateSubscription.progress ?? 0,
+          message:
+            translationData?.journeyAiTranslateCreateSubscription.message ?? ''
+        }}
         shouldUpdateTeamState={false}
         isTranslating={translationVariables != null}
       />
