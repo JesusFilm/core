@@ -1,7 +1,3 @@
-import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
-import { lighten } from '@mui/material/styles'
-import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
 import { VideoLabel } from '../../../../__generated__/globalTypes'
@@ -21,17 +17,14 @@ export function ContentMetadata({
   const { label: labelText, color } = getLabelDetails(label)
 
   return (
-    <Box
-      data-testid="ContentMetadata"
-      sx={{
-        zIndex: 1,
-        position: 'relative'
-      }}
-    >
-      <Stack spacing={3}>
-        <Typography variant="overline2" color={color}>
+    <div data-testid="ContentMetadata" className="z-10 relative">
+      <div className="flex flex-col gap-3">
+        <span
+          className="text-sm font-bold leading-tight tracking-[0.14em] uppercase"
+          style={{ color }}
+        >
           {labelText}
-        </Typography>
+        </span>
         <h2 className="text-2xl xl:text-3xl 2xl:text-4xl font-bold mb-0">
           {title}
         </h2>
@@ -43,7 +36,7 @@ export function ContentMetadata({
             description.split(' ').slice(0, 3).join(' ').length
           )}
         </p>
-      </Stack>
-    </Box>
+      </div>
+    </div>
   )
 }
