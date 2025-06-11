@@ -81,7 +81,7 @@
   "Step {{number}}": "ステップ {{number}}",
   "Journey duplication failed": "旅の重複に失敗",
   "Journey Copied": "コピーされた旅",
-  "Journey Translated": "ジャーニー",
+  "Journey Copied - Translation will begin shortly": "コピーされた旅 - 翻訳はまもなく開始されます。",
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_other": "<0>旅のテンプレート</0><1>言語</1><2>{{count}} 言語</2>",
   "{{count}} more cards_other": "{{count}} その他のカード",
   "{{count}} Cards_other": "{{count}} カード",
