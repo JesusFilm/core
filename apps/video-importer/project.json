@@ -1,0 +1,28 @@
+{
+  "name": "video-importer",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/video-importer/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["tsc -p apps/video-importer/tsconfig.json"],
+        "parallel": false
+      }
+    },
+    "run": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx ts-node apps/video-importer/src/video-importer.ts --folder apps/video-importer/test-videos"
+      }
+    },
+    "package": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nx run video-importer:build && pkg dist/video-importer/video-importer.js --targets node22-linux-arm64,node22-macos-x64,node22-win-x64 --out-path dist-executables/video-importer"
+      }
+    }
+  },
+  "tags": []
+}

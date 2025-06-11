@@ -1013,6 +1013,9 @@ type VideoVariant {
 
   """version control for master video file"""
   version: Int!
+  masterUrl: String
+  masterHeight: Int
+  masterWidth: Int
 }
 
 input VideoVariantCreateInput {
@@ -1031,6 +1034,9 @@ input VideoVariantCreateInput {
   published: Boolean = true
   muxVideoId: String
   version: Int
+  masterUrl: String
+  masterHeight: Int
+  masterWidth: Int
 }
 
 type VideoVariantDownload {
@@ -1101,6 +1107,9 @@ input VideoVariantUpdateInput {
   published: Boolean
   muxVideoId: String
   version: Int
+  masterUrl: String
+  masterHeight: Int
+  masterWidth: Int
 }
 
 input VideosFilter {
