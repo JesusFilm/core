@@ -34,7 +34,6 @@
         "libs/shared/ui/src/components/*",
         "libs/shared/ui/src/libs/*"
       ],
-      "@core/shared/ui/shadcn": ["libs/shared/ui/src/components/shadcn/*"],
       "@core/yoga/*": ["libs/yoga/src/*"]
     }
   },
