@@ -81,7 +81,7 @@
   "Step {{number}}": "الخطوة {{number}}",
   "Journey duplication failed": "فشل ازدواجية الرحلة",
   "Journey Copied": "تم نسخ الرحلة",
-  "Journey Translated": "رحلة مترجمة",
+  "Journey Copied - Translation will begin shortly": "نُسخت الرحلة - ستبدأ الترجمة بعد قليل",
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_one": "<0>قوالب الرحلات</0><1>في</1><2>{{firstLanguage}}</2>",
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_two": "<0>قوالب الرحلات</0><1>باللغات</1><2>{{count}} اللغات</2>",
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_few": "<0>قوالب الرحلات</0><1>في</1><2>{{firstLanguage}}</2>",
