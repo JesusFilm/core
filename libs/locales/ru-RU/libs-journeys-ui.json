@@ -81,7 +81,7 @@
   "Step {{number}}": "Шаг {{number}}",
   "Journey duplication failed": "Дублирование путешествия не удалось",
   "Journey Copied": "Проект скопирован",
-  "Journey Translated": "Путешествие в переводе",
+  "Journey Copied - Translation will begin shortly": "Путешествие скопировано - перевод начнется в ближайшее время",
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_one": "<0>Шаблоны путешествий</0><1>в</1><2>{{firstLanguage}}</2>",
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_few": "<0>Шаблоны путешествий</0><1>в</1><2>{{firstLanguage}}</2>",
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_many": "<0>Шаблоны путешествий</0><1>в</1><2>{{firstLanguage}}</2>",
