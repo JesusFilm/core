@@ -104,7 +104,10 @@ describe('JourneyResolver', () => {
     showDisplayTitle: null,
     menuButtonIcon: null,
     logoImageBlockId: null,
-    menuStepBlockId: null
+    menuStepBlockId: null,
+    socialNodeX: null,
+    socialNodeY: null,
+    fromTemplateId: null
   }
   const journeyWithUserTeam = {
     ...journey,
@@ -1305,6 +1308,7 @@ describe('JourneyResolver', () => {
         slug: journey.title,
         title: journey.title,
         featuredAt: null,
+        fromTemplateId: 'journeyId',
         template: false,
         team: {
           connect: { id: 'teamId' }
