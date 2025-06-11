@@ -1,1 +1,0 @@
-export { QrCodeDialog } from './QrCodeDialog'

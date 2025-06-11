@@ -10,6 +10,8 @@ export const GET_JOURNEY_FOR_SHARING = gql`
     journey: adminJourney(id: $id, idType: databaseId) {
       id
       slug
+      title
+      description
       language {
         id
         bcp47
@@ -21,6 +23,19 @@ export const GET_JOURNEY_FOR_SHARING = gql`
       }
       themeName
       themeMode
+      primaryImageBlock {
+        id
+        parentBlockId
+        parentOrder
+        src
+        alt
+        width
+        height
+        blurhash
+        scale
+        focalTop
+        focalLeft
+      }
       team {
         id
         customDomains {

@@ -39,6 +39,8 @@ interface TooltipProps
   > {
   offset?: number
   placement?: 'top' | 'bottom'
+  light?: boolean
+  leaveTouchDelay?: number
 }
 
 export function Tooltip({
@@ -46,6 +48,8 @@ export function Tooltip({
   title,
   placement = 'top',
   offset = 0,
+  light = false,
+  leaveTouchDelay,
   ...rest
 }: TooltipProps): ReactElement {
   return (
@@ -55,6 +59,23 @@ export function Tooltip({
       placement={placement}
       arrow
       enterTouchDelay={0}
+      leaveTouchDelay={leaveTouchDelay}
+      sx={
+        light
+          ? {
+              '& .MuiTooltip-tooltip': {
+                backgroundColor: 'white',
+                color: 'text.primary',
+                border: '1px solid #e0e0e0',
+                boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.3)'
+              },
+              '& .MuiTooltip-arrow': {
+                color: 'white',
+                filter: 'drop-shadow(0px 4px 12px rgba(0, 0, 0, 0.3))'
+              }
+            }
+          : undefined
+      }
       slotProps={{
         popper: {
           modifiers: [
