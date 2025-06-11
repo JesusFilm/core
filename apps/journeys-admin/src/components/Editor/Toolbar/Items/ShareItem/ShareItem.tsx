@@ -9,7 +9,6 @@ import { useTranslation } from 'next-i18next'
 import { ComponentProps, MouseEvent, ReactElement, useState } from 'react'
 
 import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
-import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { CopyTextField } from '@core/shared/ui/CopyTextField'
 import { Dialog } from '@core/shared/ui/Dialog'
 import Code1Icon from '@core/shared/ui/icons/Code1'
@@ -52,12 +51,25 @@ interface ShareItemProps {
   variant: ComponentProps<typeof Item>['variant']
   journey?: JourneyFromContext | JourneyFromLazyQuery
   handleCloseMenu?: () => void
+  handleKeepMounted?: () => void
 }
 
+/**
+ * ShareItem component provides a menu interface for sharing journeys with URL, embed, and QR code options.
+ * Includes custom domain support and analytics tracking.
+ *
+ * @param {ShareItemProps} props - Component props
+ * @param {ComponentProps<typeof Item>['variant']} props.variant - Visual variant of the share item
+ * @param {(JourneyFromContext | JourneyFromLazyQuery)} [props.journey] - Journey data for sharing
+ * @param {() => void} [props.handleCloseMenu] - Closes the parent menu
+ * @param {() => void} [props.handleKeepMounted] - Keeps component mounted in DOM
+ * @returns {ReactElement} Share button/menu item with sharing dialog
+ */
 export function ShareItem({
   variant,
   journey,
-  handleCloseMenu
+  handleCloseMenu,
+  handleKeepMounted
 }: ShareItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -73,6 +85,7 @@ export function ShareItem({
 
   function handleShowMenu(event: MouseEvent<HTMLElement>): void {
     setAnchorEl(event.currentTarget)
+    handleKeepMounted?.()
     handleCloseMenu?.()
   }
   function setRoute(param: string): void {

@@ -1,1 +1,0 @@
-export { importBibleBookNames } from './bibleBookNames'

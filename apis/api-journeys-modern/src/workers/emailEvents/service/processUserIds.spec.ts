@@ -115,7 +115,10 @@ describe('processUserIds', () => {
     showDisplayTitle: null,
     menuButtonIcon: null,
     logoImageBlockId: null,
-    menuStepBlockId: null
+    menuStepBlockId: null,
+    socialNodeX: null,
+    socialNodeY: null,
+    fromTemplateId: null
   }
 
   it('should return an array of user IDs when visitor interaction email is true', () => {

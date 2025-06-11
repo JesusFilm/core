@@ -59,6 +59,7 @@
     "@emotion/styled": "^11.13.0",
     "@google-cloud/bigquery": "^7.6.0",
     "@graphql-hive/gateway": "^1.0.7",
+    "@graphql-yoga/plugin-graphql-sse": "^3.13.6",
     "@graphql-yoga/plugin-response-cache": "^3.8.0",
     "@hono/swagger-ui": "^0.5.0",
     "@hono/zod-openapi": "^0.19.0",

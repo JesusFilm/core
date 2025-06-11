@@ -1,5 +1,4 @@
 import { Meta, StoryObj } from '@storybook/react'
-import noop from 'lodash/noop'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
@@ -23,13 +22,7 @@ const TemplateCardPreviewStory: Meta<typeof TemplateCardPreview> = {
 const steps = transformer(journeyVideoBlocks) as Array<TreeBlock<StepBlock>>
 
 const Template: StoryObj<typeof TemplateCardPreview> = {
-  render: (args) => (
-    <TemplateCardPreview
-      steps={args.steps}
-      openTeamDialog={false}
-      setOpenTeamDialog={noop}
-    />
-  )
+  render: (args) => <TemplateCardPreview steps={args.steps} />
 }
 
 export const Default = {
