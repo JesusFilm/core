@@ -99,6 +99,7 @@ const nextConfig = {
         'node_modules/esbuild-linux-64/bin'
       ]
     },
+    instrumentationHook: true,
     fallbackNodePolyfills: false
   },
   webpack: (config) => {
