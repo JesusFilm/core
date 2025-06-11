@@ -1,0 +1,1 @@
+export { OpacitySlider } from './OpacitySlider'

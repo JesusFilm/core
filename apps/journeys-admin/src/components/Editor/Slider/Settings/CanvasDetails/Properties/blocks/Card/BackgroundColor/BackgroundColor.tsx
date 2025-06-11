@@ -1,14 +1,13 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
-import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
-import { object, string } from 'yup'
+import { number, object, string } from 'yup'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
@@ -19,15 +18,15 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
-import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
 
 import { CardBlockBackgroundColorUpdate } from '../../../../../../../../../../__generated__/CardBlockBackgroundColorUpdate'
 import { CardFields } from '../../../../../../../../../../__generated__/CardFields'
-import { TextFieldForm } from '../../../../../../../../TextFieldForm'
 
+import { ColorOpacityField } from './ColorOpacityField'
 import { DebouncedHexColorPicker } from './DebouncedHexColorPicker'
+import { OpacitySlider } from './OpacitySlider'
 import { PaletteColorPicker } from './PaletteColorPicker'
 import { Swatch } from './Swatch'
 
@@ -134,10 +133,25 @@ export function BackgroundColor(): ReactElement {
     }
   }
 
+  function handleOpacityChange(opacity: number): void {
+    console.log('opacity', opacity)
+    return
+  }
+
   function isValidHex(color: string): boolean {
     const hexColorRegex = /^#[0-9A-Fa-f]{6}$/
     return hexColorRegex.test(color)
   }
+
+  const opacityValidationSchema = object({
+    opacity: number()
+      .typeError(t('Opacity must be a number'))
+      .min(0, t('Opacity must be greater that 0'))
+      .max(100, t('Opacity must be less than 100'))
+      .required(
+        t('Invalid {{ OPACITY }} opacity value', { OPACITY: 'opacity' })
+      )
+  })
 
   const validationSchema = object({
     color: string()
@@ -165,18 +179,20 @@ export function BackgroundColor(): ReactElement {
 
   // TODO: Test onChange in E2E
   const hexColorPicker = (
-    <Box sx={{ p: 4 }}>
+    <Stack sx={{ p: 4 }} spacing={4}>
       <DebouncedHexColorPicker
         data-testid="bgColorPicker"
         color={selectedColor}
         onChange={handleColorChange}
         style={{ width: '100%', height: 125 }}
       />
-    </Box>
+      {/* <OpacitySlider value={100} selectedColor={selectedColor} /> */}
+    </Stack>
   )
 
   return (
     <>
+      {hexColorPicker}
       <Stack
         sx={{ p: 4, pt: 0 }}
         spacing={3}
@@ -184,22 +200,24 @@ export function BackgroundColor(): ReactElement {
         data-testid="BackgroundColor"
       >
         <Swatch id={`bg-color-${selectedColor}`} color={selectedColor} />
-        <TextFieldForm
-          id="color"
-          data-testid="bgColorTextField"
-          hiddenLabel
-          initialValue={selectedColor}
-          validationSchema={validationSchema}
-          onSubmit={handleColorChange}
-          startIcon={
-            <InputAdornment position="start">
-              <Edit2Icon
-                onClick={(e) => handleTabChange(e, 1)}
-                style={{ cursor: 'pointer' }}
-              />
-            </InputAdornment>
-          }
+        <ColorOpacityField
+          color={selectedColor}
+          opacity={100}
+          onColorChange={handleColorChange}
+          onOpacityChange={handleOpacityChange}
+          onEditClick={() => handleTabChange({}, 1)}
+          data-testid="BackgroundColorOpacityField"
         />
+      </Stack>
+      <Stack
+        sx={{
+          [cardTheme.breakpoints.down('sm')]: { display: 'none' },
+          alignItems: 'center'
+        }}
+      >
+        <Divider sx={{ width: 300 }} />
+        {palettePicker}
+        <Divider />
       </Stack>
       <Box
         sx={{
@@ -225,18 +243,6 @@ export function BackgroundColor(): ReactElement {
         <TabPanel name="background-color" value={tabValue} index={1}>
           {hexColorPicker}
         </TabPanel>
-      </Box>
-      <Box sx={{ [cardTheme.breakpoints.down('sm')]: { display: 'none' } }}>
-        <Divider />
-        <Box sx={{ p: 4, pb: 0 }}>
-          <Typography variant="subtitle2">{t('Palette')}</Typography>
-        </Box>
-        {palettePicker}
-        <Divider />
-        <Box sx={{ p: 4, pb: 0 }}>
-          <Typography variant="subtitle2">{t('Custom')}</Typography>
-        </Box>
-        {hexColorPicker}
       </Box>
     </>
   )
