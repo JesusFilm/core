@@ -81,7 +81,7 @@
   "Step {{number}}": "Step {{number}}",
   "Journey duplication failed": "Journey duplication failed",
   "Journey Copied": "Kinopya ang Paglalakbay",
-  "Journey Translated": "Journey Translated",
+  "Journey Copied - Translation will begin shortly": "Journey Copied - Translation will begin shortly",
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_one": "<0>Mga Template ng Paglalakbay</0><1>sa</1><2>{{firstLanguage}}</2>",
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_other": "<0>Mga Template ng Paglalakbay</0><1>sa</1><2>{{firstLanguage}}</2>",
   "{{count}} more cards_one": "{{count}} more cards",
