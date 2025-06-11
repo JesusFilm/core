@@ -81,7 +81,7 @@
   "Step {{number}}": "Langkah {{number}}",
   "Journey duplication failed": "Duplikasi perjalanan gagal",
   "Journey Copied": "Perjalanan Disalin",
-  "Journey Translated": "Perjalanan Diterjemahkan",
+  "Journey Copied - Translation will begin shortly": "Perjalanan Disalin - Terjemahan akan segera dimulai",
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_other": "<0>Templat Perjalanan</0><1>dalam</1><2>{{count}} bahasa</2>",
   "{{count}} more cards_other": "{{count}} lebih banyak kartu",
   "{{count}} Cards_other": "{{count}} Kartu",
