@@ -98,7 +98,7 @@ describe('ContentPageBlurFilter', () => {
     )
 
     const contentContainer = screen.getByTestId('ContentPageContainer')
-    expect(contentContainer).toHaveClass('w-full', 'mx-auto')
+    expect(contentContainer).toHaveClass('max-w-[1920px]', 'mx-auto')
     expect(contentContainer).toHaveStyle({ marginTop: '-100vh' })
   })
 
