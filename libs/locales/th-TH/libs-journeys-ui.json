@@ -81,7 +81,7 @@
   "Step {{number}}": "ขั้นตอนที่ {{number}}",
   "Journey duplication failed": "Journey duplication failed",
   "Journey Copied": "คัอทำซ้ำ",
-  "Journey Translated": "Journey Translated",
+  "Journey Copied - Translation will begin shortly": "Journey Copied - Translation will begin shortly",
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_other": "<0>Journey Templates</0><1>in</1><2>{{count}} languages</2>",
   "{{count}} more cards_other": "{{count}} การ์ดเพิ่มเติม",
   "{{count}} Cards_other": "{{count}} การ์ด",
