@@ -81,7 +81,7 @@
   "Step {{number}}": "Paso {{number}}",
   "Journey duplication failed": "Fallo en la duplicación del viaje",
   "Journey Copied": "Viaje copiado",
-  "Journey Translated": "Viaje Traducido",
+  "Journey Copied - Translation will begin shortly": "Viaje Copiado - La traducción comenzará en breve",
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_one": "<0>Plantillas de viaje</0><1>en</1><2>{{firstLanguage}}</2>",
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_other": "<0>Plantillas de viaje</0><1>en</1><2>{{count}} idiomas</2>",
   "{{count}} more cards_one": "{{count}} más tarjetas",
