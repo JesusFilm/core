@@ -81,7 +81,7 @@
   "Step {{number}}": "步骤 {{number}}",
   "Journey duplication failed": "旅程复制失败",
   "Journey Copied": "旅程已复制",
-  "Journey Translated": "翻译之旅",
+  "Journey Copied - Translation will begin shortly": "旅程已复制 - 翻译即将开始",
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_other": "<0>旅程模板</0><1>在</1><2>所有语言</2>",
   "{{count}} more cards_other": "{{count}} 更多贺卡",
   "{{count}} Cards_other": "{{count}} 牌",
