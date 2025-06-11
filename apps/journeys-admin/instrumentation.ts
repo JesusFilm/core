@@ -3,7 +3,11 @@ import { LangfuseExporter } from 'langfuse-vercel'
 
 export function register() {
   registerOTel({
-    serviceName: 'langfuse-vercel-ai-nextjs-example',
-    traceExporter: new LangfuseExporter()
+    serviceName: 'journeys-admin',
+    traceExporter: new LangfuseExporter({
+      publicKey: process.env.NEXT_PUBLIC_LANGFUSE_PUBLIC_KEY ?? '',
+      secretKey: process.env.LANGFUSE_SECRET_KEY ?? '',
+      baseUrl: process.env.LANGFUSE_BASE_URL
+    })
   })
 }

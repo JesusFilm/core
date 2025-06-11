@@ -29,7 +29,8 @@ export function errorHandler(error: unknown) {
 }
 
 export async function POST(req: NextRequest) {
-  const { messages } = await req.json()
+  const { messages, journeyId, selectedStepId, selectedBlockId } =
+    await req.json()
 
   const parsedMessages = z.array(coreMessageSchema).parse(messages)
 
@@ -40,20 +41,33 @@ export async function POST(req: NextRequest) {
 
   const client = createApolloClient(token.split(' ')[1])
 
-  const systemPrompt = await langfuse.getPrompt('ai-chat-system-prompt')
+  const systemPrompt = await langfuse.getPrompt(
+    'ai-chat-system-prompt',
+    undefined,
+    {
+      cacheTtlSeconds: process.env.VERCEL_ENV === 'preview' ? 0 : 60
+    }
+  )
 
   const result = streamText({
     model: google('gemini-2.0-flash'),
     messages: [
       {
         role: 'system',
-        content: systemPrompt.prompt ?? ''
+        content: systemPrompt.compile({
+          journeyId: journeyId ?? 'none',
+          selectedStepId: selectedStepId ?? 'none',
+          selectedBlockId: selectedBlockId ?? 'none'
+        })
       },
       ...parsedMessages.filter((message) => message.role !== 'system')
     ],
     tools: tools(client),
     experimental_telemetry: {
-      isEnabled: true
+      isEnabled: true,
+      metadata: {
+        langfusePrompt: systemPrompt.toJSON()
+      }
     }
   })
 

@@ -31,7 +31,7 @@ export function AiChat({
   const client = useApolloClient()
   const { journey } = useJourney()
   const {
-    state: { selectedStepId }
+    state: { selectedStepId, selectedBlockId }
   } = useEditor()
   const [usage, setUsage] = useState<LanguageModelUsage | null>(null)
   const [systemPrompt, setSystemPrompt] = useState<string>('')
@@ -79,6 +79,14 @@ export function AiChat({
     },
     onError: (error) => {
       console.error('useChat error', error)
+    },
+    experimental_prepareRequestBody: (options) => {
+      return {
+        ...options,
+        journeyId: journey?.id,
+        selectedStepId,
+        selectedBlockId
+      }
     }
   })
 
