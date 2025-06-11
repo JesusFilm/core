@@ -1,5 +1,3 @@
-import Paper from '@mui/material/Paper'
-import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import dynamic from 'next/dynamic'
@@ -10,8 +8,8 @@ import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields as StepBlock } from '../../../../../../../__generated__/BlockFields'
-import { DrawerTitle } from '../../Drawer'
 import { CardTemplates } from '../../Drawer/CardTemplates/CardTemplates'
+import { EditorDrawer } from '../../Drawer/EditorDrawer'
 
 const Card = dynamic(
   async () =>
@@ -181,29 +179,8 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
   if (component == null) return <></>
 
   return (
-    <Stack
-      component={Paper}
-      elevation={0}
-      sx={{
-        height: '100%',
-        borderRadius: 3,
-        borderBottomLeftRadius: 0,
-        borderBottomRightRadius: 0,
-        overflow: 'hidden'
-      }}
-      border={1}
-      borderColor="divider"
-      data-testId="SettingsDrawer"
-    >
-      <DrawerTitle title={title} onClose={onClose} />
-      <Stack
-        data-testid="SettingsDrawerContent"
-        className="swiper-no-swiping"
-        flexGrow={1}
-        sx={{ overflow: 'auto' }}
-      >
-        {component}
-      </Stack>
-    </Stack>
+    <EditorDrawer title={title} onClose={onClose}>
+      {component}
+    </EditorDrawer>
   )
 }
