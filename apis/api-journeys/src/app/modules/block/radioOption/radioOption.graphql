@@ -3,7 +3,7 @@ input RadioOptionBlockClassNamesInput {
 }
 
 type RadioOptionBlockClassNames {
-  self: String
+  self: String @shareable
 }
 
 type RadioOptionBlock implements Block @key(fields: "id") {

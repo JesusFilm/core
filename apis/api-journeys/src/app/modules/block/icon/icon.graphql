@@ -45,7 +45,7 @@ input IconBlockClassNamesInput {
 }
 
 type IconBlockClassNames {
-  self: String
+  self: String @shareable
 }
 
 type IconBlock implements Block @key(fields: "id") {

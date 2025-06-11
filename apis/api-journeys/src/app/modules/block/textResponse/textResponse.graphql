@@ -3,7 +3,7 @@ input TextResponseBlockClassNamesInput {
 }
 
 type TextResponseBlockClassNames {
-  self: String
+  self: String @shareable
 }
 
 type TextResponseBlock implements Block @key(fields: "id") {

@@ -21,7 +21,7 @@ input ButtonBlockClassNamesInput {
 }
 
 type ButtonBlockClassNames {
-  self: String
+  self: String @shareable
 }
 
 type ButtonBlock implements Block @key(fields: "id") {

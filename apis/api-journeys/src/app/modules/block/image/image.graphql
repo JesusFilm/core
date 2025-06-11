@@ -3,7 +3,7 @@ input ImageBlockClassNamesInput {
 }
 
 type ImageBlockClassNames {
-  self: String
+  self: String @shareable
 }
 
 type ImageBlock implements Block @key(fields: "id") {

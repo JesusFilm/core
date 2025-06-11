@@ -30,7 +30,7 @@ input TypographyBlockClassNamesInput {
 }
 
 type TypographyBlockClassNames {
-  self: String
+  self: String @shareable
 }
 
 type TypographyBlock implements Block @key(fields: "id") {

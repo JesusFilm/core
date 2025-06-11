@@ -375,12 +375,6 @@ type RadioQuestionBlock implements Block
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
-  classNames: RadioQuestionBlockClassNames! @shareable
-}
-
-type RadioQuestionBlockClassNames {
-  """Tailwind class names for the radio question block"""
-  self: String! @shareable
 }
 
 type SignUpBlock implements Block

@@ -3,7 +3,7 @@ input SpacerBlockClassNamesInput {
 }
 
 type SpacerBlockClassNames {
-  self: String
+  self: String @shareable
 }
 
 type SpacerBlock implements Block @key(fields: "id") {

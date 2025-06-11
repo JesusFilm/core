@@ -15,7 +15,7 @@ enum VideoBlockSource {
 }
 
 type VideoBlockClassNames {
-  self: String
+  self: String @shareable
 }
 
 enum VideoBlockObjectFit {

@@ -3,7 +3,7 @@ input SignUpBlockClassNamesInput {
 }
 
 type SignUpBlockClassNames {
-  self: String
+  self: String @shareable
 }
 
 type SignUpBlock implements Block @key(fields: "id") {
