@@ -81,7 +81,7 @@
   "Step {{number}}": "단계 {{number}}",
   "Journey duplication failed": "여정 복제에 실패했습니다.",
   "Journey Copied": "여정 복사",
-  "Journey Translated": "여정 번역",
+  "Journey Copied - Translation will begin shortly": "여정 복사 - 번역이 곧 시작됩니다.",
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_other": "<0>여정 템플릿</0><1>in</1><2>{{count}} 언어</2>",
   "{{count}} more cards_other": "{{count}} 더 많은 카드",
   "{{count}} Cards_other": "{{count}} 카드",
