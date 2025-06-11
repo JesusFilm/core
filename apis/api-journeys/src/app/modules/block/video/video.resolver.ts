@@ -12,7 +12,7 @@ import omit from 'lodash/omit'
 import fetch from 'node-fetch'
 import { object, string } from 'yup'
 
-import { Block, VideoBlockSource } from '.prisma/api-journeys-client'
+import { Block, Prisma, VideoBlockSource } from '.prisma/api-journeys-client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 
 import {
@@ -163,7 +163,8 @@ export class VideoBlockResolver {
           coverBlockParent:
             input.isCover === true && input.parentBlockId != null
               ? { connect: { id: input.parentBlockId } }
-              : undefined
+              : undefined,
+          classNames: (input.classNames as Prisma.JsonValue) ?? { self: '' }
         },
         include: {
           action: true,
@@ -257,7 +258,10 @@ export class VideoBlockResolver {
         }
         break
     }
-    return await this.blockService.update(id, input)
+    return await this.blockService.update(id, {
+      ...input,
+      classNames: (input.classNames as Prisma.JsonValue) ?? undefined
+    })
   }
 
   @ResolveField('video')

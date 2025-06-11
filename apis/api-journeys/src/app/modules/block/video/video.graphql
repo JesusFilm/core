@@ -1,3 +1,7 @@
+input VideoBlockClassNamesInput {
+  self: String
+}
+
 extend type Video @key(fields: "id primaryLanguageId") {
   id: ID! @external
   primaryLanguageId: ID! @external
@@ -9,6 +13,11 @@ enum VideoBlockSource {
   cloudflare
   mux
 }
+
+type VideoBlockClassNames {
+  self: String
+}
+
 enum VideoBlockObjectFit {
   """
   The video is scaled to maintain its aspect ratio while filling the
@@ -112,9 +121,9 @@ type VideoBlock implements Block @key(fields: "id") {
   """
   objectFit: VideoBlockObjectFit @shareable
   """
-  style is a css style for the video block
+  classNames is an object of tailwind class names for the block
   """
-  style: String @shareable
+  classNames: VideoBlockClassNames! @shareable
 }
 
 input VideoBlockCreateInput {
@@ -165,7 +174,7 @@ input VideoBlockCreateInput {
   how the video should display within the VideoBlock
   """
   objectFit: VideoBlockObjectFit
-  style: String
+  classNames: VideoBlockClassNamesInput
 }
 
 input VideoBlockUpdateInput {
@@ -209,7 +218,7 @@ input VideoBlockUpdateInput {
   how the video should display within the VideoBlock
   """
   objectFit: VideoBlockObjectFit
-  style: String
+  classNames: VideoBlockClassNamesInput
 }
 
 extend type Mutation {

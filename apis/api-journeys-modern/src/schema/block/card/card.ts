@@ -4,6 +4,25 @@ import { Block } from '../block'
 import { ThemeMode, type ThemeModeType } from './enums/themeMode'
 import { ThemeName, type ThemeNameType } from './enums/themeName'
 
+interface CardBlockClassNamesType {
+  self: string
+}
+
+const CardBlockClassNamesRef = builder.objectRef<CardBlockClassNamesType>(
+  'CardBlockClassNames'
+)
+
+export const CardBlockClassNames = builder.objectType(CardBlockClassNamesRef, {
+  fields: (t) => ({
+    self: t.string({
+      nullable: true,
+      directives: { shareable: true },
+      description: 'Tailwind class names for the card block',
+      resolve: (classNames: CardBlockClassNamesType) => classNames.self
+    })
+  })
+})
+
 export const CardBlock = builder.prismaObject('Block', {
   interfaces: [Block],
   variant: 'CardBlock',
@@ -58,9 +77,12 @@ themeMode from journey`,
 themeName from journey`,
       resolve: (block) => block.themeName as ThemeNameType
     }),
-    style: t.exposeString('style', {
-      nullable: true,
-      directives: { shareable: true }
+    classNames: t.field({
+      type: CardBlockClassNamesRef,
+      nullable: false,
+      directives: { shareable: true },
+      resolve: ({ classNames }) =>
+        classNames as unknown as CardBlockClassNamesType
     })
   }),
   directives: { key: { fields: 'id' } }

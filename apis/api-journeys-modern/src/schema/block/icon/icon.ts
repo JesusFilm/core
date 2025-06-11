@@ -5,6 +5,25 @@ import { IconColor, type IconColorType } from './enums/iconColor'
 import { IconName, type IconNameType } from './enums/iconName'
 import { IconSize, type IconSizeType } from './enums/iconSize'
 
+interface IconBlockClassNamesType {
+  self: string
+}
+
+const IconBlockClassNamesRef = builder.objectRef<IconBlockClassNamesType>(
+  'IconBlockClassNames'
+)
+
+export const IconBlockClassNames = builder.objectType(IconBlockClassNamesRef, {
+  fields: (t) => ({
+    self: t.string({
+      nullable: false,
+      directives: { shareable: true },
+      description: 'Tailwind class names for the icon block',
+      resolve: (classNames: IconBlockClassNamesType) => classNames.self
+    })
+  })
+})
+
 export const IconBlock = builder.prismaObject('Block', {
   interfaces: [Block],
   variant: 'IconBlock',
@@ -42,9 +61,12 @@ export const IconBlock = builder.prismaObject('Block', {
       directives: { shareable: true },
       resolve: (block) => block.size as IconSizeType
     }),
-    style: t.exposeString('style', {
-      nullable: true,
-      directives: { shareable: true }
+    classNames: t.field({
+      type: IconBlockClassNamesRef,
+      nullable: false,
+      directives: { shareable: true },
+      resolve: ({ classNames }) =>
+        classNames as unknown as IconBlockClassNamesType
     })
   })
 })

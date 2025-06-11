@@ -3,17 +3,12 @@ type RadioQuestionBlock implements Block @key(fields: "id") {
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
-  """
-  style is a css style for the radio question container
-  """
-  style: String @shareable
 }
 
 input RadioQuestionBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
-  style: String
 }
 
 extend type Mutation {

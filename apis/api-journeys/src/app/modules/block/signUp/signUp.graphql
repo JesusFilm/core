@@ -1,3 +1,11 @@
+input SignUpBlockClassNamesInput {
+  self: String
+}
+
+type SignUpBlockClassNames {
+  self: String
+}
+
 type SignUpBlock implements Block @key(fields: "id") {
   id: ID! @shareable
   journeyId: ID! @shareable
@@ -7,9 +15,9 @@ type SignUpBlock implements Block @key(fields: "id") {
   submitIconId: ID @shareable
   submitLabel: String @shareable
   """
-  style is a css style for the sign up block
+  classNames is an object of tailwind class names for the block
   """
-  style: String @shareable
+  classNames: SignUpBlockClassNames! @shareable
 }
 
 input SignUpBlockCreateInput {
@@ -17,14 +25,14 @@ input SignUpBlockCreateInput {
   journeyId: ID!
   parentBlockId: ID!
   submitLabel: String!
-  style: String
+  classNames: SignUpBlockClassNamesInput
 }
 
 input SignUpBlockUpdateInput {
   parentBlockId: ID
   submitIconId: ID
   submitLabel: String
-  style: String
+  classNames: SignUpBlockClassNamesInput
 }
 
 extend type Mutation {

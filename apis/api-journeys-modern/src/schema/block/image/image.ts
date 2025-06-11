@@ -1,6 +1,28 @@
 import { builder } from '../../builder'
 import { Block } from '../block'
 
+interface ImageBlockClassNamesType {
+  self: string
+}
+
+const ImageBlockClassNamesRef = builder.objectRef<ImageBlockClassNamesType>(
+  'ImageBlockClassNames'
+)
+
+export const ImageBlockClassNames = builder.objectType(
+  ImageBlockClassNamesRef,
+  {
+    fields: (t) => ({
+      self: t.string({
+        nullable: false,
+        directives: { shareable: true },
+        description: 'Tailwind class names for the image block',
+        resolve: (classNames: ImageBlockClassNamesType) => classNames.self
+      })
+    })
+  }
+)
+
 export const ImageBlock = builder.prismaObject('Block', {
   interfaces: [Block],
   variant: 'ImageBlock',
@@ -59,9 +81,12 @@ Find a frontend implementation at https://github.com/woltapp/blurhash
       nullable: true,
       directives: { shareable: true }
     }),
-    style: t.exposeString('style', {
-      nullable: true,
-      directives: { shareable: true }
+    classNames: t.field({
+      type: ImageBlockClassNamesRef,
+      nullable: false,
+      directives: { shareable: true },
+      resolve: ({ classNames }) =>
+        classNames as unknown as ImageBlockClassNamesType
     })
   })
 })

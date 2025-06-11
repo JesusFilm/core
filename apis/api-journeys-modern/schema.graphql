@@ -24,7 +24,12 @@ type ButtonBlock implements Block
   startIconId: ID @shareable
   endIconId: ID @shareable
   submitEnabled: Boolean @shareable
-  style: String @shareable
+  classNames: ButtonBlockClassNames @shareable
+}
+
+type ButtonBlockClassNames {
+  """Tailwind class names for the button block"""
+  self: String! @shareable
 }
 
 enum ButtonColor {
@@ -81,7 +86,12 @@ type CardBlock implements Block
   themeName from journey
   """
   themeName: ThemeName @shareable
-  style: String @shareable
+  classNames: CardBlockClassNames! @shareable
+}
+
+type CardBlockClassNames {
+  """Tailwind class names for the card block"""
+  self: String @shareable
 }
 
 """
@@ -173,7 +183,12 @@ type IconBlock implements Block
   name: IconName @shareable
   color: IconColor @shareable
   size: IconSize @shareable
-  style: String @shareable
+  classNames: IconBlockClassNames! @shareable
+}
+
+type IconBlockClassNames {
+  """Tailwind class names for the icon block"""
+  self: String! @shareable
 }
 
 enum IconColor {
@@ -236,7 +251,12 @@ type ImageBlock implements Block
   focalTop: Int @shareable
   focalLeft: Int @shareable
   scale: Int @shareable
-  style: String @shareable
+  classNames: ImageBlockClassNames! @shareable
+}
+
+type ImageBlockClassNames {
+  """Tailwind class names for the image block"""
+  self: String! @shareable
 }
 
 type Journey
@@ -340,7 +360,12 @@ type RadioOptionBlock implements Block
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
   label: String! @shareable
-  style: String @shareable
+  classNames: RadioOptionBlockClassNames! @shareable
+}
+
+type RadioOptionBlockClassNames {
+  """Tailwind class names for the radio option block"""
+  self: String! @shareable
 }
 
 type RadioQuestionBlock implements Block
@@ -350,7 +375,12 @@ type RadioQuestionBlock implements Block
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
-  style: String @shareable
+  classNames: RadioQuestionBlockClassNames! @shareable
+}
+
+type RadioQuestionBlockClassNames {
+  """Tailwind class names for the radio question block"""
+  self: String! @shareable
 }
 
 type SignUpBlock implements Block
@@ -362,7 +392,12 @@ type SignUpBlock implements Block
   parentOrder: Int @shareable
   submitIconId: ID @shareable
   submitLabel: String @shareable
-  style: String @shareable
+  classNames: SignUpBlockClassNames! @shareable
+}
+
+type SignUpBlockClassNames {
+  """Tailwind class names for the sign up block"""
+  self: String! @shareable
 }
 
 type SpacerBlock implements Block
@@ -373,7 +408,12 @@ type SpacerBlock implements Block
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
   spacing: Int @shareable
-  style: String @shareable
+  classNames: SpacerBlockClassNames! @shareable
+}
+
+type SpacerBlockClassNames {
+  """Tailwind class names for the spacer block"""
+  self: String! @shareable
 }
 
 type StepBlock implements Block
@@ -437,7 +477,12 @@ type TextResponseBlock implements Block
   type: TextResponseType @shareable
   routeId: String @shareable
   integrationId: String @shareable
-  style: String @shareable
+  classNames: TextResponseBlockClassNames! @shareable
+}
+
+type TextResponseBlockClassNames {
+  """Tailwind class names for the text response block"""
+  self: String! @shareable
 }
 
 enum TextResponseType {
@@ -473,7 +518,12 @@ type TypographyBlock implements Block
   variant: TypographyVariant @shareable
   color: TypographyColor @shareable
   align: TypographyAlign @shareable
-  style: String @shareable
+  classNames: TypographyBlockClassNames! @shareable
+}
+
+type TypographyBlockClassNames {
+  """Tailwind class names for the typography block"""
+  self: String! @shareable
 }
 
 enum TypographyColor {
@@ -567,7 +617,12 @@ type VideoBlock implements Block
   """
   description: String @shareable
   mediaVideo: MediaVideo
-  style: String @shareable
+  classNames: VideoBlockClassNames! @shareable
+}
+
+type VideoBlockClassNames {
+  """Tailwind class names for the video block"""
+  self: String! @shareable
 }
 
 enum VideoBlockObjectFit {

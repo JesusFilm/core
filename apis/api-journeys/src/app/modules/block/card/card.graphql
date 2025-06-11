@@ -1,3 +1,11 @@
+type CardBlockClassNames {
+  self: String
+}
+
+input CardBlockClassNamesInput {
+  self: String
+}
+
 type CardBlock implements Block @key(fields: "id") {
   id: ID! @shareable
   journeyId: ID! @shareable
@@ -20,9 +28,9 @@ type CardBlock implements Block @key(fields: "id") {
   """
   fullscreen: Boolean! @shareable
   """
-  style is a css style for the block
+  classNames is an object of tailwind class names for the block
   """
-  style: String @shareable
+  classNames: CardBlockClassNames! @shareable
   """
   themeMode can override journey themeMode. If nothing is set then use
   themeMode from journey
@@ -43,7 +51,7 @@ input CardBlockCreateInput {
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
-  style: String
+  classNames: CardBlockClassNamesInput
 }
 
 input CardBlockUpdateInput {
@@ -53,7 +61,7 @@ input CardBlockUpdateInput {
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
-  style: String
+  classNames: CardBlockClassNamesInput
 }
 
 extend type Mutation {

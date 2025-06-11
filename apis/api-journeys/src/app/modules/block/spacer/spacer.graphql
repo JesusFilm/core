@@ -1,3 +1,11 @@
+input SpacerBlockClassNamesInput {
+  self: String
+}
+
+type SpacerBlockClassNames {
+  self: String
+}
+
 type SpacerBlock implements Block @key(fields: "id") {
   id: ID! @shareable
   journeyId: ID! @shareable
@@ -5,9 +13,9 @@ type SpacerBlock implements Block @key(fields: "id") {
   parentOrder: Int @shareable
   spacing: Int @shareable
   """
-  style is a css style for the spacer block
+  classNames is an object of tailwind class names for the block
   """
-  style: String @shareable
+  classNames: SpacerBlockClassNames! @shareable
 }
 
 input SpacerBlockCreateInput {
@@ -15,13 +23,13 @@ input SpacerBlockCreateInput {
   journeyId: ID!
   parentBlockId: ID!
   spacing: Int
-  style: String
+  classNames: SpacerBlockClassNamesInput
 }
 
 input SpacerBlockUpdateInput {
   parentBlockId: ID
   spacing: Int
-  style: String
+  classNames: SpacerBlockClassNamesInput
 }
 
 extend type Mutation {

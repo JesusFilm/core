@@ -6,6 +6,30 @@ import {
   type TextResponseTypeType
 } from './enums/textResponseType'
 
+interface TextResponseBlockClassNamesType {
+  self: string
+}
+
+const TextResponseBlockClassNamesRef =
+  builder.objectRef<TextResponseBlockClassNamesType>(
+    'TextResponseBlockClassNames'
+  )
+
+export const TextResponseBlockClassNames = builder.objectType(
+  TextResponseBlockClassNamesRef,
+  {
+    fields: (t) => ({
+      self: t.string({
+        nullable: false,
+        directives: { shareable: true },
+        description: 'Tailwind class names for the text response block',
+        resolve: (classNames: TextResponseBlockClassNamesType) =>
+          classNames.self
+      })
+    })
+  }
+)
+
 export const TextResponseBlock = builder.prismaObject('Block', {
   interfaces: [Block],
   variant: 'TextResponseBlock',
@@ -60,9 +84,12 @@ export const TextResponseBlock = builder.prismaObject('Block', {
       nullable: true,
       directives: { shareable: true }
     }),
-    style: t.exposeString('style', {
-      nullable: true,
-      directives: { shareable: true }
+    classNames: t.field({
+      type: TextResponseBlockClassNamesRef,
+      nullable: false,
+      directives: { shareable: true },
+      resolve: ({ classNames }) =>
+        classNames as unknown as TextResponseBlockClassNamesType
     })
   })
 })

@@ -1,6 +1,28 @@
 import { builder } from '../../builder'
 import { Block } from '../block'
 
+interface SpacerBlockClassNamesType {
+  self: string
+}
+
+const SpacerBlockClassNamesRef = builder.objectRef<SpacerBlockClassNamesType>(
+  'SpacerBlockClassNames'
+)
+
+export const SpacerBlockClassNames = builder.objectType(
+  SpacerBlockClassNamesRef,
+  {
+    fields: (t) => ({
+      self: t.string({
+        nullable: false,
+        directives: { shareable: true },
+        description: 'Tailwind class names for the spacer block',
+        resolve: (classNames: SpacerBlockClassNamesType) => classNames.self
+      })
+    })
+  }
+)
+
 export const SpacerBlock = builder.prismaObject('Block', {
   interfaces: [Block],
   variant: 'SpacerBlock',
@@ -24,9 +46,12 @@ export const SpacerBlock = builder.prismaObject('Block', {
       nullable: true,
       directives: { shareable: true }
     }),
-    style: t.exposeString('style', {
-      nullable: true,
-      directives: { shareable: true }
+    classNames: t.field({
+      type: SpacerBlockClassNamesRef,
+      nullable: false,
+      directives: { shareable: true },
+      resolve: ({ classNames }) =>
+        classNames as unknown as SpacerBlockClassNamesType
     })
   })
 })

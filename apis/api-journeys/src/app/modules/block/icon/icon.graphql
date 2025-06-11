@@ -40,6 +40,14 @@ enum IconSize {
   inherit
 }
 
+input IconBlockClassNamesInput {
+  self: String
+}
+
+type IconBlockClassNames {
+  self: String
+}
+
 type IconBlock implements Block @key(fields: "id") {
   id: ID! @shareable
   journeyId: ID! @shareable
@@ -49,9 +57,9 @@ type IconBlock implements Block @key(fields: "id") {
   color: IconColor @shareable
   size: IconSize @shareable
   """
-  style is a css style for the icon
+  classNames is an object of tailwind class names for the block
   """
-  style: String @shareable
+  classNames: IconBlockClassNames @shareable
 }
 
 input IconBlockCreateInput {
@@ -64,14 +72,14 @@ input IconBlockCreateInput {
   name: IconName
   color: IconColor
   size: IconSize
-  style: String
+  classNames: IconBlockClassNamesInput
 }
 
 input IconBlockUpdateInput {
   name: IconName
   color: IconColor
   size: IconSize
-  style: String
+  classNames: IconBlockClassNamesInput
 }
 
 extend type Mutation {
