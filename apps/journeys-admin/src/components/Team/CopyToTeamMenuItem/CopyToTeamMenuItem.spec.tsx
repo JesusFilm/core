@@ -55,6 +55,27 @@ describe('CopyToTeamMenuItem', () => {
     }))
   }
 
+  // Additional mock for translation scenario where updateLastActiveTeamId is called twice
+  const updateLastActiveTeamIdMockForTranslation: MockedResponse<UpdateLastActiveTeamId> =
+    {
+      request: {
+        query: UPDATE_LAST_ACTIVE_TEAM_ID,
+        variables: {
+          input: {
+            lastActiveTeamId: 'teamId'
+          }
+        }
+      },
+      result: jest.fn(() => ({
+        data: {
+          journeyProfileUpdate: {
+            __typename: 'JourneyProfile',
+            id: 'teamId'
+          }
+        }
+      }))
+    }
+
   const translateSubscriptionMock = {
     request: {
       query: JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION,
@@ -147,6 +168,7 @@ describe('CopyToTeamMenuItem', () => {
           {
             __typename: 'Language',
             id: '529',
+            slug: 'english',
             name: [
               {
                 value: 'English',
@@ -182,6 +204,7 @@ describe('CopyToTeamMenuItem', () => {
       <MockedProvider
         mocks={[
           updateLastActiveTeamIdMock,
+          updateLastActiveTeamIdMockForTranslation,
           mockLanguage,
           duplicateJourneyMock,
           getLastActiveTeamIdAndTeamsMock
@@ -202,6 +225,7 @@ describe('CopyToTeamMenuItem', () => {
                   language: {
                     __typename: 'Language',
                     id: '529',
+                    slug: 'english',
                     name: [
                       {
                         value: 'English',
@@ -257,6 +281,7 @@ describe('CopyToTeamMenuItem', () => {
       <MockedProvider
         mocks={[
           updateLastActiveTeamIdMock,
+          updateLastActiveTeamIdMockForTranslation,
           mockLanguage,
           translateSubscriptionMock,
           duplicateJourneyMock,
@@ -278,6 +303,7 @@ describe('CopyToTeamMenuItem', () => {
                   language: {
                     __typename: 'Language',
                     id: '529',
+                    slug: 'english',
                     name: [
                       {
                         value: 'English',
@@ -379,6 +405,7 @@ describe('CopyToTeamMenuItem', () => {
                   language: {
                     __typename: 'Language',
                     id: '529',
+                    slug: 'english',
                     name: [
                       {
                         value: 'English',
@@ -470,6 +497,7 @@ describe('CopyToTeamMenuItem', () => {
                   language: {
                     __typename: 'Language',
                     id: '529',
+                    slug: 'english',
                     name: [
                       {
                         value: 'English',
@@ -552,6 +580,7 @@ describe('CopyToTeamMenuItem', () => {
                   language: {
                     __typename: 'Language',
                     id: '529',
+                    slug: 'english',
                     name: [
                       {
                         value: 'English',
@@ -627,6 +656,7 @@ describe('CopyToTeamMenuItem', () => {
                   language: {
                     __typename: 'Language',
                     id: '529',
+                    slug: 'english',
                     name: [
                       {
                         value: 'English',
@@ -703,6 +733,7 @@ describe('CopyToTeamMenuItem', () => {
                   language: {
                     __typename: 'Language',
                     id: '529',
+                    slug: 'english',
                     name: [
                       {
                         value: 'English',
