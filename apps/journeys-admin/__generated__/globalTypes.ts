@@ -289,7 +289,7 @@ export interface BlockUpdateActionInput {
 }
 
 export interface ButtonBlockClassNamesInput {
-  self?: string | null;
+  self: string;
 }
 
 export interface ButtonBlockCreateInput {
@@ -327,7 +327,7 @@ export interface ButtonClickEventCreateInput {
 }
 
 export interface CardBlockClassNamesInput {
-  self?: string | null;
+  self: string;
 }
 
 export interface CardBlockCreateInput {
@@ -405,7 +405,7 @@ export interface HostUpdateInput {
 }
 
 export interface IconBlockClassNamesInput {
-  self?: string | null;
+  self: string;
 }
 
 export interface IconBlockCreateInput {
@@ -419,7 +419,7 @@ export interface IconBlockCreateInput {
 }
 
 export interface ImageBlockClassNamesInput {
-  self?: string | null;
+  self: string;
 }
 
 export interface ImageBlockCreateInput {
@@ -595,7 +595,7 @@ export interface QrCodesFilter {
 }
 
 export interface RadioOptionBlockClassNamesInput {
-  self?: string | null;
+  self: string;
 }
 
 export interface RadioOptionBlockCreateInput {
@@ -628,7 +628,7 @@ export interface RadioQuestionSubmissionEventCreateInput {
 }
 
 export interface SignUpBlockClassNamesInput {
-  self?: string | null;
+  self: string;
 }
 
 export interface SignUpBlockCreateInput {
@@ -655,7 +655,7 @@ export interface SignUpSubmissionEventCreateInput {
 }
 
 export interface SpacerBlockClassNamesInput {
-  self?: string | null;
+  self: string;
 }
 
 export interface SpacerBlockCreateInput {
@@ -722,7 +722,7 @@ export interface TeamUpdateInput {
 }
 
 export interface TextResponseBlockClassNamesInput {
-  self?: string | null;
+  self: string;
 }
 
 export interface TextResponseBlockCreateInput {
@@ -755,7 +755,7 @@ export interface TextResponseSubmissionEventCreateInput {
 }
 
 export interface TypographyBlockClassNamesInput {
-  self?: string | null;
+  self: string;
 }
 
 export interface TypographyBlockCreateInput {
@@ -795,7 +795,7 @@ export interface UserTeamUpdateInput {
 }
 
 export interface VideoBlockClassNamesInput {
-  self?: string | null;
+  self: string;
 }
 
 export interface VideoBlockCreateInput {

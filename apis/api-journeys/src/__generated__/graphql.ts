@@ -147,11 +147,11 @@ export type ButtonBlock = Block & {
 export type ButtonBlockClassNames = {
   __typename?: 'ButtonBlockClassNames';
   /** Tailwind class names for the button block */
-  self?: Maybe<Scalars['String']['output']>;
+  self: Scalars['String']['output'];
 };
 
 export type ButtonBlockClassNamesInput = {
-  self?: InputMaybe<Scalars['String']['input']>;
+  self: Scalars['String']['input'];
 };
 
 export type ButtonBlockCreateInput = {
@@ -278,7 +278,7 @@ export type CardBlockClassNames = {
 };
 
 export type CardBlockClassNamesInput = {
-  self?: InputMaybe<Scalars['String']['input']>;
+  self: Scalars['String']['input'];
 };
 
 export type CardBlockCreateInput = {
@@ -673,11 +673,11 @@ export type IconBlock = Block & {
 export type IconBlockClassNames = {
   __typename?: 'IconBlockClassNames';
   /** Tailwind class names for the icon block */
-  self?: Maybe<Scalars['String']['output']>;
+  self: Scalars['String']['output'];
 };
 
 export type IconBlockClassNamesInput = {
-  self?: InputMaybe<Scalars['String']['input']>;
+  self: Scalars['String']['input'];
 };
 
 export type IconBlockCreateInput = {
@@ -773,11 +773,11 @@ export type ImageBlock = Block & {
 export type ImageBlockClassNames = {
   __typename?: 'ImageBlockClassNames';
   /** Tailwind class names for the image block */
-  self?: Maybe<Scalars['String']['output']>;
+  self: Scalars['String']['output'];
 };
 
 export type ImageBlockClassNamesInput = {
-  self?: InputMaybe<Scalars['String']['input']>;
+  self: Scalars['String']['input'];
 };
 
 export type ImageBlockCreateInput = {
@@ -3469,11 +3469,11 @@ export type RadioOptionBlock = Block & {
 export type RadioOptionBlockClassNames = {
   __typename?: 'RadioOptionBlockClassNames';
   /** Tailwind class names for the radio option block */
-  self?: Maybe<Scalars['String']['output']>;
+  self: Scalars['String']['output'];
 };
 
 export type RadioOptionBlockClassNamesInput = {
-  self?: InputMaybe<Scalars['String']['input']>;
+  self: Scalars['String']['input'];
 };
 
 export type RadioOptionBlockCreateInput = {
@@ -3619,11 +3619,11 @@ export type SignUpBlock = Block & {
 export type SignUpBlockClassNames = {
   __typename?: 'SignUpBlockClassNames';
   /** Tailwind class names for the sign up block */
-  self?: Maybe<Scalars['String']['output']>;
+  self: Scalars['String']['output'];
 };
 
 export type SignUpBlockClassNamesInput = {
-  self?: InputMaybe<Scalars['String']['input']>;
+  self: Scalars['String']['input'];
 };
 
 export type SignUpBlockCreateInput = {
@@ -3714,11 +3714,11 @@ export type SpacerBlock = Block & {
 export type SpacerBlockClassNames = {
   __typename?: 'SpacerBlockClassNames';
   /** Tailwind class names for the spacer block */
-  self?: Maybe<Scalars['String']['output']>;
+  self: Scalars['String']['output'];
 };
 
 export type SpacerBlockClassNamesInput = {
-  self?: InputMaybe<Scalars['String']['input']>;
+  self: Scalars['String']['input'];
 };
 
 export type SpacerBlockCreateInput = {
@@ -3990,11 +3990,11 @@ export type TextResponseBlock = Block & {
 export type TextResponseBlockClassNames = {
   __typename?: 'TextResponseBlockClassNames';
   /** Tailwind class names for the text response block */
-  self?: Maybe<Scalars['String']['output']>;
+  self: Scalars['String']['output'];
 };
 
 export type TextResponseBlockClassNamesInput = {
-  self?: InputMaybe<Scalars['String']['input']>;
+  self: Scalars['String']['input'];
 };
 
 export type TextResponseBlockCreateInput = {
@@ -4099,11 +4099,11 @@ export type TypographyBlock = Block & {
 export type TypographyBlockClassNames = {
   __typename?: 'TypographyBlockClassNames';
   /** Tailwind class names for the typography block */
-  self?: Maybe<Scalars['String']['output']>;
+  self: Scalars['String']['output'];
 };
 
 export type TypographyBlockClassNamesInput = {
-  self?: InputMaybe<Scalars['String']['input']>;
+  self: Scalars['String']['input'];
 };
 
 export type TypographyBlockCreateInput = {
@@ -4538,11 +4538,11 @@ export type VideoBlock = Block & {
 export type VideoBlockClassNames = {
   __typename?: 'VideoBlockClassNames';
   /** Tailwind class names for the video block */
-  self?: Maybe<Scalars['String']['output']>;
+  self: Scalars['String']['output'];
 };
 
 export type VideoBlockClassNamesInput = {
-  self?: InputMaybe<Scalars['String']['input']>;
+  self: Scalars['String']['input'];
 };
 
 export type VideoBlockCreateInput = {
