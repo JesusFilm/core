@@ -1,6 +1,6 @@
 import AddRounded from '@mui/icons-material/AddRounded'
-import LoadingButton from '@mui/lab/LoadingButton'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Grid from '@mui/material/GridLegacy'
 import type { ComponentProps, MouseEvent, ReactElement } from 'react'
 
@@ -86,8 +86,8 @@ export function VideoGrid({
       {showLoadMore && !hasNoResults && (
         <Grid item xs={12}>
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
-            <LoadingButton
-              variant="outlined"
+            <Button
+              variant="outlined"              
               onClick={showMore}
               loading={loading}
               startIcon={<AddRounded />}
@@ -100,7 +100,7 @@ export function VideoGrid({
                 : hasNextPage
                   ? 'Load More'
                   : 'No More Videos'}
-            </LoadingButton>
+            </Button>
           </Box>
         </Grid>
       )}
