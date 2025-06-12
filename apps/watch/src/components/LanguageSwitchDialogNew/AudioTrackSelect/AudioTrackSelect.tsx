@@ -1,31 +1,84 @@
+import { gql, useQuery } from '@apollo/client'
 import { AutocompleteRenderInputParams } from '@mui/material/Autocomplete'
-import { ReactElement, Ref } from 'react'
+import { useTranslation } from 'next-i18next'
+import { ReactElement, Ref, useEffect, useState } from 'react'
 import { ListChildComponentProps } from 'react-window'
 
 import MediaStrip1 from '@core/shared/ui/icons/MediaStrip1'
-import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
+import {
+  LanguageAutocomplete,
+  LanguageOption
+} from '@core/shared/ui/LanguageAutocomplete'
+
+import {
+  GetAllLanguages,
+  GetAllLanguages_languages as Language
+} from '../../../../__generated__/GetAllLanguages'
+
+const GET_ALL_LANGUAGES = gql`
+  query GetAllLanguages {
+    languages {
+      id
+      bcp47
+      slug
+      name {
+        primary
+        value
+      }
+    }
+  }
+`
 
 interface AudioTrackSelectProps {
-  value: string
-  onChange: (value: string) => void
-  languages: { code: string; name: string }[]
-  t: (s: string) => string
+  selectedLanguageId: string
+  onChange: (selectedLanguageId: string) => void
   dropdownRef: Ref<HTMLDivElement>
-  currentTrackName: string
   renderInput: (params: AutocompleteRenderInputParams) => ReactElement
   renderOption: (props: ListChildComponentProps) => ReactElement
 }
 
 export function AudioTrackSelect({
-  value,
+  selectedLanguageId,
   onChange,
-  languages,
-  t,
   dropdownRef,
-  currentTrackName,
   renderInput,
   renderOption
 }: AudioTrackSelectProps): ReactElement {
+  const { data, loading } = useQuery<GetAllLanguages>(GET_ALL_LANGUAGES)
+  const { t } = useTranslation()
+
+  const selectedLanguage = data?.languages?.find(
+    (language) => language.id === selectedLanguageId
+  )
+
+  const [currentLanguage, setCurrentLanguage] = useState<
+    LanguageOption | undefined
+  >(undefined)
+
+  useEffect(() => {
+    if (selectedLanguage != null && !loading) {
+      setCurrentLanguage({
+        id: selectedLanguage.id,
+        localName: selectedLanguage.name.find(({ primary }) => primary)?.value,
+        nativeName: selectedLanguage.name.find(({ primary }) => !primary)
+          ?.value,
+        slug: selectedLanguage.slug
+      })
+    }
+  }, [selectedLanguage, loading])
+
+  const allLanguages =
+    data?.languages?.map((language: Language) => ({
+      id: language.id,
+      name: language.name,
+      slug: language.slug
+    })) ?? []
+
+  function handleChange(language: LanguageOption): void {
+    setCurrentLanguage(language)
+    onChange(language.id)
+  }
+
   return (
     <div className="mb-4 mx-6">
       <div className="flex items-center justify-between">
@@ -36,7 +89,7 @@ export function AudioTrackSelect({
           {t('Audio Track')}
         </label>
         <span className="text-sm text-gray-400 opacity-60">
-          {currentTrackName}
+          {currentLanguage?.nativeName}
         </span>
       </div>
       <div className="relative mt-1 flex items-center gap-2" ref={dropdownRef}>
@@ -44,17 +97,15 @@ export function AudioTrackSelect({
         <div className="relative w-full">
           <LanguageAutocomplete
             value={{
-              id: value,
-              nativeName: languages.find((a) => a.code === value)?.name,
-              localName: languages.find((a) => a.code === value)?.name
+              id: currentLanguage?.id ?? '',
+              localName: currentLanguage?.localName,
+              nativeName: currentLanguage?.nativeName,
+              slug: currentLanguage?.slug
             }}
-            onChange={(option) => onChange(option?.id || languages[0].code)}
-            languages={languages.map((a) => ({
-              id: a.code,
-              name: [{ value: a.name, primary: true }],
-              slug: null
-            }))}
-            disabled={false}
+            onChange={handleChange}
+            languages={allLanguages}
+            loading={loading}
+            disabled={loading}
             renderInput={renderInput}
             renderOption={renderOption}
           />

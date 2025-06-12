@@ -62,6 +62,7 @@ export function LanguageAutocomplete({
   popper,
   error
 }: LanguageAutocompleteProps): ReactElement {
+  console.log('value', value)
   const options = useMemo(() => {
     return (
       languages?.map(({ id, name, slug }) => {

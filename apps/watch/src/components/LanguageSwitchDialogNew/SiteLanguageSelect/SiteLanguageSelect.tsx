@@ -1,29 +1,60 @@
 import { AutocompleteRenderInputParams } from '@mui/material/Autocomplete'
-import { ReactElement, Ref } from 'react'
+import { useTranslation } from 'next-i18next'
+import { ReactElement, Ref, useEffect, useState } from 'react'
 import { ListChildComponentProps } from 'react-window'
 
 import Globe from '@core/shared/ui/icons/Globe'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
+import { SUPPORTED_LOCALES } from '../../../config/locales'
+
 interface SiteLanguageSelectProps {
-  value: string
   onChange: (value: string) => void
-  languages: { code: string; name: string }[]
-  t: (s: string) => string
   dropdownRef: Ref<HTMLDivElement>
   renderInput: (params: AutocompleteRenderInputParams) => ReactElement
   renderOption: (props: ListChildComponentProps) => ReactElement
 }
 
+interface Language {
+  code: string
+  name: string
+}
+
 export function SiteLanguageSelect({
-  value,
   onChange,
-  languages,
-  t,
   dropdownRef,
   renderInput,
   renderOption
 }: SiteLanguageSelectProps): ReactElement {
+  const { i18n, t } = useTranslation()
+  const [languages, setLanguages] = useState<Language[]>([])
+  const [currentValue, setCurrentValue] = useState(i18n?.language ?? 'en')
+
+  useEffect(() => {
+    const currentLanguageCode = i18n?.language ?? 'en'
+    const formattedLanguages = SUPPORTED_LOCALES.map(
+      (languageCode): Language => {
+        const nativeName = new Intl.DisplayNames([currentLanguageCode], {
+          type: 'language'
+        }).of(languageCode)
+        const localName = new Intl.DisplayNames([languageCode], {
+          type: 'language'
+        }).of(languageCode)
+
+        return {
+          code: languageCode,
+          name: localName ?? nativeName ?? languageCode
+        }
+      }
+    )
+    setLanguages(formattedLanguages)
+  }, [i18n?.language])
+
+  const handleLanguageChange = (languageCode: string): void => {
+    setCurrentValue(languageCode)
+    onChange(languageCode)
+  }
+
   return (
     <div className="mx-6">
       <label
@@ -37,11 +68,13 @@ export function SiteLanguageSelect({
         <div className="relative w-full">
           <LanguageAutocomplete
             value={{
-              id: value,
-              nativeName: languages.find((l) => l.code === value)?.name,
-              localName: languages.find((l) => l.code === value)?.name
+              id: currentValue,
+              nativeName: languages.find((l) => l.code === currentValue)?.name,
+              localName: languages.find((l) => l.code === currentValue)?.name
             }}
-            onChange={(option) => onChange(option?.id || languages[0].code)}
+            onChange={(option) =>
+              handleLanguageChange(option?.id || languages[0]?.code)
+            }
             languages={languages.map((l) => ({
               id: l.code,
               name: [{ value: l.name, primary: true }],
