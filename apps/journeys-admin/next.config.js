@@ -103,11 +103,17 @@ const nextConfig = {
   },
   webpack: (config, { isServer }) => {
     // Handle CSS imports from MUI X packages ESM modules
+    // Only ignore CSS files that are imported directly from MUI X ESM modules during server-side rendering
     if (isServer) {
       config.module.rules.push({
         test: /\.css$/,
         use: 'ignore-loader',
-        include: /node_modules\/@mui\/x-/
+        include: [
+          /node_modules\/@mui\/x-data-grid\/esm\/.*\.css$/,
+          /node_modules\/@mui\/x-date-pickers\/esm\/.*\.css$/,
+          /node_modules\/@mui\/x-tree-view\/esm\/.*\.css$/,
+          /node_modules\/@mui\/x-charts\/esm\/.*\.css$/
+        ]
       })
     }
     return config
