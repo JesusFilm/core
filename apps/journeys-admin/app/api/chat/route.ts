@@ -1,7 +1,8 @@
 import { google } from '@ai-sdk/google'
-import { coreMessageSchema, streamText } from 'ai'
+import { CoreMessage, streamText } from 'ai'
 import { jwtDecode } from 'jwt-decode'
 import { NextRequest } from 'next/server'
+import { v4 as uuidv4 } from 'uuid'
 import { z } from 'zod'
 
 import {
@@ -35,16 +36,27 @@ export function errorHandler(error: unknown) {
 
 export async function POST(req: NextRequest) {
   try {
+    const body = await req.json()
+    const schema = z.object({
+      messages: z.array(
+        z
+          .object({
+            role: z.enum(['system', 'user', 'assistant']),
+            content: z.string()
+          })
+          .passthrough()
+      ),
+      journeyId: z.string().optional(),
+      selectedStepId: z.string().optional(),
+      selectedBlockId: z.string().optional()
+    })
     const { messages, journeyId, selectedStepId, selectedBlockId } =
-      await req.json()
-
-    const parsedMessages = z.array(coreMessageSchema).parse(messages)
+      schema.parse(body)
 
     const token = req.headers.get('Authorization')
 
     if (token == null)
       return Response.json({ error: 'Missing token' }, { status: 400 })
-
     const decoded = z
       .object({
         user_id: z.string(),
@@ -63,23 +75,28 @@ export async function POST(req: NextRequest) {
       }
     )
 
+    const langfuseTraceId = uuidv4()
+
+    const messagesWithSystemPrompt = [
+      {
+        role: 'system',
+        content: systemPrompt.compile({
+          journeyId: journeyId ?? 'none',
+          selectedStepId: selectedStepId ?? 'none',
+          selectedBlockId: selectedBlockId ?? 'none'
+        })
+      },
+      ...messages.filter((message) => message.role !== 'system')
+    ] as CoreMessage[]
+
     const result = streamText({
       model: google('gemini-2.0-flash'),
-      messages: [
-        {
-          role: 'system',
-          content: systemPrompt.compile({
-            journeyId: journeyId ?? 'none',
-            selectedStepId: selectedStepId ?? 'none',
-            selectedBlockId: selectedBlockId ?? 'none'
-          })
-        },
-        ...parsedMessages.filter((message) => message.role !== 'system')
-      ],
+      messages: messagesWithSystemPrompt,
       tools: tools(client),
       experimental_telemetry: {
         isEnabled: true,
         metadata: {
+          langfuseTraceId,
           langfusePrompt: systemPrompt.toJSON(),
           userId: decoded.user_id,
           sessionId: `${decoded.user_id}-${decoded.auth_time}`
@@ -90,7 +107,8 @@ export async function POST(req: NextRequest) {
     return result.toDataStreamResponse({
       headers: {
         'Transfer-Encoding': 'chunked',
-        Connection: 'keep-alive'
+        Connection: 'keep-alive',
+        'x-trace-id': langfuseTraceId
       },
       getErrorMessage: errorHandler
     })
