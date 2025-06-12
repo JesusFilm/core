@@ -17,6 +17,8 @@ import {
   GetAllLanguages,
   GetAllLanguages_languages as Language
 } from '../../../__generated__/GetAllLanguages'
+import { LANGUAGE_MAPPINGS } from '../../config/locales'
+import { SUBTITLE_LANGUAGE_IDS } from '../../config/subtitleLangaugeIds'
 
 const GET_ALL_LANGUAGES = gql`
   query GetAllLanguages {
@@ -36,12 +38,6 @@ interface LanguageSwitchDialogProps {
   open: boolean
   handleClose: () => void
 }
-
-const subtitles = [
-  { code: 'en', name: 'English Subtitles' },
-  { code: 'es', name: 'Spanish Subtitles' },
-  { code: 'fr', name: 'French Subtitles' }
-]
 
 function getCookie(name: string): string | undefined {
   const match = document.cookie
@@ -75,10 +71,6 @@ export function LanguageSwitchDialog({
   )
   const [subtitlesOn, setSubtitlesOn] = useState(subtitlesOnCookie === 'true')
 
-  const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false)
-  const [isAudioDropdownOpen, setIsAudioDropdownOpen] = useState(false)
-  const [isSubtitleDropdownOpen, setIsSubtitleDropdownOpen] = useState(false)
-
   const [loading, setLoading] = useState(false)
   const languageDropdownRef = useRef<HTMLDivElement>(null)
   const audioDropdownRef = useRef<HTMLDivElement>(null)
@@ -87,6 +79,10 @@ export function LanguageSwitchDialog({
 
   // Handle escape key press
   useEffect(() => {
+    if (!open) {
+      handleResetForm()
+    }
+
     const handleEscapeKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         handleDialogCancel()
@@ -102,41 +98,17 @@ export function LanguageSwitchDialog({
     }
   }, [open, handleDialogCancel])
 
-  // Close dropdown when dialog closes
-  useEffect(() => {
-    if (!open) {
-      setIsLanguageDropdownOpen(false)
-      setIsAudioDropdownOpen(false)
-      setIsSubtitleDropdownOpen(false)
-    }
-  }, [open])
+  function handleResetForm(): void {
+    setSelectedLanguage(i18n.language)
+    setSelectedAudioLanguage(audioLanguageCookie)
+    setSelectedSubtitle(subtitleLanguageCookie)
+    setSubtitlesOn(subtitlesOnCookie === 'true')
+  }
 
-  // Close dropdowns on outside click
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      const target = event.target as Node
-      console.log('target', target)
-      console.log('dialogRef.current', dialogRef.current)
-      console.log('audioDropdownRef.current', audioDropdownRef.current)
-      console.log('languageDropdownRef.current', languageDropdownRef.current)
-      console.log('subtitleDropdownRef.current', subtitleDropdownRef.current)
-      if (
-        dialogRef.current &&
-        !dialogRef.current.contains(target) &&
-        !audioDropdownRef.current?.contains(target) &&
-        !languageDropdownRef.current?.contains(target) &&
-        !subtitleDropdownRef.current?.contains(target)
-      ) {
-        // handleDialogCancel()
-      }
-    }
-    if (open) {
-      document.addEventListener('mousedown', handleClickOutside)
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [handleDialogCancel, open])
+  function handleDialogCancel(): void {
+    handleResetForm()
+    handleClose()
+  }
 
   // Custom renderInput for all selects
   const renderInput =
@@ -177,8 +149,11 @@ export function LanguageSwitchDialog({
   }
 
   function handleSubmit(): void {
+    // Site Language cookie is language code e.g. en, es, fr, etc.
     const siteLanguageChanged = selectedLanguage !== i18n.language
+    // Audio Language cookie is languageId e.g. 529,
     const audioTrackChanged = selectedAudioLanguage !== audioLanguageCookie
+    // Subtitle Language cookie is languageId e.g. 529,
     const subtitleChanged = selectedSubtitle !== subtitleLanguageCookie
     const subtitlesOnChanged = subtitlesOn.toString() !== subtitlesOnCookie
     const cookieFingerprint = '00005'
@@ -186,17 +161,33 @@ export function LanguageSwitchDialog({
     // Site language change
     if (siteLanguageChanged) {
       document.cookie = `NEXT_LOCALE=${cookieFingerprint}---${selectedLanguage}; path=/`
+      const siteLanguageId =
+        LANGUAGE_MAPPINGS[selectedLanguage]?.languageId ?? '529'
       void i18n.changeLanguage(selectedLanguage)
+      if (!audioTrackChanged) {
+        document.cookie = `TODO: AUDIO_LANGUAGE=${cookieFingerprint}---${siteLanguageId}; path=/`
+      }
+      if (!audioTrackChanged) {
+        document.cookie = `TODO: SUBTITLE_LANGUAGE=${cookieFingerprint}---${siteLanguageId}; path=/`
+      }
     }
+
     // Audio track change
     if (audioTrackChanged) {
       document.cookie = `AUDIO_LANGUAGE=${cookieFingerprint}---${selectedAudioLanguage}; path=/`
+      if (!subtitleChanged) {
+        const subtitleLanguageId =
+          SUBTITLE_LANGUAGE_IDS.find((id) => id === selectedAudioLanguage) ??
+          '529'
+        document.cookie = `TODO: SUBTITLE_LANGUAGE=${cookieFingerprint}---${subtitleLanguageId}; path=/`
+      }
     }
     // Subtitle change
     if (subtitleChanged) {
       document.cookie = `SUBTITLE_LANGUAGE=${cookieFingerprint}---${selectedSubtitle}; path=/`
     }
 
+    // Subtitles on change
     if (subtitlesOnChanged) {
       document.cookie = `SUBTITLES_ON=${cookieFingerprint}---${subtitlesOn.toString()}; path=/`
     }
@@ -208,26 +199,6 @@ export function LanguageSwitchDialog({
       handleClose()
     }
   }
-
-  function handleDialogCancel(): void {
-    console.log('handleDialogCancel')
-    setSelectedLanguage(i18n.language)
-    setSelectedAudioLanguage(audioLanguageCookie)
-    setSelectedSubtitle(subtitleLanguageCookie)
-    setSubtitlesOn(subtitlesOnCookie === 'true')
-
-    handleClose()
-  }
-
-  useEffect(() => {
-    if (!open) {
-      setSelectedLanguage(i18n.language)
-      setSelectedAudioLanguage(audioLanguageCookie)
-      setSelectedSubtitle(subtitleLanguageCookie)
-      setSubtitlesOn(subtitlesOnCookie === 'true')
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open])
 
   return !open ? (
     <></>
@@ -337,7 +308,7 @@ export function LanguageSwitchDialog({
                     <span className="sr-only">Loading...</span>
                   </>
                 ) : (
-                  t('Done')
+                  t('Confirm')
                 )}
               </button>
             </div>
