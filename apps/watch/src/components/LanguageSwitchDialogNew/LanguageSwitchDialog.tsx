@@ -8,7 +8,7 @@ import { AudioTrackSelect } from './AudioTrackSelect'
 import { SubtitlesSelect } from './SubtitlesSelect'
 import { websiteLight } from 'libs/shared/ui/src/libs/themes/website/theme'
 import { GetAllLanguages } from '../../../__generated__/GetAllLanguages'
-import { ConfirmButton } from './ConfirmButton'
+import { DialogActions } from './DialogActions'
 import { getCookie } from './utils/cookieHandler'
 
 const GET_ALL_LANGUAGES = gql`
@@ -165,7 +165,7 @@ export function LanguageSwitchDialog({
               />
             </div>
             <div className="mt-8 mx-6 mb-6 flex justify-end">
-              <ConfirmButton
+              <DialogActions
                 selectedLanguage={selectedLanguage}
                 selectedAudioLanguage={selectedAudioLanguage}
                 selectedSubtitle={selectedSubtitle}
@@ -176,6 +176,7 @@ export function LanguageSwitchDialog({
                 loading={loading}
                 setLoading={setLoading}
                 handleClose={handleClose}
+                handleCancel={handleDialogCancel}
               />
             </div>
           </div>

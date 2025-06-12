@@ -1,1 +1,1 @@
-export { ConfirmButton } from './ConfirmButton'
+export { DialogActions } from './ConfirmButton'
