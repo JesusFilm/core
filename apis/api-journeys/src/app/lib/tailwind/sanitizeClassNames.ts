@@ -7,8 +7,8 @@ export function sanitizeClassNames(
   existingClassNames?: Prisma.JsonObject
 ): Prisma.JsonObject {
   // parse through classNames keys and run cn on the value
-  const sanitizedClassNames = Object.fromEntries(
-    Object.entries(classNames as any).map(([key, value]) => [
+  const sanitizedUpdate = Object.fromEntries(
+    Object.entries(classNames as Record<string, unknown>).map(([key, value]) => [
       key,
       cn(
         existingClassNames ? (existingClassNames[key] as string) : '',
@@ -16,5 +16,9 @@ export function sanitizeClassNames(
       )
     ])
   )
-  return sanitizedClassNames as Prisma.JsonObject
+
+  return {
+    ...(existingClassNames ?? {}),
+    ...sanitizedUpdate
+  } as Prisma.JsonObject
 }
