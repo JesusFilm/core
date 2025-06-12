@@ -1,7 +1,7 @@
 import AddRounded from '@mui/icons-material/AddRounded'
 import LoadingButton from '@mui/lab/LoadingButton'
 import Box from '@mui/material/Box'
-import Grid from '@mui/material/Grid'
+import Grid from '@mui/material/GridLegacy'
 import type { ComponentProps, MouseEvent, ReactElement } from 'react'
 
 import { EmptySearch } from '@core/journeys/ui/EmptySearch'
