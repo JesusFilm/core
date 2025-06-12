@@ -3710,18 +3710,22 @@ export type SpacerBlockClassNames = {
   self: Scalars['String']['output'];
 };
 
+export type SpacerBlockClassNamesInput = {
+  self?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type SpacerBlockCreateInput = {
+  classNames?: InputMaybe<SpacerBlockClassNamesInput>;
   id?: InputMaybe<Scalars['ID']['input']>;
   journeyId: Scalars['ID']['input'];
   parentBlockId: Scalars['ID']['input'];
   spacing?: InputMaybe<Scalars['Int']['input']>;
-  style?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type SpacerBlockUpdateInput = {
+  classNames?: InputMaybe<SpacerBlockClassNamesInput>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   spacing?: InputMaybe<Scalars['Int']['input']>;
-  style?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type StepBlock = Block & {

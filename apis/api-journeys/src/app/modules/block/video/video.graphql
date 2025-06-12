@@ -1,5 +1,5 @@
 input VideoBlockClassNamesInput {
-  self: String
+  self: String!
 }
 
 extend type Video @key(fields: "id primaryLanguageId") {
@@ -15,7 +15,7 @@ enum VideoBlockSource {
 }
 
 type VideoBlockClassNames {
-  self: String @shareable
+  self: String! @shareable
 }
 
 enum VideoBlockObjectFit {

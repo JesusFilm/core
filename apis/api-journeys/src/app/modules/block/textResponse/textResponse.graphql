@@ -1,9 +1,9 @@
 input TextResponseBlockClassNamesInput {
-  self: String
+  self: String!
 }
 
 type TextResponseBlockClassNames {
-  self: String @shareable
+  self: String! @shareable
 }
 
 type TextResponseBlock implements Block @key(fields: "id") {

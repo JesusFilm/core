@@ -1,9 +1,9 @@
 input ImageBlockClassNamesInput {
-  self: String
+  self: String!
 }
 
 type ImageBlockClassNames {
-  self: String @shareable
+  self: String! @shareable
 }
 
 type ImageBlock implements Block @key(fields: "id") {

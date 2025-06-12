@@ -1,9 +1,9 @@
 input SpacerBlockClassNamesInput {
-  self: String
+  self: String!
 }
 
 type SpacerBlockClassNames {
-  self: String @shareable
+  self: String! @shareable
 }
 
 type SpacerBlock implements Block @key(fields: "id") {

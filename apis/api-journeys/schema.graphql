@@ -589,7 +589,7 @@ input ButtonBlockClassNamesInput {
 }
 
 type ButtonBlockClassNames {
-  self: String
+  self: String @shareable
 }
 
 type ButtonBlock implements Block
@@ -637,7 +637,7 @@ input ButtonBlockUpdateInput {
 }
 
 type CardBlockClassNames {
-  self: String
+  self: String @shareable
 }
 
 input CardBlockClassNamesInput {
@@ -796,7 +796,7 @@ input IconBlockClassNamesInput {
 }
 
 type IconBlockClassNames {
-  self: String
+  self: String @shareable
 }
 
 type IconBlock implements Block
@@ -839,7 +839,7 @@ input ImageBlockClassNamesInput {
 }
 
 type ImageBlockClassNames {
-  self: String
+  self: String @shareable
 }
 
 type ImageBlock implements Block
@@ -916,7 +916,7 @@ input RadioOptionBlockClassNamesInput {
 }
 
 type RadioOptionBlockClassNames {
-  self: String
+  self: String @shareable
 }
 
 type RadioOptionBlock implements Block
@@ -967,7 +967,7 @@ input SignUpBlockClassNamesInput {
 }
 
 type SignUpBlockClassNames {
-  self: String
+  self: String @shareable
 }
 
 type SignUpBlock implements Block
@@ -1005,7 +1005,7 @@ input SpacerBlockClassNamesInput {
 }
 
 type SpacerBlockClassNames {
-  self: String
+  self: String @shareable
 }
 
 type SpacerBlock implements Block
@@ -1133,7 +1133,7 @@ input TextResponseBlockClassNamesInput {
 }
 
 type TextResponseBlockClassNames {
-  self: String
+  self: String @shareable
 }
 
 type TextResponseBlock implements Block
@@ -1216,7 +1216,7 @@ input TypographyBlockClassNamesInput {
 }
 
 type TypographyBlockClassNames {
-  self: String
+  self: String @shareable
 }
 
 type TypographyBlock implements Block
@@ -1274,7 +1274,7 @@ enum VideoBlockSource {
 }
 
 type VideoBlockClassNames {
-  self: String
+  self: String @shareable
 }
 
 enum VideoBlockObjectFit {

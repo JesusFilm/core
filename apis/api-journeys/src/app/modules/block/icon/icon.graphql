@@ -41,11 +41,11 @@ enum IconSize {
 }
 
 input IconBlockClassNamesInput {
-  self: String
+  self: String!
 }
 
 type IconBlockClassNames {
-  self: String @shareable
+  self: String! @shareable
 }
 
 type IconBlock implements Block @key(fields: "id") {

@@ -1,9 +1,9 @@
 type CardBlockClassNames {
-  self: String @shareable
+  self: String! @shareable
 }
 
 input CardBlockClassNamesInput {
-  self: String
+  self: String!
 }
 
 type CardBlock implements Block @key(fields: "id") {

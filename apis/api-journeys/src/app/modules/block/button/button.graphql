@@ -17,11 +17,11 @@ enum ButtonSize {
 }
 
 input ButtonBlockClassNamesInput {
-  self: String
+  self: String!
 }
 
 type ButtonBlockClassNames {
-  self: String @shareable
+  self: String! @shareable
 }
 
 type ButtonBlock implements Block @key(fields: "id") {

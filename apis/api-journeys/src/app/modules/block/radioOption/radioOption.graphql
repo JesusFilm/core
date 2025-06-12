@@ -1,9 +1,9 @@
 input RadioOptionBlockClassNamesInput {
-  self: String
+  self: String!
 }
 
 type RadioOptionBlockClassNames {
-  self: String @shareable
+  self: String! @shareable
 }
 
 type RadioOptionBlock implements Block @key(fields: "id") {

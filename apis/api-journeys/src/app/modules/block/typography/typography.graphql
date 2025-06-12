@@ -26,11 +26,11 @@ enum TypographyAlign {
 }
 
 input TypographyBlockClassNamesInput {
-  self: String
+  self: String!
 }
 
 type TypographyBlockClassNames {
-  self: String @shareable
+  self: String! @shareable
 }
 
 type TypographyBlock implements Block @key(fields: "id") {

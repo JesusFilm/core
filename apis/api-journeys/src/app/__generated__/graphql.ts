@@ -297,7 +297,7 @@ export class BlockDuplicateIdMap {
 }
 
 export class ButtonBlockClassNamesInput {
-    self?: Nullable<string>;
+    self: string;
 }
 
 export class ButtonBlockCreateInput {
@@ -325,7 +325,7 @@ export class ButtonBlockUpdateInput {
 }
 
 export class CardBlockClassNamesInput {
-    self?: Nullable<string>;
+    self: string;
 }
 
 export class CardBlockCreateInput {
@@ -350,7 +350,7 @@ export class CardBlockUpdateInput {
 }
 
 export class IconBlockClassNamesInput {
-    self?: Nullable<string>;
+    self: string;
 }
 
 export class IconBlockCreateInput {
@@ -371,7 +371,7 @@ export class IconBlockUpdateInput {
 }
 
 export class ImageBlockClassNamesInput {
-    self?: Nullable<string>;
+    self: string;
 }
 
 export class ImageBlockCreateInput {
@@ -404,7 +404,7 @@ export class ImageBlockUpdateInput {
 }
 
 export class RadioOptionBlockClassNamesInput {
-    self?: Nullable<string>;
+    self: string;
 }
 
 export class RadioOptionBlockCreateInput {
@@ -428,7 +428,7 @@ export class RadioQuestionBlockCreateInput {
 }
 
 export class SignUpBlockClassNamesInput {
-    self?: Nullable<string>;
+    self: string;
 }
 
 export class SignUpBlockCreateInput {
@@ -447,7 +447,7 @@ export class SignUpBlockUpdateInput {
 }
 
 export class SpacerBlockClassNamesInput {
-    self?: Nullable<string>;
+    self: string;
 }
 
 export class SpacerBlockCreateInput {
@@ -488,7 +488,7 @@ export class StepBlockPositionUpdateInput {
 }
 
 export class TextResponseBlockClassNamesInput {
-    self?: Nullable<string>;
+    self: string;
 }
 
 export class TextResponseBlockCreateInput {
@@ -513,7 +513,7 @@ export class TextResponseBlockUpdateInput {
 }
 
 export class TypographyBlockClassNamesInput {
-    self?: Nullable<string>;
+    self: string;
 }
 
 export class TypographyBlockCreateInput {
@@ -537,7 +537,7 @@ export class TypographyBlockUpdateInput {
 }
 
 export class VideoBlockClassNamesInput {
-    self?: Nullable<string>;
+    self: string;
 }
 
 export class VideoBlockCreateInput {
@@ -1328,7 +1328,7 @@ export abstract class IQuery {
 
 export class ButtonBlockClassNames {
     __typename?: 'ButtonBlockClassNames';
-    self?: Nullable<string>;
+    self: string;
 }
 
 export class ButtonBlock implements Block {
@@ -1350,7 +1350,7 @@ export class ButtonBlock implements Block {
 
 export class CardBlockClassNames {
     __typename?: 'CardBlockClassNames';
-    self?: Nullable<string>;
+    self: string;
 }
 
 export class CardBlock implements Block {
@@ -1392,7 +1392,7 @@ export class GridItemBlock implements Block {
 
 export class IconBlockClassNames {
     __typename?: 'IconBlockClassNames';
-    self?: Nullable<string>;
+    self: string;
 }
 
 export class IconBlock implements Block {
@@ -1409,7 +1409,7 @@ export class IconBlock implements Block {
 
 export class ImageBlockClassNames {
     __typename?: 'ImageBlockClassNames';
-    self?: Nullable<string>;
+    self: string;
 }
 
 export class ImageBlock implements Block {
@@ -1431,7 +1431,7 @@ export class ImageBlock implements Block {
 
 export class RadioOptionBlockClassNames {
     __typename?: 'RadioOptionBlockClassNames';
-    self?: Nullable<string>;
+    self: string;
 }
 
 export class RadioOptionBlock implements Block {
@@ -1455,7 +1455,7 @@ export class RadioQuestionBlock implements Block {
 
 export class SignUpBlockClassNames {
     __typename?: 'SignUpBlockClassNames';
-    self?: Nullable<string>;
+    self: string;
 }
 
 export class SignUpBlock implements Block {
@@ -1472,7 +1472,7 @@ export class SignUpBlock implements Block {
 
 export class SpacerBlockClassNames {
     __typename?: 'SpacerBlockClassNames';
-    self?: Nullable<string>;
+    self: string;
 }
 
 export class SpacerBlock implements Block {
@@ -1500,7 +1500,7 @@ export class StepBlock implements Block {
 
 export class TextResponseBlockClassNames {
     __typename?: 'TextResponseBlockClassNames';
-    self?: Nullable<string>;
+    self: string;
 }
 
 export class TextResponseBlock implements Block {
@@ -1522,7 +1522,7 @@ export class TextResponseBlock implements Block {
 
 export class TypographyBlockClassNames {
     __typename?: 'TypographyBlockClassNames';
-    self?: Nullable<string>;
+    self: string;
 }
 
 export class TypographyBlock implements Block {
@@ -1540,7 +1540,7 @@ export class TypographyBlock implements Block {
 
 export class VideoBlockClassNames {
     __typename?: 'VideoBlockClassNames';
-    self?: Nullable<string>;
+    self: string;
 }
 
 export class VideoBlock implements Block {
