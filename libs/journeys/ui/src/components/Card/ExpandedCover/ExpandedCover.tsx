@@ -41,6 +41,8 @@ export function ExpandedCover({
         : backgroundColor
       : 'unset'
 
+  console.log('background', background)
+
   return (
     <>
       {/* Background Image */}

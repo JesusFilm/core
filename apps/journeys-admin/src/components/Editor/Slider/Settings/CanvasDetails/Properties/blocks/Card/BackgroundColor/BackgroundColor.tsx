@@ -25,8 +25,8 @@ import { CardBlockBackgroundColorUpdate } from '../../../../../../../../../../__
 import { CardFields } from '../../../../../../../../../../__generated__/CardFields'
 
 import { ColorOpacityField } from './ColorOpacityField'
+import { isValidHex } from './ColorOpacityField/ColorOpacityUtils'
 import { DebouncedHexColorPicker } from './DebouncedHexColorPicker'
-import { OpacitySlider } from './OpacitySlider'
 import { PaletteColorPicker } from './PaletteColorPicker'
 import { Swatch } from './Swatch'
 
@@ -133,41 +133,6 @@ export function BackgroundColor(): ReactElement {
     }
   }
 
-  function handleOpacityChange(opacity: number): void {
-    console.log('opacity', opacity)
-    return
-  }
-
-  function isValidHex(color: string): boolean {
-    const hexColorRegex = /^#[0-9A-Fa-f]{6}$/
-    return hexColorRegex.test(color)
-  }
-
-  const opacityValidationSchema = object({
-    opacity: number()
-      .typeError(t('Opacity must be a number'))
-      .min(0, t('Opacity must be greater that 0'))
-      .max(100, t('Opacity must be less than 100'))
-      .required(
-        t('Invalid {{ OPACITY }} opacity value', { OPACITY: 'opacity' })
-      )
-  })
-
-  const validationSchema = object({
-    color: string()
-      .required(t('Invalid {{ HEX }} color code', { HEX: 'HEX' }))
-      .test(
-        'valid-hex-color',
-        t('Invalid {{ HEX }} color code', { HEX: 'HEX' }),
-        (value) => {
-          if (isValidHex(value)) {
-            void handleColorChange(value)
-            return true
-          }
-        }
-      )
-  })
-
   const palettePicker = (
     <PaletteColorPicker
       selectedColor={selectedColor}
@@ -186,7 +151,6 @@ export function BackgroundColor(): ReactElement {
         onChange={handleColorChange}
         style={{ width: '100%', height: 125 }}
       />
-      {/* <OpacitySlider value={100} selectedColor={selectedColor} /> */}
     </Stack>
   )
 
@@ -202,9 +166,7 @@ export function BackgroundColor(): ReactElement {
         <Swatch id={`bg-color-${selectedColor}`} color={selectedColor} />
         <ColorOpacityField
           color={selectedColor}
-          opacity={100}
           onColorChange={handleColorChange}
-          onOpacityChange={handleOpacityChange}
           onEditClick={() => handleTabChange({}, 1)}
           data-testid="BackgroundColorOpacityField"
         />
@@ -215,9 +177,7 @@ export function BackgroundColor(): ReactElement {
           alignItems: 'center'
         }}
       >
-        <Divider sx={{ width: 300 }} />
-        {palettePicker}
-        <Divider />
+        <Box sx={{ width: '100%' }}>{palettePicker}</Box>
       </Stack>
       <Box
         sx={{
