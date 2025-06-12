@@ -100,6 +100,17 @@ const nextConfig = {
       ]
     },
     fallbackNodePolyfills: false
+  },
+  webpack: (config, { isServer }) => {
+    // Handle CSS imports from MUI X packages ESM modules
+    if (isServer) {
+      config.module.rules.push({
+        test: /\.css$/,
+        use: 'ignore-loader',
+        include: /node_modules\/@mui\/x-/
+      })
+    }
+    return config
   }
 }
 const plugins = [withNx]
