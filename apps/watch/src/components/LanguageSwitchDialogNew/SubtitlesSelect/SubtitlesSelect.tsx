@@ -1,35 +1,77 @@
 import { AutocompleteRenderInputParams } from '@mui/material/Autocomplete'
-import { ReactElement, Ref } from 'react'
+import { useTranslation } from 'next-i18next'
+import { ReactElement, Ref, useEffect, useState } from 'react'
 import { ListChildComponentProps } from 'react-window'
 
 import Type3 from '@core/shared/ui/icons/Type3'
-import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
+import {
+  LanguageAutocomplete,
+  LanguageOption
+} from '@core/shared/ui/LanguageAutocomplete'
+
+import { GetAllLanguages_languages as Language } from '../../../../__generated__/GetAllLanguages'
+import { SUBTITLE_LANGUAGE_IDS } from '../../../config/subtitleLangaugeIds'
 
 interface SubtitlesSelectProps {
-  value: string
-  onChange: (value: string) => void
-  languages: { code: string; name: string }[]
-  t: (s: string) => string
+  languagesData?: Language[]
+  loading: boolean
+  selectedSubtitleId: string
+  onChange: (selectedSubtitleId: string) => void
+  subtitlesOn: boolean
+  setSubtitlesOn: (value: boolean) => void
   dropdownRef: Ref<HTMLDivElement>
-  noSubtitles: boolean
-  setNoSubtitles: (value: boolean) => void
-  disabled: boolean
-  renderInput: (params: AutocompleteRenderInputParams) => ReactElement
+  renderInput: (
+    helperText: string
+  ) => (params: AutocompleteRenderInputParams) => ReactElement
   renderOption: (props: ListChildComponentProps) => ReactElement
 }
 
 export function SubtitlesSelect({
-  value,
+  languagesData,
+  loading,
+  selectedSubtitleId,
   onChange,
-  languages,
-  t,
+  subtitlesOn,
+  setSubtitlesOn,
   dropdownRef,
-  noSubtitles,
-  setNoSubtitles,
-  disabled,
   renderInput,
   renderOption
 }: SubtitlesSelectProps): ReactElement {
+  const { t } = useTranslation()
+
+  const selectedSubtitle = languagesData?.find(
+    (language) => language.id === selectedSubtitleId
+  )
+
+  const [currentSubtitle, setCurrentSubtitle] = useState<
+    LanguageOption | undefined
+  >(undefined)
+
+  useEffect(() => {
+    if (selectedSubtitle != null && !loading) {
+      setCurrentSubtitle({
+        id: selectedSubtitle.id,
+        localName: selectedSubtitle.name.find(({ primary }) => primary)?.value,
+        nativeName: selectedSubtitle.name.find(({ primary }) => !primary)
+          ?.value,
+        slug: selectedSubtitle.slug
+      })
+    }
+  }, [selectedSubtitle, loading])
+
+  const allLanguageSubtitles = languagesData
+    ?.filter((language) => SUBTITLE_LANGUAGE_IDS.includes(language.id))
+    .map((language) => ({
+      id: language.id,
+      name: language.name,
+      slug: language.slug
+    }))
+
+  function handleChange(language: LanguageOption): void {
+    setCurrentSubtitle(language)
+    onChange(language.id)
+  }
+
   return (
     <div className="mt-6 mx-6">
       <div className="flex items-center justify-between">
@@ -43,8 +85,8 @@ export function SubtitlesSelect({
           <input
             id="no-subtitles"
             type="checkbox"
-            checked={noSubtitles}
-            onChange={() => setNoSubtitles(!noSubtitles)}
+            checked={subtitlesOn}
+            onChange={() => setSubtitlesOn(!subtitlesOn)}
             className="accent-[#CB333B] h-4 w-4 rounded border-gray-300 focus:ring-0"
           />
           <label htmlFor="no-subtitles" className="text-sm text-gray-500">
@@ -57,18 +99,15 @@ export function SubtitlesSelect({
         <div className="relative w-full">
           <LanguageAutocomplete
             value={{
-              id: value,
-              nativeName: languages.find((s) => s.code === value)?.name,
-              localName: languages.find((s) => s.code === value)?.name
+              id: currentSubtitle?.id ?? '',
+              nativeName: currentSubtitle?.nativeName,
+              localName: currentSubtitle?.localName,
+              slug: currentSubtitle?.slug
             }}
-            onChange={(option) => onChange(option?.id || languages[0].code)}
-            languages={languages.map((s) => ({
-              id: s.code,
-              name: [{ value: s.name, primary: true }],
-              slug: null
-            }))}
-            disabled={disabled}
-            renderInput={renderInput}
+            onChange={handleChange}
+            languages={allLanguageSubtitles}
+            loading={loading}
+            renderInput={renderInput(t('2000 translations'))}
             renderOption={renderOption}
           />
         </div>

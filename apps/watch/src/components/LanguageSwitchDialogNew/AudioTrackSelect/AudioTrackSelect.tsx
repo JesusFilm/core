@@ -1,4 +1,3 @@
-import { gql, useQuery } from '@apollo/client'
 import { AutocompleteRenderInputParams } from '@mui/material/Autocomplete'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, Ref, useEffect, useState } from 'react'
@@ -10,44 +9,32 @@ import {
   LanguageOption
 } from '@core/shared/ui/LanguageAutocomplete'
 
-import {
-  GetAllLanguages,
-  GetAllLanguages_languages as Language
-} from '../../../../__generated__/GetAllLanguages'
-
-const GET_ALL_LANGUAGES = gql`
-  query GetAllLanguages {
-    languages {
-      id
-      bcp47
-      slug
-      name {
-        primary
-        value
-      }
-    }
-  }
-`
+import { GetAllLanguages_languages as Language } from '../../../../__generated__/GetAllLanguages'
 
 interface AudioTrackSelectProps {
+  languagesData?: Language[]
+  loading: boolean
   selectedLanguageId: string
   onChange: (selectedLanguageId: string) => void
   dropdownRef: Ref<HTMLDivElement>
-  renderInput: (params: AutocompleteRenderInputParams) => ReactElement
+  renderInput: (
+    helperText: string
+  ) => (params: AutocompleteRenderInputParams) => ReactElement
   renderOption: (props: ListChildComponentProps) => ReactElement
 }
 
 export function AudioTrackSelect({
+  languagesData,
+  loading,
   selectedLanguageId,
   onChange,
   dropdownRef,
   renderInput,
   renderOption
 }: AudioTrackSelectProps): ReactElement {
-  const { data, loading } = useQuery<GetAllLanguages>(GET_ALL_LANGUAGES)
   const { t } = useTranslation()
 
-  const selectedLanguage = data?.languages?.find(
+  const selectedLanguage = languagesData?.find(
     (language) => language.id === selectedLanguageId
   )
 
@@ -68,7 +55,7 @@ export function AudioTrackSelect({
   }, [selectedLanguage, loading])
 
   const allLanguages =
-    data?.languages?.map((language: Language) => ({
+    languagesData?.map((language: Language) => ({
       id: language.id,
       name: language.name,
       slug: language.slug
@@ -106,7 +93,7 @@ export function AudioTrackSelect({
             languages={allLanguages}
             loading={loading}
             disabled={loading}
-            renderInput={renderInput}
+            renderInput={renderInput(t('2000 translations'))}
             renderOption={renderOption}
           />
         </div>

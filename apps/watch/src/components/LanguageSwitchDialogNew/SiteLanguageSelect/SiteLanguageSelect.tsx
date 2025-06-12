@@ -11,7 +11,9 @@ import { SUPPORTED_LOCALES } from '../../../config/locales'
 interface SiteLanguageSelectProps {
   onChange: (value: string) => void
   dropdownRef: Ref<HTMLDivElement>
-  renderInput: (params: AutocompleteRenderInputParams) => ReactElement
+  renderInput: (
+    helperText: string
+  ) => (params: AutocompleteRenderInputParams) => ReactElement
   renderOption: (props: ListChildComponentProps) => ReactElement
 }
 
@@ -81,7 +83,7 @@ export function SiteLanguageSelect({
               slug: null
             }))}
             disabled={false}
-            renderInput={renderInput}
+            renderInput={renderInput(t('11 languages'))}
             renderOption={renderOption}
           />
         </div>

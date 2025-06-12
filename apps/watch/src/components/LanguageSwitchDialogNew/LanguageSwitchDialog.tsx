@@ -1,3 +1,4 @@
+import { gql, useQuery } from '@apollo/client'
 import { AutocompleteRenderInputParams } from '@mui/material/Autocomplete'
 import ListItem from '@mui/material/ListItem'
 import { ThemeProvider } from '@mui/material/styles'
@@ -12,9 +13,24 @@ import { SiteLanguageSelect } from './SiteLanguageSelect'
 import { AudioTrackSelect } from './AudioTrackSelect'
 import { SubtitlesSelect } from './SubtitlesSelect'
 import { websiteLight } from 'libs/shared/ui/src/libs/themes/website/theme'
-import { GetLanguagesSlug } from '../../../__generated__/GetLanguagesSlug'
-import { useQuery } from '@apollo/client'
-import { GET_LANGUAGES_SLUG } from '../AudioLanguageDialog/AudioLanguageDialog'
+import {
+  GetAllLanguages,
+  GetAllLanguages_languages as Language
+} from '../../../__generated__/GetAllLanguages'
+
+const GET_ALL_LANGUAGES = gql`
+  query GetAllLanguages {
+    languages {
+      id
+      bcp47
+      slug
+      name {
+        primary
+        value
+      }
+    }
+  }
+`
 
 interface LanguageSwitchDialogProps {
   open: boolean
@@ -40,6 +56,8 @@ export function LanguageSwitchDialog({
   open,
   handleClose
 }: LanguageSwitchDialogProps): ReactElement {
+  const { data, loading: languagesLoading } =
+    useQuery<GetAllLanguages>(GET_ALL_LANGUAGES)
   const { t, i18n } = useTranslation()
   const router = useRouter()
 
@@ -47,25 +65,31 @@ export function LanguageSwitchDialog({
     i18n?.language ?? 'en'
   )
   const audioLanguageCookie = getCookie('AUDIO_LANGUAGE') ?? '529'
+  const subtitleLanguageCookie = getCookie('SUBTITLE_LANGUAGE') ?? '529'
+  const subtitlesOnCookie = getCookie('SUBTITLES_ON') ?? 'false'
+
   const [selectedAudioLanguage, setSelectedAudioLanguage] =
     useState(audioLanguageCookie)
-  const [selectedSubtitle, setSelectedSubtitle] = useState(subtitles[0].code)
+  const [selectedSubtitle, setSelectedSubtitle] = useState(
+    subtitleLanguageCookie
+  )
+  const [subtitlesOn, setSubtitlesOn] = useState(subtitlesOnCookie === 'true')
 
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false)
   const [isAudioDropdownOpen, setIsAudioDropdownOpen] = useState(false)
   const [isSubtitleDropdownOpen, setIsSubtitleDropdownOpen] = useState(false)
 
-  const [noSubtitles, setNoSubtitles] = useState(false)
   const [loading, setLoading] = useState(false)
   const languageDropdownRef = useRef<HTMLDivElement>(null)
   const audioDropdownRef = useRef<HTMLDivElement>(null)
   const subtitleDropdownRef = useRef<HTMLDivElement>(null)
+  const dialogRef = useRef<HTMLDivElement>(null)
 
   // Handle escape key press
   useEffect(() => {
     const handleEscapeKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        handleClose()
+        handleDialogCancel()
       }
     }
 
@@ -76,7 +100,7 @@ export function LanguageSwitchDialog({
     return () => {
       document.removeEventListener('keydown', handleEscapeKey)
     }
-  }, [open, handleClose])
+  }, [open, handleDialogCancel])
 
   // Close dropdown when dialog closes
   useEffect(() => {
@@ -90,39 +114,29 @@ export function LanguageSwitchDialog({
   // Close dropdowns on outside click
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
+      const target = event.target as Node
+      console.log('target', target)
+      console.log('dialogRef.current', dialogRef.current)
+      console.log('audioDropdownRef.current', audioDropdownRef.current)
+      console.log('languageDropdownRef.current', languageDropdownRef.current)
+      console.log('subtitleDropdownRef.current', subtitleDropdownRef.current)
       if (
-        isLanguageDropdownOpen &&
-        languageDropdownRef.current &&
-        !languageDropdownRef.current.contains(event.target as Node)
+        dialogRef.current &&
+        !dialogRef.current.contains(target) &&
+        !audioDropdownRef.current?.contains(target) &&
+        !languageDropdownRef.current?.contains(target) &&
+        !subtitleDropdownRef.current?.contains(target)
       ) {
-        setIsLanguageDropdownOpen(false)
-      }
-      if (
-        isAudioDropdownOpen &&
-        audioDropdownRef.current &&
-        !audioDropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsAudioDropdownOpen(false)
-      }
-      if (
-        isSubtitleDropdownOpen &&
-        subtitleDropdownRef.current &&
-        !subtitleDropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsSubtitleDropdownOpen(false)
+        // handleDialogCancel()
       }
     }
-    if (
-      isLanguageDropdownOpen ||
-      isAudioDropdownOpen ||
-      isSubtitleDropdownOpen
-    ) {
+    if (open) {
       document.addEventListener('mousedown', handleClickOutside)
     }
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [isLanguageDropdownOpen, isAudioDropdownOpen, isSubtitleDropdownOpen])
+  }, [handleDialogCancel, open])
 
   // Custom renderInput for all selects
   const renderInput =
@@ -149,10 +163,7 @@ export function LanguageSwitchDialog({
         tabIndex={1}
         sx={{
           display: 'block',
-          cursor: 'pointer',
-          '&:hover': {
-            backgroundColor: '#f3f4f6' // Tailwind's gray-100
-          }
+          cursor: 'pointer'
         }}
       >
         <Typography variant="h6">{localName ?? nativeName}</Typography>
@@ -168,7 +179,8 @@ export function LanguageSwitchDialog({
   function handleSubmit(): void {
     const siteLanguageChanged = selectedLanguage !== i18n.language
     const audioTrackChanged = selectedAudioLanguage !== audioLanguageCookie
-    const subtitleChanged = selectedSubtitle !== subtitles[0].code
+    const subtitleChanged = selectedSubtitle !== subtitleLanguageCookie
+    const subtitlesOnChanged = subtitlesOn.toString() !== subtitlesOnCookie
     const cookieFingerprint = '00005'
 
     // Site language change
@@ -176,10 +188,17 @@ export function LanguageSwitchDialog({
       document.cookie = `NEXT_LOCALE=${cookieFingerprint}---${selectedLanguage}; path=/`
       void i18n.changeLanguage(selectedLanguage)
     }
-
     // Audio track change
     if (audioTrackChanged) {
       document.cookie = `AUDIO_LANGUAGE=${cookieFingerprint}---${selectedAudioLanguage}; path=/`
+    }
+    // Subtitle change
+    if (subtitleChanged) {
+      document.cookie = `SUBTITLE_LANGUAGE=${cookieFingerprint}---${selectedSubtitle}; path=/`
+    }
+
+    if (subtitlesOnChanged) {
+      document.cookie = `SUBTITLES_ON=${cookieFingerprint}---${subtitlesOn.toString()}; path=/`
     }
 
     if (siteLanguageChanged) {
@@ -189,6 +208,26 @@ export function LanguageSwitchDialog({
       handleClose()
     }
   }
+
+  function handleDialogCancel(): void {
+    console.log('handleDialogCancel')
+    setSelectedLanguage(i18n.language)
+    setSelectedAudioLanguage(audioLanguageCookie)
+    setSelectedSubtitle(subtitleLanguageCookie)
+    setSubtitlesOn(subtitlesOnCookie === 'true')
+
+    handleClose()
+  }
+
+  useEffect(() => {
+    if (!open) {
+      setSelectedLanguage(i18n.language)
+      setSelectedAudioLanguage(audioLanguageCookie)
+      setSelectedSubtitle(subtitleLanguageCookie)
+      setSubtitlesOn(subtitlesOnCookie === 'true')
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open])
 
   return !open ? (
     <></>
@@ -205,6 +244,7 @@ export function LanguageSwitchDialog({
         {/* Dialog */}
         <div className="flex min-h-full items-center justify-center p-4">
           <div
+            ref={dialogRef}
             className="relative w-full max-w-md transform rounded-lg bg-white shadow-xl transition-all"
             role="dialog"
             aria-modal="true"
@@ -243,27 +283,28 @@ export function LanguageSwitchDialog({
               <SiteLanguageSelect
                 onChange={setSelectedLanguage}
                 dropdownRef={languageDropdownRef}
-                renderInput={renderInput(t('11 languages'))}
+                renderInput={renderInput}
                 renderOption={renderOption}
               />
               <hr className="border-t border-gray-200 w-full my-8" />
               <AudioTrackSelect
+                languagesData={data?.languages}
+                loading={languagesLoading}
                 selectedLanguageId={selectedAudioLanguage}
                 onChange={setSelectedAudioLanguage}
                 dropdownRef={audioDropdownRef}
-                renderInput={renderInput(t('2000 translations'))}
+                renderInput={renderInput}
                 renderOption={renderOption}
               />
               <SubtitlesSelect
-                value={selectedSubtitle}
+                languagesData={data?.languages}
+                loading={languagesLoading}
+                selectedSubtitleId={selectedSubtitle}
                 onChange={setSelectedSubtitle}
-                languages={subtitles}
-                t={t}
+                subtitlesOn={subtitlesOn}
+                setSubtitlesOn={setSubtitlesOn}
                 dropdownRef={subtitleDropdownRef}
-                noSubtitles={noSubtitles}
-                setNoSubtitles={setNoSubtitles}
-                disabled={!noSubtitles}
-                renderInput={renderInput(t('2000 translations'))}
+                renderInput={renderInput}
                 renderOption={renderOption}
               />
             </div>
