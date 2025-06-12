@@ -41,6 +41,14 @@ export async function POST(req: NextRequest) {
 
   const client = createApolloClient(token.split(' ')[1])
 
+  console.log(
+    'environment',
+    process.env.VERCEL_ENV ??
+      process.env.DD_ENV ??
+      process.env.NODE_ENV ??
+      'development'
+  )
+
   const systemPrompt = await langfuse.getPrompt(
     'ai-chat-system-prompt',
     undefined,
