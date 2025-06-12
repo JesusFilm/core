@@ -15,7 +15,7 @@ import type { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 
 import type { GetLanguages } from '../../../../__generated__/GetLanguages'
-import { SUBTITLE_LANGUAGE_IDS } from '../../../config/subtitleLangaugeIds'
+import { SUBTITLE_LANGUAGE_IDS } from '../../../config/subtitleLanguageIds'
 import { useAlgoliaRouter } from '../../../libs/algolia/useAlgoliaRouter'
 
 import { LanguagesFilter } from './LanguagesFilter'

@@ -8,7 +8,7 @@ import {
 } from '@core/shared/ui/LanguageAutocomplete'
 
 import { GetAllLanguages_languages as Language } from '../../../../__generated__/GetAllLanguages'
-import { SUBTITLE_LANGUAGE_IDS } from '../../../config/subtitleLangaugeIds'
+import { SUBTITLE_LANGUAGE_IDS } from '../../../config/subtitleLanguageIds'
 import { renderInput } from '../utils/renderInput'
 import { renderOption } from '../utils/renderOption'
 
