@@ -274,7 +274,7 @@ export type CardBlock = Block & {
 export type CardBlockClassNames = {
   __typename?: 'CardBlockClassNames';
   /** Tailwind class names for the card block */
-  self?: Maybe<Scalars['String']['output']>;
+  self: Scalars['String']['output'];
 };
 
 export type CardBlockClassNamesInput = {
