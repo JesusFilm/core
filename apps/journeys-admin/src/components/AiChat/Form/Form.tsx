@@ -3,43 +3,34 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
-import { LanguageModelUsage } from 'ai'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import ArrowUpIcon from '@core/shared/ui/icons/ArrowUp'
 
-import { SystemPrompt } from './SystemPrompt'
-
 interface FormProps {
-  usage: LanguageModelUsage | null
   onSubmit: UseChatHelpers['handleSubmit']
   onInputChange: UseChatHelpers['handleInputChange']
   error: UseChatHelpers['error']
   status: UseChatHelpers['status']
   stop: UseChatHelpers['stop']
   input: UseChatHelpers['input']
-  systemPrompt: string
-  onSystemPromptChange: (systemPrompt: string) => void
   waitForToolResult?: boolean
 }
 
 export function Form({
   input,
-  usage,
   onSubmit: handleSubmit,
   onInputChange: handleInputChange,
   error,
   status,
   stop,
-  systemPrompt,
-  onSystemPromptChange,
   waitForToolResult
 }: FormProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   return (
-    <Box sx={{ p: 4, pt: 0, '&:last-child': { pb: 2 } }}>
+    <Box sx={{ p: 4, pt: 0, '&:last-child': { pb: 6 } }}>
       <form onSubmit={handleSubmit}>
         <Box
           sx={{
@@ -125,11 +116,6 @@ export function Form({
           </Stack>
         </Box>
       </form>
-      <SystemPrompt
-        value={systemPrompt}
-        onChange={onSystemPromptChange}
-        usage={usage}
-      />
     </Box>
   )
 }

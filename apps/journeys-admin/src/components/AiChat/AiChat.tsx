@@ -1,15 +1,8 @@
 import { useChat } from '@ai-sdk/react'
 import { useApolloClient } from '@apollo/client'
 import Box from '@mui/material/Box'
-import {
-  ChatRequestOptions,
-  CreateMessage,
-  LanguageModelUsage,
-  Message
-} from 'ai'
 import { useUser } from 'next-firebase-auth'
 import { ReactElement, useState } from 'react'
-import { v4 as uuidv4 } from 'uuid'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -20,26 +13,19 @@ import { StateEmpty, StateError, StateLoading } from './State'
 
 interface AiChatProps {
   variant?: 'popup' | 'page'
-  systemPromptFooter?: string
 }
 
-export function AiChat({
-  variant = 'popup',
-  systemPromptFooter
-}: AiChatProps): ReactElement {
+export function AiChat({ variant = 'popup' }: AiChatProps): ReactElement {
   const user = useUser()
   const client = useApolloClient()
   const { journey } = useJourney()
   const {
     state: { selectedStepId, selectedBlockId }
   } = useEditor()
-  const [usage, setUsage] = useState<LanguageModelUsage | null>(null)
-  const [systemPrompt, setSystemPrompt] = useState<string>('')
   const [waitForToolResult, setWaitForToolResult] = useState(false)
 
   const {
     messages,
-    setMessages,
     append,
     status,
     addToolResult,
@@ -50,13 +36,6 @@ export function AiChat({
     error,
     reload
   } = useChat({
-    initialMessages: [
-      {
-        id: uuidv4(),
-        role: 'system',
-        content: ''
-      }
-    ],
     fetch: fetchWithAuthorization,
     maxSteps: 50,
     credentials: 'omit',
@@ -64,7 +43,6 @@ export function AiChat({
       if (toolCall.toolName.startsWith('client')) setWaitForToolResult(true)
     },
     onFinish: (result, { usage }) => {
-      setUsage(usage)
       const shouldRefetch = result.parts?.some(
         (part) =>
           part.type === 'tool-invocation' &&
@@ -110,38 +88,6 @@ export function AiChat({
     })
   }
 
-  function updateSystemPromptMessage(): void {
-    let content = systemPrompt
-
-    if (journey != null)
-      content = `${content}\n\nThe current journey ID is ${journey?.id}. You can use this to get the journey and update it. RUN THE GET JOURNEY TOOL FIRST IF YOU DO NOT HAVE THE JOURNEY ALREADY. \n\n ${JSON.stringify(journey)}`
-
-    if (selectedStepId != null)
-      content = `${content}\n\nThe current step ID is ${selectedStepId}. You can use this to get the step and update it.`
-
-    if (systemPromptFooter != null)
-      content = `${content}\n\n${systemPromptFooter}`
-
-    const [systemMessage, ...rest] = messages
-    setMessages([{ ...systemMessage, content }, ...rest])
-  }
-
-  function handleSubmitBeforeUseChat(
-    event?: { preventDefault?: () => void },
-    chatRequestOptions?: ChatRequestOptions
-  ): void {
-    updateSystemPromptMessage()
-    handleSubmit(event, chatRequestOptions)
-  }
-
-  function handleAppendBeforeUseChat(
-    message: Message | CreateMessage,
-    chatRequestOptions?: ChatRequestOptions
-  ): Promise<string | null | undefined> {
-    updateSystemPromptMessage()
-    return append(message, chatRequestOptions)
-  }
-
   return (
     <>
       <Box
@@ -170,7 +116,7 @@ export function AiChat({
         <StateLoading status={status} />
         <StateEmpty
           messages={messages.filter((message) => message.role !== 'system')}
-          append={handleAppendBeforeUseChat}
+          append={append}
         />
         <StateError error={error} reload={reload} />
         <MessageList messages={messages} addToolResult={handleAddToolResult} />
@@ -186,14 +132,11 @@ export function AiChat({
       />
       <Form
         input={input}
-        usage={usage}
-        onSubmit={handleSubmitBeforeUseChat}
+        onSubmit={handleSubmit}
         onInputChange={handleInputChange}
         error={error}
         status={status}
         stop={stop}
-        systemPrompt={systemPrompt}
-        onSystemPromptChange={setSystemPrompt}
         waitForToolResult={waitForToolResult}
       />
     </>
