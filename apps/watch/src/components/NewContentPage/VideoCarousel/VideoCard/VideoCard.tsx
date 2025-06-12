@@ -1,11 +1,3 @@
-import Box from '@mui/material/Box'
-import ButtonBase from '@mui/material/ButtonBase'
-import Fade from '@mui/material/Fade'
-import IconButton from '@mui/material/IconButton'
-import Link from '@mui/material/Link'
-import Stack from '@mui/material/Stack'
-import { lighten, styled } from '@mui/material/styles'
-import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { ReactElement, useState } from 'react'
@@ -15,23 +7,6 @@ import Play3 from '@core/shared/ui/icons/Play3'
 import { VideoChildFields } from '../../../../../__generated__/VideoChildFields'
 import { getLabelDetails } from '../../../../libs/utils/getLabelDetails/getLabelDetails'
 import { getWatchUrl } from '../../../../libs/utils/getWatchUrl'
-
-const ImageButton = styled(ButtonBase)(() => ({
-  borderRadius: 8,
-  width: '100%',
-  position: 'relative'
-}))
-
-const Layer = styled(Box)({
-  position: 'absolute',
-  left: 0,
-  right: 0,
-  top: 0,
-  bottom: 0,
-  borderRadius: 8,
-  overflow: 'hidden',
-  boxSizing: 'border-box'
-})
 
 interface VideoCardProps {
   video: VideoChildFields
@@ -49,119 +24,84 @@ export function VideoCard({
   const [isHovered, setIsHovered] = useState(false)
 
   return (
-    <NextLink href={href} passHref legacyBehavior scroll={false}>
-      <Link
-        display="block"
-        underline="none"
-        color="inherit"
-        sx={{ pointerEvents: video != null ? 'auto' : 'none' }}
-        aria-label="VideoCard"
-        data-testid={video != null ? `VideoCard-${video.id}` : 'VideoCard'}
-      >
-        <Stack spacing={3}>
-          <ImageButton disabled={video == null} sx={{ textAlign: 'left' }}>
-            <Box
-              sx={{
-                position: 'relative',
-                maxWidth: 200,
-                height: 240,
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'flex-end',
-                width: '100%',
-                borderRadius: 3,
-                cursor: 'pointer',
-                bgcolor: 'common.black'
-              }}
-              tabIndex={0}
-              role="button"
-              data-testid={`CarouselItem-${video.slug}`}
-              aria-label={`Navigate to ${video.slug}`}
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseLeave={() => setIsHovered(false)}
-            >
-              <Layer>
-                <Image
-                  fill
-                  src={video.images[0].mobileCinematicHigh ?? ''}
-                  alt={video.imageAlt[0].value}
-                  style={{
-                    width: '100%',
-                    objectFit: 'cover',
-                    maskImage:
-                      'linear-gradient(to bottom, rgba(0,0,0,1) 50%, transparent 100%)',
-                    maskSize: 'cover'
-                  }}
-                />
-              </Layer>
-              <Layer
-                sx={{
-                  overflow: 'visible',
-                  boxShadow:
-                    active || isHovered ? 'inset 0 0 0 4px #fff' : undefined,
-                  transition: 'box-shadow 100ms ease-in-out',
-                  pointerEvents: 'none'
+    <NextLink
+      href={href}
+      scroll={false}
+      className="block no-underline text-inherit"
+      style={{ pointerEvents: video != null ? 'auto' : 'none' }}
+      aria-label="VideoCard"
+      data-testid={video != null ? `VideoCard-${video.id}` : 'VideoCard'}
+    >
+      <div className="flex flex-col gap-6">
+        <button
+          disabled={video == null}
+          className="rounded-lg w-full relative text-left border-none bg-transparent p-0 cursor-pointer disabled:cursor-default"
+        >
+          <div
+            className="relative max-w-[200px] h-60 flex flex-col justify-end w-full rounded-xl cursor-pointer bg-black"
+            tabIndex={0}
+            role="button"
+            data-testid={`CarouselItem-${video.slug}`}
+            aria-label={`Navigate to ${video.slug}`}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+          >
+            {/* Image Layer */}
+            <div className="absolute left-0 right-0 top-0 bottom-0 rounded-lg overflow-hidden">
+              <Image
+                fill
+                src={video.images[0].mobileCinematicHigh ?? ''}
+                alt={video.imageAlt[0].value}
+                style={{
+                  width: '100%',
+                  objectFit: 'cover',
+                  maskImage:
+                    'linear-gradient(to bottom, rgba(0,0,0,1) 50%, transparent 100%)',
+                  maskSize: 'cover'
                 }}
-                data-testid="ActiveLayer"
               />
-              <Fade in={!active && isHovered}>
-                <IconButton
-                  sx={{
-                    padding: 5,
-                    position: 'absolute',
-                    top: '50%',
-                    right: '50%',
-                    transform: 'translate(50%, -50%)',
-                    color: 'common.white',
-                    bgcolor: 'rgba(0, 0, 0, 0.5)',
-                    '&:hover': {
-                      bgcolor: 'primary.main'
-                    }
-                  }}
-                >
-                  <Play3 sx={{ fontSize: 48 }} />
-                </IconButton>
-              </Fade>
-              <Box
-                sx={{
-                  p: 4,
-                  fontFamily: 'Inter',
-                  zIndex: 1
-                }}
+            </div>
+
+            {/* Active/Hover Border Layer */}
+            <div
+              className={`absolute left-0 right-0 top-0 bottom-0 rounded-lg overflow-visible transition-all duration-100 ease-in-out pointer-events-none ${
+                active || isHovered ? 'shadow-[inset_0_0_0_4px_#fff]' : ''
+              }`}
+              data-testid="ActiveLayer"
+            />
+
+            {/* Play Button with Fade */}
+            <button
+              className={`absolute top-1/2 right-1/2 transform translate-x-1/2 -translate-y-1/2 w-20 h-20 flex items-center justify-center text-white bg-black bg-opacity-50 hover:bg-red-500 rounded-full transition-all duration-300 cursor-pointer z-2 ${
+                !active && isHovered ? 'opacity-100' : 'opacity-0'
+              }`}
+            >
+              <Play3 className="text-6xl" />
+            </button>
+
+            {/* Content */}
+            <div className="p-4 font-sans z-1">
+              <span
+                className="font-apercu text-xs font-medium tracking-widest uppercase opacity-50"
+                data-testid="CarouselItemCategory"
               >
-                <Typography
-                  sx={{
-                    fontFamily: 'var(--font-apercu-pro)',
-                    fontSize: '0.75rem',
-                    fontWeight: 500,
-                    letterSpacing: '0.1em',
-                    textTransform: 'uppercase',
-                    opacity: 0.5
-                  }}
-                  data-testid="CarouselItemCategory"
-                >
-                  {label}
-                </Typography>
-                <Typography
-                  sx={{
-                    fontFamily: 'var(--font-apercu-pro)',
-                    fontSize: '1rem',
-                    fontWeight: 700,
-                    lineHeight: 'tight',
-                    display: '-webkit-box',
-                    WebkitLineClamp: 3,
-                    WebkitBoxOrient: 'vertical',
-                    opacity: 0.7
-                  }}
-                  data-testid={`CarouselItemTitle-${video.slug}`}
-                >
-                  {video.title[0].value}
-                </Typography>
-              </Box>
-            </Box>
-          </ImageButton>
-        </Stack>
-      </Link>
+                {label}
+              </span>
+              <h3
+                className="font-apercu text-base font-bold leading-tight opacity-70 overflow-hidden"
+                style={{
+                  display: '-webkit-box',
+                  WebkitLineClamp: 3,
+                  WebkitBoxOrient: 'vertical'
+                }}
+                data-testid={`CarouselItemTitle-${video.slug}`}
+              >
+                {video.title[0].value}
+              </h3>
+            </div>
+          </div>
+        </button>
+      </div>
     </NextLink>
   )
 }

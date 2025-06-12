@@ -26,6 +26,7 @@ export function VideoCarousel({
         mousewheel={{
           forceToAxis: true
         }}
+        grabCursor
         observeParents
         slidesPerView={'auto'}
         pagination={{ clickable: true }}

@@ -49,7 +49,10 @@ export function BibleCitations({
             >
               <Image
                 fill
-                src={bibleImages[i]}
+                src={
+                  bibleImages?.[i] ??
+                  'https://images.unsplash.com/photo-1480869799327-03916a613b29?q=80&w=1632&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+                }
                 alt="Bible Citation"
                 className="absolute top-0 object-cover overflow-hidden rounded-lg  [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_20%,transparent_100%)] [mask-size:cover]"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
