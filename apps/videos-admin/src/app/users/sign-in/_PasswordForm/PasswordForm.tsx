@@ -90,7 +90,7 @@ export function PasswordForm({
       {error != null && <span>{error.message}</span>}
       <Button
         loading={loading}
-        disabled={loading || disabled}    
+        disabled={loading || disabled}
         variant="contained"
         type="submit"
         fullWidth

@@ -186,7 +186,7 @@ export function UnsplashGallery({
         onChange={onChange}
       />
       <Button
-        variant="outlined"        
+        variant="outlined"
         onClick={handleFetchMore}
         loading={loading}
         startIcon={<Plus2Icon />}

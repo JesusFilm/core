@@ -20,7 +20,9 @@ describe('DateRangePicker', () => {
       />
     )
 
-    expect(screen.getAllByRole('group', { name: 'From' })[0]).toBeInTheDocument()
+    expect(
+      screen.getAllByRole('group', { name: 'From' })[0]
+    ).toBeInTheDocument()
     expect(screen.getAllByRole('group', { name: 'To' })[0]).toBeInTheDocument()
   })
 
@@ -34,9 +36,11 @@ describe('DateRangePicker', () => {
       />
     )
 
-    const calendarButtons = screen.getAllByRole('button', { name: 'Choose date' })
+    const calendarButtons = screen.getAllByRole('button', {
+      name: 'Choose date'
+    })
     expect(calendarButtons).toHaveLength(2)
-    
+
     // Test that clicking the buttons doesn't throw errors
     fireEvent.click(calendarButtons[0])
     fireEvent.click(calendarButtons[1])
@@ -58,7 +62,7 @@ describe('DateRangePicker', () => {
     // Use the hidden input elements that contain the actual values
     const fromInputs = screen.getAllByDisplayValue('15-01-2024')
     const toInputs = screen.getAllByDisplayValue('20-02-2024')
-    
+
     expect(fromInputs.length).toBeGreaterThan(0)
     expect(toInputs.length).toBeGreaterThan(0)
   })

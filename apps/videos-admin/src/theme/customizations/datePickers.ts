@@ -129,7 +129,9 @@ export const datePickersCustomizations: PickerComponents<Theme> = {
             outline: `3px solid ${alpha(brand[500], 0.5)}`,
             outlineOffset: '2px',
             backgroundColor: 'transparent',
-            [`&.${yearCalendarClasses.selected}`]: { backgroundColor: grey[300] }
+            [`&.${yearCalendarClasses.selected}`]: {
+              backgroundColor: grey[300]
+            }
           }
         })
       })

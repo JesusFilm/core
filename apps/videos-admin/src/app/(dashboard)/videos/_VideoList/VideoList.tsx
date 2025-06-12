@@ -729,7 +729,7 @@ export function VideoList(): ReactElement {
           }
         }}
         showToolbar
-        />
+      />
     </Stack>
   )
 }
