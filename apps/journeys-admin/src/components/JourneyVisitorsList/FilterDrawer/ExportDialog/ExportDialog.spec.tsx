@@ -206,7 +206,7 @@ describe('ExportDialog', () => {
 
     expect(screen.getByLabelText('All')).toBeChecked()
     expect(screen.getByLabelText('Journey Start')).toBeChecked()
-    expect(screen.getByRole('button', { name: 'Export' })).toBeEnabled()
+    expect(screen.getByRole('button', { name: 'Export (CSV)' })).toBeEnabled()
   })
 
   it('should call export function with default filters on button click', async () => {
@@ -235,7 +235,7 @@ describe('ExportDialog', () => {
     await waitFor(async () => {
       expect(mockJourneyCreatedAtResult).toHaveBeenCalled()
     })
-    const exportButton = screen.getByRole('button', { name: 'Export' })
+    const exportButton = screen.getByRole('button', { name: 'Export (CSV)' })
     await act(async () => {
       fireEvent.click(exportButton)
     })
@@ -256,7 +256,7 @@ describe('ExportDialog', () => {
     )
 
     const allCheckbox = screen.getByLabelText('All')
-    const exportButton = screen.getByRole('button', { name: 'Export' })
+    const exportButton = screen.getByRole('button', { name: 'Export (CSV)' })
 
     expect(exportButton).toBeEnabled()
     fireEvent.click(allCheckbox)
@@ -295,7 +295,7 @@ describe('ExportDialog', () => {
       expect(mockJourneyCreatedAtResult).toHaveBeenCalled()
     })
 
-    const exportButton = screen.getByRole('button', { name: 'Export' })
+    const exportButton = screen.getByRole('button', { name: 'Export (CSV)' })
 
     await act(async () => {
       fireEvent.click(exportButton)
