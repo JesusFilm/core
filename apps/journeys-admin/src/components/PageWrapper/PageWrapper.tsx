@@ -121,7 +121,7 @@ export function PageWrapper({
               sx={{
                 width: {
                   xs: 'inherit',
-                  md: `calc(100vw - ${navbar.width} )`
+                  md: `calc(100vw - ${navbar.width})`
                 }
               }}
             >
