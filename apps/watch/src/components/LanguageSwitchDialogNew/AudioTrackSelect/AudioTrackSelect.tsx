@@ -1,7 +1,5 @@
-import { AutocompleteRenderInputParams } from '@mui/material/Autocomplete'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, Ref, useEffect, useState } from 'react'
-import { ListChildComponentProps } from 'react-window'
 
 import MediaStrip1 from '@core/shared/ui/icons/MediaStrip1'
 import {
@@ -10,6 +8,8 @@ import {
 } from '@core/shared/ui/LanguageAutocomplete'
 
 import { GetAllLanguages_languages as Language } from '../../../../__generated__/GetAllLanguages'
+import { renderInput } from '../utils/renderInput'
+import { renderOption } from '../utils/renderOption'
 
 interface AudioTrackSelectProps {
   languagesData?: Language[]
@@ -17,10 +17,6 @@ interface AudioTrackSelectProps {
   selectedLanguageId: string
   onChange: (selectedLanguageId: string) => void
   dropdownRef: Ref<HTMLDivElement>
-  renderInput: (
-    helperText: string
-  ) => (params: AutocompleteRenderInputParams) => ReactElement
-  renderOption: (props: ListChildComponentProps) => ReactElement
 }
 
 export function AudioTrackSelect({
@@ -28,9 +24,7 @@ export function AudioTrackSelect({
   loading,
   selectedLanguageId,
   onChange,
-  dropdownRef,
-  renderInput,
-  renderOption
+  dropdownRef
 }: AudioTrackSelectProps): ReactElement {
   const { t } = useTranslation()
 

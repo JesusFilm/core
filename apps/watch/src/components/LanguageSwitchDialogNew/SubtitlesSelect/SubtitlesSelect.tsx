@@ -1,7 +1,5 @@
-import { AutocompleteRenderInputParams } from '@mui/material/Autocomplete'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, Ref, useEffect, useState } from 'react'
-import { ListChildComponentProps } from 'react-window'
 
 import Type3 from '@core/shared/ui/icons/Type3'
 import {
@@ -11,6 +9,8 @@ import {
 
 import { GetAllLanguages_languages as Language } from '../../../../__generated__/GetAllLanguages'
 import { SUBTITLE_LANGUAGE_IDS } from '../../../config/subtitleLangaugeIds'
+import { renderInput } from '../utils/renderInput'
+import { renderOption } from '../utils/renderOption'
 
 interface SubtitlesSelectProps {
   languagesData?: Language[]
@@ -20,10 +20,6 @@ interface SubtitlesSelectProps {
   subtitlesOn: boolean
   setSubtitlesOn: (value: boolean) => void
   dropdownRef: Ref<HTMLDivElement>
-  renderInput: (
-    helperText: string
-  ) => (params: AutocompleteRenderInputParams) => ReactElement
-  renderOption: (props: ListChildComponentProps) => ReactElement
 }
 
 export function SubtitlesSelect({
@@ -33,9 +29,7 @@ export function SubtitlesSelect({
   onChange,
   subtitlesOn,
   setSubtitlesOn,
-  dropdownRef,
-  renderInput,
-  renderOption
+  dropdownRef
 }: SubtitlesSelectProps): ReactElement {
   const { t } = useTranslation()
 
