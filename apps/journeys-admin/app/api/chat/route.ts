@@ -1,5 +1,6 @@
 import { google } from '@ai-sdk/google'
 import { coreMessageSchema, streamText } from 'ai'
+import { jwtDecode } from 'jwt-decode'
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
 
@@ -39,20 +40,19 @@ export async function POST(req: NextRequest) {
   if (token == null)
     return Response.json({ error: 'Missing token' }, { status: 400 })
 
-  const client = createApolloClient(token.split(' ')[1])
+  const decoded = jwtDecode(token.split(' ')[1])
 
-  console.log(
-    'environment',
-    process.env.VERCEL_ENV ??
-      process.env.DD_ENV ??
-      process.env.NODE_ENV ??
-      'development'
-  )
+  const client = createApolloClient(token.split(' ')[1])
 
   const systemPrompt = await langfuse.getPrompt(
     'ai-chat-system-prompt',
     undefined,
     {
+      env:
+        process.env.VERCEL_ENV ??
+        process.env.DD_ENV ??
+        process.env.NODE_ENV ??
+        'development',
       cacheTtlSeconds: process.env.VERCEL_ENV === 'preview' ? 0 : 60
     }
   )
@@ -74,7 +74,9 @@ export async function POST(req: NextRequest) {
     experimental_telemetry: {
       isEnabled: true,
       metadata: {
-        langfusePrompt: systemPrompt.toJSON()
+        langfusePrompt: systemPrompt.toJSON(),
+        userId: decoded.user_id,
+        sessionId: `${decoded.user_id}-${decoded.auth_time}`
       }
     }
   })
