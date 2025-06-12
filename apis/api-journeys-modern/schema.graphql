@@ -91,7 +91,7 @@ type CardBlock implements Block
 
 type CardBlockClassNames {
   """Tailwind class names for the card block"""
-  self: String @shareable
+  self: String! @shareable
 }
 
 """

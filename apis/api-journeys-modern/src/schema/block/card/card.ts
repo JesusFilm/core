@@ -15,7 +15,7 @@ const CardBlockClassNamesRef = builder.objectRef<CardBlockClassNamesType>(
 export const CardBlockClassNames = builder.objectType(CardBlockClassNamesRef, {
   fields: (t) => ({
     self: t.string({
-      nullable: true,
+      nullable: false,
       directives: { shareable: true },
       description: 'Tailwind class names for the card block',
       resolve: (classNames: CardBlockClassNamesType) => classNames.self
