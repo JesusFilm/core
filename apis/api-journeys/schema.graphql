@@ -585,11 +585,11 @@ enum ButtonSize {
 }
 
 input ButtonBlockClassNamesInput {
-  self: String
+  self: String!
 }
 
 type ButtonBlockClassNames {
-  self: String @shareable
+  self: String! @shareable
 }
 
 type ButtonBlock implements Block
@@ -637,11 +637,11 @@ input ButtonBlockUpdateInput {
 }
 
 type CardBlockClassNames {
-  self: String @shareable
+  self: String! @shareable
 }
 
 input CardBlockClassNamesInput {
-  self: String
+  self: String!
 }
 
 type CardBlock implements Block
@@ -792,11 +792,11 @@ enum IconSize {
 }
 
 input IconBlockClassNamesInput {
-  self: String
+  self: String!
 }
 
 type IconBlockClassNames {
-  self: String @shareable
+  self: String! @shareable
 }
 
 type IconBlock implements Block
@@ -835,11 +835,11 @@ input IconBlockUpdateInput {
 }
 
 input ImageBlockClassNamesInput {
-  self: String
+  self: String!
 }
 
 type ImageBlockClassNames {
-  self: String @shareable
+  self: String! @shareable
 }
 
 type ImageBlock implements Block
@@ -912,11 +912,11 @@ input ImageBlockUpdateInput {
 }
 
 input RadioOptionBlockClassNamesInput {
-  self: String
+  self: String!
 }
 
 type RadioOptionBlockClassNames {
-  self: String @shareable
+  self: String! @shareable
 }
 
 type RadioOptionBlock implements Block
@@ -963,11 +963,11 @@ input RadioQuestionBlockCreateInput {
 }
 
 input SignUpBlockClassNamesInput {
-  self: String
+  self: String!
 }
 
 type SignUpBlockClassNames {
-  self: String @shareable
+  self: String! @shareable
 }
 
 type SignUpBlock implements Block
@@ -1001,11 +1001,11 @@ input SignUpBlockUpdateInput {
 }
 
 input SpacerBlockClassNamesInput {
-  self: String
+  self: String!
 }
 
 type SpacerBlockClassNames {
-  self: String @shareable
+  self: String! @shareable
 }
 
 type SpacerBlock implements Block
@@ -1129,11 +1129,11 @@ input StepBlockPositionUpdateInput {
 }
 
 input TextResponseBlockClassNamesInput {
-  self: String
+  self: String!
 }
 
 type TextResponseBlockClassNames {
-  self: String @shareable
+  self: String! @shareable
 }
 
 type TextResponseBlock implements Block
@@ -1212,11 +1212,11 @@ enum TypographyAlign {
 }
 
 input TypographyBlockClassNamesInput {
-  self: String
+  self: String!
 }
 
 type TypographyBlockClassNames {
-  self: String @shareable
+  self: String! @shareable
 }
 
 type TypographyBlock implements Block
@@ -1256,7 +1256,7 @@ input TypographyBlockUpdateInput {
 }
 
 input VideoBlockClassNamesInput {
-  self: String
+  self: String!
 }
 
 extend type Video
@@ -1274,7 +1274,7 @@ enum VideoBlockSource {
 }
 
 type VideoBlockClassNames {
-  self: String @shareable
+  self: String! @shareable
 }
 
 enum VideoBlockObjectFit {
