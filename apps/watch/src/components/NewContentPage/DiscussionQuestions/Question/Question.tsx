@@ -5,7 +5,6 @@ import MuiAccordionSummary, {
   accordionSummaryClasses
 } from '@mui/material/AccordionSummary'
 import { alpha, styled } from '@mui/material/styles'
-import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
 import ChevronDown from '@core/shared/ui/icons/ChevronDown'

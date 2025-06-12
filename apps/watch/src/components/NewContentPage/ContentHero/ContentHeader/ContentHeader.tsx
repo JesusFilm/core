@@ -1,39 +1,14 @@
-import Stack from '@mui/material/Stack'
 import Image from 'next/image'
 import NextLink from 'next/link'
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 
 import { AudioLanguageButton } from '../../../VideoContentPage/AudioLanguageButton'
 
 export function ContentHeader(): ReactElement {
-  const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false)
-
-  const handleOpenLanguageModal = (): void => {
-    setIsLanguageModalOpen(true)
-  }
-
-  const handleCloseLanguageModal = (): void => {
-    setIsLanguageModalOpen(false)
-  }
-
   return (
-    <Stack
+    <div
       data-testid="ContentHeader"
-      direction="row"
-      alignItems="center"
-      justifyContent="space-between"
-      sx={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        width: '100%',
-        height: { xs: '100px', lg: '200px' },
-        maxWidth: '1920px',
-        mx: 'auto',
-        zIndex: 99,
-        px: { xs: 4, sm: 6, md: 8, lg: 10, xl: 12 }
-      }}
+      className="absolute top-0 left-0 right-0 w-full h-[100px] lg:h-[200px] max-w-[1920px] mx-auto z-[99] px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 flex flex-row items-center justify-between"
     >
       <NextLink href="https://www.jesusfilm.org/watch">
         <Image
@@ -45,6 +20,6 @@ export function ContentHeader(): ReactElement {
         />
       </NextLink>
       <AudioLanguageButton componentVariant="icon" />
-    </Stack>
+    </div>
   )
 }

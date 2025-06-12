@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box'
 import fscreen from 'fscreen'
 import { ReactElement, useEffect, useState } from 'react'
 
@@ -32,49 +31,27 @@ export function ContentHero(): ReactElement {
   }, [setIsFullscreen])
 
   return (
-    <Box
-      sx={{
-        height: isFullscreen ? '100svh' : { xs: '90svh', md: '80svh' },
-        width: '100%',
-        display: 'flex',
-        alignItems: 'flex-end',
-        position: 'relative',
-        transition: 'height 0.3s ease-out',
-        bgcolor: 'background.default',
-        zIndex: 1
-      }}
+    <div
+      className={`${
+        isFullscreen ? 'h-[100svh]' : 'h-[90svh] md:h-[80svh]'
+      } w-full flex items-end relative bg-[#131111] z-[1] transition-all duration-300 ease-out`}
       data-testid="ContentHero"
     >
       {!isFullscreen && <ContentHeader />}
       <ContentHeroVideo isFullscreen={isFullscreen} />
-      <Box
+      <div
         data-testid="ContainerHeroTitleContainer"
-        sx={{
-          width: '100%',
-          position: 'relative',
-          display: 'flex',
-          flexDirection: { xs: 'column', sm: 'row' },
-          maxWidth: '1920px',
-          mx: 'auto',
-          pb: 4
-        }}
+        className="w-full relative flex flex-col sm:flex-row max-w-[1920px] mx-auto pb-4"
       >
-        <Box
-          sx={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            height: '100%',
-            width: '100%',
-            pointerEvents: 'none',
-            display: { xs: 'block', md: 'none' },
+        <div
+          className="absolute top-0 left-0 right-0 h-full w-full pointer-events-none block md:hidden"
+          style={{
             backdropFilter: 'brightness(.6) blur(40px)',
             maskImage:
               'linear-gradient(0deg, rgba(2,0,36,1) 46%, rgba(2,0,36,1) 53%, rgba(0,0,0,0) 100%)'
           }}
         />
-      </Box>
-    </Box>
+      </div>
+    </div>
   )
 }

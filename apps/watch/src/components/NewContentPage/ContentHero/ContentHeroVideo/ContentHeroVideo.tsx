@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box'
 import { ReactElement, useCallback, useEffect, useRef } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
@@ -82,44 +81,28 @@ export function ContentHeroVideo({
   }, [variant?.hls])
 
   return (
-    <Box
-      sx={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        height: isFullscreen
-          ? '100%'
-          : {
-              xs: '90%',
-              md: '80%'
-            },
-        maxWidth: isFullscreen ? '100%' : '1920px',
-        marginX: 'auto',
-        zIndex: 0,
-        '.vjs-hidden': { display: 'none' },
-        '.vjs-loading-spinner, .vjs-seeking .vjs-loading-spinner, .vjs-waiting .vjs-loading-spinner':
-          { display: 'none' }
-      }}
+    <div
+      className={`fixed top-0 left-0 right-0 mx-auto z-0 vjs-hide-loading-spinners ${
+        isFullscreen ? 'h-full max-w-full' : 'h-[90%] md:h-[80%] max-w-[1920px]'
+      }`}
       data-testid="ContentHeroVideoContainer"
     >
       <video
         data-testid="ContentHeroVideo"
         ref={videoRef}
-        className="vjs"
+        className="vjs [&_.vjs-tech]:object-contain [&_.vjs-tech]:md:object-cover"
         style={{
           position: 'absolute',
           top: 0,
           left: 0,
           width: '100%',
-          height: '100%',
-          objectFit: 'cover'
+          height: '100%'
         }}
         playsInline
       />
       {playerRef.current != null && (
         <VideoControls player={playerRef.current} />
       )}
-    </Box>
+    </div>
   )
 }
