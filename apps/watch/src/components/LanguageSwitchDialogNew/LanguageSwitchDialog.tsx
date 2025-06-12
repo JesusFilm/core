@@ -182,7 +182,7 @@ export function LanguageSwitchDialog({
       document.cookie = `AUDIO_LANGUAGE=${cookieFingerprint}---${selectedAudioLanguage}; path=/`
     }
 
-    if (siteLanguageChanged || audioTrackChanged || subtitleChanged) {
+    if (siteLanguageChanged) {
       setLoading(true)
       router.reload()
     } else {
