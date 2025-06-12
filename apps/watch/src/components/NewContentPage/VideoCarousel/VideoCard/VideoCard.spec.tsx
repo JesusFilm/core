@@ -21,7 +21,7 @@ describe('VideoCard', () => {
     render(<VideoCard video={videos[0]} active />)
 
     const card = screen.getByTestId('ActiveLayer')
-    expect(card).toHaveStyle('box-shadow: inset 0 0 0 4px #fff')
+    expect(card).toHaveClass('shadow-[inset_0_0_0_4px_#fff]')
   })
 
   it('has proper accessibility attributes', () => {
