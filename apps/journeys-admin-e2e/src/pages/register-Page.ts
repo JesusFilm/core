@@ -159,6 +159,38 @@ export class Register {
   }
 
   async waitUntilDiscoverPageLoaded() {
+    // First, wait for the discover page to be loaded
+    await expect(
+      this.page.locator('a[data-testid="NavigationListItemDiscover"][class*="Mui-selected"]')
+    ).toBeVisible({ timeout: 30000 })
+    
+    // Wait for the main content area to be loaded
+    await expect(
+      this.page.locator('[data-testid="JourneysAdminJourneyList"]')
+    ).toBeVisible({ timeout: 30000 })
+    
+    // Wait for the team select to be loaded
+    await expect(
+      this.page.locator('[data-testid="TeamSelect"]')
+    ).toBeVisible({ timeout: 30000 })
+    
+    // Check if we're in "Shared With Me" state and need to select a team
+    const isSharedWithMe = await this.page.locator('[data-testid="TeamSelect"]').textContent()
+    if (isSharedWithMe?.includes('Shared With Me')) {
+      console.log('User is in "Shared With Me" state, attempting to select first team...')
+      try {
+        // Click on team select dropdown
+        await this.page.locator('[data-testid="TeamSelect"] [role="combobox"]').click()
+        // Wait for dropdown to open and select first team (not "Shared With Me")
+        await this.page.locator('ul[role="listbox"] li[role="option"]').first().click()
+        // Wait a bit for the team to be set
+        await this.page.waitForTimeout(2000)
+      } catch (error) {
+        console.log('Failed to select team:', error)
+      }
+    }
+    
+    // Now wait for the create journey button to appear
     await expect(
       this.page.locator('[data-testid="JourneysAdminContainedIconButton"]')
     ).toBeVisible({ timeout: 65000 })
