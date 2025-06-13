@@ -15,7 +15,7 @@ import { boolean, object, string } from 'yup'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
-import { SUPPORTED_LANGUAGE_IDS } from '../../libs/useJourneyAiTranslateMutation/supportedLanguages'
+import { SUPPORTED_LANGUAGE_IDS } from '../../libs/useJourneyAiTranslateSubscription/supportedLanguages'
 import { useLanguagesQuery } from '../../libs/useLanguagesQuery'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../libs/useUpdateLastActiveTeamIdMutation'
 import { UpdateLastActiveTeamId } from '../../libs/useUpdateLastActiveTeamIdMutation/__generated__/UpdateLastActiveTeamId'
@@ -33,6 +33,11 @@ interface CopyToTeamDialogProps {
     language?: JourneyLanguage,
     showTranslation?: boolean
   ) => Promise<void>
+  translationProgress?: {
+    progress: number
+    message: string
+  }
+  isTranslating?: boolean
 }
 
 interface JourneyLanguage {
@@ -74,7 +79,9 @@ export function CopyToTeamDialog({
   open,
   loading,
   onClose,
-  submitAction
+  submitAction,
+  translationProgress,
+  isTranslating = false
 }: CopyToTeamDialogProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const { query, setActiveTeam } = useTeam()
@@ -89,6 +96,20 @@ export function CopyToTeamDialog({
     }
   })
 
+  const updateTeamState = (teamId: string): void => {
+    setActiveTeam(teams.find((team) => team.id === teamId) ?? null)
+    void updateLastActiveTeamId({
+      variables: {
+        input: {
+          lastActiveTeamId: teamId
+        }
+      },
+      onCompleted() {
+        void client.refetchQueries({ include: ['GetAdminJourneys'] })
+      }
+    })
+  }
+
   async function handleSubmit(
     values: FormValues,
     { resetForm }: FormikHelpers<FormValues>
@@ -99,19 +120,17 @@ export function CopyToTeamDialog({
       values.showTranslation
     )
 
-    setActiveTeam(teams.find((team) => team.id === values.teamSelect) ?? null)
-    void updateLastActiveTeamId({
-      variables: {
-        input: {
-          lastActiveTeamId: values.teamSelect
-        }
-      },
-      onCompleted() {
-        void client.refetchQueries({ include: ['GetAdminJourneys'] })
-      }
-    })
+    // Update team state
+    updateTeamState(values.teamSelect)
+
+    // Always reset the form after submission
     resetForm()
-    onClose()
+
+    // Only close dialog immediately if translation is not enabled
+    // If translation is enabled, the dialog will be closed when translation completes
+    if (!values.showTranslation) {
+      onClose()
+    }
   }
 
   const baseLanguageShape = {
@@ -170,7 +189,7 @@ export function CopyToTeamDialog({
           reason?: 'backdropClick' | 'escapeKeyDown'
         ): void => {
           if (
-            loading &&
+            (loading || isTranslating) &&
             (reason === 'backdropClick' || reason === 'escapeKeyDown')
           )
             return
@@ -185,10 +204,11 @@ export function CopyToTeamDialog({
             onTranslate={handleFormSubmit}
             title={title}
             loading={loading || isSubmitting}
-            isTranslation={values.showTranslation}
+            isTranslation={values.showTranslation || isTranslating}
             submitLabel={submitLabel}
             divider={false}
             testId="CopyToTeamDialog"
+            translationProgress={translationProgress}
           >
             <Stack direction="column" spacing={4}>
               <FormControl variant="filled" hiddenLabel fullWidth>
