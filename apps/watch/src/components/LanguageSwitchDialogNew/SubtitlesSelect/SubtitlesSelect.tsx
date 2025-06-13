@@ -75,18 +75,6 @@ export function SubtitlesSelect({
         >
           {t('Subtitles')}
         </label>
-        <div className="flex items-center gap-2">
-          <input
-            id="no-subtitles"
-            type="checkbox"
-            checked={subtitlesOn}
-            onChange={() => setSubtitlesOn(!subtitlesOn)}
-            className="accent-[#CB333B] h-4 w-4 rounded border-gray-300 focus:ring-0"
-          />
-          <label htmlFor="no-subtitles" className="text-sm text-gray-500">
-            {t('None')}
-          </label>
-        </div>
       </div>
       <div className="relative mt-1 flex items-center gap-2" ref={dropdownRef}>
         <Type3 fontSize="small" />
@@ -105,6 +93,18 @@ export function SubtitlesSelect({
             renderOption={renderOption}
           />
         </div>
+      </div>
+      <div className="flex ml-8 my-4 items-center gap-2">
+        <input
+          id="no-subtitles"
+          type="checkbox"
+          checked={subtitlesOn}
+          onChange={() => setSubtitlesOn(!subtitlesOn)}
+          className="accent-[#CB333B] h-4 w-4 rounded border-gray-300 focus:ring-0"
+        />
+        <label htmlFor="no-subtitles" className="text-sm text-gray-500">
+          {t('Show subtitles')}
+        </label>
       </div>
     </div>
   )
