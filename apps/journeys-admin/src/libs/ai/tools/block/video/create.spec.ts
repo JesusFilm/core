@@ -21,6 +21,7 @@ describe('blockVideoCreate', () => {
 
   afterEach(() => {
     jest.clearAllMocks()
+    jest.restoreAllMocks()
   })
 
   it('should return a tool with correct description and parameters', () => {
@@ -91,7 +92,5 @@ describe('blockVideoCreate', () => {
 
     expect(consoleErrorSpy).toHaveBeenCalledWith(mockError)
     expect(result).toBe(`Error creating video block: ${mockError}`)
-
-    consoleErrorSpy.mockRestore()
   })
 })

@@ -18,6 +18,7 @@ describe('blockActionUpdate', () => {
 
   afterEach(() => {
     jest.clearAllMocks()
+    jest.restoreAllMocks()
   })
 
   it('should return a tool with correct description and parameters', () => {
@@ -87,7 +88,5 @@ describe('blockActionUpdate', () => {
 
     expect(consoleErrorSpy).toHaveBeenCalledWith(mockError)
     expect(result).toBe(`Error updating action: ${mockError}`)
-
-    consoleErrorSpy.mockRestore()
   })
 })

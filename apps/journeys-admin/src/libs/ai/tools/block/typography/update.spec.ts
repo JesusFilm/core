@@ -18,6 +18,7 @@ describe('blockTypographyUpdate', () => {
 
   afterEach(() => {
     jest.clearAllMocks()
+    jest.restoreAllMocks()
   })
 
   it('should return a tool with correct description and parameters', () => {
@@ -84,7 +85,5 @@ describe('blockTypographyUpdate', () => {
 
     expect(consoleErrorSpy).toHaveBeenCalledWith(mockError)
     expect(result).toBe(`Error updating typography block: ${mockError}`)
-
-    consoleErrorSpy.mockRestore()
   })
 })

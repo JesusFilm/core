@@ -22,6 +22,7 @@ describe('blockCardUpdate', () => {
 
   afterEach(() => {
     jest.clearAllMocks()
+    jest.restoreAllMocks()
   })
 
   it('should return a tool with correct description and parameters', () => {
@@ -92,7 +93,5 @@ describe('blockCardUpdate', () => {
 
     expect(consoleErrorSpy).toHaveBeenCalledWith(mockError)
     expect(result).toBe(`Error updating card block: ${mockError}`)
-
-    consoleErrorSpy.mockRestore()
   })
 })

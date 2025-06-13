@@ -18,6 +18,7 @@ describe('blockButtonUpdate', () => {
 
   afterEach(() => {
     jest.clearAllMocks()
+    jest.restoreAllMocks()
   })
 
   it('should return a tool with correct description and parameters', () => {
@@ -86,7 +87,5 @@ describe('blockButtonUpdate', () => {
 
     expect(consoleErrorSpy).toHaveBeenCalledWith(mockError)
     expect(result).toBe(`Error updating button block: ${mockError}`)
-
-    consoleErrorSpy.mockRestore()
   })
 })

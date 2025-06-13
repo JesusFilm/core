@@ -18,6 +18,7 @@ describe('blockImageUpdate', () => {
 
   afterEach(() => {
     jest.clearAllMocks()
+    jest.restoreAllMocks()
   })
 
   it('should return a tool with correct description and parameters', () => {
@@ -86,7 +87,5 @@ describe('blockImageUpdate', () => {
 
     expect(consoleErrorSpy).toHaveBeenCalledWith(mockError)
     expect(result).toBe(`Error updating image block: ${mockError}`)
-
-    consoleErrorSpy.mockRestore()
   })
 })

@@ -19,6 +19,7 @@ describe('blockRadioQuestionUpdate', () => {
 
   afterEach(() => {
     jest.clearAllMocks()
+    jest.restoreAllMocks()
   })
 
   it('should return a tool with correct description and parameters', () => {
@@ -81,7 +82,5 @@ describe('blockRadioQuestionUpdate', () => {
 
     expect(consoleErrorSpy).toHaveBeenCalledWith(mockError)
     expect(result).toBe(`Error updating radio question block: ${mockError}`)
-
-    consoleErrorSpy.mockRestore()
   })
 })

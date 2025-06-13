@@ -18,6 +18,7 @@ describe('blockVideoUpdate', () => {
 
   afterEach(() => {
     jest.clearAllMocks()
+    jest.restoreAllMocks()
   })
 
   it('should return a tool with correct description and parameters', () => {
@@ -90,7 +91,5 @@ describe('blockVideoUpdate', () => {
 
     expect(consoleErrorSpy).toHaveBeenCalledWith(mockError)
     expect(result).toBe(`Error updating video block: ${mockError}`)
-
-    consoleErrorSpy.mockRestore()
   })
 })
