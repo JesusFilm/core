@@ -1,6 +1,7 @@
+import Box from '@mui/material/Box'
+import Grid from '@mui/material/Grid2'
 import { ReactElement } from 'react'
 
-import { HorizontalSelect } from '../../../../../../../../../HorizontalSelect'
 import { Swatch } from '../Swatch'
 
 interface PaletteColorPickerProps {
@@ -14,17 +15,31 @@ export function PaletteColorPicker({
   colors,
   onChange
 }: PaletteColorPickerProps): ReactElement {
-  console.log('colors', colors)
   return (
-    <HorizontalSelect
-      onChange={onChange}
-      id={selectedColor}
-      testId="PaletteColorPicker"
-      sx={{ p: 4 }}
-    >
+    <Grid container spacing={2} sx={{ p: 4 }}>
       {colors.map((color) => {
-        return <Swatch id={color} key={`palette-${color}`} color={color} />
+        return (
+          <Box
+            key={`palette-${color}`}
+            sx={{
+              borderRadius: '50%',
+              transition: '0.1s outline ease-out',
+              position: 'relative',
+              outline: (theme) =>
+                selectedColor === color
+                  ? `2px solid ${theme.palette.primary.main}`
+                  : '2px solid transparent',
+              border: '3px solid transparent',
+              cursor: 'pointer'
+            }}
+            onClick={() => {
+              onChange(color)
+            }}
+          >
+            <Swatch id={color} color={color} variant="rounded" />
+          </Box>
+        )
       })}
-    </HorizontalSelect>
+    </Grid>
   )
 }
