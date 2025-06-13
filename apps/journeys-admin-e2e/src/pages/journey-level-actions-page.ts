@@ -287,7 +287,9 @@ export class JourneyLevelActions {
 
   async enterLanguage(language: string): Promise<void> {
     await this.page
-      .locator('[role="combobox"][aria-label*="language"], [aria-label*="Language"] [role="combobox"]')
+      .locator(
+        '[role="combobox"][aria-label*="language"], [aria-label*="Language"] [role="combobox"]'
+      )
       .click()
     this.selectedLanguage = await this.page
       .locator('[role="listbox"] [role="option"]')
