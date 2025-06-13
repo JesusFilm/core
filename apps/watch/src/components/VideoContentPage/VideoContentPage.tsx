@@ -1,14 +1,18 @@
+import { useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import last from 'lodash/last'
 import { useRouter } from 'next/router'
 import { NextSeo } from 'next-seo'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
+import { GetLanguagesSlug } from '../../../__generated__/GetLanguagesSlug'
 import { useVideoChildren } from '../../libs/useVideoChildren'
 import { useVideo } from '../../libs/videoContext'
+import { GET_LANGUAGES_SLUG } from '../AudioLanguageDialog/AudioLanguageDialog'
 import { DownloadDialog } from '../DownloadDialog'
+import { getCookie } from '../LanguageSwitchDialogNew/utils/cookieHandler'
 import { PageWrapper } from '../PageWrapper'
 import { ShareButton } from '../ShareButton'
 import { ShareDialog } from '../ShareDialog'
@@ -42,9 +46,46 @@ export function VideoContentPage(): ReactElement {
     router.locale
   )
 
+  const { loading: languageVariantsLoading, data: languageVariantsData } =
+    useQuery<GetLanguagesSlug>(GET_LANGUAGES_SLUG, {
+      variables: {
+        id
+      }
+    })
+
   const [hasPlayed, setHasPlayed] = useState(false)
   const [openShare, setOpenShare] = useState(false)
   const [openDownload, setOpenDownload] = useState(false)
+
+  // Handle locale checking and redirect
+  useEffect(() => {
+    const cookieAudioLanguageId = getCookie('AUDIO_LANGUAGE')
+    if (languageVariantsLoading || cookieAudioLanguageId == null) return
+    const selectedLanguageSlug =
+      languageVariantsData?.video?.variantLanguagesWithSlug?.find(
+        (languages) => languages.language?.id === cookieAudioLanguageId
+      )?.slug
+
+    // Get current language slug from router
+    const currentPath = router.asPath
+    const currentLanguageSlug = currentPath
+      .split('/')
+      .pop()
+      ?.replace('.html', '')
+    const selectedLanguage = selectedLanguageSlug?.split('/')[1]
+
+    if (
+      selectedLanguageSlug == null ||
+      selectedLanguage === currentLanguageSlug
+    )
+      return
+
+    void router.push(
+      `/watch${
+        container?.slug != null ? `/${container.slug}/` : '/'
+      }${selectedLanguageSlug}`
+    )
+  }, [id, languageVariantsLoading])
 
   const ogSlug = getSlug(container?.slug, label, variant?.slug)
   const realChildren = children.filter((video) => video.variant !== null)

@@ -87,7 +87,7 @@ export function DialogActions({
       document.cookie = `SUBTITLES_ON=${cookieFingerprint}---${subtitlesOn.toString()}; path=/`
     }
 
-    if (siteLanguageChanged) {
+    if (siteLanguageChanged || audioTrackChanged) {
       setLoading(true)
       router.reload()
     } else {
