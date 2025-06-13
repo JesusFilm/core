@@ -12,11 +12,17 @@ export type LocaleMapping = {
   geoLocations: string[]
   // Language ID for the locale
   languageId: string
+  // Language name for the locale
+  localName: string
+  // Native language name for the locale
+  nativeName: string
 }
 
 export const LANGUAGE_MAPPINGS: Record<string, LocaleMapping> = {
   en: {
     locale: 'en',
+    localName: 'English',
+    nativeName: 'English',
     languageSlugs: ['english.html'],
     geoLocations: [
       'US', // United States
@@ -32,6 +38,8 @@ export const LANGUAGE_MAPPINGS: Record<string, LocaleMapping> = {
   },
   es: {
     locale: 'es',
+    localName: 'Español',
+    nativeName: 'Spanish',
     languageSlugs: ['spanish-latin-american.html', 'spanish-castilian.html'],
     geoLocations: [
       'ES', // Spain
@@ -60,6 +68,8 @@ export const LANGUAGE_MAPPINGS: Record<string, LocaleMapping> = {
   },
   fr: {
     locale: 'fr',
+    localName: 'Français',
+    nativeName: 'French',
     languageSlugs: ['french.html', 'french-african.html'],
     geoLocations: [
       'FR', // France
@@ -85,6 +95,8 @@ export const LANGUAGE_MAPPINGS: Record<string, LocaleMapping> = {
   },
   id: {
     locale: 'id',
+    localName: 'Bahasa Indonesia',
+    nativeName: 'Indonesian',
     languageSlugs: ['indonesian-yesus.html', 'indonesian-isa.html'],
     geoLocations: [
       'ID', // Indonesia
@@ -94,6 +106,8 @@ export const LANGUAGE_MAPPINGS: Record<string, LocaleMapping> = {
   },
   th: {
     locale: 'th',
+    localName: 'ไทย',
+    nativeName: 'Thai',
     languageSlugs: ['thai.html', 'thai-southern.html', 'thai-northern.html'],
     geoLocations: [
       'TH' // Thailand
@@ -102,6 +116,8 @@ export const LANGUAGE_MAPPINGS: Record<string, LocaleMapping> = {
   },
   ja: {
     locale: 'ja',
+    localName: '日本語',
+    nativeName: 'Japanese',
     languageSlugs: ['japanese.html', 'japanese-sign-language.html'],
     geoLocations: [
       'JP' // Japan
@@ -110,6 +126,8 @@ export const LANGUAGE_MAPPINGS: Record<string, LocaleMapping> = {
   },
   ko: {
     locale: 'ko',
+    localName: '한국어',
+    nativeName: 'Korean',
     languageSlugs: [
       'korean.html',
       'korean-sign-language.html',
@@ -123,6 +141,8 @@ export const LANGUAGE_MAPPINGS: Record<string, LocaleMapping> = {
   },
   ru: {
     locale: 'ru',
+    localName: 'Русский',
+    nativeName: 'Russian',
     languageSlugs: [
       'russian.html',
       'central-asian-russian.html',
@@ -143,6 +163,8 @@ export const LANGUAGE_MAPPINGS: Record<string, LocaleMapping> = {
   },
   tr: {
     locale: 'tr',
+    localName: 'Türkçe',
+    nativeName: 'Turkish',
     languageSlugs: ['turkish.html'],
     geoLocations: [
       'TR', // Turkey
@@ -152,6 +174,8 @@ export const LANGUAGE_MAPPINGS: Record<string, LocaleMapping> = {
   },
   zh: {
     locale: 'zh',
+    localName: '繁體中文',
+    nativeName: 'Traditional Chinese',
     languageSlugs: [
       'chinese-mandarin.html',
       'chinese-traditional.html',
@@ -166,6 +190,8 @@ export const LANGUAGE_MAPPINGS: Record<string, LocaleMapping> = {
   },
   'zh-Hans-CN': {
     locale: 'zh-Hans-CN',
+    localName: '中文',
+    nativeName: 'Simplified Chinese',
     languageSlugs: ['chinese-simplified.html'],
     geoLocations: [
       'CN', // China

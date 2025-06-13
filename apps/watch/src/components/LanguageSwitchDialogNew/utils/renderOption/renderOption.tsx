@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import ListItem from '@mui/material/ListItem'
 import Typography from '@mui/material/Typography'
 import { ListChildComponentProps } from 'react-window'
@@ -17,12 +18,23 @@ export const renderOption = (props: ListChildComponentProps) => {
         cursor: 'pointer'
       }}
     >
-      <Typography variant="h6">{localName ?? nativeName}</Typography>
-      {localName != null && nativeName != null && (
-        <Typography variant="body2" color="text.secondary">
-          {nativeName}
-        </Typography>
-      )}
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          width: '100%'
+        }}
+      >
+        <Typography variant="h6">{localName ?? nativeName}</Typography>
+        {localName != null &&
+          nativeName != null &&
+          nativeName !== localName && (
+            <Typography variant="body2" color="text.secondary">
+              {nativeName}
+            </Typography>
+          )}
+      </Box>
     </ListItem>
   )
 }

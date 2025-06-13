@@ -2,9 +2,12 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, Ref, useEffect, useState } from 'react'
 
 import Globe from '@core/shared/ui/icons/Globe'
-import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
+import {
+  LanguageAutocomplete,
+  LanguageOption
+} from '@core/shared/ui/LanguageAutocomplete'
 
-import { SUPPORTED_LOCALES } from '../../../config/locales'
+import { LANGUAGE_MAPPINGS, SUPPORTED_LOCALES } from '../../../config/locales'
 import { renderInput } from '../utils/renderInput'
 import { renderOption } from '../utils/renderOption'
 
@@ -13,42 +16,45 @@ interface SiteLanguageSelectProps {
   dropdownRef: Ref<HTMLDivElement>
 }
 
-interface Language {
-  code: string
-  name: string
-}
-
 export function SiteLanguageSelect({
   onChange,
   dropdownRef
 }: SiteLanguageSelectProps): ReactElement {
   const { i18n, t } = useTranslation()
-  const [languages, setLanguages] = useState<Language[]>([])
-  const [currentValue, setCurrentValue] = useState(i18n?.language ?? 'en')
+  const [languages, setLanguages] = useState<LanguageOption[]>([])
+  const currentLanguageId = i18n?.language ?? 'en'
+  const [currentLanguage, setCurrentLanguage] = useState<LanguageOption | null>(
+    null
+  )
 
   useEffect(() => {
-    const currentLanguageCode = i18n?.language ?? 'en'
-    const formattedLanguages = SUPPORTED_LOCALES.map(
-      (languageCode): Language => {
-        const nativeName = new Intl.DisplayNames([currentLanguageCode], {
-          type: 'language'
-        }).of(languageCode)
-        const localName = new Intl.DisplayNames([languageCode], {
-          type: 'language'
-        }).of(languageCode)
-
-        return {
-          code: languageCode,
-          name: localName ?? nativeName ?? languageCode
-        }
+    const formattedLanguages = SUPPORTED_LOCALES.map((l) => {
+      const { locale, localName, nativeName, languageSlugs } =
+        LANGUAGE_MAPPINGS[l]
+      if (locale === currentLanguageId) {
+        setCurrentLanguage({
+          id: locale,
+          localName,
+          nativeName,
+          slug: languageSlugs[0]
+        })
       }
-    )
+
+      return {
+        id: locale,
+        localName,
+        nativeName,
+        slug: languageSlugs[0]
+      }
+    })
+
     setLanguages(formattedLanguages)
   }, [i18n?.language])
 
-  const handleLanguageChange = (languageCode: string): void => {
-    setCurrentValue(languageCode)
-    onChange(languageCode)
+  const handleLanguageChange = (language?: LanguageOption): void => {
+    if (!language) return
+    setCurrentLanguage(language)
+    onChange(language.id)
   }
 
   return (
@@ -64,20 +70,23 @@ export function SiteLanguageSelect({
         <div className="relative w-full">
           <LanguageAutocomplete
             value={{
-              id: currentValue,
-              nativeName: languages.find((l) => l.code === currentValue)?.name,
-              localName: languages.find((l) => l.code === currentValue)?.name
+              id: currentLanguage?.id ?? 'en',
+              nativeName: currentLanguage?.nativeName ?? 'English',
+              localName: currentLanguage?.localName ?? 'English'
             }}
-            onChange={(option) =>
-              handleLanguageChange(option?.id || languages[0]?.code)
-            }
-            languages={languages.map((l) => ({
-              id: l.code,
-              name: [{ value: l.name, primary: true }],
-              slug: null
+            onChange={(language) => handleLanguageChange(language)}
+            languages={languages.map(({ id, localName, nativeName, slug }) => ({
+              id,
+              name: [
+                { value: localName ?? 'English', primary: true },
+                { value: nativeName ?? 'English', primary: false }
+              ],
+              slug: slug ?? null
             }))}
             disabled={false}
-            renderInput={renderInput(t('11 languages'))}
+            renderInput={renderInput(
+              t('{{count}} languages', { count: SUPPORTED_LOCALES.length })
+            )}
             renderOption={renderOption}
           />
         </div>
