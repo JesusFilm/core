@@ -1,3 +1,4 @@
+import { useQuery } from '@apollo/client'
 import last from 'lodash/last'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
@@ -8,7 +9,10 @@ import { MuxMetadata } from '@core/shared/ui/muxMetadataType'
 
 import 'videojs-mux'
 
+import { GetSubtitles } from '../../../../../__generated__/GetSubtitles'
 import { useVideo } from '../../../../libs/videoContext'
+import { getCookie } from '../../../LanguageSwitchDialogNew/utils/cookieHandler'
+import { GET_SUBTITLES } from '../../../SubtitleDialog/SubtitleDialog'
 
 import { VideoControls } from './VideoControls'
 
@@ -21,7 +25,15 @@ export function VideoPlayer({
 }: VideoPlayerProps): ReactElement {
   const { variant, title } = useVideo()
   const videoRef = useRef<HTMLVideoElement>(null)
-  const [player, setPlayer] = useState<Player>()
+  const [player, setPlayer] = useState<
+    Player & { textTracks?: () => TextTrackList }
+  >()
+
+  const { loading, data } = useQuery<GetSubtitles>(GET_SUBTITLES, {
+    variables: {
+      id: variant?.slug
+    }
+  })
 
   useEffect(() => {
     if (videoRef.current != null) {
@@ -62,6 +74,44 @@ export function VideoPlayer({
       type: 'application/x-mpegURL'
     })
   }, [player, variant?.hls])
+
+  useEffect(() => {
+    const subtitleLanguageId = getCookie('SUBTITLE_LANGUAGE')
+    const subtitlesOn = getCookie('SUBTITLES_ON') === 'true'
+
+    if (player == null || !subtitlesOn || subtitleLanguageId == null || loading)
+      return
+
+    const selected = data?.video?.variant?.subtitle?.find(
+      (subtitle) => subtitle.language.id === subtitleLanguageId
+    )
+
+    player.addRemoteTextTrack(
+      {
+        id: subtitleLanguageId,
+        src: selected?.value,
+        kind: 'subtitles',
+        language:
+          selected?.language.bcp47 === null
+            ? undefined
+            : selected?.language.bcp47,
+        label: selected?.language.name.map((name) => name.value).join(', '),
+        mode: 'showing',
+        default: true
+      },
+      true
+    )
+    const tracks = player.textTracks?.() ?? []
+
+    for (let i = 0; i < tracks.length; i++) {
+      const track = tracks[i]
+      if (track.id === subtitleLanguageId) {
+        track.mode = 'showing'
+      } else {
+        track.mode = 'disabled'
+      }
+    }
+  }, [player, data, loading])
 
   return (
     <>
