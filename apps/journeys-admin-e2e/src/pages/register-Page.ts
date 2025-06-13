@@ -84,10 +84,9 @@ export class Register {
       )
       .click()
     await expect(
-      this.page
-        .locator(
-          'form[data-testid="EmailInviteForm"] [aria-expanded="true"]'
-        )
+      this.page.locator(
+        'form[data-testid="EmailInviteForm"] [aria-expanded="true"]'
+      )
     ).toBeVisible()
     await this.page.locator('div[role="region"]  input[name="token"]').fill(otp)
   }
