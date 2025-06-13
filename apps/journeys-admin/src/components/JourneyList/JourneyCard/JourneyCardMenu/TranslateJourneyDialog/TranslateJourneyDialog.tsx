@@ -3,7 +3,7 @@ import TextField from '@mui/material/TextField'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
+import { ReactElement, useCallback, useMemo, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
@@ -107,22 +107,20 @@ export function TranslateJourneyDialog({
   )
 
   // Set up the subscription for translation
-  const { data: translationData, error: translationError } =
-    useJourneyAiTranslateSubscription({
-      variables: translationVariables,
-      skip: !translationVariables
-    })
-
-  // Handle translation errors
-  useEffect(() => {
-    if (translationError) {
-      enqueueSnackbar(translationError.message, {
+  const { data: translationData } = useJourneyAiTranslateSubscription({
+    variables: translationVariables,
+    skip: !translationVariables,
+    onError(error) {
+      enqueueSnackbar(error.message, {
         variant: 'error'
       })
       setLoading(false)
       setTranslationVariables(undefined)
+    },
+    onComplete() {
+      handleClose()
     }
-  }, [translationError, enqueueSnackbar])
+  })
 
   const { data: languagesData, loading: languagesLoading } = useLanguagesQuery({
     languageId: '529',
@@ -176,17 +174,6 @@ export function TranslateJourneyDialog({
       setLoading(false)
     }
   }
-
-  useEffect(() => {
-    if (
-      translationData?.journeyAiTranslateCreateSubscription.progress === 100
-    ) {
-      handleClose()
-    }
-  }, [
-    translationData?.journeyAiTranslateCreateSubscription.progress,
-    handleClose
-  ])
 
   return (
     <TranslationDialogWrapper

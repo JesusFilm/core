@@ -37,7 +37,6 @@ interface CopyToTeamDialogProps {
     progress: number
     message: string
   }
-  shouldUpdateTeamState?: boolean
   isTranslating?: boolean
 }
 
@@ -82,7 +81,6 @@ export function CopyToTeamDialog({
   onClose,
   submitAction,
   translationProgress,
-  shouldUpdateTeamState = true,
   isTranslating = false
 }: CopyToTeamDialogProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
@@ -99,8 +97,6 @@ export function CopyToTeamDialog({
   })
 
   const updateTeamState = (teamId: string): void => {
-    if (!shouldUpdateTeamState) return
-
     setActiveTeam(teams.find((team) => team.id === teamId) ?? null)
     void updateLastActiveTeamId({
       variables: {
@@ -124,7 +120,7 @@ export function CopyToTeamDialog({
       values.showTranslation
     )
 
-    // Update team state based on shouldUpdateTeamState prop and translation status
+    // Update team state
     updateTeamState(values.teamSelect)
 
     // Always reset the form after submission

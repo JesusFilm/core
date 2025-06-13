@@ -4,7 +4,6 @@ import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { GetJourney_journey as Journey } from '../../libs/useJourneyQuery/__generated__/GetJourney'
-import { GET_LANGUAGES } from '../../libs/useLanguagesQuery'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../libs/useUpdateLastActiveTeamIdMutation'
 import { UpdateLastActiveTeamId } from '../../libs/useUpdateLastActiveTeamIdMutation/__generated__/UpdateLastActiveTeamId'
 import {
@@ -218,7 +217,6 @@ describe('CopyToTeamDialog', () => {
                 submitLabel="Copy"
                 onClose={handleCloseMenuMock}
                 submitAction={handleSubmitActionMock}
-                shouldUpdateTeamState={false}
               />
             </TeamProvider>
           </JourneyProvider>
