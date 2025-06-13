@@ -2,7 +2,7 @@ import { useChat } from '@ai-sdk/react'
 import { useApolloClient } from '@apollo/client'
 import Box from '@mui/material/Box'
 import { useUser } from 'next-firebase-auth'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useCallback, useRef, useState } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -19,11 +19,31 @@ export function AiChat({ variant = 'popup' }: AiChatProps): ReactElement {
   const user = useUser()
   const client = useApolloClient()
   const { journey } = useJourney()
+  const traceId = useRef<string | null>()
   const {
     state: { selectedStepId, selectedBlockId }
   } = useEditor()
   const [waitForToolResult, setWaitForToolResult] = useState(false)
+  const fetchWithAuthorization = useCallback(
+    async (url: string, options: RequestInit): Promise<Response> => {
+      try {
+        const token = await user?.getIdToken()
+        if (!token) throw new Error('Missing auth token')
 
+        return await fetch(url, {
+          ...options,
+          headers: {
+            ...options.headers,
+            Authorization: `JWT ${token}`
+          }
+        })
+      } catch (err) {
+        console.error('Authorization fetch failed', err)
+        throw err
+      }
+    },
+    [user]
+  )
   const {
     messages,
     append,
@@ -34,7 +54,8 @@ export function AiChat({ variant = 'popup' }: AiChatProps): ReactElement {
     input,
     stop,
     error,
-    reload
+    reload,
+    setMessages
   } = useChat({
     fetch: fetchWithAuthorization,
     maxSteps: 50,
@@ -42,7 +63,21 @@ export function AiChat({ variant = 'popup' }: AiChatProps): ReactElement {
     onToolCall: ({ toolCall }) => {
       if (toolCall.toolName.startsWith('client')) setWaitForToolResult(true)
     },
-    onFinish: (result, { usage }) => {
+    onResponse: (response) => {
+      traceId.current = response.headers.get('x-trace-id')
+    },
+    onFinish: (result) => {
+      setMessages((messages) =>
+        messages.map((message) => {
+          if (message.id == result.id) {
+            return {
+              ...message,
+              traceId: traceId.current
+            }
+          }
+          return message
+        })
+      )
       const shouldRefetch = result.parts?.some(
         (part) =>
           part.type === 'tool-invocation' &&
@@ -71,21 +106,6 @@ export function AiChat({ variant = 'popup' }: AiChatProps): ReactElement {
   function handleAddToolResult(response: Parameters<typeof addToolResult>[0]) {
     setWaitForToolResult(false)
     addToolResult(response)
-  }
-
-  async function fetchWithAuthorization(
-    url: string,
-    options: RequestInit
-  ): Promise<Response> {
-    const token = await user?.getIdToken()
-
-    return await fetch(url, {
-      ...options,
-      headers: {
-        ...options.headers,
-        Authorization: `JWT ${token}`
-      }
-    })
   }
 
   return (

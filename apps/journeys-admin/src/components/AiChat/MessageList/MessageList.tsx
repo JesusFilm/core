@@ -4,9 +4,10 @@ import { ReactElement } from 'react'
 
 import { TextPart } from './TextPart'
 import { ToolInvocationPart } from './ToolInvocationPart'
+import { UserFeedback } from './UserFeedback'
 
 interface MessageListProps {
-  messages: Message[]
+  messages: (Message & { traceId?: string | null })[]
   addToolResult: ({
     toolCallId,
     result
@@ -67,6 +68,9 @@ export function MessageList({
                         return null
                     }
                   })}
+                  {message.traceId && (
+                    <UserFeedback traceId={message.traceId} />
+                  )}
                 </Box>
               )
           }
