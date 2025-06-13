@@ -5,17 +5,16 @@ import { Swatch } from '../Swatch'
 
 interface PaletteColorPickerProps {
   selectedColor: string
-  colors: Array<{ dark: string; light: string }>
-  mode: 'dark' | 'light'
+  colors: string[]
   onChange: (color: string) => void
 }
 
 export function PaletteColorPicker({
   selectedColor,
   colors,
-  mode,
   onChange
 }: PaletteColorPickerProps): ReactElement {
+  console.log('colors', colors)
   return (
     <HorizontalSelect
       onChange={onChange}
@@ -24,13 +23,7 @@ export function PaletteColorPicker({
       sx={{ p: 4 }}
     >
       {colors.map((color) => {
-        return (
-          <Swatch
-            id={color[mode]}
-            key={`palette-${color[mode]}`}
-            color={color[mode]}
-          />
-        )
+        return <Swatch id={color} key={`palette-${color}`} color={color} />
       })}
     </HorizontalSelect>
   )

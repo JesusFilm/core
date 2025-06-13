@@ -28,21 +28,31 @@ import { PaletteColorPicker } from './PaletteColorPicker'
 import { Swatch } from './Swatch'
 
 const palette = [
-  { dark: '#C62828', light: '#FFCDD2' },
-  { dark: '#AD1457', light: '#F48FB1' },
-  { dark: '#6A1B9A', light: '#CE93D8' },
-  { dark: '#4527A0', light: '#B39DDB' },
-  { dark: '#283593', light: '#9FA8DA' },
-  { dark: '#1565C0', light: '#90CAF9' },
-  { dark: '#0277BD', light: '#81D4FA' },
-  { dark: '#006064', light: '#80DEEA' },
-  { dark: '#00695C', light: '#80CBC4' },
-  { dark: '#2E7D32', light: '#C8E6C9' },
-  { dark: '#33691E', light: '#C5E1A5' },
-  { dark: '#4E342E', light: '#D7CCC8' },
-  { dark: '#424242', light: '#E0E0E0' },
-  { dark: '#37474F', light: '#B0BEC5' },
-  { dark: '#30313D', light: '#FEFEFE' }
+  '#FFFFFF',
+  '#F2F3F6',
+  '#D1D5DB',
+  '#6B7280',
+  '#1F2937',
+  '#DC2626',
+  '#C7E834',
+  '#10B981',
+  '#8B5CF6',
+  '#6B21A8',
+  '#F97316',
+  '#84CC16',
+  '#14B8A6',
+  '#6366F1',
+  '#EC4899',
+  '#F59E0B',
+  '#6C7A36',
+  '#06B6D4',
+  '#2563EB',
+  '#F43F5E',
+  '#EAB308',
+  '#4B3E2A',
+  '#3B82F6',
+  '#1E3A8A',
+  '#991B1B'
 ]
 
 export const CARD_BLOCK_BACKGROUND_COLOR_UPDATE = gql`
@@ -134,7 +144,6 @@ export function BackgroundColor(): ReactElement {
     <PaletteColorPicker
       selectedColor={selectedColor}
       colors={palette}
-      mode={cardTheme.palette.mode}
       onChange={handleColorChange}
     />
   )
