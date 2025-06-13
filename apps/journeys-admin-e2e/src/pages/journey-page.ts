@@ -245,9 +245,7 @@ export class JourneyPage {
     )
     await this.page.waitForLoadState('load')
     await expect(
-      this.page.locator(
-        '[data-testid="JourneysAdminContainedIconButton"]'
-      )
+      this.page.locator('[data-testid="JourneysAdminContainedIconButton"]')
     ).toBeVisible({ timeout: 150000 })
     await expect(createJourneyLoaderPath).toBeHidden({ timeout: 18000 })
     await this.page

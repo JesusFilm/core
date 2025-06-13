@@ -160,9 +160,7 @@ export class Register {
 
   async waitUntilDiscoverPageLoaded() {
     await expect(
-      this.page.locator(
-        '[data-testid="JourneysAdminContainedIconButton"]'
-      )
+      this.page.locator('[data-testid="JourneysAdminContainedIconButton"]')
     ).toBeVisible({ timeout: 65000 })
   }
 
