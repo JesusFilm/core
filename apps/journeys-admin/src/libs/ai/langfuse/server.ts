@@ -10,13 +10,13 @@ export const langfuseEnvironment =
 export const langfuseExporter = new LangfuseExporter({
   publicKey: process.env.NEXT_PUBLIC_LANGFUSE_PUBLIC_KEY ?? '',
   secretKey: process.env.LANGFUSE_SECRET_KEY ?? '',
-  baseUrl: process.env.LANGFUSE_BASE_URL,
+  baseUrl: process.env.NEXT_PUBLIC_LANGFUSE_BASE_URL,
   environment: langfuseEnvironment
 })
 
 export const langfuse = new Langfuse({
   publicKey: process.env.NEXT_PUBLIC_LANGFUSE_PUBLIC_KEY ?? '',
   secretKey: process.env.LANGFUSE_SECRET_KEY ?? '',
-  baseUrl: process.env.LANGFUSE_BASE_URL,
+  baseUrl: process.env.NEXT_PUBLIC_LANGFUSE_BASE_URL,
   environment: langfuseEnvironment
 })

@@ -9,7 +9,7 @@ import {
   langfuse,
   langfuseEnvironment,
   langfuseExporter
-} from '../../../src/libs/ai/langfuse'
+} from '../../../src/libs/ai/langfuse/server'
 import { tools } from '../../../src/libs/ai/tools'
 import { createApolloClient } from '../../../src/libs/apolloClient'
 

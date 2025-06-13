@@ -1,11 +1,12 @@
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Tooltip from '@mui/material/Tooltip'
-import { LangfuseWeb } from 'langfuse'
 import { useState } from 'react'
 
 import ThumbsDown from '@core/shared/ui/icons/ThumbsDown'
 import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
+
+import { langfuseWeb } from '../../../../libs/ai/langfuse/client'
 
 interface UserFeedbackProps {
   traceId: string
@@ -14,13 +15,9 @@ interface UserFeedbackProps {
 export function UserFeedback({ traceId }: UserFeedbackProps) {
   const [feedback, setFeedback] = useState<number | null>(null)
 
-  const langfuseWeb = new LangfuseWeb({
-    publicKey: process.env.NEXT_PUBLIC_LANGFUSE_PUBLIC_KEY ?? ''
-  })
-
   async function handleUserFeedback(value: number) {
     setFeedback(value)
-    await langfuseWeb.score({
+    await langfuseWeb.api.score({
       traceId,
       name: 'user_feedback',
       value
@@ -28,7 +25,7 @@ export function UserFeedback({ traceId }: UserFeedbackProps) {
   }
 
   return (
-    <Stack direction="row" spacing={2} mt={2}>
+    <Stack direction="row" spacing={2} mt={1}>
       <Tooltip title="Good Response" arrow>
         <IconButton
           onClick={() => handleUserFeedback(1)}
