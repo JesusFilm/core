@@ -10,7 +10,7 @@ import { blockCardCreateInputSchema } from '../card/type'
 
 import { blockStepCreateInputSchema } from './type'
 
-const AI_BLOCK_STEP_CREATE = gql`
+export const AI_BLOCK_STEP_CREATE = gql`
   mutation AiBlockStepCreateMutation(
     $input: StepBlockCreateInput!
     $cardInput: CardBlockCreateInput!

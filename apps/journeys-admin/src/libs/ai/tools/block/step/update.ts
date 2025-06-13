@@ -9,7 +9,7 @@ import {
 
 import { blockStepUpdateInputSchema } from './type'
 
-const AI_BLOCK_STEP_UPDATE = gql`
+export const AI_BLOCK_STEP_UPDATE = gql`
   mutation AiBlockStepUpdateMutation($id: ID!, $input: StepBlockUpdateInput!) {
     stepBlockUpdate(id: $id, input: $input) {
       id
