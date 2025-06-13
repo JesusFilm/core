@@ -50,7 +50,9 @@ export function CreateJourneyButton({
       }
     | undefined
   >(undefined)
-  const [pendingNavigationId, setPendingNavigationId] = useState<string | null>(null)
+  const [pendingNavigationId, setPendingNavigationId] = useState<string | null>(
+    null
+  )
 
   const [journeyDuplicate] = useJourneyDuplicateMutation()
 
@@ -66,7 +68,7 @@ export function CreateJourneyButton({
       setLoading(false)
       setTranslationVariables(undefined)
       setOpenTeamDialog(false)
-      
+
       // Navigate to the translated journey
       if (pendingNavigationId) {
         if (journey) {
@@ -123,7 +125,7 @@ export function CreateJourneyButton({
             preventDuplicate: true
           })
           setOpenTeamDialog(false)
-          
+
           sendGTMEvent({
             event: 'template_use',
             journeyId: journey.id,
@@ -192,7 +194,7 @@ export function CreateJourneyButton({
   function handleCloseTeamDialog() {
     // Prevent closing during translation
     if (loading || translationVariables != null) return
-    
+
     if (setOpenTeamDialog !== undefined) {
       setOpenTeamDialog(false)
       const { createNew, ...queryWithoutCreateNew } = router.query
@@ -249,11 +251,11 @@ export function CreateJourneyButton({
             translationData?.journeyAiTranslateCreateSubscription
               ? {
                   progress:
-                    translationData.journeyAiTranslateCreateSubscription.progress ??
-                    0,
+                    translationData.journeyAiTranslateCreateSubscription
+                      .progress ?? 0,
                   message:
-                    translationData.journeyAiTranslateCreateSubscription.message ??
-                    ''
+                    translationData.journeyAiTranslateCreateSubscription
+                      .message ?? ''
                 }
               : undefined
           }
