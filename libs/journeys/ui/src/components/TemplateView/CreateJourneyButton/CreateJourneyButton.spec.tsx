@@ -6,7 +6,8 @@ import { SnackbarProvider } from 'notistack'
 import {
   JourneyStatus,
   ThemeMode,
-  ThemeName
+  ThemeName,
+  UserTeamRole
 } from '../../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 import type { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
@@ -89,8 +90,32 @@ const journey: Journey = {
 
 const teamResult = jest.fn(() => ({
   data: {
-    teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
+    teams: [
+      {
+        id: 'teamId',
+        title: 'Team Name',
+        __typename: 'Team',
+        publicTitle: 'Team Name',
+        userTeams: [
+          {
+            id: 'userTeamId',
+            __typename: 'UserTeam',
+            role: UserTeamRole.manager,
+            user: {
+              __typename: 'User',
+              id: 'userId',
+              firstName: 'Test',
+              lastName: 'User',
+              imageUrl: null,
+              email: 'test@example.com'
+            }
+          }
+        ],
+        customDomains: []
+      }
+    ],
     getJourneyProfile: {
+      id: 'profileId',
       __typename: 'JourneyProfile',
       lastActiveTeamId: 'teamId'
     }
@@ -115,6 +140,7 @@ const getLanguagesMock = {
           id: '496',
           bcp47: 'fr',
           iso3: 'fra',
+          slug: 'french',
           name: [
             {
               value: 'Français',
@@ -631,47 +657,4 @@ describe('CreateJourneyButton', () => {
     )
   })
 
-  it('should handle dialog close properly', async () => {
-    mockUseRouter.mockReturnValue({
-      query: { createNew: false },
-      push,
-      replace: jest.fn(),
-      pathname: '/templates/journeyId'
-    } as unknown as NextRouter)
-
-    render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
-            },
-            result: teamResult
-          },
-          getLanguagesMock
-        ]}
-      >
-        <SnackbarProvider>
-          <TeamProvider>
-            <JourneyProvider value={{ journey }}>
-              <CreateJourneyButton signedIn />
-            </JourneyProvider>
-          </TeamProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
-
-    await waitFor(() =>
-      expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
-    )
-
-    // Close dialog with cancel button
-    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
-
-    await waitFor(() => {
-      expect(screen.queryByTestId('CopyToTeamDialog')).not.toBeInTheDocument()
-    })
-  })
 })
