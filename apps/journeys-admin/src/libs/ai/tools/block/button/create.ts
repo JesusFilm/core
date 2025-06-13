@@ -9,7 +9,7 @@ import {
 
 import { blockButtonCreateInputSchema } from './type'
 
-const AI_BLOCK_BUTTON_CREATE = gql`
+export const AI_BLOCK_BUTTON_CREATE = gql`
   mutation AiBlockButtonCreateMutation($input: ButtonBlockCreateInput!) {
     buttonBlockCreate(input: $input) {
       id

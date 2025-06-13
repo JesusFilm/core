@@ -9,7 +9,7 @@ import {
 
 import { blockRadioQuestionCreateInputSchema } from './type'
 
-const AI_BLOCK_RADIO_QUESTION_CREATE = gql`
+export const AI_BLOCK_RADIO_QUESTION_CREATE = gql`
   mutation AiBlockRadioQuestionCreateMutation(
     $input: RadioQuestionBlockCreateInput!
   ) {

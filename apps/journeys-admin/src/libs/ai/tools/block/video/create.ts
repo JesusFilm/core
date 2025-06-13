@@ -3,13 +3,14 @@ import { Tool, tool } from 'ai'
 import { z } from 'zod'
 
 import {
-  VideoBlockCreate,
-  VideoBlockCreateVariables
-} from '../../../../../../__generated__/VideoBlockCreate'
+  AiBlockVideoCreateMutation,
+  AiBlockVideoCreateMutationVariables
+} from '../../../../../../__generated__/AiBlockVideoCreateMutation'
+import { VideoBlockCreateInput } from '../../../../../../__generated__/globalTypes'
 
 import { blockVideoUpdateInputSchema } from './type'
 
-const AI_BLOCK_VIDEO_CREATE = gql`
+export const AI_BLOCK_VIDEO_CREATE = gql`
   mutation AiBlockVideoCreateMutation($input: VideoBlockCreateInput!) {
     videoBlockCreate(input: $input) {
       id
@@ -17,9 +18,9 @@ const AI_BLOCK_VIDEO_CREATE = gql`
   }
 `
 
-const blockVideoCreateInputSchema = blockVideoUpdateInputSchema.merge(
+export const blockVideoCreateInputSchema = blockVideoUpdateInputSchema.merge(
   z.object({ journeyId: z.string(), parentBlockId: z.string() })
-)
+) satisfies z.ZodType<VideoBlockCreateInput>
 
 export function blockVideoCreate(
   client: ApolloClient<NormalizedCacheObject>
@@ -32,8 +33,8 @@ export function blockVideoCreate(
     execute: async ({ input }) => {
       try {
         const { data } = await client.mutate<
-          VideoBlockCreate,
-          VideoBlockCreateVariables
+          AiBlockVideoCreateMutation,
+          AiBlockVideoCreateMutationVariables
         >({
           mutation: AI_BLOCK_VIDEO_CREATE,
           variables: { input }

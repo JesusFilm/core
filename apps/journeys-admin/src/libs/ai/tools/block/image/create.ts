@@ -3,13 +3,13 @@ import { Tool, tool } from 'ai'
 import { z } from 'zod'
 
 import {
-  ImageBlockCreate,
-  ImageBlockCreateVariables
-} from '../../../../../../__generated__/ImageBlockCreate'
+  AiBlockImageCreateMutation,
+  AiBlockImageCreateMutationVariables
+} from '../../../../../../__generated__/AiBlockImageCreateMutation'
 
 import { blockImageUpdateInputSchema } from './type'
 
-const AI_BLOCK_IMAGE_CREATE = gql`
+export const AI_BLOCK_IMAGE_CREATE = gql`
   mutation AiBlockImageCreateMutation($input: ImageBlockCreateInput!) {
     imageBlockCreate(input: $input) {
       id
@@ -17,7 +17,7 @@ const AI_BLOCK_IMAGE_CREATE = gql`
   }
 `
 
-const blockImageCreateInputSchema = blockImageUpdateInputSchema.merge(
+export const blockImageCreateInputSchema = blockImageUpdateInputSchema.merge(
   z.object({ journeyId: z.string(), alt: z.string().default('') })
 )
 
@@ -33,8 +33,8 @@ export function blockImageCreate(
       try {
         const safeInput = { ...input, alt: input.alt ?? '' }
         const { data } = await client.mutate<
-          ImageBlockCreate,
-          ImageBlockCreateVariables
+          AiBlockImageCreateMutation,
+          AiBlockImageCreateMutationVariables
         >({
           mutation: AI_BLOCK_IMAGE_CREATE,
           variables: { input: safeInput }

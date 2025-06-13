@@ -9,7 +9,7 @@ import {
 
 import { blockTypographyCreateInputSchema } from './type'
 
-const AI_BLOCK_TYPOGRAPHY_CREATE = gql`
+export const AI_BLOCK_TYPOGRAPHY_CREATE = gql`
   mutation AiBlockTypographyCreateMutation(
     $input: TypographyBlockCreateInput!
   ) {

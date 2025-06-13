@@ -3,13 +3,13 @@ import { Tool, tool } from 'ai'
 import { z } from 'zod'
 
 import {
-  RadioOptionBlockCreate,
-  RadioOptionBlockCreateVariables
-} from '../../../../../../__generated__/RadioOptionBlockCreate'
+  AiBlockRadioOptionCreateMutation,
+  AiBlockRadioOptionCreateMutationVariables
+} from '../../../../../../__generated__/AiBlockRadioOptionCreateMutation'
 
 import { blockRadioOptionCreateInputSchema } from './type'
 
-const AI_BLOCK_RADIO_OPTION_CREATE = gql`
+export const AI_BLOCK_RADIO_OPTION_CREATE = gql`
   mutation AiBlockRadioOptionCreateMutation(
     $input: RadioOptionBlockCreateInput!
   ) {
@@ -30,8 +30,8 @@ export function blockRadioOptionCreate(
     execute: async ({ input }) => {
       try {
         const { data } = await client.mutate<
-          RadioOptionBlockCreate,
-          RadioOptionBlockCreateVariables
+          AiBlockRadioOptionCreateMutation,
+          AiBlockRadioOptionCreateMutationVariables
         >({
           mutation: AI_BLOCK_RADIO_OPTION_CREATE,
           variables: { input }
