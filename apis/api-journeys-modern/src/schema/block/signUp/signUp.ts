@@ -1,6 +1,28 @@
 import { builder } from '../../builder'
 import { Block } from '../block'
 
+interface SignUpBlockClassNamesType {
+  self: string
+}
+
+const SignUpBlockClassNamesRef = builder.objectRef<SignUpBlockClassNamesType>(
+  'SignUpBlockClassNames'
+)
+
+export const SignUpBlockClassNames = builder.objectType(
+  SignUpBlockClassNamesRef,
+  {
+    fields: (t) => ({
+      self: t.string({
+        nullable: false,
+        directives: { shareable: true },
+        description: 'Tailwind class names for the sign up block',
+        resolve: (classNames: SignUpBlockClassNamesType) => classNames.self
+      })
+    })
+  }
+)
+
 builder.prismaObject('Block', {
   interfaces: [Block],
   variant: 'SignUpBlock',
@@ -27,6 +49,13 @@ builder.prismaObject('Block', {
     submitLabel: t.exposeString('submitLabel', {
       nullable: true,
       directives: { shareable: true }
+    }),
+    classNames: t.field({
+      type: SignUpBlockClassNamesRef,
+      nullable: false,
+      directives: { shareable: true },
+      resolve: ({ classNames }) =>
+        classNames as unknown as SignUpBlockClassNamesType
     })
   })
 })

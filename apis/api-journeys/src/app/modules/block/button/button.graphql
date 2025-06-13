@@ -16,6 +16,14 @@ enum ButtonSize {
   large
 }
 
+input ButtonBlockClassNamesInput {
+  self: String!
+}
+
+type ButtonBlockClassNames {
+  self: String! @shareable
+}
+
 type ButtonBlock implements Block @key(fields: "id") {
   id: ID! @shareable
   journeyId: ID! @shareable
@@ -29,6 +37,10 @@ type ButtonBlock implements Block @key(fields: "id") {
   endIconId: ID @shareable
   action: Action
   submitEnabled: Boolean @shareable
+  """
+  classNames is an object of tailwind class names for the block
+  """
+  classNames: ButtonBlockClassNames! @shareable
 }
 
 input ButtonBlockCreateInput {
@@ -40,6 +52,7 @@ input ButtonBlockCreateInput {
   color: ButtonColor
   size: ButtonSize
   submitEnabled: Boolean
+  classNames: ButtonBlockClassNamesInput
 }
 
 input ButtonBlockUpdateInput {
@@ -51,6 +64,7 @@ input ButtonBlockUpdateInput {
   startIconId: ID
   endIconId: ID
   submitEnabled: Boolean
+  classNames: ButtonBlockClassNamesInput
 }
 
 extend type Mutation {

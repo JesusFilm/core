@@ -4,7 +4,7 @@ import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
 
-import { Block } from '.prisma/api-journeys-client'
+import { Block, Prisma } from '.prisma/api-journeys-client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 
 import {
@@ -14,6 +14,7 @@ import {
 import { Action, AppAbility } from '../../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../../lib/casl/caslGuard'
 import { PrismaService } from '../../../lib/prisma.service'
+import { sanitizeClassNames } from '../../../lib/tailwind/sanitizeClassNames'
 import { INCLUDE_JOURNEY_ACL } from '../../journey/journey.acl'
 import { BlockService } from '../block.service'
 
@@ -83,6 +84,13 @@ export class ImageBlockResolver {
             transformedInput.isCover === true &&
             transformedInput.parentBlockId != null
               ? { connect: { id: transformedInput.parentBlockId } }
+              : undefined,
+          classNames:
+            transformedInput.classNames != null
+              ? sanitizeClassNames(
+                  transformedInput.classNames as unknown as Prisma.JsonObject,
+                  { self: '' }
+                )
               : undefined
         },
         include: {
@@ -126,6 +134,15 @@ export class ImageBlockResolver {
       throw new GraphQLError('user is not allowed to update block', {
         extensions: { code: 'FORBIDDEN' }
       })
-    return await this.blockService.update(id, await transformInput(input))
+    return await this.blockService.update(id, {
+      ...(await transformInput(input)),
+      classNames:
+        input.classNames != null
+          ? sanitizeClassNames(
+              input.classNames as unknown as Prisma.JsonObject,
+              block.classNames as Prisma.JsonObject
+            )
+          : undefined
+    })
   }
 }
