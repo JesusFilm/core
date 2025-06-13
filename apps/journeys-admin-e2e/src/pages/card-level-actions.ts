@@ -900,7 +900,7 @@ export class CardLevelActionPage {
   async clicSelectHostBtn() {
     await this.page
       .locator(
-        'div[data-testid="HostSelection"] div[data-testid="JourneysAdminContainedIconButton"] button'
+        'div[data-testid="HostSelection"] [data-testid="JourneysAdminContainedIconButton"]'
       )
       .click()
   }

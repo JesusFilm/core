@@ -161,7 +161,7 @@ export class Register {
   async waitUntilDiscoverPageLoaded() {
     await expect(
       this.page.locator(
-        'div[data-testid="JourneysAdminContainedIconButton"] button'
+        '[data-testid="JourneysAdminContainedIconButton"]'
       )
     ).toBeVisible({ timeout: 65000 })
   }
