@@ -18,9 +18,9 @@ type FieldProps = Pick<
 
 interface TextFieldFormProps extends FieldProps {
   id: string
-  initialValue?: string | number
+  initialValue?: string
   validationSchema?: ComponentProps<typeof Formik>['validationSchema']
-  onSubmit: (value?: string | number) => void
+  onSubmit: (value?: string) => void
   onPaste?: (e: ClipboardEvent) => void
   startIcon?: ReactNode
   endIcon?: ReactNode
