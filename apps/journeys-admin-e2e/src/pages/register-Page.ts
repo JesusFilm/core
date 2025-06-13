@@ -80,17 +80,15 @@ export class Register {
   async enterOTP(otp) {
     await this.page
       .locator(
-        'form[data-testid="EmailInviteForm"] [role="button"][aria-expanded]'
+        'form[data-testid="EmailInviteForm"] >> text="Verify With Code Instead"'
       )
-      .first()
       .click()
     await expect(
       this.page
         .locator(
-          'form[data-testid="EmailInviteForm"] [role="button"][aria-expanded]'
+          'form[data-testid="EmailInviteForm"] [aria-expanded="true"]'
         )
-        .first()
-    ).toHaveAttribute('aria-expanded', 'true')
+    ).toBeVisible()
     await this.page.locator('div[role="region"]  input[name="token"]').fill(otp)
   }
 
