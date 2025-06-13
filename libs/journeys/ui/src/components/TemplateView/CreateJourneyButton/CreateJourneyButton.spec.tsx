@@ -656,5 +656,4 @@ describe('CreateJourneyButton', () => {
       expect(getByRole('button', { name: 'Use This Template' })).toBeDisabled()
     )
   })
-
 })
