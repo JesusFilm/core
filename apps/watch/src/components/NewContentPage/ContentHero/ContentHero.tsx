@@ -1,12 +1,14 @@
 import fscreen from 'fscreen'
 import { ReactElement, useEffect, useState } from 'react'
 
+import { useVideo } from '../../../libs/videoContext'
+
 import { ContentHeader } from './ContentHeader'
 import { ContentHeroVideo } from './ContentHeroVideo'
 
 export function ContentHero(): ReactElement {
   const [isFullscreen, setIsFullscreen] = useState(false)
-
+  const { variant } = useVideo()
   /**
    * Effect to handle fullscreen changes.
    * Adds and removes event listeners for fullscreen state changes.
@@ -38,7 +40,7 @@ export function ContentHero(): ReactElement {
       data-testid="ContentHero"
     >
       {!isFullscreen && <ContentHeader />}
-      <ContentHeroVideo isFullscreen={isFullscreen} />
+      <ContentHeroVideo isFullscreen={isFullscreen} key={variant?.hls} />
       <div
         data-testid="ContainerHeroTitleContainer"
         className="w-full relative flex flex-col sm:flex-row max-w-[1920px] mx-auto pb-4"

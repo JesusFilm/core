@@ -1,4 +1,4 @@
-import { ReactElement, useCallback, useEffect, useRef } from 'react'
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 import 'video.js/dist/video-js.css'
@@ -19,6 +19,7 @@ export function ContentHeroVideo({
   isFullscreen
 }: ContentHeroVideoProps): ReactElement {
   const { variant, ...video } = useVideo()
+  const [playerReady, setPlayerReady] = useState(false)
 
   const title = video.title?.[0]?.value ?? ''
 
@@ -71,6 +72,9 @@ export function ContentHeroVideo({
     })
 
     playerRef.current = player
+    playerRef.current.ready(() => {
+      setPlayerReady(true)
+    })
   }, [variant])
 
   useEffect(() => {
@@ -88,6 +92,7 @@ export function ContentHeroVideo({
       data-testid="ContentHeroVideoContainer"
     >
       <video
+        key={variant?.hls}
         data-testid="ContentHeroVideo"
         ref={videoRef}
         className="vjs [&_.vjs-tech]:object-contain [&_.vjs-tech]:md:object-cover"
@@ -100,7 +105,7 @@ export function ContentHeroVideo({
         }}
         playsInline
       />
-      {playerRef.current != null && (
+      {playerRef.current != null && playerReady && (
         <VideoControls player={playerRef.current} />
       )}
     </div>
