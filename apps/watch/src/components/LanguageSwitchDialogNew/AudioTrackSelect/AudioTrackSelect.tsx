@@ -1,3 +1,5 @@
+import last from 'lodash/last'
+import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, Ref, useEffect, useState } from 'react'
 
@@ -27,6 +29,8 @@ export function AudioTrackSelect({
   dropdownRef
 }: AudioTrackSelectProps): ReactElement {
   const { t } = useTranslation()
+  const router = useRouter()
+  const [helperText, setHelperText] = useState<string>(t('2000 translations'))
 
   const selectedLanguage = languagesData?.find(
     (language) => language.id === selectedLanguageId
@@ -38,13 +42,40 @@ export function AudioTrackSelect({
 
   useEffect(() => {
     if (selectedLanguage != null && !loading) {
-      setCurrentLanguage({
-        id: selectedLanguage.id,
-        localName: selectedLanguage.name.find(({ primary }) => primary)?.value,
-        nativeName: selectedLanguage.name.find(({ primary }) => !primary)
-          ?.value,
-        slug: selectedLanguage.slug
-      })
+      const path = router.asPath.split('/')
+      const pathLanguageSlug = last(path)?.replace('.html', '')
+      console.log(path, pathLanguageSlug)
+
+      if (pathLanguageSlug !== selectedLanguage.slug && path.length > 3) {
+        const pathLanguage = languagesData?.find(
+          (language) => language.slug === pathLanguageSlug
+        )
+
+        setCurrentLanguage({
+          id: pathLanguage?.id ?? '529',
+          localName:
+            pathLanguage?.name.find(({ primary }) => primary)?.value ??
+            'English',
+          nativeName:
+            pathLanguage?.name.find(({ primary }) => !primary)?.value ??
+            'English',
+          slug: pathLanguage?.slug ?? 'english'
+        })
+        setHelperText(
+          t('Not available in {{value}}', {
+            value: selectedLanguage.slug
+          })
+        )
+      } else {
+        setCurrentLanguage({
+          id: selectedLanguage.id,
+          localName: selectedLanguage.name.find(({ primary }) => primary)
+            ?.value,
+          nativeName: selectedLanguage.name.find(({ primary }) => !primary)
+            ?.value,
+          slug: selectedLanguage.slug
+        })
+      }
     }
   }, [selectedLanguage, loading])
 
@@ -87,7 +118,7 @@ export function AudioTrackSelect({
             languages={allLanguages}
             loading={loading}
             disabled={loading}
-            renderInput={renderInput(t('2000 translations'))}
+            renderInput={renderInput(helperText)}
             renderOption={renderOption}
           />
         </div>
