@@ -101,7 +101,12 @@ export async function POST(req: NextRequest) {
         sessionId: `${decoded.user_id}-${decoded.auth_time}`
       }
     },
-    onFinish: async () => await langfuseExporter.forceFlush()
+    onError: async () => {
+      await langfuseExporter.forceFlush()
+    },
+    onFinish: async () => {
+      await langfuseExporter.forceFlush()
+    }
   })
 
   return result.toDataStreamResponse({
