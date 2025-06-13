@@ -1,3 +1,11 @@
+input TextResponseBlockClassNamesInput {
+  self: String!
+}
+
+type TextResponseBlockClassNames {
+  self: String! @shareable
+}
+
 type TextResponseBlock implements Block @key(fields: "id") {
   id: ID! @shareable
   journeyId: ID! @shareable
@@ -11,6 +19,10 @@ type TextResponseBlock implements Block @key(fields: "id") {
   type: TextResponseType @shareable
   routeId: String @shareable
   integrationId: String @shareable
+  """
+  classNames is an object of tailwind class names for the block
+  """
+  classNames: TextResponseBlockClassNames! @shareable
 }
 
 enum TextResponseType {
@@ -25,7 +37,9 @@ input TextResponseBlockCreateInput {
   journeyId: ID!
   parentBlockId: ID!
   label: String!
+  classNames: TextResponseBlockClassNamesInput
 }
+
 input TextResponseBlockUpdateInput {
   parentBlockId: ID
   label: String
@@ -36,7 +50,9 @@ input TextResponseBlockUpdateInput {
   routeId: String
   type: TextResponseType
   integrationId: String
+  classNames: TextResponseBlockClassNamesInput
 }
+
 extend type Mutation {
   textResponseBlockCreate(
     input: TextResponseBlockCreateInput!
