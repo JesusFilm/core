@@ -32,6 +32,31 @@
         ],
         "parallel": false
       }
+    },
+    "fetch-secrets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "DOPPLER_TOKEN=$DOPPLER_VIDEO_IMPORTER_TOKEN doppler secrets download --no-file --format=env-no-quotes --project video-importer > apps/video-importer/.env"
+          }
+        ]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/video-importer/eslint",
+        "cacheStrategy": "content"
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsc -b apps/video-importer/tsconfig.json"
+      }
     }
   },
   "tags": []
