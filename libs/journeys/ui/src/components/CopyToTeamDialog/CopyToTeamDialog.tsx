@@ -31,7 +31,8 @@ interface CopyToTeamDialogProps {
   submitAction: (
     teamId: string,
     language?: JourneyLanguage,
-    showTranslation?: boolean
+    showTranslation?: boolean,
+    createWithAi?: boolean
   ) => Promise<void>
   translationProgress?: {
     progress: number
@@ -50,6 +51,7 @@ interface FormValues {
   teamSelect: string
   languageSelect?: JourneyLanguage
   showTranslation: boolean
+  createWithAi: boolean
 }
 
 /**
@@ -117,7 +119,8 @@ export function CopyToTeamDialog({
     await submitAction(
       values.teamSelect,
       values.languageSelect,
-      values.showTranslation
+      values.showTranslation,
+      values.createWithAi
     )
 
     // Update team state
@@ -141,6 +144,7 @@ export function CopyToTeamDialog({
 
   const copyToSchema = object({
     teamSelect: string().required(t('Please select a valid team')),
+    createWithAi: boolean().required(),
     showTranslation: boolean().required(),
     languageSelect: object(baseLanguageShape)
       .nullable()
@@ -159,7 +163,8 @@ export function CopyToTeamDialog({
       initialValues={{
         teamSelect: teams.length === 1 ? teams[0].id : '',
         languageSelect: undefined,
-        showTranslation: false
+        showTranslation: false,
+        createWithAi: false
       }}
       enableReinitialize
       onSubmit={handleSubmit}
@@ -197,11 +202,18 @@ export function CopyToTeamDialog({
           resetForm()
         }
 
+        const handleCreateWithAi = async () => {
+          await setFieldValue('createWithAi', true)
+          handleSubmit()
+        }
+
         return (
           <TranslationDialogWrapper
             open={open}
             onClose={handleDialogClose}
             onTranslate={handleFormSubmit}
+            onTranslateWithAi={handleCreateWithAi}
+            hasAiButton
             title={title}
             loading={loading || isSubmitting}
             isTranslation={values.showTranslation || isTranslating}

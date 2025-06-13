@@ -14,6 +14,8 @@ interface TranslationDialogWrapperProps {
   open: boolean
   onClose: () => void
   onTranslate: () => Promise<void>
+  onTranslateWithAi?: () => Promise<void>
+  hasAiButton?: boolean
   title: string
   loadingText?: string
   loading: boolean
@@ -57,6 +59,8 @@ export function TranslationDialogWrapper({
   open,
   onClose,
   onTranslate,
+  onTranslateWithAi,
+  hasAiButton,
   title,
   loadingText,
   loading,
@@ -95,6 +99,22 @@ export function TranslationDialogWrapper({
               >
                 {t('Cancel')}
               </Button>
+              {hasAiButton && (
+                <Button
+                  name="createWithAi"
+                  color="secondary"
+                  onClick={async () => {
+                    if (onTranslateWithAi) {
+                      await onTranslateWithAi()
+                    }
+                  }}
+                  variant="outlined"
+                  disabled={loading}
+                  sx={{ mr: 3 }}
+                >
+                  {t('Create with AI')}
+                </Button>
+              )}
               <LoadingButton
                 variant="contained"
                 onClick={onTranslate}
