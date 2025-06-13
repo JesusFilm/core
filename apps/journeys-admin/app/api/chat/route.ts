@@ -35,84 +35,81 @@ export function errorHandler(error: unknown) {
 }
 
 export async function POST(req: NextRequest) {
-  try {
-    const body = await req.json()
-    const schema = z.object({
-      messages: z.array(
-        z
-          .object({
-            role: z.enum(['system', 'user', 'assistant']),
-            content: z.string()
-          })
-          .passthrough()
-      ),
-      journeyId: z.string().optional(),
-      selectedStepId: z.string().optional(),
-      selectedBlockId: z.string().optional()
-    })
-    const { messages, journeyId, selectedStepId, selectedBlockId } =
-      schema.parse(body)
-
-    const token = req.headers.get('Authorization')
-
-    if (token == null)
-      return Response.json({ error: 'Missing token' }, { status: 400 })
-    const decoded = z
-      .object({
-        user_id: z.string(),
-        auth_time: z.number()
-      })
-      .parse(jwtDecode(token.split(' ')[1]))
-
-    const client = createApolloClient(token.split(' ')[1])
-
-    const systemPrompt = await langfuse.getPrompt(
-      'ai-chat-system-prompt',
-      undefined,
-      {
-        label: langfuseEnvironment,
-        cacheTtlSeconds: process.env.VERCEL_ENV === 'preview' ? 0 : 60
-      }
-    )
-
-    const langfuseTraceId = uuidv4()
-
-    const messagesWithSystemPrompt = [
-      {
-        role: 'system',
-        content: systemPrompt.compile({
-          journeyId: journeyId ?? 'none',
-          selectedStepId: selectedStepId ?? 'none',
-          selectedBlockId: selectedBlockId ?? 'none'
+  const body = await req.json()
+  const schema = z.object({
+    messages: z.array(
+      z
+        .object({
+          role: z.enum(['system', 'user', 'assistant']),
+          content: z.string()
         })
-      },
-      ...messages.filter((message) => message.role !== 'system')
-    ] as CoreMessage[]
+        .passthrough()
+    ),
+    journeyId: z.string().optional(),
+    selectedStepId: z.string().optional(),
+    selectedBlockId: z.string().optional()
+  })
+  const { messages, journeyId, selectedStepId, selectedBlockId } =
+    schema.parse(body)
 
-    const result = streamText({
-      model: google('gemini-2.0-flash'),
-      messages: messagesWithSystemPrompt,
-      tools: tools(client),
-      experimental_telemetry: {
-        isEnabled: true,
-        metadata: {
-          langfuseTraceId,
-          langfusePrompt: systemPrompt.toJSON(),
-          userId: decoded.user_id,
-          sessionId: `${decoded.user_id}-${decoded.auth_time}`
-        }
+  const token = req.headers.get('Authorization')
+
+  if (token == null)
+    return Response.json({ error: 'Missing token' }, { status: 400 })
+  const decoded = z
+    .object({
+      user_id: z.string(),
+      auth_time: z.number()
+    })
+    .parse(jwtDecode(token.split(' ')[1]))
+
+  const client = createApolloClient(token.split(' ')[1])
+
+  const systemPrompt = await langfuse.getPrompt(
+    'ai-chat-system-prompt',
+    undefined,
+    {
+      label: langfuseEnvironment,
+      cacheTtlSeconds: process.env.VERCEL_ENV === 'preview' ? 0 : 60
+    }
+  )
+
+  const langfuseTraceId = uuidv4()
+
+  const messagesWithSystemPrompt = [
+    {
+      role: 'system',
+      content: systemPrompt.compile({
+        journeyId: journeyId ?? 'none',
+        selectedStepId: selectedStepId ?? 'none',
+        selectedBlockId: selectedBlockId ?? 'none'
+      })
+    },
+    ...messages.filter((message) => message.role !== 'system')
+  ] as CoreMessage[]
+
+  const result = streamText({
+    model: google('gemini-2.0-flash'),
+    messages: messagesWithSystemPrompt,
+    tools: tools(client),
+    experimental_telemetry: {
+      isEnabled: true,
+      metadata: {
+        langfuseTraceId,
+        langfusePrompt: systemPrompt.toJSON(),
+        userId: decoded.user_id,
+        sessionId: `${decoded.user_id}-${decoded.auth_time}`
       }
-    })
+    },
+    onFinish: async () => await langfuseExporter.forceFlush()
+  })
 
-    return result.toDataStreamResponse({
-      headers: {
-        'Transfer-Encoding': 'chunked',
-        Connection: 'keep-alive',
-        'x-trace-id': langfuseTraceId
-      },
-      getErrorMessage: errorHandler
-    })
-  } finally {
-    await langfuseExporter.forceFlush()
-  }
+  return result.toDataStreamResponse({
+    headers: {
+      'Transfer-Encoding': 'chunked',
+      Connection: 'keep-alive',
+      'x-trace-id': langfuseTraceId
+    },
+    getErrorMessage: errorHandler
+  })
 }
