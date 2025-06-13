@@ -12,7 +12,7 @@ import omit from 'lodash/omit'
 import fetch from 'node-fetch'
 import { object, string } from 'yup'
 
-import { Block, VideoBlockSource } from '.prisma/api-journeys-client'
+import { Block, Prisma, VideoBlockSource } from '.prisma/api-journeys-client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 
 import {
@@ -27,6 +27,7 @@ import {
 import { Action, AppAbility } from '../../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../../lib/casl/caslGuard'
 import { PrismaService } from '../../../lib/prisma.service'
+import { sanitizeClassNames } from '../../../lib/tailwind/sanitizeClassNames'
 import { INCLUDE_JOURNEY_ACL } from '../../journey/journey.acl'
 import { BlockService } from '../block.service'
 
@@ -163,6 +164,13 @@ export class VideoBlockResolver {
           coverBlockParent:
             input.isCover === true && input.parentBlockId != null
               ? { connect: { id: input.parentBlockId } }
+              : undefined,
+          classNames:
+            input.classNames != null
+              ? sanitizeClassNames(
+                  input.classNames as unknown as Prisma.JsonObject,
+                  { self: '' }
+                )
               : undefined
         },
         include: {
@@ -257,7 +265,16 @@ export class VideoBlockResolver {
         }
         break
     }
-    return await this.blockService.update(id, input)
+    return await this.blockService.update(id, {
+      ...input,
+      classNames:
+        input.classNames != null
+          ? sanitizeClassNames(
+              input.classNames as unknown as Prisma.JsonObject,
+              block.classNames as Prisma.JsonObject
+            )
+          : undefined
+    })
   }
 
   @ResolveField('video')
