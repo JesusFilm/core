@@ -17,7 +17,7 @@ export function UserFeedback({ traceId }: UserFeedbackProps) {
 
   async function handleUserFeedback(value: number) {
     setFeedback(value)
-    await langfuseWeb.api.score({
+    await langfuseWeb.score({
       traceId,
       name: 'user_feedback',
       value
