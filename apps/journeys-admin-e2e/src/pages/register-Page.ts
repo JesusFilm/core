@@ -80,14 +80,14 @@ export class Register {
   async enterOTP(otp) {
     await this.page
       .locator(
-        'form[data-testid="EmailInviteForm"] div[class*="MuiAccordionSummary"]'
+        'form[data-testid="EmailInviteForm"] [role="button"][aria-expanded]'
       )
       .first()
       .click()
     await expect(
       this.page
         .locator(
-          'form[data-testid="EmailInviteForm"] div[class*="MuiAccordionSummary"]'
+          'form[data-testid="EmailInviteForm"] [role="button"][aria-expanded]'
         )
         .first()
     ).toHaveAttribute('aria-expanded', 'true')
@@ -178,7 +178,7 @@ export class Register {
   async verifyMoreJourneyHerePopup() {
     // waiting for 'More journeys here' appear if it is don't, we doesn't need to assert the script
     const moreJourneysLocator = this.page.locator(
-      'div[class*="MuiPopover-paper"] h6',
+      '[role="tooltip"], [role="dialog"]',
       {
         hasText: 'More journeys here'
       }
@@ -187,7 +187,7 @@ export class Register {
     try {
       await expect(moreJourneysLocator).toBeVisible({ timeout: 5000 })
       const dismissButtonLocator = this.page.locator(
-        'div[class*="MuiPopover-paper"] button',
+        '[role="tooltip"] button, [role="dialog"] button',
         {
           hasText: 'Dismiss'
         }

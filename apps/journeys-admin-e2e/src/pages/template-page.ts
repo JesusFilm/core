@@ -55,7 +55,7 @@ export class TemplatePage {
     // Test chosen category is selected
     expect(
       await this.page.textContent(
-        'div.MuiAutocomplete-tagSizeMedium span.MuiChip-label'
+        '[role="button"] [data-tag-index="0"], .MuiChip-root .MuiChip-label'
       )
     ).toContain(chosenTemplaeCategory)
 
@@ -97,7 +97,7 @@ export class TemplatePage {
   async templateDetailsPageDisplayed(visibleText: string): Promise<void> {
     expect(
       await this.page.textContent(
-        'div.MuiAutocomplete-tagSizeMedium span.MuiChip-label'
+        '[role="button"] [data-tag-index="0"], .MuiChip-root .MuiChip-label'
       )
     ).toContain(visibleText)
   }
@@ -296,35 +296,23 @@ export class TemplatePage {
 
   async clickDropDownOpenIconForFilters(filterOption: string) {
     await this.page
-      .locator(
-        'div[class*="MuiGrid-item"] > div[class*="MuiAutocomplete-root"]',
-        { hasText: filterOption }
-      )
-      .locator('button[aria-label="Open"]')
+      .locator(`div[aria-label="${filterOption}"] button[aria-label="Open"]`)
       .click()
+    await this.page.waitForSelector('[role="listbox"]', { timeout: 10000 })
   }
 
   async selectCheckBoxesForTopicDropDown(option: string) {
-    this.selectedFilterOption = await this.page
-      .locator(`${this.dropdownListBoxPath} li ul`, { hasText: option })
-      .locator('li[role="option"] p')
-      .first()
-      .innerText()
     await this.page
-      .locator(`${this.dropdownListBoxPath} li ul`, { hasText: option })
-      .locator('li[role="option"] input')
-      .first()
+      .locator('[role="listbox"] [role="option"]')
+      .filter({ hasText: option })
       .click()
   }
 
   async clickDropDownCloseIconForFilters(filterOption: string) {
     await this.page
-      .locator(
-        'div[class*="MuiGrid-item"] > div[class*="MuiAutocomplete-root"]',
-        { hasText: filterOption }
-      )
-      .locator('button[aria-label="Close"]')
+      .locator(`div[aria-label="${filterOption}"] button[aria-label="Close"]`)
       .click()
+    await this.page.waitForSelector('[role="listbox"]', { state: 'hidden' })
   }
 
   async verifyTheTemplateOfSelectedFilterOption() {

@@ -18,7 +18,7 @@ export class JourneyLevelActions {
   descriptionText = testData.journey.descriptionText
   selectedLanguage = ''
   journeyNamePath =
-    'div[data-testid *="JourneyCard"] div.MuiCardContent-root h6.MuiTypography-root'
+    '[data-testid*="JourneyCard"] h6, [data-testid*="JourneyCard"] .MuiTypography-h6'
 
   constructor(page: Page) {
     this.page = page
@@ -286,56 +286,19 @@ export class JourneyLevelActions {
   }
 
   async enterLanguage(language: string): Promise<void> {
-    const selectedValue = await this.page
-      .locator('input[placeholder="Search Language"]')
-      .getAttribute('value', { timeout: thirtySecondsTimeout })
-    this.selectedLanguage = selectedValue === language ? 'Malayalam' : language
-    await this.page.locator('input[placeholder="Search Language"]').click()
-    await expect(this.page.locator('span[role="progressbar"]')).toBeHidden({
-      timeout: thirtySecondsTimeout
-    })
-    for (let scroll = 0; scroll < 300; scroll++) {
-      const lang = await this.page
-        .locator("div[class *='MuiAutocomplete-popper'] li p")
-        .allTextContents()
-      if (
-        await this.page
-          .locator("div[class *='MuiAutocomplete-popper'] li", {
-            hasText: this.selectedLanguage
-          })
-          .first()
-          .isVisible()
-      ) {
-        break
-      }
-      expect(scroll !== 299).toBeTruthy()
-      await this.page
-        .locator("div[class *='MuiAutocomplete-popper'] li")
-        .last()
-        .waitFor({ state: 'visible' })
-      await this.page
-        .locator("div[class *='MuiAutocomplete-popper'] li")
-        .last()
-        .waitFor({ state: 'attached' })
-      // eslint-disable-next-line playwright/no-wait-for-timeout
-      await this.page.waitForTimeout(600)
-      await expect(
-        this.page.locator("div[class *='MuiAutocomplete-popper'] li").last()
-      ).toBeAttached()
-      await this.page
-        .locator("div[class *='MuiAutocomplete-popper'] li")
-        .last()
-        .scrollIntoViewIfNeeded({ timeout: 30000 })
-      await expect(
-        this.page.locator("div[class *='MuiAutocomplete-popper'] li p")
-      ).not.toHaveText(lang)
-    }
     await this.page
-      .locator("div[class *='MuiAutocomplete-popper'] li", {
-        hasText: this.selectedLanguage
-      })
+      .locator('[role="combobox"][aria-label*="language"], [aria-label*="Language"] [role="combobox"]')
+      .click()
+    this.selectedLanguage = await this.page
+      .locator('[role="listbox"] [role="option"]')
+      .filter({ hasText: language })
       .first()
-      .click({ timeout: thirtySecondsTimeout })
+      .innerText()
+    await this.page
+      .locator('[role="listbox"] [role="option"]')
+      .filter({ hasText: language })
+      .first()
+      .click()
   }
 
   async verifyLinkIsCopied() {
@@ -425,5 +388,11 @@ export class JourneyLevelActions {
         hasText: this.descriptionText
       })
     ).toBeVisible()
+  }
+
+  async getJourneyName() {
+    return await this.page.textContent(
+      '[data-testid*="JourneyCard"] h6, [data-testid*="JourneyCard"] .MuiTypography-h6'
+    )
   }
 }
