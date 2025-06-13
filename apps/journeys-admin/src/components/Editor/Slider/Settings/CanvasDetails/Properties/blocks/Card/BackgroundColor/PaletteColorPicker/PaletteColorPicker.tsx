@@ -2,6 +2,11 @@ import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid2'
 import { ReactElement } from 'react'
 
+import {
+  addAlphaToHex,
+  getOpacityFromHex
+} from '@core/journeys/ui/Card/utils/colorOpacityUtils'
+
 import { Swatch } from '../Swatch'
 
 interface PaletteColorPickerProps {
@@ -15,6 +20,8 @@ export function PaletteColorPicker({
   colors,
   onChange
 }: PaletteColorPickerProps): ReactElement {
+  const opacity = getOpacityFromHex(selectedColor) ?? 100
+
   return (
     <Grid container spacing={2} sx={{ p: 4 }}>
       {colors.map((color) => {
@@ -33,7 +40,7 @@ export function PaletteColorPicker({
               cursor: 'pointer'
             }}
             onClick={() => {
-              onChange(color)
+              onChange(addAlphaToHex(color, opacity))
             }}
           >
             <Swatch id={color} color={color} variant="rounded" />
