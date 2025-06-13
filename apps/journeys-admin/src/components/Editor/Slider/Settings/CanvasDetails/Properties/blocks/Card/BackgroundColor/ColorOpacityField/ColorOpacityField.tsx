@@ -1,19 +1,17 @@
-import FormHelperText from '@mui/material/FormHelperText'
 import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { Form, Formik } from 'formik'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useCallback, useState } from 'react'
-
-import Edit2Icon from '@core/shared/ui/icons/Edit2'
+import { ReactElement, useCallback } from 'react'
 
 import {
   addAlphaToHex,
   getOpacityFromHex,
   isValidHex,
   stripAlphaFromHex
-} from './ColorOpacityUtils'
+} from '@core/journeys/ui/Card/utils/colorOpacityUtils'
+import Edit2Icon from '@core/shared/ui/icons/Edit2'
 
 interface ColorOpacityFieldProps {
   color: string

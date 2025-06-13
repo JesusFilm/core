@@ -4,10 +4,8 @@ import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
-import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
-import { number, object, string } from 'yup'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
@@ -25,7 +23,6 @@ import { CardBlockBackgroundColorUpdate } from '../../../../../../../../../../__
 import { CardFields } from '../../../../../../../../../../__generated__/CardFields'
 
 import { ColorOpacityField } from './ColorOpacityField'
-import { isValidHex } from './ColorOpacityField/ColorOpacityUtils'
 import { DebouncedHexColorPicker } from './DebouncedHexColorPicker'
 import { PaletteColorPicker } from './PaletteColorPicker'
 import { Swatch } from './Swatch'
