@@ -5,6 +5,7 @@ import {
   GetVideoChildren,
   GetVideoChildren_video_children
 } from '../../../__generated__/GetVideoChildren'
+import { getLanguageIdFromLocale } from '../getLanguageIdFromLocale'
 import { VIDEO_CHILD_FIELDS } from '../videoChildFields'
 
 export const GET_VIDEO_CHILDREN = gql`
@@ -19,7 +20,10 @@ export const GET_VIDEO_CHILDREN = gql`
   }
 `
 
-export function useVideoChildren(slug?: string): {
+export function useVideoChildren(
+  slug?: string,
+  locale?: string
+): {
   loading: boolean
   children: GetVideoChildren_video_children[]
 } {
@@ -28,11 +32,13 @@ export function useVideoChildren(slug?: string): {
 
   useEffect(() => {
     if (slug != null) {
+      const languageId = getLanguageIdFromLocale(locale)
+
       void getVideoChildren({
-        variables: { id: slug }
+        variables: { id: slug, languageId }
       })
     }
-  }, [getVideoChildren, slug])
+  }, [getVideoChildren, slug, locale])
 
   return {
     loading,
