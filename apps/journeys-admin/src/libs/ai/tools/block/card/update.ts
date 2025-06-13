@@ -9,7 +9,7 @@ import {
 
 import { blockCardUpdateInputSchema } from './type'
 
-const AI_BLOCK_CARD_UPDATE = gql`
+export const AI_BLOCK_CARD_UPDATE = gql`
   mutation AiBlockCardUpdateMutation($id: ID!, $input: CardBlockUpdateInput!) {
     cardBlockUpdate(id: $id, input: $input) {
       id

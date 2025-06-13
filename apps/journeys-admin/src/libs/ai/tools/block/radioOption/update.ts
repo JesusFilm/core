@@ -9,7 +9,7 @@ import {
 
 import { blockRadioOptionUpdateInputSchema } from './type'
 
-const AI_BLOCK_RADIO_OPTION_UPDATE = gql`
+export const AI_BLOCK_RADIO_OPTION_UPDATE = gql`
   mutation AiBlockRadioOptionMutation(
     $id: ID!
     $input: RadioOptionBlockUpdateInput!

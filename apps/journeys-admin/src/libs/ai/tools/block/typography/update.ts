@@ -9,7 +9,7 @@ import {
 
 import { blockTypographyUpdateInputSchema } from './type'
 
-const AI_BLOCK_TYPOGRAPHY_UPDATE = gql`
+export const AI_BLOCK_TYPOGRAPHY_UPDATE = gql`
   mutation AiBlockTypographyUpdateMutation(
     $id: ID!
     $input: TypographyBlockUpdateInput!

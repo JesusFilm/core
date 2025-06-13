@@ -7,7 +7,7 @@ import {
   AiBlockRadioQuestionUpdateMutationVariables
 } from '../../../../../../__generated__/AiBlockRadioQuestionUpdateMutation'
 
-const AI_BLOCK_RADIO_QUESTION_UPDATE = gql`
+export const AI_BLOCK_RADIO_QUESTION_UPDATE = gql`
   mutation AiBlockRadioQuestionUpdateMutation($id: ID!, $parentBlockId: ID!) {
     radioQuestionBlockUpdate(id: $id, parentBlockId: $parentBlockId) {
       id
