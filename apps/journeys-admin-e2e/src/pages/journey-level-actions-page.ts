@@ -294,9 +294,9 @@ export class JourneyLevelActions {
       'input[placeholder*="language"]',
       'div[aria-label*="language"]'
     ]
-    
+
     let languageCombobox: any = null
-    
+
     // Try each selector until we find one that works
     for (const selector of languageSelectors) {
       try {
@@ -308,27 +308,35 @@ export class JourneyLevelActions {
         console.log(`Language selector not found with: ${selector}`)
       }
     }
-    
+
     if (languageCombobox === null) {
-      throw new Error('Could not find language combobox with any of the attempted selectors')
+      throw new Error(
+        'Could not find language combobox with any of the attempted selectors'
+      )
     }
-    
+
     await languageCombobox.click()
-    
+
     // Wait for the dropdown to open
     await expect(
-      this.page.locator('[role="listbox"], [role="menu"], ul[aria-label*="language"]')
+      this.page.locator(
+        '[role="listbox"], [role="menu"], ul[aria-label*="language"]'
+      )
     ).toBeVisible({ timeout: 10000 })
-    
+
     // Find and click the language option
     this.selectedLanguage = await this.page
-      .locator('[role="listbox"] [role="option"], [role="menu"] [role="menuitem"], li')
+      .locator(
+        '[role="listbox"] [role="option"], [role="menu"] [role="menuitem"], li'
+      )
       .filter({ hasText: language })
       .first()
       .innerText()
-    
+
     await this.page
-      .locator('[role="listbox"] [role="option"], [role="menu"] [role="menuitem"], li')
+      .locator(
+        '[role="listbox"] [role="option"], [role="menu"] [role="menuitem"], li'
+      )
       .filter({ hasText: language })
       .first()
       .click()

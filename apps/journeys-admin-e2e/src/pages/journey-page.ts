@@ -595,9 +595,7 @@ export class JourneyPage {
   }
 
   async clickThreeDotBesideSortByOption() {
-    await this.page
-      .locator('[data-testid="JourneyListMenu"] button')
-      .click()
+    await this.page.locator('[data-testid="JourneyListMenu"] button').click()
   }
 
   async selectThreeDotOptionsBesideSortByOption(option) {
