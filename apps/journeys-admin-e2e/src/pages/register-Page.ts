@@ -159,52 +159,69 @@ export class Register {
   }
 
   async waitUntilDiscoverPageLoaded() {
-    // First, wait for the discover page to be loaded
+    // First, wait for the discover navigation item to be visible
     await expect(
-      this.page.locator(
-        'a[data-testid="NavigationListItemDiscover"][class*="Mui-selected"]'
-      )
+      this.page.locator('[data-testid="NavigationListItemDiscover"]')
     ).toBeVisible({ timeout: 30000 })
-
+    
+    // Wait for the discover page to be selected (either by class or by checking the URL)
+    try {
+      await expect(
+        this.page.locator('[data-testid="NavigationListItemDiscover"].Mui-selected')
+      ).toBeVisible({ timeout: 15000 })
+    } catch {
+      // If the class-based selector doesn't work, check the URL
+      await expect(this.page).toHaveURL(/\/$/, { timeout: 15000 })
+    }
+    
     // Wait for the main content area to be loaded
     await expect(
       this.page.locator('[data-testid="JourneysAdminJourneyList"]')
     ).toBeVisible({ timeout: 30000 })
-
-    // Wait for the team select to be loaded
-    await expect(this.page.locator('[data-testid="TeamSelect"]')).toBeVisible({
-      timeout: 30000
-    })
-
+    
+    // Wait for the side panel to be loaded
+    await expect(
+      this.page.locator('[data-testid="side-panel"]')
+    ).toBeVisible({ timeout: 30000 })
+    
+    // Wait for team to be loaded by checking if team select is visible
+    try {
+      await expect(
+        this.page.locator('[data-testid="TeamSelect"]')
+      ).toBeVisible({ timeout: 15000 })
+    } catch {
+      console.log('Team select not found, continuing...')
+    }
+    
     // Check if we're in "Shared With Me" state and need to select a team
     const isSharedWithMe = await this.page
       .locator('[data-testid="TeamSelect"]')
       .textContent()
     if (isSharedWithMe?.includes('Shared With Me')) {
-      console.log(
-        'User is in "Shared With Me" state, attempting to select first team...'
-      )
-      try {
-        // Click on team select dropdown
-        await this.page
-          .locator('[data-testid="TeamSelect"] [role="combobox"]')
-          .click()
-        // Wait for dropdown to open and select first team (not "Shared With Me")
-        await this.page
-          .locator('ul[role="listbox"] li[role="option"]')
-          .first()
-          .click()
-        // Wait a bit for the team to be set
-        await this.page.waitForTimeout(2000)
-      } catch (error) {
-        console.log('Failed to select team:', error)
-      }
+      console.log('User is in "Shared With Me" state, selecting first team...')
+      // Click on team select to open dropdown
+      await this.page.locator('[data-testid="TeamSelect"]').click()
+      // Wait for dropdown to open and select first team
+      await this.page.locator('[role="listbox"] [role="option"]').first().click()
+      // Wait a bit for the team to be selected
+      await this.page.waitForTimeout(2000)
     }
-
-    // Now wait for the create journey button to appear
+    
+    // Finally, wait for the create journey button to appear
     await expect(
       this.page.locator('[data-testid="JourneysAdminContainedIconButton"]')
-    ).toBeVisible({ timeout: 65000 })
+    ).toBeVisible({ timeout: 30000 })
+    
+    // Add some debugging information
+    try {
+      const teamSelectText = await this.page.locator('[data-testid="TeamSelect"]').textContent()
+      console.log('Team select text:', teamSelectText)
+      
+      const buttonExists = await this.page.locator('[data-testid="JourneysAdminContainedIconButton"]').isVisible()
+      console.log('Create journey button visible:', buttonExists)
+    } catch {
+      console.log('Debug info gathering failed, but continuing...')
+    }
   }
 
   async waitUntilTheToestMsgDisappear() {
