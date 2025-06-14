@@ -7,19 +7,16 @@ import { prismaMock } from '../../../../test/prismaMock'
 
 import { service } from './service'
 
-// Mock Apollo Client
-const mockApolloQuery = jest.fn()
-jest.mock('@apollo/client', () => ({
-  ApolloClient: jest.fn().mockImplementation(() => ({
-    query: (...args: any[]) => mockApolloQuery(...args)
-  })),
-  InMemoryCache: jest.fn(),
-  createHttpLink: jest.fn()
-}))
+// Mock prismaUsers
+const mockPrismaUsers = {
+  user: {
+    findMany: jest.fn(),
+    delete: jest.fn()
+  }
+}
 
-// Mock gql.tada
-jest.mock('gql.tada', () => ({
-  graphql: jest.fn().mockReturnValue('MOCK_QUERY')
+jest.mock('@core/prisma-users/client', () => ({
+  prismaUsers: mockPrismaUsers
 }))
 
 describe('E2E Cleanup Service', () => {
@@ -37,115 +34,81 @@ describe('E2E Cleanup Service', () => {
 
     // Create mock transaction client
     mockTx = {
-      userJourney: { deleteMany: jest.fn() },
-      journeyVisitor: { deleteMany: jest.fn() },
       event: { deleteMany: jest.fn() },
-      block: { deleteMany: jest.fn() },
-      userInvite: { deleteMany: jest.fn() },
-      journey: { deleteMany: jest.fn(), findMany: jest.fn() },
-      userTeam: { deleteMany: jest.fn() },
-      userTeamInvite: { deleteMany: jest.fn() },
-      team: { deleteMany: jest.fn() }
+      journey: { delete: jest.fn() }
     }
 
     // Mock the transaction to execute the callback with the mock transaction client
-    prismaMock.$transaction.mockImplementation(async (callback) => {
+    prismaMock.$transaction.mockImplementation(async (callback, options) => {
       return await callback(mockTx)
     })
   })
 
   describe('service', () => {
-    it('should clean up test journeys by title patterns and playwright users using transaction', async () => {
-      const testJourneys = [
+    it('should find playwright users and delete their journeys individually', async () => {
+      const playwrightUsers = [
+        {
+          id: 'user-1',
+          userId: 'playwright-user-1',
+          email: 'playwright123@example.com'
+        },
+        {
+          id: 'user-2', 
+          userId: 'playwright-user-2',
+          email: 'playwright456@example.com'
+        }
+      ]
+
+      const user1Journeys = [
         {
           id: 'journey-1',
-          title: 'First journey123',
-          createdAt: new Date('2023-01-01'),
+          title: 'Test Journey 1',
           userJourneys: [
             {
-              userId: 'user-1',
+              userId: 'playwright-user-1',
               role: UserJourneyRole.owner
             }
           ]
-        },
+        }
+      ]
+
+      const user2Journeys = [
         {
           id: 'journey-2',
-          title: 'Regular journey',
-          createdAt: new Date('2023-01-01'),
+          title: 'Test Journey 2',
           userJourneys: [
             {
-              userId: 'playwright-user',
+              userId: 'playwright-user-2', 
               role: UserJourneyRole.owner
             }
           ]
         },
         {
           id: 'journey-3',
-          title: 'Another regular journey',
-          createdAt: new Date('2023-01-01'),
+          title: 'Test Journey 3',
           userJourneys: [
             {
-              userId: 'regular-user',
+              userId: 'playwright-user-2',
               role: UserJourneyRole.owner
             }
           ]
         }
       ]
 
-      const testTeams = [
-        {
-          id: 'team-1',
-          title: 'Automation TeamName123456',
-          createdAt: new Date('2023-01-01')
-        }
-      ]
+      // Mock finding playwright users
+      mockPrismaUsers.user.findMany.mockResolvedValue(playwrightUsers)
 
-      const testTeamInvites = [
-        {
-          id: 'invite-1',
-          email: 'playwright123@example.com',
-          createdAt: new Date('2023-01-01')
-        }
-      ]
-
-      const testJourneyInvites = [
-        {
-          id: 'jinvite-1',
-          email: 'playwright456@example.com',
-          updatedAt: new Date('2023-01-01')
-        }
-      ]
-
-      // Mock Apollo queries for user emails - only called for non-title-matching journeys
-      mockApolloQuery
-        .mockResolvedValueOnce({
-          data: { user: { email: 'playwright123@example.com' } }
-        }) // playwright-user
-        .mockResolvedValueOnce({
-          data: { user: { email: 'regular2@example.com' } }
-        }) // regular-user
-
-      // Mock successful operations
-      prismaMock.journey.findMany.mockResolvedValue(testJourneys as any)
-      prismaMock.team.findMany.mockResolvedValue(testTeams as any)
-      prismaMock.userTeamInvite.findMany.mockResolvedValue(
-        testTeamInvites as any
-      )
-      prismaMock.userInvite.findMany.mockResolvedValue(
-        testJourneyInvites as any
-      )
+      // Mock finding journeys for each user
+      prismaMock.journey.findMany
+        .mockResolvedValueOnce(user1Journeys as any)
+        .mockResolvedValueOnce(user2Journeys as any)
 
       // Mock transaction operations
-      mockTx.journey.deleteMany.mockResolvedValue({ count: 2 })
-      mockTx.journey.findMany.mockResolvedValue([]) // Mock team journeys lookup
-      mockTx.team.deleteMany.mockResolvedValue({ count: 1 })
-      mockTx.userJourney.deleteMany.mockResolvedValue({ count: 0 })
-      mockTx.journeyVisitor.deleteMany.mockResolvedValue({ count: 0 })
       mockTx.event.deleteMany.mockResolvedValue({ count: 0 })
-      mockTx.block.deleteMany.mockResolvedValue({ count: 0 })
-      mockTx.userTeam.deleteMany.mockResolvedValue({ count: 0 })
-      mockTx.userTeamInvite.deleteMany.mockResolvedValue({ count: 1 })
-      mockTx.userInvite.deleteMany.mockResolvedValue({ count: 1 })
+      mockTx.journey.delete.mockResolvedValue({})
+
+      // Mock user deletion
+      mockPrismaUsers.user.delete.mockResolvedValue({})
 
       const job = {
         data: {
@@ -157,87 +120,124 @@ describe('E2E Cleanup Service', () => {
 
       await service(job, mockLogger)
 
-      // Should query all journeys, not with title filters
-      expect(prismaMock.journey.findMany).toHaveBeenCalledWith({
+      // Should find playwright users with correct filters
+      expect(mockPrismaUsers.user.findMany).toHaveBeenCalledWith({
         where: {
           createdAt: {
             lt: expect.any(Date)
-          }
+          },
+          AND: [
+            {
+              email: {
+                startsWith: 'playwright',
+                mode: 'insensitive'
+              }
+            },
+            {
+              email: {
+                endsWith: '@example.com'
+              }
+            }
+          ]
         },
-        include: {
+        select: {
+          id: true,
+          userId: true,
+          email: true
+        },
+        orderBy: {
+          createdAt: 'desc'
+        }
+      })
+
+      // Should find journeys for each user
+      expect(prismaMock.journey.findMany).toHaveBeenCalledTimes(2)
+      expect(prismaMock.journey.findMany).toHaveBeenNthCalledWith(1, {
+        where: {
           userJourneys: {
-            where: {
-              role: UserJourneyRole.owner
+            some: {
+              AND: [
+                { role: UserJourneyRole.owner },
+                { userId: 'playwright-user-1' }
+              ]
+            }
+          }
+        }
+      })
+      expect(prismaMock.journey.findMany).toHaveBeenNthCalledWith(2, {
+        where: {
+          userJourneys: {
+            some: {
+              AND: [
+                { role: UserJourneyRole.owner },
+                { userId: 'playwright-user-2' }
+              ]
             }
           }
         }
       })
 
-      // Verify transaction was called
-      expect(prismaMock.$transaction).toHaveBeenCalledTimes(1)
+      // Should delete journeys in transactions (3 total journeys)
+      expect(prismaMock.$transaction).toHaveBeenCalledTimes(3)
+      expect(mockTx.event.deleteMany).toHaveBeenCalledTimes(3)
+      expect(mockTx.journey.delete).toHaveBeenCalledTimes(3)
 
-      // Should delete both journeys (one by title, one by playwright user) within transaction
-      expect(mockTx.journey.deleteMany).toHaveBeenCalledWith({
-        where: { id: { in: ['journey-1', 'journey-2'] } }
+      // Should delete events for each journey
+      expect(mockTx.event.deleteMany).toHaveBeenNthCalledWith(1, {
+        where: { journeyId: 'journey-1' }
+      })
+      expect(mockTx.event.deleteMany).toHaveBeenNthCalledWith(2, {
+        where: { journeyId: 'journey-2' }
+      })
+      expect(mockTx.event.deleteMany).toHaveBeenNthCalledWith(3, {
+        where: { journeyId: 'journey-3' }
       })
 
-      expect(mockTx.team.deleteMany).toHaveBeenCalledWith({
-        where: { id: { in: ['team-1'] } }
+      // Should delete each journey
+      expect(mockTx.journey.delete).toHaveBeenNthCalledWith(1, {
+        where: { id: 'journey-1' }
+      })
+      expect(mockTx.journey.delete).toHaveBeenNthCalledWith(2, {
+        where: { id: 'journey-2' }
+      })
+      expect(mockTx.journey.delete).toHaveBeenNthCalledWith(3, {
+        where: { id: 'journey-3' }
       })
 
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        { deletedJourneys: 2 },
-        'Deleted test journeys'
-      )
+      // Should delete both users
+      expect(mockPrismaUsers.user.delete).toHaveBeenCalledTimes(2)
+      expect(mockPrismaUsers.user.delete).toHaveBeenNthCalledWith(1, {
+        where: { id: 'user-1' }
+      })
+      expect(mockPrismaUsers.user.delete).toHaveBeenNthCalledWith(2, {
+        where: { id: 'user-2' }
+      })
     })
 
-    it('should perform dry run with detailed logging', async () => {
-      const testJourneys = [
+    it('should perform dry run without deleting anything', async () => {
+      const playwrightUsers = [
+        {
+          id: 'user-1',
+          userId: 'playwright-user-1',
+          email: 'playwright123@example.com'
+        }
+      ]
+
+      const userJourneys = [
         {
           id: 'journey-1',
-          title: 'First journey123',
-          createdAt: new Date('2023-01-01'),
+          title: 'Test Journey 1',
           userJourneys: [
             {
-              userId: 'user-1',
+              userId: 'playwright-user-1',
               role: UserJourneyRole.owner
             }
           ]
         }
       ]
 
-      const testTeams = [
-        {
-          id: 'team-1',
-          title: 'Automation TeamName123',
-          createdAt: new Date('2023-01-01')
-        }
-      ]
-
-      const testTeamInvites = [
-        {
-          id: 'invite-1',
-          email: 'playwright123@example.com',
-          createdAt: new Date('2023-01-01')
-        }
-      ]
-
-      const testJourneyInvites = [
-        {
-          id: 'jinvite-1',
-          email: 'playwright456@example.com',
-          updatedAt: new Date('2023-01-01')
-        }
-      ]
-
-      prismaMock.journey.findMany.mockResolvedValue(testJourneys as any)
-      prismaMock.team.findMany.mockResolvedValue(testTeams as any)
-      prismaMock.userTeamInvite.findMany.mockResolvedValue(
-        testTeamInvites as any
-      )
-      prismaMock.userInvite.findMany.mockResolvedValue(
-        testJourneyInvites as any
-      )
+      mockPrismaUsers.user.findMany.mockResolvedValue(playwrightUsers)
+      prismaMock.journey.findMany.mockResolvedValue(userJourneys as any)
 
       const job = {
         data: {
@@ -249,318 +249,73 @@ describe('E2E Cleanup Service', () => {
 
       await service(job, mockLogger)
 
+      // Should find users and journeys
+      expect(mockPrismaUsers.user.findMany).toHaveBeenCalled()
       expect(prismaMock.journey.findMany).toHaveBeenCalled()
-      expect(prismaMock.team.findMany).toHaveBeenCalled()
-      expect(prismaMock.userTeamInvite.findMany).toHaveBeenCalled()
-      expect(prismaMock.userInvite.findMany).toHaveBeenCalled()
 
-      // Should not call transaction or any delete operations in dry run
+      // Should not perform any deletions
       expect(prismaMock.$transaction).not.toHaveBeenCalled()
-      expect(mockTx.journey.deleteMany).not.toHaveBeenCalled()
-      expect(mockTx.team.deleteMany).not.toHaveBeenCalled()
-      expect(mockTx.userJourney.deleteMany).not.toHaveBeenCalled()
-
-      // Should log filtering statistics in dry run
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        expect.objectContaining({
-          totalCandidates: 1,
-          journeysByTitle: 1,
-          journeysByPlaywrightUser: 0,
-          totalSelected: 1,
-          uniqueUsersChecked: 0,
-          playwrightUsersFound: 0
-        }),
-        'Journey filtering completed'
-      )
-
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        'DRY RUN: Would delete the following test data:'
-      )
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        'Journey: First journey123 (journey-1) - Created: 2023-01-01T00:00:00.000Z'
-      )
+      expect(mockPrismaUsers.user.delete).not.toHaveBeenCalled()
     })
 
-    it('should cache user email lookups', async () => {
-      const testJourneys = [
+    it('should handle users with no journeys', async () => {
+      const playwrightUsers = [
         {
-          id: 'journey-1',
-          title: 'Regular journey 1',
-          createdAt: new Date('2023-01-01'),
-          userJourneys: [
-            {
-              userId: 'playwright-user',
-              role: UserJourneyRole.owner
-            }
-          ]
-        },
-        {
-          id: 'journey-2',
-          title: 'Regular journey 2',
-          createdAt: new Date('2023-01-01'),
-          userJourneys: [
-            {
-              userId: 'playwright-user', // Same user as journey-1
-              role: UserJourneyRole.owner
-            }
-          ]
+          id: 'user-1',
+          userId: 'playwright-user-1',
+          email: 'playwright123@example.com'
         }
       ]
 
-      // Mock single Apollo query - should only be called once due to caching
-      mockApolloQuery.mockResolvedValueOnce({
-        data: { user: { email: 'playwright123@example.com' } }
+      mockPrismaUsers.user.findMany.mockResolvedValue(playwrightUsers)
+      prismaMock.journey.findMany.mockResolvedValue([]) // No journeys
+
+      const job = {
+        data: {
+          __typename: 'e2eCleanup',
+          olderThanHours: 24,
+          dryRun: false
+        }
+      } as Job
+
+      await service(job, mockLogger)
+
+      // Should still delete the user even if they have no journeys
+      expect(mockPrismaUsers.user.delete).toHaveBeenCalledWith({
+        where: { id: 'user-1' }
       })
 
-      prismaMock.journey.findMany.mockResolvedValue(testJourneys as any)
-      prismaMock.team.findMany.mockResolvedValue([])
-      prismaMock.userTeamInvite.findMany.mockResolvedValue([])
-      prismaMock.userInvite.findMany.mockResolvedValue([])
-
-      mockTx.journey.deleteMany.mockResolvedValue({ count: 2 })
-      mockTx.userJourney.deleteMany.mockResolvedValue({ count: 0 })
-      mockTx.journeyVisitor.deleteMany.mockResolvedValue({ count: 0 })
-      mockTx.event.deleteMany.mockResolvedValue({ count: 0 })
-      mockTx.block.deleteMany.mockResolvedValue({ count: 0 })
-      mockTx.userInvite.deleteMany.mockResolvedValue({ count: 0 })
-
-      const job = {
-        data: {
-          __typename: 'e2eCleanup',
-          olderThanHours: 24,
-          dryRun: false
-        }
-      } as Job
-
-      await service(job, mockLogger)
-
-      // Should only call Apollo query once, despite same user owning multiple journeys
-      expect(mockApolloQuery).toHaveBeenCalledTimes(1)
-
-      // Should delete both journeys within transaction
-      expect(mockTx.journey.deleteMany).toHaveBeenCalledWith({
-        where: { id: { in: ['journey-1', 'journey-2'] } }
-      })
+      // Should not call transaction since no journeys to delete
+      expect(prismaMock.$transaction).not.toHaveBeenCalled()
     })
 
-    it('should handle user lookup errors gracefully', async () => {
-      const testJourneys = [
+    it('should handle journey deletion errors gracefully', async () => {
+      const playwrightUsers = [
+        {
+          id: 'user-1',
+          userId: 'playwright-user-1',
+          email: 'playwright123@example.com'
+        }
+      ]
+
+      const userJourneys = [
         {
           id: 'journey-1',
-          title: 'Regular journey',
-          createdAt: new Date('2023-01-01'),
+          title: 'Test Journey 1',
           userJourneys: [
             {
-              userId: 'error-user',
+              userId: 'playwright-user-1',
               role: UserJourneyRole.owner
             }
           ]
         }
       ]
 
-      // Mock Apollo query error
-      mockApolloQuery.mockRejectedValueOnce(new Error('User service error'))
+      mockPrismaUsers.user.findMany.mockResolvedValue(playwrightUsers)
+      prismaMock.journey.findMany.mockResolvedValue(userJourneys as any)
 
-      prismaMock.journey.findMany.mockResolvedValue(testJourneys as any)
-      prismaMock.team.findMany.mockResolvedValue([])
-      prismaMock.userTeamInvite.findMany.mockResolvedValue([])
-      prismaMock.userInvite.findMany.mockResolvedValue([])
-
-      // Mock transaction operations (even though no data will be deleted)
-      mockTx.journey.findMany.mockResolvedValue([])
-
-      const job = {
-        data: {
-          __typename: 'e2eCleanup',
-          olderThanHours: 24,
-          dryRun: false
-        }
-      } as Job
-
-      await service(job, mockLogger)
-
-      // Should log warning for failed user lookup
-      expect(mockLogger.warn).toHaveBeenCalledWith(
-        expect.objectContaining({
-          userId: 'error-user',
-          error: expect.any(Error)
-        }),
-        'Failed to fetch user email'
-      )
-
-      // Should call transaction even if no data matches (transaction handles empty case)
-      expect(prismaMock.$transaction).toHaveBeenCalledTimes(1)
-
-      // Should still log completion
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        'E2E cleanup completed successfully'
-      )
-    })
-
-    it('should use default cleanup hours when not specified', async () => {
-      prismaMock.journey.findMany.mockResolvedValue([])
-      prismaMock.team.findMany.mockResolvedValue([])
-      prismaMock.userTeamInvite.findMany.mockResolvedValue([])
-      prismaMock.userInvite.findMany.mockResolvedValue([])
-
-      const job = {
-        data: {
-          __typename: 'e2eCleanup'
-        }
-      } as Job
-
-      await service(job, mockLogger)
-
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        { olderThanHours: 24, dryRun: false },
-        'Starting e2e cleanup'
-      )
-    })
-
-    it('should handle cleanup of team journeys when cleaning teams', async () => {
-      const testTeams = [
-        {
-          id: 'team-1',
-          title: 'Automation TeamName123',
-          createdAt: new Date('2023-01-01')
-        }
-      ]
-
-      const teamJourneys = [{ id: 'journey-1' }, { id: 'journey-2' }]
-
-      prismaMock.journey.findMany.mockResolvedValue([])
-      prismaMock.team.findMany.mockResolvedValue(testTeams as any)
-      prismaMock.userTeamInvite.findMany.mockResolvedValue([])
-      prismaMock.userInvite.findMany.mockResolvedValue([])
-
-      // Mock team journeys lookup within transaction
-      mockTx.journey.findMany.mockResolvedValue(teamJourneys as any)
-      mockTx.team.deleteMany.mockResolvedValue({ count: 1 })
-      mockTx.journey.deleteMany.mockResolvedValue({ count: 2 })
-      mockTx.userJourney.deleteMany.mockResolvedValue({ count: 0 })
-      mockTx.journeyVisitor.deleteMany.mockResolvedValue({ count: 0 })
-      mockTx.event.deleteMany.mockResolvedValue({ count: 0 })
-      mockTx.block.deleteMany.mockResolvedValue({ count: 0 })
-      mockTx.userTeam.deleteMany.mockResolvedValue({ count: 0 })
-      mockTx.userTeamInvite.deleteMany.mockResolvedValue({ count: 0 })
-      mockTx.userInvite.deleteMany.mockResolvedValue({ count: 0 })
-
-      const job = {
-        data: {
-          __typename: 'e2eCleanup',
-          olderThanHours: 24,
-          dryRun: false
-        }
-      } as Job
-
-      await service(job, mockLogger)
-
-      // Should call transaction
-      expect(prismaMock.$transaction).toHaveBeenCalledTimes(1)
-
-      // Should clean up journeys owned by the teams within transaction
-      expect(mockTx.journey.deleteMany).toHaveBeenCalledWith({
-        where: { id: { in: ['journey-1', 'journey-2'] } }
-      })
-    })
-
-    it('should handle errors gracefully', async () => {
-      const error = new Error('Database error')
-      prismaMock.journey.findMany.mockRejectedValue(error)
-
-      const job = {
-        data: {
-          __typename: 'e2eCleanup',
-          olderThanHours: 24,
-          dryRun: false
-        }
-      } as Job
-
-      await expect(service(job, mockLogger)).rejects.toThrow('Database error')
-
-      expect(mockLogger.error).toHaveBeenCalledWith(
-        { error },
-        'E2E cleanup failed'
-      )
-    })
-
-    it('should not log info during actual cleanup (non-dry run)', async () => {
-      const testJourneys = [
-        {
-          id: 'journey-1',
-          title: 'First journey123',
-          createdAt: new Date('2023-01-01'),
-          userJourneys: [
-            {
-              userId: 'user-1',
-              role: UserJourneyRole.owner
-            }
-          ]
-        }
-      ]
-
-      prismaMock.journey.findMany.mockResolvedValue(testJourneys as any)
-      prismaMock.team.findMany.mockResolvedValue([])
-      prismaMock.userTeamInvite.findMany.mockResolvedValue([])
-      prismaMock.userInvite.findMany.mockResolvedValue([])
-
-      mockTx.journey.deleteMany.mockResolvedValue({ count: 1 })
-      mockTx.userJourney.deleteMany.mockResolvedValue({ count: 0 })
-      mockTx.journeyVisitor.deleteMany.mockResolvedValue({ count: 0 })
-      mockTx.event.deleteMany.mockResolvedValue({ count: 0 })
-      mockTx.block.deleteMany.mockResolvedValue({ count: 0 })
-      mockTx.userInvite.deleteMany.mockResolvedValue({ count: 0 })
-
-      const job = {
-        data: {
-          __typename: 'e2eCleanup',
-          olderThanHours: 24,
-          dryRun: false
-        }
-      } as Job
-
-      await service(job, mockLogger)
-
-      // Should NOT log filtering statistics during actual cleanup
-      expect(mockLogger.info).not.toHaveBeenCalledWith(
-        expect.objectContaining({
-          totalCandidates: expect.any(Number)
-        }),
-        'Journey filtering completed'
-      )
-
-      // Should still log deletion results and completion
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        { deletedJourneys: 1 },
-        'Deleted test journeys'
-      )
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        'E2E cleanup completed successfully'
-      )
-    })
-
-    it('should handle transaction errors and rollback properly', async () => {
-      const testJourneys = [
-        {
-          id: 'journey-1',
-          title: 'First journey123',
-          createdAt: new Date('2023-01-01'),
-          userJourneys: [
-            {
-              userId: 'user-1',
-              role: UserJourneyRole.owner
-            }
-          ]
-        }
-      ]
-
-      prismaMock.journey.findMany.mockResolvedValue(testJourneys as any)
-      prismaMock.team.findMany.mockResolvedValue([])
-      prismaMock.userTeamInvite.findMany.mockResolvedValue([])
-      prismaMock.userInvite.findMany.mockResolvedValue([])
-
-      // Mock transaction to throw an error
-      const transactionError = new Error('Transaction failed')
+      // Mock transaction to fail
+      const transactionError = new Error('Journey deletion failed')
       prismaMock.$transaction.mockRejectedValue(transactionError)
 
       const job = {
@@ -571,111 +326,77 @@ describe('E2E Cleanup Service', () => {
         }
       } as Job
 
-      await expect(service(job, mockLogger)).rejects.toThrow(
-        'Transaction failed'
-      )
+      await service(job, mockLogger)
 
-      expect(mockLogger.error).toHaveBeenCalledWith(
-        { error: transactionError },
-        'E2E cleanup failed'
-      )
-
-      // Should have attempted to call transaction
-      expect(prismaMock.$transaction).toHaveBeenCalledTimes(1)
+      // Should still delete the user
+      expect(mockPrismaUsers.user.delete).toHaveBeenCalledWith({
+        where: { id: 'user-1' }
+      })
     })
 
-    it('should identify journeys with exact testData.json patterns', async () => {
-      const testJourneys = [
+    it('should use default cleanup hours when not specified', async () => {
+      mockPrismaUsers.user.findMany.mockResolvedValue([])
+
+      const job = {
+        data: {
+          __typename: 'e2eCleanup'
+        }
+      } as Job
+
+      await service(job, mockLogger)
+
+      // Should use 24 hours as default by checking the date filter
+      const expectedCutoffTime = Date.now() - 24 * 60 * 60 * 1000
+      const actualCall = mockPrismaUsers.user.findMany.mock.calls[0][0]
+      const actualCutoffTime = actualCall.where.createdAt.lt.getTime()
+      
+      // Allow for small time difference due to test execution time
+      expect(Math.abs(actualCutoffTime - expectedCutoffTime)).toBeLessThan(1000)
+    })
+
+    it('should handle service errors gracefully', async () => {
+      const error = new Error('Database error')
+      mockPrismaUsers.user.findMany.mockRejectedValue(error)
+
+      const job = {
+        data: {
+          __typename: 'e2eCleanup',
+          olderThanHours: 24,
+          dryRun: false
+        }
+      } as Job
+
+      await expect(service(job, mockLogger)).rejects.toThrow('Database error')
+    })
+
+    it('should use transaction timeout for journey deletion', async () => {
+      const playwrightUsers = [
+        {
+          id: 'user-1',
+          userId: 'playwright-user-1',
+          email: 'playwright123@example.com'
+        }
+      ]
+
+      const userJourneys = [
         {
           id: 'journey-1',
-          title: 'First journey123456',
-          createdAt: new Date('2023-01-01'),
+          title: 'Test Journey 1',
           userJourneys: [
             {
-              userId: 'user-1',
-              role: UserJourneyRole.owner
-            }
-          ]
-        },
-        {
-          id: 'journey-2',
-          title: 'Second journey789',
-          createdAt: new Date('2023-01-01'),
-          userJourneys: [
-            {
-              userId: 'user-2',
-              role: UserJourneyRole.owner
-            }
-          ]
-        },
-        {
-          id: 'journey-3',
-          title: 'Renamed journey456',
-          createdAt: new Date('2023-01-01'),
-          userJourneys: [
-            {
-              userId: 'user-3',
-              role: UserJourneyRole.owner
-            }
-          ]
-        },
-        {
-          id: 'journey-4',
-          title: 'Some other journey',
-          createdAt: new Date('2023-01-01'),
-          userJourneys: [
-            {
-              userId: 'user-4',
+              userId: 'playwright-user-1',
               role: UserJourneyRole.owner
             }
           ]
         }
       ]
 
-      const testTeams = [
-        {
-          id: 'team-1',
-          title: 'Automation TeamName240124-143022123',
-          createdAt: new Date('2023-01-01')
-        },
-        {
-          id: 'team-2',
-          title: 'Renamed Team456789',
-          createdAt: new Date('2023-01-01')
-        },
-        {
-          id: 'team-3',
-          title: 'Production Group',
-          createdAt: new Date('2023-01-01')
-        }
-      ]
+      mockPrismaUsers.user.findMany.mockResolvedValue(playwrightUsers)
+      prismaMock.journey.findMany.mockResolvedValue(userJourneys as any)
 
-      prismaMock.journey.findMany.mockResolvedValue(testJourneys as any)
-      prismaMock.team.findMany.mockResolvedValue([
-        {
-          id: 'team-1',
-          title: 'Automation TeamName240124-143022123',
-          createdAt: new Date('2023-01-01')
-        },
-        {
-          id: 'team-2',
-          title: 'Renamed Team456789',
-          createdAt: new Date('2023-01-01')
-        }
-      ] as any)
-      prismaMock.userTeamInvite.findMany.mockResolvedValue([])
-      prismaMock.userInvite.findMany.mockResolvedValue([])
-
-      mockTx.journey.deleteMany.mockResolvedValue({ count: 3 })
-      mockTx.journey.findMany.mockResolvedValue([]) // Mock team journeys lookup
-      mockTx.team.deleteMany.mockResolvedValue({ count: 2 })
-      mockTx.userJourney.deleteMany.mockResolvedValue({ count: 0 })
-      mockTx.journeyVisitor.deleteMany.mockResolvedValue({ count: 0 })
       mockTx.event.deleteMany.mockResolvedValue({ count: 0 })
-      mockTx.block.deleteMany.mockResolvedValue({ count: 0 })
-      mockTx.userTeam.deleteMany.mockResolvedValue({ count: 0 })
-      mockTx.userTeamInvite.deleteMany.mockResolvedValue({ count: 0 })
-      mockTx.userInvite.deleteMany.mockResolvedValue({ count: 0 })
+      mockTx.journey.delete.mockResolvedValue({})
+      mockPrismaUsers.user.delete.mockResolvedValue({})
 
       const job = {
         data: {
@@ -687,25 +408,34 @@ describe('E2E Cleanup Service', () => {
 
       await service(job, mockLogger)
 
-      // Should delete only the journeys matching testData.json patterns
-      expect(mockTx.journey.deleteMany).toHaveBeenCalledWith({
-        where: { id: { in: ['journey-1', 'journey-2', 'journey-3'] } }
-      })
-
-      // Should delete only the teams matching testData.json patterns
-      expect(mockTx.team.deleteMany).toHaveBeenCalledWith({
-        where: { id: { in: ['team-1', 'team-2'] } }
-      })
-
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        { deletedJourneys: 3 },
-        'Deleted test journeys'
+      // Should call transaction with timeout option
+      expect(prismaMock.$transaction).toHaveBeenCalledWith(
+        expect.any(Function),
+        { timeout: 30000 }
       )
+    })
 
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        { deletedTeams: 2 },
-        'Deleted test teams'
-      )
+    it('should filter users by correct time cutoff', async () => {
+      const olderThanHours = 48
+      mockPrismaUsers.user.findMany.mockResolvedValue([])
+
+      const job = {
+        data: {
+          __typename: 'e2eCleanup',
+          olderThanHours,
+          dryRun: false
+        }
+      } as Job
+
+      await service(job, mockLogger)
+
+      // Should use the specified hours for the cutoff date
+      const expectedCutoffTime = Date.now() - olderThanHours * 60 * 60 * 1000
+      const actualCall = mockPrismaUsers.user.findMany.mock.calls[0][0]
+      const actualCutoffTime = actualCall.where.createdAt.lt.getTime()
+      
+      // Allow for small time difference due to test execution time
+      expect(Math.abs(actualCutoffTime - expectedCutoffTime)).toBeLessThan(1000)
     })
   })
 })
