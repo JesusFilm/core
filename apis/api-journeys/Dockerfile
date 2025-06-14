@@ -4,7 +4,7 @@ EXPOSE 4001
 
 ARG SERVICE_VERSION=0.0.1
 ENV OTEL_RESOURCE_ATTRIBUTES="service.version=$SERVICE_VERSION"
-ENV PRISMA_LOCATION_JOURNEYS=/app/node_modules/.prisma/api-journeys-client
+ENV PRISMA_LOCATION_JOURNEYS=/prisma/src/.prisma/client
 
 RUN apk upgrade --update-cache --available && \
     apk add g++ make python3 py3-pip curl-dev && \
@@ -18,7 +18,7 @@ COPY ./package-lock.json .
 RUN npm install --production
 
 WORKDIR /prisma
-COPY ./apis/api-journeys/db .
+COPY ./libs/prisma-journeys/db .
 RUN npx prisma@6 generate --generator client
 
 WORKDIR /app

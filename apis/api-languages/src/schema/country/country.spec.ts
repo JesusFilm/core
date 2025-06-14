@@ -1,7 +1,7 @@
 import { graphql } from 'gql.tada'
 import omit from 'lodash/omit'
 
-import { Country, CountryLanguage } from '.prisma/api-languages-client'
+import { Country, CountryLanguage } from '@core/prisma-languages/client'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'

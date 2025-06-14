@@ -1,6 +1,6 @@
 import { ExecutionResult } from 'graphql'
 
-import { ArclightApiKey } from '.prisma/api-media-client'
+import { ArclightApiKey } from '@core/prisma-media/client'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
