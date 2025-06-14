@@ -57,7 +57,6 @@ export function VisitorCard({
           />
 
           <VisitorCardDetails
-            name={visitorNode?.visitor.name}
             events={visitorNode?.events ?? []}
             loading={loading}
           />
