@@ -37,7 +37,7 @@ export function ExpandedCover({
   const background =
     backgroundColor != null
       ? imageBlock?.src != null
-        ? `${backgroundColor}4d`
+        ? `${backgroundColor}`
         : backgroundColor
       : 'unset'
 
