@@ -60,11 +60,13 @@ export class CardLevelActionPage {
   }
 
   async clickBtnInAddBlockDrawer(buttonName: string) {
-    await this.page
-      .locator('div[data-testid="SettingsDrawer"] button', {
+    const button = this.page.locator(
+      'div[data-testid="SettingsDrawer"] button',
+      {
         hasText: buttonName
-      })
-      .click()
+      }
+    )
+    await button.click({ timeout: sixtySecondsTimeout })
   }
 
   async clickTextBtnInAddBlockDrawer() {

@@ -8,9 +8,8 @@ import type {
   JourneyListProps
 } from '../JourneyList/JourneyList'
 import { SortOrder } from '../JourneyList/JourneySort'
+import { LoadingJourneyList } from '../JourneyList/LoadingJourneyList'
 import { StatusTabPanel } from '../StatusTabPanel'
-
-import { LoadingTemplateList } from './LoadingTemplateList'
 
 const ActiveTemplateList = dynamic(
   async () =>
@@ -18,7 +17,7 @@ const ActiveTemplateList = dynamic(
       /* webpackChunkName: "ActiveTemplateList" */
       './ActiveTemplateList'
     ).then((mod) => mod.ActiveTemplateList),
-  { loading: () => <LoadingTemplateList /> }
+  { loading: () => <LoadingJourneyList /> }
 )
 
 const ArchivedTemplateList = dynamic(
@@ -27,7 +26,7 @@ const ArchivedTemplateList = dynamic(
       /* webpackChunkName: "ArchivedTemplates" */
       './ArchivedTemplateList'
     ).then((mod) => mod.ArchivedTemplateList),
-  { loading: () => <LoadingTemplateList /> }
+  { loading: () => <LoadingJourneyList /> }
 )
 
 const TrashedTemplateList = dynamic(
@@ -36,7 +35,7 @@ const TrashedTemplateList = dynamic(
       /* webpackChunkName: "TrashedTemplateList" */
       './TrashedTemplateList'
     ).then((mod) => mod.TrashedTemplateList),
-  { loading: () => <LoadingTemplateList /> }
+  { loading: () => <LoadingJourneyList /> }
 )
 
 export function TemplateList(): ReactElement {
@@ -57,7 +56,13 @@ export function TemplateList(): ReactElement {
   }
 
   return (
-    <Box sx={{ mx: { xs: -6, sm: 0 } }} data-testid="JourneysAdminTemplateList">
+    <Box
+      sx={{
+        mx: { xs: 0, sm: 0 },
+        mt: { xs: 0, sm: -5 }
+      }}
+      data-testid="JourneysAdminTemplateList"
+    >
       <Container disableGutters>
         <StatusTabPanel
           activeList={<ActiveTemplateList {...journeyListProps} />}

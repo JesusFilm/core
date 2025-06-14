@@ -440,6 +440,8 @@ type Journey
   showMenu: Boolean
   showDisplayTitle: Boolean
   menuButtonIcon: JourneyMenuButtonIcon
+  socialNodeX: Int
+  socialNodeY: Int
   fromTemplateId: String
   userJourneys: [UserJourney!]
 }
@@ -582,6 +584,14 @@ enum ButtonSize {
   large
 }
 
+input ButtonBlockClassNamesInput {
+  self: String!
+}
+
+type ButtonBlockClassNames {
+  self: String! @shareable
+}
+
 type ButtonBlock implements Block
   @key(fields: "id")
 {
@@ -597,6 +607,9 @@ type ButtonBlock implements Block
   endIconId: ID @shareable
   action: Action
   submitEnabled: Boolean @shareable
+
+  """classNames is an object of tailwind class names for the block"""
+  classNames: ButtonBlockClassNames! @shareable
 }
 
 input ButtonBlockCreateInput {
@@ -608,6 +621,7 @@ input ButtonBlockCreateInput {
   color: ButtonColor
   size: ButtonSize
   submitEnabled: Boolean
+  classNames: ButtonBlockClassNamesInput
 }
 
 input ButtonBlockUpdateInput {
@@ -619,6 +633,15 @@ input ButtonBlockUpdateInput {
   startIconId: ID
   endIconId: ID
   submitEnabled: Boolean
+  classNames: ButtonBlockClassNamesInput
+}
+
+type CardBlockClassNames {
+  self: String! @shareable
+}
+
+input CardBlockClassNamesInput {
+  self: String!
 }
 
 type CardBlock implements Block
@@ -646,6 +669,9 @@ type CardBlock implements Block
   """
   fullscreen: Boolean! @shareable
 
+  """classNames is an object of tailwind class names for the block"""
+  classNames: CardBlockClassNames! @shareable
+
   """
   themeMode can override journey themeMode. If nothing is set then use
   themeMode from journey
@@ -667,6 +693,7 @@ input CardBlockCreateInput {
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
+  classNames: CardBlockClassNamesInput
 }
 
 input CardBlockUpdateInput {
@@ -676,6 +703,7 @@ input CardBlockUpdateInput {
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
+  classNames: CardBlockClassNamesInput
 }
 
 enum GridDirection {
@@ -763,6 +791,14 @@ enum IconSize {
   inherit
 }
 
+input IconBlockClassNamesInput {
+  self: String!
+}
+
+type IconBlockClassNames {
+  self: String! @shareable
+}
+
 type IconBlock implements Block
   @key(fields: "id")
 {
@@ -773,6 +809,9 @@ type IconBlock implements Block
   name: IconName @shareable
   color: IconColor @shareable
   size: IconSize @shareable
+
+  """classNames is an object of tailwind class names for the block"""
+  classNames: IconBlockClassNames @shareable
 }
 
 input IconBlockCreateInput {
@@ -785,12 +824,22 @@ input IconBlockCreateInput {
   name: IconName
   color: IconColor
   size: IconSize
+  classNames: IconBlockClassNamesInput
 }
 
 input IconBlockUpdateInput {
   name: IconName
   color: IconColor
   size: IconSize
+  classNames: IconBlockClassNamesInput
+}
+
+input ImageBlockClassNamesInput {
+  self: String!
+}
+
+type ImageBlockClassNames {
+  self: String! @shareable
 }
 
 type ImageBlock implements Block
@@ -813,6 +862,9 @@ type ImageBlock implements Block
   scale: Int @shareable
   focalTop: Int @shareable
   focalLeft: Int @shareable
+
+  """classNames is an object of tailwind class names for the block"""
+  classNames: ImageBlockClassNames! @shareable
 }
 
 input ImageBlockCreateInput {
@@ -839,6 +891,7 @@ input ImageBlockCreateInput {
   scale: Int
   focalTop: Int
   focalLeft: Int
+  classNames: ImageBlockClassNamesInput
 }
 
 input ImageBlockUpdateInput {
@@ -855,6 +908,15 @@ input ImageBlockUpdateInput {
   scale: Int
   focalTop: Int
   focalLeft: Int
+  classNames: ImageBlockClassNamesInput
+}
+
+input RadioOptionBlockClassNamesInput {
+  self: String!
+}
+
+type RadioOptionBlockClassNames {
+  self: String! @shareable
 }
 
 type RadioOptionBlock implements Block
@@ -866,6 +928,9 @@ type RadioOptionBlock implements Block
   parentOrder: Int @shareable
   label: String! @shareable
   action: Action
+
+  """classNames is an object of tailwind class names for the block"""
+  classNames: RadioOptionBlockClassNames! @shareable
 }
 
 input RadioOptionBlockCreateInput {
@@ -873,11 +938,13 @@ input RadioOptionBlockCreateInput {
   journeyId: ID!
   parentBlockId: ID!
   label: String!
+  classNames: RadioOptionBlockClassNamesInput
 }
 
 input RadioOptionBlockUpdateInput {
   parentBlockId: ID
   label: String
+  classNames: RadioOptionBlockClassNamesInput
 }
 
 type RadioQuestionBlock implements Block
@@ -895,6 +962,14 @@ input RadioQuestionBlockCreateInput {
   parentBlockId: ID!
 }
 
+input SignUpBlockClassNamesInput {
+  self: String!
+}
+
+type SignUpBlockClassNames {
+  self: String! @shareable
+}
+
 type SignUpBlock implements Block
   @key(fields: "id")
 {
@@ -905,6 +980,9 @@ type SignUpBlock implements Block
   action: Action
   submitIconId: ID @shareable
   submitLabel: String @shareable
+
+  """classNames is an object of tailwind class names for the block"""
+  classNames: SignUpBlockClassNames! @shareable
 }
 
 input SignUpBlockCreateInput {
@@ -912,12 +990,22 @@ input SignUpBlockCreateInput {
   journeyId: ID!
   parentBlockId: ID!
   submitLabel: String!
+  classNames: SignUpBlockClassNamesInput
 }
 
 input SignUpBlockUpdateInput {
   parentBlockId: ID
   submitIconId: ID
   submitLabel: String
+  classNames: SignUpBlockClassNamesInput
+}
+
+input SpacerBlockClassNamesInput {
+  self: String!
+}
+
+type SpacerBlockClassNames {
+  self: String! @shareable
 }
 
 type SpacerBlock implements Block
@@ -928,6 +1016,9 @@ type SpacerBlock implements Block
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
   spacing: Int @shareable
+
+  """classNames is an object of tailwind class names for the block"""
+  classNames: SpacerBlockClassNames! @shareable
 }
 
 input SpacerBlockCreateInput {
@@ -935,11 +1026,13 @@ input SpacerBlockCreateInput {
   journeyId: ID!
   parentBlockId: ID!
   spacing: Int
+  classNames: SpacerBlockClassNamesInput
 }
 
 input SpacerBlockUpdateInput {
   parentBlockId: ID
   spacing: Int
+  classNames: SpacerBlockClassNamesInput
 }
 
 type StepBlock implements Block
@@ -1035,6 +1128,14 @@ input StepBlockPositionUpdateInput {
   y: Int
 }
 
+input TextResponseBlockClassNamesInput {
+  self: String!
+}
+
+type TextResponseBlockClassNames {
+  self: String! @shareable
+}
+
 type TextResponseBlock implements Block
   @key(fields: "id")
 {
@@ -1050,6 +1151,9 @@ type TextResponseBlock implements Block
   type: TextResponseType @shareable
   routeId: String @shareable
   integrationId: String @shareable
+
+  """classNames is an object of tailwind class names for the block"""
+  classNames: TextResponseBlockClassNames! @shareable
 }
 
 enum TextResponseType {
@@ -1064,6 +1168,7 @@ input TextResponseBlockCreateInput {
   journeyId: ID!
   parentBlockId: ID!
   label: String!
+  classNames: TextResponseBlockClassNamesInput
 }
 
 input TextResponseBlockUpdateInput {
@@ -1076,6 +1181,7 @@ input TextResponseBlockUpdateInput {
   routeId: String
   type: TextResponseType
   integrationId: String
+  classNames: TextResponseBlockClassNamesInput
 }
 
 enum TypographyVariant {
@@ -1105,6 +1211,14 @@ enum TypographyAlign {
   right
 }
 
+input TypographyBlockClassNamesInput {
+  self: String!
+}
+
+type TypographyBlockClassNames {
+  self: String! @shareable
+}
+
 type TypographyBlock implements Block
   @key(fields: "id")
 {
@@ -1116,6 +1230,9 @@ type TypographyBlock implements Block
   variant: TypographyVariant @shareable
   color: TypographyColor @shareable
   align: TypographyAlign @shareable
+
+  """classNames is an object of tailwind class names for the block"""
+  classNames: TypographyBlockClassNames! @shareable
 }
 
 input TypographyBlockCreateInput {
@@ -1126,6 +1243,7 @@ input TypographyBlockCreateInput {
   variant: TypographyVariant
   color: TypographyColor
   align: TypographyAlign
+  classNames: TypographyBlockClassNamesInput
 }
 
 input TypographyBlockUpdateInput {
@@ -1134,6 +1252,11 @@ input TypographyBlockUpdateInput {
   variant: TypographyVariant
   color: TypographyColor
   align: TypographyAlign
+  classNames: TypographyBlockClassNamesInput
+}
+
+input VideoBlockClassNamesInput {
+  self: String!
 }
 
 extend type Video
@@ -1148,6 +1271,10 @@ enum VideoBlockSource {
   youTube
   cloudflare
   mux
+}
+
+type VideoBlockClassNames {
+  self: String! @shareable
 }
 
 enum VideoBlockObjectFit {
@@ -1261,6 +1388,9 @@ type VideoBlock implements Block
 
   """how the video should display within the VideoBlock"""
   objectFit: VideoBlockObjectFit @shareable
+
+  """classNames is an object of tailwind class names for the block"""
+  classNames: VideoBlockClassNames! @shareable
 }
 
 input VideoBlockCreateInput {
@@ -1313,6 +1443,7 @@ input VideoBlockCreateInput {
 
   """how the video should display within the VideoBlock"""
   objectFit: VideoBlockObjectFit
+  classNames: VideoBlockClassNamesInput
 }
 
 input VideoBlockUpdateInput {
@@ -1355,6 +1486,7 @@ input VideoBlockUpdateInput {
 
   """how the video should display within the VideoBlock"""
   objectFit: VideoBlockObjectFit
+  classNames: VideoBlockClassNamesInput
 }
 
 """
@@ -2328,6 +2460,8 @@ input JourneyUpdateInput {
   menuButtonIcon: JourneyMenuButtonIcon
   menuStepBlockId: ID
   logoImageBlockId: ID
+  socialNodeX: Int
+  socialNodeY: Int
 }
 
 type UserJourney
