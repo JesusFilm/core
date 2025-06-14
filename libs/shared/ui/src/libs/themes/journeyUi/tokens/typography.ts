@@ -8,7 +8,7 @@ import {
 
 // should match base values until we have a need for different values
 
-declare module '@mui/material' {
+declare module '@mui/material/styles' {
   interface TypographyPropsVariantOverrides {
     button: false
   }

@@ -1,6 +1,6 @@
 import { ApolloError, gql, useMutation } from '@apollo/client'
-import LoadingButton from '@mui/lab/LoadingButton'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import { SxProps } from '@mui/system/styleFunctionSx'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { Form, Formik } from 'formik'
@@ -208,7 +208,7 @@ export const SignUp = ({
                 }
               }}
             />
-            <LoadingButton
+            <Button
               type="submit"
               data-testid="submit"
               variant="contained"
@@ -230,7 +230,7 @@ export const SignUp = ({
                     ? submitLabel
                     : t('Submit')}
               </span>
-            </LoadingButton>
+            </Button>
           </Form>
         )}
       </Formik>

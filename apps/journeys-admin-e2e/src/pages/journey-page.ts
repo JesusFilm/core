@@ -245,13 +245,11 @@ export class JourneyPage {
     )
     await this.page.waitForLoadState('load')
     await expect(
-      this.page.locator(
-        'div[data-testid="JourneysAdminContainedIconButton"] button'
-      )
+      this.page.locator('[data-testid="JourneysAdminContainedIconButton"]')
     ).toBeVisible({ timeout: 150000 })
     await expect(createJourneyLoaderPath).toBeHidden({ timeout: 18000 })
     await this.page
-      .locator('div[data-testid="JourneysAdminContainedIconButton"] button')
+      .locator('[data-testid="JourneysAdminContainedIconButton"]')
       .click()
     try {
       await expect(createJourneyLoaderPath, 'Ignore if not found').toBeVisible({
@@ -597,11 +595,7 @@ export class JourneyPage {
   }
 
   async clickThreeDotBesideSortByOption() {
-    await this.page
-      .locator(
-        'div[aria-label="journey status tabs"] button svg[data-testid="MoreIcon"]'
-      )
-      .click()
+    await this.page.locator('[data-testid="JourneyListMenu"] button').click()
   }
 
   async selectThreeDotOptionsBesideSortByOption(option) {
