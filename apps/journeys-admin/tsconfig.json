@@ -12,7 +12,13 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "incremental": true,
-    "tsBuildInfoFile": "../../.cache/journeys-admin/tsc/.tsbuildinfo"
+    "tsBuildInfoFile": "../../.cache/journeys-admin/tsc/.tsbuildinfo",
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "strictNullChecks": true
   },
   "include": [
     "**/*.ts",
@@ -21,7 +27,8 @@
     "**/*.jsx",
     "next-env.d.ts",
     "../../libs/journeys/ui/src/ImageBlockProvider/ImageBlockProvider.tsx",
-    "eslint.config.mjs"
+    "eslint.config.mjs",
+    ".next/types/**/*.ts"
   ],
   "exclude": ["node_modules", "jest.config.ts"]
 }

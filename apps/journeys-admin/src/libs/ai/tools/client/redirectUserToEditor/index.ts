@@ -1,0 +1,1 @@
+export { clientRedirectUserToEditor } from './redirectUserToEditor'
