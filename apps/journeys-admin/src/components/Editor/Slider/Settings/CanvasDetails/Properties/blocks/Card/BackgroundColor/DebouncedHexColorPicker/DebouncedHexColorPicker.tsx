@@ -15,6 +15,10 @@ export function DebouncedHexColorPicker({
 }: ComponentProps<typeof HexAlphaColorPicker>): ReactElement {
   const [value, setValue] = useState(color)
 
+  useEffect(() => {
+    setValue(color)
+  }, [color])
+
   const debouncedChange = useRef(
     debounce((value: string) => {
       onChange?.(value)

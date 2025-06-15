@@ -95,8 +95,10 @@ export function BackgroundColor(): ReactElement {
     locale
   })
   const [tabValue, setTabValue] = useState(0)
-  const selectedColor =
+
+  const [selectedColor, setSelectedColor] = useState(
     cardBlock?.backgroundColor ?? cardTheme.palette.background.paper
+  )
 
   function handleTabChange(_event, newValue: number): void {
     setTabValue(newValue)
@@ -104,6 +106,7 @@ export function BackgroundColor(): ReactElement {
 
   async function handleColorChange(color: string): Promise<void> {
     if (cardBlock != null) {
+      setSelectedColor(color)
       await add({
         parameters: {
           execute: {

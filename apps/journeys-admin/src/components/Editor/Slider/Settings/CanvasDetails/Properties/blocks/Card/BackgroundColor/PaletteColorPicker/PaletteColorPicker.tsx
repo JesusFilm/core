@@ -4,7 +4,8 @@ import { ReactElement } from 'react'
 
 import {
   addAlphaToHex,
-  getOpacityFromHex
+  getOpacityFromHex,
+  stripAlphaFromHex
 } from '@core/journeys/ui/Card/utils/colorOpacityUtils'
 
 import { Swatch } from '../Swatch'
@@ -22,6 +23,10 @@ export function PaletteColorPicker({
 }: PaletteColorPickerProps): ReactElement {
   const opacity = getOpacityFromHex(selectedColor) ?? 100
 
+  function isSameColor(color1: string, color2: string): boolean {
+    return stripAlphaFromHex(color1) === stripAlphaFromHex(color2)
+  }
+
   return (
     <Grid container spacing={2} sx={{ p: 4 }}>
       {colors.map((color) => {
@@ -33,7 +38,7 @@ export function PaletteColorPicker({
               transition: '0.1s outline ease-out',
               position: 'relative',
               outline: (theme) =>
-                selectedColor === color
+                isSameColor(selectedColor, color)
                   ? `2px solid ${theme.palette.primary.main}`
                   : '2px solid transparent',
               border: '3px solid transparent',
