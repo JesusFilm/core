@@ -4,6 +4,8 @@ import { S3Client } from '@aws-sdk/client-s3'
 import { Upload } from '@aws-sdk/lib-storage'
 import fetch from 'node-fetch'
 
+import type { R2Asset } from '../types'
+
 import { CREATE_CLOUDFLARE_R2_ASSET } from './gql/mutations'
 import { getGraphQLClient } from './graphqlClient'
 
@@ -45,11 +47,12 @@ export async function createR2Asset({
   originalFilename: string
   videoId: string
   contentLength: number
-}) {
+}): Promise<R2Asset> {
   const client = await getGraphQLClient()
   const safeContentLength = contentLength > 2_147_483_647 ? -1 : contentLength
-  const data: { cloudflareR2Create: { uploadUrl: string; publicUrl: string } } =
-    await client.request(CREATE_CLOUDFLARE_R2_ASSET, {
+  const data: { cloudflareR2Create: R2Asset } = await client.request(
+    CREATE_CLOUDFLARE_R2_ASSET,
+    {
       input: {
         fileName,
         contentType,
@@ -57,7 +60,8 @@ export async function createR2Asset({
         videoId,
         contentLength: safeContentLength
       }
-    })
+    }
+  )
   return data.cloudflareR2Create
 }
 
