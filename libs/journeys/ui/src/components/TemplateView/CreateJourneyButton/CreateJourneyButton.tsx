@@ -19,6 +19,12 @@ interface JourneyLanguage {
   nativeName?: string
 }
 
+interface JourneyLanguage {
+  id: string
+  localName?: string
+  nativeName?: string
+}
+
 const DynamicCopyToTeamDialog = dynamic(
   async () =>
     await import(
@@ -54,7 +60,8 @@ export function CreateJourneyButton({
     async (
       teamId: string,
       selectedLanguage?: JourneyLanguage,
-      showTranslation?: boolean
+      showTranslation?: boolean,
+      createWithAi?: boolean
     ): Promise<void> => {
       if (journey == null) return
 
@@ -70,9 +77,15 @@ export function CreateJourneyButton({
           journeyId: journey.id,
           journeyTitle: journey.title
         })
-        void router.push(`/journeys/${newJourneyId}`, undefined, {
-          shallow: true
-        })
+        void router.push(
+          {
+            pathname: `/journeys/${newJourneyId}${createWithAi ? '/ai' : ''}`
+          },
+          undefined,
+          {
+            shallow: true
+          }
+        )
       }
     },
     [journey, duplicateAndTranslate, router]

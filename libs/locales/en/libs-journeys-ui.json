@@ -60,6 +60,7 @@
   "Edit": "Edit",
   "Label": "Label",
   "Translating your journey...": "Translating your journey...",
+  "Create with AI": "Create with AI",
   "Create": "Create",
   "144p": "144p",
   "240p": "240p",
@@ -89,6 +90,6 @@
   "Step {{number}}": "Step {{number}}",
   "Journey duplication failed": "Journey duplication failed",
   "Journey Copied": "Journey Copied",
-  "Journey Translated": "Journey Translated",
+  "Journey Copied - Translation will begin shortly": "Journey Copied - Translation will begin shortly",
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_zero": "<0>Journey Templates</0><1>in</1><2>All Languages</2>"
 }
