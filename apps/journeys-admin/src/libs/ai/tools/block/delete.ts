@@ -7,7 +7,7 @@ import {
   AiBlockDeleteMutationVariables
 } from '../../../../../__generated__/AiBlockDeleteMutation'
 
-const AI_BLOCK_DELETE = gql`
+export const AI_BLOCK_DELETE = gql`
   mutation AiBlockDeleteMutation($id: ID!) {
     blockDelete(id: $id) {
       id
