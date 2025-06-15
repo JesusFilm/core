@@ -65,7 +65,6 @@ export function VisitorCardDetails({
       ) : (
         <>
           {eventsToRender.map((event) => {
-            if (event.label === 'Name') return null
             if (event.__typename === 'ChatOpenEvent') {
               return (
                 <DetailsRow
