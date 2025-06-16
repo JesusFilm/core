@@ -1,1 +1,1 @@
-export * from './TranslateJourneyDialog'
+export { TranslateJourneyDialog } from './TranslateJourneyDialog'
