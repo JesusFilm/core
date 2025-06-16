@@ -45,10 +45,10 @@ const config: StorybookConfig = {
 
   addons: [
     '@storybook/addon-essentials',
+    '@storybook/addon-actions',
     '@storybook/addon-interactions',
     '@storybook/addon-a11y',
     'storybook-addon-apollo-client',
-    '@storybook/addon-actions',
     '@chromatic-com/storybook'
   ],
 
@@ -70,7 +70,11 @@ const config: StorybookConfig = {
       '@emotion/core': require.resolve('@emotion/react'),
       '@emotion-theming': require.resolve('@emotion/react'),
       '@emotion/react': require.resolve('@emotion/react'),
-      '@emotion/cache': require.resolve('@emotion/cache')
+      '@emotion/cache': require.resolve('@emotion/cache'),
+      'next-firebase-auth': require('path').resolve(
+        __dirname,
+        './mocks/next-firebase-auth.js'
+      )
     }
 
     return config

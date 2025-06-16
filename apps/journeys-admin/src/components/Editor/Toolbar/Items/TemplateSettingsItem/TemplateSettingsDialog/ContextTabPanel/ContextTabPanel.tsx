@@ -1,5 +1,6 @@
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
 import Button from '@mui/material/Button'
+import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
@@ -42,7 +43,7 @@ export function ContextTabPanel(): ReactElement {
   }
 
   return (
-    <>
+    <Stack direction="column" gap={2}>
       <TextField
         id="context"
         name="context"
@@ -70,6 +71,6 @@ export function ContextTabPanel(): ReactElement {
       >
         {generateLoading ? t('Generating...') : t('Generate with AI')}
       </Button>
-    </>
+    </Stack>
   )
 }
