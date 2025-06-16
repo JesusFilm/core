@@ -19,7 +19,7 @@ import { getJourneyRTL } from '../../../libs/rtl'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { VideoFields } from '../../Video/__generated__/VideoFields'
 import { OverlayContent } from '../OverlayContent'
-import { stripAlphaFromHex } from '../utils/colorOpacityUtils'
+import { addAlphaToHex, stripAlphaFromHex } from '../utils/colorOpacityUtils'
 
 import { BackgroundVideo } from './BackgroundVideo'
 
@@ -100,9 +100,23 @@ export function ContainedCover({
   const baseBackgroundColor = stripAlphaFromHex(backgroundColor)
 
   const overlayGradient = (direction: string): string =>
-    `linear-gradient(to ${direction}, transparent 0%,  ${baseBackgroundColor}14 10%, ${baseBackgroundColor}33 17%, ${baseBackgroundColor}60 25%, ${baseBackgroundColor}b0 40%, ${baseBackgroundColor}e6 60%, ${baseBackgroundColor} 98%)`
+    `linear-gradient(to ${direction},
+    transparent 0%,
+    ${addAlphaToHex(baseBackgroundColor, 8)} 10%,
+    ${addAlphaToHex(baseBackgroundColor, 20)} 17%,
+    ${addAlphaToHex(baseBackgroundColor, 38)} 25%,
+    ${addAlphaToHex(baseBackgroundColor, 69)} 40%,
+    ${addAlphaToHex(baseBackgroundColor, 90)} 60%,
+    ${baseBackgroundColor}98%)`
 
-  const overlayImageMask = `linear-gradient(to top, transparent 0%, ${baseBackgroundColor}14 5%, ${baseBackgroundColor}33 10%, ${baseBackgroundColor}60 15%, ${baseBackgroundColor}b0 20%, ${baseBackgroundColor}e6 25%, ${baseBackgroundColor} 30%)`
+  const overlayImageMask = `linear-gradient(to top,
+    transparent 0%,
+    ${addAlphaToHex(baseBackgroundColor, 8)} 5%,   
+    ${addAlphaToHex(baseBackgroundColor, 20)} 10%,  
+    ${addAlphaToHex(baseBackgroundColor, 38)} 15%,  
+    ${addAlphaToHex(baseBackgroundColor, 69)} 20%,  
+    ${addAlphaToHex(baseBackgroundColor, 90)} 25%,  
+    ${baseBackgroundColor} 30%)`
 
   return (
     <>
