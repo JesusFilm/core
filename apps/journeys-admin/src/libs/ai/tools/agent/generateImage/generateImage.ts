@@ -3,10 +3,13 @@ import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
 import { experimental_generateImage, tool } from 'ai'
 import { z } from 'zod'
 
+import { ToolOptions } from '../..'
+
 import { upload } from './upload'
 
 export function agentGenerateImage(
-  client: ApolloClient<NormalizedCacheObject>
+  client: ApolloClient<NormalizedCacheObject>,
+  { langfuseTraceId }: ToolOptions
 ) {
   return tool({
     description: 'Generate an image',
@@ -24,7 +27,15 @@ export function agentGenerateImage(
       const { images } = await experimental_generateImage({
         model: openai.image('dall-e-3'),
         prompt,
-        n
+        n,
+        experimental_telemetry: {
+          isEnabled: true,
+          functionId: 'agentGenerateImage',
+          metadata: {
+            langfuseTraceId,
+            langfuseUpdateParent: false
+          }
+        }
       })
 
       const result = await Promise.all(

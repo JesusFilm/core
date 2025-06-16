@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
   const result = streamText({
     model: google('gemini-2.0-flash'),
     messages: messagesWithSystemPrompt,
-    tools: tools(client),
+    tools: tools(client, { langfuseTraceId }),
     experimental_telemetry: {
       isEnabled: true,
       metadata: {
