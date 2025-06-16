@@ -176,6 +176,7 @@
     "react-instantsearch": "^7.5.0",
     "react-instantsearch-router-nextjs": "^7.12.3",
     "react-loading-hook": "^1.1.2",
+    "react-router-dom": "^7.6.2",
     "react-simple-timefield": "^3.3.1",
     "react-swipeable": "^7.0.1",
     "react-use-downloader": "^1.2.4",
