@@ -35,6 +35,7 @@ import { useCoverBlockRestoreMutation } from '../../../../../../../../../../libs
 import { ImageSource } from '../../../../../../Drawer/ImageSource'
 
 import { FocalPoint } from './FocalPoint'
+import { ZoomImage } from './ZoomImage/ZoomImage'
 
 export const COVER_IMAGE_BLOCK_CREATE = gql`
   ${IMAGE_FIELDS}
@@ -354,6 +355,9 @@ export function BackgroundMediaImage({
       <FocalPoint
         imageBlock={coverBlock?.__typename === 'ImageBlock' ? coverBlock : null}
         updateImageBlock={updateImageBlock}
+      />
+      <ZoomImage
+        updateImageBlock={() => { /* dummy updateImageBlock for now */ }} 
       />
     </Stack>
   )
