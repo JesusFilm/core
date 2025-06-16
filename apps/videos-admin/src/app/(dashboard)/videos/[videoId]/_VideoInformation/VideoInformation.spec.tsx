@@ -40,9 +40,7 @@ const mockVideoData = {
     snippet: [{ id: 'snippet-id', value: 'Test video snippet' }],
     description: [{ id: 'desc-id', value: 'Test video description' }],
     imageAlt: [{ id: 'alt-id', value: 'Test image alt text' }],
-    images: [
-      { id: 'banner-image-id', aspectRatio: 'banner' }
-    ],
+    images: [{ id: 'banner-image-id', aspectRatio: 'banner' }],
     variant: {
       id: 'variant-id',
       slug: 'test-video',
@@ -130,7 +128,7 @@ describe('VideoInformation', () => {
     // Change status to published to trigger validation
     const statusSelect = screen.getByLabelText('Status')
     fireEvent.mouseDown(statusSelect)
-    
+
     await waitFor(() => {
       const publishedOption = screen.getByText('Published')
       fireEvent.click(publishedOption)
@@ -191,7 +189,7 @@ describe('VideoInformation', () => {
     // Change status to published
     const statusSelect = screen.getByLabelText('Status')
     fireEvent.mouseDown(statusSelect)
-    
+
     await waitFor(() => {
       const publishedOption = screen.getByText('Published')
       fireEvent.click(publishedOption)
@@ -201,7 +199,9 @@ describe('VideoInformation', () => {
     await waitFor(() => {
       expect(screen.getByText('Missing Required Fields')).toBeInTheDocument()
       // Should not show "Published Video Content" requirement for collections
-      expect(screen.queryByText('Published Video Content')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Published Video Content')
+      ).not.toBeInTheDocument()
     })
   })
-}) 
+})

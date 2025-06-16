@@ -165,7 +165,9 @@ export function VideoInformation({
     }
 
     // Check if video has at least one banner image (required for all videos)
-    const hasBannerImage = video.images?.some(image => image.aspectRatio === 'banner')
+    const hasBannerImage = video.images?.some(
+      (image) => image.aspectRatio === 'banner'
+    )
     if (!hasBannerImage) {
       missingFields.push('Banner Image')
     }
@@ -174,14 +176,13 @@ export function VideoInformation({
     // Only required for content videos (not collections or series which are containers)
     // Use the current form label if provided, otherwise fall back to saved label
     const labelToCheck = currentLabel || video.label
-    const isContainerVideo = labelToCheck === 'collection' || labelToCheck === 'series'
-    
+    const isContainerVideo =
+      labelToCheck === 'collection' || labelToCheck === 'series'
+
     if (!isContainerVideo) {
-      const hasPublishedVariant = video.variant && (
-        video.variant.hls || 
-        video.variant.dash || 
-        video.variant.muxVideo?.id
-      )
+      const hasPublishedVariant =
+        video.variant &&
+        (video.variant.hls || video.variant.dash || video.variant.muxVideo?.id)
       if (!hasPublishedVariant) {
         missingFields.push('Published Video Content')
       }
@@ -193,11 +194,12 @@ export function VideoInformation({
   // Component to show validation status when trying to publish
   const ValidationStatus = ({ values }: { values: FormikValues }) => {
     if (values.published !== 'published') return null
-    
+
     const missingFields = validateVideoForPublishing(values.label)
     const video = data.adminVideo
-    const isContainerVideo = values.label === 'collection' || values.label === 'series'
-    
+    const isContainerVideo =
+      values.label === 'collection' || values.label === 'series'
+
     // Only show alert if there are missing fields
     if (missingFields.length === 0) {
       return null
@@ -205,13 +207,14 @@ export function VideoInformation({
 
     // Create field descriptions with explanations
     const fieldDescriptions: Record<string, string> = {
-      'Title': 'Video title is required',
+      Title: 'Video title is required',
       'Short Description': 'A brief description/snippet is required',
-      'Description': 'A full description is required',
+      Description: 'A full description is required',
       'Image Alt Text': 'Alt text for accessibility is required',
-      'Banner Image': 'Banner image (1280x600) is required for video thumbnails',
-      'Published Video Content': isContainerVideo 
-        ? 'Not required for collections/series' 
+      'Banner Image':
+        'Banner image (1280x600) is required for video thumbnails',
+      'Published Video Content': isContainerVideo
+        ? 'Not required for collections/series'
         : 'At least one published video variant with streaming content is required'
     }
 
@@ -225,7 +228,7 @@ export function VideoInformation({
               <ListItemIcon sx={{ minWidth: 24 }}>
                 <WarningIcon color="warning" fontSize="small" />
               </ListItemIcon>
-              <ListItemText 
+              <ListItemText
                 primary={field}
                 secondary={fieldDescriptions[field]}
                 secondaryTypographyProps={{ fontSize: '0.75rem' }}
@@ -473,13 +476,14 @@ export function VideoInformation({
             <Divider sx={{ mx: -4 }} />
             <Stack direction="row" justifyContent="flex-end" gap={1}>
               <CancelButton show={dirty} handleCancel={() => resetForm()} />
-              <SaveButton 
+              <SaveButton
                 disabled={
-                  !isValid || 
-                  isSubmitting || 
-                  !dirty || 
-                  (values.published === 'published' && validateVideoForPublishing(values.label).length > 0)
-                } 
+                  !isValid ||
+                  isSubmitting ||
+                  !dirty ||
+                  (values.published === 'published' &&
+                    validateVideoForPublishing(values.label).length > 0)
+                }
               />
             </Stack>
           </Stack>
