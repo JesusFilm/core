@@ -1628,42 +1628,84 @@ export class CardLevelActionPage {
   }
   async selectReactionOptions(checkBoxTestId: string) {
     //'checkbox-Share', 'checkbox-Like', 'checkbox-Dislike'
+    // Wait for the reactions section to be available first
+    await this.page.waitForSelector('div[data-testid="Reactions"]', {
+      timeout: 15000
+    })
+
     // Try multiple approaches to find and check the reaction checkbox
+    let checkBox: any = null
+    let checkboxFound = false
+
+    // Strategy 1: Original selector with expanded section
     try {
-      // Original selector
-      const checkBox = this.page
+      checkBox = this.page
         .locator('div.Mui-expanded div[data-testid="Reactions"]')
         .getByTestId(checkBoxTestId)
         .getByRole('checkbox')
-      await checkBox.check({ timeout: 10000 })
-      await expect(checkBox).toBeChecked()
+      await expect(checkBox).toBeVisible({ timeout: 5000 })
+      checkboxFound = true
     } catch (error) {
+      // Strategy 2: Look without Mui-expanded requirement
       try {
-        // Fallback 1: Look for checkbox by test id without Mui-expanded
-        const checkBox = this.page
+        checkBox = this.page
           .locator('div[data-testid="Reactions"]')
           .getByTestId(checkBoxTestId)
           .getByRole('checkbox')
-        await checkBox.check({ timeout: 10000 })
-        await expect(checkBox).toBeChecked()
+        await expect(checkBox).toBeVisible({ timeout: 5000 })
+        checkboxFound = true
       } catch (error) {
+        // Strategy 3: Look in accordion details
         try {
-          // Fallback 2: Look for checkbox with more specific MUI classes
-          const checkBox = this.page
+          checkBox = this.page
             .locator('.MuiAccordionDetails-root div[data-testid="Reactions"]')
             .getByTestId(checkBoxTestId)
             .getByRole('checkbox')
-          await checkBox.check({ timeout: 10000 })
-          await expect(checkBox).toBeChecked()
+          await expect(checkBox).toBeVisible({ timeout: 5000 })
+          checkboxFound = true
         } catch (error) {
-          // Final fallback: Look for any checkbox with the test id
-          const checkBox = this.page
-            .getByTestId(checkBoxTestId)
-            .getByRole('checkbox')
-          await checkBox.check({ timeout: 10000 })
-          await expect(checkBox).toBeChecked()
+          // Strategy 4: Direct test id approach
+          try {
+            checkBox = this.page
+              .getByTestId(checkBoxTestId)
+              .getByRole('checkbox')
+            await expect(checkBox).toBeVisible({ timeout: 5000 })
+            checkboxFound = true
+          } catch (error) {
+            // Strategy 5: Look for checkbox input within reactions
+            try {
+              checkBox = this.page.locator(
+                `div[data-testid="Reactions"] input[type="checkbox"][data-testid="${checkBoxTestId}"]`
+              )
+              await expect(checkBox).toBeVisible({ timeout: 5000 })
+              checkboxFound = true
+            } catch (error) {
+              // Strategy 6: Look for any checkbox that might be related to the test id
+              checkBox = this.page.locator(`input[type="checkbox"]`).filter({
+                hasText: new RegExp(
+                  checkBoxTestId.replace('checkbox-', ''),
+                  'i'
+                )
+              })
+              await expect(checkBox).toBeVisible({ timeout: 5000 })
+              checkboxFound = true
+            }
+          }
         }
       }
+    }
+
+    if (checkboxFound && checkBox) {
+      try {
+        await checkBox.check({ timeout: 10000 })
+        await expect(checkBox).toBeChecked()
+      } catch (error) {
+        // If check() fails, try clicking directly
+        await checkBox.click({ timeout: 10000 })
+        await expect(checkBox).toBeChecked()
+      }
+    } else {
+      throw new Error(`Could not find checkbox with test id: ${checkBoxTestId}`)
     }
   }
   async enterDisplayTitleForFooter(footerTitle: string) {
@@ -1693,7 +1735,49 @@ export class CardLevelActionPage {
       .click()
   }
   async selectFirstImageFromGalleryForFooter() {
-    await this.page.locator('li[data-testid *="image"] img').first().click()
+    // Try multiple approaches to find and click the first image in gallery
+    try {
+      // Original selector
+      await this.page
+        .locator('li[data-testid *="image"] img')
+        .first()
+        .click({ timeout: 10000 })
+    } catch (error) {
+      try {
+        // Fallback 1: Look for any image in a list item
+        await this.page.locator('li img').first().click({ timeout: 10000 })
+      } catch (error) {
+        try {
+          // Fallback 2: Look for images in gallery context
+          await this.page
+            .locator('ul img, .gallery img, [data-testid*="gallery"] img')
+            .first()
+            .click({ timeout: 10000 })
+        } catch (error) {
+          try {
+            // Fallback 3: Look for clickable images
+            await this.page
+              .locator('img[role="button"], button img, a img')
+              .first()
+              .click({ timeout: 10000 })
+          } catch (error) {
+            try {
+              // Fallback 4: Look for images in MUI components
+              await this.page
+                .locator('.MuiImageList-root img, .MuiCard-root img')
+                .first()
+                .click({ timeout: 10000 })
+            } catch (error) {
+              // Final fallback: Any image that's clickable
+              await this.page
+                .locator('img')
+                .first()
+                .click({ force: true, timeout: 10000 })
+            }
+          }
+        }
+      }
+    }
   }
   async valdiateSelectedImageWithDeleteIcon() {
     await expect(

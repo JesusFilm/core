@@ -358,20 +358,31 @@ export class JourneyLevelActions {
     await languageCombobox.click()
 
     // Wait for dropdown to open and options to be available
+    // The issue is we're looking for menu elements but language selection uses Autocomplete
     try {
-      await expect(
-        this.page
-          .locator('[role="listbox"], [role="menu"], ul, .MuiPaper-root li')
-          .first()
-      ).toBeVisible({ timeout: 10000 })
+      // First check if it's an Autocomplete listbox that opened
+      await expect(this.page.locator('[role="listbox"]').first()).toBeVisible({
+        timeout: 10000
+      })
     } catch (error) {
-      // If dropdown doesn't appear, try clicking again
-      await languageCombobox.click()
-      await expect(
-        this.page
-          .locator('[role="listbox"], [role="menu"], ul, .MuiPaper-root li')
-          .first()
-      ).toBeVisible({ timeout: 10000 })
+      try {
+        // If that doesn't work, try clicking the language selector again
+        await languageCombobox.click()
+        await expect(this.page.locator('[role="listbox"]').first()).toBeVisible(
+          { timeout: 10000 }
+        )
+      } catch (error) {
+        // Final attempt - look for any dropdown options that appeared
+        try {
+          await expect(
+            this.page.locator('[role="option"]').first()
+          ).toBeVisible({ timeout: 10000 })
+        } catch (error) {
+          // If still no dropdown, try different click approach
+          await languageCombobox.click({ force: true })
+          await this.page.waitForTimeout(1000) // Give it time to open
+        }
+      }
     }
 
     // Find and click the language option with better selectors

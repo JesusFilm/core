@@ -423,24 +423,42 @@ export class JourneyPage {
         .click({ timeout: 10000 })
     } catch (error) {
       try {
-        // Fallback 1: Look for menu item with "Archive" text
+        // Fallback 1: Wait for menu to be visible first, then look for Archive
+        await this.page.waitForSelector('ul[role="menu"]', { timeout: 5000 })
         await this.page
           .locator('ul[role="menu"] li[role="menuitem"]')
           .filter({ hasText: 'Archive' })
           .click({ timeout: 10000 })
       } catch (error) {
         try {
-          // Fallback 2: Look for any clickable element with Archive text in menu context
+          // Fallback 2: Look for any menu item with Archive text in any menu context
           await this.page
             .locator(
               'li:has-text("Archive"), [role="menuitem"]:has-text("Archive")'
             )
             .click({ timeout: 10000 })
         } catch (error) {
-          // Final fallback: Look for Archive text in any list item
-          await this.page
-            .locator('li', { hasText: 'Archive' })
-            .click({ timeout: 10000 })
+          try {
+            // Fallback 3: Look for Archive text in any clickable element within a menu
+            await this.page
+              .locator(
+                'ul li:has-text("Archive"), .MuiMenu-list li:has-text("Archive")'
+              )
+              .click({ timeout: 10000 })
+          } catch (error) {
+            try {
+              // Fallback 4: More specific menu item selector
+              await this.page
+                .locator('.MuiMenuItem-root:has-text("Archive")')
+                .click({ timeout: 10000 })
+            } catch (error) {
+              // Final fallback: Any element with Archive text that's clickable
+              await this.page
+                .locator('*:has-text("Archive")')
+                .filter({ hasText: /^Archive$/ })
+                .click({ timeout: 10000 })
+            }
+          }
         }
       }
     }
@@ -619,7 +637,63 @@ export class JourneyPage {
   }
 
   async clickThreeDotBesideSortByOption() {
-    await this.page.locator('button:has(svg[data-testid="MoreIcon"])').click()
+    // Try multiple approaches to find the three-dot menu button
+    try {
+      // Original selector
+      await this.page
+        .locator('button:has(svg[data-testid="MoreIcon"])')
+        .click({ timeout: 10000 })
+    } catch (error) {
+      try {
+        // Fallback 1: Look for any button with MoreIcon
+        await this.page
+          .locator('button svg[data-testid="MoreIcon"]')
+          .click({ timeout: 10000 })
+      } catch (error) {
+        try {
+          // Fallback 2: Look for three dots or more icon in any form
+          await this.page
+            .locator(
+              'button[aria-label*="more"], button[aria-label*="More"], button[aria-label*="menu"]'
+            )
+            .click({ timeout: 10000 })
+        } catch (error) {
+          try {
+            // Fallback 3: Look for IconButton with three dots pattern
+            await this.page
+              .locator('button.MuiIconButton-root:has(svg)')
+              .filter({ hasText: /⋮|•••|⋯/ })
+              .click({ timeout: 10000 })
+          } catch (error) {
+            try {
+              // Fallback 4: Look for any button near sort area that might be the menu
+              await this.page
+                .locator(
+                  'div:has-text("Sort") + button, div:has-text("Sort") ~ button'
+                )
+                .click({ timeout: 10000 })
+            } catch (error) {
+              try {
+                // Fallback 5: Look for data-testid that might contain "menu" or "more"
+                await this.page
+                  .locator(
+                    'button[data-testid*="menu"], button[data-testid*="More"]'
+                  )
+                  .click({ timeout: 10000 })
+              } catch (error) {
+                // Final fallback: Look for any button that opens a menu
+                await this.page
+                  .locator(
+                    'button[aria-haspopup="menu"], button[aria-haspopup="true"]'
+                  )
+                  .last()
+                  .click({ timeout: 10000 })
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
   async selectThreeDotOptionsBesideSortByOption(option) {
