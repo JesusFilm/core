@@ -6,7 +6,7 @@ import { ReactElement, useEffect, useState } from 'react'
 
 import { VideoContentFields_bibleCitations as BibleCitation } from '../../../../../__generated__/VideoContentFields'
 
-const LOCALE_MAP = {
+const LOCALE_TO_BIBLE_VERSION_MAP = {
   en: { bibleVersion: 'en-bsb', bibleGatewayLinkVersion: 'NIV' }
 } as const
 
@@ -34,7 +34,7 @@ export function BibleCitationCard({
       try {
         const bookName = citation.bibleBook.name[0].value.toLowerCase()
         const { data } = await axios.get<FBVScripture>(
-          `https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/${LOCALE_MAP[locale].bibleVersion}/books/${bookName}/chapters/${citation.chapterStart}/verses/${citation.verseStart}.json`
+          `https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/${LOCALE_TO_BIBLE_VERSION_MAP[locale].bibleVersion}/books/${bookName}/chapters/${citation.chapterStart}/verses/${citation.verseStart}.json`
         )
         setScripture(data)
       } catch (err) {
@@ -47,7 +47,7 @@ export function BibleCitationCard({
 
   const bibleGatewayUrl = `https://www.biblegateway.com/passage/?search=${encodeURIComponent(
     `${citation.bibleBook.name[0].value} ${citation.chapterStart}${citation.chapterEnd != null ? `-${citation.chapterEnd}` : ''}${citation.verseEnd != null ? `:${citation.verseStart}-${citation.verseEnd}` : `:${citation.verseStart}`}`
-  )}&version=${LOCALE_MAP[locale].bibleGatewayLinkVersion}`
+  )}&version=${LOCALE_TO_BIBLE_VERSION_MAP[locale].bibleGatewayLinkVersion}`
 
   return (
     <div
