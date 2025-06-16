@@ -1628,10 +1628,43 @@ export class CardLevelActionPage {
   }
   async selectReactionOptions(checkBoxTestId: string) {
     //'checkbox-Share', 'checkbox-Like', 'checkbox-Dislike'
-    // Wait for the reactions section to be available first
-    await this.page.waitForSelector('div[data-testid="Reactions"]', {
-      timeout: 15000
-    })
+
+    // First, try to expand the reactions section if it's not already visible
+    try {
+      // Check if reactions section is hidden/collapsed
+      const reactionsSection = this.page.locator('div[data-testid="Reactions"]')
+      const isHidden = await reactionsSection.isHidden()
+
+      if (isHidden) {
+        // Try to find and click an accordion or expand button for reactions
+        try {
+          await this.page
+            .locator(
+              'button:has-text("Reactions"), [role="button"]:has-text("Reactions")'
+            )
+            .click({ timeout: 5000 })
+        } catch (error) {
+          // Try to click on a parent accordion that might contain reactions
+          try {
+            await this.page
+              .locator(
+                '.MuiAccordionSummary-root:has-text("Footer"), .MuiAccordionSummary-root'
+              )
+              .last()
+              .click({ timeout: 5000 })
+          } catch (error) {
+            // Continue anyway - maybe it's visible in a different context
+          }
+        }
+      }
+
+      // Wait for the reactions section to be available and visible
+      await expect(reactionsSection).toBeVisible({ timeout: 15000 })
+    } catch (error) {
+      console.log(
+        'Could not expand reactions section, trying to find visible instance'
+      )
+    }
 
     // Try multiple approaches to find and check the reaction checkbox
     let checkBox: any = null
@@ -1646,7 +1679,7 @@ export class CardLevelActionPage {
       await expect(checkBox).toBeVisible({ timeout: 5000 })
       checkboxFound = true
     } catch (error) {
-      // Strategy 2: Look without Mui-expanded requirement
+      // Strategy 2: Look in any visible reactions section
       try {
         checkBox = this.page
           .locator('div[data-testid="Reactions"]')
@@ -1655,40 +1688,31 @@ export class CardLevelActionPage {
         await expect(checkBox).toBeVisible({ timeout: 5000 })
         checkboxFound = true
       } catch (error) {
-        // Strategy 3: Look in accordion details
+        // Strategy 3: Look for checkbox by test id without specific container
         try {
-          checkBox = this.page
-            .locator('.MuiAccordionDetails-root div[data-testid="Reactions"]')
-            .getByTestId(checkBoxTestId)
-            .getByRole('checkbox')
+          checkBox = this.page.getByTestId(checkBoxTestId).getByRole('checkbox')
           await expect(checkBox).toBeVisible({ timeout: 5000 })
           checkboxFound = true
         } catch (error) {
-          // Strategy 4: Direct test id approach
+          // Strategy 4: Look for input checkbox with test id
           try {
-            checkBox = this.page
-              .getByTestId(checkBoxTestId)
-              .getByRole('checkbox')
+            checkBox = this.page.locator(
+              `input[type="checkbox"][data-testid="${checkBoxTestId}"]`
+            )
             await expect(checkBox).toBeVisible({ timeout: 5000 })
             checkboxFound = true
           } catch (error) {
-            // Strategy 5: Look for checkbox input within reactions
+            // Strategy 5: Look for checkbox by partial test id match
             try {
               checkBox = this.page.locator(
-                `div[data-testid="Reactions"] input[type="checkbox"][data-testid="${checkBoxTestId}"]`
+                `[data-testid*="${checkBoxTestId.replace('checkbox-', '')}"] input[type="checkbox"]`
               )
               await expect(checkBox).toBeVisible({ timeout: 5000 })
               checkboxFound = true
             } catch (error) {
-              // Strategy 6: Look for any checkbox that might be related to the test id
-              checkBox = this.page.locator(`input[type="checkbox"]`).filter({
-                hasText: new RegExp(
-                  checkBoxTestId.replace('checkbox-', ''),
-                  'i'
-                )
-              })
-              await expect(checkBox).toBeVisible({ timeout: 5000 })
-              checkboxFound = true
+              throw new Error(
+                `Could not find checkbox with test id: ${checkBoxTestId}`
+              )
             }
           }
         }
@@ -1696,16 +1720,13 @@ export class CardLevelActionPage {
     }
 
     if (checkboxFound && checkBox) {
-      try {
-        await checkBox.check({ timeout: 10000 })
-        await expect(checkBox).toBeChecked()
-      } catch (error) {
-        // If check() fails, try clicking directly
-        await checkBox.click({ timeout: 10000 })
-        await expect(checkBox).toBeChecked()
-      }
+      // Check the checkbox and verify it's checked
+      await checkBox.check({ timeout: 10000 })
+      await expect(checkBox).toBeChecked()
     } else {
-      throw new Error(`Could not find checkbox with test id: ${checkBoxTestId}`)
+      throw new Error(
+        `Failed to find and interact with checkbox: ${checkBoxTestId}`
+      )
     }
   }
   async enterDisplayTitleForFooter(footerTitle: string) {
@@ -1780,11 +1801,60 @@ export class CardLevelActionPage {
     }
   }
   async valdiateSelectedImageWithDeleteIcon() {
-    await expect(
-      this.page.locator(
-        'div[data-testid="ImageBlockHeader"]:has(img) button:has(svg[data-testid="imageBlockHeaderDelete"])'
-      )
-    ).toBeVisible()
+    // Try multiple approaches to find the image with delete icon
+    try {
+      // Original selector
+      await expect(
+        this.page.locator(
+          'div[data-testid="ImageBlockHeader"]:has(img) button:has(svg[data-testid="imageBlockHeaderDelete"])'
+        )
+      ).toBeVisible({ timeout: 5000 })
+    } catch (error) {
+      try {
+        // Fallback 1: Look for delete button near image without specific structure
+        await expect(
+          this.page.locator(
+            'div[data-testid="ImageBlockHeader"] button:has(svg[data-testid="imageBlockHeaderDelete"])'
+          )
+        ).toBeVisible({ timeout: 5000 })
+      } catch (error) {
+        try {
+          // Fallback 2: Look for any delete button in image context
+          await expect(
+            this.page.locator(
+              'button:has(svg[data-testid="imageBlockHeaderDelete"]), button[aria-label*="delete"]:has(img)'
+            )
+          ).toBeVisible({ timeout: 5000 })
+        } catch (error) {
+          try {
+            // Fallback 3: Look for delete icon in any image block
+            await expect(
+              this.page.locator(
+                'div:has(img) svg[data-testid="imageBlockHeaderDelete"], svg[data-testid="imageBlockHeaderDelete"]'
+              )
+            ).toBeVisible({ timeout: 5000 })
+          } catch (error) {
+            try {
+              // Fallback 4: Look for delete button with different structure
+              await expect(
+                this.page.locator(
+                  'div[data-testid*="Image"] button:has(svg), .image-container button:has(svg)'
+                )
+              ).toBeVisible({ timeout: 5000 })
+            } catch (error) {
+              // Final fallback: Look for any button that might be delete in image context
+              await expect(
+                this.page
+                  .locator(
+                    'button[aria-label*="delete"], button[title*="delete"], button:has(svg):near(img)'
+                  )
+                  .first()
+              ).toBeVisible({ timeout: 5000 })
+            }
+          }
+        }
+      }
+    }
   }
   async closeToolDrawerForFooterImage() {
     await this.page

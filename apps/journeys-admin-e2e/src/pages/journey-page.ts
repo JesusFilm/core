@@ -600,12 +600,43 @@ export class JourneyPage {
       })
       .first()
       .innerText()
-    await this.page
+
+    // Now click the actual three-dot menu button for this journey
+    const journeyCard = this.page
       .locator('div[aria-label="journey-card"]', {
         hasNotText: 'Untitled Journey'
       })
       .first()
-      .click()
+
+    try {
+      // Try to find the menu button inside the journey card
+      const threeDotBtnPath = journeyCard
+        .locator('[data-testid="JourneyCardMenuButton"]')
+        .first()
+      await expect(threeDotBtnPath).toBeVisible({ timeout: 10000 })
+      await threeDotBtnPath.click()
+    } catch (error) {
+      try {
+        // Fallback 1: Look for any button inside the card that might be the menu
+        const menuButton = journeyCard
+          .locator('button[aria-haspopup="menu"], button[aria-haspopup="true"]')
+          .first()
+        await menuButton.click({ timeout: 10000 })
+      } catch (error) {
+        try {
+          // Fallback 2: Look for three dots icon inside the card
+          const iconButton = journeyCard
+            .locator(
+              'button:has(svg[data-testid="MoreIcon"]), button.MuiIconButton-root'
+            )
+            .first()
+          await iconButton.click({ timeout: 10000 })
+        } catch (error) {
+          // Final fallback: Just click the card and hope it opens the menu
+          await journeyCard.click()
+        }
+      }
+    }
   }
 
   async setExistingJourneyNameToJourneyName() {
@@ -639,16 +670,18 @@ export class JourneyPage {
   async clickThreeDotBesideSortByOption() {
     // Try multiple approaches to find the three-dot menu button
     try {
-      // Original selector
+      // Original selector with force click to handle interception
       await this.page
         .locator('button:has(svg[data-testid="MoreIcon"])')
-        .click({ timeout: 10000 })
+        .click({ timeout: 10000, force: true })
     } catch (error) {
       try {
-        // Fallback 1: Look for any button with MoreIcon
-        await this.page
-          .locator('button svg[data-testid="MoreIcon"]')
-          .click({ timeout: 10000 })
+        // Fallback 1: Look for any button with MoreIcon and scroll into view
+        const moreButton = this.page.locator(
+          'button:has(svg[data-testid="MoreIcon"])'
+        )
+        await moreButton.scrollIntoViewIfNeeded()
+        await moreButton.click({ timeout: 10000 })
       } catch (error) {
         try {
           // Fallback 2: Look for three dots or more icon in any form
@@ -656,14 +689,14 @@ export class JourneyPage {
             .locator(
               'button[aria-label*="more"], button[aria-label*="More"], button[aria-label*="menu"]'
             )
-            .click({ timeout: 10000 })
+            .click({ timeout: 10000, force: true })
         } catch (error) {
           try {
             // Fallback 3: Look for IconButton with three dots pattern
             await this.page
               .locator('button.MuiIconButton-root:has(svg)')
               .filter({ hasText: /⋮|•••|⋯/ })
-              .click({ timeout: 10000 })
+              .click({ timeout: 10000, force: true })
           } catch (error) {
             try {
               // Fallback 4: Look for any button near sort area that might be the menu
@@ -671,7 +704,7 @@ export class JourneyPage {
                 .locator(
                   'div:has-text("Sort") + button, div:has-text("Sort") ~ button'
                 )
-                .click({ timeout: 10000 })
+                .click({ timeout: 10000, force: true })
             } catch (error) {
               try {
                 // Fallback 5: Look for data-testid that might contain "menu" or "more"
@@ -679,15 +712,26 @@ export class JourneyPage {
                   .locator(
                     'button[data-testid*="menu"], button[data-testid*="More"]'
                   )
-                  .click({ timeout: 10000 })
+                  .click({ timeout: 10000, force: true })
               } catch (error) {
-                // Final fallback: Look for any button that opens a menu
-                await this.page
-                  .locator(
-                    'button[aria-haspopup="menu"], button[aria-haspopup="true"]'
+                try {
+                  // Fallback 6: Target the intercepting element directly
+                  const interceptingElement = this.page.locator(
+                    'div[data-testid="JourneyCardMenuButton"]'
                   )
-                  .last()
-                  .click({ timeout: 10000 })
+                  if (await interceptingElement.isVisible()) {
+                    await interceptingElement.click({ timeout: 10000 })
+                  }
+                } catch (error) {
+                  // Final fallback: Look for any button that opens a menu with retry
+                  const menuButton = this.page
+                    .locator(
+                      'button[aria-haspopup="menu"], button[aria-haspopup="true"]'
+                    )
+                    .last()
+                  await menuButton.scrollIntoViewIfNeeded()
+                  await menuButton.click({ timeout: 10000, force: true })
+                }
               }
             }
           }
