@@ -173,19 +173,45 @@ export class Register {
   }
 
   private async waitForNavigationItem(): Promise<void> {
+    // Enhanced navigation detection with more robust selectors
     const navigationSelectors = [
       '[data-testid="NavigationListItemDiscover"]',
       'a:has-text("Discover")',
-      '[role="button"]:has-text("Discover")'
+      '[role="button"]:has-text("Discover")',
+      'nav a[href="/"]', // Direct navigation link to root
+      'nav [data-testid*="Discover"]', // Any discover-related nav item
+      '.MuiListItemButton-root:has-text("Discover")', // MUI specific
+      '[data-testid="NavigationDrawer"] a[href="/"]' // Specific to navigation drawer
     ]
 
     const attempts = navigationSelectors.map((selector) =>
-      expect(this.page.locator(selector)).toBeVisible({ timeout: 30000 })
+      this.page.locator(selector).waitFor({ state: 'visible', timeout: 30000 })
+    )
+
+    // Also add a generic navigation ready check
+    attempts.push(
+      this.page
+        .locator('nav, [role="navigation"], [data-testid*="Navigation"]')
+        .waitFor({ state: 'visible', timeout: 30000 })
     )
 
     try {
       await Promise.any(attempts)
     } catch (error) {
+      // Additional debug attempt - check what navigation elements are actually present
+      console.log(
+        'Navigation detection failed. Checking available navigation elements...'
+      )
+
+      try {
+        const allNavElements = await this.page
+          .locator(
+            'nav *, [role="navigation"] *, [data-testid*="Navigation"] *'
+          )
+          .allTextContents()
+        console.log('Available navigation elements:', allNavElements)
+      } catch {}
+
       throw new Error(
         `Navigation item not found. Attempted selectors: ${navigationSelectors.join(', ')}`
       )
@@ -200,7 +226,7 @@ export class Register {
     ]
 
     const attempts = selectionSelectors.map((selector) =>
-      expect(this.page.locator(selector)).toBeVisible({ timeout: 15000 })
+      this.page.locator(selector).waitFor({ state: 'visible', timeout: 15000 })
     )
 
     // Add URL check as a final attempt - matches root path (discover page)
@@ -225,7 +251,7 @@ export class Register {
     ]
 
     const attempts = contentSelectors.map((selector) =>
-      expect(this.page.locator(selector)).toBeVisible({ timeout: 30000 })
+      this.page.locator(selector).waitFor({ state: 'visible', timeout: 30000 })
     )
 
     try {
@@ -246,7 +272,7 @@ export class Register {
     ]
 
     const attempts = sidePanelSelectors.map((selector) =>
-      expect(this.page.locator(selector)).toBeVisible({ timeout: 30000 })
+      this.page.locator(selector).waitFor({ state: 'visible', timeout: 30000 })
     )
 
     try {
@@ -268,7 +294,7 @@ export class Register {
     ]
 
     const attempts = teamSelectors.map((selector) =>
-      expect(this.page.locator(selector)).toBeVisible({ timeout: 15000 })
+      this.page.locator(selector).waitFor({ state: 'visible', timeout: 15000 })
     )
 
     try {

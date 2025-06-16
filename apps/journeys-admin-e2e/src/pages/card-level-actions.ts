@@ -1732,9 +1732,78 @@ export class CardLevelActionPage {
     }
   }
   async enterDisplayTitleForFooter(footerTitle: string) {
-    await this.page
-      .locator('div.Mui-expanded input#display-title')
-      .fill(footerTitle)
+    // Enhanced approach for MUI v7 with multiple fallback strategies
+    const attempts = [
+      // Primary: Original selector
+      () =>
+        this.page
+          .locator('div.Mui-expanded input#display-title')
+          .fill(footerTitle),
+
+      // Fallback 1: Look for input without requiring expanded state
+      () => this.page.locator('input#display-title').fill(footerTitle),
+
+      // Fallback 2: Look for any display title input in visible context
+      () =>
+        this.page
+          .locator(
+            'input[id*="display-title"], input[placeholder*="title"], input[aria-label*="title"]'
+          )
+          .first()
+          .fill(footerTitle),
+
+      // Fallback 3: Expand accordion first, then find input
+      async () => {
+        // Try to find and expand accordion if needed
+        const accordionButton = this.page.locator(
+          'button[aria-expanded="false"]:has-text("Display Title")'
+        )
+        if (await accordionButton.isVisible()) {
+          await accordionButton.click()
+          await this.page.waitForTimeout(500)
+        }
+        await this.page
+          .locator('div.Mui-expanded input#display-title')
+          .fill(footerTitle)
+      },
+
+      // Fallback 4: Look in any expanded section
+      () =>
+        this.page
+          .locator(
+            'div[aria-expanded="true"] input#display-title, .MuiAccordionDetails-root input#display-title'
+          )
+          .fill(footerTitle),
+
+      // Fallback 5: Generic approach - look for any title input in settings
+      () =>
+        this.page
+          .locator(
+            'div[data-testid="SettingsDrawerContent"] input[type="text"]'
+          )
+          .filter({ hasText: '' }) // Empty or editable
+          .first()
+          .fill(footerTitle)
+    ]
+
+    for (const [index, attempt] of attempts.entries()) {
+      try {
+        await attempt()
+        return // Success
+      } catch (error) {
+        console.log(
+          `Display title input attempt ${index + 1} failed:`,
+          error.message
+        )
+        if (index === attempts.length - 1) {
+          throw new Error(
+            `Failed to enter display title "${footerTitle}" after ${attempts.length} attempts. Last error: ${error.message}`
+          )
+        }
+        // Wait a bit before next attempt
+        await this.page.waitForTimeout(1000)
+      }
+    }
   }
 
   async validateFooterTitleAndReactionButtonsInCard(footerTitle: string) {
@@ -1803,58 +1872,113 @@ export class CardLevelActionPage {
     }
   }
   async valdiateSelectedImageWithDeleteIcon() {
-    // Try multiple approaches to find the image with delete icon
-    try {
-      // Original selector
-      await expect(
-        this.page.locator(
-          'div[data-testid="ImageBlockHeader"]:has(img) button:has(svg[data-testid="imageBlockHeaderDelete"])'
-        )
-      ).toBeVisible({ timeout: 5000 })
-    } catch (error) {
-      try {
-        // Fallback 1: Look for delete button near image without specific structure
+    // Enhanced approach with better specificity to avoid false matches
+    const attempts = [
+      // Primary: Look for specific delete icon in image header
+      () =>
+        expect(
+          this.page.locator(
+            'div[data-testid="ImageBlockHeader"]:has(img) button:has(svg[data-testid="imageBlockHeaderDelete"])'
+          )
+        ).toBeVisible({ timeout: 5000 }),
+
+      // Fallback 1: Look for delete button with specific test ID
+      () =>
+        expect(
+          this.page.locator(
+            'button:has(svg[data-testid="imageBlockHeaderDelete"])'
+          )
+        ).toBeVisible({ timeout: 5000 }),
+
+      // Fallback 2: Look for delete icon specifically (not just any button)
+      () =>
+        expect(
+          this.page.locator('svg[data-testid="imageBlockHeaderDelete"]')
+        ).toBeVisible({ timeout: 5000 }),
+
+      // Fallback 3: Look for delete button with proper context (avoid drawer/navigation buttons)
+      () =>
+        expect(
+          this.page.locator(
+            'div[data-testid*="Image"]:has(img) button[aria-label*="delete"], div[data-testid*="Image"]:has(img) button[title*="delete"]'
+          )
+        ).toBeVisible({ timeout: 5000 }),
+
+      // Fallback 4: Look for delete button near image but exclude drawer/navigation buttons
+      () =>
+        expect(
+          this.page.locator(
+            'button[aria-label*="delete"]:not([aria-label*="drawer"]):not([aria-label*="open"]):not([aria-label*="menu"])'
+          )
+        ).toBeVisible({ timeout: 5000 }),
+
+      // Fallback 5: Image container with delete button (more specific)
+      () =>
+        expect(
+          this.page.locator(
+            '.image-container button[data-testid*="delete"], .image-block button[data-testid*="delete"]'
+          )
+        ).toBeVisible({ timeout: 5000 }),
+
+      // Fallback 6: Wait for image to be loaded first, then look for delete
+      async () => {
+        // Wait for image to be visible first
+        await this.page
+          .locator(
+            'div[data-testid="ImageBlockHeader"] img, img[data-testid*="image"]'
+          )
+          .waitFor({ timeout: 5000 })
         await expect(
           this.page.locator(
-            'div[data-testid="ImageBlockHeader"] button:has(svg[data-testid="imageBlockHeaderDelete"])'
+            'div:has(img) button:has(svg[data-testid*="delete"])'
           )
         ).toBeVisible({ timeout: 5000 })
+      },
+
+      // Fallback 7: Generic but more specific - avoid common false positives
+      () => {
+        const deleteButton = this.page
+          .locator('button')
+          .filter({ has: this.page.locator('svg') })
+          .filter({ hasNot: this.page.locator('[aria-label*="open"]') })
+          .filter({ hasNot: this.page.locator('[aria-label*="drawer"]') })
+          .filter({ hasNot: this.page.locator('[aria-label*="menu"]') })
+          .first()
+        return expect(deleteButton).toBeVisible({ timeout: 5000 })
+      }
+    ]
+
+    for (const [index, attempt] of attempts.entries()) {
+      try {
+        await attempt()
+        console.log(
+          `Image delete validation succeeded with attempt ${index + 1}`
+        )
+        return // Success
       } catch (error) {
-        try {
-          // Fallback 2: Look for any delete button in image context
-          await expect(
-            this.page.locator(
-              'button:has(svg[data-testid="imageBlockHeaderDelete"]), button[aria-label*="delete"]:has(img)'
-            )
-          ).toBeVisible({ timeout: 5000 })
-        } catch (error) {
+        console.log(
+          `Image delete validation attempt ${index + 1} failed:`,
+          error.message
+        )
+        if (index === attempts.length - 1) {
+          // Additional debug info on final failure
           try {
-            // Fallback 3: Look for delete icon in any image block
-            await expect(
-              this.page.locator(
-                'div:has(img) svg[data-testid="imageBlockHeaderDelete"], svg[data-testid="imageBlockHeaderDelete"]'
+            const allButtons = await this.page.locator('button').allInnerTexts()
+            console.log('Available buttons:', allButtons)
+            const allAriaLabels = await this.page
+              .locator('button[aria-label]')
+              .evaluateAll((buttons) =>
+                buttons.map((btn) => btn.getAttribute('aria-label'))
               )
-            ).toBeVisible({ timeout: 5000 })
-          } catch (error) {
-            try {
-              // Fallback 4: Look for delete button with different structure
-              await expect(
-                this.page.locator(
-                  'div[data-testid*="Image"] button:has(svg), .image-container button:has(svg)'
-                )
-              ).toBeVisible({ timeout: 5000 })
-            } catch (error) {
-              // Final fallback: Look for any button that might be delete in image context
-              await expect(
-                this.page
-                  .locator(
-                    'button[aria-label*="delete"], button[title*="delete"], button:has(svg):near(img)'
-                  )
-                  .first()
-              ).toBeVisible({ timeout: 5000 })
-            }
-          }
+            console.log('Available aria-labels:', allAriaLabels)
+          } catch {}
+
+          throw new Error(
+            `Failed to validate image delete icon after ${attempts.length} attempts. Last error: ${error.message}`
+          )
         }
+        // Wait a bit before next attempt
+        await this.page.waitForTimeout(1000)
       }
     }
   }

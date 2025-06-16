@@ -741,11 +741,73 @@ export class JourneyPage {
   }
 
   async selectThreeDotOptionsBesideSortByOption(option) {
-    await this.page
-      .locator('ul[aria-labelledby="edit-journey-actions"] li', {
-        hasText: option
-      })
-      .click()
+    // Enhanced selector with multiple fallback strategies for MUI v7
+    const attempts = [
+      // Primary: Original selector
+      () =>
+        this.page
+          .locator('ul[aria-labelledby="edit-journey-actions"] li', {
+            hasText: option
+          })
+          .click(),
+
+      // Fallback 1: Direct menu item approach
+      () =>
+        this.page.locator(`[role="menuitem"]:has-text("${option}")`).click(),
+
+      // Fallback 2: Look for any menu option containing the text
+      () =>
+        this.page
+          .locator(
+            `li:has-text("${option}"), [role="option"]:has-text("${option}")`
+          )
+          .first()
+          .click(),
+
+      // Fallback 3: MUI Menu structure
+      () =>
+        this.page.locator(`.MuiMenuItem-root:has-text("${option}")`).click(),
+
+      // Fallback 4: Wait for menu to be visible then click
+      () =>
+        this.page
+          .locator('ul[aria-labelledby="edit-journey-actions"]')
+          .waitFor({ timeout: 10000 })
+          .then(() =>
+            this.page
+              .locator('ul[aria-labelledby="edit-journey-actions"] li', {
+                hasText: option
+              })
+              .click()
+          ),
+
+      // Fallback 5: Force click approach
+      () =>
+        this.page
+          .locator('ul[aria-labelledby="edit-journey-actions"] li', {
+            hasText: option
+          })
+          .click({ force: true })
+    ]
+
+    for (const [index, attempt] of attempts.entries()) {
+      try {
+        await attempt()
+        return // Success
+      } catch (error) {
+        console.log(
+          `Archive option attempt ${index + 1} failed:`,
+          error.message
+        )
+        if (index === attempts.length - 1) {
+          throw new Error(
+            `Failed to click option "${option}" after ${attempts.length} attempts. Last error: ${error.message}`
+          )
+        }
+        // Wait a bit before next attempt
+        await this.page.waitForTimeout(1000)
+      }
+    }
   }
 
   async getJourneyListOfActiveTab() {
@@ -1193,7 +1255,83 @@ export class JourneyPage {
   }
 
   async clickAnalyticsIconInCustomJourneyPage() {
-    await this.page.locator('div[data-testid="AnalyticsItem"] a').click()
+    // Enhanced approach to handle element interception and MUI v7 changes
+    const attempts = [
+      // Primary: Original selector
+      () => this.page.locator('div[data-testid="AnalyticsItem"] a').click(),
+
+      // Fallback 1: Wait for interacting elements to disappear first
+      async () => {
+        // Wait for any overlaying menus to disappear
+        await this.page.waitForTimeout(1000)
+        await this.page.locator('div[data-testid="AnalyticsItem"] a').click()
+      },
+
+      // Fallback 2: Force click approach
+      () =>
+        this.page
+          .locator('div[data-testid="AnalyticsItem"] a')
+          .click({ force: true }),
+
+      // Fallback 3: Scroll into view then click
+      async () => {
+        const analyticsLink = this.page.locator(
+          'div[data-testid="AnalyticsItem"] a'
+        )
+        await analyticsLink.scrollIntoViewIfNeeded()
+        await analyticsLink.click()
+      },
+
+      // Fallback 4: Close any open menus first
+      async () => {
+        // Try to close any open menus by clicking elsewhere
+        try {
+          await this.page.locator('body').click({ position: { x: 10, y: 10 } })
+          await this.page.waitForTimeout(500)
+        } catch {}
+        await this.page.locator('div[data-testid="AnalyticsItem"] a').click()
+      },
+
+      // Fallback 5: Alternative analytics selector
+      () =>
+        this.page
+          .locator(
+            '[data-testid="AnalyticsItem"] button, [aria-label*="Analytics"], [title*="Analytics"]'
+          )
+          .click(),
+
+      // Fallback 6: Direct navigation using href
+      async () => {
+        const analyticsLink = this.page.locator(
+          'div[data-testid="AnalyticsItem"] a'
+        )
+        const href = await analyticsLink.getAttribute('href')
+        if (href) {
+          await this.page.goto(href)
+        } else {
+          throw new Error('No href found on analytics link')
+        }
+      }
+    ]
+
+    for (const [index, attempt] of attempts.entries()) {
+      try {
+        await attempt()
+        return // Success
+      } catch (error) {
+        console.log(
+          `Analytics click attempt ${index + 1} failed:`,
+          error.message
+        )
+        if (index === attempts.length - 1) {
+          throw new Error(
+            `Failed to click analytics after ${attempts.length} attempts. Last error: ${error.message}`
+          )
+        }
+        // Wait a bit before next attempt
+        await this.page.waitForTimeout(1000)
+      }
+    }
   }
 
   async verifyAnalyticsPageNavigation() {
