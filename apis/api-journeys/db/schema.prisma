@@ -367,6 +367,7 @@ model Journey {
   title                     String
   languageId                String
   description               String?
+  context                   String?
   slug                      String                      @unique
   archivedAt                DateTime?
   createdAt                 DateTime                    @default(now())

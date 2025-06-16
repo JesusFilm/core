@@ -74,6 +74,7 @@ describe('JourneyResolver', () => {
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
     description: null,
+    context: null,
     creatorDescription: null,
     creatorImageBlockId: null,
     primaryImageBlockId: null,
@@ -1974,6 +1975,41 @@ describe('JourneyResolver', () => {
       await expect(
         resolver.journeyUpdate(ability, 'journeyId', { title: 'new title' })
       ).rejects.toThrow('journey not found')
+    })
+
+    describe('when journey is not a template', () => {
+      it('should not update the journey context', async () => {
+        prismaService.journey.findUnique.mockResolvedValueOnce(
+          journeyWithUserTeam
+        )
+        await resolver.journeyUpdate(ability, journeyWithUserTeam.id, {
+          context: 'new context'
+        })
+        expect(prismaService.journey.update).toHaveBeenCalledWith(
+          expect.objectContaining({
+            data: expect.objectContaining({
+              context: undefined
+            })
+          })
+        )
+      })
+    })
+
+    describe('when journey is a template', () => {
+      it('should update the journey context', async () => {
+        const template = { ...journeyWithUserTeam, template: true }
+        prismaService.journey.findUnique.mockResolvedValueOnce(template)
+        await resolver.journeyUpdate(ability, template.id, {
+          context: 'new context'
+        })
+        expect(prismaService.journey.update).toHaveBeenCalledWith(
+          expect.objectContaining({
+            data: expect.objectContaining({
+              context: 'new context'
+            })
+          })
+        )
+      })
     })
   })
 
