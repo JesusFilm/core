@@ -171,7 +171,7 @@ export function TemplateSettingsDialog({
                   {...tabA11yProps('categories', 1)}
                 />
                 <Tab label={t('About')} {...tabA11yProps('about', 2)} />
-                <Tab label={t('Context')} {...tabA11yProps('context', 3)} />
+                <Tab label={t('AI')} {...tabA11yProps('context', 3)} />
               </Tabs>
               <TabPanel name="metadata" value={tab} index={0}>
                 <Stack sx={{ pt: 6 }} gap={5}>

@@ -1,3 +1,4 @@
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import { useUser } from 'next-firebase-auth'
@@ -51,10 +52,12 @@ export function ContextTabPanel(): ReactElement {
         helperText={
           errors?.context != null
             ? errors?.context
-            : t('Context for AI-generated content')
+            : t(
+                'This will be used when a journey builder chooses to customize the journey using AI.'
+              )
         }
         onChange={handleChange}
-        label={t('Context')}
+        label={t('AI Context')}
         multiline
         rows={10}
       />
@@ -63,8 +66,9 @@ export function ContextTabPanel(): ReactElement {
         color="primary"
         onClick={handleGenerate}
         disabled={generateLoading}
+        startIcon={<AutoAwesomeIcon />}
       >
-        {generateLoading ? t('Generating...') : t('Generate')}
+        {generateLoading ? t('Generating...') : t('Generate with AI')}
       </Button>
     </>
   )
