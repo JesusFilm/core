@@ -176,7 +176,7 @@ export class Register {
     const navigationSelectors = [
       '[data-testid="NavigationListItemDiscover"]',
       'a:has-text("Discover")',
-      '[role="button"]:has-text("Discover"), a:has-text("Discover")'
+      '[role="button"]:has-text("Discover")'
     ]
 
     const attempts = navigationSelectors.map((selector) =>
@@ -195,15 +195,16 @@ export class Register {
   private async waitForPageSelection(): Promise<void> {
     const selectionSelectors = [
       '[data-testid="NavigationListItemDiscover"].Mui-selected',
-      '[data-testid="NavigationListItemDiscover"][aria-current], [data-testid="NavigationListItemDiscover"][class*="selected"]'
+      '[data-testid="NavigationListItemDiscover"][aria-current]',
+      '[data-testid="NavigationListItemDiscover"][class*="selected"]'
     ]
 
     const attempts = selectionSelectors.map((selector) =>
       expect(this.page.locator(selector)).toBeVisible({ timeout: 15000 })
     )
 
-    // Add URL check as a final attempt
-    attempts.push(this.page.waitForURL(/\/$/, { timeout: 15000 }))
+    // Add URL check as a final attempt - matches root path (discover page)
+    attempts.push(this.page.waitForURL(/^\/(\?.*)?$/, { timeout: 15000 }))
 
     try {
       await Promise.any(attempts)
@@ -217,8 +218,10 @@ export class Register {
   private async waitForMainContent(): Promise<void> {
     const contentSelectors = [
       '[data-testid="JourneysAdminJourneyList"]',
-      '[data-testid*="JourneyList"], main:has([data-testid*="Journey"])',
-      '.MuiGrid-container, [role="main"]'
+      '[data-testid*="JourneyList"]',
+      'main:has([data-testid*="Journey"])',
+      '.MuiGrid-container',
+      '[role="main"]'
     ]
 
     const attempts = contentSelectors.map((selector) =>
@@ -237,7 +240,9 @@ export class Register {
   private async waitForSidePanel(): Promise<void> {
     const sidePanelSelectors = [
       '[data-testid="side-panel"]',
-      '[data-testid*="side"], aside, .MuiDrawer-paper'
+      '[data-testid*="side"]',
+      'aside',
+      '.MuiDrawer-paper'
     ]
 
     const attempts = sidePanelSelectors.map((selector) =>
@@ -257,7 +262,9 @@ export class Register {
   private async waitForTeamSelection(): Promise<void> {
     const teamSelectors = [
       '[data-testid="TeamSelect"]',
-      '[data-testid*="Team"], [aria-label*="team"], [role="combobox"]:has-text("Team")'
+      '[data-testid*="Team"]',
+      '[aria-label*="team"]',
+      '[role="combobox"]:has-text("Team")'
     ]
 
     const attempts = teamSelectors.map((selector) =>
@@ -287,10 +294,28 @@ export class Register {
 
         try {
           await teamSelectElement.click()
-          await this.page
-            .locator('[role="listbox"] [role="option"], .MuiMenuItem-root')
-            .first()
-            .click()
+
+          // Try different selectors for the dropdown options
+          const optionSelectors = [
+            '[role="listbox"] [role="option"]',
+            '.MuiMenuItem-root'
+          ]
+
+          let optionClicked = false
+          for (const selector of optionSelectors) {
+            try {
+              await this.page.locator(selector).first().click()
+              optionClicked = true
+              break
+            } catch {
+              // Continue to next selector
+            }
+          }
+
+          if (!optionClicked) {
+            throw new Error('Could not find dropdown option to click')
+          }
+
           await this.page.waitForTimeout(2000)
         } catch (error) {
           throw new Error(
