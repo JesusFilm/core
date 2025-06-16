@@ -357,20 +357,20 @@ export class JourneyLevelActions {
 
     await languageCombobox.click()
 
-    // Wait for the dropdown to open with multiple possible selectors
+    // Wait for dropdown to open and options to be available
     try {
       await expect(
-        this.page.locator(
-          '[role="listbox"], [role="menu"], ul[aria-label*="language"], .MuiPaper-root:has([role="option"])'
-        )
+        this.page
+          .locator('[role="listbox"], [role="menu"], ul, .MuiPaper-root li')
+          .first()
       ).toBeVisible({ timeout: 10000 })
-    } catch {
+    } catch (error) {
       // If dropdown doesn't appear, try clicking again
       await languageCombobox.click()
       await expect(
-        this.page.locator(
-          '[role="listbox"], [role="menu"], ul, .MuiPaper-root li'
-        )
+        this.page
+          .locator('[role="listbox"], [role="menu"], ul, .MuiPaper-root li')
+          .first()
       ).toBeVisible({ timeout: 10000 })
     }
 

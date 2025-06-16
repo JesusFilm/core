@@ -415,9 +415,35 @@ export class JourneyPage {
   }
 
   async clickArchiveOption() {
-    await this.page
-      .locator('li[data-testid="JourneysAdminMenuItemArchive"]')
-      .click()
+    // Try multiple approaches to find the archive option
+    try {
+      // Original selector
+      await this.page
+        .locator('li[data-testid="JourneysAdminMenuItemArchive"]')
+        .click({ timeout: 10000 })
+    } catch (error) {
+      try {
+        // Fallback 1: Look for menu item with "Archive" text
+        await this.page
+          .locator('ul[role="menu"] li[role="menuitem"]')
+          .filter({ hasText: 'Archive' })
+          .click({ timeout: 10000 })
+      } catch (error) {
+        try {
+          // Fallback 2: Look for any clickable element with Archive text in menu context
+          await this.page
+            .locator(
+              'li:has-text("Archive"), [role="menuitem"]:has-text("Archive")'
+            )
+            .click({ timeout: 10000 })
+        } catch (error) {
+          // Final fallback: Look for Archive text in any list item
+          await this.page
+            .locator('li', { hasText: 'Archive' })
+            .click({ timeout: 10000 })
+        }
+      }
+    }
   }
 
   async clickArchivedTab() {

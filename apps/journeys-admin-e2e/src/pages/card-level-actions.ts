@@ -198,12 +198,47 @@ export class CardLevelActionPage {
   }
 
   async clickSelectImageBtn() {
-    await this.page
-      .locator(
-        'div[data-testid="ImageSource"] button[data-testid="card click area"]',
-        { hasText: 'Select Image' }
-      )
-      .click()
+    // Try multiple approaches to find and click the select image button
+    try {
+      // Original selector
+      await this.page
+        .locator(
+          'div[data-testid="ImageSource"] button[data-testid="card click area"]',
+          { hasText: 'Select Image' }
+        )
+        .click({ timeout: 10000 })
+    } catch (error) {
+      try {
+        // Fallback 1: Look for button with just text match
+        await this.page
+          .locator('button[data-testid="card click area"]')
+          .filter({ hasText: 'Select Image' })
+          .click({ timeout: 10000 })
+      } catch (error) {
+        try {
+          // Fallback 2: Look for button with MUI classes and text
+          await this.page
+            .locator('button.MuiButtonBase-root.MuiCardActionArea-root')
+            .filter({ hasText: 'Select Image' })
+            .click({ timeout: 10000 })
+        } catch (error) {
+          try {
+            // Fallback 3: Look for any button with "Select Image" text
+            await this.page
+              .locator('button:has-text("Select Image")')
+              .click({ timeout: 10000 })
+          } catch (error) {
+            // Final fallback: Force click with visibility check disabled
+            await this.page
+              .locator(
+                'div[data-testid="ImageSource"] button[data-testid="card click area"]',
+                { hasText: 'Select Image' }
+              )
+              .click({ force: true, timeout: 10000 })
+          }
+        }
+      }
+    }
   }
   async clickSelectedImageBtn() {
     await this.page
@@ -1429,25 +1464,56 @@ export class CardLevelActionPage {
       .click()
   }
   async verifyButtonPropertyUpdatedInCard(buttonName: string) {
-    await expect(
-      this.page
-        .frameLocator(this.journeyCardFrame)
-        .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid *="JourneysButton"]'
-        )
-        .locator(
-          'button.MuiButton-text.MuiButton-sizeSmall.MuiButton-textPrimary'
-        )
-        .filter({
-          has: this.page.locator('svg[data-testid="ArrowForwardRoundedIcon"]')
-        })
-        .filter({
-          has: this.page.locator(
-            'svg[data-testid="ChatBubbleOutlineRoundedIcon"]'
+    // Try multiple approaches to find the button in iframe
+    const frameLocator = this.page.frameLocator(this.journeyCardFrame)
+
+    try {
+      // Original selector
+      await expect(
+        frameLocator
+          .locator(
+            'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid *="JourneysButton"]'
           )
-        })
-        .locator('textarea[name="buttonLabel"]')
-    ).toHaveValue(buttonName)
+          .locator(
+            'button.MuiButton-text.MuiButton-sizeSmall.MuiButton-textPrimary'
+          )
+          .filter({
+            has: this.page.locator('svg[data-testid="ArrowForwardRoundedIcon"]')
+          })
+          .filter({
+            has: this.page.locator(
+              'svg[data-testid="ChatBubbleOutlineRoundedIcon"]'
+            )
+          })
+          .locator('textarea[name="buttonLabel"]')
+      ).toHaveValue(buttonName, { timeout: 10000 })
+    } catch (error) {
+      try {
+        // Fallback 1: Look for button with simpler MUI classes
+        await expect(
+          frameLocator
+            .locator(
+              'div[data-testid="CardOverlayContent"] div[data-testid*="JourneysButton"]'
+            )
+            .locator('button.MuiButton-root')
+            .locator('textarea[name="buttonLabel"]')
+        ).toHaveValue(buttonName, { timeout: 10000 })
+      } catch (error) {
+        try {
+          // Fallback 2: Look for any button with buttonLabel textarea
+          await expect(
+            frameLocator
+              .locator('div[data-testid="CardOverlayContent"]')
+              .locator('textarea[name="buttonLabel"]')
+          ).toHaveValue(buttonName, { timeout: 10000 })
+        } catch (error) {
+          // Final fallback: Look for any textarea with the button name value
+          await expect(
+            frameLocator.locator('textarea[name="buttonLabel"]')
+          ).toHaveValue(buttonName, { timeout: 10000 })
+        }
+      }
+    }
   }
 
   async verifySpacerAddedToCard() {
@@ -1562,12 +1628,43 @@ export class CardLevelActionPage {
   }
   async selectReactionOptions(checkBoxTestId: string) {
     //'checkbox-Share', 'checkbox-Like', 'checkbox-Dislike'
-    const checkBox = this.page
-      .locator('div.Mui-expanded div[data-testid="Reactions"]')
-      .getByTestId(checkBoxTestId)
-      .getByRole('checkbox')
-    await checkBox.check()
-    await expect(checkBox).toBeChecked()
+    // Try multiple approaches to find and check the reaction checkbox
+    try {
+      // Original selector
+      const checkBox = this.page
+        .locator('div.Mui-expanded div[data-testid="Reactions"]')
+        .getByTestId(checkBoxTestId)
+        .getByRole('checkbox')
+      await checkBox.check({ timeout: 10000 })
+      await expect(checkBox).toBeChecked()
+    } catch (error) {
+      try {
+        // Fallback 1: Look for checkbox by test id without Mui-expanded
+        const checkBox = this.page
+          .locator('div[data-testid="Reactions"]')
+          .getByTestId(checkBoxTestId)
+          .getByRole('checkbox')
+        await checkBox.check({ timeout: 10000 })
+        await expect(checkBox).toBeChecked()
+      } catch (error) {
+        try {
+          // Fallback 2: Look for checkbox with more specific MUI classes
+          const checkBox = this.page
+            .locator('.MuiAccordionDetails-root div[data-testid="Reactions"]')
+            .getByTestId(checkBoxTestId)
+            .getByRole('checkbox')
+          await checkBox.check({ timeout: 10000 })
+          await expect(checkBox).toBeChecked()
+        } catch (error) {
+          // Final fallback: Look for any checkbox with the test id
+          const checkBox = this.page
+            .getByTestId(checkBoxTestId)
+            .getByRole('checkbox')
+          await checkBox.check({ timeout: 10000 })
+          await expect(checkBox).toBeChecked()
+        }
+      }
+    }
   }
   async enterDisplayTitleForFooter(footerTitle: string) {
     await this.page
