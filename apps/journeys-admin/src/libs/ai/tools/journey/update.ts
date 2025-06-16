@@ -9,7 +9,7 @@ import {
 
 import { journeyUpdateInputSchema } from './type'
 
-const AI_JOURNEY_UPDATE = gql`
+export const AI_JOURNEY_UPDATE = gql`
   mutation AiJourneyUpdateMutation($id: ID!, $input: JourneyUpdateInput!) {
     journeyUpdate(id: $id, input: $input) {
       id

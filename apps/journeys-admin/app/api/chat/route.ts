@@ -47,9 +47,10 @@ export async function POST(req: NextRequest) {
     ),
     journeyId: z.string().optional(),
     selectedStepId: z.string().optional(),
-    selectedBlockId: z.string().optional()
+    selectedBlockId: z.string().optional(),
+    sessionId: z.string().optional()
   })
-  const { messages, journeyId, selectedStepId, selectedBlockId } =
+  const { messages, journeyId, selectedStepId, selectedBlockId, sessionId } =
     schema.parse(body)
 
   const token = req.headers.get('Authorization')
@@ -98,7 +99,7 @@ export async function POST(req: NextRequest) {
         langfuseTraceId,
         langfusePrompt: systemPrompt.toJSON(),
         userId: decoded.user_id,
-        sessionId: `${decoded.user_id}-${decoded.auth_time}`
+        sessionId: sessionId ?? `${decoded.user_id}-${decoded.auth_time}`
       }
     },
     onError: async () => {
