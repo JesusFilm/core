@@ -47,7 +47,8 @@ test.skip('Chapter', async ({ page }) => {
   // check it's navigated to the correct URL
   await expect(page).toHaveURL('/watch/jesus-calms-the-storm.html/english.html')
 
-  await page.getByRole('button', { name: 'Play' }).click()
+  //video should auto play in new watch design - Nisal - 17/06/2025
+  // await page.getByRole('button', { name: 'Play' }).click()
 
   // wait for 3 minutes to see if the video until there are some events thta can say the state of the video
   // later find a way to check if the video is complete and check if the video is playing. Also use 10 seconds video

@@ -22,7 +22,7 @@ test.describe('firefox only', () => {
   // eslint-disable-next-line playwright/no-skipped-test
   test.skip(({ browserName }) => browserName !== 'firefox', 'firefox only!')
 
-  test.skip('Feature film', async ({ page, browser }) => {
+  test('Feature film', async ({ page, browser }) => {
     // Set test time out as it has video
     test.setTimeout(5 * 60 * 1000)
 
@@ -47,6 +47,7 @@ test.describe('firefox only', () => {
     await expect(page).toHaveURL('watch/jesus.html/english.html')
 
     // check navigation buttons are working
+    // nav buttons have been removed - Nisal - 17/06/2025
     await page.getByTestId('NavigateNextIcon').click()
     await page.getByTestId('NavigateNextIcon').click()
     await page.getByTestId('NavigateBeforeIcon').click()
@@ -75,7 +76,8 @@ test.describe('firefox only', () => {
     //   fullPage: true
     // })
 
-    await page.getByRole('button', { name: 'Play' }).first().click()
+    //video should auto play in new watch design - Nisal - 17/06/2025
+    // await page.getByRole('button', { name: 'Play' }).first().click()
 
     // wait for 60 seconds to see if the video is complete. Until there are some events in the code to figure this out
     // eslint-disable-next-line playwright/no-wait-for-timeout
