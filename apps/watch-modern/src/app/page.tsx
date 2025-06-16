@@ -1,30 +1,23 @@
 'use client'
 
-import styled from '@emotion/styled'
+const TITLE = 'Welcome to Watch Modern'
+const SUBTITLE = 'Your modern streaming platform'
 
-const StyledPage = styled.div`
-  .page {
-  }
-`
-
-export default function Index() {
-  /*
-   * Replace the elements below with your own.
-   *
-   * Note: The corresponding styles are in the ./index.@emotion/styled file.
-   */
+/**
+ * Home page component for the watch-modern application
+ * @returns {JSX.Element} The rendered home page
+ */
+export default function Index(): JSX.Element {
   return (
-    <StyledPage>
-      <div className="wrapper">
-        <div className="container">
-          <div id="welcome">
-            <h1>
-              <span> Hello there, </span>
-              Welcome watch-modern 👋
-            </h1>
-          </div>
+    <main className="flex-1 py-8">
+      <div className="rounded-lg border bg-card p-6 shadow-sm">
+        <div className="mb-4">
+          <h2 className="text-2xl font-bold">{TITLE}</h2>
+        </div>
+        <div>
+          <p className="text-gray-600">{SUBTITLE}</p>
         </div>
       </div>
-    </StyledPage>
+    </main>
   )
 }
