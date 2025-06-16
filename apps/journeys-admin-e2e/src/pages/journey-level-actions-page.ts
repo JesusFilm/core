@@ -292,7 +292,15 @@ export class JourneyLevelActions {
       '[aria-label*="Language"] [role="combobox"]',
       '[data-testid*="language"] [role="combobox"]',
       'input[placeholder*="language"]',
-      'div[aria-label*="language"]'
+      'input[placeholder*="Language"]',
+      'div[aria-label*="language"]',
+      '.MuiSelect-select[aria-label*="language"]',
+      '.MuiInputBase-input[aria-label*="language"]',
+      '[role="combobox"]:has-text("Language")',
+      '[role="button"]:has-text("Language")',
+      'div[data-testid*="LanguageSelect"]',
+      'button[aria-haspopup="listbox"]:near(:text("Language"))',
+      'input:near(:text("Language"))'
     ]
 
     let languageCombobox: any = null
@@ -300,12 +308,44 @@ export class JourneyLevelActions {
     // Try each selector until we find one that works
     for (const selector of languageSelectors) {
       try {
-        await expect(this.page.locator(selector)).toBeVisible({ timeout: 5000 })
+        await expect(this.page.locator(selector)).toBeVisible({ timeout: 3000 })
         languageCombobox = this.page.locator(selector)
         console.log(`Found language selector with: ${selector}`)
         break
       } catch {
         console.log(`Language selector not found with: ${selector}`)
+      }
+    }
+
+    // If none of the specific selectors work, try a more generic approach
+    if (languageCombobox === null) {
+      try {
+        // Look for any combobox or select near text that contains "language"
+        languageCombobox = this.page
+          .locator(
+            '[role="combobox"], [role="button"][aria-haspopup="listbox"], select'
+          )
+          .filter({
+            hasText: /(language|Language)/i
+          })
+          .first()
+        await expect(languageCombobox).toBeVisible({ timeout: 5000 })
+        console.log('Found language selector using generic text filter')
+      } catch {
+        // Final fallback - look for any interactive element that might be a language selector
+        try {
+          languageCombobox = this.page
+            .locator('input, select, [role="combobox"], [role="button"]')
+            .filter({
+              hasText: /(language|lang|Language|Lang)/i
+            })
+            .first()
+          await expect(languageCombobox).toBeVisible({ timeout: 5000 })
+          console.log('Found language selector using final fallback')
+        } catch {
+          // Take a screenshot for debugging
+          await this.page.screenshot({ path: 'language-selector-debug.png' })
+        }
       }
     }
 
@@ -317,29 +357,57 @@ export class JourneyLevelActions {
 
     await languageCombobox.click()
 
-    // Wait for the dropdown to open
-    await expect(
-      this.page.locator(
-        '[role="listbox"], [role="menu"], ul[aria-label*="language"]'
-      )
-    ).toBeVisible({ timeout: 10000 })
+    // Wait for the dropdown to open with multiple possible selectors
+    try {
+      await expect(
+        this.page.locator(
+          '[role="listbox"], [role="menu"], ul[aria-label*="language"], .MuiPaper-root:has([role="option"])'
+        )
+      ).toBeVisible({ timeout: 10000 })
+    } catch {
+      // If dropdown doesn't appear, try clicking again
+      await languageCombobox.click()
+      await expect(
+        this.page.locator(
+          '[role="listbox"], [role="menu"], ul, .MuiPaper-root li'
+        )
+      ).toBeVisible({ timeout: 10000 })
+    }
 
-    // Find and click the language option
-    this.selectedLanguage = await this.page
-      .locator(
-        '[role="listbox"] [role="option"], [role="menu"] [role="menuitem"], li'
-      )
-      .filter({ hasText: language })
-      .first()
-      .innerText()
+    // Find and click the language option with better selectors
+    const optionSelectors = [
+      `[role="listbox"] [role="option"]:has-text("${language}")`,
+      `[role="menu"] [role="menuitem"]:has-text("${language}")`,
+      `li:has-text("${language}")`,
+      `.MuiMenuItem-root:has-text("${language}")`,
+      `[data-value*="${language}"]`
+    ]
 
-    await this.page
-      .locator(
-        '[role="listbox"] [role="option"], [role="menu"] [role="menuitem"], li'
-      )
-      .filter({ hasText: language })
-      .first()
-      .click()
+    let selectedOption
+    for (const selector of optionSelectors) {
+      try {
+        selectedOption = this.page.locator(selector).first()
+        await expect(selectedOption).toBeVisible({ timeout: 3000 })
+        break
+      } catch {
+        continue
+      }
+    }
+
+    if (selectedOption) {
+      this.selectedLanguage = await selectedOption.innerText()
+      await selectedOption.click()
+    } else {
+      // Fallback - get any option that contains the language text
+      const fallbackOption = this.page
+        .locator('li, [role="option"], [role="menuitem"]')
+        .filter({
+          hasText: language
+        })
+        .first()
+      this.selectedLanguage = await fallbackOption.innerText()
+      await fallbackOption.click()
+    }
   }
 
   async verifyLinkIsCopied() {

@@ -561,8 +561,6 @@ export class JourneyPage {
         hasNotText: 'Untitled Journey'
       })
       .first()
-      .locator('[data-testid="JourneyCardMenuButton"]')
-      .first()
       .click()
   }
 
@@ -595,7 +593,7 @@ export class JourneyPage {
   }
 
   async clickThreeDotBesideSortByOption() {
-    await this.page.locator('[data-testid="JourneyListMenu"] button').click()
+    await this.page.locator('button:has(svg[data-testid="MoreIcon"])').click()
   }
 
   async selectThreeDotOptionsBesideSortByOption(option) {
@@ -1035,6 +1033,8 @@ export class JourneyPage {
       .locator('div[aria-label="journey-card"]', {
         hasNotText: 'Untitled Journey'
       })
+      .first()
+      .locator('[data-testid="JourneyCardMenuButton"]')
       .first()
       .click()
   }

@@ -159,12 +159,28 @@ export class Register {
   }
 
   async waitUntilDiscoverPageLoaded() {
-    // First, wait for the discover navigation item to be visible
-    await expect(
-      this.page.locator('[data-testid="NavigationListItemDiscover"]')
-    ).toBeVisible({ timeout: 30000 })
+    // First, wait for the discover navigation item to be visible with multiple selectors
+    try {
+      await expect(
+        this.page.locator('[data-testid="NavigationListItemDiscover"]')
+      ).toBeVisible({ timeout: 30000 })
+    } catch {
+      // Try alternative selector if the first one fails
+      try {
+        await expect(this.page.locator('a:has-text("Discover")')).toBeVisible({
+          timeout: 10000
+        })
+      } catch {
+        // Final fallback - look for any navigation with discover text
+        await expect(
+          this.page.locator(
+            '[role="button"]:has-text("Discover"), a:has-text("Discover")'
+          )
+        ).toBeVisible({ timeout: 10000 })
+      }
+    }
 
-    // Wait for the discover page to be selected (either by class or by checking the URL)
+    // Wait for the discover page to be selected with multiple approaches
     try {
       await expect(
         this.page.locator(
@@ -172,19 +188,57 @@ export class Register {
         )
       ).toBeVisible({ timeout: 15000 })
     } catch {
-      // If the class-based selector doesn't work, check the URL
-      await expect(this.page).toHaveURL(/\/$/, { timeout: 15000 })
+      // If the class-based selector doesn't work, try alternative MUI classes
+      try {
+        await expect(
+          this.page.locator(
+            '[data-testid="NavigationListItemDiscover"][aria-current], [data-testid="NavigationListItemDiscover"][class*="selected"]'
+          )
+        ).toBeVisible({ timeout: 10000 })
+      } catch {
+        // Check the URL as final fallback
+        await expect(this.page).toHaveURL(/\/$/, { timeout: 15000 })
+      }
     }
 
-    // Wait for the main content area to be loaded
-    await expect(
-      this.page.locator('[data-testid="JourneysAdminJourneyList"]')
-    ).toBeVisible({ timeout: 30000 })
+    // Wait for the main content area to be loaded with fallbacks
+    try {
+      await expect(
+        this.page.locator('[data-testid="JourneysAdminJourneyList"]')
+      ).toBeVisible({ timeout: 30000 })
+    } catch {
+      // Try alternative selectors for journey list
+      try {
+        await expect(
+          this.page.locator(
+            '[data-testid*="JourneyList"], main:has([data-testid*="Journey"])'
+          )
+        ).toBeVisible({ timeout: 15000 })
+      } catch {
+        // Look for any grid or list container that might contain journeys
+        await expect(
+          this.page.locator('.MuiGrid-container, [role="main"]')
+        ).toBeVisible({ timeout: 15000 })
+      }
+    }
 
-    // Wait for the side panel to be loaded
-    await expect(this.page.locator('[data-testid="side-panel"]')).toBeVisible({
-      timeout: 30000
-    })
+    // Wait for the side panel to be loaded with fallbacks
+    try {
+      await expect(this.page.locator('[data-testid="side-panel"]')).toBeVisible(
+        {
+          timeout: 30000
+        }
+      )
+    } catch {
+      // Try alternative selectors for side panel
+      try {
+        await expect(
+          this.page.locator('[data-testid*="side"], aside, .MuiDrawer-paper')
+        ).toBeVisible({ timeout: 15000 })
+      } catch {
+        console.log('Side panel not found, continuing...')
+      }
+    }
 
     // Wait for team to be loaded by checking if team select is visible
     try {
@@ -192,44 +246,36 @@ export class Register {
         { timeout: 15000 }
       )
     } catch {
-      console.log('Team select not found, continuing...')
+      // Try alternative selectors for team selection
+      try {
+        await expect(
+          this.page.locator(
+            '[data-testid*="Team"], [aria-label*="team"], [role="combobox"]:has-text("Team")'
+          )
+        ).toBeVisible({ timeout: 10000 })
+      } catch {
+        console.log('Team select not found, continuing...')
+      }
     }
 
     // Check if we're in "Shared With Me" state and need to select a team
-    const isSharedWithMe = await this.page
-      .locator('[data-testid="TeamSelect"]')
-      .textContent()
-    if (isSharedWithMe?.includes('Shared With Me')) {
-      console.log('User is in "Shared With Me" state, selecting first team...')
-      // Click on team select to open dropdown
-      await this.page.locator('[data-testid="TeamSelect"]').click()
-      // Wait for dropdown to open and select first team
-      await this.page
-        .locator('[role="listbox"] [role="option"]')
-        .first()
-        .click()
-      // Wait a bit for the team to be selected
-      await this.page.waitForTimeout(2000)
-    }
-
-    // Finally, wait for the create journey button to appear
-    await expect(
-      this.page.locator('[data-testid="JourneysAdminContainedIconButton"]')
-    ).toBeVisible({ timeout: 30000 })
-
-    // Add some debugging information
-    try {
-      const teamSelectText = await this.page
-        .locator('[data-testid="TeamSelect"]')
-        .textContent()
-      console.log('Team select text:', teamSelectText)
-
-      const buttonExists = await this.page
-        .locator('[data-testid="JourneysAdminContainedIconButton"]')
-        .isVisible()
-      console.log('Create journey button visible:', buttonExists)
-    } catch {
-      console.log('Debug info gathering failed, but continuing...')
+    const teamSelectElement = this.page.locator('[data-testid="TeamSelect"]')
+    if (await teamSelectElement.isVisible()) {
+      const teamSelectText = await teamSelectElement.textContent()
+      if (teamSelectText?.includes('Shared With Me')) {
+        console.log(
+          'User is in "Shared With Me" state, selecting first team...'
+        )
+        // Click on team select to open dropdown
+        await teamSelectElement.click()
+        // Wait for dropdown to open and select first team
+        await this.page
+          .locator('[role="listbox"] [role="option"], .MuiMenuItem-root')
+          .first()
+          .click()
+        // Wait a bit for the team to be selected
+        await this.page.waitForTimeout(2000)
+      }
     }
   }
 

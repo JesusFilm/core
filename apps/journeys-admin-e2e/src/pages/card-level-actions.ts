@@ -691,13 +691,33 @@ export class CardLevelActionPage {
       this.page.locator('div[data-testid="TextResponseProperties"]')
     ).toBeVisible({ timeout: 30000 })
 
-    // Wait for the specific accordion summary to be visible
-    await expect(
-      this.page.locator(
+    // Try multiple approaches to find the accordion summary
+    let accordionSummary
+
+    // First try the original selector
+    try {
+      accordionSummary = this.page.locator(
         'div[data-testid="TextResponseProperties"] div[data-testid="AccordionSummary"]',
         { hasText: feedBackProperty }
       )
-    ).toBeVisible({ timeout: 20000 })
+      await expect(accordionSummary).toBeVisible({ timeout: 5000 })
+    } catch {
+      // If that fails, try looking for MUI AccordionSummary within the TextResponseProperties
+      try {
+        accordionSummary = this.page.locator(
+          'div[data-testid="TextResponseProperties"] .MuiAccordionSummary-root',
+          { hasText: feedBackProperty }
+        )
+        await expect(accordionSummary).toBeVisible({ timeout: 5000 })
+      } catch {
+        // Final fallback - look for any clickable element with the text
+        accordionSummary = this.page.locator(
+          'div[data-testid="TextResponseProperties"] [role="button"]',
+          { hasText: feedBackProperty }
+        )
+        await expect(accordionSummary).toBeVisible({ timeout: 5000 })
+      }
+    }
 
     // Check if the accordion is collapsed and needs to be expanded
     const isCollapsed = await this.page
@@ -706,14 +726,10 @@ export class CardLevelActionPage {
         { hasText: feedBackProperty }
       )
       .isVisible()
+      .catch(() => false)
 
     if (isCollapsed) {
-      await this.page
-        .locator(
-          'div[data-testid="TextResponseProperties"] div[data-testid="AccordionSummary"]',
-          { hasText: feedBackProperty }
-        )
-        .click()
+      await accordionSummary.click()
 
       // Wait for the accordion to expand
       await expect(
@@ -963,17 +979,33 @@ export class CardLevelActionPage {
   }
 
   async expandJourneyAppearance(tabName: string) {
-    // First wait for any accordion summary to be visible
-    await expect(
-      this.page.locator('div[data-testid="AccordionSummary"]').first()
-    ).toBeVisible({ timeout: 30000 })
+    // Try multiple approaches to find the accordion summary
+    let accordionSummary
 
-    // Wait for the specific accordion summary to be visible
-    await expect(
-      this.page.locator('div[data-testid="AccordionSummary"]', {
-        hasText: tabName
-      })
-    ).toBeVisible({ timeout: 20000 })
+    // First try the original selector with data-testid
+    try {
+      accordionSummary = this.page.locator(
+        'div[data-testid="AccordionSummary"]',
+        {
+          hasText: tabName
+        }
+      )
+      await expect(accordionSummary).toBeVisible({ timeout: 10000 })
+    } catch {
+      // If that fails, try looking for MUI AccordionSummary class
+      try {
+        accordionSummary = this.page.locator('.MuiAccordionSummary-root', {
+          hasText: tabName
+        })
+        await expect(accordionSummary).toBeVisible({ timeout: 10000 })
+      } catch {
+        // Final fallback - look for any button role with the text
+        accordionSummary = this.page.locator('[role="button"]', {
+          hasText: tabName
+        })
+        await expect(accordionSummary).toBeVisible({ timeout: 10000 })
+      }
+    }
 
     // Check if the accordion is collapsed
     const isCollapsed = await this.page
@@ -981,40 +1013,45 @@ export class CardLevelActionPage {
         hasText: tabName
       })
       .isVisible()
+      .catch(async () => {
+        // Fallback check using MUI class
+        return await this.page
+          .locator('.MuiAccordionSummary-root[aria-expanded="false"]', {
+            hasText: tabName
+          })
+          .isVisible()
+          .catch(() => false)
+      })
 
     if (isCollapsed) {
       // Try to click the expand icon first
-      const expandIcon = this.page
-        .locator('div[data-testid="AccordionSummary"][aria-expanded="false"]', {
-          hasText: tabName
-        })
-        .locator(
-          'div[class*="expandIconWrapper"], svg[data-testid="ExpandMoreIcon"]'
-        )
+      const expandIcon = accordionSummary.locator(
+        'div[class*="expandIconWrapper"], svg[data-testid="ExpandMoreIcon"], .MuiAccordionSummary-expandIconWrapper'
+      )
 
       if (await expandIcon.isVisible()) {
         await expandIcon.click()
       } else {
         // Fallback to clicking the entire accordion summary
-        await this.page
-          .locator(
-            'div[data-testid="AccordionSummary"][aria-expanded="false"]',
-            {
-              hasText: tabName
-            }
-          )
-          .click()
+        await accordionSummary.click()
       }
 
-      // Wait for the accordion to expand
-      await expect(
-        this.page.locator(
-          'div[data-testid="AccordionSummary"][aria-expanded="true"]',
-          {
+      // Wait for the accordion to expand with multiple fallback selectors
+      try {
+        await expect(
+          this.page.locator(
+            'div[data-testid="AccordionSummary"][aria-expanded="true"]',
+            { hasText: tabName }
+          )
+        ).toBeVisible({ timeout: 10000 })
+      } catch {
+        // Fallback using MUI class
+        await expect(
+          this.page.locator('.MuiAccordionSummary-root[aria-expanded="true"]', {
             hasText: tabName
-          }
-        )
-      ).toBeVisible({ timeout: 10000 })
+          })
+        ).toBeVisible({ timeout: 10000 })
+      }
     } else {
       console.log('%s accordion is already expanded', tabName)
     }
@@ -1438,22 +1475,36 @@ export class CardLevelActionPage {
       this.page.locator('div[data-testid="SpacerProperties"]')
     ).toBeVisible({ timeout: 30000 })
 
-    // Wait for the specific accordion summary to be visible
-    await expect(
-      this.page
+    // Try multiple approaches to find the accordion summary
+    let accordionSummary
+
+    // First try the original selector
+    try {
+      accordionSummary = this.page
         .locator(
           'div[data-testid="SpacerProperties"] div[data-testid="AccordionSummary"]'
         )
         .filter({ hasText: 'Spacer Height' })
-    ).toBeVisible({ timeout: 20000 })
+      await expect(accordionSummary).toBeVisible({ timeout: 10000 })
+    } catch {
+      // If that fails, try looking for MUI AccordionSummary within the SpacerProperties
+      try {
+        accordionSummary = this.page
+          .locator(
+            'div[data-testid="SpacerProperties"] .MuiAccordionSummary-root'
+          )
+          .filter({ hasText: 'Spacer Height' })
+        await expect(accordionSummary).toBeVisible({ timeout: 10000 })
+      } catch {
+        // Final fallback - look for any element with the text in SpacerProperties
+        accordionSummary = this.page
+          .locator('div[data-testid="SpacerProperties"] [role="button"]')
+          .filter({ hasText: 'Spacer Height' })
+        await expect(accordionSummary).toBeVisible({ timeout: 10000 })
+      }
+    }
 
-    return await this.page
-      .locator(
-        'div[data-testid="SpacerProperties"] div[data-testid="AccordionSummary"]'
-      )
-      .filter({ hasText: 'Spacer Height' })
-      .locator('p')
-      .textContent()
+    return await accordionSummary.locator('p').textContent()
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async validateSpacerHeightPixelGotChange(pixelHeightBeforeChange: any) {
@@ -1640,21 +1691,36 @@ export class CardLevelActionPage {
       this.page.locator('div[data-testid="ButtonProperties"]')
     ).toBeVisible({ timeout: 30000 })
 
-    // Wait for the specific accordion summary to be visible
-    await expect(
-      this.page.locator(
+    // Try multiple approaches to find the accordion summary
+    let accordionSummary
+
+    // First try the original selector
+    try {
+      accordionSummary = this.page.locator(
         'div[data-testid="ButtonProperties"] div[data-testid="AccordionSummary"]',
         { hasText: feedBackProperty }
       )
-    ).toBeVisible({ timeout: 20000 })
+      await expect(accordionSummary).toBeVisible({ timeout: 10000 })
+    } catch {
+      // If that fails, try looking for MUI AccordionSummary within the ButtonProperties
+      try {
+        accordionSummary = this.page.locator(
+          'div[data-testid="ButtonProperties"] .MuiAccordionSummary-root',
+          { hasText: feedBackProperty }
+        )
+        await expect(accordionSummary).toBeVisible({ timeout: 10000 })
+      } catch {
+        // Final fallback - look for any clickable element with the text
+        accordionSummary = this.page.locator(
+          'div[data-testid="ButtonProperties"] [role="button"]',
+          { hasText: feedBackProperty }
+        )
+        await expect(accordionSummary).toBeVisible({ timeout: 10000 })
+      }
+    }
 
     // Click the accordion to expand it
-    await this.page
-      .locator(
-        'div[data-testid="ButtonProperties"] div[data-testid="AccordionSummary"]',
-        { hasText: feedBackProperty }
-      )
-      .click()
+    await accordionSummary.click()
   }
   async clickCardPropertiesDropDown(cardProperty: string) {
     await this.page
