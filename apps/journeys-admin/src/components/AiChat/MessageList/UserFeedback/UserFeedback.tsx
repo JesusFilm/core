@@ -17,11 +17,15 @@ export function UserFeedback({ traceId }: UserFeedbackProps) {
 
   async function handleUserFeedback(value: number) {
     setFeedback(value)
-    await langfuseWeb.score({
-      traceId,
-      name: 'user_feedback',
-      value
-    })
+    try {
+      await langfuseWeb.score({
+        traceId,
+        name: 'user_feedback',
+        value
+      })
+    } catch (error) {
+      console.error('Failed to record user feedback analytics: ', error)
+    }
   }
 
   return (
