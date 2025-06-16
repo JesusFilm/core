@@ -159,122 +159,144 @@ export class Register {
   }
 
   async waitUntilDiscoverPageLoaded() {
-    // First, wait for the discover navigation item to be visible with multiple selectors
     try {
-      await expect(
-        this.page.locator('[data-testid="NavigationListItemDiscover"]')
-      ).toBeVisible({ timeout: 30000 })
-    } catch {
-      // Try alternative selector if the first one fails
-      try {
-        await expect(this.page.locator('a:has-text("Discover")')).toBeVisible({
-          timeout: 10000
-        })
-      } catch {
-        // Final fallback - look for any navigation with discover text
-        await expect(
-          this.page.locator(
-            '[role="button"]:has-text("Discover"), a:has-text("Discover")'
-          )
-        ).toBeVisible({ timeout: 10000 })
-      }
+      await this.waitForNavigationItem()
+      await this.waitForPageSelection()
+      await this.waitForMainContent()
+      await this.waitForSidePanel()
+      await this.waitForTeamSelection()
+      await this.handleSharedWithMeState()
+    } catch (error) {
+      console.error('Failed to load Discover page:', error.message)
+      throw error
     }
+  }
 
-    // Wait for the discover page to be selected with multiple approaches
-    try {
-      await expect(
-        this.page.locator(
-          '[data-testid="NavigationListItemDiscover"].Mui-selected'
-        )
-      ).toBeVisible({ timeout: 15000 })
-    } catch {
-      // If the class-based selector doesn't work, try alternative MUI classes
-      try {
-        await expect(
-          this.page.locator(
-            '[data-testid="NavigationListItemDiscover"][aria-current], [data-testid="NavigationListItemDiscover"][class*="selected"]'
-          )
-        ).toBeVisible({ timeout: 10000 })
-      } catch {
-        // Check the URL as final fallback
-        await expect(this.page).toHaveURL(/\/$/, { timeout: 15000 })
-      }
-    }
+  private async waitForNavigationItem(): Promise<void> {
+    const navigationSelectors = [
+      '[data-testid="NavigationListItemDiscover"]',
+      'a:has-text("Discover")',
+      '[role="button"]:has-text("Discover"), a:has-text("Discover")'
+    ]
 
-    // Wait for the main content area to be loaded with fallbacks
-    try {
-      await expect(
-        this.page.locator('[data-testid="JourneysAdminJourneyList"]')
-      ).toBeVisible({ timeout: 30000 })
-    } catch {
-      // Try alternative selectors for journey list
-      try {
-        await expect(
-          this.page.locator(
-            '[data-testid*="JourneyList"], main:has([data-testid*="Journey"])'
-          )
-        ).toBeVisible({ timeout: 15000 })
-      } catch {
-        // Look for any grid or list container that might contain journeys
-        await expect(
-          this.page.locator('.MuiGrid-container, [role="main"]')
-        ).toBeVisible({ timeout: 15000 })
-      }
-    }
+    const attempts = navigationSelectors.map((selector) =>
+      expect(this.page.locator(selector)).toBeVisible({ timeout: 30000 })
+    )
 
-    // Wait for the side panel to be loaded with fallbacks
     try {
-      await expect(this.page.locator('[data-testid="side-panel"]')).toBeVisible(
-        {
-          timeout: 30000
-        }
+      await Promise.any(attempts)
+    } catch (error) {
+      throw new Error(
+        `Navigation item not found. Attempted selectors: ${navigationSelectors.join(', ')}`
       )
-    } catch {
-      // Try alternative selectors for side panel
-      try {
-        await expect(
-          this.page.locator('[data-testid*="side"], aside, .MuiDrawer-paper')
-        ).toBeVisible({ timeout: 15000 })
-      } catch {
-        console.log('Side panel not found, continuing...')
-      }
     }
+  }
 
-    // Wait for team to be loaded by checking if team select is visible
+  private async waitForPageSelection(): Promise<void> {
+    const selectionSelectors = [
+      '[data-testid="NavigationListItemDiscover"].Mui-selected',
+      '[data-testid="NavigationListItemDiscover"][aria-current], [data-testid="NavigationListItemDiscover"][class*="selected"]'
+    ]
+
+    const attempts = selectionSelectors.map((selector) =>
+      expect(this.page.locator(selector)).toBeVisible({ timeout: 15000 })
+    )
+
+    // Add URL check as a final attempt
+    attempts.push(this.page.waitForURL(/\/$/, { timeout: 15000 }))
+
     try {
-      await expect(this.page.locator('[data-testid="TeamSelect"]')).toBeVisible(
-        { timeout: 15000 }
+      await Promise.any(attempts)
+    } catch (error) {
+      throw new Error(
+        `Page selection state not detected. Attempted selectors: ${selectionSelectors.join(', ')} and URL pattern`
       )
-    } catch {
-      // Try alternative selectors for team selection
-      try {
-        await expect(
-          this.page.locator(
-            '[data-testid*="Team"], [aria-label*="team"], [role="combobox"]:has-text("Team")'
-          )
-        ).toBeVisible({ timeout: 10000 })
-      } catch {
-        console.log('Team select not found, continuing...')
-      }
     }
+  }
 
-    // Check if we're in "Shared With Me" state and need to select a team
+  private async waitForMainContent(): Promise<void> {
+    const contentSelectors = [
+      '[data-testid="JourneysAdminJourneyList"]',
+      '[data-testid*="JourneyList"], main:has([data-testid*="Journey"])',
+      '.MuiGrid-container, [role="main"]'
+    ]
+
+    const attempts = contentSelectors.map((selector) =>
+      expect(this.page.locator(selector)).toBeVisible({ timeout: 30000 })
+    )
+
+    try {
+      await Promise.any(attempts)
+    } catch (error) {
+      throw new Error(
+        `Main content not loaded. Attempted selectors: ${contentSelectors.join(', ')}`
+      )
+    }
+  }
+
+  private async waitForSidePanel(): Promise<void> {
+    const sidePanelSelectors = [
+      '[data-testid="side-panel"]',
+      '[data-testid*="side"], aside, .MuiDrawer-paper'
+    ]
+
+    const attempts = sidePanelSelectors.map((selector) =>
+      expect(this.page.locator(selector)).toBeVisible({ timeout: 30000 })
+    )
+
+    try {
+      await Promise.any(attempts)
+    } catch (error) {
+      // Side panel is optional, so we log but don't throw
+      console.log(
+        `Side panel not found. Attempted selectors: ${sidePanelSelectors.join(', ')}`
+      )
+    }
+  }
+
+  private async waitForTeamSelection(): Promise<void> {
+    const teamSelectors = [
+      '[data-testid="TeamSelect"]',
+      '[data-testid*="Team"], [aria-label*="team"], [role="combobox"]:has-text("Team")'
+    ]
+
+    const attempts = teamSelectors.map((selector) =>
+      expect(this.page.locator(selector)).toBeVisible({ timeout: 15000 })
+    )
+
+    try {
+      await Promise.any(attempts)
+    } catch (error) {
+      // Team selection is optional, so we log but don't throw
+      console.log(
+        `Team selection not found. Attempted selectors: ${teamSelectors.join(', ')}`
+      )
+    }
+  }
+
+  private async handleSharedWithMeState(): Promise<void> {
     const teamSelectElement = this.page.locator('[data-testid="TeamSelect"]')
+
     if (await teamSelectElement.isVisible()) {
       const teamSelectText = await teamSelectElement.textContent()
+
       if (teamSelectText?.includes('Shared With Me')) {
         console.log(
           'User is in "Shared With Me" state, selecting first team...'
         )
-        // Click on team select to open dropdown
-        await teamSelectElement.click()
-        // Wait for dropdown to open and select first team
-        await this.page
-          .locator('[role="listbox"] [role="option"], .MuiMenuItem-root')
-          .first()
-          .click()
-        // Wait a bit for the team to be selected
-        await this.page.waitForTimeout(2000)
+
+        try {
+          await teamSelectElement.click()
+          await this.page
+            .locator('[role="listbox"] [role="option"], .MuiMenuItem-root')
+            .first()
+            .click()
+          await this.page.waitForTimeout(2000)
+        } catch (error) {
+          throw new Error(
+            `Failed to handle "Shared With Me" state: ${error.message}`
+          )
+        }
       }
     }
   }
