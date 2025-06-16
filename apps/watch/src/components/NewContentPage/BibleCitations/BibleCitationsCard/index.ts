@@ -1,0 +1,1 @@
+export { BibleCitationCard } from './BibleCitationCard'
