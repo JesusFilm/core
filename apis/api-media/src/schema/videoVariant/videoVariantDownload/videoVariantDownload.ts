@@ -1,5 +1,6 @@
 import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
+import { getStaticRenditions } from '../../mux/video/service'
 
 import { VideoVariantDownloadQuality } from './enums/videoVariantDownloadQuality'
 import { VideoVariantDownloadCreateInput } from './inputs/videoVariantDownloadCreate'
@@ -79,6 +80,61 @@ builder.mutationFields((t) => ({
       return await prisma.videoVariantDownload.delete({
         where: { id }
       })
+    }
+  }),
+  updateVideoVariantDownloadSizesFromMux: t.withAuth({ isPublisher: true }).field({
+    type: 'Boolean',
+    nullable: false,
+    args: {
+      videoVariantId: t.arg({ type: 'ID', required: true })
+    },
+    resolve: async (_parent, { videoVariantId }) => {
+      // Get the video variant with mux video info
+      const videoVariant = await prisma.videoVariant.findUniqueOrThrow({
+        where: { id: videoVariantId },
+        include: {
+          muxVideo: true,
+          downloads: true
+        }
+      })
+
+      if (!videoVariant.muxVideo?.assetId) {
+        throw new Error('No Mux asset found for this video variant')
+      }
+
+      // Get static renditions from Mux
+      const staticRenditions = await getStaticRenditions(videoVariant.muxVideo.assetId, false)
+      
+      if (!staticRenditions?.files) {
+        throw new Error('No static renditions found')
+      }
+
+      // Map Mux resolution to our quality levels
+      const resolutionToQuality: Record<string, string> = {
+        '720p': 'high',
+        '360p': 'sd', 
+        '270p': 'low'
+      }
+
+      // Update each download with the correct size
+      for (const download of videoVariant.downloads) {
+        // Find the corresponding static rendition file
+        const staticFile = staticRenditions.files.find(file => {
+          const muxResolution = file.resolution_tier || file.resolution
+          return muxResolution && resolutionToQuality[muxResolution] === download.quality
+        })
+
+        if (staticFile?.filesize && staticFile.status === 'ready') {
+          await prisma.videoVariantDownload.update({
+            where: { id: download.id },
+            data: {
+              size: parseInt(staticFile.filesize, 10)
+            }
+          })
+        }
+      }
+
+      return true
     }
   })
 }))

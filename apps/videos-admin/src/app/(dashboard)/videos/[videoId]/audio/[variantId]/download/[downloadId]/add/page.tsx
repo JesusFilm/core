@@ -93,6 +93,12 @@ const GET_TRANSCODE_ASSET_PROGRESS = graphql(`
   }
 `)
 
+const UPDATE_DOWNLOAD_SIZES_FROM_MUX = graphql(`
+  mutation UpdateDownloadSizesFromMux($videoVariantId: ID!) {
+    updateVideoVariantDownloadSizesFromMux(videoVariantId: $videoVariantId)
+  }
+`)
+
 export default function AddVideoVariantDownloadDialog({
   params: { videoId, variantId, downloadId: languageId }
 }: AddVideoVariantDownloadDialogProps): ReactElement {
@@ -114,6 +120,7 @@ export default function AddVideoVariantDownloadDialog({
     null
   )
   const [enableMuxDownload] = useMutation(ENABLE_MUX_DOWNLOAD)
+  const [updateDownloadSizesFromMux] = useMutation(UPDATE_DOWNLOAD_SIZES_FROM_MUX)
 
   const { data } = useSuspenseQuery(GET_ADMIN_VIDEO_VARIANT, {
     variables: { id: variantId }
@@ -342,7 +349,27 @@ export default function AddVideoVariantDownloadDialog({
               }
             }
           })
-          enqueueSnackbar('Downloads created', { variant: 'success' })
+          enqueueSnackbar('Downloads created. Sizes will be updated once Mux processes the files.', { variant: 'success' })
+          
+          // Start polling to update sizes once static renditions are ready
+          const updateSizesInterval = setInterval(async () => {
+            try {
+              await updateDownloadSizesFromMux({
+                variables: { videoVariantId: variantId }
+              })
+              clearInterval(updateSizesInterval)
+              enqueueSnackbar('Download sizes updated', { variant: 'success' })
+            } catch (error) {
+              // Silently retry until static renditions are ready
+              console.log('Waiting for static renditions to be ready...')
+            }
+          }, 10000) // Check every 10 seconds
+          
+          // Stop polling after 5 minutes
+          setTimeout(() => {
+            clearInterval(updateSizesInterval)
+          }, 300000)
+          
           // router.push(returnUrl, { scroll: false })
         } catch (error) {
           enqueueSnackbar(

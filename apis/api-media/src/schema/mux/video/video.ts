@@ -1,16 +1,16 @@
 import { GraphQLError } from 'graphql'
 
-import { Prisma } from '.prisma/api-media-client'
-
 import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 import { VideoSource, VideoSourceShape } from '../../videoSource/videoSource'
 
+import { Prisma } from "./.prisma/api-media-client"
 import {
   createVideoByDirectUpload,
   createVideoFromUrl,
   deleteVideo,
   enableDownload,
+  getStaticRenditions,
   getUpload,
   getVideo
 } from './service'
@@ -44,6 +44,20 @@ const MuxVideo = builder.prismaObject('MuxVideo', {
     readyToStream: t.exposeBoolean('readyToStream', { nullable: false }),
     downloadable: t.exposeBoolean('downloadable', { nullable: false }),
     videoVariants: t.relation('videoVariants', { nullable: false })
+  })
+})
+
+// Define a type for static rendition files
+const StaticRenditionFile = builder.simpleObject('StaticRenditionFile', {
+  fields: (t) => ({
+    name: t.string({ nullable: false }),
+    ext: t.string({ nullable: false }),
+    height: t.int({ nullable: true }),
+    width: t.int({ nullable: true }),
+    bitrate: t.int({ nullable: true }),
+    filesize: t.string({ nullable: true }),
+    resolution: t.string({ nullable: true }),
+    status: t.string({ nullable: false })
   })
 })
 
@@ -179,6 +193,25 @@ builder.queryFields((t) => ({
         }
       }
       return video
+    }
+  }),
+  getMuxStaticRenditions: t.withAuth({ isPublisher: true }).field({
+    type: [StaticRenditionFile],
+    args: {
+      assetId: t.arg({ type: 'String', required: true })
+    },
+    resolve: async (_root, { assetId }) => {
+      const staticRenditions = await getStaticRenditions(assetId, false)
+      return staticRenditions?.files?.map(file => ({
+        name: file.name ?? '',
+        ext: file.ext ?? '',
+        height: file.height ?? null,
+        width: file.width ?? null,
+        bitrate: file.bitrate ?? null,
+        filesize: file.filesize ?? null,
+        resolution: file.resolution ?? null,
+        status: file.status ?? 'unknown'
+      })) ?? []
     }
   })
 }))

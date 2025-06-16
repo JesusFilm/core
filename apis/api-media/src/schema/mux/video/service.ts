@@ -123,3 +123,11 @@ export async function enableDownload(
     }
   )
 }
+
+export async function getStaticRenditions(
+  assetId: string,
+  userGenerated: boolean
+): Promise<Mux.Video.Asset['static_renditions']> {
+  const asset = await getClient(userGenerated).video.assets.retrieve(assetId)
+  return asset.static_renditions
+}
