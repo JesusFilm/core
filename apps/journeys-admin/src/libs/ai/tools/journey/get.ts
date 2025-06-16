@@ -10,7 +10,7 @@ import {
   AiJourneyGetQueryVariables
 } from '../../../../../__generated__/AiJourneyGetQuery'
 
-const AI_JOURNEY_GET = gql`
+export const AI_JOURNEY_GET = gql`
   ${JOURNEY_FIELDS}
   query AiJourneyGetQuery($id: ID!) {
     journey: adminJourney(id: $id, idType: databaseId) {

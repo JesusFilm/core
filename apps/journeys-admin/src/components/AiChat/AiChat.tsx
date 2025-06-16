@@ -2,7 +2,8 @@ import { useChat } from '@ai-sdk/react'
 import { useApolloClient } from '@apollo/client'
 import Box from '@mui/material/Box'
 import { useUser } from 'next-firebase-auth'
-import { ReactElement, useCallback, useRef, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -20,6 +21,7 @@ export function AiChat({ variant = 'popup' }: AiChatProps): ReactElement {
   const client = useApolloClient()
   const { journey } = useJourney()
   const traceId = useRef<string | null>()
+  const sessionId = useRef<string | null>()
   const {
     state: { selectedStepId, selectedBlockId }
   } = useEditor()
@@ -44,6 +46,9 @@ export function AiChat({ variant = 'popup' }: AiChatProps): ReactElement {
     },
     [user]
   )
+  useEffect(() => {
+    sessionId.current = uuidv4()
+  }, [])
   const {
     messages,
     append,
@@ -98,7 +103,8 @@ export function AiChat({ variant = 'popup' }: AiChatProps): ReactElement {
         ...options,
         journeyId: journey?.id,
         selectedStepId,
-        selectedBlockId
+        selectedBlockId,
+        sessionId: sessionId.current
       }
     }
   })
