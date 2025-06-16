@@ -1,14 +1,11 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
-import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
-import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
-import { object, string } from 'yup'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
@@ -19,34 +16,43 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
-import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
 
 import { CardBlockBackgroundColorUpdate } from '../../../../../../../../../../__generated__/CardBlockBackgroundColorUpdate'
 import { CardFields } from '../../../../../../../../../../__generated__/CardFields'
-import { TextFieldForm } from '../../../../../../../../TextFieldForm'
 
+import { ColorOpacityField } from './ColorOpacityField'
 import { DebouncedHexColorPicker } from './DebouncedHexColorPicker'
 import { PaletteColorPicker } from './PaletteColorPicker'
 import { Swatch } from './Swatch'
 
 const palette = [
-  { dark: '#C62828', light: '#FFCDD2' },
-  { dark: '#AD1457', light: '#F48FB1' },
-  { dark: '#6A1B9A', light: '#CE93D8' },
-  { dark: '#4527A0', light: '#B39DDB' },
-  { dark: '#283593', light: '#9FA8DA' },
-  { dark: '#1565C0', light: '#90CAF9' },
-  { dark: '#0277BD', light: '#81D4FA' },
-  { dark: '#006064', light: '#80DEEA' },
-  { dark: '#00695C', light: '#80CBC4' },
-  { dark: '#2E7D32', light: '#C8E6C9' },
-  { dark: '#33691E', light: '#C5E1A5' },
-  { dark: '#4E342E', light: '#D7CCC8' },
-  { dark: '#424242', light: '#E0E0E0' },
-  { dark: '#37474F', light: '#B0BEC5' },
-  { dark: '#30313D', light: '#FEFEFE' }
+  '#FFFFFF',
+  '#F2F3F6',
+  '#D1D5DB',
+  '#6B7280',
+  '#1F2937',
+  '#DC2626',
+  '#C7E834',
+  '#10B981',
+  '#8B5CF6',
+  '#6B21A8',
+  '#F97316',
+  '#84CC16',
+  '#14B8A6',
+  '#6366F1',
+  '#EC4899',
+  '#F59E0B',
+  '#6C7A36',
+  '#06B6D4',
+  '#2563EB',
+  '#F43F5E',
+  '#EAB308',
+  '#4B3E2A',
+  '#3B82F6',
+  '#1E3A8A',
+  '#991B1B'
 ]
 
 export const CARD_BLOCK_BACKGROUND_COLOR_UPDATE = gql`
@@ -89,8 +95,10 @@ export function BackgroundColor(): ReactElement {
     locale
   })
   const [tabValue, setTabValue] = useState(0)
-  const selectedColor =
+
+  const [selectedColor, setSelectedColor] = useState(
     cardBlock?.backgroundColor ?? cardTheme.palette.background.paper
+  )
 
   function handleTabChange(_event, newValue: number): void {
     setTabValue(newValue)
@@ -98,6 +106,7 @@ export function BackgroundColor(): ReactElement {
 
   async function handleColorChange(color: string): Promise<void> {
     if (cardBlock != null) {
+      setSelectedColor(color)
       await add({
         parameters: {
           execute: {
@@ -134,49 +143,29 @@ export function BackgroundColor(): ReactElement {
     }
   }
 
-  function isValidHex(color: string): boolean {
-    const hexColorRegex = /^#[0-9A-Fa-f]{6}$/
-    return hexColorRegex.test(color)
-  }
-
-  const validationSchema = object({
-    color: string()
-      .required(t('Invalid {{ HEX }} color code', { HEX: 'HEX' }))
-      .test(
-        'valid-hex-color',
-        t('Invalid {{ HEX }} color code', { HEX: 'HEX' }),
-        (value) => {
-          if (isValidHex(value)) {
-            void handleColorChange(value)
-            return true
-          }
-        }
-      )
-  })
-
   const palettePicker = (
     <PaletteColorPicker
       selectedColor={selectedColor}
       colors={palette}
-      mode={cardTheme.palette.mode}
       onChange={handleColorChange}
     />
   )
 
   // TODO: Test onChange in E2E
   const hexColorPicker = (
-    <Box sx={{ p: 4 }}>
+    <Stack sx={{ p: 4 }} spacing={4}>
       <DebouncedHexColorPicker
         data-testid="bgColorPicker"
         color={selectedColor}
         onChange={handleColorChange}
         style={{ width: '100%', height: 125 }}
       />
-    </Box>
+    </Stack>
   )
 
   return (
     <>
+      {hexColorPicker}
       <Stack
         sx={{ p: 4, pt: 0 }}
         spacing={3}
@@ -184,22 +173,20 @@ export function BackgroundColor(): ReactElement {
         data-testid="BackgroundColor"
       >
         <Swatch id={`bg-color-${selectedColor}`} color={selectedColor} />
-        <TextFieldForm
-          id="color"
-          data-testid="bgColorTextField"
-          hiddenLabel
-          initialValue={selectedColor}
-          validationSchema={validationSchema}
-          onSubmit={handleColorChange}
-          startIcon={
-            <InputAdornment position="start">
-              <Edit2Icon
-                onClick={(e) => handleTabChange(e, 1)}
-                style={{ cursor: 'pointer' }}
-              />
-            </InputAdornment>
-          }
+        <ColorOpacityField
+          color={selectedColor}
+          onColorChange={handleColorChange}
+          onEditClick={() => handleTabChange({}, 1)}
+          data-testid="BackgroundColorOpacityField"
         />
+      </Stack>
+      <Stack
+        sx={{
+          [cardTheme.breakpoints.down('sm')]: { display: 'none' },
+          alignItems: 'center'
+        }}
+      >
+        <Box sx={{ width: '100%' }}>{palettePicker}</Box>
       </Stack>
       <Box
         sx={{
@@ -225,18 +212,6 @@ export function BackgroundColor(): ReactElement {
         <TabPanel name="background-color" value={tabValue} index={1}>
           {hexColorPicker}
         </TabPanel>
-      </Box>
-      <Box sx={{ [cardTheme.breakpoints.down('sm')]: { display: 'none' } }}>
-        <Divider />
-        <Box sx={{ p: 4, pb: 0 }}>
-          <Typography variant="subtitle2">{t('Palette')}</Typography>
-        </Box>
-        {palettePicker}
-        <Divider />
-        <Box sx={{ p: 4, pb: 0 }}>
-          <Typography variant="subtitle2">{t('Custom')}</Typography>
-        </Box>
-        {hexColorPicker}
       </Box>
     </>
   )
