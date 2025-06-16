@@ -5,6 +5,28 @@ import { ButtonColor, type ButtonColorType } from './enums/buttonColor'
 import { ButtonSize, type ButtonSizeType } from './enums/buttonSize'
 import { ButtonVariant, type ButtonVariantType } from './enums/buttonVariant'
 
+interface ButtonBlockClassNamesType {
+  self: string
+}
+
+const ButtonBlockClassNamesRef = builder.objectRef<ButtonBlockClassNamesType>(
+  'ButtonBlockClassNames'
+)
+
+export const ButtonBlockClassNames = builder.objectType(
+  ButtonBlockClassNamesRef,
+  {
+    fields: (t) => ({
+      self: t.string({
+        nullable: false,
+        directives: { shareable: true },
+        description: 'Tailwind class names for the button block',
+        resolve: (classNames: ButtonBlockClassNamesType) => classNames.self
+      })
+    })
+  }
+)
+
 export const ButtonBlock = builder.prismaObject('Block', {
   variant: 'ButtonBlock',
   interfaces: [Block],
@@ -58,6 +80,13 @@ export const ButtonBlock = builder.prismaObject('Block', {
     submitEnabled: t.exposeBoolean('submitEnabled', {
       nullable: true,
       directives: { shareable: true }
+    }),
+    classNames: t.field({
+      type: ButtonBlockClassNames,
+      nullable: true,
+      directives: { shareable: true },
+      resolve: ({ classNames }) =>
+        classNames as unknown as ButtonBlockClassNamesType
     })
   })
 })
