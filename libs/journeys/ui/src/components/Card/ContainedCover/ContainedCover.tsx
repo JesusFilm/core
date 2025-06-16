@@ -107,7 +107,7 @@ export function ContainedCover({
     ${addAlphaToHex(baseBackgroundColor, 38)} 25%,
     ${addAlphaToHex(baseBackgroundColor, 69)} 40%,
     ${addAlphaToHex(baseBackgroundColor, 90)} 60%,
-    ${baseBackgroundColor}98%)`
+    ${addAlphaToHex(baseBackgroundColor, 100)} 98%)`
 
   const overlayImageMask = `linear-gradient(to top,
     transparent 0%,
@@ -116,7 +116,7 @@ export function ContainedCover({
     ${addAlphaToHex(baseBackgroundColor, 38)} 15%,  
     ${addAlphaToHex(baseBackgroundColor, 69)} 20%,  
     ${addAlphaToHex(baseBackgroundColor, 90)} 25%,  
-    ${baseBackgroundColor} 30%)`
+    ${addAlphaToHex(baseBackgroundColor, 100)} 30%)`
 
   return (
     <>
