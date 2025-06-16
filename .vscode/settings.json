@@ -97,5 +97,6 @@
     "**/node_modules/*/**": true,
     "**/coverage/*/**": true,
     "**/.cache/*/**": true
-  }
+  },
+  "terminal.integrated.defaultProfile.linux": "zsh"
 }

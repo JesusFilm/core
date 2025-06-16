@@ -16,7 +16,6 @@ import { Item } from '../Editor/Toolbar/Items/Item'
 import { PreviewItem } from '../Editor/Toolbar/Items/PreviewItem'
 import { OnboardingTemplateCard } from '../OnboardingPageWrapper/OnboardingDrawer/OnboardingTemplateCard'
 
-import { GenerateAiDescriptionButton } from './GenerateAiDescription/GenerateAiDescriptionButton'
 import { JourneyQuickSettingsChat } from './JourneyQuickSettingsChat'
 import { JourneyQuickSettingsGoals } from './JourneyQuickSettingsGoals'
 import { JourneyQuickSettingsTabs } from './JourneyQuickSettingsTabs'
@@ -130,7 +129,6 @@ export function JourneyQuickSettings({
                   variant: 'contained'
                 }}
               />
-              <GenerateAiDescriptionButton />
               <ShareDialog
                 url={url}
                 open={shareDialogOpen}

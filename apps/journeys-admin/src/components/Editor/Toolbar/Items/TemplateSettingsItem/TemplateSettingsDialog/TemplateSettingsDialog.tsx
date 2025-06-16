@@ -20,6 +20,7 @@ import { useJourneyUpdateMutation } from '../../../../../../libs/useJourneyUpdat
 
 import { AboutTabPanel } from './AboutTabPanel'
 import { CategoriesTabPanel } from './CategoriesTabPanel'
+import { ContextTabPanel } from './ContextTabPanel'
 import { MetadataTabPanel } from './MetadataTabPanel'
 import { TemplateSettingsFormValues } from './useTemplateSettingsForm'
 
@@ -170,6 +171,7 @@ export function TemplateSettingsDialog({
                   {...tabA11yProps('categories', 1)}
                 />
                 <Tab label={t('About')} {...tabA11yProps('about', 2)} />
+                <Tab label={t('Context')} {...tabA11yProps('context', 3)} />
               </Tabs>
               <TabPanel name="metadata" value={tab} index={0}>
                 <Stack sx={{ pt: 6 }} gap={5}>
@@ -184,6 +186,11 @@ export function TemplateSettingsDialog({
               <TabPanel name="about" value={tab} index={2}>
                 <Stack sx={{ pt: 6 }} gap={5}>
                   <AboutTabPanel />
+                </Stack>
+              </TabPanel>
+              <TabPanel name="context" value={tab} index={3}>
+                <Stack sx={{ pt: 6 }} gap={5}>
+                  <ContextTabPanel />
                 </Stack>
               </TabPanel>
             </>
