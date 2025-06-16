@@ -286,68 +286,34 @@ export class JourneyLevelActions {
   }
 
   async enterLanguage(language: string): Promise<void> {
-    // Try to select the specific language option
-    // Strategy 1: Look for option with data-value containing the language
-    let selectedOption = this.page.locator('[data-value*="English"]').first()
+    // Use a single, robust role-based selector for the language combobox
+    const languageCombobox = this.page
+      .getByRole('combobox', {
+        name: /language/i
+      })
+      .first()
 
-    if (selectedOption) {
-      try {
-        this.selectedLanguage = await selectedOption.innerText()
-        await selectedOption.click()
-      } catch (error) {
-        // Fallback strategy if data-value approach fails
-        try {
-          // Strategy 2: Look for option with text content matching language
-          selectedOption = this.page
-            .locator('[role="option"]')
-            .filter({ hasText: /English/i })
-            .first()
-          this.selectedLanguage = await selectedOption.innerText()
-          await selectedOption.click()
-        } catch (error) {
-          try {
-            // Strategy 3: Look for li element with language text
-            selectedOption = this.page
-              .locator('li')
-              .filter({ hasText: /English/i })
-              .first()
-            this.selectedLanguage = await selectedOption.innerText()
-            await selectedOption.click()
-          } catch (error) {
-            try {
-              // Strategy 4: Look for any element with the exact language name
-              selectedOption = this.page
-                .locator('*:has-text("English")')
-                .filter({ hasText: /^English/ })
-                .first()
-              this.selectedLanguage = await selectedOption.innerText()
-              await selectedOption.click()
-            } catch (error) {
-              // Strategy 5: Just get the first available option and use it
-              selectedOption = this.page.locator('[role="option"], li').first()
-              this.selectedLanguage = await selectedOption.innerText()
-              await selectedOption.click()
-            }
-          }
-        }
-      }
-    } else {
-      // Fallback - get any option that contains the language text
-      try {
-        selectedOption = this.page
-          .locator('[role="option"], li, .MuiMenuItem-root')
-          .filter({ hasText: /English/i })
-          .first()
-        this.selectedLanguage = await selectedOption.innerText()
-        await selectedOption.click()
-      } catch (error) {
-        // Final fallback - just click the first available option
-        selectedOption = this.page
-          .locator('[role="option"], li, .MuiMenuItem-root')
-          .first()
-        this.selectedLanguage = await selectedOption.innerText()
-        await selectedOption.click()
-      }
+    // Click to open the combobox dropdown
+    await languageCombobox.click()
+
+    // Wait for dropdown options to appear
+    await expect(this.page.locator('[role="listbox"]').first()).toBeVisible({
+      timeout: 10000
+    })
+
+    // Find and click the language option
+    try {
+      const selectedOption = this.page
+        .getByRole('option', { name: new RegExp(language, 'i') })
+        .first()
+
+      this.selectedLanguage = await selectedOption.innerText()
+      await selectedOption.click()
+    } catch (error) {
+      // Fallback: click the first available option if specific language not found
+      const fallbackOption = this.page.getByRole('option').first()
+      this.selectedLanguage = await fallbackOption.innerText()
+      await fallbackOption.click()
     }
   }
 

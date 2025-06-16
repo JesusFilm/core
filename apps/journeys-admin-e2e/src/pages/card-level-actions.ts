@@ -1478,10 +1478,12 @@ export class CardLevelActionPage {
             'button.MuiButton-text.MuiButton-sizeSmall.MuiButton-textPrimary'
           )
           .filter({
-            has: this.page.locator('svg[data-testid="ArrowForwardRoundedIcon"]')
+            has: frameLocator.locator(
+              'svg[data-testid="ArrowForwardRoundedIcon"]'
+            )
           })
           .filter({
-            has: this.page.locator(
+            has: frameLocator.locator(
               'svg[data-testid="ChatBubbleOutlineRoundedIcon"]'
             )
           })
