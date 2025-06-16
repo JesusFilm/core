@@ -4,6 +4,7 @@ import { Tool, generateText, tool } from 'ai'
 import { z } from 'zod'
 
 import { ToolOptions } from '../..'
+import { langfuse, langfuseEnvironment } from '../../../langfuse/server'
 
 export function agentWebSearch(
   _client: ApolloClient<NormalizedCacheObject>,
@@ -25,7 +26,7 @@ export function agentWebSearch(
       )
       const result = await generateText({
         model: openai.responses('gpt-4o-mini'),
-        system: systemPrompt,
+        system: systemPrompt.prompt,
         prompt: `${url ? `\n\nSCOPED_URL: ${url}` : ''} ${prompt}`,
         tools: {
           web_search_preview: openai.tools.webSearchPreview({

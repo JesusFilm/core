@@ -27,15 +27,15 @@ export function agentGenerateImage(
       const { images } = await experimental_generateImage({
         model: openai.image('dall-e-3'),
         prompt,
-        n,
-        experimental_telemetry: {
-          isEnabled: true,
-          functionId: 'agentGenerateImage',
-          metadata: {
-            langfuseTraceId,
-            langfuseUpdateParent: false
-          }
-        }
+        n
+        // experimental_telemetry: {
+        //   isEnabled: true,
+        //   functionId: 'agentGenerateImage',
+        //   metadata: {
+        //     langfuseTraceId,
+        //     langfuseUpdateParent: false
+        //   }
+        // }
       })
 
       const result = await Promise.all(
