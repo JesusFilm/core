@@ -288,6 +288,10 @@ export interface BlockUpdateActionInput {
   blockId?: string | null;
 }
 
+export interface ButtonBlockClassNamesInput {
+  self: string;
+}
+
 export interface ButtonBlockCreateInput {
   id?: string | null;
   journeyId: string;
@@ -297,6 +301,7 @@ export interface ButtonBlockCreateInput {
   color?: ButtonColor | null;
   size?: ButtonSize | null;
   submitEnabled?: boolean | null;
+  classNames?: ButtonBlockClassNamesInput | null;
 }
 
 export interface ButtonBlockUpdateInput {
@@ -308,6 +313,7 @@ export interface ButtonBlockUpdateInput {
   startIconId?: string | null;
   endIconId?: string | null;
   submitEnabled?: boolean | null;
+  classNames?: ButtonBlockClassNamesInput | null;
 }
 
 export interface ButtonClickEventCreateInput {
@@ -320,6 +326,10 @@ export interface ButtonClickEventCreateInput {
   actionValue?: string | null;
 }
 
+export interface CardBlockClassNamesInput {
+  self: string;
+}
+
 export interface CardBlockCreateInput {
   id?: string | null;
   journeyId: string;
@@ -328,6 +338,7 @@ export interface CardBlockCreateInput {
   fullscreen?: boolean | null;
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
+  classNames?: CardBlockClassNamesInput | null;
 }
 
 export interface CardBlockUpdateInput {
@@ -337,6 +348,7 @@ export interface CardBlockUpdateInput {
   fullscreen?: boolean | null;
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
+  classNames?: CardBlockClassNamesInput | null;
 }
 
 export interface ChatButtonCreateInput {
@@ -392,6 +404,10 @@ export interface HostUpdateInput {
   src2?: string | null;
 }
 
+export interface IconBlockClassNamesInput {
+  self: string;
+}
+
 export interface IconBlockCreateInput {
   id?: string | null;
   parentBlockId: string;
@@ -399,6 +415,11 @@ export interface IconBlockCreateInput {
   name?: IconName | null;
   color?: IconColor | null;
   size?: IconSize | null;
+  classNames?: IconBlockClassNamesInput | null;
+}
+
+export interface ImageBlockClassNamesInput {
+  self: string;
 }
 
 export interface ImageBlockCreateInput {
@@ -414,6 +435,7 @@ export interface ImageBlockCreateInput {
   scale?: number | null;
   focalTop?: number | null;
   focalLeft?: number | null;
+  classNames?: ImageBlockClassNamesInput | null;
 }
 
 export interface ImageBlockUpdateInput {
@@ -426,6 +448,7 @@ export interface ImageBlockUpdateInput {
   scale?: number | null;
   focalTop?: number | null;
   focalLeft?: number | null;
+  classNames?: ImageBlockClassNamesInput | null;
 }
 
 export interface IntegrationGrowthSpacesCreateInput {
@@ -509,6 +532,8 @@ export interface JourneyUpdateInput {
   menuButtonIcon?: JourneyMenuButtonIcon | null;
   menuStepBlockId?: string | null;
   logoImageBlockId?: string | null;
+  socialNodeX?: number | null;
+  socialNodeY?: number | null;
 }
 
 export interface JourneyVisitorFilter {
@@ -569,16 +594,22 @@ export interface QrCodesFilter {
   teamId?: string | null;
 }
 
+export interface RadioOptionBlockClassNamesInput {
+  self: string;
+}
+
 export interface RadioOptionBlockCreateInput {
   id?: string | null;
   journeyId: string;
   parentBlockId: string;
   label: string;
+  classNames?: RadioOptionBlockClassNamesInput | null;
 }
 
 export interface RadioOptionBlockUpdateInput {
   parentBlockId?: string | null;
   label?: string | null;
+  classNames?: RadioOptionBlockClassNamesInput | null;
 }
 
 export interface RadioQuestionBlockCreateInput {
@@ -596,17 +627,23 @@ export interface RadioQuestionSubmissionEventCreateInput {
   value?: string | null;
 }
 
+export interface SignUpBlockClassNamesInput {
+  self: string;
+}
+
 export interface SignUpBlockCreateInput {
   id?: string | null;
   journeyId: string;
   parentBlockId: string;
   submitLabel: string;
+  classNames?: SignUpBlockClassNamesInput | null;
 }
 
 export interface SignUpBlockUpdateInput {
   parentBlockId?: string | null;
   submitIconId?: string | null;
   submitLabel?: string | null;
+  classNames?: SignUpBlockClassNamesInput | null;
 }
 
 export interface SignUpSubmissionEventCreateInput {
@@ -617,11 +654,16 @@ export interface SignUpSubmissionEventCreateInput {
   email: string;
 }
 
+export interface SpacerBlockClassNamesInput {
+  self: string;
+}
+
 export interface SpacerBlockCreateInput {
   id?: string | null;
   journeyId: string;
   parentBlockId: string;
   spacing?: number | null;
+  classNames?: SpacerBlockClassNamesInput | null;
 }
 
 export interface StepBlockCreateInput {
@@ -679,11 +721,16 @@ export interface TeamUpdateInput {
   publicTitle?: string | null;
 }
 
+export interface TextResponseBlockClassNamesInput {
+  self: string;
+}
+
 export interface TextResponseBlockCreateInput {
   id?: string | null;
   journeyId: string;
   parentBlockId: string;
   label: string;
+  classNames?: TextResponseBlockClassNamesInput | null;
 }
 
 export interface TextResponseBlockUpdateInput {
@@ -696,6 +743,7 @@ export interface TextResponseBlockUpdateInput {
   routeId?: string | null;
   type?: TextResponseType | null;
   integrationId?: string | null;
+  classNames?: TextResponseBlockClassNamesInput | null;
 }
 
 export interface TextResponseSubmissionEventCreateInput {
@@ -706,6 +754,10 @@ export interface TextResponseSubmissionEventCreateInput {
   value: string;
 }
 
+export interface TypographyBlockClassNamesInput {
+  self: string;
+}
+
 export interface TypographyBlockCreateInput {
   id?: string | null;
   journeyId: string;
@@ -714,6 +766,7 @@ export interface TypographyBlockCreateInput {
   variant?: TypographyVariant | null;
   color?: TypographyColor | null;
   align?: TypographyAlign | null;
+  classNames?: TypographyBlockClassNamesInput | null;
 }
 
 export interface TypographyBlockUpdateInput {
@@ -722,6 +775,7 @@ export interface TypographyBlockUpdateInput {
   variant?: TypographyVariant | null;
   color?: TypographyColor | null;
   align?: TypographyAlign | null;
+  classNames?: TypographyBlockClassNamesInput | null;
 }
 
 export interface UserInviteCreateInput {
@@ -738,6 +792,10 @@ export interface UserTeamInviteCreateInput {
 
 export interface UserTeamUpdateInput {
   role: UserTeamRole;
+}
+
+export interface VideoBlockClassNamesInput {
+  self: string;
 }
 
 export interface VideoBlockCreateInput {
@@ -757,6 +815,7 @@ export interface VideoBlockCreateInput {
   fullsize?: boolean | null;
   isCover?: boolean | null;
   objectFit?: VideoBlockObjectFit | null;
+  classNames?: VideoBlockClassNamesInput | null;
 }
 
 export interface VideoBlockUpdateInput {
@@ -771,6 +830,7 @@ export interface VideoBlockUpdateInput {
   posterBlockId?: string | null;
   fullsize?: boolean | null;
   objectFit?: VideoBlockObjectFit | null;
+  classNames?: VideoBlockClassNamesInput | null;
 }
 
 export interface VideoCollapseEventCreateInput {

@@ -259,6 +259,8 @@ describe('HostResolver', () => {
       menuButtonIcon: null,
       logoImageBlockId: null,
       menuStepBlockId: null,
+      socialNodeX: null,
+      socialNodeY: null,
       fromTemplateId: null
     }
 

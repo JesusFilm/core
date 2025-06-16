@@ -423,6 +423,8 @@ model Journey {
   menuStepBlockId           String?                     @unique
   menuStepBlock             Block?                      @relation("MenuStepBlock", fields: [menuStepBlockId], references: [id], onDelete: SetNull)
   menuButtonIcon            JourneyMenuButtonIcon?
+  socialNodeX               Int?                        @default(-240)
+  socialNodeY               Int?                        @default(-46)
   qrCode                    QrCode[]
   Event                     Event[]
   journeyEventsExportLogs   JourneyEventsExportLog[]
@@ -558,6 +560,7 @@ model Block {
   menuStepBlockParent     Journey?             @relation("MenuStepBlock")
   logoImageBlockParent    Journey?             @relation("LogoImageBlock")
   slug                    String?
+  classNames              Json                 @default("{ \"self\": \"\"}") // tailwind class names
 
   @@unique([slug, journeyId])
   @@index(journeyId)
