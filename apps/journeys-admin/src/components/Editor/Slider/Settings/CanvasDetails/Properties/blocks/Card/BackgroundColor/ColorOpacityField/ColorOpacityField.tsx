@@ -29,7 +29,7 @@ export function ColorOpacityField({
   const { t } = useTranslation('apps-journeys-admin')
 
   const initialColorValue = stripAlphaFromHex(color)
-  const initialOpacityValue = getOpacityFromHex(color) ?? 50
+  const initialOpacityValue = getOpacityFromHex(color)
 
   const validateAndSubmit = useCallback(
     async (

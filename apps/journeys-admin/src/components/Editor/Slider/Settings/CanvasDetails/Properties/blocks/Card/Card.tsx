@@ -5,6 +5,10 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import {
+  getOpacityFromHex,
+  stripAlphaFromHex
+} from '@core/journeys/ui/Card/utils/colorOpacityUtils'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
@@ -99,6 +103,9 @@ export function Card({
       break
   }
 
+  const baseColor = stripAlphaFromHex(selectedCardColor)
+  const opacity = getOpacityFromHex(selectedCardColor)
+
   return (
     <Box data-testid="CardProperties">
       <Accordion
@@ -118,7 +125,7 @@ export function Card({
           </Paper>
         }
         name={t('Color')}
-        value={selectedCardColor.toUpperCase()}
+        value={`${baseColor.toUpperCase()} (${opacity}%)`}
       >
         <BackgroundColor key={selectedStep?.id} />
       </Accordion>
