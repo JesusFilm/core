@@ -375,7 +375,7 @@ describe('CreateJourneyButton', () => {
 
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
-        '/journeys/duplicatedJourneyId',
+        { pathname: '/journeys/duplicatedJourneyId' },
         undefined,
         { shallow: true }
       )
