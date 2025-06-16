@@ -7,6 +7,7 @@ import {
   getOpacityFromHex,
   stripAlphaFromHex
 } from '@core/journeys/ui/Card/utils/colorOpacityUtils'
+import CheckIcon from '@core/shared/ui/icons/Check'
 
 import { Swatch } from '../Swatch'
 
@@ -28,20 +29,15 @@ export function PaletteColorPicker({
   }
 
   return (
-    <Grid container spacing={2} sx={{ p: 4 }}>
+    <Grid container spacing={3} sx={{ p: 4 }}>
       {colors.map((color) => {
+        const selected = isSameColor(selectedColor, color)
         return (
           <Box
             key={`palette-${color}`}
             sx={{
               borderRadius: '50%',
-              transition: '0.1s outline ease-out',
               position: 'relative',
-              outline: (theme) =>
-                isSameColor(selectedColor, color)
-                  ? `2px solid ${theme.palette.primary.main}`
-                  : '2px solid transparent',
-              border: '3px solid transparent',
               cursor: 'pointer'
             }}
             onClick={() => {
@@ -49,6 +45,27 @@ export function PaletteColorPicker({
             }}
           >
             <Swatch id={color} color={color} variant="rounded" />
+            {selected && (
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                <CheckIcon
+                  sx={{ fontSize: 45, color: 'background.default' }}
+                  onClick={() => {
+                    onChange(addAlphaToHex(color, opacity))
+                  }}
+                />
+              </Box>
+            )}
           </Box>
         )
       })}
