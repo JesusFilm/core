@@ -1,4 +1,4 @@
-import { Message } from '@ai-sdk/react'
+import { Message, UseChatHelpers } from '@ai-sdk/react'
 import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
 
@@ -7,6 +7,7 @@ import { ToolInvocationPart } from './ToolInvocationPart'
 import { UserFeedback } from './UserFeedback'
 
 interface MessageListProps {
+  status: UseChatHelpers['status']
   messages: (Message & { traceId?: string | null })[]
   addToolResult: ({
     toolCallId,
@@ -18,6 +19,7 @@ interface MessageListProps {
 }
 
 export function MessageList({
+  status,
   messages,
   addToolResult
 }: MessageListProps): ReactElement {
@@ -25,6 +27,7 @@ export function MessageList({
     <>
       {messages
         .map((message) => {
+          const isLastMessage = messages[messages.length - 1].id === message.id
           switch (message.role) {
             case 'system':
               return null
@@ -68,9 +71,10 @@ export function MessageList({
                         return null
                     }
                   })}
-                  {message.traceId && (
-                    <UserFeedback traceId={message.traceId} />
-                  )}
+                  {((isLastMessage && status === 'ready') || !isLastMessage) &&
+                    message.traceId && (
+                      <UserFeedback traceId={message.traceId} />
+                    )}
                 </Box>
               )
           }

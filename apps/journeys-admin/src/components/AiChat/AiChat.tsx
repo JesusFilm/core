@@ -145,7 +145,11 @@ export function AiChat({ variant = 'popup' }: AiChatProps): ReactElement {
           append={append}
         />
         <StateError error={error} reload={reload} />
-        <MessageList messages={messages} addToolResult={handleAddToolResult} />
+        <MessageList
+          status={status}
+          messages={messages}
+          addToolResult={handleAddToolResult}
+        />
       </Box>
       <Box
         sx={{
