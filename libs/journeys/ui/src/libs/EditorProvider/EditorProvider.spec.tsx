@@ -511,7 +511,9 @@ describe('EditorContext', () => {
           ...state,
           steps: [step],
           selectedBlock: step,
-          selectedStep: step
+          selectedBlockId: step.id,
+          selectedStep: step,
+          selectedStepId: step.id
         })
       })
 
@@ -565,7 +567,9 @@ describe('EditorContext', () => {
           ...state,
           steps: [updatedStep],
           selectedBlock: updatedBlock,
-          selectedStep: updatedStep
+          selectedBlockId: updatedBlock.id,
+          selectedStep: updatedStep,
+          selectedStepId: updatedStep.id
         })
       })
     })
