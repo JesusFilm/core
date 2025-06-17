@@ -72,7 +72,13 @@ export function StepHeaderMenu(): ReactElement {
         <>
           {variant === 'default' && menuStepBlock != null ? (
             <IconButton onClick={handleClick}>
-              <Icon />
+              <Icon
+                data-testid={
+                  menuButtonIcon === JourneyMenuButtonIcon.chevronDown
+                    ? 'ChevronDownIcon'
+                    : undefined
+                }
+              />
             </IconButton>
           ) : (
             <Icon
@@ -80,6 +86,11 @@ export function StepHeaderMenu(): ReactElement {
                 color: ({ palette }) =>
                   isEmpty ? palette.grey[700] : undefined
               }}
+              data-testid={
+                menuButtonIcon === JourneyMenuButtonIcon.chevronDown
+                  ? 'ChevronDownIcon'
+                  : undefined
+              }
             />
           )}
         </>

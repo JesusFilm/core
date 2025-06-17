@@ -170,12 +170,20 @@ export function MenuIconSelect(): ReactElement {
                   height: 56,
                   width: 56,
                   borderRadius: 2,
-                  background: ({ palette }) => palette.background.default,
+                  border: ({ palette }) =>
+                    `3px solid ${palette.background.paper}`,
                   display: 'grid',
                   placeItems: 'center'
                 }}
               >
-                <Icon />
+                <Icon
+                  data-testid={
+                    value === JourneyMenuButtonIcon.chevronDown
+                      ? 'ChevronDownIcon'
+                      : undefined
+                  }
+                  sx={{ fontSize: '40px', color: 'primary.main' }}
+                />
               </Box>
             </MenuItem>
           ))}
