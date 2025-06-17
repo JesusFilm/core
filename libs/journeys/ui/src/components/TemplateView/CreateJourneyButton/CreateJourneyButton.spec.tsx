@@ -427,236 +427,6 @@ describe('CreateJourneyButton', () => {
     })
   })
 
-  describe('if not signed in', () => {
-    beforeEach(() => {
-      mockUseRouter.mockReturnValue({
-        prefetch,
-        push,
-        query: { createNew: false }
-      } as unknown as NextRouter)
-
-      defineWindowWithPath('http://localhost:4200')
-    })
-
-    afterEach(() => {
-      jest.resetAllMocks()
-    })
-
-    it('should pre-render sign in page', async () => {
-      render(createJourneyButton)
-
-      await waitFor(() => {
-        expect(prefetch).toHaveBeenCalledWith('/users/sign-in')
-      })
-    })
-
-    it('should open account check dialog and redirect to sign in page when login is clicked', async () => {
-      const { getByRole } = render(createJourneyButton)
-
-      fireEvent.click(getByRole('button', { name: 'Use This Template' }))
-      fireEvent.click(getByRole('button', { name: 'Login with my account' }))
-
-      await waitFor(() => {
-        expect(push).toHaveBeenCalledWith(
-          {
-            pathname: 'http://localhost:4200/users/sign-in',
-            query: {
-              redirect:
-                'http://localhost:4200/templates/journeyId?createNew=true',
-              login: true
-            }
-          },
-          undefined,
-          { shallow: true }
-        )
-      })
-    })
-
-    it('should open account check dialog and redirect to sign in page when create account is clicked', async () => {
-      const { getByRole } = render(createJourneyButton)
-
-      fireEvent.click(getByRole('button', { name: 'Use This Template' }))
-      fireEvent.click(getByRole('button', { name: 'Create a new account' }))
-
-      await waitFor(() => {
-        expect(push).toHaveBeenCalledWith(
-          {
-            pathname: 'http://localhost:4200/users/sign-in',
-            query: {
-              redirect:
-                'http://localhost:4200/templates/journeyId?createNew=true',
-              login: false
-            }
-          },
-          undefined,
-          { shallow: true }
-        )
-      })
-    })
-  })
-
-  describe('if not signed in and viewing from journeys admin', () => {
-    beforeAll(() => {
-      mockUseRouter.mockReturnValue({
-        prefetch,
-        push,
-        query: { createNew: false }
-      } as unknown as NextRouter)
-
-      defineWindowWithPath('http://localhost:4200')
-
-      process.env = {
-        ...originalEnv,
-        NEXT_PUBLIC_JOURNEYS_ADMIN_URL: 'http://localhost:4200'
-      }
-    })
-
-    afterAll(() => {
-      process.env = originalEnv
-    })
-
-    it('should open account check dialog and still redirect to sign in page when login is clicked', async () => {
-      const { getByRole } = render(createJourneyButton)
-
-      fireEvent.click(getByRole('button', { name: 'Use This Template' }))
-      fireEvent.click(getByRole('button', { name: 'Login with my account' }))
-
-      await waitFor(() => {
-        expect(push).toHaveBeenCalledWith(
-          {
-            pathname: 'http://localhost:4200/users/sign-in',
-            query: {
-              redirect:
-                'http://localhost:4200/templates/journeyId?createNew=true',
-              login: true
-            }
-          },
-          undefined,
-          { shallow: true }
-        )
-      })
-    })
-
-    it('should open account check dialog and still redirect to sign in page when create account is clicked', async () => {
-      const { getByRole } = render(createJourneyButton)
-
-      fireEvent.click(getByRole('button', { name: 'Use This Template' }))
-      fireEvent.click(getByRole('button', { name: 'Create a new account' }))
-
-      await waitFor(() => {
-        expect(push).toHaveBeenCalledWith(
-          {
-            pathname: 'http://localhost:4200/users/sign-in',
-            query: {
-              redirect:
-                'http://localhost:4200/templates/journeyId?createNew=true',
-              login: false
-            }
-          },
-          undefined,
-          { shallow: true }
-        )
-      })
-    })
-  })
-
-  describe('if not signed in and viewing from another project', () => {
-    beforeEach(() => {
-      mockUseRouter.mockReturnValue({
-        prefetch,
-        push,
-        query: { createNew: false }
-      } as unknown as NextRouter)
-
-      defineWindowWithPath('http://localhost:4300')
-
-      process.env = {
-        ...originalEnv,
-        NEXT_PUBLIC_JOURNEYS_ADMIN_URL: 'http://localhost:4200'
-      }
-    })
-
-    afterAll(() => {
-      process.env = originalEnv
-    })
-
-    it('should open account check dialog and still redirect to sign in page when login is clicked', async () => {
-      const { getByRole } = render(createJourneyButton)
-
-      fireEvent.click(getByRole('button', { name: 'Use This Template' }))
-      fireEvent.click(getByRole('button', { name: 'Login with my account' }))
-
-      await waitFor(() => {
-        expect(push).toHaveBeenCalledWith(
-          {
-            pathname: 'http://localhost:4200/users/sign-in',
-            query: {
-              redirect:
-                'http://localhost:4200/templates/journeyId?createNew=true',
-              login: true
-            }
-          },
-          undefined,
-          { shallow: true }
-        )
-      })
-    })
-
-    it('should open account check dialog and still redirect to sign in page when create account is clicked', async () => {
-      const { getByRole } = render(createJourneyButton)
-
-      fireEvent.click(getByRole('button', { name: 'Use This Template' }))
-      fireEvent.click(getByRole('button', { name: 'Create a new account' }))
-
-      await waitFor(() => {
-        expect(push).toHaveBeenCalledWith(
-          {
-            pathname: 'http://localhost:4200/users/sign-in',
-            query: {
-              redirect:
-                'http://localhost:4200/templates/journeyId?createNew=true',
-              login: false
-            }
-          },
-          undefined,
-          { shallow: true }
-        )
-      })
-    })
-  })
-
-  it('should disable button while loading', async () => {
-    mockUseRouter.mockReturnValue({
-      query: { createNew: false }
-    } as unknown as NextRouter)
-
-    const { getByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
-            },
-            result: teamResult
-          },
-          getLanguagesMock
-        ]}
-      >
-        <SnackbarProvider>
-          <TeamProvider>
-            <JourneyProvider value={{}}>
-              <CreateJourneyButton signedIn />
-            </JourneyProvider>
-          </TeamProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    await waitFor(() =>
-      expect(getByRole('button', { name: 'Use This Template' })).toBeDisabled()
-    )
-  })
-
   describe('Create with AI functionality', () => {
     const push = jest.fn().mockResolvedValue('')
     const replace = jest.fn()
@@ -887,5 +657,235 @@ describe('CreateJourneyButton', () => {
         expect(createWithAiButton).toBeDisabled()
       })
     })
+  })
+
+  describe('if not signed in', () => {
+    beforeEach(() => {
+      mockUseRouter.mockReturnValue({
+        prefetch,
+        push,
+        query: { createNew: false }
+      } as unknown as NextRouter)
+
+      defineWindowWithPath('http://localhost:4200')
+    })
+
+    afterEach(() => {
+      jest.resetAllMocks()
+    })
+
+    it('should pre-render sign in page', async () => {
+      render(createJourneyButton)
+
+      await waitFor(() => {
+        expect(prefetch).toHaveBeenCalledWith('/users/sign-in')
+      })
+    })
+
+    it('should open account check dialog and redirect to sign in page when login is clicked', async () => {
+      const { getByRole } = render(createJourneyButton)
+
+      fireEvent.click(getByRole('button', { name: 'Use This Template' }))
+      fireEvent.click(getByRole('button', { name: 'Login with my account' }))
+
+      await waitFor(() => {
+        expect(push).toHaveBeenCalledWith(
+          {
+            pathname: 'http://localhost:4200/users/sign-in',
+            query: {
+              redirect:
+                'http://localhost:4200/templates/journeyId?createNew=true',
+              login: true
+            }
+          },
+          undefined,
+          { shallow: true }
+        )
+      })
+    })
+
+    it('should open account check dialog and redirect to sign in page when create account is clicked', async () => {
+      const { getByRole } = render(createJourneyButton)
+
+      fireEvent.click(getByRole('button', { name: 'Use This Template' }))
+      fireEvent.click(getByRole('button', { name: 'Create a new account' }))
+
+      await waitFor(() => {
+        expect(push).toHaveBeenCalledWith(
+          {
+            pathname: 'http://localhost:4200/users/sign-in',
+            query: {
+              redirect:
+                'http://localhost:4200/templates/journeyId?createNew=true',
+              login: false
+            }
+          },
+          undefined,
+          { shallow: true }
+        )
+      })
+    })
+  })
+
+  describe('if not signed in and viewing from journeys admin', () => {
+    beforeAll(() => {
+      mockUseRouter.mockReturnValue({
+        prefetch,
+        push,
+        query: { createNew: false }
+      } as unknown as NextRouter)
+
+      defineWindowWithPath('http://localhost:4200')
+
+      process.env = {
+        ...originalEnv,
+        NEXT_PUBLIC_JOURNEYS_ADMIN_URL: 'http://localhost:4200'
+      }
+    })
+
+    afterAll(() => {
+      process.env = originalEnv
+    })
+
+    it('should open account check dialog and still redirect to sign in page when login is clicked', async () => {
+      const { getByRole } = render(createJourneyButton)
+
+      fireEvent.click(getByRole('button', { name: 'Use This Template' }))
+      fireEvent.click(getByRole('button', { name: 'Login with my account' }))
+
+      await waitFor(() => {
+        expect(push).toHaveBeenCalledWith(
+          {
+            pathname: 'http://localhost:4200/users/sign-in',
+            query: {
+              redirect:
+                'http://localhost:4200/templates/journeyId?createNew=true',
+              login: true
+            }
+          },
+          undefined,
+          { shallow: true }
+        )
+      })
+    })
+
+    it('should open account check dialog and still redirect to sign in page when create account is clicked', async () => {
+      const { getByRole } = render(createJourneyButton)
+
+      fireEvent.click(getByRole('button', { name: 'Use This Template' }))
+      fireEvent.click(getByRole('button', { name: 'Create a new account' }))
+
+      await waitFor(() => {
+        expect(push).toHaveBeenCalledWith(
+          {
+            pathname: 'http://localhost:4200/users/sign-in',
+            query: {
+              redirect:
+                'http://localhost:4200/templates/journeyId?createNew=true',
+              login: false
+            }
+          },
+          undefined,
+          { shallow: true }
+        )
+      })
+    })
+  })
+
+  describe('if not signed in and viewing from another project', () => {
+    beforeEach(() => {
+      mockUseRouter.mockReturnValue({
+        prefetch,
+        push,
+        query: { createNew: false }
+      } as unknown as NextRouter)
+
+      defineWindowWithPath('http://localhost:4300')
+
+      process.env = {
+        ...originalEnv,
+        NEXT_PUBLIC_JOURNEYS_ADMIN_URL: 'http://localhost:4200'
+      }
+    })
+
+    afterAll(() => {
+      process.env = originalEnv
+    })
+
+    it('should open account check dialog and still redirect to sign in page when login is clicked', async () => {
+      const { getByRole } = render(createJourneyButton)
+
+      fireEvent.click(getByRole('button', { name: 'Use This Template' }))
+      fireEvent.click(getByRole('button', { name: 'Login with my account' }))
+
+      await waitFor(() => {
+        expect(push).toHaveBeenCalledWith(
+          {
+            pathname: 'http://localhost:4200/users/sign-in',
+            query: {
+              redirect:
+                'http://localhost:4200/templates/journeyId?createNew=true',
+              login: true
+            }
+          },
+          undefined,
+          { shallow: true }
+        )
+      })
+    })
+
+    it('should open account check dialog and still redirect to sign in page when create account is clicked', async () => {
+      const { getByRole } = render(createJourneyButton)
+
+      fireEvent.click(getByRole('button', { name: 'Use This Template' }))
+      fireEvent.click(getByRole('button', { name: 'Create a new account' }))
+
+      await waitFor(() => {
+        expect(push).toHaveBeenCalledWith(
+          {
+            pathname: 'http://localhost:4200/users/sign-in',
+            query: {
+              redirect:
+                'http://localhost:4200/templates/journeyId?createNew=true',
+              login: false
+            }
+          },
+          undefined,
+          { shallow: true }
+        )
+      })
+    })
+  })
+
+  it('should disable button while loading', async () => {
+    mockUseRouter.mockReturnValue({
+      query: { createNew: false }
+    } as unknown as NextRouter)
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+            },
+            result: teamResult
+          },
+          getLanguagesMock
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <JourneyProvider value={{}}>
+              <CreateJourneyButton signedIn />
+            </JourneyProvider>
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Use This Template' })).toBeDisabled()
+    )
   })
 })
