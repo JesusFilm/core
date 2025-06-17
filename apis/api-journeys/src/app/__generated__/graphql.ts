@@ -19,7 +19,8 @@ export enum ThemeName {
 
 export enum ButtonVariant {
     text = "text",
-    contained = "contained"
+    contained = "contained",
+    outlined = "outlined"
 }
 
 export enum ButtonColor {

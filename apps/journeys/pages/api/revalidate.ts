@@ -13,7 +13,8 @@ export default async function handler(
   }
 
   try {
-    const path = `/${req.query.slug as string}`
+    const hostname = req.query.hostname?.toString()
+    const path = `/${hostname ?? 'home'}/${req.query.slug as string}`
     await res.revalidate(path)
 
     return res.status(200).json({

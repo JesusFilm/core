@@ -28,6 +28,7 @@ export enum ButtonSize {
 
 export enum ButtonVariant {
   contained = "contained",
+  outlined = "outlined",
   text = "text",
 }
 
