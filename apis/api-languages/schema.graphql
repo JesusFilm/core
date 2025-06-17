@@ -2,6 +2,7 @@ extend schema
   @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@key"])
 
 type AudioPreview {
+  languageId: ID!
   language: Language!
   value: String!
   duration: Int!
@@ -83,6 +84,30 @@ input LanguagesFilter {
   ids: [ID!]
   bcp47: [String!]
   iso3: [String!]
+}
+
+type Mutation {
+  audioPreviewCreate(input: MutationAudioPreviewCreateInput!): AudioPreview!
+  audioPreviewUpdate(input: MutationAudioPreviewUpdateInput!): AudioPreview!
+  audioPreviewDelete(languageId: ID!): AudioPreview!
+}
+
+input MutationAudioPreviewCreateInput {
+  languageId: ID!
+  value: String!
+  duration: Int!
+  size: Int!
+  bitrate: Int!
+  codec: String!
+}
+
+input MutationAudioPreviewUpdateInput {
+  languageId: ID!
+  value: String
+  duration: Int
+  size: Int
+  bitrate: Int
+  codec: String
 }
 
 type Query {

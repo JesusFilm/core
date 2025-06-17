@@ -6,6 +6,7 @@ import DirectivesPlugin from '@pothos/plugin-directives'
 import FederationPlugin from '@pothos/plugin-federation'
 import pluginName from '@pothos/plugin-prisma'
 import TracingPlugin, { isRootField } from '@pothos/plugin-tracing'
+import WithInputPlugin from '@pothos/plugin-with-input'
 import { createOpenTelemetryWrapper } from '@pothos/tracing-opentelemetry'
 
 import { Prisma } from '.prisma/api-languages-client'
@@ -25,7 +26,13 @@ export const builder = new SchemaBuilder<{
     ID: { Input: string; Output: number | string }
   }
 }>({
-  plugins: [TracingPlugin, PrismaPlugin, DirectivesPlugin, FederationPlugin],
+  plugins: [
+    TracingPlugin,
+    PrismaPlugin,
+    DirectivesPlugin,
+    FederationPlugin,
+    WithInputPlugin
+  ],
   tracing: {
     default: (config) => isRootField(config),
     wrap: (resolver, options) => createSpan(resolver, options)
@@ -38,3 +45,5 @@ export const builder = new SchemaBuilder<{
 })
 
 builder.queryType({})
+
+builder.mutationType({})
