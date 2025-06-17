@@ -5,6 +5,7 @@ import './language'
 import './country'
 import './continent'
 import './countryLanguage'
+import './language/audioPreview'
 
 import { builder } from './builder'
 
