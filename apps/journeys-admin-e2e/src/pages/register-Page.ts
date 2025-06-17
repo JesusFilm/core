@@ -162,9 +162,33 @@ export class Register {
   }
 
   async waitUntilDiscoverPageLoaded() {
-    await expect(
-      this.page.locator('div[data-testid="JourneysAdminContainedIconButton"]')
-    ).toBeVisible({ timeout: 65000 })
+    // Try multiple selectors for different MUI versions
+    const selectors = [
+      'div[data-testid="JourneysAdminContainedIconButton"]',
+      '[data-testid="JourneysAdminContainedIconButton"]',
+      'div[data-testid="JourneysAdminContainedIconButton"] button',
+      '[data-testid="JourneysAdminContainedIconButton"] button'
+    ]
+
+    let found = false
+    for (const selector of selectors) {
+      try {
+        await expect(this.page.locator(selector).first()).toBeVisible({
+          timeout: 15000
+        })
+        found = true
+        break
+      } catch (error) {
+        // Try next selector
+        continue
+      }
+    }
+
+    if (!found) {
+      throw new Error(
+        'Discover page did not load - ContainedIconButton not found'
+      )
+    }
   }
 
   async waitUntilTheToestMsgDisappear() {
