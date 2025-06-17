@@ -24,7 +24,7 @@ describe('ContentHeader', () => {
     expect(header).toBeInTheDocument()
 
     const link = screen.getByRole('link')
-    expect(link).toHaveAttribute('href', 'https://www.jesusfilm.org/watch')
+    expect(link).toHaveAttribute('href', '/')
   })
 
   it('opens audio language dialog on language button click', async () => {
