@@ -1471,24 +1471,23 @@ export class CardLevelActionPage {
       .first()
     await expect(buttonList).toBeVisible()
 
-    // Check for reaction buttons with multiple selector patterns
+    // Check for reaction buttons based on actual component structure
     const shareSelectors = [
+      'button[data-testid="ShareButton"]',
       'svg[data-testid="ShareIcon"]',
-      'button[data-testid="ShareButton"] svg',
-      'button svg[data-testid="ShareIcon"]',
-      '[data-testid*="Share"] svg'
+      'button[data-testid="ShareButton"] svg[data-testid="ShareIcon"]'
     ]
 
     const thumbsUpSelectors = [
+      'button[data-testid="ReactionButton"]:has(svg[data-testid="ThumbsUpIcon"])',
       'svg[data-testid="ThumbsUpIcon"]',
-      'button[data-testid="ReactionButton"] svg[data-testid="ThumbsUpIcon"]',
-      'button svg[data-testid="ThumbsUpIcon"]'
+      'button[data-testid="ReactionButton"] svg[data-testid="ThumbsUpIcon"]'
     ]
 
     const thumbsDownSelectors = [
+      'button[data-testid="ReactionButton"]:has(svg[data-testid="ThumbsDownIcon"])',
       'svg[data-testid="ThumbsDownIcon"]',
-      'button[data-testid="ReactionButton"] svg[data-testid="ThumbsDownIcon"]',
-      'button svg[data-testid="ThumbsDownIcon"]'
+      'button[data-testid="ReactionButton"] svg[data-testid="ThumbsDownIcon"]'
     ]
 
     // Try to find each icon type
@@ -1661,16 +1660,25 @@ export class CardLevelActionPage {
   }
 
   async validateWebsiteFooterSectionInCard(title: string) {
+    // For website templates, logo and menu are in the header, title and chat are in footer
+    // First validate the header has logo and menu icon
+    await expect(
+      this.page
+        .frameLocator(this.journeyCardFrame)
+        .locator('div[data-testid="JourneysStepHeader"]')
+        .filter({ has: this.page.locator('img') })
+        .filter({
+          has: this.page.locator('svg[data-testid="ChevronDownIcon"]')
+        })
+    ).toBeVisible()
+
+    // Then validate the footer has the display title
     await expect(
       this.page
         .frameLocator(this.journeyCardFrame)
         .locator(
           `div[data-testid="JourneysStepFooter"]:has(h6:text-is("${title}"))`
         )
-        .filter({ has: this.page.locator('img') })
-        .filter({
-          has: this.page.locator('svg[data-testid="ChevronDownIcon"]')
-        })
     ).toBeVisible()
   }
 
