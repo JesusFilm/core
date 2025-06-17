@@ -482,6 +482,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   videoVariantDownloadCreate(input: VideoVariantDownloadCreateInput!) : VideoVariantDownload! @join__field(graph: API_MEDIA) 
   videoVariantDownloadUpdate(input: VideoVariantDownloadUpdateInput!) : VideoVariantDownload! @join__field(graph: API_MEDIA) 
   videoVariantDownloadDelete(id: ID!) : VideoVariantDownload! @join__field(graph: API_MEDIA) 
+  updateVideoVariantDownloadSizesFromMux(videoVariantId: ID!) : Boolean! @join__field(graph: API_MEDIA) 
   userImpersonate(email: String!) : String @join__field(graph: API_USERS) 
   createVerificationRequest(input: CreateVerificationRequestInput) : Boolean @join__field(graph: API_USERS) 
   validateEmail(email: String!, token: String!) : User @join__field(graph: API_USERS) 
@@ -744,6 +745,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   getMyMuxVideos(offset: Int, limit: Int) : [MuxVideo!]! @join__field(graph: API_MEDIA) 
   getMyMuxVideo(id: ID!, userGenerated: Boolean) : MuxVideo! @join__field(graph: API_MEDIA) 
   getMuxVideo(id: ID!, userGenerated: Boolean) : MuxVideo @join__field(graph: API_MEDIA) 
+  getMuxStaticRenditions(assetId: String!) : [StaticRenditionFile!] @join__field(graph: API_MEDIA) 
   """
   List of short link domains that can be used for short links
   """
@@ -2680,6 +2682,17 @@ type ShortLinkDomainVerfication @join__type(graph: API_MEDIA)  {
   Reason for the verification
   """
   reason: String!
+}
+
+type StaticRenditionFile @join__type(graph: API_MEDIA)  {
+  name: String!
+  ext: String!
+  height: Int
+  width: Int
+  bitrate: Int
+  filesize: String
+  resolution: String
+  status: String!
 }
 
 type TagName @join__type(graph: API_MEDIA)  {

@@ -241,6 +241,7 @@ type Mutation {
   videoVariantDownloadCreate(input: VideoVariantDownloadCreateInput!): VideoVariantDownload!
   videoVariantDownloadUpdate(input: VideoVariantDownloadUpdateInput!): VideoVariantDownload!
   videoVariantDownloadDelete(id: ID!): VideoVariantDownload!
+  updateVideoVariantDownloadSizesFromMux(videoVariantId: ID!): Boolean!
 }
 
 input MutationBibleCitationCreateInput {
@@ -439,6 +440,7 @@ type Query {
   getMyMuxVideos(offset: Int, limit: Int): [MuxVideo!]!
   getMyMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo!
   getMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo
+  getMuxStaticRenditions(assetId: String!): [StaticRenditionFile!]
 
   """List of short link domains that can be used for short links"""
   shortLinkDomains(
@@ -609,6 +611,17 @@ type ShortLinkDomainVerfication {
 
   """Reason for the verification"""
   reason: String!
+}
+
+type StaticRenditionFile {
+  name: String!
+  ext: String!
+  height: Int
+  width: Int
+  bitrate: Int
+  filesize: String
+  resolution: String
+  status: String!
 }
 
 type Tag
