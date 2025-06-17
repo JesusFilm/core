@@ -78,17 +78,25 @@ export class Register {
   }
 
   async enterOTP(otp) {
-    await this.page
-      .locator(
-        'form[data-testid="EmailInviteForm"] >> text="Verify With Code Instead"'
-      )
-      .click()
+    // Use role-based locator for the "Verify With Code Instead" trigger
+    const form = this.page.locator('form[data-testid="EmailInviteForm"]')
+    const verifyCodeTrigger = form
+      .getByRole('button', { name: /verify.*code.*instead/i })
+      .or(form.getByRole('link', { name: /verify.*code.*instead/i }))
+      .or(form.locator('[role="button"]:has-text("Verify With Code Instead")'))
+
+    await verifyCodeTrigger.click()
+
+    // More specific check for expanded region within the form scope
     await expect(
-      this.page.locator(
-        'form[data-testid="EmailInviteForm"] [aria-expanded="true"]'
-      )
+      form
+        .locator('[aria-expanded="true"]')
+        .or(form.locator('[role="region"][aria-expanded="true"]'))
+        .or(form.locator('.MuiCollapse-entered, .MuiAccordionDetails-root'))
     ).toBeVisible()
-    await this.page.locator('div[role="region"]  input[name="token"]').fill(otp)
+
+    // Scope the token input within the form for better specificity
+    await form.locator('input[name="token"]').fill(otp)
   }
 
   async clickValidateEmailBtn() {

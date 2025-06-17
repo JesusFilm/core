@@ -198,46 +198,45 @@ export class CardLevelActionPage {
   }
 
   async clickSelectImageBtn() {
-    // Try multiple approaches to find and click the select image button
+    // Array of selectors to try in order of preference
+    const selectImageButtonSelectors = [
+      // Most specific selector with ImageSource container
+      'div[data-testid="ImageSource"] button[data-testid="card click area"]:has-text("Select Image")',
+      // Button with card click area test id and text filter
+      'button[data-testid="card click area"]:has-text("Select Image")',
+      // Button with MUI classes and text filter
+      'button.MuiButtonBase-root.MuiCardActionArea-root:has-text("Select Image")',
+      // Generic button with text selector
+      'button:has-text("Select Image")'
+    ]
+
+    // Try each selector until one works
+    for (const selector of selectImageButtonSelectors) {
+      try {
+        const button = this.page.locator(selector)
+
+        // Check if button is visible before attempting to click
+        if (await button.isVisible({ timeout: 5000 })) {
+          await button.click({ timeout: 10000 })
+          return // Successfully clicked, exit the method
+        }
+      } catch (error) {
+        // Continue to next selector if this one fails
+        continue
+      }
+    }
+
+    // If all selectors fail, try force click as last resort
     try {
-      // Original selector
       await this.page
         .locator(
-          'div[data-testid="ImageSource"] button[data-testid="card click area"]',
-          { hasText: 'Select Image' }
+          'div[data-testid="ImageSource"] button[data-testid="card click area"]:has-text("Select Image")'
         )
-        .click({ timeout: 10000 })
+        .click({ force: true, timeout: 10000 })
     } catch (error) {
-      try {
-        // Fallback 1: Look for button with just text match
-        await this.page
-          .locator('button[data-testid="card click area"]')
-          .filter({ hasText: 'Select Image' })
-          .click({ timeout: 10000 })
-      } catch (error) {
-        try {
-          // Fallback 2: Look for button with MUI classes and text
-          await this.page
-            .locator('button.MuiButtonBase-root.MuiCardActionArea-root')
-            .filter({ hasText: 'Select Image' })
-            .click({ timeout: 10000 })
-        } catch (error) {
-          try {
-            // Fallback 3: Look for any button with "Select Image" text
-            await this.page
-              .locator('button:has-text("Select Image")')
-              .click({ timeout: 10000 })
-          } catch (error) {
-            // Final fallback: Force click with visibility check disabled
-            await this.page
-              .locator(
-                'div[data-testid="ImageSource"] button[data-testid="card click area"]',
-                { hasText: 'Select Image' }
-              )
-              .click({ force: true, timeout: 10000 })
-          }
-        }
-      }
+      throw new Error(
+        `Failed to find and click "Select Image" button. Tried ${selectImageButtonSelectors.length} different selectors. Last error: ${error.message}`
+      )
     }
   }
   async clickSelectedImageBtn() {
@@ -1463,31 +1462,32 @@ export class CardLevelActionPage {
       .getByRole('button', { name: iconColor })
       .click()
   }
-  async verifyButtonPropertyUpdatedInCard(buttonName: string) {
+  async verifyButtonPropertyUpdatedInCard(
+    buttonName: string,
+    expectedIcon?: string
+  ) {
     // Try multiple approaches to find the button in iframe
     const frameLocator = this.page.frameLocator(this.journeyCardFrame)
 
     try {
-      // Original selector
+      // Original selector with optional icon filter
+      let buttonLocator = frameLocator
+        .locator(
+          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid *="JourneysButton"]'
+        )
+        .locator(
+          'button.MuiButton-text.MuiButton-sizeSmall.MuiButton-textPrimary'
+        )
+
+      // Apply icon filter if expectedIcon is provided
+      if (expectedIcon) {
+        buttonLocator = buttonLocator.filter({
+          has: frameLocator.locator(`svg[data-testid="${expectedIcon}"]`)
+        })
+      }
+
       await expect(
-        frameLocator
-          .locator(
-            'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid *="JourneysButton"]'
-          )
-          .locator(
-            'button.MuiButton-text.MuiButton-sizeSmall.MuiButton-textPrimary'
-          )
-          .filter({
-            has: frameLocator.locator(
-              'svg[data-testid="ArrowForwardRoundedIcon"]'
-            )
-          })
-          .filter({
-            has: frameLocator.locator(
-              'svg[data-testid="ChatBubbleOutlineRoundedIcon"]'
-            )
-          })
-          .locator('textarea[name="buttonLabel"]')
+        buttonLocator.locator('textarea[name="buttonLabel"]')
       ).toHaveValue(buttonName, { timeout: 10000 })
     } catch (error) {
       try {
