@@ -113,6 +113,15 @@ export function VideoCreateForm({
           childIds: []
         }
       },
+      update: (cache, { data }) => {
+        if (!data?.videoCreate) return
+
+        // Invalidate all adminVideos and adminVideosCount queries in the cache
+        // This ensures that any active queries will refetch and show the new video
+        cache.evict({ fieldName: 'adminVideos' })
+        cache.evict({ fieldName: 'adminVideosCount' })
+        cache.gc()
+      },
       onCompleted: async (data) => {
         const videoId = data.videoCreate.id
 
