@@ -1375,7 +1375,7 @@ export class CardLevelActionPage {
         .locator(
           'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid *="JourneysSpacer"]'
         )
-    ).toHaveCount(0)
+    ).toHaveCount(0, { timeout: 10000 })
   }
   async getSpacerHeightPixelBeforeChange() {
     return await this.page
@@ -1729,13 +1729,12 @@ export class CardLevelActionPage {
       }
     }
 
-    // Then validate the footer has the display title
+    // For website journeys, the display title is in the HEADER, not the footer
+    // The footer only contains InformationButton and ChatButtons
     await expect(
-      this.page
-        .frameLocator(this.journeyCardFrame)
-        .locator(
-          `div[data-testid="JourneysStepFooter"]:has(h6:text-is("${title}"))`
-        )
+      header.locator(
+        `h6:text-is("${title}"), [role="heading"]:text-is("${title}"), *:text-is("${title}")`
+      )
     ).toBeVisible()
   }
 

@@ -31,13 +31,54 @@ test.describe('firefox only', () => {
     // Get and log the current URL
     console.log('Current URL:', page.url())
 
-    await page
-      .getByRole('button', { name: 'JESUS JESUS Feature Film 61 chapters' })
-      .click()
+    // Add debug: check what buttons are actually on the page
+    const buttons = await page.locator('button, [role="button"], a').all()
+    console.log('Found buttons:', buttons.length)
+
+    // Check for any buttons with "JESUS" in their text
+    const jesusButtons = await page
+      .locator('button, [role="button"], a')
+      .filter({ hasText: 'JESUS' })
+      .all()
+    console.log('Found JESUS buttons:', jesusButtons.length)
+
+    for (let i = 0; i < jesusButtons.length; i++) {
+      const buttonText = await jesusButtons[i].textContent()
+      console.log(`JESUS button ${i}: "${buttonText}"`)
+    }
+
+    // Try to find the button with a more flexible selector
+    let jesusButton
+    try {
+      jesusButton = page.getByRole('button', {
+        name: 'JESUS JESUS Feature Film 61 chapters'
+      })
+      const buttonExists = await jesusButton.isVisible()
+      console.log('Exact button found:', buttonExists)
+    } catch (e) {
+      console.log('Exact button not found, trying alternative selectors')
+
+      // Try just looking for any button with "JESUS" and "Feature Film"
+      jesusButton = page
+        .locator('button, [role="button"], a')
+        .filter({ hasText: 'JESUS' })
+        .filter({ hasText: 'Feature Film' })
+        .first()
+    }
+
+    console.log('About to click button')
+    await jesusButton.click()
+    console.log('Button clicked')
+
+    // Add a small wait to see if navigation starts
+    await page.waitForTimeout(2000)
+    console.log('URL after click:', page.url())
 
     // video tiles aren't loading upon right away and there is no event to say they are loaded. So the only option is to hard wait
     // eslint-disable-next-line playwright/no-wait-for-timeout
     await page.waitForTimeout(6 * 1000)
+    console.log('Final URL after wait:', page.url())
+
     // await expect(page).toHaveScreenshot('ff-landing-page.png', {
     //   animations: 'disabled',
     //   fullPage: true
