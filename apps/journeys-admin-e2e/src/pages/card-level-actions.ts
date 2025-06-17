@@ -1332,9 +1332,7 @@ export class CardLevelActionPage {
         .locator(
           'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid *="JourneysButton"]'
         )
-        .locator(
-          'button.MuiButton-text.MuiButton-sizeSmall.MuiButton-textPrimary'
-        )
+        .locator('button')
         .filter({
           has: this.page.locator('svg[data-testid="ArrowForwardRoundedIcon"]')
         })
@@ -1497,7 +1495,7 @@ export class CardLevelActionPage {
   }
   async selectChevronDownIconForFooter() {
     await this.page
-      .locator('li:has(svg[data-testid="ChevronDownIcon"])')
+      .locator('li[role="option"]:has(svg[data-testid="ChevronDownIcon"])')
       .click()
   }
 
