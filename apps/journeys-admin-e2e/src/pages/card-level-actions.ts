@@ -1465,10 +1465,10 @@ export class CardLevelActionPage {
 
     await expect(footerSection).toBeVisible()
 
-    // Then validate the button list exists
-    const buttonList = footerSection.locator(
-      'div[data-testid="StepFooterButtonList"]'
-    )
+    // Then validate the button list exists (use first() since there might be multiple)
+    const buttonList = footerSection
+      .locator('div[data-testid="StepFooterButtonList"]')
+      .first()
     await expect(buttonList).toBeVisible()
 
     // Check for reaction buttons with multiple selector patterns
@@ -1665,7 +1665,7 @@ export class CardLevelActionPage {
       this.page
         .frameLocator(this.journeyCardFrame)
         .locator(
-          `div[data-testid="JourneysStepHeader"]:has(h6:text-is("${title}"))`
+          `div[data-testid="JourneysStepFooter"]:has(h6:text-is("${title}"))`
         )
         .filter({ has: this.page.locator('img') })
         .filter({

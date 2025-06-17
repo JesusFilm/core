@@ -204,9 +204,30 @@ export class Register {
       const allTestIds = await this.page.locator('[data-testid]').count()
       console.log(`Found ${allTestIds} elements with data-testid on the page`)
 
-      throw new Error(
-        'Discover page did not load - ContainedIconButton not found'
-      )
+      // Debug: Check if the page finished loading
+      await this.page.waitForTimeout(2000)
+
+      // Try one more time with the most basic selector
+      try {
+        await expect(
+          this.page.locator('[data-testid="JourneysAdminContainedIconButton"]')
+        ).toBeVisible({ timeout: 5000 })
+        console.log('ContainedIconButton found on final retry')
+        return
+      } catch (finalError) {
+        // List some visible elements for debugging
+        const visibleButtons = await this.page.locator('button').count()
+        const visibleDivs = await this.page
+          .locator('[data-testid*="Button"]')
+          .count()
+        console.log(
+          `Found ${visibleButtons} buttons and ${visibleDivs} testid elements containing "Button"`
+        )
+
+        throw new Error(
+          'Discover page did not load - ContainedIconButton not found'
+        )
+      }
     }
   }
 
