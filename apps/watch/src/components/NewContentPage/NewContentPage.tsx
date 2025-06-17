@@ -5,7 +5,6 @@ import { ReactElement, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import Bible from '@core/shared/ui/icons/Bible'
-import Download2 from '@core/shared/ui/icons/Download2'
 import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 import { ThemeMode } from '@core/shared/ui/themes'
 
@@ -13,7 +12,6 @@ import { VideoContentFields_studyQuestions } from '../../../__generated__/VideoC
 import { useVideoChildren } from '../../libs/useVideoChildren'
 import { getWatchUrl } from '../../libs/utils/getWatchUrl'
 import { useVideo } from '../../libs/videoContext'
-import { DownloadDialog } from '../DownloadDialog'
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
 
@@ -42,12 +40,11 @@ export function NewContentPage(): ReactElement {
   } = useVideo()
 
   const [showShare, setShowShare] = useState(false)
-  const [showDownload, setShowDownload] = useState(false)
 
   const variantSlug = container?.variant?.slug ?? variant?.slug
   const watchUrl = getWatchUrl(container?.slug, label, variant?.slug)
 
-  const { loading, children } = useVideoChildren(variantSlug)
+  const { children } = useVideoChildren(variantSlug)
   const filteredChildren = children.filter((video) => video.variant !== null)
 
   const questions =
@@ -146,18 +143,7 @@ export function NewContentPage(): ReactElement {
                   <LinkExternal className="w-4 h-4" />
                   {t('Share')}
                 </button>
-                <button
-                  onClick={() => setShowDownload(true)}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-gray-900 font-bold uppercase tracking-wider bg-white hover:bg-[#cb333b] hover:text-white transition-colors duration-200 text-sm cursor-pointer"
-                >
-                  <Download2 className="w-4 h-4" />
-                  {t('Download')}
-                </button>
               </div>
-              <DownloadDialog
-                open={showDownload}
-                onClose={() => setShowDownload(false)}
-              />
               <ShareDialog
                 open={showShare}
                 onClose={() => setShowShare(false)}

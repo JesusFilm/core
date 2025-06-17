@@ -10,7 +10,7 @@ export function ContentHeader(): ReactElement {
       data-testid="ContentHeader"
       className="absolute top-0 left-0 right-0 w-full h-[100px] lg:h-[200px] max-w-[1920px] mx-auto z-[99] px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 flex flex-row items-center justify-between"
     >
-      <NextLink href="https://www.jesusfilm.org/watch">
+      <NextLink href="/">
         <Image
           src="/watch/assets/jesusfilm-sign.svg"
           alt="JesusFilm Project"
