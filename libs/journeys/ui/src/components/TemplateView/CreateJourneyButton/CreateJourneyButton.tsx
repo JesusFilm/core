@@ -252,6 +252,7 @@ export function CreateJourneyButton({
           title={t('Add Journey to Team')}
           open={openTeamDialog}
           loading={loading}
+          showCreateWithAiButton
           onClose={handleCloseTeamDialog}
           submitAction={handleCreateJourney}
           translationProgress={
