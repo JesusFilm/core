@@ -187,24 +187,40 @@ export class Register {
 
     let found = false
     for (const selector of selectors) {
-      try {
-        const element = this.page.locator(selector).first()
-        await expect(element).toBeVisible({ timeout: 10000 })
-        console.log(`ContainedIconButton found using selector: ${selector}`)
-        found = true
-        break
-      } catch (error) {
-        console.log(`Failed with selector: ${selector}`)
-        continue
+      if (selector === 'div[data-testid="JourneysAdminContainedIconButton"]') {
+        try {
+          await this.page.locator(selector).waitFor({ timeout: 5000 })
+        } catch {
+          // Fallback selectors if the primary one fails
+          const fallbackSelectors = [
+            '[data-testid="JourneysAdminContainedIconButton"]',
+            'div[data-testid="JourneysAdminContainedIconButton"] button',
+            '[data-testid="JourneysAdminContainedIconButton"] button',
+            'div[data-testid="JourneysAdminContainedIconButton"] [role="button"]'
+          ]
+
+          for (const fallback of fallbackSelectors) {
+            try {
+              await this.page.locator(fallback).waitFor({ timeout: 2000 })
+              selector = fallback
+              break
+            } catch {
+              continue
+            }
+          }
+        }
       }
+
+      // Wait for the element and click it
+      const element = this.page.locator(selector)
+      await element.waitFor({ timeout: 30000 })
+      await element.click()
+      found = true
+      break
     }
 
     if (!found) {
-      // Debug: Check what's actually on the page
-      const allTestIds = await this.page.locator('[data-testid]').count()
-      console.log(`Found ${allTestIds} elements with data-testid on the page`)
-
-      // Debug: Check if the page finished loading
+      // Check if the page finished loading
       await this.page.waitForTimeout(2000)
 
       // Try one more time with the most basic selector
@@ -212,18 +228,8 @@ export class Register {
         await expect(
           this.page.locator('[data-testid="JourneysAdminContainedIconButton"]')
         ).toBeVisible({ timeout: 5000 })
-        console.log('ContainedIconButton found on final retry')
         return
       } catch (finalError) {
-        // List some visible elements for debugging
-        const visibleButtons = await this.page.locator('button').count()
-        const visibleDivs = await this.page
-          .locator('[data-testid*="Button"]')
-          .count()
-        console.log(
-          `Found ${visibleButtons} buttons and ${visibleDivs} testid elements containing "Button"`
-        )
-
         throw new Error(
           'Discover page did not load - ContainedIconButton not found'
         )
