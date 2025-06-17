@@ -1,6 +1,5 @@
 import { promises } from 'fs'
 import path from 'path'
-
 import 'dotenv/config'
 
 import { Command } from 'commander'
@@ -304,7 +303,6 @@ async function main() {
     try {
       const filePath = path.join(folderPath, file)
       const contentType = 'audio/aac'
-      const originalFilename = file
       const { size: contentLength } = await promises.stat(filePath)
 
       // Extract audio metadata
