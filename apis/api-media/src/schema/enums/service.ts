@@ -1,4 +1,4 @@
-import { Service as PrismaService } from '.prisma/api-media-client'
+import { Service as PrismaService } from '@core/prisma-media/client'
 
 import { builder } from '../builder'
 

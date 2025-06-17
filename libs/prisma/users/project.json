@@ -1,0 +1,66 @@
+{
+  "name": "prisma-users",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/prisma/users/src",
+  "projectType": "library",
+  "tags": ["type:prisma", "scope:users"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/prisma-users/eslint",
+        "cacheStrategy": "content"
+      }
+    },
+    "prisma-generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "parallel": false,
+        "commands": [
+          "npx prisma generate --schema libs/prisma/users/db/schema.prisma"
+        ]
+      }
+    },
+    "prisma-migrate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_USERS=postgresql://postgres:postgres@db:5432/users?schema=public \"bash -c 'npx prisma migrate dev --schema libs/prisma/users/db/schema.prisma --name `date +\\\"%Y%m%d%H%M%S\\\"`'\""
+        ]
+      },
+      "configurations": {
+        "production": {
+          "commands": [
+            "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_USERS=postgresql://postgres:postgres@db:5432/users?schema=public \"npx prisma migrate deploy --schema libs/prisma/users/db/schema.prisma\""
+          ]
+        }
+      }
+    },
+    "prisma-reset": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_USERS=postgresql://postgres:postgres@db:5432/users?schema=public \"npx prisma migrate reset --schema libs/prisma/users/db/schema.prisma --force\""
+        ]
+      }
+    },
+    "prisma-studio": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx prisma studio --schema libs/prisma/users/db/schema.prisma"
+        ]
+      }
+    },
+    "prisma-validate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx prisma validate --schema libs/prisma/users/db/schema.prisma"
+        ]
+      }
+    }
+  }
+}
