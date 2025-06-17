@@ -88,3 +88,6 @@ terraform.tfstate.backup
 # ignore exports
 /exports/*
 /imports/*
+
+# node sea
+sea-prep.blob
