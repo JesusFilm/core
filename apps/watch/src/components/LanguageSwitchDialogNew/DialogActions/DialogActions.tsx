@@ -2,8 +2,6 @@ import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { LANGUAGE_MAPPINGS } from '../../../config/locales'
-import { SUBTITLE_LANGUAGE_IDS } from '../../../config/subtitleLanguageIds'
 import { setCookie } from '../utils/cookieHandler'
 
 interface DialogActionsProps {

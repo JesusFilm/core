@@ -10,7 +10,6 @@ import { websiteLight } from 'libs/shared/ui/src/libs/themes/website/theme'
 import { GetAllLanguages } from '../../../__generated__/GetAllLanguages'
 import { DialogActions } from './DialogActions'
 import { getCookie } from './utils/cookieHandler'
-import { LANGUAGE_MAPPINGS } from '../../config/locales'
 
 const GET_ALL_LANGUAGES = gql`
   query GetAllLanguages {
@@ -78,14 +77,14 @@ export function LanguageSwitchDialog({
     if (!manuallyChangedFields.subtitle) {
       setSelectedSubtitle(selectedLangObj.id)
     }
-  }, [selectedLanguage, data?.languages, manuallyChangedFields])
+  }, [selectedLanguage, data?.languages])
 
   // Update subtitle when audio changes if not manually changed
   useEffect(() => {
     if (!manuallyChangedFields.subtitle) {
       setSelectedSubtitle(selectedAudioLanguage)
     }
-  }, [selectedAudioLanguage, manuallyChangedFields.subtitle])
+  }, [selectedAudioLanguage])
 
   function handleResetForm(): void {
     setSelectedLanguage(i18n.language)
@@ -105,7 +104,10 @@ export function LanguageSwitchDialog({
     if (!open) {
       handleResetForm()
     }
+  }, [open])
 
+  // Handle escape key separately to avoid dependency issues
+  useEffect(() => {
     const handleEscapeKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         handleDialogCancel()
@@ -119,7 +121,7 @@ export function LanguageSwitchDialog({
     return () => {
       document.removeEventListener('keydown', handleEscapeKey)
     }
-  }, [open, handleDialogCancel])
+  }, [open])
 
   return !open ? (
     <></>

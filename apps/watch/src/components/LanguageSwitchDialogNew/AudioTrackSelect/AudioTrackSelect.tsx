@@ -44,7 +44,6 @@ export function AudioTrackSelect({
     if (selectedLanguage != null && !loading) {
       const path = router.asPath.split('/')
       const pathLanguageSlug = last(path)?.replace('.html', '')
-      console.log(path, pathLanguageSlug)
 
       if (pathLanguageSlug !== selectedLanguage.slug && path.length > 3) {
         const pathLanguage = languagesData?.find(
