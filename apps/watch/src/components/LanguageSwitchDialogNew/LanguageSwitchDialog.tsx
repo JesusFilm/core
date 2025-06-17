@@ -10,6 +10,7 @@ import { websiteLight } from 'libs/shared/ui/src/libs/themes/website/theme'
 import { GetAllLanguages } from '../../../__generated__/GetAllLanguages'
 import { DialogActions } from './DialogActions'
 import { getCookie } from './utils/cookieHandler'
+import { LANGUAGE_MAPPINGS } from '../../config/locales'
 
 const GET_ALL_LANGUAGES = gql`
   query GetAllLanguages {
@@ -51,12 +52,53 @@ export function LanguageSwitchDialog({
     subtitleLanguageCookie
   )
   const [subtitlesOn, setSubtitlesOn] = useState(subtitlesOnCookie === 'true')
-
+  const [manuallyChangedFields, setManuallyChangedFields] = useState({
+    audio: false,
+    subtitle: false
+  })
   const [loading, setLoading] = useState(false)
   const languageDropdownRef = useRef<HTMLDivElement>(null)
   const audioDropdownRef = useRef<HTMLDivElement>(null)
   const subtitleDropdownRef = useRef<HTMLDivElement>(null)
   const dialogRef = useRef<HTMLDivElement>(null)
+
+  // Handle automatic language updates
+  useEffect(() => {
+    if (!data?.languages) return
+
+    const selectedLangObj = data.languages.find(
+      (lang) => lang.bcp47 === selectedLanguage
+    )
+    if (!selectedLangObj) return
+
+    // Update audio and subtitle based on site language if not manually changed
+    if (!manuallyChangedFields.audio) {
+      setSelectedAudioLanguage(selectedLangObj.id)
+    }
+    if (!manuallyChangedFields.subtitle) {
+      setSelectedSubtitle(selectedLangObj.id)
+    }
+  }, [selectedLanguage, data?.languages, manuallyChangedFields])
+
+  // Update subtitle when audio changes if not manually changed
+  useEffect(() => {
+    if (!manuallyChangedFields.subtitle) {
+      setSelectedSubtitle(selectedAudioLanguage)
+    }
+  }, [selectedAudioLanguage, manuallyChangedFields.subtitle])
+
+  function handleResetForm(): void {
+    setSelectedLanguage(i18n.language)
+    setSelectedAudioLanguage(audioLanguageCookie)
+    setSelectedSubtitle(subtitleLanguageCookie)
+    setSubtitlesOn(subtitlesOnCookie === 'true')
+    setManuallyChangedFields({ audio: false, subtitle: false })
+  }
+
+  function handleDialogCancel(): void {
+    handleResetForm()
+    handleClose()
+  }
 
   // Handle dialog close and reset form
   useEffect(() => {
@@ -78,18 +120,6 @@ export function LanguageSwitchDialog({
       document.removeEventListener('keydown', handleEscapeKey)
     }
   }, [open, handleDialogCancel])
-
-  function handleResetForm(): void {
-    setSelectedLanguage(i18n.language)
-    setSelectedAudioLanguage(audioLanguageCookie)
-    setSelectedSubtitle(subtitleLanguageCookie)
-    setSubtitlesOn(subtitlesOnCookie === 'true')
-  }
-
-  function handleDialogCancel(): void {
-    handleResetForm()
-    handleClose()
-  }
 
   return !open ? (
     <></>
@@ -151,14 +181,23 @@ export function LanguageSwitchDialog({
                 languagesData={data?.languages}
                 loading={languagesLoading}
                 selectedLanguageId={selectedAudioLanguage}
-                onChange={setSelectedAudioLanguage}
+                onChange={(value) => {
+                  setSelectedAudioLanguage(value)
+                  setManuallyChangedFields((prev) => ({ ...prev, audio: true }))
+                }}
                 dropdownRef={audioDropdownRef}
               />
               <SubtitlesSelect
                 languagesData={data?.languages}
                 loading={languagesLoading}
                 selectedSubtitleId={selectedSubtitle}
-                onChange={setSelectedSubtitle}
+                onChange={(value) => {
+                  setSelectedSubtitle(value)
+                  setManuallyChangedFields((prev) => ({
+                    ...prev,
+                    subtitle: true
+                  }))
+                }}
                 subtitlesOn={subtitlesOn}
                 setSubtitlesOn={setSubtitlesOn}
                 dropdownRef={subtitleDropdownRef}

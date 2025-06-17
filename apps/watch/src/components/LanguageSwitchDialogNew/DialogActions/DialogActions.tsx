@@ -51,40 +51,24 @@ export function DialogActions({
     // Subtitle Language cookie is languageId e.g. 529,
     const subtitleChanged = selectedSubtitle !== subtitleLanguageCookie
     const subtitlesOnChanged = subtitlesOn.toString() !== subtitlesOnCookie
-    const cookieFingerprint = '00005'
 
     // Site language change
     if (siteLanguageChanged) {
       setCookie('NEXT_LOCALE', selectedLanguage)
-      const siteLanguageId =
-        LANGUAGE_MAPPINGS[selectedLanguage]?.languageId ?? '529'
-      void i18n.changeLanguage(selectedLanguage)
-      if (!audioTrackChanged) {
-        setCookie('AUDIO_LANGUAGE', siteLanguageId)
-      }
-      if (!audioTrackChanged) {
-        setCookie('SUBTITLE_LANGUAGE', siteLanguageId)
-      }
     }
 
     // Audio track change
     if (audioTrackChanged) {
-      document.cookie = `AUDIO_LANGUAGE=${cookieFingerprint}---${selectedAudioLanguage}; path=/`
-      if (!subtitleChanged) {
-        const subtitleLanguageId =
-          SUBTITLE_LANGUAGE_IDS.find((id) => id === selectedAudioLanguage) ??
-          '529'
-        document.cookie = `TODO: SUBTITLE_LANGUAGE=${cookieFingerprint}---${subtitleLanguageId}; path=/`
-      }
+      setCookie('AUDIO_LANGUAGE', selectedAudioLanguage)
     }
     // Subtitle change
     if (subtitleChanged) {
-      document.cookie = `SUBTITLE_LANGUAGE=${cookieFingerprint}---${selectedSubtitle}; path=/`
+      setCookie('SUBTITLE_LANGUAGE', selectedSubtitle)
     }
 
     // Subtitles on change
     if (subtitlesOnChanged) {
-      document.cookie = `SUBTITLES_ON=${cookieFingerprint}---${subtitlesOn.toString()}; path=/`
+      setCookie('SUBTITLES_ON', subtitlesOn.toString())
     }
 
     if (siteLanguageChanged || audioTrackChanged) {
