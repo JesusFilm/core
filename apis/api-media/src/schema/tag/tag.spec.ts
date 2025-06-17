@@ -1,4 +1,4 @@
-import { Tag, TagName } from '.prisma/api-media-client'
+import { Tag, TagName } from '@core/prisma-media/client'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'

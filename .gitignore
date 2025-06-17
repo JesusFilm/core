@@ -88,3 +88,6 @@ terraform.tfstate.backup
 # ignore exports
 /exports/*
 /imports/*
+
+# prisma
+.prisma/
