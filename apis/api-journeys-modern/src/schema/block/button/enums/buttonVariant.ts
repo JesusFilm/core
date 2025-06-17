@@ -10,5 +10,3 @@ export type ButtonVariantType = (typeof BUTTON_VARIANT_VALUES)[number] | null
 export const ButtonVariant = builder.enumType('ButtonVariant', {
   values: BUTTON_VARIANT_VALUES
 })
-
-//dummy comment to re run the build
