@@ -11,7 +11,7 @@ import { VideoCarouselNavButton } from './VideoCarouselNavButton'
 const VideoCarouselNavButtonStory: Meta<typeof VideoCarouselNavButton> = {
   ...watchConfig,
   component: VideoCarouselNavButton,
-  title: 'Watch/VideoCarousel/NavButton',
+  title: 'Watch/VideoCarousel/VideoCarouselNavButton',
   parameters: {
     docs: {
       source: { type: 'code' }

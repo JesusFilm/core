@@ -20,6 +20,7 @@ import { sendGTMEvent } from '@next/third-parties/google'
 import fscreen from 'fscreen'
 import debounce from 'lodash/debounce'
 import dynamic from 'next/dynamic'
+import Image from 'next/image'
 import { MouseEventHandler, ReactElement, useEffect, useState } from 'react'
 import Player from 'video.js/dist/types/player'
 
@@ -27,8 +28,10 @@ import { isMobile } from '@core/shared/ui/deviceUtils'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import { useVideo } from '../../../../../libs/videoContext'
+import { HeroOverlay } from '../../../../HeroOverlay/HeroOverlay'
 import { SubtitleDialogProps } from '../../../../SubtitleDialog/SubtitleDialog'
 import { AudioLanguageButton } from '../../../AudioLanguageButton'
+import { VideoTitle } from '../VideoTitle'
 
 const DynamicSubtitleDialog = dynamic<SubtitleDialogProps>(
   async () =>
@@ -86,7 +89,7 @@ export function VideoControls({
     trimZeroes: true
   })
   const durationSeconds = Math.round(player.duration() ?? 1)
-  const { id, title, snippet, variant } = useVideo()
+  const { id, title, snippet, variant, images, imageAlt } = useVideo()
   const visible = !play || active || loading
 
   const videoTitle = title?.[0]?.value ?? ''
@@ -322,66 +325,54 @@ export function VideoControls({
       data-testid="VideoControls"
     >
       {!loading ? (
-        <Fade
-          in={!play}
-          style={{
-            transitionDuration: '250ms'
-          }}
-          timeout={{ exit: 2225 }}
-        >
-          <Stack
+        <VideoTitle
+          play={play}
+          videoTitle={videoTitle}
+          videoSnippet={videoSnippet}
+        />
+      ) : (
+        <>
+          <Box
             sx={{
-              width: '100%',
-              zIndex: 2,
               display: 'flex',
-              flexDirection: 'column',
-              px: { xs: 4, sm: 6, md: 8, lg: 10, xl: 12 }
+              flexGrow: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingTop: '104px',
+              zIndex: 2
             }}
           >
-            <Typography
-              component="h1"
-              variant="h2"
-              sx={{
-                fontWeight: 'bold',
-                color: 'text.primary',
-                opacity: 0.9,
-                mixBlendMode: 'screen',
-                flexGrow: 1,
-                mb: 1
+            <CircularProgress size={65} />
+          </Box>
+          {images[0]?.mobileCinematicHigh != null && (
+            <Image
+              src={images[0].mobileCinematicHigh}
+              alt={imageAlt[0].value}
+              fill
+              sizes="100vw"
+              style={{
+                objectFit: 'cover'
               }}
-            >
-              {videoTitle}
-            </Typography>
-
-            <Typography
-              component="h4"
-              variant="h6"
-              data-testid="ContainerHeroDescription"
-              sx={{
-                opacity: 0.5,
-                mixBlendMode: 'screen',
-                zIndex: 2,
-                textTransform: 'uppercase',
-                letterSpacing: '0.1em',
-                color: 'text.primary'
-              }}
-            >
-              {videoSnippet}
-            </Typography>
-          </Stack>
-        </Fade>
-      ) : (
-        <Box
-          sx={{
-            display: 'flex',
-            flexGrow: 1,
-            alignItems: 'center',
-            justifyContent: 'center',
-            paddingTop: '104px'
-          }}
-        >
-          <CircularProgress size={65} />
-        </Box>
+            />
+          )}
+          <VideoTitle
+            play={!loading}
+            videoTitle={videoTitle}
+            videoSnippet={videoSnippet}
+          />
+          <Box
+            sx={{
+              zIndex: 0,
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0
+            }}
+          >
+            <HeroOverlay />
+          </Box>
+        </>
       )}
       <Fade
         in={visible}
