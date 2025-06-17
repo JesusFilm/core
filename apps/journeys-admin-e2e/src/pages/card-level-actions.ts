@@ -1484,7 +1484,7 @@ export class CardLevelActionPage {
   async validateSelectedImageWithEditIcon() {
     await expect(
       this.page.locator(
-        'div[data-testid="ImageBlockHeader"]:has(div[data-testid="ImageBlockThumbnail"] img) button svg[data-testid *="Edit"]'
+        'div[data-testid="ImageBlockHeader"]:has(div[data-testid="ImageBlockThumbnail"] img) button svg[data-testid="imageBlockHeaderEdit"]'
       )
     ).toBeVisible()
   }
