@@ -265,20 +265,18 @@ export const reducer = (
     }
     case 'SetStepsAction': {
       const selectedStep =
-        state.selectedStepId != null
-          ? action.steps.find(({ id }) => id === state.selectedStepId)
-          : action.steps[0]
+        action.steps.find(({ id }) => id === state.selectedStepId) ??
+        action.steps[0]
       const selectedBlock =
-        state.selectedBlockId != null
-          ? searchBlocks(action.steps, state.selectedBlockId)
-          : action.steps[0]
+        searchBlocks(action.steps, state.selectedBlockId ?? '') ??
+        action.steps[0]
       return {
         ...state,
         steps: action.steps,
         selectedStep,
-        selectedStepId: selectedStep?.id ?? state.selectedStepId,
+        selectedStepId: selectedStep?.id,
         selectedBlock,
-        selectedBlockId: selectedBlock?.id ?? state.selectedBlockId
+        selectedBlockId: selectedBlock?.id
       }
     }
     case 'SetShowAnalyticsAction':
