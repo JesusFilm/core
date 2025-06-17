@@ -8,7 +8,7 @@ interface VideoCarouselNavButtonProps {
 }
 
 export const VideoCarouselNavButton = forwardRef<
-  HTMLDivElement,
+  HTMLButtonElement,
   VideoCarouselNavButtonProps
 >(function VideoCarouselNavButton(
   { variant, disabled = false },
@@ -53,7 +53,7 @@ export const VideoCarouselNavButton = forwardRef<
   ].join(' ')
 
   return (
-    <div
+    <button
       ref={ref}
       className={`${allClasses} swiper-button-disabled:opacity-0 swiper-button-disabled:cursor-auto swiper-button-disabled:pointer-events-none`}
       data-testid="NavButton"
@@ -63,6 +63,6 @@ export const VideoCarouselNavButton = forwardRef<
       ) : (
         <NavigateNextIcon fontSize="large" />
       )}
-    </div>
+    </button>
   )
 })

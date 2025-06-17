@@ -47,7 +47,6 @@ test.describe('firefox only', () => {
     await expect(page).toHaveURL('watch/jesus.html/english.html')
 
     // check navigation buttons are working
-    // nav buttons have been removed - Nisal - 17/06/2025
     await page.getByTestId('NavigateNextIcon').click()
     await page.getByTestId('NavigateNextIcon').click()
     await page.getByTestId('NavigateBeforeIcon').click()
@@ -61,7 +60,7 @@ test.describe('firefox only', () => {
 
     await page
       .getByRole('button', {
-        name: 'Blessed are those Who Hear and Obey'
+        name: 'Blessed are those Who Hear and Obey Chapter Blessed are those Who Hear and Obey'
       })
       .click()
 
