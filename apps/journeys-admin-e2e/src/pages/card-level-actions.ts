@@ -967,6 +967,10 @@ export class CardLevelActionPage {
     await this.page
       .locator('input#whatsApp')
       .fill(testData.cardLevelAction.whatsApp)
+    // Trigger blur to save the configuration
+    await this.page.locator('input#whatsApp').blur()
+    // Wait a moment for the chat button to be created/updated
+    await this.page.waitForTimeout(2000)
   }
 
   async verifyChatWidgetAddedToCard() {
@@ -1484,6 +1488,10 @@ export class CardLevelActionPage {
       .click()
   }
   async selectChevronDownIconForFooter() {
+    // Wait for the dropdown to be fully opened and options to be visible
+    await expect(
+      this.page.locator('li:has(svg[data-testid="ChevronDownIcon"])')
+    ).toBeVisible({ timeout: 10000 })
     await this.page
       .locator('li:has(svg[data-testid="ChevronDownIcon"])')
       .click()
