@@ -189,6 +189,7 @@ export function ContainedCover({
             layout="fill"
             objectFit="cover"
             objectPosition={`${imageBlock.focalLeft}% ${imageBlock.focalTop}%`}
+            sx={{ transform: `scale(${(imageBlock.scale ?? 100) / 100})` }}
           />
         )}
       </Box>

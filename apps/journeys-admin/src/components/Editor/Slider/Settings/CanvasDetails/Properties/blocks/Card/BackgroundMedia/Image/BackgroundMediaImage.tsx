@@ -104,7 +104,7 @@ export function BackgroundMediaImage({
       height: input.height ?? 0,
       blurhash: input.blurhash ?? '',
       parentOrder: null,
-      scale: null,
+      scale: 100,
       focalTop: 50,
       focalLeft: 50
     }
@@ -233,7 +233,8 @@ export function BackgroundMediaImage({
       height: input.height ?? coverBlock.height,
       width: input.width ?? coverBlock.width,
       focalTop: input?.focalTop ?? coverBlock.focalTop,
-      focalLeft: input?.focalLeft ?? coverBlock.focalLeft
+      focalLeft: input?.focalLeft ?? coverBlock.focalLeft,
+      scale: input?.scale ?? coverBlock.scale
     }
 
     add({
@@ -357,7 +358,8 @@ export function BackgroundMediaImage({
         updateImageBlock={updateImageBlock}
       />
       <ZoomImage
-        updateImageBlock={() => { /* dummy updateImageBlock for now */ }} 
+        imageBlock={coverBlock?.__typename === 'ImageBlock' ? coverBlock : null}
+        updateImageBlock={updateImageBlock}
       />
     </Stack>
   )

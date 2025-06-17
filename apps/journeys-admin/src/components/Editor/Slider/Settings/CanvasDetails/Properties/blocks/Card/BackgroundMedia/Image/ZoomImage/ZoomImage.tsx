@@ -1,123 +1,93 @@
 import ZoomInIcon from '@mui/icons-material/ZoomIn'
-import InputAdornment from '@mui/material/InputAdornment'
 import Slider from '@mui/material/Slider'
 import Stack from '@mui/material/Stack'
-import TextField from '@mui/material/TextField'
-import debounce from 'lodash/debounce'
-import { useCallback, useState } from 'react'
+import Typography from '@mui/material/Typography'
+import { useState } from 'react'
+
+import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../../../../__generated__/BlockFields'
+import { ImageBlockUpdateInput } from '../../../../../../../../../../../../__generated__/globalTypes'
 
 interface ZoomImageProps {
-  value?: number // 0-1
-  updateImageBlock?: (zoom: number) => void
+  imageBlock?: ImageBlock | null
+  updateImageBlock: (input: ImageBlockUpdateInput) => void
 }
 
-export const ZoomImage = ({ value = 0, updateImageBlock }: ZoomImageProps) => {
-  const [zoom, setZoom] = useState<number>(value)
-
-  // Debounced update function
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debouncedUpdate = useCallback(
-    debounce((val: number) => {
-      updateImageBlock?.(val)
-    }, 500),
-    [updateImageBlock]
+export function ZoomImage({ 
+  imageBlock, 
+  updateImageBlock 
+}: ZoomImageProps) {
+  const [zoom, setZoom] = useState<number>(
+    imageBlock?.scale !== null ? imageBlock!.scale - 100 : 0
   )
 
   const handleSliderChange = (_: Event, newValue: number | number[]) => {
     const val = typeof newValue === 'number' ? newValue : newValue[0]
     setZoom(val)
-    debouncedUpdate(val)
   }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let percent = parseInt(e.target.value.replace(/[^0-9]/g, ''), 10)
-    if (isNaN(percent)) percent = 0
-    if (percent > 100) percent = 100
-    if (percent < 0) percent = 0
-    const val = percent / 100
-    setZoom(val)
-    debouncedUpdate(val)
+  const handleSliderChangeCommitted = (
+    _: Event,
+    newValue: number | number[]
+  ) => {
+    const val = typeof newValue === 'number' ? newValue : newValue[0]
+
+    updateImageBlock?.({
+      src: imageBlock?.src,
+      scale: 100 + val
+    })
   }
 
   return (
     <Stack direction="row" alignItems="center" spacing={3}>
-      {/* <Box sx={{ display: 'flex', alignItems: 'center', minWidth: 32 }}> */}
-        <ZoomInIcon
-          sx={{ color: 'grey.500', fontSize: 24 }}
-          aria-label="Zoom in"
-        />
-      {/* </Box> */}
+      <ZoomInIcon
+        sx={{ color: 'text.secondary', fontSize: 24 }}
+        aria-label="Zoom in"
+      />
       <Slider
         value={zoom}
         min={0}
-        max={1}
-        step={0.01}
+        max={100}
+        step={1}
         onChange={handleSliderChange}
-        sx={{ 
-          flex: 1, 
-          color: '#B32836', 
+        onChangeCommitted={handleSliderChangeCommitted}
+        sx={{
+          flex: 1,
+          color: 'primary',
           borderRadius: 4,
           '& .MuiSlider-thumb': {
             width: 14,
             height: 14,
-            boxShadow: 2,
+            boxShadow: 2
           },
           '& .MuiSlider-rail': {
             height: 3,
-            backgroundColor: '#d9d9d9'
+            backgroundColor: 'divider'
           },
           '& .MuiSlider-track': {
-            height: 3,
-          },
+            height: 3
+          }
         }}
         aria-label="Zoom slider"
         tabIndex={0}
       />
-      <TextField
-        value={Math.round(zoom * 100)}
-        onChange={handleInputChange}
-        InputProps={{
-          endAdornment: (
-            <InputAdornment
-              position="end"
-              sx={{
-                ml: -2.5,
-                mr: -2.5,
-                padding: 0,
-                fontSize: 14
-              }}
-            >
-              %
-            </InputAdornment>
-          ),
-          inputProps: {
-            min: 0,
-            max: 100,
-            type: 'number',
-            'aria-label': 'Zoom percentage',
-            style: { textAlign: 'center', fontSize: 14 }
-          }
-        }}
+      <Typography
         sx={{
-          '& .MuiOutlinedInput-root': { 
-            borderRadius: 1,
-            height: 31, 
-            width: 52,
-            '& input': {
-              color: 'black'
-            }
-          },
-          '& input[type=number]': {
-            padding: '6px 8px',
-          },
-          '& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button':
-            {
-              WebkitAppearance: 'none'
-            },
+          width: 52,
+          height: 31,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: 14,
+          color: 'text.primary',
+          borderRadius: 1,
+          border: '1px solid',
+          borderColor: 'divider',
+          backgroundColor: 'background.paper'
         }}
-        variant="outlined"
-        size="small"
-      />
+        aria-label="Zoom percentage"
+      >
+        {zoom} %
+      </Typography>
     </Stack>
   )
 }
