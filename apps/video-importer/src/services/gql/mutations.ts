@@ -103,37 +103,18 @@ export const UPDATE_VIDEO_SUBTITLE = graphql(`
   }
 `)
 
-export const GET_VIDEO_EDITION = graphql(`
-  query GetVideoEdition($videoId: ID!) {
-    video(id: $videoId) {
-      videoEditions {
-        name
-        id
-      }
+export const CREATE_AUDIO_PREVIEW = graphql(`
+  mutation CreateAudioPreview($input: MutationAudioPreviewCreateInput!) {
+    audioPreviewCreate(input: $input) {
+      value
     }
   }
 `)
 
-export const GET_VIDEO_SUBTITLES_BY_EDITION = graphql(`
-  query GetVideoSubtitlesByEdition($videoId: ID!, $edition: String!) {
-    video(id: $videoId) {
-      subtitles(edition: $edition) {
-        id
-        languageId
-        edition
-        primary
-        srtAsset {
-          id
-        }
-        srtSrc
-        srtVersion
-        value
-        vttSrc
-        vttVersion
-        vttAsset {
-          id
-        }
-      }
+export const UPDATE_AUDIO_PREVIEW = graphql(`
+  mutation UpdateAudioPreview($input: MutationAudioPreviewUpdateInput!) {
+    audioPreviewUpdate(input: $input) {
+      value
     }
   }
 `)

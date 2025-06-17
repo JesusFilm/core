@@ -121,3 +121,12 @@ export interface VideoSubtitleInput {
   srtVersion?: number
   primary?: boolean
 }
+
+export interface AudioPreviewInput {
+  languageId: string
+  value: string
+  duration: number
+  size: number
+  bitrate: number
+  codec: string
+}

@@ -1,4 +1,4 @@
-import { GET_VIDEO_EDITION } from './gql/mutations'
+import { GET_VIDEO_EDITION } from './gql/queries'
 import { getGraphQLClient } from './graphqlClient'
 
 export async function getVideoEditionId(
