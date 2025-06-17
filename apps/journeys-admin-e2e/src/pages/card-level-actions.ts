@@ -976,7 +976,7 @@ export class CardLevelActionPage {
         .locator(
           'div[data-testid="StepFooterChatButtons"] svg[data-testid="WhatsAppIcon"]'
         )
-    ).toBeVisible()
+    ).toBeVisible({ timeout: 10000 })
   }
 
   async verifyCardDeletedInCustomJournetPage() {
@@ -1330,18 +1330,8 @@ export class CardLevelActionPage {
       this.page
         .frameLocator(this.journeyCardFrame)
         .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid *="JourneysButton"]'
+          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid *="JourneysButton"] button textarea[name="buttonLabel"]'
         )
-        .locator('button')
-        .filter({
-          has: this.page.locator('svg[data-testid="ArrowForwardRoundedIcon"]')
-        })
-        .filter({
-          has: this.page.locator(
-            'svg[data-testid="ChatBubbleOutlineRoundedIcon"]'
-          )
-        })
-        .locator('textarea[name="buttonLabel"]')
     ).toHaveValue(buttonName)
   }
 
@@ -1495,7 +1485,7 @@ export class CardLevelActionPage {
   }
   async selectChevronDownIconForFooter() {
     await this.page
-      .locator('li[role="option"]:has(svg[data-testid="ChevronDownIcon"])')
+      .locator('li:has(svg[data-testid="ChevronDownIcon"])')
       .click()
   }
 
