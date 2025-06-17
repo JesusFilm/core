@@ -245,11 +245,13 @@ export class JourneyPage {
     )
     await this.page.waitForLoadState('load')
     await expect(
-      this.page.locator('[data-testid="JourneysAdminContainedIconButton"]')
+      this.page.locator(
+        'div[data-testid="JourneysAdminContainedIconButton"] button'
+      )
     ).toBeVisible({ timeout: 150000 })
     await expect(createJourneyLoaderPath).toBeHidden({ timeout: 18000 })
     await this.page
-      .locator('[data-testid="JourneysAdminContainedIconButton"]')
+      .locator('div[data-testid="JourneysAdminContainedIconButton"] button')
       .click()
     try {
       await expect(createJourneyLoaderPath, 'Ignore if not found').toBeVisible({
@@ -415,53 +417,9 @@ export class JourneyPage {
   }
 
   async clickArchiveOption() {
-    // Try multiple approaches to find the archive option
-    try {
-      // Original selector
-      await this.page
-        .locator('li[data-testid="JourneysAdminMenuItemArchive"]')
-        .click({ timeout: 10000 })
-    } catch (error) {
-      try {
-        // Fallback 1: Wait for menu to be visible first, then look for Archive
-        await this.page.waitForSelector('ul[role="menu"]', { timeout: 5000 })
-        await this.page
-          .locator('ul[role="menu"] li[role="menuitem"]')
-          .filter({ hasText: 'Archive' })
-          .click({ timeout: 10000 })
-      } catch (error) {
-        try {
-          // Fallback 2: Look for any menu item with Archive text in any menu context
-          await this.page
-            .locator(
-              'li:has-text("Archive"), [role="menuitem"]:has-text("Archive")'
-            )
-            .click({ timeout: 10000 })
-        } catch (error) {
-          try {
-            // Fallback 3: Look for Archive text in any clickable element within a menu
-            await this.page
-              .locator(
-                'ul li:has-text("Archive"), .MuiMenu-list li:has-text("Archive")'
-              )
-              .click({ timeout: 10000 })
-          } catch (error) {
-            try {
-              // Fallback 4: More specific menu item selector
-              await this.page
-                .locator('.MuiMenuItem-root:has-text("Archive")')
-                .click({ timeout: 10000 })
-            } catch (error) {
-              // Final fallback: Any element with Archive text that's clickable
-              await this.page
-                .locator('*:has-text("Archive")')
-                .filter({ hasText: /^Archive$/ })
-                .click({ timeout: 10000 })
-            }
-          }
-        }
-      }
-    }
+    await this.page
+      .locator('li[data-testid="JourneysAdminMenuItemArchive"]')
+      .click()
   }
 
   async clickArchivedTab() {
@@ -600,43 +558,14 @@ export class JourneyPage {
       })
       .first()
       .innerText()
-
-    // Now click the actual three-dot menu button for this journey
-    const journeyCard = this.page
+    await this.page
       .locator('div[aria-label="journey-card"]', {
         hasNotText: 'Untitled Journey'
       })
       .first()
-
-    try {
-      // Try to find the menu button inside the journey card
-      const threeDotBtnPath = journeyCard
-        .locator('[data-testid="JourneyCardMenuButton"]')
-        .first()
-      await expect(threeDotBtnPath).toBeVisible({ timeout: 10000 })
-      await threeDotBtnPath.click()
-    } catch (error) {
-      try {
-        // Fallback 1: Look for any button inside the card that might be the menu
-        const menuButton = journeyCard
-          .locator('button[aria-haspopup="menu"], button[aria-haspopup="true"]')
-          .first()
-        await menuButton.click({ timeout: 10000 })
-      } catch (error) {
-        try {
-          // Fallback 2: Look for three dots icon inside the card
-          const iconButton = journeyCard
-            .locator(
-              'button:has(svg[data-testid="MoreIcon"]), button.MuiIconButton-root'
-            )
-            .first()
-          await iconButton.click({ timeout: 10000 })
-        } catch (error) {
-          // Final fallback: Just click the card and hope it opens the menu
-          await journeyCard.click()
-        }
-      }
-    }
+      .locator('[data-testid="JourneyCardMenuButton"]')
+      .first()
+      .click()
   }
 
   async setExistingJourneyNameToJourneyName() {
@@ -668,146 +597,19 @@ export class JourneyPage {
   }
 
   async clickThreeDotBesideSortByOption() {
-    // Try multiple approaches to find the three-dot menu button
-    try {
-      // Original selector with force click to handle interception
-      await this.page
-        .locator('button:has(svg[data-testid="MoreIcon"])')
-        .click({ timeout: 10000, force: true })
-    } catch (error) {
-      try {
-        // Fallback 1: Look for any button with MoreIcon and scroll into view
-        const moreButton = this.page.locator(
-          'button:has(svg[data-testid="MoreIcon"])'
-        )
-        await moreButton.scrollIntoViewIfNeeded()
-        await moreButton.click({ timeout: 10000 })
-      } catch (error) {
-        try {
-          // Fallback 2: Look for three dots or more icon in any form
-          await this.page
-            .locator(
-              'button[aria-label*="more"], button[aria-label*="More"], button[aria-label*="menu"]'
-            )
-            .click({ timeout: 10000, force: true })
-        } catch (error) {
-          try {
-            // Fallback 3: Look for IconButton with three dots pattern
-            await this.page
-              .locator('button.MuiIconButton-root:has(svg)')
-              .filter({ hasText: /⋮|•••|⋯/ })
-              .click({ timeout: 10000, force: true })
-          } catch (error) {
-            try {
-              // Fallback 4: Look for any button near sort area that might be the menu
-              await this.page
-                .locator(
-                  'div:has-text("Sort") + button, div:has-text("Sort") ~ button'
-                )
-                .click({ timeout: 10000, force: true })
-            } catch (error) {
-              try {
-                // Fallback 5: Look for data-testid that might contain "menu" or "more"
-                await this.page
-                  .locator(
-                    'button[data-testid*="menu"], button[data-testid*="More"]'
-                  )
-                  .click({ timeout: 10000, force: true })
-              } catch (error) {
-                try {
-                  // Fallback 6: Target the intercepting element directly
-                  const interceptingElement = this.page.locator(
-                    'div[data-testid="JourneyCardMenuButton"]'
-                  )
-                  if (await interceptingElement.isVisible()) {
-                    await interceptingElement.click({ timeout: 10000 })
-                  }
-                } catch (error) {
-                  // Final fallback: Look for any button that opens a menu with retry
-                  const menuButton = this.page
-                    .locator(
-                      'button[aria-haspopup="menu"], button[aria-haspopup="true"]'
-                    )
-                    .last()
-                  await menuButton.scrollIntoViewIfNeeded()
-                  await menuButton.click({ timeout: 10000, force: true })
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+    await this.page
+      .locator(
+        'div[aria-label="journey status tabs"] button svg[data-testid="MoreIcon"]'
+      )
+      .click()
   }
 
   async selectThreeDotOptionsBesideSortByOption(option) {
-    // Enhanced selector with multiple fallback strategies for MUI v7
-    const attempts = [
-      // Primary: Original selector
-      () =>
-        this.page
-          .locator('ul[aria-labelledby="edit-journey-actions"] li', {
-            hasText: option
-          })
-          .click(),
-
-      // Fallback 1: Direct menu item approach
-      () =>
-        this.page.locator(`[role="menuitem"]:has-text("${option}")`).click(),
-
-      // Fallback 2: Look for any menu option containing the text
-      () =>
-        this.page
-          .locator(
-            `li:has-text("${option}"), [role="option"]:has-text("${option}")`
-          )
-          .first()
-          .click(),
-
-      // Fallback 3: MUI Menu structure
-      () =>
-        this.page.locator(`.MuiMenuItem-root:has-text("${option}")`).click(),
-
-      // Fallback 4: Wait for menu to be visible then click
-      () =>
-        this.page
-          .locator('ul[aria-labelledby="edit-journey-actions"]')
-          .waitFor({ timeout: 10000 })
-          .then(() =>
-            this.page
-              .locator('ul[aria-labelledby="edit-journey-actions"] li', {
-                hasText: option
-              })
-              .click()
-          ),
-
-      // Fallback 5: Force click approach
-      () =>
-        this.page
-          .locator('ul[aria-labelledby="edit-journey-actions"] li', {
-            hasText: option
-          })
-          .click({ force: true })
-    ]
-
-    for (const [index, attempt] of attempts.entries()) {
-      try {
-        await attempt()
-        return // Success
-      } catch (error) {
-        console.log(
-          `Archive option attempt ${index + 1} failed:`,
-          error.message
-        )
-        if (index === attempts.length - 1) {
-          throw new Error(
-            `Failed to click option "${option}" after ${attempts.length} attempts. Last error: ${error.message}`
-          )
-        }
-        // Wait a bit before next attempt
-        await this.page.waitForTimeout(1000)
-      }
-    }
+    await this.page
+      .locator('ul[aria-labelledby="edit-journey-actions"] li', {
+        hasText: option
+      })
+      .click()
   }
 
   async getJourneyListOfActiveTab() {
@@ -1240,8 +1042,6 @@ export class JourneyPage {
         hasNotText: 'Untitled Journey'
       })
       .first()
-      .locator('[data-testid="JourneyCardMenuButton"]')
-      .first()
       .click()
   }
 
@@ -1255,83 +1055,7 @@ export class JourneyPage {
   }
 
   async clickAnalyticsIconInCustomJourneyPage() {
-    // Enhanced approach to handle element interception and MUI v7 changes
-    const attempts = [
-      // Primary: Original selector
-      () => this.page.locator('div[data-testid="AnalyticsItem"] a').click(),
-
-      // Fallback 1: Wait for interacting elements to disappear first
-      async () => {
-        // Wait for any overlaying menus to disappear
-        await this.page.waitForTimeout(1000)
-        await this.page.locator('div[data-testid="AnalyticsItem"] a').click()
-      },
-
-      // Fallback 2: Force click approach
-      () =>
-        this.page
-          .locator('div[data-testid="AnalyticsItem"] a')
-          .click({ force: true }),
-
-      // Fallback 3: Scroll into view then click
-      async () => {
-        const analyticsLink = this.page.locator(
-          'div[data-testid="AnalyticsItem"] a'
-        )
-        await analyticsLink.scrollIntoViewIfNeeded()
-        await analyticsLink.click()
-      },
-
-      // Fallback 4: Close any open menus first
-      async () => {
-        // Try to close any open menus by clicking elsewhere
-        try {
-          await this.page.locator('body').click({ position: { x: 10, y: 10 } })
-          await this.page.waitForTimeout(500)
-        } catch {}
-        await this.page.locator('div[data-testid="AnalyticsItem"] a').click()
-      },
-
-      // Fallback 5: Alternative analytics selector
-      () =>
-        this.page
-          .locator(
-            '[data-testid="AnalyticsItem"] button, [aria-label*="Analytics"], [title*="Analytics"]'
-          )
-          .click(),
-
-      // Fallback 6: Direct navigation using href
-      async () => {
-        const analyticsLink = this.page.locator(
-          'div[data-testid="AnalyticsItem"] a'
-        )
-        const href = await analyticsLink.getAttribute('href')
-        if (href) {
-          await this.page.goto(href)
-        } else {
-          throw new Error('No href found on analytics link')
-        }
-      }
-    ]
-
-    for (const [index, attempt] of attempts.entries()) {
-      try {
-        await attempt()
-        return // Success
-      } catch (error) {
-        console.log(
-          `Analytics click attempt ${index + 1} failed:`,
-          error.message
-        )
-        if (index === attempts.length - 1) {
-          throw new Error(
-            `Failed to click analytics after ${attempts.length} attempts. Last error: ${error.message}`
-          )
-        }
-        // Wait a bit before next attempt
-        await this.page.waitForTimeout(1000)
-      }
-    }
+    await this.page.locator('div[data-testid="AnalyticsItem"] a').click()
   }
 
   async verifyAnalyticsPageNavigation() {

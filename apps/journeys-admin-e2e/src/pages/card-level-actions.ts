@@ -198,46 +198,12 @@ export class CardLevelActionPage {
   }
 
   async clickSelectImageBtn() {
-    // Array of selectors to try in order of preference
-    const selectImageButtonSelectors = [
-      // Most specific selector with ImageSource container
-      'div[data-testid="ImageSource"] button[data-testid="card click area"]:has-text("Select Image")',
-      // Button with card click area test id and text filter
-      'button[data-testid="card click area"]:has-text("Select Image")',
-      // Button with MUI classes and text filter
-      'button.MuiButtonBase-root.MuiCardActionArea-root:has-text("Select Image")',
-      // Generic button with text selector
-      'button:has-text("Select Image")'
-    ]
-
-    // Try each selector until one works
-    for (const selector of selectImageButtonSelectors) {
-      try {
-        const button = this.page.locator(selector)
-
-        // Check if button is visible before attempting to click
-        if (await button.isVisible({ timeout: 5000 })) {
-          await button.click({ timeout: 10000 })
-          return // Successfully clicked, exit the method
-        }
-      } catch (error) {
-        // Continue to next selector if this one fails
-        continue
-      }
-    }
-
-    // If all selectors fail, try force click as last resort
-    try {
-      await this.page
-        .locator(
-          'div[data-testid="ImageSource"] button[data-testid="card click area"]:has-text("Select Image")'
-        )
-        .click({ force: true, timeout: 10000 })
-    } catch (error) {
-      throw new Error(
-        `Failed to find and click "Select Image" button. Tried ${selectImageButtonSelectors.length} different selectors. Last error: ${error.message}`
+    await this.page
+      .locator(
+        'div[data-testid="ImageSource"] button[data-testid="card click area"]',
+        { hasText: 'Select Image' }
       )
-    }
+      .click()
   }
   async clickSelectedImageBtn() {
     await this.page
@@ -720,58 +686,26 @@ export class CardLevelActionPage {
   }
 
   async clickFeedBackPropertiesDropDown(feedBackProperty: string) {
-    // First wait for the TextResponseProperties panel to be visible
     await expect(
-      this.page.locator('div[data-testid="TextResponseProperties"]')
-    ).toBeVisible({ timeout: 30000 })
-
-    // Try multiple approaches to find the accordion summary
-    let accordionSummary
-
-    // First try the original selector
-    try {
-      accordionSummary = this.page.locator(
+      this.page.locator(
         'div[data-testid="TextResponseProperties"] div[data-testid="AccordionSummary"]',
         { hasText: feedBackProperty }
       )
-      await expect(accordionSummary).toBeVisible({ timeout: 5000 })
-    } catch {
-      // If that fails, try looking for MUI AccordionSummary within the TextResponseProperties
-      try {
-        accordionSummary = this.page.locator(
-          'div[data-testid="TextResponseProperties"] .MuiAccordionSummary-root',
+    ).toBeVisible()
+    if (
+      await this.page
+        .locator(
+          'div[data-testid="TextResponseProperties"] div[data-testid="AccordionSummary"][aria-expanded="false"]',
           { hasText: feedBackProperty }
         )
-        await expect(accordionSummary).toBeVisible({ timeout: 5000 })
-      } catch {
-        // Final fallback - look for any clickable element with the text
-        accordionSummary = this.page.locator(
-          'div[data-testid="TextResponseProperties"] [role="button"]',
+        .isVisible()
+    ) {
+      await this.page
+        .locator(
+          'div[data-testid="TextResponseProperties"] div[data-testid="AccordionSummary"]',
           { hasText: feedBackProperty }
         )
-        await expect(accordionSummary).toBeVisible({ timeout: 5000 })
-      }
-    }
-
-    // Check if the accordion is collapsed and needs to be expanded
-    const isCollapsed = await this.page
-      .locator(
-        'div[data-testid="TextResponseProperties"] div[data-testid="AccordionSummary"][aria-expanded="false"]',
-        { hasText: feedBackProperty }
-      )
-      .isVisible()
-      .catch(() => false)
-
-    if (isCollapsed) {
-      await accordionSummary.click()
-
-      // Wait for the accordion to expand
-      await expect(
-        this.page.locator(
-          'div[data-testid="TextResponseProperties"] div[data-testid="AccordionSummary"][aria-expanded="true"]',
-          { hasText: feedBackProperty }
-        )
-      ).toBeVisible({ timeout: 10000 })
+        .click()
     } else {
       console.log('%s is already opened', feedBackProperty)
     }
@@ -966,7 +900,7 @@ export class CardLevelActionPage {
   async clicSelectHostBtn() {
     await this.page
       .locator(
-        'div[data-testid="HostSelection"] [data-testid="JourneysAdminContainedIconButton"]'
+        'div[data-testid="HostSelection"] div[data-testid="JourneysAdminContainedIconButton"] button'
       )
       .click()
   }
@@ -1013,82 +947,12 @@ export class CardLevelActionPage {
   }
 
   async expandJourneyAppearance(tabName: string) {
-    // Try multiple approaches to find the accordion summary
-    let accordionSummary
-
-    // First try the original selector with data-testid
-    try {
-      accordionSummary = this.page.locator(
-        'div[data-testid="AccordionSummary"]',
-        {
-          hasText: tabName
-        }
-      )
-      await expect(accordionSummary).toBeVisible({ timeout: 10000 })
-    } catch {
-      // If that fails, try looking for MUI AccordionSummary class
-      try {
-        accordionSummary = this.page.locator('.MuiAccordionSummary-root', {
-          hasText: tabName
-        })
-        await expect(accordionSummary).toBeVisible({ timeout: 10000 })
-      } catch {
-        // Final fallback - look for any button role with the text
-        accordionSummary = this.page.locator('[role="button"]', {
-          hasText: tabName
-        })
-        await expect(accordionSummary).toBeVisible({ timeout: 10000 })
-      }
-    }
-
-    // Check if the accordion is collapsed
-    const isCollapsed = await this.page
+    await this.page
       .locator('div[data-testid="AccordionSummary"][aria-expanded="false"]', {
         hasText: tabName
       })
-      .isVisible()
-      .catch(async () => {
-        // Fallback check using MUI class
-        return await this.page
-          .locator('.MuiAccordionSummary-root[aria-expanded="false"]', {
-            hasText: tabName
-          })
-          .isVisible()
-          .catch(() => false)
-      })
-
-    if (isCollapsed) {
-      // Try to click the expand icon first
-      const expandIcon = accordionSummary.locator(
-        'div[class*="expandIconWrapper"], svg[data-testid="ExpandMoreIcon"], .MuiAccordionSummary-expandIconWrapper'
-      )
-
-      if (await expandIcon.isVisible()) {
-        await expandIcon.click()
-      } else {
-        // Fallback to clicking the entire accordion summary
-        await accordionSummary.click()
-      }
-
-      // Wait for the accordion to expand with multiple fallback selectors
-      try {
-        await expect(
-          this.page.locator(
-            'div[data-testid="AccordionSummary"][aria-expanded="true"]',
-            { hasText: tabName }
-          )
-        ).toBeVisible({ timeout: 10000 })
-      } catch {
-        // Fallback using MUI class
-        await expect(
-          this.page.locator('.MuiAccordionSummary-root[aria-expanded="true"]', {
-            hasText: tabName
-          })
-        ).toBeVisible({ timeout: 10000 })
-      }
-    } else {
-      console.log('%s accordion is already expanded', tabName)
-    }
+      .locator('div[class*="expandIconWrapper "]')
+      .click()
   }
 
   async clickMessangerDropDown(messangerTitle: string) {
@@ -1462,60 +1326,26 @@ export class CardLevelActionPage {
       .getByRole('button', { name: iconColor })
       .click()
   }
-  async verifyButtonPropertyUpdatedInCard(
-    buttonName: string,
-    expectedIcon?: string
-  ) {
-    // Try multiple approaches to find the button in iframe
-    const frameLocator = this.page.frameLocator(this.journeyCardFrame)
-
-    try {
-      // Original selector with optional icon filter
-      let buttonLocator = frameLocator
+  async verifyButtonPropertyUpdatedInCard(buttonName: string) {
+    await expect(
+      this.page
+        .frameLocator(this.journeyCardFrame)
         .locator(
           'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid *="JourneysButton"]'
         )
         .locator(
           'button.MuiButton-text.MuiButton-sizeSmall.MuiButton-textPrimary'
         )
-
-      // Apply icon filter if expectedIcon is provided
-      if (expectedIcon) {
-        buttonLocator = buttonLocator.filter({
-          has: frameLocator.locator(`svg[data-testid="${expectedIcon}"]`)
+        .filter({
+          has: this.page.locator('svg[data-testid="ArrowForwardRoundedIcon"]')
         })
-      }
-
-      await expect(
-        buttonLocator.locator('textarea[name="buttonLabel"]')
-      ).toHaveValue(buttonName, { timeout: 10000 })
-    } catch (error) {
-      try {
-        // Fallback 1: Look for button with simpler MUI classes
-        await expect(
-          frameLocator
-            .locator(
-              'div[data-testid="CardOverlayContent"] div[data-testid*="JourneysButton"]'
-            )
-            .locator('button.MuiButton-root')
-            .locator('textarea[name="buttonLabel"]')
-        ).toHaveValue(buttonName, { timeout: 10000 })
-      } catch (error) {
-        try {
-          // Fallback 2: Look for any button with buttonLabel textarea
-          await expect(
-            frameLocator
-              .locator('div[data-testid="CardOverlayContent"]')
-              .locator('textarea[name="buttonLabel"]')
-          ).toHaveValue(buttonName, { timeout: 10000 })
-        } catch (error) {
-          // Final fallback: Look for any textarea with the button name value
-          await expect(
-            frameLocator.locator('textarea[name="buttonLabel"]')
-          ).toHaveValue(buttonName, { timeout: 10000 })
-        }
-      }
-    }
+        .filter({
+          has: this.page.locator(
+            'svg[data-testid="ChatBubbleOutlineRoundedIcon"]'
+          )
+        })
+        .locator('textarea[name="buttonLabel"]')
+    ).toHaveValue(buttonName)
   }
 
   async verifySpacerAddedToCard() {
@@ -1538,41 +1368,13 @@ export class CardLevelActionPage {
     ).toHaveCount(0)
   }
   async getSpacerHeightPixelBeforeChange() {
-    // First wait for the SpacerProperties panel to be visible
-    await expect(
-      this.page.locator('div[data-testid="SpacerProperties"]')
-    ).toBeVisible({ timeout: 30000 })
-
-    // Try multiple approaches to find the accordion summary
-    let accordionSummary
-
-    // First try the original selector
-    try {
-      accordionSummary = this.page
-        .locator(
-          'div[data-testid="SpacerProperties"] div[data-testid="AccordionSummary"]'
-        )
-        .filter({ hasText: 'Spacer Height' })
-      await expect(accordionSummary).toBeVisible({ timeout: 10000 })
-    } catch {
-      // If that fails, try looking for MUI AccordionSummary within the SpacerProperties
-      try {
-        accordionSummary = this.page
-          .locator(
-            'div[data-testid="SpacerProperties"] .MuiAccordionSummary-root'
-          )
-          .filter({ hasText: 'Spacer Height' })
-        await expect(accordionSummary).toBeVisible({ timeout: 10000 })
-      } catch {
-        // Final fallback - look for any element with the text in SpacerProperties
-        accordionSummary = this.page
-          .locator('div[data-testid="SpacerProperties"] [role="button"]')
-          .filter({ hasText: 'Spacer Height' })
-        await expect(accordionSummary).toBeVisible({ timeout: 10000 })
-      }
-    }
-
-    return await accordionSummary.locator('p').textContent()
+    return await this.page
+      .locator(
+        'div[data-testid="SpacerProperties"] div[data-testid="AccordionSummary"]',
+        { hasText: 'Spacer Height' }
+      )
+      .locator('p')
+      .textContent()
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async validateSpacerHeightPixelGotChange(pixelHeightBeforeChange: any) {
@@ -1630,180 +1432,17 @@ export class CardLevelActionPage {
   }
   async selectReactionOptions(checkBoxTestId: string) {
     //'checkbox-Share', 'checkbox-Like', 'checkbox-Dislike'
-
-    // First, try to expand the reactions section if it's not already visible
-    try {
-      // Check if reactions section is hidden/collapsed
-      const reactionsSection = this.page.locator('div[data-testid="Reactions"]')
-      const isHidden = await reactionsSection.isHidden()
-
-      if (isHidden) {
-        // Try to find and click an accordion or expand button for reactions
-        try {
-          await this.page
-            .locator(
-              'button:has-text("Reactions"), [role="button"]:has-text("Reactions")'
-            )
-            .click({ timeout: 5000 })
-        } catch (error) {
-          // Try to click on a parent accordion that might contain reactions
-          try {
-            await this.page
-              .locator(
-                '.MuiAccordionSummary-root:has-text("Footer"), .MuiAccordionSummary-root'
-              )
-              .last()
-              .click({ timeout: 5000 })
-          } catch (error) {
-            // Continue anyway - maybe it's visible in a different context
-          }
-        }
-      }
-
-      // Wait for the reactions section to be available and visible
-      await expect(reactionsSection).toBeVisible({ timeout: 15000 })
-    } catch (error) {
-      console.log(
-        'Could not expand reactions section, trying to find visible instance'
-      )
-    }
-
-    // Try multiple approaches to find and check the reaction checkbox
-    let checkBox: any = null
-    let checkboxFound = false
-
-    // Strategy 1: Original selector with expanded section
-    try {
-      checkBox = this.page
-        .locator('div.Mui-expanded div[data-testid="Reactions"]')
-        .getByTestId(checkBoxTestId)
-        .getByRole('checkbox')
-      await expect(checkBox).toBeVisible({ timeout: 5000 })
-      checkboxFound = true
-    } catch (error) {
-      // Strategy 2: Look in any visible reactions section
-      try {
-        checkBox = this.page
-          .locator('div[data-testid="Reactions"]')
-          .getByTestId(checkBoxTestId)
-          .getByRole('checkbox')
-        await expect(checkBox).toBeVisible({ timeout: 5000 })
-        checkboxFound = true
-      } catch (error) {
-        // Strategy 3: Look for checkbox by test id without specific container
-        try {
-          checkBox = this.page.getByTestId(checkBoxTestId).getByRole('checkbox')
-          await expect(checkBox).toBeVisible({ timeout: 5000 })
-          checkboxFound = true
-        } catch (error) {
-          // Strategy 4: Look for input checkbox with test id
-          try {
-            checkBox = this.page.locator(
-              `input[type="checkbox"][data-testid="${checkBoxTestId}"]`
-            )
-            await expect(checkBox).toBeVisible({ timeout: 5000 })
-            checkboxFound = true
-          } catch (error) {
-            // Strategy 5: Look for checkbox by partial test id match
-            try {
-              checkBox = this.page.locator(
-                `[data-testid*="${checkBoxTestId.replace('checkbox-', '')}"] input[type="checkbox"]`
-              )
-              await expect(checkBox).toBeVisible({ timeout: 5000 })
-              checkboxFound = true
-            } catch (error) {
-              throw new Error(
-                `Could not find checkbox with test id: ${checkBoxTestId}`
-              )
-            }
-          }
-        }
-      }
-    }
-
-    if (checkboxFound && checkBox) {
-      // Check the checkbox and verify it's checked
-      await checkBox.check({ timeout: 10000 })
-      await expect(checkBox).toBeChecked()
-    } else {
-      throw new Error(
-        `Failed to find and interact with checkbox: ${checkBoxTestId}`
-      )
-    }
+    const checkBox = this.page
+      .locator('div.Mui-expanded div[data-testid="Reactions"]')
+      .getByTestId(checkBoxTestId)
+      .getByRole('checkbox')
+    await checkBox.check()
+    await expect(checkBox).toBeChecked()
   }
   async enterDisplayTitleForFooter(footerTitle: string) {
-    // Enhanced approach for MUI v7 with multiple fallback strategies
-    const attempts = [
-      // Primary: Original selector
-      () =>
-        this.page
-          .locator('div.Mui-expanded input#display-title')
-          .fill(footerTitle),
-
-      // Fallback 1: Look for input without requiring expanded state
-      () => this.page.locator('input#display-title').fill(footerTitle),
-
-      // Fallback 2: Look for any display title input in visible context
-      () =>
-        this.page
-          .locator(
-            'input[id*="display-title"], input[placeholder*="title"], input[aria-label*="title"]'
-          )
-          .first()
-          .fill(footerTitle),
-
-      // Fallback 3: Expand accordion first, then find input
-      async () => {
-        // Try to find and expand accordion if needed
-        const accordionButton = this.page.locator(
-          'button[aria-expanded="false"]:has-text("Display Title")'
-        )
-        if (await accordionButton.isVisible()) {
-          await accordionButton.click()
-          await this.page.waitForTimeout(500)
-        }
-        await this.page
-          .locator('div.Mui-expanded input#display-title')
-          .fill(footerTitle)
-      },
-
-      // Fallback 4: Look in any expanded section
-      () =>
-        this.page
-          .locator(
-            'div[aria-expanded="true"] input#display-title, .MuiAccordionDetails-root input#display-title'
-          )
-          .fill(footerTitle),
-
-      // Fallback 5: Generic approach - look for any title input in settings
-      () =>
-        this.page
-          .locator(
-            'div[data-testid="SettingsDrawerContent"] input[type="text"]'
-          )
-          .filter({ hasText: '' }) // Empty or editable
-          .first()
-          .fill(footerTitle)
-    ]
-
-    for (const [index, attempt] of attempts.entries()) {
-      try {
-        await attempt()
-        return // Success
-      } catch (error) {
-        console.log(
-          `Display title input attempt ${index + 1} failed:`,
-          error.message
-        )
-        if (index === attempts.length - 1) {
-          throw new Error(
-            `Failed to enter display title "${footerTitle}" after ${attempts.length} attempts. Last error: ${error.message}`
-          )
-        }
-        // Wait a bit before next attempt
-        await this.page.waitForTimeout(1000)
-      }
-    }
+    await this.page
+      .locator('div.Mui-expanded input#display-title')
+      .fill(footerTitle)
   }
 
   async validateFooterTitleAndReactionButtonsInCard(footerTitle: string) {
@@ -1827,160 +1466,14 @@ export class CardLevelActionPage {
       .click()
   }
   async selectFirstImageFromGalleryForFooter() {
-    // Try multiple approaches to find and click the first image in gallery
-    try {
-      // Original selector
-      await this.page
-        .locator('li[data-testid *="image"] img')
-        .first()
-        .click({ timeout: 10000 })
-    } catch (error) {
-      try {
-        // Fallback 1: Look for any image in a list item
-        await this.page.locator('li img').first().click({ timeout: 10000 })
-      } catch (error) {
-        try {
-          // Fallback 2: Look for images in gallery context
-          await this.page
-            .locator('ul img, .gallery img, [data-testid*="gallery"] img')
-            .first()
-            .click({ timeout: 10000 })
-        } catch (error) {
-          try {
-            // Fallback 3: Look for clickable images
-            await this.page
-              .locator('img[role="button"], button img, a img')
-              .first()
-              .click({ timeout: 10000 })
-          } catch (error) {
-            try {
-              // Fallback 4: Look for images in MUI components
-              await this.page
-                .locator('.MuiImageList-root img, .MuiCard-root img')
-                .first()
-                .click({ timeout: 10000 })
-            } catch (error) {
-              // Final fallback: Any image that's clickable
-              await this.page
-                .locator('img')
-                .first()
-                .click({ force: true, timeout: 10000 })
-            }
-          }
-        }
-      }
-    }
+    await this.page.locator('li[data-testid *="image"] img').first().click()
   }
   async valdiateSelectedImageWithDeleteIcon() {
-    // Enhanced approach with better specificity to avoid false matches
-    const attempts = [
-      // Primary: Look for specific delete icon in image header
-      () =>
-        expect(
-          this.page.locator(
-            'div[data-testid="ImageBlockHeader"]:has(img) button:has(svg[data-testid="imageBlockHeaderDelete"])'
-          )
-        ).toBeVisible({ timeout: 5000 }),
-
-      // Fallback 1: Look for delete button with specific test ID
-      () =>
-        expect(
-          this.page.locator(
-            'button:has(svg[data-testid="imageBlockHeaderDelete"])'
-          )
-        ).toBeVisible({ timeout: 5000 }),
-
-      // Fallback 2: Look for delete icon specifically (not just any button)
-      () =>
-        expect(
-          this.page.locator('svg[data-testid="imageBlockHeaderDelete"]')
-        ).toBeVisible({ timeout: 5000 }),
-
-      // Fallback 3: Look for delete button with proper context (avoid drawer/navigation buttons)
-      () =>
-        expect(
-          this.page.locator(
-            'div[data-testid*="Image"]:has(img) button[aria-label*="delete"], div[data-testid*="Image"]:has(img) button[title*="delete"]'
-          )
-        ).toBeVisible({ timeout: 5000 }),
-
-      // Fallback 4: Look for delete button near image but exclude drawer/navigation buttons
-      () =>
-        expect(
-          this.page.locator(
-            'button[aria-label*="delete"]:not([aria-label*="drawer"]):not([aria-label*="open"]):not([aria-label*="menu"])'
-          )
-        ).toBeVisible({ timeout: 5000 }),
-
-      // Fallback 5: Image container with delete button (more specific)
-      () =>
-        expect(
-          this.page.locator(
-            '.image-container button[data-testid*="delete"], .image-block button[data-testid*="delete"]'
-          )
-        ).toBeVisible({ timeout: 5000 }),
-
-      // Fallback 6: Wait for image to be loaded first, then look for delete
-      async () => {
-        // Wait for image to be visible first
-        await this.page
-          .locator(
-            'div[data-testid="ImageBlockHeader"] img, img[data-testid*="image"]'
-          )
-          .waitFor({ timeout: 5000 })
-        await expect(
-          this.page.locator(
-            'div:has(img) button:has(svg[data-testid*="delete"])'
-          )
-        ).toBeVisible({ timeout: 5000 })
-      },
-
-      // Fallback 7: Generic but more specific - avoid common false positives
-      () => {
-        const deleteButton = this.page
-          .locator('button')
-          .filter({ has: this.page.locator('svg') })
-          .filter({ hasNot: this.page.locator('[aria-label*="open"]') })
-          .filter({ hasNot: this.page.locator('[aria-label*="drawer"]') })
-          .filter({ hasNot: this.page.locator('[aria-label*="menu"]') })
-          .first()
-        return expect(deleteButton).toBeVisible({ timeout: 5000 })
-      }
-    ]
-
-    for (const [index, attempt] of attempts.entries()) {
-      try {
-        await attempt()
-        console.log(
-          `Image delete validation succeeded with attempt ${index + 1}`
-        )
-        return // Success
-      } catch (error) {
-        console.log(
-          `Image delete validation attempt ${index + 1} failed:`,
-          error.message
-        )
-        if (index === attempts.length - 1) {
-          // Additional debug info on final failure
-          try {
-            const allButtons = await this.page.locator('button').allInnerTexts()
-            console.log('Available buttons:', allButtons)
-            const allAriaLabels = await this.page
-              .locator('button[aria-label]')
-              .evaluateAll((buttons) =>
-                buttons.map((btn) => btn.getAttribute('aria-label'))
-              )
-            console.log('Available aria-labels:', allAriaLabels)
-          } catch {}
-
-          throw new Error(
-            `Failed to validate image delete icon after ${attempts.length} attempts. Last error: ${error.message}`
-          )
-        }
-        // Wait a bit before next attempt
-        await this.page.waitForTimeout(1000)
-      }
-    }
+    await expect(
+      this.page.locator(
+        'div[data-testid="ImageBlockHeader"]:has(img) button:has(svg[data-testid="imageBlockHeaderDelete"])'
+      )
+    ).toBeVisible()
   }
   async closeToolDrawerForFooterImage() {
     await this.page
@@ -2063,41 +1556,12 @@ export class CardLevelActionPage {
     ).toBeVisible()
   }
   async clickButtonPropertyDropdown(feedBackProperty: string) {
-    // First wait for the ButtonProperties panel to be visible
-    await expect(
-      this.page.locator('div[data-testid="ButtonProperties"]')
-    ).toBeVisible({ timeout: 30000 })
-
-    // Try multiple approaches to find the accordion summary
-    let accordionSummary
-
-    // First try the original selector
-    try {
-      accordionSummary = this.page.locator(
+    await this.page
+      .locator(
         'div[data-testid="ButtonProperties"] div[data-testid="AccordionSummary"]',
         { hasText: feedBackProperty }
       )
-      await expect(accordionSummary).toBeVisible({ timeout: 10000 })
-    } catch {
-      // If that fails, try looking for MUI AccordionSummary within the ButtonProperties
-      try {
-        accordionSummary = this.page.locator(
-          'div[data-testid="ButtonProperties"] .MuiAccordionSummary-root',
-          { hasText: feedBackProperty }
-        )
-        await expect(accordionSummary).toBeVisible({ timeout: 10000 })
-      } catch {
-        // Final fallback - look for any clickable element with the text
-        accordionSummary = this.page.locator(
-          'div[data-testid="ButtonProperties"] [role="button"]',
-          { hasText: feedBackProperty }
-        )
-        await expect(accordionSummary).toBeVisible({ timeout: 10000 })
-      }
-    }
-
-    // Click the accordion to expand it
-    await accordionSummary.click()
+      .click()
   }
   async clickCardPropertiesDropDown(cardProperty: string) {
     await this.page
