@@ -1465,20 +1465,87 @@ export class CardLevelActionPage {
 
     await expect(footerSection).toBeVisible()
 
-    // Then validate each reaction button exists within the footer button list
+    // Then validate the button list exists
     const buttonList = footerSection.locator(
       'div[data-testid="StepFooterButtonList"]'
     )
+    await expect(buttonList).toBeVisible()
 
-    await expect(
-      buttonList.locator('svg[data-testid="ShareIcon"]')
-    ).toBeVisible()
-    await expect(
-      buttonList.locator('svg[data-testid="ThumbsUpIcon"]')
-    ).toBeVisible()
-    await expect(
-      buttonList.locator('svg[data-testid="ThumbsDownIcon"]')
-    ).toBeVisible()
+    // Check for reaction buttons with multiple selector patterns
+    const shareSelectors = [
+      'svg[data-testid="ShareIcon"]',
+      'button[data-testid="ShareButton"] svg',
+      'button svg[data-testid="ShareIcon"]',
+      '[data-testid*="Share"] svg'
+    ]
+
+    const thumbsUpSelectors = [
+      'svg[data-testid="ThumbsUpIcon"]',
+      'button[data-testid="ReactionButton"] svg[data-testid="ThumbsUpIcon"]',
+      'button svg[data-testid="ThumbsUpIcon"]'
+    ]
+
+    const thumbsDownSelectors = [
+      'svg[data-testid="ThumbsDownIcon"]',
+      'button[data-testid="ReactionButton"] svg[data-testid="ThumbsDownIcon"]',
+      'button svg[data-testid="ThumbsDownIcon"]'
+    ]
+
+    // Try to find each icon type
+    let shareFound = false
+    for (const selector of shareSelectors) {
+      try {
+        await expect(buttonList.locator(selector)).toBeVisible({
+          timeout: 2000
+        })
+        shareFound = true
+        console.log(`Share icon found with selector: ${selector}`)
+        break
+      } catch (error) {
+        continue
+      }
+    }
+
+    let thumbsUpFound = false
+    for (const selector of thumbsUpSelectors) {
+      try {
+        await expect(buttonList.locator(selector)).toBeVisible({
+          timeout: 2000
+        })
+        thumbsUpFound = true
+        console.log(`ThumbsUp icon found with selector: ${selector}`)
+        break
+      } catch (error) {
+        continue
+      }
+    }
+
+    let thumbsDownFound = false
+    for (const selector of thumbsDownSelectors) {
+      try {
+        await expect(buttonList.locator(selector)).toBeVisible({
+          timeout: 2000
+        })
+        thumbsDownFound = true
+        console.log(`ThumbsDown icon found with selector: ${selector}`)
+        break
+      } catch (error) {
+        continue
+      }
+    }
+
+    if (!shareFound || !thumbsUpFound || !thumbsDownFound) {
+      // Debug information
+      const buttonCount = await buttonList.locator('button').count()
+      const svgCount = await buttonList.locator('svg').count()
+      console.log(
+        `Debug: Found ${buttonCount} buttons and ${svgCount} SVGs in footer`
+      )
+
+      throw new Error(
+        `Missing reaction buttons - Share: ${shareFound}, ThumbsUp: ${thumbsUpFound}, ThumbsDown: ${thumbsDownFound}`
+      )
+    }
   }
   async clickJourneyOrWebSiteOptionForFooter(buttonName: string) {
     //Journey , Website
@@ -1522,29 +1589,34 @@ export class CardLevelActionPage {
     // Wait for the dropdown to be fully opened and options to be visible
     await this.page.waitForTimeout(2000)
 
-    // Try multiple selectors for different MUI versions and DOM structures
-    const chevronDownSelectors = [
+    // Looking at MenuIconSelect component, the ChevronDown option should be in a MenuItem
+    // with value "chevronDown" containing a Box with the ChevronDown icon
+    const menuItemSelectors = [
+      // Specific MenuItem value selector
+      'li[role="menuitem"][data-value="chevronDown"]',
+      'li[data-value="chevronDown"]',
+
+      // MenuItem containing ChevronDown icon
+      'li[role="menuitem"]:has(svg[data-testid="ChevronDownIcon"])',
+
       // Standard MUI dropdown patterns
       'ul[role="listbox"] li:has(svg[data-testid="ChevronDownIcon"])',
       '.MuiMenu-list li:has(svg[data-testid="ChevronDownIcon"])',
       '.MuiList-root li:has(svg[data-testid="ChevronDownIcon"])',
 
-      // Role-based selectors
-      'li[role="option"]:has(svg[data-testid="ChevronDownIcon"])',
-
       // General fallbacks
       'li:has(svg[data-testid="ChevronDownIcon"])',
-      '[role="presentation"] li:has(svg[data-testid="ChevronDownIcon"])',
+      'li[role="option"]:has(svg[data-testid="ChevronDownIcon"])',
 
-      // Direct SVG targeting
-      'svg[data-testid="ChevronDownIcon"]',
+      // Box containing the icon (from MenuIconSelect structure)
+      'li:has(div:has(svg[data-testid="ChevronDownIcon"]))',
 
-      // Parent-based selectors
-      'div[role="presentation"] li:has(svg[data-testid="ChevronDownIcon"])'
+      // Fallback to direct icon click
+      'svg[data-testid="ChevronDownIcon"]'
     ]
 
     let found = false
-    for (const selector of chevronDownSelectors) {
+    for (const selector of menuItemSelectors) {
       try {
         const element = this.page.locator(selector).first()
         await expect(element).toBeVisible({ timeout: 3000 })
@@ -1559,10 +1631,23 @@ export class CardLevelActionPage {
     }
 
     if (!found) {
-      // Final attempt: wait for any dropdown to appear and try to find ChevronDown
+      // Debug: Log all available dropdown options
       await this.page.waitForTimeout(1000)
+      const allMenuItems = await this.page
+        .locator('li[role="menuitem"], li[data-value], li[role="option"]')
+        .count()
       const allOptions = await this.page.locator('li, [role="option"]').count()
-      console.log(`Found ${allOptions} dropdown options`)
+      console.log(
+        `Found ${allMenuItems} menu items and ${allOptions} total dropdown options`
+      )
+
+      // Try to get data-value attributes to debug
+      const menuItems = this.page.locator('li[data-value]')
+      const count = await menuItems.count()
+      for (let i = 0; i < Math.min(count, 5); i++) {
+        const value = await menuItems.nth(i).getAttribute('data-value')
+        console.log(`MenuItem ${i}: data-value="${value}"`)
+      }
 
       throw new Error('ChevronDown option not found with any selector')
     }
