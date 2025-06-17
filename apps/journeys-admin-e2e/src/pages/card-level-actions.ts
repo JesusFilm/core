@@ -974,11 +974,12 @@ export class CardLevelActionPage {
   }
 
   async verifyChatWidgetAddedToCard() {
+    // Generic URLs fall back to MessageTyping icon, not WhatsApp icon
     await expect(
       this.page
         .frameLocator(this.journeyCardFrame)
         .locator(
-          'div[data-testid="StepFooterChatButtons"] svg[data-testid="WhatsAppIcon"]'
+          'div[data-testid="StepFooterChatButtons"] svg[data-testid="MessageTypingIcon"]'
         )
     ).toBeVisible({ timeout: 10000 })
   }
@@ -1489,12 +1490,32 @@ export class CardLevelActionPage {
   }
   async selectChevronDownIconForFooter() {
     // Wait for the dropdown to be fully opened and options to be visible
-    await expect(
-      this.page.locator('li:has(svg[data-testid="ChevronDownIcon"])')
-    ).toBeVisible({ timeout: 10000 })
-    await this.page
-      .locator('li:has(svg[data-testid="ChevronDownIcon"])')
-      .click()
+    await this.page.waitForTimeout(1000)
+
+    // Try multiple selectors for different MUI versions
+    const chevronDownSelector = [
+      'ul[role="listbox"] li:has(svg[data-testid="ChevronDownIcon"])',
+      '.MuiMenu-list li:has(svg[data-testid="ChevronDownIcon"])',
+      'li[role="option"]:has(svg[data-testid="ChevronDownIcon"])',
+      'li:has(svg[data-testid="ChevronDownIcon"])'
+    ]
+
+    let found = false
+    for (const selector of chevronDownSelector) {
+      try {
+        await expect(this.page.locator(selector)).toBeVisible({ timeout: 3000 })
+        await this.page.locator(selector).click()
+        found = true
+        break
+      } catch (error) {
+        // Try next selector
+        continue
+      }
+    }
+
+    if (!found) {
+      throw new Error('ChevronDown option not found with any selector')
+    }
   }
 
   async clickCreateMenuCardButtonInMenuFooter() {
