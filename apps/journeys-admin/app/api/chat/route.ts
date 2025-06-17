@@ -76,6 +76,10 @@ export async function POST(req: NextRequest) {
   )
 
   const langfuseTraceId = uuidv4()
+  langfuse.trace({
+    id: langfuseTraceId,
+    name: 'ai-chat'
+  })
 
   const messagesWithSystemPrompt = [
     {
@@ -95,6 +99,7 @@ export async function POST(req: NextRequest) {
     tools: tools(client, { langfuseTraceId }),
     experimental_telemetry: {
       isEnabled: true,
+      functionId: 'ai-chat-stream',
       metadata: {
         langfuseTraceId,
         langfusePrompt: systemPrompt.toJSON(),

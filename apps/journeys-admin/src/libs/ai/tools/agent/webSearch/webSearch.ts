@@ -36,7 +36,7 @@ export function agentWebSearch(
         toolChoice: { type: 'tool', toolName: 'web_search_preview' },
         experimental_telemetry: {
           isEnabled: true,
-          functionId: 'agentWebSearch',
+          functionId: 'agent-web-search',
           metadata: {
             langfuseTraceId,
             langfusePrompt: systemPrompt.toJSON(),
