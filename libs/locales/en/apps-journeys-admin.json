@@ -244,6 +244,7 @@
   "Medium": "Medium",
   "Large": "Large",
   "Contained": "Contained",
+  "Outlined": "Outlined",
   "Invalid {{ HEX }} color code": "Invalid {{ HEX }} color code",
   "Palette": "Palette",
   "Focal Point": "Focal Point",
