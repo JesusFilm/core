@@ -34,6 +34,7 @@ export function VideoCard({
     >
       <div className="flex flex-col gap-6">
         <button
+          name={video.title[0].value}
           disabled={video == null}
           className="rounded-lg w-full relative text-left border-none bg-transparent p-0 cursor-pointer disabled:cursor-default"
         >

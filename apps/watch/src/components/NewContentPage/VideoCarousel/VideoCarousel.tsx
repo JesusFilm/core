@@ -1,9 +1,10 @@
 import Skeleton from '@mui/material/Skeleton'
-import { ReactElement } from 'react'
-import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
+import { ReactElement, useRef } from 'react'
+import { A11y, FreeMode, Mousewheel, Navigation } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
+import { NavButton } from '../../VideoCarousel/NavButton/NavButton'
 
 import { VideoCard } from './VideoCard'
 
@@ -18,11 +19,13 @@ export function VideoCarousel({
   containerSlug,
   activeVideoId
 }: VideoCarouselProps): ReactElement {
+  const nextRef = useRef<HTMLDivElement>(null)
+  const prevRef = useRef<HTMLDivElement>(null)
   return (
-    <div data-testid="VideoCarousel" className="my-7">
+    <div data-testid="VideoCarousel" className="my-7 relative">
       <Swiper
         data-testid="VideoCarouselSwiper"
-        modules={[Mousewheel, FreeMode, A11y]}
+        modules={[Mousewheel, FreeMode, A11y, Navigation]}
         mousewheel={{
           forceToAxis: true
         }}
@@ -35,6 +38,10 @@ export function VideoCarousel({
         spaceBetween={20}
         slidesOffsetBefore={28}
         slidesOffsetAfter={28}
+        navigation={{
+          nextEl: nextRef.current,
+          prevEl: prevRef.current
+        }}
       >
         {videos.length > 0
           ? videos?.map((video) => (
@@ -64,6 +71,8 @@ export function VideoCarousel({
               </SwiperSlide>
             ))}
       </Swiper>
+      <NavButton variant="prev" ref={prevRef} />
+      <NavButton variant="next" ref={nextRef} />
     </div>
   )
 }

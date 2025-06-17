@@ -63,7 +63,8 @@ export function Question({
       expanded={isOpen}
       onChange={onToggle}
       sx={{
-        bgcolor: 'transparent'
+        bgcolor: 'transparent',
+        borderWidth: 0
       }}
     >
       <AccordionSummary>
