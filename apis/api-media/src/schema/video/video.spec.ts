@@ -1068,9 +1068,15 @@ describe('video', () => {
         $offset: Int
         $limit: Int
         $where: VideosFilter
+        $orderBy: VideoSort
         $aspectRatio: ImageAspectRatio
       ) {
-        adminVideos(offset: $offset, limit: $limit, where: $where) {
+        adminVideos(
+          offset: $offset
+          limit: $limit
+          where: $where
+          orderBy: $orderBy
+        ) {
           id
           bibleCitations {
             id
@@ -1330,6 +1336,7 @@ describe('video', () => {
         skip: 0,
         take: 100,
         where: {},
+        orderBy: undefined,
         include: {
           bibleCitation: {
             orderBy: {
@@ -1495,6 +1502,10 @@ describe('video', () => {
           where: {
             title: 'Jesus'
           },
+          orderBy: {
+            field: 'published',
+            direction: 'desc'
+          } as any,
           aspectRatio: ImageAspectRatio.hd
         }
       })
@@ -1510,6 +1521,7 @@ describe('video', () => {
             }
           }
         },
+        orderBy: { published: 'desc' },
         include: {
           bibleCitation: {
             orderBy: {
@@ -1618,6 +1630,133 @@ describe('video', () => {
             where: {
               aspectRatio: ImageAspectRatio.hd
             },
+            orderBy: { aspectRatio: 'desc' }
+          }
+        }
+      })
+      expect(data).toHaveProperty('data.adminVideos', result)
+    })
+
+    it('should query videos with orderBy', async () => {
+      prismaMock.video.findMany.mockResolvedValueOnce(videos)
+      prismaMock.video.findMany.mockResolvedValueOnce(children)
+      prismaMock.video.findMany.mockResolvedValueOnce(parents)
+      // variantLanguages
+      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
+        { languageId: 'languageId' } as unknown as VideoVariant
+      ])
+      // variantLanguagesCount
+      prismaMock.videoVariant.count.mockResolvedValueOnce(1)
+      // childrenCount
+      prismaMock.video.count.mockResolvedValueOnce(1)
+      // variantLanguagesWithSlug
+      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
+        { languageId: 'languageId', slug: 'slug' } as unknown as VideoVariant
+      ])
+      // variant
+      prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
+        id: 'variantId'
+      } as unknown as VideoVariant)
+      prismaMock.userMediaRole.findUnique.mockResolvedValueOnce({
+        id: 'userId',
+        userId: 'userId',
+        roles: ['publisher']
+      })
+      const data = await authClient({
+        document: ADMIN_VIDEOS_QUERY,
+        variables: {
+          orderBy: {
+            field: 'id',
+            direction: 'asc'
+          } as any
+        }
+      })
+      expect(prismaMock.video.findMany).toHaveBeenCalledWith({
+        skip: 0,
+        take: 100,
+        where: {},
+        orderBy: { id: 'asc' },
+        include: {
+          bibleCitation: {
+            orderBy: {
+              order: 'asc'
+            }
+          },
+          description: {
+            orderBy: {
+              primary: 'desc'
+            },
+            where: {
+              OR: [
+                {
+                  languageId: '529'
+                }
+              ]
+            }
+          },
+          imageAlt: {
+            orderBy: {
+              primary: 'desc'
+            },
+            where: {
+              OR: [
+                {
+                  languageId: '529'
+                }
+              ]
+            }
+          },
+          keywords: {
+            where: {
+              languageId: '529'
+            }
+          },
+          snippet: {
+            orderBy: {
+              primary: 'desc'
+            },
+            where: {
+              OR: [
+                {
+                  languageId: '529'
+                }
+              ]
+            }
+          },
+          studyQuestions: {
+            orderBy: {
+              order: 'asc'
+            },
+            where: {
+              OR: [
+                {
+                  languageId: '529'
+                }
+              ]
+            }
+          },
+          subtitles: {
+            orderBy: {
+              primary: 'desc'
+            },
+            where: {
+              OR: undefined
+            }
+          },
+          title: {
+            orderBy: {
+              primary: 'desc'
+            },
+            where: {
+              OR: [
+                {
+                  languageId: '529'
+                }
+              ]
+            }
+          },
+          images: {
+            where: { aspectRatio: undefined },
             orderBy: { aspectRatio: 'desc' }
           }
         }

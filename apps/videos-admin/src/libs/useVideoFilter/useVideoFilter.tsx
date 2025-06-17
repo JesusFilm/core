@@ -2,7 +2,8 @@ import {
   DataGridProps,
   GridColumnVisibilityModel,
   GridFilterModel,
-  GridPaginationModel
+  GridPaginationModel,
+  GridSortModel
 } from '@mui/x-data-grid'
 import { VariablesOf } from 'gql.tada'
 import { useSearchParams } from 'next/navigation'
@@ -20,6 +21,7 @@ interface FilterState {
   paginationModel: { pageSize: number; page: number }
   filterModel: GridFilterModel
   columnVisibilityModel: GridColumnVisibilityModel
+  sortModel: GridSortModel
   whereArgs: VideosWhereFilter
 }
 
@@ -27,6 +29,7 @@ type FilterAction =
   | { type: 'PageChange'; model: GridPaginationModel }
   | { type: 'ColumnChange'; model: GridColumnVisibilityModel }
   | { type: 'FilterChange'; model: GridFilterModel }
+  | { type: 'SortChange'; model: GridSortModel }
 
 export function reducer(state: FilterState, action: FilterAction): FilterState {
   switch (action.type) {
@@ -45,6 +48,11 @@ export function reducer(state: FilterState, action: FilterAction): FilterState {
         ...state,
         filterModel: action.model,
         whereArgs: getWhereArgs(action.model)
+      }
+    case 'SortChange':
+      return {
+        ...state,
+        sortModel: action.model
       }
     default:
       return state
@@ -118,6 +126,25 @@ function getColumnVisibilityModel(
   return model
 }
 
+function getSortModel(params?: ParsedQs): GridSortModel {
+  if (
+    params?.sort &&
+    typeof params.sort === 'object' &&
+    !Array.isArray(params.sort)
+  ) {
+    const sortObj = params.sort as Record<string, any>
+    if (sortObj.field && sortObj.direction) {
+      return [
+        {
+          field: sortObj.field as string,
+          sort: sortObj.direction as 'asc' | 'desc'
+        }
+      ]
+    }
+  }
+  return []
+}
+
 function getWhereArgs(model: GridFilterModel): VideosWhereFilter {
   const where: VideosWhereFilter = {}
 
@@ -163,6 +190,10 @@ interface VideoFilters {
   showTitle: boolean
   showSnippet: boolean
   where: VideosWhereFilter
+  orderBy?: {
+    field: 'id' | 'published' | 'locked' | 'label' | 'primaryLanguageId'
+    direction: 'asc' | 'desc'
+  } | null
 }
 
 type TableFilterProps = Pick<
@@ -171,6 +202,7 @@ type TableFilterProps = Pick<
   | 'paginationModel'
   | 'pageSizeOptions'
   | 'columnVisibilityModel'
+  | 'sortModel'
 > & { pageSizeOptions: number[] }
 
 export function useVideoFilter(): {
@@ -189,6 +221,7 @@ export function useVideoFilter(): {
     paginationModel: { pageSize: limit, page },
     filterModel: getFilterModel(params),
     columnVisibilityModel: getColumnVisibilityModel(params),
+    sortModel: getSortModel(params),
     whereArgs: getWhereArgs(getFilterModel(params))
   })
 
@@ -201,13 +234,28 @@ export function useVideoFilter(): {
     window.history.pushState(null, '', `?${query}`)
   }
 
+  // Convert sort model to backend format
+  const sortItem = state.sortModel?.[0]
+  const orderBy = sortItem
+    ? {
+        field: sortItem.field as
+          | 'id'
+          | 'published'
+          | 'locked'
+          | 'label'
+          | 'primaryLanguageId',
+        direction: sortItem.sort as 'asc' | 'desc'
+      }
+    : null
+
   return {
     filters: {
       limit: limit,
       offset: state?.paginationModel?.page * limit,
       showTitle: state?.columnVisibilityModel.title ?? true,
       showSnippet: state?.columnVisibilityModel.description ?? true,
-      where: state.whereArgs
+      where: state.whereArgs,
+      orderBy
     },
     tableFilterProps: {
       ...state,

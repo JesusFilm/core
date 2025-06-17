@@ -475,7 +475,7 @@ type Query {
     last: Int
   ): QueryShortLinksConnection!
   adminVideo(id: ID!, idType: IdType = databaseId): Video!
-  adminVideos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
+  adminVideos(where: VideosFilter, offset: Int, limit: Int, orderBy: VideoSort): [Video!]!
   adminVideosCount(where: VideosFilter): Int!
   video(id: ID!, idType: IdType = databaseId): Video!
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
@@ -872,6 +872,24 @@ type VideoSnippet {
   value: String!
   primary: Boolean!
   language: Language!
+}
+
+input VideoSort {
+  field: VideoSortField!
+  direction: VideoSortDirection!
+}
+
+enum VideoSortDirection {
+  asc
+  desc
+}
+
+enum VideoSortField {
+  id
+  published
+  locked
+  label
+  primaryLanguageId
 }
 
 type VideoStudyQuestion {

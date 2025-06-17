@@ -17,6 +17,7 @@ import { VideoVariantFilter } from '../videoVariant/inputs/videoVariantFilter'
 import { VideoLabel } from './enums/videoLabel'
 import { VideoCreateInput } from './inputs/videoCreate'
 import { VideosFilter } from './inputs/videosFilter'
+import { VideoSort } from './inputs/videosSort'
 import { VideoUpdateInput } from './inputs/videoUpdate'
 import { videosFilter } from './lib/videosFilter'
 
@@ -401,13 +402,22 @@ builder.queryFields((t) => ({
     args: {
       where: t.arg({ type: VideosFilter, required: false }),
       offset: t.arg.int({ required: false }),
-      limit: t.arg.int({ required: false })
+      limit: t.arg.int({ required: false }),
+      orderBy: t.arg({ type: VideoSort, required: false })
     },
-    resolve: async (query, _parent, { offset, limit, where }) => {
+    resolve: async (query, _parent, { offset, limit, where, orderBy }) => {
       const filter = videosFilter(where ?? {})
+      
+      // Build the orderBy clause
+      let order: any = undefined
+      if (orderBy) {
+        order = { [orderBy.field]: orderBy.direction }
+      }
+      
       return await prisma.video.findMany({
         ...query,
         where: filter,
+        orderBy: order,
         skip: offset ?? 0,
         take: limit ?? 100
       })

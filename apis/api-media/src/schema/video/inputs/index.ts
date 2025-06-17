@@ -1,5 +1,6 @@
 import './videoCreate'
 import './videosFilter'
+import './videosSort'
 import './videoTranslationCreate'
 import './videoTranslationUpdate'
 import './videoUpdate'

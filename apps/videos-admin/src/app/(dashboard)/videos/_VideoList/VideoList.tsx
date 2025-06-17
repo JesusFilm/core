@@ -16,6 +16,7 @@ import {
   GridRenderCellParams,
   GridRowParams,
   GridRowsProp,
+  GridSortModel,
   GridToolbarColumnsButton,
   GridToolbarContainer,
   GridToolbarFilterButton,
@@ -76,8 +77,9 @@ export const GET_ADMIN_VIDEOS_AND_COUNT = graphql(`
     $showTitle: Boolean!
     $showSnippet: Boolean!
     $where: VideosFilter
+    $orderBy: VideoSort
   ) {
-    adminVideos(limit: $limit, offset: $offset, where: $where) {
+    adminVideos(limit: $limit, offset: $offset, where: $where, orderBy: $orderBy) {
       id
       locked
       title @include(if: $showTitle) {
@@ -314,6 +316,7 @@ export function VideoList(): ReactElement {
       field: 'locked',
       headerName: 'Locked',
       width: 68,
+      sortable: true,
       renderCell: (params) => <LockedCell {...params} />,
       filterOperators: getGridBooleanOperators().filter(
         (operator) => operator.value === 'is'
@@ -323,6 +326,7 @@ export function VideoList(): ReactElement {
       field: 'id',
       headerName: 'ID',
       minWidth: 150,
+      sortable: true,
       filterOperators: getGridStringOperators().filter(
         (operator) => operator.value === 'equals'
       )
@@ -331,6 +335,7 @@ export function VideoList(): ReactElement {
       field: 'title',
       headerName: 'Title',
       minWidth: 200,
+      sortable: false,
       filterOperators: getGridStringOperators().filter(
         (operator) => operator.value === 'equals'
       )
@@ -339,6 +344,7 @@ export function VideoList(): ReactElement {
       field: 'published',
       headerName: 'Published',
       width: 112,
+      sortable: true,
       filterOperators: getGridBooleanOperators().filter(
         (operator) => operator.value === 'is'
       ),
@@ -350,7 +356,8 @@ export function VideoList(): ReactElement {
       field: 'description',
       headerName: 'Description',
       flex: 1,
-      filterable: false
+      filterable: false,
+      sortable: false
     }
   ]
 
@@ -397,6 +404,24 @@ export function VideoList(): ReactElement {
     })
 
     updateQueryParams({ filters: params })
+  }
+
+  function handleSortModelChange(model: GridSortModel): void {
+    dispatch({ type: 'SortChange', model })
+
+    // Convert sort model to query params  
+    const sortParams = model.length > 0 ? {
+      field: model[0].field,
+      direction: model[0].sort
+    } : null
+
+    // Reset to first page when sorting changes
+    dispatch({
+      type: 'PageChange',
+      model: { pageSize: filters.limit, page: 0 }
+    })
+
+    updateQueryParams({ sort: sortParams, page: 0 })
   }
 
   const handleColumnVisibilityModelChange = (model) => {
@@ -705,7 +730,9 @@ export function VideoList(): ReactElement {
         disableDensitySelector
         onColumnVisibilityModelChange={handleColumnVisibilityModelChange}
         onFilterModelChange={handleFilterModelChange}
+        onSortModelChange={handleSortModelChange}
         filterMode="server"
+        sortingMode="server"
         sx={{
           [`& .${gridClasses.columnHeader}, & .${gridClasses.cell}`]: {
             outline: 'transparent'
