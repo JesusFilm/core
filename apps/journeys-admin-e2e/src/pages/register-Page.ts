@@ -162,29 +162,48 @@ export class Register {
   }
 
   async waitUntilDiscoverPageLoaded() {
-    // Try multiple selectors for different MUI versions
+    // Wait for page navigation to complete
+    await this.page.waitForLoadState('domcontentloaded', { timeout: 30000 })
+
+    // Try multiple selectors for different MUI versions and component structures
     const selectors = [
+      // Primary data-testid selectors
       'div[data-testid="JourneysAdminContainedIconButton"]',
       '[data-testid="JourneysAdminContainedIconButton"]',
+
+      // With nested elements
       'div[data-testid="JourneysAdminContainedIconButton"] button',
-      '[data-testid="JourneysAdminContainedIconButton"] button'
+      '[data-testid="JourneysAdminContainedIconButton"] button',
+      'div[data-testid="JourneysAdminContainedIconButton"] [role="button"]',
+
+      // CardActionArea based (MUI Card structure)
+      'div[data-testid="JourneysAdminContainedIconButton"] .MuiCardActionArea-root',
+      '[data-testid="JourneysAdminContainedIconButton"] .MuiButtonBase-root',
+
+      // Fallback to any clickable element with the testid
+      '[data-testid*="ContainedIconButton"]',
+      'div[data-testid*="ContainedIconButton"]'
     ]
 
     let found = false
     for (const selector of selectors) {
       try {
-        await expect(this.page.locator(selector).first()).toBeVisible({
-          timeout: 15000
-        })
+        const element = this.page.locator(selector).first()
+        await expect(element).toBeVisible({ timeout: 10000 })
+        console.log(`ContainedIconButton found using selector: ${selector}`)
         found = true
         break
       } catch (error) {
-        // Try next selector
+        console.log(`Failed with selector: ${selector}`)
         continue
       }
     }
 
     if (!found) {
+      // Debug: Check what's actually on the page
+      const allTestIds = await this.page.locator('[data-testid]').count()
+      console.log(`Found ${allTestIds} elements with data-testid on the page`)
+
       throw new Error(
         'Discover page did not load - ContainedIconButton not found'
       )

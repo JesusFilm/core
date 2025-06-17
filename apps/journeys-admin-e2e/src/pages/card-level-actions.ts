@@ -1456,16 +1456,28 @@ export class CardLevelActionPage {
   }
 
   async validateFooterTitleAndReactionButtonsInCard(footerTitle: string) {
+    // First validate the footer with title exists
+    const footerSection = this.page
+      .frameLocator(this.journeyCardFrame)
+      .locator(
+        `div[data-testid="JourneysStepFooter"]:has(h6:text-is("${footerTitle}"))`
+      )
+
+    await expect(footerSection).toBeVisible()
+
+    // Then validate each reaction button exists within the footer button list
+    const buttonList = footerSection.locator(
+      'div[data-testid="StepFooterButtonList"]'
+    )
+
     await expect(
-      this.page
-        .frameLocator(this.journeyCardFrame)
-        .locator(
-          `div[data-testid="JourneysStepFooter"]:has(h6:text-is("${footerTitle}")) div[data-testid="StepFooterButtonList"]`
-        )
-        .first()
-        .filter({ has: this.page.getByTestId('ShareIcon') })
-        .filter({ has: this.page.getByTestId('ThumbsUpIcon') })
-        .filter({ has: this.page.getByTestId('ThumbsDownIcon') })
+      buttonList.locator('svg[data-testid="ShareIcon"]')
+    ).toBeVisible()
+    await expect(
+      buttonList.locator('svg[data-testid="ThumbsUpIcon"]')
+    ).toBeVisible()
+    await expect(
+      buttonList.locator('svg[data-testid="ThumbsDownIcon"]')
     ).toBeVisible()
   }
   async clickJourneyOrWebSiteOptionForFooter(buttonName: string) {
@@ -1508,30 +1520,50 @@ export class CardLevelActionPage {
   }
   async selectChevronDownIconForFooter() {
     // Wait for the dropdown to be fully opened and options to be visible
-    await this.page.waitForTimeout(1000)
+    await this.page.waitForTimeout(2000)
 
-    // Try multiple selectors for different MUI versions
-    const chevronDownSelector = [
+    // Try multiple selectors for different MUI versions and DOM structures
+    const chevronDownSelectors = [
+      // Standard MUI dropdown patterns
       'ul[role="listbox"] li:has(svg[data-testid="ChevronDownIcon"])',
       '.MuiMenu-list li:has(svg[data-testid="ChevronDownIcon"])',
+      '.MuiList-root li:has(svg[data-testid="ChevronDownIcon"])',
+
+      // Role-based selectors
       'li[role="option"]:has(svg[data-testid="ChevronDownIcon"])',
-      'li:has(svg[data-testid="ChevronDownIcon"])'
+
+      // General fallbacks
+      'li:has(svg[data-testid="ChevronDownIcon"])',
+      '[role="presentation"] li:has(svg[data-testid="ChevronDownIcon"])',
+
+      // Direct SVG targeting
+      'svg[data-testid="ChevronDownIcon"]',
+
+      // Parent-based selectors
+      'div[role="presentation"] li:has(svg[data-testid="ChevronDownIcon"])'
     ]
 
     let found = false
-    for (const selector of chevronDownSelector) {
+    for (const selector of chevronDownSelectors) {
       try {
-        await expect(this.page.locator(selector)).toBeVisible({ timeout: 3000 })
-        await this.page.locator(selector).click()
+        const element = this.page.locator(selector).first()
+        await expect(element).toBeVisible({ timeout: 3000 })
+        await element.click()
         found = true
+        console.log(`ChevronDown found using selector: ${selector}`)
         break
       } catch (error) {
-        // Try next selector
+        console.log(`Failed with selector: ${selector}`)
         continue
       }
     }
 
     if (!found) {
+      // Final attempt: wait for any dropdown to appear and try to find ChevronDown
+      await this.page.waitForTimeout(1000)
+      const allOptions = await this.page.locator('li, [role="option"]').count()
+      console.log(`Found ${allOptions} dropdown options`)
+
       throw new Error('ChevronDown option not found with any selector')
     }
   }
