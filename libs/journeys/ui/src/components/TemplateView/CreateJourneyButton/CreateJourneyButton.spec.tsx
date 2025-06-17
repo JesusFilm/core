@@ -656,4 +656,236 @@ describe('CreateJourneyButton', () => {
       expect(getByRole('button', { name: 'Use This Template' })).toBeDisabled()
     )
   })
+
+  describe('Create with AI functionality', () => {
+    const push = jest.fn().mockResolvedValue('')
+    const replace = jest.fn()
+
+    beforeEach(() => {
+      jest.clearAllMocks()
+      teamResult.mockClear()
+      journeyDuplicateMock.result.mockClear()
+
+      mockUseRouter.mockReturnValue({
+        query: { createNew: false },
+        push,
+        replace,
+        pathname: '/templates/journeyId'
+      } as unknown as NextRouter)
+    })
+
+    describe('Button Rendering', () => {
+      it('should show Create with AI button in team dialog when signed in', async () => {
+        render(
+          <MockedProvider
+            mocks={[
+              {
+                request: {
+                  query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+                },
+                result: teamResult
+              },
+              getLanguagesMock
+            ]}
+          >
+            <SnackbarProvider>
+              <TeamProvider>
+                <JourneyProvider value={{ journey }}>
+                  <CreateJourneyButton signedIn />
+                </JourneyProvider>
+              </TeamProvider>
+            </SnackbarProvider>
+          </MockedProvider>
+        )
+
+        fireEvent.click(
+          screen.getByRole('button', { name: 'Use This Template' })
+        )
+
+        await waitFor(() =>
+          expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
+        )
+
+        expect(
+          screen.getByRole('button', { name: 'Create with AI' })
+        ).toBeInTheDocument()
+      })
+
+      it('should enable Create with AI button when translation is not selected', async () => {
+        render(
+          <MockedProvider
+            mocks={[
+              {
+                request: {
+                  query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+                },
+                result: teamResult
+              },
+              getLanguagesMock
+            ]}
+          >
+            <SnackbarProvider>
+              <TeamProvider>
+                <JourneyProvider value={{ journey }}>
+                  <CreateJourneyButton signedIn />
+                </JourneyProvider>
+              </TeamProvider>
+            </SnackbarProvider>
+          </MockedProvider>
+        )
+
+        fireEvent.click(
+          screen.getByRole('button', { name: 'Use This Template' })
+        )
+
+        await waitFor(() =>
+          expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
+        )
+
+        const createWithAiButton = screen.getByRole('button', {
+          name: 'Create with AI'
+        })
+        expect(createWithAiButton).toBeEnabled()
+      })
+
+      it('should disable Create with AI button when translation is selected', async () => {
+        render(
+          <MockedProvider
+            mocks={[
+              {
+                request: {
+                  query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+                },
+                result: teamResult
+              },
+              getLanguagesMock
+            ]}
+          >
+            <SnackbarProvider>
+              <TeamProvider>
+                <JourneyProvider value={{ journey }}>
+                  <CreateJourneyButton signedIn />
+                </JourneyProvider>
+              </TeamProvider>
+            </SnackbarProvider>
+          </MockedProvider>
+        )
+
+        fireEvent.click(
+          screen.getByRole('button', { name: 'Use This Template' })
+        )
+
+        await waitFor(() =>
+          expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
+        )
+
+        // Enable translation
+        fireEvent.click(screen.getByRole('checkbox', { name: 'Translation' }))
+
+        const createWithAiButton = screen.getByRole('button', {
+          name: 'Create with AI'
+        })
+        expect(createWithAiButton).toBeDisabled()
+      })
+    })
+
+    describe('Navigation to AI page', () => {
+      it('should duplicate journey and navigate to AI page when Create with AI is clicked', async () => {
+        render(
+          <MockedProvider
+            mocks={[
+              {
+                request: {
+                  query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+                },
+                result: teamResult
+              },
+              getLanguagesMock,
+              journeyDuplicateMock,
+              updateLastActiveTeamIdMock
+            ]}
+          >
+            <SnackbarProvider>
+              <TeamProvider>
+                <JourneyProvider value={{ journey }}>
+                  <CreateJourneyButton signedIn />
+                </JourneyProvider>
+              </TeamProvider>
+            </SnackbarProvider>
+          </MockedProvider>
+        )
+
+        fireEvent.click(
+          screen.getByRole('button', { name: 'Use This Template' })
+        )
+
+        await waitFor(() =>
+          expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
+        )
+
+        // Click Create with AI button
+        fireEvent.click(screen.getByRole('button', { name: 'Create with AI' }))
+
+        await waitFor(() => {
+          expect(journeyDuplicateMock.result).toHaveBeenCalled()
+        })
+
+        await waitFor(() => {
+          expect(push).toHaveBeenCalledWith(
+            { pathname: '/journeys/duplicatedJourneyId/ai' },
+            undefined,
+            { shallow: true }
+          )
+        })
+      })
+
+      it('should not navigate to AI page when Create with AI is disabled due to translation', async () => {
+        render(
+          <MockedProvider
+            mocks={[
+              {
+                request: {
+                  query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+                },
+                result: teamResult
+              },
+              getLanguagesMock,
+              journeyDuplicateMock,
+              updateLastActiveTeamIdMock
+            ]}
+          >
+            <SnackbarProvider>
+              <TeamProvider>
+                <JourneyProvider value={{ journey }}>
+                  <CreateJourneyButton signedIn />
+                </JourneyProvider>
+              </TeamProvider>
+            </SnackbarProvider>
+          </MockedProvider>
+        )
+
+        fireEvent.click(
+          screen.getByRole('button', { name: 'Use This Template' })
+        )
+
+        await waitFor(() =>
+          expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
+        )
+
+        // Enable translation (this should disable Create with AI)
+        fireEvent.click(screen.getByRole('checkbox', { name: 'Translation' }))
+
+        // Try to click Create with AI button (should be disabled)
+        const createWithAiButton = screen.getByRole('button', {
+          name: 'Create with AI'
+        })
+        fireEvent.click(createWithAiButton)
+
+        // Should not duplicate or navigate
+        expect(journeyDuplicateMock.result).not.toHaveBeenCalled()
+        expect(push).not.toHaveBeenCalled()
+        expect(createWithAiButton).toBeDisabled()
+      })
+    })
+  })
 })
