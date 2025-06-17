@@ -102,7 +102,9 @@ export default function VariantDialog({
   })
 
   const [updateAdminVideoVariant] = useMutation(UPDATE_ADMIN_VIDEO_VARIANT)
-  const [updateDownloadSizesFromMux] = useMutation(UPDATE_DOWNLOAD_SIZES_FROM_MUX)
+  const [updateDownloadSizesFromMux] = useMutation(
+    UPDATE_DOWNLOAD_SIZES_FROM_MUX
+  )
 
   const handleUpdateSizes = async (): Promise<void> => {
     try {
@@ -110,11 +112,16 @@ export default function VariantDialog({
         variables: { videoVariantId: variantId }
       })
       await refetch()
-      enqueueSnackbar('Download sizes updated successfully', { variant: 'success' })
-    } catch (error) {
-      enqueueSnackbar('Failed to update sizes. Mux static renditions may not be ready yet.', { 
-        variant: 'warning' 
+      enqueueSnackbar('Download sizes updated successfully', {
+        variant: 'success'
       })
+    } catch (error) {
+      enqueueSnackbar(
+        'Failed to update sizes. Mux static renditions may not be ready yet.',
+        {
+          variant: 'warning'
+        }
+      )
     }
   }
 
@@ -259,7 +266,7 @@ export default function VariantDialog({
                     >
                       Add Download
                     </Button>
-                    {data.videoVariant.downloads.some(d => d.size === 0) && (
+                    {data.videoVariant.downloads.some((d) => d.size === 0) && (
                       <Button
                         variant="outlined"
                         color="secondary"
