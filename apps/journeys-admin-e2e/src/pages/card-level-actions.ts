@@ -688,21 +688,21 @@ export class CardLevelActionPage {
   async clickFeedBackPropertiesDropDown(feedBackProperty: string) {
     await expect(
       this.page.locator(
-        'div[data-testid="TextResponseProperties"] div[data-testid="AccordionSummary"]',
+        'div[data-testid="TextResponseProperties"] [data-testid="AccordionSummary"]',
         { hasText: feedBackProperty }
       )
     ).toBeVisible()
     if (
       await this.page
         .locator(
-          'div[data-testid="TextResponseProperties"] div[data-testid="AccordionSummary"][aria-expanded="false"]',
+          'div[data-testid="TextResponseProperties"] [data-testid="AccordionSummary"][aria-expanded="false"]',
           { hasText: feedBackProperty }
         )
         .isVisible()
     ) {
       await this.page
         .locator(
-          'div[data-testid="TextResponseProperties"] div[data-testid="AccordionSummary"]',
+          'div[data-testid="TextResponseProperties"] [data-testid="AccordionSummary"]',
           { hasText: feedBackProperty }
         )
         .click()
@@ -861,7 +861,7 @@ export class CardLevelActionPage {
   async clickPropertiesDropDown(feedBackProperty: string) {
     await this.page
       .locator(
-        'div[data-testid="SignUpProperties"] div[data-testid="AccordionSummary"]',
+        'div[data-testid="SignUpProperties"] [data-testid="AccordionSummary"]',
         { hasText: feedBackProperty }
       )
       .click()
@@ -948,10 +948,9 @@ export class CardLevelActionPage {
 
   async expandJourneyAppearance(tabName: string) {
     await this.page
-      .locator('div[data-testid="AccordionSummary"][aria-expanded="false"]', {
+      .locator('[data-testid="AccordionSummary"][aria-expanded="false"]', {
         hasText: tabName
       })
-      .locator('div[class*="expandIconWrapper "]')
       .click()
   }
 
@@ -1370,7 +1369,7 @@ export class CardLevelActionPage {
   async getSpacerHeightPixelBeforeChange() {
     return await this.page
       .locator(
-        'div[data-testid="SpacerProperties"] div[data-testid="AccordionSummary"]',
+        'div[data-testid="SpacerProperties"] [data-testid="AccordionSummary"]',
         { hasText: 'Spacer Height' }
       )
       .locator('p')
@@ -1558,7 +1557,7 @@ export class CardLevelActionPage {
   async clickButtonPropertyDropdown(feedBackProperty: string) {
     await this.page
       .locator(
-        'div[data-testid="ButtonProperties"] div[data-testid="AccordionSummary"]',
+        'div[data-testid="ButtonProperties"] [data-testid="AccordionSummary"]',
         { hasText: feedBackProperty }
       )
       .click()
@@ -1566,7 +1565,7 @@ export class CardLevelActionPage {
   async clickCardPropertiesDropDown(cardProperty: string) {
     await this.page
       .locator(
-        `div[data-testid="SettingsDrawer"] div[data-testid="AccordionSummary"]:has(span:text-is("${cardProperty}"))`
+        `div[data-testid="SettingsDrawer"] [data-testid="AccordionSummary"]:has(span:text-is("${cardProperty}"))`
       )
       .click({ timeout: 60000 })
   }
