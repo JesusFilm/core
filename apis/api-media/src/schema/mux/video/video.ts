@@ -1,10 +1,11 @@
 import { GraphQLError } from 'graphql'
 
+import { Prisma } from '.prisma/api-media-client'
+
 import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 import { VideoSource, VideoSourceShape } from '../../videoSource/videoSource'
 
-import { Prisma } from "./.prisma/api-media-client"
 import {
   createVideoByDirectUpload,
   createVideoFromUrl,
@@ -48,16 +49,55 @@ const MuxVideo = builder.prismaObject('MuxVideo', {
 })
 
 // Define a type for static rendition files
-const StaticRenditionFile = builder.simpleObject('StaticRenditionFile', {
+interface StaticRenditionFileType {
+  name: string
+  ext: string
+  height: number | null
+  width: number | null
+  bitrate: number | null
+  filesize: string | null
+  resolution: string | null
+  status: string
+}
+
+const StaticRenditionFileRef = builder.objectRef<StaticRenditionFileType>(
+  'StaticRenditionFile'
+)
+
+const StaticRenditionFile = builder.objectType(StaticRenditionFileRef, {
   fields: (t) => ({
-    name: t.string({ nullable: false }),
-    ext: t.string({ nullable: false }),
-    height: t.int({ nullable: true }),
-    width: t.int({ nullable: true }),
-    bitrate: t.int({ nullable: true }),
-    filesize: t.string({ nullable: true }),
-    resolution: t.string({ nullable: true }),
-    status: t.string({ nullable: false })
+    name: t.string({
+      nullable: false,
+      resolve: (file) => file.name
+    }),
+    ext: t.string({
+      nullable: false,
+      resolve: (file) => file.ext
+    }),
+    height: t.int({
+      nullable: true,
+      resolve: (file) => file.height
+    }),
+    width: t.int({
+      nullable: true,
+      resolve: (file) => file.width
+    }),
+    bitrate: t.int({
+      nullable: true,
+      resolve: (file) => file.bitrate
+    }),
+    filesize: t.string({
+      nullable: true,
+      resolve: (file) => file.filesize
+    }),
+    resolution: t.string({
+      nullable: true,
+      resolve: (file) => file.resolution
+    }),
+    status: t.string({
+      nullable: false,
+      resolve: (file) => file.status
+    })
   })
 })
 
@@ -202,16 +242,18 @@ builder.queryFields((t) => ({
     },
     resolve: async (_root, { assetId }) => {
       const staticRenditions = await getStaticRenditions(assetId, false)
-      return staticRenditions?.files?.map(file => ({
-        name: file.name ?? '',
-        ext: file.ext ?? '',
-        height: file.height ?? null,
-        width: file.width ?? null,
-        bitrate: file.bitrate ?? null,
-        filesize: file.filesize ?? null,
-        resolution: file.resolution ?? null,
-        status: file.status ?? 'unknown'
-      })) ?? []
+      return (
+        staticRenditions?.files?.map((file) => ({
+          name: file.name ?? '',
+          ext: file.ext ?? '',
+          height: file.height ?? null,
+          width: file.width ?? null,
+          bitrate: file.bitrate ?? null,
+          filesize: file.filesize ?? null,
+          resolution: file.resolution ?? null,
+          status: file.status ?? 'unknown'
+        })) ?? []
+      )
     }
   })
 }))
