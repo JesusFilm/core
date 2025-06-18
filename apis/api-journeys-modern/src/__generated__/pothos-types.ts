@@ -316,7 +316,7 @@ export default interface PrismaTypes {
         Where: Prisma.JourneyWhereInput;
         Create: {};
         Update: {};
-        RelationName: "actions" | "blocks" | "chatButtons" | "Event" | "creatorImageBlock" | "host" | "logoImageBlock" | "menuStepBlock" | "primaryImageBlock" | "team" | "journeyCollectionJourneys" | "journeyEventsExportLogs" | "journeyNotifications" | "journeyTags" | "JourneyTheme" | "journeyVisitors" | "qrCode" | "userInvites" | "userJourneys";
+        RelationName: "actions" | "blocks" | "chatButtons" | "Event" | "creatorImageBlock" | "host" | "logoImageBlock" | "menuStepBlock" | "primaryImageBlock" | "team" | "journeyCollectionJourneys" | "journeyEventsExportLogs" | "journeyNotifications" | "journeyTags" | "journeyTheme" | "journeyVisitors" | "qrCode" | "userInvites" | "userJourneys";
         ListRelations: "actions" | "blocks" | "chatButtons" | "Event" | "journeyCollectionJourneys" | "journeyEventsExportLogs" | "journeyNotifications" | "journeyTags" | "journeyVisitors" | "qrCode" | "userInvites" | "userJourneys";
         Relations: {
             actions: {
@@ -389,7 +389,7 @@ export default interface PrismaTypes {
                 Name: "JourneyTag";
                 Nullable: false;
             };
-            JourneyTheme: {
+            journeyTheme: {
                 Shape: JourneyTheme | null;
                 Name: "JourneyTheme";
                 Nullable: true;
@@ -763,10 +763,10 @@ export default interface PrismaTypes {
         Where: Prisma.JourneyThemeWhereInput;
         Create: {};
         Update: {};
-        RelationName: "Journey";
+        RelationName: "journey";
         ListRelations: never;
         Relations: {
-            Journey: {
+            journey: {
                 Shape: Journey;
                 Name: "Journey";
                 Nullable: false;
