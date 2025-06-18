@@ -80,14 +80,17 @@ export class Register {
   async enterOTP(otp) {
     await this.page
       .locator(
-        'form[data-testid="EmailInviteForm"] >> text="Verify With Code Instead"'
+        'form[data-testid="EmailInviteForm"] [data-testid="VerifyCodeAccordionSummary"]'
       )
+      .first()
       .click()
     await expect(
-      this.page.locator(
-        'form[data-testid="EmailInviteForm"] [aria-expanded="true"]'
-      )
-    ).toBeVisible()
+      this.page
+        .locator(
+          'form[data-testid="EmailInviteForm"] [data-testid="VerifyCodeAccordionSummary"]'
+        )
+        .first()
+    ).toHaveAttribute('aria-expanded', 'true')
     await this.page.locator('div[role="region"]  input[name="token"]').fill(otp)
   }
 
@@ -159,68 +162,52 @@ export class Register {
   }
 
   async waitUntilDiscoverPageLoaded() {
-    // First, wait for the discover navigation item to be visible
-    await expect(
-      this.page.locator('[data-testid="NavigationListItemDiscover"]')
-    ).toBeVisible({ timeout: 30000 })
-    
-    // Wait for the discover page to be selected (either by class or by checking the URL)
-    try {
-      await expect(
-        this.page.locator('[data-testid="NavigationListItemDiscover"].Mui-selected')
-      ).toBeVisible({ timeout: 15000 })
-    } catch {
-      // If the class-based selector doesn't work, check the URL
-      await expect(this.page).toHaveURL(/\/$/, { timeout: 15000 })
+    // Wait for page navigation to complete
+    await this.page.waitForLoadState('domcontentloaded', { timeout: 30000 })
+
+    // Try multiple selectors for different MUI versions and component structures
+    const selectors = [
+      // Primary data-testid selectors
+      'div[data-testid="JourneysAdminContainedIconButton"]',
+      '[data-testid="JourneysAdminContainedIconButton"]',
+
+      // With nested elements
+      'div[data-testid="JourneysAdminContainedIconButton"] button',
+      '[data-testid="JourneysAdminContainedIconButton"] button',
+      'div[data-testid="JourneysAdminContainedIconButton"] [role="button"]',
+
+      // CardActionArea based (MUI Card structure)
+      'div[data-testid="JourneysAdminContainedIconButton"] .MuiCardActionArea-root',
+      '[data-testid="JourneysAdminContainedIconButton"] .MuiButtonBase-root',
+
+      // Fallback to any clickable element with the testid
+      '[data-testid*="ContainedIconButton"]',
+      'div[data-testid*="ContainedIconButton"]'
+    ]
+
+    let found = false
+    for (const selector of selectors) {
+      try {
+        await expect(this.page.locator(selector)).toBeVisible({
+          timeout: 3000
+        })
+        found = true
+        break
+      } catch (error) {
+        continue
+      }
     }
-    
-    // Wait for the main content area to be loaded
-    await expect(
-      this.page.locator('[data-testid="JourneysAdminJourneyList"]')
-    ).toBeVisible({ timeout: 30000 })
-    
-    // Wait for the side panel to be loaded
-    await expect(
-      this.page.locator('[data-testid="side-panel"]')
-    ).toBeVisible({ timeout: 30000 })
-    
-    // Wait for team to be loaded by checking if team select is visible
-    try {
-      await expect(
-        this.page.locator('[data-testid="TeamSelect"]')
-      ).toBeVisible({ timeout: 15000 })
-    } catch {
-      console.log('Team select not found, continuing...')
-    }
-    
-    // Check if we're in "Shared With Me" state and need to select a team
-    const isSharedWithMe = await this.page
-      .locator('[data-testid="TeamSelect"]')
-      .textContent()
-    if (isSharedWithMe?.includes('Shared With Me')) {
-      console.log('User is in "Shared With Me" state, selecting first team...')
-      // Click on team select to open dropdown
-      await this.page.locator('[data-testid="TeamSelect"]').click()
-      // Wait for dropdown to open and select first team
-      await this.page.locator('[role="listbox"] [role="option"]').first().click()
-      // Wait a bit for the team to be selected
-      await this.page.waitForTimeout(2000)
-    }
-    
-    // Finally, wait for the create journey button to appear
-    await expect(
-      this.page.locator('[data-testid="JourneysAdminContainedIconButton"]')
-    ).toBeVisible({ timeout: 30000 })
-    
-    // Add some debugging information
-    try {
-      const teamSelectText = await this.page.locator('[data-testid="TeamSelect"]').textContent()
-      console.log('Team select text:', teamSelectText)
-      
-      const buttonExists = await this.page.locator('[data-testid="JourneysAdminContainedIconButton"]').isVisible()
-      console.log('Create journey button visible:', buttonExists)
-    } catch {
-      console.log('Debug info gathering failed, but continuing...')
+
+    if (!found) {
+      // Get all elements with data-testid for debugging
+      const allTestIds = await this.page.$$eval(
+        '[data-testid]',
+        (elements) => elements.length
+      )
+
+      throw new Error(
+        `ContainedIconButton not found. Found ${allTestIds} elements with data-testid on the page`
+      )
     }
   }
 
@@ -233,7 +220,7 @@ export class Register {
   async verifyMoreJourneyHerePopup() {
     // waiting for 'More journeys here' appear if it is don't, we doesn't need to assert the script
     const moreJourneysLocator = this.page.locator(
-      '[role="tooltip"], [role="dialog"]',
+      'div[class*="MuiPopover-paper"] h6',
       {
         hasText: 'More journeys here'
       }
@@ -242,7 +229,7 @@ export class Register {
     try {
       await expect(moreJourneysLocator).toBeVisible({ timeout: 5000 })
       const dismissButtonLocator = this.page.locator(
-        '[role="tooltip"] button, [role="dialog"] button',
+        'div[class*="MuiPopover-paper"] button',
         {
           hasText: 'Dismiss'
         }

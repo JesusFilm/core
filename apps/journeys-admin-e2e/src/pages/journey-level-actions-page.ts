@@ -18,7 +18,7 @@ export class JourneyLevelActions {
   descriptionText = testData.journey.descriptionText
   selectedLanguage = ''
   journeyNamePath =
-    '[data-testid*="JourneyCard"] h6, [data-testid*="JourneyCard"] .MuiTypography-h6'
+    'div[data-testid *="JourneyCard"] div.MuiCardContent-root h6.MuiTypography-root'
 
   constructor(page: Page) {
     this.page = page
@@ -286,52 +286,56 @@ export class JourneyLevelActions {
   }
 
   async enterLanguage(language: string): Promise<void> {
-    // Try multiple selectors for the language combobox
-    const languageSelectors = [
-      '[role="combobox"][aria-label*="language"]',
-      '[aria-label*="Language"] [role="combobox"]',
-      '[data-testid*="language"] [role="combobox"]',
-      'input[placeholder*="language"]',
-      'div[aria-label*="language"]'
-    ]
-    
-    let languageCombobox: any = null
-    
-    // Try each selector until we find one that works
-    for (const selector of languageSelectors) {
-      try {
-        await expect(this.page.locator(selector)).toBeVisible({ timeout: 5000 })
-        languageCombobox = this.page.locator(selector)
-        console.log(`Found language selector with: ${selector}`)
+    const selectedValue = await this.page
+      .locator('input[placeholder="Search Language"]')
+      .getAttribute('value', { timeout: thirtySecondsTimeout })
+    this.selectedLanguage = selectedValue === language ? 'Malayalam' : language
+    await this.page.locator('input[placeholder="Search Language"]').click()
+    await expect(this.page.locator('span[role="progressbar"]')).toBeHidden({
+      timeout: thirtySecondsTimeout
+    })
+    for (let scroll = 0; scroll < 300; scroll++) {
+      const lang = await this.page
+        .locator("div[class *='MuiAutocomplete-popper'] li p")
+        .allTextContents()
+      if (
+        await this.page
+          .locator("div[class *='MuiAutocomplete-popper'] li", {
+            hasText: this.selectedLanguage
+          })
+          .first()
+          .isVisible()
+      ) {
         break
-      } catch {
-        console.log(`Language selector not found with: ${selector}`)
       }
+      expect(scroll !== 299).toBeTruthy()
+      await this.page
+        .locator("div[class *='MuiAutocomplete-popper'] li")
+        .last()
+        .waitFor({ state: 'visible' })
+      await this.page
+        .locator("div[class *='MuiAutocomplete-popper'] li")
+        .last()
+        .waitFor({ state: 'attached' })
+      // eslint-disable-next-line playwright/no-wait-for-timeout
+      await this.page.waitForTimeout(600)
+      await expect(
+        this.page.locator("div[class *='MuiAutocomplete-popper'] li").last()
+      ).toBeAttached()
+      await this.page
+        .locator("div[class *='MuiAutocomplete-popper'] li")
+        .last()
+        .scrollIntoViewIfNeeded({ timeout: 30000 })
+      await expect(
+        this.page.locator("div[class *='MuiAutocomplete-popper'] li p")
+      ).not.toHaveText(lang)
     }
-    
-    if (languageCombobox === null) {
-      throw new Error('Could not find language combobox with any of the attempted selectors')
-    }
-    
-    await languageCombobox.click()
-    
-    // Wait for the dropdown to open
-    await expect(
-      this.page.locator('[role="listbox"], [role="menu"], ul[aria-label*="language"]')
-    ).toBeVisible({ timeout: 10000 })
-    
-    // Find and click the language option
-    this.selectedLanguage = await this.page
-      .locator('[role="listbox"] [role="option"], [role="menu"] [role="menuitem"], li')
-      .filter({ hasText: language })
-      .first()
-      .innerText()
-    
     await this.page
-      .locator('[role="listbox"] [role="option"], [role="menu"] [role="menuitem"], li')
-      .filter({ hasText: language })
+      .locator("div[class *='MuiAutocomplete-popper'] li", {
+        hasText: this.selectedLanguage
+      })
       .first()
-      .click()
+      .click({ timeout: thirtySecondsTimeout })
   }
 
   async verifyLinkIsCopied() {
@@ -421,11 +425,5 @@ export class JourneyLevelActions {
         hasText: this.descriptionText
       })
     ).toBeVisible()
-  }
-
-  async getJourneyName() {
-    return await this.page.textContent(
-      '[data-testid*="JourneyCard"] h6, [data-testid*="JourneyCard"] .MuiTypography-h6'
-    )
   }
 }

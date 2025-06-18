@@ -111,7 +111,7 @@ export function Dialog({
               onClick={onClose}
               data-testid="dialog-close-button"
             >
-              <CloseRoundedIcon />
+              <CloseRoundedIcon data-testid="CloseRoundedIcon" />
             </IconButton>
           )}
         </MuiDialogTitle>
