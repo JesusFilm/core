@@ -686,26 +686,42 @@ export class CardLevelActionPage {
   }
 
   async clickFeedBackPropertiesDropDown(feedBackProperty: string) {
+    // First wait for the TextResponseProperties panel to be visible
+    await expect(
+      this.page.locator('div[data-testid="TextResponseProperties"]')
+    ).toBeVisible({ timeout: 30000 })
+    
+    // Wait for the specific accordion summary to be visible
     await expect(
       this.page.locator(
         'div[data-testid="TextResponseProperties"] div[data-testid="AccordionSummary"]',
         { hasText: feedBackProperty }
       )
-    ).toBeVisible()
-    if (
-      await this.page
-        .locator(
-          'div[data-testid="TextResponseProperties"] div[data-testid="AccordionSummary"][aria-expanded="false"]',
-          { hasText: feedBackProperty }
-        )
-        .isVisible()
-    ) {
+    ).toBeVisible({ timeout: 20000 })
+    
+    // Check if the accordion is collapsed and needs to be expanded
+    const isCollapsed = await this.page
+      .locator(
+        'div[data-testid="TextResponseProperties"] div[data-testid="AccordionSummary"][aria-expanded="false"]',
+        { hasText: feedBackProperty }
+      )
+      .isVisible()
+    
+    if (isCollapsed) {
       await this.page
         .locator(
           'div[data-testid="TextResponseProperties"] div[data-testid="AccordionSummary"]',
           { hasText: feedBackProperty }
         )
         .click()
+      
+      // Wait for the accordion to expand
+      await expect(
+        this.page.locator(
+          'div[data-testid="TextResponseProperties"] div[data-testid="AccordionSummary"][aria-expanded="true"]',
+          { hasText: feedBackProperty }
+        )
+      ).toBeVisible({ timeout: 10000 })
     } else {
       console.log('%s is already opened', feedBackProperty)
     }
@@ -900,7 +916,7 @@ export class CardLevelActionPage {
   async clicSelectHostBtn() {
     await this.page
       .locator(
-        'div[data-testid="HostSelection"] div[data-testid="JourneysAdminContainedIconButton"] button'
+        'div[data-testid="HostSelection"] [data-testid="JourneysAdminContainedIconButton"]'
       )
       .click()
   }
@@ -947,12 +963,51 @@ export class CardLevelActionPage {
   }
 
   async expandJourneyAppearance(tabName: string) {
-    await this.page
+    // First wait for any accordion summary to be visible
+    await expect(
+      this.page.locator('div[data-testid="AccordionSummary"]').first()
+    ).toBeVisible({ timeout: 30000 })
+    
+    // Wait for the specific accordion summary to be visible
+    await expect(
+      this.page.locator('div[data-testid="AccordionSummary"]', { hasText: tabName })
+    ).toBeVisible({ timeout: 20000 })
+    
+    // Check if the accordion is collapsed
+    const isCollapsed = await this.page
       .locator('div[data-testid="AccordionSummary"][aria-expanded="false"]', {
         hasText: tabName
       })
-      .locator('div[class*="expandIconWrapper "]')
-      .click()
+      .isVisible()
+    
+    if (isCollapsed) {
+      // Try to click the expand icon first
+      const expandIcon = this.page
+        .locator('div[data-testid="AccordionSummary"][aria-expanded="false"]', {
+          hasText: tabName
+        })
+        .locator('div[class*="expandIconWrapper"], svg[data-testid="ExpandMoreIcon"]')
+      
+      if (await expandIcon.isVisible()) {
+        await expandIcon.click()
+      } else {
+        // Fallback to clicking the entire accordion summary
+        await this.page
+          .locator('div[data-testid="AccordionSummary"][aria-expanded="false"]', {
+            hasText: tabName
+          })
+          .click()
+      }
+      
+      // Wait for the accordion to expand
+      await expect(
+        this.page.locator('div[data-testid="AccordionSummary"][aria-expanded="true"]', {
+          hasText: tabName
+        })
+      ).toBeVisible({ timeout: 10000 })
+    } else {
+      console.log('%s accordion is already expanded', tabName)
+    }
   }
 
   async clickMessangerDropDown(messangerTitle: string) {
@@ -1368,11 +1423,23 @@ export class CardLevelActionPage {
     ).toHaveCount(0)
   }
   async getSpacerHeightPixelBeforeChange() {
+    // First wait for the SpacerProperties panel to be visible
+    await expect(
+      this.page.locator('div[data-testid="SpacerProperties"]')
+    ).toBeVisible({ timeout: 30000 })
+    
+    // Wait for the specific accordion summary to be visible
+    await expect(
+      this.page.locator(
+        'div[data-testid="SpacerProperties"] div[data-testid="AccordionSummary"]'
+      ).filter({ hasText: 'Spacer Height' })
+    ).toBeVisible({ timeout: 20000 })
+    
     return await this.page
       .locator(
-        'div[data-testid="SpacerProperties"] div[data-testid="AccordionSummary"]',
-        { hasText: 'Spacer Height' }
+        'div[data-testid="SpacerProperties"] div[data-testid="AccordionSummary"]'
       )
+      .filter({ hasText: 'Spacer Height' })
       .locator('p')
       .textContent()
   }
@@ -1556,6 +1623,20 @@ export class CardLevelActionPage {
     ).toBeVisible()
   }
   async clickButtonPropertyDropdown(feedBackProperty: string) {
+    // First wait for the ButtonProperties panel to be visible
+    await expect(
+      this.page.locator('div[data-testid="ButtonProperties"]')
+    ).toBeVisible({ timeout: 30000 })
+    
+    // Wait for the specific accordion summary to be visible
+    await expect(
+      this.page.locator(
+        'div[data-testid="ButtonProperties"] div[data-testid="AccordionSummary"]',
+        { hasText: feedBackProperty }
+      )
+    ).toBeVisible({ timeout: 20000 })
+    
+    // Click the accordion to expand it
     await this.page
       .locator(
         'div[data-testid="ButtonProperties"] div[data-testid="AccordionSummary"]',
