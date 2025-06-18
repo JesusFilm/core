@@ -6,6 +6,7 @@ import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import { type SxProps, styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import last from 'lodash/last'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
@@ -72,6 +73,7 @@ export function VideoCard({
   const { t } = useTranslation('apps-watch')
 
   const { label, color, childCountLabel } = getLabelDetails(
+    t,
     video?.label,
     video?.childrenCount ?? 0
   )
@@ -115,10 +117,10 @@ export function VideoCard({
                 transition: (theme) => theme.transitions.create('transform')
               }}
             >
-              {video?.images[0]?.mobileCinematicHigh != null ? (
+              {last(video?.images)?.mobileCinematicHigh != null ? (
                 <Image
-                  src={video.images[0].mobileCinematicHigh}
-                  alt={video.imageAlt[0].value}
+                  src={last(video?.images)?.mobileCinematicHigh ?? ''}
+                  alt={last(video?.imageAlt)?.value ?? ''}
                   fill
                   sizes="100vw"
                   style={{
@@ -187,7 +189,7 @@ export function VideoCard({
                   }}
                 >
                   {video != null ? (
-                    video?.title[0].value
+                    last(video?.title)?.value
                   ) : (
                     <Skeleton width="60%" data-testid="VideoTitleSkeleton" />
                   )}
@@ -300,7 +302,7 @@ export function VideoCard({
                 lineHeight={27 / 21}
               >
                 {video?.title != null ? (
-                  video?.title[0].value
+                  last(video?.title)?.value
                 ) : (
                   <Skeleton width="60%" data-testid="VideoTitleSkeleton" />
                 )}
