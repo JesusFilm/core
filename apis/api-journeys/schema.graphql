@@ -657,6 +657,11 @@ type CardBlock implements Block
   backgroundColor: String @shareable
 
   """
+  backdropBlur should be a number representing blur amount in pixels e.g 20.
+  """
+  backdropBlur: Int @shareable
+
+  """
   coverBlockId is present if a child block should be used as a cover.
   This child block should not be rendered normally, instead it should be used
   as a background. Blocks are often of type ImageBlock or VideoBlock.
@@ -691,6 +696,7 @@ input CardBlockCreateInput {
   journeyId: ID!
   parentBlockId: ID!
   backgroundColor: String
+  backdropBlur: Int
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
@@ -701,6 +707,7 @@ input CardBlockUpdateInput {
   parentBlockId: ID
   coverBlockId: ID
   backgroundColor: String
+  backdropBlur: Int
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
