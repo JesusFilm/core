@@ -14,12 +14,12 @@ interface ZoomImageProps {
 
 export function ZoomImage({ imageBlock, updateImageBlock }: ZoomImageProps) {
   const [zoom, setZoom] = useState<number>(
-    imageBlock?.scale == null ? 0 : imageBlock.scale - 100
+    imageBlock?.scale == null ? 1.0 : imageBlock.scale / 100
   )
 
   const handleSliderChange = (_: Event, newValue: number | number[]) => {
     const val = typeof newValue === 'number' ? newValue : newValue[0]
-    setZoom(val)
+    setZoom(Math.round(val * 10) / 10)
   }
 
   const handleSliderChangeCommitted = (
@@ -30,7 +30,7 @@ export function ZoomImage({ imageBlock, updateImageBlock }: ZoomImageProps) {
 
     updateImageBlock({
       src: imageBlock?.src,
-      scale: 100 + val
+      scale: Math.round(val * 100)
     })
   }
 
@@ -44,9 +44,9 @@ export function ZoomImage({ imageBlock, updateImageBlock }: ZoomImageProps) {
           />
           <Slider
             value={zoom}
-            min={0}
-            max={100}
-            step={1}
+            min={1.0}
+            max={2.0}
+            step={0.1}
             onChange={handleSliderChange}
             onChangeCommitted={handleSliderChangeCommitted}
             sx={{
@@ -78,14 +78,11 @@ export function ZoomImage({ imageBlock, updateImageBlock }: ZoomImageProps) {
               justifyContent: 'center',
               fontSize: 14,
               color: 'text.primary',
-              borderRadius: 1,
-              border: '1px solid',
-              borderColor: 'divider',
               backgroundColor: 'background.paper'
             }}
             aria-label="Zoom percentage"
           >
-            {zoom} %
+            {zoom.toFixed(1)} ×
           </Typography>
         </Stack>
       )}

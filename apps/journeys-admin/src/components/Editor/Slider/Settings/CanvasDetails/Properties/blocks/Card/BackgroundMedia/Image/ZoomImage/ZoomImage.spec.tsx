@@ -37,7 +37,7 @@ describe('ZoomImage', () => {
     )
 
     expect(screen.getByRole('slider')).toBeInTheDocument()
-    expect(screen.getByText('0 %')).toBeInTheDocument()
+    expect(screen.getByText('1.0 ×')).toBeInTheDocument()
   })
 
   it('should not render ZoomImage when image block src is null', () => {
@@ -56,7 +56,7 @@ describe('ZoomImage', () => {
     )
 
     const slider = screen.getByRole('slider')
-    fireEvent.change(slider, { target: { value: 50 } })
+    fireEvent.change(slider, { target: { value: 1.5 } })
     fireEvent.mouseUp(slider)
 
     await waitFor(() => {
@@ -66,7 +66,7 @@ describe('ZoomImage', () => {
       })
     })
 
-    fireEvent.change(slider, { target: { value: 100 } })
+    fireEvent.change(slider, { target: { value: 2.0 } })
     fireEvent.mouseUp(slider)
 
     await waitFor(() => {
@@ -76,7 +76,7 @@ describe('ZoomImage', () => {
       })
     })
 
-    fireEvent.change(slider, { target: { value: 0 } })
+    fireEvent.change(slider, { target: { value: 1.0 } })
     fireEvent.mouseUp(slider)
 
     await waitFor(() => {
@@ -100,7 +100,7 @@ describe('ZoomImage', () => {
       />
     )
 
-    expect(screen.getByRole('slider')).toHaveValue('50')
-    expect(screen.getByText('50 %')).toBeInTheDocument()
+    expect(screen.getByRole('slider')).toHaveValue('1.5')
+    expect(screen.getByText('1.5 ×')).toBeInTheDocument()
   })
 })
