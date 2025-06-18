@@ -44,6 +44,7 @@ export type AudioPreview = {
   codec: Scalars['String']['output'];
   duration: Scalars['Int']['output'];
   language: Language;
+  languageId: Scalars['ID']['output'];
   size: Scalars['Int']['output'];
   value: Scalars['String']['output'];
 };
@@ -1417,6 +1418,9 @@ export enum MessagePlatform {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  audioPreviewCreate: AudioPreview;
+  audioPreviewDelete: AudioPreview;
+  audioPreviewUpdate: AudioPreview;
   bibleCitationCreate?: Maybe<BibleCitation>;
   bibleCitationDelete?: Maybe<Scalars['Boolean']['output']>;
   bibleCitationUpdate?: Maybe<BibleCitation>;
@@ -1608,6 +1612,21 @@ export type Mutation = {
   visitorUpdate: Visitor;
   /** Allow current user to update specific allowable fields of their visitor record */
   visitorUpdateForCurrentUser: Visitor;
+};
+
+
+export type MutationAudioPreviewCreateArgs = {
+  input: MutationAudioPreviewCreateInput;
+};
+
+
+export type MutationAudioPreviewDeleteArgs = {
+  languageId: Scalars['ID']['input'];
+};
+
+
+export type MutationAudioPreviewUpdateArgs = {
+  input: MutationAudioPreviewUpdateInput;
 };
 
 
@@ -2485,6 +2504,24 @@ export type MutationVisitorUpdateArgs = {
 
 export type MutationVisitorUpdateForCurrentUserArgs = {
   input: VisitorUpdateInput;
+};
+
+export type MutationAudioPreviewCreateInput = {
+  bitrate: Scalars['Int']['input'];
+  codec: Scalars['String']['input'];
+  duration: Scalars['Int']['input'];
+  languageId: Scalars['ID']['input'];
+  size: Scalars['Int']['input'];
+  value: Scalars['String']['input'];
+};
+
+export type MutationAudioPreviewUpdateInput = {
+  bitrate?: InputMaybe<Scalars['Int']['input']>;
+  codec?: InputMaybe<Scalars['String']['input']>;
+  duration?: InputMaybe<Scalars['Int']['input']>;
+  languageId: Scalars['ID']['input'];
+  size?: InputMaybe<Scalars['Int']['input']>;
+  value?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type MutationBibleCitationCreateInput = {
