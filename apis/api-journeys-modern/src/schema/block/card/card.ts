@@ -46,6 +46,11 @@ export const CardBlock = builder.prismaObject('Block', {
       directives: { shareable: true },
       description: `backgroundColor should be a HEX color value e.g #FFFFFF for white.`
     }),
+    backdropBlur: t.exposeInt('backdropBlur', {
+      nullable: true,
+      directives: { shareable: true },
+      description: `backdropBlur should be a number representing blur amount in pixels e.g 20.`
+    }),
     coverBlockId: t.exposeID('coverBlockId', {
       nullable: true,
       directives: { shareable: true },
