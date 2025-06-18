@@ -1,5 +1,5 @@
 import { google } from '@ai-sdk/google'
-import { CoreMessage, streamText } from 'ai'
+import { streamText } from 'ai'
 import { jwtDecode } from 'jwt-decode'
 import { NextRequest } from 'next/server'
 import { v4 as uuidv4 } from 'uuid'
@@ -76,26 +76,15 @@ export async function POST(req: NextRequest) {
   )
 
   const langfuseTraceId = uuidv4()
-  langfuse.trace({
-    id: langfuseTraceId,
-    name: 'ai-chat'
-  })
-
-  const messagesWithSystemPrompt = [
-    {
-      role: 'system',
-      content: systemPrompt.compile({
-        journeyId: journeyId ?? 'none',
-        selectedStepId: selectedStepId ?? 'none',
-        selectedBlockId: selectedBlockId ?? 'none'
-      })
-    },
-    ...messages.filter((message) => message.role !== 'system')
-  ] as CoreMessage[]
 
   const result = streamText({
     model: google('gemini-2.0-flash'),
-    messages: messagesWithSystemPrompt,
+    messages: messages.filter((message) => message.role !== 'system'),
+    system: systemPrompt.compile({
+      journeyId: journeyId ?? 'none',
+      selectedStepId: selectedStepId ?? 'none',
+      selectedBlockId: selectedBlockId ?? 'none'
+    }),
     tools: tools(client, { langfuseTraceId }),
     experimental_telemetry: {
       isEnabled: true,
@@ -107,11 +96,15 @@ export async function POST(req: NextRequest) {
         sessionId: sessionId ?? `${decoded.user_id}-${decoded.auth_time}`
       }
     },
-    onError: async () => {
+    onFinish: async (result) => {
       await langfuseExporter.forceFlush()
-    },
-    onFinish: async () => {
-      await langfuseExporter.forceFlush()
+      await langfuse
+        .trace({
+          id: langfuseTraceId
+        })
+        .update({
+          output: result.text
+        })
     }
   })
 
