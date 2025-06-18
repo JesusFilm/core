@@ -1112,7 +1112,7 @@ export type JourneyTheme = {
   primaryFont?: Maybe<FontName>;
   secondaryFont?: Maybe<FontName>;
   updatedAt: Scalars['DateTime']['output'];
-  userId: Scalars['String']['output'];
+  userId: Scalars['ID']['output'];
 };
 
 export type JourneyThemeCreateInput = {

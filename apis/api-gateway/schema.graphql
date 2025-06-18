@@ -1874,7 +1874,7 @@ type JourneyTheme @join__type(graph: API_JOURNEYS)  {
   id: ID!
   journeyId: ID!
   journey: Journey!
-  userId: String!
+  userId: ID!
   primaryFont: FontName
   secondaryFont: FontName
   accentFont: FontName

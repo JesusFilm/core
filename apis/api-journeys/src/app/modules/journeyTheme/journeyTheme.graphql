@@ -8,7 +8,7 @@ type JourneyTheme {
   id: ID!
   journeyId: ID!
   journey: Journey!
-  userId: String!
+  userId: ID!
   primaryFont: FontName
   secondaryFont: FontName
   accentFont: FontName
