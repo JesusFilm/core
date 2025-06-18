@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
-import Grid from '@mui/material/Grid'
+import Grid from '@mui/material/GridLegacy'
 import Typography from '@mui/material/Typography'
 import { ReactElement, Suspense } from 'react'
 

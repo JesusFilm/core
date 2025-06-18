@@ -190,7 +190,7 @@ export function Slider(): ReactElement {
             }
           }}
         >
-          <ChevronUpIcon />
+          <ChevronUpIcon data-testid="ChevronUpIcon" />
         </IconButton>
       </Box>
       {/* back (desktop left) button */}
@@ -229,7 +229,7 @@ export function Slider(): ReactElement {
             }
           }}
         >
-          <ChevronLeftIcon />
+          <ChevronLeftIcon data-testid="ChevronLeftIcon" />
           <Collapse
             in={
               showBackButtonHelp === true && activeSlide === ActiveSlide.Content
