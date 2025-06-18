@@ -1042,6 +1042,8 @@ export class JourneyPage {
         hasNotText: 'Untitled Journey'
       })
       .first()
+      .locator('[data-testid="JourneyCardMenuButton"]')
+      .first()
       .click()
   }
 
@@ -1055,7 +1057,10 @@ export class JourneyPage {
   }
 
   async clickAnalyticsIconInCustomJourneyPage() {
-    await this.page.locator('div[data-testid="AnalyticsItem"] a').click()
+    await this.page
+      .locator('div[data-testid="AnalyticsItem"] a')
+      .first()
+      .click()
   }
 
   async verifyAnalyticsPageNavigation() {

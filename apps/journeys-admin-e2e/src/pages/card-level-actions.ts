@@ -1659,9 +1659,15 @@ export class CardLevelActionPage {
     // If we have both logo and menu icon, validate them together
     if (hasLogo && hasMenuIcon) {
       await expect(
-        header.filter({ has: header.locator('img') }).filter({
-          has: header.locator('svg[data-testid="ChevronDownIcon"]')
-        })
+        header
+          .filter({
+            has: this.page.frameLocator(this.journeyCardFrame).locator('img')
+          })
+          .filter({
+            has: this.page
+              .frameLocator(this.journeyCardFrame)
+              .locator('svg[data-testid="ChevronDownIcon"]')
+          })
       ).toBeVisible()
     } else {
       // Try more flexible approach - check if header has either logo OR menu, not necessarily both
