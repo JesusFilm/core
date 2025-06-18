@@ -76,24 +76,26 @@ export class JourneyThemeResolver {
       })
     }
 
-    const existingTheme = await this.prismaService.journeyTheme.findUnique({
-      where: { journeyId: input.journeyId }
-    })
-
-    if (existingTheme != null) {
-      throw new GraphQLError('journey already has a theme', {
-        extensions: { code: 'BAD_USER_INPUT' }
+    return await this.prismaService.$transaction(async (tx) => {
+      const existingTheme = await tx.journeyTheme.findUnique({
+        where: { journeyId: input.journeyId }
       })
-    }
 
-    return await this.prismaService.journeyTheme.create({
-      data: {
-        journeyId: input.journeyId,
-        userId,
-        primaryFont: input.primaryFont ?? null,
-        secondaryFont: input.secondaryFont ?? null,
-        accentFont: input.accentFont ?? null
+      if (existingTheme != null) {
+        throw new GraphQLError('journey already has a theme', {
+          extensions: { code: 'BAD_USER_INPUT' }
+        })
       }
+
+      return await tx.journeyTheme.create({
+        data: {
+          journeyId: input.journeyId,
+          userId,
+          primaryFont: input.primaryFont ?? null,
+          secondaryFont: input.secondaryFont ?? null,
+          accentFont: input.accentFont ?? null
+        }
+      })
     })
   }
 
