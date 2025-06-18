@@ -569,6 +569,7 @@ extend type Query {
 enum ButtonVariant {
   text
   contained
+  outlined
 }
 
 enum ButtonColor {
