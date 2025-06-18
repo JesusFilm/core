@@ -1,6 +1,7 @@
 import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
 import type { EmotionCache } from '@emotion/cache'
-import { CacheProvider } from '@emotion/react'
+import GlobalStyles from '@mui/material/GlobalStyles'
+import { AppCacheProvider } from '@mui/material-nextjs/v14-pagesRouter'
 import { GoogleTagManager } from '@next/third-parties/google'
 import { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
@@ -25,6 +26,7 @@ import 'swiper/css/mousewheel'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 import '../public/swiper-pagination-override.css'
+import "./globals.css"
 
 initAuth()
 const clientSideEmotionCache = createEmotionCache({})
@@ -65,7 +67,8 @@ function JourneysAdminApp({
 
   return (
     <FlagsProvider flags={pageProps.flags}>
-      <CacheProvider value={emotionCache}>
+      <AppCacheProvider emotionCache={emotionCache}>
+      <GlobalStyles styles="@layer theme, base, mui, components, utilities;" />
         <ThemeProvider>
           <DefaultSeo
             titleTemplate={t('%s | Next Steps')}
@@ -133,7 +136,7 @@ function JourneysAdminApp({
             </TeamProvider>
           </ApolloProvider>
         </ThemeProvider>
-      </CacheProvider>
+      </AppCacheProvider>
     </FlagsProvider>
   )
 }
