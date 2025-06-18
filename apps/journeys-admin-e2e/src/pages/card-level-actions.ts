@@ -1518,7 +1518,7 @@ export class CardLevelActionPage {
           timeout: 2000
         })
         thumbsUpFound = true
-
+        console.log(`ThumbsUp icon found with selector: ${selector}`)
         break
       } catch (error) {
         continue
@@ -1532,7 +1532,7 @@ export class CardLevelActionPage {
           timeout: 2000
         })
         thumbsDownFound = true
-
+        console.log(`ThumbsDown icon found with selector: ${selector}`)
         break
       } catch (error) {
         continue
@@ -1540,6 +1540,33 @@ export class CardLevelActionPage {
     }
 
     if (!shareFound || !thumbsUpFound || !thumbsDownFound) {
+      // Enhanced debug information
+      const buttonCount = await buttonList.locator('button').count()
+      const svgCount = await buttonList.locator('svg').count()
+
+      // Get actual button data-testids
+      const buttons = buttonList.locator('button')
+      const buttonTestIds: string[] = []
+      for (let i = 0; i < (await buttons.count()); i++) {
+        const testId = await buttons.nth(i).getAttribute('data-testid')
+        buttonTestIds.push(testId || 'no-testid')
+      }
+
+      // Get actual SVG data-testids
+      const svgs = buttonList.locator('svg')
+      const svgTestIds: string[] = []
+      for (let i = 0; i < (await svgs.count()); i++) {
+        const testId = await svgs.nth(i).getAttribute('data-testid')
+        svgTestIds.push(testId || 'no-testid')
+      }
+
+      console.log(
+        `Debug: Found ${buttonCount} buttons with testids: [${buttonTestIds.join(', ')}]`
+      )
+      console.log(
+        `Debug: Found ${svgCount} SVGs with testids: [${svgTestIds.join(', ')}]`
+      )
+
       throw new Error(
         `Missing reaction buttons - Share: ${shareFound}, ThumbsUp: ${thumbsUpFound}, ThumbsDown: ${thumbsDownFound}`
       )
@@ -1620,15 +1647,32 @@ export class CardLevelActionPage {
         await expect(element).toBeVisible({ timeout: 3000 })
         await element.click()
         found = true
-
+        console.log(`ChevronDown found using selector: ${selector}`)
         break
       } catch (error) {
+        console.log(`Failed with selector: ${selector}`)
         continue
       }
     }
 
     if (!found) {
+      // Debug: Log all available dropdown options
       await this.page.waitForTimeout(1000)
+      const allMenuItems = await this.page
+        .locator('li[role="menuitem"], li[data-value], li[role="option"]')
+        .count()
+      const allOptions = await this.page.locator('li, [role="option"]').count()
+      console.log(
+        `Found ${allMenuItems} menu items and ${allOptions} total dropdown options`
+      )
+
+      // Try to get data-value attributes to debug
+      const menuItems = this.page.locator('li[data-value]')
+      const count = await menuItems.count()
+      for (let i = 0; i < Math.min(count, 5); i++) {
+        const value = await menuItems.nth(i).getAttribute('data-value')
+        console.log(`MenuItem ${i}: data-value="${value}"`)
+      }
 
       throw new Error('ChevronDown option not found with any selector')
     }
@@ -1652,37 +1696,36 @@ export class CardLevelActionPage {
 
     // Check for logo (image) separately
     const hasLogo = (await header.locator('img').count()) > 0
+    console.log(`Website header has logo: ${hasLogo}`)
+
     // Check for menu icon separately
     const hasMenuIcon =
       (await header.locator('svg[data-testid="ChevronDownIcon"]').count()) > 0
+    console.log(`Website header has ChevronDownIcon: ${hasMenuIcon}`)
 
     // If we have both logo and menu icon, validate them together
     if (hasLogo && hasMenuIcon) {
       await expect(
-        header
-          .filter({
-            has: this.page.frameLocator(this.journeyCardFrame).locator('img')
-          })
-          .filter({
-            has: this.page
-              .frameLocator(this.journeyCardFrame)
-              .locator('svg[data-testid="ChevronDownIcon"]')
-          })
+        header.filter({ has: this.page.locator('img') }).filter({
+          has: this.page.locator('svg[data-testid="ChevronDownIcon"]')
+        })
       ).toBeVisible()
     } else {
       // Try more flexible approach - check if header has either logo OR menu, not necessarily both
       try {
         await expect(header.locator('img')).toBeVisible({ timeout: 2000 })
+        console.log('Found logo in header')
       } catch (error) {
-        // Logo not found
+        console.log('No logo found in header')
       }
 
       try {
         await expect(
           header.locator('svg[data-testid="ChevronDownIcon"]')
         ).toBeVisible({ timeout: 2000 })
+        console.log('Found ChevronDownIcon in header')
       } catch (error) {
-        // ChevronDownIcon not found
+        console.log('No ChevronDownIcon found in header')
       }
     }
 
