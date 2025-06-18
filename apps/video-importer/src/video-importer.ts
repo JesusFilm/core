@@ -52,8 +52,8 @@ async function main() {
   let files: string[]
   try {
     files = await promises.readdir(folderPath)
-  } catch {
-    console.error(`Failed to read folder: ${folderPath}`)
+  } catch (err) {
+    console.error(`Failed to read folder: ${folderPath}`, err)
     process.exit(1)
   }
 
@@ -335,9 +335,15 @@ async function main() {
         contentType
       })
 
+      if (!process.env.CLOUDFLARE_R2_ENDPOINT) {
+        throw new Error(
+          'CLOUDFLARE_R2_ENDPOINT is required for audio preview processing'
+        )
+      }
+
       const publicBaseUrl =
         process.env.CLOUDFLARE_R2_PUBLIC_BASE_URL ||
-        `https://${bucket}.${new URL(process.env.CLOUDFLARE_R2_ENDPOINT!).hostname}`
+        `https://${bucket}.${new URL(process.env.CLOUDFLARE_R2_ENDPOINT).hostname}`
       const publicUrl = `${publicBaseUrl.replace(/\/$/, '')}/${key}`
 
       console.log('      Public URL:', publicUrl)
