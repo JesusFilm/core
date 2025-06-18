@@ -73,7 +73,9 @@ MyDocument.getInitialProps = async (ctx) => {
   // 3. app.render
   // 4. page.render
 
-  const initialProps = await documentGetInitialProps(ctx, { emotionCache: createEmotionCache({}) })  
+  const initialProps = await documentGetInitialProps(ctx, {
+    emotionCache: createEmotionCache({})
+  })
 
   return initialProps
 }

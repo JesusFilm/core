@@ -1,4 +1,3 @@
-
 import {
   DocumentHeadTags,
   documentGetInitialProps
@@ -31,7 +30,6 @@ export default class MyDocument extends Document<{
         style={{ overscrollBehaviorY: 'none' }}
       >
         <Head>
-          
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" />
           {this.props.rtl && this.props.locale !== 'ur' ? (
@@ -114,7 +112,9 @@ MyDocument.getInitialProps = async (ctx) => {
 
   let pageProps: Pick<JourneyFields, 'language'> | undefined
 
-  const initialProps = await documentGetInitialProps(ctx, { emotionCache: createEmotionCache({}) })  
+  const initialProps = await documentGetInitialProps(ctx, {
+    emotionCache: createEmotionCache({})
+  })
 
   const { rtl, locale } = getJourneyRTL(pageProps)
 

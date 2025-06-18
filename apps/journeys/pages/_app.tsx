@@ -22,7 +22,7 @@ import { firebaseClient } from '../src/libs/firebaseClient'
 
 import 'swiper/css'
 import 'swiper/css/pagination'
-import "./globals.css"
+import './globals.css'
 
 type JourneysAppProps = NextJsAppProps<{ journey?: Journey }> & {
   pageProps: SSRConfig
