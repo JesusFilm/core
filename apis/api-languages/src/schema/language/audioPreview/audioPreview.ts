@@ -1,7 +1,7 @@
 import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 
-builder.prismaObject('AudioPreview', {
+const AudioPreview = builder.prismaObject('AudioPreview', {
   fields: (t) => ({
     languageId: t.exposeID('languageId', { nullable: false }),
     language: t.relation('language', { nullable: false }),
@@ -11,6 +11,12 @@ builder.prismaObject('AudioPreview', {
     bitrate: t.exposeInt('bitrate', { nullable: false }),
     codec: t.exposeString('codec', { nullable: false })
   })
+})
+
+builder.asEntity(AudioPreview, {
+  key: builder.selection<{ languageId: string }>('languageId'),
+  resolveReference: async ({ languageId }) =>
+    await prisma.audioPreview.findUnique({ where: { languageId } })
 })
 
 builder.mutationFields((t) => ({

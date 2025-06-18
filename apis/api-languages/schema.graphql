@@ -1,7 +1,9 @@
 extend schema
   @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@key"])
 
-type AudioPreview {
+type AudioPreview
+  @key(fields: "languageId")
+{
   languageId: ID!
   language: Language!
   value: String!

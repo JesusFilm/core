@@ -2380,7 +2380,7 @@ type YouTube @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId"
   source: VideoBlockSource!
 }
 
-type AudioPreview @join__type(graph: API_LANGUAGES)  {
+type AudioPreview @join__type(graph: API_LANGUAGES, key: "languageId")  {
   languageId: ID!
   language: Language!
   value: String!
