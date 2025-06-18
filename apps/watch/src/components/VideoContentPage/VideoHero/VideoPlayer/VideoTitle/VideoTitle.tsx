@@ -27,7 +27,7 @@ export function VideoTitle({
       <h1
         className="
           font-bold text-white opacity-90 mix-blend-screen 
-          flex-grow mb-1 text-3xl md:text-4xl lg:text-5xl xl:text-6xl
+          flex-grow mb-1 text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-sans
         "
       >
         {videoTitle}
@@ -38,7 +38,7 @@ export function VideoTitle({
         className="
           opacity-50 mix-blend-screen z-[2] 
           uppercase tracking-[0.1em] text-white
-          text-sm md:text-base lg:text-lg
+          text-sm md:text-base lg:text-lg font-sans
         "
       >
         {videoSnippet}

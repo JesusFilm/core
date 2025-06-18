@@ -59,9 +59,7 @@ test.describe('firefox only', () => {
     // })
 
     await page
-      .getByRole('button', {
-        name: 'Blessed are those Who Hear and Obey Chapter Blessed are those Who Hear and Obey'
-      })
+      .getByTestId('VideoCardButton-blessed-are-those-who-hear-and-obey')
       .click()
 
     await expect(page).toHaveURL(

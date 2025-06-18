@@ -74,7 +74,7 @@ export function VideoControls({
 }: VideoControlProps): ReactElement {
   const [play, setPlay] = useState(false)
   const [active, setActive] = useState(true)
-  const [currentTime, setCurrentTime] = useState<string>()
+  const [currentTime, setCurrentTime] = useState<string>('0:00')
   const [progress, setProgress] = useState(0)
   const [progressPercentNotYetEmitted, setProgressPercentNotYetEmitted] =
     useState([10, 25, 50, 75, 90])
@@ -84,11 +84,9 @@ export function VideoControls({
   const [openSubtitleDialog, setOpenSubtitleDialog] = useState(false)
   const [loadSubtitleDialog, setLoadSubtitleDialog] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [durationSeconds, setDurationSeconds] = useState(0)
+  const [duration, setDuration] = useState('0:00')
 
-  const duration = secondsToTimeFormat(player.duration() ?? 1, {
-    trimZeroes: true
-  })
-  const durationSeconds = Math.round(player.duration() ?? 1)
   const { id, title, snippet, variant, images, imageAlt } = useVideo()
   const visible = !play || active || loading
 
@@ -98,6 +96,32 @@ export function VideoControls({
   useEffect(() => {
     onVisibleChanged?.(!play || active || loading)
   }, [play, active, loading, onVisibleChanged])
+
+  // Listen for when metadata becomes available before setting duration https://stackoverflow.com/questions/40763057/trying-to-get-full-video-duration-but-returning-as-nan
+  useEffect(() => {
+    const updateDuration = (): void => {
+      const playerDuration = player.duration()
+      if (
+        playerDuration != null &&
+        !isNaN(playerDuration) &&
+        playerDuration > 0
+      ) {
+        const roundedDuration = Math.round(playerDuration)
+        setDurationSeconds(roundedDuration)
+        setDuration(secondsToTimeFormat(roundedDuration, { trimZeroes: true }))
+      }
+    }
+
+    player.on('durationchange', updateDuration)
+    player.on('loadedmetadata', updateDuration)
+
+    updateDuration()
+
+    return () => {
+      player.off('durationchange', updateDuration)
+      player.off('loadedmetadata', updateDuration)
+    }
+  }, [player])
 
   useEffect(() => {
     if ((progress / durationSeconds) * 100 > progressPercentNotYetEmitted[0]) {
@@ -464,7 +488,7 @@ export function VideoControls({
                   <Typography
                     variant="body2"
                     color="secondary.contrastText"
-                    sx={{ display: 'flex', gap: 1 }}
+                    sx={{ display: 'flex', gap: 1, zIndex: 2 }}
                   >
                     <span>
                       <p className="font-sans">{currentTime ?? '0:00'}</p>

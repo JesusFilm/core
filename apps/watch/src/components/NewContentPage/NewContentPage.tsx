@@ -1,7 +1,7 @@
 import { sendGTMEvent } from '@next/third-parties/google'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useMemo, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import Bible from '@core/shared/ui/icons/Bible'
@@ -36,7 +36,8 @@ export function NewContentPage(): ReactElement {
     label,
     studyQuestions,
     slug: videoSlug,
-    bibleCitations
+    bibleCitations,
+    childrenCount
   } = useVideo()
 
   const [showShare, setShowShare] = useState(false)
@@ -44,8 +45,11 @@ export function NewContentPage(): ReactElement {
   const variantSlug = container?.variant?.slug ?? variant?.slug
   const watchUrl = getWatchUrl(container?.slug, label, variant?.slug)
 
-  const { children } = useVideoChildren(variantSlug)
-  const filteredChildren = children.filter((video) => video.variant !== null)
+  const { children, loading } = useVideoChildren(variantSlug)
+  const filteredChildren = useMemo(
+    () => children.filter((video) => video.variant !== null),
+    [children]
+  )
 
   const questions =
     studyQuestions.length > 0
@@ -114,11 +118,16 @@ export function NewContentPage(): ReactElement {
         hideFooter
       >
         <ContentPageBlurFilter>
-          <VideoCarousel
-            videos={filteredChildren}
-            containerSlug={container?.slug ?? videoSlug}
-            activeVideoId={id}
-          />
+          {((container?.childrenCount ?? 0) > 0 || childrenCount > 0) &&
+            (filteredChildren.length === children.length ||
+              filteredChildren.length > 0) && (
+              <VideoCarousel
+                videos={filteredChildren}
+                containerSlug={container?.slug ?? videoSlug}
+                activeVideoId={id}
+                loading={loading}
+              />
+            )}
           <div
             data-testid="ContentPageContent"
             className="flex flex-col gap-20 py-20 z-10 px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 max-w-[1920px] w-full mx-auto"

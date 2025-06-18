@@ -12,17 +12,19 @@ interface VideoCarouselProps {
   videos: VideoChildFields[]
   containerSlug?: string
   activeVideoId?: string
+  loading?: boolean
 }
 
 export function VideoCarousel({
   videos,
   containerSlug,
-  activeVideoId
+  activeVideoId,
+  loading = false
 }: VideoCarouselProps): ReactElement {
   const nextRef = useRef<HTMLDivElement>(null)
   const prevRef = useRef<HTMLDivElement>(null)
   return (
-    <div data-testid="VideoCarousel" className="my-7 relative">
+    <div data-testid="VideoCarousel" className="my-7">
       <Swiper
         data-testid="VideoCarouselSwiper"
         modules={[Mousewheel, FreeMode, A11y, Navigation]}
@@ -43,7 +45,7 @@ export function VideoCarousel({
           prevEl: prevRef.current
         }}
       >
-        {videos.length > 0
+        {!loading
           ? videos?.map((video) => (
               <SwiperSlide
                 key={video.id}
