@@ -249,7 +249,7 @@ mediaCountries.openapi(route, async (c) => {
           : {}),
         _links: {
           self: {
-            href: `http://api.arclight.org/v2/media-countries/${country.id}?apiKey=3a21a65d4gf98hZ7`
+            href: `http://api.arclight.org/v2/media-countries/${country.id}?apiKey=${process.env.API_KEY}`
           }
         }
       }))

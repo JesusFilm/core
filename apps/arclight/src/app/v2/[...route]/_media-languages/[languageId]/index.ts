@@ -89,12 +89,14 @@ const ResponseSchema = z.object({
       description: z.string()
     })
   }),
-  audioPreview: z.object({
-    url: z.string(),
-    audioBitrate: z.number(),
-    audioContainer: z.string(),
-    sizeInBytes: z.number()
-  }),
+  audioPreview: z
+    .object({
+      url: z.string(),
+      audioBitrate: z.number(),
+      audioContainer: z.string(),
+      sizeInBytes: z.number()
+    })
+    .nullable(),
   primaryCountryId: z.string(),
   name: z.string(),
   nameNative: z.string(),
