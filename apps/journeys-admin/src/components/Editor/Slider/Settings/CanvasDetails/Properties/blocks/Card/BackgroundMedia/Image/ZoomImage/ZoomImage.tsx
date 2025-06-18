@@ -28,7 +28,7 @@ export function ZoomImage({ imageBlock, updateImageBlock }: ZoomImageProps) {
   ) => {
     const val = typeof newValue === 'number' ? newValue : newValue[0]
 
-    updateImageBlock?.({
+    updateImageBlock({
       src: imageBlock?.src,
       scale: 100 + val
     })
