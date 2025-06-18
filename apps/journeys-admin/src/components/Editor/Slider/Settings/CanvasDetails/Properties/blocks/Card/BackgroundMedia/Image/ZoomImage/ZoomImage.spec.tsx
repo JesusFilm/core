@@ -103,4 +103,4 @@ describe('ZoomImage', () => {
     expect(screen.getByRole('slider')).toHaveValue('50')
     expect(screen.getByText('50 %')).toBeInTheDocument()
   })
-}) 
+})

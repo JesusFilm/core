@@ -12,10 +12,7 @@ interface ZoomImageProps {
   updateImageBlock: (input: ImageBlockUpdateInput) => void
 }
 
-export function ZoomImage({ 
-  imageBlock, 
-  updateImageBlock 
-}: ZoomImageProps) {
+export function ZoomImage({ imageBlock, updateImageBlock }: ZoomImageProps) {
   const [zoom, setZoom] = useState<number>(
     imageBlock?.scale == null ? 0 : imageBlock.scale - 100
   )
