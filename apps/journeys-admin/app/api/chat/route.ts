@@ -96,8 +96,10 @@ export async function POST(req: NextRequest) {
         sessionId: sessionId ?? `${decoded.user_id}-${decoded.auth_time}`
       }
     },
+    maxSteps: 5,
     onFinish: async (result) => {
       await langfuseExporter.forceFlush()
+      console.log('result:', result.text)
       await langfuse
         .trace({
           id: langfuseTraceId
