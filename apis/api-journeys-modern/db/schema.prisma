@@ -300,7 +300,7 @@ model Journey {
   journeyEventsExportLogs   JourneyEventsExportLog[]
   journeyNotifications      JourneyNotification[]
   journeyTags               JourneyTag[]
-  JourneyTheme              JourneyTheme?
+  journeyTheme              JourneyTheme?
   journeyVisitors           JourneyVisitor[]
   qrCode                    QrCode[]
   userInvites               UserInvite[]
