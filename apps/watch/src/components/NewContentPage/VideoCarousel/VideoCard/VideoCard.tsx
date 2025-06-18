@@ -23,6 +23,8 @@ export function VideoCard({
   const href = getWatchUrl(containerSlug, video.label, video.variant?.slug)
   const [isHovered, setIsHovered] = useState(false)
 
+  console.log(video)
+
   return (
     <NextLink
       href={href}
@@ -34,6 +36,7 @@ export function VideoCard({
     >
       <div className="flex flex-col gap-6">
         <button
+          data-testid={`VideoCardButton-${video.slug}`}
           name={video.title[0].value}
           disabled={video == null}
           className="rounded-lg w-full relative text-left border-none bg-transparent p-0 cursor-pointer disabled:cursor-default"
@@ -73,9 +76,12 @@ export function VideoCard({
 
             {/* Play Button with Fade */}
             <button
-              className={`absolute top-1/2 right-1/2 transform translate-x-1/2 -translate-y-1/2 w-20 h-20 flex items-center justify-center text-white bg-black bg-opacity-50 hover:bg-red-500 rounded-full transition-all duration-300 cursor-pointer z-2 ${
+              className={`absolute top-1/2 right-1/2 transform translate-x-1/2 -translate-y-1/2 w-20 h-20 flex items-center justify-center text-white bg-red-500 bg-opacity-50 rounded-full transition-all duration-300 cursor-pointer z-2 ${
                 !active && isHovered ? 'opacity-100' : 'opacity-0'
               }`}
+              style={{
+                pointerEvents: 'none'
+              }}
             >
               <Play3 className="text-6xl" />
             </button>

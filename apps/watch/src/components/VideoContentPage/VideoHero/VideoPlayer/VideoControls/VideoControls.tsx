@@ -99,6 +99,12 @@ export function VideoControls({
     onVisibleChanged?.(!play || active || loading)
   }, [play, active, loading, onVisibleChanged])
 
+  // useEffect(() => {
+  //   if (typeof player.readyState() === 'undefined' || player.readyState() < 1) {
+  //     setLoading(false)
+  //   }
+  // }, [player.readyState()])
+
   useEffect(() => {
     if ((progress / durationSeconds) * 100 > progressPercentNotYetEmitted[0]) {
       eventToDataLayer(
