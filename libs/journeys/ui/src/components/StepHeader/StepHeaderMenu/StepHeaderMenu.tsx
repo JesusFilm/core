@@ -53,9 +53,9 @@ export function StepHeaderMenu(): ReactElement {
   const isEmpty = menuButtonIcon === null && variant === 'admin'
 
   const getIconTestId = (
-    Icon: typeof SvgIcon | null,
-    menuButtonIcon: JourneyMenuButtonIcon | null,
-    variant: string
+    Icon: typeof SvgIcon | null | undefined,
+    menuButtonIcon: JourneyMenuButtonIcon | null | undefined,
+    variant: string | undefined
   ): string | undefined => {
     // Check for specific icon components first
     if (Icon === X2) return 'X2Icon'
