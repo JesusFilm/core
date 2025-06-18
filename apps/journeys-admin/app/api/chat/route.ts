@@ -99,14 +99,13 @@ export async function POST(req: NextRequest) {
     maxSteps: 5,
     onFinish: async (result) => {
       await langfuseExporter.forceFlush()
-      console.log('result:', result.text)
-      await langfuse
-        .trace({
-          id: langfuseTraceId
-        })
-        .update({
-          output: result.text
-        })
+      const trace = langfuse.trace({
+        id: langfuseTraceId
+      })
+      await trace.update({
+        output: result.text,
+        tags: ['output-added']
+      })
     }
   })
 
