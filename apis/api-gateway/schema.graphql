@@ -1875,9 +1875,9 @@ type JourneyTheme @join__type(graph: API_JOURNEYS)  {
   journeyId: ID!
   journey: Journey!
   userId: ID!
-  primaryFont: FontName
-  secondaryFont: FontName
-  accentFont: FontName
+  primaryFont: String
+  secondaryFont: String
+  accentFont: String
   createdAt: DateTime!
   updatedAt: DateTime!
 }
@@ -3239,12 +3239,6 @@ enum UserTeamRole @join__type(graph: API_JOURNEYS)  {
   member @join__enumValue(graph: API_JOURNEYS) 
 }
 
-enum FontName @join__type(graph: API_JOURNEYS)  {
-  montserrat @join__enumValue(graph: API_JOURNEYS) 
-  nunito @join__enumValue(graph: API_JOURNEYS) 
-  raleway @join__enumValue(graph: API_JOURNEYS) 
-}
-
 enum Role @join__type(graph: API_JOURNEYS)  {
   """
   User can create templates and
@@ -4321,15 +4315,15 @@ input JourneyProfileUpdateInput @join__type(graph: API_JOURNEYS)  {
 
 input JourneyThemeCreateInput @join__type(graph: API_JOURNEYS)  {
   journeyId: ID!
-  primaryFont: FontName
-  secondaryFont: FontName
-  accentFont: FontName
+  primaryFont: String
+  secondaryFont: String
+  accentFont: String
 }
 
 input JourneyThemeUpdateInput @join__type(graph: API_JOURNEYS)  {
-  primaryFont: FontName
-  secondaryFont: FontName
-  accentFont: FontName
+  primaryFont: String
+  secondaryFont: String
+  accentFont: String
 }
 
 input JourneyVisitorFilter @join__type(graph: API_JOURNEYS)  {

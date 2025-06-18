@@ -1,14 +1,11 @@
--- CreateEnum
-CREATE TYPE "FontName" AS ENUM ('montserrat', 'nunito', 'raleway');
-
 -- CreateTable
 CREATE TABLE "JourneyTheme" (
     "id" TEXT NOT NULL,
     "journeyId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
-    "primaryFont" "FontName",
-    "secondaryFont" "FontName",
-    "accentFont" "FontName",
+    "primaryFont" TEXT,
+    "secondaryFont" TEXT,
+    "accentFont" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 

@@ -101,12 +101,6 @@ enum TextResponseType {
   phone
 }
 
-enum FontName {
-  montserrat
-  nunito
-  raleway
-}
-
 model ChatButton {
   id        String           @id @default(uuid())
   journeyId String
@@ -670,15 +664,15 @@ model JourneyEventsExportLog {
 }
 
 model JourneyTheme {
-  id            String    @id @default(uuid())
-  journeyId     String    @unique
-  journey       Journey   @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  id            String   @id @default(uuid())
+  journeyId     String   @unique
+  journey       Journey  @relation(fields: [journeyId], references: [id], onDelete: Cascade)
   userId        String
-  primaryFont   FontName?
-  secondaryFont FontName?
-  accentFont    FontName?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @default(now()) @updatedAt
+  primaryFont   String?
+  secondaryFont String?
+  accentFont    String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now()) @updatedAt
 
   @@index(journeyId)
   @@index(userId)

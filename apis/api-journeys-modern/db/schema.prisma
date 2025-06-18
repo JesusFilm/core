@@ -535,15 +535,15 @@ model JourneyEventsExportLog {
 }
 
 model JourneyTheme {
-  id            String    @id @default(uuid())
-  journeyId     String    @unique
-  journey       Journey   @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  id            String   @id @default(uuid())
+  journeyId     String   @unique
   userId        String
-  primaryFont   FontName?
-  secondaryFont FontName?
-  accentFont    FontName?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @default(now())
+  primaryFont   String?
+  secondaryFont String?
+  accentFont    String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now())
+  journey       Journey  @relation(fields: [journeyId], references: [id], onDelete: Cascade)
 
   @@index([journeyId])
   @@index([userId])
@@ -679,10 +679,4 @@ enum VideoBlockObjectFit {
   fill
   fit
   zoomed
-}
-
-enum FontName {
-  montserrat
-  nunito
-  raleway
 }

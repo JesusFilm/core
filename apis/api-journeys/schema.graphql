@@ -2605,35 +2605,29 @@ input JourneyProfileUpdateInput {
   plausibleDashboardViewed: Boolean
 }
 
-enum FontName {
-  montserrat
-  nunito
-  raleway
-}
-
 type JourneyTheme {
   id: ID!
   journeyId: ID!
   journey: Journey!
   userId: ID!
-  primaryFont: FontName
-  secondaryFont: FontName
-  accentFont: FontName
+  primaryFont: String
+  secondaryFont: String
+  accentFont: String
   createdAt: DateTime!
   updatedAt: DateTime!
 }
 
 input JourneyThemeCreateInput {
   journeyId: ID!
-  primaryFont: FontName
-  secondaryFont: FontName
-  accentFont: FontName
+  primaryFont: String
+  secondaryFont: String
+  accentFont: String
 }
 
 input JourneyThemeUpdateInput {
-  primaryFont: FontName
-  secondaryFont: FontName
-  accentFont: FontName
+  primaryFont: String
+  secondaryFont: String
+  accentFont: String
 }
 
 type JourneyVisitor

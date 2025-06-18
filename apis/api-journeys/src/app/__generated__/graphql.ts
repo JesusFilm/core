@@ -220,12 +220,6 @@ export enum JourneysReportType {
     singleSummary = "singleSummary"
 }
 
-export enum FontName {
-    montserrat = "montserrat",
-    nunito = "nunito",
-    raleway = "raleway"
-}
-
 export enum JourneyVisitorSort {
     date = "date",
     duration = "duration",
@@ -860,15 +854,15 @@ export class JourneyProfileUpdateInput {
 
 export class JourneyThemeCreateInput {
     journeyId: string;
-    primaryFont?: Nullable<FontName>;
-    secondaryFont?: Nullable<FontName>;
-    accentFont?: Nullable<FontName>;
+    primaryFont?: Nullable<string>;
+    secondaryFont?: Nullable<string>;
+    accentFont?: Nullable<string>;
 }
 
 export class JourneyThemeUpdateInput {
-    primaryFont?: Nullable<FontName>;
-    secondaryFont?: Nullable<FontName>;
-    accentFont?: Nullable<FontName>;
+    primaryFont?: Nullable<string>;
+    secondaryFont?: Nullable<string>;
+    accentFont?: Nullable<string>;
 }
 
 export class JourneyVisitorFilter {
@@ -1940,9 +1934,9 @@ export class JourneyTheme {
     journeyId: string;
     journey: Journey;
     userId: string;
-    primaryFont?: Nullable<FontName>;
-    secondaryFont?: Nullable<FontName>;
-    accentFont?: Nullable<FontName>;
+    primaryFont?: Nullable<string>;
+    secondaryFont?: Nullable<string>;
+    accentFont?: Nullable<string>;
     createdAt: DateTime;
     updatedAt: DateTime;
 }

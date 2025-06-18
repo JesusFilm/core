@@ -575,12 +575,6 @@ export enum EventType {
   VideoStartEvent = 'VideoStartEvent'
 }
 
-export enum FontName {
-  Montserrat = 'montserrat',
-  Nunito = 'nunito',
-  Raleway = 'raleway'
-}
-
 export type ForeignKeyConstraintError = BaseError & {
   __typename?: 'ForeignKeyConstraintError';
   /** The arguments that caused the foriegn key constraint violation */
@@ -1105,28 +1099,28 @@ export type JourneyTemplateInput = {
 
 export type JourneyTheme = {
   __typename?: 'JourneyTheme';
-  accentFont?: Maybe<FontName>;
+  accentFont?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
   journey: Journey;
   journeyId: Scalars['ID']['output'];
-  primaryFont?: Maybe<FontName>;
-  secondaryFont?: Maybe<FontName>;
+  primaryFont?: Maybe<Scalars['String']['output']>;
+  secondaryFont?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
   userId: Scalars['ID']['output'];
 };
 
 export type JourneyThemeCreateInput = {
-  accentFont?: InputMaybe<FontName>;
+  accentFont?: InputMaybe<Scalars['String']['input']>;
   journeyId: Scalars['ID']['input'];
-  primaryFont?: InputMaybe<FontName>;
-  secondaryFont?: InputMaybe<FontName>;
+  primaryFont?: InputMaybe<Scalars['String']['input']>;
+  secondaryFont?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type JourneyThemeUpdateInput = {
-  accentFont?: InputMaybe<FontName>;
-  primaryFont?: InputMaybe<FontName>;
-  secondaryFont?: InputMaybe<FontName>;
+  accentFont?: InputMaybe<Scalars['String']['input']>;
+  primaryFont?: InputMaybe<Scalars['String']['input']>;
+  secondaryFont?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type JourneyUpdateInput = {
