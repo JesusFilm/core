@@ -283,9 +283,9 @@ model Journey {
   logoImageBlockId          String?                     @unique
   menuStepBlockId           String?                     @unique
   menuButtonIcon            JourneyMenuButtonIcon?
-  fromTemplateId            String?
   socialNodeX               Int?                        @default(-240)
   socialNodeY               Int?                        @default(-46)
+  fromTemplateId            String?
   actions                   Action[]
   blocks                    Block[]
   chatButtons               ChatButton[]
@@ -300,6 +300,7 @@ model Journey {
   journeyEventsExportLogs   JourneyEventsExportLog[]
   journeyNotifications      JourneyNotification[]
   journeyTags               JourneyTag[]
+  JourneyTheme              JourneyTheme?
   journeyVisitors           JourneyVisitor[]
   qrCode                    QrCode[]
   userInvites               UserInvite[]
@@ -533,6 +534,21 @@ model JourneyEventsExportLog {
   @@index([createdAt])
 }
 
+model JourneyTheme {
+  id            String    @id
+  journeyId     String    @unique
+  userId        String
+  primaryFont   FontName?
+  secondaryFont FontName?
+  accentFont    FontName?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now())
+  Journey       Journey   @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+
+  @@index([journeyId])
+  @@index([userId])
+}
+
 enum MessagePlatform {
   facebook
   telegram
@@ -663,4 +679,10 @@ enum VideoBlockObjectFit {
   fill
   fit
   zoomed
+}
+
+enum FontName {
+  montserrat
+  nunito
+  raleway
 }

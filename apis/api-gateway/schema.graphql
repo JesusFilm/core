@@ -362,6 +362,9 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   journeyNotificationUpdate(input: JourneyNotificationUpdateInput!) : JourneyNotification! @join__field(graph: API_JOURNEYS) 
   journeyProfileCreate: JourneyProfile! @join__field(graph: API_JOURNEYS) 
   journeyProfileUpdate(input: JourneyProfileUpdateInput!) : JourneyProfile! @join__field(graph: API_JOURNEYS) 
+  journeyThemeCreate(input: JourneyThemeCreateInput!) : JourneyTheme! @join__field(graph: API_JOURNEYS) 
+  journeyThemeUpdate(id: ID!, input: JourneyThemeUpdateInput!) : JourneyTheme! @join__field(graph: API_JOURNEYS) 
+  journeyThemeDelete(id: ID!) : JourneyTheme! @join__field(graph: API_JOURNEYS) 
   updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput!) : JourneysEmailPreference @join__field(graph: API_JOURNEYS) 
   qrCodeCreate(input: QrCodeCreateInput!) : QrCode! @join__field(graph: API_JOURNEYS) 
   qrCodeUpdate(id: ID!, input: QrCodeUpdateInput!) : QrCode! @join__field(graph: API_JOURNEYS) 
@@ -596,6 +599,7 @@ type Journey @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API
   socialNodeX: Int @join__field(graph: API_JOURNEYS) 
   socialNodeY: Int @join__field(graph: API_JOURNEYS) 
   fromTemplateId: String @join__field(graph: API_JOURNEYS) 
+  journeyTheme: JourneyTheme @join__field(graph: API_JOURNEYS) 
   userJourneys: [UserJourney!] @join__field(graph: API_JOURNEYS) 
 }
 
@@ -630,6 +634,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, first: Int, after: String) : JourneyEventsConnection! @join__field(graph: API_JOURNEYS) 
   journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter) : Int! @join__field(graph: API_JOURNEYS) 
   getJourneyProfile: JourneyProfile @join__field(graph: API_JOURNEYS) 
+  journeyTheme(journeyId: ID!) : JourneyTheme @join__field(graph: API_JOURNEYS) 
   """
   Get a list of Visitor Information by Journey
   """
@@ -1863,6 +1868,18 @@ type JourneyProfile @join__type(graph: API_JOURNEYS, key: "id")  {
   journeyFlowBackButtonClicked: Boolean
   plausibleJourneyFlowViewed: Boolean
   plausibleDashboardViewed: Boolean
+}
+
+type JourneyTheme @join__type(graph: API_JOURNEYS)  {
+  id: ID!
+  journeyId: ID!
+  journey: Journey!
+  userId: String!
+  primaryFont: FontName
+  secondaryFont: FontName
+  accentFont: FontName
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 type JourneyVisitor @join__type(graph: API_JOURNEYS, key: "visitorId journeyId")  {
@@ -3221,6 +3238,12 @@ enum UserTeamRole @join__type(graph: API_JOURNEYS)  {
   member @join__enumValue(graph: API_JOURNEYS) 
 }
 
+enum FontName @join__type(graph: API_JOURNEYS)  {
+  montserrat @join__enumValue(graph: API_JOURNEYS) 
+  nunito @join__enumValue(graph: API_JOURNEYS) 
+  raleway @join__enumValue(graph: API_JOURNEYS) 
+}
+
 enum Role @join__type(graph: API_JOURNEYS)  {
   """
   User can create templates and
@@ -4293,6 +4316,19 @@ input JourneyProfileUpdateInput @join__type(graph: API_JOURNEYS)  {
   journeyFlowBackButtonClicked: Boolean
   plausibleJourneyFlowViewed: Boolean
   plausibleDashboardViewed: Boolean
+}
+
+input JourneyThemeCreateInput @join__type(graph: API_JOURNEYS)  {
+  journeyId: ID!
+  primaryFont: FontName
+  secondaryFont: FontName
+  accentFont: FontName
+}
+
+input JourneyThemeUpdateInput @join__type(graph: API_JOURNEYS)  {
+  primaryFont: FontName
+  secondaryFont: FontName
+  accentFont: FontName
 }
 
 input JourneyVisitorFilter @join__type(graph: API_JOURNEYS)  {

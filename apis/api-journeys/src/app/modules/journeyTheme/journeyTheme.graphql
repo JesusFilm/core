@@ -1,0 +1,44 @@
+enum FontName {
+  montserrat
+  nunito
+  raleway
+}
+
+type JourneyTheme {
+  id: ID!
+  journeyId: ID!
+  journey: Journey!
+  userId: String!
+  primaryFont: FontName
+  secondaryFont: FontName
+  accentFont: FontName
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+input JourneyThemeCreateInput {
+  journeyId: ID!
+  primaryFont: FontName
+  secondaryFont: FontName
+  accentFont: FontName
+}
+
+input JourneyThemeUpdateInput {
+  primaryFont: FontName
+  secondaryFont: FontName
+  accentFont: FontName
+}
+
+extend type Journey {
+  journeyTheme: JourneyTheme
+}
+
+extend type Query {
+  journeyTheme(journeyId: ID!): JourneyTheme
+}
+
+extend type Mutation {
+  journeyThemeCreate(input: JourneyThemeCreateInput!): JourneyTheme!
+  journeyThemeUpdate(id: ID!, input: JourneyThemeUpdateInput!): JourneyTheme!
+  journeyThemeDelete(id: ID!): JourneyTheme!
+}
