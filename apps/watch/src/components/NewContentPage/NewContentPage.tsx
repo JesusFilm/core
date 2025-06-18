@@ -1,7 +1,7 @@
 import { sendGTMEvent } from '@next/third-parties/google'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useMemo, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import Bible from '@core/shared/ui/icons/Bible'
@@ -46,7 +46,10 @@ export function NewContentPage(): ReactElement {
   const watchUrl = getWatchUrl(container?.slug, label, variant?.slug)
 
   const { children, loading } = useVideoChildren(variantSlug)
-  const filteredChildren = children.filter((video) => video.variant !== null)
+  const filteredChildren = useMemo(
+    () => children.filter((video) => video.variant !== null),
+    [children]
+  )
 
   const questions =
     studyQuestions.length > 0
