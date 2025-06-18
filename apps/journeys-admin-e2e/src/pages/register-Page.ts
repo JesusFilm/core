@@ -165,8 +165,8 @@ export class Register {
     // Wait for page navigation to complete
     await this.page.waitForLoadState('domcontentloaded', { timeout: 30000 })
 
-    // Try multiple selectors for different MUI versions and component structures
-    const selectors = [
+    // Combine all selectors (primary and fallback) into a single array
+    const allSelectors = [
       // Primary data-testid selectors
       'div[data-testid="JourneysAdminContainedIconButton"]',
       '[data-testid="JourneysAdminContainedIconButton"]',
@@ -185,55 +185,31 @@ export class Register {
       'div[data-testid*="ContainedIconButton"]'
     ]
 
-    let found = false
-    for (const selector of selectors) {
-      if (selector === 'div[data-testid="JourneysAdminContainedIconButton"]') {
-        try {
-          await this.page.locator(selector).waitFor({ timeout: 5000 })
-        } catch {
-          // Fallback selectors if the primary one fails
-          const fallbackSelectors = [
-            '[data-testid="JourneysAdminContainedIconButton"]',
-            'div[data-testid="JourneysAdminContainedIconButton"] button',
-            '[data-testid="JourneysAdminContainedIconButton"] button',
-            'div[data-testid="JourneysAdminContainedIconButton"] [role="button"]'
-          ]
-
-          for (const fallback of fallbackSelectors) {
-            try {
-              await this.page.locator(fallback).waitFor({ timeout: 2000 })
-              selector = fallback
-              break
-            } catch {
-              continue
-            }
-          }
-        }
+    // Try each selector until one works
+    for (const selector of allSelectors) {
+      try {
+        const element = this.page.locator(selector)
+        await element.waitFor({ timeout: 5000 })
+        await element.click()
+        return // Successfully found and clicked element
+      } catch {
+        continue // Try next selector
       }
-
-      // Wait for the element and click it
-      const element = this.page.locator(selector)
-      await element.waitFor({ timeout: 30000 })
-      await element.click()
-      found = true
-      break
     }
 
-    if (!found) {
-      // Check if the page finished loading
-      await this.page.waitForTimeout(2000)
-
-      // Try one more time with the most basic selector
-      try {
-        await expect(
-          this.page.locator('[data-testid="JourneysAdminContainedIconButton"]')
-        ).toBeVisible({ timeout: 5000 })
-        return
-      } catch (finalError) {
-        throw new Error(
-          'Discover page did not load - ContainedIconButton not found'
-        )
-      }
+    // If no selector worked, wait a bit and try one final time with the basic selector
+    await this.page.waitForTimeout(2000)
+    try {
+      await expect(
+        this.page.locator('[data-testid="JourneysAdminContainedIconButton"]')
+      ).toBeVisible({ timeout: 5000 })
+      await this.page
+        .locator('[data-testid="JourneysAdminContainedIconButton"]')
+        .click()
+    } catch (finalError) {
+      throw new Error(
+        'Discover page did not load - ContainedIconButton not found'
+      )
     }
   }
 
