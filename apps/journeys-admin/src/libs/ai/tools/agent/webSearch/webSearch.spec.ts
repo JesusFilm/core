@@ -237,10 +237,6 @@ describe('agentWebSearch', () => {
       const mockError = new Error('Langfuse API error')
       ;(langfuse.getPrompt as jest.Mock).mockRejectedValue(mockError)
 
-      const consoleErrorSpy = jest
-        .spyOn(console, 'error')
-        .mockImplementation(jest.fn())
-
       const tool = agentWebSearch(mockClient, mockToolOptions)
 
       await expect(
@@ -249,17 +245,11 @@ describe('agentWebSearch', () => {
           { toolCallId: 'test-call-id', messages: [] }
         )
       ).rejects.toThrow('Langfuse API error')
-
-      consoleErrorSpy.mockRestore()
     })
 
     it('should handle generateText failure', async () => {
       const mockError = new Error('OpenAI API error')
       ;(generateText as jest.Mock).mockRejectedValue(mockError)
-
-      const consoleErrorSpy = jest
-        .spyOn(console, 'error')
-        .mockImplementation(jest.fn())
 
       const tool = agentWebSearch(mockClient, mockToolOptions)
 
@@ -269,8 +259,6 @@ describe('agentWebSearch', () => {
           { toolCallId: 'test-call-id', messages: [] }
         )
       ).rejects.toThrow('OpenAI API error')
-
-      consoleErrorSpy.mockRestore()
     })
 
     it('should handle system prompt toJSON failure gracefully', async () => {
