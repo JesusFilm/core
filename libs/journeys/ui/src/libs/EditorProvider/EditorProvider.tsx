@@ -263,19 +263,22 @@ export const reducer = (
         activeContent: ActiveContent.Canvas
       }
     }
-    case 'SetStepsAction':
+    case 'SetStepsAction': {
+      const selectedStep =
+        action.steps.find(({ id }) => id === state.selectedStepId) ??
+        action.steps[0]
+      const selectedBlock =
+        searchBlocks(action.steps, state.selectedBlockId ?? '') ??
+        action.steps[0]
       return {
         ...state,
         steps: action.steps,
-        selectedStep:
-          state.selectedStepId != null
-            ? action.steps.find(({ id }) => id === state.selectedStepId)
-            : action.steps[0],
-        selectedBlock:
-          state.selectedBlockId != null
-            ? searchBlocks(action.steps, state.selectedBlockId)
-            : action.steps[0]
+        selectedStep,
+        selectedStepId: selectedStep?.id,
+        selectedBlock,
+        selectedBlockId: selectedBlock?.id
       }
+    }
     case 'SetShowAnalyticsAction':
       return {
         ...state,
