@@ -2,57 +2,114 @@ import { render, screen } from '@testing-library/react'
 
 import { TextPart } from './TextPart'
 
-// Mock react-markdown
-jest.mock('react-markdown', () => {
-  return function MockedMarkdown({ children }: { children: string }) {
-    return <div data-testid="markdown">{children}</div>
-  }
-})
-
 describe('TextPart', () => {
   const mockTextPart = {
     type: 'text' as const,
     text: 'This is test message content'
   }
 
-  it('should render user message with styled box and collapse animation', () => {
+  describe('User Messages', () => {
     const userMessage = {
       id: '1',
       role: 'user' as const,
       content: 'user message'
     }
 
-    render(<TextPart message={userMessage} part={mockTextPart} />)
+    it('should render user message with styled box and text-part class', () => {
+      render(<TextPart message={userMessage} part={mockTextPart} />)
 
-    expect(screen.getByText('This is test message content')).toBeInTheDocument()
+      expect(
+        screen.getByText('This is test message content')
+      ).toBeInTheDocument()
 
-    // Test that the text-part class is present (for styling)
-    const container = screen
-      .getByText('This is test message content')
-      .closest('.text-part')
-    expect(container).toBeInTheDocument()
+      // Test that the text-part class is present (for styling)
+      const container = screen
+        .getByText('This is test message content')
+        .closest('.text-part')
+      expect(container).toBeInTheDocument()
 
-    // Markdown should not be rendered for user messages
-    expect(screen.queryByTestId('markdown')).not.toBeInTheDocument()
+      // Should render as Typography, not markdown elements
+      const typography = screen.getByText('This is test message content')
+      expect(typography.tagName.toLowerCase()).toBe('span')
+    })
+
+    it('should not render markdown for user messages', () => {
+      const userMessageWithMarkdown = {
+        ...userMessage
+      }
+      const markdownTextPart = {
+        type: 'text' as const,
+        text: '**Bold text** and *italic text*'
+      }
+
+      render(
+        <TextPart message={userMessageWithMarkdown} part={markdownTextPart} />
+      )
+
+      // Should render the markdown syntax as plain text, not as HTML elements
+      expect(
+        screen.getByText('**Bold text** and *italic text*')
+      ).toBeInTheDocument()
+      expect(screen.queryByRole('strong')).not.toBeInTheDocument()
+      expect(screen.queryByRole('emphasis')).not.toBeInTheDocument()
+    })
   })
 
-  it('should render AI message with markdown', () => {
+  describe('Assistant Messages', () => {
     const aiMessage = {
       id: '1',
       role: 'assistant' as const,
       content: 'AI response'
     }
 
-    render(<TextPart message={aiMessage} part={mockTextPart} />)
+    it('should render AI message with markdown and no user styling', () => {
+      const markdownTextPart = {
+        type: 'text' as const,
+        text: 'This has **bold text** in it'
+      }
 
-    expect(screen.getByTestId('markdown')).toBeInTheDocument()
-    expect(screen.getByTestId('markdown')).toHaveTextContent(
-      'This is test message content'
-    )
+      render(<TextPart message={aiMessage} part={markdownTextPart} />)
 
-    // Test that user message styling (text-part class) is not present
-    expect(
-      screen.queryByText('This is test message content')?.closest('.text-part')
-    ).not.toBeInTheDocument()
+      // Check that markdown is rendered (bold text becomes strong element)
+      const boldElement = screen.getByText('bold text')
+      expect(boldElement).toBeInTheDocument()
+      expect(boldElement.tagName.toLowerCase()).toBe('strong')
+
+      // Should not have user message styling (text-part class)
+      expect(
+        screen.queryByText('bold text')?.closest('.text-part')
+      ).not.toBeInTheDocument()
+    })
+
+    it('should render complex markdown with multiple elements', () => {
+      const markdownTextPart = {
+        type: 'text' as const,
+        text: "## Journey Creation\n\nHere are the steps:\n\n1. **Create** your journey\n2. *Customize* the content\n3. [Publish](https://example.com) it\n\nThat's it!"
+      }
+
+      render(<TextPart message={aiMessage} part={markdownTextPart} />)
+
+      // Check heading
+      expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(
+        'Journey Creation'
+      )
+
+      // Check ordered list
+      const orderedList = screen.getByRole('list')
+      expect(orderedList.tagName.toLowerCase()).toBe('ol')
+
+      // Check list items with formatting
+      expect(screen.getByText('Create')).toBeInTheDocument()
+      expect(screen.getByText('Create').tagName.toLowerCase()).toBe('strong')
+      expect(screen.getByText('Customize')).toBeInTheDocument()
+      expect(screen.getByText('Customize').tagName.toLowerCase()).toBe('em')
+
+      // Check link
+      const link = screen.getByRole('link', { name: 'Publish' })
+      expect(link).toHaveAttribute('href', 'https://example.com')
+
+      // Check plain text
+      expect(screen.getByText("That's it!")).toBeInTheDocument()
+    })
   })
 })

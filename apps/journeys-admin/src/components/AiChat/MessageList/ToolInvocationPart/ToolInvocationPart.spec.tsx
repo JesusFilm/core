@@ -3,51 +3,54 @@ import { render, screen } from '@testing-library/react'
 
 import { ToolInvocationPart } from './ToolInvocationPart'
 
+// Mock external dependencies that the tool components rely on
 jest.mock('next-i18next', () => ({
   useTranslation: () => ({
     t: (str: string) => str
   })
 }))
 
-jest.mock('./BasicTool', () => ({
-  BasicTool: function MockedBasicTool({ callText, resultText }: any) {
+jest.mock('next/image', () => {
+  return function MockedImage({ src, alt, width, height, onClick }: any) {
     return (
-      <div data-testid="basic-tool">
-        {callText && <span data-testid="call-text">{callText}</span>}
-        {resultText && <span data-testid="result-text">{resultText}</span>}
-      </div>
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={src}
+        alt={alt}
+        width={width}
+        height={height}
+        onClick={onClick}
+        data-testid="next-image"
+      />
+    )
+  }
+})
+
+jest.mock('next/router', () => ({
+  useRouter: () => ({
+    push: jest.fn()
+  })
+}))
+
+jest.mock('../../../Editor/Slider/Settings/Drawer/ImageLibrary', () => ({
+  ImageLibrary: function MockedImageLibrary({ open }: any) {
+    return (
+      <div
+        data-testid="image-library"
+        style={{ display: open ? 'block' : 'none' }}
+      />
     )
   }
 }))
 
-jest.mock('./agent/GenerateImageTool', () => ({
-  AgentGenerateImageTool: function MockedAgentGenerateImageTool() {
-    return <div data-testid="agent-generate-image-tool" />
-  }
-}))
-
-jest.mock('./client/RedirectUserToEditorTool', () => ({
-  ClientRedirectUserToEditorTool:
-    function MockedClientRedirectUserToEditorTool() {
-      return <div data-testid="client-redirect-user-to-editor-tool" />
-    }
-}))
-
-jest.mock('./client/SelectImageTool', () => ({
-  ClientSelectImageTool: function MockedClientSelectImageTool() {
-    return <div data-testid="client-select-image-tool" />
-  }
-}))
-
-jest.mock('./client/SelectVideoTool', () => ({
-  ClientSelectVideoTool: function MockedClientSelectVideoTool() {
-    return <div data-testid="client-select-video-tool" />
-  }
-}))
-
-jest.mock('./client/RequestFormTool', () => ({
-  RequestFormTool: function MockedRequestFormTool() {
-    return <div data-testid="request-form-tool" />
+jest.mock('../../../Editor/Slider/Settings/Drawer/VideoLibrary', () => ({
+  VideoLibrary: function MockedVideoLibrary({ open }: any) {
+    return (
+      <div
+        data-testid="video-library"
+        style={{ display: open ? 'block' : 'none' }}
+      />
+    )
   }
 }))
 
@@ -89,7 +92,7 @@ describe('ToolInvocationPart', () => {
       }
     } as ToolInvocationUIPart
 
-    it('should render BasicTool for agentWebSearch', () => {
+    it('should render BasicTool for agentWebSearch with shimmer text', () => {
       render(
         <ToolInvocationPart
           part={agentWebSearchPart}
@@ -97,14 +100,10 @@ describe('ToolInvocationPart', () => {
         />
       )
 
-      expect(screen.getByTestId('basic-tool')).toBeInTheDocument()
-      expect(screen.getByTestId('call-text')).toHaveTextContent(
-        'Searching the web...'
-      )
-      expect(screen.queryByTestId('result-text')).not.toBeInTheDocument()
+      expect(screen.getByText('Searching the web...')).toBeInTheDocument()
     })
 
-    it('should render BasicTool for journeyGet with call and result text', () => {
+    it('should render BasicTool for journeyGet with shimmer text', () => {
       render(
         <ToolInvocationPart
           part={journeyGetPart}
@@ -112,16 +111,10 @@ describe('ToolInvocationPart', () => {
         />
       )
 
-      expect(screen.getByTestId('basic-tool')).toBeInTheDocument()
-      expect(screen.getByTestId('call-text')).toHaveTextContent(
-        'Getting journey...'
-      )
-      expect(screen.getByTestId('result-text')).toHaveTextContent(
-        'Journey retrieved'
-      )
+      expect(screen.getByText('Getting journey...')).toBeInTheDocument()
     })
 
-    it('should render BasicTool for journeyUpdate with call and result text', () => {
+    it('should render BasicTool for journeyUpdate with shimmer text', () => {
       render(
         <ToolInvocationPart
           part={journeyUpdatePart}
@@ -129,13 +122,28 @@ describe('ToolInvocationPart', () => {
         />
       )
 
-      expect(screen.getByTestId('basic-tool')).toBeInTheDocument()
-      expect(screen.getByTestId('call-text')).toHaveTextContent(
-        'Updating journey...'
+      expect(screen.getByText('Updating journey...')).toBeInTheDocument()
+    })
+
+    it('should render BasicTool result state for journeyGet', () => {
+      const journeyGetResultPart = {
+        ...journeyGetPart,
+        toolInvocation: {
+          ...journeyGetPart.toolInvocation,
+          state: 'result' as const
+        }
+      } as ToolInvocationUIPart
+
+      render(
+        <ToolInvocationPart
+          part={journeyGetResultPart}
+          addToolResult={mockAddToolResult}
+        />
       )
-      expect(screen.getByTestId('result-text')).toHaveTextContent(
-        'Journey updated'
-      )
+
+      expect(screen.getByText('Journey retrieved')).toBeInTheDocument()
+      // Should not show call text in result state
+      expect(screen.queryByText('Getting journey...')).not.toBeInTheDocument()
     })
   })
 
@@ -145,7 +153,9 @@ describe('ToolInvocationPart', () => {
       toolInvocation: {
         toolCallId: 'test-id',
         toolName: 'clientSelectImage',
-        args: {},
+        args: {
+          message: 'Select an image'
+        },
         state: 'call' as const
       }
     } as ToolInvocationUIPart
@@ -155,7 +165,10 @@ describe('ToolInvocationPart', () => {
       toolInvocation: {
         toolCallId: 'test-id',
         toolName: 'clientRedirectUserToEditor',
-        args: {},
+        args: {
+          message: 'Click to view your journey',
+          journeyId: 'journey-123'
+        },
         state: 'call' as const
       }
     } as ToolInvocationUIPart
@@ -165,7 +178,9 @@ describe('ToolInvocationPart', () => {
       toolInvocation: {
         toolCallId: 'test-id',
         toolName: 'clientSelectVideo',
-        args: {},
+        args: {
+          message: 'Select a video'
+        },
         state: 'call' as const
       }
     } as ToolInvocationUIPart
@@ -175,12 +190,22 @@ describe('ToolInvocationPart', () => {
       toolInvocation: {
         toolCallId: 'test-id',
         toolName: 'clientRequestForm',
-        args: {},
+        args: {
+          formItems: [
+            {
+              type: 'text',
+              name: 'title',
+              label: 'Title',
+              required: true,
+              helperText: 'Enter a title for your content'
+            }
+          ]
+        },
         state: 'call' as const
       }
     } as ToolInvocationUIPart
 
-    it('should render ClientSelectImageTool for clientSelectImage', () => {
+    it('should render ClientSelectImageTool with message and buttons', () => {
       render(
         <ToolInvocationPart
           part={clientSelectImagePart}
@@ -188,10 +213,14 @@ describe('ToolInvocationPart', () => {
         />
       )
 
-      expect(screen.getByTestId('client-select-image-tool')).toBeInTheDocument()
+      expect(screen.getByText('Select an image')).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'Open Image Library' })
+      ).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
     })
 
-    it('should render ClientRedirectUserToEditorTool for clientRedirectUserToEditor', () => {
+    it('should render ClientRedirectUserToEditorTool with message and button', () => {
       render(
         <ToolInvocationPart
           part={clientRedirectUserToEditorPart}
@@ -199,12 +228,13 @@ describe('ToolInvocationPart', () => {
         />
       )
 
+      expect(screen.getByText('Click to view your journey')).toBeInTheDocument()
       expect(
-        screen.getByTestId('client-redirect-user-to-editor-tool')
+        screen.getByRole('button', { name: 'See My Journey!' })
       ).toBeInTheDocument()
     })
 
-    it('should render ClientSelectVideoTool for clientSelectVideo', () => {
+    it('should render ClientSelectVideoTool with message and buttons', () => {
       render(
         <ToolInvocationPart
           part={clientSelectVideoPart}
@@ -212,10 +242,14 @@ describe('ToolInvocationPart', () => {
         />
       )
 
-      expect(screen.getByTestId('client-select-video-tool')).toBeInTheDocument()
+      expect(screen.getByText('Select a video')).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'Open Video Library' })
+      ).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
     })
 
-    it('should render RequestFormTool for clientRequestForm', () => {
+    it('should render RequestFormTool with form fields', () => {
       render(
         <ToolInvocationPart
           part={clientRequestFormPart}
@@ -223,7 +257,13 @@ describe('ToolInvocationPart', () => {
         />
       )
 
-      expect(screen.getByTestId('request-form-tool')).toBeInTheDocument()
+      expect(screen.getByLabelText('Title')).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'Submit form' })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'Cancel form' })
+      ).toBeInTheDocument()
     })
   })
 
@@ -238,7 +278,18 @@ describe('ToolInvocationPart', () => {
       }
     } as ToolInvocationUIPart
 
-    it('should render AgentGenerateImageTool for agentGenerateImage', () => {
+    const agentGenerateImageResultPart = {
+      type: 'tool-invocation' as const,
+      toolInvocation: {
+        toolCallId: 'test-id',
+        toolName: 'agentGenerateImage',
+        args: {},
+        state: 'result' as const,
+        result: [{ src: 'https://example.com/generated.png' }]
+      }
+    } as ToolInvocationUIPart
+
+    it('should render AgentGenerateImageTool in call state', () => {
       render(
         <ToolInvocationPart
           part={agentGenerateImagePart}
@@ -246,9 +297,21 @@ describe('ToolInvocationPart', () => {
         />
       )
 
-      expect(
-        screen.getByTestId('agent-generate-image-tool')
-      ).toBeInTheDocument()
+      expect(screen.getByText('Generating image...')).toBeInTheDocument()
+    })
+
+    it('should render AgentGenerateImageTool in result state with images', () => {
+      render(
+        <ToolInvocationPart
+          part={agentGenerateImageResultPart}
+          addToolResult={mockAddToolResult}
+        />
+      )
+
+      const image = screen.getByTestId('next-image')
+      expect(image).toBeInTheDocument()
+      expect(image).toHaveAttribute('src', 'https://example.com/generated.png')
+      expect(image).toHaveAttribute('alt', 'Generated image')
     })
   })
 
