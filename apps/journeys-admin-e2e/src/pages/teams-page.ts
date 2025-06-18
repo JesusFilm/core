@@ -97,6 +97,11 @@ export class TeamsPage {
   }
 
   async clickDiaLogBoxCloseBtn() {
+    // Wait for the dialog to be visible (TeamManageDialog opens after TeamCreateDialog closes)
+    await this.page.waitForSelector(
+      'button[data-testid="dialog-close-button"]',
+      { timeout: 10000 }
+    )
     await this.page.locator('button[data-testid="dialog-close-button"]').click()
   }
 
