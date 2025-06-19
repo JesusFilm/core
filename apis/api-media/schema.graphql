@@ -241,7 +241,6 @@ type Mutation {
   videoVariantDownloadCreate(input: VideoVariantDownloadCreateInput!): VideoVariantDownload!
   videoVariantDownloadUpdate(input: VideoVariantDownloadUpdateInput!): VideoVariantDownload!
   videoVariantDownloadDelete(id: ID!): VideoVariantDownload!
-  updateVideoVariantDownloadSizesFromMux(videoVariantId: ID!): Boolean!
 }
 
 input MutationBibleCitationCreateInput {
@@ -425,6 +424,11 @@ type PageInfo
   hasPreviousPage: Boolean!
   startCursor: String
   endCursor: String
+}
+
+enum Platform {
+  arclight
+  watch
 }
 
 type Query {
@@ -800,6 +804,7 @@ type Video
   subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]!
   variant(languageId: ID): VideoVariant
   images(aspectRatio: ImageAspectRatio): [CloudflareImage!]!
+  blockDownloadPlatforms: [Platform!]!
 }
 
 enum VideoBlockSource {
@@ -987,6 +992,7 @@ input VideoUpdateInput {
   noIndex: Boolean
   childIds: [String!]
   keywordIds: [String!]
+  blockDownloadPlatforms: [Platform!]
 }
 
 type VideoVariant {

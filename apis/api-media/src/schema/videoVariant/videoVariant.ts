@@ -1,5 +1,7 @@
 import compact from 'lodash/compact'
 
+import { Platform } from '.prisma/api-media-client'
+
 import { prisma } from '../../lib/prisma'
 import {
   videoCacheReset,
@@ -23,7 +25,29 @@ builder.prismaObject('VideoVariant', {
     dash: t.exposeString('dash'),
     share: t.exposeString('share'),
     downloadable: t.exposeBoolean('downloadable', { nullable: false }),
-    downloads: t.relation('downloads', { nullable: false }),
+    downloads: t.prismaField({
+      type: ['VideoVariantDownload'],
+      nullable: false,
+      resolve: async (query, parent, _args, context) => {
+        // If clientName matches a platform in blockDownloadPlatforms, return empty array
+        if (context.clientName && parent.videoId) {
+          const video = await prisma.video.findUnique({
+            where: { id: parent.videoId },
+            select: { blockDownloadPlatforms: true }
+          })
+          
+          if (video?.blockDownloadPlatforms.includes(context.clientName as Platform)) {
+            return []
+          }
+        }
+        
+        // Otherwise, return the downloads
+        return await prisma.videoVariantDownload.findMany({
+          ...query,
+          where: { videoVariantId: parent.id }
+        })
+      }
+    }),
     duration: t.int({
       nullable: false,
       resolve: ({ duration }) => duration ?? 0

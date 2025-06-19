@@ -482,7 +482,6 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   videoVariantDownloadCreate(input: VideoVariantDownloadCreateInput!) : VideoVariantDownload! @join__field(graph: API_MEDIA) 
   videoVariantDownloadUpdate(input: VideoVariantDownloadUpdateInput!) : VideoVariantDownload! @join__field(graph: API_MEDIA) 
   videoVariantDownloadDelete(id: ID!) : VideoVariantDownload! @join__field(graph: API_MEDIA) 
-  updateVideoVariantDownloadSizesFromMux(videoVariantId: ID!) : Boolean! @join__field(graph: API_MEDIA) 
   userImpersonate(email: String!) : String @join__field(graph: API_USERS) 
   createVerificationRequest(input: CreateVerificationRequestInput) : Boolean @join__field(graph: API_USERS) 
   validateEmail(email: String!, token: String!) : User @join__field(graph: API_USERS) 
@@ -1139,6 +1138,7 @@ type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId", extensi
   subtitles(languageId: ID, primary: Boolean, edition: String) : [VideoSubtitle!]! @join__field(graph: API_MEDIA) 
   variant(languageId: ID) : VideoVariant @join__field(graph: API_MEDIA) 
   images(aspectRatio: ImageAspectRatio) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
+  blockDownloadPlatforms: [Platform!]! @join__field(graph: API_MEDIA) 
 }
 
 type VideoBlockClassNames @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -3313,6 +3313,11 @@ enum Service @join__type(graph: API_MEDIA)  {
   apiVideos @join__enumValue(graph: API_MEDIA) 
 }
 
+enum Platform @join__type(graph: API_MEDIA)  {
+  arclight @join__enumValue(graph: API_MEDIA) 
+  watch @join__enumValue(graph: API_MEDIA) 
+}
+
 enum UnsplashPhotoOrientation @join__type(graph: API_MEDIA)  {
   landscape @join__enumValue(graph: API_MEDIA) 
   portrait @join__enumValue(graph: API_MEDIA) 
@@ -4742,6 +4747,7 @@ input VideoUpdateInput @join__type(graph: API_MEDIA)  {
   noIndex: Boolean
   childIds: [String!]
   keywordIds: [String!]
+  blockDownloadPlatforms: [Platform!]
 }
 
 input VideoVariantCreateInput @join__type(graph: API_MEDIA)  {
