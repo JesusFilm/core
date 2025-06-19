@@ -1,0 +1,1 @@
+export { ContentHero } from './ContentHero'

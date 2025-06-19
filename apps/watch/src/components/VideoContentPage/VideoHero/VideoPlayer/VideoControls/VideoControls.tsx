@@ -20,6 +20,7 @@ import { sendGTMEvent } from '@next/third-parties/google'
 import fscreen from 'fscreen'
 import debounce from 'lodash/debounce'
 import dynamic from 'next/dynamic'
+import Image from 'next/image'
 import { MouseEventHandler, ReactElement, useEffect, useState } from 'react'
 import Player from 'video.js/dist/types/player'
 
@@ -27,8 +28,10 @@ import { isMobile } from '@core/shared/ui/deviceUtils'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import { useVideo } from '../../../../../libs/videoContext'
+import { HeroOverlay } from '../../../../HeroOverlay/HeroOverlay'
 import { SubtitleDialogProps } from '../../../../SubtitleDialog/SubtitleDialog'
 import { AudioLanguageButton } from '../../../AudioLanguageButton'
+import { VideoTitle } from '../VideoTitle'
 
 const DynamicSubtitleDialog = dynamic<SubtitleDialogProps>(
   async () =>
@@ -71,27 +74,88 @@ export function VideoControls({
 }: VideoControlProps): ReactElement {
   const [play, setPlay] = useState(false)
   const [active, setActive] = useState(true)
-  const [currentTime, setCurrentTime] = useState<string>()
+  const [currentTime, setCurrentTime] = useState<string>('0:00')
   const [progress, setProgress] = useState(0)
   const [progressPercentNotYetEmitted, setProgressPercentNotYetEmitted] =
     useState([10, 25, 50, 75, 90])
   const [volume, setVolume] = useState(0)
-  const [mute, setMute] = useState(false)
+  const [mute, setMute] = useState(true)
   const [fullscreen, setFullscreen] = useState(false)
   const [openSubtitleDialog, setOpenSubtitleDialog] = useState(false)
   const [loadSubtitleDialog, setLoadSubtitleDialog] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [durationSeconds, setDurationSeconds] = useState(0)
+  const [duration, setDuration] = useState('0:00')
 
-  const duration = secondsToTimeFormat(player.duration() ?? 1, {
-    trimZeroes: true
-  })
-  const durationSeconds = Math.round(player.duration() ?? 1)
-  const { id, title, variant } = useVideo()
+  const { id, title, snippet, variant, images, imageAlt } = useVideo()
   const visible = !play || active || loading
+
+  const videoTitle = title?.[0]?.value ?? ''
+  const videoSnippet = snippet?.[0]?.value ?? ''
 
   useEffect(() => {
     onVisibleChanged?.(!play || active || loading)
   }, [play, active, loading, onVisibleChanged])
+
+  // Set duration from variant data instead of trying to detect from HLS stream
+  useEffect(() => {
+    if (variant?.duration != null && variant.duration > 0) {
+      const roundedDuration = Math.round(variant.duration)
+      setDurationSeconds(roundedDuration)
+      setDuration(secondsToTimeFormat(roundedDuration, { trimZeroes: true }))
+    } else {
+      // Fallback to player detection for edge cases
+      let retryCount = 0
+      const maxRetries = 3
+      let retryTimeout: NodeJS.Timeout | undefined
+
+      const updateDuration = (state: string): void => {
+        const playerDuration = player.duration()
+
+        if (
+          playerDuration != null &&
+          !isNaN(playerDuration) &&
+          playerDuration > 0
+        ) {
+          const roundedDuration = Math.round(playerDuration)
+          setDurationSeconds(roundedDuration)
+          setDuration(
+            secondsToTimeFormat(roundedDuration, { trimZeroes: true })
+          )
+          if (retryTimeout) {
+            clearTimeout(retryTimeout)
+            retryTimeout = undefined
+          }
+        } else if (playerDuration === Infinity) {
+          setDurationSeconds(0)
+          setDuration('Live')
+        } else if (state === 'retry' && retryCount < maxRetries) {
+          retryCount++
+          const delay = 1000 * retryCount
+
+          retryTimeout = setTimeout(() => {
+            updateDuration('retry')
+          }, delay)
+        }
+      }
+      // Only add fallback listeners if variant duration is not available
+      const events = ['durationchange', 'loadedmetadata', 'canplay']
+      events.forEach((event) => {
+        player.on(event, () => updateDuration(event))
+      })
+
+      updateDuration('initial')
+
+      return () => {
+        if (retryTimeout) {
+          clearTimeout(retryTimeout)
+        }
+        events.forEach((event) => {
+          player.off(event, updateDuration)
+        })
+      }
+    }
+  }, [player, variant?.duration])
 
   useEffect(() => {
     if ((progress / durationSeconds) * 100 > progressPercentNotYetEmitted[0]) {
@@ -268,6 +332,7 @@ export function VideoControls({
 
   function handleVolume(_event: Event, value: number | number[]): void {
     if (!Array.isArray(value)) {
+      if (mute === true) handleMute()
       setVolume(value)
       player.volume(value / 100)
     }
@@ -306,7 +371,11 @@ export function VideoControls({
         right: 0,
         bottom: 0,
         left: 0,
-        cursor: visible ? undefined : 'none'
+        cursor: visible ? undefined : 'none',
+        zIndex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-end'
       }}
       onClick={getClickHandler(handlePlay, () => {
         void handleFullscreen()
@@ -314,6 +383,56 @@ export function VideoControls({
       onMouseMove={() => player.userActive(true)}
       data-testid="VideoControls"
     >
+      {!loading ? (
+        <VideoTitle
+          play={play}
+          videoTitle={videoTitle}
+          videoSnippet={videoSnippet}
+        />
+      ) : (
+        <>
+          <Box
+            sx={{
+              display: 'flex',
+              flexGrow: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingTop: '104px',
+              zIndex: 2
+            }}
+          >
+            <CircularProgress size={65} />
+          </Box>
+          {images[0]?.mobileCinematicHigh != null && (
+            <Image
+              src={images[0].mobileCinematicHigh}
+              alt={imageAlt[0].value}
+              fill
+              sizes="100vw"
+              style={{
+                objectFit: 'cover'
+              }}
+            />
+          )}
+          <VideoTitle
+            play={!loading}
+            videoTitle={videoTitle}
+            videoSnippet={videoSnippet}
+          />
+          <Box
+            sx={{
+              zIndex: 0,
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0
+            }}
+          >
+            <HeroOverlay />
+          </Box>
+        </>
+      )}
       <Fade
         in={visible}
         style={{
@@ -322,41 +441,7 @@ export function VideoControls({
         }}
         timeout={{ exit: 2225 }}
       >
-        <Box
-          sx={{
-            height: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'flex-end'
-          }}
-        >
-          <Box
-            sx={{
-              display: 'flex',
-              flexGrow: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
-              paddingTop: '104px'
-            }}
-          >
-            {!loading ? (
-              <IconButton
-                sx={{
-                  fontSize: 100,
-                  display: { xs: 'flex', md: 'none' }
-                }}
-              >
-                {play ? (
-                  <PauseRounded fontSize="inherit" />
-                ) : (
-                  <PlayArrowRounded fontSize="inherit" />
-                )}
-              </IconButton>
-            ) : (
-              <CircularProgress size={65} />
-            )}
-          </Box>
-
+        <Box>
           <Box
             sx={{
               background:
@@ -438,14 +523,18 @@ export function VideoControls({
                   <Typography
                     variant="body2"
                     color="secondary.contrastText"
-                    sx={{ display: 'flex', gap: 1 }}
+                    sx={{ display: 'flex', gap: 1, zIndex: 2 }}
                   >
-                    <span>{currentTime ?? '0:00'}</span>
+                    <span>
+                      <p className="font-sans">{currentTime ?? '0:00'}</p>
+                    </span>
                     <span>/</span>
                     {duration === '0:00' ? (
                       <Skeleton width={27} sx={{ bgcolor: 'grey.800' }} />
                     ) : (
-                      <span>{duration}</span>
+                      <span>
+                        <p className="font-sans">{duration}</p>
+                      </span>
                     )}
                   </Typography>
                 )}

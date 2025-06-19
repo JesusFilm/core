@@ -19,6 +19,7 @@ interface PageWrapperProps {
   testId?: string
   headerThemeMode?: ThemeMode
   hideFooter?: boolean
+  isFullscreen?: boolean
 }
 
 export function PageWrapper({
@@ -28,7 +29,8 @@ export function PageWrapper({
   hideHeaderSpacer,
   testId,
   headerThemeMode,
-  hideFooter = false
+  hideFooter = false,
+  isFullscreen = false
 }: PageWrapperProps): ReactElement {
   return (
     <Div100vh>
@@ -37,7 +39,11 @@ export function PageWrapper({
       )}
       <Stack
         justifyContent="space-between"
-        sx={{ width: '100%', height: '100%', overflowX: 'clip' }}
+        sx={{
+          width: '100%',
+          height: '100%',
+          overflowX: isFullscreen ? 'hidden' : 'clip'
+        }}
         data-testid={testId}
       >
         <Container maxWidth={false} disableGutters>
