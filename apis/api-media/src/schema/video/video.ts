@@ -14,6 +14,7 @@ import { Language, LanguageWithSlug } from '../language'
 import { VideoSource, VideoSourceShape } from '../videoSource/videoSource'
 import { VideoVariantFilter } from '../videoVariant/inputs/videoVariantFilter'
 
+import { Platform } from './enums/platform'
 import { VideoLabel } from './enums/videoLabel'
 import { VideoCreateInput } from './inputs/videoCreate'
 import { VideosFilter } from './inputs/videosFilter'
@@ -360,6 +361,11 @@ const Video = builder.prismaObject('Video', {
         },
         orderBy: { aspectRatio: 'desc' }
       })
+    }),
+    blockDownloadPlatforms: t.withAuth({ isPublisher: true }).field({
+      type: [Platform],
+      nullable: false,
+      resolve: ({ blockDownloadPlatforms }) => blockDownloadPlatforms
     })
   })
 })
@@ -522,6 +528,7 @@ builder.mutationFields((t) => ({
           slug: input.slug ?? undefined,
           noIndex: input.noIndex ?? undefined,
           childIds: input.childIds ?? undefined,
+          blockDownloadPlatforms: input.blockDownloadPlatforms ?? undefined,
           ...(input.keywordIds
             ? { keywords: { set: input.keywordIds.map((id) => ({ id })) } }
             : {})

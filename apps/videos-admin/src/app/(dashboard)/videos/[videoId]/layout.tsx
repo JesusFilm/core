@@ -14,6 +14,7 @@ import { Section } from '../../../../components/Section'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../constants'
 
 import { LockedVideoView } from './_LockedVideo'
+import { RestrictedDownloads } from './_RestrictedDownloads'
 import { VideoBibleCitation } from './_VideoBibleCitation'
 import { VideoDescription } from './_VideoDescription'
 import { VideoViewFallback } from './_VideoFallback'
@@ -114,6 +115,9 @@ export default function VideoViewLayout({
                 </Section>
                 <Section title="Description" variant="outlined">
                   <VideoDescription videoId={videoId} />
+                </Section>
+                <Section title="Restricted Downloads" variant="outlined">
+                  <RestrictedDownloads videoId={videoId} />
                 </Section>
                 <VideoBibleCitation videoId={videoId} />
                 {studyQuestions}
