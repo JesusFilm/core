@@ -281,8 +281,10 @@ builder.mutationFields((t) => ({
       // Clean up Mux asset
       if (variant.muxVideoId != null && variant.muxVideo != null) {
         try {
-          // Delete from Mux service first
-          await deleteVideo(variant.muxVideoId, false)
+          // Delete from Mux service first (using assetId, not our database ID)
+          if (variant.muxVideo.assetId != null) {
+            await deleteVideo(variant.muxVideo.assetId, false)
+          }
 
           // Delete from our database
           await prisma.muxVideo.delete({
