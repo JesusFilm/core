@@ -22,7 +22,7 @@ export function PropertiesSlider({
   step,
   onChange,
   onChangeCommitted,
-  ariaLabel = 'Slider',
+  ariaLabel = 'Slider'
 }: PropertiesSliderProps) {
   return (
     <Slider
