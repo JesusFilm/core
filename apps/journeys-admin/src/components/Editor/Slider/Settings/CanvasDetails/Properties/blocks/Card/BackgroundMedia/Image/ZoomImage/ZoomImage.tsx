@@ -22,10 +22,7 @@ export function ZoomImage({ imageBlock, updateImageBlock }: ZoomImageProps) {
     setZoom(zoomFactorRounded)
   }
 
-  const handleSliderChangeCommitted = (
-    _: Event,
-    newValue: number
-  ) => {
+  const handleSliderChangeCommitted = (_: Event, newValue: number) => {
     const zoomPercentage = Math.round(newValue * 100)
 
     updateImageBlock({
