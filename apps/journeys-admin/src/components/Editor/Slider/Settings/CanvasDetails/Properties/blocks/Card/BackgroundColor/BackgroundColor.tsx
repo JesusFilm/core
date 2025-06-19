@@ -61,6 +61,18 @@ export const CARD_BLOCK_BACKGROUND_COLOR_UPDATE = gql`
   }
 `
 
+export const CARD_BLOCK_BACKDROP_BLUR_UPDATE = gql`
+  mutation CardBlockBackdropBlurUpdate(
+    $id: ID!
+    $input: CardBlockUpdateInput!
+  ) {
+    cardBlockUpdate(id: $id, input: $input) {
+      id
+      backdropBlur
+    }
+  }
+`
+
 export function BackgroundColor(): ReactElement {
   const {
     state: { selectedBlock, selectedStep },
@@ -71,6 +83,9 @@ export function BackgroundColor(): ReactElement {
   const { add } = useCommand()
   const [cardBlockUpdate] = useMutation<CardBlockBackgroundColorUpdate>(
     CARD_BLOCK_BACKGROUND_COLOR_UPDATE
+  )
+  const [cardBlockBackdropBlurUpdate] = useMutation(
+    CARD_BLOCK_BACKDROP_BLUR_UPDATE
   )
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -126,6 +141,44 @@ export function BackgroundColor(): ReactElement {
                 id: cardBlock.id,
                 __typename: 'CardBlock',
                 backgroundColor: color === 'null' ? null : color
+              }
+            }
+          })
+        }
+      })
+    }
+  }
+
+  async function handleBlurChange(blur: number): Promise<void> {
+    if (cardBlock != null) {
+      await add({
+        parameters: {
+          execute: {
+            blur
+          },
+          undo: {
+            blur: cardBlock.backdropBlur ?? 20
+          }
+        },
+        execute: async ({ blur }) => {
+          dispatch({
+            type: 'SetEditorFocusAction',
+            activeSlide: ActiveSlide.Content,
+            selectedStep,
+            activeContent: ActiveContent.Canvas
+          })
+          await cardBlockBackdropBlurUpdate({
+            variables: {
+              id: cardBlock.id,
+              input: {
+                backdropBlur: blur
+              }
+            },
+            optimisticResponse: {
+              cardBlockUpdate: {
+                id: cardBlock.id,
+                __typename: 'CardBlock',
+                backdropBlur: blur
               }
             }
           })
