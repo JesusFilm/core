@@ -97,77 +97,74 @@ export function VideoControls({
     onVisibleChanged?.(!play || active || loading)
   }, [play, active, loading, onVisibleChanged])
 
-  // Listen for when metadata becomes available before setting duration https://stackoverflow.com/questions/40763057/trying-to-get-full-video-duration-but-returning-as-nan
+  // Set duration from variant data instead of trying to detect from HLS stream
   useEffect(() => {
-    let retryCount = 0
-    const maxRetries = 5
-    let retryTimeout: NodeJS.Timeout | undefined
+    if (variant?.duration != null && variant.duration > 0) {
+      const roundedDuration = Math.round(variant.duration)
+      setDurationSeconds(roundedDuration)
+      setDuration(secondsToTimeFormat(roundedDuration, { trimZeroes: true }))
+      console.log(`Duration set from variant: ${roundedDuration}s`)
+    } else {
+      // Fallback to player detection for edge cases
+      let retryCount = 0
+      const maxRetries = 3
+      let retryTimeout: NodeJS.Timeout | undefined
 
-    const updateDuration = (state: string): void => {
-      console.log('updateDuration', state)
-      const playerDuration = player.duration()
-      console.log(`playerDuration ${state}`, playerDuration)
+      const updateDuration = (state: string): void => {
+        console.log('updateDuration fallback', state)
+        const playerDuration = player.duration()
 
-      if (
-        playerDuration != null &&
-        !isNaN(playerDuration) &&
-        playerDuration > 0
-      ) {
-        const roundedDuration = Math.round(playerDuration)
-        setDurationSeconds(roundedDuration)
-        setDuration(secondsToTimeFormat(roundedDuration, { trimZeroes: true }))
+        if (
+          playerDuration != null &&
+          !isNaN(playerDuration) &&
+          playerDuration > 0
+        ) {
+          const roundedDuration = Math.round(playerDuration)
+          setDurationSeconds(roundedDuration)
+          setDuration(
+            secondsToTimeFormat(roundedDuration, { trimZeroes: true })
+          )
+          console.log(`Duration set from player fallback: ${roundedDuration}s`)
 
-        // Clear any pending retry
+          if (retryTimeout) {
+            clearTimeout(retryTimeout)
+            retryTimeout = undefined
+          }
+        } else if (playerDuration === Infinity) {
+          console.log('Live stream detected')
+          setDurationSeconds(0)
+          setDuration('Live')
+        } else if (state === 'retry' && retryCount < maxRetries) {
+          retryCount++
+          const delay = 1000 * retryCount
+          console.log(
+            `Retrying player duration detection (${retryCount}/${maxRetries}) in ${delay}ms`
+          )
+
+          retryTimeout = setTimeout(() => {
+            updateDuration('retry')
+          }, delay)
+        }
+      }
+
+      // Only add fallback listeners if variant duration is not available
+      const events = ['durationchange', 'loadedmetadata', 'canplay']
+      events.forEach((event) => {
+        player.on(event, () => updateDuration(event))
+      })
+
+      updateDuration('initial')
+
+      return () => {
         if (retryTimeout) {
           clearTimeout(retryTimeout)
-          retryTimeout = undefined
         }
-      } else if (state === 'retry' && retryCount < maxRetries) {
-        // Retry with exponential backoff for HLS streams
-        retryCount++
-        const delay = Math.min(1000 * Math.pow(2, retryCount - 1), 5000)
-        console.warn(
-          `Retrying duration detection (${retryCount}/${maxRetries}) in ${delay}ms`
-        )
-        retryTimeout = setTimeout(() => {
-          updateDuration('retry')
-        }, delay)
+        events.forEach((event) => {
+          player.off(event, updateDuration)
+        })
       }
     }
-
-    const events = [
-      'durationchange',
-      'loadedmetadata',
-      'loadstart',
-      'canplay',
-      'canplaythrough',
-      'progress'
-    ]
-
-    events.forEach((event) => {
-      player.on(event, () => updateDuration(event))
-    })
-
-    // Initial check
-    updateDuration('initial')
-
-    // Start retry mechanism if initial duration is not available
-    const initialDuration = player.duration()
-    if (isNaN(initialDuration ?? NaN) || (initialDuration ?? 0) <= 0) {
-      retryTimeout = setTimeout(() => {
-        updateDuration('retry')
-      }, 500)
-    }
-
-    return () => {
-      if (retryTimeout) {
-        clearTimeout(retryTimeout)
-      }
-      events.forEach((event) => {
-        player.off(event, updateDuration)
-      })
-    }
-  }, [player])
+  }, [player, variant?.duration])
 
   useEffect(() => {
     if ((progress / durationSeconds) * 100 > progressPercentNotYetEmitted[0]) {
