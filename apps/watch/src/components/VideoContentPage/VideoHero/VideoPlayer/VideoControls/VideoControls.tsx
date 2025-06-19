@@ -103,7 +103,6 @@ export function VideoControls({
       const roundedDuration = Math.round(variant.duration)
       setDurationSeconds(roundedDuration)
       setDuration(secondsToTimeFormat(roundedDuration, { trimZeroes: true }))
-      console.log(`Duration set from variant: ${roundedDuration}s`)
     } else {
       // Fallback to player detection for edge cases
       let retryCount = 0
@@ -111,7 +110,6 @@ export function VideoControls({
       let retryTimeout: NodeJS.Timeout | undefined
 
       const updateDuration = (state: string): void => {
-        console.log('updateDuration fallback', state)
         const playerDuration = player.duration()
 
         if (
@@ -124,29 +122,22 @@ export function VideoControls({
           setDuration(
             secondsToTimeFormat(roundedDuration, { trimZeroes: true })
           )
-          console.log(`Duration set from player fallback: ${roundedDuration}s`)
-
           if (retryTimeout) {
             clearTimeout(retryTimeout)
             retryTimeout = undefined
           }
         } else if (playerDuration === Infinity) {
-          console.log('Live stream detected')
           setDurationSeconds(0)
           setDuration('Live')
         } else if (state === 'retry' && retryCount < maxRetries) {
           retryCount++
           const delay = 1000 * retryCount
-          console.log(
-            `Retrying player duration detection (${retryCount}/${maxRetries}) in ${delay}ms`
-          )
 
           retryTimeout = setTimeout(() => {
             updateDuration('retry')
           }, delay)
         }
       }
-
       // Only add fallback listeners if variant duration is not available
       const events = ['durationchange', 'loadedmetadata', 'canplay']
       events.forEach((event) => {
@@ -341,6 +332,7 @@ export function VideoControls({
 
   function handleVolume(_event: Event, value: number | number[]): void {
     if (!Array.isArray(value)) {
+      if (mute === true) handleMute()
       setVolume(value)
       player.volume(value / 100)
     }
