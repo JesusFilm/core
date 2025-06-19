@@ -6,8 +6,13 @@ import { useVideo } from '../../../libs/videoContext'
 import { ContentHeader } from './ContentHeader'
 import { ContentHeroVideo } from './ContentHeroVideo'
 
-export function ContentHero(): ReactElement {
-  const [isFullscreen, setIsFullscreen] = useState(false)
+export function ContentHero({
+  isFullscreen = false,
+  setIsFullscreen
+}: {
+  isFullscreen?: boolean
+  setIsFullscreen?: (isFullscreen: boolean) => void
+}): ReactElement {
   const { variant } = useVideo()
   /**
    * Effect to handle fullscreen changes.
@@ -20,7 +25,7 @@ export function ContentHero(): ReactElement {
      */
     function fullscreenchange(): void {
       const isFullscreen = fscreen.fullscreenElement != null
-      setIsFullscreen(isFullscreen)
+      setIsFullscreen?.(isFullscreen)
       if (isFullscreen) {
         window.scrollTo({ top: 0, behavior: 'smooth' })
       }

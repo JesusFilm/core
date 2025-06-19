@@ -41,6 +41,7 @@ export function NewContentPage(): ReactElement {
   } = useVideo()
 
   const [showShare, setShowShare] = useState(false)
+  const [isFullscreen, setIsFullscreen] = useState(false)
 
   const variantSlug = container?.variant?.slug ?? variant?.slug
   const watchUrl = getWatchUrl(container?.slug, label, variant?.slug)
@@ -112,10 +113,16 @@ export function NewContentPage(): ReactElement {
         }}
       />
       <PageWrapper
-        hero={<ContentHero />}
+        hero={
+          <ContentHero
+            isFullscreen={isFullscreen}
+            setIsFullscreen={setIsFullscreen}
+          />
+        }
         headerThemeMode={ThemeMode.dark}
         hideHeader
         hideFooter
+        isFullscreen={isFullscreen}
       >
         <ContentPageBlurFilter>
           {((container?.childrenCount ?? 0) > 0 || childrenCount > 0) &&
