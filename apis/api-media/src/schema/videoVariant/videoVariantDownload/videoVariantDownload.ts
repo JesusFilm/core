@@ -131,7 +131,9 @@ builder.mutationFields((t) => ({
         for (const download of videoVariant.downloads) {
           // Find the corresponding static rendition file
           const staticFile = staticRenditions.files.find((file) => {
-            const muxResolution = file.resolution_tier || file.resolution
+            // Use resolution field first (which contains the actual quality like "720p", "360p", "270p")
+            // Then fall back to resolution_tier if resolution is not available
+            const muxResolution = file.resolution || file.resolution_tier
             return (
               muxResolution &&
               resolutionToQuality[muxResolution] === download.quality
@@ -139,10 +141,12 @@ builder.mutationFields((t) => ({
           })
 
           if (staticFile?.filesize && staticFile.status === 'ready') {
+            const newSize = parseInt(staticFile.filesize, 10)
+
             await prisma.videoVariantDownload.update({
               where: { id: download.id },
               data: {
-                size: parseInt(staticFile.filesize, 10)
+                size: newSize
               }
             })
           }

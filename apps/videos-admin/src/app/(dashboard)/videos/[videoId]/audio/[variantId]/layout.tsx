@@ -117,7 +117,7 @@ export default function VariantDialog({
       })
     } catch (error) {
       enqueueSnackbar(
-        'Failed to update sizes. Mux static renditions may not be ready yet.',
+        'Failed to update sizes. Mux may not have generated download files yet - please try again in a few minutes.',
         {
           variant: 'warning'
         }

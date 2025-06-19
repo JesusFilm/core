@@ -106,10 +106,11 @@ export async function enableDownload(
   const existingAsset =
     await getClient(userGenerated).video.assets.retrieve(assetId)
 
-  // skip if the resolution already exists
+  // skip if the resolution already exists - check both resolution_tier and resolution fields
   if (
     existingAsset.static_renditions?.files?.some(
-      (file) => file.resolution === resolution
+      (file) =>
+        file.resolution_tier === resolution || file.resolution === resolution
     )
   )
     return

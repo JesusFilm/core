@@ -352,7 +352,7 @@ export default function AddVideoVariantDownloadDialog({
             }
           })
           enqueueSnackbar(
-            'Downloads created. Sizes will be updated once Mux processes the files.',
+            'Downloads created. Mux may not generate download sizes immediately and may need to be re-run using "Update Sizes from Mux".',
             { variant: 'success' }
           )
 
@@ -375,7 +375,7 @@ export default function AddVideoVariantDownloadDialog({
             clearInterval(updateSizesInterval)
           }, 300000)
 
-          // router.push(returnUrl, { scroll: false })
+          router.push(returnUrl, { scroll: false })
         } catch (error) {
           enqueueSnackbar(
             error.message ?? 'Failed to create downloads from Mux',
