@@ -99,6 +99,8 @@ export function VideoControls({
 
   // Set duration from variant data instead of trying to detect from HLS stream
   useEffect(() => {
+    console.log('variant duration', variant?.duration)
+    console.log('player duration', player.duration())
     if (variant?.duration != null && variant.duration > 0) {
       const roundedDuration = Math.round(variant.duration)
       setDurationSeconds(roundedDuration)
