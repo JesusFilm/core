@@ -235,7 +235,6 @@ describe('mux/video', () => {
         })
       })
     })
-
   })
 
   describe('mutations', () => {
