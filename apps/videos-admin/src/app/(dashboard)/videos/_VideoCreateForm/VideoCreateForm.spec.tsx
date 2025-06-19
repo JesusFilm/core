@@ -6,6 +6,7 @@ import {
   CREATE_EDITION,
   CREATE_VIDEO,
   GET_PARENT_VIDEO_LABEL,
+  GET_VIDEO_ORIGINS,
   VideoCreateForm
 } from './VideoCreateForm'
 
@@ -36,6 +37,31 @@ describe('VideoCreateForm', () => {
   })
 
   // Mock data for queries and mutations
+  const getVideoOriginsMock = {
+    request: {
+      query: GET_VIDEO_ORIGINS,
+      variables: {}
+    },
+    result: {
+      data: {
+        videoOrigins: [
+          {
+            id: 'origin-1',
+            name: 'Jesus Film Project',
+            description: 'Official Jesus Film Project content',
+            __typename: 'VideoOrigin'
+          },
+          {
+            id: 'origin-2',
+            name: 'Partner Content',
+            description: 'Content from partner organizations',
+            __typename: 'VideoOrigin'
+          }
+        ]
+      }
+    }
+  }
+
   const createVideoMock = {
     request: {
       query: CREATE_VIDEO,
@@ -44,6 +70,7 @@ describe('VideoCreateForm', () => {
           id: 'test-id',
           slug: 'test-slug',
           label: 'episode',
+          originId: 'origin-1',
           primaryLanguageId: '529',
           noIndex: false,
           published: false,
@@ -99,17 +126,22 @@ describe('VideoCreateForm', () => {
   describe('without a parent video', () => {
     beforeEach(() => {
       render(
-        <MockedProvider mocks={[createVideoMock, createEditionMock]}>
+        <MockedProvider mocks={[createVideoMock, createEditionMock, getVideoOriginsMock]}>
           <VideoCreateForm onCreateSuccess={mockOnCreateSuccess} />
         </MockedProvider>
       )
     })
 
-    it('renders the form with the correct fields', () => {
+    it('renders the form with the correct fields', async () => {
       expect(screen.getByTestId('VideoCreateForm')).toBeInTheDocument()
       expect(screen.getByLabelText(/ID/i)).toBeInTheDocument()
       expect(screen.getByLabelText(/Slug/i)).toBeInTheDocument()
       expect(screen.getByLabelText(/Label/i)).toBeInTheDocument()
+      
+      // Wait for origins to load
+      await waitFor(() => {
+        expect(screen.getByLabelText(/Origin/i)).toBeInTheDocument()
+      })
     })
 
     it('displays validation errors when submitting empty form', async () => {
@@ -119,6 +151,7 @@ describe('VideoCreateForm', () => {
         expect(screen.getByText('ID is required')).toBeInTheDocument()
         expect(screen.getByText('Slug is required')).toBeInTheDocument()
         expect(screen.getByText('Label is required')).toBeInTheDocument()
+        expect(screen.getByText('Origin is required')).toBeInTheDocument()
       })
     })
 
@@ -132,7 +165,7 @@ describe('VideoCreateForm', () => {
     beforeEach(() => {
       render(
         <MockedProvider
-          mocks={[createVideoMock, createEditionMock, getParentVideoLabelMock]}
+          mocks={[createVideoMock, createEditionMock, getParentVideoLabelMock, getVideoOriginsMock]}
         >
           <VideoCreateForm
             parentId={mockParentId}
@@ -169,10 +202,15 @@ describe('VideoCreateForm', () => {
       const user = userEvent.setup()
 
       render(
-        <MockedProvider mocks={[createVideoMock, createEditionMock]}>
+        <MockedProvider mocks={[createVideoMock, createEditionMock, getVideoOriginsMock]}>
           <VideoCreateForm onCreateSuccess={mockOnCreateSuccess} />
         </MockedProvider>
       )
+
+      // Wait for origins to load
+      await waitFor(() => {
+        expect(screen.getByLabelText(/Origin/i)).toBeInTheDocument()
+      })
 
       // Fill out the form
       await user.type(screen.getByLabelText(/ID/i), 'test-id')
@@ -182,6 +220,11 @@ describe('VideoCreateForm', () => {
       const labelSelect = screen.getByLabelText(/Label/i)
       await user.click(labelSelect)
       await user.click(screen.getByText('Episode'))
+
+      // Select an origin option
+      const originSelect = screen.getByLabelText(/Origin/i)
+      await user.click(originSelect)
+      await user.click(screen.getByText('Jesus Film Project'))
 
       // Submit the form
       await user.click(screen.getByText('Create'))
@@ -196,10 +239,15 @@ describe('VideoCreateForm', () => {
       const user = userEvent.setup()
 
       render(
-        <MockedProvider mocks={[createVideoMock, createEditionMock]}>
+        <MockedProvider mocks={[createVideoMock, createEditionMock, getVideoOriginsMock]}>
           <VideoCreateForm />
         </MockedProvider>
       )
+
+      // Wait for origins to load
+      await waitFor(() => {
+        expect(screen.getByLabelText(/Origin/i)).toBeInTheDocument()
+      })
 
       // Fill out the form
       await user.type(screen.getByLabelText(/ID/i), 'test-id')
@@ -209,6 +257,11 @@ describe('VideoCreateForm', () => {
       const labelSelect = screen.getByLabelText(/Label/i)
       await user.click(labelSelect)
       await user.click(screen.getByText('Episode'))
+
+      // Select an origin option
+      const originSelect = screen.getByLabelText(/Origin/i)
+      await user.click(originSelect)
+      await user.click(screen.getByText('Jesus Film Project'))
 
       // Submit the form
       await user.click(screen.getByText('Create'))
