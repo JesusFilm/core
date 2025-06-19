@@ -120,7 +120,7 @@ export function VideoCreateForm({
 
     return originsData.videoOrigins.map((origin) => ({
       value: origin.id,
-      label: origin.name
+      label: `${origin.id} - ${origin.name}`
     }))
   }, [originsData])
 
@@ -213,6 +213,13 @@ export function VideoCreateForm({
     >
       <Form data-testid="VideoCreateForm">
         <Stack gap={2}>
+          <FormSelectField
+            name="originId"
+            label="Origin"
+            options={originOptions}
+            fullWidth
+            disabled={originsLoading}
+          />
           <FormTextField name="id" label="ID" fullWidth />
           <FormTextField name="slug" label="Slug" fullWidth />
           <FormSelectField
@@ -220,13 +227,6 @@ export function VideoCreateForm({
             label="Label"
             options={videoLabels}
             fullWidth
-          />
-          <FormSelectField
-            name="originId"
-            label="Origin"
-            options={originOptions}
-            fullWidth
-            disabled={originsLoading}
           />
           {suggestedLabel && (
             <Typography variant="caption" color="text.secondary">

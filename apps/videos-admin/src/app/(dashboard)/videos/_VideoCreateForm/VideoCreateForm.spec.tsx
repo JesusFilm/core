@@ -136,14 +136,15 @@ describe('VideoCreateForm', () => {
 
     it('renders the form with the correct fields', async () => {
       expect(screen.getByTestId('VideoCreateForm')).toBeInTheDocument()
-      expect(screen.getByLabelText(/ID/i)).toBeInTheDocument()
-      expect(screen.getByLabelText(/Slug/i)).toBeInTheDocument()
-      expect(screen.getByLabelText(/Label/i)).toBeInTheDocument()
-
-      // Wait for origins to load
+      
+      // Wait for origins to load first since it's now the first field
       await waitFor(() => {
         expect(screen.getByLabelText(/Origin/i)).toBeInTheDocument()
       })
+      
+      expect(screen.getByLabelText(/ID/i)).toBeInTheDocument()
+      expect(screen.getByLabelText(/Slug/i)).toBeInTheDocument()
+      expect(screen.getByLabelText(/Label/i)).toBeInTheDocument()
     })
 
     it('displays validation errors when submitting empty form', async () => {
@@ -233,7 +234,7 @@ describe('VideoCreateForm', () => {
       // Select an origin option
       const originSelect = screen.getByLabelText(/Origin/i)
       await user.click(originSelect)
-      await user.click(screen.getByText('Jesus Film Project'))
+      await user.click(screen.getByText('origin-1 - Jesus Film Project'))
 
       // Submit the form
       await user.click(screen.getByText('Create'))
@@ -272,7 +273,7 @@ describe('VideoCreateForm', () => {
       // Select an origin option
       const originSelect = screen.getByLabelText(/Origin/i)
       await user.click(originSelect)
-      await user.click(screen.getByText('Jesus Film Project'))
+      await user.click(screen.getByText('origin-1 - Jesus Film Project'))
 
       // Submit the form
       await user.click(screen.getByText('Create'))
