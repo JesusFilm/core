@@ -43,6 +43,16 @@ export const GET_PARENT_VIDEO_LABEL = graphql(`
   }
 `)
 
+export const GET_VIDEO_ORIGINS = graphql(`
+  query GetVideoOrigins {
+    videoOrigins {
+      id
+      name
+      description
+    }
+  }
+`)
+
 export const CREATE_EDITION = graphql(`
   mutation CreateEdition($input: VideoEditionCreateInput!) {
     videoEditionCreate(input: $input) {
@@ -69,7 +79,8 @@ export function VideoCreateForm({
     slug: string().trim().required('Slug is required'),
     label: mixed<VideoLabel>()
       .oneOf(Object.values(VideoLabel))
-      .required('Label is required')
+      .required('Label is required'),
+    originId: string().trim().required('Origin is required')
   })
 
   const router = useRouter()
@@ -78,6 +89,8 @@ export function VideoCreateForm({
     variables: { videoId: parentId || '' },
     skip: !parentId
   })
+
+  const { data: originsData, loading: originsLoading } = useQuery(GET_VIDEO_ORIGINS)
 
   const [createVideo] = useMutation(CREATE_VIDEO)
   const [createEdition] = useMutation(CREATE_EDITION)
@@ -100,6 +113,16 @@ export function VideoCreateForm({
     }
   }, [parentId, parentData])
 
+  // Format origins for dropdown
+  const originOptions = useMemo(() => {
+    if (!originsData?.videoOrigins) return []
+    
+    return originsData.videoOrigins.map((origin) => ({
+      value: origin.id,
+      label: origin.name
+    }))
+  }, [originsData])
+
   const handleSubmit = async (values: InferType<typeof validationSchema>) => {
     await createVideo({
       variables: {
@@ -107,6 +130,7 @@ export function VideoCreateForm({
           id: values.id,
           slug: values.slug,
           label: values.label,
+          originId: values.originId,
           primaryLanguageId: '529',
           noIndex: false,
           published: false,
@@ -160,7 +184,8 @@ export function VideoCreateForm({
   const initialValues: InferType<typeof validationSchema> = {
     id: '',
     slug: '',
-    label: suggestedLabel || ('' as VideoLabel)
+    label: suggestedLabel || ('' as VideoLabel),
+    originId: ''
   }
 
   // Get explanatory text for the suggested label
@@ -194,6 +219,13 @@ export function VideoCreateForm({
             label="Label"
             options={videoLabels}
             fullWidth
+          />
+          <FormSelectField
+            name="originId"
+            label="Origin"
+            options={originOptions}
+            fullWidth
+            disabled={originsLoading}
           />
           {suggestedLabel && (
             <Typography variant="caption" color="text.secondary">
