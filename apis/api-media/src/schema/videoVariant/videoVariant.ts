@@ -239,12 +239,12 @@ builder.mutationFields((t) => ({
 
       // Clean up R2 assets
       const assetsToDelete: string[] = []
-      
+
       // Add main variant asset if it exists
       if (variant.assetId != null) {
         assetsToDelete.push(variant.assetId)
       }
-      
+
       // Add download assets if they exist
       if (variant.downloads) {
         variant.downloads.forEach((download) => {
@@ -262,12 +262,12 @@ builder.mutationFields((t) => ({
             where: { id: assetId },
             select: { fileName: true }
           })
-          
+
           if (r2Asset?.fileName != null) {
             // Delete the actual file from Cloudflare R2 storage
             await deleteR2File(r2Asset.fileName)
           }
-          
+
           // Delete the database record
           await prisma.cloudflareR2.delete({
             where: { id: assetId }
@@ -283,14 +283,17 @@ builder.mutationFields((t) => ({
         try {
           // Delete from Mux service first
           await deleteVideo(variant.muxVideoId, false)
-          
+
           // Delete from our database
           await prisma.muxVideo.delete({
             where: { id: variant.muxVideoId }
           })
         } catch (error) {
           // Log error but continue with variant deletion
-          console.error(`Failed to delete Mux video ${variant.muxVideoId}:`, error)
+          console.error(
+            `Failed to delete Mux video ${variant.muxVideoId}:`,
+            error
+          )
         }
       }
 

@@ -33,8 +33,12 @@ jest.mock('../cloudflare/r2/asset', () => ({
 // Get the mocked functions for testing
 const mockedVideoCacheReset = jest.mocked(videoCacheReset)
 const mockedVideoVariantCacheReset = jest.mocked(videoVariantCacheReset)
-const { deleteVideo: mockedDeleteVideo } = jest.requireMock('../mux/video/service')
-const { deleteR2File: mockedDeleteR2File } = jest.requireMock('../cloudflare/r2/asset')
+const { deleteVideo: mockedDeleteVideo } = jest.requireMock(
+  '../mux/video/service'
+)
+const { deleteR2File: mockedDeleteR2File } = jest.requireMock(
+  '../cloudflare/r2/asset'
+)
 
 describe('videoVariant', () => {
   const client = getClient()
@@ -988,7 +992,7 @@ describe('videoVariant', () => {
           userId: 'userId',
           roles: ['publisher']
         })
-        
+
         // Mock variant with assets
         prismaMock.videoVariant.findUnique.mockResolvedValue({
           id: 'id',
