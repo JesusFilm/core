@@ -2124,8 +2124,9 @@ type UserInvite @join__type(graph: API_JOURNEYS, key: "id")  {
   removedAt: DateTime
 }
 
-type User @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_MEDIA, key: "id", extension: true)  @join__type(graph: API_USERS, key: "id")  {
+type User @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_LANGUAGES, key: "id", extension: true)  @join__type(graph: API_MEDIA, key: "id", extension: true)  @join__type(graph: API_USERS, key: "id")  {
   id: ID!
+  languageUserRoles: [LanguageRole!]! @join__field(graph: API_LANGUAGES) 
   mediaUserRoles: [MediaRole!]! @join__field(graph: API_MEDIA) 
   firstName: String! @join__field(graph: API_USERS) 
   lastName: String @join__field(graph: API_USERS) 
@@ -3283,6 +3284,10 @@ enum EventType @join__type(graph: API_JOURNEYS_MODERN)  {
 enum LanguageIdType @join__type(graph: API_LANGUAGES)  {
   databaseId @join__enumValue(graph: API_LANGUAGES) 
   bcp47 @join__enumValue(graph: API_LANGUAGES) 
+}
+
+enum LanguageRole @join__type(graph: API_LANGUAGES)  {
+  publisher @join__enumValue(graph: API_LANGUAGES) 
 }
 
 enum DefaultPlatform @join__type(graph: API_MEDIA)  {

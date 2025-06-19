@@ -20,7 +20,7 @@ builder.asEntity(AudioPreview, {
 })
 
 builder.mutationFields((t) => ({
-  audioPreviewCreate: t.prismaFieldWithInput({
+  audioPreviewCreate: t.withAuth({ isPublisher: true }).prismaFieldWithInput({
     type: 'AudioPreview',
     nullable: false,
     input: {
@@ -51,7 +51,7 @@ builder.mutationFields((t) => ({
       })
     }
   }),
-  audioPreviewUpdate: t.prismaFieldWithInput({
+  audioPreviewUpdate: t.withAuth({ isPublisher: true }).prismaFieldWithInput({
     type: 'AudioPreview',
     nullable: false,
     input: {
@@ -87,7 +87,7 @@ builder.mutationFields((t) => ({
       })
     }
   }),
-  audioPreviewDelete: t.prismaField({
+  audioPreviewDelete: t.withAuth({ isPublisher: true }).prismaField({
     type: 'AudioPreview',
     nullable: false,
     args: {

@@ -1,5 +1,5 @@
 extend schema
-  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@key"])
+  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key"])
 
 type AudioPreview
   @key(fields: "languageId")
@@ -82,6 +82,10 @@ type LanguageName {
   language: Language!
 }
 
+enum LanguageRole {
+  publisher
+}
+
 input LanguagesFilter {
   ids: [ID!]
   bcp47: [String!]
@@ -118,4 +122,12 @@ type Query {
   languagesCount(where: LanguagesFilter, term: String): Int!
   country(id: ID!): Country
   countries(term: String, ids: [ID!]): [Country!]!
+}
+
+type User
+  @key(fields: "id")
+  @extends
+{
+  id: ID! @external
+  languageUserRoles: [LanguageRole!]!
 }
