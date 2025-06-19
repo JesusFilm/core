@@ -1342,6 +1342,10 @@ export type LanguageName = {
   value: Scalars['String']['output'];
 };
 
+export enum LanguageRole {
+  Publisher = 'publisher'
+}
+
 export type LanguageWithSlug = {
   __typename?: 'LanguageWithSlug';
   language: Language;
@@ -4303,6 +4307,7 @@ export type User = {
   firstName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   imageUrl?: Maybe<Scalars['String']['output']>;
+  languageUserRoles: Array<LanguageRole>;
   lastName?: Maybe<Scalars['String']['output']>;
   mediaUserRoles: Array<MediaRole>;
   superAdmin?: Maybe<Scalars['Boolean']['output']>;
