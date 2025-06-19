@@ -1165,7 +1165,7 @@ describe('videoVariant', () => {
         })
 
         // Verify Mux video was deleted
-        expect(mockedDeleteVideo).toHaveBeenCalledWith('muxVideoId', false)
+        expect(mockedDeleteVideo).toHaveBeenCalledWith('muxAssetId', false)
         expect(prismaMock.muxVideo.delete).toHaveBeenCalledWith({
           where: { id: 'muxVideoId' }
         })
@@ -1316,6 +1316,116 @@ describe('videoVariant', () => {
 
         // Verify findUnique was called only 2 times (for non-null assets)
         expect(prismaMock.cloudflareR2.findUnique).toHaveBeenCalledTimes(2)
+
+        // Verify variant was deleted
+        expect(prismaMock.videoVariant.delete).toHaveBeenCalledWith({
+          where: { id: 'id' }
+        })
+
+        expect(result).toHaveProperty('data.videoVariantDelete', {
+          id: 'id'
+        })
+
+        // Verify cache reset functions were called
+        expect(mockedVideoVariantCacheReset).toHaveBeenCalledWith('id')
+        expect(mockedVideoCacheReset).toHaveBeenCalledWith('videoId')
+      })
+
+      it('should handle mux video with null assetId gracefully', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+
+        // Mock variant with mux video that has null assetId
+        prismaMock.videoVariant.findUnique.mockResolvedValue({
+          id: 'id',
+          videoId: 'videoId',
+          hls: 'hls',
+          duration: 1024,
+          lengthInMilliseconds: 123456,
+          dash: 'dash',
+          edition: 'base',
+          slug: 'videoSlug',
+          languageId: 'languageId',
+          published: true,
+          share: 'share',
+          downloadable: true,
+          muxVideoId: 'muxVideoId',
+          masterUrl: 'masterUrl',
+          masterWidth: 320,
+          masterHeight: 180,
+          assetId: null,
+          version: 1,
+          downloads: [],
+          asset: null,
+          muxVideo: {
+            id: 'muxVideoId',
+            playbackId: 'playbackId',
+            uploadUrl: 'uploadUrl',
+            uploadId: 'uploadId',
+            assetId: null, // No asset ID available
+            userId: 'userId',
+            name: 'videoName',
+            duration: 1024,
+            downloadable: false,
+            createdAt: new Date(),
+            readyToStream: false,
+            updatedAt: new Date()
+          }
+        } as any)
+
+        prismaMock.muxVideo.delete.mockResolvedValue({
+          id: 'muxVideoId',
+          playbackId: 'playbackId',
+          uploadUrl: 'uploadUrl',
+          uploadId: 'uploadId',
+          assetId: null,
+          userId: 'userId',
+          name: 'videoName',
+          duration: 1024,
+          downloadable: false,
+          createdAt: new Date(),
+          readyToStream: false,
+          updatedAt: new Date()
+        })
+
+        prismaMock.videoVariant.delete.mockResolvedValue({
+          id: 'id',
+          hls: 'hls',
+          duration: 1024,
+          lengthInMilliseconds: 123456,
+          dash: 'dash',
+          edition: 'base',
+          slug: 'videoSlug',
+          videoId: 'videoId',
+          languageId: 'languageId',
+          published: true,
+          share: 'share',
+          downloadable: true,
+          muxVideoId: 'muxVideoId',
+          masterUrl: 'masterUrl',
+          masterWidth: 320,
+          masterHeight: 180,
+          assetId: null,
+          version: 1
+        })
+
+        const result = await authClient({
+          document: VIDEO_VARIANT_DELETE_MUTATION,
+          variables: {
+            id: 'id'
+          }
+        })
+
+        // Verify deleteVideo was NOT called since assetId is null
+        expect(mockedDeleteVideo).not.toHaveBeenCalled()
+
+        // Verify mux video database record was still deleted
+        expect(prismaMock.muxVideo.delete).toHaveBeenCalledWith({
+          where: { id: 'muxVideoId' }
+        })
 
         // Verify variant was deleted
         expect(prismaMock.videoVariant.delete).toHaveBeenCalledWith({
