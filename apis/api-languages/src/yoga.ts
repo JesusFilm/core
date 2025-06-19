@@ -31,7 +31,13 @@ export const yoga = createYoga<
   logging: logger,
   context: async ({ request, params }) => {
     const payload = get(params, 'extensions.jwt.payload')
-    const user = getUserFromPayload(payload, logger)
+    const authHeader = request.headers.get('authorization')
+
+    // Only attempt to get user if there's actual auth data
+    const user =
+      payload != null || authHeader != null
+        ? getUserFromPayload(payload, logger)
+        : null
 
     if (user != null)
       return {
