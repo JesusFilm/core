@@ -241,6 +241,7 @@ type Mutation {
   videoVariantDownloadCreate(input: VideoVariantDownloadCreateInput!): VideoVariantDownload!
   videoVariantDownloadUpdate(input: VideoVariantDownloadUpdateInput!): VideoVariantDownload!
   videoVariantDownloadDelete(id: ID!): VideoVariantDownload!
+  updateVideoVariantDownloadSizesFromMux(videoVariantId: ID!): Boolean!
 }
 
 input MutationBibleCitationCreateInput {
