@@ -23,11 +23,6 @@ export function PropertiesSlider({
   onChange,
   onChangeCommitted,
   ariaLabel = 'Slider',
-  color = '#C52D3A',
-  railColor = '#DEDFE0',
-  thumbSize = 14,
-  trackHeight = 3,
-  borderRadius = 4
 }: PropertiesSliderProps) {
   return (
     <Slider
@@ -41,25 +36,25 @@ export function PropertiesSlider({
         root: {
           style: {
             flex: 1,
-            color,
-            borderRadius
+            color: '#C52D3A',
+            borderRadius: 4
           }
         },
         thumb: {
           style: {
-            width: thumbSize,
-            height: thumbSize
+            width: 14,
+            height: 14
           }
         },
         rail: {
           style: {
-            height: trackHeight,
-            backgroundColor: railColor
+            height: 3,
+            backgroundColor: '#DEDFE0'
           }
         },
         track: {
           style: {
-            height: trackHeight
+            height: 3
           }
         }
       }}
