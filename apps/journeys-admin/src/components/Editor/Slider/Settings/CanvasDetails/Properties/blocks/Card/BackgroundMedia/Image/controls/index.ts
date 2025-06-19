@@ -1,1 +1,1 @@
-export { PropertiesSlider } from './PropertiesSlider' 
+export { PropertiesSlider } from './PropertiesSlider'

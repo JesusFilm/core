@@ -67,4 +67,4 @@ export function PropertiesSlider({
       tabIndex={0}
     />
   )
-} 
+}
