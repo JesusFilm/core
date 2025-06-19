@@ -2939,7 +2939,6 @@ export type Query = {
   customDomain: CustomDomain;
   customDomains: Array<CustomDomain>;
   getJourneyProfile?: Maybe<JourneyProfile>;
-  getMuxStaticRenditions?: Maybe<Array<StaticRenditionFile>>;
   getMuxVideo?: Maybe<MuxVideo>;
   getMyCloudflareImage: CloudflareImage;
   getMyCloudflareImages: Array<CloudflareImage>;
@@ -3110,11 +3109,6 @@ export type QueryCustomDomainArgs = {
 
 export type QueryCustomDomainsArgs = {
   teamId: Scalars['ID']['input'];
-};
-
-
-export type QueryGetMuxStaticRenditionsArgs = {
-  assetId: Scalars['String']['input'];
 };
 
 
@@ -3745,18 +3739,6 @@ export type SpacerBlockUpdateInput = {
   classNames?: InputMaybe<SpacerBlockClassNamesInput>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   spacing?: InputMaybe<Scalars['Int']['input']>;
-};
-
-export type StaticRenditionFile = {
-  __typename?: 'StaticRenditionFile';
-  bitrate?: Maybe<Scalars['Int']['output']>;
-  ext: Scalars['String']['output'];
-  filesize?: Maybe<Scalars['String']['output']>;
-  height?: Maybe<Scalars['Int']['output']>;
-  name: Scalars['String']['output'];
-  resolution?: Maybe<Scalars['String']['output']>;
-  status: Scalars['String']['output'];
-  width?: Maybe<Scalars['Int']['output']>;
 };
 
 export type StepBlock = Block & {
