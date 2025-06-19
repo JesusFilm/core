@@ -485,6 +485,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   videoVariantDownloadCreate(input: VideoVariantDownloadCreateInput!) : VideoVariantDownload! @join__field(graph: API_MEDIA) 
   videoVariantDownloadUpdate(input: VideoVariantDownloadUpdateInput!) : VideoVariantDownload! @join__field(graph: API_MEDIA) 
   videoVariantDownloadDelete(id: ID!) : VideoVariantDownload! @join__field(graph: API_MEDIA) 
+  updateVideoVariantDownloadSizesFromMux(videoVariantId: ID!) : Boolean! @join__field(graph: API_MEDIA) 
   userImpersonate(email: String!) : String @join__field(graph: API_USERS) 
   createVerificationRequest(input: CreateVerificationRequestInput) : Boolean @join__field(graph: API_USERS) 
   validateEmail(email: String!, token: String!) : User @join__field(graph: API_USERS) 
