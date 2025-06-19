@@ -1183,6 +1183,153 @@ describe('videoVariant', () => {
         expect(mockedVideoVariantCacheReset).toHaveBeenCalledWith('id')
         expect(mockedVideoCacheReset).toHaveBeenCalledWith('videoId')
       })
+
+      it('should handle downloads with null assetId gracefully', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        
+        // Mock variant with downloads that have null assetId
+        prismaMock.videoVariant.findUnique.mockResolvedValue({
+          id: 'id',
+          videoId: 'videoId',
+          hls: 'hls',
+          duration: 1024,
+          lengthInMilliseconds: 123456,
+          dash: 'dash',
+          edition: 'base',
+          slug: 'videoSlug',
+          languageId: 'languageId',
+          published: true,
+          share: 'share',
+          downloadable: true,
+          muxVideoId: null,
+          masterUrl: 'masterUrl',
+          masterWidth: 320,
+          masterHeight: 180,
+          assetId: 'mainAssetId',
+          version: 1,
+          downloads: [
+            {
+              id: 'download1',
+              assetId: 'downloadAsset1',
+              quality: 'high',
+              size: 1000,
+              height: 720,
+              width: 1280,
+              bitrate: 2500,
+              version: 1,
+              url: 'url1',
+              videoVariantId: 'id'
+            },
+            {
+              id: 'download2',
+              assetId: null, // This download has no asset
+              quality: 'sd',
+              size: 500,
+              height: 360,
+              width: 640,
+              bitrate: 1000,
+              version: 1,
+              url: 'url2',
+              videoVariantId: 'id'
+            }
+          ],
+          asset: {
+            id: 'mainAssetId',
+            fileName: 'main.mp4',
+            originalFilename: 'original.mp4',
+            uploadUrl: 'uploadUrl',
+            userId: 'userId',
+            publicUrl: 'publicUrl',
+            videoId: 'videoId',
+            contentType: 'video/mp4',
+            contentLength: 2000,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          },
+          muxVideo: null
+        } as any)
+
+        prismaMock.cloudflareR2.delete.mockResolvedValue({
+          id: 'mainAssetId',
+          fileName: 'main.mp4',
+          originalFilename: 'original.mp4',
+          uploadUrl: 'uploadUrl',
+          userId: 'userId',
+          publicUrl: 'publicUrl',
+          videoId: 'videoId',
+          contentType: 'video/mp4',
+          contentLength: 2000,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+
+        // Mock the findUnique calls - only 2 calls since one download has null assetId
+        prismaMock.cloudflareR2.findUnique
+          .mockResolvedValueOnce({ fileName: 'main.mp4' } as any)
+          .mockResolvedValueOnce({ fileName: 'download1.mp4' } as any)
+
+        prismaMock.videoVariant.delete.mockResolvedValue({
+          id: 'id',
+          hls: 'hls',
+          duration: 1024,
+          lengthInMilliseconds: 123456,
+          dash: 'dash',
+          edition: 'base',
+          slug: 'videoSlug',
+          videoId: 'videoId',
+          languageId: 'languageId',
+          published: true,
+          share: 'share',
+          downloadable: true,
+          muxVideoId: null,
+          masterUrl: 'masterUrl',
+          masterWidth: 320,
+          masterHeight: 180,
+          assetId: 'mainAssetId',
+          version: 1
+        })
+
+        const result = await authClient({
+          document: VIDEO_VARIANT_DELETE_MUTATION,
+          variables: {
+            id: 'id'
+          }
+        })
+
+        // Verify only 2 R2 assets were deleted (main + download1, not the null one)
+        expect(prismaMock.cloudflareR2.delete).toHaveBeenCalledTimes(2)
+        expect(prismaMock.cloudflareR2.delete).toHaveBeenCalledWith({
+          where: { id: 'mainAssetId' }
+        })
+        expect(prismaMock.cloudflareR2.delete).toHaveBeenCalledWith({
+          where: { id: 'downloadAsset1' }
+        })
+
+        // Verify only 2 files were deleted from Cloudflare R2 storage
+        expect(mockedDeleteR2File).toHaveBeenCalledTimes(2)
+        expect(mockedDeleteR2File).toHaveBeenCalledWith('main.mp4')
+        expect(mockedDeleteR2File).toHaveBeenCalledWith('download1.mp4')
+
+        // Verify findUnique was called only 2 times (for non-null assets)
+        expect(prismaMock.cloudflareR2.findUnique).toHaveBeenCalledTimes(2)
+
+        // Verify variant was deleted
+        expect(prismaMock.videoVariant.delete).toHaveBeenCalledWith({
+          where: { id: 'id' }
+        })
+
+        expect(result).toHaveProperty('data.videoVariantDelete', {
+          id: 'id'
+        })
+
+        // Verify cache reset functions were called
+        expect(mockedVideoVariantCacheReset).toHaveBeenCalledWith('id')
+        expect(mockedVideoCacheReset).toHaveBeenCalledWith('videoId')
+      })
     })
   })
 })
