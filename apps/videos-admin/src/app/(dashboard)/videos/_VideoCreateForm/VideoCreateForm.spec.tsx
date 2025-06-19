@@ -126,7 +126,9 @@ describe('VideoCreateForm', () => {
   describe('without a parent video', () => {
     beforeEach(() => {
       render(
-        <MockedProvider mocks={[createVideoMock, createEditionMock, getVideoOriginsMock]}>
+        <MockedProvider
+          mocks={[createVideoMock, createEditionMock, getVideoOriginsMock]}
+        >
           <VideoCreateForm onCreateSuccess={mockOnCreateSuccess} />
         </MockedProvider>
       )
@@ -137,7 +139,7 @@ describe('VideoCreateForm', () => {
       expect(screen.getByLabelText(/ID/i)).toBeInTheDocument()
       expect(screen.getByLabelText(/Slug/i)).toBeInTheDocument()
       expect(screen.getByLabelText(/Label/i)).toBeInTheDocument()
-      
+
       // Wait for origins to load
       await waitFor(() => {
         expect(screen.getByLabelText(/Origin/i)).toBeInTheDocument()
@@ -165,7 +167,12 @@ describe('VideoCreateForm', () => {
     beforeEach(() => {
       render(
         <MockedProvider
-          mocks={[createVideoMock, createEditionMock, getParentVideoLabelMock, getVideoOriginsMock]}
+          mocks={[
+            createVideoMock,
+            createEditionMock,
+            getParentVideoLabelMock,
+            getVideoOriginsMock
+          ]}
         >
           <VideoCreateForm
             parentId={mockParentId}
@@ -202,7 +209,9 @@ describe('VideoCreateForm', () => {
       const user = userEvent.setup()
 
       render(
-        <MockedProvider mocks={[createVideoMock, createEditionMock, getVideoOriginsMock]}>
+        <MockedProvider
+          mocks={[createVideoMock, createEditionMock, getVideoOriginsMock]}
+        >
           <VideoCreateForm onCreateSuccess={mockOnCreateSuccess} />
         </MockedProvider>
       )
@@ -239,7 +248,9 @@ describe('VideoCreateForm', () => {
       const user = userEvent.setup()
 
       render(
-        <MockedProvider mocks={[createVideoMock, createEditionMock, getVideoOriginsMock]}>
+        <MockedProvider
+          mocks={[createVideoMock, createEditionMock, getVideoOriginsMock]}
+        >
           <VideoCreateForm />
         </MockedProvider>
       )
