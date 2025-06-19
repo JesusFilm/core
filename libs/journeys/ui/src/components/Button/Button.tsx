@@ -298,10 +298,17 @@ export function Button({
           editableLabel != null
             ? {
                 '&:hover': {
-                  backgroundColor:
-                    buttonVariant === ButtonVariant.text
-                      ? 'transparent'
-                      : `${buttonColor ?? 'primary'}.main`
+                  backgroundColor: (() => {
+                    switch (buttonVariant) {
+                      case ButtonVariant.text:
+                        return 'transparent'
+                      case ButtonVariant.outlined:
+                        return `${buttonColor ?? 'transparent'}`
+                      case ButtonVariant.contained:
+                      default:
+                        return `${buttonColor ?? 'primary'}.main`
+                    }
+                  })()
                 }
               }
             : undefined
