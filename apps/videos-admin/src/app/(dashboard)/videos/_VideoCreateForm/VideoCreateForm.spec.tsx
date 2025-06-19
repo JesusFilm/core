@@ -136,12 +136,12 @@ describe('VideoCreateForm', () => {
 
     it('renders the form with the correct fields', async () => {
       expect(screen.getByTestId('VideoCreateForm')).toBeInTheDocument()
-      
+
       // Wait for origins to load first since it's now the first field
       await waitFor(() => {
         expect(screen.getByLabelText(/Origin/i)).toBeInTheDocument()
       })
-      
+
       expect(screen.getByLabelText(/ID/i)).toBeInTheDocument()
       expect(screen.getByLabelText(/Slug/i)).toBeInTheDocument()
       expect(screen.getByLabelText(/Label/i)).toBeInTheDocument()
