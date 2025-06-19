@@ -1,6 +1,7 @@
 import { ApolloProvider } from '@apollo/client'
 import type { EmotionCache } from '@emotion/cache'
-import { CacheProvider } from '@emotion/react'
+import GlobalStyles from '@mui/material/GlobalStyles'
+import { AppCacheProvider } from '@mui/material-nextjs/v14-pagesRouter'
 import { GoogleTagManager, sendGTMEvent } from '@next/third-parties/google'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { AppProps as NextJsAppProps } from 'next/app'
@@ -21,6 +22,7 @@ import { firebaseClient } from '../src/libs/firebaseClient'
 
 import 'swiper/css'
 import 'swiper/css/pagination'
+import './globals.css'
 
 type JourneysAppProps = NextJsAppProps<{ journey?: Journey }> & {
   pageProps: SSRConfig
@@ -57,7 +59,8 @@ function JourneysApp({
   const apolloClient = useApollo()
 
   return (
-    <CacheProvider value={emotionCache}>
+    <AppCacheProvider emotionCache={emotionCache}>
+      <GlobalStyles styles="@layer theme, base, mui, components, utilities;" />
       <DefaultSeo
         titleTemplate={t('%s | Next Steps')}
         defaultTitle={t('Next Steps')}
@@ -113,7 +116,7 @@ function JourneysApp({
           <Component {...pageProps} />
         </SnackbarProvider>
       </ApolloProvider>
-    </CacheProvider>
+    </AppCacheProvider>
   )
 }
 
