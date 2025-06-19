@@ -1,8 +1,9 @@
+import { graphql } from 'gql.tada'
+
 import { LanguageRole } from '.prisma/api-languages-client'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
-import { graphql } from '../../lib/graphql/subgraphGraphql'
 
 describe('user', () => {
   const authClient = getClient({
