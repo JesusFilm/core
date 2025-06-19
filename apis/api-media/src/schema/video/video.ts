@@ -528,7 +528,8 @@ builder.mutationFields((t) => ({
           slug: input.slug ?? undefined,
           noIndex: input.noIndex ?? undefined,
           childIds: input.childIds ?? undefined,
-          restrictDownloadPlatforms: input.restrictDownloadPlatforms ?? undefined,
+          restrictDownloadPlatforms:
+            input.restrictDownloadPlatforms ?? undefined,
           ...(input.keywordIds
             ? { keywords: { set: input.keywordIds.map((id) => ({ id })) } }
             : {})

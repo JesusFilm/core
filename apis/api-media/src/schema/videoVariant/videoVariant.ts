@@ -35,12 +35,16 @@ builder.prismaObject('VideoVariant', {
             where: { id: parent.videoId },
             select: { restrictDownloadPlatforms: true }
           })
-          
-          if (video?.restrictDownloadPlatforms.includes(context.clientName as Platform)) {
+
+          if (
+            video?.restrictDownloadPlatforms.includes(
+              context.clientName as Platform
+            )
+          ) {
             return []
           }
         }
-        
+
         // Otherwise, return the downloads
         return await prisma.videoVariantDownload.findMany({
           ...query,
