@@ -18,6 +18,7 @@ export function AiEditButton(): ReactElement {
       <Fab
         color="primary"
         onClick={handleClick}
+        data-testid="AiEditButton"
         sx={{
           position: 'fixed',
           bottom: 32,

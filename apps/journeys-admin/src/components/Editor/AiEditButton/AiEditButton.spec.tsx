@@ -10,7 +10,7 @@ describe('AiEditButton', () => {
   it('should render button and ai chat', () => {
     render(<AiEditButton />)
 
-    const fabButton = screen.getByRole('button')
+    const fabButton = screen.getByTestId('AiEditButton')
     expect(fabButton).toBeInTheDocument()
 
     const aiChat = screen.getByTestId('mocked-aichat')
@@ -23,7 +23,7 @@ describe('AiEditButton', () => {
   it('should open chat when button is clicked', () => {
     render(<AiEditButton />)
 
-    const fabButton = screen.getByRole('button')
+    const fabButton = screen.getByTestId('AiEditButton')
     const aiChat = screen.getByTestId('mocked-aichat')
     expect(aiChat).not.toBeVisible()
 
@@ -34,7 +34,7 @@ describe('AiEditButton', () => {
   it('should close chat when button is clicked again', () => {
     render(<AiEditButton />)
 
-    const fabButton = screen.getByRole('button')
+    const fabButton = screen.getByTestId('AiEditButton')
     const aiChat = screen.getByTestId('mocked-aichat')
     expect(aiChat).not.toBeVisible()
 
