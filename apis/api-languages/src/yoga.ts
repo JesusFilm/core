@@ -38,12 +38,15 @@ export const yoga = createYoga<
         ...initContextCache(),
         type: 'authenticated',
         user,
-        currentRoles:
-          (
-            await prisma.userLanguageRole.findUnique({
-              where: { userId: user.id }
-            })
-          )?.roles ?? []
+        currentRoles: await prisma.userLanguageRole
+          .findUnique({
+            where: { userId: user.id }
+          })
+          .then((data) => data?.roles ?? [])
+          .catch((error) => {
+            logger.error('Error fetching user roles', { error })
+            return []
+          })
       }
 
     const interopToken = request.headers.get('interop-token')

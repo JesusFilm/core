@@ -77,7 +77,7 @@ export const builder = new SchemaBuilder<{
         case 'authenticated':
           return {
             isAuthenticated: true,
-            isPublisher: context.currentRoles.includes('publisher'),
+            isPublisher: context.currentRoles.includes(LanguageRole.publisher),
             isValidInterop: false
           }
         case 'interop':
