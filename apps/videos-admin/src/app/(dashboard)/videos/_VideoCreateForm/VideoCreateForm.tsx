@@ -90,7 +90,8 @@ export function VideoCreateForm({
     skip: !parentId
   })
 
-  const { data: originsData, loading: originsLoading } = useQuery(GET_VIDEO_ORIGINS)
+  const { data: originsData, loading: originsLoading } =
+    useQuery(GET_VIDEO_ORIGINS)
 
   const [createVideo] = useMutation(CREATE_VIDEO)
   const [createEdition] = useMutation(CREATE_EDITION)
@@ -116,7 +117,7 @@ export function VideoCreateForm({
   // Format origins for dropdown
   const originOptions = useMemo(() => {
     if (!originsData?.videoOrigins) return []
-    
+
     return originsData.videoOrigins.map((origin) => ({
       value: origin.id,
       label: origin.name
