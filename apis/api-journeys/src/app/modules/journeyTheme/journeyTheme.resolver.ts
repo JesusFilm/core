@@ -33,12 +33,7 @@ export class JourneyThemeResolver {
     const journeyTheme = await this.prismaService.journeyTheme.findUnique({
       where: { journeyId },
       include: {
-        journey: {
-          include: {
-            userJourneys: true,
-            team: { include: { userTeams: true } }
-          }
-        }
+        journey: true
       }
     })
     if (journeyTheme == null) {
