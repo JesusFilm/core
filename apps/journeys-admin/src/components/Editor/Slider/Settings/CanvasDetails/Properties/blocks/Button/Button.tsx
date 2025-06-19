@@ -85,7 +85,7 @@ export function Button({
       >
         <Color />
       </Accordion>
- 
+
       <Accordion
         id={`${id}-button-size`}
         icon={<SpaceHorizontalIcon />}
