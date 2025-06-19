@@ -1190,7 +1190,7 @@ describe('videoVariant', () => {
           userId: 'userId',
           roles: ['publisher']
         })
-        
+
         // Mock variant with downloads that have null assetId
         prismaMock.videoVariant.findUnique.mockResolvedValue({
           id: 'id',
