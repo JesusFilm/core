@@ -52,6 +52,10 @@ jest.mock('next-firebase-auth', () => ({
 
 jest.mock('react-instantsearch')
 
+jest.mock('../AiChat', () => ({
+  AiChat: jest.fn()
+}))
+
 const mockUseSearchBox = useSearchBox as jest.MockedFunction<
   typeof useSearchBox
 >
