@@ -1,11 +1,11 @@
 import ZoomInIcon from '@mui/icons-material/ZoomIn'
-import Slider from '@mui/material/Slider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useState } from 'react'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../../../../__generated__/BlockFields'
 import { ImageBlockUpdateInput } from '../../../../../../../../../../../../__generated__/globalTypes'
+import { PropertiesSlider } from '../controls'
 
 interface ZoomImageProps {
   imageBlock?: ImageBlock | null
@@ -18,19 +18,21 @@ export function ZoomImage({ imageBlock, updateImageBlock }: ZoomImageProps) {
   )
 
   const handleSliderChange = (_: Event, newValue: number | number[]) => {
-    const val = typeof newValue === 'number' ? newValue : newValue[0]
-    setZoom(Math.round(val * 10) / 10)
+    const zoomFactor = typeof newValue === 'number' ? newValue : newValue[0]
+    const zoomFactorRounded = Math.round(zoomFactor * 10) / 10
+    setZoom(zoomFactorRounded)
   }
 
   const handleSliderChangeCommitted = (
     _: Event,
     newValue: number | number[]
   ) => {
-    const val = typeof newValue === 'number' ? newValue : newValue[0]
+    const zoomFactor = typeof newValue === 'number' ? newValue : newValue[0]
+    const zoomPercentage = Math.round(zoomFactor * 100)
 
     updateImageBlock({
       src: imageBlock?.src,
-      scale: Math.round(val * 100)
+      scale: zoomPercentage
     })
   }
 
@@ -42,37 +44,19 @@ export function ZoomImage({ imageBlock, updateImageBlock }: ZoomImageProps) {
             sx={{ color: 'text.secondary', fontSize: 24 }}
             aria-label="Zoom in"
           />
-          <Slider
+          <PropertiesSlider
             value={zoom}
             min={1.0}
             max={2.0}
             step={0.1}
             onChange={handleSliderChange}
             onChangeCommitted={handleSliderChangeCommitted}
-            sx={{
-              flex: 1,
-              color: 'primary',
-              borderRadius: 4,
-              '& .MuiSlider-thumb': {
-                width: 14,
-                height: 14,
-                boxShadow: 2
-              },
-              '& .MuiSlider-rail': {
-                height: 3,
-                backgroundColor: 'divider'
-              },
-              '& .MuiSlider-track': {
-                height: 3
-              }
-            }}
-            aria-label="Zoom slider"
-            tabIndex={0}
+            ariaLabel="Zoom slider"
           />
           <Typography
             sx={{
               width: 52,
-              height: 31,
+              height: 32,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
