@@ -5,7 +5,7 @@ import { MuxVideo } from '.prisma/api-media-client'
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 
-import { enableDownload, getStaticRenditions } from './service'
+import { enableDownload } from './service'
 
 jest.mock('./service', () => ({
   createVideoByDirectUpload: jest.fn().mockResolvedValue({
@@ -27,30 +27,6 @@ jest.mock('./service', () => ({
   enableDownload: jest.fn().mockResolvedValue(undefined),
   getUpload: jest.fn().mockResolvedValue({
     asset_id: 'assetId'
-  }),
-  getStaticRenditions: jest.fn().mockResolvedValue({
-    files: [
-      {
-        name: 'video_1080p.mp4',
-        ext: 'mp4',
-        height: 1080,
-        width: 1920,
-        bitrate: 5000000,
-        filesize: '104857600',
-        resolution: '1080p',
-        status: 'ready'
-      },
-      {
-        name: 'video_720p.mp4',
-        ext: 'mp4',
-        height: 720,
-        width: 1280,
-        bitrate: 3000000,
-        filesize: '67108864',
-        resolution: '720p',
-        status: 'ready'
-      }
-    ]
   })
 }))
 
@@ -260,103 +236,6 @@ describe('mux/video', () => {
       })
     })
 
-    describe('getMuxStaticRenditions', () => {
-      const GET_MUX_STATIC_RENDITIONS = graphql(`
-        query GetMuxStaticRenditions($assetId: String!) {
-          getMuxStaticRenditions(assetId: $assetId) {
-            name
-            ext
-            height
-            width
-            bitrate
-            filesize
-            resolution
-            status
-          }
-        }
-      `)
-
-      it('should return static renditions when user is publisher', async () => {
-        prismaMock.userMediaRole.findUnique.mockResolvedValue({
-          id: 'userId',
-          userId: 'userId',
-          roles: ['publisher']
-        })
-
-        const data = await publisherClient({
-          document: GET_MUX_STATIC_RENDITIONS,
-          variables: {
-            assetId: 'test-asset-id'
-          }
-        })
-
-        expect(getStaticRenditions).toHaveBeenCalledWith('test-asset-id', false)
-        expect(data).toHaveProperty('data.getMuxStaticRenditions', [
-          {
-            name: 'video_1080p.mp4',
-            ext: 'mp4',
-            height: 1080,
-            width: 1920,
-            bitrate: 5000000,
-            filesize: '104857600',
-            resolution: '1080p',
-            status: 'ready'
-          },
-          {
-            name: 'video_720p.mp4',
-            ext: 'mp4',
-            height: 720,
-            width: 1280,
-            bitrate: 3000000,
-            filesize: '67108864',
-            resolution: '720p',
-            status: 'ready'
-          }
-        ])
-      })
-
-      it('should return empty array when no files exist', async () => {
-        prismaMock.userMediaRole.findUnique.mockResolvedValue({
-          id: 'userId',
-          userId: 'userId',
-          roles: ['publisher']
-        })
-        ;(getStaticRenditions as jest.Mock).mockResolvedValueOnce({
-          files: null
-        })
-
-        const data = await publisherClient({
-          document: GET_MUX_STATIC_RENDITIONS,
-          variables: {
-            assetId: 'test-asset-id'
-          }
-        })
-
-        expect(data).toHaveProperty('data.getMuxStaticRenditions', [])
-      })
-
-      it('should return null when not authorized as publisher', async () => {
-        const data = await authClient({
-          document: GET_MUX_STATIC_RENDITIONS,
-          variables: {
-            assetId: 'test-asset-id'
-          }
-        })
-
-        expect(data).toHaveProperty('data.getMuxStaticRenditions', null)
-      })
-
-      it('should return null when not authenticated', async () => {
-        const data = await client({
-          document: GET_MUX_STATIC_RENDITIONS,
-          variables: {
-            assetId: 'test-asset-id'
-          }
-        })
-
-        expect(data).toHaveProperty('data.getMuxStaticRenditions', null)
-      })
-    })
   })
 
   describe('mutations', () => {
