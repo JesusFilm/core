@@ -235,37 +235,54 @@ describe('agentWebSearch', () => {
   describe('Error Handling', () => {
     it('should handle Langfuse prompt retrieval failure', async () => {
       const mockError = new Error('Langfuse API error')
+      const consoleErrorSpy = jest
+        .spyOn(console, 'error')
+        .mockImplementation(jest.fn())
+
       ;(langfuse.getPrompt as jest.Mock).mockRejectedValue(mockError)
 
       const tool = agentWebSearch(mockClient, mockToolOptions)
+      const result = await tool.execute!(
+        { prompt: 'test query' },
+        { toolCallId: 'test-call-id', messages: [] }
+      )
 
-      await expect(
-        tool.execute!(
-          { prompt: 'test query' },
-          { toolCallId: 'test-call-id', messages: [] }
-        )
-      ).rejects.toThrow('Langfuse API error')
+      expect(consoleErrorSpy).toHaveBeenCalledWith(mockError)
+      expect(result).toBe(`Error performing web search: ${mockError}`)
+
+      consoleErrorSpy.mockRestore()
     })
 
     it('should handle generateText failure', async () => {
       const mockError = new Error('OpenAI API error')
+      const consoleErrorSpy = jest
+        .spyOn(console, 'error')
+        .mockImplementation(jest.fn())
+
       ;(generateText as jest.Mock).mockRejectedValue(mockError)
 
       const tool = agentWebSearch(mockClient, mockToolOptions)
+      const result = await tool.execute!(
+        { prompt: 'test query' },
+        { toolCallId: 'test-call-id', messages: [] }
+      )
 
-      await expect(
-        tool.execute!(
-          { prompt: 'test query' },
-          { toolCallId: 'test-call-id', messages: [] }
-        )
-      ).rejects.toThrow('OpenAI API error')
+      expect(consoleErrorSpy).toHaveBeenCalledWith(mockError)
+      expect(result).toBe(`Error performing web search: ${mockError}`)
+
+      consoleErrorSpy.mockRestore()
     })
 
     it('should handle system prompt toJSON failure gracefully', async () => {
+      const mockError = new Error('toJSON failed')
+      const consoleErrorSpy = jest
+        .spyOn(console, 'error')
+        .mockImplementation(jest.fn())
+
       const mockSystemPromptWithBrokenToJSON = {
         prompt: 'System prompt text',
         toJSON: jest.fn().mockImplementation(() => {
-          throw new Error('toJSON failed')
+          throw mockError
         })
       }
       ;(langfuse.getPrompt as jest.Mock).mockResolvedValue(
@@ -273,13 +290,15 @@ describe('agentWebSearch', () => {
       )
 
       const tool = agentWebSearch(mockClient, mockToolOptions)
+      const result = await tool.execute!(
+        { prompt: 'test query' },
+        { toolCallId: 'test-call-id', messages: [] }
+      )
 
-      await expect(
-        tool.execute!(
-          { prompt: 'test query' },
-          { toolCallId: 'test-call-id', messages: [] }
-        )
-      ).rejects.toThrow('toJSON failed')
+      expect(consoleErrorSpy).toHaveBeenCalledWith(mockError)
+      expect(result).toBe(`Error performing web search: ${mockError}`)
+
+      consoleErrorSpy.mockRestore()
     })
   })
 
