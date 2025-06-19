@@ -59,7 +59,8 @@ export function VideoCard({
                   objectFit: 'cover',
                   maskImage:
                     'linear-gradient(to bottom, rgba(0,0,0,1) 50%, transparent 100%)',
-                  maskSize: 'cover'
+                  maskSize: 'cover',
+                  pointerEvents: 'none'
                 }}
               />
             </div>
