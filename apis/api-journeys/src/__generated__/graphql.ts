@@ -873,6 +873,7 @@ export type Journey = {
   host?: Maybe<Host>;
   id: Scalars['ID']['output'];
   journeyCollections: Array<JourneyCollection>;
+  journeyTheme?: Maybe<JourneyTheme>;
   language: Language;
   languageId: Scalars['String']['output'];
   logoImageBlock?: Maybe<ImageBlock>;
@@ -1094,6 +1095,32 @@ export enum JourneyStatus {
 
 export type JourneyTemplateInput = {
   template?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type JourneyTheme = {
+  __typename?: 'JourneyTheme';
+  accentFont?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  journey: Journey;
+  journeyId: Scalars['ID']['output'];
+  primaryFont?: Maybe<Scalars['String']['output']>;
+  secondaryFont?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
+  userId: Scalars['ID']['output'];
+};
+
+export type JourneyThemeCreateInput = {
+  accentFont?: InputMaybe<Scalars['String']['input']>;
+  journeyId: Scalars['ID']['input'];
+  primaryFont?: InputMaybe<Scalars['String']['input']>;
+  secondaryFont?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type JourneyThemeUpdateInput = {
+  accentFont?: InputMaybe<Scalars['String']['input']>;
+  primaryFont?: InputMaybe<Scalars['String']['input']>;
+  secondaryFont?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type JourneyUpdateInput = {
@@ -1488,6 +1515,9 @@ export type Mutation = {
   journeyPublish?: Maybe<Journey>;
   /** Updates template */
   journeyTemplate: Journey;
+  journeyThemeCreate: JourneyTheme;
+  journeyThemeDelete: JourneyTheme;
+  journeyThemeUpdate: JourneyTheme;
   journeyUpdate: Journey;
   /**
    * Creates a JourneyViewEvent, returns null if attempting to create another
@@ -1965,6 +1995,22 @@ export type MutationJourneyPublishArgs = {
 export type MutationJourneyTemplateArgs = {
   id: Scalars['ID']['input'];
   input: JourneyTemplateInput;
+};
+
+
+export type MutationJourneyThemeCreateArgs = {
+  input: JourneyThemeCreateInput;
+};
+
+
+export type MutationJourneyThemeDeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationJourneyThemeUpdateArgs = {
+  id: Scalars['ID']['input'];
+  input: JourneyThemeUpdateInput;
 };
 
 
@@ -2948,6 +2994,7 @@ export type Query = {
   journeyCollections: Array<Maybe<JourneyCollection>>;
   journeyEventsConnection: JourneyEventsConnection;
   journeyEventsCount: Scalars['Int']['output'];
+  journeyTheme?: Maybe<JourneyTheme>;
   /** Get a JourneyVisitor count by JourneyVisitorFilter */
   journeyVisitorCount: Scalars['Int']['output'];
   /** Get a list of Visitor Information by Journey */
@@ -3178,6 +3225,11 @@ export type QueryJourneyEventsConnectionArgs = {
 
 export type QueryJourneyEventsCountArgs = {
   filter?: InputMaybe<JourneyEventsFilter>;
+  journeyId: Scalars['ID']['input'];
+};
+
+
+export type QueryJourneyThemeArgs = {
   journeyId: Scalars['ID']['input'];
 };
 
