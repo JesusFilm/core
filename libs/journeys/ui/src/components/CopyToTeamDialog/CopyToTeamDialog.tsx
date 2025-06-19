@@ -27,11 +27,13 @@ interface CopyToTeamDialogProps {
   submitLabel?: string
   open: boolean
   loading?: boolean
+  showCreateWithAiButton?: boolean
   onClose: () => void
   submitAction: (
     teamId: string,
     language?: JourneyLanguage,
-    showTranslation?: boolean
+    showTranslation?: boolean,
+    createWithAi?: boolean
   ) => Promise<void>
   translationProgress?: {
     progress: number
@@ -50,6 +52,7 @@ interface FormValues {
   teamSelect: string
   languageSelect?: JourneyLanguage
   showTranslation: boolean
+  createWithAi: boolean
 }
 
 /**
@@ -68,9 +71,10 @@ interface FormValues {
  * @param {string} [props.submitLabel] - Optional custom label for the submit button
  * @param {boolean} props.open - Controls the visibility of the dialog
  * @param {boolean} [props.loading] - Optional flag to indicate loading state
+ * @param {boolean} [props.showCreateWithAiButton] - Optional flag to show the Create with AI button
  * @param {() => void} props.onClose - Callback function invoked when the dialog should close
- * @param {(teamId: string, language?: JourneyLanguage, showTranslation?: boolean) => Promise<void>} props.submitAction -
- *        Callback function that handles the form submission with selected team, optional language, and translation preference
+ * @param {(teamId: string, language?: JourneyLanguage, showTranslation?: boolean, createWithAi?: boolean) => Promise<void>} props.submitAction -
+ *        Callback function that handles the form submission with selected team, optional language, translation preference, and AI creation flag
  * @returns {ReactElement} A dialog component with team selection and optional translation settings
  */
 export function CopyToTeamDialog({
@@ -78,6 +82,7 @@ export function CopyToTeamDialog({
   submitLabel,
   open,
   loading,
+  showCreateWithAiButton = false,
   onClose,
   submitAction,
   translationProgress,
@@ -117,7 +122,8 @@ export function CopyToTeamDialog({
     await submitAction(
       values.teamSelect,
       values.languageSelect,
-      values.showTranslation
+      values.showTranslation,
+      values.createWithAi
     )
 
     // Update team state
@@ -141,6 +147,7 @@ export function CopyToTeamDialog({
 
   const copyToSchema = object({
     teamSelect: string().required(t('Please select a valid team')),
+    createWithAi: boolean().required(),
     showTranslation: boolean().required(),
     languageSelect: object(baseLanguageShape)
       .nullable()
@@ -159,7 +166,8 @@ export function CopyToTeamDialog({
       initialValues={{
         teamSelect: teams.length === 1 ? teams[0].id : '',
         languageSelect: undefined,
-        showTranslation: false
+        showTranslation: false,
+        createWithAi: false
       }}
       enableReinitialize
       onSubmit={handleSubmit}
@@ -197,11 +205,19 @@ export function CopyToTeamDialog({
           resetForm()
         }
 
+        const handleCreateWithAi = async () => {
+          await setFieldValue('createWithAi', true)
+          handleSubmit()
+        }
+
         return (
           <TranslationDialogWrapper
             open={open}
             onClose={handleDialogClose}
             onTranslate={handleFormSubmit}
+            onCreateWithAi={
+              showCreateWithAiButton ? handleCreateWithAi : undefined
+            }
             title={title}
             loading={loading || isSubmitting}
             isTranslation={values.showTranslation || isTranslating}

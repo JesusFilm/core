@@ -100,7 +100,8 @@ export function CreateJourneyButton({
     async (
       teamId: string,
       selectedLanguage?: JourneyLanguage,
-      showTranslation?: boolean
+      showTranslation?: boolean,
+      createWithAi?: boolean
     ): Promise<void> => {
       if (journey == null) return
 
@@ -131,9 +132,15 @@ export function CreateJourneyButton({
             journeyId: journey.id,
             journeyTitle: journey.title
           })
-          void router.push(`/journeys/${newJourneyId}`, undefined, {
-            shallow: true
-          })
+          void router.push(
+            {
+              pathname: `/journeys/${newJourneyId}${createWithAi ? '/ai' : ''}`
+            },
+            undefined,
+            {
+              shallow: true
+            }
+          )
           return
         }
 
@@ -245,6 +252,7 @@ export function CreateJourneyButton({
           title={t('Add Journey to Team')}
           open={openTeamDialog}
           loading={loading}
+          showCreateWithAiButton
           onClose={handleCloseTeamDialog}
           submitAction={handleCreateJourney}
           translationProgress={
