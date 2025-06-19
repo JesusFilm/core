@@ -12,6 +12,7 @@ export const VideoCreateInput = builder.inputType('VideoCreateInput', {
     published: t.boolean({ required: true }),
     slug: t.string({ required: true }),
     noIndex: t.boolean({ required: true }),
-    childIds: t.field({ type: ['String'], required: true })
+    childIds: t.field({ type: ['String'], required: true }),
+    originId: t.string({ required: true })
   })
 })

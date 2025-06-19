@@ -1845,7 +1845,7 @@ describe('video', () => {
           noIndex: true,
           childIds: [],
           availableLanguages: [],
-          originId: null
+          originId: 'originId'
         } as unknown as Video)
         const result = await authClient({
           document: CREATE_VIDEO_MUTATION,
@@ -1857,7 +1857,8 @@ describe('video', () => {
               published: true,
               slug: 'slug',
               noIndex: true,
-              childIds: []
+              childIds: [],
+              originId: 'originId'
             }
           }
         })
@@ -1869,7 +1870,8 @@ describe('video', () => {
             published: true,
             slug: 'slug',
             noIndex: true,
-            childIds: []
+            childIds: [],
+            originId: 'originId'
           }
         })
         expect(result).toHaveProperty('data.videoCreate', {
@@ -1888,7 +1890,8 @@ describe('video', () => {
               published: true,
               slug: 'slug',
               noIndex: true,
-              childIds: []
+              childIds: [],
+              originId: 'originId'
             }
           }
         })
