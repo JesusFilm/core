@@ -1139,7 +1139,7 @@ type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId", extensi
   subtitles(languageId: ID, primary: Boolean, edition: String) : [VideoSubtitle!]! @join__field(graph: API_MEDIA) 
   variant(languageId: ID) : VideoVariant @join__field(graph: API_MEDIA) 
   images(aspectRatio: ImageAspectRatio) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
-  blockDownloadPlatforms: [Platform!]! @join__field(graph: API_MEDIA) 
+  restrictDownloadPlatforms: [Platform!]! @join__field(graph: API_MEDIA) 
 }
 
 type VideoBlockClassNames @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4748,7 +4748,7 @@ input VideoUpdateInput @join__type(graph: API_MEDIA)  {
   noIndex: Boolean
   childIds: [String!]
   keywordIds: [String!]
-  blockDownloadPlatforms: [Platform!]
+  restrictDownloadPlatforms: [Platform!]
 }
 
 input VideoVariantCreateInput @join__type(graph: API_MEDIA)  {

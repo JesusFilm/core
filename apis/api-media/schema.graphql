@@ -805,7 +805,7 @@ type Video
   subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]!
   variant(languageId: ID): VideoVariant
   images(aspectRatio: ImageAspectRatio): [CloudflareImage!]!
-  blockDownloadPlatforms: [Platform!]!
+  restrictDownloadPlatforms: [Platform!]!
 }
 
 enum VideoBlockSource {
@@ -993,7 +993,7 @@ input VideoUpdateInput {
   noIndex: Boolean
   childIds: [String!]
   keywordIds: [String!]
-  blockDownloadPlatforms: [Platform!]
+  restrictDownloadPlatforms: [Platform!]
 }
 
 type VideoVariant {
