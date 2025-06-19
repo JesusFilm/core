@@ -208,11 +208,11 @@ describe('ClientLayout', () => {
 
     const previewButtons = screen.getAllByLabelText('preview variant')
     expect(previewButtons).toHaveLength(3) // All variants should have preview buttons
-    
+
     // First and third variants are published and video is published, so they should be enabled
     expect(previewButtons[0]).not.toBeDisabled()
     expect(previewButtons[2]).not.toBeDisabled()
-    
+
     // Second variant is unpublished, so it should be disabled
     expect(previewButtons[1]).toBeDisabled()
   })

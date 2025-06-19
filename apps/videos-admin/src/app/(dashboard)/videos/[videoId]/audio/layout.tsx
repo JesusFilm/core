@@ -116,8 +116,12 @@ export default function ClientLayout({
         >
           {({ index, data: variants }) => {
             const variant = variants[index]
-            const canPreview = variant.published && data?.adminVideo?.published && data?.adminVideo?.slug && variant.language?.slug
-            
+            const canPreview =
+              variant.published &&
+              data?.adminVideo?.published &&
+              data?.adminVideo?.slug &&
+              variant.language?.slug
+
             return (
               <ListItem
                 key={variant.id}
@@ -158,22 +162,24 @@ export default function ClientLayout({
                     size="small"
                     onClick={(event) => {
                       event.stopPropagation()
-                                             if (canPreview) {
-                         window.open(
-                           `${process.env.NEXT_PUBLIC_WATCH_URL ?? ''}/watch/${data?.adminVideo?.slug}.html/${variant.language.slug}.html`,
-                           '_blank',
-                           'noopener,noreferrer'
-                         )
-                       }
+                      if (canPreview) {
+                        window.open(
+                          `${process.env.NEXT_PUBLIC_WATCH_URL ?? ''}/watch/${data?.adminVideo?.slug}.html/${variant.language.slug}.html`,
+                          '_blank',
+                          'noopener,noreferrer'
+                        )
+                      }
                     }}
                     aria-label="preview variant"
                     disabled={!canPreview}
                     sx={{
                       color: canPreview ? 'primary.main' : 'action.disabled',
-                      '&:hover': canPreview ? {
-                        backgroundColor: 'primary.light',
-                        color: 'primary.contrastText'
-                      } : {},
+                      '&:hover': canPreview
+                        ? {
+                            backgroundColor: 'primary.light',
+                            color: 'primary.contrastText'
+                          }
+                        : {},
                       '&.Mui-disabled': {
                         color: 'action.disabled'
                       }
