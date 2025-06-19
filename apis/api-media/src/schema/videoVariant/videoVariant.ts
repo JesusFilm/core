@@ -29,14 +29,14 @@ builder.prismaObject('VideoVariant', {
       type: ['VideoVariantDownload'],
       nullable: false,
       resolve: async (query, parent, _args, context) => {
-        // If clientName matches a platform in blockDownloadPlatforms, return empty array
+        // If clientName matches a platform in restrictDownloadPlatforms, return empty array
         if (context.clientName && parent.videoId) {
           const video = await prisma.video.findUnique({
             where: { id: parent.videoId },
-            select: { blockDownloadPlatforms: true }
+            select: { restrictDownloadPlatforms: true }
           })
           
-          if (video?.blockDownloadPlatforms.includes(context.clientName as Platform)) {
+          if (video?.restrictDownloadPlatforms.includes(context.clientName as Platform)) {
             return []
           }
         }
