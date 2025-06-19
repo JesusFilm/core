@@ -40,7 +40,7 @@ describe('Card', () => {
     )
 
     expect(
-      screen.getByRole('button', { name: 'Color #FEFEFE' })
+      screen.getByRole('button', { name: 'Filter #FEFEFE' })
     ).toBeInTheDocument()
     expect(
       screen.getByRole('button', { name: 'Background None' })
@@ -79,7 +79,7 @@ describe('Card', () => {
       )
 
       expect(
-        screen.getByRole('button', { name: 'Color #00FFCC' })
+        screen.getByRole('button', { name: 'Filter #00FFCC' })
       ).toBeInTheDocument()
     })
 
@@ -99,7 +99,7 @@ describe('Card', () => {
       )
 
       expect(
-        screen.getByRole('button', { name: 'Color #FEFEFE' })
+        screen.getByRole('button', { name: 'Filter #FEFEFE' })
       ).toBeInTheDocument()
     })
 
@@ -115,7 +115,7 @@ describe('Card', () => {
       )
 
       expect(
-        screen.getByRole('button', { name: 'Color #30313D' })
+        screen.getByRole('button', { name: 'Filter #30313D' })
       ).toBeInTheDocument()
     })
 
