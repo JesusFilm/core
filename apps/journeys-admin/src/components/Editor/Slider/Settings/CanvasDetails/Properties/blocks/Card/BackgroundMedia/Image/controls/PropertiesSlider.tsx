@@ -1,12 +1,13 @@
 import Slider from '@mui/material/Slider'
+import { useTheme } from '@mui/material/styles'
 
 interface PropertiesSliderProps {
   value: number
   min: number
   max: number
   step: number
-  onChange: (event: Event, value: number | number[]) => void
-  onChangeCommitted: (event: Event, value: number | number[]) => void
+  onChange: (event: Event, value: number) => void
+  onChangeCommitted: (event: Event, value: number) => void
   ariaLabel?: string
   color?: string
   railColor?: string
@@ -24,6 +25,8 @@ export function PropertiesSlider({
   onChangeCommitted,
   ariaLabel = 'Slider'
 }: PropertiesSliderProps) {
+  const { palette } = useTheme()
+
   return (
     <Slider
       value={value}
@@ -36,7 +39,7 @@ export function PropertiesSlider({
         root: {
           style: {
             flex: 1,
-            color: '#C52D3A',
+            color: palette.primary.main,
             borderRadius: 4
           }
         },
@@ -49,7 +52,7 @@ export function PropertiesSlider({
         rail: {
           style: {
             height: 3,
-            backgroundColor: '#DEDFE0'
+            backgroundColor: palette.divider
           }
         },
         track: {

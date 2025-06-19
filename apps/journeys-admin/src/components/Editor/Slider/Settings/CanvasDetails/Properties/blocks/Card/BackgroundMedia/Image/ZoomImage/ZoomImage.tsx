@@ -17,18 +17,16 @@ export function ZoomImage({ imageBlock, updateImageBlock }: ZoomImageProps) {
     imageBlock?.scale == null ? 1.0 : imageBlock.scale / 100
   )
 
-  const handleSliderChange = (_: Event, newValue: number | number[]) => {
-    const zoomFactor = typeof newValue === 'number' ? newValue : newValue[0]
-    const zoomFactorRounded = Math.round(zoomFactor * 10) / 10
+  const handleSliderChange = (_: Event, newValue: number) => {
+    const zoomFactorRounded = Math.round(newValue * 10) / 10
     setZoom(zoomFactorRounded)
   }
 
   const handleSliderChangeCommitted = (
     _: Event,
-    newValue: number | number[]
+    newValue: number
   ) => {
-    const zoomFactor = typeof newValue === 'number' ? newValue : newValue[0]
-    const zoomPercentage = Math.round(zoomFactor * 100)
+    const zoomPercentage = Math.round(newValue * 100)
 
     updateImageBlock({
       src: imageBlock?.src,
