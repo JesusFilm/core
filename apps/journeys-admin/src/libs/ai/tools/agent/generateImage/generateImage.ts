@@ -24,25 +24,31 @@ export function agentGenerateImage(
         )
     }),
     execute: async ({ prompt, n }) => {
-      const { images } = await experimental_generateImage({
-        model: openai.image('dall-e-3'),
-        prompt,
-        n
-        // experimental_telemetry: {
-        //   isEnabled: true,
-        //   functionId: 'agentGenerateImage',
-        //   metadata: {
-        //     langfuseTraceId,
-        //     langfuseUpdateParent: false
-        //   }
-        // }
-      })
+      try {
+        const { images } = await experimental_generateImage({
+          model: openai.image('dall-e-3'),
+          prompt,
+          n
+          // Commented out, experimental_telemetry is not supported on generateImage
+          // experimental_telemetry: {
+          //   isEnabled: true,
+          //   functionId: 'agentGenerateImage',
+          //   metadata: {
+          //     langfuseTraceId,
+          //     langfuseUpdateParent: false
+          //   }
+          // }
+        })
 
-      const result = await Promise.all(
-        images.map(async (image) => await upload(client, image.uint8Array))
-      )
+        const result = await Promise.all(
+          images.map(async (image) => await upload(client, image.uint8Array))
+        )
 
-      return result
+        return result
+      } catch (error) {
+        console.error(error)
+        return `Error generating image: ${error}`
+      }
     }
   })
 }
