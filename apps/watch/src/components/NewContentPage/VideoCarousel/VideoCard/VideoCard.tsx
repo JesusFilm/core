@@ -23,8 +23,6 @@ export function VideoCard({
   const href = getWatchUrl(containerSlug, video.label, video.variant?.slug)
   const [isHovered, setIsHovered] = useState(false)
 
-  console.log(video)
-
   return (
     <NextLink
       href={href}

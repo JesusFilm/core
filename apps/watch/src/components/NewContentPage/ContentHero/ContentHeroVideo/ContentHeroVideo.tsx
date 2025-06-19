@@ -43,7 +43,15 @@ export function ContentHeroVideo({
   }, [pauseVideoOnScrollAway])
 
   useEffect(() => {
-    if (!videoRef.current) return
+    if (!videoRef.current || !variant?.hls) return
+
+    // Dispose of existing player before creating new one
+    if (playerRef.current) {
+      playerRef.current.dispose()
+      playerRef.current = null
+      setPlayerReady(false)
+    }
+
     // Create Mux metadata for video analytics
     const muxMetadata: MuxMetadata = {
       env_key: process.env.NEXT_PUBLIC_MUX_DEFAULT_REPORTING_KEY || '',
@@ -72,17 +80,24 @@ export function ContentHeroVideo({
     })
 
     playerRef.current = player
-    playerRef.current.ready(() => {
-      setPlayerReady(true)
-    })
-  }, [variant])
 
-  useEffect(() => {
-    void playerRef.current?.src({
-      src: variant?.hls ?? '',
+    player.src({
+      src: variant.hls,
       type: 'application/x-mpegURL'
     })
-  }, [variant?.hls])
+
+    player.ready(() => {
+      setPlayerReady(true)
+    })
+
+    return () => {
+      if (playerRef.current) {
+        playerRef.current.dispose()
+        playerRef.current = null
+      }
+      setPlayerReady(false)
+    }
+  }, [variant?.hls, title, variant?.id])
 
   return (
     <div
@@ -91,20 +106,22 @@ export function ContentHeroVideo({
       }`}
       data-testid="ContentHeroVideoContainer"
     >
-      <video
-        key={variant?.hls}
-        data-testid="ContentHeroVideo"
-        ref={videoRef}
-        className="vjs [&_.vjs-tech]:object-contain [&_.vjs-tech]:md:object-cover"
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%'
-        }}
-        playsInline
-      />
+      {variant?.hls && (
+        <video
+          key={variant.hls}
+          data-testid="ContentHeroVideo"
+          ref={videoRef}
+          className="vjs [&_.vjs-tech]:object-contain [&_.vjs-tech]:md:object-cover"
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%'
+          }}
+          playsInline
+        />
+      )}
       {playerRef.current != null && playerReady && (
         <VideoControls player={playerRef.current} />
       )}

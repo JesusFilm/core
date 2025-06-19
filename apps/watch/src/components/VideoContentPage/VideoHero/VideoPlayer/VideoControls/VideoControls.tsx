@@ -99,8 +99,15 @@ export function VideoControls({
 
   // Listen for when metadata becomes available before setting duration https://stackoverflow.com/questions/40763057/trying-to-get-full-video-duration-but-returning-as-nan
   useEffect(() => {
-    const updateDuration = (): void => {
+    let retryCount = 0
+    const maxRetries = 5
+    let retryTimeout: NodeJS.Timeout | undefined
+
+    const updateDuration = (state: string): void => {
+      console.log('updateDuration', state)
       const playerDuration = player.duration()
+      console.log(`playerDuration ${state}`, playerDuration)
+
       if (
         playerDuration != null &&
         !isNaN(playerDuration) &&
@@ -109,17 +116,56 @@ export function VideoControls({
         const roundedDuration = Math.round(playerDuration)
         setDurationSeconds(roundedDuration)
         setDuration(secondsToTimeFormat(roundedDuration, { trimZeroes: true }))
+
+        // Clear any pending retry
+        if (retryTimeout) {
+          clearTimeout(retryTimeout)
+          retryTimeout = undefined
+        }
+      } else if (state === 'retry' && retryCount < maxRetries) {
+        // Retry with exponential backoff for HLS streams
+        retryCount++
+        const delay = Math.min(1000 * Math.pow(2, retryCount - 1), 5000)
+        console.warn(
+          `Retrying duration detection (${retryCount}/${maxRetries}) in ${delay}ms`
+        )
+        retryTimeout = setTimeout(() => {
+          updateDuration('retry')
+        }, delay)
       }
     }
 
-    player.on('durationchange', updateDuration)
-    player.on('loadedmetadata', updateDuration)
+    const events = [
+      'durationchange',
+      'loadedmetadata',
+      'loadstart',
+      'canplay',
+      'canplaythrough',
+      'progress'
+    ]
 
-    updateDuration()
+    events.forEach((event) => {
+      player.on(event, () => updateDuration(event))
+    })
+
+    // Initial check
+    updateDuration('initial')
+
+    // Start retry mechanism if initial duration is not available
+    const initialDuration = player.duration()
+    if (isNaN(initialDuration ?? NaN) || (initialDuration ?? 0) <= 0) {
+      retryTimeout = setTimeout(() => {
+        updateDuration('retry')
+      }, 500)
+    }
 
     return () => {
-      player.off('durationchange', updateDuration)
-      player.off('loadedmetadata', updateDuration)
+      if (retryTimeout) {
+        clearTimeout(retryTimeout)
+      }
+      events.forEach((event) => {
+        player.off(event, updateDuration)
+      })
     }
   }, [player])
 
