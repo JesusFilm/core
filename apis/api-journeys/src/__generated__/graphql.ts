@@ -1546,6 +1546,7 @@ export type Mutation = {
   typographyBlockCreate: TypographyBlock;
   typographyBlockUpdate: TypographyBlock;
   updateJourneysEmailPreference?: Maybe<JourneysEmailPreference>;
+  updateVideoVariantDownloadSizesFromMux: Scalars['Boolean']['output'];
   userImpersonate?: Maybe<Scalars['String']['output']>;
   userInviteAcceptAll: Array<UserInvite>;
   userInviteCreate?: Maybe<UserInvite>;
@@ -2191,6 +2192,11 @@ export type MutationTypographyBlockUpdateArgs = {
 
 export type MutationUpdateJourneysEmailPreferenceArgs = {
   input: JourneysEmailPreferenceUpdateInput;
+};
+
+
+export type MutationUpdateVideoVariantDownloadSizesFromMuxArgs = {
+  videoVariantId: Scalars['ID']['input'];
 };
 
 
