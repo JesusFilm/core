@@ -127,7 +127,7 @@ describe('RestrictedViews', () => {
 
   it('should show cancel button when form is dirty', async () => {
     const user = userEvent.setup()
-    
+
     render(
       <TestWrapper mocks={mockVideoWithNoPlatforms}>
         <RestrictedViews videoId="video1" />
@@ -192,4 +192,4 @@ describe('RestrictedViews', () => {
       ).toBeInTheDocument()
     })
   })
-}) 
+})

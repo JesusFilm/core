@@ -1,1 +1,1 @@
-export { RestrictedViews } from './RestrictedViews' 
+export { RestrictedViews } from './RestrictedViews'

@@ -82,8 +82,7 @@ export function RestrictedViews({
   return (
     <Formik
       initialValues={{
-        restrictViewPlatforms:
-          data.adminVideo.restrictViewPlatforms || []
+        restrictViewPlatforms: data.adminVideo.restrictViewPlatforms || []
       }}
       onSubmit={handleUpdateRestrictedViews}
     >
@@ -92,9 +91,9 @@ export function RestrictedViews({
           <Stack gap={2}>
             <Stack gap={1}>
               <Typography variant="body2" color="text.secondary">
-                Select platforms where viewing should be blocked for this
-                video. When a platform is selected, users accessing from that
-                platform will not be able to view this video.
+                Select platforms where viewing should be blocked for this video.
+                When a platform is selected, users accessing from that platform
+                will not be able to view this video.
               </Typography>
               <FormControl component="fieldset" variant="standard">
                 <FormGroup>
@@ -144,4 +143,4 @@ export function RestrictedViews({
       )}
     </Formik>
   )
-} 
+}
