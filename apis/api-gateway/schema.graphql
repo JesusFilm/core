@@ -405,6 +405,10 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   audioPreviewCreate(input: MutationAudioPreviewCreateInput!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
   audioPreviewUpdate(input: MutationAudioPreviewUpdateInput!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
   audioPreviewDelete(languageId: ID!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
+  """
+  Transcode an asset. Returns the bullmq job ID.
+  """
+  transcodeAsset(input: TranscodeVideoInput!) : String @join__field(graph: API_MEDIA) 
   createCloudflareUploadByFile(input: ImageInput) : CloudflareImage! @join__field(graph: API_MEDIA) 
   createCloudflareUploadByUrl(url: String!, input: ImageInput) : CloudflareImage! @join__field(graph: API_MEDIA) 
   createCloudflareImageFromPrompt(prompt: String!, input: ImageInput) : CloudflareImage! @join__field(graph: API_MEDIA) 
@@ -2125,8 +2129,9 @@ type UserInvite @join__type(graph: API_JOURNEYS, key: "id")  {
   removedAt: DateTime
 }
 
-type User @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_MEDIA, key: "id", extension: true)  @join__type(graph: API_USERS, key: "id")  {
+type User @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_LANGUAGES, key: "id", extension: true)  @join__type(graph: API_MEDIA, key: "id", extension: true)  @join__type(graph: API_USERS, key: "id")  {
   id: ID!
+  languageUserRoles: [LanguageRole!]! @join__field(graph: API_LANGUAGES) 
   mediaUserRoles: [MediaRole!]! @join__field(graph: API_MEDIA) 
   firstName: String! @join__field(graph: API_USERS) 
   lastName: String @join__field(graph: API_USERS) 
@@ -2381,7 +2386,7 @@ type YouTube @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId"
   source: VideoBlockSource!
 }
 
-type AudioPreview @join__type(graph: API_LANGUAGES)  {
+type AudioPreview @join__type(graph: API_LANGUAGES, key: "languageId")  {
   languageId: ID!
   language: Language!
   value: String!
@@ -3284,6 +3289,10 @@ enum EventType @join__type(graph: API_JOURNEYS_MODERN)  {
 enum LanguageIdType @join__type(graph: API_LANGUAGES)  {
   databaseId @join__enumValue(graph: API_LANGUAGES) 
   bcp47 @join__enumValue(graph: API_LANGUAGES) 
+}
+
+enum LanguageRole @join__type(graph: API_LANGUAGES)  {
+  publisher @join__enumValue(graph: API_LANGUAGES) 
 }
 
 enum DefaultPlatform @join__type(graph: API_MEDIA)  {
