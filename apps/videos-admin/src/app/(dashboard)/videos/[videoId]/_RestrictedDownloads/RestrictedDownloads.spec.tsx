@@ -2,7 +2,10 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
-import { GET_RESTRICTED_DOWNLOADS, RestrictedDownloads } from './RestrictedDownloads'
+import {
+  GET_RESTRICTED_DOWNLOADS,
+  RestrictedDownloads
+} from './RestrictedDownloads'
 
 const mocks = [
   {
@@ -34,4 +37,4 @@ describe('RestrictedDownloads', () => {
 
     expect(container).toBeInTheDocument()
   })
-}) 
+})

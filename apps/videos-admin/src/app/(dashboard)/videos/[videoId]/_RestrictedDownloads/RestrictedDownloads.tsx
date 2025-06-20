@@ -85,22 +85,22 @@ export function RestrictedDownloads({
       }}
       onSubmit={handleUpdateRestrictedDownloads}
     >
-      {({
-        values,
-        setFieldValue,
-        isSubmitting,
-        dirty,
-        resetForm
-      }) => (
+      {({ values, setFieldValue, isSubmitting, dirty, resetForm }) => (
         <Form>
           <Stack gap={2}>
             <Stack gap={1}>
               <Typography variant="body2" color="text.secondary">
-                Select platforms where downloads should be blocked for this video.
-                When a platform is selected, users accessing from that platform will not see any download options.
+                Select platforms where downloads should be blocked for this
+                video. When a platform is selected, users accessing from that
+                platform will not see any download options.
               </Typography>
-              <Typography variant="body2" color="warning.main" sx={{ fontStyle: 'italic' }}>
-                Note: This feature is currently under development. Changes will not be saved until the backend schema is updated.
+              <Typography
+                variant="body2"
+                color="warning.main"
+                sx={{ fontStyle: 'italic' }}
+              >
+                Note: This feature is currently under development. Changes will
+                not be saved until the backend schema is updated.
               </Typography>
               <FormControl component="fieldset" variant="standard">
                 <FormLabel component="legend">Blocked Platforms</FormLabel>
@@ -110,9 +110,12 @@ export function RestrictedDownloads({
                       key={platform.value}
                       control={
                         <Checkbox
-                          checked={values.blockDownloadPlatforms.includes(platform.value)}
+                          checked={values.blockDownloadPlatforms.includes(
+                            platform.value
+                          )}
                           onChange={(event) => {
-                            const currentPlatforms = values.blockDownloadPlatforms
+                            const currentPlatforms =
+                              values.blockDownloadPlatforms
                             if (event.target.checked) {
                               void setFieldValue('blockDownloadPlatforms', [
                                 ...currentPlatforms,
@@ -121,7 +124,9 @@ export function RestrictedDownloads({
                             } else {
                               void setFieldValue(
                                 'blockDownloadPlatforms',
-                                currentPlatforms.filter((p) => p !== platform.value)
+                                currentPlatforms.filter(
+                                  (p) => p !== platform.value
+                                )
                               )
                             }
                           }}
@@ -135,13 +140,17 @@ export function RestrictedDownloads({
               </FormControl>
               {values.blockDownloadPlatforms.length > 0 && (
                 <Typography variant="body2" color="warning.main">
-                  Downloads are currently blocked for: {values.blockDownloadPlatforms.join(', ')}
+                  Downloads are currently blocked for:{' '}
+                  {values.blockDownloadPlatforms.join(', ')}
                 </Typography>
               )}
             </Stack>
             <Divider sx={{ mx: -4 }} />
             <Stack direction="row" justifyContent="flex-end" gap={1}>
-              <CancelButton show={dirty} handleCancel={() => void resetForm()} />
+              <CancelButton
+                show={dirty}
+                handleCancel={() => void resetForm()}
+              />
               <SaveButton disabled={isSubmitting || !dirty} />
             </Stack>
           </Stack>
@@ -149,4 +158,4 @@ export function RestrictedDownloads({
       )}
     </Formik>
   )
-} 
+}
