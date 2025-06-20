@@ -801,6 +801,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   video(id: ID!, idType: IdType = databaseId) : Video! @join__field(graph: API_MEDIA) 
   videos(where: VideosFilter, offset: Int, limit: Int) : [Video!]! @join__field(graph: API_MEDIA) 
   videosCount(where: VideosFilter) : Int! @join__field(graph: API_MEDIA) 
+  videoOrigins: [VideoOrigin!]! @join__field(graph: API_MEDIA) 
   videoEditions: [VideoEdition!]! @join__field(graph: API_MEDIA) 
   videoEdition(id: ID!) : VideoEdition @join__field(graph: API_MEDIA) 
   videoVariant(id: ID!) : VideoVariant! @join__field(graph: API_MEDIA) 
@@ -1142,6 +1143,7 @@ type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId", extensi
   subtitles(languageId: ID, primary: Boolean, edition: String) : [VideoSubtitle!]! @join__field(graph: API_MEDIA) 
   variant(languageId: ID) : VideoVariant @join__field(graph: API_MEDIA) 
   images(aspectRatio: ImageAspectRatio) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
+  restrictDownloadPlatforms: [Platform!]! @join__field(graph: API_MEDIA) 
 }
 
 type VideoBlockClassNames @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -3322,6 +3324,11 @@ enum Service @join__type(graph: API_MEDIA)  {
   apiVideos @join__enumValue(graph: API_MEDIA) 
 }
 
+enum Platform @join__type(graph: API_MEDIA)  {
+  arclight @join__enumValue(graph: API_MEDIA) 
+  watch @join__enumValue(graph: API_MEDIA) 
+}
+
 enum UnsplashPhotoOrientation @join__type(graph: API_MEDIA)  {
   landscape @join__enumValue(graph: API_MEDIA) 
   portrait @join__enumValue(graph: API_MEDIA) 
@@ -4681,6 +4688,7 @@ input VideoCreateInput @join__type(graph: API_MEDIA)  {
   slug: String!
   noIndex: Boolean!
   childIds: [String!]!
+  originId: String!
 }
 
 input VideoEditionCreateInput @join__type(graph: API_MEDIA)  {
@@ -4769,6 +4777,7 @@ input VideoUpdateInput @join__type(graph: API_MEDIA)  {
   noIndex: Boolean
   childIds: [String!]
   keywordIds: [String!]
+  restrictDownloadPlatforms: [Platform!]
 }
 
 input VideoVariantCreateInput @join__type(graph: API_MEDIA)  {

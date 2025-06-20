@@ -2737,6 +2737,11 @@ export type PageInfo = {
   startCursor?: Maybe<Scalars['String']['output']>;
 };
 
+export enum Platform {
+  Arclight = 'arclight',
+  Watch = 'watch'
+}
+
 export type PlausibleStatsAggregateFilter = {
   /**
    * date in the standard ISO-8601 format (YYYY-MM-DD).
@@ -3060,6 +3065,7 @@ export type Query = {
   video: Video;
   videoEdition?: Maybe<VideoEdition>;
   videoEditions: Array<VideoEdition>;
+  videoOrigins: Array<VideoOrigin>;
   videoVariant: VideoVariant;
   videoVariants: Array<VideoVariant>;
   videos: Array<Video>;
@@ -4426,6 +4432,7 @@ export type Video = {
   parents: Array<Video>;
   primaryLanguageId: Scalars['ID']['output'];
   published: Scalars['Boolean']['output'];
+  restrictDownloadPlatforms: Array<Platform>;
   /** slug is a permanent link to the video. */
   slug: Scalars['String']['output'];
   snippet: Array<VideoSnippet>;
@@ -4773,6 +4780,7 @@ export type VideoCreateInput = {
   id: Scalars['String']['input'];
   label: VideoLabel;
   noIndex: Scalars['Boolean']['input'];
+  originId: Scalars['String']['input'];
   primaryLanguageId: Scalars['String']['input'];
   published: Scalars['Boolean']['input'];
   slug: Scalars['String']['input'];
@@ -5124,6 +5132,7 @@ export type VideoUpdateInput = {
   noIndex?: InputMaybe<Scalars['Boolean']['input']>;
   primaryLanguageId?: InputMaybe<Scalars['String']['input']>;
   published?: InputMaybe<Scalars['Boolean']['input']>;
+  restrictDownloadPlatforms?: InputMaybe<Array<Platform>>;
   slug?: InputMaybe<Scalars['String']['input']>;
 };
 
