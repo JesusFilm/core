@@ -16,7 +16,7 @@ builder.queryFields((t) => ({
     resolve: async (query) => {
       return await prisma.videoOrigin.findMany({
         ...query,
-        orderBy: { id: 'asc' }
+        orderBy: { name: 'asc' }
       })
     }
   })
