@@ -2737,6 +2737,11 @@ export type PageInfo = {
   startCursor?: Maybe<Scalars['String']['output']>;
 };
 
+export enum Platform {
+  Arclight = 'arclight',
+  Watch = 'watch'
+}
+
 export type PlausibleStatsAggregateFilter = {
   /**
    * date in the standard ISO-8601 format (YYYY-MM-DD).
@@ -4426,6 +4431,7 @@ export type Video = {
   parents: Array<Video>;
   primaryLanguageId: Scalars['ID']['output'];
   published: Scalars['Boolean']['output'];
+  restrictDownloadPlatforms: Array<Platform>;
   /** slug is a permanent link to the video. */
   slug: Scalars['String']['output'];
   snippet: Array<VideoSnippet>;
@@ -5124,6 +5130,7 @@ export type VideoUpdateInput = {
   noIndex?: InputMaybe<Scalars['Boolean']['input']>;
   primaryLanguageId?: InputMaybe<Scalars['String']['input']>;
   published?: InputMaybe<Scalars['Boolean']['input']>;
+  restrictDownloadPlatforms?: InputMaybe<Array<Platform>>;
   slug?: InputMaybe<Scalars['String']['input']>;
 };
 
