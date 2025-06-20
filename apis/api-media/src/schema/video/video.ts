@@ -362,10 +362,10 @@ const Video = builder.prismaObject('Video', {
         orderBy: { aspectRatio: 'desc' }
       })
     }),
-    blockDownloadPlatforms: t.withAuth({ isPublisher: true }).field({
+    restrictDownloadPlatforms: t.withAuth({ isPublisher: true }).field({
       type: [Platform],
       nullable: false,
-      resolve: ({ blockDownloadPlatforms }) => blockDownloadPlatforms
+      resolve: ({ restrictDownloadPlatforms }) => restrictDownloadPlatforms
     })
   })
 })
@@ -507,7 +507,9 @@ builder.mutationFields((t) => ({
       })
       try {
         await videoCacheReset(video.id)
-      } catch {}
+      } catch {
+        // ignore
+      }
       return video
     }
   }),
@@ -528,7 +530,8 @@ builder.mutationFields((t) => ({
           slug: input.slug ?? undefined,
           noIndex: input.noIndex ?? undefined,
           childIds: input.childIds ?? undefined,
-          blockDownloadPlatforms: input.blockDownloadPlatforms ?? undefined,
+          restrictDownloadPlatforms:
+            input.restrictDownloadPlatforms ?? undefined,
           ...(input.keywordIds
             ? { keywords: { set: input.keywordIds.map((id) => ({ id })) } }
             : {})
@@ -540,7 +543,9 @@ builder.mutationFields((t) => ({
       })
       try {
         await videoCacheReset(video.id)
-      } catch {}
+      } catch {
+        // ignore
+      }
       return video
     }
   })

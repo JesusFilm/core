@@ -2,6 +2,7 @@ import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { ResultOf, graphql } from 'gql.tada'
 
 import { getApolloClient } from '../../../../lib/apolloClient'
+import { generateCacheKey, getWithStaleCache } from '../../../../lib/cache'
 
 import { taxonomiesWithCategory } from './[category]'
 import { TaxonomyGroup, findBestMatchingName } from './lib'
@@ -94,67 +95,72 @@ taxonomies.openapi(listTaxonomiesRoute, async (c) => {
     ?.split(',') ?? ['en']
   const apiKey = c.req.query('apiKey') ?? ''
 
-  const { data } = await getApolloClient().query<
-    ResultOf<typeof GET_TAXONOMIES>
-  >({
-    query: GET_TAXONOMIES,
-    variables: { languageCodes: metadataLanguageTags }
+  const cacheKey = generateCacheKey(['taxonomies', ...metadataLanguageTags])
+
+  const response = await getWithStaleCache(cacheKey, async () => {
+    const { data } = await getApolloClient().query<
+      ResultOf<typeof GET_TAXONOMIES>
+    >({
+      query: GET_TAXONOMIES,
+      variables: { languageCodes: metadataLanguageTags }
+    })
+
+    const groupedTaxonomies: Record<string, TaxonomyGroup> = {}
+
+    const filteredTaxonomies = data.taxonomies.filter(
+      (taxonomy) => taxonomy.name.length > 0
+    )
+
+    if (filteredTaxonomies.length === 0) {
+      return null
+    }
+
+    filteredTaxonomies.forEach((taxonomy) => {
+      const matchingName = findBestMatchingName(
+        taxonomy.name as Array<{ label: string; language: { bcp47: string } }>,
+        metadataLanguageTags
+      )
+
+      if (groupedTaxonomies[taxonomy.category] === undefined) {
+        groupedTaxonomies[taxonomy.category] = {
+          terms: {
+            [taxonomy.term]: {
+              label: matchingName.label,
+              metadataLanguageTag: matchingName.language.bcp47
+            }
+          },
+          _links: {
+            self: {
+              href: `http://api.arclight.org/v2/taxonomies/${taxonomy.category}?apiKey=${apiKey}`
+            },
+            taxonomies: {
+              href: `http://api.arclight.org/v2/taxonomies?apiKey=${apiKey}`
+            }
+          }
+        }
+      } else {
+        groupedTaxonomies[taxonomy.category].terms[taxonomy.term] = {
+          label: matchingName.label,
+          metadataLanguageTag: matchingName.language.bcp47
+        }
+      }
+    })
+
+    return {
+      _links: {
+        self: { href: `http://api.arclight.org/v2/taxonomies?apiKey=${apiKey}` }
+      },
+      _embedded: { taxonomies: groupedTaxonomies }
+    }
   })
 
-  const groupedTaxonomies: Record<string, TaxonomyGroup> = {}
-
-  const filteredTaxonomies = data.taxonomies.filter(
-    (taxonomy) => taxonomy.name.length > 0
-  )
-
-  if (filteredTaxonomies.length === 0) {
+  if (response == null) {
     return c.json(
       {
-        message: `Not acceptable metadata language tag(s): ${metadataLanguageTags.join(
-          ', '
-        )}`
+        message: `Not acceptable metadata language tag(s): ${metadataLanguageTags.join(', ')}`
       },
       406
     )
   }
-
-  filteredTaxonomies.forEach((taxonomy) => {
-    const matchingName = findBestMatchingName(
-      taxonomy.name as Array<{ label: string; language: { bcp47: string } }>,
-      metadataLanguageTags
-    )
-
-    if (groupedTaxonomies[taxonomy.category] === undefined) {
-      groupedTaxonomies[taxonomy.category] = {
-        terms: {
-          [taxonomy.term]: {
-            label: matchingName.label,
-            metadataLanguageTag: matchingName.language.bcp47
-          }
-        },
-        _links: {
-          self: {
-            href: `http://api.arclight.org/v2/taxonomies/${taxonomy.category}?apiKey=${apiKey}`
-          },
-          taxonomies: {
-            href: `http://api.arclight.org/v2/taxonomies?apiKey=${apiKey}`
-          }
-        }
-      }
-    } else {
-      groupedTaxonomies[taxonomy.category].terms[taxonomy.term] = {
-        label: matchingName.label,
-        metadataLanguageTag: matchingName.language.bcp47
-      }
-    }
-  })
-
-  const response = {
-    _links: {
-      self: { href: `http://api.arclight.org/v2/taxonomies?apiKey=${apiKey}` }
-    },
-    _embedded: { taxonomies: groupedTaxonomies }
-  }
-
   return c.json(response, 200)
 })

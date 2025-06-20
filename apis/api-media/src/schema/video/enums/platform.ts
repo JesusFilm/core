@@ -4,4 +4,4 @@ import { builder } from '../../builder'
 
 export const Platform = builder.enumType(PrismaPlatform, {
   name: 'Platform'
-}) 
+})
