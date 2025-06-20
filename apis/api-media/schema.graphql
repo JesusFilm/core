@@ -429,6 +429,7 @@ type PageInfo
 
 enum Platform {
   arclight
+  journeys
   watch
 }
 
@@ -806,6 +807,7 @@ type Video
   variant(languageId: ID): VideoVariant
   images(aspectRatio: ImageAspectRatio): [CloudflareImage!]!
   restrictDownloadPlatforms: [Platform!]!
+  restrictViewPlatforms: [Platform!]!
 }
 
 enum VideoBlockSource {
@@ -994,6 +996,7 @@ input VideoUpdateInput {
   childIds: [String!]
   keywordIds: [String!]
   restrictDownloadPlatforms: [Platform!]
+  restrictViewPlatforms: [Platform!]
 }
 
 type VideoVariant {
