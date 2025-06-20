@@ -507,9 +507,7 @@ builder.mutationFields((t) => ({
       })
       try {
         await videoCacheReset(video.id)
-      } catch {
-        // ignore
-      }
+      } catch {}
       return video
     }
   }),
@@ -543,9 +541,7 @@ builder.mutationFields((t) => ({
       })
       try {
         await videoCacheReset(video.id)
-      } catch {
-        // ignore
-      }
+      } catch {}
       return video
     }
   })
