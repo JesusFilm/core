@@ -48,7 +48,7 @@ describe('videoOrigin', () => {
           document: VIDEO_ORIGINS_QUERY
         })
         expect(prismaMock.videoOrigin.findMany).toHaveBeenCalledWith({
-          orderBy: { name: 'asc' }
+          orderBy: { id: 'asc' }
         })
         expect(result).toHaveProperty('data.videoOrigins', [
           {
