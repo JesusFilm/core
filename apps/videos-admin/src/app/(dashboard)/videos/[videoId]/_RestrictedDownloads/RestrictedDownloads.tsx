@@ -81,7 +81,8 @@ export function RestrictedDownloads({
   return (
     <Formik
       initialValues={{
-        restrictDownloadPlatforms: data.adminVideo.restrictDownloadPlatforms || []
+        restrictDownloadPlatforms:
+          data.adminVideo.restrictDownloadPlatforms || []
       }}
       onSubmit={handleUpdateRestrictedDownloads}
     >

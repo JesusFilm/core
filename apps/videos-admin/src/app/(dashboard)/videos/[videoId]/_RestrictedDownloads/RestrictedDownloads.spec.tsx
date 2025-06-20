@@ -67,12 +67,16 @@ const mockUpdateMutation = {
   }
 }
 
-const TestWrapper = ({ children, mocks }: { children: React.ReactNode; mocks: any[] }) => (
+const TestWrapper = ({
+  children,
+  mocks
+}: {
+  children: React.ReactNode
+  mocks: any[]
+}) => (
   <MockedProvider mocks={mocks} addTypename={false}>
     <SnackbarProvider>
-      <Suspense fallback={<div>Loading...</div>}>
-        {children}
-      </Suspense>
+      <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
     </SnackbarProvider>
   </MockedProvider>
 )
@@ -113,7 +117,7 @@ describe('RestrictedDownloads', () => {
     await waitFor(() => {
       const arclightCheckbox = screen.getByLabelText('Arclight')
       const watchCheckbox = screen.getByLabelText('Watch')
-      
+
       expect(arclightCheckbox).toBeChecked()
       expect(watchCheckbox).not.toBeChecked()
     })
@@ -121,7 +125,7 @@ describe('RestrictedDownloads', () => {
 
   it('should enable save button when form is dirty', async () => {
     const user = userEvent.setup()
-    
+
     render(
       <TestWrapper mocks={[...mockVideoWithNoPlatforms, mockUpdateMutation]}>
         <RestrictedDownloads videoId="video1" />
@@ -142,7 +146,7 @@ describe('RestrictedDownloads', () => {
 
   it('should show cancel button when form is dirty', async () => {
     const user = userEvent.setup()
-    
+
     render(
       <TestWrapper mocks={mockVideoWithNoPlatforms}>
         <RestrictedDownloads videoId="video1" />
@@ -150,7 +154,9 @@ describe('RestrictedDownloads', () => {
     )
 
     await waitFor(() => {
-      expect(screen.queryByRole('button', { name: /cancel/i })).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: /cancel/i })
+      ).not.toBeInTheDocument()
     })
 
     await waitFor(() => {
@@ -161,7 +167,9 @@ describe('RestrictedDownloads', () => {
     await user.click(arclightCheckbox)
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: /cancel/i })
+      ).toBeInTheDocument()
     })
   })
 
@@ -173,7 +181,9 @@ describe('RestrictedDownloads', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByText(/Select platforms where downloads should be blocked/)).toBeInTheDocument()
+      expect(
+        screen.getByText(/Select platforms where downloads should be blocked/)
+      ).toBeInTheDocument()
     })
   })
 })
