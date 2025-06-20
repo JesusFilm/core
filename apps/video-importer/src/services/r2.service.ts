@@ -1,8 +1,10 @@
 import { createReadStream } from 'fs'
 
-import { S3Client } from '@aws-sdk/client-s3'
+import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { Upload } from '@aws-sdk/lib-storage'
 import fetch from 'node-fetch'
+
+import type { R2Asset } from '../types'
 
 import { CREATE_CLOUDFLARE_R2_ASSET } from './gql/mutations'
 import { getGraphQLClient } from './graphqlClient'
@@ -45,11 +47,12 @@ export async function createR2Asset({
   originalFilename: string
   videoId: string
   contentLength: number
-}) {
+}): Promise<R2Asset> {
   const client = await getGraphQLClient()
   const safeContentLength = contentLength > 2_147_483_647 ? -1 : contentLength
-  const data: { cloudflareR2Create: { uploadUrl: string; publicUrl: string } } =
-    await client.request(CREATE_CLOUDFLARE_R2_ASSET, {
+  const data: { cloudflareR2Create: R2Asset } = await client.request(
+    CREATE_CLOUDFLARE_R2_ASSET,
+    {
       input: {
         fileName,
         contentType,
@@ -57,7 +60,8 @@ export async function createR2Asset({
         videoId,
         contentLength: safeContentLength
       }
-    })
+    }
+  )
   return data.cloudflareR2Create
 }
 
@@ -163,5 +167,41 @@ export async function uploadToR2({
   } catch (err) {
     console.error('[R2 Service] Multipart upload failed:', err)
     throw err
+  }
+}
+
+/**
+ * Directly uploads a file to R2 using the S3 PutObjectCommand (no presigned URL).
+ * Suitable for small files such as audio previews. We use this for audio previews
+ * because we don't want to create a new R2 asset for each audio preview. Since, they
+ * are in api-languages not api-media.
+ */
+export async function uploadFileToR2Direct({
+  bucket,
+  key,
+  filePath,
+  contentType
+}: {
+  bucket: string
+  key: string
+  filePath: string
+  contentType: string
+}): Promise<void> {
+  const fileStream = createReadStream(filePath)
+  try {
+    await s3Client.send(
+      new PutObjectCommand({
+        Bucket: bucket,
+        Key: key,
+        Body: fileStream,
+        ContentType: contentType
+      })
+    )
+    console.log(
+      '[R2 Service] Successfully uploaded audio preview via PutObject.'
+    )
+  } catch (error) {
+    console.error('[R2 Service] Direct upload failed:', error)
+    throw error
   }
 }
