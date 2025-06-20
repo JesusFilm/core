@@ -116,11 +116,11 @@ export default function VideoViewLayout({
                 <Section title="Description" variant="outlined">
                   <VideoDescription videoId={videoId} />
                 </Section>
+                <VideoBibleCitation videoId={videoId} />
+                {studyQuestions}
                 <Section title="Restricted Downloads" variant="outlined">
                   <RestrictedDownloads videoId={videoId} />
                 </Section>
-                <VideoBibleCitation videoId={videoId} />
-                {studyQuestions}
               </Stack>
             </>
           )}

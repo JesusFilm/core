@@ -25,6 +25,7 @@ export const GET_RESTRICTED_DOWNLOADS = graphql(`
   query GetRestrictedDownloads($id: ID!) {
     adminVideo(id: $id) {
       id
+      restrictDownloadPlatforms
     }
   }
 `)
@@ -59,9 +60,8 @@ export function RestrictedDownloads({
     await updateRestrictedDownloads({
       variables: {
         input: {
-          id: videoId
-          // TODO: Add blockDownloadPlatforms when schema is updated
-          // blockDownloadPlatforms: values.blockDownloadPlatforms
+          id: videoId,
+          restrictDownloadPlatforms: values.restrictDownloadPlatforms
         }
       },
       onCompleted: () => {
@@ -81,7 +81,7 @@ export function RestrictedDownloads({
   return (
     <Formik
       initialValues={{
-        blockDownloadPlatforms: [] // TODO: Replace with data.adminVideo.blockDownloadPlatforms when schema is updated
+        restrictDownloadPlatforms: data.adminVideo.restrictDownloadPlatforms || []
       }}
       onSubmit={handleUpdateRestrictedDownloads}
     >
@@ -94,43 +94,34 @@ export function RestrictedDownloads({
                 video. When a platform is selected, users accessing from that
                 platform will not see any download options.
               </Typography>
-              <Typography
-                variant="body2"
-                color="warning.main"
-                sx={{ fontStyle: 'italic' }}
-              >
-                Note: This feature is currently under development. Changes will
-                not be saved until the backend schema is updated.
-              </Typography>
               <FormControl component="fieldset" variant="standard">
-                <FormLabel component="legend">Blocked Platforms</FormLabel>
                 <FormGroup>
                   {platformOptions.map((platform) => (
                     <FormControlLabel
                       key={platform.value}
                       control={
                         <Checkbox
-                          checked={values.blockDownloadPlatforms.includes(
+                          checked={values.restrictDownloadPlatforms.includes(
                             platform.value
                           )}
                           onChange={(event) => {
                             const currentPlatforms =
-                              values.blockDownloadPlatforms
+                              values.restrictDownloadPlatforms
                             if (event.target.checked) {
-                              void setFieldValue('blockDownloadPlatforms', [
+                              void setFieldValue('restrictDownloadPlatforms', [
                                 ...currentPlatforms,
                                 platform.value
                               ])
                             } else {
                               void setFieldValue(
-                                'blockDownloadPlatforms',
+                                'restrictDownloadPlatforms',
                                 currentPlatforms.filter(
                                   (p) => p !== platform.value
                                 )
                               )
                             }
                           }}
-                          name={`blockDownloadPlatforms.${platform.value}`}
+                          name={`restrictDownloadPlatforms.${platform.value}`}
                         />
                       }
                       label={platform.label}
@@ -138,14 +129,7 @@ export function RestrictedDownloads({
                   ))}
                 </FormGroup>
               </FormControl>
-              {values.blockDownloadPlatforms.length > 0 && (
-                <Typography variant="body2" color="warning.main">
-                  Downloads are currently blocked for:{' '}
-                  {values.blockDownloadPlatforms.join(', ')}
-                </Typography>
-              )}
             </Stack>
-            <Divider sx={{ mx: -4 }} />
             <Stack direction="row" justifyContent="flex-end" gap={1}>
               <CancelButton
                 show={dirty}
