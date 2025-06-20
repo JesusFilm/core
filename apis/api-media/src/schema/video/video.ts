@@ -216,7 +216,7 @@ const Video = builder.prismaObject('Video', {
       async resolve(query, parent, _args, context) {
         if (parent.childIds.length === 0) return []
 
-        const whereCondition: any = {
+        const whereCondition: Prisma.VideoWhereInput = {
           id: { in: parent.childIds }
         }
 
@@ -249,7 +249,7 @@ const Video = builder.prismaObject('Video', {
       type: ['Video'],
       nullable: false,
       async resolve(query, child: { id: string }, _args, context) {
-        const whereCondition: any = {
+        const whereCondition: Prisma.VideoWhereInput = {
           childIds: {
             has: child.id
           }
