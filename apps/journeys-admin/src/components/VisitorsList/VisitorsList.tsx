@@ -1,6 +1,6 @@
 import { gql, useQuery } from '@apollo/client'
-import LoadingButton from '@mui/lab/LoadingButton'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
 import { DataGrid } from '@mui/x-data-grid'
@@ -122,7 +122,7 @@ export function VisitorsList(): ReactElement {
           getRowHeight={() => 'auto'}
         />
       </Box>
-      <LoadingButton
+      <Button
         variant="outlined"
         onClick={handleFetchNext}
         disabled={!hasNextPage}
@@ -130,7 +130,7 @@ export function VisitorsList(): ReactElement {
         sx={{ width: '250px' }}
       >
         {t('Load More')}
-      </LoadingButton>
+      </Button>
     </Stack>
   )
 }

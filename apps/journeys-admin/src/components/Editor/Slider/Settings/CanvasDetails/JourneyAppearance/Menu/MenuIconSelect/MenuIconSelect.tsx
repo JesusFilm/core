@@ -62,6 +62,25 @@ const Icons: IconOptions = [
   }
 ]
 
+const getIconTestId = (
+  iconValue: JourneyMenuButtonIcon
+): string | undefined => {
+  switch (iconValue) {
+    case JourneyMenuButtonIcon.chevronDown:
+      return 'ChevronDownIcon'
+    case JourneyMenuButtonIcon.home4:
+      return 'Home4Icon'
+    case JourneyMenuButtonIcon.home3:
+      return 'Home3Icon'
+    case JourneyMenuButtonIcon.menu1:
+      return 'Menu1Icon'
+    case JourneyMenuButtonIcon.more:
+      return 'MoreIcon'
+    default:
+      return undefined
+  }
+}
+
 export function MenuIconSelect(): ReactElement {
   const { journey } = useJourney()
   const { add } = useCommand()
@@ -170,12 +189,12 @@ export function MenuIconSelect(): ReactElement {
                   height: 56,
                   width: 56,
                   borderRadius: 2,
-                  background: ({ palette }) => palette.background.default,
+                  border: ({ palette }) => palette.background.default,
                   display: 'grid',
                   placeItems: 'center'
                 }}
               >
-                <Icon />
+                <Icon data-testid={getIconTestId(value)} />
               </Box>
             </MenuItem>
           ))}

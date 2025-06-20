@@ -157,7 +157,10 @@ function ValidateEmail({
                   }}
                   elevation={0}
                 >
-                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    data-testid="VerifyCodeAccordionSummary"
+                  >
                     <Typography px={4}>
                       {t('Verify With Code Instead')}
                     </Typography>
