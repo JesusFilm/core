@@ -8,7 +8,9 @@ import {
   videoVariantCacheReset
 } from '../../lib/videoCacheReset'
 import { builder } from '../builder'
+import { deleteR2File } from '../cloudflare/r2/asset'
 import { Language } from '../language'
+import { deleteVideo } from '../mux/video/service'
 
 import { VideoVariantCreateInput } from './inputs/videoVariantCreate'
 import { VideoVariantFilter } from './inputs/videoVariantFilter'
@@ -242,10 +244,18 @@ builder.mutationFields((t) => ({
       id: t.arg.id({ required: true })
     },
     resolve: async (query, _parent, { id }) => {
-      // Get the video variant first to ensure we have videoId for cache reset
+      // Get the video variant with all associated assets
       const variant = await prisma.videoVariant.findUnique({
         where: { id },
-        select: { videoId: true }
+        include: {
+          downloads: {
+            include: {
+              asset: true
+            }
+          },
+          asset: true,
+          muxVideo: true
+        }
       })
 
       if (variant == null) {
@@ -255,6 +265,69 @@ builder.mutationFields((t) => ({
       // Store videoId to use later
       const { videoId } = variant
 
+      // Clean up R2 assets
+      const assetsToDelete: string[] = []
+
+      // Add main variant asset if it exists
+      if (variant.assetId != null) {
+        assetsToDelete.push(variant.assetId)
+      }
+
+      // Add download assets if they exist
+      if (variant.downloads) {
+        variant.downloads.forEach((download) => {
+          if (download.assetId != null) {
+            assetsToDelete.push(download.assetId)
+          }
+        })
+      }
+
+      // Delete R2 assets
+      for (const assetId of assetsToDelete) {
+        try {
+          // Get the R2 asset record to get the fileName
+          const r2Asset = await prisma.cloudflareR2.findUnique({
+            where: { id: assetId },
+            select: { fileName: true }
+          })
+
+          if (r2Asset?.fileName != null) {
+            // Delete the actual file from Cloudflare R2 storage
+            await deleteR2File(r2Asset.fileName)
+          }
+
+          // Delete the database record
+          await prisma.cloudflareR2.delete({
+            where: { id: assetId }
+          })
+        } catch (error) {
+          // Log error but continue with other deletions
+          console.error(`Failed to delete R2 asset ${assetId}:`, error)
+        }
+      }
+
+      // Clean up Mux asset
+      if (variant.muxVideoId != null && variant.muxVideo != null) {
+        try {
+          // Delete from Mux service first (using assetId, not our database ID)
+          if (variant.muxVideo.assetId != null) {
+            await deleteVideo(variant.muxVideo.assetId, false)
+          }
+
+          // Delete from our database
+          await prisma.muxVideo.delete({
+            where: { id: variant.muxVideoId }
+          })
+        } catch (error) {
+          // Log error but continue with variant deletion
+          console.error(
+            `Failed to delete Mux video ${variant.muxVideoId}:`,
+            error
+          )
+        }
+      }
+
+      // Delete the video variant
       const deleted = await prisma.videoVariant.delete({
         ...query,
         where: { id }
