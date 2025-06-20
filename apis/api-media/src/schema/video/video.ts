@@ -26,7 +26,10 @@ function isVideoViewRestricted(
   restrictViewPlatforms: PrismaPlatform[],
   clientName?: string
 ): boolean {
-  return clientName != null && restrictViewPlatforms.includes(clientName as PrismaPlatform)
+  return (
+    clientName != null &&
+    restrictViewPlatforms.includes(clientName as PrismaPlatform)
+  )
 }
 
 interface Info {
@@ -212,11 +215,11 @@ const Video = builder.prismaObject('Video', {
       nullable: false,
       async resolve(query, parent, _args, context) {
         if (parent.childIds.length === 0) return []
-        
+
         const whereCondition: any = {
           id: { in: parent.childIds }
         }
-        
+
         // Add platform restriction filter if clientName is provided
         if (context.clientName) {
           whereCondition.NOT = {
@@ -225,7 +228,7 @@ const Video = builder.prismaObject('Video', {
             }
           }
         }
-        
+
         return orderBy(
           await prisma.video.findMany({
             ...query,
@@ -251,7 +254,7 @@ const Video = builder.prismaObject('Video', {
             has: child.id
           }
         }
-        
+
         // Add platform restriction filter if clientName is provided
         if (context.clientName) {
           whereCondition.NOT = {
@@ -260,7 +263,7 @@ const Video = builder.prismaObject('Video', {
             }
           }
         }
-        
+
         return await prisma.video.findMany({
           ...query,
           where: whereCondition
@@ -477,18 +480,21 @@ builder.queryFields((t) => ({
     },
     resolve: async (query, _parent, { id, idType }, context) => {
       try {
-        const video = idType === IdTypeShape.slug
-          ? await prisma.video.findFirstOrThrow({
-              ...query,
-              where: { variants: { some: { slug: id } }, published: true }
-            })
-          : await prisma.video.findUniqueOrThrow({
-              ...query,
-              where: { id, published: true }
-            })
+        const video =
+          idType === IdTypeShape.slug
+            ? await prisma.video.findFirstOrThrow({
+                ...query,
+                where: { variants: { some: { slug: id } }, published: true }
+              })
+            : await prisma.video.findUniqueOrThrow({
+                ...query,
+                where: { id, published: true }
+              })
 
         // Check if video viewing is restricted for the current platform
-        if (isVideoViewRestricted(video.restrictViewPlatforms, context.clientName)) {
+        if (
+          isVideoViewRestricted(video.restrictViewPlatforms, context.clientName)
+        ) {
           throw new GraphQLError(`Video not found with id ${idType}:${id}`)
         }
 
@@ -515,7 +521,7 @@ builder.queryFields((t) => ({
     resolve: async (query, _parent, { offset, limit, where }, context) => {
       const filter = videosFilter(where ?? {})
       filter.published = true
-      
+
       // Add platform restriction filter if clientName is provided
       if (context.clientName) {
         filter.NOT = {
@@ -525,7 +531,7 @@ builder.queryFields((t) => ({
           }
         }
       }
-      
+
       return await prisma.video.findMany({
         ...query,
         where: filter,
@@ -540,7 +546,7 @@ builder.queryFields((t) => ({
     resolve: async (_parent, { where }, context) => {
       const filter = videosFilter(where ?? {})
       filter.published = true
-      
+
       // Add platform restriction filter if clientName is provided
       if (context.clientName) {
         filter.NOT = {
@@ -550,7 +556,7 @@ builder.queryFields((t) => ({
           }
         }
       }
-      
+
       return await prisma.video.count({
         where: filter
       })
@@ -595,8 +601,7 @@ builder.mutationFields((t) => ({
           childIds: input.childIds ?? undefined,
           restrictDownloadPlatforms:
             input.restrictDownloadPlatforms ?? undefined,
-          restrictViewPlatforms:
-            input.restrictViewPlatforms ?? undefined,
+          restrictViewPlatforms: input.restrictViewPlatforms ?? undefined,
           ...(input.keywordIds
             ? { keywords: { set: input.keywordIds.map((id) => ({ id })) } }
             : {})

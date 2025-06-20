@@ -2698,6 +2698,7 @@ export type PageInfo = {
 
 export enum Platform {
   Arclight = 'arclight',
+  Journeys = 'journeys',
   Watch = 'watch'
 }
 
@@ -4390,6 +4391,7 @@ export type Video = {
   primaryLanguageId: Scalars['ID']['output'];
   published: Scalars['Boolean']['output'];
   restrictDownloadPlatforms: Array<Platform>;
+  restrictViewPlatforms: Array<Platform>;
   /** slug is a permanent link to the video. */
   slug: Scalars['String']['output'];
   snippet: Array<VideoSnippet>;
@@ -5089,6 +5091,7 @@ export type VideoUpdateInput = {
   primaryLanguageId?: InputMaybe<Scalars['String']['input']>;
   published?: InputMaybe<Scalars['Boolean']['input']>;
   restrictDownloadPlatforms?: InputMaybe<Array<Platform>>;
+  restrictViewPlatforms?: InputMaybe<Array<Platform>>;
   slug?: InputMaybe<Scalars['String']['input']>;
 };
 
