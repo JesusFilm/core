@@ -144,7 +144,7 @@ export function VideoHeroOverlay({
               >
                 <AccessTime sx={{ width: 17, height: 17 }} />
                 {variant !== null && (
-                  <Typography variant="body1" sx={{ whiteSpace: 'nowrap' }}>
+                  <Typography variant="h6" sx={{ whiteSpace: 'nowrap' }}>
                     {t('{{ duration }} min', {
                       duration: secondsToMinutes(variant.duration)
                     })}

@@ -1,7 +1,15 @@
 locals {
   port = 3000
   environment_variables = [
-    "NEXT_PUBLIC_GATEWAY_URL"
+    "NEXT_PUBLIC_GATEWAY_URL",
+    "NEXT_PUBLIC_ALGOLIA_APP_ID",
+    "NEXT_PUBLIC_ALGOLIA_INDEX_COUNTRIES",
+    "NEXT_PUBLIC_ALGOLIA_INDEX_LANGUAGES",
+    "NEXT_PUBLIC_ALGOLIA_INDEX_VIDEOS",
+    "NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY",
+    "NEXT_PUBLIC_MUX_DEFAULT_REPORTING_KEY",
+    "REDIS_URL",
+    "REDIS_PORT"
   ]
   service_config = {
     name           = "arclight"

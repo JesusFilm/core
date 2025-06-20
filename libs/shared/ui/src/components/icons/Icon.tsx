@@ -56,6 +56,7 @@ import CopyLeft from './CopyLeft'
 import CopyRight from './CopyRight'
 import CopyTo from './CopyTo'
 import Crop1 from './Crop1'
+import Crop169 from './Crop169'
 import Cursor4 from './Cursor4'
 import Cursor6 from './Cursor6'
 import CursorPointer from './CursorPointer'
@@ -178,6 +179,7 @@ import Square from './Square'
 import Star2 from './Star2'
 import Stars from './Stars'
 import StopCircleContained from './StopCircleContained'
+import Sun2 from './Sun2'
 import Tag from './Tag'
 import Target from './Target'
 import Target2 from './Target2'
@@ -269,6 +271,7 @@ export type IconName =
   | 'CopyRight'
   | 'CopyTo'
   | 'Crop1'
+  | 'Crop169'
   | 'Cursor4'
   | 'Cursor6'
   | 'CursorPointer'
@@ -391,6 +394,7 @@ export type IconName =
   | 'Star2'
   | 'Stars'
   | 'StopCircleContained'
+  | 'Sun2'
   | 'Tag'
   | 'Target'
   | 'Target2'
@@ -486,6 +490,7 @@ const iconComponents: IconComponents = {
   CopyRight,
   CopyTo,
   Crop1,
+  Crop169,
   Cursor4,
   Cursor6,
   CursorPointer,
@@ -608,6 +613,7 @@ const iconComponents: IconComponents = {
   Star2,
   Stars,
   StopCircleContained,
+  Sun2,
   Tag,
   Target,
   Target2,

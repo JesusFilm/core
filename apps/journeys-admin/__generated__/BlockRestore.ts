@@ -50,6 +50,7 @@ export interface BlockRestore_blockRestore_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: BlockRestore_blockRestore_ButtonBlock_action | null;
 }
 
@@ -187,6 +188,14 @@ export interface BlockRestore_blockRestore_SignUpBlock {
   action: BlockRestore_blockRestore_SignUpBlock_action | null;
 }
 
+export interface BlockRestore_blockRestore_SpacerBlock {
+  __typename: "SpacerBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  spacing: number | null;
+}
+
 export interface BlockRestore_blockRestore_StepBlock {
   __typename: "StepBlock";
   id: string;
@@ -227,7 +236,9 @@ export interface BlockRestore_blockRestore_TextResponseBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;
@@ -431,7 +442,7 @@ export interface BlockRestore_blockRestore_VideoTriggerBlock {
   triggerAction: BlockRestore_blockRestore_VideoTriggerBlock_triggerAction;
 }
 
-export type BlockRestore_blockRestore = BlockRestore_blockRestore_GridContainerBlock | BlockRestore_blockRestore_ButtonBlock | BlockRestore_blockRestore_CardBlock | BlockRestore_blockRestore_IconBlock | BlockRestore_blockRestore_ImageBlock | BlockRestore_blockRestore_RadioOptionBlock | BlockRestore_blockRestore_RadioQuestionBlock | BlockRestore_blockRestore_SignUpBlock | BlockRestore_blockRestore_StepBlock | BlockRestore_blockRestore_TextResponseBlock | BlockRestore_blockRestore_TypographyBlock | BlockRestore_blockRestore_VideoBlock | BlockRestore_blockRestore_VideoTriggerBlock;
+export type BlockRestore_blockRestore = BlockRestore_blockRestore_GridContainerBlock | BlockRestore_blockRestore_ButtonBlock | BlockRestore_blockRestore_CardBlock | BlockRestore_blockRestore_IconBlock | BlockRestore_blockRestore_ImageBlock | BlockRestore_blockRestore_RadioOptionBlock | BlockRestore_blockRestore_RadioQuestionBlock | BlockRestore_blockRestore_SignUpBlock | BlockRestore_blockRestore_SpacerBlock | BlockRestore_blockRestore_StepBlock | BlockRestore_blockRestore_TextResponseBlock | BlockRestore_blockRestore_TypographyBlock | BlockRestore_blockRestore_VideoBlock | BlockRestore_blockRestore_VideoTriggerBlock;
 
 export interface BlockRestore {
   /**

@@ -23,7 +23,7 @@ export function ExpandedCover({
   backgroundBlur,
   hasFullscreenVideo = false
 }: ExpandedCoverProps): ReactElement {
-  const { variant } = useJourney()
+  const { journey, variant } = useJourney()
   const enableVerticalScroll = {
     overflowY: 'scroll',
     // Hide on Firefox https://caniuse.com/?search=scrollbar-width
@@ -49,6 +49,7 @@ export function ExpandedCover({
           data-testid="CardExpandedImageCover"
           src={imageBlock.src ?? backgroundBlur}
           alt={imageBlock.alt}
+          loading="eager"
           placeholder="blur"
           blurDataURL={backgroundBlur}
           layout="fill"
@@ -73,7 +74,7 @@ export function ExpandedCover({
           justifyContent="center"
           sx={{
             flexGrow: 1,
-            pt: { xs: 10, sm: 8 },
+            pt: journey?.website === true ? 0 : { xs: 10, sm: 8 },
             ...enableVerticalScroll
           }}
         >
@@ -84,8 +85,8 @@ export function ExpandedCover({
               width: {
                 xs:
                   variant === 'default'
-                    ? 'calc(100% - 48px - env(safe-area-inset-left) - env(safe-area-inset-right))'
-                    : 'calc(100% - 48px)',
+                    ? 'calc(100% - 32px - env(safe-area-inset-left) - env(safe-area-inset-right))'
+                    : 'calc(100% - 32px)',
                 sm: 360,
                 md: 500
               }

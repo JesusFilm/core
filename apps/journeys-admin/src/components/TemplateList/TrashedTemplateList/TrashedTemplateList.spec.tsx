@@ -48,13 +48,16 @@ const noJourneysMock = {
 }
 
 describe('TrashedTemplateList', () => {
-  // fake timers not working correctly with
   beforeAll(() => {
     jest.useFakeTimers()
     jest.setSystemTime(new Date(fakeDate))
   })
 
-  it('should render templates in descending createdAt date by default', async () => {
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
+  it('should render templates in descending updatedAt date by default', async () => {
     const { getAllByLabelText } = render(
       <MockedProvider mocks={[trashedJourneysMock]}>
         <ThemeProvider>
@@ -65,12 +68,12 @@ describe('TrashedTemplateList', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getAllByLabelText('template-card')[0].textContent).toContain(
-        'January 1'
+      expect(getAllByLabelText('journey-card')[0].textContent).toContain(
+        '11 months ago'
       )
     )
-    expect(getAllByLabelText('template-card')[1].textContent).toContain(
-      'November 19, 2020'
+    expect(getAllByLabelText('journey-card')[1].textContent).toContain(
+      '1 year ago'
     )
   })
 
@@ -111,12 +114,12 @@ describe('TrashedTemplateList', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getAllByLabelText('template-card')[0].textContent).toContain(
-        `a lower case titleJanuary 1English`
+      expect(getAllByLabelText('journey-card')[0].textContent).toContain(
+        'a lower case title'
       )
     )
-    expect(getAllByLabelText('template-card')[1].textContent).toContain(
-      'An Old Template HeadingNovember 19, 2020 - Template created before the current year should also show the year in the dateEnglish'
+    expect(getAllByLabelText('journey-card')[1].textContent).toContain(
+      'An Old Template'
     )
   })
 
@@ -151,25 +154,44 @@ describe('TrashedTemplateList', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getAllByLabelText('template-card')[0].textContent).toContain(
+      expect(getAllByLabelText('journey-card')[0].textContent).toContain(
         'Default Template Heading'
       )
     )
-    expect(getAllByLabelText('template-card')[1]).toBeUndefined()
+    expect(getAllByLabelText('journey-card')[1]).toBeUndefined()
   })
 
-  it('should render loading skeleton', async () => {
-    const { getAllByLabelText } = render(
-      <MockedProvider mocks={[]}>
+  it('should display no trashed templates message', async () => {
+    const { getByText } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_ADMIN_JOURNEYS,
+              variables: {
+                status: [JourneyStatus.trashed],
+                template: true
+              }
+            },
+            result: {
+              data: {
+                journeys: []
+              }
+            }
+          }
+        ]}
+      >
         <ThemeProvider>
           <SnackbarProvider>
-            <TrashedTemplateList />
+            <TrashedTemplateList sortOrder={SortOrder.TITLE} />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getAllByLabelText('template-card')).toHaveLength(3)
+      expect(
+        getByText('Your trashed templates will appear here.')
+      ).toBeInTheDocument()
     )
   })
 

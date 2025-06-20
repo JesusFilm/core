@@ -9,9 +9,11 @@ import { ReactElement, useEffect, useRef, useState } from 'react'
 
 import { WrapperProps } from '@core/journeys/ui/BlockRenderer'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import DragIcon from '@core/shared/ui/icons/Drag'
+import { ThemeMode } from '@core/shared/ui/themes'
 
 export function DragItemWrapper({
   block,
@@ -30,6 +32,8 @@ export function DragItemWrapper({
   const [blockIds, setBlockIds] = useState<string[]>([])
 
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+  const theme =
+    selectedStep != null ? getStepTheme(selectedStep, journey) : null
 
   useEffect(() => {
     setBlockIds(
@@ -113,7 +117,7 @@ export function DragItemWrapper({
         <Divider
           orientation="horizontal"
           sx={{
-            width: '315px',
+            width: '248px',
             height: '2px',
             mt: '6px',
             mb: '6px',
@@ -134,15 +138,19 @@ export function DragItemWrapper({
       >
         <DragIcon
           fontSize="large"
-          style={{
+          sx={{
             position: 'absolute',
+            color: '#FFFFFF',
             left: rtl ? undefined : '-30px',
             right: rtl ? '-30px' : undefined,
             top: '-18px',
             opacity: isHovering && !isDuringDrag ? 1 : 0,
-            color: 'secondary.dark',
             cursor: 'grab',
-            alignSelf: 'center'
+            alignSelf: 'center',
+            filter:
+              theme?.themeMode === ThemeMode.light
+                ? 'drop-shadow(0px 0px 2px #000000)'
+                : 'drop-shadow(0px 0px 2px #FFFFFF)'
           }}
         />
       </Popper>

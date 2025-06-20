@@ -1,0 +1,26 @@
+type RadioQuestionBlock implements Block @key(fields: "id") {
+  id: ID! @shareable
+  journeyId: ID! @shareable
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+}
+
+input RadioQuestionBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+}
+
+extend type Mutation {
+  radioQuestionBlockCreate(
+    input: RadioQuestionBlockCreateInput!
+  ): RadioQuestionBlock!
+  radioQuestionBlockUpdate(
+    id: ID!
+    parentBlockId: ID!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): RadioQuestionBlock!
+}

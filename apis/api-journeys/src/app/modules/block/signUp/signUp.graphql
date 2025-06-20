@@ -1,0 +1,48 @@
+input SignUpBlockClassNamesInput {
+  self: String!
+}
+
+type SignUpBlockClassNames {
+  self: String! @shareable
+}
+
+type SignUpBlock implements Block @key(fields: "id") {
+  id: ID! @shareable
+  journeyId: ID! @shareable
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  action: Action
+  submitIconId: ID @shareable
+  submitLabel: String @shareable
+  """
+  classNames is an object of tailwind class names for the block
+  """
+  classNames: SignUpBlockClassNames! @shareable
+}
+
+input SignUpBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  submitLabel: String!
+  classNames: SignUpBlockClassNamesInput
+}
+
+input SignUpBlockUpdateInput {
+  parentBlockId: ID
+  submitIconId: ID
+  submitLabel: String
+  classNames: SignUpBlockClassNamesInput
+}
+
+extend type Mutation {
+  signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock!
+  signUpBlockUpdate(
+    id: ID!
+    input: SignUpBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): SignUpBlock
+}

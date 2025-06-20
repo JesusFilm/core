@@ -60,27 +60,11 @@ Tip: Make a separate branch for each set of unrelated changes. This makes it eas
 
 :::
 
-#### Commit Messages
-
-Your commit messages must be structured according to [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/).
-
-The Conventional Commits specification is a lightweight convention on top of commit messages. It provides an easy set of rules for creating an explicit commit history; which makes it easier to write automated tools on top of. This convention dovetails with SemVer, by describing the features, fixes, and breaking changes made in commit messages. Husky and commit-lint are installed to enforce the commit messages are correctly formatted.
-
-The commit message should be structured as follows:
-
-```
-<type>[optional scope]: <description>
-
-[optional body]
-
-[optional footer(s)]
-```
-
 ### Create a pull request
 
 Create a pull request to ask collaborators for feedback on your changes. Pull request review is so valuable to us that we require approving review and passing checks before pull requests can be merged. If you want early feedback or advice before you complete your changes, you can mark your pull request as a draft. For more information, see "[Creating a pull request](https://docs.github.com/en/articles/creating-a-pull-request)."
 
-When you create a pull request, include a summary of the changes and what problem they solve. You can include images, links, and tables to help convey this information. The body of the pull request will automatically be populated using our [pull request template](https://github.com/JesusFilm/core/blob/main/.github/pull_request_template.md).
+When you create a pull request, coderabbit.ai will populate a detailed description for you.
 
 [![Example pull request](./pull-request-example.png)](https://github.com/JesusFilm/core/pull/1020)
 
@@ -109,24 +93,6 @@ You must tag at least one reviewer. Typically this is going to be a fellow team 
 #### Assignee
 
 You must tag the person responsible for merging this pull request. Typically this is going to be youself or your team leader.
-
-#### Labelling
-
-It is important that you monitor your pull request and apply the appropriate labels.
-
-- Prefixes matter. Labels get chaotic without them. The chosen are;
-  - effort = relative effort involved, Fibonacci from 1 to 13
-  - priority = designate immediacy; now, 2day or soon
-  - type = describe type; bug, chore, discussion, docs, feature, fix, security, testing
-- The only labels without prefixes are; breaking, good first issue, on stage, and help
-
-#### Projects
-
-As a mono-repo, there are many projects contained in this repository. You must add the appropriate user-facing project tag that your pull request is primarily affecting. There are some times however when your pull request is more general in nature. For these pull requests you can tag them with the core project.
-
-#### Milestone
-
-As per Shape Up we make use of cycles and cooldowns and make references to these as milestones. You must add the related milestone tag to your pull request. For Example `2022 - 02 Cycle` or `2022 - 02 Cooldown`.
 
 ### Code Review
 

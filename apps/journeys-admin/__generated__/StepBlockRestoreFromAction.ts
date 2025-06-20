@@ -50,6 +50,7 @@ export interface StepBlockRestoreFromAction_blockRestore_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: StepBlockRestoreFromAction_blockRestore_ButtonBlock_action | null;
 }
 
@@ -187,6 +188,14 @@ export interface StepBlockRestoreFromAction_blockRestore_SignUpBlock {
   action: StepBlockRestoreFromAction_blockRestore_SignUpBlock_action | null;
 }
 
+export interface StepBlockRestoreFromAction_blockRestore_SpacerBlock {
+  __typename: "SpacerBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  spacing: number | null;
+}
+
 export interface StepBlockRestoreFromAction_blockRestore_StepBlock {
   __typename: "StepBlock";
   id: string;
@@ -227,7 +236,9 @@ export interface StepBlockRestoreFromAction_blockRestore_TextResponseBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;
@@ -431,10 +442,10 @@ export interface StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock {
   triggerAction: StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock_triggerAction;
 }
 
-export type StepBlockRestoreFromAction_blockRestore = StepBlockRestoreFromAction_blockRestore_GridContainerBlock | StepBlockRestoreFromAction_blockRestore_ButtonBlock | StepBlockRestoreFromAction_blockRestore_CardBlock | StepBlockRestoreFromAction_blockRestore_IconBlock | StepBlockRestoreFromAction_blockRestore_ImageBlock | StepBlockRestoreFromAction_blockRestore_RadioOptionBlock | StepBlockRestoreFromAction_blockRestore_RadioQuestionBlock | StepBlockRestoreFromAction_blockRestore_SignUpBlock | StepBlockRestoreFromAction_blockRestore_StepBlock | StepBlockRestoreFromAction_blockRestore_TextResponseBlock | StepBlockRestoreFromAction_blockRestore_TypographyBlock | StepBlockRestoreFromAction_blockRestore_VideoBlock | StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock;
+export type StepBlockRestoreFromAction_blockRestore = StepBlockRestoreFromAction_blockRestore_GridContainerBlock | StepBlockRestoreFromAction_blockRestore_ButtonBlock | StepBlockRestoreFromAction_blockRestore_CardBlock | StepBlockRestoreFromAction_blockRestore_IconBlock | StepBlockRestoreFromAction_blockRestore_ImageBlock | StepBlockRestoreFromAction_blockRestore_RadioOptionBlock | StepBlockRestoreFromAction_blockRestore_RadioQuestionBlock | StepBlockRestoreFromAction_blockRestore_SignUpBlock | StepBlockRestoreFromAction_blockRestore_SpacerBlock | StepBlockRestoreFromAction_blockRestore_StepBlock | StepBlockRestoreFromAction_blockRestore_TextResponseBlock | StepBlockRestoreFromAction_blockRestore_TypographyBlock | StepBlockRestoreFromAction_blockRestore_VideoBlock | StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock;
 
 export interface StepBlockRestoreFromAction_blockUpdateAction_parentBlock {
-  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
 }
 

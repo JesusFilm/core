@@ -50,6 +50,7 @@ export interface CardPollRestore_imageRestore_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardPollRestore_imageRestore_ButtonBlock_action | null;
 }
 
@@ -187,6 +188,14 @@ export interface CardPollRestore_imageRestore_SignUpBlock {
   action: CardPollRestore_imageRestore_SignUpBlock_action | null;
 }
 
+export interface CardPollRestore_imageRestore_SpacerBlock {
+  __typename: "SpacerBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  spacing: number | null;
+}
+
 export interface CardPollRestore_imageRestore_StepBlock {
   __typename: "StepBlock";
   id: string;
@@ -217,7 +226,9 @@ export interface CardPollRestore_imageRestore_TextResponseBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;
@@ -421,7 +432,7 @@ export interface CardPollRestore_imageRestore_VideoTriggerBlock {
   triggerAction: CardPollRestore_imageRestore_VideoTriggerBlock_triggerAction;
 }
 
-export type CardPollRestore_imageRestore = CardPollRestore_imageRestore_GridContainerBlock | CardPollRestore_imageRestore_ButtonBlock | CardPollRestore_imageRestore_CardBlock | CardPollRestore_imageRestore_IconBlock | CardPollRestore_imageRestore_ImageBlock | CardPollRestore_imageRestore_RadioOptionBlock | CardPollRestore_imageRestore_RadioQuestionBlock | CardPollRestore_imageRestore_SignUpBlock | CardPollRestore_imageRestore_StepBlock | CardPollRestore_imageRestore_TextResponseBlock | CardPollRestore_imageRestore_TypographyBlock | CardPollRestore_imageRestore_VideoBlock | CardPollRestore_imageRestore_VideoTriggerBlock;
+export type CardPollRestore_imageRestore = CardPollRestore_imageRestore_GridContainerBlock | CardPollRestore_imageRestore_ButtonBlock | CardPollRestore_imageRestore_CardBlock | CardPollRestore_imageRestore_IconBlock | CardPollRestore_imageRestore_ImageBlock | CardPollRestore_imageRestore_RadioOptionBlock | CardPollRestore_imageRestore_RadioQuestionBlock | CardPollRestore_imageRestore_SignUpBlock | CardPollRestore_imageRestore_SpacerBlock | CardPollRestore_imageRestore_StepBlock | CardPollRestore_imageRestore_TextResponseBlock | CardPollRestore_imageRestore_TypographyBlock | CardPollRestore_imageRestore_VideoBlock | CardPollRestore_imageRestore_VideoTriggerBlock;
 
 export interface CardPollRestore_subtitleRestore_GridContainerBlock {
   __typename: "GridContainerBlock" | "GridItemBlock";
@@ -464,6 +475,7 @@ export interface CardPollRestore_subtitleRestore_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardPollRestore_subtitleRestore_ButtonBlock_action | null;
 }
 
@@ -601,6 +613,14 @@ export interface CardPollRestore_subtitleRestore_SignUpBlock {
   action: CardPollRestore_subtitleRestore_SignUpBlock_action | null;
 }
 
+export interface CardPollRestore_subtitleRestore_SpacerBlock {
+  __typename: "SpacerBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  spacing: number | null;
+}
+
 export interface CardPollRestore_subtitleRestore_StepBlock {
   __typename: "StepBlock";
   id: string;
@@ -631,7 +651,9 @@ export interface CardPollRestore_subtitleRestore_TextResponseBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;
@@ -835,7 +857,7 @@ export interface CardPollRestore_subtitleRestore_VideoTriggerBlock {
   triggerAction: CardPollRestore_subtitleRestore_VideoTriggerBlock_triggerAction;
 }
 
-export type CardPollRestore_subtitleRestore = CardPollRestore_subtitleRestore_GridContainerBlock | CardPollRestore_subtitleRestore_ButtonBlock | CardPollRestore_subtitleRestore_CardBlock | CardPollRestore_subtitleRestore_IconBlock | CardPollRestore_subtitleRestore_ImageBlock | CardPollRestore_subtitleRestore_RadioOptionBlock | CardPollRestore_subtitleRestore_RadioQuestionBlock | CardPollRestore_subtitleRestore_SignUpBlock | CardPollRestore_subtitleRestore_StepBlock | CardPollRestore_subtitleRestore_TextResponseBlock | CardPollRestore_subtitleRestore_TypographyBlock | CardPollRestore_subtitleRestore_VideoBlock | CardPollRestore_subtitleRestore_VideoTriggerBlock;
+export type CardPollRestore_subtitleRestore = CardPollRestore_subtitleRestore_GridContainerBlock | CardPollRestore_subtitleRestore_ButtonBlock | CardPollRestore_subtitleRestore_CardBlock | CardPollRestore_subtitleRestore_IconBlock | CardPollRestore_subtitleRestore_ImageBlock | CardPollRestore_subtitleRestore_RadioOptionBlock | CardPollRestore_subtitleRestore_RadioQuestionBlock | CardPollRestore_subtitleRestore_SignUpBlock | CardPollRestore_subtitleRestore_SpacerBlock | CardPollRestore_subtitleRestore_StepBlock | CardPollRestore_subtitleRestore_TextResponseBlock | CardPollRestore_subtitleRestore_TypographyBlock | CardPollRestore_subtitleRestore_VideoBlock | CardPollRestore_subtitleRestore_VideoTriggerBlock;
 
 export interface CardPollRestore_titleRestore_GridContainerBlock {
   __typename: "GridContainerBlock" | "GridItemBlock";
@@ -878,6 +900,7 @@ export interface CardPollRestore_titleRestore_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardPollRestore_titleRestore_ButtonBlock_action | null;
 }
 
@@ -1015,6 +1038,14 @@ export interface CardPollRestore_titleRestore_SignUpBlock {
   action: CardPollRestore_titleRestore_SignUpBlock_action | null;
 }
 
+export interface CardPollRestore_titleRestore_SpacerBlock {
+  __typename: "SpacerBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  spacing: number | null;
+}
+
 export interface CardPollRestore_titleRestore_StepBlock {
   __typename: "StepBlock";
   id: string;
@@ -1045,7 +1076,9 @@ export interface CardPollRestore_titleRestore_TextResponseBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;
@@ -1249,7 +1282,7 @@ export interface CardPollRestore_titleRestore_VideoTriggerBlock {
   triggerAction: CardPollRestore_titleRestore_VideoTriggerBlock_triggerAction;
 }
 
-export type CardPollRestore_titleRestore = CardPollRestore_titleRestore_GridContainerBlock | CardPollRestore_titleRestore_ButtonBlock | CardPollRestore_titleRestore_CardBlock | CardPollRestore_titleRestore_IconBlock | CardPollRestore_titleRestore_ImageBlock | CardPollRestore_titleRestore_RadioOptionBlock | CardPollRestore_titleRestore_RadioQuestionBlock | CardPollRestore_titleRestore_SignUpBlock | CardPollRestore_titleRestore_StepBlock | CardPollRestore_titleRestore_TextResponseBlock | CardPollRestore_titleRestore_TypographyBlock | CardPollRestore_titleRestore_VideoBlock | CardPollRestore_titleRestore_VideoTriggerBlock;
+export type CardPollRestore_titleRestore = CardPollRestore_titleRestore_GridContainerBlock | CardPollRestore_titleRestore_ButtonBlock | CardPollRestore_titleRestore_CardBlock | CardPollRestore_titleRestore_IconBlock | CardPollRestore_titleRestore_ImageBlock | CardPollRestore_titleRestore_RadioOptionBlock | CardPollRestore_titleRestore_RadioQuestionBlock | CardPollRestore_titleRestore_SignUpBlock | CardPollRestore_titleRestore_SpacerBlock | CardPollRestore_titleRestore_StepBlock | CardPollRestore_titleRestore_TextResponseBlock | CardPollRestore_titleRestore_TypographyBlock | CardPollRestore_titleRestore_VideoBlock | CardPollRestore_titleRestore_VideoTriggerBlock;
 
 export interface CardPollRestore_radioQuestionRestore_GridContainerBlock {
   __typename: "GridContainerBlock" | "GridItemBlock";
@@ -1292,6 +1325,7 @@ export interface CardPollRestore_radioQuestionRestore_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardPollRestore_radioQuestionRestore_ButtonBlock_action | null;
 }
 
@@ -1429,6 +1463,14 @@ export interface CardPollRestore_radioQuestionRestore_SignUpBlock {
   action: CardPollRestore_radioQuestionRestore_SignUpBlock_action | null;
 }
 
+export interface CardPollRestore_radioQuestionRestore_SpacerBlock {
+  __typename: "SpacerBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  spacing: number | null;
+}
+
 export interface CardPollRestore_radioQuestionRestore_StepBlock {
   __typename: "StepBlock";
   id: string;
@@ -1459,7 +1501,9 @@ export interface CardPollRestore_radioQuestionRestore_TextResponseBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;
@@ -1663,7 +1707,7 @@ export interface CardPollRestore_radioQuestionRestore_VideoTriggerBlock {
   triggerAction: CardPollRestore_radioQuestionRestore_VideoTriggerBlock_triggerAction;
 }
 
-export type CardPollRestore_radioQuestionRestore = CardPollRestore_radioQuestionRestore_GridContainerBlock | CardPollRestore_radioQuestionRestore_ButtonBlock | CardPollRestore_radioQuestionRestore_CardBlock | CardPollRestore_radioQuestionRestore_IconBlock | CardPollRestore_radioQuestionRestore_ImageBlock | CardPollRestore_radioQuestionRestore_RadioOptionBlock | CardPollRestore_radioQuestionRestore_RadioQuestionBlock | CardPollRestore_radioQuestionRestore_SignUpBlock | CardPollRestore_radioQuestionRestore_StepBlock | CardPollRestore_radioQuestionRestore_TextResponseBlock | CardPollRestore_radioQuestionRestore_TypographyBlock | CardPollRestore_radioQuestionRestore_VideoBlock | CardPollRestore_radioQuestionRestore_VideoTriggerBlock;
+export type CardPollRestore_radioQuestionRestore = CardPollRestore_radioQuestionRestore_GridContainerBlock | CardPollRestore_radioQuestionRestore_ButtonBlock | CardPollRestore_radioQuestionRestore_CardBlock | CardPollRestore_radioQuestionRestore_IconBlock | CardPollRestore_radioQuestionRestore_ImageBlock | CardPollRestore_radioQuestionRestore_RadioOptionBlock | CardPollRestore_radioQuestionRestore_RadioQuestionBlock | CardPollRestore_radioQuestionRestore_SignUpBlock | CardPollRestore_radioQuestionRestore_SpacerBlock | CardPollRestore_radioQuestionRestore_StepBlock | CardPollRestore_radioQuestionRestore_TextResponseBlock | CardPollRestore_radioQuestionRestore_TypographyBlock | CardPollRestore_radioQuestionRestore_VideoBlock | CardPollRestore_radioQuestionRestore_VideoTriggerBlock;
 
 export interface CardPollRestore_radioOption1Restore_GridContainerBlock {
   __typename: "GridContainerBlock" | "GridItemBlock";
@@ -1706,6 +1750,7 @@ export interface CardPollRestore_radioOption1Restore_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardPollRestore_radioOption1Restore_ButtonBlock_action | null;
 }
 
@@ -1843,6 +1888,14 @@ export interface CardPollRestore_radioOption1Restore_SignUpBlock {
   action: CardPollRestore_radioOption1Restore_SignUpBlock_action | null;
 }
 
+export interface CardPollRestore_radioOption1Restore_SpacerBlock {
+  __typename: "SpacerBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  spacing: number | null;
+}
+
 export interface CardPollRestore_radioOption1Restore_StepBlock {
   __typename: "StepBlock";
   id: string;
@@ -1873,7 +1926,9 @@ export interface CardPollRestore_radioOption1Restore_TextResponseBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;
@@ -2077,7 +2132,7 @@ export interface CardPollRestore_radioOption1Restore_VideoTriggerBlock {
   triggerAction: CardPollRestore_radioOption1Restore_VideoTriggerBlock_triggerAction;
 }
 
-export type CardPollRestore_radioOption1Restore = CardPollRestore_radioOption1Restore_GridContainerBlock | CardPollRestore_radioOption1Restore_ButtonBlock | CardPollRestore_radioOption1Restore_CardBlock | CardPollRestore_radioOption1Restore_IconBlock | CardPollRestore_radioOption1Restore_ImageBlock | CardPollRestore_radioOption1Restore_RadioOptionBlock | CardPollRestore_radioOption1Restore_RadioQuestionBlock | CardPollRestore_radioOption1Restore_SignUpBlock | CardPollRestore_radioOption1Restore_StepBlock | CardPollRestore_radioOption1Restore_TextResponseBlock | CardPollRestore_radioOption1Restore_TypographyBlock | CardPollRestore_radioOption1Restore_VideoBlock | CardPollRestore_radioOption1Restore_VideoTriggerBlock;
+export type CardPollRestore_radioOption1Restore = CardPollRestore_radioOption1Restore_GridContainerBlock | CardPollRestore_radioOption1Restore_ButtonBlock | CardPollRestore_radioOption1Restore_CardBlock | CardPollRestore_radioOption1Restore_IconBlock | CardPollRestore_radioOption1Restore_ImageBlock | CardPollRestore_radioOption1Restore_RadioOptionBlock | CardPollRestore_radioOption1Restore_RadioQuestionBlock | CardPollRestore_radioOption1Restore_SignUpBlock | CardPollRestore_radioOption1Restore_SpacerBlock | CardPollRestore_radioOption1Restore_StepBlock | CardPollRestore_radioOption1Restore_TextResponseBlock | CardPollRestore_radioOption1Restore_TypographyBlock | CardPollRestore_radioOption1Restore_VideoBlock | CardPollRestore_radioOption1Restore_VideoTriggerBlock;
 
 export interface CardPollRestore_radioOption2Restore_GridContainerBlock {
   __typename: "GridContainerBlock" | "GridItemBlock";
@@ -2120,6 +2175,7 @@ export interface CardPollRestore_radioOption2Restore_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardPollRestore_radioOption2Restore_ButtonBlock_action | null;
 }
 
@@ -2257,6 +2313,14 @@ export interface CardPollRestore_radioOption2Restore_SignUpBlock {
   action: CardPollRestore_radioOption2Restore_SignUpBlock_action | null;
 }
 
+export interface CardPollRestore_radioOption2Restore_SpacerBlock {
+  __typename: "SpacerBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  spacing: number | null;
+}
+
 export interface CardPollRestore_radioOption2Restore_StepBlock {
   __typename: "StepBlock";
   id: string;
@@ -2287,7 +2351,9 @@ export interface CardPollRestore_radioOption2Restore_TextResponseBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;
@@ -2491,7 +2557,7 @@ export interface CardPollRestore_radioOption2Restore_VideoTriggerBlock {
   triggerAction: CardPollRestore_radioOption2Restore_VideoTriggerBlock_triggerAction;
 }
 
-export type CardPollRestore_radioOption2Restore = CardPollRestore_radioOption2Restore_GridContainerBlock | CardPollRestore_radioOption2Restore_ButtonBlock | CardPollRestore_radioOption2Restore_CardBlock | CardPollRestore_radioOption2Restore_IconBlock | CardPollRestore_radioOption2Restore_ImageBlock | CardPollRestore_radioOption2Restore_RadioOptionBlock | CardPollRestore_radioOption2Restore_RadioQuestionBlock | CardPollRestore_radioOption2Restore_SignUpBlock | CardPollRestore_radioOption2Restore_StepBlock | CardPollRestore_radioOption2Restore_TextResponseBlock | CardPollRestore_radioOption2Restore_TypographyBlock | CardPollRestore_radioOption2Restore_VideoBlock | CardPollRestore_radioOption2Restore_VideoTriggerBlock;
+export type CardPollRestore_radioOption2Restore = CardPollRestore_radioOption2Restore_GridContainerBlock | CardPollRestore_radioOption2Restore_ButtonBlock | CardPollRestore_radioOption2Restore_CardBlock | CardPollRestore_radioOption2Restore_IconBlock | CardPollRestore_radioOption2Restore_ImageBlock | CardPollRestore_radioOption2Restore_RadioOptionBlock | CardPollRestore_radioOption2Restore_RadioQuestionBlock | CardPollRestore_radioOption2Restore_SignUpBlock | CardPollRestore_radioOption2Restore_SpacerBlock | CardPollRestore_radioOption2Restore_StepBlock | CardPollRestore_radioOption2Restore_TextResponseBlock | CardPollRestore_radioOption2Restore_TypographyBlock | CardPollRestore_radioOption2Restore_VideoBlock | CardPollRestore_radioOption2Restore_VideoTriggerBlock;
 
 export interface CardPollRestore_radioOption3Restore_GridContainerBlock {
   __typename: "GridContainerBlock" | "GridItemBlock";
@@ -2534,6 +2600,7 @@ export interface CardPollRestore_radioOption3Restore_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardPollRestore_radioOption3Restore_ButtonBlock_action | null;
 }
 
@@ -2671,6 +2738,14 @@ export interface CardPollRestore_radioOption3Restore_SignUpBlock {
   action: CardPollRestore_radioOption3Restore_SignUpBlock_action | null;
 }
 
+export interface CardPollRestore_radioOption3Restore_SpacerBlock {
+  __typename: "SpacerBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  spacing: number | null;
+}
+
 export interface CardPollRestore_radioOption3Restore_StepBlock {
   __typename: "StepBlock";
   id: string;
@@ -2701,7 +2776,9 @@ export interface CardPollRestore_radioOption3Restore_TextResponseBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;
@@ -2905,7 +2982,7 @@ export interface CardPollRestore_radioOption3Restore_VideoTriggerBlock {
   triggerAction: CardPollRestore_radioOption3Restore_VideoTriggerBlock_triggerAction;
 }
 
-export type CardPollRestore_radioOption3Restore = CardPollRestore_radioOption3Restore_GridContainerBlock | CardPollRestore_radioOption3Restore_ButtonBlock | CardPollRestore_radioOption3Restore_CardBlock | CardPollRestore_radioOption3Restore_IconBlock | CardPollRestore_radioOption3Restore_ImageBlock | CardPollRestore_radioOption3Restore_RadioOptionBlock | CardPollRestore_radioOption3Restore_RadioQuestionBlock | CardPollRestore_radioOption3Restore_SignUpBlock | CardPollRestore_radioOption3Restore_StepBlock | CardPollRestore_radioOption3Restore_TextResponseBlock | CardPollRestore_radioOption3Restore_TypographyBlock | CardPollRestore_radioOption3Restore_VideoBlock | CardPollRestore_radioOption3Restore_VideoTriggerBlock;
+export type CardPollRestore_radioOption3Restore = CardPollRestore_radioOption3Restore_GridContainerBlock | CardPollRestore_radioOption3Restore_ButtonBlock | CardPollRestore_radioOption3Restore_CardBlock | CardPollRestore_radioOption3Restore_IconBlock | CardPollRestore_radioOption3Restore_ImageBlock | CardPollRestore_radioOption3Restore_RadioOptionBlock | CardPollRestore_radioOption3Restore_RadioQuestionBlock | CardPollRestore_radioOption3Restore_SignUpBlock | CardPollRestore_radioOption3Restore_SpacerBlock | CardPollRestore_radioOption3Restore_StepBlock | CardPollRestore_radioOption3Restore_TextResponseBlock | CardPollRestore_radioOption3Restore_TypographyBlock | CardPollRestore_radioOption3Restore_VideoBlock | CardPollRestore_radioOption3Restore_VideoTriggerBlock;
 
 export interface CardPollRestore_radioOption4Restore_GridContainerBlock {
   __typename: "GridContainerBlock" | "GridItemBlock";
@@ -2948,6 +3025,7 @@ export interface CardPollRestore_radioOption4Restore_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardPollRestore_radioOption4Restore_ButtonBlock_action | null;
 }
 
@@ -3085,6 +3163,14 @@ export interface CardPollRestore_radioOption4Restore_SignUpBlock {
   action: CardPollRestore_radioOption4Restore_SignUpBlock_action | null;
 }
 
+export interface CardPollRestore_radioOption4Restore_SpacerBlock {
+  __typename: "SpacerBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  spacing: number | null;
+}
+
 export interface CardPollRestore_radioOption4Restore_StepBlock {
   __typename: "StepBlock";
   id: string;
@@ -3115,7 +3201,9 @@ export interface CardPollRestore_radioOption4Restore_TextResponseBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;
@@ -3319,7 +3407,7 @@ export interface CardPollRestore_radioOption4Restore_VideoTriggerBlock {
   triggerAction: CardPollRestore_radioOption4Restore_VideoTriggerBlock_triggerAction;
 }
 
-export type CardPollRestore_radioOption4Restore = CardPollRestore_radioOption4Restore_GridContainerBlock | CardPollRestore_radioOption4Restore_ButtonBlock | CardPollRestore_radioOption4Restore_CardBlock | CardPollRestore_radioOption4Restore_IconBlock | CardPollRestore_radioOption4Restore_ImageBlock | CardPollRestore_radioOption4Restore_RadioOptionBlock | CardPollRestore_radioOption4Restore_RadioQuestionBlock | CardPollRestore_radioOption4Restore_SignUpBlock | CardPollRestore_radioOption4Restore_StepBlock | CardPollRestore_radioOption4Restore_TextResponseBlock | CardPollRestore_radioOption4Restore_TypographyBlock | CardPollRestore_radioOption4Restore_VideoBlock | CardPollRestore_radioOption4Restore_VideoTriggerBlock;
+export type CardPollRestore_radioOption4Restore = CardPollRestore_radioOption4Restore_GridContainerBlock | CardPollRestore_radioOption4Restore_ButtonBlock | CardPollRestore_radioOption4Restore_CardBlock | CardPollRestore_radioOption4Restore_IconBlock | CardPollRestore_radioOption4Restore_ImageBlock | CardPollRestore_radioOption4Restore_RadioOptionBlock | CardPollRestore_radioOption4Restore_RadioQuestionBlock | CardPollRestore_radioOption4Restore_SignUpBlock | CardPollRestore_radioOption4Restore_SpacerBlock | CardPollRestore_radioOption4Restore_StepBlock | CardPollRestore_radioOption4Restore_TextResponseBlock | CardPollRestore_radioOption4Restore_TypographyBlock | CardPollRestore_radioOption4Restore_VideoBlock | CardPollRestore_radioOption4Restore_VideoTriggerBlock;
 
 export interface CardPollRestore_bodyRestore_GridContainerBlock {
   __typename: "GridContainerBlock" | "GridItemBlock";
@@ -3362,6 +3450,7 @@ export interface CardPollRestore_bodyRestore_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardPollRestore_bodyRestore_ButtonBlock_action | null;
 }
 
@@ -3499,6 +3588,14 @@ export interface CardPollRestore_bodyRestore_SignUpBlock {
   action: CardPollRestore_bodyRestore_SignUpBlock_action | null;
 }
 
+export interface CardPollRestore_bodyRestore_SpacerBlock {
+  __typename: "SpacerBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  spacing: number | null;
+}
+
 export interface CardPollRestore_bodyRestore_StepBlock {
   __typename: "StepBlock";
   id: string;
@@ -3529,7 +3626,9 @@ export interface CardPollRestore_bodyRestore_TextResponseBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;
@@ -3733,7 +3832,7 @@ export interface CardPollRestore_bodyRestore_VideoTriggerBlock {
   triggerAction: CardPollRestore_bodyRestore_VideoTriggerBlock_triggerAction;
 }
 
-export type CardPollRestore_bodyRestore = CardPollRestore_bodyRestore_GridContainerBlock | CardPollRestore_bodyRestore_ButtonBlock | CardPollRestore_bodyRestore_CardBlock | CardPollRestore_bodyRestore_IconBlock | CardPollRestore_bodyRestore_ImageBlock | CardPollRestore_bodyRestore_RadioOptionBlock | CardPollRestore_bodyRestore_RadioQuestionBlock | CardPollRestore_bodyRestore_SignUpBlock | CardPollRestore_bodyRestore_StepBlock | CardPollRestore_bodyRestore_TextResponseBlock | CardPollRestore_bodyRestore_TypographyBlock | CardPollRestore_bodyRestore_VideoBlock | CardPollRestore_bodyRestore_VideoTriggerBlock;
+export type CardPollRestore_bodyRestore = CardPollRestore_bodyRestore_GridContainerBlock | CardPollRestore_bodyRestore_ButtonBlock | CardPollRestore_bodyRestore_CardBlock | CardPollRestore_bodyRestore_IconBlock | CardPollRestore_bodyRestore_ImageBlock | CardPollRestore_bodyRestore_RadioOptionBlock | CardPollRestore_bodyRestore_RadioQuestionBlock | CardPollRestore_bodyRestore_SignUpBlock | CardPollRestore_bodyRestore_SpacerBlock | CardPollRestore_bodyRestore_StepBlock | CardPollRestore_bodyRestore_TextResponseBlock | CardPollRestore_bodyRestore_TypographyBlock | CardPollRestore_bodyRestore_VideoBlock | CardPollRestore_bodyRestore_VideoTriggerBlock;
 
 export interface CardPollRestore {
   /**

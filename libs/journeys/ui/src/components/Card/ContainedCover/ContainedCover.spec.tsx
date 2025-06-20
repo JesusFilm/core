@@ -76,9 +76,6 @@ describe('ContainedCover', () => {
     children: []
   }
 
-  const minifiedUnsplashImage =
-    'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
-
   // Render children with background color or background blur overlay tested in Card VR
 
   it('should render children', () => {
@@ -105,7 +102,11 @@ describe('ContainedCover', () => {
     const imageCover = getByTestId('background-image')
 
     expect(imageCover).toHaveAccessibleName(imageBlock.alt)
-    expect(imageCover).toHaveAttribute('src', minifiedUnsplashImage)
+
+    expect(imageCover).toHaveAttribute(
+      'src',
+      expect.stringContaining(encodeURIComponent(imageBlock.src!))
+    )
   })
 
   it('should render background image with blur url', () => {

@@ -74,6 +74,7 @@ export const defaultJourney: Journey = {
       }
     ]
   },
+  updatedAt: formatISO(startOfYear(new Date(fakeDate))),
   createdAt: formatISO(startOfYear(new Date(fakeDate))),
   publishedAt: null,
   status: JourneyStatus.draft,
@@ -85,12 +86,28 @@ export const defaultJourney: Journey = {
   primaryImageBlock: null
 }
 
+export const journeyWithImage: Journey = {
+  ...defaultJourney,
+  primaryImageBlock: {
+    __typename: 'ImageBlock',
+    id: 'image-id',
+    parentBlockId: null,
+    parentOrder: 1,
+    src: 'https://example.com/image.jpg',
+    alt: 'Test Social Media Image',
+    width: 1920,
+    height: 1080,
+    blurhash: 'LEHV6nWB2yk8pyo0adR*.7kCMdnj'
+  }
+}
+
 export const oldJourney: Journey = {
   ...defaultJourney,
   id: 'old-journey-id',
   title: 'An Old Journey Heading',
   description:
     'Journey created before the current year should also show the year in the date',
+  updatedAt: '2020-11-19T12:34:56.647Z',
   createdAt: '2020-11-19T12:34:56.647Z',
   publishedAt: '2020-12-19T12:34:56.647Z',
   status: JourneyStatus.published

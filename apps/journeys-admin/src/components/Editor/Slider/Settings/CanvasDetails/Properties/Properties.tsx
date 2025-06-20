@@ -84,6 +84,14 @@ const SignUp = dynamic(
   { ssr: false }
 )
 
+const Spacer = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Spacer" */ './blocks/Spacer'
+    ).then((mod) => mod.Spacer),
+  { ssr: false }
+)
+
 interface PropertiesProps {
   block?: TreeBlock
   step?: TreeBlock<StepBlock>
@@ -131,7 +139,10 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
       component = <Typography {...selectedBlock} />
       break
     case 'ButtonBlock':
-      title = t('Button Properties')
+      title =
+        selectedBlock.submitEnabled === true
+          ? t('Submit Button Properties')
+          : t('Button Properties')
       component = <Button {...selectedBlock} />
       break
     case 'RadioQuestionBlock':
@@ -146,8 +157,12 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
       title = t('Subscribe Properties')
       component = <SignUp {...selectedBlock} />
       break
+    case 'SpacerBlock':
+      title = t('Spacer Properties')
+      component = <Spacer {...selectedBlock} />
+      break
     case 'TextResponseBlock':
-      title = t('Text Input Properties')
+      title = t('Response Field Properties')
       component = <TextResponse {...selectedBlock} />
       break
   }

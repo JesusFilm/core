@@ -31,34 +31,24 @@ title: 3. Microservice Databases
 Microservices typically make use of a variety of database stores. The following command will create the required databases, migrate them to the latest state, and fill them with relevant data.
 
 ```shell
-nx run-many --all --target=prisma-generate --parallel=1
+nx run-many --target=prisma-generate --parallel=1
 ```
 
 ```shell
-nx run-many --all --target=prisma-migrate
+nx run-many --target=prisma-migrate
 ```
 
 ```shell
-nx run-many --all --target=prisma-seed
-```
-
-To ingest data from bigquery, you will need to start the ingest job. In one terminal, run:
-
-```shell
-nf start
-```
-
-In a separate terminal, run:
-
-```shell
-nx ingest api-languages
+nx run-many --target=prisma-seed
 ```
 
 Once that has completed, run:
 
 ```shell
-nx queue-ingest api-media
+nx run-many --target=data-import
 ```
+
+(Note: When running data-import, it is recommended that you run it from the main branch.)
 
 ## Common Issues
 
@@ -67,7 +57,7 @@ nx queue-ingest api-media
 If prisma-generate is failing, try running:
 
 ```shell
-nx run-many -t prisma-reset --all
+nx run-many --target=prisma-reset
 ```
 
 #### command failed because of mmdc
@@ -75,7 +65,7 @@ nx run-many -t prisma-reset --all
 If prisma generate fails with a error message similar to the one below:
 
 ```shell
-Command failed: "/workspaces/core/node_modules/-bin/mmdc" -i "/tmp/prisma-erd-q0 cpUx/prisma.mmd" -0 "/workspaces/core/apps/api-journeys/db/ERD.svg" -c"/tmp/pri
+Command failed: "/workspaces/core/node_modules/-bin/mmdc" -i "/tmp/prisma-erd-q0 cpUx/prisma.mmd" -0 "/workspaces/core/apis/api-journeys/db/ERD.svg" -c"/tmp/pri
 sma-erd-qOcpUx/config-json" -p"/tmp/prisma-erd-qOcpUx/puppeteerConfig-json"
 ```
 

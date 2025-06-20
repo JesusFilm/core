@@ -18,8 +18,8 @@ export function MainPanelBody({
 
   const padding = mainBodyPadding
     ? {
-        px: { xs: 6, sm: 8 },
-        py: { xs: 6, sm: 9 }
+        px: { xs: 0, sm: 8 },
+        py: { xs: 0, sm: 9 }
       }
     : {}
 

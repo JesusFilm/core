@@ -9,9 +9,8 @@ schema.graphql
 .prettierignore
 .docusaurus/
 .storybook/static/mockServiceWorker.js
-/.nx/cache
-/.nx/workspace-data
+.nx/
 .next/
 .terraform/
 playwright-report/
-!apps/api-languages/src/__generated__/languageSlugs.ts
+!apis/api-languages/src/__generated__/languageSlugs.ts
