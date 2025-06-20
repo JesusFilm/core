@@ -235,6 +235,7 @@ export enum ButtonSize {
 
 export enum ButtonVariant {
   Contained = 'contained',
+  Outlined = 'outlined',
   Text = 'text'
 }
 
@@ -1341,6 +1342,10 @@ export type LanguageName = {
   value: Scalars['String']['output'];
 };
 
+export enum LanguageRole {
+  Publisher = 'publisher'
+}
+
 export type LanguageWithSlug = {
   __typename?: 'LanguageWithSlug';
   language: Language;
@@ -1549,6 +1554,7 @@ export type Mutation = {
   typographyBlockCreate: TypographyBlock;
   typographyBlockUpdate: TypographyBlock;
   updateJourneysEmailPreference?: Maybe<JourneysEmailPreference>;
+  updateVideoVariantDownloadSizesFromMux: Scalars['Boolean']['output'];
   userImpersonate?: Maybe<Scalars['String']['output']>;
   userInviteAcceptAll: Array<UserInvite>;
   userInviteCreate?: Maybe<UserInvite>;
@@ -2209,6 +2215,11 @@ export type MutationTypographyBlockUpdateArgs = {
 
 export type MutationUpdateJourneysEmailPreferenceArgs = {
   input: JourneysEmailPreferenceUpdateInput;
+};
+
+
+export type MutationUpdateVideoVariantDownloadSizesFromMuxArgs = {
+  videoVariantId: Scalars['ID']['input'];
 };
 
 
@@ -4302,6 +4313,7 @@ export type User = {
   firstName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   imageUrl?: Maybe<Scalars['String']['output']>;
+  languageUserRoles: Array<LanguageRole>;
   lastName?: Maybe<Scalars['String']['output']>;
   mediaUserRoles: Array<MediaRole>;
   superAdmin?: Maybe<Scalars['Boolean']['output']>;

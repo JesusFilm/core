@@ -1,7 +1,7 @@
 import { builder } from '../../../builder'
 
 // Define the variant values as a const array for reuse
-const BUTTON_VARIANT_VALUES = ['text', 'contained'] as const
+const BUTTON_VARIANT_VALUES = ['text', 'contained', 'outlined'] as const
 
 // Export the type for reuse
 export type ButtonVariantType = (typeof BUTTON_VARIANT_VALUES)[number] | null

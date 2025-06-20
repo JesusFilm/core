@@ -3,6 +3,7 @@ import { ResultOf, graphql } from 'gql.tada'
 import { HTTPException } from 'hono/http-exception'
 
 import { getApolloClient } from '../../../../../lib/apolloClient'
+import { generateCacheKey, getWithStaleCache } from '../../../../../lib/cache'
 import { getLanguageIdsFromTags } from '../../../../../lib/getLanguageIdsFromTags'
 
 interface MediaCountryResponse {
@@ -187,93 +188,106 @@ mediaCountry.openapi(route, async (c) => {
 
   const { metadataLanguageId, fallbackLanguageId } = languageResult
 
-  const { data } = await getApolloClient().query<ResultOf<typeof GET_COUNTRY>>({
-    query: GET_COUNTRY,
-    variables: {
-      id: countryId,
-      metadataLanguageId,
-      fallbackLanguageId
-    }
-  })
-  const country = data.country
+  const queryObject = c.req.query()
+  const cacheKey = generateCacheKey([
+    'media-country',
+    countryId,
+    expand ?? '',
+    ...metadataLanguageTags
+  ])
 
-  if (country == null) {
-    return c.json(
-      {
+  const response = await getWithStaleCache(cacheKey, async () => {
+    const { data } = await getApolloClient().query<
+      ResultOf<typeof GET_COUNTRY>
+    >({
+      query: GET_COUNTRY,
+      variables: {
+        id: countryId,
+        metadataLanguageId,
+        fallbackLanguageId
+      }
+    })
+    const country = data.country
+
+    if (country == null) {
+      return {
         message: `${countryId}:\n  The requested country ID '${countryId}' not found.\n`,
         logref: 404
-      },
-      404
-    )
-  }
-
-  const queryObject = c.req.query()
-
-  const queryString = new URLSearchParams(queryObject).toString()
-
-  const response: MediaCountryResponse = {
-    countryId,
-    name: country.name?.[0]?.value ?? country.fallbackName?.[0]?.value ?? '',
-    continentName:
-      country.continent?.name?.[0]?.value ??
-      country.continent?.fallbackName?.[0]?.value ??
-      '',
-    metadataLanguageTag: metadataLanguageTags[0] ?? 'en',
-    // TODO: fix this in the import
-    longitude: country.longitude ? country.longitude : 0,
-    latitude: country.latitude ? country.latitude : 0,
-    counts: {
-      languageCount: {
-        value: country.languageCount,
-        description: 'Number of spoken languages'
-      },
-      population: {
-        value: country.population,
-        description: 'Country population'
-      },
-      languageHavingMediaCount: {
-        value: country.languageHavingMediaCount,
-        description: 'Number of languages having media'
-      }
-    },
-    assets: {
-      flagUrls: {
-        png8: country.flagPngSrc,
-        webpLossy50: country.flagWebpSrc
-      }
-    },
-    _links: {
-      self: {
-        href: `http://api.arclight.org/v2/media-countries/${countryId}?${queryString}`
       }
     }
-  }
 
-  if (expand === 'mediaLanguages') {
-    response._embedded = {
-      mediaLanguages: country.countryLanguages.map((countryLanguage) => ({
-        languageId: Number(countryLanguage.language.id),
-        iso3: countryLanguage.language.iso3,
-        bcp47: countryLanguage.language.bcp47,
-        counts: {
-          countrySpeakerCount: {
-            value: countryLanguage.displaySpeakers,
-            description: 'Number of language speakers in country'
-          }
+    const queryString = new URLSearchParams(queryObject).toString()
+
+    const response: MediaCountryResponse = {
+      countryId,
+      name: country.name?.[0]?.value ?? country.fallbackName?.[0]?.value ?? '',
+      continentName:
+        country.continent?.name?.[0]?.value ??
+        country.continent?.fallbackName?.[0]?.value ??
+        '',
+      metadataLanguageTag: metadataLanguageTags[0] ?? 'en',
+      longitude: country.longitude ? country.longitude : 0,
+      latitude: country.latitude ? country.latitude : 0,
+      counts: {
+        languageCount: {
+          value: country.languageCount,
+          description: 'Number of spoken languages'
         },
-        primaryCountryId:
-          countryLanguage.language.countryLanguages.find(
-            (countryLanguage) => countryLanguage.primary
-          )?.country.id ?? '',
-        name: countryLanguage.language.name.find(({ primary }) => !primary)
-          ?.value,
-        nameNative: countryLanguage.language.name.find(({ primary }) => primary)
-          ?.value,
-        alternateLanguageName: '',
-        alternateLanguageNameNative: '',
-        metadataLanguageTag: 'en'
-      }))
+        population: {
+          value: country.population,
+          description: 'Country population'
+        },
+        languageHavingMediaCount: {
+          value: country.languageHavingMediaCount,
+          description: 'Number of languages having media'
+        }
+      },
+      assets: {
+        flagUrls: {
+          png8: country.flagPngSrc,
+          webpLossy50: country.flagWebpSrc
+        }
+      },
+      _links: {
+        self: {
+          href: `http://api.arclight.org/v2/media-countries/${countryId}?${queryString}`
+        }
+      }
     }
+
+    if (expand === 'mediaLanguages') {
+      response._embedded = {
+        mediaLanguages: country.countryLanguages.map((countryLanguage) => ({
+          languageId: Number(countryLanguage.language.id),
+          iso3: countryLanguage.language.iso3,
+          bcp47: countryLanguage.language.bcp47,
+          counts: {
+            countrySpeakerCount: {
+              value: countryLanguage.displaySpeakers,
+              description: 'Number of language speakers in country'
+            }
+          },
+          primaryCountryId:
+            countryLanguage.language.countryLanguages.find(
+              (countryLanguage) => countryLanguage.primary
+            )?.country.id ?? '',
+          name: countryLanguage.language.name.find(({ primary }) => !primary)
+            ?.value,
+          nameNative: countryLanguage.language.name.find(
+            ({ primary }) => primary
+          )?.value,
+          alternateLanguageName: '',
+          alternateLanguageNameNative: '',
+          metadataLanguageTag: 'en'
+        }))
+      }
+    }
+
+    return response
+  })
+
+  if ('message' in response) {
+    return c.json(response, 404)
   }
 
   return c.json(response)
