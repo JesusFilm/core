@@ -283,9 +283,9 @@ model Journey {
   logoImageBlockId          String?                     @unique
   menuStepBlockId           String?                     @unique
   menuButtonIcon            JourneyMenuButtonIcon?
-  fromTemplateId            String?
   socialNodeX               Int?                        @default(-240)
   socialNodeY               Int?                        @default(-46)
+  fromTemplateId            String?
   actions                   Action[]
   blocks                    Block[]
   chatButtons               ChatButton[]

@@ -143,3 +143,13 @@ model ImportTimes {
   modelName  String   @id
   lastImport DateTime
 }
+
+enum LanguageRole {
+  publisher
+}
+
+model UserLanguageRole {
+  id     String         @id @default(uuid())
+  userId String         @unique
+  roles  LanguageRole[]
+}

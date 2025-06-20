@@ -26,6 +26,7 @@ const PrismaPlugin = pluginName
 
 interface BaseContext {
   type: string
+  clientName?: string
 }
 
 interface PublicContext extends BaseContext {
