@@ -1144,6 +1144,7 @@ type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId", extensi
   variant(languageId: ID) : VideoVariant @join__field(graph: API_MEDIA) 
   images(aspectRatio: ImageAspectRatio) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
   restrictDownloadPlatforms: [Platform!]! @join__field(graph: API_MEDIA) 
+  restrictViewPlatforms: [Platform!]! @join__field(graph: API_MEDIA) 
 }
 
 type VideoBlockClassNames @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -3326,6 +3327,7 @@ enum Service @join__type(graph: API_MEDIA)  {
 
 enum Platform @join__type(graph: API_MEDIA)  {
   arclight @join__enumValue(graph: API_MEDIA) 
+  journeys @join__enumValue(graph: API_MEDIA) 
   watch @join__enumValue(graph: API_MEDIA) 
 }
 
@@ -4778,6 +4780,7 @@ input VideoUpdateInput @join__type(graph: API_MEDIA)  {
   childIds: [String!]
   keywordIds: [String!]
   restrictDownloadPlatforms: [Platform!]
+  restrictViewPlatforms: [Platform!]
 }
 
 input VideoVariantCreateInput @join__type(graph: API_MEDIA)  {
