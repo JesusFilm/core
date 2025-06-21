@@ -70,7 +70,8 @@ describe('video', () => {
       locked: false,
       originId: null,
       restrictDownloadPlatforms: [],
-      restrictViewPlatforms: []
+      restrictViewPlatforms: [],
+      publishedAt: null
     },
     {
       id: 'videoId1',
@@ -84,7 +85,8 @@ describe('video', () => {
       locked: false,
       originId: null,
       restrictDownloadPlatforms: [],
-      restrictViewPlatforms: []
+      restrictViewPlatforms: [],
+      publishedAt: null
     }
   ]
 
@@ -101,7 +103,8 @@ describe('video', () => {
       locked: false,
       originId: null,
       restrictDownloadPlatforms: [],
-      restrictViewPlatforms: []
+      restrictViewPlatforms: [],
+      publishedAt: null
     },
     {
       id: 'videoId4',
@@ -115,7 +118,8 @@ describe('video', () => {
       locked: false,
       originId: null,
       restrictDownloadPlatforms: [],
-      restrictViewPlatforms: []
+      restrictViewPlatforms: [],
+      publishedAt: null
     }
   ]
 
@@ -133,6 +137,7 @@ describe('video', () => {
       locked: false,
       restrictDownloadPlatforms: [],
       restrictViewPlatforms: [],
+      publishedAt: null,
       bibleCitation: [
         {
           id: 'bibleCitationId',
@@ -328,7 +333,8 @@ describe('video', () => {
     originId: null,
     locked: false,
     restrictDownloadPlatforms: [],
-    restrictViewPlatforms: []
+    restrictViewPlatforms: [],
+    publishedAt: null
   }
 
   describe('videos', () => {
@@ -1671,7 +1677,8 @@ describe('video', () => {
       originId: null,
       locked: false,
       restrictDownloadPlatforms: [],
-      restrictViewPlatforms: []
+      restrictViewPlatforms: [],
+      publishedAt: null
     }
 
     it('should query video', async () => {
@@ -1882,6 +1889,7 @@ describe('video', () => {
             label: 'featureFilm',
             primaryLanguageId: 'primaryLanguageId',
             published: true,
+            publishedAt: expect.any(Date),
             slug: 'slug',
             noIndex: true,
             childIds: [],
@@ -1928,6 +1936,9 @@ describe('video', () => {
           userId: 'userId',
           roles: ['publisher']
         })
+        prismaMock.video.findUnique.mockResolvedValue({
+          publishedAt: null
+        } as any)
         prismaMock.video.update.mockResolvedValue({
           id: 'id',
           label: VideoLabel.episode,
@@ -1960,6 +1971,7 @@ describe('video', () => {
             label: 'episode',
             primaryLanguageId: 'primaryLanguageId',
             published: true,
+            publishedAt: expect.any(Date),
             slug: 'slug',
             noIndex: true,
             childIds: []
@@ -2018,7 +2030,8 @@ describe('video', () => {
         locked: false,
         originId: null,
         restrictDownloadPlatforms: [],
-        restrictViewPlatforms: []
+        restrictViewPlatforms: [],
+        publishedAt: null
       })
       const data = await client({
         document: VIDEO
