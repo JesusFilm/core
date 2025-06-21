@@ -1938,7 +1938,7 @@ describe('video', () => {
           originId: 'originId',
           publishedAt: new Date()
         } as unknown as Video)
-        
+
         await authClient({
           document: CREATE_VIDEO_MUTATION,
           variables: {
@@ -1954,7 +1954,7 @@ describe('video', () => {
             }
           }
         })
-        
+
         expect(prismaMock.video.create).toHaveBeenCalledWith({
           data: {
             id: 'id',
@@ -1988,7 +1988,7 @@ describe('video', () => {
           originId: 'originId',
           publishedAt: null
         } as unknown as Video)
-        
+
         await authClient({
           document: CREATE_VIDEO_MUTATION,
           variables: {
@@ -2004,7 +2004,7 @@ describe('video', () => {
             }
           }
         })
-        
+
         expect(prismaMock.video.create).toHaveBeenCalledWith({
           data: {
             id: 'id',
@@ -2096,7 +2096,7 @@ describe('video', () => {
           published: true,
           publishedAt: new Date()
         } as unknown as Video)
-        
+
         await authClient({
           document: VIDEO_UPDATE_MUTATION,
           variables: {
@@ -2106,7 +2106,7 @@ describe('video', () => {
             }
           }
         })
-        
+
         expect(prismaMock.video.findUnique).toHaveBeenCalledWith({
           where: { id: 'id' },
           select: { publishedAt: true }
@@ -2136,7 +2136,7 @@ describe('video', () => {
           published: true,
           publishedAt: existingPublishedAt
         } as unknown as Video)
-        
+
         await authClient({
           document: VIDEO_UPDATE_MUTATION,
           variables: {
@@ -2146,7 +2146,7 @@ describe('video', () => {
             }
           }
         })
-        
+
         expect(prismaMock.video.update).toHaveBeenCalledWith({
           where: { id: 'id' },
           include: { children: true },
@@ -2167,7 +2167,7 @@ describe('video', () => {
           id: 'id',
           label: VideoLabel.episode
         } as unknown as Video)
-        
+
         await authClient({
           document: VIDEO_UPDATE_MUTATION,
           variables: {
@@ -2177,7 +2177,7 @@ describe('video', () => {
             }
           }
         })
-        
+
         // Should not check for publishedAt when published is not being updated
         expect(prismaMock.video.findUnique).not.toHaveBeenCalledWith({
           where: { id: 'id' },

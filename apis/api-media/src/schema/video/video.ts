@@ -577,7 +577,7 @@ builder.mutationFields((t) => ({
         // Set publishedAt to current timestamp if published is true
         publishedAt: input.published ? new Date() : undefined
       }
-      
+
       const video = await prisma.video.create({
         ...query,
         data
@@ -603,13 +603,13 @@ builder.mutationFields((t) => ({
           where: { id: input.id },
           select: { publishedAt: true }
         })
-        
+
         // Only set publishedAt if it's not already set
         if (existingVideo?.publishedAt == null) {
           publishedAtUpdate = new Date()
         }
       }
-      
+
       const video = await prisma.video.update({
         ...query,
         where: { id: input.id },

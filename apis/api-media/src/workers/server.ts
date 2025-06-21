@@ -84,7 +84,7 @@ async function main(): Promise<void> {
       )
     )
   }
-  
+
   run(
     await import(
       /* webpackChunkName: "published" */

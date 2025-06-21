@@ -2,7 +2,9 @@ import { Logger } from 'pino'
 
 import { prisma } from '../../../lib/prisma'
 
-async function getPublishedVideosWithoutPublishedAt(): Promise<Array<{ id: string }>> {
+async function getPublishedVideosWithoutPublishedAt(): Promise<
+  Array<{ id: string }>
+> {
   const videos = await prisma.video.findMany({
     select: { id: true },
     where: {
@@ -27,14 +29,14 @@ export async function service(logger?: Logger): Promise<void> {
 
   const batchSize = 100
   const batches = []
-  
+
   for (let i = 0; i < videos.length; i += batchSize) {
     batches.push(videos.slice(i, i + batchSize))
   }
 
   let processedCount = 0
   const publishedAtTimestamp = new Date()
-  
+
   for (const batch of batches) {
     try {
       await prisma.$transaction(
@@ -50,9 +52,14 @@ export async function service(logger?: Logger): Promise<void> {
       processedCount += batch.length
       logger?.info(`processed ${processedCount}/${videos.length} videos`)
     } catch (error) {
-      logger?.error({ error, batchSize: batch.length }, 'failed to update batch')
+      logger?.error(
+        { error, batchSize: batch.length },
+        'failed to update batch'
+      )
     }
   }
 
-  logger?.info(`published videos publishedAt update finished - updated ${processedCount} videos`)
-} 
+  logger?.info(
+    `published videos publishedAt update finished - updated ${processedCount} videos`
+  )
+}
