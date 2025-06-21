@@ -105,6 +105,7 @@ describe('RestrictedViews', () => {
 
     await waitFor(() => {
       expect(screen.getByLabelText('Arclight')).toBeInTheDocument()
+      expect(screen.getByLabelText('Journeys')).toBeInTheDocument()
       expect(screen.getByLabelText('Watch')).toBeInTheDocument()
     })
   })
