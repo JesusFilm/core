@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event'
 import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/__generated__/testData'
 
-import { NewContentPage } from './NewContentPage'
+import { NewContentPage } from './NewVideoContentPage'
 
 describe('NewContentPage', () => {
   it('should render', () => {

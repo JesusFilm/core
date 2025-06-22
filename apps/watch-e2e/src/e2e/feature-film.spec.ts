@@ -73,7 +73,6 @@ test.describe('firefox only', () => {
     //   fullPage: true
     // })
 
-    //video should auto play in new watch design - Nisal - 17/06/2025
     // await page.getByRole('button', { name: 'Play' }).first().click()
 
     // wait for 60 seconds to see if the video is complete. Until there are some events in the code to figure this out

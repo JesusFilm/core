@@ -1,12 +1,12 @@
 import fscreen from 'fscreen'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect } from 'react'
 
 import { useVideo } from '../../../libs/videoContext'
 
 import { ContentHeader } from './ContentHeader'
-import { ContentHeroVideo } from './ContentHeroVideo'
+import { HeroVideo } from './HeroVideo'
 
-export function ContentHero({
+export function VideoContentHero({
   isFullscreen = false,
   setIsFullscreen
 }: {
@@ -45,7 +45,7 @@ export function ContentHero({
       data-testid="ContentHero"
     >
       {!isFullscreen && <ContentHeader />}
-      <ContentHeroVideo isFullscreen={isFullscreen} key={variant?.hls} />
+      <HeroVideo isFullscreen={isFullscreen} key={variant?.hls} />
       <div
         data-testid="ContainerHeroTitleContainer"
         className="w-full relative flex flex-col sm:flex-row max-w-[1920px] mx-auto pb-4"

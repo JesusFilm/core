@@ -11,13 +11,11 @@ import 'videojs-mux'
 import { useVideo } from '../../../../libs/videoContext'
 import { VideoControls } from '../../../VideoContentPage/VideoHero/VideoPlayer/VideoControls'
 
-interface ContentHeroVideoProps {
+interface HeroVideoProps {
   isFullscreen: boolean
 }
 
-export function ContentHeroVideo({
-  isFullscreen
-}: ContentHeroVideoProps): ReactElement {
+export function HeroVideo({ isFullscreen }: HeroVideoProps): ReactElement {
   const { variant, ...video } = useVideo()
   const [playerReady, setPlayerReady] = useState(false)
 

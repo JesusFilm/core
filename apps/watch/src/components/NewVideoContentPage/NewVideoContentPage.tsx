@@ -16,13 +16,13 @@ import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
 
 import { BibleCitations } from './BibleCitations'
-import { ContentHero } from './ContentHero'
 import { ContentMetadata } from './ContentMetadata'
 import { ContentPageBlurFilter } from './ContentPageBlurFilter'
 import { DiscussionQuestions } from './DiscussionQuestions'
 import { VideoCarousel } from './VideoCarousel'
+import { VideoContentHero } from './VideoContentHero'
 
-export function NewContentPage(): ReactElement {
+export function NewVideoContentPage(): ReactElement {
   const { t } = useTranslation('apps-watch')
   const {
     id,
@@ -114,7 +114,7 @@ export function NewContentPage(): ReactElement {
       />
       <PageWrapper
         hero={
-          <ContentHero
+          <VideoContentHero
             isFullscreen={isFullscreen}
             setIsFullscreen={setIsFullscreen}
           />
