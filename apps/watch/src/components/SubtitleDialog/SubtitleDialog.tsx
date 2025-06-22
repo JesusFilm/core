@@ -59,6 +59,8 @@ export function SubtitleDialog({
     ({ language }) => language
   ) as unknown as Language[]
 
+  console.log('languages', languages)
+
   function handleChange(result?: Language): void {
     setSelected(result)
     updateSubtitle(result?.id)

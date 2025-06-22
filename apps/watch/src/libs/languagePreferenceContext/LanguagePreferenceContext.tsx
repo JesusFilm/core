@@ -2,7 +2,8 @@ import { Dispatch, createContext, useContext, useReducer } from 'react'
 
 import { GetAllLanguages_languages as Language } from '../../../__generated__/GetAllLanguages'
 import { GetLanguagesSlug_video_variantLanguagesWithSlug_language as AudioLanguage } from '../../../__generated__/GetLanguagesSlug'
-import { GetSubtitles_video_variant_subtitle_language as SubtitleLanguage } from '../../../__generated__/GetSubtitles'
+import { GetSubtitles_video_variant_subtitle as SubtitleLanguage } from '../../../__generated__/GetSubtitles'
+import { LANGUAGE_MAPPINGS } from '../../config/locales'
 
 /**
  * State interface for language preferences and video-specific language data
@@ -10,12 +11,16 @@ import { GetSubtitles_video_variant_subtitle_language as SubtitleLanguage } from
 interface LanguageState {
   /** Current site/UI language (e.g., 'en', 'es') */
   siteLanguage: string
-  /** User's preferred audio language ID */
+  /** User's preferred audio language ID (e.g., '529')*/
   audioLanguage: string
-  /** User's preferred subtitle language ID */
+  /** User's preferred subtitle language ID (e.g., '529')*/
   subtitleLanguage: string
   /** Whether subtitles are enabled by user preference */
   subtitleOn: boolean
+  /** Current video ID being watched */
+  videoId?: string
+  /** Current video variant slug being watched */
+  videoVariantSlug?: string
   /** All available languages from the system */
   allLanguages?: Language[]
   /** Available audio languages for the current video */
@@ -74,6 +79,17 @@ interface SetVideoSubtitleLanguagesAction {
 }
 
 /**
+ * Action to set the current video being watched
+ */
+interface SetCurrentVideoAction {
+  type: 'SetCurrentVideo'
+  /** Video ID to set */
+  videoId?: string
+  /** Video variant slug to set */
+  videoVariantSlug?: string
+}
+
+/**
  * Union type of all possible actions for the language preference context
  */
 export type LanguageAction =
@@ -81,6 +97,7 @@ export type LanguageAction =
   | SetAllLanguagesAction
   | SetVideoAudioLanguagesAction
   | SetVideoSubtitleLanguagesAction
+  | SetCurrentVideoAction
 
 const LanguageContext = createContext<{
   state: LanguageState
@@ -123,45 +140,39 @@ const reducer = (
       }
     case 'SetVideoAudioLanguages': {
       const videoAudioLanguages = action.videoAudioLanguages
-      let selectedAudioLanguage: AudioLanguage | undefined
+      let currentAudioLanguage: AudioLanguage | undefined = undefined
 
-      if (videoAudioLanguages.length > 0) {
-        let siteLanguageMatch: AudioLanguage | undefined
-        let englishMatch: AudioLanguage | undefined
+      // Get language slugs for the current site language
+      const siteLanguageMapping = LANGUAGE_MAPPINGS[state.siteLanguage]
+      const siteLanguageSlugs =
+        siteLanguageMapping?.languageSlugs?.map((slug) =>
+          slug.replace('.html', '')
+        ) || []
 
-        // Single loop through array checking all conditions
-        for (const lang of videoAudioLanguages) {
-          // Priority 1: Match audioLanguage (by ID) - return immediately
-          if (lang.id === state.audioLanguage) {
-            selectedAudioLanguage = lang
-            break
-          }
-
-          // Priority 2: Match siteLanguage (by slug) - store but continue
-          if (!siteLanguageMatch && lang.slug === state.siteLanguage) {
-            siteLanguageMatch = lang
-          }
-
-          // Priority 3: Match English - store but continue
-          if (
-            !englishMatch &&
-            (lang.slug === 'en' || lang.slug?.startsWith('en-'))
-          ) {
-            englishMatch = lang
-          }
+      // Find matching audio language based on user preferences
+      for (const lang of videoAudioLanguages) {
+        // Priority 1: Exact match for user's audio preference (by ID)
+        if (lang.id === state.audioLanguage) {
+          currentAudioLanguage = lang
+          break
         }
 
-        // Use fallback priority if no exact audioLanguage match
-        if (!selectedAudioLanguage) {
-          selectedAudioLanguage =
-            siteLanguageMatch || englishMatch || videoAudioLanguages[0]
+        // Priority 2: Match site language (by language slugs)
+        if (
+          !currentAudioLanguage &&
+          siteLanguageSlugs.includes(lang.slug || '')
+        ) {
+          currentAudioLanguage = lang
+          break
         }
       }
+
+      // If no matches found, currentAudioLanguage remains undefined
 
       return {
         ...state,
         videoAudioLanguages,
-        currentAudioLanguage: selectedAudioLanguage
+        currentAudioLanguage
       }
     }
     case 'SetVideoSubtitleLanguages': {
@@ -169,7 +180,7 @@ const reducer = (
 
       // Check if user's subtitle preference is available
       const subtitleAvailable = videoSubtitleLanguages.some(
-        (lang) => lang.id === state.subtitleLanguage
+        (subtitle) => subtitle.language.id === state.subtitleLanguage
       )
 
       return {
@@ -178,6 +189,12 @@ const reducer = (
         currentSubtitleOn: subtitleAvailable
       }
     }
+    case 'SetCurrentVideo':
+      return {
+        ...state,
+        videoId: action.videoId,
+        videoVariantSlug: action.videoVariantSlug
+      }
     default:
       return state
   }

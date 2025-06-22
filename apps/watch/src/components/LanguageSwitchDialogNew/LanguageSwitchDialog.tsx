@@ -1,4 +1,4 @@
-import { gql, useQuery } from '@apollo/client'
+import { gql, useLazyQuery } from '@apollo/client'
 import { ThemeProvider } from '@mui/material/styles'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useRef, useState } from 'react'
@@ -9,7 +9,7 @@ import { SubtitlesSelect } from './SubtitlesSelect'
 import { websiteLight } from 'libs/shared/ui/src/libs/themes/website/theme'
 import { GetAllLanguages } from '../../../__generated__/GetAllLanguages'
 import { DialogActions } from './DialogActions'
-import { getCookie } from './utils/cookieHandler'
+import { useLanguagePreference } from '../../libs/languagePreferenceContext/LanguagePreferenceContext'
 
 const GET_ALL_LANGUAGES = gql`
   query GetAllLanguages {
@@ -34,23 +34,35 @@ export function LanguageSwitchDialog({
   open,
   handleClose
 }: LanguageSwitchDialogProps): ReactElement {
-  const { data, loading: languagesLoading } =
-    useQuery<GetAllLanguages>(GET_ALL_LANGUAGES)
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
+  const {
+    state: {
+      siteLanguage,
+      audioLanguage,
+      subtitleLanguage,
+      subtitleOn,
+      allLanguages
+    },
+    dispatch
+  } = useLanguagePreference()
+  const [getAllLanguages, { loading: languagesLoading }] =
+    useLazyQuery<GetAllLanguages>(GET_ALL_LANGUAGES, {
+      onCompleted: (data) => {
+        if (data?.languages && !allLanguages) {
+          dispatch({
+            type: 'SetAllLanguages',
+            allLanguages: data.languages
+          })
+        }
+      }
+    })
 
-  const [selectedLanguage, setSelectedLanguage] = useState(
-    i18n?.language ?? 'en'
-  )
-  const audioLanguageCookie = getCookie('AUDIO_LANGUAGE') ?? '529'
-  const subtitleLanguageCookie = getCookie('SUBTITLE_LANGUAGE') ?? '529'
-  const subtitlesOnCookie = getCookie('SUBTITLES_ON') ?? 'false'
-
+  // TODO: consider also moving these states into provider
+  const [selectedLanguage, setSelectedLanguage] = useState(siteLanguage)
   const [selectedAudioLanguage, setSelectedAudioLanguage] =
-    useState(audioLanguageCookie)
-  const [selectedSubtitle, setSelectedSubtitle] = useState(
-    subtitleLanguageCookie
-  )
-  const [subtitlesOn, setSubtitlesOn] = useState(subtitlesOnCookie === 'true')
+    useState(audioLanguage)
+  const [selectedSubtitle, setSelectedSubtitle] = useState(subtitleLanguage)
+  const [selectedSubtitlesOn, setSelectedSubtitlesOn] = useState(subtitleOn)
   const [manuallyChangedFields, setManuallyChangedFields] = useState({
     audio: false,
     subtitle: false
@@ -61,11 +73,18 @@ export function LanguageSwitchDialog({
   const subtitleDropdownRef = useRef<HTMLDivElement>(null)
   const dialogRef = useRef<HTMLDivElement>(null)
 
+  // Fetch languages when dialog opens if needed
+  useEffect(() => {
+    if (open && !allLanguages && !languagesLoading) {
+      getAllLanguages()
+    }
+  }, [open, allLanguages, languagesLoading, getAllLanguages])
+
   // Handle automatic language updates
   useEffect(() => {
-    if (!data?.languages) return
+    if (!allLanguages) return
 
-    const selectedLangObj = data.languages.find(
+    const selectedLangObj = allLanguages.find(
       (lang) => lang.bcp47 === selectedLanguage
     )
     if (!selectedLangObj) return
@@ -77,7 +96,7 @@ export function LanguageSwitchDialog({
     if (!manuallyChangedFields.subtitle) {
       setSelectedSubtitle(selectedLangObj.id)
     }
-  }, [selectedLanguage, data?.languages])
+  }, [selectedLanguage, allLanguages, manuallyChangedFields])
 
   // Update subtitle when audio changes if not manually changed
   useEffect(() => {
@@ -87,10 +106,10 @@ export function LanguageSwitchDialog({
   }, [selectedAudioLanguage])
 
   function handleResetForm(): void {
-    setSelectedLanguage(i18n.language)
-    setSelectedAudioLanguage(audioLanguageCookie)
-    setSelectedSubtitle(subtitleLanguageCookie)
-    setSubtitlesOn(subtitlesOnCookie === 'true')
+    setSelectedLanguage(siteLanguage)
+    setSelectedAudioLanguage(audioLanguage)
+    setSelectedSubtitle(subtitleLanguage)
+    setSelectedSubtitlesOn(subtitleOn)
     setManuallyChangedFields({ audio: false, subtitle: false })
   }
 
@@ -180,9 +199,7 @@ export function LanguageSwitchDialog({
               />
               <hr className="border-t border-gray-200 w-full my-8" />
               <AudioTrackSelect
-                languagesData={data?.languages}
                 loading={languagesLoading}
-                selectedLanguageId={selectedAudioLanguage}
                 onChange={(value) => {
                   setSelectedAudioLanguage(value)
                   setManuallyChangedFields((prev) => ({ ...prev, audio: true }))
@@ -190,9 +207,7 @@ export function LanguageSwitchDialog({
                 dropdownRef={audioDropdownRef}
               />
               <SubtitlesSelect
-                languagesData={data?.languages}
                 loading={languagesLoading}
-                selectedSubtitleId={selectedSubtitle}
                 onChange={(value) => {
                   setSelectedSubtitle(value)
                   setManuallyChangedFields((prev) => ({
@@ -200,8 +215,7 @@ export function LanguageSwitchDialog({
                     subtitle: true
                   }))
                 }}
-                subtitlesOn={subtitlesOn}
-                setSubtitlesOn={setSubtitlesOn}
+                setSubtitlesOn={setSelectedSubtitlesOn}
                 dropdownRef={subtitleDropdownRef}
               />
             </div>
@@ -210,10 +224,10 @@ export function LanguageSwitchDialog({
                 selectedLanguage={selectedLanguage}
                 selectedAudioLanguage={selectedAudioLanguage}
                 selectedSubtitle={selectedSubtitle}
-                subtitlesOn={subtitlesOn}
-                subtitlesOnCookie={subtitlesOnCookie}
-                audioLanguageCookie={audioLanguageCookie}
-                subtitleLanguageCookie={subtitleLanguageCookie}
+                subtitlesOn={selectedSubtitlesOn}
+                subtitlesOnCookie={subtitleOn.toString()}
+                audioLanguageCookie={audioLanguage}
+                subtitleLanguageCookie={subtitleLanguage}
                 loading={loading}
                 setLoading={setLoading}
                 handleClose={handleClose}

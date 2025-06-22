@@ -1,4 +1,4 @@
-import last from 'lodash/last'
+import { useLazyQuery } from '@apollo/client'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, Ref, useEffect, useState } from 'react'
@@ -10,76 +10,104 @@ import {
 } from '@core/shared/ui/LanguageAutocomplete'
 
 import { GetAllLanguages_languages as Language } from '../../../../__generated__/GetAllLanguages'
+import { GetLanguagesSlug } from '../../../../__generated__/GetLanguagesSlug'
+import { useLanguagePreference } from '../../../libs/languagePreferenceContext'
+import { GET_LANGUAGES_SLUG } from '../../AudioLanguageDialog/AudioLanguageDialog'
+import {
+  selectLanguageForNoVideo,
+  selectLanguageForVideo
+} from '../utils/audioLanguageSetter'
 import { renderInput } from '../utils/renderInput'
 import { renderOption } from '../utils/renderOption'
 
 interface AudioTrackSelectProps {
-  languagesData?: Language[]
   loading: boolean
-  selectedLanguageId: string
   onChange: (selectedLanguageId: string) => void
   dropdownRef: Ref<HTMLDivElement>
 }
 
 export function AudioTrackSelect({
-  languagesData,
   loading,
-  selectedLanguageId,
   onChange,
   dropdownRef
 }: AudioTrackSelectProps): ReactElement {
+  const {
+    state: {
+      allLanguages,
+      currentAudioLanguage,
+      audioLanguage,
+      videoId,
+      videoAudioLanguages
+    },
+    dispatch
+  } = useLanguagePreference()
+
+  const [getAudioLanguages, { loading: audioLanguagesLoading }] =
+    useLazyQuery<GetLanguagesSlug>(GET_LANGUAGES_SLUG, {
+      onCompleted: (data) => {
+        if (data?.video?.variantLanguagesWithSlug) {
+          dispatch({
+            type: 'SetVideoAudioLanguages',
+            videoAudioLanguages: data.video.variantLanguagesWithSlug.map(
+              (variant) => variant.language
+            )
+          })
+        }
+      }
+    })
+
   const { t } = useTranslation()
   const router = useRouter()
   const [helperText, setHelperText] = useState<string>(t('2000 translations'))
 
-  const selectedLanguage = languagesData?.find(
-    (language) => language.id === selectedLanguageId
-  )
+  // Fetch audio languages for current video when needed
+  useEffect(() => {
+    if (videoId != null && videoAudioLanguages == null) {
+      void getAudioLanguages({
+        variables: {
+          id: videoId
+        }
+      })
+    }
+  }, [videoId, videoAudioLanguages, getAudioLanguages])
 
   const [currentLanguage, setCurrentLanguage] = useState<
     LanguageOption | undefined
   >(undefined)
 
   useEffect(() => {
-    if (selectedLanguage != null && !loading) {
-      const path = router.asPath.split('/')
-      const pathLanguageSlug = last(path)?.replace('.html', '')
+    if (!allLanguages || loading) return
 
-      if (pathLanguageSlug !== selectedLanguage.slug && path.length > 3) {
-        const pathLanguage = languagesData?.find(
-          (language) => language.slug === pathLanguageSlug
-        )
-
-        setCurrentLanguage({
-          id: pathLanguage?.id ?? '529',
-          localName:
-            pathLanguage?.name.find(({ primary }) => primary)?.value ??
-            'English',
-          nativeName:
-            pathLanguage?.name.find(({ primary }) => !primary)?.value ??
-            'English',
-          slug: pathLanguage?.slug ?? 'english'
-        })
-        setHelperText(
-          t('Not available in {{value}}', {
-            value: selectedLanguage.slug
-          })
-        )
-      } else {
-        setCurrentLanguage({
-          id: selectedLanguage.id,
-          localName: selectedLanguage.name.find(({ primary }) => primary)
-            ?.value,
-          nativeName: selectedLanguage.name.find(({ primary }) => !primary)
-            ?.value,
-          slug: selectedLanguage.slug
-        })
-      }
+    const params = {
+      currentAudioLanguage,
+      allLanguages,
+      audioLanguage,
+      router,
+      setCurrentLanguage,
+      setHelperText,
+      t
     }
-  }, [selectedLanguage, loading])
 
-  const allLanguages =
-    languagesData?.map((language: Language) => ({
+    if (videoId == null) {
+      selectLanguageForNoVideo(params)
+    } else {
+      if (videoAudioLanguages == null || audioLanguagesLoading) return
+      selectLanguageForVideo(params)
+    }
+  }, [
+    loading,
+    allLanguages,
+    audioLanguage,
+    currentAudioLanguage,
+    t,
+    router,
+    videoId,
+    videoAudioLanguages,
+    audioLanguagesLoading
+  ])
+
+  const languages =
+    allLanguages?.map((language: Language) => ({
       id: language.id,
       name: language.name,
       slug: language.slug
@@ -114,8 +142,8 @@ export function AudioTrackSelect({
               slug: currentLanguage?.slug
             }}
             onChange={handleChange}
-            languages={allLanguages}
-            loading={loading}
+            languages={languages}
+            loading={loading || audioLanguagesLoading}
             disabled={loading}
             renderInput={renderInput(helperText)}
             renderOption={renderOption}

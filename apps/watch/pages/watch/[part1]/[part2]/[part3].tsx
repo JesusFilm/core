@@ -1,5 +1,6 @@
 import { ApolloError, gql } from '@apollo/client'
 import { GetStaticPaths, GetStaticProps } from 'next'
+import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
@@ -17,11 +18,13 @@ import {
 } from '../../../../__generated__/GetVideoContentPart3'
 import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 import i18nConfig from '../../../../next-i18next.config'
+import { getCookie } from '../../../../src/components/LanguageSwitchDialogNew/utils/cookieHandler'
 import { VideoContentPage } from '../../../../src/components/VideoContentPage'
 import { createApolloClient } from '../../../../src/libs/apolloClient'
 import { getFlags } from '../../../../src/libs/getFlags'
 import { getLanguageIdFromLocale } from '../../../../src/libs/getLanguageIdFromLocale'
 import { LanguageProvider } from '../../../../src/libs/languageContext/LanguageContext'
+import { LanguagePreferenceProvider } from '../../../../src/libs/languagePreferenceContext/LanguagePreferenceContext'
 import { slugMap } from '../../../../src/libs/slugMap'
 import { VIDEO_CONTENT_FIELDS } from '../../../../src/libs/videoContentFields'
 import { VideoProvider } from '../../../../src/libs/videoContext'
@@ -53,19 +56,32 @@ export default function Part3Page({
   container,
   content
 }: Part3PageProps): ReactElement {
+  const { i18n } = useTranslation()
   const searchClient = useInstantSearchClient()
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
+  // Initialize language preferences from cookies and i18n
+  const initialLanguageState = {
+    siteLanguage: i18n?.language ?? 'en',
+    audioLanguage: getCookie('AUDIO_LANGUAGE') ?? '529',
+    subtitleLanguage: getCookie('SUBTITLE_LANGUAGE') ?? '529',
+    subtitleOn: (getCookie('SUBTITLES_ON') ?? 'false') === 'true',
+    videoId: content.id,
+    videoVariantSlug: content.variant?.slug
+  }
+
   return (
-    <InstantSearch searchClient={searchClient} indexName={indexName} insights>
-      <SnackbarProvider>
-        <LanguageProvider>
-          <VideoProvider value={{ content, container }}>
-            <VideoContentPage />
-          </VideoProvider>
-        </LanguageProvider>
-      </SnackbarProvider>
-    </InstantSearch>
+    <LanguagePreferenceProvider initialState={initialLanguageState}>
+      <InstantSearch searchClient={searchClient} indexName={indexName} insights>
+        <SnackbarProvider>
+          <LanguageProvider>
+            <VideoProvider value={{ content, container }}>
+              <VideoContentPage />
+            </VideoProvider>
+          </LanguageProvider>
+        </SnackbarProvider>
+      </InstantSearch>
+    </LanguagePreferenceProvider>
   )
 }
 

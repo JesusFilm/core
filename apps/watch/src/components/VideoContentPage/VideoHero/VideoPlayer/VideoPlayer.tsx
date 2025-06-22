@@ -1,4 +1,3 @@
-import { useQuery } from '@apollo/client'
 import last from 'lodash/last'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
@@ -9,10 +8,8 @@ import { MuxMetadata } from '@core/shared/ui/muxMetadataType'
 
 import 'videojs-mux'
 
-import { GetSubtitles } from '../../../../../__generated__/GetSubtitles'
+import { useLanguagePreference } from '../../../../libs/languagePreferenceContext'
 import { useVideo } from '../../../../libs/videoContext'
-import { getCookie } from '../../../LanguageSwitchDialogNew/utils/cookieHandler'
-import { GET_SUBTITLES } from '../../../SubtitleDialog/SubtitleDialog'
 
 import { VideoControls } from './VideoControls'
 
@@ -24,16 +21,18 @@ export function VideoPlayer({
   setControlsVisible
 }: VideoPlayerProps): ReactElement {
   const { variant, title } = useVideo()
+  const {
+    state: {
+      subtitleLanguage,
+      subtitleOn,
+      currentSubtitleOn,
+      videoSubtitleLanguages
+    }
+  } = useLanguagePreference()
   const videoRef = useRef<HTMLVideoElement>(null)
   const [player, setPlayer] = useState<
     Player & { textTracks?: () => TextTrackList }
   >()
-
-  const { loading, data } = useQuery<GetSubtitles>(GET_SUBTITLES, {
-    variables: {
-      id: variant?.slug
-    }
-  })
 
   useEffect(() => {
     if (videoRef.current != null) {
@@ -76,42 +75,78 @@ export function VideoPlayer({
   }, [player, variant?.hls])
 
   useEffect(() => {
-    const subtitleLanguageId = getCookie('SUBTITLE_LANGUAGE')
-    const subtitlesOn = getCookie('SUBTITLES_ON') === 'true'
+    if (player == null) return
 
-    if (player == null || !subtitlesOn || subtitleLanguageId == null || loading)
-      return
-
-    const selected = data?.video?.variant?.subtitle?.find(
-      (subtitle) => subtitle.language.id === subtitleLanguageId
-    )
-
-    player.addRemoteTextTrack(
-      {
-        id: subtitleLanguageId,
-        src: selected?.value,
-        kind: 'subtitles',
-        language:
-          selected?.language.bcp47 === null
-            ? undefined
-            : selected?.language.bcp47,
-        label: selected?.language.name.map((name) => name.value).join(', '),
-        mode: 'showing',
-        default: true
-      },
-      true
-    )
     const tracks = player.textTracks?.() ?? []
 
+    // Use currentSubtitleOn if available (based on availability), otherwise fall back to user preference
+    const shouldShowSubtitles = currentSubtitleOn ?? subtitleOn
+
+    if (!shouldShowSubtitles || subtitleLanguage == null) {
+      // Disable all subtitle tracks when subtitles should be off
+      for (let i = 0; i < tracks.length; i++) {
+        const track = tracks[i]
+        if (track.kind === 'subtitles') {
+          track.mode = 'disabled'
+        }
+      }
+      return
+    }
+
+    const selected = videoSubtitleLanguages?.find(
+      (subtitle) => subtitle.language.id === subtitleLanguage
+    )
+
+    if (selected == null) return
+
+    // Check if track with this ID already exists
+    let existingTrack: TextTrack | null = null
     for (let i = 0; i < tracks.length; i++) {
       const track = tracks[i]
-      if (track.id === subtitleLanguageId) {
-        track.mode = 'showing'
-      } else {
-        track.mode = 'disabled'
+      if (track.id === subtitleLanguage) {
+        existingTrack = track
+        break
       }
     }
-  }, [player, data, loading])
+
+    // If track doesn't exist, add it
+    if (existingTrack == null) {
+      player.addRemoteTextTrack(
+        {
+          id: subtitleLanguage,
+          src: selected.value,
+          kind: 'subtitles',
+          language:
+            selected.language.bcp47 === null
+              ? undefined
+              : selected.language.bcp47,
+          label: selected.language.name.map((name) => name.value).join(', '),
+          mode: 'showing',
+          default: true
+        },
+        true
+      )
+    }
+
+    // Update track modes: show selected language, disable others
+    const updatedTracks = player.textTracks?.() ?? []
+    for (let i = 0; i < updatedTracks.length; i++) {
+      const track = updatedTracks[i]
+      if (track.kind === 'subtitles') {
+        if (track.id === subtitleLanguage) {
+          track.mode = 'showing'
+        } else {
+          track.mode = 'disabled'
+        }
+      }
+    }
+  }, [
+    player,
+    videoSubtitleLanguages,
+    subtitleLanguage,
+    subtitleOn,
+    currentSubtitleOn
+  ])
 
   return (
     <>

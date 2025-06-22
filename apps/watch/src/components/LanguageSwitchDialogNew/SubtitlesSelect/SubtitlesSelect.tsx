@@ -1,3 +1,4 @@
+import { useLazyQuery } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, Ref, useEffect, useState } from 'react'
 
@@ -7,35 +8,67 @@ import {
   LanguageOption
 } from '@core/shared/ui/LanguageAutocomplete'
 
-import { GetAllLanguages_languages as Language } from '../../../../__generated__/GetAllLanguages'
+import { GetSubtitles } from '../../../../__generated__/GetSubtitles'
 import { SUBTITLE_LANGUAGE_IDS } from '../../../config/subtitleLanguageIds'
+import { useLanguagePreference } from '../../../libs/languagePreferenceContext/LanguagePreferenceContext'
+import { GET_SUBTITLES } from '../../SubtitleDialog/SubtitleDialog'
 import { renderInput } from '../utils/renderInput'
 import { renderOption } from '../utils/renderOption'
 
 interface SubtitlesSelectProps {
-  languagesData?: Language[]
   loading: boolean
-  selectedSubtitleId: string
   onChange: (selectedSubtitleId: string) => void
-  subtitlesOn: boolean
   setSubtitlesOn: (value: boolean) => void
   dropdownRef: Ref<HTMLDivElement>
 }
 
 export function SubtitlesSelect({
-  languagesData,
   loading,
-  selectedSubtitleId,
   onChange,
-  subtitlesOn,
   setSubtitlesOn,
   dropdownRef
 }: SubtitlesSelectProps): ReactElement {
   const { t } = useTranslation()
+  const {
+    state: {
+      allLanguages,
+      subtitleLanguage,
+      subtitleOn,
+      currentSubtitleOn,
+      videoId,
+      videoSubtitleLanguages,
+      videoVariantSlug
+    },
+    dispatch
+  } = useLanguagePreference()
 
-  const selectedSubtitle = languagesData?.find(
-    (language) => language.id === selectedSubtitleId
+  const [getSubtitleLanguages, { loading: subtitlesLoading }] =
+    useLazyQuery<GetSubtitles>(GET_SUBTITLES, {
+      onCompleted: (data) => {
+        if (data?.video?.variant?.subtitle) {
+          dispatch({
+            type: 'SetVideoSubtitleLanguages',
+            videoSubtitleLanguages: data.video.variant.subtitle
+          })
+        }
+      }
+    })
+
+  useEffect(() => {
+    if (videoId != null && videoSubtitleLanguages == null) {
+      void getSubtitleLanguages({
+        variables: {
+          id: videoVariantSlug
+        }
+      })
+    }
+  }, [videoId, videoSubtitleLanguages, getSubtitleLanguages])
+
+  const selectedSubtitle = allLanguages?.find(
+    (language) => language.id === subtitleLanguage
   )
+
+  const preferredSubtitleOn = currentSubtitleOn ?? subtitleOn
 
   const [currentSubtitle, setCurrentSubtitle] = useState<
     LanguageOption | undefined
@@ -53,7 +86,7 @@ export function SubtitlesSelect({
     }
   }, [selectedSubtitle, loading])
 
-  const allLanguageSubtitles = languagesData
+  const allLanguageSubtitles = allLanguages
     ?.filter((language) => SUBTITLE_LANGUAGE_IDS.includes(language.id))
     .map((language) => ({
       id: language.id,
@@ -88,7 +121,7 @@ export function SubtitlesSelect({
             }}
             onChange={handleChange}
             languages={allLanguageSubtitles}
-            loading={loading}
+            loading={loading || subtitlesLoading}
             renderInput={renderInput(t('2000 translations'))}
             renderOption={renderOption}
           />
@@ -98,8 +131,8 @@ export function SubtitlesSelect({
         <input
           id="no-subtitles"
           type="checkbox"
-          checked={subtitlesOn}
-          onChange={() => setSubtitlesOn(!subtitlesOn)}
+          checked={preferredSubtitleOn}
+          onChange={() => setSubtitlesOn(!preferredSubtitleOn)}
           className="accent-[#CB333B] h-4 w-4 rounded border-gray-300 focus:ring-0"
         />
         <label htmlFor="no-subtitles" className="text-sm text-gray-500">

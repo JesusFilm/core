@@ -2,6 +2,7 @@ import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+import { useLanguagePreference } from '../../../libs/languagePreferenceContext/LanguagePreferenceContext'
 import { setCookie } from '../utils/cookieHandler'
 
 interface DialogActionsProps {
@@ -33,6 +34,7 @@ export function DialogActions({
 }: DialogActionsProps): ReactElement {
   const { t, i18n } = useTranslation()
   const router = useRouter()
+  const { dispatch } = useLanguagePreference()
 
   // Calculate if any values have changed
   const hasChanges =
@@ -49,6 +51,22 @@ export function DialogActions({
     // Subtitle Language cookie is languageId e.g. 529,
     const subtitleChanged = selectedSubtitle !== subtitleLanguageCookie
     const subtitlesOnChanged = subtitlesOn.toString() !== subtitlesOnCookie
+
+    // Update preferences in provider context first
+    if (
+      siteLanguageChanged ||
+      audioTrackChanged ||
+      subtitleChanged ||
+      subtitlesOnChanged
+    ) {
+      dispatch({
+        type: 'SetLanguagePreferences',
+        siteLanguage: siteLanguageChanged ? selectedLanguage : undefined,
+        audioLanguage: audioTrackChanged ? selectedAudioLanguage : undefined,
+        subtitleLanguage: subtitleChanged ? selectedSubtitle : undefined,
+        subtitleOn: subtitlesOnChanged ? subtitlesOn : undefined
+      })
+    }
 
     // Site language change
     if (siteLanguageChanged) {
