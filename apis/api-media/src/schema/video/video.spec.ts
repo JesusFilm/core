@@ -68,7 +68,8 @@ describe('video', () => {
       childIds: [],
       availableLanguages: [],
       locked: false,
-      originId: null
+      originId: null,
+      restrictDownloadPlatforms: []
     },
     {
       id: 'videoId1',
@@ -80,7 +81,8 @@ describe('video', () => {
       childIds: [],
       availableLanguages: [],
       locked: false,
-      originId: null
+      originId: null,
+      restrictDownloadPlatforms: []
     }
   ]
 
@@ -95,7 +97,8 @@ describe('video', () => {
       childIds: [],
       availableLanguages: [],
       locked: false,
-      originId: null
+      originId: null,
+      restrictDownloadPlatforms: []
     },
     {
       id: 'videoId4',
@@ -107,7 +110,8 @@ describe('video', () => {
       childIds: [],
       availableLanguages: [],
       locked: false,
-      originId: null
+      originId: null,
+      restrictDownloadPlatforms: []
     }
   ]
 
@@ -123,6 +127,7 @@ describe('video', () => {
       availableLanguages: [],
       originId: 'originId',
       locked: false,
+      restrictDownloadPlatforms: [],
       bibleCitation: [
         {
           id: 'bibleCitationId',
@@ -316,7 +321,8 @@ describe('video', () => {
     childIds: [],
     availableLanguages: [],
     originId: null,
-    locked: false
+    locked: false,
+    restrictDownloadPlatforms: []
   }
 
   describe('videos', () => {
@@ -1657,7 +1663,8 @@ describe('video', () => {
       childIds: [],
       availableLanguages: [],
       originId: null,
-      locked: false
+      locked: false,
+      restrictDownloadPlatforms: []
     }
 
     it('should query video', async () => {
@@ -1845,7 +1852,7 @@ describe('video', () => {
           noIndex: true,
           childIds: [],
           availableLanguages: [],
-          originId: null
+          originId: 'originId'
         } as unknown as Video)
         const result = await authClient({
           document: CREATE_VIDEO_MUTATION,
@@ -1857,7 +1864,8 @@ describe('video', () => {
               published: true,
               slug: 'slug',
               noIndex: true,
-              childIds: []
+              childIds: [],
+              originId: 'originId'
             }
           }
         })
@@ -1869,7 +1877,8 @@ describe('video', () => {
             published: true,
             slug: 'slug',
             noIndex: true,
-            childIds: []
+            childIds: [],
+            originId: 'originId'
           }
         })
         expect(result).toHaveProperty('data.videoCreate', {
@@ -1888,7 +1897,8 @@ describe('video', () => {
               published: true,
               slug: 'slug',
               noIndex: true,
-              childIds: []
+              childIds: [],
+              originId: 'originId'
             }
           }
         })
@@ -1999,7 +2009,8 @@ describe('video', () => {
         childIds: [],
         availableLanguages: [],
         locked: false,
-        originId: null
+        originId: null,
+        restrictDownloadPlatforms: []
       })
       const data = await client({
         document: VIDEO
