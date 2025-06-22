@@ -31,7 +31,11 @@ test('Chapter', async ({ page }) => {
   //   timeout: 10000
   // })
 
-  await page.getByTestId('VideoCardButton-jesus-calms-the-storm').click()
+  await page
+    .getByRole('button', {
+      name: 'Jesus Calms the Storm Jesus Calms the Storm Chapter 1:59'
+    })
+    .click()
 
   // eslint-disable-next-line playwright/no-wait-for-timeout
   await page.waitForTimeout(8 * 1000)
