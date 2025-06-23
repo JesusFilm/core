@@ -16,13 +16,13 @@ import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
 
 import { BibleCitations } from './BibleCitations'
-import { ContentHero } from './ContentHero'
 import { ContentMetadata } from './ContentMetadata'
 import { ContentPageBlurFilter } from './ContentPageBlurFilter'
 import { DiscussionQuestions } from './DiscussionQuestions'
 import { VideoCarousel } from './VideoCarousel'
+import { VideoContentHero } from './VideoContentHero'
 
-export function NewContentPage(): ReactElement {
+export function NewVideoContentPage(): ReactElement {
   const { t } = useTranslation('apps-watch')
   const {
     id,
@@ -41,6 +41,7 @@ export function NewContentPage(): ReactElement {
   } = useVideo()
 
   const [showShare, setShowShare] = useState(false)
+  const [isFullscreen, setIsFullscreen] = useState(false)
 
   const variantSlug = container?.variant?.slug ?? variant?.slug
   const watchUrl = getWatchUrl(container?.slug, label, variant?.slug)
@@ -112,10 +113,16 @@ export function NewContentPage(): ReactElement {
         }}
       />
       <PageWrapper
-        hero={<ContentHero />}
+        hero={
+          <VideoContentHero
+            isFullscreen={isFullscreen}
+            setIsFullscreen={setIsFullscreen}
+          />
+        }
         headerThemeMode={ThemeMode.dark}
         hideHeader
         hideFooter
+        isFullscreen={isFullscreen}
       >
         <ContentPageBlurFilter>
           {((container?.childrenCount ?? 0) > 0 || childrenCount > 0) &&

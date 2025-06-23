@@ -23,7 +23,7 @@ describe('ContentHeader', () => {
     expect(header).toBeInTheDocument()
 
     const link = screen.getByRole('link')
-    expect(link).toHaveAttribute('href', '/')
+    expect(link).toHaveAttribute('href', '/watch')
   })
 
   it('opens audio language dialog on language button click', async () => {

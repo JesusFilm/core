@@ -43,7 +43,7 @@ const DynamicNewContentPage = dynamic(
   async () =>
     await import(
       /* webpackChunkName: "NewContentPage" */
-      '../../../src/components/NewContentPage'
+      '../../../src/components/NewVideoContentPage'
     )
 )
 

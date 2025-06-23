@@ -97,31 +97,65 @@ export function VideoControls({
     onVisibleChanged?.(!play || active || loading)
   }, [play, active, loading, onVisibleChanged])
 
-  // Listen for when metadata becomes available before setting duration https://stackoverflow.com/questions/40763057/trying-to-get-full-video-duration-but-returning-as-nan
+  // Set duration from variant data instead of trying to detect from HLS stream
   useEffect(() => {
-    const updateDuration = (): void => {
-      const playerDuration = player.duration()
-      if (
-        playerDuration != null &&
-        !isNaN(playerDuration) &&
-        playerDuration > 0
-      ) {
-        const roundedDuration = Math.round(playerDuration)
-        setDurationSeconds(roundedDuration)
-        setDuration(secondsToTimeFormat(roundedDuration, { trimZeroes: true }))
+    if (variant?.duration != null && variant.duration > 0) {
+      const roundedDuration = Math.round(variant.duration)
+      setDurationSeconds(roundedDuration)
+      setDuration(secondsToTimeFormat(roundedDuration, { trimZeroes: true }))
+    } else {
+      // Fallback to player detection for edge cases
+      let retryCount = 0
+      const maxRetries = 3
+      let retryTimeout: NodeJS.Timeout | undefined
+
+      const updateDuration = (state: string): void => {
+        const playerDuration = player.duration()
+
+        if (
+          playerDuration != null &&
+          !isNaN(playerDuration) &&
+          playerDuration > 0
+        ) {
+          const roundedDuration = Math.round(playerDuration)
+          setDurationSeconds(roundedDuration)
+          setDuration(
+            secondsToTimeFormat(roundedDuration, { trimZeroes: true })
+          )
+          if (retryTimeout) {
+            clearTimeout(retryTimeout)
+            retryTimeout = undefined
+          }
+        } else if (playerDuration === Infinity) {
+          setDurationSeconds(0)
+          setDuration('Live')
+        } else if (state === 'retry' && retryCount < maxRetries) {
+          retryCount++
+          const delay = 1000 * retryCount
+
+          retryTimeout = setTimeout(() => {
+            updateDuration('retry')
+          }, delay)
+        }
+      }
+      // Only add fallback listeners if variant duration is not available
+      const events = ['durationchange', 'loadedmetadata', 'canplay']
+      events.forEach((event) => {
+        player.on(event, () => updateDuration(event))
+      })
+
+      updateDuration('initial')
+
+      return () => {
+        if (retryTimeout) {
+          clearTimeout(retryTimeout)
+        }
+        events.forEach((event) => {
+          player.off(event, updateDuration)
+        })
       }
     }
-
-    player.on('durationchange', updateDuration)
-    player.on('loadedmetadata', updateDuration)
-
-    updateDuration()
-
-    return () => {
-      player.off('durationchange', updateDuration)
-      player.off('loadedmetadata', updateDuration)
-    }
-  }, [player])
+  }, [player, variant?.duration])
 
   useEffect(() => {
     if ((progress / durationSeconds) * 100 > progressPercentNotYetEmitted[0]) {
@@ -298,6 +332,7 @@ export function VideoControls({
 
   function handleVolume(_event: Event, value: number | number[]): void {
     if (!Array.isArray(value)) {
+      if (mute === true) handleMute()
       setVolume(value)
       player.volume(value / 100)
     }

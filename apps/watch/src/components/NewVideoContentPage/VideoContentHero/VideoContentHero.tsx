@@ -1,13 +1,18 @@
 import fscreen from 'fscreen'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect } from 'react'
 
 import { useVideo } from '../../../libs/videoContext'
 
 import { ContentHeader } from './ContentHeader'
-import { ContentHeroVideo } from './ContentHeroVideo'
+import { HeroVideo } from './HeroVideo'
 
-export function ContentHero(): ReactElement {
-  const [isFullscreen, setIsFullscreen] = useState(false)
+export function VideoContentHero({
+  isFullscreen = false,
+  setIsFullscreen
+}: {
+  isFullscreen?: boolean
+  setIsFullscreen?: (isFullscreen: boolean) => void
+}): ReactElement {
   const { variant } = useVideo()
   /**
    * Effect to handle fullscreen changes.
@@ -20,7 +25,7 @@ export function ContentHero(): ReactElement {
      */
     function fullscreenchange(): void {
       const isFullscreen = fscreen.fullscreenElement != null
-      setIsFullscreen(isFullscreen)
+      setIsFullscreen?.(isFullscreen)
       if (isFullscreen) {
         window.scrollTo({ top: 0, behavior: 'smooth' })
       }
@@ -40,7 +45,7 @@ export function ContentHero(): ReactElement {
       data-testid="ContentHero"
     >
       {!isFullscreen && <ContentHeader />}
-      <ContentHeroVideo isFullscreen={isFullscreen} key={variant?.hls} />
+      <HeroVideo isFullscreen={isFullscreen} key={variant?.hls} />
       <div
         data-testid="ContainerHeroTitleContainer"
         className="w-full relative flex flex-col sm:flex-row max-w-[1920px] mx-auto pb-4"

@@ -23,8 +23,10 @@ export function useVideoChildren(slug?: string): {
   loading: boolean
   children: GetVideoChildren_video_children[]
 } {
-  const [getVideoChildren, { loading, data }] =
+  const [getVideoChildren, { loading, data, error }] =
     useLazyQuery<GetVideoChildren>(GET_VIDEO_CHILDREN)
+
+  console.log('error', error)
 
   useEffect(() => {
     if (slug != null) {

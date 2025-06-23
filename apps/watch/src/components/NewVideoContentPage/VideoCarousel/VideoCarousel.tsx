@@ -23,8 +23,9 @@ export function VideoCarousel({
 }: VideoCarouselProps): ReactElement {
   const nextRef = useRef<HTMLDivElement>(null)
   const prevRef = useRef<HTMLDivElement>(null)
+
   return (
-    <div data-testid="VideoCarousel" className="my-7">
+    <div data-testid="VideoCarousel" className="my-7 relative">
       <Swiper
         data-testid="VideoCarouselSwiper"
         modules={[Mousewheel, FreeMode, A11y, Navigation]}
@@ -46,7 +47,7 @@ export function VideoCarousel({
         }}
       >
         {!loading
-          ? videos?.map((video) => (
+          ? videos.map((video) => (
               <SwiperSlide
                 key={video.id}
                 className="max-w-[200px]"

@@ -5,14 +5,14 @@ import userEvent from '@testing-library/user-event'
 import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/__generated__/testData'
 
-import { NewContentPage } from './NewContentPage'
+import { NewVideoContentPage } from './NewVideoContentPage'
 
 describe('NewContentPage', () => {
   it('should render', () => {
     render(
       <MockedProvider>
         <VideoProvider value={{ content: videos[0] }}>
-          <NewContentPage />
+          <NewVideoContentPage />
         </VideoProvider>
       </MockedProvider>
     )
@@ -32,7 +32,7 @@ describe('NewContentPage', () => {
     render(
       <MockedProvider>
         <VideoProvider value={{ content: videos[0] }}>
-          <NewContentPage />
+          <NewVideoContentPage />
         </VideoProvider>
       </MockedProvider>
     )
@@ -47,7 +47,7 @@ describe('NewContentPage', () => {
     render(
       <MockedProvider>
         <VideoProvider value={{ content: videos[0] }}>
-          <NewContentPage />
+          <NewVideoContentPage />
         </VideoProvider>
       </MockedProvider>
     )

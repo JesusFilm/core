@@ -11,7 +11,7 @@ Click on the Play button
 Wait for two minutes as this video is for 1.59 minutes
 Take screenshot - so it will be tested all the times
 */
-test.skip('Chapter', async ({ page }) => {
+test('Chapter', async ({ page }) => {
   // Set test time out as it has video
   test.setTimeout(7 * 60 * 1000)
 
@@ -47,7 +47,6 @@ test.skip('Chapter', async ({ page }) => {
   // check it's navigated to the correct URL
   await expect(page).toHaveURL('/watch/jesus-calms-the-storm.html/english.html')
 
-  //video should auto play in new watch design - Nisal - 17/06/2025
   // await page.getByRole('button', { name: 'Play' }).click()
 
   // wait for 3 minutes to see if the video until there are some events thta can say the state of the video
