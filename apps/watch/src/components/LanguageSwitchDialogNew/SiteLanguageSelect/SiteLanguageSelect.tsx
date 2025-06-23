@@ -10,6 +10,7 @@ import {
 import { LANGUAGE_MAPPINGS, SUPPORTED_LOCALES } from '../../../config/locales'
 import { renderInput } from '../utils/renderInput'
 import { renderOption } from '../utils/renderOption'
+import { siteLanguageReorder } from '../utils/siteLanguageReorder'
 
 interface SiteLanguageSelectProps {
   onChange: (value: string) => void
@@ -28,16 +29,18 @@ export function SiteLanguageSelect({
   )
 
   useEffect(() => {
+    let siteLang: LanguageOption | null = null
     const formattedLanguages = SUPPORTED_LOCALES.map((l) => {
       const { locale, localName, nativeName, languageSlugs } =
         LANGUAGE_MAPPINGS[l]
       if (locale === currentLanguageId) {
-        setCurrentLanguage({
+        siteLang = {
           id: locale,
           localName,
           nativeName,
           slug: languageSlugs[0]
-        })
+        }
+        setCurrentLanguage(siteLang)
       }
 
       return {
@@ -48,7 +51,28 @@ export function SiteLanguageSelect({
       }
     })
 
-    setLanguages(formattedLanguages)
+    const fetchGeolocationAndSetLanguages = async () => {
+      try {
+        // Fetch country from geolocation API
+        const countryResponse = await fetch('/api/geolocation')
+        const { country } = await countryResponse.json()
+        const browserLanguage = navigator.language || navigator.languages[0]
+
+        // Reorder languages using utility function
+        const finalLanguages = siteLanguageReorder({
+          languages: formattedLanguages,
+          siteLang,
+          browserLanguage,
+          country
+        })
+
+        setLanguages(finalLanguages)
+      } catch (error) {
+        console.error('Error fetching geolocation or browser language:', error)
+        setLanguages(formattedLanguages)
+      }
+    }
+    void fetchGeolocationAndSetLanguages()
   }, [i18n?.language])
 
   const handleLanguageChange = (language?: LanguageOption): void => {
