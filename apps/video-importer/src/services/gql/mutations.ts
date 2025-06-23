@@ -65,3 +65,56 @@ export const UPDATE_VIDEO_VARIANT = graphql(`
     }
   }
 `)
+
+export const CREATE_VIDEO_SUBTITLE = graphql(`
+  mutation CreateVideoSubtitle($input: VideoSubtitleCreateInput!) {
+    videoSubtitleCreate(input: $input) {
+      id
+      vttSrc
+      srtSrc
+      vttAsset {
+        id
+      }
+      srtAsset {
+        id
+      }
+      srtVersion
+      vttVersion
+      value
+      primary
+      edition
+      language {
+        id
+        name {
+          value
+          primary
+        }
+        slug
+      }
+    }
+  }
+`)
+
+export const UPDATE_VIDEO_SUBTITLE = graphql(`
+  mutation UpdateVideoSubtitle($input: VideoSubtitleUpdateInput!) {
+    videoSubtitleUpdate(input: $input) {
+      id
+    }
+  }
+`)
+
+export const CREATE_AUDIO_PREVIEW = graphql(`
+  mutation CreateAudioPreview($input: MutationAudioPreviewCreateInput!) {
+    audioPreviewCreate(input: $input) {
+      value
+    }
+  }
+`)
+
+export const UPDATE_AUDIO_PREVIEW = graphql(`
+  mutation UpdateAudioPreview($input: MutationAudioPreviewUpdateInput!) {
+    audioPreviewUpdate(input: $input) {
+      value
+    }
+  }
+`)
