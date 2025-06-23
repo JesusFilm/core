@@ -127,6 +127,13 @@ export enum ButtonAction {
   NavigateToBlockAction = 'NavigateToBlockAction'
 }
 
+export enum ButtonAlignment {
+  Center = 'center',
+  Justify = 'justify',
+  Left = 'left',
+  Right = 'right'
+}
+
 export type ButtonBlock = Block & {
   __typename?: 'ButtonBlock';
   action?: Maybe<Action>;
