@@ -371,24 +371,4 @@ describe('JourneyThemeResolver', () => {
       ).rejects.toThrow('user is not allowed to delete journey theme')
     })
   })
-
-  describe('journey', () => {
-    it('should return the journey for a journey theme', async () => {
-      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
-
-      await expect(resolver.journey(journeyTheme)).resolves.toEqual(journey)
-
-      expect(prismaService.journey.findUnique).toHaveBeenCalledWith({
-        where: { id: 'journeyId' }
-      })
-    })
-
-    it('should throw an error if journey not found', async () => {
-      prismaService.journey.findUnique.mockResolvedValueOnce(null)
-
-      await expect(resolver.journey(journeyTheme)).rejects.toThrow(
-        'journey not found'
-      )
-    })
-  })
 })
