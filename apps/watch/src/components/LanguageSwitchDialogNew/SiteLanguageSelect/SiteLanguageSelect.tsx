@@ -102,8 +102,10 @@ export function SiteLanguageSelect({
       >
         {t('Site Language')}
       </label>
-      <div className="relative mt-1 flex items-center gap-2" ref={dropdownRef}>
-        <Globe fontSize="small" />
+      <div className="relative mt-1 flex items-start gap-2" ref={dropdownRef}>
+        <div className="pt-4">
+          <Globe fontSize="small" />
+        </div>
         <div className="relative w-full">
           <LanguageAutocomplete
             value={{

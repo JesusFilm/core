@@ -128,8 +128,10 @@ export function SubtitlesSelect({
           {t('Subtitles')}
         </label>
       </div>
-      <div className="relative mt-1 flex items-center gap-2" ref={dropdownRef}>
-        <Type3 fontSize="small" />
+      <div className="relative mt-1 flex items-start gap-2" ref={dropdownRef}>
+        <div className="pt-4">
+          <Type3 fontSize="small" />
+        </div>
         <div className="relative w-full">
           <LanguageAutocomplete
             value={{
