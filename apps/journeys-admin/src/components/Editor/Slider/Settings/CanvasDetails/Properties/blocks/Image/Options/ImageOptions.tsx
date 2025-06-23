@@ -82,15 +82,15 @@ export function ImageOptions(): ReactElement {
   return (
     <Box sx={{ px: 4, pb: 4 }}>
       <Stack direction="column" gap={4}>
-      <ImageSource
-        selectedBlock={imageBlock}
-        onChange={async (input) => updateImageBlock(input)}
-        onDelete={deleteImageBlock}
-      />
-      <ZoomImage
-        imageBlock={imageBlock}
-        updateImageBlock={updateImageBlock}
-      />
+        <ImageSource
+          selectedBlock={imageBlock}
+          onChange={async (input) => updateImageBlock(input)}
+          onDelete={deleteImageBlock}
+        />
+        <ZoomImage
+          imageBlock={imageBlock}
+          updateImageBlock={updateImageBlock}
+        />
       </Stack>
     </Box>
   )
