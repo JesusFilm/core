@@ -179,15 +179,9 @@ export function LanguageSwitchDialog({
             className="relative w-full max-w-md transform rounded-lg bg-white shadow-xl transition-all"
             role="dialog"
             aria-modal="true"
-            aria-labelledby="dialog-title"
+            aria-label="Language Settings"
           >
-            <div className="mt-8 mb-6 flex items-center justify-between">
-              <h3
-                id="dialog-title"
-                className="text-lg font-medium leading-6 text-gray-900 mx-6"
-              >
-                {t('Language Settings')}
-              </h3>
+            <div className="mt-8 mb-6 flex items-center justify-end">
               <button
                 onClick={handleClose}
                 className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 mx-6"
