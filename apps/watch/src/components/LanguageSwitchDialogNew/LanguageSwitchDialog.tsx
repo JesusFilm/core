@@ -82,6 +82,8 @@ export function LanguageSwitchDialog({
 
   // Handle automatic language updates when site language changes
   useEffect(() => {
+    const audioChanged = selectedAudioLanguage !== audioLanguage
+    const siteLanguageChanged = selectedLanguage !== siteLanguage
     if (!allLanguages) return
 
     const selectedLangObj = allLanguages.find(
@@ -90,10 +92,13 @@ export function LanguageSwitchDialog({
     if (!selectedLangObj) return
 
     // Update audio and subtitle based on site language if not manually changed
-    if (!manuallyChangedFields.audio) {
+    if (siteLanguageChanged && !manuallyChangedFields.audio) {
       setSelectedAudioLanguage(selectedLangObj.id)
     }
-    if (!manuallyChangedFields.subtitle) {
+    if (
+      (siteLanguageChanged || audioChanged) &&
+      !manuallyChangedFields.subtitle
+    ) {
       setSelectedSubtitle(selectedLangObj.id)
     }
   }, [
@@ -105,7 +110,13 @@ export function LanguageSwitchDialog({
 
   // Update subtitle when audio changes if not manually changed
   useEffect(() => {
-    if (!manuallyChangedFields.subtitle) {
+    const audioChanged = selectedAudioLanguage !== audioLanguage
+    const siteLanguageChanged = selectedLanguage !== siteLanguage
+
+    if (
+      (audioChanged || siteLanguageChanged) &&
+      !manuallyChangedFields.subtitle
+    ) {
       setSelectedSubtitle(selectedAudioLanguage)
     }
   }, [selectedAudioLanguage, manuallyChangedFields.subtitle])
