@@ -193,6 +193,7 @@ import Transform from './Transform'
 import Trash2 from './Trash2'
 import TrendDown1 from './TrendDown1'
 import TwitterLogo from './TwitterLogo'
+import Type1 from './Type1'
 import Type2 from './Type2'
 import Type3 from './Type3'
 import Upload1 from './Upload1'
@@ -408,6 +409,7 @@ export type IconName =
   | 'Transform'
   | 'TrendDown1'
   | 'TwitterLogo'
+  | 'Type1'
   | 'Type2'
   | 'Type3'
   | 'Upload1'
@@ -627,6 +629,7 @@ const iconComponents: IconComponents = {
   Transform,
   TrendDown1,
   TwitterLogo,
+  Type1,
   Type2,
   Type3,
   Upload1,
