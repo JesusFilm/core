@@ -261,13 +261,14 @@ mediaComponents.openapi(route, async (c) => {
         variables: {
           metadataLanguageId,
           fallbackLanguageId,
-          languageIds,
+          ...(languageIds != null ? { languageIds } : {}),
           limit,
           offset,
-          labels: subTypes,
+          ...(subTypes != null ? { labels: subTypes } : {}),
           ...(ids != null ? { ids } : {})
         }
       })
+
       const videos = data.videos
       const total = data.videosCount
 
@@ -284,6 +285,7 @@ mediaComponents.openapi(route, async (c) => {
           video.snippet[0]?.value != null ||
           video.description[0]?.value != null
       )
+
       const lastPage =
         Math.ceil(total / limit) === 0 ? 1 : Math.ceil(total / limit)
 

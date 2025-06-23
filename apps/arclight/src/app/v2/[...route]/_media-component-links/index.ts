@@ -139,7 +139,7 @@ mediaComponentLinks.openapi(route, async (c) => {
       return {
         _links: {
           self: {
-            href: `http://api.arclight.org/v2/mediaComponents?${queryString}`
+            href: `http://api.arclight.org/v2/media-component-links?${queryString}`
           }
         },
         _embedded: {
