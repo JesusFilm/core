@@ -1,5 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import pick from 'lodash/pick'
 import { ReactElement } from 'react'
 
@@ -15,6 +16,7 @@ import {
   ImageBlockUpdateVariables
 } from '../../../../../../../../../../__generated__/ImageBlockUpdate'
 import { ImageSource } from '../../../../../Drawer/ImageSource'
+import { ZoomImage } from '../../Card/BackgroundMedia/Image/ZoomImage/ZoomImage'
 
 export const IMAGE_BLOCK_UPDATE = gql`
   ${IMAGE_FIELDS}
@@ -79,11 +81,17 @@ export function ImageOptions(): ReactElement {
 
   return (
     <Box sx={{ px: 4, pb: 4 }}>
+      <Stack direction="column" gap={4}>
       <ImageSource
         selectedBlock={imageBlock}
         onChange={async (input) => updateImageBlock(input)}
         onDelete={deleteImageBlock}
       />
+      <ZoomImage
+        imageBlock={imageBlock}
+        updateImageBlock={updateImageBlock}
+      />
+      </Stack>
     </Box>
   )
 }
