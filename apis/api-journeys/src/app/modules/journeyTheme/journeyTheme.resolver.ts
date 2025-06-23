@@ -169,19 +169,4 @@ export class JourneyThemeResolver {
       where: { id }
     })
   }
-
-  @ResolveField()
-  async journey(@Parent() journeyTheme: JourneyTheme): Promise<Journey> {
-    const journey = await this.prismaService.journey.findUnique({
-      where: { id: journeyTheme.journeyId }
-    })
-
-    if (journey == null) {
-      throw new GraphQLError('journey not found', {
-        extensions: { code: 'NOT_FOUND' }
-      })
-    }
-
-    return journey
-  }
 }
