@@ -1,7 +1,7 @@
 import ZoomInIcon from '@mui/icons-material/ZoomIn'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../../../../__generated__/BlockFields'
 import { ImageBlockUpdateInput } from '../../../../../../../../../../../../__generated__/globalTypes'
@@ -17,6 +17,10 @@ export function ZoomImage({ imageBlock, updateImageBlock }: ZoomImageProps) {
     imageBlock?.scale == null ? 1.0 : imageBlock.scale / 100
   )
 
+  useEffect(() => {
+    setZoom(imageBlock?.scale == null ? 1.0 : imageBlock.scale / 100)
+  }, [imageBlock?.id, imageBlock?.scale])
+  
   const handleSliderChange = (_: Event, newValue: number) => {
     const zoomFactorRounded = Math.round(newValue * 10) / 10
     setZoom(zoomFactorRounded)
