@@ -24,12 +24,14 @@ interface AudioTrackSelectProps {
   loading: boolean
   onChange: (selectedLanguageId: string) => void
   dropdownRef: Ref<HTMLDivElement>
+  value?: string // The currently selected audio language ID
 }
 
 export function AudioTrackSelect({
   loading,
   onChange,
-  dropdownRef
+  dropdownRef,
+  value
 }: AudioTrackSelectProps): ReactElement {
   const {
     state: {
@@ -75,8 +77,26 @@ export function AudioTrackSelect({
     LanguageOption | undefined
   >(undefined)
 
+  // Update currentLanguage when external value prop changes (for immediate visual feedback)
   useEffect(() => {
-    if (!allLanguages || loading) return
+    if (value && allLanguages) {
+      const selectedLanguage = allLanguages.find((lang) => lang.id === value)
+      if (selectedLanguage) {
+        setCurrentLanguage({
+          id: selectedLanguage.id,
+          localName: selectedLanguage.name.find(({ primary }) => primary)
+            ?.value,
+          nativeName: selectedLanguage.name.find(({ primary }) => !primary)
+            ?.value,
+          slug: selectedLanguage.slug
+        })
+      }
+    }
+  }, [value, allLanguages])
+
+  useEffect(() => {
+    // Only run automatic selection logic if no external value is provided
+    if (value == null || allLanguages == null || loading) return
 
     const params = {
       currentAudioLanguage,
@@ -95,6 +115,7 @@ export function AudioTrackSelect({
       selectLanguageForVideo(params)
     }
   }, [
+    value,
     loading,
     allLanguages,
     audioLanguage,

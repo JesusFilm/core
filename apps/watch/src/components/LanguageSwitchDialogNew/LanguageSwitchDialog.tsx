@@ -80,7 +80,7 @@ export function LanguageSwitchDialog({
     }
   }, [open, allLanguages, languagesLoading, getAllLanguages])
 
-  // Handle automatic language updates
+  // Handle automatic language updates when site language changes
   useEffect(() => {
     if (!allLanguages) return
 
@@ -96,14 +96,19 @@ export function LanguageSwitchDialog({
     if (!manuallyChangedFields.subtitle) {
       setSelectedSubtitle(selectedLangObj.id)
     }
-  }, [selectedLanguage, allLanguages, manuallyChangedFields])
+  }, [
+    selectedLanguage,
+    allLanguages,
+    manuallyChangedFields.audio,
+    manuallyChangedFields.subtitle
+  ])
 
   // Update subtitle when audio changes if not manually changed
   useEffect(() => {
     if (!manuallyChangedFields.subtitle) {
       setSelectedSubtitle(selectedAudioLanguage)
     }
-  }, [selectedAudioLanguage])
+  }, [selectedAudioLanguage, manuallyChangedFields.subtitle])
 
   function handleResetForm(): void {
     setSelectedLanguage(siteLanguage)
@@ -200,6 +205,7 @@ export function LanguageSwitchDialog({
               <hr className="border-t border-gray-200 w-full my-8" />
               <AudioTrackSelect
                 loading={languagesLoading}
+                value={selectedAudioLanguage}
                 onChange={(value) => {
                   setSelectedAudioLanguage(value)
                   setManuallyChangedFields((prev) => ({ ...prev, audio: true }))
@@ -208,6 +214,7 @@ export function LanguageSwitchDialog({
               />
               <SubtitlesSelect
                 loading={languagesLoading}
+                value={selectedSubtitle}
                 onChange={(value) => {
                   setSelectedSubtitle(value)
                   setManuallyChangedFields((prev) => ({

@@ -20,13 +20,15 @@ interface SubtitlesSelectProps {
   onChange: (selectedSubtitleId: string) => void
   setSubtitlesOn: (value: boolean) => void
   dropdownRef: Ref<HTMLDivElement>
+  value?: string
 }
 
 export function SubtitlesSelect({
   loading,
   onChange,
   setSubtitlesOn,
-  dropdownRef
+  dropdownRef,
+  value
 }: SubtitlesSelectProps): ReactElement {
   const { t } = useTranslation()
   const {
@@ -74,17 +76,34 @@ export function SubtitlesSelect({
     LanguageOption | undefined
   >(undefined)
 
+  // Update currentSubtitle when external value prop changes (for immediate visual feedback)
   useEffect(() => {
-    if (selectedSubtitle != null && !loading) {
-      setCurrentSubtitle({
-        id: selectedSubtitle.id,
-        localName: selectedSubtitle.name.find(({ primary }) => primary)?.value,
-        nativeName: selectedSubtitle.name.find(({ primary }) => !primary)
-          ?.value,
-        slug: selectedSubtitle.slug
-      })
+    if (value && allLanguages) {
+      const selectedLanguage = allLanguages.find((lang) => lang.id === value)
+      if (selectedLanguage) {
+        setCurrentSubtitle({
+          id: selectedLanguage.id,
+          localName: selectedLanguage.name.find(({ primary }) => primary)
+            ?.value,
+          nativeName: selectedLanguage.name.find(({ primary }) => !primary)
+            ?.value,
+          slug: selectedLanguage.slug
+        })
+      }
     }
-  }, [selectedSubtitle, loading])
+  }, [value, allLanguages])
+
+  useEffect(() => {
+    // Only use internal state if no external value is provided
+    if (value || !selectedSubtitle || loading) return
+
+    setCurrentSubtitle({
+      id: selectedSubtitle.id,
+      localName: selectedSubtitle.name.find(({ primary }) => primary)?.value,
+      nativeName: selectedSubtitle.name.find(({ primary }) => !primary)?.value,
+      slug: selectedSubtitle.slug
+    })
+  }, [value, selectedSubtitle, loading])
 
   const allLanguageSubtitles = allLanguages
     ?.filter((language) => SUBTITLE_LANGUAGE_IDS.includes(language.id))

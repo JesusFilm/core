@@ -279,7 +279,6 @@ export function selectLanguageForVideo({
     allLanguages,
     audioLanguage
   })
-
   // Scenario 1: User's original preference is matched
   if (
     currentAudioLanguage != null &&
