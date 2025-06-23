@@ -38,6 +38,20 @@ describe('video', () => {
     }
   })
 
+  // Add client with specific platform name for testing restrictions
+  const clientWithPlatform = getClient({
+    headers: {
+      'x-graphql-client-name': 'testPlatform'
+    }
+  })
+
+  // Add client with restricted platform name
+  const clientWithRestrictedPlatform = getClient({
+    headers: {
+      'x-graphql-client-name': 'restrictedPlatform'
+    }
+  })
+
   type VideoAndIncludes = Video & {
     bibleCitation: BibleCitation[]
     keywords: Keyword[]
