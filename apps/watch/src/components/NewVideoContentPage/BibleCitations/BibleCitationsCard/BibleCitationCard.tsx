@@ -77,7 +77,7 @@ export function BibleCitationCard({
             href={bibleGatewayUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="relative mt-4 block text-white/80 text-sm hover:text-white transition-colors duration-200"
+            className="relative mt-4 block text-white/80 text-sm hover:text-white transition-colors duration-200 underline"
           >
             {t('Read more...')}
           </a>
