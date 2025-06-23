@@ -3044,6 +3044,13 @@ enum ButtonSize @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEY
   large @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
+enum ButtonAlignment @join__type(graph: API_JOURNEYS)  {
+  left @join__enumValue(graph: API_JOURNEYS) 
+  center @join__enumValue(graph: API_JOURNEYS) 
+  right @join__enumValue(graph: API_JOURNEYS) 
+  justify @join__enumValue(graph: API_JOURNEYS) 
+}
+
 enum GridDirection @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   columnReverse @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
   column @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 

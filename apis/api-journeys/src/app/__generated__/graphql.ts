@@ -36,6 +36,13 @@ export enum ButtonSize {
     large = "large"
 }
 
+export enum ButtonAlignment {
+    left = "left",
+    center = "center",
+    right = "right",
+    justify = "justify"
+}
+
 export enum GridDirection {
     columnReverse = "columnReverse",
     column = "column",

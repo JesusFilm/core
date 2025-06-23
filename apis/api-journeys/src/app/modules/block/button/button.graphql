@@ -17,6 +17,13 @@ enum ButtonSize {
   large
 }
 
+enum ButtonAlignment {
+  left
+  center
+  right
+  justify
+}
+
 input ButtonBlockClassNamesInput {
   self: String!
 }

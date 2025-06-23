@@ -411,6 +411,7 @@ model Block {
   scale                   Int?
   slug                    String?
   classNames              Json                 @default("{\"self\": \"\"}")
+  alignment               String?
   targetActions           Action[]             @relation("Block")
   action                  Action?
   coverBlock              Block?               @relation("CoverBlock", fields: [coverBlockId], references: [id])
