@@ -5,18 +5,6 @@ import { baseBreakpoints } from '../../base/tokens/breakpoints'
 
 import { typography } from './typography'
 
-declare module '@mui/material/Button' {
-  interface ButtonPropsSizeOverrides {
-    xsmall: true
-  }
-}
-
-declare module '@mui/material/IconButton' {
-  interface IconButtonPropsSizeOverrides {
-    xsmall: true
-  }
-}
-
 export const websiteComponents: Required<Pick<ThemeOptions, 'components'>> = {
   components: {
     MuiContainer: {
@@ -73,15 +61,6 @@ export const websiteComponents: Required<Pick<ThemeOptions, 'components'>> = {
             lineHeight: '24px',
             fontWeight: 700,
             padding: '12px 20px'
-          }
-        },
-        {
-          props: { size: 'xsmall' },
-          style: {
-            fontSize: '14px',
-            lineHeight: '16px',
-            fontWeight: 700,
-            padding: '8px 12px'
           }
         }
       ]

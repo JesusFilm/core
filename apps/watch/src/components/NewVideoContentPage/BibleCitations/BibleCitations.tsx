@@ -1,3 +1,5 @@
+
+import Image from 'next/image'
 import { ReactElement } from 'react'
 import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -5,6 +7,7 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { VideoContentFields_bibleCitations as BibleCitation } from '../../../../__generated__/VideoContentFields'
 
 import { BibleCitationCard } from './BibleCitationsCard/BibleCitationCard'
+
 import { FreeResourceCard, type FreeResourceProps } from './FreeResourceCard'
 
 const bibleImages = [
