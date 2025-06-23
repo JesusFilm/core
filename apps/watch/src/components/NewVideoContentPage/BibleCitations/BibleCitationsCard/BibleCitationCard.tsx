@@ -6,6 +6,8 @@ import { ReactElement, useEffect, useState } from 'react'
 
 import { VideoContentFields_bibleCitations as BibleCitation } from '../../../../../__generated__/VideoContentFields'
 
+import { formatScripture } from './utils/formatScripture'
+
 const LOCALE_TO_BIBLE_VERSION_MAP = {
   en: { bibleVersion: 'en-bsb', bibleGatewayLinkVersion: 'NIV' }
 } as const
@@ -67,7 +69,7 @@ export function BibleCitationCard({
         </span>
         {scripture != null && (
           <p className="relative mt-4 text-white/90 text-sm">
-            {scripture.text}
+            {formatScripture(scripture.text)}
           </p>
         )}
         {citation.verseEnd != null && (
