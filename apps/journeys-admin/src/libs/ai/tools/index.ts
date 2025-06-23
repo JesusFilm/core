@@ -6,7 +6,14 @@ import { tools as blockTools } from './block'
 import { tools as clientTools } from './client'
 import { tools as journeyTools } from './journey'
 
-export function tools(client: ApolloClient<NormalizedCacheObject>): ToolSet {
+export interface ToolOptions {
+  langfuseTraceId: string
+}
+
+export function tools(
+  client: ApolloClient<NormalizedCacheObject>,
+  { langfuseTraceId }: ToolOptions
+): ToolSet {
   const tools = {
     ...agentTools,
     ...blockTools,
@@ -16,7 +23,10 @@ export function tools(client: ApolloClient<NormalizedCacheObject>): ToolSet {
 
   return {
     ...Object.fromEntries(
-      Object.entries(tools).map(([key, tool]) => [key, tool(client)])
+      Object.entries(tools).map(([key, tool]) => [
+        key,
+        tool(client, { langfuseTraceId })
+      ])
     )
   }
 }

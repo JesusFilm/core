@@ -48,6 +48,7 @@ enum ButtonSize {
 enum ButtonVariant {
   text
   contained
+  outlined
 }
 
 type CardBlock implements Block

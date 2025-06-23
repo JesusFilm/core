@@ -99,7 +99,7 @@ const nextConfig = {
         'node_modules/esbuild-linux-64/bin'
       ]
     },
-    instrumentationHook: process.env.NODE_ENV === 'production',
+    instrumentationHook: true,
     fallbackNodePolyfills: false
   },
   webpack: (config) => {

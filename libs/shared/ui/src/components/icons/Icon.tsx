@@ -179,6 +179,7 @@ import Square from './Square'
 import Star2 from './Star2'
 import Stars from './Stars'
 import StopCircleContained from './StopCircleContained'
+import Sun2 from './Sun2'
 import Tag from './Tag'
 import Target from './Target'
 import Target2 from './Target2'
@@ -393,6 +394,7 @@ export type IconName =
   | 'Star2'
   | 'Stars'
   | 'StopCircleContained'
+  | 'Sun2'
   | 'Tag'
   | 'Target'
   | 'Target2'
@@ -611,6 +613,7 @@ const iconComponents: IconComponents = {
   Star2,
   Stars,
   StopCircleContained,
+  Sun2,
   Tag,
   Target,
   Target2,
