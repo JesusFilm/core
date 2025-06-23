@@ -48,6 +48,7 @@ export interface LanguageAutocompleteProps {
   renderOption?: (params: HTMLAttributes<HTMLLIElement>) => ReactNode
   popper?: Omit<PopperProps, 'open'>
   error?: boolean
+  disableSort?: boolean
 }
 
 export function LanguageAutocomplete({
@@ -60,11 +61,13 @@ export function LanguageAutocomplete({
   renderOption,
   helperText,
   popper,
-  error
+  error,
+  disableSort = false
 }: LanguageAutocompleteProps): ReactElement {
   const options = useMemo(() => {
     return (
-      languages?.map(({ id, name, slug }) => {
+      languages?.map((language) => {
+        const { id, name, slug, ...rest } = language
         const localLanguageName = name.find(({ primary }) => !primary)?.value
         const nativeLanguageName = name.find(({ primary }) => primary)?.value
 
@@ -72,22 +75,23 @@ export function LanguageAutocomplete({
           id,
           localName: localLanguageName,
           nativeName: nativeLanguageName,
-          slug
+          slug,
+          ...rest // Preserve additional properties like __type
         }
       }) ?? []
     )
   }, [languages])
 
   const sortedOptions = useMemo(() => {
-    if (options.length > 0) {
+    if (options.length > 0 && !disableSort) {
       return options.sort((a, b) => {
         return (a.localName ?? a.nativeName ?? '').localeCompare(
           b.localName ?? b.nativeName ?? ''
         )
       })
     }
-    return []
-  }, [options])
+    return options
+  }, [options, disableSort])
 
   const defaultRenderInput = (
     params: AutocompleteRenderInputParams

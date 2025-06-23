@@ -3,13 +3,15 @@ import { ThemeProvider } from '@mui/material/styles'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 
-import { SiteLanguageSelect } from './SiteLanguageSelect'
-import { AudioTrackSelect } from './AudioTrackSelect'
-import { SubtitlesSelect } from './SubtitlesSelect'
-import { websiteLight } from 'libs/shared/ui/src/libs/themes/website/theme'
+import { websiteLight } from '@core/shared/ui/themes/website/theme'
+
 import { GetAllLanguages } from '../../../__generated__/GetAllLanguages'
-import { DialogActions } from './DialogActions'
 import { useLanguagePreference } from '../../libs/languagePreferenceContext/LanguagePreferenceContext'
+
+import { AudioTrackSelect } from './AudioTrackSelect'
+import { DialogActions } from './DialogActions'
+import { SiteLanguageSelect } from './SiteLanguageSelect'
+import { SubtitlesSelect } from './SubtitlesSelect'
 
 const GET_ALL_LANGUAGES = gql`
   query GetAllLanguages {
@@ -76,7 +78,7 @@ export function LanguageSwitchDialog({
   // Fetch languages when dialog opens if needed
   useEffect(() => {
     if (open && !allLanguages && !languagesLoading) {
-      getAllLanguages()
+      void getAllLanguages()
     }
   }, [open, allLanguages, languagesLoading, getAllLanguages])
 

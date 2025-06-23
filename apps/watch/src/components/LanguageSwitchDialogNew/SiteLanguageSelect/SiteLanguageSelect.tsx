@@ -10,7 +10,10 @@ import {
 import { LANGUAGE_MAPPINGS, SUPPORTED_LOCALES } from '../../../config/locales'
 import { renderInput } from '../utils/renderInput'
 import { renderOption } from '../utils/renderOption'
-import { siteLanguageReorder } from '../utils/siteLanguageReorder'
+import {
+  ExtendedLanguageOption,
+  siteLanguageReorder
+} from '../utils/siteLanguageReorder'
 
 interface SiteLanguageSelectProps {
   onChange: (value: string) => void
@@ -22,7 +25,7 @@ export function SiteLanguageSelect({
   dropdownRef
 }: SiteLanguageSelectProps): ReactElement {
   const { i18n, t } = useTranslation()
-  const [languages, setLanguages] = useState<LanguageOption[]>([])
+  const [languages, setLanguages] = useState<ExtendedLanguageOption[]>([])
   const currentLanguageId = i18n?.language ?? 'en'
   const [currentLanguage, setCurrentLanguage] = useState<LanguageOption | null>(
     null
@@ -69,7 +72,14 @@ export function SiteLanguageSelect({
         setLanguages(finalLanguages)
       } catch (error) {
         console.error('Error fetching geolocation or browser language:', error)
-        setLanguages(formattedLanguages)
+        // If geolocation fails, still use the utility function for consistency
+        const finalLanguages = siteLanguageReorder({
+          languages: formattedLanguages,
+          siteLang,
+          browserLanguage: undefined,
+          country: undefined
+        })
+        setLanguages(finalLanguages)
       }
     }
     void fetchGeolocationAndSetLanguages()
@@ -77,8 +87,11 @@ export function SiteLanguageSelect({
 
   const handleLanguageChange = (language?: LanguageOption): void => {
     if (!language) return
-    setCurrentLanguage(language)
-    onChange(language.id)
+    // Only process actual language items, skip headers and dividers
+    if (!language.id.startsWith('__')) {
+      setCurrentLanguage(language)
+      onChange(language.id)
+    }
   }
 
   return (
@@ -99,15 +112,40 @@ export function SiteLanguageSelect({
               localName: currentLanguage?.localName ?? 'English'
             }}
             onChange={(language) => handleLanguageChange(language)}
-            languages={languages.map(({ id, localName, nativeName, slug }) => ({
-              id,
-              name: [
-                { value: localName ?? 'English', primary: true },
-                { value: nativeName ?? 'English', primary: false }
-              ],
-              slug: slug ?? null
-            }))}
+            languages={languages.map((item, index) => {
+              // Handle headers and dividers
+              if (item.type === 'header' || item.type === 'divider') {
+                return {
+                  id: item.id,
+                  name: [
+                    {
+                      value:
+                        item.id === '__header_suggested__'
+                          ? t('Suggested:')
+                          : '',
+                      primary: true
+                    },
+                    { value: '', primary: false }
+                  ],
+                  slug: null,
+                  __type: item.type
+                }
+              }
+
+              // Handle regular language items
+              const { id, localName, nativeName, slug } = item
+              return {
+                id,
+                name: [
+                  { value: localName ?? 'English', primary: true },
+                  { value: nativeName ?? 'English', primary: false }
+                ],
+                slug: slug ?? null,
+                __type: 'language'
+              }
+            })}
             disabled={false}
+            disableSort={true}
             renderInput={renderInput(
               t('{{count}} languages', { count: SUPPORTED_LOCALES.length })
             )}
