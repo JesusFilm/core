@@ -1,6 +1,6 @@
-import { agentGenerateImage } from './generateImage/generateImage'
-import { agentGetPersonalizationQuestions } from './getPersonalizationQuestions/getPersonalizationQuestions'
-import { agentWebSearch } from './webSearch/webSearch'
+import { agentGenerateImage } from './generateImage'
+import { agentGetPersonalizationQuestions } from './getPersonalizationQuestions'
+import { agentWebSearch } from './webSearch'
 
 export const tools = {
   agentGenerateImage,
