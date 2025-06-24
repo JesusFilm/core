@@ -30,19 +30,18 @@ describe('QuizModal', () => {
   })
 
   test('should call onClose when close button is clicked', () => {
-    render(<QuizModal open={true} onClose={mockOnClose} />)
+    render(<QuizModal open onClose={mockOnClose} />)
 
-    const closeButton = screen.getByTestId('CloseQuizButton')
+    const closeButton = screen.getByRole('button', { name: 'close' })
     fireEvent.click(closeButton)
 
     expect(mockOnClose).toHaveBeenCalledTimes(1)
   })
 
-  test('should call onClose when Dialog onClose is triggered', () => {
-    render(<QuizModal open={true} onClose={mockOnClose} />)
+  test('should call onClose when escape key is pressed', () => {
+    render(<QuizModal open onClose={mockOnClose} />)
 
-    // Simulate escape key press which triggers Dialog's onClose
-    fireEvent.keyDown(screen.getByTestId('QuizModal'), {
+    fireEvent.keyDown(document, {
       key: 'Escape',
       code: 'Escape'
     })

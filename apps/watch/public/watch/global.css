@@ -16,7 +16,7 @@
   --color-text-primary: #252424;
   --color-text-secondary: #4d4d4d;
   --color-text-disabled: #aaacbb;
-  --color-background: #ffffff;
+  --color-background: oklch(0.145 0 0);
   --color-background-paper: #ffffff;
 
   /* Dark Mode Colors */
@@ -116,7 +116,6 @@
       z-index: 99;
       pointer-events: none;
       mix-blend-mode: screen;
-      box-shadow: inset 0 0 1px rgba(252, 243, 224, 0.5);
     }
   }
 
