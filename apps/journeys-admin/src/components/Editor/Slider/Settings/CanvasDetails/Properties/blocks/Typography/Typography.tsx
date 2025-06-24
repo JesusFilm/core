@@ -1,10 +1,12 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import Stack from '@mui/material/Stack'
 import MuiTypography from '@mui/material/Typography'
 import capitalize from 'lodash/capitalize'
 import lowerCase from 'lodash/lowerCase'
+import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -20,10 +22,19 @@ import { Align } from './Align'
 import { Color } from './Color'
 import { Variant } from './Variant'
 
+const ThemeBuilderDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "ThemeBuilderDialog" */
+      './ThemeBuilderDialog'
+    ).then((mod) => mod.ThemeBuilderDialog),
+  { ssr: false }
+)
+
 export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
   const { id, align, color, variant } = block
   const { t } = useTranslation('apps-journeys-admin')
-
+  const [openThemeBuilderDialog, setOpenThemeBuilderDialog] = useState(false)
   const { dispatch } = useEditor()
 
   useEffect(() => {
@@ -74,14 +85,16 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
         </Accordion>
       </Box>
 
-      <Box
+      <Stack
         sx={{
           position: 'absolute',
           bottom: 0,
           left: 0,
           right: 0,
           padding: 2,
-          backgroundColor: 'background.default'
+          backgroundColor: 'background.default',
+          height: 64,
+          justifyContent: 'center'
         }}
       >
         <Button
@@ -92,10 +105,19 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
             color: '#B42318'
           }}
           startIcon={<Type1Icon sx={{ color: '#B42318' }} />}
+          onClick={() => setOpenThemeBuilderDialog(true)}
         >
-          <MuiTypography variant="body2">{t('Edit Font Theme')}</MuiTypography>
+          <MuiTypography variant="subtitle2">
+            {t('Edit Font Theme')}
+          </MuiTypography>
         </Button>
-      </Box>
+      </Stack>
+      {openThemeBuilderDialog && (
+        <ThemeBuilderDialog
+          open={openThemeBuilderDialog}
+          onClose={() => setOpenThemeBuilderDialog(false)}
+        />
+      )}
     </Box>
   )
 }
