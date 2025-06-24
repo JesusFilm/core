@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box'
 import type { ReactElement } from 'react'
-import { CSSTransition, TransitionGroup } from 'react-transition-group'
 
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 
@@ -26,53 +25,32 @@ export function Content(): ReactElement {
   }
 
   return (
-    <TransitionGroup
-      component={Box}
+    <Box
+      data-testid="Content"
       sx={{
         position: 'relative',
         flexGrow: 1,
-        '& .journey-edit-content-component-enter': {
-          opacity: 0
-        },
-        '& .journey-edit-content-component-enter-active': {
-          opacity: 1
-        },
-        '& .journey-edit-content-component-enter-done': {
-          opacity: 1
-        },
-        '& .journey-edit-content-component-exit': {
-          opacity: 1
-        },
-        '& .journey-edit-content-component-exit-active': {
-          opacity: 0
-        }
+        display: 'flex',
+        justifyContent: 'space-between'
       }}
+      className="transition-opacity duration-600 ease-in-out"
     >
-      <CSSTransition
+      <Box
         key={activeContent}
-        timeout={600}
-        classNames="journey-edit-content-component"
+        sx={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          bottom: 0,
+          left: 0,
+          userSelect: 'none',
+          display: 'flex',
+          justifyContent: 'space-between'
+        }}
+        className="animate-in fade-in duration-600"
       >
-        <Box
-          data-testid="Content"
-          sx={{
-            position: 'absolute',
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-            userSelect: 'none',
-            display: 'flex',
-            justifyContent: 'space-between',
-            transition: (theme) =>
-              `${theme.transitions.create('opacity', {
-                duration: 300
-              })}`
-          }}
-        >
-          {content}
-        </Box>
-      </CSSTransition>
-    </TransitionGroup>
+        {content}
+      </Box>
+    </Box>
   )
 }

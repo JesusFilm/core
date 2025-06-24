@@ -20,13 +20,13 @@ import { ThemeProvider } from '../src/components/ThemeProvider'
 import { useApollo } from '../src/libs/apolloClient'
 import { initAuth } from '../src/libs/firebaseClient/initAuth'
 
+import './globals.css'
 import 'swiper/css'
 import 'swiper/css/a11y'
 import 'swiper/css/mousewheel'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 import '../public/swiper-pagination-override.css'
-import './globals.css'
 
 initAuth()
 const clientSideEmotionCache = createEmotionCache({})
@@ -67,7 +67,10 @@ function JourneysAdminApp({
 
   return (
     <FlagsProvider flags={pageProps.flags}>
-      <AppCacheProvider emotionCache={emotionCache}>
+      <AppCacheProvider
+        emotionCache={emotionCache}
+        options={{ enableCssLayer: true }}
+      >
         <GlobalStyles styles="@layer theme, base, mui, components, utilities;" />
         <ThemeProvider>
           <DefaultSeo
