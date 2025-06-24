@@ -133,8 +133,8 @@ model Video {
   availableLanguages        String[]
   origin                    VideoOrigin?         @relation(fields: [originId], references: [id])
   originId                  String?
-  restrictDownloadPlatforms Platform[]
-  restrictViewPlatforms     Platform[]
+  restrictDownloadPlatforms Platform[]           @default([])
+  restrictViewPlatforms     Platform[]           @default([])
 
   @@index(label)
   @@index(childIds)
