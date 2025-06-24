@@ -149,7 +149,10 @@ describe('ImageUpload', () => {
     fireEvent.drop(inputEl)
     await waitFor(() =>
       expect(onChange).toHaveBeenCalledWith({
-        src: 'https://imagedelivery.net/cloudflare-key/uploadId/public'
+        src: 'https://imagedelivery.net/cloudflare-key/uploadId/public',
+        scale: 100,
+        focalLeft: 50,
+        focalTop: 50
       })
     )
     expect(screen.getByText('Upload successful!')).toBeInTheDocument()
