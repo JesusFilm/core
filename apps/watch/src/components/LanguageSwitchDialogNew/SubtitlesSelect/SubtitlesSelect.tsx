@@ -1,8 +1,8 @@
 import { useLazyQuery } from '@apollo/client'
+import ClosedCaptionOffOutlinedIcon from '@mui/icons-material/ClosedCaptionOffOutlined'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, Ref, useEffect, useState } from 'react'
 
-import Type3 from '@core/shared/ui/icons/Type3'
 import {
   LanguageAutocomplete,
   LanguageOption
@@ -130,7 +130,7 @@ export function SubtitlesSelect({
       </div>
       <div className="relative mt-1 flex items-start gap-2" ref={dropdownRef}>
         <div className="pt-4">
-          <Type3 fontSize="small" />
+          <ClosedCaptionOffOutlinedIcon fontSize="small" />
         </div>
         <div className="relative w-full">
           <LanguageAutocomplete

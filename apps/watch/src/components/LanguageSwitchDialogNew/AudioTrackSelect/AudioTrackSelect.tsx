@@ -1,9 +1,9 @@
 import { useLazyQuery } from '@apollo/client'
+import SpatialAudioOffOutlinedIcon from '@mui/icons-material/SpatialAudioOffOutlined'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, Ref, useEffect, useState } from 'react'
 
-import MediaStrip1 from '@core/shared/ui/icons/MediaStrip1'
 import {
   LanguageAutocomplete,
   LanguageOption
@@ -154,7 +154,7 @@ export function AudioTrackSelect({
       </div>
       <div className="relative mt-1 flex items-start gap-2" ref={dropdownRef}>
         <div className="pt-4">
-          <MediaStrip1 fontSize="small" />
+          <SpatialAudioOffOutlinedIcon fontSize="small" />
         </div>
         <div className="relative w-full">
           <LanguageAutocomplete
