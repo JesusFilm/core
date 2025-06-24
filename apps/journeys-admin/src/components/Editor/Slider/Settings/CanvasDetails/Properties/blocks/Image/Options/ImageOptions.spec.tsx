@@ -310,11 +310,13 @@ describe('ImageOptions', () => {
 
     fireEvent.change(zoomSlider, { target: { value: 1.5 } })
     fireEvent.mouseUp(zoomSlider)
-    await waitFor(() => { expect(zoomUpdateResult).toHaveBeenCalled() })
+    await waitFor(() => {
+      expect(zoomUpdateResult).toHaveBeenCalled()
+    })
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(undoResult).toHaveBeenCalled())
-    
+
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(redoResult).toHaveBeenCalled())
   })
