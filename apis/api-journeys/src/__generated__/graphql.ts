@@ -44,6 +44,7 @@ export type AudioPreview = {
   codec: Scalars['String']['output'];
   duration: Scalars['Int']['output'];
   language: Language;
+  languageId: Scalars['ID']['output'];
   size: Scalars['Int']['output'];
   value: Scalars['String']['output'];
 };
@@ -873,6 +874,7 @@ export type Journey = {
   host?: Maybe<Host>;
   id: Scalars['ID']['output'];
   journeyCollections: Array<JourneyCollection>;
+  journeyTheme?: Maybe<JourneyTheme>;
   language: Language;
   languageId: Scalars['String']['output'];
   logoImageBlock?: Maybe<ImageBlock>;
@@ -1094,6 +1096,32 @@ export enum JourneyStatus {
 
 export type JourneyTemplateInput = {
   template?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type JourneyTheme = {
+  __typename?: 'JourneyTheme';
+  accentFont?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  journey: Journey;
+  journeyId: Scalars['ID']['output'];
+  primaryFont?: Maybe<Scalars['String']['output']>;
+  secondaryFont?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
+  userId: Scalars['ID']['output'];
+};
+
+export type JourneyThemeCreateInput = {
+  accentFont?: InputMaybe<Scalars['String']['input']>;
+  journeyId: Scalars['ID']['input'];
+  primaryFont?: InputMaybe<Scalars['String']['input']>;
+  secondaryFont?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type JourneyThemeUpdateInput = {
+  accentFont?: InputMaybe<Scalars['String']['input']>;
+  primaryFont?: InputMaybe<Scalars['String']['input']>;
+  secondaryFont?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type JourneyUpdateInput = {
@@ -1341,6 +1369,10 @@ export type LanguageName = {
   value: Scalars['String']['output'];
 };
 
+export enum LanguageRole {
+  Publisher = 'publisher'
+}
+
 export type LanguageWithSlug = {
   __typename?: 'LanguageWithSlug';
   language: Language;
@@ -1417,6 +1449,9 @@ export enum MessagePlatform {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  audioPreviewCreate: AudioPreview;
+  audioPreviewDelete: AudioPreview;
+  audioPreviewUpdate: AudioPreview;
   bibleCitationCreate?: Maybe<BibleCitation>;
   bibleCitationDelete?: Maybe<Scalars['Boolean']['output']>;
   bibleCitationUpdate?: Maybe<BibleCitation>;
@@ -1488,6 +1523,9 @@ export type Mutation = {
   journeyPublish?: Maybe<Journey>;
   /** Updates template */
   journeyTemplate: Journey;
+  journeyThemeCreate: JourneyTheme;
+  journeyThemeDelete: JourneyTheme;
+  journeyThemeUpdate: JourneyTheme;
   journeyUpdate: Journey;
   /**
    * Creates a JourneyViewEvent, returns null if attempting to create another
@@ -1546,6 +1584,7 @@ export type Mutation = {
   typographyBlockCreate: TypographyBlock;
   typographyBlockUpdate: TypographyBlock;
   updateJourneysEmailPreference?: Maybe<JourneysEmailPreference>;
+  updateVideoVariantDownloadSizesFromMux: Scalars['Boolean']['output'];
   userImpersonate?: Maybe<Scalars['String']['output']>;
   userInviteAcceptAll: Array<UserInvite>;
   userInviteCreate?: Maybe<UserInvite>;
@@ -1608,6 +1647,21 @@ export type Mutation = {
   visitorUpdate: Visitor;
   /** Allow current user to update specific allowable fields of their visitor record */
   visitorUpdateForCurrentUser: Visitor;
+};
+
+
+export type MutationAudioPreviewCreateArgs = {
+  input: MutationAudioPreviewCreateInput;
+};
+
+
+export type MutationAudioPreviewDeleteArgs = {
+  languageId: Scalars['ID']['input'];
+};
+
+
+export type MutationAudioPreviewUpdateArgs = {
+  input: MutationAudioPreviewUpdateInput;
 };
 
 
@@ -1968,6 +2022,22 @@ export type MutationJourneyTemplateArgs = {
 };
 
 
+export type MutationJourneyThemeCreateArgs = {
+  input: JourneyThemeCreateInput;
+};
+
+
+export type MutationJourneyThemeDeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationJourneyThemeUpdateArgs = {
+  id: Scalars['ID']['input'];
+  input: JourneyThemeUpdateInput;
+};
+
+
 export type MutationJourneyUpdateArgs = {
   id: Scalars['ID']['input'];
   input: JourneyUpdateInput;
@@ -2191,6 +2261,11 @@ export type MutationTypographyBlockUpdateArgs = {
 
 export type MutationUpdateJourneysEmailPreferenceArgs = {
   input: JourneysEmailPreferenceUpdateInput;
+};
+
+
+export type MutationUpdateVideoVariantDownloadSizesFromMuxArgs = {
+  videoVariantId: Scalars['ID']['input'];
 };
 
 
@@ -2487,6 +2562,24 @@ export type MutationVisitorUpdateForCurrentUserArgs = {
   input: VisitorUpdateInput;
 };
 
+export type MutationAudioPreviewCreateInput = {
+  bitrate: Scalars['Int']['input'];
+  codec: Scalars['String']['input'];
+  duration: Scalars['Int']['input'];
+  languageId: Scalars['ID']['input'];
+  size: Scalars['Int']['input'];
+  value: Scalars['String']['input'];
+};
+
+export type MutationAudioPreviewUpdateInput = {
+  bitrate?: InputMaybe<Scalars['Int']['input']>;
+  codec?: InputMaybe<Scalars['String']['input']>;
+  duration?: InputMaybe<Scalars['Int']['input']>;
+  languageId: Scalars['ID']['input'];
+  size?: InputMaybe<Scalars['Int']['input']>;
+  value?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type MutationBibleCitationCreateInput = {
   bibleBookId: Scalars['ID']['input'];
   chapterEnd?: InputMaybe<Scalars['Int']['input']>;
@@ -2689,6 +2782,12 @@ export type PageInfo = {
   /** When paginating backwards, the cursor to continue. */
   startCursor?: Maybe<Scalars['String']['output']>;
 };
+
+export enum Platform {
+  Arclight = 'arclight',
+  Journeys = 'journeys',
+  Watch = 'watch'
+}
 
 export type PlausibleStatsAggregateFilter = {
   /**
@@ -2948,6 +3047,7 @@ export type Query = {
   journeyCollections: Array<Maybe<JourneyCollection>>;
   journeyEventsConnection: JourneyEventsConnection;
   journeyEventsCount: Scalars['Int']['output'];
+  journeyTheme?: Maybe<JourneyTheme>;
   /** Get a JourneyVisitor count by JourneyVisitorFilter */
   journeyVisitorCount: Scalars['Int']['output'];
   /** Get a list of Visitor Information by Journey */
@@ -3013,6 +3113,7 @@ export type Query = {
   video: Video;
   videoEdition?: Maybe<VideoEdition>;
   videoEditions: Array<VideoEdition>;
+  videoOrigins: Array<VideoOrigin>;
   videoVariant: VideoVariant;
   videoVariants: Array<VideoVariant>;
   videos: Array<Video>;
@@ -3178,6 +3279,11 @@ export type QueryJourneyEventsConnectionArgs = {
 
 export type QueryJourneyEventsCountArgs = {
   filter?: InputMaybe<JourneyEventsFilter>;
+  journeyId: Scalars['ID']['input'];
+};
+
+
+export type QueryJourneyThemeArgs = {
   journeyId: Scalars['ID']['input'];
 };
 
@@ -4266,6 +4372,7 @@ export type User = {
   firstName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   imageUrl?: Maybe<Scalars['String']['output']>;
+  languageUserRoles: Array<LanguageRole>;
   lastName?: Maybe<Scalars['String']['output']>;
   mediaUserRoles: Array<MediaRole>;
   superAdmin?: Maybe<Scalars['Boolean']['output']>;
@@ -4378,6 +4485,8 @@ export type Video = {
   parents: Array<Video>;
   primaryLanguageId: Scalars['ID']['output'];
   published: Scalars['Boolean']['output'];
+  restrictDownloadPlatforms: Array<Platform>;
+  restrictViewPlatforms: Array<Platform>;
   /** slug is a permanent link to the video. */
   slug: Scalars['String']['output'];
   snippet: Array<VideoSnippet>;
@@ -4725,6 +4834,7 @@ export type VideoCreateInput = {
   id: Scalars['String']['input'];
   label: VideoLabel;
   noIndex: Scalars['Boolean']['input'];
+  originId: Scalars['String']['input'];
   primaryLanguageId: Scalars['String']['input'];
   published: Scalars['Boolean']['input'];
   slug: Scalars['String']['input'];
@@ -5076,6 +5186,8 @@ export type VideoUpdateInput = {
   noIndex?: InputMaybe<Scalars['Boolean']['input']>;
   primaryLanguageId?: InputMaybe<Scalars['String']['input']>;
   published?: InputMaybe<Scalars['Boolean']['input']>;
+  restrictDownloadPlatforms?: InputMaybe<Array<Platform>>;
+  restrictViewPlatforms?: InputMaybe<Array<Platform>>;
   slug?: InputMaybe<Scalars['String']['input']>;
 };
 

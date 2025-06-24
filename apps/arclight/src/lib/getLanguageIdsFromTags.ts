@@ -1,6 +1,7 @@
 import { ResultOf, graphql } from 'gql.tada'
 
 import { getApolloClient } from './apolloClient'
+import { generateCacheKey, getWithStaleCache } from './cache'
 
 const GET_LANGUAGE_ID_FROM_BCP47 = graphql(`
   query GetLanguageIdFromBCP47($bcp47: ID!) {
@@ -50,14 +51,16 @@ function matchLocales(metadataLanguageTags: string[]): string | undefined {
 }
 
 async function fetchLanguageId(languageTag: string): Promise<string> {
-  const { data } = await getApolloClient().query<
-    ResultOf<typeof GET_LANGUAGE_ID_FROM_BCP47>
-  >({
-    query: GET_LANGUAGE_ID_FROM_BCP47,
-    variables: { bcp47: languageTag }
+  const cacheKey = generateCacheKey(['bcp47', languageTag])
+  return await getWithStaleCache(cacheKey, async () => {
+    const { data } = await getApolloClient().query<
+      ResultOf<typeof GET_LANGUAGE_ID_FROM_BCP47>
+    >({
+      query: GET_LANGUAGE_ID_FROM_BCP47,
+      variables: { bcp47: languageTag }
+    })
+    return data.language?.id ?? ''
   })
-
-  return data.language?.id ?? ''
 }
 
 export async function getLanguageIdsFromTags(
