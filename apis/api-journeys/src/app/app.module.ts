@@ -24,6 +24,7 @@ import { JourneyEventModule } from './modules/journeyEvent/journeyEvent.module'
 import { JourneyNotificationModule } from './modules/journeyNotification/journeyNotification.module'
 import { JourneyProfileModule } from './modules/journeyProfile/journeyProfile.module'
 import { JourneysEmailPreferenceModule } from './modules/journeysEmailPreference/journeysEmailPreference.module'
+import { JourneyThemeModule } from './modules/journeyTheme/journeyTheme.module'
 import { JourneyVisitorModule } from './modules/journeyVisitor/journeyVisitor.module'
 import { MailChimpModule } from './modules/mailChimp/mailChimp.module'
 import { PlausibleModule } from './modules/plausible/plausible.module'
@@ -48,6 +49,7 @@ import { VisitorModule } from './modules/visitor/visitor.module'
     JourneyEventModule,
     JourneysEmailPreferenceModule,
     JourneyModule,
+    JourneyThemeModule,
     JourneyVisitorModule,
     JourneyNotificationModule,
     JourneyProfileModule,
