@@ -27,15 +27,17 @@ import { isMobile } from '@core/shared/ui/deviceUtils'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import { useVideo } from '../../../../../libs/videoContext'
-import { SubtitleDialogProps } from '../../../../SubtitleDialog/SubtitleDialog'
 import { AudioLanguageButton } from '../../../AudioLanguageButton'
 
-const DynamicSubtitleDialog = dynamic<SubtitleDialogProps>(
+const DynamicLanguageSwitchDialog = dynamic<{
+  open: boolean
+  handleClose: () => void
+}>(
   async () =>
     await import(
-      /* webpackChunkName: "SubtitleDialog" */
-      '../../../../SubtitleDialog'
-    ).then((mod) => mod.SubtitleDialog)
+      /* webpackChunkName: "LanguageSwitchDialog" */
+      '../../../../LanguageSwitchDialogNew/LanguageSwitchDialog'
+    ).then((mod) => mod.LanguageSwitchDialog)
 )
 
 interface VideoControlProps {
@@ -78,8 +80,10 @@ export function VideoControls({
   const [volume, setVolume] = useState(0)
   const [mute, setMute] = useState(false)
   const [fullscreen, setFullscreen] = useState(false)
-  const [openSubtitleDialog, setOpenSubtitleDialog] = useState(false)
-  const [loadSubtitleDialog, setLoadSubtitleDialog] = useState(false)
+  const [openLanguageSwitchDialog, setOpenLanguageSwitchDialog] =
+    useState(false)
+  const [loadLanguageSwitchDialog, setLoadLanguageSwitchDialog] =
+    useState(false)
   const [loading, setLoading] = useState(false)
 
   const duration = secondsToTimeFormat(player.duration() ?? 1, {
@@ -294,8 +298,8 @@ export function VideoControls({
   }
 
   function handleClick(): void {
-    setOpenSubtitleDialog(true)
-    setLoadSubtitleDialog(true)
+    setOpenLanguageSwitchDialog(true)
+    setLoadLanguageSwitchDialog(true)
   }
 
   return (
@@ -521,11 +525,10 @@ export function VideoControls({
                   </IconButton>
                 </Stack>
               </Stack>
-              {loadSubtitleDialog && (
-                <DynamicSubtitleDialog
-                  open={openSubtitleDialog}
-                  player={player}
-                  onClose={() => setOpenSubtitleDialog(false)}
+              {loadLanguageSwitchDialog && (
+                <DynamicLanguageSwitchDialog
+                  open={openLanguageSwitchDialog}
+                  handleClose={() => setOpenLanguageSwitchDialog(false)}
                 />
               )}
             </Container>
