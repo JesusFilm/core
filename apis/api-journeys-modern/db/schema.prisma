@@ -301,6 +301,7 @@ model Journey {
   journeyEventsExportLogs   JourneyEventsExportLog[]
   journeyNotifications      JourneyNotification[]
   journeyTags               JourneyTag[]
+  journeyTheme              JourneyTheme?
   journeyVisitors           JourneyVisitor[]
   qrCode                    QrCode[]
   userInvites               UserInvite[]
@@ -532,6 +533,21 @@ model JourneyEventsExportLog {
 
   @@index([journeyId])
   @@index([createdAt])
+}
+
+model JourneyTheme {
+  id            String   @id @default(uuid())
+  journeyId     String   @unique
+  userId        String
+  primaryFont   String?
+  secondaryFont String?
+  accentFont    String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now())
+  journey       Journey  @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+
+  @@index([journeyId])
+  @@index([userId])
 }
 
 enum MessagePlatform {
