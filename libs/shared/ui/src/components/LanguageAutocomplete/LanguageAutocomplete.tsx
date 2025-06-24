@@ -65,21 +65,30 @@ export function LanguageAutocomplete({
   disableSort = false
 }: LanguageAutocompleteProps): ReactElement {
   const options = useMemo(() => {
-    return (
-      languages?.map((language) => {
-        const { id, name, slug, ...rest } = language
-        const localLanguageName = name.find(({ primary }) => !primary)?.value
-        const nativeLanguageName = name.find(({ primary }) => primary)?.value
+    if (!languages) return []
 
-        return {
-          id,
-          localName: localLanguageName,
-          nativeName: nativeLanguageName,
-          slug,
-          ...rest // Preserve additional properties like __type
-        }
-      }) ?? []
-    )
+    const validOptions: LanguageOption[] = []
+
+    for (const language of languages) {
+      // Skip languages with empty or null name arrays
+      if (!language.name || language.name.length === 0) {
+        continue
+      }
+
+      const { id, name, slug, ...rest } = language
+      const localLanguageName = name.find(({ primary }) => !primary)?.value
+      const nativeLanguageName = name.find(({ primary }) => primary)?.value
+
+      validOptions.push({
+        id,
+        localName: localLanguageName,
+        nativeName: nativeLanguageName,
+        slug,
+        ...rest // Preserve additional properties like __type
+      })
+    }
+
+    return validOptions
   }, [languages])
 
   const sortedOptions = useMemo(() => {
