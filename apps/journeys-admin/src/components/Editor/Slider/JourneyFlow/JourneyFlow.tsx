@@ -1,7 +1,7 @@
 import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
-import { useTheme } from '@mui/material/styles'
+import { styled, useTheme } from '@mui/material/styles'
 import { useRouter } from 'next/compat/router'
 import {
   type MouseEvent,
@@ -45,6 +45,7 @@ import type {
   GetStepBlocksWithPosition_blocks_StepBlock
 } from '../../../../../__generated__/GetStepBlocksWithPosition'
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
+import { EDIT_TOOLBAR_HEIGHT, EDIT_TOOLBAR_MARGIN } from '../../constants'
 
 import { AnalyticsOverlaySwitch } from './AnalyticsOverlaySwitch'
 import { Controls } from './Controls'
@@ -78,6 +79,21 @@ const additionalEdgeStyles = {
 const analyticEdgeStyles = {
   '.react-flow__edge, .react-flow__edge-interaction': {
     'pointer-events': 'none'
+  }
+}
+
+const panelStyles = {
+  '.react-flow__panel.top': {
+    top: `${EDIT_TOOLBAR_HEIGHT + EDIT_TOOLBAR_MARGIN}px`
+  },
+  '.react-flow__panel.left': {
+    left: `${EDIT_TOOLBAR_MARGIN * 2}px`
+  },
+  '.react-flow__panel.right': {
+    right: `${EDIT_TOOLBAR_MARGIN * 2}px`
+  },
+  '.react-flow__panel.bottom': {
+    bottom: `${EDIT_TOOLBAR_MARGIN * 2}px`
   }
 }
 
@@ -502,7 +518,8 @@ export function JourneyFlow(): ReactElement {
         width: '100%',
         height: '100%',
         ...additionalEdgeStyles,
-        ...(showAnalytics === true && analyticEdgeStyles)
+        ...(showAnalytics === true && analyticEdgeStyles),
+        ...panelStyles
       }}
       data-testid="JourneyFlow"
     >
