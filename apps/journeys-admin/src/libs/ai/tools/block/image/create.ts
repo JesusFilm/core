@@ -41,7 +41,6 @@ export function blockImageCreate(
         })
         return data?.imageBlockCreate
       } catch (error) {
-        console.error(error)
         return `Error creating image block: ${error}`
       }
     }

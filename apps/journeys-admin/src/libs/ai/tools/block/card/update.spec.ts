@@ -79,10 +79,6 @@ describe('blockCardUpdate', () => {
     } satisfies CardBlockUpdateInput
     const mockError = new Error('Network error')
 
-    const consoleErrorSpy = jest
-      .spyOn(console, 'error')
-      .mockImplementation(jest.fn())
-
     ;(mockClient.mutate as jest.Mock).mockRejectedValue(mockError)
 
     const tool = blockCardUpdate(mockClient)
@@ -90,8 +86,6 @@ describe('blockCardUpdate', () => {
       { id: mockId, input: mockInput },
       { toolCallId: 'test-id', messages: [] }
     )
-
-    expect(consoleErrorSpy).toHaveBeenCalledWith(mockError)
     expect(result).toBe(`Error updating card block: ${mockError}`)
   })
 })

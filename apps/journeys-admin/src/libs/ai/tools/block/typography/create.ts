@@ -38,7 +38,6 @@ export function blockTypographyCreate(
         })
         return data?.typographyBlockCreate
       } catch (error) {
-        console.error(error)
         return `Error creating typography block: ${error}`
       }
     }

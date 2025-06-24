@@ -109,10 +109,6 @@ describe('blockImageCreate', () => {
     } satisfies ImageBlockCreateInput
     const mockError = new Error('Network error')
 
-    const consoleErrorSpy = jest
-      .spyOn(console, 'error')
-      .mockImplementation(jest.fn())
-
     ;(mockClient.mutate as jest.Mock).mockRejectedValue(mockError)
 
     const tool = blockImageCreate(mockClient)
@@ -120,8 +116,6 @@ describe('blockImageCreate', () => {
       { input: mockInput },
       { toolCallId: 'test-id', messages: [] }
     )
-
-    expect(consoleErrorSpy).toHaveBeenCalledWith(mockError)
     expect(result).toBe(`Error creating image block: ${mockError}`)
   })
 })

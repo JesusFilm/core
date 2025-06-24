@@ -71,10 +71,6 @@ describe('blockRadioOptionCreate', () => {
     } satisfies RadioOptionBlockCreateInput
     const mockError = new Error('Network error')
 
-    const consoleErrorSpy = jest
-      .spyOn(console, 'error')
-      .mockImplementation(jest.fn())
-
     ;(mockClient.mutate as jest.Mock).mockRejectedValue(mockError)
 
     const tool = blockRadioOptionCreate(mockClient)
@@ -82,8 +78,6 @@ describe('blockRadioOptionCreate', () => {
       { input: mockInput },
       { toolCallId: 'test-id', messages: [] }
     )
-
-    expect(consoleErrorSpy).toHaveBeenCalledWith(mockError)
     expect(result).toBe(`Error creating radio option block: ${mockError}`)
   })
 })

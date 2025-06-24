@@ -64,10 +64,6 @@ describe('blockDelete', () => {
     const mockId = 'block-id-to-delete'
     const mockError = new Error('Network error')
 
-    const consoleErrorSpy = jest
-      .spyOn(console, 'error')
-      .mockImplementation(jest.fn())
-
     ;(mockClient.mutate as jest.Mock).mockRejectedValue(mockError)
 
     const tool = blockDelete(mockClient)
@@ -76,7 +72,6 @@ describe('blockDelete', () => {
       { toolCallId: 'test-id', messages: [] }
     )
 
-    expect(consoleErrorSpy).toHaveBeenCalledWith(mockError)
     expect(result).toBe(`Error deleting block: ${mockError}`)
   })
 })

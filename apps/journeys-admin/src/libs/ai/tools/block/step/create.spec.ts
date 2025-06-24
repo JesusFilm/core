@@ -90,10 +90,6 @@ describe('blockStepCreate', () => {
 
     const mockError = new Error('Network error')
 
-    const consoleErrorSpy = jest
-      .spyOn(console, 'error')
-      .mockImplementation(jest.fn())
-
     ;(mockClient.mutate as jest.Mock).mockRejectedValue(mockError)
 
     const tool = blockStepCreate(mockClient)
@@ -101,8 +97,6 @@ describe('blockStepCreate', () => {
       { input: mockInput, cardInput: mockCardInput },
       { toolCallId: 'test-id', messages: [] }
     )
-
-    expect(consoleErrorSpy).toHaveBeenCalledWith(mockError)
     expect(result).toBe(`Error creating step block: ${mockError}`)
   })
 })

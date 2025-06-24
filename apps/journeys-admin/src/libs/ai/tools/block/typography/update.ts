@@ -40,7 +40,6 @@ export function blockTypographyUpdate(
         })
         return data?.typographyBlockUpdate
       } catch (error) {
-        console.error(error)
         return `Error updating typography block: ${error}`
       }
     }
