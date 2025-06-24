@@ -39,6 +39,14 @@ export interface CardFormRestore_image_ButtonBlock_action_EmailAction {
 
 export type CardFormRestore_image_ButtonBlock_action = CardFormRestore_image_ButtonBlock_action_NavigateToBlockAction | CardFormRestore_image_ButtonBlock_action_LinkAction | CardFormRestore_image_ButtonBlock_action_EmailAction;
 
+export interface CardFormRestore_image_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface CardFormRestore_image_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -52,6 +60,10 @@ export interface CardFormRestore_image_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardFormRestore_image_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: CardFormRestore_image_ButtonBlock_classNames | null;
 }
 
 export interface CardFormRestore_image_CardBlock {
@@ -464,6 +476,14 @@ export interface CardFormRestore_subtitle_ButtonBlock_action_EmailAction {
 
 export type CardFormRestore_subtitle_ButtonBlock_action = CardFormRestore_subtitle_ButtonBlock_action_NavigateToBlockAction | CardFormRestore_subtitle_ButtonBlock_action_LinkAction | CardFormRestore_subtitle_ButtonBlock_action_EmailAction;
 
+export interface CardFormRestore_subtitle_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface CardFormRestore_subtitle_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -477,6 +497,10 @@ export interface CardFormRestore_subtitle_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardFormRestore_subtitle_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: CardFormRestore_subtitle_ButtonBlock_classNames | null;
 }
 
 export interface CardFormRestore_subtitle_CardBlock {
@@ -889,6 +913,14 @@ export interface CardFormRestore_title_ButtonBlock_action_EmailAction {
 
 export type CardFormRestore_title_ButtonBlock_action = CardFormRestore_title_ButtonBlock_action_NavigateToBlockAction | CardFormRestore_title_ButtonBlock_action_LinkAction | CardFormRestore_title_ButtonBlock_action_EmailAction;
 
+export interface CardFormRestore_title_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface CardFormRestore_title_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -902,6 +934,10 @@ export interface CardFormRestore_title_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardFormRestore_title_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: CardFormRestore_title_ButtonBlock_classNames | null;
 }
 
 export interface CardFormRestore_title_CardBlock {
@@ -1314,6 +1350,14 @@ export interface CardFormRestore_textResponse_ButtonBlock_action_EmailAction {
 
 export type CardFormRestore_textResponse_ButtonBlock_action = CardFormRestore_textResponse_ButtonBlock_action_NavigateToBlockAction | CardFormRestore_textResponse_ButtonBlock_action_LinkAction | CardFormRestore_textResponse_ButtonBlock_action_EmailAction;
 
+export interface CardFormRestore_textResponse_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface CardFormRestore_textResponse_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -1327,6 +1371,10 @@ export interface CardFormRestore_textResponse_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardFormRestore_textResponse_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: CardFormRestore_textResponse_ButtonBlock_classNames | null;
 }
 
 export interface CardFormRestore_textResponse_CardBlock {
@@ -1739,6 +1787,14 @@ export interface CardFormRestore_button_ButtonBlock_action_EmailAction {
 
 export type CardFormRestore_button_ButtonBlock_action = CardFormRestore_button_ButtonBlock_action_NavigateToBlockAction | CardFormRestore_button_ButtonBlock_action_LinkAction | CardFormRestore_button_ButtonBlock_action_EmailAction;
 
+export interface CardFormRestore_button_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface CardFormRestore_button_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -1752,6 +1808,10 @@ export interface CardFormRestore_button_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardFormRestore_button_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: CardFormRestore_button_ButtonBlock_classNames | null;
 }
 
 export interface CardFormRestore_button_CardBlock {
@@ -2164,6 +2224,14 @@ export interface CardFormRestore_startIcon_ButtonBlock_action_EmailAction {
 
 export type CardFormRestore_startIcon_ButtonBlock_action = CardFormRestore_startIcon_ButtonBlock_action_NavigateToBlockAction | CardFormRestore_startIcon_ButtonBlock_action_LinkAction | CardFormRestore_startIcon_ButtonBlock_action_EmailAction;
 
+export interface CardFormRestore_startIcon_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface CardFormRestore_startIcon_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -2177,6 +2245,10 @@ export interface CardFormRestore_startIcon_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardFormRestore_startIcon_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: CardFormRestore_startIcon_ButtonBlock_classNames | null;
 }
 
 export interface CardFormRestore_startIcon_CardBlock {
@@ -2589,6 +2661,14 @@ export interface CardFormRestore_endIcon_ButtonBlock_action_EmailAction {
 
 export type CardFormRestore_endIcon_ButtonBlock_action = CardFormRestore_endIcon_ButtonBlock_action_NavigateToBlockAction | CardFormRestore_endIcon_ButtonBlock_action_LinkAction | CardFormRestore_endIcon_ButtonBlock_action_EmailAction;
 
+export interface CardFormRestore_endIcon_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface CardFormRestore_endIcon_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -2602,6 +2682,10 @@ export interface CardFormRestore_endIcon_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardFormRestore_endIcon_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: CardFormRestore_endIcon_ButtonBlock_classNames | null;
 }
 
 export interface CardFormRestore_endIcon_CardBlock {
@@ -3014,6 +3098,14 @@ export interface CardFormRestore_body_ButtonBlock_action_EmailAction {
 
 export type CardFormRestore_body_ButtonBlock_action = CardFormRestore_body_ButtonBlock_action_NavigateToBlockAction | CardFormRestore_body_ButtonBlock_action_LinkAction | CardFormRestore_body_ButtonBlock_action_EmailAction;
 
+export interface CardFormRestore_body_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface CardFormRestore_body_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -3027,6 +3119,10 @@ export interface CardFormRestore_body_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardFormRestore_body_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: CardFormRestore_body_ButtonBlock_classNames | null;
 }
 
 export interface CardFormRestore_body_CardBlock {

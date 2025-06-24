@@ -39,6 +39,14 @@ export interface BlockFields_ButtonBlock_action_EmailAction {
 
 export type BlockFields_ButtonBlock_action = BlockFields_ButtonBlock_action_NavigateToBlockAction | BlockFields_ButtonBlock_action_LinkAction | BlockFields_ButtonBlock_action_EmailAction;
 
+export interface BlockFields_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface BlockFields_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -52,6 +60,10 @@ export interface BlockFields_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: BlockFields_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: BlockFields_ButtonBlock_classNames | null;
 }
 
 export interface BlockFields_CardBlock {

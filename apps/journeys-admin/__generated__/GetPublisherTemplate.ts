@@ -53,6 +53,14 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_actio
 
 export type GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action = GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_EmailAction;
 
+export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -66,6 +74,10 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_classNames | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_CardBlock {

@@ -32,6 +32,14 @@ export interface ButtonBlockCreate_buttonBlockCreate_action_EmailAction {
 
 export type ButtonBlockCreate_buttonBlockCreate_action = ButtonBlockCreate_buttonBlockCreate_action_NavigateToBlockAction | ButtonBlockCreate_buttonBlockCreate_action_LinkAction | ButtonBlockCreate_buttonBlockCreate_action_EmailAction;
 
+export interface ButtonBlockCreate_buttonBlockCreate_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface ButtonBlockCreate_buttonBlockCreate {
   __typename: "ButtonBlock";
   id: string;
@@ -45,6 +53,10 @@ export interface ButtonBlockCreate_buttonBlockCreate {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: ButtonBlockCreate_buttonBlockCreate_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: ButtonBlockCreate_buttonBlockCreate_classNames | null;
 }
 
 export interface ButtonBlockCreate_startIcon {
@@ -90,6 +102,14 @@ export interface ButtonBlockCreate_buttonBlockUpdate_action_EmailAction {
 
 export type ButtonBlockCreate_buttonBlockUpdate_action = ButtonBlockCreate_buttonBlockUpdate_action_NavigateToBlockAction | ButtonBlockCreate_buttonBlockUpdate_action_LinkAction | ButtonBlockCreate_buttonBlockUpdate_action_EmailAction;
 
+export interface ButtonBlockCreate_buttonBlockUpdate_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface ButtonBlockCreate_buttonBlockUpdate {
   __typename: "ButtonBlock";
   id: string;
@@ -103,6 +123,10 @@ export interface ButtonBlockCreate_buttonBlockUpdate {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: ButtonBlockCreate_buttonBlockUpdate_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: ButtonBlockCreate_buttonBlockUpdate_classNames | null;
 }
 
 export interface ButtonBlockCreate {

@@ -32,6 +32,14 @@ export interface ButtonFields_action_EmailAction {
 
 export type ButtonFields_action = ButtonFields_action_NavigateToBlockAction | ButtonFields_action_LinkAction | ButtonFields_action_EmailAction;
 
+export interface ButtonFields_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface ButtonFields {
   __typename: "ButtonBlock";
   id: string;
@@ -45,4 +53,8 @@ export interface ButtonFields {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: ButtonFields_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: ButtonFields_classNames | null;
 }

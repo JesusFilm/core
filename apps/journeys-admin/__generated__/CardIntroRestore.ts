@@ -39,6 +39,14 @@ export interface CardIntroRestore_subtitle_ButtonBlock_action_EmailAction {
 
 export type CardIntroRestore_subtitle_ButtonBlock_action = CardIntroRestore_subtitle_ButtonBlock_action_NavigateToBlockAction | CardIntroRestore_subtitle_ButtonBlock_action_LinkAction | CardIntroRestore_subtitle_ButtonBlock_action_EmailAction;
 
+export interface CardIntroRestore_subtitle_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface CardIntroRestore_subtitle_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -52,6 +60,10 @@ export interface CardIntroRestore_subtitle_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardIntroRestore_subtitle_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: CardIntroRestore_subtitle_ButtonBlock_classNames | null;
 }
 
 export interface CardIntroRestore_subtitle_CardBlock {
@@ -464,6 +476,14 @@ export interface CardIntroRestore_title_ButtonBlock_action_EmailAction {
 
 export type CardIntroRestore_title_ButtonBlock_action = CardIntroRestore_title_ButtonBlock_action_NavigateToBlockAction | CardIntroRestore_title_ButtonBlock_action_LinkAction | CardIntroRestore_title_ButtonBlock_action_EmailAction;
 
+export interface CardIntroRestore_title_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface CardIntroRestore_title_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -477,6 +497,10 @@ export interface CardIntroRestore_title_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardIntroRestore_title_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: CardIntroRestore_title_ButtonBlock_classNames | null;
 }
 
 export interface CardIntroRestore_title_CardBlock {
@@ -889,6 +913,14 @@ export interface CardIntroRestore_body_ButtonBlock_action_EmailAction {
 
 export type CardIntroRestore_body_ButtonBlock_action = CardIntroRestore_body_ButtonBlock_action_NavigateToBlockAction | CardIntroRestore_body_ButtonBlock_action_LinkAction | CardIntroRestore_body_ButtonBlock_action_EmailAction;
 
+export interface CardIntroRestore_body_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface CardIntroRestore_body_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -902,6 +934,10 @@ export interface CardIntroRestore_body_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardIntroRestore_body_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: CardIntroRestore_body_ButtonBlock_classNames | null;
 }
 
 export interface CardIntroRestore_body_CardBlock {
@@ -1314,6 +1350,14 @@ export interface CardIntroRestore_button_ButtonBlock_action_EmailAction {
 
 export type CardIntroRestore_button_ButtonBlock_action = CardIntroRestore_button_ButtonBlock_action_NavigateToBlockAction | CardIntroRestore_button_ButtonBlock_action_LinkAction | CardIntroRestore_button_ButtonBlock_action_EmailAction;
 
+export interface CardIntroRestore_button_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface CardIntroRestore_button_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -1327,6 +1371,10 @@ export interface CardIntroRestore_button_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardIntroRestore_button_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: CardIntroRestore_button_ButtonBlock_classNames | null;
 }
 
 export interface CardIntroRestore_button_CardBlock {
@@ -1739,6 +1787,14 @@ export interface CardIntroRestore_startIcon_ButtonBlock_action_EmailAction {
 
 export type CardIntroRestore_startIcon_ButtonBlock_action = CardIntroRestore_startIcon_ButtonBlock_action_NavigateToBlockAction | CardIntroRestore_startIcon_ButtonBlock_action_LinkAction | CardIntroRestore_startIcon_ButtonBlock_action_EmailAction;
 
+export interface CardIntroRestore_startIcon_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface CardIntroRestore_startIcon_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -1752,6 +1808,10 @@ export interface CardIntroRestore_startIcon_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardIntroRestore_startIcon_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: CardIntroRestore_startIcon_ButtonBlock_classNames | null;
 }
 
 export interface CardIntroRestore_startIcon_CardBlock {
@@ -2164,6 +2224,14 @@ export interface CardIntroRestore_endIcon_ButtonBlock_action_EmailAction {
 
 export type CardIntroRestore_endIcon_ButtonBlock_action = CardIntroRestore_endIcon_ButtonBlock_action_NavigateToBlockAction | CardIntroRestore_endIcon_ButtonBlock_action_LinkAction | CardIntroRestore_endIcon_ButtonBlock_action_EmailAction;
 
+export interface CardIntroRestore_endIcon_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface CardIntroRestore_endIcon_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -2177,6 +2245,10 @@ export interface CardIntroRestore_endIcon_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardIntroRestore_endIcon_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: CardIntroRestore_endIcon_ButtonBlock_classNames | null;
 }
 
 export interface CardIntroRestore_endIcon_CardBlock {
@@ -2589,6 +2661,14 @@ export interface CardIntroRestore_video_ButtonBlock_action_EmailAction {
 
 export type CardIntroRestore_video_ButtonBlock_action = CardIntroRestore_video_ButtonBlock_action_NavigateToBlockAction | CardIntroRestore_video_ButtonBlock_action_LinkAction | CardIntroRestore_video_ButtonBlock_action_EmailAction;
 
+export interface CardIntroRestore_video_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface CardIntroRestore_video_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -2602,6 +2682,10 @@ export interface CardIntroRestore_video_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardIntroRestore_video_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: CardIntroRestore_video_ButtonBlock_classNames | null;
 }
 
 export interface CardIntroRestore_video_CardBlock {

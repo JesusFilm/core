@@ -39,6 +39,14 @@ export interface BlockRestore_blockRestore_ButtonBlock_action_EmailAction {
 
 export type BlockRestore_blockRestore_ButtonBlock_action = BlockRestore_blockRestore_ButtonBlock_action_NavigateToBlockAction | BlockRestore_blockRestore_ButtonBlock_action_LinkAction | BlockRestore_blockRestore_ButtonBlock_action_EmailAction;
 
+export interface BlockRestore_blockRestore_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface BlockRestore_blockRestore_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -52,6 +60,10 @@ export interface BlockRestore_blockRestore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: BlockRestore_blockRestore_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: BlockRestore_blockRestore_ButtonBlock_classNames | null;
 }
 
 export interface BlockRestore_blockRestore_CardBlock {
