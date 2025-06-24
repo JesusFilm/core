@@ -189,16 +189,12 @@ export function MenuIconSelect(): ReactElement {
                   height: 56,
                   width: 56,
                   borderRadius: 2,
-                  border: ({ palette }) =>
-                    `3px solid ${palette.background.paper}`,
+                  border: ({ palette }) => palette.background.default,
                   display: 'grid',
                   placeItems: 'center'
                 }}
               >
-                <Icon
-                  data-testid={getIconTestId(value)}
-                  sx={{ fontSize: '40px', color: 'primary.main' }}
-                />
+                <Icon data-testid={getIconTestId(value)} />
               </Box>
             </MenuItem>
           ))}
