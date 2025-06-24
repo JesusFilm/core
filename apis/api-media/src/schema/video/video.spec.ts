@@ -38,6 +38,20 @@ describe('video', () => {
     }
   })
 
+  // Add client with specific platform name for testing restrictions
+  const clientWithPlatform = getClient({
+    headers: {
+      'x-graphql-client-name': 'testPlatform'
+    }
+  })
+
+  // Add client with restricted platform name
+  const clientWithRestrictedPlatform = getClient({
+    headers: {
+      'x-graphql-client-name': 'restrictedPlatform'
+    }
+  })
+
   type VideoAndIncludes = Video & {
     bibleCitation: BibleCitation[]
     keywords: Keyword[]
@@ -68,7 +82,9 @@ describe('video', () => {
       childIds: [],
       availableLanguages: [],
       locked: false,
-      originId: null
+      originId: null,
+      restrictDownloadPlatforms: [],
+      restrictViewPlatforms: []
     },
     {
       id: 'videoId1',
@@ -80,7 +96,9 @@ describe('video', () => {
       childIds: [],
       availableLanguages: [],
       locked: false,
-      originId: null
+      originId: null,
+      restrictDownloadPlatforms: [],
+      restrictViewPlatforms: []
     }
   ]
 
@@ -95,7 +113,9 @@ describe('video', () => {
       childIds: [],
       availableLanguages: [],
       locked: false,
-      originId: null
+      originId: null,
+      restrictDownloadPlatforms: [],
+      restrictViewPlatforms: []
     },
     {
       id: 'videoId4',
@@ -107,7 +127,9 @@ describe('video', () => {
       childIds: [],
       availableLanguages: [],
       locked: false,
-      originId: null
+      originId: null,
+      restrictDownloadPlatforms: [],
+      restrictViewPlatforms: []
     }
   ]
 
@@ -123,6 +145,8 @@ describe('video', () => {
       availableLanguages: [],
       originId: 'originId',
       locked: false,
+      restrictDownloadPlatforms: [],
+      restrictViewPlatforms: [],
       bibleCitation: [
         {
           id: 'bibleCitationId',
@@ -316,7 +340,9 @@ describe('video', () => {
     childIds: [],
     availableLanguages: [],
     originId: null,
-    locked: false
+    locked: false,
+    restrictDownloadPlatforms: [],
+    restrictViewPlatforms: []
   }
 
   describe('videos', () => {
@@ -1657,7 +1683,9 @@ describe('video', () => {
       childIds: [],
       availableLanguages: [],
       originId: null,
-      locked: false
+      locked: false,
+      restrictDownloadPlatforms: [],
+      restrictViewPlatforms: []
     }
 
     it('should query video', async () => {
@@ -1845,7 +1873,7 @@ describe('video', () => {
           noIndex: true,
           childIds: [],
           availableLanguages: [],
-          originId: null
+          originId: 'originId'
         } as unknown as Video)
         const result = await authClient({
           document: CREATE_VIDEO_MUTATION,
@@ -1857,7 +1885,8 @@ describe('video', () => {
               published: true,
               slug: 'slug',
               noIndex: true,
-              childIds: []
+              childIds: [],
+              originId: 'originId'
             }
           }
         })
@@ -1869,7 +1898,8 @@ describe('video', () => {
             published: true,
             slug: 'slug',
             noIndex: true,
-            childIds: []
+            childIds: [],
+            originId: 'originId'
           }
         })
         expect(result).toHaveProperty('data.videoCreate', {
@@ -1888,7 +1918,8 @@ describe('video', () => {
               published: true,
               slug: 'slug',
               noIndex: true,
-              childIds: []
+              childIds: [],
+              originId: 'originId'
             }
           }
         })
@@ -1999,7 +2030,9 @@ describe('video', () => {
         childIds: [],
         availableLanguages: [],
         locked: false,
-        originId: null
+        originId: null,
+        restrictDownloadPlatforms: [],
+        restrictViewPlatforms: []
       })
       const data = await client({
         document: VIDEO
