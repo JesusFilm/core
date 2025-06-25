@@ -8,7 +8,7 @@ import { AudioLanguageButton } from '.'
 
 describe('AudioLanguageButton', () => {
   it('renders audio language as a button', async () => {
-    const { getByRole, getByText } = render(
+    const { getByRole } = render(
       <MockedProvider>
         <VideoProvider value={{ content: videos[0] }}>
           <AudioLanguageButton componentVariant="button" />
@@ -17,19 +17,25 @@ describe('AudioLanguageButton', () => {
     )
     fireEvent.click(getByRole('button'))
     await waitFor(() =>
-      expect(getByText('2039 Languages Available')).toBeInTheDocument()
+      expect(
+        getByRole('dialog', { name: 'Language Settings' })
+      ).toBeInTheDocument()
     )
   })
 
   it('renders audio language as an icon', async () => {
-    const { getByTestId, getByText } = render(
+    const { getByTestId, getByRole } = render(
       <MockedProvider>
         <VideoProvider value={{ content: videos[0] }}>
           <AudioLanguageButton componentVariant="icon" />
         </VideoProvider>
       </MockedProvider>
     )
-    await waitFor(() => fireEvent.click(getByTestId('LanguageOutlinedIcon')))
-    expect(getByText('2039 Languages Available')).toBeInTheDocument()
+    fireEvent.click(getByTestId('LanguageOutlinedIcon'))
+    await waitFor(() =>
+      expect(
+        getByRole('dialog', { name: 'Language Settings' })
+      ).toBeInTheDocument()
+    )
   })
 })
