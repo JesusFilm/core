@@ -47,9 +47,23 @@ export function Content(): ReactElement {
           display: 'flex',
           justifyContent: 'space-between'
         }}
-        className="animate-in fade-in duration-600"
       >
-        {content}
+        <Box
+          data-testid="Content"
+          sx={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            userSelect: 'none',
+            display: 'flex',
+            justifyContent: 'space-between',
+            className: 'animate-in fade-in duration-300',
+          }}
+        >
+          {content}
+        </Box>
       </Box>
     </Box>
   )
