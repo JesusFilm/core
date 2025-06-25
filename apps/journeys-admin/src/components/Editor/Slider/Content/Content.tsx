@@ -33,7 +33,7 @@ export function Content(): ReactElement {
         display: 'flex',
         justifyContent: 'space-between'
       }}
-      className="transition-opacity duration-600 ease-in-out"
+      className="transition-opacity duration-300 ease-in-out"
     >
       <Box
         key={activeContent}
@@ -59,7 +59,7 @@ export function Content(): ReactElement {
             userSelect: 'none',
             display: 'flex',
             justifyContent: 'space-between',
-            className: 'animate-in fade-in duration-300',
+            className: 'animate-in fade-in duration-300'
           }}
         >
           {content}

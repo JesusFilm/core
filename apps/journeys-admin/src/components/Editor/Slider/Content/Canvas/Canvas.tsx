@@ -1,7 +1,8 @@
-import { keyframes } from '@emotion/react'
 import Box from '@mui/material/Box'
+import Fab from '@mui/material/Fab'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { type ReactElement, useEffect, useRef, useState } from 'react'
 
 import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
@@ -18,9 +19,16 @@ import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
+import SettingsIcon from '@core/shared/ui/icons/Settings'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle
+} from '../../../../Drawer'
 import { Hotkeys } from '../../../Hotkeys'
 
 import { CanvasFooter } from './CanvasFooter'
@@ -37,16 +45,7 @@ import {
   calculateScaledMargin
 } from './utils/calculateDimensions'
 
-const fadeIn = keyframes`
-  from {
-    top: -10px;
-    opacity: 0;
-  }
-  to {
-    top: 0;
-    opacity: 1;
-  }
-`
+const snapPoints = ['148px', '355px', 1]
 
 export function Canvas(): ReactElement {
   const frameRef = useRef<HTMLIFrameElement>(null)
@@ -66,17 +65,48 @@ export function Canvas(): ReactElement {
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
   const router = useRouter()
+  const [snap, setSnap] = useState<number | string | null>(snapPoints[0])
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 900)
+  const { t } = useTranslation('apps-journeys-admin')
 
-  const initialScale =
-    typeof window !== 'undefined' && window.innerWidth <= 600 ? 0 : 1
-  const [scale, setScale] = useState(initialScale)
+  const [scale, setScale] = useState(1)
+  // const [mobileDrawerOpen, setMobileDrawerOpen] = useState(true)
 
   useEffect(() => {
-    const handleResize = (): void => setScale(calculateScale(containerRef))
-    handleResize()
+    const handleResize = (): void => {
+      const current = containerRef.current
+      if (current == null) {
+        setScale(1)
+        return
+      }
+
+      setIsMobile(window.innerWidth <= 900)
+
+      if (isMobile) {
+        // On mobile, scale based on available width with padding
+        const availableWidth = current.clientWidth - 48 // 24px padding on each side
+        const widthScale = availableWidth / CARD_WIDTH
+        // Also consider available height for mobile
+        const availableHeight = current.clientHeight - 200 // Reserve space for header and footer
+        const heightScale = availableHeight / CARD_HEIGHT
+        const mobileScale = Math.min(widthScale, heightScale, 0.85) // Cap at 0.85 for mobile
+        setScale(Math.max(mobileScale, 0.85))
+      } else {
+        // On desktop, use the original height-based calculation
+        const newScale = calculateScale(containerRef)
+        setScale(newScale > 0 ? newScale : 1)
+      }
+    }
+
+    // Use setTimeout to ensure DOM is ready
+    const timeoutId = setTimeout(handleResize, 100)
+
     window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
+    return () => {
+      clearTimeout(timeoutId)
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [isMobile])
 
   function handleJourneyAppearanceClick(): void {
     dispatch({
@@ -152,10 +182,11 @@ export function Canvas(): ReactElement {
       alignItems="flex-end"
       sx={{
         height: '100%',
-        alignItems: 'center',
+        alignItems: { xs: 'center', md: 'center' },
         alignSelf: 'center',
         justifyContent: 'center',
-        flexGrow: { xs: 1, md: activeSlide === ActiveSlide.Content ? 1 : 0 }
+        flexGrow: { xs: 1, md: activeSlide === ActiveSlide.Content ? 1 : 0 },
+        width: '100%'
       }}
     >
       {selectedStep != null && theme != null && (
@@ -167,153 +198,194 @@ export function Canvas(): ReactElement {
           sx={{
             flexGrow: { xs: 1, md: 0 },
             height: { xs: '100%', md: 'auto' },
-            pb: { xs: 5, md: 0 },
+            pb: { xs: 4, md: 0 },
             px: { xs: 3, md: 5 },
-            justifyContent: 'center'
+            justifyContent: { xs: 'space-between', md: 'center' },
+            pt: { xs: 6, md: 0 },
+            width: { xs: '100%', md: 'auto' }
           }}
         >
           <Box
-            data-testId="CanvasContainer"
             sx={{
-              animation: (theme) =>
-                `${fadeIn} ${theme.transitions.duration.standard}ms ${theme.transitions.easing.easeInOut} 0.5s backwards`,
-              position: 'relative',
-              maxHeight: CARD_HEIGHT,
-              width: CARD_WIDTH,
-              transform: `scale(${scale})`,
-              transformOrigin: {
-                xs: 'center',
-                md: activeSlide === ActiveSlide.JourneyFlow ? 'right' : 'center'
-              },
-              my: `${calculateScaledMargin(CARD_HEIGHT, scale)}`,
-              mx: `${calculateScaledMargin(CARD_WIDTH, scale)}`,
-              borderRadius: 8,
-              pointerEvents: showAnalytics === true ? 'none' : 'auto',
-              transition: (theme) =>
-                theme.transitions.create('outline', {
-                  duration: 200,
-                  delay: 100,
-                  easing: 'ease-out'
-                }),
-              outline: (theme) =>
-                selectedStep.id === selectedBlock?.id
-                  ? `2px solid ${theme.palette.primary.main}`
-                  : 'none',
-              outlineOffset: 4,
-              bgcolor:
-                theme.themeMode === ThemeMode.light
-                  ? 'secondary.main'
-                  : 'secondary.dark',
-              aspectRatio: 6 / 13
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'flex-start',
+              flex: 1
             }}
           >
-            <FramePortal
-              height="100%"
-              width="100%"
-              dir={rtl ? 'rtl' : 'ltr'}
-              // frameRef assists to see if user is copying text from typog blocks
-              ref={frameRef}
-              scrolling="no"
+            <Box
+              data-testId="CanvasContainer"
+              className={`
+              relative animate-in fade-in duration-500 ease-in-out
+              transition-outline duration-200 delay-100 ease-out
+              rounded-lg
+              ${showAnalytics === true ? 'pointer-events-none' : 'pointer-events-auto'}
+              ${selectedStep.id === selectedBlock?.id ? 'outline outline-2 outline-primary outline-offset-4' : ''}
+            `}
+              sx={{
+                maxHeight: { xs: 'none', md: CARD_HEIGHT },
+                width: CARD_WIDTH,
+                transform: `scale(${scale})`,
+                transformOrigin: {
+                  xs: 'center',
+                  md:
+                    activeSlide === ActiveSlide.JourneyFlow ? 'right' : 'center'
+                },
+                my: {
+                  xs: 0,
+                  md: `${calculateScaledMargin(CARD_HEIGHT, scale)}`
+                },
+                mx: {
+                  xs: 'auto',
+                  md: `${calculateScaledMargin(CARD_WIDTH, scale)}`
+                },
+                bgcolor:
+                  theme.themeMode === ThemeMode.light
+                    ? 'secondary.main'
+                    : 'secondary.dark',
+                aspectRatio: 6 / 13
+              }}
             >
-              {({ document }) => (
-                <ThemeProvider {...theme} rtl={rtl} locale={locale}>
-                  <Hotkeys document={document} />
-                  <Box
-                    sx={{
-                      position: 'relative',
-                      width: 'calc(100% - 24px)',
-                      height: 'calc(100vh - 24px)',
-                      m: '12px'
-                    }}
-                  >
-                    <Stack
-                      key={selectedStep.id}
-                      justifyContent="center"
+              <FramePortal
+                height="100%"
+                width="100%"
+                dir={rtl ? 'rtl' : 'ltr'}
+                // frameRef assists to see if user is copying text from typog blocks
+                ref={frameRef}
+                scrolling="no"
+              >
+                {({ document }) => (
+                  <ThemeProvider {...theme} rtl={rtl} locale={locale}>
+                    <Hotkeys document={document} />
+                    <Box
+                      className="relative m-3"
                       sx={{
-                        position: 'absolute',
-                        top: 0,
-                        right: 0,
-                        bottom: 0,
-                        left: 0
+                        width: 'calc(100% - 24px)',
+                        height: 'calc(100vh - 24px)'
                       }}
-                      className="animate-in fade-in duration-300"
-                      data-testid={`step-${selectedStep.id}`}
                     >
-                      <ThemeProvider
-                        themeName={ThemeName.journeyUi}
-                        themeMode={theme.themeMode}
-                        rtl={rtl}
-                        locale={locale}
-                        nested
+                      <Stack
+                        key={selectedStep.id}
+                        justifyContent="center"
+                        className="absolute inset-0 animate-in fade-in duration-300 ease-in-out"
+                        data-testid={`step-${selectedStep.id}`}
                       >
-                        <StepHeader
-                          sx={{
-                            outline:
-                              activeCanvasDetailsDrawer ===
-                                ActiveCanvasDetailsDrawer.JourneyAppearance &&
-                              journey?.website === true
-                                ? '2px solid #C52D3A'
-                                : 'none',
-                            outlineOffset: -4,
-                            borderRadius: 6,
-                            cursor: 'pointer',
-                            minHeight: '42px'
-                          }}
-                          onHeaderClick={
-                            journey?.website === true
-                              ? handleJourneyAppearanceClick
-                              : undefined
-                          }
-                        />
-                      </ThemeProvider>
-                      <DragDropWrapper>
-                        <JourneyLocaleProvider locale={locale}>
-                          <BlockRenderer
-                            block={selectedStep}
-                            wrappers={{
-                              Wrapper: SelectableWrapper,
-                              TypographyWrapper: InlineEditWrapper,
-                              ButtonWrapper: InlineEditWrapper,
-                              RadioQuestionWrapper: InlineEditWrapper,
-                              RadioOptionWrapper: InlineEditWrapper,
-                              TextResponseWrapper: InlineEditWrapper,
-                              SignUpWrapper: InlineEditWrapper,
-                              VideoWrapper,
-                              CardWrapper,
-                              DragItemWrapper
+                        <ThemeProvider
+                          themeName={ThemeName.journeyUi}
+                          themeMode={theme.themeMode}
+                          rtl={rtl}
+                          locale={locale}
+                          nested
+                        >
+                          <StepHeader
+                            sx={{
+                              outline:
+                                activeCanvasDetailsDrawer ===
+                                  ActiveCanvasDetailsDrawer.JourneyAppearance &&
+                                journey?.website === true
+                                  ? '2px solid #C52D3A'
+                                  : 'none',
+                              outlineOffset: -4,
+                              borderRadius: 6,
+                              cursor: 'pointer',
+                              minHeight: '42px'
                             }}
+                            onHeaderClick={
+                              journey?.website === true
+                                ? handleJourneyAppearanceClick
+                                : undefined
+                            }
                           />
-                        </JourneyLocaleProvider>
-                      </DragDropWrapper>
-                      <ThemeProvider
-                        themeName={ThemeName.journeyUi}
-                        themeMode={theme.themeMode}
-                        rtl={rtl}
-                        locale={locale}
-                        nested
-                      >
-                        <StepFooter
-                          sx={{
-                            outline:
-                              activeCanvasDetailsDrawer ===
-                              ActiveCanvasDetailsDrawer.JourneyAppearance
-                                ? '2px solid #C52D3A'
-                                : 'none',
-                            outlineOffset: -4,
-                            borderRadius: 6,
-                            cursor: 'pointer'
-                          }}
-                          onFooterClick={handleJourneyAppearanceClick}
-                        />
-                      </ThemeProvider>
-                    </Stack>
-                  </Box>
-                </ThemeProvider>
-              )}
-            </FramePortal>
+                        </ThemeProvider>
+                        <DragDropWrapper>
+                          <JourneyLocaleProvider locale={locale}>
+                            <BlockRenderer
+                              block={selectedStep}
+                              wrappers={{
+                                Wrapper: SelectableWrapper,
+                                TypographyWrapper: InlineEditWrapper,
+                                ButtonWrapper: InlineEditWrapper,
+                                RadioQuestionWrapper: InlineEditWrapper,
+                                RadioOptionWrapper: InlineEditWrapper,
+                                TextResponseWrapper: InlineEditWrapper,
+                                SignUpWrapper: InlineEditWrapper,
+                                VideoWrapper,
+                                CardWrapper,
+                                DragItemWrapper
+                              }}
+                            />
+                          </JourneyLocaleProvider>
+                        </DragDropWrapper>
+                        <ThemeProvider
+                          themeName={ThemeName.journeyUi}
+                          themeMode={theme.themeMode}
+                          rtl={rtl}
+                          locale={locale}
+                          nested
+                        >
+                          <StepFooter
+                            sx={{
+                              outline:
+                                activeCanvasDetailsDrawer ===
+                                ActiveCanvasDetailsDrawer.JourneyAppearance
+                                  ? '2px solid #C52D3A'
+                                  : 'none',
+                              outlineOffset: -4,
+                              borderRadius: 6,
+                              cursor: 'pointer'
+                            }}
+                            onFooterClick={handleJourneyAppearanceClick}
+                          />
+                        </ThemeProvider>
+                      </Stack>
+                    </Box>
+                  </ThemeProvider>
+                )}
+              </FramePortal>
+            </Box>
           </Box>
-          <CanvasFooter scale={scale} />
+          {/* Desktop footer */}
+          {!isMobile && <CanvasFooter scale={scale} />}
         </Stack>
+      )}
+
+      {isMobile && (
+        <>
+          {/* Mobile settings drawer */}
+
+          <Drawer
+            open={true}
+            // onOpenChange={setMobileDrawerOpen}
+            direction="bottom"
+            data-testid="CanvasSettingsDrawer"
+            snapPoints={snapPoints}
+            activeSnapPoint={snap}
+            setActiveSnapPoint={setSnap}
+            modal={false}
+          >
+            <DrawerContent className="fixed bottom-0 left-0 right-0 z-50">
+              <DrawerHeader>
+                <DrawerTitle>{t('Canvas Settings')}</DrawerTitle>
+              </DrawerHeader>
+              <div className="p-4">
+                <CanvasFooter scale={1} />
+              </div>
+            </DrawerContent>
+          </Drawer>
+          {/* Mobile floating action button */}
+          <Fab
+            color="primary"
+            sx={{
+              position: 'fixed',
+              bottom: 16,
+              right: 16,
+              zIndex: 1000
+            }}
+            // onClick={() => setMobileDrawerOpen(true)}
+          >
+            <SettingsIcon />
+          </Fab>
+        </>
       )}
     </Stack>
   )

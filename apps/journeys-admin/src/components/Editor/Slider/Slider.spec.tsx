@@ -19,6 +19,7 @@ import {
   UpdateJourneyFlowBackButtonClicked,
   UpdateJourneyFlowBackButtonClickedVariables
 } from '../../../../__generated__/UpdateJourneyFlowBackButtonClicked'
+import createMatchMedia from '../../../../test/createMatchMedia'
 import { mockReactFlow } from '../../../../test/mockReactFlow'
 import { TestEditorState } from '../../../libs/TestEditorState'
 
@@ -61,7 +62,14 @@ describe('Slider', () => {
       activeContent: ActiveContent.Canvas,
       activeSlide: ActiveSlide.JourneyFlow
     }
-    mockUseMediaQuery.mockImplementation(() => true)
+    mockUseMediaQuery.mockImplementation(() => false)
+    // Set window width to desktop size to ensure Tailwind md: breakpoint is active
+    Object.defineProperty(window, 'innerWidth', {
+      writable: true,
+      configurable: true,
+      value: 1200
+    })
+    window.matchMedia = createMatchMedia(1200)
     mockReactFlow()
   })
 
