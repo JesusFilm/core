@@ -135,6 +135,7 @@ model Video {
   originId                  String?
   restrictDownloadPlatforms Platform[]           @default([])
   restrictViewPlatforms     Platform[]           @default([])
+  publishedAt               DateTime?
 
   @@index(label)
   @@index(childIds)
