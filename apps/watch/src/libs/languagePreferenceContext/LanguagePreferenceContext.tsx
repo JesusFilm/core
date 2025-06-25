@@ -1,9 +1,19 @@
+import { NextRouter } from 'next/router'
 import { Dispatch, createContext, useContext, useReducer } from 'react'
 
 import { GetAllLanguages_languages as Language } from '../../../__generated__/GetAllLanguages'
 import { GetLanguagesSlug_video_variantLanguagesWithSlug_language as AudioLanguage } from '../../../__generated__/GetLanguagesSlug'
 import { GetSubtitles_video_variant_subtitle as SubtitleLanguage } from '../../../__generated__/GetSubtitles'
 import { LANGUAGE_MAPPINGS } from '../../config/locales'
+
+// Cookie handler utility
+function setCookie(name: string, value: string): void {
+  if (typeof document === 'undefined') return
+  const cookieFingerprint = '00005'
+  const encodedValue = encodeURIComponent(value)
+  const expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString()
+  document.cookie = `${name}=${cookieFingerprint}---${encodedValue}; path=/; SameSite=Lax; expires=${expires}`
+}
 
 /**
  * State interface for language preferences and video-specific language data
@@ -17,6 +27,10 @@ interface LanguageState {
   subtitleLanguage: string
   /** Whether subtitles are enabled by user preference */
   subtitleOn: boolean
+  /** Loading state for operations that require page reload */
+  loading?: boolean
+  /** Next.js router instance for triggering page reloads */
+  router?: NextRouter
   /** Current video ID being watched */
   videoId?: string
   /** Current video variant slug being watched */
@@ -90,6 +104,54 @@ interface SetCurrentVideoAction {
 }
 
 /**
+ * Action to set loading state
+ */
+interface SetLoadingAction {
+  type: 'SetLoading'
+  loading: boolean
+}
+
+/**
+ * Action to set router instance
+ */
+interface SetRouterAction {
+  type: 'SetRouter'
+  router: NextRouter
+}
+
+/**
+ * Action to update site language with automatic cascading and page reload
+ */
+interface UpdateSiteLanguageAction {
+  type: 'UpdateSiteLanguage'
+  language: string
+}
+
+/**
+ * Action to update audio language with automatic cascading and page reload
+ */
+interface UpdateAudioLanguageAction {
+  type: 'UpdateAudioLanguage'
+  languageId: string
+}
+
+/**
+ * Action to update subtitle language (no page reload)
+ */
+interface UpdateSubtitleLanguageAction {
+  type: 'UpdateSubtitleLanguage'
+  languageId: string
+}
+
+/**
+ * Action to update subtitles on/off setting (no page reload)
+ */
+interface UpdateSubtitlesOnAction {
+  type: 'UpdateSubtitlesOn'
+  enabled: boolean
+}
+
+/**
  * Union type of all possible actions for the language preference context
  */
 export type LanguageAction =
@@ -98,6 +160,12 @@ export type LanguageAction =
   | SetVideoAudioLanguagesAction
   | SetVideoSubtitleLanguagesAction
   | SetCurrentVideoAction
+  | SetLoadingAction
+  | SetRouterAction
+  | UpdateSiteLanguageAction
+  | UpdateAudioLanguageAction
+  | UpdateSubtitleLanguageAction
+  | UpdateSubtitlesOnAction
 
 const LanguageContext = createContext<{
   state: LanguageState
@@ -107,7 +175,8 @@ const LanguageContext = createContext<{
     siteLanguage: 'en',
     audioLanguage: 'english',
     subtitleLanguage: 'english',
-    subtitleOn: false
+    subtitleOn: false,
+    loading: false
   },
   dispatch: () => null
 })
@@ -195,6 +264,84 @@ const reducer = (
         videoId: action.videoId,
         videoVariantSlug: action.videoVariantSlug
       }
+    case 'SetLoading':
+      return {
+        ...state,
+        loading: action.loading
+      }
+    case 'SetRouter':
+      return {
+        ...state,
+        router: action.router
+      }
+    case 'UpdateSiteLanguage': {
+      const newLanguage = action.language
+
+      // Find matching language object for cascading
+      const selectedLangObj = state.allLanguages?.find(
+        (lang) => lang.bcp47 === newLanguage
+      )
+
+      // Update state with cascading
+      const newState = {
+        ...state,
+        loading: true,
+        siteLanguage: newLanguage,
+        audioLanguage: selectedLangObj?.id ?? state.audioLanguage,
+        subtitleLanguage: selectedLangObj?.id ?? state.subtitleLanguage
+      }
+
+      // Set cookie and trigger reload
+      setCookie('NEXT_LOCALE', newLanguage)
+      if (state.router) {
+        // Use setTimeout to allow state update first
+        setTimeout(() => state.router?.reload(), 0)
+      }
+
+      return newState
+    }
+    case 'UpdateAudioLanguage': {
+      const newAudioLanguage = action.languageId
+
+      // Update state with cascading (subtitle follows audio)
+      const newState = {
+        ...state,
+        loading: true,
+        audioLanguage: newAudioLanguage,
+        subtitleLanguage: newAudioLanguage
+      }
+
+      // Set cookie and trigger reload
+      setCookie('AUDIO_LANGUAGE', newAudioLanguage)
+      if (state.router) {
+        // Use setTimeout to allow state update first
+        setTimeout(() => state.router?.reload(), 0)
+      }
+
+      return newState
+    }
+    case 'UpdateSubtitleLanguage': {
+      const newSubtitleLanguage = action.languageId
+
+      // Set cookie immediately (no reload needed)
+      setCookie('SUBTITLE_LANGUAGE', newSubtitleLanguage)
+
+      return {
+        ...state,
+        subtitleLanguage: newSubtitleLanguage
+      }
+    }
+    case 'UpdateSubtitlesOn': {
+      const newSubtitlesOn = action.enabled
+
+      // Set cookie immediately (no reload needed)
+      setCookie('SUBTITLES_ON', newSubtitlesOn.toString())
+
+      return {
+        ...state,
+        subtitleOn: newSubtitlesOn
+      }
+    }
     default:
       return state
   }
@@ -225,7 +372,10 @@ export function LanguagePreferenceProvider({
   children,
   initialState
 }: LanguagePreferenceProviderProps) {
-  const [state, dispatch] = useReducer(reducer, { ...initialState })
+  const [state, dispatch] = useReducer(reducer, {
+    ...initialState,
+    loading: false
+  })
   return (
     <LanguageContext.Provider value={{ state, dispatch }}>
       {children}

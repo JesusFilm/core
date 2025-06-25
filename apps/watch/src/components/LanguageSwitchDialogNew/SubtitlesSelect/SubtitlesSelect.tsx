@@ -1,7 +1,7 @@
 import { useLazyQuery } from '@apollo/client'
 import ClosedCaptionOffOutlinedIcon from '@mui/icons-material/ClosedCaptionOffOutlined'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, Ref, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import {
   LanguageAutocomplete,
@@ -15,21 +15,7 @@ import { GET_SUBTITLES } from '../../SubtitleDialog/SubtitleDialog'
 import { renderInput } from '../utils/renderInput'
 import { renderOption } from '../utils/renderOption'
 
-interface SubtitlesSelectProps {
-  loading: boolean
-  onChange: (selectedSubtitleId: string) => void
-  setSubtitlesOn: (value: boolean) => void
-  dropdownRef: Ref<HTMLDivElement>
-  value?: string
-}
-
-export function SubtitlesSelect({
-  loading,
-  onChange,
-  setSubtitlesOn,
-  dropdownRef,
-  value
-}: SubtitlesSelectProps): ReactElement {
+export function SubtitlesSelect(): ReactElement {
   const { t } = useTranslation()
   const {
     state: {
@@ -39,7 +25,8 @@ export function SubtitlesSelect({
       currentSubtitleOn,
       videoId,
       videoSubtitleLanguages,
-      videoVariantSlug
+      videoVariantSlug,
+      loading
     },
     dispatch
   } = useLanguagePreference()
@@ -76,10 +63,12 @@ export function SubtitlesSelect({
     LanguageOption | undefined
   >(undefined)
 
-  // Update currentSubtitle when external value prop changes (for immediate visual feedback)
+  // Update currentSubtitle when subtitleLanguage changes (for immediate visual feedback)
   useEffect(() => {
-    if (value && allLanguages) {
-      const selectedLanguage = allLanguages.find((lang) => lang.id === value)
+    if (subtitleLanguage && allLanguages) {
+      const selectedLanguage = allLanguages.find(
+        (lang) => lang.id === subtitleLanguage
+      )
       if (selectedLanguage) {
         setCurrentSubtitle({
           id: selectedLanguage.id,
@@ -91,11 +80,11 @@ export function SubtitlesSelect({
         })
       }
     }
-  }, [value, allLanguages])
+  }, [subtitleLanguage, allLanguages])
 
   useEffect(() => {
-    // Only use internal state if no external value is provided
-    if (value || !selectedSubtitle || loading) return
+    // Use internal state when no loading
+    if (!selectedSubtitle || loading) return
 
     setCurrentSubtitle({
       id: selectedSubtitle.id,
@@ -103,7 +92,7 @@ export function SubtitlesSelect({
       nativeName: selectedSubtitle.name.find(({ primary }) => !primary)?.value,
       slug: selectedSubtitle.slug
     })
-  }, [value, selectedSubtitle, loading])
+  }, [selectedSubtitle, loading])
 
   const allLanguageSubtitles = allLanguages
     ?.filter((language) => SUBTITLE_LANGUAGE_IDS.includes(language.id))
@@ -115,7 +104,10 @@ export function SubtitlesSelect({
 
   function handleChange(language: LanguageOption): void {
     setCurrentSubtitle(language)
-    onChange(language.id)
+    dispatch({
+      type: 'UpdateSubtitleLanguage',
+      languageId: language.id
+    })
   }
 
   return (
@@ -128,7 +120,7 @@ export function SubtitlesSelect({
           {t('Subtitles')}
         </label>
       </div>
-      <div className="relative mt-1 flex items-start gap-2" ref={dropdownRef}>
+      <div className="relative mt-1 flex items-start gap-2">
         <div className="pt-4">
           <ClosedCaptionOffOutlinedIcon fontSize="small" />
         </div>
@@ -143,6 +135,7 @@ export function SubtitlesSelect({
             onChange={handleChange}
             languages={allLanguageSubtitles}
             loading={loading || subtitlesLoading}
+            disabled={loading || subtitlesLoading}
             renderInput={renderInput(t('2000 translations'))}
             renderOption={renderOption}
           />
@@ -153,8 +146,14 @@ export function SubtitlesSelect({
           id="no-subtitles"
           type="checkbox"
           checked={preferredSubtitleOn}
-          onChange={() => setSubtitlesOn(!preferredSubtitleOn)}
-          className="accent-[#CB333B] h-4 w-4 rounded border-gray-300 focus:ring-0"
+          onChange={() =>
+            dispatch({
+              type: 'UpdateSubtitlesOn',
+              enabled: !preferredSubtitleOn
+            })
+          }
+          disabled={loading || subtitlesLoading}
+          className="accent-[#CB333B] h-4 w-4 rounded border-gray-300 focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed"
         />
         <label htmlFor="no-subtitles" className="text-sm text-gray-500">
           {t('Show subtitles')}

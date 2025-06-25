@@ -2,7 +2,7 @@ import { useLazyQuery } from '@apollo/client'
 import SpatialAudioOffOutlinedIcon from '@mui/icons-material/SpatialAudioOffOutlined'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, Ref, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import {
   LanguageAutocomplete,
@@ -20,26 +20,15 @@ import {
 import { renderInput } from '../utils/renderInput'
 import { renderOption } from '../utils/renderOption'
 
-interface AudioTrackSelectProps {
-  loading: boolean
-  onChange: (selectedLanguageId: string) => void
-  dropdownRef: Ref<HTMLDivElement>
-  value?: string // The currently selected audio language ID
-}
-
-export function AudioTrackSelect({
-  loading,
-  onChange,
-  dropdownRef,
-  value
-}: AudioTrackSelectProps): ReactElement {
+export function AudioTrackSelect(): ReactElement {
   const {
     state: {
       allLanguages,
       currentAudioLanguage,
       audioLanguage,
       videoId,
-      videoAudioLanguages
+      videoAudioLanguages,
+      loading
     },
     dispatch
   } = useLanguagePreference()
@@ -77,10 +66,12 @@ export function AudioTrackSelect({
     LanguageOption | undefined
   >(undefined)
 
-  // Update currentLanguage when external value prop changes (for immediate visual feedback)
+  // Update currentLanguage when audioLanguage changes (for immediate visual feedback)
   useEffect(() => {
-    if (value && allLanguages) {
-      const selectedLanguage = allLanguages.find((lang) => lang.id === value)
+    if (audioLanguage && allLanguages) {
+      const selectedLanguage = allLanguages.find(
+        (lang) => lang.id === audioLanguage
+      )
       if (selectedLanguage) {
         setCurrentLanguage({
           id: selectedLanguage.id,
@@ -92,11 +83,11 @@ export function AudioTrackSelect({
         })
       }
     }
-  }, [value, allLanguages])
+  }, [audioLanguage, allLanguages])
 
   useEffect(() => {
-    // Only run automatic selection logic if no external value is provided
-    if (value == null || allLanguages == null || loading) return
+    // Run automatic selection logic based on current state
+    if (allLanguages == null || loading) return
 
     const params = {
       currentAudioLanguage,
@@ -115,7 +106,6 @@ export function AudioTrackSelect({
       selectLanguageForVideo(params)
     }
   }, [
-    value,
     loading,
     allLanguages,
     audioLanguage,
@@ -136,7 +126,10 @@ export function AudioTrackSelect({
 
   function handleChange(language: LanguageOption): void {
     setCurrentLanguage(language)
-    onChange(language.id)
+    dispatch({
+      type: 'UpdateAudioLanguage',
+      languageId: language.id
+    })
   }
 
   return (
@@ -152,7 +145,7 @@ export function AudioTrackSelect({
           {currentLanguage?.nativeName}
         </span>
       </div>
-      <div className="relative mt-1 flex items-start gap-2" ref={dropdownRef}>
+      <div className="relative mt-1 flex items-start gap-2">
         <div className="pt-4">
           <SpatialAudioOffOutlinedIcon fontSize="small" />
         </div>

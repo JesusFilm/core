@@ -1,7 +1,8 @@
 import { gql, useLazyQuery } from '@apollo/client'
 import { ThemeProvider } from '@mui/material/styles'
+import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { ReactElement, useEffect, useRef } from 'react'
 
 import { websiteLight } from '@core/shared/ui/themes/website/theme'
 
@@ -9,7 +10,6 @@ import { GetAllLanguages } from '../../../__generated__/GetAllLanguages'
 import { useLanguagePreference } from '../../libs/languagePreferenceContext/LanguagePreferenceContext'
 
 import { AudioTrackSelect } from './AudioTrackSelect'
-import { DialogActions } from './DialogActions'
 import { SiteLanguageSelect } from './SiteLanguageSelect'
 import { SubtitlesSelect } from './SubtitlesSelect'
 
@@ -37,14 +37,9 @@ export function LanguageSwitchDialog({
   handleClose
 }: LanguageSwitchDialogProps): ReactElement {
   const { t } = useTranslation()
+  const router = useRouter()
   const {
-    state: {
-      siteLanguage,
-      audioLanguage,
-      subtitleLanguage,
-      subtitleOn,
-      allLanguages
-    },
+    state: { allLanguages },
     dispatch
   } = useLanguagePreference()
   const [getAllLanguages, { loading: languagesLoading }] =
@@ -59,20 +54,6 @@ export function LanguageSwitchDialog({
       }
     })
 
-  // TODO: consider also moving these states into provider
-  const [selectedLanguage, setSelectedLanguage] = useState(siteLanguage)
-  const [selectedAudioLanguage, setSelectedAudioLanguage] =
-    useState(audioLanguage)
-  const [selectedSubtitle, setSelectedSubtitle] = useState(subtitleLanguage)
-  const [selectedSubtitlesOn, setSelectedSubtitlesOn] = useState(subtitleOn)
-  const [manuallyChangedFields, setManuallyChangedFields] = useState({
-    audio: false,
-    subtitle: false
-  })
-  const [loading, setLoading] = useState(false)
-  const languageDropdownRef = useRef<HTMLDivElement>(null)
-  const audioDropdownRef = useRef<HTMLDivElement>(null)
-  const subtitleDropdownRef = useRef<HTMLDivElement>(null)
   const dialogRef = useRef<HTMLDivElement>(null)
 
   // Fetch languages when dialog opens if needed
@@ -82,83 +63,13 @@ export function LanguageSwitchDialog({
     }
   }, [open, allLanguages, languagesLoading, getAllLanguages])
 
-  // Handle automatic language updates when site language changes
+  // Set router in context when component mounts
   useEffect(() => {
-    const audioChanged = selectedAudioLanguage !== audioLanguage
-    const siteLanguageChanged = selectedLanguage !== siteLanguage
-    if (!allLanguages) return
-
-    const selectedLangObj = allLanguages.find(
-      (lang) => lang.bcp47 === selectedLanguage
-    )
-    if (!selectedLangObj) return
-
-    // Update audio and subtitle based on site language if not manually changed
-    if (siteLanguageChanged && !manuallyChangedFields.audio) {
-      setSelectedAudioLanguage(selectedLangObj.id)
-    }
-    if (
-      (siteLanguageChanged || audioChanged) &&
-      !manuallyChangedFields.subtitle
-    ) {
-      setSelectedSubtitle(selectedLangObj.id)
-    }
-  }, [
-    selectedLanguage,
-    allLanguages,
-    manuallyChangedFields.audio,
-    manuallyChangedFields.subtitle
-  ])
-
-  // Update subtitle when audio changes if not manually changed
-  useEffect(() => {
-    const audioChanged = selectedAudioLanguage !== audioLanguage
-    const siteLanguageChanged = selectedLanguage !== siteLanguage
-
-    if (
-      (audioChanged || siteLanguageChanged) &&
-      !manuallyChangedFields.subtitle
-    ) {
-      setSelectedSubtitle(selectedAudioLanguage)
-    }
-  }, [selectedAudioLanguage, manuallyChangedFields.subtitle])
-
-  function handleResetForm(): void {
-    setSelectedLanguage(siteLanguage)
-    setSelectedAudioLanguage(audioLanguage)
-    setSelectedSubtitle(subtitleLanguage)
-    setSelectedSubtitlesOn(subtitleOn)
-    setManuallyChangedFields({ audio: false, subtitle: false })
-  }
-
-  function handleDialogCancel(): void {
-    handleResetForm()
-    handleClose()
-  }
-
-  // Handle dialog close and reset form
-  useEffect(() => {
-    if (!open) {
-      handleResetForm()
-    }
-  }, [open])
-
-  // Handle escape key separately to avoid dependency issues
-  useEffect(() => {
-    const handleEscapeKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        handleDialogCancel()
-      }
-    }
-
-    if (open) {
-      document.addEventListener('keydown', handleEscapeKey)
-    }
-
-    return () => {
-      document.removeEventListener('keydown', handleEscapeKey)
-    }
-  }, [open])
+    dispatch({
+      type: 'SetRouter',
+      router
+    })
+  }, [router, dispatch])
 
   return !open ? (
     <></>
@@ -204,49 +115,11 @@ export function LanguageSwitchDialog({
               </button>
             </div>
 
-            <div className="mt-6">
-              <SiteLanguageSelect
-                onChange={setSelectedLanguage}
-                dropdownRef={languageDropdownRef}
-              />
+            <div className="mt-6 mb-8">
+              <SiteLanguageSelect />
               <hr className="border-t border-gray-200 w-full my-8" />
-              <AudioTrackSelect
-                loading={languagesLoading}
-                value={selectedAudioLanguage}
-                onChange={(value) => {
-                  setSelectedAudioLanguage(value)
-                  setManuallyChangedFields((prev) => ({ ...prev, audio: true }))
-                }}
-                dropdownRef={audioDropdownRef}
-              />
-              <SubtitlesSelect
-                loading={languagesLoading}
-                value={selectedSubtitle}
-                onChange={(value) => {
-                  setSelectedSubtitle(value)
-                  setManuallyChangedFields((prev) => ({
-                    ...prev,
-                    subtitle: true
-                  }))
-                }}
-                setSubtitlesOn={setSelectedSubtitlesOn}
-                dropdownRef={subtitleDropdownRef}
-              />
-            </div>
-            <div className="mt-8 mx-6 mb-6 flex justify-end">
-              <DialogActions
-                selectedLanguage={selectedLanguage}
-                selectedAudioLanguage={selectedAudioLanguage}
-                selectedSubtitle={selectedSubtitle}
-                subtitlesOn={selectedSubtitlesOn}
-                subtitlesOnCookie={subtitleOn.toString()}
-                audioLanguageCookie={audioLanguage}
-                subtitleLanguageCookie={subtitleLanguage}
-                loading={loading}
-                setLoading={setLoading}
-                handleClose={handleClose}
-                handleCancel={handleDialogCancel}
-              />
+              <AudioTrackSelect />
+              <SubtitlesSelect />
             </div>
           </div>
         </div>

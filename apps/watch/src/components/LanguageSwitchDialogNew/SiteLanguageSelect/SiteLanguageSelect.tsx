@@ -1,5 +1,5 @@
 import { useTranslation } from 'next-i18next'
-import { ReactElement, Ref, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import Globe from '@core/shared/ui/icons/Globe'
 import {
@@ -8,6 +8,7 @@ import {
 } from '@core/shared/ui/LanguageAutocomplete'
 
 import { LANGUAGE_MAPPINGS, SUPPORTED_LOCALES } from '../../../config/locales'
+import { useLanguagePreference } from '../../../libs/languagePreferenceContext/LanguagePreferenceContext'
 import { renderInput } from '../utils/renderInput'
 import { renderOption } from '../utils/renderOption'
 import {
@@ -15,16 +16,9 @@ import {
   siteLanguageReorder
 } from '../utils/siteLanguageReorder'
 
-interface SiteLanguageSelectProps {
-  onChange: (value: string) => void
-  dropdownRef: Ref<HTMLDivElement>
-}
-
-export function SiteLanguageSelect({
-  onChange,
-  dropdownRef
-}: SiteLanguageSelectProps): ReactElement {
+export function SiteLanguageSelect(): ReactElement {
   const { i18n, t } = useTranslation()
+  const { state, dispatch } = useLanguagePreference()
   const [languages, setLanguages] = useState<ExtendedLanguageOption[]>([])
   const currentLanguageId = i18n?.language ?? 'en'
   const [currentLanguage, setCurrentLanguage] = useState<LanguageOption | null>(
@@ -90,7 +84,10 @@ export function SiteLanguageSelect({
     // Only process actual language items, skip headers and dividers
     if (!language.id.startsWith('__')) {
       setCurrentLanguage(language)
-      onChange(language.id)
+      dispatch({
+        type: 'UpdateSiteLanguage',
+        language: language.id
+      })
     }
   }
 
@@ -102,7 +99,7 @@ export function SiteLanguageSelect({
       >
         {t('Site Language')}
       </label>
-      <div className="relative mt-1 flex items-start gap-2" ref={dropdownRef}>
+      <div className="relative mt-1 flex items-start gap-2">
         <div className="pt-4">
           <Globe fontSize="small" />
         </div>
@@ -146,7 +143,8 @@ export function SiteLanguageSelect({
                 __type: 'language'
               }
             })}
-            disabled={false}
+            disabled={state.loading}
+            loading={state.loading}
             disableSort={true}
             renderInput={renderInput(
               t('{{count}} languages', { count: SUPPORTED_LOCALES.length })
