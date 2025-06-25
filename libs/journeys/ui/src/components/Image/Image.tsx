@@ -17,7 +17,8 @@ export function Image({
   alt,
   height,
   width,
-  blurhash
+  blurhash,
+  scale
 }: TreeBlock<ImageFields>): ReactElement {
   const theme = useTheme()
   const placeholderSrc = useMemo(() => {
@@ -44,6 +45,9 @@ export function Image({
           blurDataURL={placeholderSrc ?? src}
           layout="responsive"
           objectFit="cover"
+          sx={{
+            transform: `scale(${(scale ?? 100) / 100})`
+          }}
         />
       ) : (
         <Paper

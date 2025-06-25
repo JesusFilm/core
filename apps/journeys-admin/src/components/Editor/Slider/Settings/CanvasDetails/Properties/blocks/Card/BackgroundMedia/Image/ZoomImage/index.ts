@@ -1,0 +1,1 @@
+export { ZoomImage } from './ZoomImage'

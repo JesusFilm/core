@@ -35,6 +35,7 @@ import { useCoverBlockRestoreMutation } from '../../../../../../../../../../libs
 import { ImageSource } from '../../../../../../Drawer/ImageSource'
 
 import { FocalPoint } from './FocalPoint'
+import { ZoomImage } from './ZoomImage/ZoomImage'
 
 export const COVER_IMAGE_BLOCK_CREATE = gql`
   ${IMAGE_FIELDS}
@@ -103,7 +104,7 @@ export function BackgroundMediaImage({
       height: input.height ?? 0,
       blurhash: input.blurhash ?? '',
       parentOrder: null,
-      scale: null,
+      scale: 100,
       focalTop: 50,
       focalLeft: 50
     }
@@ -232,7 +233,8 @@ export function BackgroundMediaImage({
       height: input.height ?? coverBlock.height,
       width: input.width ?? coverBlock.width,
       focalTop: input?.focalTop ?? coverBlock.focalTop,
-      focalLeft: input?.focalLeft ?? coverBlock.focalLeft
+      focalLeft: input?.focalLeft ?? coverBlock.focalLeft,
+      scale: input?.scale ?? coverBlock.scale
     }
 
     add({
@@ -352,6 +354,10 @@ export function BackgroundMediaImage({
         onDelete={async () => deleteImageBlock()}
       />
       <FocalPoint
+        imageBlock={coverBlock?.__typename === 'ImageBlock' ? coverBlock : null}
+        updateImageBlock={updateImageBlock}
+      />
+      <ZoomImage
         imageBlock={coverBlock?.__typename === 'ImageBlock' ? coverBlock : null}
         updateImageBlock={updateImageBlock}
       />
