@@ -306,7 +306,6 @@ export function VideoControls({
   }
 
   async function handleFullscreen(): Promise<void> {
-    console.log('here')
     if (fullscreen) {
       fscreen.exitFullscreen()
       setFullscreen(false)
