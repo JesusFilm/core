@@ -1,0 +1,1 @@
+export { ContentHeroVideo } from './ContentHeroVideo'

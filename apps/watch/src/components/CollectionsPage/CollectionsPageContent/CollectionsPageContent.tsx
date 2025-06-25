@@ -1,7 +1,7 @@
-import { ReactElement } from 'react'
+import { ReactElement, ReactNode } from 'react'
 
 interface CollectionsPageContentProps {
-  children?: ReactElement[]
+  children?: ReactNode[]
 }
 
 export function CollectionsPageContent({

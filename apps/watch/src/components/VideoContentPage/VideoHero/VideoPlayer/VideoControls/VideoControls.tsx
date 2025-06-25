@@ -76,7 +76,7 @@ export function VideoControls({
   const [progressPercentNotYetEmitted, setProgressPercentNotYetEmitted] =
     useState([10, 25, 50, 75, 90])
   const [volume, setVolume] = useState(0)
-  const [mute, setMute] = useState(false)
+  const [mute, setMute] = useState(true)
   const [fullscreen, setFullscreen] = useState(false)
   const [openSubtitleDialog, setOpenSubtitleDialog] = useState(false)
   const [loadSubtitleDialog, setLoadSubtitleDialog] = useState(false)
@@ -86,8 +86,11 @@ export function VideoControls({
     trimZeroes: true
   })
   const durationSeconds = Math.round(player.duration() ?? 1)
-  const { id, title, variant } = useVideo()
+  const { id, title, snippet, variant } = useVideo()
   const visible = !play || active || loading
+
+  const videoTitle = title?.[0]?.value ?? ''
+  const videoSnippet = snippet?.[0]?.value ?? ''
 
   useEffect(() => {
     onVisibleChanged?.(!play || active || loading)
@@ -306,7 +309,11 @@ export function VideoControls({
         right: 0,
         bottom: 0,
         left: 0,
-        cursor: visible ? undefined : 'none'
+        cursor: visible ? undefined : 'none',
+        zIndex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-end'
       }}
       onClick={getClickHandler(handlePlay, () => {
         void handleFullscreen()
@@ -314,6 +321,68 @@ export function VideoControls({
       onMouseMove={() => player.userActive(true)}
       data-testid="VideoControls"
     >
+      {!loading ? (
+        <Fade
+          in={!play}
+          style={{
+            transitionDuration: '250ms'
+          }}
+          timeout={{ exit: 2225 }}
+        >
+          <Stack
+            sx={{
+              width: '100%',
+              zIndex: 2,
+              display: 'flex',
+              flexDirection: 'column',
+              px: { xs: 4, sm: 6, md: 8, lg: 10, xl: 12 }
+            }}
+          >
+            <Typography
+              component="h1"
+              variant="h2"
+              sx={{
+                fontWeight: 'bold',
+                color: 'text.primary',
+                opacity: 0.9,
+                mixBlendMode: 'screen',
+                flexGrow: 1,
+                mb: 1
+              }}
+            >
+              {videoTitle}
+            </Typography>
+
+            <Typography
+              component="h4"
+              variant="h6"
+              data-testid="ContainerHeroDescription"
+              sx={{
+                opacity: 0.5,
+                mixBlendMode: 'screen',
+                zIndex: 2,
+                textTransform: 'uppercase',
+                letterSpacing: '0.1em',
+                color: 'text.primary'
+              }}
+            >
+              {videoSnippet}
+            </Typography>
+          </Stack>
+        </Fade>
+      ) : (
+        <Box
+          sx={{
+            display: 'flex',
+            flexGrow: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingTop: '104px'
+          }}
+        >
+          <CircularProgress size={65} />
+        </Box>
+      )}
       <Fade
         in={visible}
         style={{
@@ -322,41 +391,7 @@ export function VideoControls({
         }}
         timeout={{ exit: 2225 }}
       >
-        <Box
-          sx={{
-            height: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'flex-end'
-          }}
-        >
-          <Box
-            sx={{
-              display: 'flex',
-              flexGrow: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
-              paddingTop: '104px'
-            }}
-          >
-            {!loading ? (
-              <IconButton
-                sx={{
-                  fontSize: 100,
-                  display: { xs: 'flex', md: 'none' }
-                }}
-              >
-                {play ? (
-                  <PauseRounded fontSize="inherit" />
-                ) : (
-                  <PlayArrowRounded fontSize="inherit" />
-                )}
-              </IconButton>
-            ) : (
-              <CircularProgress size={65} />
-            )}
-          </Box>
-
+        <Box>
           <Box
             sx={{
               background:
