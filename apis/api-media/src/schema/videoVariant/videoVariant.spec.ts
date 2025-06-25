@@ -493,7 +493,8 @@ describe('videoVariant', () => {
           availableLanguages: ['en'],
           originId: null,
           restrictDownloadPlatforms: [],
-          restrictViewPlatforms: []
+          restrictViewPlatforms: [],
+          publishedAt: null
         })
         prismaMock.video.update.mockResolvedValue({
           id: 'videoId',
@@ -507,7 +508,8 @@ describe('videoVariant', () => {
           availableLanguages: ['en', 'languageId'],
           originId: null,
           restrictDownloadPlatforms: [],
-          restrictViewPlatforms: []
+          restrictViewPlatforms: [],
+          publishedAt: null
         })
         const result = await authClient({
           document: VIDEO_VARIANT_CREATE_MUTATION,
@@ -598,7 +600,8 @@ describe('videoVariant', () => {
           availableLanguages: ['en'],
           originId: null,
           restrictDownloadPlatforms: [],
-          restrictViewPlatforms: []
+          restrictViewPlatforms: [],
+          publishedAt: null
         })
         prismaMock.video.update.mockResolvedValue({
           id: 'videoId',
@@ -612,7 +615,8 @@ describe('videoVariant', () => {
           availableLanguages: ['en', 'languageId'],
           originId: null,
           restrictDownloadPlatforms: [],
-          restrictViewPlatforms: []
+          restrictViewPlatforms: [],
+          publishedAt: null
         })
 
         const result = await authClient({

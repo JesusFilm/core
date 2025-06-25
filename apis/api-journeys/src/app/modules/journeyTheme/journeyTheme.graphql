@@ -1,0 +1,38 @@
+type JourneyTheme {
+  id: ID!
+  journeyId: ID!
+  journey: Journey!
+  userId: ID!
+  primaryFont: String
+  secondaryFont: String
+  accentFont: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+input JourneyThemeCreateInput {
+  journeyId: ID!
+  primaryFont: String
+  secondaryFont: String
+  accentFont: String
+}
+
+input JourneyThemeUpdateInput {
+  primaryFont: String
+  secondaryFont: String
+  accentFont: String
+}
+
+extend type Journey {
+  journeyTheme: JourneyTheme
+}
+
+extend type Query {
+  journeyTheme(journeyId: ID!): JourneyTheme
+}
+
+extend type Mutation {
+  journeyThemeCreate(input: JourneyThemeCreateInput!): JourneyTheme!
+  journeyThemeUpdate(id: ID!, input: JourneyThemeUpdateInput!): JourneyTheme!
+  journeyThemeDelete(id: ID!): JourneyTheme!
+}

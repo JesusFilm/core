@@ -61,6 +61,14 @@ describe('ImageOptions', () => {
       ...selectedBlock
     }
   }
+
+  const scaleUpdateResponse: ImageBlockUpdate = {
+    imageBlockUpdate: {
+      ...selectedBlock,
+      scale: 150
+    }
+  }
+
   const imageBlockUpdateMock: MockedResponse<
     ImageBlockUpdate,
     ImageBlockUpdateVariables
@@ -230,6 +238,85 @@ describe('ImageOptions', () => {
     await waitFor(() => expect(deleteResult).toHaveBeenCalled())
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(undoResult).toHaveBeenCalled())
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+    await waitFor(() => expect(redoResult).toHaveBeenCalled())
+  })
+
+  it('update image block scale', async () => {
+    const zoomUpdateResult = jest.fn(() => ({
+      data: scaleUpdateResponse
+    }))
+    const undoResult = jest.fn(() => ({
+      data: response
+    }))
+    const redoResult = jest.fn(() => ({
+      data: scaleUpdateResponse
+    }))
+
+    const zoomUpdateMock: MockedResponse<
+      ImageBlockUpdate,
+      ImageBlockUpdateVariables
+    > = {
+      request: {
+        query: IMAGE_BLOCK_UPDATE,
+        variables: {
+          id: selectedBlock.id,
+          input: {
+            src: selectedBlock.src,
+            scale: 150
+          }
+        }
+      },
+      result: zoomUpdateResult
+    }
+
+    render(
+      <MockedProvider
+        mocks={[
+          zoomUpdateMock,
+          {
+            ...zoomUpdateMock,
+            request: {
+              ...zoomUpdateMock.request,
+              variables: {
+                ...zoomUpdateMock.request.variables,
+                input: {
+                  ...zoomUpdateMock.request.variables?.input,
+                  scale: null
+                }
+              }
+            },
+            result: undoResult
+          },
+          {
+            ...zoomUpdateMock,
+            result: redoResult
+          }
+        ]}
+      >
+        <CommandProvider>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <ImageOptions />
+            <CommandUndoItem variant="button" />
+            <CommandRedoItem variant="button" />
+          </EditorProvider>
+        </CommandProvider>
+      </MockedProvider>
+    )
+
+    const zoomSlider = screen.getByRole('slider', { name: 'Zoom slider' })
+    expect(screen.getByText('1.0 ×')).toBeInTheDocument()
+    expect(zoomSlider).toHaveValue('1')
+
+    fireEvent.change(zoomSlider, { target: { value: 1.5 } })
+    fireEvent.mouseUp(zoomSlider)
+    await waitFor(() => {
+      expect(zoomUpdateResult).toHaveBeenCalled()
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(undoResult).toHaveBeenCalled())
+
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(redoResult).toHaveBeenCalled())
   })

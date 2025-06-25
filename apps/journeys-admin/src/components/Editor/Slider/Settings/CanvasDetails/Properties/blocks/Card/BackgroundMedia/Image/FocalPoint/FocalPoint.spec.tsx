@@ -48,7 +48,7 @@ describe('FocalPoint', () => {
       <FocalPoint imageBlock={imageBlock} updateImageBlock={updateImageBlock} />
     )
 
-    expect(screen.getByText('Focal Point')).toBeInTheDocument()
+    expect(screen.getByText('Adjust View')).toBeInTheDocument()
     expect(screen.getByRole('img').getAttribute('src')).toBe(
       'https://imagedelivery.net/cloudflare-key/uploadId/public'
     )
@@ -62,7 +62,7 @@ describe('FocalPoint', () => {
         updateImageBlock={updateImageBlock}
       />
     )
-    expect(screen.queryByText('Focal Point')).not.toBeInTheDocument()
+    expect(screen.queryByText('Adjust View')).not.toBeInTheDocument()
   })
 
   it('updates image block when image is clicked', async () => {

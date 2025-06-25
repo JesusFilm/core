@@ -26,7 +26,8 @@ const testVideo: Video = {
   availableLanguages: ['529'],
   originId: null,
   restrictDownloadPlatforms: [],
-  restrictViewPlatforms: []
+  restrictViewPlatforms: [],
+  publishedAt: null
 }
 
 const testTranslation: ProcessedTranslation = {

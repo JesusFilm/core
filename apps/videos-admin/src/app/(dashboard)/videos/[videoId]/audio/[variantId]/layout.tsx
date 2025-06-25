@@ -78,6 +78,12 @@ const UPDATE_ADMIN_VIDEO_VARIANT = graphql(`
   }
 `)
 
+const UPDATE_DOWNLOAD_SIZES_FROM_MUX = graphql(`
+  mutation UpdateDownloadSizesFromMux($videoVariantId: ID!) {
+    updateVideoVariantDownloadSizesFromMux(videoVariantId: $videoVariantId)
+  }
+`)
+
 const validationSchema = object({
   published: string().required()
 })
@@ -96,6 +102,29 @@ export default function VariantDialog({
   })
 
   const [updateAdminVideoVariant] = useMutation(UPDATE_ADMIN_VIDEO_VARIANT)
+  const [updateDownloadSizesFromMux] = useMutation(
+    UPDATE_DOWNLOAD_SIZES_FROM_MUX
+  )
+
+  const handleUpdateSizes = async (): Promise<void> => {
+    try {
+      await updateDownloadSizesFromMux({
+        variables: { videoVariantId: variantId }
+      })
+      await refetch()
+      enqueueSnackbar('Download sizes updated successfully', {
+        variant: 'success'
+      })
+    } catch (error) {
+      enqueueSnackbar(
+        'Failed to update sizes. Mux may not have generated download files yet - please try again in a few minutes.',
+        {
+          variant: 'warning'
+        }
+      )
+    }
+  }
+
   const handleSubmit = async (
     values: FormikValues,
     { resetForm }: FormikProps<FormikValues>
@@ -222,21 +251,31 @@ export default function VariantDialog({
                 </Box>
                 <>
                   <Typography variant="h4">Downloads</Typography>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() =>
-                      router.push(
-                        `/videos/${videoId}/audio/${variantId}/download/${data.videoVariant.language.id}/add`,
-                        {
-                          scroll: false
-                        }
-                      )
-                    }
-                    sx={{ my: 2 }}
-                  >
-                    Add Download
-                  </Button>
+                  <Stack direction="row" spacing={2} sx={{ my: 2 }}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() =>
+                        router.push(
+                          `/videos/${videoId}/audio/${variantId}/download/${data.videoVariant.language.id}/add`,
+                          {
+                            scroll: false
+                          }
+                        )
+                      }
+                    >
+                      Add Download
+                    </Button>
+                    {data.videoVariant.downloads.some((d) => d.size === 0) && (
+                      <Button
+                        variant="outlined"
+                        color="secondary"
+                        onClick={handleUpdateSizes}
+                      >
+                        Update Sizes from Mux
+                      </Button>
+                    )}
+                  </Stack>
 
                   {data.videoVariant.downloads.length === 0 ? (
                     <Typography>No downloads available</Typography>
