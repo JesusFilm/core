@@ -8,6 +8,7 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, ReactNode } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import { TranslationProgressBar } from '../TranslationProgressBar'
 
@@ -71,6 +72,7 @@ export function TranslationDialogWrapper({
   isTranslation,
   translationProgress
 }: TranslationDialogWrapperProps): ReactElement {
+  const { createWithAiButtonFlag } = useFlags()
   const { t } = useTranslation('libs-journeys-ui')
   const defaultLoadingText = t('Translating your journey...')
 
@@ -99,7 +101,7 @@ export function TranslationDialogWrapper({
               >
                 {t('Cancel')}
               </Button>
-              {onCreateWithAi && (
+              {createWithAiButtonFlag && onCreateWithAi && (
                 <Tooltip
                   title={
                     isTranslation
