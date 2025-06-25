@@ -809,6 +809,7 @@ type Video
   images(aspectRatio: ImageAspectRatio): [CloudflareImage!]!
   restrictDownloadPlatforms: [Platform!]!
   restrictViewPlatforms: [Platform!]!
+  publishedAt: Date
 }
 
 enum VideoBlockSource {

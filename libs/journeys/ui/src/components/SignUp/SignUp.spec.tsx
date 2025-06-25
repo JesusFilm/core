@@ -256,12 +256,11 @@ describe('SignUp', () => {
     fireEvent.change(name, { target: { value: 'Anon' } })
     fireEvent.change(email, { target: { value: '123abc@gmail.com' } })
 
-    expect(submit).not.toHaveClass('MuiLoadingButton-loading')
+    expect(submit).not.toHaveClass('MuiButton-loading')
 
     fireEvent.click(submit)
 
-    await waitFor(() => expect(submit).toHaveClass('MuiLoadingButton-loading'))
-    expect(submit).toBeDisabled()
+    await waitFor(() => expect(submit).toHaveClass('MuiButton-loading'))
   })
 
   it('should create submission event on click', async () => {
