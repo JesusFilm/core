@@ -592,6 +592,14 @@ export interface GetJourney_journey_menuStepBlock {
   slug: string | null;
 }
 
+export interface GetJourney_journey_journeyTheme {
+  __typename: "JourneyTheme";
+  id: string;
+  primaryFont: string | null;
+  secondaryFont: string | null;
+  accentFont: string | null;
+}
+
 export interface GetJourney_journey {
   __typename: "Journey";
   id: string;
@@ -636,6 +644,7 @@ export interface GetJourney_journey {
   logoImageBlock: GetJourney_journey_logoImageBlock | null;
   menuButtonIcon: JourneyMenuButtonIcon | null;
   menuStepBlock: GetJourney_journey_menuStepBlock | null;
+  journeyTheme: GetJourney_journey_journeyTheme | null;
 }
 
 export interface GetJourney {

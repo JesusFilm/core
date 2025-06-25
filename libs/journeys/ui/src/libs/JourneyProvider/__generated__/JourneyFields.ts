@@ -592,6 +592,14 @@ export interface JourneyFields_menuStepBlock {
   slug: string | null;
 }
 
+export interface JourneyFields_journeyTheme {
+  __typename: "JourneyTheme";
+  id: string;
+  primaryFont: string | null;
+  secondaryFont: string | null;
+  accentFont: string | null;
+}
+
 export interface JourneyFields {
   __typename: "Journey";
   id: string;
@@ -636,4 +644,5 @@ export interface JourneyFields {
   logoImageBlock: JourneyFields_logoImageBlock | null;
   menuButtonIcon: JourneyMenuButtonIcon | null;
   menuStepBlock: JourneyFields_menuStepBlock | null;
+  journeyTheme: JourneyFields_journeyTheme | null;
 }
