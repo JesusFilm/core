@@ -1,4 +1,5 @@
 import { Meta, StoryObj } from '@storybook/react'
+import noop from 'lodash/noop'
 import { ComponentPropsWithoutRef } from 'react'
 
 import { sharedUiConfig } from '@core/shared/ui/sharedUiConfig'
@@ -22,9 +23,7 @@ export const Default: Story = {
     answer:
       'Process what you learned -- Have a private discussion with someone who is ready to listen.',
     isOpen: false,
-    onToggle: () => {
-      console.log('toggle')
-    }
+    onToggle: noop
   }
 }
 

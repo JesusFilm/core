@@ -108,7 +108,7 @@ describe('VideoControls', () => {
         </VideoProvider>
       </MockedProvider>
     )
-    fireEvent.click(screen.getByTestId('VolumeOffOutlinedIcon'))
+    fireEvent.click(screen.getAllByTestId('VolumeOffOutlinedIcon')[0])
     expect(mutedStub).toHaveBeenCalled()
   })
 

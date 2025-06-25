@@ -544,6 +544,26 @@ export function VideoControls({
                     spacing={2}
                     direction="row"
                     sx={{
+                      display: { xs: 'flex', md: 'none' }
+                    }}
+                  >
+                    <IconButton onClick={handleMute}>
+                      {mute || volume === 0 ? (
+                        <VolumeOffOutlined />
+                      ) : volume > 60 ? (
+                        <VolumeUpOutlined />
+                      ) : volume > 30 ? (
+                        <VolumeDownOutlined />
+                      ) : (
+                        <VolumeMuteOutlined />
+                      )}
+                    </IconButton>
+                  </Stack>
+                  <Stack
+                    alignItems="center"
+                    spacing={2}
+                    direction="row"
+                    sx={{
                       display: { xs: 'none', md: 'flex' },
                       '> .MuiSlider-root': {
                         width: 0,
@@ -601,7 +621,10 @@ export function VideoControls({
                   >
                     <SubtitlesOutlined />
                   </IconButton>
-                  <IconButton onClick={handleFullscreen}>
+                  <IconButton
+                    onClick={handleFullscreen}
+                    data-testid="FullscreenButton"
+                  >
                     {fullscreen ? (
                       <FullscreenExitOutlined />
                     ) : (
