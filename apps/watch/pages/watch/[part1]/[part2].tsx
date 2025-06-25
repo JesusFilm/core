@@ -44,7 +44,7 @@ const DynamicNewContentPage = dynamic(
     await import(
       /* webpackChunkName: "NewContentPage" */
       '../../../src/components/NewVideoContentPage'
-    )
+    ).then((mod) => mod.NewVideoContentPage)
 )
 
 export default function Part2Page({ content }: Part2PageProps): ReactElement {
