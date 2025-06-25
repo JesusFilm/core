@@ -1,4 +1,5 @@
 import { ApolloQueryResult } from '@apollo/client'
+import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import dynamic from 'next/dynamic'
@@ -45,24 +46,6 @@ const TrashJourneyDialog = dynamic(
       /* webpackChunkName: "RestoreJourneyDialog" */
       './TrashJourneyDialog'
     ).then((mod) => mod.TrashJourneyDialog),
-  { ssr: false }
-)
-
-const DefaultMenu = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "DefaultMenu" */
-      './DefaultMenu'
-    ).then((mod) => mod.DefaultMenu),
-  { ssr: false }
-)
-
-const TrashMenu = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "TrashMenu" */
-      './TrashMenu'
-    ).then((mod) => mod.TrashMenu),
   { ssr: false }
 )
 
@@ -126,7 +109,7 @@ export function JourneyCardMenu({
   onMenuClose
 }: JourneyCardMenuProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
-  const open = Boolean(anchorEl)
+  const [open, setOpen] = useState<boolean | null>(null)
 
   const [openAccessDialog, setOpenAccessDialog] = useState<
     boolean | undefined
@@ -146,11 +129,39 @@ export function JourneyCardMenu({
   >()
   const [keepMounted, setKeepMounted] = useState<boolean>(false)
 
-  const handleOpenMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
+  const [DefaultMenuItemsComponent, setDefaultMenuItemsComponent] = useState<
+    ((args: any) => ReactElement) | null
+  >(null)
+  const [TrashMenuItemsComponent, setTrashMenuItemsComponent] = useState<
+    ((args: any) => ReactElement) | null
+  >(null)
+
+  const handleOpenMenu = async (
+    event: React.MouseEvent<HTMLElement>
+  ): Promise<void> => {
     setAnchorEl(event.currentTarget)
+    if (status === JourneyStatus.trashed) {
+      if (TrashMenuItemsComponent == null) {
+        const mod = await import(
+          /* webpackChunkName: "TrashMenu" */
+          './TrashMenu'
+        )
+        setTrashMenuItemsComponent(() => mod.TrashMenu)
+      }
+    } else {
+      if (DefaultMenuItemsComponent == null) {
+        const mod = await import(
+          /* webpackChunkName: "DefaultMenu" */
+          './DefaultMenu'
+        )
+        setDefaultMenuItemsComponent(() => mod.DefaultMenu)
+      }
+    }
+    setOpen(true)
   }
   const handleCloseMenu = (): void => {
     setAnchorEl(null)
+    setOpen(false)
     onMenuClose?.()
   }
 
@@ -160,34 +171,47 @@ export function JourneyCardMenu({
 
   return (
     <>
-      <IconButton
-        id="journey-actions"
-        aria-controls="journey-actions"
-        aria-haspopup="true"
-        aria-expanded={open ? 'true' : 'false'}
+      <Box
+        data-testid="JourneyCardMenuButton"
         onClick={handleOpenMenu}
-        edge="end"
         sx={{
-          color: hovered ? 'gray.400' : 'white',
-          '& svg': {
-            filter: 'drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.4))'
-          },
-          '&:hover': {
-            backgroundColor: '#FFF'
-          },
-          backgroundColor: hovered ? 'white' : 'transparent',
-          transition: 'background-color 0.3s, color 0.3s',
-          borderRadius: '10px',
-          width: '20px',
-          height: '30px'
+          width: { xs: '44px', sm: '20px' },
+          height: { xs: '44px', sm: '30px' },
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          position: 'relative'
         }}
       >
-        <MoreIcon />
-      </IconButton>
+        <IconButton
+          id="journey-actions"
+          aria-controls="journey-actions"
+          aria-haspopup="true"
+          aria-expanded={open ? 'true' : 'false'}
+          sx={{
+            color: hovered ? 'gray.400' : 'white',
+            '& svg': {
+              filter: 'drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.4))'
+            },
+            '&:hover': {
+              backgroundColor: '#FFF'
+            },
+            backgroundColor: hovered ? 'white' : 'transparent',
+            transition: 'background-color 0.3s, color 0.3s',
+            borderRadius: '10px',
+            width: '20px',
+            height: '30px',
+            pointerEvents: 'none'
+          }}
+        >
+          <MoreIcon data-testid="MoreIcon" />
+        </IconButton>
+      </Box>
       <Menu
         id="journey-actions"
         anchorEl={anchorEl}
-        open={open}
+        open={open ?? false}
         onClose={handleCloseMenu}
         keepMounted={keepMounted}
         MenuListProps={{
@@ -203,29 +227,32 @@ export function JourneyCardMenu({
         }}
         data-testid="JourneyCardMenu"
       >
-        {status === JourneyStatus.trashed ? (
-          <TrashMenu
-            setOpenRestoreDialog={() => setOpenRestoreDialog(true)}
-            setOpenDeleteDialog={() => setOpenDeleteDialog(true)}
-            handleCloseMenu={handleCloseMenu}
-          />
-        ) : (
-          <DefaultMenu
-            id={id}
-            status={status}
-            slug={slug}
-            journeyId={id}
-            published={published}
-            handleKeepMounted={handleKeepMounted}
-            setOpenAccessDialog={() => setOpenAccessDialog(true)}
-            handleCloseMenu={handleCloseMenu}
-            setOpenTrashDialog={() => setOpenTrashDialog(true)}
-            setOpenDetailsDialog={() => setOpenDetailsDialog(true)}
-            setOpenTranslateDialog={() => setOpenTranslateDialog(true)}
-            template={template}
-            refetch={refetch}
-          />
-        )}
+        {status === JourneyStatus.trashed
+          ? TrashMenuItemsComponent && (
+              <TrashMenuItemsComponent
+                setOpenRestoreDialog={() => setOpenRestoreDialog(true)}
+                setOpenDeleteDialog={() => setOpenDeleteDialog(true)}
+                handleCloseMenu={handleCloseMenu}
+              />
+            )
+          : DefaultMenuItemsComponent && (
+              <DefaultMenuItemsComponent
+                id={id}
+                status={status}
+                slug={slug}
+                journeyId={id}
+                journey={journey}
+                published={published}
+                handleKeepMounted={handleKeepMounted}
+                setOpenAccessDialog={() => setOpenAccessDialog(true)}
+                handleCloseMenu={handleCloseMenu}
+                setOpenTrashDialog={() => setOpenTrashDialog(true)}
+                setOpenTranslateDialog={() => setOpenTranslateDialog(true)}
+                setOpenDetailsDialog={() => setOpenDetailsDialog(true)}
+                template={template}
+                refetch={refetch}
+              />
+            )}
       </Menu>
       {openAccessDialog != null && (
         <AccessDialog

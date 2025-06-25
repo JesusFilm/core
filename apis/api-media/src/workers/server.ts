@@ -52,12 +52,12 @@ function run({
 
 async function main(): Promise<void> {
   if (process.env.NODE_ENV === 'production') {
-    run(
-      await import(
-        /* webpackChunkName: "algolia" */
-        './algolia'
-      )
-    )
+    // run(
+    //   await import(
+    //     /* webpackChunkName: "algolia" */
+    //     './algolia'
+    //   )
+    // )
     run(
       await import(
         /* webpackChunkName: "crowdin" */
@@ -84,6 +84,13 @@ async function main(): Promise<void> {
       )
     )
   }
+
+  run(
+    await import(
+      /* webpackChunkName: "published" */
+      './published'
+    )
+  )
 
   if (process.env.NODE_ENV !== 'production') {
     run(

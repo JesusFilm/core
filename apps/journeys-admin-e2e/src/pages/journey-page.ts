@@ -483,7 +483,7 @@ export class JourneyPage {
     const threeDotBtnPath = this.page
       .locator('div[aria-label="journey-card"]', { hasText: journeyName })
       .first()
-      .locator('button#journey-actions')
+      .locator('[data-testid="JourneyCardMenuButton"]')
       .first()
     await expect(threeDotBtnPath).toBeVisible({ timeout: thirtySecondsTimeout })
     await threeDotBtnPath.click()
@@ -563,7 +563,7 @@ export class JourneyPage {
         hasNotText: 'Untitled Journey'
       })
       .first()
-      .locator('button#journey-actions')
+      .locator('[data-testid="JourneyCardMenuButton"]')
       .first()
       .click()
   }
@@ -599,7 +599,7 @@ export class JourneyPage {
   async clickThreeDotBesideSortByOption() {
     await this.page
       .locator(
-        'div[aria-label="journey status tabs"] button svg[data-testid="MoreIcon"]'
+        'div[aria-label="journey status tabs"] button[data-testid="JourneyListMenuButton"]'
       )
       .click()
   }

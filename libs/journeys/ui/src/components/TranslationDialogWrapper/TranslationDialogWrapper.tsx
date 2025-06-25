@@ -1,4 +1,3 @@
-import { LoadingButton } from '@mui/lab'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -7,6 +6,8 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, ReactNode } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
+
+import { TranslationProgressBar } from '../TranslationProgressBar'
 
 interface TranslationDialogWrapperProps {
   open: boolean
@@ -20,6 +21,10 @@ interface TranslationDialogWrapperProps {
   submitLabel?: string
   divider?: boolean
   isTranslation?: boolean
+  translationProgress?: {
+    progress: number
+    message: string
+  }
 }
 
 /**
@@ -44,6 +49,7 @@ interface TranslationDialogWrapperProps {
  * @param {string} [props.submitLabel] - Optional custom label for the submit button (defaults to "Create")
  * @param {boolean} [props.divider] - Optional flag to show a divider between header and content
  * @param {boolean} [props.isTranslation] - Optional flag to indicate if this is a translation operation
+ * @param {object} [props.translationProgress] - Optional object containing translation progress and message
  * @returns {ReactElement} A dialog component with standardized translation UI elements
  */
 export function TranslationDialogWrapper({
@@ -57,7 +63,8 @@ export function TranslationDialogWrapper({
   children,
   submitLabel,
   divider,
-  isTranslation
+  isTranslation,
+  translationProgress
 }: TranslationDialogWrapperProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const defaultLoadingText = t('Translating your journey...')
@@ -87,7 +94,7 @@ export function TranslationDialogWrapper({
               >
                 {t('Cancel')}
               </Button>
-              <LoadingButton
+              <Button
                 variant="contained"
                 onClick={onTranslate}
                 loading={loading}
@@ -96,7 +103,7 @@ export function TranslationDialogWrapper({
                 }}
               >
                 {submitLabel ?? t('Create')}
-              </LoadingButton>
+              </Button>
             </>
           )}
         </>
@@ -104,11 +111,39 @@ export function TranslationDialogWrapper({
       testId={testId}
     >
       {loading && isTranslation ? (
-        <Box display="flex" flexDirection="column" alignItems="center" p={3}>
-          <CircularProgress color="primary" />
-          <Typography variant="body1" mt={2}>
-            {loadingText ?? defaultLoadingText}
-          </Typography>
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          sx={{
+            py: 6,
+            px: 4,
+            minHeight: 200
+          }}
+        >
+          {translationProgress ? (
+            <Box sx={{ width: '100%', maxWidth: 500 }}>
+              <TranslationProgressBar
+                progress={translationProgress.progress}
+                message={translationProgress.message}
+              />
+            </Box>
+          ) : (
+            <>
+              <Typography
+                variant="h6"
+                sx={{
+                  mb: 4,
+                  color: 'text.primary',
+                  fontWeight: 500
+                }}
+              >
+                {loadingText ?? defaultLoadingText}
+              </Typography>
+              <CircularProgress color="primary" />
+            </>
+          )}
         </Box>
       ) : (
         children

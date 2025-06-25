@@ -1,5 +1,4 @@
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
-import LoadingButton from '@mui/lab/LoadingButton'
 import Button from '@mui/material/Button'
 import MuiDialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
@@ -112,7 +111,7 @@ export function Dialog({
               onClick={onClose}
               data-testid="dialog-close-button"
             >
-              <CloseRoundedIcon />
+              <CloseRoundedIcon data-testid="CloseRoundedIcon" />
             </IconButton>
           )}
         </MuiDialogTitle>
@@ -127,9 +126,9 @@ export function Dialog({
               {dialogAction.closeLabel}
             </Button>
           )}
-          <LoadingButton onClick={dialogAction?.onSubmit} loading={loading}>
+          <Button onClick={dialogAction?.onSubmit} loading={loading}>
             {dialogAction.submitLabel ?? 'Save'}
-          </LoadingButton>
+          </Button>
         </DialogActions>
       ) : dialogActionChildren != null ? (
         <DialogActions data-testid="dialog-action">
