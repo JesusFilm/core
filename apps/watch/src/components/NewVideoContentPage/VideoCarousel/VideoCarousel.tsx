@@ -1,9 +1,9 @@
-import Skeleton from '@mui/material/Skeleton'
 import { ReactElement, useRef } from 'react'
 import { A11y, FreeMode, Mousewheel, Navigation } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
+import { Skeleton } from '../../Skeleton'
 import { NavButton } from '../../VideoCarousel/NavButton/NavButton'
 
 import { VideoCard } from './VideoCard'
@@ -63,7 +63,7 @@ export function VideoCarousel({
             ))
           : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
               <SwiperSlide key={i} className="max-w-[200px]">
-                <div className="w-[200px] h-[240px] rounded-lg animate-pulse bg-text-secondary" />
+                <Skeleton width={200} height={240} />
               </SwiperSlide>
             ))}
       </Swiper>
