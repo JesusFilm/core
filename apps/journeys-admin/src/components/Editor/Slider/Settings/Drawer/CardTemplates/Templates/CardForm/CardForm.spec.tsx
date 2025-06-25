@@ -63,6 +63,7 @@ describe('CardForm', () => {
     themeMode: null,
     themeName: null,
     fullscreen: false,
+    backdropBlur: null,
     children: []
   }
   const step: TreeBlock = {
@@ -160,7 +161,8 @@ describe('CardForm', () => {
         journeyId: 'journeyId',
         cardId: 'cardId',
         cardInput: {
-          fullscreen: true
+          fullscreen: true,
+          backdropBlur: null
         }
       }
     },
@@ -280,6 +282,7 @@ describe('CardForm', () => {
           themeMode: null,
           themeName: null,
           fullscreen: true,
+          backdropBlur: null,
           __typename: 'CardBlock'
         }
       }

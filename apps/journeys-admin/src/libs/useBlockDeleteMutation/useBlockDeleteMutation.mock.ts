@@ -51,6 +51,7 @@ export const selectedStepCardBlock: TreeBlock<CardBlock> = {
   themeMode: null,
   themeName: null,
   fullscreen: false,
+  backdropBlur: null,
   children: [selectedBlock, block1, block2]
 }
 
