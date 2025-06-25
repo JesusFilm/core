@@ -47,6 +47,10 @@ export async function updateVideoVariantInAlgolia(
 
   if (videoVariant == null) {
     logger?.warn(`video variant ${videoVariantId} not found`)
+    await client.deleteObject({
+      indexName: videoVariantsIndex,
+      objectID: videoVariantId
+    })
     return
   }
 
