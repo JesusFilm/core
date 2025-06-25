@@ -43,8 +43,6 @@ export async function updateVideoVariantInAlgolia(
     }
   })
 
-  console.log('videoVariant', videoVariant)
-
   if (videoVariant == null) {
     logger?.warn(`video variant ${videoVariantId} not found`)
     await client.deleteObject({
