@@ -52,6 +52,10 @@ jest.mock('next-firebase-auth', () => ({
 
 jest.mock('react-instantsearch')
 
+jest.mock('../AiChat', () => ({
+  AiChat: jest.fn()
+}))
+
 const mockUseSearchBox = useSearchBox as jest.MockedFunction<
   typeof useSearchBox
 >
@@ -201,6 +205,20 @@ describe('Editor', () => {
     )
 
     expect(screen.getByTestId('Fab')).toBeInTheDocument()
+  })
+
+  it('should render the AiEditButton', () => {
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <ThemeProvider>
+            <Editor journey={journey} />
+          </ThemeProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('AiEditButton')).toBeInTheDocument()
   })
 
   it('should set the selected step', async () => {

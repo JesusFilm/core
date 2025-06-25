@@ -12,12 +12,12 @@ export function StateLoading({
   status
 }: StateLoadingProps): ReactElement | null {
   return (
-    <>
-      <Collapse in={status === 'submitted'} unmountOnExit>
+    <Box>
+      <Collapse in={status === 'submitted'}>
         <Box sx={{ height: 24, display: 'flex', alignItems: 'center' }}>
           <CircularProgress size={18} />
         </Box>
       </Collapse>
-    </>
+    </Box>
   )
 }

@@ -6,11 +6,7 @@ import { ReactElement, useState } from 'react'
 
 import { AiChat } from '../../AiChat'
 
-interface AiEditButtonProps {
-  disabled?: boolean
-}
-
-export function AiEditButton({ disabled }: AiEditButtonProps): ReactElement {
+export function AiEditButton(): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
 
   const handleClick = () => {
@@ -22,6 +18,7 @@ export function AiEditButton({ disabled }: AiEditButtonProps): ReactElement {
       <Fab
         color="primary"
         onClick={handleClick}
+        data-testid="AiEditButton"
         sx={{
           position: 'fixed',
           bottom: 32,
