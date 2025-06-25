@@ -16,6 +16,7 @@ import {
   ImageBlockUpdateVariables
 } from '../../../../../../../../../../__generated__/ImageBlockUpdate'
 import { ImageSource } from '../../../../../Drawer/ImageSource'
+import { FocalPoint } from '../../Card/BackgroundMedia/Image/FocalPoint'
 import { ZoomImage } from '../../Card/BackgroundMedia/Image/ZoomImage/ZoomImage'
 
 export const IMAGE_BLOCK_UPDATE = gql`
@@ -86,6 +87,10 @@ export function ImageOptions(): ReactElement {
           selectedBlock={imageBlock}
           onChange={async (input) => updateImageBlock(input)}
           onDelete={deleteImageBlock}
+        />
+        <FocalPoint
+          imageBlock={imageBlock}
+          updateImageBlock={updateImageBlock}
         />
         <ZoomImage
           imageBlock={imageBlock}
