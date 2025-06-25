@@ -61,7 +61,7 @@ export const CARD_BLOCK_BACKGROUND_COLOR_UPDATE = gql`
   }
 `
 
-export function BackgroundColor(): ReactElement {
+export function ColorPicker(): ReactElement {
   const {
     state: { selectedBlock, selectedStep },
     dispatch
@@ -181,7 +181,7 @@ export function BackgroundColor(): ReactElement {
         sx={{ p: 4, pt: 0 }}
         spacing={3}
         direction="row"
-        data-testid="BackgroundColor"
+        data-testid="ColorPicker"
       >
         <Swatch id={`bg-color-${selectedColor}`} color={selectedColor} />
         <TextFieldForm

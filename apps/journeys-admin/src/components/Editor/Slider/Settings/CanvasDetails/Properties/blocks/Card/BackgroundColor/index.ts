@@ -1,1 +1,1 @@
-export { BackgroundColor } from './BackgroundColor'
+export { ColorPicker } from './ColorPicker'

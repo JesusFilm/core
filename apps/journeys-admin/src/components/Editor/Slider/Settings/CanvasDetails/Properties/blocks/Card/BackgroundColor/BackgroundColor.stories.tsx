@@ -16,13 +16,13 @@ import {
   ThemeName
 } from '../../../../../../../../../../__generated__/globalTypes'
 
-import { BackgroundColor } from '.'
+import { ColorPicker } from '.'
 
-const Demo: Meta<typeof BackgroundColor> = {
+const Demo: Meta<typeof ColorPicker> = {
   ...journeysAdminConfig,
-  component: BackgroundColor,
+  component: ColorPicker,
   title:
-    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Card/BackgroundColor',
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Card/ColorPicker',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
@@ -56,7 +56,7 @@ const card: TreeBlock<CardBlock> = {
 }
 
 const Template: StoryObj<
-  ComponentProps<typeof BackgroundColor> & {
+  ComponentProps<typeof ColorPicker> & {
     card: TreeBlock<CardBlock>
   }
 > = {
@@ -68,7 +68,7 @@ const Template: StoryObj<
             selectedStep: step(card)
           }}
         >
-          <BackgroundColor />
+          <ColorPicker />
         </EditorProvider>
       </MockedProvider>
     )

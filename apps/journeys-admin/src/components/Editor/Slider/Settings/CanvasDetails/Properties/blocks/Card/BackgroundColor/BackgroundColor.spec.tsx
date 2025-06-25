@@ -22,9 +22,9 @@ import { ThemeProvider } from '../../../../../../../../ThemeProvider'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 
 import {
-  BackgroundColor,
-  CARD_BLOCK_BACKGROUND_COLOR_UPDATE
-} from './BackgroundColor'
+  CARD_BLOCK_BACKGROUND_COLOR_UPDATE,
+  ColorPicker
+} from './ColorPicker'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -80,7 +80,7 @@ const journey: Journey = {
   menuStepBlock: null
 }
 
-describe('BackgroundColor', () => {
+describe('ColorPicker', () => {
   const card: TreeBlock<CardBlock> = {
     id: 'card1.id',
     __typename: 'CardBlock',
@@ -119,7 +119,7 @@ describe('BackgroundColor', () => {
         <ThemeProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
             <EditorProvider initialState={{ selectedBlock: card }}>
-              <BackgroundColor />
+              <ColorPicker />
             </EditorProvider>
           </JourneyProvider>
         </ThemeProvider>
@@ -179,7 +179,7 @@ describe('BackgroundColor', () => {
         <ThemeProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
             <EditorProvider initialState={{ selectedBlock: card }}>
-              <BackgroundColor />
+              <ColorPicker />
             </EditorProvider>
           </JourneyProvider>
         </ThemeProvider>
@@ -242,7 +242,7 @@ describe('BackgroundColor', () => {
         <ThemeProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
             <EditorProvider initialState={{ selectedBlock: card }}>
-              <BackgroundColor />
+              <ColorPicker />
               <CommandUndoItem variant="button" />
               <TestEditorState />
             </EditorProvider>
@@ -296,7 +296,7 @@ describe('BackgroundColor', () => {
         <ThemeProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
             <EditorProvider initialState={{ selectedBlock: card }}>
-              <BackgroundColor />
+              <ColorPicker />
             </EditorProvider>
           </JourneyProvider>
         </ThemeProvider>

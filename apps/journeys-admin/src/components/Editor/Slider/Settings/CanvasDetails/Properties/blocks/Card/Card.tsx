@@ -17,11 +17,11 @@ import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { Accordion } from '../../Accordion'
 
-const BackgroundColor = dynamic(
+const ColorPicker = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card/BackgroundColor/BackgroundColor" */ './BackgroundColor'
-    ).then((mod) => mod.BackgroundColor),
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card/ColorPicker/ColorPicker" */ './ColorPicker'
+    ).then((mod) => mod.ColorPicker),
   { ssr: false }
 )
 
@@ -144,7 +144,7 @@ export function Card({
         name={t('Filter')}
         value={selectedCardColor.toUpperCase()}
       >
-        <BackgroundColor key={selectedStep?.id} />
+        <ColorPicker key={selectedStep?.id} />
       </Accordion>
     </Box>
   )
