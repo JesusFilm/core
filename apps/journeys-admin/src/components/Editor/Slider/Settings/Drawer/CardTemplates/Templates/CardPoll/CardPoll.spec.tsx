@@ -151,8 +151,7 @@ describe('CardPoll', () => {
         journeyId: 'journeyId',
         cardId: 'cardId',
         cardInput: {
-          fullscreen: true,
-          backdropBlur: null
+          fullscreen: true
         }
       }
     },
