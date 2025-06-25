@@ -7,6 +7,7 @@ import { Prisma, Platform as PrismaPlatform } from '.prisma/api-media-client'
 
 import { prisma } from '../../lib/prisma'
 import { videoCacheReset } from '../../lib/videoCacheReset'
+import { updateVideoInAlgolia } from '../../workers/algolia/service'
 import { builder } from '../builder'
 import { ImageAspectRatio } from '../cloudflare/image/enums'
 import { IdType, IdTypeShape } from '../enums/idType'
@@ -578,8 +579,15 @@ builder.mutationFields((t) => ({
         data: input
       })
       try {
+        await updateVideoInAlgolia(video.id)
+      } catch (error) {
+        console.error('Algolia update error:', error)
+      }
+
+      try {
         await videoCacheReset(video.id)
       } catch {}
+
       return video
     }
   }),
@@ -613,8 +621,15 @@ builder.mutationFields((t) => ({
         }
       })
       try {
+        await updateVideoInAlgolia(video.id)
+      } catch (error) {
+        console.error('Algolia update error:', error)
+      }
+
+      try {
         await videoCacheReset(video.id)
       } catch {}
+
       return video
     }
   })

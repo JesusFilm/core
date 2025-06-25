@@ -1,1 +1,1 @@
-export * from './algoliaVideoUpdate'
+export { updateVideoInAlgolia } from './algoliaVideoUpdate'
