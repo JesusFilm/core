@@ -423,15 +423,14 @@ export function BackgroundColor(): ReactElement {
           <Stack sx={{ p: 4, pt: 2 }} data-testid="BackdropBlurSlider">
             <Stack direction="row" alignItems="center" spacing={3}>
               <Tooltip
-                title={t(
-                  'Adjust the blur level of your background image. Increasing the blur can reduce visual noise and improve content readability'
-                )}
+                title={t('Adjust the blur level of your background image.')}
                 slotProps={{
                   tooltip: {
                     sx: {
                       textAlign: 'center',
-                      lineHeight: 1.5,
-                      maxWidth: 220
+                      lineHeight: 1.4,
+                      maxWidth: 165,
+                      py: 2
                     }
                   }
                 }}
