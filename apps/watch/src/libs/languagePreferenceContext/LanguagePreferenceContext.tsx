@@ -282,17 +282,23 @@ const reducer = (
         (lang) => lang.bcp47 === newLanguage
       )
 
+      const newAudioLanguage = selectedLangObj?.id ?? state.audioLanguage
+      const newSubtitleLanguage = selectedLangObj?.id ?? state.subtitleLanguage
+
       // Update state with cascading
       const newState = {
         ...state,
         loading: true,
         siteLanguage: newLanguage,
-        audioLanguage: selectedLangObj?.id ?? state.audioLanguage,
-        subtitleLanguage: selectedLangObj?.id ?? state.subtitleLanguage
+        audioLanguage: newAudioLanguage,
+        subtitleLanguage: newSubtitleLanguage
       }
 
-      // Set cookie and trigger reload
+      // Set all affected cookies
       setCookie('NEXT_LOCALE', newLanguage)
+      setCookie('AUDIO_LANGUAGE', newAudioLanguage)
+      setCookie('SUBTITLE_LANGUAGE', newSubtitleLanguage)
+
       if (state.router) {
         // Use setTimeout to allow state update first
         setTimeout(() => state.router?.reload(), 0)
@@ -311,8 +317,10 @@ const reducer = (
         subtitleLanguage: newAudioLanguage
       }
 
-      // Set cookie and trigger reload
+      // Set both audio and subtitle cookies
       setCookie('AUDIO_LANGUAGE', newAudioLanguage)
+      setCookie('SUBTITLE_LANGUAGE', newAudioLanguage)
+
       if (state.router) {
         // Use setTimeout to allow state update first
         setTimeout(() => state.router?.reload(), 0)
