@@ -4489,6 +4489,7 @@ export type Video = {
   parents: Array<Video>;
   primaryLanguageId: Scalars['ID']['output'];
   published: Scalars['Boolean']['output'];
+  publishedAt?: Maybe<Scalars['Date']['output']>;
   restrictDownloadPlatforms: Array<Platform>;
   restrictViewPlatforms: Array<Platform>;
   /** slug is a permanent link to the video. */

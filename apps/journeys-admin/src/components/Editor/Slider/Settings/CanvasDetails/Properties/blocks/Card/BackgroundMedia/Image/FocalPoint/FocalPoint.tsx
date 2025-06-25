@@ -90,7 +90,7 @@ export function FocalPoint({
     <>
       {imageBlock?.src != null && (
         <Stack gap={4}>
-          <Typography variant="subtitle2">{t('Focal Point')}</Typography>
+          <Typography variant="subtitle2">{t('Adjust View')}</Typography>
           <Box
             onMouseMove={handleMouseMove}
             sx={{
