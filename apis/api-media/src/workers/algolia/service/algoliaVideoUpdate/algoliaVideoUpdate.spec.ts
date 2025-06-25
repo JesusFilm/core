@@ -4,22 +4,26 @@ import { prismaMock } from '../../../../../test/prismaMock'
 
 import { updateVideoInAlgolia } from './algoliaVideoUpdate'
 
-const saveObjectsSpy = jest
-  .fn()
-  .mockResolvedValue([{ taskID: 'test-task-123' }])
-
-const mockAlgoliaClient = {
-  saveObjects: saveObjectsSpy
-}
-
 // Mock the algolia client helper
 jest.mock('../algoliaClient', () => ({
-  getAlgoliaClient: jest.fn().mockResolvedValue(mockAlgoliaClient)
+  getAlgoliaClient: jest.fn()
 }))
 
 // Mock the languages helper
 jest.mock('../languages', () => ({
-  getLanguages: jest.fn().mockResolvedValue({
+  getLanguages: jest.fn()
+}))
+
+describe('algoliaVideoUpdate', () => {
+  const saveObjectsSpy = jest
+    .fn()
+    .mockResolvedValue([{ taskID: 'test-task-123' }])
+
+  const mockAlgoliaClient = {
+    saveObjects: saveObjectsSpy
+  }
+
+  const mockLanguages = {
     '529': {
       english: 'English',
       primary: 'English',
@@ -30,24 +34,28 @@ jest.mock('../languages', () => ({
       primary: '简体中文',
       bcp47: 'zh-Hans'
     }
-  })
-}))
+  }
 
-const { getAlgoliaClient } = require('../algoliaClient')
-const { getLanguages } = require('../languages')
-
-describe('algoliaVideoUpdate', () => {
   const mockLogger: Logger = {
     info: jest.fn(),
     warn: jest.fn(),
     error: jest.fn()
   } as any
 
+  // Get the mocked functions
+  const { getAlgoliaClient } = require('../algoliaClient')
+  const { getLanguages } = require('../languages')
+
   beforeEach(() => {
     jest.clearAllMocks()
     process.env.ALGOLIA_INDEX_VIDEOS = 'test-videos'
     process.env.CLOUDFLARE_IMAGE_ACCOUNT = 'test-account'
+
+    // Reset the spy mock return values
+    saveObjectsSpy.mockResolvedValue([{ taskID: 'test-task-123' }])
+
     getAlgoliaClient.mockResolvedValue(mockAlgoliaClient)
+    getLanguages.mockResolvedValue(mockLanguages)
   })
 
   afterEach(() => {

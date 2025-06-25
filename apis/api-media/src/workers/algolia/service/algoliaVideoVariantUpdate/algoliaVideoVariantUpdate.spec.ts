@@ -4,24 +4,28 @@ import { prismaMock } from '../../../../../test/prismaMock'
 
 import { updateVideoVariantInAlgolia } from './algoliaVideoVariantUpdate'
 
-const deleteObjectSpy = jest.fn().mockResolvedValue({})
-const saveObjectsSpy = jest
-  .fn()
-  .mockResolvedValue([{ taskID: 'test-task-123' }])
-
-const mockAlgoliaClient = {
-  deleteObject: deleteObjectSpy,
-  saveObjects: saveObjectsSpy
-}
-
 // Mock the algolia client helper
 jest.mock('../algoliaClient', () => ({
-  getAlgoliaClient: jest.fn().mockResolvedValue(mockAlgoliaClient)
+  getAlgoliaClient: jest.fn()
 }))
 
 // Mock the languages helper
 jest.mock('../languages', () => ({
-  getLanguages: jest.fn().mockResolvedValue({
+  getLanguages: jest.fn()
+}))
+
+describe('algoliaVideoVariantUpdate', () => {
+  const deleteObjectSpy = jest.fn().mockResolvedValue({})
+  const saveObjectsSpy = jest
+    .fn()
+    .mockResolvedValue([{ taskID: 'test-task-123' }])
+
+  const mockAlgoliaClient = {
+    deleteObject: deleteObjectSpy,
+    saveObjects: saveObjectsSpy
+  }
+
+  const mockLanguages = {
     '529': {
       english: 'English',
       primary: 'English',
@@ -32,24 +36,29 @@ jest.mock('../languages', () => ({
       primary: '简体中文',
       bcp47: 'zh-Hans'
     }
-  })
-}))
+  }
 
-const { getAlgoliaClient } = require('../algoliaClient')
-const { getLanguages } = require('../languages')
-
-describe('algoliaVideoVariantUpdate', () => {
   const mockLogger: Logger = {
     info: jest.fn(),
     warn: jest.fn(),
     error: jest.fn()
   } as any
 
+  // Get the mocked functions
+  const { getAlgoliaClient } = require('../algoliaClient')
+  const { getLanguages } = require('../languages')
+
   beforeEach(() => {
     jest.clearAllMocks()
     process.env.ALGOLIA_INDEX_VIDEO_VARIANTS = 'test-video-variants'
     process.env.CLOUDFLARE_IMAGE_ACCOUNT = 'test-account'
+
+    // Reset the spy mock return values
+    saveObjectsSpy.mockResolvedValue([{ taskID: 'test-task-123' }])
+    deleteObjectSpy.mockResolvedValue({})
+
     getAlgoliaClient.mockResolvedValue(mockAlgoliaClient)
+    getLanguages.mockResolvedValue(mockLanguages)
   })
 
   afterEach(() => {
@@ -67,7 +76,7 @@ describe('algoliaVideoVariantUpdate', () => {
     expect(saveObjectsSpy).not.toHaveBeenCalled()
   })
 
-  it('should warn when video variant is not found', async () => {
+  it('should warn when video variant is not found and delete from algolia', async () => {
     prismaMock.videoVariant.findUnique.mockResolvedValueOnce(null)
 
     await updateVideoVariantInAlgolia('non-existent-variant', mockLogger)
@@ -75,6 +84,10 @@ describe('algoliaVideoVariantUpdate', () => {
     expect(mockLogger.warn).toHaveBeenCalledWith(
       'video variant non-existent-variant not found'
     )
+    expect(deleteObjectSpy).toHaveBeenCalledWith({
+      indexName: 'test-video-variants',
+      objectID: 'non-existent-variant'
+    })
     expect(saveObjectsSpy).not.toHaveBeenCalled()
   })
 
@@ -274,5 +287,18 @@ describe('algoliaVideoVariantUpdate', () => {
       ],
       waitForTasks: true
     })
+  })
+
+  it('should handle errors gracefully', async () => {
+    prismaMock.videoVariant.findUnique.mockRejectedValueOnce(
+      new Error('Database error')
+    )
+
+    await updateVideoVariantInAlgolia('test-variant-id', mockLogger)
+
+    expect(mockLogger.error).toHaveBeenCalledWith(
+      expect.any(Error),
+      'failed to update video variant test-variant-id in algolia'
+    )
   })
 })
