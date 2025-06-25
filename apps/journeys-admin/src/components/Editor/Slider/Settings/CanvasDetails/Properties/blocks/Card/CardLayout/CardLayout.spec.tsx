@@ -209,8 +209,7 @@ describe('CardLayout', () => {
               variables: {
                 id: 'card1.id',
                 input: {
-                  fullscreen: true,
-                  backdropBlur: null
+                  fullscreen: true
                 }
               }
             },
@@ -276,8 +275,7 @@ describe('CardLayout', () => {
               variables: {
                 id: 'card1.id',
                 input: {
-                  fullscreen: false,
-                  backdropBlur: null
+                  fullscreen: false
                 }
               }
             },
