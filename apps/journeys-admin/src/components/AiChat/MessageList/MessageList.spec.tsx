@@ -4,7 +4,6 @@ import userEvent from '@testing-library/user-event'
 
 import { MessageList } from './MessageList'
 
-// Mock external dependencies
 jest.mock('next-i18next', () => ({
   useTranslation: () => ({
     t: (str: string) => str
@@ -24,7 +23,6 @@ jest.mock('../../../libs/ai/langfuse/client', () => ({
   }
 }))
 
-// Mock complex external components while keeping MessageList structure
 jest.mock('../../Editor/Slider/Settings/Drawer/ImageLibrary', () => ({
   ImageLibrary: function MockImageLibrary() {
     return <div data-testid="image-library">Image Library</div>
@@ -547,7 +545,6 @@ describe('MessageList', () => {
       const thumbsUpButton = screen.getByLabelText('Good Response')
       await userEvent.click(thumbsUpButton)
 
-      // UserFeedback component should handle the Langfuse integration
       expect(thumbsUpButton).toHaveClass('MuiIconButton-colorPrimary')
     })
   })
