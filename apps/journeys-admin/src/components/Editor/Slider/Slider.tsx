@@ -269,7 +269,7 @@ export function Slider(): ReactElement {
             overflow: 'hidden'
           }}
         >
-          <JourneyFlow />
+          <JourneyFlow flowType="mobile" />
         </Box>
       </StyledSwiperSlide>
       <StyledSwiperSlide

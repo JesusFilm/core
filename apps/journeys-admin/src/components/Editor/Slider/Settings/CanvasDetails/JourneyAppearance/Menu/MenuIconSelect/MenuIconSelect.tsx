@@ -189,7 +189,7 @@ export function MenuIconSelect(): ReactElement {
                   height: 56,
                   width: 56,
                   borderRadius: 2,
-                  border: ({ palette }) => palette.background.default,
+                  background: ({ palette }) => palette.background.default,
                   display: 'grid',
                   placeItems: 'center'
                 }}
