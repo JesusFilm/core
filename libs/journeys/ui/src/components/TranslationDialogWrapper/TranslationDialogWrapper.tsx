@@ -72,7 +72,7 @@ export function TranslationDialogWrapper({
   isTranslation,
   translationProgress
 }: TranslationDialogWrapperProps): ReactElement {
-  const { createWithAiButtonFlag } = useFlags()
+  const { aiCreateButton } = useFlags()
   const { t } = useTranslation('libs-journeys-ui')
   const defaultLoadingText = t('Translating your journey...')
 
@@ -101,7 +101,7 @@ export function TranslationDialogWrapper({
               >
                 {t('Cancel')}
               </Button>
-              {createWithAiButtonFlag && onCreateWithAi && (
+              {aiCreateButton && onCreateWithAi && (
                 <Tooltip
                   title={
                     isTranslation

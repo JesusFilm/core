@@ -152,7 +152,7 @@ describe('TranslationDialogWrapper', () => {
     describe('Button Rendering', () => {
       it('should show Create with AI button when onCreateWithAi is provided', () => {
         render(
-          <FlagsProvider flags={{ createWithAiButtonFlag: true }}>
+          <FlagsProvider flags={{ aiCreateButton: true }}>
             <TranslationDialogWrapper
               open
               onClose={onClose}
@@ -174,7 +174,7 @@ describe('TranslationDialogWrapper', () => {
 
       it('should not render Create with AI button when onCreateWithAi is not provided', () => {
         render(
-          <FlagsProvider flags={{ createWithAiButtonFlag: true }}>
+          <FlagsProvider flags={{ aiCreateButton: true }}>
             <TranslationDialogWrapper
               open
               onClose={onClose}
@@ -195,7 +195,7 @@ describe('TranslationDialogWrapper', () => {
 
       it('should not render Create with AI button when onCreateWithAi is undefined', () => {
         render(
-          <FlagsProvider flags={{ createWithAiButtonFlag: true }}>
+          <FlagsProvider flags={{ aiCreateButton: true }}>
             <TranslationDialogWrapper
               open
               onClose={onClose}
@@ -217,7 +217,7 @@ describe('TranslationDialogWrapper', () => {
 
       it('should not render Create with AI button when loading is true', () => {
         render(
-          <FlagsProvider flags={{ createWithAiButtonFlag: true }}>
+          <FlagsProvider flags={{ aiCreateButton: true }}>
             <TranslationDialogWrapper
               open
               onClose={onClose}
@@ -242,7 +242,7 @@ describe('TranslationDialogWrapper', () => {
     describe('Button State', () => {
       it('should enable Create with AI button when isTranslation is false', () => {
         render(
-          <FlagsProvider flags={{ createWithAiButtonFlag: true }}>
+          <FlagsProvider flags={{ aiCreateButton: true }}>
             <TranslationDialogWrapper
               open
               onClose={onClose}
@@ -266,7 +266,7 @@ describe('TranslationDialogWrapper', () => {
 
       it('should disable Create with AI button when isTranslation is true', () => {
         render(
-          <FlagsProvider flags={{ createWithAiButtonFlag: true }}>
+          <FlagsProvider flags={{ aiCreateButton: true }}>
             <TranslationDialogWrapper
               open
               onClose={onClose}
@@ -294,7 +294,7 @@ describe('TranslationDialogWrapper', () => {
         const user = userEvent.setup()
 
         render(
-          <FlagsProvider flags={{ createWithAiButtonFlag: true }}>
+          <FlagsProvider flags={{ aiCreateButton: true }}>
             <TranslationDialogWrapper
               open
               onClose={onClose}
@@ -330,7 +330,7 @@ describe('TranslationDialogWrapper', () => {
         const user = userEvent.setup()
 
         render(
-          <FlagsProvider flags={{ createWithAiButtonFlag: true }}>
+          <FlagsProvider flags={{ aiCreateButton: true }}>
             <TranslationDialogWrapper
               open
               onClose={onClose}
@@ -367,7 +367,7 @@ describe('TranslationDialogWrapper', () => {
     describe('Click Handling', () => {
       it('should call onCreateWithAi when Create with AI button is clicked and enabled', async () => {
         render(
-          <FlagsProvider flags={{ createWithAiButtonFlag: true }}>
+          <FlagsProvider flags={{ aiCreateButton: true }}>
             <TranslationDialogWrapper
               open
               onClose={onClose}
@@ -395,7 +395,7 @@ describe('TranslationDialogWrapper', () => {
 
       it('should not call onCreateWithAi when button is disabled due to translation', () => {
         render(
-          <FlagsProvider flags={{ createWithAiButtonFlag: true }}>
+          <FlagsProvider flags={{ aiCreateButton: true }}>
             <TranslationDialogWrapper
               open
               onClose={onClose}
