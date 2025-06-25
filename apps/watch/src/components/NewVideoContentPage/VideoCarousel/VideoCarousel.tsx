@@ -63,14 +63,7 @@ export function VideoCarousel({
             ))
           : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
               <SwiperSlide key={i} className="max-w-[200px]">
-                <Skeleton
-                  variant="rectangular"
-                  width={200}
-                  height={240}
-                  sx={{
-                    borderRadius: 3
-                  }}
-                />
+                <div className="w-[200px] h-[240px] rounded-lg animate-pulse" />
               </SwiperSlide>
             ))}
       </Swiper>

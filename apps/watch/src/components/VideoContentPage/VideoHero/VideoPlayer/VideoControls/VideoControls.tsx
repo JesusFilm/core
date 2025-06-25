@@ -306,6 +306,7 @@ export function VideoControls({
   }
 
   async function handleFullscreen(): Promise<void> {
+    console.log('here')
     if (fullscreen) {
       fscreen.exitFullscreen()
       setFullscreen(false)
@@ -621,7 +622,10 @@ export function VideoControls({
                   >
                     <SubtitlesOutlined />
                   </IconButton>
-                  <IconButton onClick={handleFullscreen}>
+                  <IconButton
+                    onClick={handleFullscreen}
+                    data-testid="FullscreenButton"
+                  >
                     {fullscreen ? (
                       <FullscreenExitOutlined />
                     ) : (
