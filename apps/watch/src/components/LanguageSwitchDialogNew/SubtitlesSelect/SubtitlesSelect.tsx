@@ -1,7 +1,7 @@
 import { useLazyQuery } from '@apollo/client'
 import ClosedCaptionOffOutlinedIcon from '@mui/icons-material/ClosedCaptionOffOutlined'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect } from 'react'
 
 import {
   LanguageAutocomplete,
@@ -10,7 +10,10 @@ import {
 
 import { GetSubtitles } from '../../../../__generated__/GetSubtitles'
 import { SUBTITLE_LANGUAGE_IDS } from '../../../config/subtitleLanguageIds'
-import { useLanguagePreference } from '../../../libs/languagePreferenceContext/LanguagePreferenceContext'
+import {
+  useLanguageActions,
+  useLanguagePreference
+} from '../../../libs/languagePreferenceContext'
 import { GET_SUBTITLES } from '../../SubtitleDialog/SubtitleDialog'
 import { renderInput } from '../utils/renderInput'
 import { renderOption } from '../utils/renderOption'
@@ -30,11 +33,13 @@ export function SubtitlesSelect(): ReactElement {
     },
     dispatch
   } = useLanguagePreference()
+  const { updateSubtitleLanguage, updateSubtitlesOn } = useLanguageActions()
 
   const [getSubtitleLanguages, { loading: subtitlesLoading }] =
     useLazyQuery<GetSubtitles>(GET_SUBTITLES, {
       onCompleted: (data) => {
         if (data?.video?.variant?.subtitle) {
+          // This action doesn't have side effects, so we can use dispatch directly
           dispatch({
             type: 'SetVideoSubtitleLanguages',
             videoSubtitleLanguages: data.video.variant.subtitle
@@ -53,46 +58,28 @@ export function SubtitlesSelect(): ReactElement {
     }
   }, [videoId, videoSubtitleLanguages, getSubtitleLanguages])
 
-  const selectedSubtitle = allLanguages?.find(
-    (language) => language.id === subtitleLanguage
-  )
-
   const preferredSubtitleOn = currentSubtitleOn ?? subtitleOn
 
-  const [currentSubtitle, setCurrentSubtitle] = useState<
-    LanguageOption | undefined
-  >(undefined)
-
-  // Update currentSubtitle when subtitleLanguage changes (for immediate visual feedback)
-  useEffect(() => {
-    if (subtitleLanguage && allLanguages) {
-      const selectedLanguage = allLanguages.find(
-        (lang) => lang.id === subtitleLanguage
-      )
-      if (selectedLanguage) {
-        setCurrentSubtitle({
-          id: selectedLanguage.id,
-          localName: selectedLanguage.name.find(({ primary }) => primary)
-            ?.value,
-          nativeName: selectedLanguage.name.find(({ primary }) => !primary)
-            ?.value,
-          slug: selectedLanguage.slug
-        })
-      }
-    }
-  }, [subtitleLanguage, allLanguages])
-
-  useEffect(() => {
-    // Use internal state when no loading
-    if (!selectedSubtitle || loading) return
-
-    setCurrentSubtitle({
-      id: selectedSubtitle.id,
-      localName: selectedSubtitle.name.find(({ primary }) => primary)?.value,
-      nativeName: selectedSubtitle.name.find(({ primary }) => !primary)?.value,
-      slug: selectedSubtitle.slug
-    })
-  }, [selectedSubtitle, loading])
+  // Compute current subtitle display object directly from context
+  const currentSubtitle =
+    subtitleLanguage && allLanguages
+      ? (() => {
+          const selectedLanguage = allLanguages.find(
+            (lang) => lang.id === subtitleLanguage
+          )
+          return selectedLanguage
+            ? {
+                id: selectedLanguage.id,
+                localName: selectedLanguage.name.find(({ primary }) => primary)
+                  ?.value,
+                nativeName: selectedLanguage.name.find(
+                  ({ primary }) => !primary
+                )?.value,
+                slug: selectedLanguage.slug
+              }
+            : undefined
+        })()
+      : undefined
 
   const allLanguageSubtitles = allLanguages
     ?.filter((language) => SUBTITLE_LANGUAGE_IDS.includes(language.id))
@@ -103,11 +90,7 @@ export function SubtitlesSelect(): ReactElement {
     }))
 
   function handleChange(language: LanguageOption): void {
-    setCurrentSubtitle(language)
-    dispatch({
-      type: 'UpdateSubtitleLanguage',
-      languageId: language.id
-    })
+    updateSubtitleLanguage(language.id)
   }
 
   return (
@@ -146,12 +129,7 @@ export function SubtitlesSelect(): ReactElement {
           id="no-subtitles"
           type="checkbox"
           checked={preferredSubtitleOn}
-          onChange={() =>
-            dispatch({
-              type: 'UpdateSubtitlesOn',
-              enabled: !preferredSubtitleOn
-            })
-          }
+          onChange={() => updateSubtitlesOn(!preferredSubtitleOn)}
           disabled={loading || subtitlesLoading}
           className="accent-[#CB333B] h-4 w-4 rounded border-gray-300 focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed"
         />

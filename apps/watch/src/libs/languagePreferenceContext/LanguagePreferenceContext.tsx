@@ -2,23 +2,14 @@ import { NextRouter } from 'next/router'
 import { Dispatch, createContext, useContext, useReducer } from 'react'
 
 import { GetAllLanguages_languages as Language } from '../../../__generated__/GetAllLanguages'
-import { GetLanguagesSlug_video_variantLanguagesWithSlug_language as AudioLanguage } from '../../../__generated__/GetLanguagesSlug'
+import { GetLanguagesSlug_video_variantLanguagesWithSlug as AudioLanguage } from '../../../__generated__/GetLanguagesSlug'
 import { GetSubtitles_video_variant_subtitle as SubtitleLanguage } from '../../../__generated__/GetSubtitles'
 import { LANGUAGE_MAPPINGS } from '../../config/locales'
-
-// Cookie handler utility
-function setCookie(name: string, value: string): void {
-  if (typeof document === 'undefined') return
-  const cookieFingerprint = '00005'
-  const encodedValue = encodeURIComponent(value)
-  const expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString()
-  document.cookie = `${name}=${cookieFingerprint}---${encodedValue}; path=/; SameSite=Lax; expires=${expires}`
-}
 
 /**
  * State interface for language preferences and video-specific language data
  */
-interface LanguageState {
+export interface LanguageState {
   /** Current site/UI language (e.g., 'en', 'es') */
   siteLanguage: string
   /** User's preferred audio language ID (e.g., '529')*/
@@ -185,6 +176,9 @@ const LanguageContext = createContext<{
  * Reducer function for managing language preference state
  * Handles all language-related actions and maintains derived state
  *
+ * **Note**: This reducer is pure and contains no side effects.
+ * Side effects are handled by the useLanguageActions hook.
+ *
  * @param state - Current language state
  * @param action - Action to process
  * @returns Updated language state
@@ -209,26 +203,16 @@ const reducer = (
       }
     case 'SetVideoAudioLanguages': {
       const videoAudioLanguages = action.videoAudioLanguages
-      let currentAudioLanguage: AudioLanguage | undefined = undefined
 
-      // Get language slugs for the current site language
-      const siteLanguageMapping = LANGUAGE_MAPPINGS[state.siteLanguage]
-      const siteLanguageSlugs =
-        siteLanguageMapping?.languageSlugs?.map((slug) =>
-          slug.replace('.html', '')
-        ) || []
+      // Find the best matching audio language for the current user preference
+      let currentAudioLanguage: AudioLanguage | undefined
 
-      // Find matching audio language based on user preferences
+      // Check if user's audio preference is available for this video
       for (const lang of videoAudioLanguages) {
-        // Priority 1: Exact match for user's audio preference (by ID)
-        if (lang.id === state.audioLanguage) {
-          currentAudioLanguage = lang
-          break
-        }
-
-        // Priority 2: Match site language (by language slugs)
+        const siteLanguageMapping = LANGUAGE_MAPPINGS[state.siteLanguage]
+        const siteLanguageSlugs = siteLanguageMapping?.languageSlugs || []
         if (
-          !currentAudioLanguage &&
+          lang.language.id === state.audioLanguage ||
           siteLanguageSlugs.includes(lang.slug || '')
         ) {
           currentAudioLanguage = lang
@@ -285,55 +269,30 @@ const reducer = (
       const newAudioLanguage = selectedLangObj?.id ?? state.audioLanguage
       const newSubtitleLanguage = selectedLangObj?.id ?? state.subtitleLanguage
 
-      // Update state with cascading
-      const newState = {
+      // Pure state update - no side effects
+      return {
         ...state,
         loading: true,
         siteLanguage: newLanguage,
         audioLanguage: newAudioLanguage,
         subtitleLanguage: newSubtitleLanguage
       }
-
-      // Set all affected cookies
-      setCookie('NEXT_LOCALE', newLanguage)
-      setCookie('AUDIO_LANGUAGE', newAudioLanguage)
-      setCookie('SUBTITLE_LANGUAGE', newSubtitleLanguage)
-
-      if (state.router) {
-        // Use setTimeout to allow state update first
-        setTimeout(() => state.router?.reload(), 0)
-      }
-
-      return newState
     }
     case 'UpdateAudioLanguage': {
       const newAudioLanguage = action.languageId
 
-      // Update state with cascading (subtitle follows audio)
-      const newState = {
+      // Pure state update - no side effects
+      return {
         ...state,
         loading: true,
         audioLanguage: newAudioLanguage,
         subtitleLanguage: newAudioLanguage
       }
-
-      // Set both audio and subtitle cookies
-      setCookie('AUDIO_LANGUAGE', newAudioLanguage)
-      setCookie('SUBTITLE_LANGUAGE', newAudioLanguage)
-
-      if (state.router) {
-        // Use setTimeout to allow state update first
-        setTimeout(() => state.router?.reload(), 0)
-      }
-
-      return newState
     }
     case 'UpdateSubtitleLanguage': {
       const newSubtitleLanguage = action.languageId
 
-      // Set cookie immediately (no reload needed)
-      setCookie('SUBTITLE_LANGUAGE', newSubtitleLanguage)
-
+      // Pure state update - no side effects
       return {
         ...state,
         subtitleLanguage: newSubtitleLanguage
@@ -342,9 +301,7 @@ const reducer = (
     case 'UpdateSubtitlesOn': {
       const newSubtitlesOn = action.enabled
 
-      // Set cookie immediately (no reload needed)
-      setCookie('SUBTITLES_ON', newSubtitlesOn.toString())
-
+      // Pure state update - no side effects
       return {
         ...state,
         subtitleOn: newSubtitlesOn

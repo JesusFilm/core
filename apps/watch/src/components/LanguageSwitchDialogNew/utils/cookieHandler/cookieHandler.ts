@@ -42,11 +42,11 @@ export function getCookie(name: string): string | undefined {
 }
 
 /**
- * Sets a cookie with proper URL encoding and security attributes
+ * Sets a cookie with proper URL encoding, validation, and security attributes
  *
- * This function safely sets cookies with appropriate security flags and encoding.
- * It uses a custom fingerprint format and includes security attributes like SameSite
- * protection and proper expiration handling.
+ * This function safely sets cookies with comprehensive validation, appropriate security
+ * flags and encoding. It uses a custom fingerprint format and includes security attributes
+ * like SameSite protection and proper expiration handling.
  *
  * @param name - The name of the cookie to set
  * @param value - The value to store in the cookie (will be URL-encoded)
@@ -61,6 +61,7 @@ export function getCookie(name: string): string | undefined {
  *
  * @remarks
  * - Does nothing during server-side rendering (SSR) for safety
+ * - Validates input parameters for security and browser compatibility
  * - Values are URL-encoded to handle special characters safely
  * - Uses custom fingerprint format: "cookieFingerprint---encodedValue"
  * - Sets 30-day expiration appropriate for user language preferences
@@ -68,23 +69,78 @@ export function getCookie(name: string): string | undefined {
  * - Sets path=/ to make cookie available across the entire domain
  *
  * @security
+ * - Input validation prevents XSS attacks through malicious cookie names
+ * - Length validation ensures browser compatibility
  * - SameSite=Lax prevents cross-site request forgery attacks
  * - URL encoding prevents injection of malicious cookie attributes
  * - Explicit expiration prevents indefinite cookie persistence
+ *
+ * @validation
+ * - Cookie names must be non-empty strings with valid characters only
+ * - Cookie names limited to 256 characters
+ * - Cookie values limited to 4096 characters (before encoding)
+ * - Final cookie string limited to 4096 characters (browser limit)
+ * - Graceful error handling with console warnings for debugging
  */
 export function setCookie(name: string, value: string): void {
-  // Check if we're on the client side (document exists)
-  if (typeof document === 'undefined') {
+  // Environment validation
+  if (typeof document === 'undefined') return
+
+  // Input validation
+  if (!name || typeof name !== 'string') {
+    console.warn('setCookie: Invalid cookie name provided')
     return
   }
 
-  const cookieFingerprint = '00005'
-  const encodedValue = encodeURIComponent(value)
+  if (typeof value !== 'string') {
+    console.warn('setCookie: Invalid cookie value provided')
+    return
+  }
 
-  // Set cookie with security attributes
-  // SameSite=Lax provides CSRF protection while allowing normal navigation
-  // 30 days expiration for language preferences
-  const expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString()
+  // Security validation for cookie name
+  if (!/^[a-zA-Z_][a-zA-Z0-9_-]*$/.test(name)) {
+    console.warn('setCookie: Cookie name contains invalid characters')
+    return
+  }
 
-  document.cookie = `${name}=${cookieFingerprint}---${encodedValue}; path=/; SameSite=Lax; expires=${expires}`
+  // Length validation
+  if (name.length > 256) {
+    console.warn(
+      'setCookie: Cookie name exceeds maximum length (256 characters)'
+    )
+    return
+  }
+
+  if (value.length > 4096) {
+    console.warn(
+      'setCookie: Cookie value exceeds maximum length (4096 characters)'
+    )
+    return
+  }
+
+  try {
+    const cookieFingerprint = '00005'
+    const encodedValue = encodeURIComponent(value)
+
+    // Set cookie with security attributes
+    // SameSite=Lax provides CSRF protection while allowing normal navigation
+    // 30 days expiration for language preferences
+    const expires = new Date(
+      Date.now() + 30 * 24 * 60 * 60 * 1000
+    ).toUTCString()
+
+    // Final validation - check total cookie string length
+    const cookieString = `${name}=${cookieFingerprint}---${encodedValue}; path=/; SameSite=Lax; expires=${expires}`
+
+    if (cookieString.length > 4096) {
+      console.warn(
+        'setCookie: Final cookie string exceeds browser limit (4096 characters)'
+      )
+      return
+    }
+
+    document.cookie = cookieString
+  } catch (error) {
+    console.error('setCookie: Failed to set cookie', error)
+  }
 }

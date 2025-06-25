@@ -11,7 +11,10 @@ import {
 
 import { GetAllLanguages_languages as Language } from '../../../../__generated__/GetAllLanguages'
 import { GetLanguagesSlug } from '../../../../__generated__/GetLanguagesSlug'
-import { useLanguagePreference } from '../../../libs/languagePreferenceContext'
+import {
+  useLanguageActions,
+  useLanguagePreference
+} from '../../../libs/languagePreferenceContext'
 import { GET_LANGUAGES_SLUG } from '../../AudioLanguageDialog/AudioLanguageDialog'
 import {
   selectLanguageForNoVideo,
@@ -32,16 +35,16 @@ export function AudioTrackSelect(): ReactElement {
     },
     dispatch
   } = useLanguagePreference()
+  const { updateAudioLanguage } = useLanguageActions()
 
   const [getAudioLanguages, { loading: audioLanguagesLoading }] =
     useLazyQuery<GetLanguagesSlug>(GET_LANGUAGES_SLUG, {
       onCompleted: (data) => {
         if (data?.video?.variantLanguagesWithSlug) {
+          // This action doesn't have side effects, so we can use dispatch directly
           dispatch({
             type: 'SetVideoAudioLanguages',
-            videoAudioLanguages: data.video.variantLanguagesWithSlug.map(
-              (variant) => variant.language
-            )
+            videoAudioLanguages: data.video.variantLanguagesWithSlug
           })
         }
       }
@@ -62,28 +65,26 @@ export function AudioTrackSelect(): ReactElement {
     }
   }, [videoId, videoAudioLanguages, getAudioLanguages])
 
-  const [currentLanguage, setCurrentLanguage] = useState<
-    LanguageOption | undefined
-  >(undefined)
-
-  // Update currentLanguage when audioLanguage changes (for immediate visual feedback)
-  useEffect(() => {
-    if (audioLanguage && allLanguages) {
-      const selectedLanguage = allLanguages.find(
-        (lang) => lang.id === audioLanguage
-      )
-      if (selectedLanguage) {
-        setCurrentLanguage({
-          id: selectedLanguage.id,
-          localName: selectedLanguage.name.find(({ primary }) => primary)
-            ?.value,
-          nativeName: selectedLanguage.name.find(({ primary }) => !primary)
-            ?.value,
-          slug: selectedLanguage.slug
-        })
-      }
-    }
-  }, [audioLanguage, allLanguages])
+  // Compute current language display object directly from context
+  const currentLanguage =
+    audioLanguage && allLanguages
+      ? (() => {
+          const selectedLanguage = allLanguages.find(
+            (lang) => lang.id === audioLanguage
+          )
+          return selectedLanguage
+            ? {
+                id: selectedLanguage.id,
+                localName: selectedLanguage.name.find(({ primary }) => primary)
+                  ?.value,
+                nativeName: selectedLanguage.name.find(
+                  ({ primary }) => !primary
+                )?.value,
+                slug: selectedLanguage.slug
+              }
+            : undefined
+        })()
+      : undefined
 
   useEffect(() => {
     // Run automatic selection logic based on current state
@@ -94,7 +95,6 @@ export function AudioTrackSelect(): ReactElement {
       allLanguages,
       audioLanguage,
       router,
-      setCurrentLanguage,
       setHelperText,
       t
     }
@@ -125,11 +125,7 @@ export function AudioTrackSelect(): ReactElement {
     })) ?? []
 
   function handleChange(language: LanguageOption): void {
-    setCurrentLanguage(language)
-    dispatch({
-      type: 'UpdateAudioLanguage',
-      languageId: language.id
-    })
+    updateAudioLanguage(language.id)
   }
 
   return (

@@ -2,10 +2,8 @@ import last from 'lodash/last'
 import { NextRouter } from 'next/router'
 import { TFunction } from 'next-i18next'
 
-import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
-
 import { GetAllLanguages_languages as Language } from '../../../../../__generated__/GetAllLanguages'
-import { GetLanguagesSlug_video_variantLanguagesWithSlug_language as AudioLanguage } from '../../../../../__generated__/GetLanguagesSlug'
+import { GetLanguagesSlug_video_variantLanguagesWithSlug as AudioLanguage } from '../../../../../__generated__/GetLanguagesSlug'
 
 /**
  * Parameters for audio language setter functions
@@ -19,8 +17,6 @@ export interface AudioLanguageSetterParams {
   audioLanguage: string
   /** Next.js router instance for URL management */
   router: NextRouter
-  /** Function to update the current language selection in the UI */
-  setCurrentLanguage: (language: LanguageOption) => void
   /** Function to update the helper text displayed to the user */
   setHelperText: (text: string) => void
   /** Translation function for internationalization */
@@ -71,8 +67,6 @@ interface SetLanguageAndHelperParams {
   isPreferred: boolean
   /** User's preferred language (for helper text generation) */
   preferredLanguage?: Language
-  /** Function to update the current language selection in the UI */
-  setCurrentLanguage: (language: LanguageOption) => void
   /** Function to update the helper text displayed to the user */
   setHelperText: (text: string) => void
   /** Translation function for internationalization */
@@ -95,7 +89,6 @@ interface SetLanguageAndHelperParams {
  *   allLanguages: availableLanguages,
  *   audioLanguage: 'english',
  *   router,
- *   setCurrentLanguage,
  *   setHelperText,
  *   t
  * })
@@ -103,42 +96,17 @@ interface SetLanguageAndHelperParams {
  */
 export function selectLanguageForNoVideo({
   currentAudioLanguage,
-  allLanguages,
-  audioLanguage,
-  setCurrentLanguage,
   setHelperText,
   t
 }: AudioLanguageSetterParams): void {
   // Priority 1: Use currentAudioLanguage if available
   if (currentAudioLanguage != null) {
-    setCurrentLanguage({
-      id: currentAudioLanguage.id,
-      localName: currentAudioLanguage.name?.find(({ primary }) => primary)
-        ?.value,
-      nativeName: currentAudioLanguage.name?.find(({ primary }) => !primary)
-        ?.value,
-      slug: currentAudioLanguage.slug
-    })
     setHelperText(t('2000 translations'))
     return
   }
 
-  // Priority 2: Fallback to user's preferred audio language
-  const preferredAudioLanguage = allLanguages?.find(
-    (language) => language.id === audioLanguage
-  )
-
-  if (preferredAudioLanguage != null) {
-    setCurrentLanguage({
-      id: preferredAudioLanguage.id,
-      localName: preferredAudioLanguage.name.find(({ primary }) => primary)
-        ?.value,
-      nativeName: preferredAudioLanguage.name.find(({ primary }) => !primary)
-        ?.value,
-      slug: preferredAudioLanguage.slug
-    })
-    setHelperText(t('2000 translations'))
-  }
+  // Priority 2: Fallback - just set helper text
+  setHelperText(t('2000 translations'))
 }
 
 /**
@@ -217,16 +185,10 @@ function setLanguageAndHelper({
   language,
   isPreferred,
   preferredLanguage,
-  setCurrentLanguage,
   setHelperText,
   t
 }: SetLanguageAndHelperParams): void {
-  setCurrentLanguage({
-    id: language.id,
-    localName: language.name.find(({ primary }) => primary)?.value,
-    nativeName: language.name.find(({ primary }) => !primary)?.value,
-    slug: language.slug
-  })
+  setHelperText(t('2000 translations'))
 
   if (isPreferred) {
     setHelperText(t('2000 translations'))
@@ -259,7 +221,6 @@ function setLanguageAndHelper({
  *   allLanguages: availableLanguages,
  *   audioLanguage: 'english',
  *   router,
- *   setCurrentLanguage,
  *   setHelperText,
  *   t
  * })
@@ -270,7 +231,6 @@ export function selectLanguageForVideo({
   allLanguages,
   audioLanguage,
   router,
-  setCurrentLanguage,
   setHelperText,
   t
 }: AudioLanguageSetterParams): void {
@@ -283,12 +243,11 @@ export function selectLanguageForVideo({
   if (
     currentAudioLanguage != null &&
     preferredAudioLanguage != null &&
-    currentAudioLanguage.id === preferredAudioLanguage.id
+    currentAudioLanguage.language.id === preferredAudioLanguage.id
   ) {
     setLanguageAndHelper({
       language: preferredAudioLanguage,
       isPreferred: true,
-      setCurrentLanguage,
       setHelperText,
       t
     })
@@ -297,14 +256,13 @@ export function selectLanguageForVideo({
   // Scenario 2: Different preference is matched
   else if (currentAudioLanguage != null) {
     const matchingLanguage = allLanguages?.find(
-      (lang) => lang.id === currentAudioLanguage.id
+      (lang) => lang.id === currentAudioLanguage.language.id
     )
     if (matchingLanguage) {
       setLanguageAndHelper({
         language: matchingLanguage,
         isPreferred: false,
         preferredLanguage: preferredAudioLanguage,
-        setCurrentLanguage,
         setHelperText,
         t
       })
@@ -317,7 +275,6 @@ export function selectLanguageForVideo({
       language: pathLanguage,
       isPreferred: false,
       preferredLanguage: preferredAudioLanguage,
-      setCurrentLanguage,
       setHelperText,
       t
     })
@@ -327,7 +284,6 @@ export function selectLanguageForVideo({
     setLanguageAndHelper({
       language: preferredAudioLanguage,
       isPreferred: true,
-      setCurrentLanguage,
       setHelperText,
       t
     })

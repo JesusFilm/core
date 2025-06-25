@@ -8,7 +8,10 @@ import {
 } from '@core/shared/ui/LanguageAutocomplete'
 
 import { LANGUAGE_MAPPINGS, SUPPORTED_LOCALES } from '../../../config/locales'
-import { useLanguagePreference } from '../../../libs/languagePreferenceContext/LanguagePreferenceContext'
+import {
+  useLanguageActions,
+  useLanguagePreference
+} from '../../../libs/languagePreferenceContext'
 import { renderInput } from '../utils/renderInput'
 import { renderOption } from '../utils/renderOption'
 import {
@@ -18,7 +21,8 @@ import {
 
 export function SiteLanguageSelect(): ReactElement {
   const { i18n, t } = useTranslation()
-  const { state, dispatch } = useLanguagePreference()
+  const { state } = useLanguagePreference()
+  const { updateSiteLanguage } = useLanguageActions()
   const [languages, setLanguages] = useState<ExtendedLanguageOption[]>([])
   const currentLanguageId = i18n?.language ?? 'en'
   const [currentLanguage, setCurrentLanguage] = useState<LanguageOption | null>(
@@ -84,10 +88,7 @@ export function SiteLanguageSelect(): ReactElement {
     // Only process actual language items, skip headers and dividers
     if (!language.id.startsWith('__')) {
       setCurrentLanguage(language)
-      dispatch({
-        type: 'UpdateSiteLanguage',
-        language: language.id
-      })
+      updateSiteLanguage(language.id)
     }
   }
 

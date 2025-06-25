@@ -40,7 +40,7 @@ export function siteLanguageReorder({
   // Find language based on country using existing LANGUAGE_MAPPINGS
   const countryLangCode = country
     ? Object.keys(LANGUAGE_MAPPINGS).find((locale) =>
-        LANGUAGE_MAPPINGS[locale].geoLocations.includes(country)
+        LANGUAGE_MAPPINGS[locale]?.geoLocations?.includes(country)
       )
     : null
 

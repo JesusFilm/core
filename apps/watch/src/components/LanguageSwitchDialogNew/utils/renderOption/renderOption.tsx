@@ -81,7 +81,7 @@ export const renderOption = (props: ListChildComponentProps) => {
       {...optionProps}
       key={id}
       style={style}
-      tabIndex={1}
+      tabIndex={0}
       sx={{
         display: 'block',
         cursor: 'pointer'
