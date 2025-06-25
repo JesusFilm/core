@@ -20,6 +20,10 @@ export const GET_LANGUAGES = graphql(`
 `)
 
 function createApolloClient(): ApolloClient<any> {
+  if (!process.env.GATEWAY_URL) {
+    throw new Error('GATEWAY_URL environment variable is required')
+  }
+
   const httpLink = createHttpLink({
     uri: process.env.GATEWAY_URL,
     headers: {
