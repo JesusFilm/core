@@ -264,9 +264,9 @@ describe('JourneyThemeResolver', () => {
       expect(prismaService.journeyTheme.update).toHaveBeenCalledWith({
         where: { id: 'journeyThemeId' },
         data: {
-          primaryFont: 'Helvetica',
-          secondaryFont: 'Times New Roman',
-          accentFont: 'Nunito'
+          headerFont: 'Helvetica',
+          bodyFont: 'Times New Roman',
+          labelFont: 'Nunito'
         }
       })
     })
