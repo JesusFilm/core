@@ -16,11 +16,9 @@ describe('RequestForm', () => {
 
       const parametersShape = tool.parameters.shape
 
-      // Test parameter types
       expect(parametersShape.formItems).toBeInstanceOf(z.ZodArray)
       expect(parametersShape.formItems._def.type).toBe(formItemSchema)
 
-      // Test parameter descriptions
       expect(parametersShape.formItems.description).toBe(
         'Array of form items to be filled out by the user.'
       )

@@ -56,7 +56,6 @@ describe('blockImageCreate', () => {
       { toolCallId: 'test-id', messages: [] }
     )
 
-    // Image component processes input with safeInput logic
     expect(mockClient.mutate).toHaveBeenCalledWith({
       mutation: AI_BLOCK_IMAGE_CREATE,
       variables: {
@@ -90,7 +89,6 @@ describe('blockImageCreate', () => {
       { toolCallId: 'test-id', messages: [] }
     )
 
-    // Image component should set alt to empty string when undefined
     expect(mockClient.mutate).toHaveBeenCalledWith({
       mutation: AI_BLOCK_IMAGE_CREATE,
       variables: {
