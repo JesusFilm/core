@@ -436,7 +436,7 @@ export function BackgroundColor(): ReactElement {
                 }}
               >
                 <BlurIcon
-                  sx={{ color: 'text.secondary', fontSize: 24 }}
+                  sx={{ color: 'text.secondary', fontSize: 24, opacity: 0.8 }}
                   aria-label="Backdrop blur"
                 />
               </Tooltip>
