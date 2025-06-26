@@ -49,7 +49,10 @@ export function UnsplashList({
       blurhash: item.blur_hash,
       width: 1080,
       height: Math.ceil((item.height / item.width) * 1080),
-      alt: item.alt_description
+      alt: item.alt_description,
+      scale: 100,
+      focalLeft: 50,
+      focalTop: 50
     })
   }
 

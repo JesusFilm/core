@@ -24,6 +24,7 @@ import {
   Host,
   Journey,
   JourneyCollection,
+  JourneyTheme,
   Prisma,
   Team,
   UserJourney,
@@ -646,7 +647,8 @@ export class JourneyResolver {
             typename: block.typename,
             journey: {
               connect: { id: duplicateJourneyId }
-            }
+            },
+            classNames: block.classNames ?? { self: '' }
           }))
         )
         // update block references after import
@@ -1169,6 +1171,13 @@ export class JourneyResolver {
       where: {
         journeyCollectionJourneys: { some: { journeyId: parent.id } }
       }
+    })
+  }
+
+  @ResolveField()
+  async journeyTheme(@Parent() journey: Journey): Promise<JourneyTheme | null> {
+    return await this.prismaService.journeyTheme.findUnique({
+      where: { journeyId: journey.id }
     })
   }
 }

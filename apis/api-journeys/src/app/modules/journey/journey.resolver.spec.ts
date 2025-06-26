@@ -1381,7 +1381,8 @@ describe('JourneyResolver', () => {
             'nextBlockId',
             'action'
           ]),
-          journey: { connect: { id: 'duplicateJourneyId' } }
+          journey: { connect: { id: 'duplicateJourneyId' } },
+          classNames: { self: '' }
         },
         {
           ...omit(duplicatedButton, [
@@ -1392,7 +1393,8 @@ describe('JourneyResolver', () => {
             'nextBlockId',
             'action'
           ]),
-          journey: { connect: { id: 'duplicateJourneyId' } }
+          journey: { connect: { id: 'duplicateJourneyId' } },
+          classNames: { self: '' }
         },
         {
           ...omit(duplicatedNextStep, [
@@ -1403,7 +1405,8 @@ describe('JourneyResolver', () => {
             'nextBlockId',
             'action'
           ]),
-          journey: { connect: { id: 'duplicateJourneyId' } }
+          journey: { connect: { id: 'duplicateJourneyId' } },
+          classNames: { self: '' }
         }
       ])
     })
@@ -1495,7 +1498,8 @@ describe('JourneyResolver', () => {
             'nextBlockId',
             'action'
           ]),
-          journey: { connect: { id: 'duplicateJourneyId' } }
+          journey: { connect: { id: 'duplicateJourneyId' } },
+          classNames: { self: '' }
         },
         {
           ...omit(duplicatedButton, [
@@ -1506,7 +1510,8 @@ describe('JourneyResolver', () => {
             'nextBlockId',
             'action'
           ]),
-          journey: { connect: { id: 'duplicateJourneyId' } }
+          journey: { connect: { id: 'duplicateJourneyId' } },
+          classNames: { self: '' }
         },
         {
           ...omit(duplicatedNextStep, [
@@ -1517,7 +1522,8 @@ describe('JourneyResolver', () => {
             'nextBlockId',
             'action'
           ]),
-          journey: { connect: { id: 'duplicateJourneyId' } }
+          journey: { connect: { id: 'duplicateJourneyId' } },
+          classNames: { self: '' }
         },
         {
           ...omit(duplicatedPrimaryImage, [
@@ -1528,7 +1534,8 @@ describe('JourneyResolver', () => {
             'nextBlockId',
             'action'
           ]),
-          journey: { connect: { id: 'duplicateJourneyId' } }
+          journey: { connect: { id: 'duplicateJourneyId' } },
+          classNames: { self: '' }
         }
       ])
     })
@@ -1575,7 +1582,8 @@ describe('JourneyResolver', () => {
             'nextBlockId',
             'action'
           ]),
-          journey: { connect: { id: 'duplicateJourneyId' } }
+          journey: { connect: { id: 'duplicateJourneyId' } },
+          classNames: { self: '' }
         },
         {
           ...omit(duplicatedButton, [
@@ -1586,7 +1594,8 @@ describe('JourneyResolver', () => {
             'nextBlockId',
             'action'
           ]),
-          journey: { connect: { id: 'duplicateJourneyId' } }
+          journey: { connect: { id: 'duplicateJourneyId' } },
+          classNames: { self: '' }
         },
         {
           ...omit(duplicatedNextStep, [
@@ -1597,7 +1606,8 @@ describe('JourneyResolver', () => {
             'nextBlockId',
             'action'
           ]),
-          journey: { connect: { id: 'duplicateJourneyId' } }
+          journey: { connect: { id: 'duplicateJourneyId' } },
+          classNames: { self: '' }
         },
         {
           ...omit(duplicatedLogoImage, [
@@ -1608,7 +1618,8 @@ describe('JourneyResolver', () => {
             'nextBlockId',
             'action'
           ]),
-          journey: { connect: { id: 'duplicateJourneyId' } }
+          journey: { connect: { id: 'duplicateJourneyId' } },
+          classNames: { self: '' }
         }
       ])
     })
@@ -1661,7 +1672,8 @@ describe('JourneyResolver', () => {
             'nextBlockId',
             'action'
           ]),
-          journey: { connect: { id: 'duplicateJourneyId' } }
+          journey: { connect: { id: 'duplicateJourneyId' } },
+          classNames: { self: '' }
         },
         {
           ...omit(duplicatedButton, [
@@ -1672,7 +1684,8 @@ describe('JourneyResolver', () => {
             'nextBlockId',
             'action'
           ]),
-          journey: { connect: { id: 'duplicateJourneyId' } }
+          journey: { connect: { id: 'duplicateJourneyId' } },
+          classNames: { self: '' }
         },
         {
           ...omit(duplicatedNextStep, [
@@ -1683,7 +1696,8 @@ describe('JourneyResolver', () => {
             'nextBlockId',
             'action'
           ]),
-          journey: { connect: { id: 'duplicateJourneyId' } }
+          journey: { connect: { id: 'duplicateJourneyId' } },
+          classNames: { self: '' }
         },
         {
           ...omit(duplicatedMenuStep, [
@@ -1694,7 +1708,8 @@ describe('JourneyResolver', () => {
             'nextBlockId',
             'action'
           ]),
-          journey: { connect: { id: 'duplicateJourneyId' } }
+          journey: { connect: { id: 'duplicateJourneyId' } },
+          classNames: { self: '' }
         }
       ])
     })
