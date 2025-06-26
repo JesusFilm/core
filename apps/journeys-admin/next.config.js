@@ -106,7 +106,15 @@ const nextConfig = {
         'node_modules/esbuild-linux-64/bin'
       ]
     },
+    instrumentationHook: true,
     fallbackNodePolyfills: false
+  },
+  webpack: (config) => {
+    config.module.rules.push({
+      test: /\.md$/,
+      use: 'raw-loader'
+    })
+    return config
   }
 }
 const plugins = [withNx]

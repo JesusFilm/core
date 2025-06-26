@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
+import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, ReactNode } from 'react'
@@ -13,6 +14,7 @@ interface TranslationDialogWrapperProps {
   open: boolean
   onClose: () => void
   onTranslate: () => Promise<void>
+  onCreateWithAi?: () => Promise<void>
   title: string
   loadingText?: string
   loading: boolean
@@ -41,6 +43,7 @@ interface TranslationDialogWrapperProps {
  * @param {boolean} props.open - Controls the visibility of the dialog
  * @param {() => void} props.onClose - Callback function invoked when the dialog should close
  * @param {() => Promise<void>} props.onTranslate - Async callback function triggered when the submit button is clicked
+ * @param {() => Promise<void>} [props.onCreateWithAi] - Optional async callback function triggered when the Create with AI button is clicked. If provided, the Create with AI button will be displayed.
  * @param {string} props.title - The title to display in the dialog header
  * @param {string} [props.loadingText] - Optional custom text to display during loading state
  * @param {boolean} props.loading - Flag indicating whether the dialog is in a loading state
@@ -56,6 +59,7 @@ export function TranslationDialogWrapper({
   open,
   onClose,
   onTranslate,
+  onCreateWithAi,
   title,
   loadingText,
   loading,
@@ -94,7 +98,38 @@ export function TranslationDialogWrapper({
               >
                 {t('Cancel')}
               </Button>
+<<<<<<< HEAD
               <Button
+=======
+              {onCreateWithAi && (
+                <Tooltip
+                  title={
+                    isTranslation
+                      ? t(
+                          'AI creation is not available when translation is enabled'
+                        )
+                      : ''
+                  }
+                  arrow
+                >
+                  <span>
+                    <Button
+                      name="createWithAi"
+                      color="secondary"
+                      onClick={async () => {
+                        await onCreateWithAi()
+                      }}
+                      variant="outlined"
+                      disabled={isTranslation}
+                      sx={{ mr: 3 }}
+                    >
+                      {t('Create with AI')}
+                    </Button>
+                  </span>
+                </Tooltip>
+              )}
+              <LoadingButton
+>>>>>>> origin/tataihono/nes-415-spike-build-generate-ai-description-feature-for-journey
                 variant="contained"
                 onClick={onTranslate}
                 loading={loading}

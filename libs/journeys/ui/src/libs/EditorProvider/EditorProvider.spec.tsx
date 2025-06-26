@@ -514,11 +514,11 @@ describe('EditorContext', () => {
           })
         ).toEqual({
           ...state,
-          steps: [step1, step2],
-          selectedStep: step1,
-          selectedStepId: step1.id,
-          selectedBlock: step1,
-          selectedBlockId: step1.id
+          steps: [step],
+          selectedBlock: step,
+          selectedBlockId: step.id,
+          selectedStep: step,
+          selectedStepId: step.id
         })
       })
 
@@ -669,11 +669,57 @@ describe('EditorContext', () => {
           })
         ).toEqual({
           ...state,
-          steps: [updatedPersistentStep, newStep],
-          selectedStep: updatedPersistentStep,
-          selectedStepId: updatedPersistentStep.id,
-          selectedBlock: updatedPersistentStep, // Block falls back to first step
-          selectedBlockId: updatedPersistentStep.id
+          steps: [updatedStep],
+          selectedBlock: updatedBlock,
+          selectedBlockId: updatedBlock.id,
+          selectedStep: updatedStep,
+          selectedStepId: updatedStep.id
+        })
+      })
+
+      it('should fallback to first step when selected step and block are null', () => {
+        const step1: TreeBlock = {
+          id: 'step1.id',
+          __typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 0,
+          locked: false,
+          nextBlockId: null,
+          slug: null,
+          children: []
+        }
+        const step2: TreeBlock = {
+          id: 'step2.id',
+          __typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 1,
+          locked: false,
+          nextBlockId: null,
+          slug: null,
+          children: []
+        }
+        const state: EditorState = {
+          steps: [],
+          selectedStep: undefined,
+          selectedStepId: undefined,
+          selectedBlock: undefined,
+          selectedBlockId: undefined,
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas
+        }
+        expect(
+          reducer(state, {
+            type: 'SetStepsAction',
+            steps: [step1, step2]
+          })
+        ).toEqual({
+          ...state,
+          steps: [step1, step2],
+          selectedStep: step1,
+          selectedStepId: step1.id,
+          selectedBlock: step1,
+          selectedBlockId: step1.id
         })
       })
     })
