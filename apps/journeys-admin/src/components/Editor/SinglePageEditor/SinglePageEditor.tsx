@@ -170,7 +170,7 @@ export function SinglePageEditor(): ReactElement {
               {t('Close details')}
             </Typography>
           </Collapse>
-          <ChevronRightIcon />
+          <ChevronRightIcon data-testid="ChevronRightIcon" />
         </IconButton>
       </Box>
 
