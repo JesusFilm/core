@@ -34,6 +34,14 @@ function isVideoViewRestricted(
   )
 }
 
+function isValidClientName(clientName?: string): boolean {
+  return (
+    clientName != null &&
+    clientName !== '' &&
+    Object.values(PrismaPlatform).includes(clientName as PrismaPlatform)
+  )
+}
+
 interface Info {
   variableValues:
     | Record<
@@ -223,7 +231,7 @@ const Video = builder.prismaObject('Video', {
         }
 
         // Add platform restriction filter if clientName is provided
-        if (context.clientName != null && context.clientName !== '') {
+        if (isValidClientName(context.clientName)) {
           whereCondition.NOT = {
             restrictViewPlatforms: {
               has: context.clientName as PrismaPlatform
@@ -258,7 +266,7 @@ const Video = builder.prismaObject('Video', {
         }
 
         // Add platform restriction filter if clientName is provided
-        if (context.clientName != null && context.clientName !== '') {
+        if (isValidClientName(context.clientName)) {
           whereCondition.NOT = {
             restrictViewPlatforms: {
               has: context.clientName as PrismaPlatform
@@ -526,7 +534,7 @@ builder.queryFields((t) => ({
       filter.published = true
 
       // Add platform restriction filter if clientName is provided
-      if (context.clientName != null && context.clientName !== '') {
+      if (isValidClientName(context.clientName)) {
         filter.NOT = {
           ...filter.NOT,
           restrictViewPlatforms: {
@@ -551,7 +559,7 @@ builder.queryFields((t) => ({
       filter.published = true
 
       // Add platform restriction filter if clientName is provided
-      if (context.clientName != null && context.clientName !== '') {
+      if (isValidClientName(context.clientName)) {
         filter.NOT = {
           ...filter.NOT,
           restrictViewPlatforms: {
