@@ -268,8 +268,10 @@ export const reducer = (
         action.steps.find(({ id }) => id === state.selectedStepId) ??
         action.steps[0]
       const selectedBlock =
-        searchBlocks(action.steps, state.selectedBlockId ?? '') ??
-        action.steps[0]
+        state.selectedBlockId != null
+          ? (searchBlocks(action.steps, state.selectedBlockId) ??
+            action.steps[0])
+          : action.steps[0]
       return {
         ...state,
         steps: action.steps,
