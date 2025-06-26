@@ -7,6 +7,7 @@ import { Prisma, Platform as PrismaPlatform } from '.prisma/api-media-client'
 
 import { prisma } from '../../lib/prisma'
 import { videoCacheReset } from '../../lib/videoCacheReset'
+import { updateVideoInAlgolia } from '../../workers/algolia/service'
 import { builder } from '../builder'
 import { ImageAspectRatio } from '../cloudflare/image/enums'
 import { IdType, IdTypeShape } from '../enums/idType'
@@ -30,6 +31,14 @@ function isVideoViewRestricted(
     clientName != null &&
     clientName !== '' &&
     restrictViewPlatforms.includes(clientName as PrismaPlatform)
+  )
+}
+
+function isValidClientName(clientName?: string): boolean {
+  return (
+    clientName != null &&
+    clientName !== '' &&
+    Object.values(PrismaPlatform).includes(clientName as PrismaPlatform)
   )
 }
 
@@ -222,7 +231,7 @@ const Video = builder.prismaObject('Video', {
         }
 
         // Add platform restriction filter if clientName is provided
-        if (context.clientName != null && context.clientName !== '') {
+        if (isValidClientName(context.clientName)) {
           whereCondition.NOT = {
             restrictViewPlatforms: {
               has: context.clientName as PrismaPlatform
@@ -257,7 +266,7 @@ const Video = builder.prismaObject('Video', {
         }
 
         // Add platform restriction filter if clientName is provided
-        if (context.clientName != null && context.clientName !== '') {
+        if (isValidClientName(context.clientName)) {
           whereCondition.NOT = {
             restrictViewPlatforms: {
               has: context.clientName as PrismaPlatform
@@ -406,7 +415,8 @@ const Video = builder.prismaObject('Video', {
       type: [Platform],
       nullable: false,
       resolve: ({ restrictViewPlatforms }) => restrictViewPlatforms
-    })
+    }),
+    publishedAt: t.expose('publishedAt', { type: 'Date', nullable: true })
   })
 })
 
@@ -524,7 +534,7 @@ builder.queryFields((t) => ({
       filter.published = true
 
       // Add platform restriction filter if clientName is provided
-      if (context.clientName != null && context.clientName !== '') {
+      if (isValidClientName(context.clientName)) {
         filter.NOT = {
           ...filter.NOT,
           restrictViewPlatforms: {
@@ -549,7 +559,7 @@ builder.queryFields((t) => ({
       filter.published = true
 
       // Add platform restriction filter if clientName is provided
-      if (context.clientName != null && context.clientName !== '') {
+      if (isValidClientName(context.clientName)) {
         filter.NOT = {
           ...filter.NOT,
           restrictViewPlatforms: {
@@ -573,13 +583,26 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoCreateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
+      const data = {
+        ...input,
+        // Set publishedAt to current timestamp if published is true
+        publishedAt: input.published ? new Date() : undefined
+      }
+
       const video = await prisma.video.create({
         ...query,
-        data: input
+        data
       })
+      try {
+        await updateVideoInAlgolia(video.id)
+      } catch (error) {
+        console.error('Algolia update error:', error)
+      }
+
       try {
         await videoCacheReset(video.id)
       } catch {}
+
       return video
     }
   }),
@@ -590,6 +613,21 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoUpdateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
+      // If published is being set to true, we need to check if publishedAt should be set
+      let publishedAtUpdate = undefined
+      if (input.published === true) {
+        // Check if the video already has a publishedAt value
+        const existingVideo = await prisma.video.findUnique({
+          where: { id: input.id },
+          select: { publishedAt: true }
+        })
+
+        // Only set publishedAt if it's not already set
+        if (existingVideo?.publishedAt == null) {
+          publishedAtUpdate = new Date()
+        }
+      }
+
       const video = await prisma.video.update({
         ...query,
         where: { id: input.id },
@@ -597,6 +635,7 @@ builder.mutationFields((t) => ({
           label: input.label ?? undefined,
           primaryLanguageId: input.primaryLanguageId ?? undefined,
           published: input.published ?? undefined,
+          publishedAt: publishedAtUpdate,
           slug: input.slug ?? undefined,
           noIndex: input.noIndex ?? undefined,
           childIds: input.childIds ?? undefined,
@@ -613,8 +652,15 @@ builder.mutationFields((t) => ({
         }
       })
       try {
+        await updateVideoInAlgolia(video.id)
+      } catch (error) {
+        console.error('Algolia update error:', error)
+      }
+
+      try {
         await videoCacheReset(video.id)
       } catch {}
+
       return video
     }
   })
