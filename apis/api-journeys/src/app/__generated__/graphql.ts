@@ -334,6 +334,7 @@ export class CardBlockCreateInput {
     journeyId: string;
     parentBlockId: string;
     backgroundColor?: Nullable<string>;
+    backdropBlur?: Nullable<number>;
     fullscreen?: Nullable<boolean>;
     themeMode?: Nullable<ThemeMode>;
     themeName?: Nullable<ThemeName>;
@@ -344,6 +345,7 @@ export class CardBlockUpdateInput {
     parentBlockId?: Nullable<string>;
     coverBlockId?: Nullable<string>;
     backgroundColor?: Nullable<string>;
+    backdropBlur?: Nullable<number>;
     fullscreen?: Nullable<boolean>;
     themeMode?: Nullable<ThemeMode>;
     themeName?: Nullable<ThemeName>;
@@ -1383,6 +1385,7 @@ export class CardBlock implements Block {
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
     backgroundColor?: Nullable<string>;
+    backdropBlur?: Nullable<number>;
     coverBlockId?: Nullable<string>;
     fullscreen: boolean;
     classNames: CardBlockClassNames;
