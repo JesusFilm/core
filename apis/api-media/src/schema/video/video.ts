@@ -38,7 +38,7 @@ function isValidClientName(clientName?: string): boolean {
   return (
     clientName != null &&
     clientName !== '' &&
-    Object.values(Platform).includes(clientName as PrismaPlatform)
+    Object.values(PrismaPlatform).includes(clientName as PrismaPlatform)
   )
 }
 
