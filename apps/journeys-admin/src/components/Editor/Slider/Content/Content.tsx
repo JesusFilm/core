@@ -31,6 +31,7 @@ export function Content(): ReactElement {
       sx={{
         position: 'relative',
         flexGrow: 1,
+        height: '100%',
         '& .journey-edit-content-component-enter': {
           opacity: 0,
           transform: 'translateX(50px)'
@@ -79,6 +80,7 @@ export function Content(): ReactElement {
             userSelect: 'none',
             display: 'flex',
             justifyContent: 'space-between',
+            height: '100%',
             transition: (theme) =>
               `${theme.transitions.create(['opacity', 'transform'], {
                 duration: 300
