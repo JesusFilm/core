@@ -68,7 +68,8 @@ export function Canvas(): ReactElement {
   const { rtl, locale } = getJourneyRTL(journey)
   const router = useRouter()
 
-  const initialScale = 1 // Always start with scale 1, let resize handler calculate proper scale
+  const initialScale =
+    typeof window !== 'undefined' && window.innerWidth <= 600 ? 0 : 1
   const [scale, setScale] = useState(initialScale)
 
   useEffect(() => {
@@ -155,7 +156,9 @@ export function Canvas(): ReactElement {
         alignItems: 'center',
         alignSelf: 'center',
         justifyContent: 'center',
-        flexGrow: 1
+        flexGrow: { xs: 1, md: activeSlide === ActiveSlide.Content ? 1 : 0 },
+        transition: (theme) =>
+          theme.transitions.create('flex-grow', { duration: 300 })
       }}
     >
       {selectedStep != null && theme != null && (

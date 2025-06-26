@@ -7,13 +7,11 @@ export const CARD_HEIGHT = 674
 
 export function calculateScale(ref: RefObject<HTMLDivElement>): number {
   const current = ref.current
-  if (current == null) return 1 // Return 1 instead of 0 as fallback
+  if (current == null) return 0
 
-  const clientHeight = current.clientHeight
-  if (clientHeight === 0) return 1 // Return 1 if no height available yet
-
-  const scale = clientHeight / (CARD_HEIGHT + EDIT_TOOLBAR_HEIGHT)
-  return Math.min(scale, 1)
+  const clientHeight =
+    current.clientHeight / (CARD_HEIGHT + EDIT_TOOLBAR_HEIGHT)
+  return Math.min(clientHeight, 1)
 }
 
 export function calculateScaledMargin(
