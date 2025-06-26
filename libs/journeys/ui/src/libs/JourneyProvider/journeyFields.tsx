@@ -102,9 +102,9 @@ export const JOURNEY_FIELDS = gql`
     }
     journeyTheme {
       id
-      primaryFont
-      secondaryFont
-      accentFont
+      headerFont
+      bodyFont
+      labelFont
     }
   }
 `

@@ -595,9 +595,9 @@ export interface GetPublisherTemplate_publisherTemplate_menuStepBlock {
 export interface GetPublisherTemplate_publisherTemplate_journeyTheme {
   __typename: "JourneyTheme";
   id: string;
-  primaryFont: string | null;
-  secondaryFont: string | null;
-  accentFont: string | null;
+  headerFont: string | null;
+  bodyFont: string | null;
+  labelFont: string | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate {

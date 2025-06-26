@@ -595,9 +595,9 @@ export interface GetAdminJourneyWithPlausibleToken_journey_menuStepBlock {
 export interface GetAdminJourneyWithPlausibleToken_journey_journeyTheme {
   __typename: "JourneyTheme";
   id: string;
-  primaryFont: string | null;
-  secondaryFont: string | null;
-  accentFont: string | null;
+  headerFont: string | null;
+  bodyFont: string | null;
+  labelFont: string | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey {

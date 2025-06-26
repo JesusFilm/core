@@ -595,9 +595,9 @@ export interface JourneyFields_menuStepBlock {
 export interface JourneyFields_journeyTheme {
   __typename: "JourneyTheme";
   id: string;
-  primaryFont: string | null;
-  secondaryFont: string | null;
-  accentFont: string | null;
+  headerFont: string | null;
+  bodyFont: string | null;
+  labelFont: string | null;
 }
 
 export interface JourneyFields {
