@@ -821,7 +821,7 @@ describe('AiChat', () => {
         'overflow-y': 'auto',
         // page-specific styles
         'max-height': '100%',
-        'flex-grow': '0',
+        'flex-grow': '1',
         'justify-content': 'flex-end'
       })
     })
