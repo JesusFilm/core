@@ -38,22 +38,28 @@ describe('ClientLayout', () => {
   const mockVideoVariants = [
     {
       id: 'variant1',
+      published: true,
       language: {
         id: 'lang1',
+        slug: 'english',
         name: [{ value: 'English' }]
       }
     },
     {
       id: 'variant2',
+      published: false,
       language: {
         id: 'lang2',
+        slug: 'spanish',
         name: [{ value: 'Spanish' }]
       }
     },
     {
       id: 'variant3',
+      published: true,
       language: {
         id: 'lang3',
+        slug: 'french',
         name: [{ value: 'French' }]
       }
     }
@@ -68,6 +74,9 @@ describe('ClientLayout', () => {
     const mockQueryResult: QueryResult<any, OperationVariables> = {
       data: {
         adminVideo: {
+          id: 'video123',
+          slug: 'test-video',
+          published: true,
           variants: mockVideoVariants
         }
       },
@@ -184,5 +193,58 @@ describe('ClientLayout', () => {
     )
 
     expect(screen.getByTestId('child-content')).toBeInTheDocument()
+  })
+
+  it('should render preview buttons for published variants', async () => {
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <ClientLayout params={{ videoId: 'video123' }}>
+            <div>Child content</div>
+          </ClientLayout>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const previewButtons = screen.getAllByLabelText('preview variant')
+    expect(previewButtons).toHaveLength(3) // All variants should have preview buttons
+
+    // First and third variants are published and video is published, so they should be enabled
+    expect(previewButtons[0]).not.toBeDisabled()
+    expect(previewButtons[2]).not.toBeDisabled()
+
+    // Second variant is unpublished, so it should be disabled
+    expect(previewButtons[1]).toBeDisabled()
+  })
+
+  it('should open preview in new window when preview button is clicked for published variant', async () => {
+    // Mock window.open
+    const mockWindowOpen = jest.fn()
+    Object.defineProperty(window, 'open', {
+      value: mockWindowOpen,
+      writable: true
+    })
+
+    // Mock environment variable
+    process.env.NEXT_PUBLIC_WATCH_URL = 'https://watch.jesusfilm.org'
+
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <ClientLayout params={{ videoId: 'video123' }}>
+            <div>Child content</div>
+          </ClientLayout>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const previewButtons = screen.getAllByLabelText('preview variant')
+    fireEvent.click(previewButtons[0]) // Click first (published) variant
+
+    expect(mockWindowOpen).toHaveBeenCalledWith(
+      'https://watch.jesusfilm.org/watch/test-video.html/english.html',
+      '_blank',
+      'noopener,noreferrer'
+    )
   })
 })

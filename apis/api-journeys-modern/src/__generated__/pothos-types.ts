@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { Prisma, ChatButton, Event, Visitor, Host, JourneyVisitor, Team, Integration, UserTeam, UserTeamInvite, UserJourney, JourneyTag, Journey, UserRole, JourneyProfile, UserInvite, Block, Action, JourneysEmailPreference, JourneyNotification, CustomDomain, JourneyCollection, JourneyCollectionJourneys, QrCode, JourneyEventsExportLog } from ".prisma/api-journeys-modern-client/index.js";
+import type { Prisma, ChatButton, Event, Visitor, Host, JourneyVisitor, Team, Integration, UserTeam, UserTeamInvite, UserJourney, JourneyTag, Journey, UserRole, JourneyProfile, UserInvite, Block, Action, JourneysEmailPreference, JourneyNotification, CustomDomain, JourneyCollection, JourneyCollectionJourneys, QrCode, JourneyEventsExportLog, JourneyTheme } from ".prisma/api-journeys-modern-client/index.js";
 export default interface PrismaTypes {
     ChatButton: {
         Name: "ChatButton";
@@ -316,7 +316,7 @@ export default interface PrismaTypes {
         Where: Prisma.JourneyWhereInput;
         Create: {};
         Update: {};
-        RelationName: "actions" | "blocks" | "chatButtons" | "Event" | "creatorImageBlock" | "host" | "logoImageBlock" | "menuStepBlock" | "primaryImageBlock" | "team" | "journeyCollectionJourneys" | "journeyEventsExportLogs" | "journeyNotifications" | "journeyTags" | "journeyVisitors" | "qrCode" | "userInvites" | "userJourneys";
+        RelationName: "actions" | "blocks" | "chatButtons" | "Event" | "creatorImageBlock" | "host" | "logoImageBlock" | "menuStepBlock" | "primaryImageBlock" | "team" | "journeyCollectionJourneys" | "journeyEventsExportLogs" | "journeyNotifications" | "journeyTags" | "journeyTheme" | "journeyVisitors" | "qrCode" | "userInvites" | "userJourneys";
         ListRelations: "actions" | "blocks" | "chatButtons" | "Event" | "journeyCollectionJourneys" | "journeyEventsExportLogs" | "journeyNotifications" | "journeyTags" | "journeyVisitors" | "qrCode" | "userInvites" | "userJourneys";
         Relations: {
             actions: {
@@ -388,6 +388,11 @@ export default interface PrismaTypes {
                 Shape: JourneyTag[];
                 Name: "JourneyTag";
                 Nullable: false;
+            };
+            journeyTheme: {
+                Shape: JourneyTheme | null;
+                Name: "JourneyTheme";
+                Nullable: true;
             };
             journeyVisitors: {
                 Shape: JourneyVisitor[];
@@ -736,6 +741,26 @@ export default interface PrismaTypes {
         OrderBy: Prisma.JourneyEventsExportLogOrderByWithRelationInput;
         WhereUnique: Prisma.JourneyEventsExportLogWhereUniqueInput;
         Where: Prisma.JourneyEventsExportLogWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: "journey";
+        ListRelations: never;
+        Relations: {
+            journey: {
+                Shape: Journey;
+                Name: "Journey";
+                Nullable: false;
+            };
+        };
+    };
+    JourneyTheme: {
+        Name: "JourneyTheme";
+        Shape: JourneyTheme;
+        Include: Prisma.JourneyThemeInclude;
+        Select: Prisma.JourneyThemeSelect;
+        OrderBy: Prisma.JourneyThemeOrderByWithRelationInput;
+        WhereUnique: Prisma.JourneyThemeWhereUniqueInput;
+        Where: Prisma.JourneyThemeWhereInput;
         Create: {};
         Update: {};
         RelationName: "journey";
