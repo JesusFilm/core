@@ -613,6 +613,69 @@ describe('EditorContext', () => {
           selectedBlockId: step1.id
         })
       })
+
+      it('should fallback block when step survives but block is deleted', () => {
+        const cardBlock: TreeBlock = {
+          id: 'card.id',
+          __typename: 'CardBlock',
+          parentBlockId: null,
+          backgroundColor: null,
+          coverBlockId: null,
+          parentOrder: 0,
+          themeMode: null,
+          themeName: null,
+          fullscreen: false,
+          children: []
+        }
+        const persistentStep: TreeBlock = {
+          id: 'persistent-step.id',
+          __typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 0,
+          locked: false,
+          nextBlockId: null,
+          slug: null,
+          children: [cardBlock]
+        }
+        const newStep: TreeBlock = {
+          id: 'new-step.id',
+          __typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 1,
+          locked: false,
+          nextBlockId: null,
+          slug: null,
+          children: []
+        }
+        // Updated version of persistent step without the nested card block
+        const updatedPersistentStep: TreeBlock = {
+          ...persistentStep,
+          children: []
+        }
+        const state: EditorState = {
+          steps: [persistentStep],
+          selectedStepId: 'persistent-step.id',
+          selectedStep: persistentStep,
+          selectedBlockId: 'card.id', // This block will no longer exist
+          selectedBlock: cardBlock,
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas
+        }
+        expect(
+          reducer(state, {
+            type: 'SetStepsAction',
+            steps: [updatedPersistentStep, newStep]
+          })
+        ).toEqual({
+          ...state,
+          steps: [updatedPersistentStep, newStep],
+          selectedStep: updatedPersistentStep,
+          selectedStepId: updatedPersistentStep.id,
+          selectedBlock: updatedPersistentStep, // Block falls back to first step
+          selectedBlockId: updatedPersistentStep.id
+        })
+      })
     })
 
     describe('SetEditorFocusAction', () => {
