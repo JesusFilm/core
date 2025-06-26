@@ -49,24 +49,6 @@ const TrashJourneyDialog = dynamic(
   { ssr: false }
 )
 
-const DefaultMenu = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "DefaultMenu" */
-      './DefaultMenu'
-    ).then((mod) => mod.DefaultMenu),
-  { ssr: false }
-)
-
-const TrashMenu = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "TrashMenu" */
-      './TrashMenu'
-    ).then((mod) => mod.TrashMenu),
-  { ssr: false }
-)
-
 const JourneyDetailsDialog = dynamic(
   async () =>
     await import(
@@ -127,7 +109,7 @@ export function JourneyCardMenu({
   onMenuClose
 }: JourneyCardMenuProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
-  const open = Boolean(anchorEl)
+  const [open, setOpen] = useState<boolean | null>(null)
 
   const [openAccessDialog, setOpenAccessDialog] = useState<
     boolean | undefined
@@ -147,11 +129,39 @@ export function JourneyCardMenu({
   >()
   const [keepMounted, setKeepMounted] = useState<boolean>(false)
 
-  const handleOpenMenu = (event: React.MouseEvent<HTMLElement>): void => {
+  const [DefaultMenuItemsComponent, setDefaultMenuItemsComponent] = useState<
+    ((args: any) => ReactElement) | null
+  >(null)
+  const [TrashMenuItemsComponent, setTrashMenuItemsComponent] = useState<
+    ((args: any) => ReactElement) | null
+  >(null)
+
+  const handleOpenMenu = async (
+    event: React.MouseEvent<HTMLElement>
+  ): Promise<void> => {
     setAnchorEl(event.currentTarget)
+    if (status === JourneyStatus.trashed) {
+      if (TrashMenuItemsComponent == null) {
+        const mod = await import(
+          /* webpackChunkName: "TrashMenu" */
+          './TrashMenu'
+        )
+        setTrashMenuItemsComponent(() => mod.TrashMenu)
+      }
+    } else {
+      if (DefaultMenuItemsComponent == null) {
+        const mod = await import(
+          /* webpackChunkName: "DefaultMenu" */
+          './DefaultMenu'
+        )
+        setDefaultMenuItemsComponent(() => mod.DefaultMenu)
+      }
+    }
+    setOpen(true)
   }
   const handleCloseMenu = (): void => {
     setAnchorEl(null)
+    setOpen(false)
     onMenuClose?.()
   }
 
@@ -195,13 +205,13 @@ export function JourneyCardMenu({
             pointerEvents: 'none'
           }}
         >
-          <MoreIcon />
+          <MoreIcon data-testid="MoreIcon" />
         </IconButton>
       </Box>
       <Menu
         id="journey-actions"
         anchorEl={anchorEl}
-        open={open}
+        open={open ?? false}
         onClose={handleCloseMenu}
         keepMounted={keepMounted}
         MenuListProps={{
@@ -217,29 +227,32 @@ export function JourneyCardMenu({
         }}
         data-testid="JourneyCardMenu"
       >
-        {status === JourneyStatus.trashed ? (
-          <TrashMenu
-            setOpenRestoreDialog={() => setOpenRestoreDialog(true)}
-            setOpenDeleteDialog={() => setOpenDeleteDialog(true)}
-            handleCloseMenu={handleCloseMenu}
-          />
-        ) : (
-          <DefaultMenu
-            id={id}
-            status={status}
-            slug={slug}
-            journeyId={id}
-            published={published}
-            handleKeepMounted={handleKeepMounted}
-            setOpenAccessDialog={() => setOpenAccessDialog(true)}
-            handleCloseMenu={handleCloseMenu}
-            setOpenTrashDialog={() => setOpenTrashDialog(true)}
-            setOpenDetailsDialog={() => setOpenDetailsDialog(true)}
-            setOpenTranslateDialog={() => setOpenTranslateDialog(true)}
-            template={template}
-            refetch={refetch}
-          />
-        )}
+        {status === JourneyStatus.trashed
+          ? TrashMenuItemsComponent && (
+              <TrashMenuItemsComponent
+                setOpenRestoreDialog={() => setOpenRestoreDialog(true)}
+                setOpenDeleteDialog={() => setOpenDeleteDialog(true)}
+                handleCloseMenu={handleCloseMenu}
+              />
+            )
+          : DefaultMenuItemsComponent && (
+              <DefaultMenuItemsComponent
+                id={id}
+                status={status}
+                slug={slug}
+                journeyId={id}
+                journey={journey}
+                published={published}
+                handleKeepMounted={handleKeepMounted}
+                setOpenAccessDialog={() => setOpenAccessDialog(true)}
+                handleCloseMenu={handleCloseMenu}
+                setOpenTrashDialog={() => setOpenTrashDialog(true)}
+                setOpenTranslateDialog={() => setOpenTranslateDialog(true)}
+                setOpenDetailsDialog={() => setOpenDetailsDialog(true)}
+                template={template}
+                refetch={refetch}
+              />
+            )}
       </Menu>
       {openAccessDialog != null && (
         <AccessDialog
