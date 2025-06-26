@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Grid from '@mui/material/Grid2'
+import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
 import { styled, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'

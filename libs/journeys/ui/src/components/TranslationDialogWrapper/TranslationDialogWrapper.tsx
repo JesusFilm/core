@@ -1,4 +1,3 @@
-import { LoadingButton } from '@mui/lab'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -128,7 +127,7 @@ export function TranslationDialogWrapper({
                   </span>
                 </Tooltip>
               )}
-              <LoadingButton
+              <Button
                 variant="contained"
                 onClick={onTranslate}
                 loading={loading}
@@ -137,7 +136,7 @@ export function TranslationDialogWrapper({
                 }}
               >
                 {submitLabel ?? t('Create')}
-              </LoadingButton>
+              </Button>
             </>
           )}
         </>

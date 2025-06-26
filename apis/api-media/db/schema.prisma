@@ -90,6 +90,12 @@ enum IdType {
   slug
 }
 
+enum Platform {
+  arclight
+  journeys
+  watch
+}
+
 enum VideoLabel {
   collection
   episode
@@ -102,31 +108,34 @@ enum VideoLabel {
 }
 
 model Video {
-  id                 String               @id @default(uuid())
-  label              VideoLabel
-  primaryLanguageId  String
-  published          Boolean              @default(true)
-  title              VideoTitle[]
-  snippet            VideoSnippet[]
-  description        VideoDescription[]
-  studyQuestions     VideoStudyQuestion[]
-  imageAlt           VideoImageAlt[]
-  slug               String?              @unique
-  noIndex            Boolean?
-  childIds           String[] // needed for child sort order
-  locked             Boolean              @default(false)
-  subtitles          VideoSubtitle[]
-  children           Video[]              @relation("ParentChild")
-  parent             Video[]              @relation("ParentChild")
-  variants           VideoVariant[]
-  bibleCitation      BibleCitation[]
-  keywords           Keyword[]            @relation("VideoToKeyword")
-  images             CloudflareImage[]
-  cloudflareAssets   CloudflareR2[]
-  videoEditions      VideoEdition[]
-  availableLanguages String[]
-  origin             VideoOrigin?         @relation(fields: [originId], references: [id])
-  originId           String?
+  id                        String               @id @default(uuid())
+  label                     VideoLabel
+  primaryLanguageId         String
+  published                 Boolean              @default(true)
+  title                     VideoTitle[]
+  snippet                   VideoSnippet[]
+  description               VideoDescription[]
+  studyQuestions            VideoStudyQuestion[]
+  imageAlt                  VideoImageAlt[]
+  slug                      String?              @unique
+  noIndex                   Boolean?
+  childIds                  String[] // needed for child sort order
+  locked                    Boolean              @default(false)
+  subtitles                 VideoSubtitle[]
+  children                  Video[]              @relation("ParentChild")
+  parent                    Video[]              @relation("ParentChild")
+  variants                  VideoVariant[]
+  bibleCitation             BibleCitation[]
+  keywords                  Keyword[]            @relation("VideoToKeyword")
+  images                    CloudflareImage[]
+  cloudflareAssets          CloudflareR2[]
+  videoEditions             VideoEdition[]
+  availableLanguages        String[]
+  origin                    VideoOrigin?         @relation(fields: [originId], references: [id])
+  originId                  String?
+  restrictDownloadPlatforms Platform[]           @default([])
+  restrictViewPlatforms     Platform[]           @default([])
+  publishedAt               DateTime?
 
   @@index(label)
   @@index(childIds)
