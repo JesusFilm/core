@@ -350,8 +350,7 @@ describe('TranslationDialogWrapper', () => {
           name: 'Create with AI'
         })
 
-        // Hover over the button
-        await user.hover(createWithAiButton)
+        await user.hover(createWithAiButton.parentElement!)
 
         // Wait a bit to ensure tooltip doesn't appear
         await new Promise((resolve) => setTimeout(resolve, 100))
