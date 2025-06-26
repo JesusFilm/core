@@ -98,9 +98,6 @@ export function TranslationDialogWrapper({
               >
                 {t('Cancel')}
               </Button>
-<<<<<<< HEAD
-              <Button
-=======
               {onCreateWithAi && (
                 <Tooltip
                   title={
@@ -129,7 +126,6 @@ export function TranslationDialogWrapper({
                 </Tooltip>
               )}
               <LoadingButton
->>>>>>> origin/tataihono/nes-415-spike-build-generate-ai-description-feature-for-journey
                 variant="contained"
                 onClick={onTranslate}
                 loading={loading}
