@@ -3,6 +3,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
 import { type ReactElement, useEffect, useRef, useState } from 'react'
+import { CSSTransition, TransitionGroup } from 'react-transition-group'
 
 import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
@@ -218,96 +219,117 @@ export function Canvas(): ReactElement {
               {({ document }) => (
                 <ThemeProvider {...theme} rtl={rtl} locale={locale}>
                   <Hotkeys document={document} />
-                  <Box
+                  <TransitionGroup
+                    component={Box}
                     sx={{
+                      '& .card-enter': {
+                        opacity: 0
+                      },
+                      '& .card-enter-active': {
+                        opacity: 1,
+                        transition: 'opacity 0.15s ease'
+                      },
+                      '& .card-exit': {
+                        opacity: 1
+                      },
+                      '& .card-exit-active': {
+                        opacity: 0,
+                        transition: 'opacity 0.3s ease'
+                      },
                       position: 'relative',
                       width: 'calc(100% - 24px)',
                       height: 'calc(100vh - 24px)',
                       m: '12px'
                     }}
                   >
-                    <Stack
+                    <CSSTransition
                       key={selectedStep.id}
-                      justifyContent="center"
-                      sx={{
-                        position: 'absolute',
-                        top: 0,
-                        right: 0,
-                        bottom: 0,
-                        left: 0
-                      }}
-                      className="animate-in fade-in duration-300"
-                      data-testid={`step-${selectedStep.id}`}
+                      timeout={300}
+                      classNames="card"
                     >
-                      <ThemeProvider
-                        themeName={ThemeName.journeyUi}
-                        themeMode={theme.themeMode}
-                        rtl={rtl}
-                        locale={locale}
-                        nested
+                      <Stack
+                        justifyContent="center"
+                        sx={{
+                          position: 'absolute',
+                          top: 0,
+                          right: 0,
+                          bottom: 0,
+                          left: 0,
+                          transition: (theme) =>
+                            theme.transitions.create('opacity')
+                        }}
+                        data-testid={`step-${selectedStep.id}`}
                       >
-                        <StepHeader
-                          sx={{
-                            outline:
-                              activeCanvasDetailsDrawer ===
-                                ActiveCanvasDetailsDrawer.JourneyAppearance &&
-                              journey?.website === true
-                                ? '2px solid #C52D3A'
-                                : 'none',
-                            outlineOffset: -4,
-                            borderRadius: 6,
-                            cursor: 'pointer',
-                            minHeight: '42px'
-                          }}
-                          onHeaderClick={
-                            journey?.website === true
-                              ? handleJourneyAppearanceClick
-                              : undefined
-                          }
-                        />
-                      </ThemeProvider>
-                      <DragDropWrapper>
-                        <JourneyLocaleProvider locale={locale}>
-                          <BlockRenderer
-                            block={selectedStep}
-                            wrappers={{
-                              Wrapper: SelectableWrapper,
-                              TypographyWrapper: InlineEditWrapper,
-                              ButtonWrapper: InlineEditWrapper,
-                              RadioQuestionWrapper: InlineEditWrapper,
-                              RadioOptionWrapper: InlineEditWrapper,
-                              TextResponseWrapper: InlineEditWrapper,
-                              SignUpWrapper: InlineEditWrapper,
-                              VideoWrapper,
-                              CardWrapper,
-                              DragItemWrapper
+                        <ThemeProvider
+                          themeName={ThemeName.journeyUi}
+                          themeMode={theme.themeMode}
+                          rtl={rtl}
+                          locale={locale}
+                          nested
+                        >
+                          <StepHeader
+                            sx={{
+                              outline:
+                                activeCanvasDetailsDrawer ===
+                                  ActiveCanvasDetailsDrawer.JourneyAppearance &&
+                                journey?.website === true
+                                  ? '2px solid #C52D3A'
+                                  : 'none',
+                              outlineOffset: -4,
+                              borderRadius: 6,
+                              cursor: 'pointer',
+                              minHeight: '42px'
                             }}
+                            onHeaderClick={
+                              journey?.website === true
+                                ? handleJourneyAppearanceClick
+                                : undefined
+                            }
                           />
-                        </JourneyLocaleProvider>
-                      </DragDropWrapper>
-                      <ThemeProvider
-                        themeName={ThemeName.journeyUi}
-                        themeMode={theme.themeMode}
-                        rtl={rtl}
-                        locale={locale}
-                        nested
-                      >
-                        <StepFooter
-                          sx={{
-                            outline:
-                              activeCanvasDetailsDrawer ===
-                              ActiveCanvasDetailsDrawer.JourneyAppearance
-                                ? '2px solid #C52D3A'
-                                : 'none',
-                            outlineOffset: -4,
-                            borderRadius: 6,
-                            cursor: 'pointer'
-                          }}
-                          onFooterClick={handleJourneyAppearanceClick}
-                        />
-                      </ThemeProvider>
-                    </Stack>
-                  </Box>
+                        </ThemeProvider>
+                        <DragDropWrapper>
+                          <JourneyLocaleProvider locale={locale}>
+                            <BlockRenderer
+                              block={selectedStep}
+                              wrappers={{
+                                Wrapper: SelectableWrapper,
+                                TypographyWrapper: InlineEditWrapper,
+                                ButtonWrapper: InlineEditWrapper,
+                                RadioQuestionWrapper: InlineEditWrapper,
+                                RadioOptionWrapper: InlineEditWrapper,
+                                TextResponseWrapper: InlineEditWrapper,
+                                SignUpWrapper: InlineEditWrapper,
+                                VideoWrapper,
+                                CardWrapper,
+                                DragItemWrapper
+                              }}
+                            />
+                          </JourneyLocaleProvider>
+                        </DragDropWrapper>
+                        <ThemeProvider
+                          themeName={ThemeName.journeyUi}
+                          themeMode={theme.themeMode}
+                          rtl={rtl}
+                          locale={locale}
+                          nested
+                        >
+                          <StepFooter
+                            sx={{
+                              outline:
+                                activeCanvasDetailsDrawer ===
+                                ActiveCanvasDetailsDrawer.JourneyAppearance
+                                  ? '2px solid #C52D3A'
+                                  : 'none',
+                              outlineOffset: -4,
+                              borderRadius: 6,
+                              cursor: 'pointer'
+                            }}
+                            onFooterClick={handleJourneyAppearanceClick}
+                          />
+                        </ThemeProvider>
+                      </Stack>
+                    </CSSTransition>
+                  </TransitionGroup>
                 </ThemeProvider>
               )}
             </FramePortal>

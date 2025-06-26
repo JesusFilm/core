@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box'
 import type { ReactElement } from 'react'
+import { CSSTransition, TransitionGroup } from 'react-transition-group'
 
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 
@@ -25,28 +26,47 @@ export function Content(): ReactElement {
   }
 
   return (
-    <Box
-      data-testid="Content"
+    <TransitionGroup
+      component={Box}
       sx={{
         position: 'relative',
         flexGrow: 1,
-        display: 'flex',
-        justifyContent: 'space-between'
+        '& .journey-edit-content-component-enter': {
+          opacity: 0,
+          transform: 'translateX(50px)'
+        },
+        '& .journey-edit-content-component-enter-active': {
+          opacity: 1,
+          transform: 'translateX(0)',
+          transition: (theme) =>
+            `${theme.transitions.create(['opacity', 'transform'], {
+              duration: 300,
+              easing: theme.transitions.easing.easeOut
+            })}`
+        },
+        '& .journey-edit-content-component-enter-done': {
+          opacity: 1,
+          transform: 'translateX(0)'
+        },
+        '& .journey-edit-content-component-exit': {
+          opacity: 1,
+          transform: 'translateX(0)'
+        },
+        '& .journey-edit-content-component-exit-active': {
+          opacity: 0,
+          transform: 'translateX(50px)',
+          transition: (theme) =>
+            `${theme.transitions.create(['opacity', 'transform'], {
+              duration: 300,
+              easing: theme.transitions.easing.easeIn
+            })}`
+        }
       }}
-      className="transition-opacity duration-600 ease-in-out"
     >
-      <Box
+      <CSSTransition
         key={activeContent}
-        sx={{
-          position: 'absolute',
-          top: 0,
-          right: 0,
-          bottom: 0,
-          left: 0,
-          userSelect: 'none',
-          display: 'flex',
-          justifyContent: 'space-between'
-        }}
+        timeout={600}
+        classNames="journey-edit-content-component"
       >
         <Box
           data-testid="Content"
@@ -59,12 +79,15 @@ export function Content(): ReactElement {
             userSelect: 'none',
             display: 'flex',
             justifyContent: 'space-between',
-            className: 'animate-in fade-in duration-300',
+            transition: (theme) =>
+              `${theme.transitions.create(['opacity', 'transform'], {
+                duration: 300
+              })}`
           }}
         >
           {content}
         </Box>
-      </Box>
-    </Box>
+      </CSSTransition>
+    </TransitionGroup>
   )
 }
