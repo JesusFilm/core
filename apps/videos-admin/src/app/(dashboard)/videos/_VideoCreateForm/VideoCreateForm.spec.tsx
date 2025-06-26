@@ -117,7 +117,10 @@ describe('VideoCreateForm', () => {
       data: {
         adminVideo: {
           id: mockParentId,
-          label: 'series'
+          label: 'series',
+          origin: {
+            id: 'origin-1'
+          }
         }
       }
     }
@@ -193,9 +196,14 @@ describe('VideoCreateForm', () => {
       })
     })
 
-    it('shows suggested label explanation when parent video has a label', async () => {
+    it('pre-selects episode label for series parent', async () => {
       await waitFor(() => {
-        expect(screen.getByText(/Based on the parent/)).toBeInTheDocument()
+        // Check that "Episode" is displayed in the label select field
+        expect(screen.getByText('Episode')).toBeInTheDocument()
+
+        // Also verify the hidden input has the correct value
+        const hiddenInput = screen.getByDisplayValue('episode')
+        expect(hiddenInput).toBeInTheDocument()
       })
     })
 
