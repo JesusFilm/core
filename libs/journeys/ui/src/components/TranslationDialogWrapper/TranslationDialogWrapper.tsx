@@ -125,16 +125,6 @@ export function TranslationDialogWrapper({
                   </span>
                 </Tooltip>
               )}
-              <LoadingButton
-                variant="contained"
-                onClick={onTranslate}
-                loading={loading}
-                sx={{
-                  backgroundColor: 'secondary.dark'
-                }}
-              >
-                {submitLabel ?? t('Create')}
-              </Button>
             </>
           )}
         </>
