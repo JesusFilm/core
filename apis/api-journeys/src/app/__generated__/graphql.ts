@@ -857,15 +857,15 @@ export class JourneyProfileUpdateInput {
 
 export class JourneyThemeCreateInput {
     journeyId: string;
-    primaryFont?: Nullable<string>;
-    secondaryFont?: Nullable<string>;
-    accentFont?: Nullable<string>;
+    headerFont?: Nullable<string>;
+    bodyFont?: Nullable<string>;
+    labelFont?: Nullable<string>;
 }
 
 export class JourneyThemeUpdateInput {
-    primaryFont?: Nullable<string>;
-    secondaryFont?: Nullable<string>;
-    accentFont?: Nullable<string>;
+    headerFont?: Nullable<string>;
+    bodyFont?: Nullable<string>;
+    labelFont?: Nullable<string>;
 }
 
 export class JourneyVisitorFilter {
@@ -1939,9 +1939,9 @@ export class JourneyTheme {
     journeyId: string;
     journey: Journey;
     userId: string;
-    primaryFont?: Nullable<string>;
-    secondaryFont?: Nullable<string>;
-    accentFont?: Nullable<string>;
+    headerFont?: Nullable<string>;
+    bodyFont?: Nullable<string>;
+    labelFont?: Nullable<string>;
     createdAt: DateTime;
     updatedAt: DateTime;
 }
