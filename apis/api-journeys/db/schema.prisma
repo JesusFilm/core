@@ -488,6 +488,7 @@ model Block {
   endIconId               String?
   action                  Action?
   backgroundColor         String?
+  backdropBlur            Int?
   coverBlockId            String?              @unique
   fullscreen              Boolean?
   themeMode               String?
