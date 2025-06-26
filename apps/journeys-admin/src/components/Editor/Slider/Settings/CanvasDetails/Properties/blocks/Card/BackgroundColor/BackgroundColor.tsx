@@ -1,4 +1,4 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql, useApolloClient, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import InputAdornment from '@mui/material/InputAdornment'
@@ -77,6 +77,12 @@ export const CARD_BLOCK_BACKDROP_BLUR_UPDATE = gql`
   }
 `
 
+const UPDATE_BACKDROP_BLUR_FRAGMENT = gql`
+  fragment UpdateBackdropBlur on CardBlock {
+    backdropBlur
+  }
+`
+
 export function BackgroundColor(): ReactElement {
   const {
     state: { selectedBlock, selectedStep },
@@ -85,6 +91,7 @@ export function BackgroundColor(): ReactElement {
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
   const { add } = useCommand()
+  const client = useApolloClient()
   const [cardBlockUpdate] = useMutation<CardBlockBackgroundColorUpdate>(
     CARD_BLOCK_BACKGROUND_COLOR_UPDATE
   )
@@ -134,24 +141,17 @@ export function BackgroundColor(): ReactElement {
   function handleBlurSliderChange(_: Event, newValue: number): void {
     setBlurPercentage(newValue)
     setInputValue(`${newValue}%`) // Update input field to match slider
-    // Convert percentage to pixels for the mutation
+
+    // Convert percentage to pixels for cache update
     const pixelValue = Math.round((newValue / 100) * 25)
 
-    // Update Apollo cache immediately for real-time visual feedback
+    // Update Apollo cache directly for real-time visual feedback (no API call)
     if (cardBlock != null) {
-      void cardBlockBackdropBlurUpdate({
-        variables: {
-          id: cardBlock.id,
-          input: {
-            backdropBlur: pixelValue
-          }
-        },
-        optimisticResponse: {
-          cardBlockUpdate: {
-            id: cardBlock.id,
-            __typename: 'CardBlock',
-            backdropBlur: pixelValue
-          }
+      client.writeFragment({
+        id: client.cache.identify(cardBlock as any),
+        fragment: UPDATE_BACKDROP_BLUR_FRAGMENT,
+        data: {
+          backdropBlur: pixelValue
         }
       })
     }
@@ -222,25 +222,8 @@ export function BackgroundColor(): ReactElement {
     setInputValue(`${numValue}%`) // Update input to show the constrained value
     const pixelValue = Math.round((numValue / 100) * 25)
 
-    // Update Apollo cache immediately for real-time visual feedback
+    // For input: Make single API call with command pattern for undo/redo + UI update
     if (cardBlock != null) {
-      void cardBlockBackdropBlurUpdate({
-        variables: {
-          id: cardBlock.id,
-          input: {
-            backdropBlur: pixelValue
-          }
-        },
-        optimisticResponse: {
-          cardBlockUpdate: {
-            id: cardBlock.id,
-            __typename: 'CardBlock',
-            backdropBlur: pixelValue
-          }
-        }
-      })
-
-      // Also trigger command for undo/redo
       await handleBlurChange(pixelValue)
     }
   }
@@ -307,7 +290,7 @@ export function BackgroundColor(): ReactElement {
     if (event.key === 'Enter') {
       event.preventDefault()
       await handleInputValueUpdate(inputValue)
-      ;(event.target as HTMLInputElement).blur()
+      // Don't blur after Enter to avoid double API call
     }
   }
 
