@@ -51,6 +51,13 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const { journey, variant } = useJourney()
   const { locale, rtl } = getJourneyRTL(journey)
 
+  // Create font family strings based on journey theme
+  const fontFamilies = {
+    primaryFontFamily: journey?.journeyTheme?.headerFont ?? 'Baloo 2',
+    secondaryFontFamily: journey?.journeyTheme?.bodyFont ?? 'Nunito',
+    accentFontFamily: journey?.journeyTheme?.labelFont ?? 'Oswald'
+  }
+
   useEffect(() => {
     blockHistoryVar([blocks[0]])
     setTreeBlocks(blocks)
@@ -187,7 +194,13 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                   }
                 }}
               />
-              <ThemeProvider {...stepTheme} locale={locale} rtl={rtl} nested>
+              <ThemeProvider
+                {...stepTheme}
+                locale={locale}
+                rtl={rtl}
+                fontFamilies={fontFamilies}
+                nested
+              >
                 <SwipeNavigation activeBlock={activeBlock} rtl={rtl}>
                   <DynamicCardList blocks={blocks} />
                 </SwipeNavigation>

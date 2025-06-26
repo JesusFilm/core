@@ -31,6 +31,25 @@ export function JourneyPageWrapper({
     themeMode: journey.themeMode
   }
 
+  // Create font family strings based on journey theme
+  const fontFamilies = {
+    primaryFontFamily: journey.journeyTheme?.primaryFont
+      ? journey.journeyTheme.primaryFont
+      : rtl && locale !== 'ur'
+        ? 'El Messiri'
+        : 'Nunito',
+    secondaryFontFamily: journey.journeyTheme?.secondaryFont
+      ? journey.journeyTheme.secondaryFont
+      : rtl && locale !== 'ur'
+        ? 'Tajawal'
+        : 'Nunito',
+    accentFontFamily: journey.journeyTheme?.accentFont
+      ? journey.journeyTheme.accentFont
+      : 'Tahoma'
+  }
+
+  console.log('JourneyPageWrapper fontFamilies:', fontFamilies)
+
   return (
     <PlausibleProvider
       enabled
@@ -44,7 +63,12 @@ export function JourneyPageWrapper({
       }`}
     >
       <JourneyProvider value={{ journey, variant: variant ?? 'default' }}>
-        <ThemeProvider {...journeyTheme} rtl={rtl} locale={locale}>
+        <ThemeProvider
+          {...journeyTheme}
+          rtl={rtl}
+          locale={locale}
+          fontFamilies={fontFamilies}
+        >
           {children}
         </ThemeProvider>
       </JourneyProvider>

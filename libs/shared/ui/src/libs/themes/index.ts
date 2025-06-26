@@ -22,16 +22,25 @@ interface ThemeProps {
   themeMode: ThemeMode
   rtl?: boolean
   locale?: string
+  fontFamilies?: {
+    primaryFontFamily: string
+    secondaryFontFamily: string
+    accentFontFamily: string
+  }
 }
 
 export const getTheme = ({
   themeName,
   themeMode,
   rtl = false,
-  locale = ''
+  locale = '',
+  fontFamilies
 }: ThemeProps): Theme => {
   const themes = {
-    base: { light: getBaseLight(rtl, locale), dark: getBaseDark(rtl, locale) },
+    base: {
+      light: getBaseLight(rtl, locale, fontFamilies),
+      dark: getBaseDark(rtl, locale, fontFamilies)
+    },
     journeyUi: {
       light: getJourneyUiLight(rtl, locale),
       dark: getJourneyUiDark(rtl, locale)

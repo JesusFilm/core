@@ -31,6 +31,28 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
   if (isIframe) {
     void router.push('/embed/[journeySlug]', `/embed/${journey.slug}`)
   }
+
+  // Get journey-specific fonts if they exist
+  const journeyFonts = journey.journeyTheme
+    ? [
+        ...new Set([
+          journey.journeyTheme.headerFont,
+          journey.journeyTheme.bodyFont,
+          journey.journeyTheme.labelFont
+        ])
+      ].filter(Boolean)
+    : ['Baloo 2', 'Nunito', 'Oswald']
+
+  const fontLink =
+    journeyFonts.length > 0
+      ? `https://fonts.googleapis.com/css2?${journeyFonts
+          .map(
+            (font) =>
+              `family=${encodeURIComponent(font as string)}:wght@400;500;600;700;800`
+          )
+          .join('&')}&display=swap`
+      : null
+
   return (
     <>
       <Head>
@@ -44,6 +66,7 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
           }%2F${journey.slug}&format=json`}
           title={journey.seoTitle ?? undefined}
         />
+        {fontLink && <link rel="stylesheet" href={fontLink} />}
       </Head>
       <NextSeo
         nofollow

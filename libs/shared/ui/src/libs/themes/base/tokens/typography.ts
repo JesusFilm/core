@@ -1,5 +1,7 @@
 import { ThemeOptions } from '@mui/material/styles'
 
+import { FontFamilies } from '../theme'
+
 // Update the Typography's variant prop options
 declare module '@mui/material/styles' {
   interface TypographyPropsVariantOverrides {
@@ -9,53 +11,56 @@ declare module '@mui/material/styles' {
 
 export const baseTypography: Pick<ThemeOptions, 'typography'> = {
   typography: {
-    fontFamily: ['"Montserrat","Open Sans","Tahoma","Verdana",sans-serif'].join(
-      ','
-    ),
+    fontFamily: [
+      'Montserrat',
+      '"Open Sans"',
+      'Tahoma',
+      'Verdana',
+      'sans-serif'
+    ].join(','),
     h1: {
-      fontSize: 36,
-      fontWeight: 600,
-      lineHeight: '38px',
+      fontSize: 40,
+      fontWeight: 700,
+      lineHeight: '50px',
       textShadow: '0px 1px 3px rgba(0, 0, 0, 0.25)'
     },
     h2: {
-      fontSize: 28,
+      fontSize: 32,
       fontWeight: 800,
-      lineHeight: '33px'
+      lineHeight: '39px'
     },
     h3: {
-      fontSize: 24,
-      fontWeight: 800,
-      lineHeight: '28px'
+      fontSize: 28,
+      fontWeight: 700,
+      lineHeight: '34px'
     },
     h4: {
       fontSize: 22,
-      fontWeight: 800,
+      fontWeight: 700,
       lineHeight: '27px'
     },
     h5: {
-      fontSize: 18,
-      fontWeight: 800,
-      lineHeight: '23px'
+      fontSize: 22,
+      fontWeight: 700,
+      lineHeight: '22px'
     },
     h6: {
       fontSize: 14,
       fontWeight: 600,
       lineHeight: '20px',
-      letterSpacing: 2,
-      textTransform: 'uppercase'
+      letterSpacing: 2
     },
     subtitle1: {
-      fontSize: 18,
+      fontSize: 14,
       fontWeight: 600,
-      lineHeight: '24px',
-      letterSpacing: 0.5
+      lineHeight: '20px',
+      letterSpacing: 2
     },
     subtitle2: {
-      fontSize: 16,
+      fontSize: 14,
       fontWeight: 600,
-      lineHeight: '24px',
-      letterSpacing: 0.5
+      lineHeight: '20px',
+      letterSpacing: 2
     },
     body1: {
       fontFamily: '"Open Sans","Tahoma","Verdana",sans-serif',
@@ -81,6 +86,115 @@ export const baseTypography: Pick<ThemeOptions, 'typography'> = {
       fontSize: 12,
       fontWeight: 400,
       lineHeight: '20px'
+    }
+  }
+}
+
+// Create a custom typography configuration based on fontFamilies
+export const createCustomTypography = (
+  baseTypography: Pick<ThemeOptions, 'typography'>,
+  fontFamilies?: FontFamilies
+): Pick<ThemeOptions, 'typography'> => {
+  const { primaryFontFamily, secondaryFontFamily } = fontFamilies ?? {}
+
+  const typographyOptions =
+    typeof baseTypography.typography === 'function'
+      ? {}
+      : baseTypography.typography
+
+  return {
+    typography: {
+      ...typographyOptions,
+      h1: {
+        ...typographyOptions?.h1,
+        fontFamily: [
+          `"${primaryFontFamily}"`,
+          'Montserrat',
+          '"Open Sans"',
+          'sans-serif'
+        ].join(',')
+      },
+      h2: {
+        ...typographyOptions?.h2,
+        fontFamily: [
+          `"${primaryFontFamily}"`,
+          'Montserrat',
+          '"Open Sans"',
+          'sans-serif'
+        ].join(',')
+      },
+      h3: {
+        ...typographyOptions?.h3,
+        fontFamily: [
+          `"${primaryFontFamily}"`,
+          'Montserrat',
+          '"Open Sans"',
+          'sans-serif'
+        ].join(',')
+      },
+      h4: {
+        ...typographyOptions?.h4,
+        fontFamily: [
+          `"${primaryFontFamily}"`,
+          'Montserrat',
+          '"Open Sans"',
+          'sans-serif'
+        ].join(',')
+      },
+      h5: {
+        ...typographyOptions?.h5,
+        fontFamily: [
+          `"${primaryFontFamily}"`,
+          'Montserrat',
+          '"Open Sans"',
+          'sans-serif'
+        ].join(',')
+      },
+      h6: {
+        ...typographyOptions?.h6,
+        fontFamily: [
+          `"${primaryFontFamily}"`,
+          'Montserrat',
+          '"Open Sans"',
+          'sans-serif'
+        ].join(',')
+      },
+      subtitle1: {
+        ...typographyOptions?.subtitle1,
+        fontFamily: [
+          `"${primaryFontFamily}"`,
+          'Montserrat',
+          '"Open Sans"',
+          'sans-serif'
+        ].join(',')
+      },
+      subtitle2: {
+        ...typographyOptions?.subtitle2,
+        fontFamily: [
+          `"${primaryFontFamily}"`,
+          'Montserrat',
+          '"Open Sans"',
+          'sans-serif'
+        ].join(',')
+      },
+      body1: {
+        ...typographyOptions?.body1,
+        fontFamily: [
+          `"${secondaryFontFamily}"`,
+          'Montserrat',
+          '"Open Sans"',
+          'sans-serif'
+        ].join(',')
+      },
+      body2: {
+        ...typographyOptions?.body2,
+        fontFamily: [
+          `"${secondaryFontFamily}"`,
+          'Montserrat',
+          '"Open Sans"',
+          'sans-serif'
+        ].join(',')
+      }
     }
   }
 }

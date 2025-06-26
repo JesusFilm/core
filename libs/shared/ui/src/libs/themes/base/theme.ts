@@ -10,12 +10,20 @@ import { baseSpacing } from './tokens/spacing'
 import {
   baseTypographyArabic,
   baseTypography as baseTypographyLTR,
-  baseTypographyUrdu
+  baseTypographyUrdu,
+  createCustomTypography
 } from './tokens/typography'
+
+export interface FontFamilies {
+  primaryFontFamily: string
+  secondaryFontFamily: string
+  accentFontFamily: string
+}
 
 export const baseTheme = (
   rtl: boolean,
-  locale: string
+  locale: string,
+  fontFamilies?: FontFamilies
 ): Pick<
   ThemeOptions,
   'spacing' | 'components' | 'breakpoints' | 'typography' | 'direction'
@@ -24,7 +32,7 @@ export const baseTheme = (
     ? locale === 'ur'
       ? baseTypographyUrdu
       : baseTypographyArabic
-    : baseTypographyLTR
+    : createCustomTypography(baseTypographyLTR, fontFamilies)
 
   return {
     ...baseSpacing,
@@ -36,8 +44,18 @@ export const baseTheme = (
 }
 
 // DeepMerge no longer needed - remove or keep just in case for future?
-export const getBaseLight = (rtl: boolean, locale: string): Theme =>
-  createTheme(deepmerge(baseColorsLight(), baseTheme(rtl, locale)))
+export const getBaseLight = (
+  rtl: boolean,
+  locale: string,
+  fontFamilies?: FontFamilies
+): Theme =>
+  createTheme(
+    deepmerge(baseColorsLight(), baseTheme(rtl, locale, fontFamilies))
+  )
 
-export const getBaseDark = (rtl: boolean, locale: string): Theme =>
-  createTheme(deepmerge(baseColorsDark(), baseTheme(rtl, locale)))
+export const getBaseDark = (
+  rtl: boolean,
+  locale: string,
+  fontFamilies?: FontFamilies
+): Theme =>
+  createTheme(deepmerge(baseColorsDark(), baseTheme(rtl, locale, fontFamilies)))
