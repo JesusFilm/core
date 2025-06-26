@@ -19,7 +19,8 @@ export enum ThemeName {
 
 export enum ButtonVariant {
     text = "text",
-    contained = "contained"
+    contained = "contained",
+    outlined = "outlined"
 }
 
 export enum ButtonColor {
@@ -851,6 +852,19 @@ export class JourneyProfileUpdateInput {
     plausibleDashboardViewed?: Nullable<boolean>;
 }
 
+export class JourneyThemeCreateInput {
+    journeyId: string;
+    primaryFont?: Nullable<string>;
+    secondaryFont?: Nullable<string>;
+    accentFont?: Nullable<string>;
+}
+
+export class JourneyThemeUpdateInput {
+    primaryFont?: Nullable<string>;
+    secondaryFont?: Nullable<string>;
+    accentFont?: Nullable<string>;
+}
+
 export class JourneyVisitorFilter {
     journeyId: string;
     hasChatStarted?: Nullable<boolean>;
@@ -1157,6 +1171,12 @@ export abstract class IMutation {
 
     abstract journeyProfileUpdate(input: JourneyProfileUpdateInput): JourneyProfile | Promise<JourneyProfile>;
 
+    abstract journeyThemeCreate(input: JourneyThemeCreateInput): JourneyTheme | Promise<JourneyTheme>;
+
+    abstract journeyThemeUpdate(id: string, input: JourneyThemeUpdateInput): JourneyTheme | Promise<JourneyTheme>;
+
+    abstract journeyThemeDelete(id: string): JourneyTheme | Promise<JourneyTheme>;
+
     abstract updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput): Nullable<JourneysEmailPreference> | Promise<Nullable<JourneysEmailPreference>>;
 
     abstract qrCodeCreate(input: QrCodeCreateInput): QrCode | Promise<QrCode>;
@@ -1251,6 +1271,7 @@ export class Journey {
     socialNodeX?: Nullable<number>;
     socialNodeY?: Nullable<number>;
     fromTemplateId?: Nullable<string>;
+    journeyTheme?: Nullable<JourneyTheme>;
     userJourneys?: Nullable<UserJourney[]>;
 }
 
@@ -1288,6 +1309,8 @@ export abstract class IQuery {
     abstract journeyEventsCount(journeyId: string, filter?: Nullable<JourneyEventsFilter>): number | Promise<number>;
 
     abstract getJourneyProfile(): Nullable<JourneyProfile> | Promise<Nullable<JourneyProfile>>;
+
+    abstract journeyTheme(journeyId: string): Nullable<JourneyTheme> | Promise<Nullable<JourneyTheme>>;
 
     abstract journeyVisitorsConnection(filter: JourneyVisitorFilter, first?: Nullable<number>, after?: Nullable<string>, sort?: Nullable<JourneyVisitorSort>): JourneyVisitorsConnection | Promise<JourneyVisitorsConnection>;
 
@@ -1903,6 +1926,19 @@ export class JourneyProfile {
     journeyFlowBackButtonClicked?: Nullable<boolean>;
     plausibleJourneyFlowViewed?: Nullable<boolean>;
     plausibleDashboardViewed?: Nullable<boolean>;
+}
+
+export class JourneyTheme {
+    __typename?: 'JourneyTheme';
+    id: string;
+    journeyId: string;
+    journey: Journey;
+    userId: string;
+    primaryFont?: Nullable<string>;
+    secondaryFont?: Nullable<string>;
+    accentFont?: Nullable<string>;
+    createdAt: DateTime;
+    updatedAt: DateTime;
 }
 
 export class JourneyVisitor {

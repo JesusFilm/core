@@ -28,7 +28,11 @@
       "options": {
         "commands": [
           "nx run video-importer:bundle",
-          "cd apps/video-importer && ./build-scripts/build-cross-platform.sh"
+          {
+            "command": "./build-scripts/build-cross-platform.sh",
+            "cwd": "apps/video-importer"
+          },
+          "npx shx cp apps/video-importer/README.md dist/apps/video-importer-executable/README.md"
         ],
         "parallel": false
       }
