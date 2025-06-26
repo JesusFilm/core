@@ -253,9 +253,6 @@ export function VideoCreateForm({
           {parentId && (
             <Typography variant="caption" color="text.secondary">
               This video will be added as a child to video with ID: {parentId}
-              {parentData?.adminVideo?.origin?.id && <br />}
-              {parentData?.adminVideo?.origin?.id &&
-                `Origin inherited from parent: ${parentData.adminVideo.origin.id}`}
             </Typography>
           )}
           <Stack direction="row" sx={{ gap: 1, mt: 2 }}>
