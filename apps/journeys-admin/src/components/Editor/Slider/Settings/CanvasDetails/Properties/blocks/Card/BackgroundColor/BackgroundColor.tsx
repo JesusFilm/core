@@ -290,7 +290,6 @@ export function BackgroundColor(): ReactElement {
     if (event.key === 'Enter') {
       event.preventDefault()
       await handleInputValueUpdate(inputValue)
-      // Don't blur after Enter to avoid double API call
     }
   }
 
