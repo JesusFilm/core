@@ -67,5 +67,5 @@ export const LANGUAGE_CODES = {
   ja: '7083',
   vi: '3887',
   th: '13169',
-  bn: '114150'
+  bn: '126488'
 }
