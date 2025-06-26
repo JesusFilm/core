@@ -169,7 +169,6 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
     })
     // Log total duration as a metric
     console.log(`METRIC total_duration ${totalDuration}`)
-
   } catch (error) {
     // Enhanced error logging for monitoring
     console.error('=== Monitoring Alert ===')
