@@ -4,6 +4,7 @@ import { ReactNode } from 'react'
 
 import {
   WatchAction,
+  WatchInitialState,
   WatchProvider,
   WatchState,
   reducer,
@@ -353,7 +354,7 @@ describe('WatchContext', () => {
   })
 
   describe('WatchProvider', () => {
-    const defaultInitialState: WatchState = {
+    const defaultInitialState: WatchInitialState = {
       siteLanguage: 'en',
       audioLanguage: '529',
       subtitleLanguage: '529',
@@ -383,9 +384,8 @@ describe('WatchContext', () => {
     })
 
     it('should set initial state with additional properties', () => {
-      const initialStateWithExtras: WatchState = {
+      const initialStateWithExtras: WatchInitialState = {
         ...defaultInitialState,
-        loading: true,
         videoId: 'test-video'
       }
 

@@ -174,6 +174,20 @@ export type WatchAction =
   | UpdateSubtitleLanguageAction
   | UpdateSubtitlesOnAction
 
+/**
+ * Initial state type for WatchProvider - contains the required fields for initialization
+ * and allows optional additional fields from WatchState
+ */
+export type WatchInitialState = Pick<
+  WatchState,
+  | 'siteLanguage'
+  | 'audioLanguage'
+  | 'subtitleLanguage'
+  | 'subtitleOn'
+  | 'videoId'
+  | 'videoVariantSlug'
+>
+
 const WatchContext = createContext<{
   state: WatchState
   dispatch: Dispatch<WatchAction>
@@ -330,7 +344,7 @@ interface WatchProviderProps {
   /** Child components that will have access to the watch context */
   children: React.ReactNode
   /** Initial state for the language preferences */
-  initialState: WatchState
+  initialState: WatchInitialState
 }
 
 /**
