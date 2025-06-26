@@ -89,7 +89,7 @@ export function Slider(): ReactElement {
       centeredSlides: true,
       centeredSlidesBounds: true,
       spaceBetween: 0,
-      slidesPerView: 1
+      slidesPerView: 1.1
     },
     [breakpoints.values.md]: {
       direction: 'horizontal',
