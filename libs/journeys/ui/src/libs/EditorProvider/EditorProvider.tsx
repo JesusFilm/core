@@ -265,8 +265,10 @@ export const reducer = (
     }
     case 'SetStepsAction': {
       const selectedStep =
-        action.steps.find(({ id }) => id === state.selectedStepId) ??
-        action.steps[0]
+        state.selectedStepId != null
+          ? (action.steps.find(({ id }) => id === state.selectedStepId) ??
+            action.steps[0])
+          : action.steps[0]
       const selectedBlock =
         state.selectedBlockId != null
           ? (searchBlocks(action.steps, state.selectedBlockId) ??
