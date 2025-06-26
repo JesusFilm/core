@@ -98,6 +98,7 @@ import Grid1 from './Grid1'
 import GridEmpty from './GridEmpty'
 import Hash1 from './Hash1'
 import Hash2 from './Hash2'
+import Header1 from './Header1'
 import HelpCircleContained from './HelpCircleContained'
 import HelpSquareContained from './HelpSquareContained'
 import Home3 from './Home3'
@@ -314,6 +315,7 @@ export type IconName =
   | 'GridEmpty'
   | 'Hash1'
   | 'Hash2'
+  | 'Header1'
   | 'HelpCircleContained'
   | 'HelpSquareContained'
   | 'Home3'
@@ -534,6 +536,7 @@ const iconComponents: IconComponents = {
   GridEmpty,
   Hash1,
   Hash2,
+  Header1,
   HelpCircleContained,
   HelpSquareContained,
   Home3,

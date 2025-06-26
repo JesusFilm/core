@@ -106,6 +106,7 @@ const iconNames: IconName[] = [
   'GridEmpty',
   'Hash1',
   'Hash2',
+  'Header1',
   'HelpCircleContained',
   'HelpSquareContained',
   'Home3',

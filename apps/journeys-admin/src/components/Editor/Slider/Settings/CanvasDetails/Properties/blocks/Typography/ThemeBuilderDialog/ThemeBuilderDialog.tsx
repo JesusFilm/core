@@ -18,7 +18,7 @@ export function ThemeBuilderDialog({
   onClose
 }: ThemeBuilderDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [headerFont, setHeaderFont] = useState('Arial')
+  const [headerFont, setHeaderFont] = useState<string>('Arial')
   const [bodyFont, setBodyFont] = useState('Helvetica')
   const [labelsFont, setLabelsFont] = useState('Roboto')
 
@@ -49,6 +49,12 @@ export function ThemeBuilderDialog({
     <Dialog
       open={open}
       onClose={onClose}
+      sx={{
+        '& .MuiDialog-paper': {
+          minWidth: '856px',
+          minHeight: '860px'
+        }
+      }}
       dialogTitle={{
         title: t('Select Fonts'),
         closeButton: true
@@ -59,7 +65,8 @@ export function ThemeBuilderDialog({
         direction={{ xs: 'column', sm: 'row' }}
         spacing={3}
         sx={{
-          width: '100%'
+          width: '100%',
+          height: '100%'
         }}
       >
         <ThemeSettings
