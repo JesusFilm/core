@@ -46,6 +46,11 @@ export function SocialImage({
           blurDataURL={journey?.primaryImageBlock.blurhash}
           layout="fill"
           objectFit="cover"
+          objectPosition={`${journey.primaryImageBlock.focalLeft ?? 50}% ${journey.primaryImageBlock.focalTop ?? 50}%`}
+          sx={{
+            transform: `scale(${(journey.primaryImageBlock.scale ?? 100) / 100})`,
+            transformOrigin: `${journey.primaryImageBlock.focalLeft ?? 50}% ${journey.primaryImageBlock.focalTop ?? 50}%`
+          }}
           priority
         />
       ) : journey != null ? (

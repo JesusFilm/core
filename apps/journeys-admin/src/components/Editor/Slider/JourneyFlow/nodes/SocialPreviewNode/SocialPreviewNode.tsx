@@ -166,7 +166,9 @@ export function SocialPreviewNode(): ReactElement {
                 width: 118.5,
                 height: 90,
                 display: 'flex',
-                flexDirection: 'column'
+                flexDirection: 'column',
+                overflow: 'hidden',
+                borderRadius: '5px'
               }}
             >
               {journey?.primaryImageBlock?.src == null ? (
@@ -192,7 +194,8 @@ export function SocialPreviewNode(): ReactElement {
                   style={{
                     borderRadius: 5,
                     maxWidth: '100%',
-                    objectFit: 'cover'
+                    objectFit: 'cover',
+                    objectPosition: `${journey.primaryImageBlock.focalLeft ?? 50}% ${journey.primaryImageBlock.focalTop ?? 50}%`
                   }}
                 />
               )}
