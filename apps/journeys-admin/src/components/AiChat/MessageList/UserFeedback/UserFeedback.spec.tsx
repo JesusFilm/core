@@ -34,19 +34,15 @@ describe('UserFeedback', () => {
         name: /bad response/i
       })
 
-      // Buttons should be present
       expect(thumbsUpButton).toBeInTheDocument()
       expect(thumbsDownButton).toBeInTheDocument()
 
-      // Tooltips should be correct (via aria-label)
       expect(screen.getByLabelText('Good Response')).toBeInTheDocument()
       expect(screen.getByLabelText('Bad Response')).toBeInTheDocument()
 
-      // Buttons should have default color initially (not primary)
       expect(thumbsUpButton).not.toHaveClass('MuiIconButton-colorPrimary')
       expect(thumbsDownButton).not.toHaveClass('MuiIconButton-colorPrimary')
 
-      // Buttons should have small size
       expect(thumbsUpButton).toHaveClass('MuiIconButton-sizeSmall')
       expect(thumbsDownButton).toHaveClass('MuiIconButton-sizeSmall')
     })
@@ -62,10 +58,8 @@ describe('UserFeedback', () => {
 
       await userEvent.click(thumbsUpButton)
 
-      // Button should be highlighted after click
       expect(thumbsUpButton).toHaveClass('MuiIconButton-colorPrimary')
 
-      // Should call langfuse with correct parameters
       await waitFor(() => {
         expect(mockLangfuseWeb.score).toHaveBeenCalledWith({
           traceId: mockTraceId,
@@ -74,7 +68,6 @@ describe('UserFeedback', () => {
         })
       })
 
-      // Should call langfuse only once
       expect(mockLangfuseWeb.score).toHaveBeenCalledTimes(1)
     })
   })
@@ -89,10 +82,8 @@ describe('UserFeedback', () => {
 
       await userEvent.click(thumbsDownButton)
 
-      // Button should be highlighted after click
       expect(thumbsDownButton).toHaveClass('MuiIconButton-colorPrimary')
 
-      // Should call langfuse with correct parameters
       await waitFor(() => {
         expect(mockLangfuseWeb.score).toHaveBeenCalledWith({
           traceId: mockTraceId,
@@ -101,7 +92,6 @@ describe('UserFeedback', () => {
         })
       })
 
-      // Should call langfuse only once
       expect(mockLangfuseWeb.score).toHaveBeenCalledTimes(1)
     })
   })
@@ -117,17 +107,14 @@ describe('UserFeedback', () => {
         name: /bad response/i
       })
 
-      // Click thumbs up first
       await userEvent.click(thumbsUpButton)
       expect(thumbsUpButton).toHaveClass('MuiIconButton-colorPrimary')
       expect(thumbsDownButton).not.toHaveClass('MuiIconButton-colorPrimary')
 
-      // Then click thumbs down
       await userEvent.click(thumbsDownButton)
       expect(thumbsDownButton).toHaveClass('MuiIconButton-colorPrimary')
       expect(thumbsUpButton).not.toHaveClass('MuiIconButton-colorPrimary')
 
-      // Verify both calls were made
       await waitFor(() => {
         expect(mockLangfuseWeb.score).toHaveBeenCalledTimes(2)
       })
@@ -142,10 +129,8 @@ describe('UserFeedback', () => {
 
       await userEvent.click(thumbsUpButton)
 
-      // Button should remain highlighted
       expect(thumbsUpButton).toHaveClass('MuiIconButton-colorPrimary')
 
-      // State should persist without additional clicks
       await new Promise((resolve) => setTimeout(resolve, 100))
       expect(thumbsUpButton).toHaveClass('MuiIconButton-colorPrimary')
     })

@@ -30,7 +30,6 @@ jest.mock('../../libs/ai/langfuse/client', () => ({
   }
 }))
 
-// Helper function to validate common request payload structure
 const validateChatRequestPayload = (
   payload: any,
   expectedMessage: { content: string; role: string } = {
@@ -113,7 +112,6 @@ describe('AiChat', () => {
     jest.clearAllMocks()
     mswServer.resetHandlers()
 
-    // Setup common mocks
     mockUseUser.mockReturnValue({
       displayName: 'Test User',
       getIdToken: jest.fn().mockResolvedValue('mock-jwt-token')

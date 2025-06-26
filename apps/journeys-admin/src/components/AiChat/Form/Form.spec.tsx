@@ -39,18 +39,15 @@ describe('Form', () => {
     it('should render form with all elements and proper structure', () => {
       render(<Form {...defaultProps} />)
 
-      // Form structure
       const form = screen.getByRole('textbox')
       expect(form).toBeInTheDocument()
 
-      // TextField with correct properties
       const textField = screen.getByRole('textbox')
       expect(textField).toBeInTheDocument()
       expect(textField).toHaveAttribute('placeholder', 'Ask Anything')
-      expect(textField.tagName.toLowerCase()).toBe('textarea') // multiline
-      expect(textField).toHaveFocus() // autoFocus
+      expect(textField.tagName.toLowerCase()).toBe('textarea')
+      expect(textField).toHaveFocus()
 
-      // Submit button with ArrowUp icon
       const submitButton = screen.getByRole('button')
       expect(submitButton).toBeInTheDocument()
       expect(submitButton).toHaveAttribute('type', 'submit')
@@ -114,7 +111,6 @@ describe('Form', () => {
       })
 
       expect(mockHandleSubmit).not.toHaveBeenCalled()
-      // Should have called onChange for typing
       expect(mockInputChange).toHaveBeenCalled()
     })
 
@@ -130,7 +126,6 @@ describe('Form', () => {
 
   describe('Button States & Interaction', () => {
     it('should show stop button when submitted or streaming and handle stop action', async () => {
-      // Test submitted status
       const { rerender } = render(<Form {...defaultProps} status="submitted" />)
 
       let stopButton = screen.getByRole('button')
@@ -142,7 +137,6 @@ describe('Form', () => {
       await userEvent.click(stopButton)
       expect(mockStop).toHaveBeenCalledTimes(1)
 
-      // Test streaming status
       rerender(<Form {...defaultProps} status="streaming" />)
 
       stopButton = screen.getByRole('button')
@@ -151,14 +145,12 @@ describe('Form', () => {
     })
 
     it('should show submit button with ArrowUp icon when not submitted or streaming', () => {
-      // Test ready status
       const { rerender } = render(<Form {...defaultProps} status="ready" />)
 
       let submitButton = screen.getByRole('button')
       expect(submitButton).toHaveAttribute('type', 'submit')
       expect(screen.getByTestId('arrow-up-icon')).toBeInTheDocument()
 
-      // Test error status
       rerender(<Form {...defaultProps} status="error" />)
 
       submitButton = screen.getByRole('button')
@@ -174,14 +166,12 @@ describe('Form', () => {
         <Form {...defaultProps} error={error} status="ready" />
       )
 
-      // Test submit button disabled
       let textField = screen.getByRole('textbox')
       const submitButton = screen.getByRole('button')
 
       expect(textField).toBeDisabled()
       expect(submitButton).toBeDisabled()
 
-      // Test stop button disabled
       rerender(<Form {...defaultProps} error={error} status="submitted" />)
 
       textField = screen.getByRole('textbox')
@@ -196,7 +186,6 @@ describe('Form', () => {
         <Form {...defaultProps} waitForToolResult={true} status="ready" />
       )
 
-      // Test submit button disabled
       let textField = screen.getByRole('textbox')
       const submitButton = screen.getByRole('button')
 

@@ -4,7 +4,6 @@ import userEvent from '@testing-library/user-event'
 
 import { RequestFormTool } from './RequestFormTool'
 
-// Mock next-i18next
 jest.mock('next-i18next', () => ({
   useTranslation: () => ({
     t: (str: string) => str
@@ -51,7 +50,6 @@ describe('RequestFormTool', () => {
       expect(textField).toHaveAttribute('tabindex', '0')
       expect(screen.getByText('This is a helpful hint')).toBeInTheDocument()
 
-      // Suggestion chip should be visible and clickable
       const suggestionChip = screen.getByText('My Journey')
       expect(suggestionChip).toBeInTheDocument()
       expect(suggestionChip).toBeInstanceOf(HTMLElement)
@@ -111,7 +109,6 @@ describe('RequestFormTool', () => {
 
       const textareaField = screen.getByLabelText('Description')
       expect(textareaField).toBeInTheDocument()
-      // Check that it's rendered as multiline by looking for the textarea element
       expect(textareaField.tagName.toLowerCase()).toBe('textarea')
     })
 
@@ -210,7 +207,6 @@ describe('RequestFormTool', () => {
       expect(screen.getByText('Category')).toBeInTheDocument()
       expect(screen.getByText('Choose a category')).toBeInTheDocument()
 
-      // Check that select field is rendered (MUI creates complex accessible names)
       const selectElement = screen.getByRole('combobox', {
         name: /category/i
       })

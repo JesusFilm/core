@@ -175,7 +175,6 @@ describe('MessageList', () => {
         />
       )
 
-      // Markdown should render bold and italic
       expect(screen.getByText('Bold text')).toBeInTheDocument()
       expect(screen.getByText('italic text')).toBeInTheDocument()
     })
