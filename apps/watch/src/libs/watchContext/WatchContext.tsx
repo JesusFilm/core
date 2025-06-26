@@ -193,8 +193,8 @@ const WatchContext = createContext<{
 }>({
   state: {
     siteLanguage: 'en',
-    audioLanguage: 'english',
-    subtitleLanguage: 'english',
+    audioLanguage: '529',
+    subtitleLanguage: '529',
     subtitleOn: false,
     loading: false
   },
