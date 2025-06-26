@@ -23,7 +23,7 @@ export const GET_ALL_LANGUAGES = gql`
 `
 
 /**
- * State interface for language preferences and video-specific language data
+ * State interface for watch context containing language preferences and video-specific data
  */
 export interface WatchState {
   /** Current site/UI language (e.g., 'en', 'es') */
@@ -175,8 +175,7 @@ export type WatchAction =
   | UpdateSubtitlesOnAction
 
 /**
- * Initial state type for WatchProvider - contains the required fields for initialization
- * and allows optional additional fields from WatchState
+ * Initial state type for WatchProvider - contains the core fields required for initialization
  */
 export type WatchInitialState = Pick<
   WatchState,
@@ -203,15 +202,15 @@ const WatchContext = createContext<{
 })
 
 /**
- * Reducer function for managing language preference state
+ * Reducer function for managing watch context state
  * Handles all language-related actions and maintains derived state
  *
  * **Note**: This reducer is pure and contains no side effects.
- * Side effects are handled by the useLanguageActions hook.
+ * Side effects should be handled by components using this context.
  *
- * @param state - Current language state
+ * @param state - Current watch state
  * @param action - Action to process
- * @returns Updated language state
+ * @returns Updated watch state
  */
 export const reducer = (state: WatchState, action: WatchAction): WatchState => {
   switch (action.type) {
@@ -343,7 +342,7 @@ export const reducer = (state: WatchState, action: WatchAction): WatchState => {
 interface WatchProviderProps {
   /** Child components that will have access to the watch context */
   children: React.ReactNode
-  /** Initial state for the language preferences */
+  /** Initial state for the watch context */
   initialState: WatchInitialState
 }
 
@@ -353,7 +352,7 @@ interface WatchProviderProps {
  *
  * @example
  * ```tsx
- * <WatchProvider initialState={initialLanguageState}>
+ * <WatchProvider initialState={initialWatchState}>
  *   <VideoPlayer />
  * </WatchProvider>
  * ```
@@ -372,15 +371,15 @@ export function WatchProvider({ children, initialState }: WatchProviderProps) {
 
 /**
  * Hook to access watch context
- * Provides access to language state and dispatch function for managing language preferences
+ * Provides access to watch state and dispatch function for managing watch preferences
  *
- * @returns Object containing language state and dispatch function
+ * @returns Object containing watch state and dispatch function
  * @throws Error if used outside of WatchProvider
  *
  * @example
  * ```tsx
  * function VideoControls() {
- *   const { state, dispatch } = useWatchContext()
+ *   const { state, dispatch } = useWatch()
  *
  *   const handleLanguageChange = (language: string) => {
  *     dispatch({
