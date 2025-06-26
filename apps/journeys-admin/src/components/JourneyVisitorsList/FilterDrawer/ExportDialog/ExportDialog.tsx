@@ -1,6 +1,6 @@
 import { gql, useQuery } from '@apollo/client'
-import LoadingButton from '@mui/lab/LoadingButton'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
@@ -86,11 +86,11 @@ export function ExportDialog({
       }}
       divider={false}
       dialogActionChildren={
-        <LoadingButton
-          loading={downloading}
+        <Button
           variant="contained"
           color="secondary"
           onClick={handleExport}
+          loading={downloading}
           disabled={selectedEvents.length === 0}
           sx={{
             mb: { xs: 0, sm: 3 },
@@ -98,7 +98,7 @@ export function ExportDialog({
           }}
         >
           {t('Export (CSV)')}
-        </LoadingButton>
+        </Button>
       }
     >
       <DateRangePicker

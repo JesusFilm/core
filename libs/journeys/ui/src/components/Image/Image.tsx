@@ -18,7 +18,9 @@ export function Image({
   height,
   width,
   blurhash,
-  scale
+  scale,
+  focalLeft,
+  focalTop
 }: TreeBlock<ImageFields>): ReactElement {
   const theme = useTheme()
   const placeholderSrc = useMemo(() => {
@@ -46,7 +48,8 @@ export function Image({
           layout="responsive"
           objectFit="cover"
           sx={{
-            transform: `scale(${(scale ?? 100) / 100})`
+            transform: `scale(${(scale ?? 100) / 100})`,
+            transformOrigin: `${focalLeft}% ${focalTop}%`
           }}
         />
       ) : (
