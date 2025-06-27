@@ -101,7 +101,7 @@ describe('BibleCitationCard', () => {
 
     await waitFor(() => {
       expect(mockAxiosGet).toHaveBeenCalledWith(
-        'https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/en-bsb/books/john/chapters/3/verses/16.json'
+        'https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/en-asv/books/john/chapters/3/verses/16.json'
       )
     })
   })
@@ -249,7 +249,7 @@ describe('BibleCitationCard', () => {
 
     await waitFor(() => {
       expect(mockAxiosGet).toHaveBeenCalledWith(
-        expect.stringContaining('en-bsb')
+        expect.stringContaining('en-asv')
       )
     })
   })
@@ -272,7 +272,7 @@ describe('BibleCitationCard', () => {
 
     await waitFor(() => {
       expect(mockAxiosGet).toHaveBeenCalledWith(
-        expect.stringContaining('en-bsb')
+        expect.stringContaining('en-asv')
       )
     })
   })
