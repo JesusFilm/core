@@ -563,7 +563,7 @@ export default function AddVideoVariantDownloadDialog({
                   <MenuItem value="high">Upload high 720p (2500kbps)</MenuItem>
                   <MenuItem value="sd">Upload SD 360p (1000kbps)</MenuItem>
                   <MenuItem value="low">Upload low 270p (500kbps)</MenuItem>
-                  <MenuItem
+                  {/* <MenuItem
                     value="generate-high"
                     disabled={!data.videoVariant.asset?.id}
                   >
@@ -619,7 +619,7 @@ export default function AddVideoVariantDownloadDialog({
                     )
                       ? ' (no high quality download available)'
                       : ''}
-                  </MenuItem>
+                  </MenuItem> */}
                 </Select>
                 <FormHelperText sx={{ minHeight: 20 }}>
                   {errors.quality != null &&

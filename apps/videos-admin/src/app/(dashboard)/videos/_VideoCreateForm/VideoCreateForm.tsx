@@ -39,6 +39,9 @@ export const GET_PARENT_VIDEO_LABEL = graphql(`
     adminVideo(id: $videoId) {
       id
       label
+      origin {
+        id
+      }
     }
   }
 `)
@@ -98,21 +101,45 @@ export function VideoCreateForm({
   const [createVideo] = useMutation(CREATE_VIDEO)
   const [createEdition] = useMutation(CREATE_EDITION)
 
-  // Determine the suggested child label based on parent label
-  const suggestedLabel = useMemo(() => {
-    if (!parentId || !parentData?.adminVideo?.label) return undefined
+  // Determine valid child labels and suggested label based on parent label
+  const { validChildLabels, suggestedLabel } = useMemo(() => {
+    if (!parentId || !parentData?.adminVideo?.label) {
+      return { validChildLabels: videoLabels, suggestedLabel: undefined }
+    }
 
     const parentLabel = parentData.adminVideo.label
 
     switch (parentLabel) {
       case 'collection':
-        return VideoLabel.episode
+        return {
+          validChildLabels: videoLabels.filter((vl) =>
+            ['episode', 'featureFilm', 'shortFilm', 'series'].includes(vl.value)
+          ),
+          suggestedLabel: VideoLabel.episode
+        }
       case 'featureFilm':
-        return VideoLabel.segment
+        return {
+          validChildLabels: videoLabels.filter((vl) =>
+            ['segment', 'trailer', 'behindTheScenes'].includes(vl.value)
+          ),
+          suggestedLabel: VideoLabel.segment
+        }
       case 'series':
-        return VideoLabel.episode
+        return {
+          validChildLabels: videoLabels.filter((vl) =>
+            ['episode', 'trailer', 'behindTheScenes'].includes(vl.value)
+          ),
+          suggestedLabel: VideoLabel.episode
+        }
+      case 'episode':
+        return {
+          validChildLabels: videoLabels.filter((vl) =>
+            ['segment', 'trailer', 'behindTheScenes'].includes(vl.value)
+          ),
+          suggestedLabel: VideoLabel.segment
+        }
       default:
-        return undefined
+        return { validChildLabels: videoLabels, suggestedLabel: undefined }
     }
   }, [parentId, parentData])
 
@@ -200,22 +227,7 @@ export function VideoCreateForm({
     id: '',
     slug: '',
     label: suggestedLabel || ('' as VideoLabel),
-    originId: ''
-  }
-
-  // Get explanatory text for the suggested label
-  const getSuggestedLabelExplanation = (): string => {
-    if (!suggestedLabel) return ''
-
-    const parentLabel = parentData?.adminVideo?.label
-    const suggestedLabelName = videoLabels.find(
-      (vl) => vl.value === suggestedLabel
-    )?.label
-    const parentLabelName = videoLabels.find(
-      (vl) => vl.value === parentLabel
-    )?.label
-
-    return `Based on the parent ${parentLabelName}, we've suggested ${suggestedLabelName}`
+    originId: parentData?.adminVideo?.origin?.id || ''
   }
 
   return (
@@ -239,13 +251,11 @@ export function VideoCreateForm({
           <FormSelectField
             name="label"
             label="Label"
-            options={videoLabels}
+            options={validChildLabels}
             fullWidth
           />
-          {suggestedLabel && (
-            <Typography variant="caption" color="text.secondary">
-              {getSuggestedLabelExplanation()}
-            </Typography>
+          {parentId && (
+            <Typography variant="caption" color="text.secondary"></Typography>
           )}
           {parentId && (
             <Typography variant="caption" color="text.secondary">
