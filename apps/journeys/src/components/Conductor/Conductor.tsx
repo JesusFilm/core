@@ -15,7 +15,7 @@ import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { ThemeName } from '@core/shared/ui/themes'
+import { FontFamilies, ThemeName } from '@core/shared/ui/themes'
 
 import { VisitorUpdateInput } from '../../../__generated__/globalTypes'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
@@ -52,10 +52,10 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const { locale, rtl } = getJourneyRTL(journey)
 
   // Create font family strings based on journey theme
-  const fontFamilies = {
-    primaryFontFamily: journey?.journeyTheme?.headerFont ?? 'Baloo 2',
-    secondaryFontFamily: journey?.journeyTheme?.bodyFont ?? 'Nunito',
-    accentFontFamily: journey?.journeyTheme?.labelFont ?? 'Oswald'
+  const fontFamilies: FontFamilies = {
+    headerFont: journey?.journeyTheme?.headerFont ?? '',
+    bodyFont: journey?.journeyTheme?.bodyFont ?? '',
+    labelFont: journey?.journeyTheme?.labelFont ?? ''
   }
 
   useEffect(() => {

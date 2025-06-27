@@ -17,16 +17,18 @@ export enum ThemeName {
   journeysAdmin = 'journeysAdmin'
 }
 
+export interface FontFamilies {
+  headerFont: string
+  bodyFont: string
+  labelFont: string
+}
+
 interface ThemeProps {
   themeName: ThemeName
   themeMode: ThemeMode
   rtl?: boolean
   locale?: string
-  fontFamilies?: {
-    primaryFontFamily: string
-    secondaryFontFamily: string
-    accentFontFamily: string
-  }
+  fontFamilies?: FontFamilies
 }
 
 export const getTheme = ({

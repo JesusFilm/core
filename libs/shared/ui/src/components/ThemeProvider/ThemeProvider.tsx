@@ -4,7 +4,12 @@ import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles'
 import { ReactElement, ReactNode, useMemo } from 'react'
 
-import { ThemeMode, ThemeName, getTheme } from '../../libs/themes/index'
+import {
+  FontFamilies,
+  ThemeMode,
+  ThemeName,
+  getTheme
+} from '../../libs/themes/index'
 
 interface ThemeProviderProps {
   children: ReactNode
@@ -12,11 +17,7 @@ interface ThemeProviderProps {
   themeMode: ThemeMode
   rtl?: boolean
   locale?: string
-  fontFamilies?: {
-    primaryFontFamily: string
-    secondaryFontFamily: string
-    accentFontFamily: string
-  }
+  fontFamilies?: FontFamilies
   /** if nested ThemeProvider then CssBaseline should not be inserted */
   nested?: boolean
 }

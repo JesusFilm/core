@@ -2,13 +2,14 @@ import InputAdornment from '@mui/material/InputAdornment'
 import MenuItem from '@mui/material/MenuItem'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import Header1Icon from '@core/shared/ui/icons/Header1'
 import Type2Icon from '@core/shared/ui/icons/Type2'
 import Type3Icon from '@core/shared/ui/icons/Type3'
+
+import { FontFamily } from '../ThemeBuilderDialog'
 
 interface ThemeSettingsProps {
   onHeaderFontChange: (font: string) => void
@@ -28,16 +29,38 @@ export function ThemeSettings({
   labelsFont
 }: ThemeSettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  console.log(headerFont, bodyFont, labelsFont)
 
-  // Mock font options - replace with actual font options from your system
-  const fontOptions = [
-    'Arial',
-    'Helvetica',
-    'Times New Roman',
-    'Georgia',
-    'Verdana',
-    'Roboto',
-    'Open Sans'
+  const headerFontOptions = [
+    FontFamily.Montserrat,
+    FontFamily.Inter,
+    FontFamily.Oswald,
+    FontFamily.PlayfairDisplay,
+    FontFamily.Georgia,
+    FontFamily.CormorantGaramond,
+    FontFamily.NotoSans,
+    FontFamily.BerkshireSwash,
+    FontFamily.Cinzel,
+    FontFamily.Baloo
+  ]
+
+  const bodyFontOptions = [
+    FontFamily.Montserrat,
+    FontFamily.Inter,
+    FontFamily.Nunito,
+    FontFamily.Raleway,
+    FontFamily.NotoSans,
+    FontFamily.Georgia,
+    FontFamily.CormorantGaramond
+  ]
+
+  const labelsFontOptions = [
+    FontFamily.Montserrat,
+    FontFamily.Inter,
+    FontFamily.NotoSans,
+    FontFamily.Nunito,
+    FontFamily.Raleway,
+    FontFamily.Georgia
   ]
 
   return (
@@ -63,7 +86,7 @@ export function ThemeSettings({
             }
           }}
         >
-          {fontOptions.map((font) => (
+          {headerFontOptions.map((font) => (
             <MenuItem key={font} value={font}>
               {font}
             </MenuItem>
@@ -91,7 +114,7 @@ export function ThemeSettings({
             }
           }}
         >
-          {fontOptions.map((font) => (
+          {bodyFontOptions.map((font) => (
             <MenuItem key={font} value={font}>
               {font}
             </MenuItem>
@@ -117,7 +140,7 @@ export function ThemeSettings({
             }
           }}
         >
-          {fontOptions.map((font) => (
+          {labelsFontOptions.map((font) => (
             <MenuItem key={font} value={font}>
               {font}
             </MenuItem>

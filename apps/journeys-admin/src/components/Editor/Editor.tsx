@@ -1,5 +1,6 @@
+import dynamic from 'next/dynamic'
 import { User } from 'next-firebase-auth'
-import { ReactElement } from 'react'
+import { ReactElement, useMemo } from 'react'
 import { HotkeysProvider } from 'react-hotkeys-hook'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -14,6 +15,14 @@ import { Fab } from './Fab'
 import { Hotkeys } from './Hotkeys'
 import { Slider } from './Slider'
 import { Toolbar } from './Toolbar'
+
+const FontLoader = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/FontLoader" */ './FontLoader/FontLoader'
+    ).then((mod) => mod.FontLoader),
+  { ssr: false }
+)
 
 interface EditorProps {
   journey?: Journey
@@ -42,6 +51,27 @@ export function Editor({
       ? steps.find(({ id }) => id === selectedStepId)
       : undefined
 
+  const fontFamilies = useMemo(
+    () =>
+      journey?.journeyTheme
+        ? [
+            ...new Set([
+              journey.journeyTheme.headerFont,
+              journey.journeyTheme.bodyFont,
+              journey.journeyTheme.labelFont
+            ])
+          ]
+            .filter(Boolean)
+            .map(formatFontWithWeights)
+        : [],
+    [journey]
+  )
+
+  function formatFontWithWeights(font: string): string {
+    return `${font}:400,500,600,700,800`
+  }
+
+  console.log('journey', journey)
   return (
     <JourneyProvider value={{ journey, variant: 'admin' }}>
       <EditorProvider
@@ -52,6 +82,7 @@ export function Editor({
         }}
       >
         <HotkeysProvider>
+          <FontLoader fontFamilies={fontFamilies} />
           <Hotkeys />
           <Toolbar user={user} />
           <Slider />

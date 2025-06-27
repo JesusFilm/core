@@ -2,7 +2,7 @@ import { keyframes } from '@emotion/react'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
-import { type ReactElement, useEffect, useRef, useState } from 'react'
+import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react'
 import { CSSTransition, TransitionGroup } from 'react-transition-group'
 
 import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
@@ -20,7 +20,7 @@ import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
+import { FontFamilies, ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { Hotkeys } from '../../../Hotkeys'
 
@@ -139,6 +139,27 @@ export function Canvas(): ReactElement {
   const theme =
     selectedStep != null ? getStepTheme(selectedStep, journey) : null
 
+  const fontFamilies = useMemo((): FontFamilies | undefined => {
+    if (!journey?.journeyTheme) return undefined
+
+    const fonts: Partial<FontFamilies> = {}
+
+    if (journey.journeyTheme.headerFont) {
+      fonts.headerFont = journey.journeyTheme.headerFont
+    }
+
+    if (journey.journeyTheme.bodyFont) {
+      fonts.bodyFont = journey.journeyTheme.bodyFont
+    }
+
+    if (journey.journeyTheme.labelFont) {
+      fonts.labelFont = journey.journeyTheme.labelFont
+    }
+
+    // Only return if at least one font is defined
+    return Object.keys(fonts).length > 0 ? (fonts as FontFamilies) : undefined
+  }, [journey])
+
   return (
     <Stack
       ref={containerRef}
@@ -219,7 +240,12 @@ export function Canvas(): ReactElement {
               scrolling="no"
             >
               {({ document }) => (
-                <ThemeProvider {...theme} rtl={rtl} locale={locale}>
+                <ThemeProvider
+                  {...theme}
+                  rtl={rtl}
+                  locale={locale}
+                  fontFamilies={fontFamilies}
+                >
                   <Hotkeys document={document} />
                   <TransitionGroup
                     component={Box}

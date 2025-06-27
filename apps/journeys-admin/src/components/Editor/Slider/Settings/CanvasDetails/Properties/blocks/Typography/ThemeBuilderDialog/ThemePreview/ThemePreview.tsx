@@ -37,12 +37,12 @@ export function ThemePreview({
       >
         <CardContent>
           <Stack spacing={3} alignItems="center">
-            <Typography
+            {/* <Typography
               variant={TypographyVariant.h1}
               align={TypographyAlign.center}
               color={TypographyColor.secondary}
               content={t('Display Text')}
-            />
+            /> */}
 
             {/* <Typography
             variant="h4"
@@ -92,60 +92,6 @@ export function ThemePreview({
             >
               {t('Button')}
             </Button>
-
-            <Paper
-              elevation={0}
-              sx={{
-                bgcolor: 'rgba(200, 200, 200, 0.3)',
-                p: 2,
-                width: '100%',
-                borderRadius: 2
-              }}
-            >
-              <Stack spacing={1}>
-                <Typography sx={{ fontFamily: labelsFont }}>
-                  {t('Poll Block Option')}
-                </Typography>
-                <Paper
-                  sx={{
-                    height: 1,
-                    bgcolor: 'rgba(200, 200, 200, 0.3)',
-                    width: '100%'
-                  }}
-                />
-                <Typography sx={{ fontFamily: labelsFont }}>
-                  {t('Poll Block Option')}
-                </Typography>
-              </Stack>
-            </Paper>
-
-            <Paper
-              elevation={0}
-              sx={{
-                bgcolor: 'rgba(200, 200, 200, 0.3)',
-                p: 2,
-                width: '100%',
-                borderRadius: 2
-              }}
-            >
-              <Typography sx={{ fontFamily: labelsFont }}>
-                {t('Multiselect Block Option')}
-              </Typography>
-            </Paper>
-
-            <Stack spacing={1} width="100%">
-              <Typography sx={{ fontFamily: labelsFont }}>
-                {t('Label')}
-              </Typography>
-              <TextField
-                placeholder={t('Placeholder Text')}
-                fullWidth
-                InputProps={{
-                  sx: { fontFamily: labelsFont }
-                }}
-                disabled
-              />
-            </Stack>
           </Stack>
         </CardContent>
       </Card>

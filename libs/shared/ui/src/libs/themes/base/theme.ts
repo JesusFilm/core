@@ -3,6 +3,8 @@
 import { Theme, ThemeOptions, createTheme } from '@mui/material/styles'
 import { deepmerge } from '@mui/utils'
 
+import { FontFamilies } from '..'
+
 import { baseBreakpoints } from './tokens/breakpoints'
 import { baseColorsDark, baseColorsLight } from './tokens/colors'
 import { baseComponents } from './tokens/components'
@@ -13,12 +15,6 @@ import {
   baseTypographyUrdu,
   createCustomTypography
 } from './tokens/typography'
-
-export interface FontFamilies {
-  primaryFontFamily: string
-  secondaryFontFamily: string
-  accentFontFamily: string
-}
 
 export const baseTheme = (
   rtl: boolean,

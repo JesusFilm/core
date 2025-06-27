@@ -1,6 +1,6 @@
 import { ThemeOptions } from '@mui/material/styles'
 
-import { FontFamilies } from '../theme'
+import { FontFamilies } from '../..'
 
 // Update the Typography's variant prop options
 declare module '@mui/material/styles' {
@@ -95,105 +95,76 @@ export const createCustomTypography = (
   baseTypography: Pick<ThemeOptions, 'typography'>,
   fontFamilies?: FontFamilies
 ): Pick<ThemeOptions, 'typography'> => {
-  const { primaryFontFamily, secondaryFontFamily } = fontFamilies ?? {}
+  const { headerFont, bodyFont, labelFont } = fontFamilies ?? {}
 
   const typographyOptions =
     typeof baseTypography.typography === 'function'
       ? {}
       : baseTypography.typography
 
+  function createFontFamilyString(font?: string): string {
+    const fonts = []
+    if (font) {
+      fonts.push(`"${font}"`)
+    }
+    fonts.push('Montserrat', '"Open Sans"', 'sans-serif')
+    return fonts.join(',')
+  }
+
+  const headerFontFamily = createFontFamilyString(headerFont)
+  const bodyFontFamily = createFontFamilyString(bodyFont)
+  const labelFontFamily = createFontFamilyString(labelFont)
+
   return {
     typography: {
       ...typographyOptions,
       h1: {
         ...typographyOptions?.h1,
-        fontFamily: [
-          `"${primaryFontFamily}"`,
-          'Montserrat',
-          '"Open Sans"',
-          'sans-serif'
-        ].join(',')
+        fontFamily: headerFontFamily
       },
       h2: {
         ...typographyOptions?.h2,
-        fontFamily: [
-          `"${primaryFontFamily}"`,
-          'Montserrat',
-          '"Open Sans"',
-          'sans-serif'
-        ].join(',')
+        fontFamily: headerFontFamily
       },
       h3: {
         ...typographyOptions?.h3,
-        fontFamily: [
-          `"${primaryFontFamily}"`,
-          'Montserrat',
-          '"Open Sans"',
-          'sans-serif'
-        ].join(',')
+        fontFamily: headerFontFamily
       },
       h4: {
         ...typographyOptions?.h4,
-        fontFamily: [
-          `"${primaryFontFamily}"`,
-          'Montserrat',
-          '"Open Sans"',
-          'sans-serif'
-        ].join(',')
+        fontFamily: headerFontFamily
       },
       h5: {
         ...typographyOptions?.h5,
-        fontFamily: [
-          `"${primaryFontFamily}"`,
-          'Montserrat',
-          '"Open Sans"',
-          'sans-serif'
-        ].join(',')
+        fontFamily: headerFontFamily
       },
       h6: {
         ...typographyOptions?.h6,
-        fontFamily: [
-          `"${primaryFontFamily}"`,
-          'Montserrat',
-          '"Open Sans"',
-          'sans-serif'
-        ].join(',')
+        fontFamily: labelFontFamily
       },
       subtitle1: {
         ...typographyOptions?.subtitle1,
-        fontFamily: [
-          `"${primaryFontFamily}"`,
-          'Montserrat',
-          '"Open Sans"',
-          'sans-serif'
-        ].join(',')
+        fontFamily: labelFontFamily
       },
       subtitle2: {
         ...typographyOptions?.subtitle2,
-        fontFamily: [
-          `"${primaryFontFamily}"`,
-          'Montserrat',
-          '"Open Sans"',
-          'sans-serif'
-        ].join(',')
+        fontFamily: labelFontFamily
       },
       body1: {
         ...typographyOptions?.body1,
-        fontFamily: [
-          `"${secondaryFontFamily}"`,
-          'Montserrat',
-          '"Open Sans"',
-          'sans-serif'
-        ].join(',')
+        fontFamily: bodyFontFamily
       },
       body2: {
         ...typographyOptions?.body2,
-        fontFamily: [
-          `"${secondaryFontFamily}"`,
-          'Montserrat',
-          '"Open Sans"',
-          'sans-serif'
-        ].join(',')
+        fontFamily: bodyFontFamily
+      },
+      overline: {
+        ...typographyOptions?.overline,
+        fontFamily: labelFontFamily
+      },
+      caption: {
+        ...typographyOptions?.caption,
+        fontFamily: bodyFontFamily
       }
     }
   }

@@ -1,8 +1,10 @@
+import { gql, useQuery } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { ThemePreview } from './ThemePreview'
@@ -13,14 +15,38 @@ interface ThemeBuilderDialogProps {
   onClose: () => void
 }
 
+export enum FontFamily {
+  Montserrat = 'Montserrat',
+  Inter = 'Inter',
+  Oswald = 'Oswald',
+  PlayfairDisplay = 'Playfair Display',
+  Georgia = 'Georgia',
+  CormorantGaramond = 'Cormorant Garamond',
+  NotoSans = 'Noto Sans',
+  BerkshireSwash = 'Berkshire Swash',
+  Cinzel = 'Cinzel',
+  Baloo = 'Baloo 2',
+  Nunito = 'Nunito',
+  Raleway = 'Raleway'
+}
+
 export function ThemeBuilderDialog({
   open,
   onClose
 }: ThemeBuilderDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [headerFont, setHeaderFont] = useState<string>('Arial')
-  const [bodyFont, setBodyFont] = useState('Helvetica')
-  const [labelsFont, setLabelsFont] = useState('Roboto')
+  const { journey } = useJourney()
+
+  const journeyTheme = journey?.journeyTheme
+  console.log(journeyTheme)
+
+  const [headerFont, setHeaderFont] = useState<string>(
+    journeyTheme?.headerFont ?? ''
+  )
+  const [bodyFont, setBodyFont] = useState<string>(journeyTheme?.bodyFont ?? '')
+  const [labelsFont, setLabelsFont] = useState<string>(
+    journeyTheme?.labelFont ?? ''
+  )
 
   const handleHeaderFontChange = (font: string): void => {
     setHeaderFont(font)
