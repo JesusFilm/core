@@ -128,7 +128,8 @@ describe('fetchEmailDetails', () => {
     menuStepBlockId: null,
     socialNodeX: null,
     socialNodeY: null,
-    fromTemplateId: null
+    fromTemplateId: null,
+    context: null
   }
 
   const event: Event = {
