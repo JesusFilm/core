@@ -17,13 +17,15 @@ import {
   ButtonBlockUpdateAlignment,
   ButtonBlockUpdateAlignmentVariables
 } from '../../../../../../../../../../__generated__/ButtonBlockUpdateAlignment'
-import { ButtonAlignment } from '../../../../../../../../../../__generated__/globalTypes'
+// import { ButtonAlignment } from '../../../../../../../../../../__generated__/globalTypes'
 
 export const BUTTON_BLOCK_UPDATE = gql`
-  mutation ButtonBlockUpdateAlignment($id: ID!, $alignment: ButtonAlignment!) {
-    buttonBlockUpdate(id: $id, input: { alignment: $alignment }) {
+  mutation ButtonBlockUpdateAlignment($id: ID!, $classNames: String!) {
+    buttonBlockUpdate(id: $id, input: { classNames: $classNames }) {
       id
-      alignment
+      classNames {
+        self
+      }
     }
   }
 `
@@ -53,32 +55,37 @@ export function Alignment(): ReactElement {
 
   function handleChange(alignment: ButtonAlignment): void {
     if (selectedBlock == null || alignment == null) return
-    add({
-      parameters: {
-        execute: { alignment },
-        undo: { alignment: selectedBlock.alignment }
-      },
-      execute({ alignment }) {
-        dispatch({
-          type: 'SetEditorFocusAction',
-          selectedBlock,
-          selectedStep: state.selectedStep
-        })
-        void buttonBlockUpdate({
-          variables: {
-            id: selectedBlock.id,
-            alignment
-          },
-          optimisticResponse: {
-            buttonBlockUpdate: {
-              id: selectedBlock.id,
-              alignment,
-              __typename: 'ButtonBlock'
-            }
-          }
-        })
-      }
-    })
+    // add({
+    // parameters: {
+    //   execute: { alignment },
+    //   undo: { alignment: selectedBlock.alignment }
+    // },
+    // execute({ alignment }) {
+    // dispatch({
+    //   type: 'SetEditorFocusAction',
+    //   selectedBlock,
+    //   selectedStep: state.selectedStep
+    // })
+    // void buttonBlockUpdate({
+    //   variables: {
+    //     id: selectedBlock.id,
+    //     classNames: {
+    //       self: alignment
+    //     }
+    //   },
+    //   optimisticResponse: {
+    //     buttonBlockUpdate: {
+    //       id: selectedBlock.id,
+    //       classNames: {
+    //         __typename: 'ButtonBlockClassNames',
+    //         self: alignment
+    //       },
+    //       __typename: 'ButtonBlock'
+    //     }
+    //   }
+    // })
+    // }
+    // })
   }
 
   const options = [

@@ -97,7 +97,8 @@ export function Button({
   action,
   children,
   editableLabel,
-  submitEnabled
+  submitEnabled,
+  classNames
 }: ButtonProps): ReactElement {
   const [buttonClickEventCreate] = useMutation<
     ButtonClickEventCreate,
@@ -283,6 +284,7 @@ export function Button({
                 ? 4
                 : 5
       }}
+      className="flex w-full justify-end"
       data-testid={`JourneysButton-${blockId}`}
     >
       <MuiButton
@@ -293,7 +295,7 @@ export function Button({
         startIcon={startIcon != null ? <Icon {...startIcon} /> : undefined}
         endIcon={endIcon != null ? <Icon {...endIcon} /> : undefined}
         onClick={handleClick}
-        fullWidth
+        fullWidth={classNames?.self.includes('justify-stretch')}
         sx={
           editableLabel != null
             ? {
