@@ -39,6 +39,9 @@ export const GET_PARENT_VIDEO_LABEL = graphql(`
     adminVideo(id: $videoId) {
       id
       label
+      origin {
+        id
+      }
     }
   }
 `)
@@ -200,7 +203,7 @@ export function VideoCreateForm({
     id: '',
     slug: '',
     label: suggestedLabel || ('' as VideoLabel),
-    originId: ''
+    originId: parentData?.adminVideo?.origin?.id || ''
   }
 
   // Get explanatory text for the suggested label
