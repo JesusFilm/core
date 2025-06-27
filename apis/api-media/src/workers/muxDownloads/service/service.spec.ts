@@ -19,6 +19,15 @@ const mockLogger = {
 describe('muxDownloads service', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    // Mock setTimeout to avoid delays in tests
+    jest.spyOn(global, 'setTimeout').mockImplementation((callback: any) => {
+      callback()
+      return {} as NodeJS.Timeout
+    })
+  })
+
+  afterEach(() => {
+    jest.restoreAllMocks()
   })
 
   it('should update download sizes from Mux static renditions', async () => {
@@ -191,5 +200,41 @@ describe('muxDownloads service', () => {
       },
       'failed to update video variant download sizes'
     )
+  })
+
+  it('should rate limit Mux API calls with 2 second delays', async () => {
+    // Mock multiple video variants to test rate limiting
+    prismaMock.videoVariant.findMany.mockResolvedValue([
+      {
+        id: 'variant-1',
+        muxVideo: { assetId: 'mux-asset-1' },
+        downloads: [{ id: 'download-1', quality: 'high', size: 0 }]
+      },
+      {
+        id: 'variant-2',
+        muxVideo: { assetId: 'mux-asset-2' },
+        downloads: [{ id: 'download-2', quality: 'high', size: 0 }]
+      }
+    ] as any)
+    ;(getStaticRenditions as jest.Mock).mockResolvedValue({
+      files: [{ resolution: '720p', filesize: '157286400', status: 'ready' }]
+    })
+    prismaMock.videoVariantDownload.update.mockResolvedValue({} as any)
+
+    // Restore the real setTimeout for this test and spy on it
+    jest.restoreAllMocks()
+    const setTimeoutSpy = jest
+      .spyOn(global, 'setTimeout')
+      .mockImplementation((callback: any) => {
+        callback()
+        return {} as NodeJS.Timeout
+      })
+
+    await service(mockLogger)
+
+    // Should call setTimeout once (for the second API call)
+    expect(setTimeoutSpy).toHaveBeenCalledTimes(1)
+    expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 2000)
+    expect(getStaticRenditions).toHaveBeenCalledTimes(2)
   })
 })

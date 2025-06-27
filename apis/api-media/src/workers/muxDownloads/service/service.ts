@@ -79,6 +79,15 @@ export async function service(logger?: Logger): Promise<void> {
         continue
       }
 
+      // Rate limit: wait 2 seconds between Mux API calls
+      if (processedCount > 0) {
+        logger?.info(
+          { videoVariantId: videoVariant.id },
+          'rate limiting: waiting 2 seconds before next Mux API call'
+        )
+        await new Promise((resolve) => setTimeout(resolve, 2000))
+      }
+
       // Get static renditions from Mux
       const staticRenditions = await getStaticRenditions(
         videoVariant.muxVideo.assetId,
