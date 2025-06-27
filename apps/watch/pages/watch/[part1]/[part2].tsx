@@ -12,15 +12,15 @@ import type {
 } from '../../../__generated__/GetVideoContent'
 import type { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import i18nConfig from '../../../next-i18next.config'
-import { getCookie } from '../../../src/components/LanguageSwitchDialogNew/utils/cookieHandler'
 import { createApolloClient } from '../../../src/libs/apolloClient'
+import { getCookie } from '../../../src/libs/cookieHandler'
 import { getFlags } from '../../../src/libs/getFlags'
 import { getLanguageIdFromLocale } from '../../../src/libs/getLanguageIdFromLocale'
 import { LanguageProvider } from '../../../src/libs/languageContext/LanguageContext'
-import { LanguagePreferenceProvider } from '../../../src/libs/languagePreferenceContext/LanguagePreferenceContext'
 import { slugMap } from '../../../src/libs/slugMap'
 import { VIDEO_CONTENT_FIELDS } from '../../../src/libs/videoContentFields'
 import { VideoProvider } from '../../../src/libs/videoContext'
+import { WatchProvider } from '../../../src/libs/watchContext/WatchContext'
 
 export const GET_VIDEO_CONTENT = gql`
   ${VIDEO_CONTENT_FIELDS}
@@ -54,8 +54,7 @@ const DynamicVideoContainerPage = dynamic(
 export default function Part2Page({ content }: Part2PageProps): ReactElement {
   const { i18n } = useTranslation()
 
-  // Initialize language preferences from cookies and i18n
-  const initialLanguageState = {
+  const initialWatchState = {
     siteLanguage: i18n?.language ?? 'en',
     audioLanguage: getCookie('AUDIO_LANGUAGE') ?? '529',
     subtitleLanguage: getCookie('SUBTITLE_LANGUAGE') ?? '529',
@@ -65,8 +64,8 @@ export default function Part2Page({ content }: Part2PageProps): ReactElement {
   }
 
   return (
-    <LanguagePreferenceProvider initialState={initialLanguageState}>
-      <SnackbarProvider>
+    <SnackbarProvider>
+      <WatchProvider initialState={initialWatchState}>
         <LanguageProvider>
           <VideoProvider value={{ content }}>
             {content.variant?.hls != null ? (
@@ -76,8 +75,8 @@ export default function Part2Page({ content }: Part2PageProps): ReactElement {
             )}
           </VideoProvider>
         </LanguageProvider>
-      </SnackbarProvider>
-    </LanguagePreferenceProvider>
+      </WatchProvider>
+    </SnackbarProvider>
   )
 }
 

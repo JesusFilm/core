@@ -130,7 +130,7 @@ export function HeaderTabButtons(): ReactElement {
           >
             {buttonIcon}
             <Typography variant="inherit">{buttonLabel}</Typography>
-            <ChervonDownIcon />
+            <ChervonDownIcon data-testid="ChevronDownIcon" />
           </Stack>
         </Button>
       </Box>

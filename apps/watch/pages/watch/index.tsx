@@ -15,17 +15,17 @@ import {
 import { useInstantSearchClient } from '@core/journeys/ui/algolia/InstantSearchProvider'
 
 import i18nConfig from '../../next-i18next.config'
-import { getCookie } from '../../src/components/LanguageSwitchDialogNew/utils/cookieHandler'
 import { WatchHomePage as VideoHomePage } from '../../src/components/WatchHomePage'
 import { createInstantSearchRouter } from '../../src/libs/algolia/instantSearchRouter/instantSearchRouter'
 import {
   createApolloClient,
   useApolloClient
 } from '../../src/libs/apolloClient'
+import { getCookie } from '../../src/libs/cookieHandler'
 import { getFlags } from '../../src/libs/getFlags'
 import { getLanguageIdFromLocale } from '../../src/libs/getLanguageIdFromLocale'
-import { LanguagePreferenceProvider } from '../../src/libs/languagePreferenceContext/LanguagePreferenceContext'
 import { VIDEO_CHILD_FIELDS } from '../../src/libs/videoChildFields'
+import { WatchProvider } from '../../src/libs/watchContext/WatchContext'
 
 export const GET_HOME_VIDEOS = gql`
   ${VIDEO_CHILD_FIELDS}
@@ -55,8 +55,7 @@ function HomePage({
   const searchClient = useInstantSearchClient()
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
-  // Initialize language preferences from cookies and i18n
-  const initialLanguageState = {
+  const initialWatchState = {
     siteLanguage: i18n?.language ?? 'en',
     audioLanguage: getCookie('AUDIO_LANGUAGE') ?? '529',
     subtitleLanguage: getCookie('SUBTITLE_LANGUAGE') ?? '529',
@@ -64,9 +63,9 @@ function HomePage({
   }
 
   return (
-    <LanguagePreferenceProvider initialState={initialLanguageState}>
-      <InstantSearchSSRProvider {...serverState}>
-        <ApolloProvider client={client}>
+    <InstantSearchSSRProvider {...serverState}>
+      <ApolloProvider client={client}>
+        <WatchProvider initialState={initialWatchState}>
           <InstantSearch
             searchClient={searchClient}
             indexName={indexName}
@@ -76,11 +75,11 @@ function HomePage({
             routing={createInstantSearchRouter()}
           >
             <Configure ruleContexts={['home_page']} />
-            <VideoHomePage languageId={localLanguageId} />
+            <VideoHomePage />
           </InstantSearch>
-        </ApolloProvider>
-      </InstantSearchSSRProvider>
-    </LanguagePreferenceProvider>
+        </WatchProvider>
+      </ApolloProvider>
+    </InstantSearchSSRProvider>
   )
 }
 

@@ -18,16 +18,16 @@ import {
 } from '../../../../__generated__/GetVideoContentPart3'
 import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 import i18nConfig from '../../../../next-i18next.config'
-import { getCookie } from '../../../../src/components/LanguageSwitchDialogNew/utils/cookieHandler'
 import { VideoContentPage } from '../../../../src/components/VideoContentPage'
 import { createApolloClient } from '../../../../src/libs/apolloClient'
+import { getCookie } from '../../../../src/libs/cookieHandler'
 import { getFlags } from '../../../../src/libs/getFlags'
 import { getLanguageIdFromLocale } from '../../../../src/libs/getLanguageIdFromLocale'
 import { LanguageProvider } from '../../../../src/libs/languageContext/LanguageContext'
-import { LanguagePreferenceProvider } from '../../../../src/libs/languagePreferenceContext/LanguagePreferenceContext'
 import { slugMap } from '../../../../src/libs/slugMap'
 import { VIDEO_CONTENT_FIELDS } from '../../../../src/libs/videoContentFields'
 import { VideoProvider } from '../../../../src/libs/videoContext'
+import { WatchProvider } from '../../../../src/libs/watchContext/WatchContext'
 
 export const GET_VIDEO_CONTAINER_PART_2 = gql`
   ${VIDEO_CONTENT_FIELDS}
@@ -60,8 +60,7 @@ export default function Part3Page({
   const searchClient = useInstantSearchClient()
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
-  // Initialize language preferences from cookies and i18n
-  const initialLanguageState = {
+  const initialWatchState = {
     siteLanguage: i18n?.language ?? 'en',
     audioLanguage: getCookie('AUDIO_LANGUAGE') ?? '529',
     subtitleLanguage: getCookie('SUBTITLE_LANGUAGE') ?? '529',
@@ -71,17 +70,17 @@ export default function Part3Page({
   }
 
   return (
-    <LanguagePreferenceProvider initialState={initialLanguageState}>
-      <InstantSearch searchClient={searchClient} indexName={indexName} insights>
-        <SnackbarProvider>
+    <InstantSearch searchClient={searchClient} indexName={indexName} insights>
+      <SnackbarProvider>
+        <WatchProvider initialState={initialWatchState}>
           <LanguageProvider>
             <VideoProvider value={{ content, container }}>
               <VideoContentPage />
             </VideoProvider>
           </LanguageProvider>
-        </SnackbarProvider>
-      </InstantSearch>
-    </LanguagePreferenceProvider>
+        </WatchProvider>
+      </SnackbarProvider>
+    </InstantSearch>
   )
 }
 
