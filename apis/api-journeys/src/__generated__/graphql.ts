@@ -1104,28 +1104,28 @@ export type JourneyTemplateInput = {
 
 export type JourneyTheme = {
   __typename?: 'JourneyTheme';
-  accentFont?: Maybe<Scalars['String']['output']>;
+  bodyFont?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
+  headerFont?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   journey: Journey;
   journeyId: Scalars['ID']['output'];
-  primaryFont?: Maybe<Scalars['String']['output']>;
-  secondaryFont?: Maybe<Scalars['String']['output']>;
+  labelFont?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
   userId: Scalars['ID']['output'];
 };
 
 export type JourneyThemeCreateInput = {
-  accentFont?: InputMaybe<Scalars['String']['input']>;
+  bodyFont?: InputMaybe<Scalars['String']['input']>;
+  headerFont?: InputMaybe<Scalars['String']['input']>;
   journeyId: Scalars['ID']['input'];
-  primaryFont?: InputMaybe<Scalars['String']['input']>;
-  secondaryFont?: InputMaybe<Scalars['String']['input']>;
+  labelFont?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type JourneyThemeUpdateInput = {
-  accentFont?: InputMaybe<Scalars['String']['input']>;
-  primaryFont?: InputMaybe<Scalars['String']['input']>;
-  secondaryFont?: InputMaybe<Scalars['String']['input']>;
+  bodyFont?: InputMaybe<Scalars['String']['input']>;
+  headerFont?: InputMaybe<Scalars['String']['input']>;
+  labelFont?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type JourneyUpdateInput = {
