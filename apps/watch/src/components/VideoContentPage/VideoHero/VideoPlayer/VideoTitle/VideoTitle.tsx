@@ -1,24 +1,31 @@
 import { ReactElement } from 'react'
 
+import { useWatch } from '../../../../../libs/watchContext'
+
 interface VideoTitleProps {
-  play: boolean
   videoTitle: string
   videoSnippet: string
 }
 
 export function VideoTitle({
-  play,
   videoTitle,
   videoSnippet
 }: VideoTitleProps): ReactElement {
+  const {
+    state: {
+      player: { play, active, loading }
+    }
+  } = useWatch()
+  const visible = !play || active || loading
+
   return (
     <div
       className={`
         w-full z-[2] flex flex-col
         px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12
-        transition-opacity duration-[250ms]
-        ${!play ? 'opacity-100' : 'opacity-0'}
-        ${!play ? 'delay-0' : 'delay-[2000ms]'}
+        transition-opacity duration-[225ms]
+        ${visible ? 'opacity-100' : 'opacity-0'}
+        ${visible ? 'delay-0' : 'delay-[2000ms]'}
       `}
       style={{
         transitionTimingFunction: 'ease-out'

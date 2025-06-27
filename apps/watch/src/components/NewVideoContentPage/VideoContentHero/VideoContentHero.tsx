@@ -44,7 +44,7 @@ export function VideoContentHero({
       } w-full flex items-end relative bg-[#131111] z-[1] transition-all duration-300 ease-out`}
       data-testid="ContentHero"
     >
-      {!isFullscreen && <ContentHeader />}
+      <ContentHeader />
       <HeroVideo isFullscreen={isFullscreen} key={variant?.hls} />
       <div
         data-testid="ContainerHeroTitleContainer"

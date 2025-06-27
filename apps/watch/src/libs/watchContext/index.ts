@@ -2,5 +2,6 @@ export {
   WatchProvider,
   useWatch,
   type WatchAction,
-  type WatchState
+  type WatchState,
+  videoPlayerInitialState
 } from './WatchContext'
