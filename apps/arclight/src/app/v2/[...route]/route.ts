@@ -16,6 +16,19 @@ import { taxonomies } from './_taxonomies'
 
 const app = new OpenAPIHono().basePath('/v2')
 
+const setCorsHeaders = (c: any) => {
+  c.header('Access-Control-Allow-Origin', '*')
+  c.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+  c.header('Access-Control-Allow-Headers', '*')
+  c.header('Access-Control-Expose-Headers', '*')
+}
+
+// Apply CORS headers to all routes
+app.use('*', (c, next) => {
+  setCorsHeaders(c)
+  return next()
+})
+
 // Apply compression for responses larger than 1KB
 app.use(
   '*',
@@ -66,5 +79,11 @@ app.doc('/doc', {
 })
 
 app.get('/api/doc', swaggerUI({ url: '/v2/doc' }))
+
+// Handle preflight requests
+app.options('*', (c) => {
+  setCorsHeaders(c)
+  return c.body(null, 204)
+})
 
 export const GET = handle(app)
