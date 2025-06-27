@@ -205,13 +205,8 @@ const setCorsHeaders = (c: Context) => {
   c.header('Access-Control-Expose-Headers', '*')
 }
 
-// Apply CORS headers to all routes
-mediaComponentLanguage.use('*', (c, next) => {
-  setCorsHeaders(c)
-  return next()
-})
-
 mediaComponentLanguage.openapi(route, async (c) => {
+  setCorsHeaders(c)
   const mediaComponentId = c.req.param('mediaComponentId')
   const languageId = c.req.param('languageId')
   const expand = c.req.query('expand') ?? ''
@@ -480,7 +475,6 @@ mediaComponentLanguage.openapi(route, async (c) => {
   return c.json(response)
 })
 
-// Handle preflight requests
 mediaComponentLanguage.options('*', (c) => {
   setCorsHeaders(c)
   return c.body(null, 204)

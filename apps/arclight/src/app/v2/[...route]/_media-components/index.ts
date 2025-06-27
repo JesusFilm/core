@@ -219,15 +219,10 @@ const setCorsHeaders = (c: Context) => {
   c.header('Access-Control-Expose-Headers', '*')
 }
 
-// Apply CORS headers to all routes
-mediaComponents.use('*', (c, next) => {
-  setCorsHeaders(c)
-  return next()
-})
-
 mediaComponents.route('/:mediaComponentId', mediaComponent)
 
 mediaComponents.openapi(route, async (c) => {
+  setCorsHeaders(c)
   const page = c.req.query('page') == null ? 1 : Number(c.req.query('page'))
   const limit =
     c.req.query('limit') == null ? 10000 : Number(c.req.query('limit'))
@@ -436,7 +431,6 @@ mediaComponents.openapi(route, async (c) => {
   return c.json(response)
 })
 
-// Handle preflight requests
 mediaComponents.options('*', (c) => {
   setCorsHeaders(c)
   return c.body(null, 204)

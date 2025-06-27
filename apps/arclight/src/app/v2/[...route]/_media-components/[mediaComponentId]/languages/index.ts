@@ -58,12 +58,6 @@ const setCorsHeaders = (c: Context) => {
   c.header('Access-Control-Expose-Headers', '*')
 }
 
-// Apply CORS headers to all routes
-mediaComponentLanguages.use('*', (c, next) => {
-  setCorsHeaders(c)
-  return next()
-})
-
 mediaComponentLanguages.route('/:languageId', mediaComponentLanguage)
 
 const QuerySchema = z.object({
@@ -115,6 +109,7 @@ const route = createRoute({
 })
 
 mediaComponentLanguages.openapi(route, async (c) => {
+  setCorsHeaders(c)
   const mediaComponentId = c.req.param('mediaComponentId')
 
   const apiKey = c.req.query('apiKey')
@@ -309,7 +304,6 @@ mediaComponentLanguages.openapi(route, async (c) => {
   return c.json(response)
 })
 
-// Handle preflight requests
 mediaComponentLanguages.options('*', (c) => {
   setCorsHeaders(c)
   return c.body(null, 204)
