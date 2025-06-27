@@ -1,5 +1,6 @@
 import { swaggerUI } from '@hono/swagger-ui'
 import { OpenAPIHono } from '@hono/zod-openapi'
+import { Context } from 'hono'
 import { compress } from 'hono/compress'
 import { etag } from 'hono/etag'
 import { HTTPException } from 'hono/http-exception'
@@ -16,7 +17,7 @@ import { taxonomies } from './_taxonomies'
 
 const app = new OpenAPIHono().basePath('/v2')
 
-const setCorsHeaders = (c: any) => {
+const setCorsHeaders = (c: Context) => {
   c.header('Access-Control-Allow-Origin', '*')
   c.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
   c.header('Access-Control-Allow-Headers', '*')
@@ -87,3 +88,4 @@ app.options('*', (c) => {
 })
 
 export const GET = handle(app)
+export const OPTIONS = handle(app)
