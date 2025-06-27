@@ -1,6 +1,6 @@
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 
-import { LANGUAGE_MAPPINGS } from '../../../../config/locales'
+import { LANGUAGE_MAPPINGS } from '../../../../libs/localeMapping'
 
 // Extended interface to support headers and dividers
 export interface ExtendedLanguageOption extends LanguageOption {

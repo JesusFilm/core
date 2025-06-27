@@ -1,4 +1,4 @@
-import { LANGUAGE_MAPPINGS } from './locales'
+import { LANGUAGE_MAPPINGS } from './localeMapping'
 
 describe('LANGUAGE_MAPPINGS', () => {
   describe('languageSlugs uniqueness', () => {

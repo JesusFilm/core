@@ -1,8 +1,8 @@
 import { useCallback } from 'react'
 
-import { setCookie } from '../../components/LanguageSwitchDialogNew/utils/cookieHandler'
+import { setCookie } from '../cookieHandler'
 
-import { useLanguagePreference } from './LanguagePreferenceContext'
+import { useWatch } from './WatchContext'
 
 /**
  * Hook that provides action dispatchers with side effects
@@ -22,7 +22,7 @@ import { useLanguagePreference } from './LanguagePreferenceContext'
  * ```
  */
 export function useLanguageActions() {
-  const { state, dispatch } = useLanguagePreference()
+  const { state, dispatch } = useWatch()
 
   const updateSiteLanguage = useCallback(
     (language: string) => {

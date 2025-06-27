@@ -11,10 +11,7 @@ import {
 
 import { GetAllLanguages_languages as Language } from '../../../../__generated__/GetAllLanguages'
 import { GetLanguagesSlug } from '../../../../__generated__/GetLanguagesSlug'
-import {
-  useLanguageActions,
-  useLanguagePreference
-} from '../../../libs/languagePreferenceContext'
+import { useLanguageActions, useWatch } from '../../../libs/watchContext'
 import { GET_LANGUAGES_SLUG } from '../../AudioLanguageDialog/AudioLanguageDialog'
 import {
   selectLanguageForNoVideo,
@@ -34,7 +31,7 @@ export function AudioTrackSelect(): ReactElement {
       loading
     },
     dispatch
-  } = useLanguagePreference()
+  } = useWatch()
   const { updateAudioLanguage } = useLanguageActions()
 
   const [getAudioLanguages, { loading: audioLanguagesLoading }] =

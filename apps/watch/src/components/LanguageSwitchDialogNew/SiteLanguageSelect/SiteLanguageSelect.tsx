@@ -7,11 +7,11 @@ import {
   LanguageOption
 } from '@core/shared/ui/LanguageAutocomplete'
 
-import { LANGUAGE_MAPPINGS, SUPPORTED_LOCALES } from '../../../config/locales'
 import {
-  useLanguageActions,
-  useLanguagePreference
-} from '../../../libs/languagePreferenceContext'
+  LANGUAGE_MAPPINGS,
+  SUPPORTED_LOCALES
+} from '../../../libs/localeMapping'
+import { useLanguageActions, useWatch } from '../../../libs/watchContext'
 import { renderInput } from '../utils/renderInput'
 import { renderOption } from '../utils/renderOption'
 import {
@@ -21,7 +21,7 @@ import {
 
 export function SiteLanguageSelect(): ReactElement {
   const { i18n, t } = useTranslation()
-  const { state } = useLanguagePreference()
+  const { state } = useWatch()
   const { updateSiteLanguage } = useLanguageActions()
   const [languages, setLanguages] = useState<ExtendedLanguageOption[]>([])
   const currentLanguageId = i18n?.language ?? 'en'

@@ -9,11 +9,8 @@ import {
 } from '@core/shared/ui/LanguageAutocomplete'
 
 import { GetSubtitles } from '../../../../__generated__/GetSubtitles'
-import { SUBTITLE_LANGUAGE_IDS } from '../../../config/subtitleLanguageIds'
-import {
-  useLanguageActions,
-  useLanguagePreference
-} from '../../../libs/languagePreferenceContext'
+import { SUBTITLE_LANGUAGE_IDS } from '../../../libs/localeMapping'
+import { useLanguageActions, useWatch } from '../../../libs/watchContext'
 import { GET_SUBTITLES } from '../../SubtitleDialog/SubtitleDialog'
 import { renderInput } from '../utils/renderInput'
 import { renderOption } from '../utils/renderOption'
@@ -32,7 +29,7 @@ export function SubtitlesSelect(): ReactElement {
       loading
     },
     dispatch
-  } = useLanguagePreference()
+  } = useWatch()
   const { updateSubtitleLanguage, updateSubtitlesOn } = useLanguageActions()
 
   const [getSubtitleLanguages, { loading: subtitlesLoading }] =

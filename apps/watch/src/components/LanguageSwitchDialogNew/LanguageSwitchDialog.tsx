@@ -7,13 +7,13 @@ import { ReactElement, useEffect, useRef } from 'react'
 import { websiteLight } from '@core/shared/ui/themes/website/theme'
 
 import { GetAllLanguages } from '../../../__generated__/GetAllLanguages'
-import { useLanguagePreference } from '../../libs/languagePreferenceContext/LanguagePreferenceContext'
+import { useWatch } from '../../libs/watchContext'
 
 import { AudioTrackSelect } from './AudioTrackSelect'
 import { SiteLanguageSelect } from './SiteLanguageSelect'
 import { SubtitlesSelect } from './SubtitlesSelect'
 
-const GET_ALL_LANGUAGES = gql`
+export const GET_ALL_LANGUAGES = gql`
   query GetAllLanguages {
     languages {
       id
@@ -41,7 +41,7 @@ export function LanguageSwitchDialog({
   const {
     state: { allLanguages },
     dispatch
-  } = useLanguagePreference()
+  } = useWatch()
   const [getAllLanguages, { loading: languagesLoading }] =
     useLazyQuery<GetAllLanguages>(GET_ALL_LANGUAGES, {
       onCompleted: (data) => {
