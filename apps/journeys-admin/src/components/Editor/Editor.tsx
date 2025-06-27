@@ -1,6 +1,6 @@
 import dynamic from 'next/dynamic'
 import { User } from 'next-firebase-auth'
-import { ReactElement, useMemo } from 'react'
+import { ReactElement } from 'react'
 import { HotkeysProvider } from 'react-hotkeys-hook'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -51,27 +51,6 @@ export function Editor({
       ? steps.find(({ id }) => id === selectedStepId)
       : undefined
 
-  const fontFamilies = useMemo(
-    () =>
-      journey?.journeyTheme
-        ? [
-            ...new Set([
-              journey.journeyTheme.headerFont,
-              journey.journeyTheme.bodyFont,
-              journey.journeyTheme.labelFont
-            ])
-          ]
-            .filter(Boolean)
-            .map(formatFontWithWeights)
-        : [],
-    [journey]
-  )
-
-  function formatFontWithWeights(font: string): string {
-    return `${font}:400,500,600,700,800`
-  }
-
-  console.log('journey', journey)
   return (
     <JourneyProvider value={{ journey, variant: 'admin' }}>
       <EditorProvider
@@ -82,7 +61,7 @@ export function Editor({
         }}
       >
         <HotkeysProvider>
-          <FontLoader fontFamilies={fontFamilies} />
+          <FontLoader journeyTheme={journey?.journeyTheme ?? null} />
           <Hotkeys />
           <Toolbar user={user} />
           <Slider />
