@@ -47,7 +47,7 @@ export function JourneyListMenu({
             onClick={handleShowMenu}
             data-testid="JourneyListMenuButton"
           >
-            <MoreIcon />
+            <MoreIcon data-testid="MoreIcon" />
           </IconButton>
           <Menu
             id="edit-journey-actions"

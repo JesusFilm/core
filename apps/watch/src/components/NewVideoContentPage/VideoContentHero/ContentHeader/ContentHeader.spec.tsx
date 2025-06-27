@@ -3,6 +3,7 @@ import { userEvent } from '@storybook/test'
 import { render, screen, waitFor } from '@testing-library/react'
 
 import { VideoProvider } from '../../../../libs/videoContext'
+import { WatchProvider } from '../../../../libs/watchContext'
 import { videos } from '../../../Videos/__generated__/testData'
 
 import { ContentHeader } from './ContentHeader'
@@ -15,7 +16,16 @@ describe('ContentHeader', () => {
   it('renders the header with a logo', () => {
     render(
       <VideoProvider value={{ content: videos[0] }}>
-        <ContentHeader />
+        <WatchProvider
+          initialState={{
+            siteLanguage: 'en',
+            audioLanguage: 'en',
+            subtitleLanguage: 'en',
+            subtitleOn: false
+          }}
+        >
+          <ContentHeader />
+        </WatchProvider>
       </VideoProvider>
     )
 
@@ -30,7 +40,16 @@ describe('ContentHeader', () => {
     render(
       <MockedProvider>
         <VideoProvider value={{ content: videos[0] }}>
-          <ContentHeader />
+          <WatchProvider
+            initialState={{
+              siteLanguage: 'en',
+              audioLanguage: 'en',
+              subtitleLanguage: 'en',
+              subtitleOn: false
+            }}
+          >
+            <ContentHeader />
+          </WatchProvider>
         </VideoProvider>
       </MockedProvider>
     )
