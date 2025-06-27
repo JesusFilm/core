@@ -1,5 +1,6 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { ResultOf, graphql } from 'gql.tada'
+import { Context } from 'hono'
 import { HTTPException } from 'hono/http-exception'
 
 import { getApolloClient } from '../../../../../lib/apolloClient'
@@ -86,6 +87,20 @@ const GET_VIDEO = graphql(`
 `)
 
 export const mediaComponent = new OpenAPIHono()
+
+const setCorsHeaders = (c: Context) => {
+  c.header('Access-Control-Allow-Origin', '*')
+  c.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+  c.header('Access-Control-Allow-Headers', '*')
+  c.header('Access-Control-Expose-Headers', '*')
+}
+
+// Apply CORS headers to all routes
+mediaComponent.use('*', (c, next) => {
+  setCorsHeaders(c)
+  return next()
+})
+
 mediaComponent.route('/languages', mediaComponentLanguages)
 
 const QuerySchema = z.object({
@@ -309,4 +324,10 @@ mediaComponent.openapi(route, async (c) => {
       404
     )
   }
+})
+
+// Handle preflight requests
+mediaComponent.options('*', (c) => {
+  setCorsHeaders(c)
+  return c.body(null, 204)
 })

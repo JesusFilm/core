@@ -1,5 +1,6 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { ResultOf, graphql } from 'gql.tada'
+import { Context } from 'hono'
 
 import { getApolloClient } from '../../../../../../../lib/apolloClient'
 import { getDefaultPlatformForApiKey } from '../../../../../../../lib/getPlatformFromApiKey'
@@ -195,6 +196,19 @@ const route = createRoute({
       description: 'Not found'
     }
   }
+})
+
+const setCorsHeaders = (c: Context) => {
+  c.header('Access-Control-Allow-Origin', '*')
+  c.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+  c.header('Access-Control-Allow-Headers', '*')
+  c.header('Access-Control-Expose-Headers', '*')
+}
+
+// Apply CORS headers to all routes
+mediaComponentLanguage.use('*', (c, next) => {
+  setCorsHeaders(c)
+  return next()
 })
 
 mediaComponentLanguage.openapi(route, async (c) => {
@@ -464,4 +478,10 @@ mediaComponentLanguage.openapi(route, async (c) => {
   }
 
   return c.json(response)
+})
+
+// Handle preflight requests
+mediaComponentLanguage.options('*', (c) => {
+  setCorsHeaders(c)
+  return c.body(null, 204)
 })
