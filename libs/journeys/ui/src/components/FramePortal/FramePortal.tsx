@@ -18,6 +18,9 @@ import { createPortal } from 'react-dom'
 import { prefixer } from 'stylis'
 import rtlPlugin from 'stylis-plugin-rtl'
 
+// Import the globals.css to ensure Tailwind styles are available
+import '../../globals.css'
+
 interface ContentProps {
   children: ReactNode
   document: Document

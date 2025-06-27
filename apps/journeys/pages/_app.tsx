@@ -20,8 +20,6 @@ import i18nConfig from '../next-i18next.config'
 import { useApollo } from '../src/libs/apolloClient'
 import { firebaseClient } from '../src/libs/firebaseClient'
 
-import 'swiper/css'
-import 'swiper/css/pagination'
 import './globals.css'
 
 type JourneysAppProps = NextJsAppProps<{ journey?: Journey }> & {
@@ -60,7 +58,7 @@ function JourneysApp({
 
   return (
     <AppCacheProvider emotionCache={emotionCache}>
-      <GlobalStyles styles="@layer theme, base, mui, components, utilities;" />
+      <GlobalStyles styles="@layer theme, base, mui, css, components, utilities;" />
       <DefaultSeo
         titleTemplate={t('%s | Next Steps')}
         defaultTitle={t('Next Steps')}

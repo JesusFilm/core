@@ -1,6 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import Box from '@mui/material/Box'
-import MuiButton from '@mui/material/Button'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { useFormikContext } from 'formik'
 import { useRouter } from 'next/router'
@@ -12,6 +10,8 @@ import { v4 as uuidv4 } from 'uuid'
 import {
   ButtonAction,
   ButtonClickEventCreateInput,
+  ButtonColor,
+  ButtonSize,
   ButtonVariant,
   ChatOpenEventCreateInput
 } from '../../../__generated__/globalTypes'
@@ -24,13 +24,13 @@ import { useJourney } from '../../libs/JourneyProvider'
 import { JourneyPlausibleEvents } from '../../libs/plausibleHelpers'
 import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
 import { Icon } from '../Icon'
-import { IconFields } from '../Icon/__generated__/IconFields'
+import type { IconFields } from '../Icon/__generated__/IconFields'
 
 import {
   ButtonClickEventCreate,
   ButtonClickEventCreateVariables
 } from './__generated__/ButtonClickEventCreate'
-import { ButtonFields } from './__generated__/ButtonFields'
+import type { ButtonFields } from './__generated__/ButtonFields'
 import {
   ChatOpenEventCreate,
   ChatOpenEventCreateVariables
@@ -57,6 +57,103 @@ export const CHAT_OPEN_EVENT_CREATE = gql`
 
 export interface ButtonProps extends TreeBlock<ButtonFields> {
   editableLabel?: ReactElement
+}
+
+// Utility function to map MUI props to Tailwind classes
+function getButtonClasses(
+  variant: ButtonVariant = ButtonVariant.contained,
+  color: ButtonColor = ButtonColor.primary,
+  size: ButtonSize = ButtonSize.medium,
+  fullWidth: boolean = true
+): string {
+  const baseClasses = [
+    'inline-flex',
+    'items-center',
+    'justify-center',
+    'relative',
+    'box-border',
+    'outline-none',
+    'cursor-pointer',
+    'select-none',
+    'align-middle',
+    'no-underline',
+    'font-[Montserrat]',
+    'leading-[1.75]',
+    'min-w-[64px]',
+    'border-0',
+    'text-[#26262E]',
+    'bg-[#FEFEFE]',
+    'bg-red-500',
+    'px-[22px]',
+    'py-[8px]',
+    'text-[0.9375rem]',
+    'w-full',
+    'transition-all',
+    'duration-250',
+    'ease-out',
+    'h-[42px]',
+    'rounded-[16px]',
+    'font-bold',
+    'hover:bg-[rgb(170,172,187)]',
+    'hover:shadow-[0px_2px_4px_-1px_rgba(0,0,0,0.2),0px_4px_5px_0px_rgba(0,0,0,0.14),0px_1px_10px_0px_rgba(0,0,0,0.12)]',
+    'hover:no-underline'
+  ]
+
+  // Size classes - simplified since we're matching MUI exactly
+  const sizeClasses = {
+    [ButtonSize.small]: [],
+    [ButtonSize.medium]: [],
+    [ButtonSize.large]: []
+  }
+
+  // Color and variant combinations - simplified since we're using MUI exact styling
+  const colorVariantClasses = {
+    [ButtonVariant.contained]: {
+      [ButtonColor.primary]: [],
+      [ButtonColor.secondary]: ['bg-gray-500', 'text-white'],
+      [ButtonColor.error]: ['bg-red-600', 'text-white'],
+      [ButtonColor.inherit]: ['bg-gray-800', 'text-white']
+    },
+    [ButtonVariant.outlined]: {
+      [ButtonColor.primary]: ['border', 'border-gray-300', 'bg-transparent'],
+      [ButtonColor.secondary]: [
+        'border',
+        'border-gray-500',
+        'bg-transparent',
+        'text-gray-500'
+      ],
+      [ButtonColor.error]: [
+        'border',
+        'border-red-600',
+        'bg-transparent',
+        'text-red-600'
+      ],
+      [ButtonColor.inherit]: [
+        'border',
+        'border-gray-300',
+        'bg-transparent',
+        'text-gray-700'
+      ]
+    },
+    [ButtonVariant.text]: {
+      [ButtonColor.primary]: ['bg-transparent'],
+      [ButtonColor.secondary]: ['bg-transparent', 'text-gray-500'],
+      [ButtonColor.error]: ['bg-transparent', 'text-red-600'],
+      [ButtonColor.inherit]: ['bg-transparent', 'text-inherit']
+    }
+  }
+
+  // Width classes
+  const widthClasses = fullWidth ? ['w-full', 'max-w-none'] : []
+
+  const allClasses = [
+    ...baseClasses,
+    ...sizeClasses[size],
+    ...colorVariantClasses[variant][color],
+    ...widthClasses
+  ]
+
+  return allClasses.join(' ')
 }
 
 /**
@@ -269,44 +366,24 @@ export function Button({
     handleAction(router, action, nextStepSlug)
   }
 
+  const buttonClasses = getButtonClasses(
+    buttonVariant ?? ButtonVariant.contained,
+    buttonColor ?? ButtonColor.primary,
+    size ?? ButtonSize.medium,
+    true
+  )
+
+  const containerClasses = 'mb-12 mt-6'
+
   return (
-    // Margin added via Box so it's ignored by admin selection border outline
-    <Box
-      sx={{
-        mb: 4,
-        mt:
-          size === 'large'
-            ? 6
-            : size === 'medium'
-              ? 5
-              : size === 'small'
-                ? 4
-                : 5
-      }}
-      data-testid={`JourneysButton-${blockId}`}
-    >
-      <MuiButton
-        type={buttonType}
-        variant={buttonVariant ?? ButtonVariant.contained}
-        color={buttonColor ?? undefined}
-        size={size ?? undefined}
-        startIcon={startIcon != null ? <Icon {...startIcon} /> : undefined}
-        endIcon={endIcon != null ? <Icon {...endIcon} /> : undefined}
-        onClick={handleClick}
-        fullWidth
-        sx={
-          editableLabel != null
-            ? {
-                '&:hover': {
-                  backgroundColor:
-                    buttonVariant === ButtonVariant.text
-                      ? 'transparent'
-                      : `${buttonColor ?? 'primary'}.main`
-                }
-              }
-            : undefined
-        }
-      >
+    // Margin added via div so it's ignored by admin selection border outline
+    <div className={containerClasses} data-testid={`JourneysButton-${blockId}`}>
+      <button type={buttonType} onClick={handleClick} className={buttonClasses}>
+        {startIcon != null && (
+          <span className="mr-2">
+            <Icon {...startIcon} />
+          </span>
+        )}
         <span>
           {editableLabel != null
             ? editableLabel
@@ -314,7 +391,12 @@ export function Button({
               ? label
               : fallbackLabel}
         </span>
-      </MuiButton>
-    </Box>
+        {endIcon != null && (
+          <span className="mr-2" style={{ fontSize: '20px' }}>
+            <Icon {...endIcon} />
+          </span>
+        )}
+      </button>
+    </div>
   )
 }

@@ -97,5 +97,8 @@
     "**/node_modules/*/**": true,
     "**/coverage/*/**": true,
     "**/.cache/*/**": true
-  }
+  },
+  "tailwindCSS.experimental.classRegex": [
+    ["className\\s*:\\s*['\"]([^'\"]*)['\"]"]
+  ]
 }
