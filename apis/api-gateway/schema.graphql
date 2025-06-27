@@ -560,6 +560,10 @@ type Journey @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API
   themeMode: ThemeMode! @join__field(graph: API_JOURNEYS) 
   themeName: ThemeName! @join__field(graph: API_JOURNEYS) 
   description: String
+  """
+  context is a field for internal AI notes. It should only be used by template publishers.
+  """
+  context: String @join__field(graph: API_JOURNEYS) 
   creatorDescription: String @join__field(graph: API_JOURNEYS) 
   slug: String!
   archivedAt: DateTime @join__field(graph: API_JOURNEYS) 
@@ -4271,6 +4275,10 @@ input JourneyUpdateInput @join__type(graph: API_JOURNEYS)  {
   themeMode: ThemeMode
   themeName: ThemeName
   description: String
+  """
+  context is a field for internal AI notes. It should only be used by template publishers.
+  """
+  context: String
   creatorDescription: String
   creatorImageBlockId: ID
   primaryImageBlockId: ID

@@ -41,6 +41,7 @@ describe('PlausibleResolver', () => {
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
     description: null,
+    context: null,
     creatorDescription: null,
     creatorImageBlockId: null,
     primaryImageBlockId: null,

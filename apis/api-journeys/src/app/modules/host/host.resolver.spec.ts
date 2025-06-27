@@ -228,6 +228,7 @@ describe('HostResolver', () => {
       themeMode: ThemeMode.light,
       themeName: ThemeName.base,
       description: null,
+      context: null,
       primaryImageBlockId: null,
       publishedAt: null,
       createdAt: new Date(),

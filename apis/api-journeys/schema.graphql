@@ -406,6 +406,11 @@ type Journey
   themeMode: ThemeMode!
   themeName: ThemeName!
   description: String @shareable
+
+  """
+  context is a field for internal AI notes. It should only be used by template publishers.
+  """
+  context: String
   creatorDescription: String
   slug: String! @shareable
   archivedAt: DateTime
@@ -2443,6 +2448,11 @@ input JourneyUpdateInput {
   themeMode: ThemeMode
   themeName: ThemeName
   description: String
+
+  """
+  context is a field for internal AI notes. It should only be used by template publishers.
+  """
+  context: String
   creatorDescription: String
   creatorImageBlockId: ID
   primaryImageBlockId: ID

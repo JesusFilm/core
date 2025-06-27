@@ -510,6 +510,7 @@ export interface JourneyUpdateInput {
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
   description?: string | null;
+  context?: string | null;
   creatorDescription?: string | null;
   creatorImageBlockId?: string | null;
   primaryImageBlockId?: string | null;
