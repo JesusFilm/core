@@ -28,7 +28,39 @@ interface ContentProps {
 
 function Content({ children, document }: ContentProps): ReactElement {
   const cache = useMemo(() => {
+    // Copy the parent document's head content
     document.head.innerHTML = `${window.document.head.innerHTML}<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans&family=El+Messiri:wght@400;600;700&display=swap" rel="stylesheet" />`
+
+    // Ensure all stylesheets from the parent document are properly loaded in the iframe
+    Array.from(window.document.styleSheets).forEach((styleSheet) => {
+      try {
+        if (styleSheet.href) {
+          // External stylesheet - create a link element
+          const existingLink = document.querySelector(
+            `link[href="${styleSheet.href}"]`
+          )
+          if (!existingLink) {
+            const link = document.createElement('link')
+            link.rel = 'stylesheet'
+            link.href = styleSheet.href
+            document.head.appendChild(link)
+          }
+        } else if (styleSheet.cssRules) {
+          // Inline stylesheet - copy the CSS rules
+          const cssText = Array.from(styleSheet.cssRules)
+            .map((rule) => rule.cssText)
+            .join('\n')
+          if (cssText.trim()) {
+            const style = document.createElement('style')
+            style.textContent = cssText
+            document.head.appendChild(style)
+          }
+        }
+      } catch (e) {
+        // Some stylesheets might not be accessible due to CORS
+        console.warn('Could not copy stylesheet:', e)
+      }
+    })
 
     return createCache({
       key: 'iframe',

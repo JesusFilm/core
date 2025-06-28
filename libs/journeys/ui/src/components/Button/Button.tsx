@@ -83,15 +83,11 @@ function getButtonClasses(
     'border-0',
     'text-[#26262E]',
     'bg-[#FEFEFE]',
-    'bg-red-500',
     'px-[22px]',
-    'py-[8px]',
-    'text-[0.9375rem]',
     'w-full',
     'transition-all',
     'duration-250',
     'ease-out',
-    'h-[42px]',
     'rounded-[16px]',
     'font-bold',
     'hover:bg-[rgb(170,172,187)]',
@@ -101,9 +97,9 @@ function getButtonClasses(
 
   // Size classes - simplified since we're matching MUI exactly
   const sizeClasses = {
-    [ButtonSize.small]: [],
-    [ButtonSize.medium]: [],
-    [ButtonSize.large]: []
+    [ButtonSize.small]: ['py-1.5', 'h-[30.75px]', 'text-[0.8125rem]'],
+    [ButtonSize.medium]: ['py-1.5', 'h-[36.5px]', 'text-[0.875rem]'],
+    [ButtonSize.large]: ['py-2', 'h-[42.5px]', 'text-[0.9375rem]']
   }
 
   // Color and variant combinations - simplified since we're using MUI exact styling
@@ -373,7 +369,10 @@ export function Button({
     true
   )
 
-  const containerClasses = 'mb-12 mt-6'
+  let containerClasses = 'inline-flex w-full'
+  if (editableLabel == null) {
+    containerClasses = 'mb-12 mt-6'
+  }
 
   return (
     // Margin added via div so it's ignored by admin selection border outline
