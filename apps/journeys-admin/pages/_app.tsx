@@ -62,7 +62,7 @@ function JourneysAdminApp({
   return (
     <FlagsProvider flags={pageProps.flags}>
       <AppCacheProvider emotionCache={emotionCache}>
-        <GlobalStyles styles="@layer theme, base, mui, components, utilities;" />
+        <GlobalStyles styles="@layer theme, base, mui, css, components, utilities;" />
         <ThemeProvider>
           <DefaultSeo
             titleTemplate={t('%s | Next Steps')}

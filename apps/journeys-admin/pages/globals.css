@@ -1,5 +1,6 @@
 @import 'tailwindcss';
-@import 'tw-animate-css';
+
+@import '../../../libs/journeys/ui/src/globals.css';
 
 @theme {
   --breakpoint-xs: 0px;
