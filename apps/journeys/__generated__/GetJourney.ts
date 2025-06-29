@@ -53,6 +53,14 @@ export interface GetJourney_journey_blocks_ButtonBlock_action_EmailAction {
 
 export type GetJourney_journey_blocks_ButtonBlock_action = GetJourney_journey_blocks_ButtonBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_ButtonBlock_action_LinkAction | GetJourney_journey_blocks_ButtonBlock_action_EmailAction;
 
+export interface GetJourney_journey_blocks_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface GetJourney_journey_blocks_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -66,6 +74,10 @@ export interface GetJourney_journey_blocks_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: GetJourney_journey_blocks_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: GetJourney_journey_blocks_ButtonBlock_classNames | null;
 }
 
 export interface GetJourney_journey_blocks_CardBlock {

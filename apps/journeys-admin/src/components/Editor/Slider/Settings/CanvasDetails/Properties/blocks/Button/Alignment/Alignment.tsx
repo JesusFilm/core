@@ -49,16 +49,16 @@ export function Alignment(): ReactElement {
     | undefined
 
   const [alignment, setAlignment] = useState<
-    'justify-left' | 'justify-center' | 'justify-right' | 'justify-stretch'
-  >('justify-left')
+    'justify-start' | 'justify-center' | 'justify-end' | 'justify-evenly'
+  >('justify-start')
 
   const temp_handleAlignmentChange = (
     _event: React.MouseEvent<HTMLElement>,
     newAlignment:
-      | 'justify-left'
+      | 'justify-start'
       | 'justify-center'
-      | 'justify-right'
-      | 'justify-stretch'
+      | 'justify-end'
+      | 'justify-evenly'
       | null
   ) => {
     if (newAlignment !== null) setAlignment(newAlignment)
@@ -101,7 +101,7 @@ export function Alignment(): ReactElement {
 
   const options = [
     {
-      value: 'justify-left',
+      value: 'justify-start',
       ariaLabel: 'Align Left',
       icon: <AlignLeftIcon />
     },
@@ -111,12 +111,12 @@ export function Alignment(): ReactElement {
       icon: <AlignCenterIcon />
     },
     {
-      value: 'justify-right',
+      value: 'justify-end',
       ariaLabel: 'Align Right',
       icon: <AlignRightIcon />
     },
     {
-      value: 'justify-stretch',
+      value: 'justify-evenly',
       ariaLabel: 'Align Justify',
       icon: <AlignJustifyIcon />
     }

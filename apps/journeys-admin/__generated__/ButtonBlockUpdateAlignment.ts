@@ -3,6 +3,8 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { ButtonBlockClassNamesInput } from "./globalTypes";
+
 // ====================================================
 // GraphQL mutation operation: ButtonBlockUpdateAlignment
 // ====================================================
@@ -30,5 +32,5 @@ export interface ButtonBlockUpdateAlignment {
 
 export interface ButtonBlockUpdateAlignmentVariables {
   id: string;
-  classNames: string;
+  classNames: ButtonBlockClassNamesInput;
 }

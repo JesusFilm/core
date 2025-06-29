@@ -9,6 +9,8 @@ import { usePlausible } from 'next-plausible'
 import { MouseEvent, ReactElement, useMemo } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
+import { cn } from '@core/shared/ui/tailwind'
+
 import {
   ButtonAction,
   ButtonClickEventCreateInput,
@@ -284,7 +286,6 @@ export function Button({
                 ? 4
                 : 5
       }}
-      className={cn('flex w-full', classNames?.self)}
       data-testid={`JourneysButton-${blockId}`}
     >
       <MuiButton
@@ -295,7 +296,8 @@ export function Button({
         startIcon={startIcon != null ? <Icon {...startIcon} /> : undefined}
         endIcon={endIcon != null ? <Icon {...endIcon} /> : undefined}
         onClick={handleClick}
-        fullWidth={classNames?.self.includes('justify-stretch')}
+        fullWidth
+        className={cn(classNames?.self)}
         sx={
           editableLabel != null
             ? {
