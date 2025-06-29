@@ -362,6 +362,9 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   journeyNotificationUpdate(input: JourneyNotificationUpdateInput!) : JourneyNotification! @join__field(graph: API_JOURNEYS) 
   journeyProfileCreate: JourneyProfile! @join__field(graph: API_JOURNEYS) 
   journeyProfileUpdate(input: JourneyProfileUpdateInput!) : JourneyProfile! @join__field(graph: API_JOURNEYS) 
+  journeyThemeCreate(input: JourneyThemeCreateInput!) : JourneyTheme! @join__field(graph: API_JOURNEYS) 
+  journeyThemeUpdate(id: ID!, input: JourneyThemeUpdateInput!) : JourneyTheme! @join__field(graph: API_JOURNEYS) 
+  journeyThemeDelete(id: ID!) : JourneyTheme! @join__field(graph: API_JOURNEYS) 
   updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput!) : JourneysEmailPreference @join__field(graph: API_JOURNEYS) 
   qrCodeCreate(input: QrCodeCreateInput!) : QrCode! @join__field(graph: API_JOURNEYS) 
   qrCodeUpdate(id: ID!, input: QrCodeUpdateInput!) : QrCode! @join__field(graph: API_JOURNEYS) 
@@ -600,6 +603,7 @@ type Journey @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API
   socialNodeX: Int @join__field(graph: API_JOURNEYS) 
   socialNodeY: Int @join__field(graph: API_JOURNEYS) 
   fromTemplateId: String @join__field(graph: API_JOURNEYS) 
+  journeyTheme: JourneyTheme @join__field(graph: API_JOURNEYS) 
   userJourneys: [UserJourney!] @join__field(graph: API_JOURNEYS) 
 }
 
@@ -634,6 +638,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, first: Int, after: String) : JourneyEventsConnection! @join__field(graph: API_JOURNEYS) 
   journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter) : Int! @join__field(graph: API_JOURNEYS) 
   getJourneyProfile: JourneyProfile @join__field(graph: API_JOURNEYS) 
+  journeyTheme(journeyId: ID!) : JourneyTheme @join__field(graph: API_JOURNEYS) 
   """
   Get a list of Visitor Information by Journey
   """
@@ -857,6 +862,10 @@ type CardBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @jo
   backgroundColor should be a HEX color value e.g #FFFFFF for white.
   """
   backgroundColor: String
+  """
+  backdropBlur should be a number representing blur amount in pixels e.g 20.
+  """
+  backdropBlur: Int
   """
   coverBlockId is present if a child block should be used as a cover.
   This child block should not be rendered normally, instead it should be used
@@ -1144,6 +1153,8 @@ type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId", extensi
   variant(languageId: ID) : VideoVariant @join__field(graph: API_MEDIA) 
   images(aspectRatio: ImageAspectRatio) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
   restrictDownloadPlatforms: [Platform!]! @join__field(graph: API_MEDIA) 
+  restrictViewPlatforms: [Platform!]! @join__field(graph: API_MEDIA) 
+  publishedAt: Date @join__field(graph: API_MEDIA) 
 }
 
 type VideoBlockClassNames @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -1869,6 +1880,18 @@ type JourneyProfile @join__type(graph: API_JOURNEYS, key: "id")  {
   journeyFlowBackButtonClicked: Boolean
   plausibleJourneyFlowViewed: Boolean
   plausibleDashboardViewed: Boolean
+}
+
+type JourneyTheme @join__type(graph: API_JOURNEYS)  {
+  id: ID!
+  journeyId: ID!
+  journey: Journey!
+  userId: ID!
+  headerFont: String
+  bodyFont: String
+  labelFont: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 type JourneyVisitor @join__type(graph: API_JOURNEYS, key: "visitorId journeyId")  {
@@ -3326,6 +3349,7 @@ enum Service @join__type(graph: API_MEDIA)  {
 
 enum Platform @join__type(graph: API_MEDIA)  {
   arclight @join__enumValue(graph: API_MEDIA) 
+  journeys @join__enumValue(graph: API_MEDIA) 
   watch @join__enumValue(graph: API_MEDIA) 
 }
 
@@ -3453,6 +3477,7 @@ input CardBlockCreateInput @join__type(graph: API_JOURNEYS)  {
   journeyId: ID!
   parentBlockId: ID!
   backgroundColor: String
+  backdropBlur: Int
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
@@ -3463,6 +3488,7 @@ input CardBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
   parentBlockId: ID
   coverBlockId: ID
   backgroundColor: String
+  backdropBlur: Int
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
@@ -4313,6 +4339,19 @@ input JourneyProfileUpdateInput @join__type(graph: API_JOURNEYS)  {
   plausibleDashboardViewed: Boolean
 }
 
+input JourneyThemeCreateInput @join__type(graph: API_JOURNEYS)  {
+  journeyId: ID!
+  headerFont: String
+  bodyFont: String
+  labelFont: String
+}
+
+input JourneyThemeUpdateInput @join__type(graph: API_JOURNEYS)  {
+  headerFont: String
+  bodyFont: String
+  labelFont: String
+}
+
 input JourneyVisitorFilter @join__type(graph: API_JOURNEYS)  {
   journeyId: String!
   hasChatStarted: Boolean
@@ -4778,6 +4817,7 @@ input VideoUpdateInput @join__type(graph: API_MEDIA)  {
   childIds: [String!]
   keywordIds: [String!]
   restrictDownloadPlatforms: [Platform!]
+  restrictViewPlatforms: [Platform!]
 }
 
 input VideoVariantCreateInput @join__type(graph: API_MEDIA)  {

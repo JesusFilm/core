@@ -241,6 +241,8 @@ export enum ButtonVariant {
 
 export type CardBlock = Block & {
   __typename?: 'CardBlock';
+  /** backdropBlur should be a number representing blur amount in pixels e.g 20. */
+  backdropBlur?: Maybe<Scalars['Int']['output']>;
   /** backgroundColor should be a HEX color value e.g #FFFFFF for white. */
   backgroundColor?: Maybe<Scalars['String']['output']>;
   /** classNames is an object of tailwind class names for the block */
@@ -284,6 +286,7 @@ export type CardBlockClassNamesInput = {
 };
 
 export type CardBlockCreateInput = {
+  backdropBlur?: InputMaybe<Scalars['Int']['input']>;
   backgroundColor?: InputMaybe<Scalars['String']['input']>;
   classNames?: InputMaybe<CardBlockClassNamesInput>;
   fullscreen?: InputMaybe<Scalars['Boolean']['input']>;
@@ -295,6 +298,7 @@ export type CardBlockCreateInput = {
 };
 
 export type CardBlockUpdateInput = {
+  backdropBlur?: InputMaybe<Scalars['Int']['input']>;
   backgroundColor?: InputMaybe<Scalars['String']['input']>;
   classNames?: InputMaybe<CardBlockClassNamesInput>;
   coverBlockId?: InputMaybe<Scalars['ID']['input']>;
@@ -874,6 +878,7 @@ export type Journey = {
   host?: Maybe<Host>;
   id: Scalars['ID']['output'];
   journeyCollections: Array<JourneyCollection>;
+  journeyTheme?: Maybe<JourneyTheme>;
   language: Language;
   languageId: Scalars['String']['output'];
   logoImageBlock?: Maybe<ImageBlock>;
@@ -1095,6 +1100,32 @@ export enum JourneyStatus {
 
 export type JourneyTemplateInput = {
   template?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type JourneyTheme = {
+  __typename?: 'JourneyTheme';
+  bodyFont?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  headerFont?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  journey: Journey;
+  journeyId: Scalars['ID']['output'];
+  labelFont?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
+  userId: Scalars['ID']['output'];
+};
+
+export type JourneyThemeCreateInput = {
+  bodyFont?: InputMaybe<Scalars['String']['input']>;
+  headerFont?: InputMaybe<Scalars['String']['input']>;
+  journeyId: Scalars['ID']['input'];
+  labelFont?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type JourneyThemeUpdateInput = {
+  bodyFont?: InputMaybe<Scalars['String']['input']>;
+  headerFont?: InputMaybe<Scalars['String']['input']>;
+  labelFont?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type JourneyUpdateInput = {
@@ -1496,6 +1527,9 @@ export type Mutation = {
   journeyPublish?: Maybe<Journey>;
   /** Updates template */
   journeyTemplate: Journey;
+  journeyThemeCreate: JourneyTheme;
+  journeyThemeDelete: JourneyTheme;
+  journeyThemeUpdate: JourneyTheme;
   journeyUpdate: Journey;
   /**
    * Creates a JourneyViewEvent, returns null if attempting to create another
@@ -1989,6 +2023,22 @@ export type MutationJourneyPublishArgs = {
 export type MutationJourneyTemplateArgs = {
   id: Scalars['ID']['input'];
   input: JourneyTemplateInput;
+};
+
+
+export type MutationJourneyThemeCreateArgs = {
+  input: JourneyThemeCreateInput;
+};
+
+
+export type MutationJourneyThemeDeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationJourneyThemeUpdateArgs = {
+  id: Scalars['ID']['input'];
+  input: JourneyThemeUpdateInput;
 };
 
 
@@ -2739,6 +2789,7 @@ export type PageInfo = {
 
 export enum Platform {
   Arclight = 'arclight',
+  Journeys = 'journeys',
   Watch = 'watch'
 }
 
@@ -3000,6 +3051,7 @@ export type Query = {
   journeyCollections: Array<Maybe<JourneyCollection>>;
   journeyEventsConnection: JourneyEventsConnection;
   journeyEventsCount: Scalars['Int']['output'];
+  journeyTheme?: Maybe<JourneyTheme>;
   /** Get a JourneyVisitor count by JourneyVisitorFilter */
   journeyVisitorCount: Scalars['Int']['output'];
   /** Get a list of Visitor Information by Journey */
@@ -3231,6 +3283,11 @@ export type QueryJourneyEventsConnectionArgs = {
 
 export type QueryJourneyEventsCountArgs = {
   filter?: InputMaybe<JourneyEventsFilter>;
+  journeyId: Scalars['ID']['input'];
+};
+
+
+export type QueryJourneyThemeArgs = {
   journeyId: Scalars['ID']['input'];
 };
 
@@ -4432,7 +4489,9 @@ export type Video = {
   parents: Array<Video>;
   primaryLanguageId: Scalars['ID']['output'];
   published: Scalars['Boolean']['output'];
+  publishedAt?: Maybe<Scalars['Date']['output']>;
   restrictDownloadPlatforms: Array<Platform>;
+  restrictViewPlatforms: Array<Platform>;
   /** slug is a permanent link to the video. */
   slug: Scalars['String']['output'];
   snippet: Array<VideoSnippet>;
@@ -5133,6 +5192,7 @@ export type VideoUpdateInput = {
   primaryLanguageId?: InputMaybe<Scalars['String']['input']>;
   published?: InputMaybe<Scalars['Boolean']['input']>;
   restrictDownloadPlatforms?: InputMaybe<Array<Platform>>;
+  restrictViewPlatforms?: InputMaybe<Array<Platform>>;
   slug?: InputMaybe<Scalars['String']['input']>;
 };
 

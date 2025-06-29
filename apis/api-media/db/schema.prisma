@@ -92,6 +92,7 @@ enum IdType {
 
 enum Platform {
   arclight
+  journeys
   watch
 }
 
@@ -132,7 +133,9 @@ model Video {
   availableLanguages        String[]
   origin                    VideoOrigin?         @relation(fields: [originId], references: [id])
   originId                  String?
-  restrictDownloadPlatforms Platform[]
+  restrictDownloadPlatforms Platform[]           @default([])
+  restrictViewPlatforms     Platform[]           @default([])
+  publishedAt               DateTime?
 
   @@index(label)
   @@index(childIds)
