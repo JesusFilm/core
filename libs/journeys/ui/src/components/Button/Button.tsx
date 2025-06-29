@@ -284,7 +284,7 @@ export function Button({
                 ? 4
                 : 5
       }}
-      className="flex w-full justify-end"
+      className={cn('flex w-full', classNames?.self)}
       data-testid={`JourneysButton-${blockId}`}
     >
       <MuiButton

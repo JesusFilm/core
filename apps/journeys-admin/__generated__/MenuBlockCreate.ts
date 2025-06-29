@@ -122,6 +122,14 @@ export interface MenuBlockCreate_button1_action_EmailAction {
 
 export type MenuBlockCreate_button1_action = MenuBlockCreate_button1_action_NavigateToBlockAction | MenuBlockCreate_button1_action_LinkAction | MenuBlockCreate_button1_action_EmailAction;
 
+export interface MenuBlockCreate_button1_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface MenuBlockCreate_button1 {
   __typename: "ButtonBlock";
   id: string;
@@ -135,6 +143,10 @@ export interface MenuBlockCreate_button1 {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: MenuBlockCreate_button1_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: MenuBlockCreate_button1_classNames | null;
 }
 
 export interface MenuBlockCreate_button2_action_NavigateToBlockAction {
@@ -160,6 +172,14 @@ export interface MenuBlockCreate_button2_action_EmailAction {
 
 export type MenuBlockCreate_button2_action = MenuBlockCreate_button2_action_NavigateToBlockAction | MenuBlockCreate_button2_action_LinkAction | MenuBlockCreate_button2_action_EmailAction;
 
+export interface MenuBlockCreate_button2_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface MenuBlockCreate_button2 {
   __typename: "ButtonBlock";
   id: string;
@@ -173,6 +193,10 @@ export interface MenuBlockCreate_button2 {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: MenuBlockCreate_button2_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: MenuBlockCreate_button2_classNames | null;
 }
 
 export interface MenuBlockCreate_button3_action_NavigateToBlockAction {
@@ -198,6 +222,14 @@ export interface MenuBlockCreate_button3_action_EmailAction {
 
 export type MenuBlockCreate_button3_action = MenuBlockCreate_button3_action_NavigateToBlockAction | MenuBlockCreate_button3_action_LinkAction | MenuBlockCreate_button3_action_EmailAction;
 
+export interface MenuBlockCreate_button3_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface MenuBlockCreate_button3 {
   __typename: "ButtonBlock";
   id: string;
@@ -211,6 +243,10 @@ export interface MenuBlockCreate_button3 {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: MenuBlockCreate_button3_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: MenuBlockCreate_button3_classNames | null;
 }
 
 export interface MenuBlockCreate_journeyUpdate_menuStepBlock {

@@ -39,6 +39,14 @@ export interface CardQuoteRestore_image_ButtonBlock_action_EmailAction {
 
 export type CardQuoteRestore_image_ButtonBlock_action = CardQuoteRestore_image_ButtonBlock_action_NavigateToBlockAction | CardQuoteRestore_image_ButtonBlock_action_LinkAction | CardQuoteRestore_image_ButtonBlock_action_EmailAction;
 
+export interface CardQuoteRestore_image_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface CardQuoteRestore_image_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -52,6 +60,10 @@ export interface CardQuoteRestore_image_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardQuoteRestore_image_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: CardQuoteRestore_image_ButtonBlock_classNames | null;
 }
 
 export interface CardQuoteRestore_image_CardBlock {
@@ -464,6 +476,14 @@ export interface CardQuoteRestore_subtitle_ButtonBlock_action_EmailAction {
 
 export type CardQuoteRestore_subtitle_ButtonBlock_action = CardQuoteRestore_subtitle_ButtonBlock_action_NavigateToBlockAction | CardQuoteRestore_subtitle_ButtonBlock_action_LinkAction | CardQuoteRestore_subtitle_ButtonBlock_action_EmailAction;
 
+export interface CardQuoteRestore_subtitle_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface CardQuoteRestore_subtitle_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -477,6 +497,10 @@ export interface CardQuoteRestore_subtitle_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardQuoteRestore_subtitle_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: CardQuoteRestore_subtitle_ButtonBlock_classNames | null;
 }
 
 export interface CardQuoteRestore_subtitle_CardBlock {
@@ -889,6 +913,14 @@ export interface CardQuoteRestore_title_ButtonBlock_action_EmailAction {
 
 export type CardQuoteRestore_title_ButtonBlock_action = CardQuoteRestore_title_ButtonBlock_action_NavigateToBlockAction | CardQuoteRestore_title_ButtonBlock_action_LinkAction | CardQuoteRestore_title_ButtonBlock_action_EmailAction;
 
+export interface CardQuoteRestore_title_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface CardQuoteRestore_title_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -902,6 +934,10 @@ export interface CardQuoteRestore_title_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardQuoteRestore_title_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: CardQuoteRestore_title_ButtonBlock_classNames | null;
 }
 
 export interface CardQuoteRestore_title_CardBlock {
@@ -1314,6 +1350,14 @@ export interface CardQuoteRestore_body_ButtonBlock_action_EmailAction {
 
 export type CardQuoteRestore_body_ButtonBlock_action = CardQuoteRestore_body_ButtonBlock_action_NavigateToBlockAction | CardQuoteRestore_body_ButtonBlock_action_LinkAction | CardQuoteRestore_body_ButtonBlock_action_EmailAction;
 
+export interface CardQuoteRestore_body_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface CardQuoteRestore_body_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -1327,6 +1371,10 @@ export interface CardQuoteRestore_body_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardQuoteRestore_body_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: CardQuoteRestore_body_ButtonBlock_classNames | null;
 }
 
 export interface CardQuoteRestore_body_CardBlock {

@@ -39,6 +39,14 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock_acti
 
 export type StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock_action = StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock_action_NavigateToBlockAction | StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock_action_LinkAction | StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock_action_EmailAction;
 
+export interface StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -52,6 +60,10 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock_classNames | null;
 }
 
 export interface StepBlockRestoreFromSocialPreview_blockRestore_CardBlock {

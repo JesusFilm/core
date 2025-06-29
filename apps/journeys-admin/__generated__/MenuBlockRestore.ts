@@ -39,6 +39,14 @@ export interface MenuBlockRestore_stepRestore_ButtonBlock_action_EmailAction {
 
 export type MenuBlockRestore_stepRestore_ButtonBlock_action = MenuBlockRestore_stepRestore_ButtonBlock_action_NavigateToBlockAction | MenuBlockRestore_stepRestore_ButtonBlock_action_LinkAction | MenuBlockRestore_stepRestore_ButtonBlock_action_EmailAction;
 
+export interface MenuBlockRestore_stepRestore_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface MenuBlockRestore_stepRestore_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -52,6 +60,10 @@ export interface MenuBlockRestore_stepRestore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: MenuBlockRestore_stepRestore_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: MenuBlockRestore_stepRestore_ButtonBlock_classNames | null;
 }
 
 export interface MenuBlockRestore_stepRestore_CardBlock {

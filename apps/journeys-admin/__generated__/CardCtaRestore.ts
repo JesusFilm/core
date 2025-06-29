@@ -39,6 +39,14 @@ export interface CardCtaRestore_imageRestore_ButtonBlock_action_EmailAction {
 
 export type CardCtaRestore_imageRestore_ButtonBlock_action = CardCtaRestore_imageRestore_ButtonBlock_action_NavigateToBlockAction | CardCtaRestore_imageRestore_ButtonBlock_action_LinkAction | CardCtaRestore_imageRestore_ButtonBlock_action_EmailAction;
 
+export interface CardCtaRestore_imageRestore_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface CardCtaRestore_imageRestore_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -52,6 +60,10 @@ export interface CardCtaRestore_imageRestore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardCtaRestore_imageRestore_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: CardCtaRestore_imageRestore_ButtonBlock_classNames | null;
 }
 
 export interface CardCtaRestore_imageRestore_CardBlock {
@@ -464,6 +476,14 @@ export interface CardCtaRestore_subtitleRestore_ButtonBlock_action_EmailAction {
 
 export type CardCtaRestore_subtitleRestore_ButtonBlock_action = CardCtaRestore_subtitleRestore_ButtonBlock_action_NavigateToBlockAction | CardCtaRestore_subtitleRestore_ButtonBlock_action_LinkAction | CardCtaRestore_subtitleRestore_ButtonBlock_action_EmailAction;
 
+export interface CardCtaRestore_subtitleRestore_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface CardCtaRestore_subtitleRestore_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -477,6 +497,10 @@ export interface CardCtaRestore_subtitleRestore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardCtaRestore_subtitleRestore_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: CardCtaRestore_subtitleRestore_ButtonBlock_classNames | null;
 }
 
 export interface CardCtaRestore_subtitleRestore_CardBlock {
@@ -889,6 +913,14 @@ export interface CardCtaRestore_titleRestore_ButtonBlock_action_EmailAction {
 
 export type CardCtaRestore_titleRestore_ButtonBlock_action = CardCtaRestore_titleRestore_ButtonBlock_action_NavigateToBlockAction | CardCtaRestore_titleRestore_ButtonBlock_action_LinkAction | CardCtaRestore_titleRestore_ButtonBlock_action_EmailAction;
 
+export interface CardCtaRestore_titleRestore_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface CardCtaRestore_titleRestore_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -902,6 +934,10 @@ export interface CardCtaRestore_titleRestore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardCtaRestore_titleRestore_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: CardCtaRestore_titleRestore_ButtonBlock_classNames | null;
 }
 
 export interface CardCtaRestore_titleRestore_CardBlock {
@@ -1314,6 +1350,14 @@ export interface CardCtaRestore_button1Restore_ButtonBlock_action_EmailAction {
 
 export type CardCtaRestore_button1Restore_ButtonBlock_action = CardCtaRestore_button1Restore_ButtonBlock_action_NavigateToBlockAction | CardCtaRestore_button1Restore_ButtonBlock_action_LinkAction | CardCtaRestore_button1Restore_ButtonBlock_action_EmailAction;
 
+export interface CardCtaRestore_button1Restore_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface CardCtaRestore_button1Restore_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -1327,6 +1371,10 @@ export interface CardCtaRestore_button1Restore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardCtaRestore_button1Restore_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: CardCtaRestore_button1Restore_ButtonBlock_classNames | null;
 }
 
 export interface CardCtaRestore_button1Restore_CardBlock {
@@ -1739,6 +1787,14 @@ export interface CardCtaRestore_startIcon1Restore_ButtonBlock_action_EmailAction
 
 export type CardCtaRestore_startIcon1Restore_ButtonBlock_action = CardCtaRestore_startIcon1Restore_ButtonBlock_action_NavigateToBlockAction | CardCtaRestore_startIcon1Restore_ButtonBlock_action_LinkAction | CardCtaRestore_startIcon1Restore_ButtonBlock_action_EmailAction;
 
+export interface CardCtaRestore_startIcon1Restore_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface CardCtaRestore_startIcon1Restore_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -1752,6 +1808,10 @@ export interface CardCtaRestore_startIcon1Restore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardCtaRestore_startIcon1Restore_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: CardCtaRestore_startIcon1Restore_ButtonBlock_classNames | null;
 }
 
 export interface CardCtaRestore_startIcon1Restore_CardBlock {
@@ -2164,6 +2224,14 @@ export interface CardCtaRestore_endIcon1Restore_ButtonBlock_action_EmailAction {
 
 export type CardCtaRestore_endIcon1Restore_ButtonBlock_action = CardCtaRestore_endIcon1Restore_ButtonBlock_action_NavigateToBlockAction | CardCtaRestore_endIcon1Restore_ButtonBlock_action_LinkAction | CardCtaRestore_endIcon1Restore_ButtonBlock_action_EmailAction;
 
+export interface CardCtaRestore_endIcon1Restore_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface CardCtaRestore_endIcon1Restore_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -2177,6 +2245,10 @@ export interface CardCtaRestore_endIcon1Restore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardCtaRestore_endIcon1Restore_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: CardCtaRestore_endIcon1Restore_ButtonBlock_classNames | null;
 }
 
 export interface CardCtaRestore_endIcon1Restore_CardBlock {
@@ -2589,6 +2661,14 @@ export interface CardCtaRestore_button2Restore_ButtonBlock_action_EmailAction {
 
 export type CardCtaRestore_button2Restore_ButtonBlock_action = CardCtaRestore_button2Restore_ButtonBlock_action_NavigateToBlockAction | CardCtaRestore_button2Restore_ButtonBlock_action_LinkAction | CardCtaRestore_button2Restore_ButtonBlock_action_EmailAction;
 
+export interface CardCtaRestore_button2Restore_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface CardCtaRestore_button2Restore_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -2602,6 +2682,10 @@ export interface CardCtaRestore_button2Restore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardCtaRestore_button2Restore_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: CardCtaRestore_button2Restore_ButtonBlock_classNames | null;
 }
 
 export interface CardCtaRestore_button2Restore_CardBlock {
@@ -3014,6 +3098,14 @@ export interface CardCtaRestore_startIcon2Restore_ButtonBlock_action_EmailAction
 
 export type CardCtaRestore_startIcon2Restore_ButtonBlock_action = CardCtaRestore_startIcon2Restore_ButtonBlock_action_NavigateToBlockAction | CardCtaRestore_startIcon2Restore_ButtonBlock_action_LinkAction | CardCtaRestore_startIcon2Restore_ButtonBlock_action_EmailAction;
 
+export interface CardCtaRestore_startIcon2Restore_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface CardCtaRestore_startIcon2Restore_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -3027,6 +3119,10 @@ export interface CardCtaRestore_startIcon2Restore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardCtaRestore_startIcon2Restore_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: CardCtaRestore_startIcon2Restore_ButtonBlock_classNames | null;
 }
 
 export interface CardCtaRestore_startIcon2Restore_CardBlock {
@@ -3439,6 +3535,14 @@ export interface CardCtaRestore_endIcon2Restore_ButtonBlock_action_EmailAction {
 
 export type CardCtaRestore_endIcon2Restore_ButtonBlock_action = CardCtaRestore_endIcon2Restore_ButtonBlock_action_NavigateToBlockAction | CardCtaRestore_endIcon2Restore_ButtonBlock_action_LinkAction | CardCtaRestore_endIcon2Restore_ButtonBlock_action_EmailAction;
 
+export interface CardCtaRestore_endIcon2Restore_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface CardCtaRestore_endIcon2Restore_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -3452,6 +3556,10 @@ export interface CardCtaRestore_endIcon2Restore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardCtaRestore_endIcon2Restore_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: CardCtaRestore_endIcon2Restore_ButtonBlock_classNames | null;
 }
 
 export interface CardCtaRestore_endIcon2Restore_CardBlock {
@@ -3864,6 +3972,14 @@ export interface CardCtaRestore_button3Restore_ButtonBlock_action_EmailAction {
 
 export type CardCtaRestore_button3Restore_ButtonBlock_action = CardCtaRestore_button3Restore_ButtonBlock_action_NavigateToBlockAction | CardCtaRestore_button3Restore_ButtonBlock_action_LinkAction | CardCtaRestore_button3Restore_ButtonBlock_action_EmailAction;
 
+export interface CardCtaRestore_button3Restore_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface CardCtaRestore_button3Restore_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -3877,6 +3993,10 @@ export interface CardCtaRestore_button3Restore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardCtaRestore_button3Restore_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: CardCtaRestore_button3Restore_ButtonBlock_classNames | null;
 }
 
 export interface CardCtaRestore_button3Restore_CardBlock {
@@ -4289,6 +4409,14 @@ export interface CardCtaRestore_startIcon3Restore_ButtonBlock_action_EmailAction
 
 export type CardCtaRestore_startIcon3Restore_ButtonBlock_action = CardCtaRestore_startIcon3Restore_ButtonBlock_action_NavigateToBlockAction | CardCtaRestore_startIcon3Restore_ButtonBlock_action_LinkAction | CardCtaRestore_startIcon3Restore_ButtonBlock_action_EmailAction;
 
+export interface CardCtaRestore_startIcon3Restore_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface CardCtaRestore_startIcon3Restore_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -4302,6 +4430,10 @@ export interface CardCtaRestore_startIcon3Restore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardCtaRestore_startIcon3Restore_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: CardCtaRestore_startIcon3Restore_ButtonBlock_classNames | null;
 }
 
 export interface CardCtaRestore_startIcon3Restore_CardBlock {
@@ -4714,6 +4846,14 @@ export interface CardCtaRestore_endIcon3Restore_ButtonBlock_action_EmailAction {
 
 export type CardCtaRestore_endIcon3Restore_ButtonBlock_action = CardCtaRestore_endIcon3Restore_ButtonBlock_action_NavigateToBlockAction | CardCtaRestore_endIcon3Restore_ButtonBlock_action_LinkAction | CardCtaRestore_endIcon3Restore_ButtonBlock_action_EmailAction;
 
+export interface CardCtaRestore_endIcon3Restore_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface CardCtaRestore_endIcon3Restore_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -4727,6 +4867,10 @@ export interface CardCtaRestore_endIcon3Restore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardCtaRestore_endIcon3Restore_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: CardCtaRestore_endIcon3Restore_ButtonBlock_classNames | null;
 }
 
 export interface CardCtaRestore_endIcon3Restore_CardBlock {

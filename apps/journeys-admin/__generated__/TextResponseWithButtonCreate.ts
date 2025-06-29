@@ -47,6 +47,14 @@ export interface TextResponseWithButtonCreate_button_action_EmailAction {
 
 export type TextResponseWithButtonCreate_button_action = TextResponseWithButtonCreate_button_action_NavigateToBlockAction | TextResponseWithButtonCreate_button_action_LinkAction | TextResponseWithButtonCreate_button_action_EmailAction;
 
+export interface TextResponseWithButtonCreate_button_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface TextResponseWithButtonCreate_button {
   __typename: "ButtonBlock";
   id: string;
@@ -60,6 +68,10 @@ export interface TextResponseWithButtonCreate_button {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: TextResponseWithButtonCreate_button_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: TextResponseWithButtonCreate_button_classNames | null;
 }
 
 export interface TextResponseWithButtonCreate_startIcon {
@@ -105,6 +117,14 @@ export interface TextResponseWithButtonCreate_buttonUpdate_action_EmailAction {
 
 export type TextResponseWithButtonCreate_buttonUpdate_action = TextResponseWithButtonCreate_buttonUpdate_action_NavigateToBlockAction | TextResponseWithButtonCreate_buttonUpdate_action_LinkAction | TextResponseWithButtonCreate_buttonUpdate_action_EmailAction;
 
+export interface TextResponseWithButtonCreate_buttonUpdate_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface TextResponseWithButtonCreate_buttonUpdate {
   __typename: "ButtonBlock";
   id: string;
@@ -118,6 +138,10 @@ export interface TextResponseWithButtonCreate_buttonUpdate {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: TextResponseWithButtonCreate_buttonUpdate_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: TextResponseWithButtonCreate_buttonUpdate_classNames | null;
 }
 
 export interface TextResponseWithButtonCreate {

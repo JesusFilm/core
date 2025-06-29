@@ -65,6 +65,14 @@ export interface CardIntroCreate_button_action_EmailAction {
 
 export type CardIntroCreate_button_action = CardIntroCreate_button_action_NavigateToBlockAction | CardIntroCreate_button_action_LinkAction | CardIntroCreate_button_action_EmailAction;
 
+export interface CardIntroCreate_button_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface CardIntroCreate_button {
   __typename: "ButtonBlock";
   id: string;
@@ -78,6 +86,10 @@ export interface CardIntroCreate_button {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardIntroCreate_button_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: CardIntroCreate_button_classNames | null;
 }
 
 export interface CardIntroCreate_startIcon {
@@ -123,6 +135,14 @@ export interface CardIntroCreate_buttonBlockUpdate_action_EmailAction {
 
 export type CardIntroCreate_buttonBlockUpdate_action = CardIntroCreate_buttonBlockUpdate_action_NavigateToBlockAction | CardIntroCreate_buttonBlockUpdate_action_LinkAction | CardIntroCreate_buttonBlockUpdate_action_EmailAction;
 
+export interface CardIntroCreate_buttonBlockUpdate_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface CardIntroCreate_buttonBlockUpdate {
   __typename: "ButtonBlock";
   id: string;
@@ -136,6 +156,10 @@ export interface CardIntroCreate_buttonBlockUpdate {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardIntroCreate_buttonBlockUpdate_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: CardIntroCreate_buttonBlockUpdate_classNames | null;
 }
 
 export interface CardIntroCreate_video_mediaVideo_Video_title {

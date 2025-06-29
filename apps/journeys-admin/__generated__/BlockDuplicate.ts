@@ -39,6 +39,14 @@ export interface BlockDuplicate_blockDuplicate_ButtonBlock_action_EmailAction {
 
 export type BlockDuplicate_blockDuplicate_ButtonBlock_action = BlockDuplicate_blockDuplicate_ButtonBlock_action_NavigateToBlockAction | BlockDuplicate_blockDuplicate_ButtonBlock_action_LinkAction | BlockDuplicate_blockDuplicate_ButtonBlock_action_EmailAction;
 
+export interface BlockDuplicate_blockDuplicate_ButtonBlock_classNames {
+  __typename: "ButtonBlockClassNames";
+  /**
+   * Tailwind class names for the button block
+   */
+  self: string;
+}
+
 export interface BlockDuplicate_blockDuplicate_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -52,6 +60,10 @@ export interface BlockDuplicate_blockDuplicate_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: BlockDuplicate_blockDuplicate_ButtonBlock_action | null;
+  /**
+   * classNames is an object of tailwind class names for the block
+   */
+  classNames: BlockDuplicate_blockDuplicate_ButtonBlock_classNames | null;
 }
 
 export interface BlockDuplicate_blockDuplicate_CardBlock {
