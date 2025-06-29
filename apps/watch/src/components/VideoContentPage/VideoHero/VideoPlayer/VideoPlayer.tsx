@@ -8,8 +8,8 @@ import { MuxMetadata } from '@core/shared/ui/muxMetadataType'
 
 import 'videojs-mux'
 
-import { useLanguagePreference } from '../../../../libs/languagePreferenceContext'
 import { useVideo } from '../../../../libs/videoContext'
+import { useWatch } from '../../../../libs/watchContext'
 
 import { VideoControls } from './VideoControls'
 
@@ -28,7 +28,7 @@ export function VideoPlayer({
       currentSubtitleOn,
       videoSubtitleLanguages
     }
-  } = useLanguagePreference()
+  } = useWatch()
   const videoRef = useRef<HTMLVideoElement>(null)
   const [player, setPlayer] = useState<
     Player & { textTracks?: () => TextTrackList }
