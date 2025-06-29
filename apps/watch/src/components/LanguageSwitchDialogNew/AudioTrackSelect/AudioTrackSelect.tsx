@@ -130,7 +130,7 @@ export function AudioTrackSelect(): ReactElement {
       <div className="flex items-center justify-between">
         <label
           htmlFor="audio-select"
-          className="block text-sm font-medium text-gray-700 ml-7"
+          className="block text-xl font-medium text-gray-700 ml-7"
         >
           {t('Audio Track')}
         </label>

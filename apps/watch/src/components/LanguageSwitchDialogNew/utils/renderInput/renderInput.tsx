@@ -10,5 +10,15 @@ export const renderInput =
       variant="filled"
       helperText={helperText}
       data-testid="LanguageSwitchDialog-Select"
+      sx={{
+        '& .MuiInputBase-input': {
+          fontSize: '0.875rem',
+          fontWeight: 600,
+          fontFamily: 'Montserrat, ui-sans-serif, system-ui, sans-serif'
+        },
+        '& .MuiFormHelperText-root': {
+          fontFamily: 'Montserrat, ui-sans-serif, system-ui, sans-serif'
+        }
+      }}
     />
   )

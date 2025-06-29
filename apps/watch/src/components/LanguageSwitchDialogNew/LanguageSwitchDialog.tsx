@@ -75,7 +75,7 @@ export function LanguageSwitchDialog({
     <></>
   ) : (
     <ThemeProvider theme={websiteLight}>
-      <div className="fixed inset-0 z-50 overflow-y-auto">
+      <div className="fixed inset-0 z-50 overflow-y-auto font-sans">
         {/* Backdrop */}
         <div
           className="fixed inset-0 bg-gray-900/10 backdrop-blur-sm transition-opacity"

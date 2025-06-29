@@ -96,7 +96,7 @@ export function SiteLanguageSelect(): ReactElement {
     <div className="mx-6">
       <label
         htmlFor="language-select"
-        className="block text-sm font-medium text-gray-700 ml-7"
+        className="block text-xl font-medium text-gray-700 ml-7"
       >
         {t('Site Language')}
       </label>
