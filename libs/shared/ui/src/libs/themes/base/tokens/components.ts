@@ -47,24 +47,31 @@ export const baseComponents: Required<Pick<ThemeOptions, 'components'>> = {
             size: 'large'
           },
           style: {
-            minHeight: '42px',
-            borderRadius: '16px',
-            fontWeight: 700
+            fontSize: '16px',
+            fontWeight: 700,
+            minHeight: '56px',
+            padding: '14.5px 24px',
+            borderRadius: '32px'
           }
         },
         {
           props: { size: 'medium' },
           style: {
-            minHeight: '36.5px',
-            borderRadius: '12px',
-            fontWeight: 700
+            fontSize: '16px',
+            fontWeight: 700,
+            minHeight: '48px',
+            padding: '12px 24px',
+            borderRadius: '24px'
           }
         },
         {
           props: { size: 'small' },
           style: {
-            minHeight: '30.75px',
-            borderRadius: '8px'
+            fontSize: '14px',
+            fontWeight: 700,
+            minHeight: '44px',
+            padding: '11.5px 16px',
+            borderRadius: '24px'
           }
         }
       ]
