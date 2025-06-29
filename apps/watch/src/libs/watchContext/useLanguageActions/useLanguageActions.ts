@@ -1,8 +1,7 @@
 import { useCallback } from 'react'
 
-import { setCookie } from '../cookieHandler'
-
-import { useWatch } from './WatchContext'
+import { setCookie } from '../../cookieHandler'
+import { useWatch } from '../WatchContext'
 
 /**
  * Hook that provides action dispatchers with side effects
