@@ -334,6 +334,7 @@ export class CardBlockCreateInput {
     journeyId: string;
     parentBlockId: string;
     backgroundColor?: Nullable<string>;
+    backdropBlur?: Nullable<number>;
     fullscreen?: Nullable<boolean>;
     themeMode?: Nullable<ThemeMode>;
     themeName?: Nullable<ThemeName>;
@@ -344,6 +345,7 @@ export class CardBlockUpdateInput {
     parentBlockId?: Nullable<string>;
     coverBlockId?: Nullable<string>;
     backgroundColor?: Nullable<string>;
+    backdropBlur?: Nullable<number>;
     fullscreen?: Nullable<boolean>;
     themeMode?: Nullable<ThemeMode>;
     themeName?: Nullable<ThemeName>;
@@ -854,15 +856,15 @@ export class JourneyProfileUpdateInput {
 
 export class JourneyThemeCreateInput {
     journeyId: string;
-    primaryFont?: Nullable<string>;
-    secondaryFont?: Nullable<string>;
-    accentFont?: Nullable<string>;
+    headerFont?: Nullable<string>;
+    bodyFont?: Nullable<string>;
+    labelFont?: Nullable<string>;
 }
 
 export class JourneyThemeUpdateInput {
-    primaryFont?: Nullable<string>;
-    secondaryFont?: Nullable<string>;
-    accentFont?: Nullable<string>;
+    headerFont?: Nullable<string>;
+    bodyFont?: Nullable<string>;
+    labelFont?: Nullable<string>;
 }
 
 export class JourneyVisitorFilter {
@@ -1383,6 +1385,7 @@ export class CardBlock implements Block {
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
     backgroundColor?: Nullable<string>;
+    backdropBlur?: Nullable<number>;
     coverBlockId?: Nullable<string>;
     fullscreen: boolean;
     classNames: CardBlockClassNames;
@@ -1934,9 +1937,9 @@ export class JourneyTheme {
     journeyId: string;
     journey: Journey;
     userId: string;
-    primaryFont?: Nullable<string>;
-    secondaryFont?: Nullable<string>;
-    accentFont?: Nullable<string>;
+    headerFont?: Nullable<string>;
+    bodyFont?: Nullable<string>;
+    labelFont?: Nullable<string>;
     createdAt: DateTime;
     updatedAt: DateTime;
 }

@@ -3,24 +3,24 @@ type JourneyTheme {
   journeyId: ID!
   journey: Journey!
   userId: ID!
-  primaryFont: String
-  secondaryFont: String
-  accentFont: String
+  headerFont: String
+  bodyFont: String
+  labelFont: String
   createdAt: DateTime!
   updatedAt: DateTime!
 }
 
 input JourneyThemeCreateInput {
   journeyId: ID!
-  primaryFont: String
-  secondaryFont: String
-  accentFont: String
+  headerFont: String
+  bodyFont: String
+  labelFont: String
 }
 
 input JourneyThemeUpdateInput {
-  primaryFont: String
-  secondaryFont: String
-  accentFont: String
+  headerFont: String
+  bodyFont: String
+  labelFont: String
 }
 
 extend type Journey {
