@@ -137,6 +137,13 @@ export function Button({
 
   const fallbackLabel = submitEnabled ? t('Submit') : t('Button')
 
+  const justifyContent = {
+    [ButtonAlignment.left]: 'flex-start',
+    [ButtonAlignment.center]: 'flex-center',
+    [ButtonAlignment.right]: 'flex-end',
+    [ButtonAlignment.justify]: 'space-evenly'
+  }
+
   const buttonType = submitEnabled
     ? variant !== 'admin'
       ? 'submit'
