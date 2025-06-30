@@ -1,7 +1,4 @@
-import InputAdornment from '@mui/material/InputAdornment'
-import MenuItem from '@mui/material/MenuItem'
 import Stack from '@mui/material/Stack'
-import TextField from '@mui/material/TextField'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
@@ -10,6 +7,8 @@ import Type2Icon from '@core/shared/ui/icons/Type2'
 import Type3Icon from '@core/shared/ui/icons/Type3'
 
 import { FontFamily } from '../ThemeBuilderDialog'
+
+import { FontSelect } from './FontSelect'
 
 interface ThemeSettingsProps {
   onHeaderFontChange: (font: string) => void
@@ -29,7 +28,6 @@ export function ThemeSettings({
   labelsFont
 }: ThemeSettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  console.log(headerFont, bodyFont, labelsFont)
 
   const headerFontOptions = [
     FontFamily.Montserrat,
@@ -64,89 +62,34 @@ export function ThemeSettings({
   ]
 
   return (
-    <Stack spacing={4} sx={{ minHeight: 860, minWidth: 380 }}>
-      <Stack spacing={1}>
-        <TextField
-          select
-          fullWidth
-          variant="filled"
-          label={t('Header Text')}
-          value={headerFont}
-          helperText={t(
-            'Used for large text elements like titles and headings.'
-          )}
-          onChange={(e) => onHeaderFontChange(e.target.value)}
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Header1Icon />
-                </InputAdornment>
-              )
-            }
-          }}
-        >
-          {headerFontOptions.map((font) => (
-            <MenuItem key={font} value={font}>
-              {font}
-            </MenuItem>
-          ))}
-        </TextField>
-      </Stack>
-      <Stack spacing={1}>
-        <TextField
-          select
-          fullWidth
-          variant="filled"
-          label={t('Body Text')}
-          value={bodyFont}
-          helperText={t(
-            'Used for paragraphs, subheadings, and smaller content.'
-          )}
-          onChange={(e) => onBodyFontChange(e.target.value)}
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Type2Icon />
-                </InputAdornment>
-              )
-            }
-          }}
-        >
-          {bodyFontOptions.map((font) => (
-            <MenuItem key={font} value={font}>
-              {font}
-            </MenuItem>
-          ))}
-        </TextField>
-      </Stack>
-      <Stack spacing={1}>
-        <TextField
-          select
-          fullWidth
-          variant="filled"
-          label={t('Label Text')}
-          value={labelsFont}
-          helperText={t('Used for buttons, forms, and interface elements.')}
-          onChange={(e) => onLabelsFontChange(e.target.value)}
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Type3Icon />
-                </InputAdornment>
-              )
-            }
-          }}
-        >
-          {labelsFontOptions.map((font) => (
-            <MenuItem key={font} value={font}>
-              {font}
-            </MenuItem>
-          ))}
-        </TextField>
-      </Stack>
+    <Stack spacing={4} sx={{ width: '100%' }}>
+      <FontSelect
+        label={t('Header Text')}
+        value={headerFont}
+        options={headerFontOptions}
+        onChange={onHeaderFontChange}
+        icon={<Header1Icon />}
+        labelId="header-font-select-label"
+        selectId="header-font-select"
+      />
+      <FontSelect
+        label={t('Body Text')}
+        value={bodyFont}
+        options={bodyFontOptions}
+        onChange={onBodyFontChange}
+        icon={<Type2Icon />}
+        labelId="body-font-select-label"
+        selectId="body-font-select"
+      />
+      <FontSelect
+        label={t('Label Text')}
+        value={labelsFont}
+        options={labelsFontOptions}
+        onChange={onLabelsFontChange}
+        icon={<Type3Icon />}
+        labelId="labels-font-select-label"
+        selectId="labels-font-select"
+      />
     </Stack>
   )
 }

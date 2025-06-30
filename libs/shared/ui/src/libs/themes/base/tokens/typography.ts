@@ -103,7 +103,7 @@ export const createCustomTypography = (
       : baseTypography.typography
 
   function createFontFamilyString(font?: string): string {
-    const fonts = []
+    const fonts: string[] = []
     if (font) {
       fonts.push(`"${font}"`)
     }

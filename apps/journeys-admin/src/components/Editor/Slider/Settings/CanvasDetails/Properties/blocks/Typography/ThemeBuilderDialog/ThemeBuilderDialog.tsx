@@ -1,4 +1,5 @@
 import { gql, useQuery } from '@apollo/client'
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next'
@@ -77,8 +78,9 @@ export function ThemeBuilderDialog({
       onClose={onClose}
       sx={{
         '& .MuiDialog-paper': {
-          minWidth: '856px',
-          minHeight: '860px'
+          maxWidth: '100%',
+          maxHeight: '100%',
+          width: 'auto'
         }
       }}
       dialogTitle={{
@@ -89,25 +91,37 @@ export function ThemeBuilderDialog({
     >
       <Stack
         direction={{ xs: 'column', sm: 'row' }}
-        spacing={3}
+        spacing={5}
         sx={{
-          width: '100%',
-          height: '100%'
+          height: '100%',
+          width: '100%'
         }}
       >
-        <ThemeSettings
-          headerFont={headerFont}
-          bodyFont={bodyFont}
-          labelsFont={labelsFont}
-          onHeaderFontChange={handleHeaderFontChange}
-          onBodyFontChange={handleBodyFontChange}
-          onLabelsFontChange={handleLabelsFontChange}
-        />
-        <ThemePreview
-          headerFont={headerFont}
-          bodyFont={bodyFont}
-          labelsFont={labelsFont}
-        />
+        <Box
+          sx={{
+            width: 380
+          }}
+        >
+          <ThemeSettings
+            headerFont={headerFont}
+            bodyFont={bodyFont}
+            labelsFont={labelsFont}
+            onHeaderFontChange={handleHeaderFontChange}
+            onBodyFontChange={handleBodyFontChange}
+            onLabelsFontChange={handleLabelsFontChange}
+          />
+        </Box>
+        <Box
+          sx={{
+            width: 476
+          }}
+        >
+          <ThemePreview
+            headerFont={headerFont}
+            bodyFont={bodyFont}
+            labelsFont={labelsFont}
+          />
+        </Box>
       </Stack>
     </Dialog>
   )
