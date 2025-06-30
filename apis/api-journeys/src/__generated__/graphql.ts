@@ -127,10 +127,16 @@ export enum ButtonAction {
   NavigateToBlockAction = 'NavigateToBlockAction'
 }
 
+export enum ButtonAlignment {
+  Center = 'center',
+  Justify = 'justify',
+  Left = 'left',
+  Right = 'right'
+}
+
 export type ButtonBlock = Block & {
   __typename?: 'ButtonBlock';
   action?: Maybe<Action>;
-  /** classNames is an object of tailwind class names for the block */
   classNames?: Maybe<ButtonBlockClassNames>;
   color?: Maybe<ButtonColor>;
   endIconId?: Maybe<Scalars['ID']['output']>;
@@ -139,6 +145,7 @@ export type ButtonBlock = Block & {
   label: Scalars['String']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
+  settings: ButtonBlockSettings;
   size?: Maybe<ButtonSize>;
   startIconId?: Maybe<Scalars['ID']['output']>;
   submitEnabled?: Maybe<Scalars['Boolean']['output']>;
@@ -156,23 +163,32 @@ export type ButtonBlockClassNamesInput = {
 };
 
 export type ButtonBlockCreateInput = {
-  classNames?: InputMaybe<ButtonBlockClassNamesInput>;
   color?: InputMaybe<ButtonColor>;
   id?: InputMaybe<Scalars['ID']['input']>;
   journeyId: Scalars['ID']['input'];
   label: Scalars['String']['input'];
   parentBlockId: Scalars['ID']['input'];
+  settings?: InputMaybe<ButtonBlockSettingsInput>;
   size?: InputMaybe<ButtonSize>;
   submitEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   variant?: InputMaybe<ButtonVariant>;
 };
 
+export type ButtonBlockSettings = {
+  __typename?: 'ButtonBlockSettings';
+  alignment?: Maybe<Scalars['String']['output']>;
+};
+
+export type ButtonBlockSettingsInput = {
+  alignment?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type ButtonBlockUpdateInput = {
-  classNames?: InputMaybe<ButtonBlockClassNamesInput>;
   color?: InputMaybe<ButtonColor>;
   endIconId?: InputMaybe<Scalars['ID']['input']>;
   label?: InputMaybe<Scalars['String']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
+  settings?: InputMaybe<ButtonBlockSettingsInput>;
   size?: InputMaybe<ButtonSize>;
   startIconId?: InputMaybe<Scalars['ID']['input']>;
   submitEnabled?: InputMaybe<Scalars['Boolean']['input']>;
@@ -245,8 +261,6 @@ export type CardBlock = Block & {
   backdropBlur?: Maybe<Scalars['Int']['output']>;
   /** backgroundColor should be a HEX color value e.g #FFFFFF for white. */
   backgroundColor?: Maybe<Scalars['String']['output']>;
-  /** classNames is an object of tailwind class names for the block */
-  classNames: CardBlockClassNames;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
@@ -277,7 +291,6 @@ export type CardBlock = Block & {
 
 export type CardBlockClassNames = {
   __typename?: 'CardBlockClassNames';
-  /** Tailwind class names for the card block */
   self: Scalars['String']['output'];
 };
 
@@ -288,7 +301,6 @@ export type CardBlockClassNamesInput = {
 export type CardBlockCreateInput = {
   backdropBlur?: InputMaybe<Scalars['Int']['input']>;
   backgroundColor?: InputMaybe<Scalars['String']['input']>;
-  classNames?: InputMaybe<CardBlockClassNamesInput>;
   fullscreen?: InputMaybe<Scalars['Boolean']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
   journeyId: Scalars['ID']['input'];
@@ -300,7 +312,6 @@ export type CardBlockCreateInput = {
 export type CardBlockUpdateInput = {
   backdropBlur?: InputMaybe<Scalars['Int']['input']>;
   backgroundColor?: InputMaybe<Scalars['String']['input']>;
-  classNames?: InputMaybe<CardBlockClassNamesInput>;
   coverBlockId?: InputMaybe<Scalars['ID']['input']>;
   fullscreen?: InputMaybe<Scalars['Boolean']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
@@ -665,8 +676,7 @@ export type HostUpdateInput = {
 
 export type IconBlock = Block & {
   __typename?: 'IconBlock';
-  /** classNames is an object of tailwind class names for the block */
-  classNames?: Maybe<IconBlockClassNames>;
+  classNames: IconBlockClassNames;
   color?: Maybe<IconColor>;
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
@@ -687,7 +697,6 @@ export type IconBlockClassNamesInput = {
 };
 
 export type IconBlockCreateInput = {
-  classNames?: InputMaybe<IconBlockClassNamesInput>;
   color?: InputMaybe<IconColor>;
   /** ID should be unique Response UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
@@ -698,7 +707,6 @@ export type IconBlockCreateInput = {
 };
 
 export type IconBlockUpdateInput = {
-  classNames?: InputMaybe<IconBlockClassNamesInput>;
   color?: InputMaybe<IconColor>;
   name?: InputMaybe<IconName>;
   size?: InputMaybe<IconSize>;
@@ -762,7 +770,6 @@ export type ImageBlock = Block & {
    * Find a frontend implementation at https://github.com/woltapp/blurhash
    */
   blurhash: Scalars['String']['output'];
-  /** classNames is an object of tailwind class names for the block */
   classNames: ImageBlockClassNames;
   focalLeft?: Maybe<Scalars['Int']['output']>;
   focalTop?: Maybe<Scalars['Int']['output']>;
@@ -790,7 +797,6 @@ export type ImageBlockCreateInput = {
   alt: Scalars['String']['input'];
   /** If blurhash, width, & height are provided, the image will skip blurhash processing. Otherwise these values will be calculated. */
   blurhash?: InputMaybe<Scalars['String']['input']>;
-  classNames?: InputMaybe<ImageBlockClassNamesInput>;
   focalLeft?: InputMaybe<Scalars['Int']['input']>;
   focalTop?: InputMaybe<Scalars['Int']['input']>;
   height?: InputMaybe<Scalars['Int']['input']>;
@@ -809,7 +815,6 @@ export type ImageBlockUpdateInput = {
   alt?: InputMaybe<Scalars['String']['input']>;
   /** If blurhash, width, & height are provided, the image will skip blurhash processing. Otherwise these values will be calculated. */
   blurhash?: InputMaybe<Scalars['String']['input']>;
-  classNames?: InputMaybe<ImageBlockClassNamesInput>;
   focalLeft?: InputMaybe<Scalars['Int']['input']>;
   focalTop?: InputMaybe<Scalars['Int']['input']>;
   height?: InputMaybe<Scalars['Int']['input']>;
@@ -3568,7 +3573,6 @@ export type QueryShortLinksConnectionEdge = {
 export type RadioOptionBlock = Block & {
   __typename?: 'RadioOptionBlock';
   action?: Maybe<Action>;
-  /** classNames is an object of tailwind class names for the block */
   classNames: RadioOptionBlockClassNames;
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
@@ -3588,7 +3592,6 @@ export type RadioOptionBlockClassNamesInput = {
 };
 
 export type RadioOptionBlockCreateInput = {
-  classNames?: InputMaybe<RadioOptionBlockClassNamesInput>;
   id?: InputMaybe<Scalars['ID']['input']>;
   journeyId: Scalars['ID']['input'];
   label: Scalars['String']['input'];
@@ -3596,7 +3599,6 @@ export type RadioOptionBlockCreateInput = {
 };
 
 export type RadioOptionBlockUpdateInput = {
-  classNames?: InputMaybe<RadioOptionBlockClassNamesInput>;
   label?: InputMaybe<Scalars['String']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
 };
@@ -3717,7 +3719,6 @@ export type ShortLinkDomainVerfication = {
 export type SignUpBlock = Block & {
   __typename?: 'SignUpBlock';
   action?: Maybe<Action>;
-  /** classNames is an object of tailwind class names for the block */
   classNames: SignUpBlockClassNames;
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
@@ -3738,7 +3739,6 @@ export type SignUpBlockClassNamesInput = {
 };
 
 export type SignUpBlockCreateInput = {
-  classNames?: InputMaybe<SignUpBlockClassNamesInput>;
   id?: InputMaybe<Scalars['ID']['input']>;
   journeyId: Scalars['ID']['input'];
   parentBlockId: Scalars['ID']['input'];
@@ -3746,7 +3746,6 @@ export type SignUpBlockCreateInput = {
 };
 
 export type SignUpBlockUpdateInput = {
-  classNames?: InputMaybe<SignUpBlockClassNamesInput>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   submitIconId?: InputMaybe<Scalars['ID']['input']>;
   submitLabel?: InputMaybe<Scalars['String']['input']>;
@@ -3813,7 +3812,6 @@ export type SiteSharedLink = {
 
 export type SpacerBlock = Block & {
   __typename?: 'SpacerBlock';
-  /** classNames is an object of tailwind class names for the block */
   classNames: SpacerBlockClassNames;
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
@@ -3833,7 +3831,6 @@ export type SpacerBlockClassNamesInput = {
 };
 
 export type SpacerBlockCreateInput = {
-  classNames?: InputMaybe<SpacerBlockClassNamesInput>;
   id?: InputMaybe<Scalars['ID']['input']>;
   journeyId: Scalars['ID']['input'];
   parentBlockId: Scalars['ID']['input'];
@@ -3841,7 +3838,6 @@ export type SpacerBlockCreateInput = {
 };
 
 export type SpacerBlockUpdateInput = {
-  classNames?: InputMaybe<SpacerBlockClassNamesInput>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   spacing?: InputMaybe<Scalars['Int']['input']>;
 };
@@ -4082,7 +4078,6 @@ export type TeamUpdateInput = {
 
 export type TextResponseBlock = Block & {
   __typename?: 'TextResponseBlock';
-  /** classNames is an object of tailwind class names for the block */
   classNames: TextResponseBlockClassNames;
   hint?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
@@ -4109,7 +4104,6 @@ export type TextResponseBlockClassNamesInput = {
 };
 
 export type TextResponseBlockCreateInput = {
-  classNames?: InputMaybe<TextResponseBlockClassNamesInput>;
   id?: InputMaybe<Scalars['ID']['input']>;
   journeyId: Scalars['ID']['input'];
   label: Scalars['String']['input'];
@@ -4117,7 +4111,6 @@ export type TextResponseBlockCreateInput = {
 };
 
 export type TextResponseBlockUpdateInput = {
-  classNames?: InputMaybe<TextResponseBlockClassNamesInput>;
   hint?: InputMaybe<Scalars['String']['input']>;
   integrationId?: InputMaybe<Scalars['String']['input']>;
   label?: InputMaybe<Scalars['String']['input']>;
@@ -4196,7 +4189,6 @@ export enum TypographyAlign {
 export type TypographyBlock = Block & {
   __typename?: 'TypographyBlock';
   align?: Maybe<TypographyAlign>;
-  /** classNames is an object of tailwind class names for the block */
   classNames: TypographyBlockClassNames;
   color?: Maybe<TypographyColor>;
   content: Scalars['String']['output'];
@@ -4219,7 +4211,6 @@ export type TypographyBlockClassNamesInput = {
 
 export type TypographyBlockCreateInput = {
   align?: InputMaybe<TypographyAlign>;
-  classNames?: InputMaybe<TypographyBlockClassNamesInput>;
   color?: InputMaybe<TypographyColor>;
   content: Scalars['String']['input'];
   id?: InputMaybe<Scalars['ID']['input']>;
@@ -4230,7 +4221,6 @@ export type TypographyBlockCreateInput = {
 
 export type TypographyBlockUpdateInput = {
   align?: InputMaybe<TypographyAlign>;
-  classNames?: InputMaybe<TypographyBlockClassNamesInput>;
   color?: InputMaybe<TypographyColor>;
   content?: InputMaybe<Scalars['String']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
@@ -4579,7 +4569,6 @@ export type VideoBlock = Block & {
   /** action that should be performed when the video ends */
   action?: Maybe<Action>;
   autoplay?: Maybe<Scalars['Boolean']['output']>;
-  /** classNames is an object of tailwind class names for the block */
   classNames: VideoBlockClassNames;
   /**
    * internal source videos: this field is not populated and instead only present
@@ -4662,7 +4651,6 @@ export type VideoBlockClassNamesInput = {
 
 export type VideoBlockCreateInput = {
   autoplay?: InputMaybe<Scalars['Boolean']['input']>;
-  classNames?: InputMaybe<VideoBlockClassNamesInput>;
   description?: InputMaybe<Scalars['String']['input']>;
   duration?: InputMaybe<Scalars['Int']['input']>;
   /** endAt dictates at which point of time the video should end */
@@ -4737,7 +4725,6 @@ export enum VideoBlockSource {
 
 export type VideoBlockUpdateInput = {
   autoplay?: InputMaybe<Scalars['Boolean']['input']>;
-  classNames?: InputMaybe<VideoBlockClassNamesInput>;
   duration?: InputMaybe<Scalars['Int']['input']>;
   /** endAt dictates at which point of time the video should end */
   endAt?: InputMaybe<Scalars['Int']['input']>;
