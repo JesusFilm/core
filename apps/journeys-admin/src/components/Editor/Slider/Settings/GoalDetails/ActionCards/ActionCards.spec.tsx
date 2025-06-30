@@ -43,7 +43,8 @@ describe('ActionCards', () => {
                     coverBlockId: 'image2.id',
                     themeMode: null,
                     themeName: null,
-                    fullscreen: false
+                    fullscreen: false,
+                    backdropBlur: null
                   },
                   {
                     __typename: 'RadioQuestionBlock',

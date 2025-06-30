@@ -32,6 +32,7 @@ export function Custom404(): ReactElement {
     {
       __typename: 'CardBlock',
       backgroundColor: '#30313D',
+      backdropBlur: null,
       coverBlockId: '404-imageBlock-id',
       fullscreen: false,
       id: '404-cardBlock-id',

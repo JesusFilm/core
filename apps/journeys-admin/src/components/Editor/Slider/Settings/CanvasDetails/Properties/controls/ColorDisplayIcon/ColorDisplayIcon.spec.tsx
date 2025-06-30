@@ -41,6 +41,7 @@ describe('ColorDisplayIcon', () => {
           themeMode: ThemeMode.dark,
           themeName: ThemeName.base,
           fullscreen: false,
+          backdropBlur: null,
           children: [
             {
               __typename: 'TypographyBlock',
@@ -90,6 +91,7 @@ describe('ColorDisplayIcon', () => {
           themeMode: ThemeMode.dark,
           themeName: ThemeName.base,
           fullscreen: false,
+          backdropBlur: null,
           children: [
             {
               __typename: 'TypographyBlock',

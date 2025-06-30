@@ -38,6 +38,7 @@ const iconNames: IconName[] = [
   'BarGroup3',
   'Bell2',
   'Bible',
+  'Blur',
   'Book',
   'Box',
   'Bulb',

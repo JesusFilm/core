@@ -77,6 +77,7 @@ export function Card({
   id,
   children,
   backgroundColor,
+  backdropBlur,
   coverBlockId,
   fullscreen,
   wrappers
@@ -264,6 +265,7 @@ export function Card({
               <ExpandedCover
                 backgroundColor={cardColor}
                 backgroundBlur={blurUrl}
+                backdropBlur={backdropBlur ?? 20}
                 imageBlock={imageBlock}
                 hasFullscreenVideo={hasFullscreenVideo}
               >

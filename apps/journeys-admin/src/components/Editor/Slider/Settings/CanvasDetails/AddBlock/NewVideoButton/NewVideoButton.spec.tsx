@@ -46,6 +46,7 @@ describe('NewVideoButton', () => {
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: []
       }
     ]

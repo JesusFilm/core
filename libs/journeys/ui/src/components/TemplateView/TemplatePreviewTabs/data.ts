@@ -11,7 +11,8 @@ export const journeyVideoBlocks: Blocks[] = [
     coverBlockId: null,
     themeMode: null,
     themeName: null,
-    fullscreen: false
+    fullscreen: false,
+    backdropBlur: null
   },
   {
     __typename: 'VideoBlock',
@@ -177,7 +178,8 @@ export const journeyVideoBlocks: Blocks[] = [
     coverBlockId: null,
     themeMode: null,
     themeName: null,
-    fullscreen: false
+    fullscreen: false,
+    backdropBlur: null
   },
   {
     __typename: 'StepBlock',
@@ -241,7 +243,8 @@ export const journeyVideoBlocks: Blocks[] = [
     coverBlockId: null,
     themeMode: null,
     themeName: null,
-    fullscreen: false
+    fullscreen: false,
+    backdropBlur: null
   },
   {
     __typename: 'CardBlock',
@@ -252,7 +255,8 @@ export const journeyVideoBlocks: Blocks[] = [
     coverBlockId: null,
     themeMode: null,
     themeName: null,
-    fullscreen: false
+    fullscreen: false,
+    backdropBlur: null
   },
   {
     __typename: 'CardBlock',
@@ -263,7 +267,8 @@ export const journeyVideoBlocks: Blocks[] = [
     coverBlockId: null,
     themeMode: null,
     themeName: null,
-    fullscreen: false
+    fullscreen: false,
+    backdropBlur: null
   },
   {
     __typename: 'StepBlock',
