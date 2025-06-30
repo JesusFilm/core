@@ -606,11 +606,11 @@ type ButtonBlockClassNames {
 }
 
 input ButtonBlockSettingsInput {
-  alignment: String
+  alignment: ButtonAlignment
 }
 
 type ButtonBlockSettings {
-  alignment: String
+  alignment: ButtonAlignment @shareable
 }
 
 type ButtonBlock implements Block
