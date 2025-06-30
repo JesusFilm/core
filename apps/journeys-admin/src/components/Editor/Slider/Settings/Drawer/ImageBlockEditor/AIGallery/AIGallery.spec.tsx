@@ -61,7 +61,10 @@ describe('AIGallery', () => {
     await waitFor(() => {
       expect(onChange).toHaveBeenCalledWith({
         alt: 'Prompt: an image of the New Jerusalem',
-        src: 'https://imagedelivery.net/cloudflare-key/imageId/public'
+        src: 'https://imagedelivery.net/cloudflare-key/imageId/public',
+        scale: 100,
+        focalLeft: 50,
+        focalTop: 50
       })
     })
   })

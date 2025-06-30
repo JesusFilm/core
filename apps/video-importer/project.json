@@ -1,0 +1,67 @@
+{
+  "name": "video-importer",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/video-importer/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["tsc -p apps/video-importer/tsconfig.json"],
+        "parallel": false
+      }
+    },
+    "run": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx ts-node apps/video-importer/src/video-importer.ts --folder apps/video-importer/test-videos"
+      }
+    },
+    "bundle": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "esbuild apps/video-importer/src/video-importer.ts --bundle --outfile=dist/apps/video-importer/video-importer-bundled.js --platform=node --target=node22 --format=cjs"
+      }
+    },
+    "package": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "nx run video-importer:bundle",
+          {
+            "command": "./build-scripts/build-cross-platform.sh",
+            "cwd": "apps/video-importer"
+          },
+          "npx shx cp apps/video-importer/README.md dist/apps/video-importer-executable/README.md"
+        ],
+        "parallel": false
+      }
+    },
+    "fetch-secrets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "DOPPLER_TOKEN=$DOPPLER_VIDEO_IMPORTER_TOKEN doppler secrets download --no-file --format=env-no-quotes --project video-importer > apps/video-importer/.env"
+          }
+        ]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/video-importer/eslint",
+        "cacheStrategy": "content"
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsc -b apps/video-importer/tsconfig.json"
+      }
+    }
+  },
+  "tags": []
+}

@@ -34,6 +34,7 @@ const block: TreeBlock<CardBlock> = {
   themeMode: ThemeMode.light,
   themeName: ThemeName.base,
   fullscreen: false,
+  backdropBlur: null,
   children: []
 }
 
@@ -68,6 +69,7 @@ export const Filled: StoryObj<typeof Card> = {
       themeMode: ThemeMode.dark,
       themeName: ThemeName.base,
       fullscreen: true,
+      backdropBlur: null,
       children: [
         {
           __typename: 'ImageBlock',
