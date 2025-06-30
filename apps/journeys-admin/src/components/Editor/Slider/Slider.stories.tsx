@@ -45,6 +45,7 @@ const step1: TreeBlock<StepBlock> = {
       themeName: null,
       themeMode: null,
       fullscreen: false,
+      backdropBlur: null,
       children: [
         {
           __typename: 'TypographyBlock',
@@ -101,6 +102,7 @@ const step2: TreeBlock<StepBlock> = {
       themeName: null,
       themeMode: null,
       fullscreen: false,
+      backdropBlur: null,
       children: [
         {
           __typename: 'TypographyBlock',
