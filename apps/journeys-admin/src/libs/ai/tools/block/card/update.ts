@@ -37,7 +37,6 @@ export function blockCardUpdate(
         })
         return data?.cardBlockUpdate
       } catch (error) {
-        console.error(error)
         return `Error updating card block: ${error}`
       }
     }

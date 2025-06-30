@@ -35,7 +35,6 @@ export function blockRadioQuestionUpdate(
         })
         return data?.radioQuestionBlockUpdate
       } catch (error) {
-        console.error(error)
         return `Error updating radio question block: ${error}`
       }
     }

@@ -41,7 +41,6 @@ export function blockVideoCreate(
         })
         return data?.videoBlockCreate
       } catch (error) {
-        console.error(error)
         return `Error creating video block: ${error}`
       }
     }

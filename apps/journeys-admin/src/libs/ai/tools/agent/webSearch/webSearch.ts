@@ -37,8 +37,7 @@ export function agentWebSearch() {
         })
         return result.text
       } catch (error) {
-        console.error('Error searching web:', error)
-        return { error: 'Failed to search web' }
+        return `Error performing web search: ${error}`
       }
     }
   })

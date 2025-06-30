@@ -36,7 +36,6 @@ export function blockDelete(client: ApolloClient<NormalizedCacheObject>): Tool {
         })
         return data?.blockDelete
       } catch (error) {
-        console.error(error)
         return `Error deleting block: ${error}`
       }
     }

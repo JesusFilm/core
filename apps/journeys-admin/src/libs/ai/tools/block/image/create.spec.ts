@@ -56,7 +56,6 @@ describe('blockImageCreate', () => {
       { toolCallId: 'test-id', messages: [] }
     )
 
-    // Image component processes input with safeInput logic
     expect(mockClient.mutate).toHaveBeenCalledWith({
       mutation: AI_BLOCK_IMAGE_CREATE,
       variables: {
@@ -90,7 +89,6 @@ describe('blockImageCreate', () => {
       { toolCallId: 'test-id', messages: [] }
     )
 
-    // Image component should set alt to empty string when undefined
     expect(mockClient.mutate).toHaveBeenCalledWith({
       mutation: AI_BLOCK_IMAGE_CREATE,
       variables: {
@@ -109,10 +107,6 @@ describe('blockImageCreate', () => {
     } satisfies ImageBlockCreateInput
     const mockError = new Error('Network error')
 
-    const consoleErrorSpy = jest
-      .spyOn(console, 'error')
-      .mockImplementation(jest.fn())
-
     ;(mockClient.mutate as jest.Mock).mockRejectedValue(mockError)
 
     const tool = blockImageCreate(mockClient)
@@ -120,8 +114,6 @@ describe('blockImageCreate', () => {
       { input: mockInput },
       { toolCallId: 'test-id', messages: [] }
     )
-
-    expect(consoleErrorSpy).toHaveBeenCalledWith(mockError)
     expect(result).toBe(`Error creating image block: ${mockError}`)
   })
 })

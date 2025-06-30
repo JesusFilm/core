@@ -867,6 +867,10 @@ type CardBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @jo
   """
   backgroundColor: String
   """
+  backdropBlur should be a number representing blur amount in pixels e.g 20.
+  """
+  backdropBlur: Int
+  """
   coverBlockId is present if a child block should be used as a cover.
   This child block should not be rendered normally, instead it should be used
   as a background. Blocks are often of type ImageBlock or VideoBlock.
@@ -1154,6 +1158,7 @@ type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId", extensi
   images(aspectRatio: ImageAspectRatio) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
   restrictDownloadPlatforms: [Platform!]! @join__field(graph: API_MEDIA) 
   restrictViewPlatforms: [Platform!]! @join__field(graph: API_MEDIA) 
+  publishedAt: Date @join__field(graph: API_MEDIA) 
 }
 
 type VideoBlockClassNames @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -1886,9 +1891,9 @@ type JourneyTheme @join__type(graph: API_JOURNEYS)  {
   journeyId: ID!
   journey: Journey!
   userId: ID!
-  primaryFont: String
-  secondaryFont: String
-  accentFont: String
+  headerFont: String
+  bodyFont: String
+  labelFont: String
   createdAt: DateTime!
   updatedAt: DateTime!
 }
@@ -3476,6 +3481,7 @@ input CardBlockCreateInput @join__type(graph: API_JOURNEYS)  {
   journeyId: ID!
   parentBlockId: ID!
   backgroundColor: String
+  backdropBlur: Int
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
@@ -3486,6 +3492,7 @@ input CardBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
   parentBlockId: ID
   coverBlockId: ID
   backgroundColor: String
+  backdropBlur: Int
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
@@ -4342,15 +4349,15 @@ input JourneyProfileUpdateInput @join__type(graph: API_JOURNEYS)  {
 
 input JourneyThemeCreateInput @join__type(graph: API_JOURNEYS)  {
   journeyId: ID!
-  primaryFont: String
-  secondaryFont: String
-  accentFont: String
+  headerFont: String
+  bodyFont: String
+  labelFont: String
 }
 
 input JourneyThemeUpdateInput @join__type(graph: API_JOURNEYS)  {
-  primaryFont: String
-  secondaryFont: String
-  accentFont: String
+  headerFont: String
+  bodyFont: String
+  labelFont: String
 }
 
 input JourneyVisitorFilter @join__type(graph: API_JOURNEYS)  {

@@ -36,7 +36,6 @@ export function blockButtonCreate(
         })
         return data?.buttonBlockCreate
       } catch (error) {
-        console.error(error)
         return `Error creating button block: ${error}`
       }
     }

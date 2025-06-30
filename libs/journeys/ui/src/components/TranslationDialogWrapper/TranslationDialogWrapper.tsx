@@ -1,4 +1,3 @@
-import { LoadingButton } from '@mui/lab'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -8,6 +7,7 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, ReactNode } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import { TranslationProgressBar } from '../TranslationProgressBar'
 
@@ -71,6 +71,7 @@ export function TranslationDialogWrapper({
   isTranslation,
   translationProgress
 }: TranslationDialogWrapperProps): ReactElement {
+  const { aiCreateButton } = useFlags()
   const { t } = useTranslation('libs-journeys-ui')
   const defaultLoadingText = t('Translating your journey...')
 
@@ -99,7 +100,7 @@ export function TranslationDialogWrapper({
               >
                 {t('Cancel')}
               </Button>
-              {onCreateWithAi && (
+              {aiCreateButton && onCreateWithAi && (
                 <Tooltip
                   title={
                     isTranslation
@@ -126,7 +127,7 @@ export function TranslationDialogWrapper({
                   </span>
                 </Tooltip>
               )}
-              <LoadingButton
+              <Button
                 variant="contained"
                 onClick={onTranslate}
                 loading={loading}
@@ -135,7 +136,7 @@ export function TranslationDialogWrapper({
                 }}
               >
                 {submitLabel ?? t('Create')}
-              </LoadingButton>
+              </Button>
             </>
           )}
         </>

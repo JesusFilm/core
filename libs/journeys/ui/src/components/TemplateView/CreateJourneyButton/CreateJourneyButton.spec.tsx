@@ -3,6 +3,8 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { type NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
 import {
   JourneyStatus,
   ThemeMode,
@@ -461,7 +463,9 @@ describe('CreateJourneyButton', () => {
             <SnackbarProvider>
               <TeamProvider>
                 <JourneyProvider value={{ journey }}>
-                  <CreateJourneyButton signedIn />
+                  <FlagsProvider flags={{ aiCreateButton: true }}>
+                    <CreateJourneyButton signedIn />
+                  </FlagsProvider>
                 </JourneyProvider>
               </TeamProvider>
             </SnackbarProvider>
@@ -497,7 +501,9 @@ describe('CreateJourneyButton', () => {
             <SnackbarProvider>
               <TeamProvider>
                 <JourneyProvider value={{ journey }}>
-                  <CreateJourneyButton signedIn />
+                  <FlagsProvider flags={{ aiCreateButton: true }}>
+                    <CreateJourneyButton signedIn />
+                  </FlagsProvider>
                 </JourneyProvider>
               </TeamProvider>
             </SnackbarProvider>
@@ -534,7 +540,9 @@ describe('CreateJourneyButton', () => {
             <SnackbarProvider>
               <TeamProvider>
                 <JourneyProvider value={{ journey }}>
-                  <CreateJourneyButton signedIn />
+                  <FlagsProvider flags={{ aiCreateButton: true }}>
+                    <CreateJourneyButton signedIn />
+                  </FlagsProvider>
                 </JourneyProvider>
               </TeamProvider>
             </SnackbarProvider>
@@ -549,7 +557,6 @@ describe('CreateJourneyButton', () => {
           expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
         )
 
-        // Enable translation
         fireEvent.click(screen.getByRole('checkbox', { name: 'Translation' }))
 
         const createWithAiButton = screen.getByRole('button', {
@@ -578,7 +585,9 @@ describe('CreateJourneyButton', () => {
             <SnackbarProvider>
               <TeamProvider>
                 <JourneyProvider value={{ journey }}>
-                  <CreateJourneyButton signedIn />
+                  <FlagsProvider flags={{ aiCreateButton: true }}>
+                    <CreateJourneyButton signedIn />
+                  </FlagsProvider>
                 </JourneyProvider>
               </TeamProvider>
             </SnackbarProvider>
@@ -593,7 +602,6 @@ describe('CreateJourneyButton', () => {
           expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
         )
 
-        // Click Create with AI button
         fireEvent.click(screen.getByRole('button', { name: 'Create with AI' }))
 
         await waitFor(() => {
@@ -627,7 +635,9 @@ describe('CreateJourneyButton', () => {
             <SnackbarProvider>
               <TeamProvider>
                 <JourneyProvider value={{ journey }}>
-                  <CreateJourneyButton signedIn />
+                  <FlagsProvider flags={{ aiCreateButton: true }}>
+                    <CreateJourneyButton signedIn />
+                  </FlagsProvider>
                 </JourneyProvider>
               </TeamProvider>
             </SnackbarProvider>

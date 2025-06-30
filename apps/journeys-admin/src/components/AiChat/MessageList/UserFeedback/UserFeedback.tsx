@@ -15,17 +15,13 @@ interface UserFeedbackProps {
 export function UserFeedback({ traceId }: UserFeedbackProps) {
   const [feedback, setFeedback] = useState<number | null>(null)
 
-  async function handleUserFeedback(value: number) {
+  function handleUserFeedback(value: number) {
     setFeedback(value)
-    try {
-      await langfuseWeb.score({
-        traceId,
-        name: 'user_feedback',
-        value
-      })
-    } catch (error) {
-      console.error('Failed to record user feedback analytics: ', error)
-    }
+    void langfuseWeb.score({
+      traceId,
+      name: 'user_feedback',
+      value
+    })
   }
 
   return (

@@ -37,7 +37,6 @@ export function blockStepUpdate(
         })
         return data?.stepBlockUpdate
       } catch (error) {
-        console.error(error)
         return `Error updating step block: ${error}`
       }
     }

@@ -22,13 +22,11 @@ describe('TextPart', () => {
         screen.getByText('This is test message content')
       ).toBeInTheDocument()
 
-      // Test that the text-part class is present (for styling)
       const container = screen
         .getByText('This is test message content')
         .closest('.text-part')
       expect(container).toBeInTheDocument()
 
-      // Should render as Typography, not markdown elements
       const typography = screen.getByText('This is test message content')
       expect(typography.tagName.toLowerCase()).toBe('span')
     })
@@ -46,7 +44,6 @@ describe('TextPart', () => {
         <TextPart message={userMessageWithMarkdown} part={markdownTextPart} />
       )
 
-      // Should render the markdown syntax as plain text, not as HTML elements
       expect(
         screen.getByText('**Bold text** and *italic text*')
       ).toBeInTheDocument()
@@ -70,12 +67,10 @@ describe('TextPart', () => {
 
       render(<TextPart message={aiMessage} part={markdownTextPart} />)
 
-      // Check that markdown is rendered (bold text becomes strong element)
       const boldElement = screen.getByText('bold text')
       expect(boldElement).toBeInTheDocument()
       expect(boldElement.tagName.toLowerCase()).toBe('strong')
 
-      // Should not have user message styling (text-part class)
       expect(
         screen.queryByText('bold text')?.closest('.text-part')
       ).not.toBeInTheDocument()
@@ -89,26 +84,21 @@ describe('TextPart', () => {
 
       render(<TextPart message={aiMessage} part={markdownTextPart} />)
 
-      // Check heading
       expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(
         'Journey Creation'
       )
 
-      // Check ordered list
       const orderedList = screen.getByRole('list')
       expect(orderedList.tagName.toLowerCase()).toBe('ol')
 
-      // Check list items with formatting
       expect(screen.getByText('Create')).toBeInTheDocument()
       expect(screen.getByText('Create').tagName.toLowerCase()).toBe('strong')
       expect(screen.getByText('Customize')).toBeInTheDocument()
       expect(screen.getByText('Customize').tagName.toLowerCase()).toBe('em')
 
-      // Check link
       const link = screen.getByRole('link', { name: 'Publish' })
       expect(link).toHaveAttribute('href', 'https://example.com')
 
-      // Check plain text
       expect(screen.getByText("That's it!")).toBeInTheDocument()
     })
   })

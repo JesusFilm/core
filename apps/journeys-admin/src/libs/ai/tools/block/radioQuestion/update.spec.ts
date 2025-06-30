@@ -68,10 +68,6 @@ describe('blockRadioQuestionUpdate', () => {
     const mockParentBlockId = 'parent-block-id'
     const mockError = new Error('Network error')
 
-    const consoleErrorSpy = jest
-      .spyOn(console, 'error')
-      .mockImplementation(jest.fn())
-
     ;(mockClient.mutate as jest.Mock).mockRejectedValue(mockError)
 
     const tool = blockRadioQuestionUpdate(mockClient)
@@ -79,8 +75,6 @@ describe('blockRadioQuestionUpdate', () => {
       { id: mockId, parentBlockId: mockParentBlockId },
       { toolCallId: 'test-id', messages: [] }
     )
-
-    expect(consoleErrorSpy).toHaveBeenCalledWith(mockError)
     expect(result).toBe(`Error updating radio question block: ${mockError}`)
   })
 })

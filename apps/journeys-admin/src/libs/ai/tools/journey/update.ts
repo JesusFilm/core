@@ -37,7 +37,6 @@ export function journeyUpdate(
         })
         return result.data?.journeyUpdate
       } catch (error) {
-        console.error(error)
         return `Error updating journey: ${error}`
       }
     }

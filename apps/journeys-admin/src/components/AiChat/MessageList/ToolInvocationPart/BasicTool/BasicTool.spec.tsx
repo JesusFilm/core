@@ -26,11 +26,9 @@ describe('BasicTool', () => {
 
       expect(screen.getByText('Processing your request...')).toBeInTheDocument()
 
-      // Test that shimmer styling is applied
       const shimmerText = screen.getByText('Processing your request...')
       expect(shimmerText.tagName.toLowerCase()).toBe('span')
 
-      // result text should not be rendered
       expect(screen.queryByText('Result text')).not.toBeInTheDocument()
     })
 
@@ -67,13 +65,11 @@ describe('BasicTool', () => {
         screen.getByText('Task completed successfully')
       ).toBeInTheDocument()
 
-      // Test that it's rendered as a chip
       const chip = screen
         .getByText('Task completed successfully')
         .closest('[class*="MuiChip"]')
       expect(chip).toBeInTheDocument()
 
-      // call text should not be rendered
       expect(screen.queryByText('Call text')).not.toBeInTheDocument()
     })
 

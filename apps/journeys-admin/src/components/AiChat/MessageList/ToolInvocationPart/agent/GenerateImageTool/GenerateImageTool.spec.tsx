@@ -2,14 +2,12 @@ import { render, screen } from '@testing-library/react'
 
 import { AgentGenerateImageTool } from './GenerateImageTool'
 
-// Mock next-i18next following the established pattern
 jest.mock('next-i18next', () => ({
   useTranslation: () => ({
     t: (str: string) => str
   })
 }))
 
-// Mock Next.js Image component
 jest.mock('next/image', () => {
   return function MockedImage({ src, alt, width, height }: any) {
     return (
@@ -63,7 +61,6 @@ describe('AgentGenerateImageTool', () => {
 
       expect(screen.getByText('Generating image...')).toBeInTheDocument()
 
-      // Should not render any images in call state
       expect(screen.queryByTestId('generated-image')).not.toBeInTheDocument()
     })
   })
@@ -82,7 +79,6 @@ describe('AgentGenerateImageTool', () => {
       expect(image).toHaveAttribute('width', '256')
       expect(image).toHaveAttribute('height', '256')
 
-      // Should not render generating message in result state
       expect(screen.queryByText('Generating image...')).not.toBeInTheDocument()
     })
 
@@ -108,7 +104,6 @@ describe('AgentGenerateImageTool', () => {
       expect(images[1]).toHaveAttribute('src', 'https://example.com/image2.png')
       expect(images[2]).toHaveAttribute('src', 'https://example.com/image3.png')
 
-      // All images should have consistent attributes
       images.forEach((image) => {
         expect(image).toHaveAttribute('alt', 'Generated image')
         expect(image).toHaveAttribute('width', '256')

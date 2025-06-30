@@ -47,7 +47,6 @@ export function journeyGet(client: ApolloClient<NormalizedCacheObject>): Tool {
           blocks: transformer(result.data.journey.blocks)
         }
       } catch (error) {
-        console.error(error)
         return `Error getting journey: ${error}`
       }
     }

@@ -74,10 +74,6 @@ describe('blockActionUpdate', () => {
     } satisfies BlockUpdateActionInput
     const mockError = new Error('Network error')
 
-    const consoleErrorSpy = jest
-      .spyOn(console, 'error')
-      .mockImplementation(jest.fn())
-
     ;(mockClient.mutate as jest.Mock).mockRejectedValue(mockError)
 
     const tool = blockActionUpdate(mockClient)
@@ -86,7 +82,6 @@ describe('blockActionUpdate', () => {
       { toolCallId: 'test-id', messages: [] }
     )
 
-    expect(consoleErrorSpy).toHaveBeenCalledWith(mockError)
     expect(result).toBe(`Error updating action: ${mockError}`)
   })
 })

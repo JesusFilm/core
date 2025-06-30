@@ -103,10 +103,6 @@ describe('journeyGet', () => {
     const mockJourneyId = 'journey-123'
     const mockError = new Error('Network error')
 
-    const consoleErrorSpy = jest
-      .spyOn(console, 'error')
-      .mockImplementation(jest.fn())
-
     ;(mockClient.query as jest.Mock).mockRejectedValue(mockError)
 
     const tool = journeyGet(mockClient)
@@ -115,7 +111,6 @@ describe('journeyGet', () => {
       { toolCallId: 'test-id', messages: [] }
     )
 
-    expect(consoleErrorSpy).toHaveBeenCalledWith(mockError)
     expect(result).toBe(`Error getting journey: ${mockError}`)
   })
 })

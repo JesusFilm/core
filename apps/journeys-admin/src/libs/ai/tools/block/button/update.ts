@@ -40,7 +40,6 @@ export function blockButtonUpdate(
         })
         return data?.buttonBlockUpdate
       } catch (error) {
-        console.error(error)
         return `Error updating button block: ${error}`
       }
     }

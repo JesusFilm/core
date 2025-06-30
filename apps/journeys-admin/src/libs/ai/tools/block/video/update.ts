@@ -40,7 +40,6 @@ export function blockVideoUpdate(
         })
         return data?.videoBlockUpdate
       } catch (error) {
-        console.error(error)
         return `Error updating video block: ${error}`
       }
     }

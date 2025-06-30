@@ -84,7 +84,8 @@ describe('video', () => {
       locked: false,
       originId: null,
       restrictDownloadPlatforms: [],
-      restrictViewPlatforms: []
+      restrictViewPlatforms: [],
+      publishedAt: null
     },
     {
       id: 'videoId1',
@@ -98,7 +99,8 @@ describe('video', () => {
       locked: false,
       originId: null,
       restrictDownloadPlatforms: [],
-      restrictViewPlatforms: []
+      restrictViewPlatforms: [],
+      publishedAt: null
     }
   ]
 
@@ -115,7 +117,8 @@ describe('video', () => {
       locked: false,
       originId: null,
       restrictDownloadPlatforms: [],
-      restrictViewPlatforms: []
+      restrictViewPlatforms: [],
+      publishedAt: null
     },
     {
       id: 'videoId4',
@@ -129,7 +132,8 @@ describe('video', () => {
       locked: false,
       originId: null,
       restrictDownloadPlatforms: [],
-      restrictViewPlatforms: []
+      restrictViewPlatforms: [],
+      publishedAt: null
     }
   ]
 
@@ -147,6 +151,7 @@ describe('video', () => {
       locked: false,
       restrictDownloadPlatforms: [],
       restrictViewPlatforms: [],
+      publishedAt: null,
       bibleCitation: [
         {
           id: 'bibleCitationId',
@@ -342,7 +347,8 @@ describe('video', () => {
     originId: null,
     locked: false,
     restrictDownloadPlatforms: [],
-    restrictViewPlatforms: []
+    restrictViewPlatforms: [],
+    publishedAt: null
   }
 
   describe('videos', () => {
@@ -1685,7 +1691,8 @@ describe('video', () => {
       originId: null,
       locked: false,
       restrictDownloadPlatforms: [],
-      restrictViewPlatforms: []
+      restrictViewPlatforms: [],
+      publishedAt: null
     }
 
     it('should query video', async () => {
@@ -1896,6 +1903,7 @@ describe('video', () => {
             label: 'featureFilm',
             primaryLanguageId: 'primaryLanguageId',
             published: true,
+            publishedAt: expect.any(Date),
             slug: 'slug',
             noIndex: true,
             childIds: [],
@@ -1925,6 +1933,106 @@ describe('video', () => {
         })
         expect(result).toHaveProperty('data', null)
       })
+
+      it('should create video with publishedAt when published is true', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        prismaMock.video.create.mockResolvedValue({
+          id: 'id',
+          label: VideoLabel.featureFilm,
+          primaryLanguageId: 'primaryLanguageId',
+          published: true,
+          slug: 'slug',
+          noIndex: true,
+          childIds: [],
+          availableLanguages: [],
+          originId: 'originId',
+          publishedAt: new Date()
+        } as unknown as Video)
+
+        await authClient({
+          document: CREATE_VIDEO_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              label: VideoLabel.featureFilm,
+              primaryLanguageId: 'primaryLanguageId',
+              published: true,
+              slug: 'slug',
+              noIndex: true,
+              childIds: [],
+              originId: 'originId'
+            }
+          }
+        })
+
+        expect(prismaMock.video.create).toHaveBeenCalledWith({
+          data: {
+            id: 'id',
+            label: 'featureFilm',
+            primaryLanguageId: 'primaryLanguageId',
+            published: true,
+            publishedAt: expect.any(Date),
+            slug: 'slug',
+            noIndex: true,
+            childIds: [],
+            originId: 'originId'
+          }
+        })
+      })
+
+      it('should create video without publishedAt when published is false', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        prismaMock.video.create.mockResolvedValue({
+          id: 'id',
+          label: VideoLabel.featureFilm,
+          primaryLanguageId: 'primaryLanguageId',
+          published: false,
+          slug: 'slug',
+          noIndex: true,
+          childIds: [],
+          availableLanguages: [],
+          originId: 'originId',
+          publishedAt: null
+        } as unknown as Video)
+
+        await authClient({
+          document: CREATE_VIDEO_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              label: VideoLabel.featureFilm,
+              primaryLanguageId: 'primaryLanguageId',
+              published: false,
+              slug: 'slug',
+              noIndex: true,
+              childIds: [],
+              originId: 'originId'
+            }
+          }
+        })
+
+        expect(prismaMock.video.create).toHaveBeenCalledWith({
+          data: {
+            id: 'id',
+            label: 'featureFilm',
+            primaryLanguageId: 'primaryLanguageId',
+            published: false,
+            publishedAt: undefined,
+            slug: 'slug',
+            noIndex: true,
+            childIds: [],
+            originId: 'originId'
+          }
+        })
+      })
     })
 
     describe('videoUpdate', () => {
@@ -1942,6 +2050,9 @@ describe('video', () => {
           userId: 'userId',
           roles: ['publisher']
         })
+        prismaMock.video.findUnique.mockResolvedValue({
+          publishedAt: null
+        } as any)
         prismaMock.video.update.mockResolvedValue({
           id: 'id',
           label: VideoLabel.episode,
@@ -1974,6 +2085,7 @@ describe('video', () => {
             label: 'episode',
             primaryLanguageId: 'primaryLanguageId',
             published: true,
+            publishedAt: expect.any(Date),
             slug: 'slug',
             noIndex: true,
             childIds: []
@@ -1981,6 +2093,117 @@ describe('video', () => {
         })
         expect(result).toHaveProperty('data.videoUpdate', {
           id: 'id'
+        })
+      })
+
+      it('should set publishedAt when updating from unpublished to published', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        prismaMock.video.findUnique.mockResolvedValue({
+          publishedAt: null
+        } as any)
+        prismaMock.video.update.mockResolvedValue({
+          id: 'id',
+          published: true,
+          publishedAt: new Date()
+        } as unknown as Video)
+
+        await authClient({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              published: true
+            }
+          }
+        })
+
+        expect(prismaMock.video.findUnique).toHaveBeenCalledWith({
+          where: { id: 'id' },
+          select: { publishedAt: true }
+        })
+        expect(prismaMock.video.update).toHaveBeenCalledWith({
+          where: { id: 'id' },
+          include: { children: true },
+          data: {
+            published: true,
+            publishedAt: expect.any(Date)
+          }
+        })
+      })
+
+      it('should NOT overwrite existing publishedAt when updating to published', async () => {
+        const existingPublishedAt = new Date('2023-01-01')
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        prismaMock.video.findUnique.mockResolvedValue({
+          publishedAt: existingPublishedAt
+        } as any)
+        prismaMock.video.update.mockResolvedValue({
+          id: 'id',
+          published: true,
+          publishedAt: existingPublishedAt
+        } as unknown as Video)
+
+        await authClient({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              published: true
+            }
+          }
+        })
+
+        expect(prismaMock.video.update).toHaveBeenCalledWith({
+          where: { id: 'id' },
+          include: { children: true },
+          data: {
+            published: true,
+            publishedAt: undefined
+          }
+        })
+      })
+
+      it('should not set publishedAt when published is not being updated', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        prismaMock.video.update.mockResolvedValue({
+          id: 'id',
+          label: VideoLabel.episode
+        } as unknown as Video)
+
+        await authClient({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              label: VideoLabel.episode
+            }
+          }
+        })
+
+        // Should not check for publishedAt when published is not being updated
+        expect(prismaMock.video.findUnique).not.toHaveBeenCalledWith({
+          where: { id: 'id' },
+          select: { publishedAt: true }
+        })
+        expect(prismaMock.video.update).toHaveBeenCalledWith({
+          where: { id: 'id' },
+          include: { children: true },
+          data: {
+            label: 'episode',
+            publishedAt: undefined
+          }
         })
       })
 
@@ -2032,7 +2255,8 @@ describe('video', () => {
         locked: false,
         originId: null,
         restrictDownloadPlatforms: [],
-        restrictViewPlatforms: []
+        restrictViewPlatforms: [],
+        publishedAt: null
       })
       const data = await client({
         document: VIDEO
