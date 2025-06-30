@@ -19,12 +19,10 @@ describe('clientSelectImage', () => {
       generatedImageUrls: z.ZodTypeAny
     }
 
-    // Test parameter types
     expect(parametersShape.message).toBeInstanceOf(z.ZodString)
     expect(parametersShape.imageId).toBeInstanceOf(z.ZodString)
     expect(parametersShape.generatedImageUrls).toBeInstanceOf(z.ZodOptional)
 
-    // Test parameter descriptions
     expect(parametersShape.message.description).toBe(
       'The message to ask for confirmation.'
     )

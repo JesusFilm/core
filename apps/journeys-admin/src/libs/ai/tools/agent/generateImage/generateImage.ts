@@ -46,7 +46,6 @@ export function agentGenerateImage(
 
         return result
       } catch (error) {
-        console.error(error)
         return `Error generating image: ${error}`
       }
     }

@@ -74,6 +74,7 @@ export function Form({
             <Box>
               {status === 'submitted' || status === 'streaming' ? (
                 <Button
+                  data-testid="FormStopButton"
                   onClick={() => stop()}
                   disabled={error != null || waitForToolResult}
                   variant="contained"
@@ -97,6 +98,7 @@ export function Form({
                 </Button>
               ) : (
                 <Button
+                  data-testid="FormSubmitButton"
                   type="submit"
                   disabled={error != null || waitForToolResult}
                   variant="contained"

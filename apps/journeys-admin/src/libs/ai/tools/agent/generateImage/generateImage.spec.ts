@@ -199,9 +199,6 @@ describe('agentGenerateImage', () => {
   describe('AI SDK Error Handling', () => {
     it('should handle experimental_generateImage failures', async () => {
       const mockError = new Error('OpenAI API error')
-      const consoleErrorSpy = jest
-        .spyOn(console, 'error')
-        .mockImplementation(jest.fn())
 
       mockExperimentalGenerateImage.mockRejectedValue(mockError)
 
@@ -211,7 +208,6 @@ describe('agentGenerateImage', () => {
         { toolCallId: 'test-call-id', messages: [] }
       )
 
-      expect(consoleErrorSpy).toHaveBeenCalledWith(mockError)
       expect(result).toBe(`Error generating image: ${mockError}`)
 
       expect(mockExperimentalGenerateImage).toHaveBeenCalledWith({
@@ -221,8 +217,6 @@ describe('agentGenerateImage', () => {
       })
 
       expect(mockUpload).not.toHaveBeenCalled()
-
-      consoleErrorSpy.mockRestore()
     })
   })
 
@@ -236,9 +230,6 @@ describe('agentGenerateImage', () => {
       } as any
 
       const mockUploadError = new Error('Upload failed')
-      const consoleErrorSpy = jest
-        .spyOn(console, 'error')
-        .mockImplementation(jest.fn())
 
       mockExperimentalGenerateImage.mockResolvedValue(mockGeneratedImages)
       mockUpload
@@ -254,7 +245,6 @@ describe('agentGenerateImage', () => {
         { toolCallId: 'test-call-id', messages: [] }
       )
 
-      expect(consoleErrorSpy).toHaveBeenCalledWith(mockUploadError)
       expect(result).toBe(`Error generating image: ${mockUploadError}`)
 
       expect(mockExperimentalGenerateImage).toHaveBeenCalledWith({
@@ -264,8 +254,6 @@ describe('agentGenerateImage', () => {
       })
 
       expect(mockUpload).toHaveBeenCalledTimes(2)
-
-      consoleErrorSpy.mockRestore()
     })
   })
 })

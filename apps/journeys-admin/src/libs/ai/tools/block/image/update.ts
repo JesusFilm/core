@@ -40,7 +40,6 @@ export function blockImageUpdate(
         })
         return data?.imageBlockUpdate
       } catch (error) {
-        console.error(error)
         return `Error updating image block: ${error}`
       }
     }

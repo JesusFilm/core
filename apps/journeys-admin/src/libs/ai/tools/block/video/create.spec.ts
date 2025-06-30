@@ -78,10 +78,6 @@ describe('blockVideoCreate', () => {
     } satisfies VideoBlockCreateInput
     const mockError = new Error('Network error')
 
-    const consoleErrorSpy = jest
-      .spyOn(console, 'error')
-      .mockImplementation(jest.fn())
-
     ;(mockClient.mutate as jest.Mock).mockRejectedValue(mockError)
 
     const tool = blockVideoCreate(mockClient)
@@ -89,8 +85,6 @@ describe('blockVideoCreate', () => {
       { input: mockInput },
       { toolCallId: 'test-id', messages: [] }
     )
-
-    expect(consoleErrorSpy).toHaveBeenCalledWith(mockError)
     expect(result).toBe(`Error creating video block: ${mockError}`)
   })
 })

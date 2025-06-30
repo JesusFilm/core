@@ -213,27 +213,16 @@ describe('upload', () => {
   describe('Apollo Client Error Tests', () => {
     it('should handle Apollo Client mutation failure', async () => {
       const mockError = new Error('GraphQL network error')
-      const consoleErrorSpy = jest
-        .spyOn(console, 'error')
-        .mockImplementation(jest.fn())
-
       ;(mockClient.mutate as jest.Mock).mockRejectedValue(mockError)
 
       const testUint8Array = new Uint8Array([1, 2, 3, 4])
       const result = await upload(mockClient, testUint8Array)
-
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'Error uploading generated image:',
-        mockError
-      )
       expect(result).toEqual({
         errorMessage: mockError.message,
         success: false
       })
 
       expect(global.fetch).not.toHaveBeenCalled()
-
-      consoleErrorSpy.mockRestore()
     })
 
     it('should handle missing/null uploadUrl in response', async () => {
@@ -250,9 +239,6 @@ describe('upload', () => {
       }
 
       const mockError = new Error('Failed to get upload URL')
-      const consoleErrorSpy = jest
-        .spyOn(console, 'error')
-        .mockImplementation(jest.fn())
 
       ;(mockClient.mutate as jest.Mock).mockResolvedValue(mockMutationResponse)
 
@@ -263,18 +249,12 @@ describe('upload', () => {
         mutation: AI_CREATE_CLOUDFLARE_UPLOAD_BY_FILE
       })
 
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'Error uploading generated image:',
-        mockError
-      )
       expect(result).toEqual({
         errorMessage: mockError.message,
         success: false
       })
 
       expect(global.fetch).not.toHaveBeenCalled()
-
-      consoleErrorSpy.mockRestore()
     })
   })
 
@@ -293,9 +273,6 @@ describe('upload', () => {
       }
 
       const mockError = new Error('Network connection failed')
-      const consoleErrorSpy = jest
-        .spyOn(console, 'error')
-        .mockImplementation(jest.fn())
 
       ;(mockClient.mutate as jest.Mock).mockResolvedValue(mockMutationResponse)
       ;(global.fetch as jest.Mock).mockRejectedValue(mockError)
@@ -307,16 +284,10 @@ describe('upload', () => {
         mutation: AI_CREATE_CLOUDFLARE_UPLOAD_BY_FILE
       })
 
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'Error uploading generated image:',
-        mockError
-      )
       expect(result).toEqual({
         errorMessage: mockError.message,
         success: false
       })
-
-      consoleErrorSpy.mockRestore()
     })
 
     it('should handle non-ok fetch responses (404, 500, etc.)', async () => {
@@ -339,9 +310,6 @@ describe('upload', () => {
       }
 
       const mockError = new Error('Failed to upload image to Cloudflare')
-      const consoleErrorSpy = jest
-        .spyOn(console, 'error')
-        .mockImplementation(jest.fn())
 
       ;(mockClient.mutate as jest.Mock).mockResolvedValue(mockMutationResponse)
       ;(global.fetch as jest.Mock).mockResolvedValue(mockFetchResponse)
@@ -353,16 +321,10 @@ describe('upload', () => {
         mutation: AI_CREATE_CLOUDFLARE_UPLOAD_BY_FILE
       })
 
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'Error uploading generated image:',
-        mockError
-      )
       expect(result).toEqual({
         errorMessage: mockError.message,
         success: false
       })
-
-      consoleErrorSpy.mockRestore()
     })
 
     it('should handle non-Error exceptions and use fallback error message', async () => {
@@ -379,9 +341,6 @@ describe('upload', () => {
       }
 
       const mockNonErrorException = 'Network timeout'
-      const consoleErrorSpy = jest
-        .spyOn(console, 'error')
-        .mockImplementation(jest.fn())
 
       ;(mockClient.mutate as jest.Mock).mockResolvedValue(mockMutationResponse)
       ;(global.fetch as jest.Mock).mockRejectedValue(mockNonErrorException)
@@ -389,16 +348,10 @@ describe('upload', () => {
       const testUint8Array = new Uint8Array([9, 10, 11, 12])
       const result = await upload(mockClient, testUint8Array)
 
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'Error uploading generated image:',
-        mockNonErrorException
-      )
       expect(result).toEqual({
         errorMessage: 'Failed to upload image to Cloudflare',
         success: false
       })
-
-      consoleErrorSpy.mockRestore()
     })
   })
 })

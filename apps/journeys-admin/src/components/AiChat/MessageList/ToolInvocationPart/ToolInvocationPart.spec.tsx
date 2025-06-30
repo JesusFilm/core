@@ -3,7 +3,6 @@ import { render, screen } from '@testing-library/react'
 
 import { ToolInvocationPart } from './ToolInvocationPart'
 
-// Mock external dependencies that the tool components rely on
 jest.mock('next-i18next', () => ({
   useTranslation: () => ({
     t: (str: string) => str
@@ -142,7 +141,6 @@ describe('ToolInvocationPart', () => {
       )
 
       expect(screen.getByText('Journey retrieved')).toBeInTheDocument()
-      // Should not show call text in result state
       expect(screen.queryByText('Getting journey...')).not.toBeInTheDocument()
     })
   })

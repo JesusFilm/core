@@ -90,7 +90,14 @@ const nextConfig = {
     // handled by github actions
     ignoreDuringBuilds: process.env.CI === 'true'
   },
-  transpilePackages: ['shared-ui', 'shared-ui-dynamic'],
+  transpilePackages: [
+    'shared-ui',
+    'shared-ui-dynamic',
+    '@mui/x-data-grid',
+    '@mui/x-date-pickers',
+    '@mui/x-tree-view',
+    '@mui/x-charts'
+  ],
   experimental: {
     outputFileTracingExcludes: {
       '*': [

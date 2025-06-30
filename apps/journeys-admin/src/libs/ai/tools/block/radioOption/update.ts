@@ -40,7 +40,6 @@ export function blockRadioOptionUpdate(
         })
         return data?.radioOptionBlockUpdate
       } catch (error) {
-        console.error(error)
         return `Error updating radio option block: ${error}`
       }
     }

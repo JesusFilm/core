@@ -1,5 +1,6 @@
 import { ApolloProvider, NormalizedCacheObject, gql } from '@apollo/client'
 import type { GetStaticProps } from 'next'
+import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import type { ReactElement } from 'react'
 import { renderToString } from 'react-dom/server'
@@ -20,8 +21,10 @@ import {
   createApolloClient,
   useApolloClient
 } from '../../src/libs/apolloClient'
+import { getCookie } from '../../src/libs/cookieHandler'
 import { getFlags } from '../../src/libs/getFlags'
 import { VIDEO_CHILD_FIELDS } from '../../src/libs/videoChildFields'
+import { WatchProvider } from '../../src/libs/watchContext/WatchContext'
 
 export const GET_HOME_VIDEOS = gql`
   ${VIDEO_CHILD_FIELDS}
@@ -44,24 +47,34 @@ function HomePage({
   const client = useApolloClient({
     initialState: initialApolloState
   })
+  const { i18n } = useTranslation()
 
   const searchClient = useInstantSearchClient()
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
+  const initialWatchState = {
+    siteLanguage: i18n?.language ?? 'en',
+    audioLanguage: getCookie('AUDIO_LANGUAGE') ?? '529',
+    subtitleLanguage: getCookie('SUBTITLE_LANGUAGE') ?? '529',
+    subtitleOn: (getCookie('SUBTITLES_ON') ?? 'false') === 'true'
+  }
+
   return (
     <InstantSearchSSRProvider {...serverState}>
       <ApolloProvider client={client}>
-        <InstantSearch
-          searchClient={searchClient}
-          indexName={indexName}
-          stalledSearchDelay={500}
-          future={{ preserveSharedStateOnUnmount: true }}
-          insights
-          routing={createInstantSearchRouter()}
-        >
-          <Configure ruleContexts={['home_page']} />
-          <VideoHomePage />
-        </InstantSearch>
+        <WatchProvider initialState={initialWatchState}>
+          <InstantSearch
+            searchClient={searchClient}
+            indexName={indexName}
+            stalledSearchDelay={500}
+            future={{ preserveSharedStateOnUnmount: true }}
+            insights
+            routing={createInstantSearchRouter()}
+          >
+            <Configure ruleContexts={['home_page']} />
+            <VideoHomePage />
+          </InstantSearch>
+        </WatchProvider>
       </ApolloProvider>
     </InstantSearchSSRProvider>
   )

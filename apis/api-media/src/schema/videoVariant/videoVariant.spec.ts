@@ -30,6 +30,11 @@ jest.mock('../cloudflare/r2/asset', () => ({
   deleteR2File: jest.fn()
 }))
 
+// Mock the Algolia service
+jest.mock('../../workers/algolia/service', () => ({
+  updateVideoVariantInAlgolia: jest.fn()
+}))
+
 // Get the mocked functions for testing
 const mockedVideoCacheReset = jest.mocked(videoCacheReset)
 const mockedVideoVariantCacheReset = jest.mocked(videoVariantCacheReset)
@@ -39,6 +44,8 @@ const { deleteVideo: mockedDeleteVideo } = jest.requireMock(
 const { deleteR2File: mockedDeleteR2File } = jest.requireMock(
   '../cloudflare/r2/asset'
 )
+const { updateVideoVariantInAlgolia: mockedUpdateVideoVariantInAlgolia } =
+  jest.requireMock('../../workers/algolia/service')
 
 describe('videoVariant', () => {
   const client = getClient()
@@ -58,6 +65,7 @@ describe('videoVariant', () => {
     mockedVideoVariantCacheReset.mockImplementation(() => Promise.resolve())
     mockedDeleteVideo.mockResolvedValue(undefined)
     mockedDeleteR2File.mockResolvedValue(undefined)
+    mockedUpdateVideoVariantInAlgolia.mockResolvedValue(undefined)
   })
 
   describe('videoVariants', () => {
@@ -493,7 +501,8 @@ describe('videoVariant', () => {
           availableLanguages: ['en'],
           originId: null,
           restrictDownloadPlatforms: [],
-          restrictViewPlatforms: []
+          restrictViewPlatforms: [],
+          publishedAt: null
         })
         prismaMock.video.update.mockResolvedValue({
           id: 'videoId',
@@ -507,7 +516,8 @@ describe('videoVariant', () => {
           availableLanguages: ['en', 'languageId'],
           originId: null,
           restrictDownloadPlatforms: [],
-          restrictViewPlatforms: []
+          restrictViewPlatforms: [],
+          publishedAt: null
         })
         const result = await authClient({
           document: VIDEO_VARIANT_CREATE_MUTATION,
@@ -598,7 +608,8 @@ describe('videoVariant', () => {
           availableLanguages: ['en'],
           originId: null,
           restrictDownloadPlatforms: [],
-          restrictViewPlatforms: []
+          restrictViewPlatforms: [],
+          publishedAt: null
         })
         prismaMock.video.update.mockResolvedValue({
           id: 'videoId',
@@ -612,7 +623,8 @@ describe('videoVariant', () => {
           availableLanguages: ['en', 'languageId'],
           originId: null,
           restrictDownloadPlatforms: [],
-          restrictViewPlatforms: []
+          restrictViewPlatforms: [],
+          publishedAt: null
         })
 
         const result = await authClient({

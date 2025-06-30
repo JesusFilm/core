@@ -73,10 +73,6 @@ describe('blockButtonCreate', () => {
     const errorMessage = 'Network error'
     const mockError = new Error(errorMessage)
 
-    const consoleErrorSpy = jest
-      .spyOn(console, 'error')
-      .mockImplementation(jest.fn())
-
     ;(mockClient.mutate as jest.Mock).mockRejectedValue(mockError)
 
     const tool = blockButtonCreate(mockClient)
@@ -84,8 +80,6 @@ describe('blockButtonCreate', () => {
       { input: mockInput },
       { toolCallId: 'test-id', messages: [] }
     )
-
-    expect(consoleErrorSpy).toHaveBeenCalledWith(mockError)
 
     expect(result).toBe(`Error creating button block: ${mockError}`)
   })

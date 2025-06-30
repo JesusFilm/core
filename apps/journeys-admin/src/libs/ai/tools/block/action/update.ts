@@ -40,7 +40,6 @@ export function blockActionUpdate(
         })
         return data?.blockUpdateAction
       } catch (error) {
-        console.error(error)
         return `Error updating action: ${error}`
       }
     }

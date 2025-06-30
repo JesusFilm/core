@@ -2,6 +2,8 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { GetJourney_journey as Journey } from '../../libs/useJourneyQuery/__generated__/GetJourney'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../libs/useUpdateLastActiveTeamIdMutation'
@@ -697,13 +699,15 @@ describe('CopyToTeamDialog', () => {
                 }}
               >
                 <TeamProvider>
-                  <CopyToTeamDialog
-                    open
-                    title="Copy To Journey"
-                    showCreateWithAiButton
-                    onClose={handleCloseMenuMock}
-                    submitAction={handleSubmitActionMock}
-                  />
+                  <FlagsProvider flags={{ aiCreateButton: true }}>
+                    <CopyToTeamDialog
+                      open
+                      title="Copy To Journey"
+                      showCreateWithAiButton
+                      onClose={handleCloseMenuMock}
+                      submitAction={handleSubmitActionMock}
+                    />
+                  </FlagsProvider>
                 </TeamProvider>
               </JourneyProvider>
             </SnackbarProvider>
@@ -737,13 +741,15 @@ describe('CopyToTeamDialog', () => {
                 }}
               >
                 <TeamProvider>
-                  <CopyToTeamDialog
-                    open
-                    title="Copy To Journey"
-                    showCreateWithAiButton={false}
-                    onClose={handleCloseMenuMock}
-                    submitAction={handleSubmitActionMock}
-                  />
+                  <FlagsProvider flags={{ aiCreateButton: true }}>
+                    <CopyToTeamDialog
+                      open
+                      title="Copy To Journey"
+                      showCreateWithAiButton={false}
+                      onClose={handleCloseMenuMock}
+                      submitAction={handleSubmitActionMock}
+                    />
+                  </FlagsProvider>
                 </TeamProvider>
               </JourneyProvider>
             </SnackbarProvider>
@@ -777,12 +783,14 @@ describe('CopyToTeamDialog', () => {
                 }}
               >
                 <TeamProvider>
-                  <CopyToTeamDialog
-                    open
-                    title="Copy To Journey"
-                    onClose={handleCloseMenuMock}
-                    submitAction={handleSubmitActionMock}
-                  />
+                  <FlagsProvider flags={{ aiCreateButton: true }}>
+                    <CopyToTeamDialog
+                      open
+                      title="Copy To Journey"
+                      onClose={handleCloseMenuMock}
+                      submitAction={handleSubmitActionMock}
+                    />
+                  </FlagsProvider>
                 </TeamProvider>
               </JourneyProvider>
             </SnackbarProvider>
@@ -818,13 +826,15 @@ describe('CopyToTeamDialog', () => {
                 }}
               >
                 <TeamProvider>
-                  <CopyToTeamDialog
-                    open
-                    title="Copy To Journey"
-                    showCreateWithAiButton={true}
-                    onClose={handleCloseMenuMock}
-                    submitAction={handleSubmitActionMock}
-                  />
+                  <FlagsProvider flags={{ aiCreateButton: true }}>
+                    <CopyToTeamDialog
+                      open
+                      title="Copy To Journey"
+                      showCreateWithAiButton={true}
+                      onClose={handleCloseMenuMock}
+                      submitAction={handleSubmitActionMock}
+                    />
+                  </FlagsProvider>
                 </TeamProvider>
               </JourneyProvider>
             </SnackbarProvider>
@@ -860,13 +870,15 @@ describe('CopyToTeamDialog', () => {
                 }}
               >
                 <TeamProvider>
-                  <CopyToTeamDialog
-                    open
-                    title="Copy To Journey"
-                    showCreateWithAiButton={true}
-                    onClose={handleCloseMenuMock}
-                    submitAction={handleSubmitActionMock}
-                  />
+                  <FlagsProvider flags={{ aiCreateButton: true }}>
+                    <CopyToTeamDialog
+                      open
+                      title="Copy To Journey"
+                      showCreateWithAiButton={true}
+                      onClose={handleCloseMenuMock}
+                      submitAction={handleSubmitActionMock}
+                    />
+                  </FlagsProvider>
                 </TeamProvider>
               </JourneyProvider>
             </SnackbarProvider>
@@ -875,7 +887,6 @@ describe('CopyToTeamDialog', () => {
 
         await waitFor(() => expect(result).toHaveBeenCalled())
 
-        // Enable translation
         fireEvent.click(screen.getByRole('checkbox', { name: 'Translation' }))
 
         const createWithAiButton = screen.getByRole('button', {
@@ -907,13 +918,15 @@ describe('CopyToTeamDialog', () => {
                 }}
               >
                 <TeamProvider>
-                  <CopyToTeamDialog
-                    open
-                    title="Copy To Journey"
-                    showCreateWithAiButton={true}
-                    onClose={handleCloseMenuMock}
-                    submitAction={handleSubmitActionMock}
-                  />
+                  <FlagsProvider flags={{ aiCreateButton: true }}>
+                    <CopyToTeamDialog
+                      open
+                      title="Copy To Journey"
+                      showCreateWithAiButton={true}
+                      onClose={handleCloseMenuMock}
+                      submitAction={handleSubmitActionMock}
+                    />
+                  </FlagsProvider>
                 </TeamProvider>
               </JourneyProvider>
             </SnackbarProvider>
@@ -922,7 +935,6 @@ describe('CopyToTeamDialog', () => {
 
         await waitFor(() => expect(result).toHaveBeenCalled())
 
-        // Select team
         await fireEvent.mouseDown(
           getByRole('combobox', { name: 'Select Team' })
         )
@@ -931,7 +943,6 @@ describe('CopyToTeamDialog', () => {
         })
         fireEvent.click(muiSelectOptions)
 
-        // Click Create with AI button
         fireEvent.click(screen.getByRole('button', { name: 'Create with AI' }))
 
         await waitFor(() => {
@@ -965,13 +976,15 @@ describe('CopyToTeamDialog', () => {
                 }}
               >
                 <TeamProvider>
-                  <CopyToTeamDialog
-                    open
-                    title="Copy To Journey"
-                    showCreateWithAiButton={true}
-                    onClose={handleCloseMenuMock}
-                    submitAction={handleSubmitActionMock}
-                  />
+                  <FlagsProvider flags={{ aiCreateButton: true }}>
+                    <CopyToTeamDialog
+                      open
+                      title="Copy To Journey"
+                      showCreateWithAiButton={true}
+                      onClose={handleCloseMenuMock}
+                      submitAction={handleSubmitActionMock}
+                    />
+                  </FlagsProvider>
                 </TeamProvider>
               </JourneyProvider>
             </SnackbarProvider>
@@ -980,7 +993,6 @@ describe('CopyToTeamDialog', () => {
 
         await waitFor(() => expect(result).toHaveBeenCalled())
 
-        // Select team
         await fireEvent.mouseDown(
           getByRole('combobox', { name: 'Select Team' })
         )
@@ -992,13 +1004,11 @@ describe('CopyToTeamDialog', () => {
         // Enable translation (this should disable the Create with AI button)
         fireEvent.click(screen.getByRole('checkbox', { name: 'Translation' }))
 
-        // Try to click Create with AI button (should be disabled)
         const createWithAiButton = screen.getByRole('button', {
           name: 'Create with AI'
         })
         fireEvent.click(createWithAiButton)
 
-        // submitAction should not be called
         expect(handleSubmitActionMock).not.toHaveBeenCalled()
         expect(createWithAiButton).toBeDisabled()
       })

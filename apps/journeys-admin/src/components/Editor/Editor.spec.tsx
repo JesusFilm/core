@@ -14,6 +14,7 @@ import {
 } from 'react-instantsearch'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import type { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import type { GetStepBlocksWithPosition } from '../../../__generated__/GetStepBlocksWithPosition'
@@ -209,13 +210,15 @@ describe('Editor', () => {
 
   it('should render the AiEditButton', () => {
     render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <ThemeProvider>
-            <Editor journey={journey} />
-          </ThemeProvider>
-        </SnackbarProvider>
-      </MockedProvider>
+      <FlagsProvider flags={{ aiEditButton: true }}>
+        <MockedProvider>
+          <SnackbarProvider>
+            <ThemeProvider>
+              <Editor journey={journey} />
+            </ThemeProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      </FlagsProvider>
     )
 
     expect(screen.getByTestId('AiEditButton')).toBeInTheDocument()

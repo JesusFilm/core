@@ -241,6 +241,8 @@ export enum ButtonVariant {
 
 export type CardBlock = Block & {
   __typename?: 'CardBlock';
+  /** backdropBlur should be a number representing blur amount in pixels e.g 20. */
+  backdropBlur?: Maybe<Scalars['Int']['output']>;
   /** backgroundColor should be a HEX color value e.g #FFFFFF for white. */
   backgroundColor?: Maybe<Scalars['String']['output']>;
   /** classNames is an object of tailwind class names for the block */
@@ -284,6 +286,7 @@ export type CardBlockClassNamesInput = {
 };
 
 export type CardBlockCreateInput = {
+  backdropBlur?: InputMaybe<Scalars['Int']['input']>;
   backgroundColor?: InputMaybe<Scalars['String']['input']>;
   classNames?: InputMaybe<CardBlockClassNamesInput>;
   fullscreen?: InputMaybe<Scalars['Boolean']['input']>;
@@ -295,6 +298,7 @@ export type CardBlockCreateInput = {
 };
 
 export type CardBlockUpdateInput = {
+  backdropBlur?: InputMaybe<Scalars['Int']['input']>;
   backgroundColor?: InputMaybe<Scalars['String']['input']>;
   classNames?: InputMaybe<CardBlockClassNamesInput>;
   coverBlockId?: InputMaybe<Scalars['ID']['input']>;
@@ -1102,28 +1106,28 @@ export type JourneyTemplateInput = {
 
 export type JourneyTheme = {
   __typename?: 'JourneyTheme';
-  accentFont?: Maybe<Scalars['String']['output']>;
+  bodyFont?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
+  headerFont?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   journey: Journey;
   journeyId: Scalars['ID']['output'];
-  primaryFont?: Maybe<Scalars['String']['output']>;
-  secondaryFont?: Maybe<Scalars['String']['output']>;
+  labelFont?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
   userId: Scalars['ID']['output'];
 };
 
 export type JourneyThemeCreateInput = {
-  accentFont?: InputMaybe<Scalars['String']['input']>;
+  bodyFont?: InputMaybe<Scalars['String']['input']>;
+  headerFont?: InputMaybe<Scalars['String']['input']>;
   journeyId: Scalars['ID']['input'];
-  primaryFont?: InputMaybe<Scalars['String']['input']>;
-  secondaryFont?: InputMaybe<Scalars['String']['input']>;
+  labelFont?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type JourneyThemeUpdateInput = {
-  accentFont?: InputMaybe<Scalars['String']['input']>;
-  primaryFont?: InputMaybe<Scalars['String']['input']>;
-  secondaryFont?: InputMaybe<Scalars['String']['input']>;
+  bodyFont?: InputMaybe<Scalars['String']['input']>;
+  headerFont?: InputMaybe<Scalars['String']['input']>;
+  labelFont?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type JourneyUpdateInput = {
@@ -4489,6 +4493,7 @@ export type Video = {
   parents: Array<Video>;
   primaryLanguageId: Scalars['ID']['output'];
   published: Scalars['Boolean']['output'];
+  publishedAt?: Maybe<Scalars['Date']['output']>;
   restrictDownloadPlatforms: Array<Platform>;
   restrictViewPlatforms: Array<Platform>;
   /** slug is a permanent link to the video. */

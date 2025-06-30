@@ -47,7 +47,6 @@ export function agentWebSearch(
         })
         return result.text
       } catch (error) {
-        console.error(error)
         return `Error performing web search: ${error}`
       }
     }

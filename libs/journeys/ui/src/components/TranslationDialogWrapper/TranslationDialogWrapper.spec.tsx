@@ -2,6 +2,8 @@ import Typography from '@mui/material/Typography'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
 import { TranslationDialogWrapper } from './TranslationDialogWrapper'
 
 jest.mock('next-i18next', () => ({
@@ -150,17 +152,19 @@ describe('TranslationDialogWrapper', () => {
     describe('Button Rendering', () => {
       it('should show Create with AI button when onCreateWithAi is provided', () => {
         render(
-          <TranslationDialogWrapper
-            open
-            onClose={onClose}
-            onTranslate={onTranslate}
-            onCreateWithAi={onCreateWithAi}
-            loading={false}
-            title="Test Title"
-            testId="test-dialog"
-          >
-            <Typography>Test Children</Typography>
-          </TranslationDialogWrapper>
+          <FlagsProvider flags={{ aiCreateButton: true }}>
+            <TranslationDialogWrapper
+              open
+              onClose={onClose}
+              onTranslate={onTranslate}
+              onCreateWithAi={onCreateWithAi}
+              loading={false}
+              title="Test Title"
+              testId="test-dialog"
+            >
+              <Typography>Test Children</Typography>
+            </TranslationDialogWrapper>
+          </FlagsProvider>
         )
 
         expect(
@@ -170,16 +174,18 @@ describe('TranslationDialogWrapper', () => {
 
       it('should not render Create with AI button when onCreateWithAi is not provided', () => {
         render(
-          <TranslationDialogWrapper
-            open
-            onClose={onClose}
-            onTranslate={onTranslate}
-            loading={false}
-            title="Test Title"
-            testId="test-dialog"
-          >
-            <Typography>Test Children</Typography>
-          </TranslationDialogWrapper>
+          <FlagsProvider flags={{ aiCreateButton: true }}>
+            <TranslationDialogWrapper
+              open
+              onClose={onClose}
+              onTranslate={onTranslate}
+              loading={false}
+              title="Test Title"
+              testId="test-dialog"
+            >
+              <Typography>Test Children</Typography>
+            </TranslationDialogWrapper>
+          </FlagsProvider>
         )
 
         expect(
@@ -189,17 +195,19 @@ describe('TranslationDialogWrapper', () => {
 
       it('should not render Create with AI button when onCreateWithAi is undefined', () => {
         render(
-          <TranslationDialogWrapper
-            open
-            onClose={onClose}
-            onTranslate={onTranslate}
-            onCreateWithAi={undefined}
-            loading={false}
-            title="Test Title"
-            testId="test-dialog"
-          >
-            <Typography>Test Children</Typography>
-          </TranslationDialogWrapper>
+          <FlagsProvider flags={{ aiCreateButton: true }}>
+            <TranslationDialogWrapper
+              open
+              onClose={onClose}
+              onTranslate={onTranslate}
+              onCreateWithAi={undefined}
+              loading={false}
+              title="Test Title"
+              testId="test-dialog"
+            >
+              <Typography>Test Children</Typography>
+            </TranslationDialogWrapper>
+          </FlagsProvider>
         )
 
         expect(
@@ -209,18 +217,20 @@ describe('TranslationDialogWrapper', () => {
 
       it('should not render Create with AI button when loading is true', () => {
         render(
-          <TranslationDialogWrapper
-            open
-            onClose={onClose}
-            onTranslate={onTranslate}
-            onCreateWithAi={onCreateWithAi}
-            isTranslation={false}
-            loading={true}
-            title="Test Title"
-            testId="test-dialog"
-          >
-            <Typography>Test Children</Typography>
-          </TranslationDialogWrapper>
+          <FlagsProvider flags={{ aiCreateButton: true }}>
+            <TranslationDialogWrapper
+              open
+              onClose={onClose}
+              onTranslate={onTranslate}
+              onCreateWithAi={onCreateWithAi}
+              isTranslation={false}
+              loading={true}
+              title="Test Title"
+              testId="test-dialog"
+            >
+              <Typography>Test Children</Typography>
+            </TranslationDialogWrapper>
+          </FlagsProvider>
         )
 
         expect(
@@ -232,18 +242,20 @@ describe('TranslationDialogWrapper', () => {
     describe('Button State', () => {
       it('should enable Create with AI button when isTranslation is false', () => {
         render(
-          <TranslationDialogWrapper
-            open
-            onClose={onClose}
-            onTranslate={onTranslate}
-            onCreateWithAi={onCreateWithAi}
-            isTranslation={false}
-            loading={false}
-            title="Test Title"
-            testId="test-dialog"
-          >
-            <Typography>Test Children</Typography>
-          </TranslationDialogWrapper>
+          <FlagsProvider flags={{ aiCreateButton: true }}>
+            <TranslationDialogWrapper
+              open
+              onClose={onClose}
+              onTranslate={onTranslate}
+              onCreateWithAi={onCreateWithAi}
+              isTranslation={false}
+              loading={false}
+              title="Test Title"
+              testId="test-dialog"
+            >
+              <Typography>Test Children</Typography>
+            </TranslationDialogWrapper>
+          </FlagsProvider>
         )
 
         const createWithAiButton = screen.getByRole('button', {
@@ -254,18 +266,20 @@ describe('TranslationDialogWrapper', () => {
 
       it('should disable Create with AI button when isTranslation is true', () => {
         render(
-          <TranslationDialogWrapper
-            open
-            onClose={onClose}
-            onTranslate={onTranslate}
-            onCreateWithAi={onCreateWithAi}
-            isTranslation={true}
-            loading={false}
-            title="Test Title"
-            testId="test-dialog"
-          >
-            <Typography>Test Children</Typography>
-          </TranslationDialogWrapper>
+          <FlagsProvider flags={{ aiCreateButton: true }}>
+            <TranslationDialogWrapper
+              open
+              onClose={onClose}
+              onTranslate={onTranslate}
+              onCreateWithAi={onCreateWithAi}
+              isTranslation={true}
+              loading={false}
+              title="Test Title"
+              testId="test-dialog"
+            >
+              <Typography>Test Children</Typography>
+            </TranslationDialogWrapper>
+          </FlagsProvider>
         )
 
         const createWithAiButton = screen.getByRole('button', {
@@ -280,18 +294,20 @@ describe('TranslationDialogWrapper', () => {
         const user = userEvent.setup()
 
         render(
-          <TranslationDialogWrapper
-            open
-            onClose={onClose}
-            onTranslate={onTranslate}
-            onCreateWithAi={onCreateWithAi}
-            isTranslation={true}
-            loading={false}
-            title="Test Title"
-            testId="test-dialog"
-          >
-            <Typography>Test Children</Typography>
-          </TranslationDialogWrapper>
+          <FlagsProvider flags={{ aiCreateButton: true }}>
+            <TranslationDialogWrapper
+              open
+              onClose={onClose}
+              onTranslate={onTranslate}
+              onCreateWithAi={onCreateWithAi}
+              isTranslation={true}
+              loading={false}
+              title="Test Title"
+              testId="test-dialog"
+            >
+              <Typography>Test Children</Typography>
+            </TranslationDialogWrapper>
+          </FlagsProvider>
         )
 
         const createWithAiButton = screen.getByRole('button', {
@@ -314,26 +330,27 @@ describe('TranslationDialogWrapper', () => {
         const user = userEvent.setup()
 
         render(
-          <TranslationDialogWrapper
-            open
-            onClose={onClose}
-            onTranslate={onTranslate}
-            onCreateWithAi={onCreateWithAi}
-            isTranslation={false}
-            loading={false}
-            title="Test Title"
-            testId="test-dialog"
-          >
-            <Typography>Test Children</Typography>
-          </TranslationDialogWrapper>
+          <FlagsProvider flags={{ aiCreateButton: true }}>
+            <TranslationDialogWrapper
+              open
+              onClose={onClose}
+              onTranslate={onTranslate}
+              onCreateWithAi={onCreateWithAi}
+              isTranslation={false}
+              loading={false}
+              title="Test Title"
+              testId="test-dialog"
+            >
+              <Typography>Test Children</Typography>
+            </TranslationDialogWrapper>
+          </FlagsProvider>
         )
 
         const createWithAiButton = screen.getByRole('button', {
           name: 'Create with AI'
         })
 
-        // Hover over the button
-        await user.hover(createWithAiButton)
+        await user.hover(createWithAiButton.parentElement!)
 
         // Wait a bit to ensure tooltip doesn't appear
         await new Promise((resolve) => setTimeout(resolve, 100))
@@ -349,18 +366,20 @@ describe('TranslationDialogWrapper', () => {
     describe('Click Handling', () => {
       it('should call onCreateWithAi when Create with AI button is clicked and enabled', async () => {
         render(
-          <TranslationDialogWrapper
-            open
-            onClose={onClose}
-            onTranslate={onTranslate}
-            onCreateWithAi={onCreateWithAi}
-            isTranslation={false}
-            loading={false}
-            title="Test Title"
-            testId="test-dialog"
-          >
-            <Typography>Test Children</Typography>
-          </TranslationDialogWrapper>
+          <FlagsProvider flags={{ aiCreateButton: true }}>
+            <TranslationDialogWrapper
+              open
+              onClose={onClose}
+              onTranslate={onTranslate}
+              onCreateWithAi={onCreateWithAi}
+              isTranslation={false}
+              loading={false}
+              title="Test Title"
+              testId="test-dialog"
+            >
+              <Typography>Test Children</Typography>
+            </TranslationDialogWrapper>
+          </FlagsProvider>
         )
 
         const createWithAiButton = screen.getByRole('button', {
@@ -375,18 +394,20 @@ describe('TranslationDialogWrapper', () => {
 
       it('should not call onCreateWithAi when button is disabled due to translation', () => {
         render(
-          <TranslationDialogWrapper
-            open
-            onClose={onClose}
-            onTranslate={onTranslate}
-            onCreateWithAi={onCreateWithAi}
-            isTranslation={true}
-            loading={false}
-            title="Test Title"
-            testId="test-dialog"
-          >
-            <Typography>Test Children</Typography>
-          </TranslationDialogWrapper>
+          <FlagsProvider flags={{ aiCreateButton: true }}>
+            <TranslationDialogWrapper
+              open
+              onClose={onClose}
+              onTranslate={onTranslate}
+              onCreateWithAi={onCreateWithAi}
+              isTranslation={true}
+              loading={false}
+              title="Test Title"
+              testId="test-dialog"
+            >
+              <Typography>Test Children</Typography>
+            </TranslationDialogWrapper>
+          </FlagsProvider>
         )
 
         const createWithAiButton = screen.getByRole('button', {

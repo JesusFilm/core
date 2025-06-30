@@ -45,7 +45,6 @@ export function blockStepCreate(
         })
         return data?.stepBlockCreate
       } catch (error) {
-        console.error(error)
         return `Error creating step block: ${error}`
       }
     }

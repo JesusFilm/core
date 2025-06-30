@@ -28,21 +28,16 @@ export function AiChat({ variant = 'popup' }: AiChatProps): ReactElement {
   const [waitForToolResult, setWaitForToolResult] = useState(false)
   const fetchWithAuthorization = useCallback(
     async (url: string, options: RequestInit): Promise<Response> => {
-      try {
-        const token = await user?.getIdToken()
-        if (!token) throw new Error('Missing auth token')
+      const token = await user?.getIdToken()
+      if (!token) throw new Error('Missing auth token')
 
-        return await fetch(url, {
-          ...options,
-          headers: {
-            ...options.headers,
-            Authorization: `JWT ${token}`
-          }
-        })
-      } catch (err) {
-        console.error('Authorization fetch failed', err)
-        throw err
-      }
+      return await fetch(url, {
+        ...options,
+        headers: {
+          ...options.headers,
+          Authorization: `JWT ${token}`
+        }
+      })
     },
     [user]
   )
@@ -95,9 +90,6 @@ export function AiChat({ variant = 'popup' }: AiChatProps): ReactElement {
         })
       }
     },
-    onError: (error) => {
-      console.error('useChat error', error)
-    },
     experimental_prepareRequestBody: (options) => {
       return {
         ...options,
@@ -126,6 +118,7 @@ export function AiChat({ variant = 'popup' }: AiChatProps): ReactElement {
         }}
       />
       <Box
+        data-testid="AiChatContainer"
         sx={{
           display: 'flex',
           flexDirection: 'column-reverse',

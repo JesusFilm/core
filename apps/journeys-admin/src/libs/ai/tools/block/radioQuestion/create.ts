@@ -38,7 +38,6 @@ export function blockRadioQuestionCreate(
         })
         return data?.radioQuestionBlockCreate
       } catch (error) {
-        console.error(error)
         return `Error creating radio question block: ${error}`
       }
     }

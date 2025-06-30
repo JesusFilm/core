@@ -6,6 +6,7 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { transformer } from '@core/journeys/ui/transformer'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
@@ -34,6 +35,7 @@ export function Editor({
   initialState,
   user
 }: EditorProps): ReactElement {
+  const { aiEditButton } = useFlags()
   const steps =
     journey != null
       ? (transformer(journey.blocks ?? []) as Array<TreeBlock<StepBlock>>)
@@ -57,7 +59,7 @@ export function Editor({
           <Toolbar user={user} />
           <Slider />
           <Fab variant="mobile" />
-          <AiEditButton />
+          {aiEditButton && <AiEditButton />}
         </HotkeysProvider>
       </EditorProvider>
     </JourneyProvider>

@@ -74,7 +74,6 @@ export async function upload(
       success: true
     }
   } catch (error) {
-    console.error('Error uploading generated image:', error)
     if (error instanceof Error) {
       return {
         errorMessage: error.message,
