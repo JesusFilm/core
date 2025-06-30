@@ -120,10 +120,6 @@ type VideoBlock implements Block @key(fields: "id") {
   how the video should display within the VideoBlock
   """
   objectFit: VideoBlockObjectFit @shareable
-  """
-  classNames is an object of tailwind class names for the block
-  """
-  classNames: VideoBlockClassNames! @shareable
 }
 
 input VideoBlockCreateInput {
@@ -174,7 +170,6 @@ input VideoBlockCreateInput {
   how the video should display within the VideoBlock
   """
   objectFit: VideoBlockObjectFit
-  classNames: VideoBlockClassNamesInput
 }
 
 input VideoBlockUpdateInput {
@@ -218,7 +213,6 @@ input VideoBlockUpdateInput {
   how the video should display within the VideoBlock
   """
   objectFit: VideoBlockObjectFit
-  classNames: VideoBlockClassNamesInput
 }
 
 extend type Mutation {

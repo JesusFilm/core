@@ -36,6 +36,13 @@ export enum ButtonSize {
     large = "large"
 }
 
+export enum ButtonAlignment {
+    left = "left",
+    center = "center",
+    right = "right",
+    justify = "justify"
+}
+
 export enum GridDirection {
     columnReverse = "columnReverse",
     column = "column",
@@ -301,6 +308,10 @@ export class ButtonBlockClassNamesInput {
     self: string;
 }
 
+export class ButtonBlockSettingsInput {
+    alignment?: Nullable<string>;
+}
+
 export class ButtonBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
@@ -310,7 +321,7 @@ export class ButtonBlockCreateInput {
     color?: Nullable<ButtonColor>;
     size?: Nullable<ButtonSize>;
     submitEnabled?: Nullable<boolean>;
-    classNames?: Nullable<ButtonBlockClassNamesInput>;
+    settings?: Nullable<ButtonBlockSettingsInput>;
 }
 
 export class ButtonBlockUpdateInput {
@@ -322,7 +333,7 @@ export class ButtonBlockUpdateInput {
     startIconId?: Nullable<string>;
     endIconId?: Nullable<string>;
     submitEnabled?: Nullable<boolean>;
-    classNames?: Nullable<ButtonBlockClassNamesInput>;
+    settings?: Nullable<ButtonBlockSettingsInput>;
 }
 
 export class CardBlockClassNamesInput {
@@ -338,7 +349,6 @@ export class CardBlockCreateInput {
     fullscreen?: Nullable<boolean>;
     themeMode?: Nullable<ThemeMode>;
     themeName?: Nullable<ThemeName>;
-    classNames?: Nullable<CardBlockClassNamesInput>;
 }
 
 export class CardBlockUpdateInput {
@@ -349,7 +359,6 @@ export class CardBlockUpdateInput {
     fullscreen?: Nullable<boolean>;
     themeMode?: Nullable<ThemeMode>;
     themeName?: Nullable<ThemeName>;
-    classNames?: Nullable<CardBlockClassNamesInput>;
 }
 
 export class IconBlockClassNamesInput {
@@ -363,14 +372,12 @@ export class IconBlockCreateInput {
     name?: Nullable<IconName>;
     color?: Nullable<IconColor>;
     size?: Nullable<IconSize>;
-    classNames?: Nullable<IconBlockClassNamesInput>;
 }
 
 export class IconBlockUpdateInput {
     name?: Nullable<IconName>;
     color?: Nullable<IconColor>;
     size?: Nullable<IconSize>;
-    classNames?: Nullable<IconBlockClassNamesInput>;
 }
 
 export class ImageBlockClassNamesInput {
@@ -390,7 +397,6 @@ export class ImageBlockCreateInput {
     scale?: Nullable<number>;
     focalTop?: Nullable<number>;
     focalLeft?: Nullable<number>;
-    classNames?: Nullable<ImageBlockClassNamesInput>;
 }
 
 export class ImageBlockUpdateInput {
@@ -403,7 +409,6 @@ export class ImageBlockUpdateInput {
     scale?: Nullable<number>;
     focalTop?: Nullable<number>;
     focalLeft?: Nullable<number>;
-    classNames?: Nullable<ImageBlockClassNamesInput>;
 }
 
 export class RadioOptionBlockClassNamesInput {
@@ -415,13 +420,11 @@ export class RadioOptionBlockCreateInput {
     journeyId: string;
     parentBlockId: string;
     label: string;
-    classNames?: Nullable<RadioOptionBlockClassNamesInput>;
 }
 
 export class RadioOptionBlockUpdateInput {
     parentBlockId?: Nullable<string>;
     label?: Nullable<string>;
-    classNames?: Nullable<RadioOptionBlockClassNamesInput>;
 }
 
 export class RadioQuestionBlockCreateInput {
@@ -439,14 +442,12 @@ export class SignUpBlockCreateInput {
     journeyId: string;
     parentBlockId: string;
     submitLabel: string;
-    classNames?: Nullable<SignUpBlockClassNamesInput>;
 }
 
 export class SignUpBlockUpdateInput {
     parentBlockId?: Nullable<string>;
     submitIconId?: Nullable<string>;
     submitLabel?: Nullable<string>;
-    classNames?: Nullable<SignUpBlockClassNamesInput>;
 }
 
 export class SpacerBlockClassNamesInput {
@@ -458,13 +459,11 @@ export class SpacerBlockCreateInput {
     journeyId: string;
     parentBlockId: string;
     spacing?: Nullable<number>;
-    classNames?: Nullable<SpacerBlockClassNamesInput>;
 }
 
 export class SpacerBlockUpdateInput {
     parentBlockId?: Nullable<string>;
     spacing?: Nullable<number>;
-    classNames?: Nullable<SpacerBlockClassNamesInput>;
 }
 
 export class StepBlockCreateInput {
@@ -499,7 +498,6 @@ export class TextResponseBlockCreateInput {
     journeyId: string;
     parentBlockId: string;
     label: string;
-    classNames?: Nullable<TextResponseBlockClassNamesInput>;
 }
 
 export class TextResponseBlockUpdateInput {
@@ -512,7 +510,6 @@ export class TextResponseBlockUpdateInput {
     routeId?: Nullable<string>;
     type?: Nullable<TextResponseType>;
     integrationId?: Nullable<string>;
-    classNames?: Nullable<TextResponseBlockClassNamesInput>;
 }
 
 export class TypographyBlockClassNamesInput {
@@ -527,7 +524,6 @@ export class TypographyBlockCreateInput {
     variant?: Nullable<TypographyVariant>;
     color?: Nullable<TypographyColor>;
     align?: Nullable<TypographyAlign>;
-    classNames?: Nullable<TypographyBlockClassNamesInput>;
 }
 
 export class TypographyBlockUpdateInput {
@@ -536,7 +532,6 @@ export class TypographyBlockUpdateInput {
     variant?: Nullable<TypographyVariant>;
     color?: Nullable<TypographyColor>;
     align?: Nullable<TypographyAlign>;
-    classNames?: Nullable<TypographyBlockClassNamesInput>;
 }
 
 export class VideoBlockClassNamesInput {
@@ -560,7 +555,6 @@ export class VideoBlockCreateInput {
     fullsize?: Nullable<boolean>;
     isCover?: Nullable<boolean>;
     objectFit?: Nullable<VideoBlockObjectFit>;
-    classNames?: Nullable<VideoBlockClassNamesInput>;
 }
 
 export class VideoBlockUpdateInput {
@@ -575,7 +569,6 @@ export class VideoBlockUpdateInput {
     posterBlockId?: Nullable<string>;
     fullsize?: Nullable<boolean>;
     objectFit?: Nullable<VideoBlockObjectFit>;
-    classNames?: Nullable<VideoBlockClassNamesInput>;
 }
 
 export class ChatButtonCreateInput {
@@ -1356,6 +1349,11 @@ export class ButtonBlockClassNames {
     self: string;
 }
 
+export class ButtonBlockSettings {
+    __typename?: 'ButtonBlockSettings';
+    alignment?: Nullable<string>;
+}
+
 export class ButtonBlock implements Block {
     __typename?: 'ButtonBlock';
     id: string;
@@ -1370,7 +1368,7 @@ export class ButtonBlock implements Block {
     endIconId?: Nullable<string>;
     action?: Nullable<Action>;
     submitEnabled?: Nullable<boolean>;
-    classNames: ButtonBlockClassNames;
+    settings: ButtonBlockSettings;
 }
 
 export class CardBlockClassNames {
@@ -1388,7 +1386,6 @@ export class CardBlock implements Block {
     backdropBlur?: Nullable<number>;
     coverBlockId?: Nullable<string>;
     fullscreen: boolean;
-    classNames: CardBlockClassNames;
     themeMode?: Nullable<ThemeMode>;
     themeName?: Nullable<ThemeName>;
 }
@@ -1430,7 +1427,6 @@ export class IconBlock implements Block {
     name?: Nullable<IconName>;
     color?: Nullable<IconColor>;
     size?: Nullable<IconSize>;
-    classNames?: Nullable<IconBlockClassNames>;
 }
 
 export class ImageBlockClassNames {
@@ -1452,7 +1448,6 @@ export class ImageBlock implements Block {
     scale?: Nullable<number>;
     focalTop?: Nullable<number>;
     focalLeft?: Nullable<number>;
-    classNames: ImageBlockClassNames;
 }
 
 export class RadioOptionBlockClassNames {
@@ -1468,7 +1463,6 @@ export class RadioOptionBlock implements Block {
     parentOrder?: Nullable<number>;
     label: string;
     action?: Nullable<Action>;
-    classNames: RadioOptionBlockClassNames;
 }
 
 export class RadioQuestionBlock implements Block {
@@ -1493,7 +1487,6 @@ export class SignUpBlock implements Block {
     action?: Nullable<Action>;
     submitIconId?: Nullable<string>;
     submitLabel?: Nullable<string>;
-    classNames: SignUpBlockClassNames;
 }
 
 export class SpacerBlockClassNames {
@@ -1508,7 +1501,6 @@ export class SpacerBlock implements Block {
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
     spacing?: Nullable<number>;
-    classNames: SpacerBlockClassNames;
 }
 
 export class StepBlock implements Block {
@@ -1543,7 +1535,6 @@ export class TextResponseBlock implements Block {
     type?: Nullable<TextResponseType>;
     routeId?: Nullable<string>;
     integrationId?: Nullable<string>;
-    classNames: TextResponseBlockClassNames;
 }
 
 export class TypographyBlockClassNames {
@@ -1561,7 +1552,6 @@ export class TypographyBlock implements Block {
     variant?: Nullable<TypographyVariant>;
     color?: Nullable<TypographyColor>;
     align?: Nullable<TypographyAlign>;
-    classNames: TypographyBlockClassNames;
 }
 
 export class VideoBlockClassNames {
@@ -1591,7 +1581,6 @@ export class VideoBlock implements Block {
     duration?: Nullable<number>;
     action?: Nullable<Action>;
     objectFit?: Nullable<VideoBlockObjectFit>;
-    classNames: VideoBlockClassNames;
 }
 
 export class VideoTriggerBlock implements Block {

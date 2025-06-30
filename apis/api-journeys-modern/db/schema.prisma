@@ -358,7 +358,6 @@ model Block {
   startIconId             String?
   endIconId               String?
   backgroundColor         String?
-  backdropBlur            Int?
   coverBlockId            String?              @unique
   fullscreen              Boolean?
   themeMode               String?
@@ -412,7 +411,8 @@ model Block {
   focalLeft               Int?                 @default(50)
   scale                   Int?
   slug                    String?
-  classNames              Json                 @default("{\"self\": \"\"}")
+  backdropBlur            Int?
+  settings                Json                 @default("{}")
   targetActions           Action[]             @relation("Block")
   action                  Action?
   coverBlock              Block?               @relation("CoverBlock", fields: [coverBlockId], references: [id])
