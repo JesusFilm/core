@@ -122,7 +122,8 @@ export function PageWrapper({
                 width: {
                   xs: 'inherit',
                   md: `calc(100vw - ${navbar.width})`
-                }
+                },
+                height: '100%'
               }}
             >
               {showMainHeader && (
@@ -142,7 +143,10 @@ export function PageWrapper({
                       sidePanelChildren != null || customSidePanel != null
                         ? `calc(100vw - ${navbar.width} - ${sidePanel.width})`
                         : `calc(100vw - ${navbar.width})`
-                  }
+                  },
+                  height: showMainHeader
+                    ? `calc(100% - ${toolbar.height})`
+                    : '100%'
                 }}
               >
                 <MainPanelBody

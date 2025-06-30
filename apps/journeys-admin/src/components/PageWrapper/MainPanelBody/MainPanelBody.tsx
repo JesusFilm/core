@@ -30,7 +30,15 @@ export function MainPanelBody({
       sx={{
         overflow: 'hidden',
         overflowY: 'auto',
-        width: 'inherit'
+        width: 'inherit',
+        // Hide scrollbar for webkit browsers (Chrome, Safari, Edge)
+        '&::-webkit-scrollbar': {
+          display: 'none'
+        },
+        // Hide scrollbar for Firefox
+        scrollbarWidth: 'none',
+        // Hide scrollbar for IE and Edge
+        '-ms-overflow-style': 'none'
       }}
       data-testid="MainPanelBody"
     >
