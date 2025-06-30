@@ -1,4 +1,4 @@
-import { LANGUAGE_MAPPINGS } from '../../config/locales'
+import { LANGUAGE_MAPPINGS } from '../localeMapping'
 
 /**
  * Gets the language ID for a given UI language code.

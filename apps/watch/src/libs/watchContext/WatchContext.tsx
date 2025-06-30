@@ -1,4 +1,3 @@
-import { gql } from '@apollo/client'
 import { NextRouter } from 'next/router'
 import { Dispatch, createContext, useContext, useReducer } from 'react'
 
@@ -6,21 +5,6 @@ import { GetAllLanguages_languages as Language } from '../../../__generated__/Ge
 import { GetLanguagesSlug_video_variantLanguagesWithSlug as AudioLanguage } from '../../../__generated__/GetLanguagesSlug'
 import { GetSubtitles_video_variant_subtitle as SubtitleLanguage } from '../../../__generated__/GetSubtitles'
 import { LANGUAGE_MAPPINGS } from '../localeMapping'
-
-// TODO: move this into language switcher dialog component
-export const GET_ALL_LANGUAGES = gql`
-  query GetAllLanguages {
-    languages {
-      id
-      bcp47
-      slug
-      name {
-        primary
-        value
-      }
-    }
-  }
-`
 
 /**
  * State interface for watch context containing language preferences and video-specific data
