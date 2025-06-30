@@ -74,42 +74,6 @@ interface SetLanguageAndHelperParams {
 }
 
 /**
- * Selects the appropriate language when no video is present
- *
- * Uses a priority system:
- * 1. Use currentAudioLanguage if system has already selected one
- * 2. Fall back to user's preferred audio language
- *
- * @param params - Configuration object containing language data and callback functions
- *
- * @example
- * ```typescript
- * selectLanguageForNoVideo({
- *   currentAudioLanguage: selectedLanguage,
- *   allLanguages: availableLanguages,
- *   audioLanguage: 'english',
- *   router,
- *   setHelperText,
- *   t
- * })
- * ```
- */
-export function selectLanguageForNoVideo({
-  currentAudioLanguage,
-  setHelperText,
-  t
-}: AudioLanguageSetterParams): void {
-  // Priority 1: Use currentAudioLanguage if available
-  if (currentAudioLanguage != null) {
-    setHelperText(t('2000 translations'))
-    return
-  }
-
-  // Priority 2: Fallback - just set helper text
-  setHelperText(t('2000 translations'))
-}
-
-/**
  * Finds languages based on user preferences and current URL path
  *
  * Analyzes the router path to extract language slug and searches for:
