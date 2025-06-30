@@ -28,46 +28,109 @@ interface ContentProps {
 
 function Content({ children, document }: ContentProps): ReactElement {
   const cache = useMemo(() => {
-    // Copy the parent document's head content
-    document.head.innerHTML = `${window.document.head.innerHTML}<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans&family=El+Messiri:wght@400;600;700&display=swap" rel="stylesheet" />`
+    // Copy the parent document's head content completely
+    document.head.innerHTML = window.document.head.innerHTML
 
-    // Ensure all stylesheets from the parent document are properly loaded in the iframe
-    Array.from(window.document.styleSheets).forEach((styleSheet) => {
-      try {
-        if (styleSheet.href) {
-          // External stylesheet - create a link element
-          const existingLink = document.querySelector(
-            `link[href="${styleSheet.href}"]`
-          )
-          if (!existingLink) {
-            const link = document.createElement('link')
-            link.rel = 'stylesheet'
-            link.href = styleSheet.href
-            document.head.appendChild(link)
+    // Add the Google Fonts link if not already present
+    const googleFontsHref =
+      'https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans&family=El+Messiri:wght@400;600;700&display=swap'
+    if (!document.querySelector(`link[href="${googleFontsHref}"]`)) {
+      const googleFontsLink = document.createElement('link')
+      googleFontsLink.href = googleFontsHref
+      googleFontsLink.rel = 'stylesheet'
+      document.head.appendChild(googleFontsLink)
+    }
+
+    // Find and boost Tailwind utility specificity to override MUI
+    const tailwindBoostStyle = document.createElement('style')
+    tailwindBoostStyle.setAttribute('data-tailwind-boost', 'true')
+
+    // Create CSS that gives Tailwind utilities higher specificity than MUI
+    let boostCSS = `
+      /* Boost Tailwind utility specificity to override MUI CSS-in-JS */
+      /* Background utilities */
+    `
+
+    // Find all Tailwind background utilities in the copied styles
+    const allStyles = Array.from(document.querySelectorAll('style'))
+      .map((style) => style.textContent || '')
+      .join('\n')
+
+    // Extract background utilities and boost their specificity
+    const bgMatches = allStyles.match(/\.bg-[a-zA-Z0-9-]+\s*{[^}]+}/g) || []
+    bgMatches.forEach((rule) => {
+      const className = rule.match(/\.bg-[a-zA-Z0-9-]+/)?.[0]
+      if (className) {
+        boostCSS += `
+          .MuiButton-root${className},
+          .MuiBox-root${className},
+          .MuiTypography-root${className},
+          [class*="Mui"]${className} {
+            ${rule.replace(/\.bg-[a-zA-Z0-9-]+\s*{/, '').replace('}', '')}
+            background-image: none !important;
           }
-        } else if (styleSheet.cssRules) {
-          // Inline stylesheet - copy the CSS rules
-          const cssText = Array.from(styleSheet.cssRules)
-            .map((rule) => rule.cssText)
-            .join('\n')
-          if (cssText.trim()) {
-            const style = document.createElement('style')
-            style.textContent = cssText
-            document.head.appendChild(style)
-          }
-        }
-      } catch (e) {
-        // Some stylesheets might not be accessible due to CORS
-        console.warn('Could not copy stylesheet:', e)
+        `
       }
     })
 
-    return createCache({
+    // Extract text utilities and boost their specificity
+    const textMatches = allStyles.match(/\.text-[a-zA-Z0-9-]+\s*{[^}]+}/g) || []
+    textMatches.forEach((rule) => {
+      const className = rule.match(/\.text-[a-zA-Z0-9-]+/)?.[0]
+      if (className) {
+        boostCSS += `
+          .MuiButton-root${className},
+          .MuiBox-root${className},
+          .MuiTypography-root${className},
+          [class*="Mui"]${className} {
+            ${rule.replace(/\.text-[a-zA-Z0-9-]+\s*{/, '').replace('}', '')}
+          }
+        `
+      }
+    })
+
+    // Extract other common utilities (padding, margin, flex, etc.)
+    const otherUtilities = [
+      /\.p-[a-zA-Z0-9-]+\s*{[^}]+}/g,
+      /\.m-[a-zA-Z0-9-]+\s*{[^}]+}/g,
+      /\.px-[a-zA-Z0-9-]+\s*{[^}]+}/g,
+      /\.py-[a-zA-Z0-9-]+\s*{[^}]+}/g,
+      /\.mx-[a-zA-Z0-9-]+\s*{[^}]+}/g,
+      /\.my-[a-zA-Z0-9-]+\s*{[^}]+}/g,
+      /\.flex\s*{[^}]+}/g,
+      /\.font-[a-zA-Z0-9-]+\s*{[^}]+}/g,
+      /\.rounded[a-zA-Z0-9-]*\s*{[^}]+}/g
+    ]
+
+    otherUtilities.forEach((regex) => {
+      const matches = allStyles.match(regex) || []
+      matches.forEach((rule) => {
+        const className = rule.match(/\.[a-zA-Z0-9-]+/)?.[0]
+        if (className) {
+          boostCSS += `
+            .MuiButton-root${className},
+            .MuiBox-root${className},
+            .MuiTypography-root${className},
+            [class*="Mui"]${className} {
+              ${rule.replace(/\.[a-zA-Z0-9-]+\s*{/, '').replace('}', '')}
+            }
+          `
+        }
+      })
+    })
+
+    tailwindBoostStyle.textContent = boostCSS
+    document.head.appendChild(tailwindBoostStyle)
+
+    // Create the Emotion cache that will work with the iframe document
+    const iframeCache = createCache({
       key: 'iframe',
       container: document.head,
-      prepend: true,
+      prepend: false, // Don't prepend, let it append after existing styles
       stylisPlugins: document.dir === 'rtl' ? [prefixer, rtlPlugin] : []
     })
+
+    return iframeCache
   }, [document])
 
   useEffect(() => {
