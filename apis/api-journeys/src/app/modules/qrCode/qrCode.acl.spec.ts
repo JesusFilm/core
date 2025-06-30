@@ -22,17 +22,51 @@ describe('qrCodeAcl', () => {
   })
 
   describe('manage', () => {
-    it('allow when user is team manager', () => {
-      const qrCodeUserTeamManager = subject('QrCode', {
-        id: 'qrCodeId',
-        team: {
-          userTeams: [{ userId: user.id, role: UserTeamRole.manager }]
-        }
-      } as unknown as QrCode)
-      expect(ability.can(Action.Manage, qrCodeUserTeamManager)).toBe(true)
+    describe('team permissions', () => {
+      it('allow when user is team manager', () => {
+        const qrCodeUserTeamManager = subject('QrCode', {
+          id: 'qrCodeId',
+          team: {
+            userTeams: [{ userId: user.id, role: UserTeamRole.manager }]
+          }
+        } as unknown as QrCode)
+        expect(ability.can(Action.Manage, qrCodeUserTeamManager)).toBe(true)
+      })
+
+      it('allow when user is team member', () => {
+        const qrCodeUserTeamMember = subject('QrCode', {
+          id: 'qrCodeId',
+          team: {
+            userTeams: [{ userId: user.id, role: UserTeamRole.member }]
+          }
+        } as unknown as QrCode)
+        expect(ability.can(Action.Manage, qrCodeUserTeamMember)).toBe(true)
+      })
     })
 
-    describe('publisher', () => {
+    describe('journey permissions', () => {
+      it('allow when user is journey owner', () => {
+        const qrCodeUserJourneyOwner = subject('QrCode', {
+          id: 'qrCodeId',
+          journey: {
+            userJourneys: [{ userId: user.id, role: UserJourneyRole.owner }]
+          }
+        } as unknown as QrCode)
+        expect(ability.can(Action.Manage, qrCodeUserJourneyOwner)).toBe(true)
+      })
+
+      it('allow when user is journey editor', () => {
+        const qrCodeUserJourneyEditor = subject('QrCode', {
+          id: 'qrCodeId',
+          journey: {
+            userJourneys: [{ userId: user.id, role: UserJourneyRole.editor }]
+          }
+        } as unknown as QrCode)
+        expect(ability.can(Action.Manage, qrCodeUserJourneyEditor)).toBe(true)
+      })
+    })
+
+    describe('publisher permissions', () => {
       beforeEach(async () => {
         ability = await factory.createAbility({ ...user, roles: ['publisher'] })
       })
@@ -46,30 +80,16 @@ describe('qrCodeAcl', () => {
         } as unknown as QrCode)
         expect(ability.can(Action.Manage, qrCodeUserPublisher)).toBe(true)
       })
-    })
-  })
 
-  describe('read', () => {
-    it('allow when user is journey owner', () => {
-      const qrCodeUserJourneyMember = subject('QrCode', {
-        id: 'qrCodeId',
-        journey: {
-          userJourneys: [{ userId: user.id, role: UserJourneyRole.owner }]
-        }
-      } as unknown as QrCode)
-      expect(ability.can(Action.Read, qrCodeUserJourneyMember)).toBe(true)
-    })
-  })
-
-  describe('update', () => {
-    it('allow when user is journey owner', () => {
-      const qrCodeUserJourneyMember = subject('QrCode', {
-        id: 'qrCodeId',
-        journey: {
-          userJourneys: [{ userId: user.id, role: UserJourneyRole.owner }]
-        }
-      } as unknown as QrCode)
-      expect(ability.can(Action.Update, qrCodeUserJourneyMember)).toBe(true)
+      it('deny when user is publisher but journey is not template', () => {
+        const qrCodeUserPublisher = subject('QrCode', {
+          id: 'qrCodeId',
+          journey: {
+            template: false
+          }
+        } as unknown as QrCode)
+        expect(ability.can(Action.Manage, qrCodeUserPublisher)).toBe(false)
+      })
     })
   })
 })

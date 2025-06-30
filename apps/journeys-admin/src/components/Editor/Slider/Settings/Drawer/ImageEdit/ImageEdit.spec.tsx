@@ -167,7 +167,11 @@ describe('ImageEdit', () => {
         <SnackbarProvider>
           <JourneyProvider
             value={{
-              journey: { id: 'journey.id' } as unknown as Journey,
+              journey: {
+                id: 'journey.id',
+                hostname: null,
+                slug: 'journey-id'
+              } as unknown as Journey,
               variant: 'admin'
             }}
           >
@@ -366,6 +370,8 @@ describe('ImageEdit', () => {
             value={{
               journey: {
                 id: 'journey.id',
+                hostname: null,
+                slug: 'journey-id',
                 primaryImageBlock: { ...image }
               } as unknown as Journey,
               variant: 'admin'
@@ -410,6 +416,8 @@ describe('ImageEdit', () => {
         journeyUpdate: {
           __typename: 'Journey',
           id: 'journey.id',
+          hostname: null,
+          slug: 'journey-id',
           primaryImageBlock: {
             id: image.id
           }
@@ -451,6 +459,8 @@ describe('ImageEdit', () => {
             value={{
               journey: {
                 id: 'journey.id',
+                hostname: null,
+                slug: 'journey-id',
                 creatorImageBlock: { ...image }
               } as unknown as Journey,
               variant: 'admin'
@@ -512,6 +522,8 @@ describe('ImageEdit', () => {
             value={{
               journey: {
                 id: 'journey.id',
+                hostname: null,
+                slug: 'journey-id',
                 primaryImageBlock: {
                   ...image,
                   src: 'https://imagedelivery.net/cloudflare-key/uploadId/public2'

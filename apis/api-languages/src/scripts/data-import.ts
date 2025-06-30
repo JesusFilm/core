@@ -9,6 +9,7 @@ import { prisma } from '../lib/prisma'
 
 const GZIPPED_BACKUP_FILE_NAME = 'languages-backup.sql.gz'
 const BACKUP_FILE_NAME = 'languages-backup.sql'
+const PROCESSED_BACKUP_FILE_NAME = 'languages-backup-processed.sql'
 
 /**
  * Downloads a file from a URL and saves it locally
@@ -90,6 +91,32 @@ async function decompressFile(
     console.log('File decompression completed')
   } catch (error) {
     console.error('Error decompressing file:', error)
+    throw error
+  }
+}
+
+/**
+ * Preprocesses the SQL file to ensure compatibility with existing database
+ */
+async function preprocessSqlFile(
+  inputFile: string,
+  outputFile: string
+): Promise<void> {
+  console.log('Preprocessing SQL file for compatibility')
+
+  try {
+    const sqlContent = await fsPromises.readFile(inputFile, 'utf8')
+
+    // Remove all CREATE PUBLICATION statements completely
+    const processedContent = sqlContent.replace(
+      /CREATE PUBLICATION .* FOR .*;(\r?\n)?/g,
+      ''
+    )
+
+    await fsPromises.writeFile(outputFile, processedContent)
+    console.log('SQL file preprocessing completed')
+  } catch (error) {
+    console.error('Error preprocessing SQL file:', error)
     throw error
   }
 }
@@ -185,6 +212,7 @@ async function executePsql(filePath: string): Promise<void> {
 async function main(): Promise<void> {
   let gzippedFile: string | null = null
   let sqlFile: string | null = null
+  let processedSqlFile: string | null = null
 
   try {
     console.log('Starting data import script')
@@ -218,8 +246,12 @@ async function main(): Promise<void> {
       sqlFile = join(tempDir, BACKUP_FILE_NAME)
       await decompressFile(gzippedFile, sqlFile)
 
+      // Preprocess the SQL file
+      processedSqlFile = join(tempDir, PROCESSED_BACKUP_FILE_NAME)
+      await preprocessSqlFile(sqlFile, processedSqlFile)
+
       // Import the SQL file using psql
-      await executePsql(sqlFile)
+      await executePsql(processedSqlFile)
 
       // Update import times
       await prisma.importTimes.upsert({
@@ -245,6 +277,13 @@ async function main(): Promise<void> {
             .unlink(sqlFile)
             .catch((err) =>
               console.warn(`Failed to delete temp file: ${sqlFile}`)
+            )
+        }
+        if (processedSqlFile) {
+          await fsPromises
+            .unlink(processedSqlFile)
+            .catch((err) =>
+              console.warn(`Failed to delete temp file: ${processedSqlFile}`)
             )
         }
       } catch (cleanupError) {

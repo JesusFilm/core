@@ -76,7 +76,7 @@ describe('Step', () => {
         visitor: {
           connect: { id: 'visitor.id' }
         },
-        journeyId: 'journey.id',
+        journey: { connect: { id: 'journey.id' } },
         stepId: input.blockId
       })
     })
@@ -155,7 +155,7 @@ describe('Step', () => {
             connect: { id: 'visitor.id' }
           },
           createdAt: new Date().toISOString(),
-          journeyId: 'journey.id'
+          journey: { connect: { id: 'journey.id' } }
         })
       })
     })
@@ -191,7 +191,7 @@ describe('Step', () => {
               connect: { id: 'visitor.id' }
             },
             createdAt: new Date().toISOString(),
-            journeyId: 'journey.id'
+            journey: { connect: { id: 'journey.id' } }
           }
         )
       })

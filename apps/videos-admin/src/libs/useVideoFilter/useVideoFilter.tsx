@@ -10,7 +10,7 @@ import qs, { ParsedQs } from 'qs'
 import { Dispatch, useReducer } from 'react'
 import { z } from 'zod'
 
-import { GET_ADMIN_VIDEOS_AND_COUNT } from '../../app/[locale]/(dashboard)/videos/_VideoList/VideoList'
+import { GET_ADMIN_VIDEOS_AND_COUNT } from '../../app/(dashboard)/videos/_VideoList/VideoList'
 
 const VIDEOS_LIMIT = 50
 

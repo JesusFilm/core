@@ -6,8 +6,9 @@ import { alpha } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import isEmpty from 'lodash/isEmpty'
 import Image from 'next/image'
-import type { ReactElement } from 'react'
-import type { OnConnect } from 'reactflow'
+import { useTranslation } from 'next-i18next'
+import { ReactElement, useEffect, useState } from 'react'
+import { OnConnect, useStore } from 'reactflow'
 
 import {
   ActiveContent,
@@ -15,25 +16,35 @@ import {
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import MessageCircle from '@core/shared/ui/icons/MessageCircle'
-import Share from '@core/shared/ui/icons/Share'
-import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
-import UserProfileCircle from '@core/shared/ui/icons/UserProfileCircle'
 
+import { Tooltip } from '../../../../../Tooltip'
+import { getReactflowTooltipOffset } from '../../../../../Tooltip/utils/getReactflowTooltipOffset'
 import { useUpdateEdge } from '../../libs/useUpdateEdge'
 import { BaseNode, HandleVariant } from '../BaseNode'
 
+const TOOLTIP_DURATION = 1500
+
 export function SocialPreviewNode(): ReactElement {
   const { journey } = useJourney()
-  const {
-    state: { showAnalytics }
-  } = useEditor()
   const updateEdge = useUpdateEdge()
+  const { t } = useTranslation('apps-journeys-admin')
+  const [showTooltip, setShowTooltip] = useState(false)
+  const scaledOffset = useStore(getReactflowTooltipOffset)
 
   const {
     dispatch,
-    state: { activeContent }
+    state: { activeContent, activeSlide, showAnalytics }
   } = useEditor()
+
+  useEffect(() => {
+    const timeout = showTooltip
+      ? setTimeout(() => setShowTooltip(false), TOOLTIP_DURATION)
+      : undefined
+
+    return () => {
+      if (timeout != null) clearTimeout(timeout)
+    }
+  }, [showTooltip])
 
   function handleClick(): void {
     if (activeContent !== ActiveContent.Social) {
@@ -79,204 +90,202 @@ export function SocialPreviewNode(): ReactElement {
       positionTargetHandle={false}
     >
       {({ selected }) => (
-        <Card
-          data-testid="SocialPreviewNode"
-          sx={{
-            height: 168,
-            width: 130.5,
-            borderRadius: 2,
-            display: 'block',
-            px: 1.5,
-            outline: (theme) =>
-              `2px solid ${
-                selected === true
-                  ? theme.palette.primary.main
-                  : selected === 'descendant'
-                    ? theme.palette.divider
-                    : 'transparent'
-              }`,
-            outlineOffset: '5px',
-            ...(showAnalytics === true && {
-              backgroundColor: 'transparent',
-              outline: (theme) =>
-                `2px solid ${alpha(theme.palette.secondary.dark, 0.1)}`,
-              outlineOffset: 0,
-              opacity: 0.7,
-              boxShadow: 'none'
-            })
-          }}
-          onClick={() => handleClick()}
+        <Tooltip
+          title={t('Social Media Preview')}
+          offset={scaledOffset}
+          open={activeSlide === ActiveSlide.JourneyFlow && showTooltip}
+          onOpen={() => setShowTooltip(true)}
+          onClose={() => setShowTooltip(false)}
         >
-          <Stack
-            direction="row"
-            height="30px"
-            justifyContent="space-between"
-            alignItems="center"
-            spacing={1}
+          <Card
+            data-testid="SocialPreviewNode"
+            sx={{
+              height: 168,
+              width: 130.5,
+              borderRadius: 2,
+              display: 'block',
+              px: 1.5,
+              outline: (theme) =>
+                `2px solid ${
+                  selected === true
+                    ? theme.palette.primary.main
+                    : selected === 'descendant'
+                      ? theme.palette.divider
+                      : 'transparent'
+                }`,
+              outlineOffset: '5px',
+              ...(showAnalytics === true && {
+                backgroundColor: 'transparent',
+                outline: ({ palette }) =>
+                  `2px solid ${alpha(palette.secondary.dark, 0.1)}`,
+                outlineOffset: 0,
+                opacity: 0.7,
+                boxShadow: 'none'
+              })
+            }}
+            onClick={() => handleClick()}
           >
-            <UserProfileCircle
-              sx={{
-                fontSize: 14,
-                color: (theme) =>
-                  showAnalytics === true
-                    ? alpha(theme.palette.secondary.dark, 0.1)
-                    : 'background.default'
-              }}
-            />
-            <Box flexGrow={1}>
+            <Stack
+              direction="row"
+              height="30px"
+              justifyContent="space-between"
+              alignItems="center"
+              spacing={1}
+            >
               <Box
-                width={45}
+                width={13}
+                height={13}
+                borderRadius={3.25}
+                sx={{
+                  bgcolor: ({ palette }) =>
+                    showAnalytics === true
+                      ? alpha(palette.secondary.dark, 0.1)
+                      : 'background.default'
+                }}
+              />
+              <Box flexGrow={1}>
+                <Box
+                  width={45}
+                  height={9}
+                  borderRadius={2}
+                  sx={{
+                    bgcolor: ({ palette }) =>
+                      showAnalytics === true
+                        ? alpha(palette.secondary.dark, 0.1)
+                        : 'background.default'
+                  }}
+                />
+              </Box>
+              <Box
+                width={9}
                 height={9}
                 borderRadius={2}
                 sx={{
-                  backgroundColor: (theme) =>
+                  bgcolor: ({ palette }) =>
                     showAnalytics === true
-                      ? alpha(theme.palette.secondary.dark, 0.1)
+                      ? alpha(palette.secondary.dark, 0.1)
                       : 'background.default'
                 }}
               />
-            </Box>
-            <Box
-              width={9}
-              height={9}
-              borderRadius={2}
+            </Stack>
+            <CardMedia
               sx={{
-                backgroundColor: (theme) =>
-                  showAnalytics === true
-                    ? alpha(theme.palette.secondary.dark, 0.1)
-                    : 'background.default'
+                width: 118.5,
+                height: 90,
+                display: 'flex',
+                flexDirection: 'column'
               }}
-            />
-          </Stack>
-          <CardMedia
-            sx={{
-              width: 118.5,
-              height: 90,
-              display: 'flex',
-              flexDirection: 'column'
-            }}
-          >
-            {journey?.primaryImageBlock?.src == null ? (
-              <Box
-                data-testid="SocialPreviewPostEmpty"
-                display="block"
-                width={118.5}
-                height={90}
-                borderRadius={1}
-                sx={{
-                  backgroundColor: (theme) =>
-                    alpha(theme.palette.secondary.dark, 0.1)
-                }}
-              />
-            ) : (
-              <Image
-                src={journey.primaryImageBlock.src}
-                alt={journey.primaryImageBlock.alt ?? ''}
-                width={118.5}
-                height={90}
-                style={{
-                  borderRadius: 1.5,
-                  maxWidth: '100%',
-                  objectFit: 'cover'
-                }}
-              />
-            )}
-          </CardMedia>
-          <Stack
-            gap={2}
-            sx={{
-              flexDirection: 'column',
-              display: 'flex',
-              height: 36
-            }}
-          >
-            <Stack gap={0.75} sx={{ mt: 1 }}>
-              {journey?.seoTitle == null ||
-              isEmpty(journey?.seoTitle?.trim()) ? (
-                <Box
-                  data-testid="SocialPreviewTitleEmpty"
-                  width={118.5}
-                  height={9}
-                  borderRadius={2}
-                  sx={{
-                    backgroundColor: (theme) =>
-                      showAnalytics === true
-                        ? alpha(theme.palette.secondary.dark, 0.1)
-                        : 'background.default'
-                  }}
-                />
-              ) : (
-                <Typography
-                  variant="subtitle1"
-                  fontSize={7}
-                  lineHeight="9px"
-                  color="secondary.dark"
-                  noWrap
-                >
-                  {journey.seoTitle}
-                </Typography>
-              )}
-              {journey?.seoDescription == null ||
-              isEmpty(journey?.seoDescription?.trim()) ? (
-                <Box
-                  data-testid="SocialPreviewDescriptionEmpty"
-                  width={118.5}
-                  height={9}
-                  sx={{
-                    backgroundColor: (theme) =>
-                      showAnalytics === true
-                        ? alpha(theme.palette.secondary.dark, 0.1)
-                        : 'background.default'
-                  }}
-                  borderRadius={2}
-                />
-              ) : (
-                <Typography
-                  variant="body2"
-                  fontSize={4.5}
-                  lineHeight="9px"
-                  color="secondary.light"
-                  noWrap
-                >
-                  {journey.seoDescription}
-                </Typography>
-              )}
-            </Stack>
-            <Stack
-              flexDirection="row"
-              justifyContent="space-around"
-              color="background.default"
             >
-              <ThumbsUp
-                sx={{
-                  fontSize: 9,
-                  color: (theme) =>
-                    showAnalytics === true
-                      ? alpha(theme.palette.secondary.dark, 0.1)
-                      : 'background.default'
-                }}
-              />
-              <MessageCircle
-                sx={{
-                  fontSize: 9,
-                  color: (theme) =>
-                    showAnalytics === true
-                      ? alpha(theme.palette.secondary.dark, 0.1)
-                      : 'background.default'
-                }}
-              />
-              <Share
-                sx={{
-                  fontSize: 9,
-                  color: (theme) =>
-                    showAnalytics === true
-                      ? alpha(theme.palette.secondary.dark, 0.1)
-                      : 'background.default'
-                }}
-              />
+              {journey?.primaryImageBlock?.src == null ? (
+                <Box
+                  data-testid="SocialPreviewPostEmpty"
+                  display="block"
+                  width={118.5}
+                  height={90}
+                  borderRadius={1}
+                  sx={{
+                    bgcolor: ({ palette }) =>
+                      showAnalytics === true
+                        ? alpha(palette.secondary.dark, 0.1)
+                        : 'background.default'
+                  }}
+                />
+              ) : (
+                <Image
+                  src={journey.primaryImageBlock.src}
+                  alt={journey.primaryImageBlock.alt ?? ''}
+                  width={118.5}
+                  height={90}
+                  style={{
+                    borderRadius: 5,
+                    maxWidth: '100%',
+                    objectFit: 'cover'
+                  }}
+                />
+              )}
+            </CardMedia>
+            <Stack
+              sx={{
+                flexDirection: 'column',
+                display: 'flex'
+              }}
+            >
+              <Stack gap={0.75} sx={{ mt: 1 }}>
+                {journey?.seoTitle == null ||
+                isEmpty(journey?.seoTitle?.trim()) ? (
+                  <Box
+                    data-testid="SocialPreviewTitleEmpty"
+                    width={118.5}
+                    height={9}
+                    borderRadius={0.75}
+                    sx={{
+                      bgcolor: ({ palette }) =>
+                        showAnalytics === true
+                          ? alpha(palette.secondary.dark, 0.1)
+                          : 'background.default'
+                    }}
+                  />
+                ) : (
+                  <Typography
+                    variant="subtitle1"
+                    fontSize={7}
+                    lineHeight="9px"
+                    color="secondary.dark"
+                    noWrap
+                  >
+                    {journey.seoTitle}
+                  </Typography>
+                )}
+                {journey?.seoDescription == null ||
+                isEmpty(journey?.seoDescription?.trim()) ? (
+                  <Box
+                    data-testid="SocialPreviewDescriptionEmpty"
+                    width={118.5}
+                    height={9}
+                    borderRadius={0.75}
+                    sx={{
+                      bgcolor: ({ palette }) =>
+                        showAnalytics === true
+                          ? alpha(palette.secondary.dark, 0.1)
+                          : 'background.default'
+                    }}
+                  />
+                ) : (
+                  <Typography
+                    variant="body2"
+                    fontSize={4.5}
+                    lineHeight="9px"
+                    color="secondary.light"
+                    noWrap
+                  >
+                    {journey.seoDescription}
+                  </Typography>
+                )}
+              </Stack>
+              <Stack
+                flexDirection="row"
+                justifyContent="space-around"
+                color="background.default"
+                p={1.75}
+              >
+                {[0, 1, 2].map((i) => (
+                  <Box
+                    key={i}
+                    width={9}
+                    height={9}
+                    borderRadius="4.5px"
+                    sx={{
+                      bgcolor: ({ palette }) =>
+                        showAnalytics === true
+                          ? alpha(palette.secondary.dark, 0.1)
+                          : 'background.default'
+                    }}
+                  />
+                ))}
+              </Stack>
             </Stack>
-          </Stack>
-        </Card>
+          </Card>
+        </Tooltip>
       )}
     </BaseNode>
   )

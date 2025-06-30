@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { useTheme } from '@mui/material/styles'
 import { Meta, StoryObj } from '@storybook/react'
+import { SnackbarProvider } from 'notistack'
 import { ComponentProps } from 'react'
 
 import {
@@ -68,6 +69,7 @@ const content: TreeBlock[] = [
     size: ButtonSize.large,
     startIconId: 'icon',
     endIconId: null,
+    submitEnabled: null,
     action: null,
     children: [
       {
@@ -154,21 +156,23 @@ const Template: Story = {
     const theme = useTheme()
     return (
       <MockedProvider>
-        <Box
-          sx={{
-            height: 'calc(100vh - 80px)',
-            maxHeight: 'calc(100vh - 80px)',
-            [theme.breakpoints.up('sm')]: {
-              maxHeight: '460px'
-            },
-            [theme.breakpoints.up('lg')]: {
-              maxWidth: '854px',
-              maxHeight: '480px'
-            }
-          }}
-        >
-          <Card {...args} />
-        </Box>
+        <SnackbarProvider>
+          <Box
+            sx={{
+              height: 'calc(100vh - 80px)',
+              maxHeight: 'calc(100vh - 80px)',
+              [theme.breakpoints.up('sm')]: {
+                maxHeight: '460px'
+              },
+              [theme.breakpoints.up('lg')]: {
+                maxWidth: '854px',
+                maxHeight: '480px'
+              }
+            }}
+          >
+            <Card {...args} />
+          </Box>
+        </SnackbarProvider>
       </MockedProvider>
     )
   }
@@ -200,7 +204,8 @@ export const ImageBlur = {
     ...Default.args,
     coverBlockId: image.id,
     children: [...content, image],
-    fullscreen: true
+    fullscreen: true,
+    backdropBlur: null
   }
 }
 

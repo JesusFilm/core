@@ -39,9 +39,10 @@ describe('ActionButton', () => {
     expect(screen.getByTestId('BaseNodeConnectionArrowIcon')).toBeVisible()
   })
 
-  it('should render default label for ButtonBlock', () => {
+  it('should render default label "Button" for ButtonBlock when submitEnabled is false', () => {
     const block = {
-      __typename: 'ButtonBlock'
+      __typename: 'ButtonBlock',
+      submitEnabled: false
     } as unknown as TreeBlock<ButtonBlock>
 
     render(
@@ -53,6 +54,23 @@ describe('ActionButton', () => {
     )
 
     expect(screen.getByText('Button')).toBeInTheDocument()
+  })
+
+  it('should render default label "Submit" for ButtonBlock when submitEnabled is true', () => {
+    const block = {
+      __typename: 'ButtonBlock',
+      submitEnabled: true
+    } as unknown as TreeBlock<ButtonBlock>
+
+    render(
+      <MockedProvider>
+        <ReactFlowProvider>
+          <ActionButton stepId="step.id" block={block} />
+        </ReactFlowProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByText('Submit')).toBeInTheDocument()
   })
 
   it('should render label for RadioOptionBlock', () => {

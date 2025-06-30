@@ -25,15 +25,27 @@ enum TypographyAlign {
   right
 }
 
-type TypographyBlock implements Block {
-  id: ID!
-  journeyId: ID!
-  parentBlockId: ID
-  parentOrder: Int
-  content: String!
-  variant: TypographyVariant
-  color: TypographyColor
-  align: TypographyAlign
+input TypographyBlockClassNamesInput {
+  self: String!
+}
+
+type TypographyBlockClassNames {
+  self: String! @shareable
+}
+
+type TypographyBlock implements Block @key(fields: "id") {
+  id: ID! @shareable
+  journeyId: ID! @shareable
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  content: String! @shareable
+  variant: TypographyVariant @shareable
+  color: TypographyColor @shareable
+  align: TypographyAlign @shareable
+  """
+  classNames is an object of tailwind class names for the block
+  """
+  classNames: TypographyBlockClassNames! @shareable
 }
 
 input TypographyBlockCreateInput {
@@ -44,6 +56,7 @@ input TypographyBlockCreateInput {
   variant: TypographyVariant
   color: TypographyColor
   align: TypographyAlign
+  classNames: TypographyBlockClassNamesInput
 }
 
 input TypographyBlockUpdateInput {
@@ -52,6 +65,7 @@ input TypographyBlockUpdateInput {
   variant: TypographyVariant
   color: TypographyColor
   align: TypographyAlign
+  classNames: TypographyBlockClassNamesInput
 }
 
 extend type Mutation {

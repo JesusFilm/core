@@ -30,6 +30,7 @@ describe('Button size selector', () => {
     size: ButtonSize.medium,
     startIconId: null,
     endIconId: null,
+    submitEnabled: null,
     action: null,
     children: []
   }

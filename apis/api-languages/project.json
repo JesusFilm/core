@@ -92,7 +92,7 @@
       "configurations": {
         "production": {
           "commands": [
-            "npx prisma migrate deploy --schema apis/api-languages/db/schema.prisma"
+            "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_LANGUAGES=postgresql://postgres:postgres@db:5432/languages?schema=public \"npx prisma migrate deploy --schema apis/api-languages/db/schema.prisma\""
           ]
         }
       }
@@ -101,7 +101,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma migrate reset --schema apis/api-languages/db/schema.prisma --force"
+          "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_LANGUAGES=postgresql://postgres:postgres@db:5432/languages?schema=public \"npx prisma migrate reset --schema apis/api-languages/db/schema.prisma --force\""
         ]
       }
     },
@@ -131,12 +131,6 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "codecov -f coverage/apis/api-languages/cobertura-coverage.xml -F apps.api-languages"
-      }
-    },
-    "ingest": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npm run ts-node apis/api-languages/src/workers/cli.ts big-query"
       }
     },
     "queue-algolia": {

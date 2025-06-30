@@ -1,7 +1,353 @@
 extend schema
   @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@shareable"])
 
+interface Block
+  @key(fields: "id")
+{
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+}
+
+type ButtonBlock implements Block
+  @key(fields: "id")
+{
+  id: ID! @shareable
+  journeyId: ID! @shareable
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  label: String! @shareable
+  variant: ButtonVariant @shareable
+  color: ButtonColor @shareable
+  size: ButtonSize @shareable
+  startIconId: ID @shareable
+  endIconId: ID @shareable
+  submitEnabled: Boolean @shareable
+  classNames: ButtonBlockClassNames @shareable
+}
+
+type ButtonBlockClassNames {
+  """Tailwind class names for the button block"""
+  self: String! @shareable
+}
+
+enum ButtonColor {
+  primary
+  secondary
+  error
+  inherit
+}
+
+enum ButtonSize {
+  small
+  medium
+  large
+}
+
+enum ButtonVariant {
+  text
+  contained
+  outlined
+}
+
+type CardBlock implements Block
+  @key(fields: "id")
+{
+  id: ID! @shareable
+  journeyId: ID! @shareable
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+
+  """backgroundColor should be a HEX color value e.g #FFFFFF for white."""
+  backgroundColor: String @shareable
+
+  """
+  backdropBlur should be a number representing blur amount in pixels e.g 20.
+  """
+  backdropBlur: Int @shareable
+
+  """
+  coverBlockId is present if a child block should be used as a cover.
+  This child block should not be rendered normally, instead it should be used
+  as a background. Blocks are often of type ImageBlock or VideoBlock.
+  """
+  coverBlockId: ID @shareable
+
+  """
+  fullscreen should control how the coverBlock is displayed. When fullscreen
+  is set to true the coverBlock Image should be displayed as a blur in the
+  background.
+  """
+  fullscreen: Boolean! @shareable
+
+  """
+  themeMode can override journey themeMode. If nothing is set then use
+  themeMode from journey
+  """
+  themeMode: ThemeMode @shareable
+
+  """
+  themeName can override journey themeName. If nothing is set then use
+  themeName from journey
+  """
+  themeName: ThemeName @shareable
+  classNames: CardBlockClassNames! @shareable
+}
+
+type CardBlockClassNames {
+  """Tailwind class names for the card block"""
+  self: String! @shareable
+}
+
+"""
+A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar Date
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.This scalar is serialized to a string in ISO 8601 format and parsed from a string in ISO 8601 format.
+"""
+scalar DateTimeISO
+
+enum EventType {
+  ButtonClickEvent
+  ChatOpenEvent
+  JourneyViewEvent
+  RadioQuestionSubmissionEvent
+  SignUpSubmissionEvent
+  StepViewEvent
+  StepNextEvent
+  StepPreviousEvent
+  TextResponseSubmissionEvent
+  VideoStartEvent
+  VideoPlayEvent
+  VideoPauseEvent
+  VideoCompleteEvent
+  VideoExpandEvent
+  VideoCollapseEvent
+  VideoProgressEvent
+}
+
+enum GridAlignItems {
+  baseline
+  flexStart
+  flexEnd
+  center
+}
+
+type GridContainerBlock implements Block
+  @key(fields: "id")
+{
+  id: ID! @shareable
+  journeyId: ID! @shareable
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  gap: Int! @shareable
+  direction: GridDirection! @shareable
+  justifyContent: GridJustifyContent! @shareable
+  alignItems: GridAlignItems! @shareable
+}
+
+enum GridDirection {
+  columnReverse
+  column
+  row
+  rowReverse
+}
+
+type GridItemBlock implements Block
+  @key(fields: "id")
+{
+  id: ID! @shareable
+  journeyId: ID! @shareable
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  xl: Int! @shareable
+  lg: Int! @shareable
+  sm: Int! @shareable
+}
+
+enum GridJustifyContent {
+  flexStart
+  flexEnd
+  center
+}
+
+type IconBlock implements Block
+  @key(fields: "id")
+{
+  id: ID! @shareable
+  journeyId: ID! @shareable
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  name: IconName @shareable
+  color: IconColor @shareable
+  size: IconSize @shareable
+  classNames: IconBlockClassNames! @shareable
+}
+
+type IconBlockClassNames {
+  """Tailwind class names for the icon block"""
+  self: String! @shareable
+}
+
+enum IconColor {
+  primary
+  secondary
+  action
+  error
+  disabled
+  inherit
+}
+
+enum IconName {
+  PlayArrowRounded
+  TranslateRounded
+  CheckCircleRounded
+  RadioButtonUncheckedRounded
+  FormatQuoteRounded
+  LockOpenRounded
+  ArrowForwardRounded
+  ArrowBackRounded
+  ChatBubbleOutlineRounded
+  LiveTvRounded
+  MenuBookRounded
+  ChevronRightRounded
+  ChevronLeftRounded
+  BeenhereRounded
+  SendRounded
+  SubscriptionsRounded
+  ContactSupportRounded
+  Launch
+  MailOutline
+}
+
+enum IconSize {
+  sm
+  md
+  lg
+  xl
+  inherit
+}
+
+type ImageBlock implements Block
+  @key(fields: "id")
+{
+  id: ID! @shareable
+  journeyId: ID! @shareable
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  src: String @shareable
+  alt: String! @shareable
+  width: Int! @shareable
+  height: Int! @shareable
+
+  """
+  blurhash is a compact representation of a placeholder for an image.
+  Find a frontend implementation at https://github.com/woltapp/blurhash
+    
+  """
+  blurhash: String! @shareable
+  focalTop: Int @shareable
+  focalLeft: Int @shareable
+  scale: Int @shareable
+  classNames: ImageBlockClassNames! @shareable
+}
+
+type ImageBlockClassNames {
+  """Tailwind class names for the image block"""
+  self: String! @shareable
+}
+
+type Journey
+  @key(fields: "id")
+{
+  id: ID! @shareable
+
+  """private title for creators"""
+  title: String! @shareable
+  description: String @shareable
+  slug: String! @shareable
+  createdAt: DateTime! @shareable
+  updatedAt: DateTime! @shareable
+  status: JourneyStatus! @shareable
+  languageId: String! @shareable
+  language: Language! @shareable
+  blocks: [Block!] @shareable
+}
+
+input JourneyAiTranslateInput {
+  journeyId: ID!
+  name: String!
+  journeyLanguageName: String!
+  textLanguageId: ID!
+  textLanguageName: String!
+}
+
+type JourneyAiTranslateProgress {
+  """Translation progress as a percentage (0-100)"""
+  progress: Float
+
+  """Current translation step message"""
+  message: String
+
+  """The journey being translated (only present when complete)"""
+  journey: Journey
+}
+
+type JourneyEventsExportLog {
+  id: ID!
+  createdAt: DateTimeISO!
+  userId: ID!
+  journeyId: ID!
+  eventsFilter: [String!]!
+  dateRangeStart: DateTimeISO
+  dateRangeEnd: DateTimeISO
+}
+
+input JourneyEventsExportLogInput {
+  journeyId: ID!
+  eventsFilter: [EventType!]!
+  dateRangeStart: DateTimeISO
+  dateRangeEnd: DateTimeISO
+}
+
+enum JourneyStatus {
+  archived
+  deleted
+  draft
+  published
+  trashed
+}
+
+type Language
+  @key(fields: "id")
+  @extends
+{
+  id: ID! @external
+}
+
 union MediaVideo = MuxVideo | Video | YouTube
+
+type Mutation {
+  journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
+  createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
+  journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!): Boolean!
+}
+
+input MutationJourneyLanguageAiDetectInput {
+  journeyId: ID!
+  name: String!
+  journeyLanguageName: String!
+  textLanguageId: ID!
+  textLanguageName: String!
+}
 
 type MuxVideo
   @key(fields: "id primaryLanguageId")
@@ -10,6 +356,195 @@ type MuxVideo
   id: ID! @external
   primaryLanguageId: ID @external
   source: VideoBlockSource! @shareable
+}
+
+type RadioOptionBlock implements Block
+  @key(fields: "id")
+{
+  id: ID! @shareable
+  journeyId: ID! @shareable
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  label: String! @shareable
+  classNames: RadioOptionBlockClassNames! @shareable
+}
+
+type RadioOptionBlockClassNames {
+  """Tailwind class names for the radio option block"""
+  self: String! @shareable
+}
+
+type RadioQuestionBlock implements Block
+  @key(fields: "id")
+{
+  id: ID! @shareable
+  journeyId: ID! @shareable
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+}
+
+type SignUpBlock implements Block
+  @key(fields: "id")
+{
+  id: ID! @shareable
+  journeyId: ID! @shareable
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  submitIconId: ID @shareable
+  submitLabel: String @shareable
+  classNames: SignUpBlockClassNames! @shareable
+}
+
+type SignUpBlockClassNames {
+  """Tailwind class names for the sign up block"""
+  self: String! @shareable
+}
+
+type SpacerBlock implements Block
+  @key(fields: "id")
+{
+  id: ID! @shareable
+  journeyId: ID! @shareable
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  spacing: Int @shareable
+  classNames: SpacerBlockClassNames! @shareable
+}
+
+type SpacerBlockClassNames {
+  """Tailwind class names for the spacer block"""
+  self: String! @shareable
+}
+
+type StepBlock implements Block
+  @key(fields: "id")
+{
+  id: ID! @shareable
+  journeyId: ID! @shareable
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+
+  """
+  locked will be set to true if the user should not be able to manually
+  advance to the next step.
+  """
+  locked: Boolean! @shareable
+
+  """
+  nextBlockId contains the preferred block to navigate to, users will have to
+  manually set the next block they want to card to navigate to
+  """
+  nextBlockId: ID @shareable
+
+  """
+  x is used to position the block horizontally in the journey flow diagram on
+  the editor.
+  """
+  x: Int @shareable
+
+  """
+  y is used to position the block vertically in the journey flow diagram on
+  the editor.
+  """
+  y: Int @shareable
+
+  """
+  Slug should be unique amongst all blocks
+  (server will throw BAD_USER_INPUT error if not)
+  If not required will use the current block id
+  If the generated slug is not unique the uuid will be placed
+  at the end of the slug guaranteeing uniqueness
+  """
+  slug: String @shareable
+}
+
+type Subscription {
+  journeyAiTranslateCreateSubscription(input: JourneyAiTranslateInput!): JourneyAiTranslateProgress!
+}
+
+type TextResponseBlock implements Block
+  @key(fields: "id")
+{
+  id: ID! @shareable
+  journeyId: ID! @shareable
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  label: String! @shareable
+  placeholder: String @shareable
+  required: Boolean @shareable
+  hint: String @shareable
+  minRows: Int @shareable
+  type: TextResponseType @shareable
+  routeId: String @shareable
+  integrationId: String @shareable
+  classNames: TextResponseBlockClassNames! @shareable
+}
+
+type TextResponseBlockClassNames {
+  """Tailwind class names for the text response block"""
+  self: String! @shareable
+}
+
+enum TextResponseType {
+  freeForm
+  name
+  email
+  phone
+}
+
+enum ThemeMode {
+  dark
+  light
+}
+
+enum ThemeName {
+  base
+}
+
+enum TypographyAlign {
+  left
+  center
+  right
+}
+
+type TypographyBlock implements Block
+  @key(fields: "id")
+{
+  id: ID! @shareable
+  journeyId: ID! @shareable
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  content: String! @shareable
+  variant: TypographyVariant @shareable
+  color: TypographyColor @shareable
+  align: TypographyAlign @shareable
+  classNames: TypographyBlockClassNames! @shareable
+}
+
+type TypographyBlockClassNames {
+  """Tailwind class names for the typography block"""
+  self: String! @shareable
+}
+
+enum TypographyColor {
+  primary
+  secondary
+  error
+}
+
+enum TypographyVariant {
+  h1
+  h2
+  h3
+  h4
+  h5
+  h6
+  subtitle1
+  subtitle2
+  body1
+  body2
+  caption
+  overline
 }
 
 type Video
@@ -21,15 +556,79 @@ type Video
   source: VideoBlockSource! @shareable
 }
 
-type VideoBlock
-  @key(fields: "id source videoId videoVariantLanguageId")
-  @extends
+type VideoBlock implements Block
+  @key(fields: "id")
 {
-  id: ID! @external
-  videoId: ID @external
-  source: VideoBlockSource! @external
-  videoVariantLanguageId: ID @external
+  id: ID! @shareable
+  journeyId: ID! @shareable
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+
+  """startAt dictates at which point of time the video should start playing"""
+  startAt: Int @shareable
+
+  """endAt dictates at which point of time the video should end"""
+  endAt: Int @shareable
+  muted: Boolean @shareable
+  autoplay: Boolean @shareable
+
+  """
+  posterBlockId is present if a child block should be used as a poster.
+  This child block should not be rendered normally, instead it should be used
+  as the video poster. PosterBlock should be of type ImageBlock.
+  """
+  posterBlockId: ID @shareable
+  fullsize: Boolean @shareable
+
+  """
+  internal source videos: videoId and videoVariantLanguageId both need to be set
+  to select a video.
+  For other sources only videoId needs to be set.
+  """
+  videoId: ID @shareable
+
+  """
+  internal source videos: videoId and videoVariantLanguageId both need to be set
+  to select a video.
+  For other sources only videoId needs to be set.
+  """
+  videoVariantLanguageId: ID @shareable
+
+  """
+  internal source: videoId, videoVariantLanguageId, and video present
+  youTube source: videoId, title, description, and duration present
+  """
+  source: VideoBlockSource! @shareable
+
+  """how the video should display within the VideoBlock"""
+  objectFit: VideoBlockObjectFit @shareable
+
+  """
+  internal source videos: this field is not populated and instead only present
+  in the video field.
+  For other sources this is automatically populated.
+  """
+  title: String @shareable
+
+  """
+  internal source videos: this field is not populated and instead only present
+  in the video field.
+  For other sources this is automatically populated.
+  """
+  description: String @shareable
   mediaVideo: MediaVideo
+  classNames: VideoBlockClassNames! @shareable
+}
+
+type VideoBlockClassNames {
+  """Tailwind class names for the video block"""
+  self: String! @shareable
+}
+
+enum VideoBlockObjectFit {
+  fill
+  fit
+  zoomed
 }
 
 enum VideoBlockSource {
@@ -37,6 +636,21 @@ enum VideoBlockSource {
   internal
   youTube
   mux
+}
+
+type VideoTriggerBlock implements Block
+  @key(fields: "id")
+{
+  id: ID! @shareable
+  journeyId: ID! @shareable
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+
+  """
+  triggerStart sets the time as to when a video navigates to the next block,
+  this is the number of seconds since the start of the video
+  """
+  triggerStart: Int! @shareable
 }
 
 type YouTube

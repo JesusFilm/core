@@ -66,6 +66,7 @@ model MuxVideo {
 model CloudflareR2 {
   id                   String                @id @default(uuid())
   fileName             String
+  originalFilename     String?
   uploadUrl            String?
   userId               String
   publicUrl            String?
@@ -89,6 +90,12 @@ enum IdType {
   slug
 }
 
+enum Platform {
+  arclight
+  journeys
+  watch
+}
+
 enum VideoLabel {
   collection
   episode
@@ -101,33 +108,39 @@ enum VideoLabel {
 }
 
 model Video {
-  id                 String               @id @default(uuid())
-  label              VideoLabel
-  primaryLanguageId  String
-  published          Boolean              @default(true)
-  title              VideoTitle[]
-  snippet            VideoSnippet[]
-  description        VideoDescription[]
-  studyQuestions     VideoStudyQuestion[]
-  imageAlt           VideoImageAlt[]
-  slug               String?              @unique
-  noIndex            Boolean?
-  childIds           String[] // needed for child sort order
-  locked             Boolean              @default(false)
-  subtitles          VideoSubtitle[]
-  children           Video[]              @relation("ParentChild")
-  parent             Video[]              @relation("ParentChild")
-  variants           VideoVariant[]
-  bibleCitation      BibleCitation[]
-  keywords           Keyword[]            @relation("VideoToKeyword")
-  images             CloudflareImage[]
-  cloudflareAssets   CloudflareR2[]
-  videoEditions      VideoEdition[]
-  availableLanguages String[]
+  id                        String               @id @default(uuid())
+  label                     VideoLabel
+  primaryLanguageId         String
+  published                 Boolean              @default(true)
+  title                     VideoTitle[]
+  snippet                   VideoSnippet[]
+  description               VideoDescription[]
+  studyQuestions            VideoStudyQuestion[]
+  imageAlt                  VideoImageAlt[]
+  slug                      String?              @unique
+  noIndex                   Boolean?
+  childIds                  String[] // needed for child sort order
+  locked                    Boolean              @default(false)
+  subtitles                 VideoSubtitle[]
+  children                  Video[]              @relation("ParentChild")
+  parent                    Video[]              @relation("ParentChild")
+  variants                  VideoVariant[]
+  bibleCitation             BibleCitation[]
+  keywords                  Keyword[]            @relation("VideoToKeyword")
+  images                    CloudflareImage[]
+  cloudflareAssets          CloudflareR2[]
+  videoEditions             VideoEdition[]
+  availableLanguages        String[]
+  origin                    VideoOrigin?         @relation(fields: [originId], references: [id])
+  originId                  String?
+  restrictDownloadPlatforms Platform[]           @default([])
+  restrictViewPlatforms     Platform[]           @default([])
+  publishedAt               DateTime?
 
   @@index(label)
   @@index(childIds)
   @@index(published(type: Hash))
+  @@index(originId(type: Hash))
 }
 
 model VideoTitle {
@@ -145,8 +158,9 @@ model VideoTitle {
 }
 
 enum VideoVariantDownloadQuality {
-  low
-  high
+  low // 2x0p
+  sd // 360p
+  high // 720p
 }
 
 model VideoVariantDownload {
@@ -155,6 +169,7 @@ model VideoVariantDownload {
   size           Float?
   height         Int?
   width          Int?
+  bitrate        Int?
   version        Int                         @default(1)
   url            String
   assetId        String?                     @unique
@@ -300,10 +315,10 @@ model BibleCitation {
   id           String    @id @default(uuid())
   bibleBookId  String
   osisId       String
-  chapterStart Int
-  chapterEnd   Int
-  verseStart   Int
-  verseEnd     Int
+  chapterStart Int       @default(-1)
+  chapterEnd   Int       @default(-1)
+  verseStart   Int       @default(-1)
+  verseEnd     Int       @default(-1)
   videoId      String
   order        Int
   video        Video     @relation(fields: [videoId], references: [id])
@@ -465,4 +480,23 @@ model ShortLink {
 model ShortLinkBlocklistDomain {
   /// the hostname including subdomain, domain, and TLD, but excluding port
   hostname String @id
+}
+
+model VideoOrigin {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  videos      Video[]
+}
+
+enum DefaultPlatform {
+  ios
+  android
+  web
+}
+
+model ArclightApiKey {
+  key             String          @unique
+  desc            String?
+  defaultPlatform DefaultPlatform
 }

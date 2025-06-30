@@ -18,6 +18,7 @@ interface PageWrapperProps {
   hideHeaderSpacer?: boolean
   testId?: string
   headerThemeMode?: ThemeMode
+  hideFooter?: boolean
 }
 
 export function PageWrapper({
@@ -26,7 +27,8 @@ export function PageWrapper({
   hideHeader,
   hideHeaderSpacer,
   testId,
-  headerThemeMode
+  headerThemeMode,
+  hideFooter = false
 }: PageWrapperProps): ReactElement {
   return (
     <Div100vh>
@@ -48,7 +50,7 @@ export function PageWrapper({
           </ThemeProvider>
         </Container>
         <Box sx={{ flexGrow: 1 }}>{children}</Box>
-        <Footer />
+        {hideFooter !== true && <Footer />}
       </Stack>
     </Div100vh>
   )

@@ -28,7 +28,8 @@ const i18nConfig = {
       'ru', // Russian
       'tr', // Turkish
       'zh', // Chinese
-      'zh-Hans-CN' // Chinese, Simplified
+      'zh-Hans-CN', // Chinese, Simplified
+      'de' // German
     ],
     localeDetection: false
   },
@@ -42,7 +43,8 @@ const i18nConfig = {
     ko: ['ko-KR'],
     ru: ['ru-RU'],
     tr: ['tr-TR'],
-    zh: ['zh-Hans-CN']
+    zh: ['zh-Hans-CN'],
+    de: ['de-DE']
   },
   localePath,
   react: { useSuspense: false }

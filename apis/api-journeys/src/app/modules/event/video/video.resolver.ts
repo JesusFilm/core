@@ -65,7 +65,7 @@ export class VideoStartEventResolver {
       typename: 'VideoStartEvent',
       visitor: { connect: { id: visitor.id } },
       stepId: input.stepId ?? undefined,
-      journeyId
+      journey: { connect: { id: journeyId } }
     })
   }
 
@@ -115,7 +115,7 @@ export class VideoPlayEventResolver {
       typename: 'VideoPlayEvent',
       visitor: { connect: { id: visitor.id } },
       stepId: input.stepId ?? undefined,
-      journeyId
+      journey: { connect: { id: journeyId } }
     })
   }
 
@@ -146,7 +146,7 @@ export class VideoPauseEventResolver {
       id: input.id ?? undefined,
       typename: 'VideoPauseEvent',
       visitor: { connect: { id: visitor.id } },
-      journeyId,
+      journey: { connect: { id: journeyId } },
       stepId: input.stepId ?? undefined
     })
   }
@@ -180,7 +180,7 @@ export class VideoCompleteEventResolver {
       id: input.id ?? undefined,
       typename: 'VideoCompleteEvent',
       visitor: { connect: { id: visitor.id } },
-      journeyId,
+      journey: { connect: { id: journeyId } },
       stepId: input.stepId ?? undefined
     })
   }
@@ -212,7 +212,7 @@ export class VideoExpandEventResolver {
       id: input.id ?? undefined,
       typename: 'VideoExpandEvent',
       visitor: { connect: { id: visitor.id } },
-      journeyId,
+      journey: { connect: { id: journeyId } },
       stepId: input.stepId ?? undefined
     })
   }
@@ -244,7 +244,7 @@ export class VideoCollapseEventResolver {
       id: input.id ?? undefined,
       typename: 'VideoCollapseEvent',
       visitor: { connect: { id: visitor.id } },
-      journeyId,
+      journey: { connect: { id: journeyId } },
       stepId: input.stepId ?? undefined
     })
   }
@@ -276,7 +276,7 @@ export class VideoProgressEventResolver {
       id: input.id ?? undefined,
       typename: 'VideoProgressEvent',
       visitor: { connect: { id: visitor.id } },
-      journeyId,
+      journey: { connect: { id: journeyId } },
       stepId: input.stepId ?? undefined
     })
   }

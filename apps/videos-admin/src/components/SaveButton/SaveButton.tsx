@@ -1,5 +1,4 @@
 import Button from '@mui/material/Button'
-import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
 interface SaveButtonProps {
@@ -9,8 +8,6 @@ interface SaveButtonProps {
 export function SaveButton({
   disabled = false
 }: SaveButtonProps): ReactElement {
-  const t = useTranslations()
-
   return (
     <Button
       variant="contained"
@@ -19,7 +16,7 @@ export function SaveButton({
       type="submit"
       disabled={disabled}
     >
-      {t('Save')}
+      Save
     </Button>
   )
 }

@@ -17,7 +17,8 @@ export default class MyDocument extends Document<{
       language?.name?.find((name) => name && !name.primary)?.value ?? null
 
     return (
-      <Html lang={bcp47 ?? undefined}>
+      // TODO: Remove scroll snap after easter 2025 campaign
+      <Html lang={bcp47 ?? undefined} style={{ scrollSnapType: 'y proximity' }}>
         <Head>
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" />

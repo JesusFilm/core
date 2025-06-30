@@ -23,6 +23,7 @@ const buttonBase = {
   size: ButtonSize.large,
   startIconId: null,
   endIconId: null,
+  submitEnabled: null,
   action: null
 }
 
@@ -46,6 +47,7 @@ export const mockMenuCard = {
   themeMode: ThemeMode.dark,
   themeName: ThemeName.base,
   fullscreen: false,
+  backdropBlur: null,
   coverBlockId: null,
   backgroundColor: null,
   parentOrder: 0

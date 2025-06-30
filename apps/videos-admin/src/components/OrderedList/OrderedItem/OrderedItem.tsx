@@ -1,4 +1,5 @@
 import { useSortable } from '@dnd-kit/sortable'
+import ImageIcon from '@mui/icons-material/Image'
 import Box from '@mui/material/Box'
 import IconButton, { IconButtonProps } from '@mui/material/IconButton'
 import ListItem from '@mui/material/ListItem'
@@ -137,16 +138,29 @@ export function OrderedItem({
             width: { xs: 'auto', sm: 80 },
             borderRadius: 0.75,
             overflow: 'hidden',
-            flexShrink: 0
+            flexShrink: 0,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: 'background.paper'
           }}
         >
-          <Image
-            src={img.src}
-            alt={img.alt}
-            loading="lazy"
-            layout="fill"
-            style={{ objectFit: 'cover' }}
-          />
+          {img.src ? (
+            <Image
+              src={img.src}
+              alt={img.alt}
+              loading="lazy"
+              layout="fill"
+              style={{ objectFit: 'cover' }}
+            />
+          ) : (
+            <ImageIcon
+              sx={{
+                fontSize: 24,
+                color: 'text.secondary'
+              }}
+            />
+          )}
         </Box>
       )}
       <Box>

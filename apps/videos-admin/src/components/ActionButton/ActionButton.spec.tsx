@@ -1,16 +1,11 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { NextIntlClientProvider } from 'next-intl'
 
 import { ActionButton } from './ActionButton'
 
 describe('ActionButton', () => {
   it('should render without actions', async () => {
-    render(
-      <NextIntlClientProvider locale="en">
-        <ActionButton actions={{}} />
-      </NextIntlClientProvider>
-    )
+    render(<ActionButton actions={{}} />)
 
     const user = userEvent.setup()
 
@@ -30,15 +25,13 @@ describe('ActionButton', () => {
     const deleteFn = jest.fn()
 
     render(
-      <NextIntlClientProvider locale="en">
-        <ActionButton
-          actions={{
-            view: viewFn,
-            edit: editFn,
-            delete: deleteFn
-          }}
-        />
-      </NextIntlClientProvider>
+      <ActionButton
+        actions={{
+          view: viewFn,
+          edit: editFn,
+          delete: deleteFn
+        }}
+      />
     )
 
     const user = userEvent.setup()

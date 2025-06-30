@@ -139,7 +139,10 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
       component = <Typography {...selectedBlock} />
       break
     case 'ButtonBlock':
-      title = t('Button Properties')
+      title =
+        selectedBlock.submitEnabled === true
+          ? t('Submit Button Properties')
+          : t('Button Properties')
       component = <Button {...selectedBlock} />
       break
     case 'RadioQuestionBlock':
@@ -159,7 +162,7 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
       component = <Spacer {...selectedBlock} />
       break
     case 'TextResponseBlock':
-      title = t('Text Input Properties')
+      title = t('Response Field Properties')
       component = <TextResponse {...selectedBlock} />
       break
   }

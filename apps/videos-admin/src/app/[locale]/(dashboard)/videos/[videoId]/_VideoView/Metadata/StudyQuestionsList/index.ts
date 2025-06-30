@@ -1,1 +1,0 @@
-export { StudyQuestionsList } from './StudyQuestionsList'

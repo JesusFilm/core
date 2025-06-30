@@ -46,6 +46,7 @@ export const defaultJourney: Journey = {
   },
   status: JourneyStatus.draft,
   createdAt: '2021-11-19T12:34:56.647Z',
+  updatedAt: '2021-11-19T12:34:56.647Z',
   publishedAt: null,
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
@@ -136,7 +137,8 @@ export const publishedJourney: Journey = {
       backgroundColor: null,
       themeMode: null,
       themeName: null,
-      fullscreen: false
+      fullscreen: false,
+      backdropBlur: null
     },
     {
       id: 'image0.id',
@@ -184,6 +186,7 @@ export const publishedJourney: Journey = {
       size: ButtonSize.large,
       startIconId: 'icon',
       endIconId: null,
+      submitEnabled: null,
       action: null
     },
     {
@@ -229,7 +232,8 @@ export const blocks: Block[] = [
     backgroundColor: null,
     themeMode: null,
     themeName: null,
-    fullscreen: false
+    fullscreen: false,
+    backdropBlur: null
   },
   {
     id: 'typographyBlockId1',
@@ -263,6 +267,7 @@ export const blocks: Block[] = [
     size: ButtonSize.large,
     startIconId: 'icon0-1.id',
     endIconId: null,
+    submitEnabled: null,
     action: {
       __typename: 'NavigateToBlockAction',
       parentBlockId: 'button0.id',
@@ -355,7 +360,8 @@ export const blocks: Block[] = [
     backgroundColor: null,
     themeMode: null,
     themeName: null,
-    fullscreen: false
+    fullscreen: false,
+    backdropBlur: null
   },
   {
     id: 'typographyBlockId3',
@@ -388,6 +394,7 @@ export const blocks: Block[] = [
     size: ButtonSize.large,
     startIconId: 'icon1-1.id',
     endIconId: null,
+    submitEnabled: null,
     action: {
       __typename: 'NavigateToBlockAction',
       parentBlockId: 'button1.id',
@@ -437,7 +444,8 @@ export const blocks: Block[] = [
     backgroundColor: null,
     themeMode: null,
     themeName: null,
-    fullscreen: false
+    fullscreen: false,
+    backdropBlur: null
   },
   {
     id: 'typographyBlockId5',
@@ -536,7 +544,8 @@ export const blocks: Block[] = [
     backgroundColor: null,
     themeMode: null,
     themeName: null,
-    fullscreen: false
+    fullscreen: false,
+    backdropBlur: null
   },
   {
     id: 'typographyBlockId7',
@@ -689,7 +698,8 @@ export const blocks: Block[] = [
     backgroundColor: null,
     themeMode: null,
     themeName: null,
-    fullscreen: false
+    fullscreen: false,
+    backdropBlur: null
   },
   {
     __typename: 'ImageBlock',
@@ -741,7 +751,8 @@ export const blocks: Block[] = [
     backgroundColor: null,
     themeMode: null,
     themeName: null,
-    fullscreen: false
+    fullscreen: false,
+    backdropBlur: null
   },
   {
     id: 'image6.id',
@@ -799,6 +810,7 @@ export const blocks: Block[] = [
     size: ButtonSize.large,
     startIconId: 'icon6-1.id',
     endIconId: null,
+    submitEnabled: null,
     action: {
       __typename: 'NavigateToBlockAction',
       parentBlockId: 'button3.id',

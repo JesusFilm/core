@@ -139,12 +139,14 @@ model Event {
   updatedAt               DateTime          @default(now()) @updatedAt
   visitor                 Visitor           @relation(fields: [visitorId], references: [id], onDelete: Cascade)
   journeyVisitor          JourneyVisitor?   @relation(fields: [journeyVisitorJourneyId, journeyVisitorVisitorId], references: [journeyId, visitorId])
+  journey                 Journey?          @relation(fields: [journeyId], references: [id])
 
   @@index(journeyId)
   @@index(visitorId)
   @@index(blockId)
   @@index(userId)
   @@index([journeyId, visitorId, typename, createdAt(sort: Desc)])
+  @@index([journeyId, typename, createdAt(sort: Desc)])
 }
 
 model Visitor {
@@ -165,6 +167,7 @@ model Visitor {
   messagePlatformId         String?
   name                      String?
   notes                     String?
+  phone                     String?
   status                    VisitorStatus?
   referrer                  String?
   teamId                    String
@@ -273,6 +276,7 @@ model UserTeam {
   @@unique([teamId, userId])
   @@index(role)
   @@index(teamId)
+  @@index([userId, role, teamId])
 }
 
 model UserTeamInvite {
@@ -317,6 +321,7 @@ model UserJourney {
   @@unique([journeyId, userId])
   @@index(journeyId)
   @@index(role)
+  @@index([userId, role, journeyId])
 }
 
 model JourneyTag {
@@ -401,8 +406,8 @@ model Journey {
   showLikeButton            Boolean?                    @default(false)
   showDislikeButton         Boolean?                    @default(false)
   displayTitle              String?
-  showHosts                 Boolean?                    @default(true)
-  showChatButtons           Boolean?                    @default(true)
+  showHosts                 Boolean?                    @default(false)
+  showChatButtons           Boolean?                    @default(false)
   showReactionButtons       Boolean?                    @default(false)
   showLogo                  Boolean?                    @default(false)
   showMenu                  Boolean?                    @default(false)
@@ -412,7 +417,13 @@ model Journey {
   menuStepBlockId           String?                     @unique
   menuStepBlock             Block?                      @relation("MenuStepBlock", fields: [menuStepBlockId], references: [id], onDelete: SetNull)
   menuButtonIcon            JourneyMenuButtonIcon?
+  socialNodeX               Int?                        @default(-240)
+  socialNodeY               Int?                        @default(-46)
   qrCode                    QrCode[]
+  Event                     Event[]
+  journeyEventsExportLogs   JourneyEventsExportLog[]
+  fromTemplateId            String?
+  journeyTheme              JourneyTheme?
 
   @@index(title)
 }
@@ -477,6 +488,7 @@ model Block {
   endIconId               String?
   action                  Action?
   backgroundColor         String?
+  backdropBlur            Int?
   coverBlockId            String?              @unique
   fullscreen              Boolean?
   themeMode               String?
@@ -544,6 +556,7 @@ model Block {
   menuStepBlockParent     Journey?             @relation("MenuStepBlock")
   logoImageBlockParent    Journey?             @relation("LogoImageBlock")
   slug                    String?
+  classNames              Json                 @default("{ \"self\": \"\"}") // tailwind class names
 
   @@unique([slug, journeyId])
   @@index(journeyId)
@@ -635,4 +648,33 @@ model QrCode {
   backgroundColor String? @default("#FFFFFF")
   team            Team    @relation(fields: [teamId], references: [id])
   journey         Journey @relation(fields: [journeyId], references: [id])
+}
+
+model JourneyEventsExportLog {
+  id             String    @id @default(uuid())
+  createdAt      DateTime  @default(now())
+  userId         String
+  journeyId      String
+  eventsFilter   String[]
+  dateRangeStart DateTime?
+  dateRangeEnd   DateTime?
+  journey        Journey   @relation(fields: [journeyId], references: [id])
+
+  @@index(journeyId)
+  @@index(createdAt)
+}
+
+model JourneyTheme {
+  id         String   @id @default(uuid())
+  journeyId  String   @unique
+  journey    Journey  @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  userId     String
+  headerFont String?
+  bodyFont   String?
+  labelFont  String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+
+  @@index(journeyId)
+  @@index(userId)
 }

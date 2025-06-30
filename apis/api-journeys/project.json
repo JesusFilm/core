@@ -117,22 +117,32 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "bash -c 'npx prisma migrate dev --schema apis/api-journeys/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
-        ]
+          "bash -c 'npx prisma migrate dev --schema apis/api-journeys/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'",
+          "nx run api-journeys-modern:prisma-introspect"
+        ],
+        "parallel": false
       },
       "configurations": {
         "production": {
           "commands": [
-            "npx prisma migrate deploy --schema apis/api-journeys/db/schema.prisma"
+            "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_JOURNEYS=postgresql://postgres:postgres@db:5432/journeys?schema=public \"npx prisma migrate deploy --schema apis/api-journeys/db/schema.prisma\""
           ]
         }
+      }
+    },
+    "prisma-resolve-squash": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx prisma migrate resolve --schema apis/api-journeys/db/schema.prisma --applied 000000000000_squashed_migrations"
+        ]
       }
     },
     "prisma-reset": {
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma migrate reset --schema apis/api-journeys/db/schema.prisma --force"
+          "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_JOURNEYS=postgresql://postgres:postgres@db:5432/journeys?schema=public \"npx prisma migrate reset --schema apis/api-journeys/db/schema.prisma --force\""
         ]
       }
     },

@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import omit from 'lodash/omit'
 
 import { keyAsId } from '@core/nest/decorators/KeyAsId'
 
@@ -92,11 +93,12 @@ describe('JourneyViewEventResolver', () => {
       expect(
         await resolver.journeyViewEventCreate('user.id', userAgent, input)
       ).toEqual({
-        ...input,
+        ...omit(input, 'journeyId'),
         typename: 'JourneyViewEvent',
         visitor: {
           connect: { id: visitorWithId.id }
-        }
+        },
+        journey: { connect: { id: input.journeyId } }
       })
     })
 

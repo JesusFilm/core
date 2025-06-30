@@ -63,7 +63,7 @@ describe('ButtonClickEventResolver', () => {
         visitor: {
           connect: { id: 'visitor.id' }
         },
-        journeyId: 'journey.id'
+        journey: { connect: { id: 'journey.id' } }
       })
     })
 
@@ -162,7 +162,7 @@ describe('ChatOpenEventResolver', () => {
         visitor: {
           connect: { id: 'visitor.id' }
         },
-        journeyId: 'journey.id'
+        journey: { connect: { id: 'journey.id' } }
       })
     })
 
@@ -180,7 +180,7 @@ describe('ChatOpenEventResolver', () => {
         visitor: {
           connect: { id: 'visitor.id' }
         },
-        journeyId: 'journey.id'
+        journey: { connect: { id: 'journey.id' } }
       })
     })
 

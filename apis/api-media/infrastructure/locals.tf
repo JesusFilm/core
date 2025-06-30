@@ -7,7 +7,6 @@ locals {
     "ALGOLIA_API_KEY",
     "ALGOLIA_INDEX_VIDEO_VARIANTS",
     "ALGOLIA_INDEX_VIDEOS",
-    "BIG_QUERY_APPLICATION_JSON",
     "CLOUDFLARE_IMAGES_TOKEN",
     "CLOUDFLARE_ACCOUNT_ID",
     "CLOUDFLARE_IMAGE_ACCOUNT",
@@ -37,7 +36,9 @@ locals {
     "VERCEL_TEAM_ID",
     "VERCEL_TOKEN",
     "SEGMIND_API_KEY",
-    "UNSPLASH_ACCESS_KEY"
+    "UNSPLASH_ACCESS_KEY",
+    "WATCH_REVALIDATE_SECRET",
+    "WATCH_URL"
   ]
   service_config = {
     name           = "api-media"

@@ -8,6 +8,7 @@ import TextField, {
   TextFieldProps
 } from '@mui/material/TextField'
 import { Formik } from 'formik'
+import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
 import {
   type ReactElement,
@@ -16,6 +17,7 @@ import {
   useRef,
   useState
 } from 'react'
+import React from 'react'
 import { useRefinementList, useSearchBox } from 'react-instantsearch'
 
 import Search1Icon from '@core/shared/ui/icons/Search1'
@@ -28,8 +30,21 @@ import {
 import { useLanguagesContinentsLazyQuery } from '../../libs/useLanguagesContinentsQuery'
 import { sortLanguageContinents } from '../../libs/useLanguagesContinentsQuery/sortLanguageContinents'
 
-import { LanguageButtons } from './LanguageButtons'
-import { SearchbarDropdown } from './SearchDropdown'
+const SearchbarDropdown = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "SearchBar/SearchbarDropdown" */ './SearchDropdown'
+    ).then((mod) => mod.SearchbarDropdown),
+  { ssr: false }
+)
+
+const LanguageButtons = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "SearchBar/LanguageButtons" */ './LanguageButtons'
+    ).then((mod) => mod.LanguageButtons),
+  { ssr: false }
+)
 
 interface StyledTextFieldProps extends BaseTextFieldProps {
   showLanguageButton?: boolean

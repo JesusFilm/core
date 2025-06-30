@@ -17,6 +17,7 @@ export const GET_JOURNEYS = gql`
       publishedAt
       featuredAt
       trashedAt
+      updatedAt
       description
       slug
       themeName

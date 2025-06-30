@@ -107,7 +107,13 @@ export function SidePanel({
       overflowX: 'hidden',
       boxSizing: 'border-box',
       width: sidePanel.width,
-      height: '100%'
+      height: 'calc(100% - 68px)',
+      mt: 17,
+      mr: 5,
+      borderTopLeftRadius: { xs: 0, sm: 12 },
+      borderTopRightRadius: { xs: 0, sm: 12 },
+      border: '1px solid',
+      borderColor: 'divider'
     }
   }
   const mobileStyle = {
@@ -134,7 +140,7 @@ export function SidePanel({
       <Drawer
         elevation={1}
         anchor="right"
-        variant="persistent"
+        variant="permanent"
         open={onClose != null ? open : true}
         hideBackdrop
         data-testid="side-panel"

@@ -61,6 +61,7 @@ describe('BlockRenderer', () => {
       size: null,
       startIconId: null,
       endIconId: null,
+      submitEnabled: null,
       action: null,
       children: []
     }
@@ -86,6 +87,7 @@ describe('BlockRenderer', () => {
       size: null,
       startIconId: null,
       endIconId: null,
+      submitEnabled: null,
       action: null,
       children: []
     }
@@ -123,6 +125,7 @@ describe('BlockRenderer', () => {
       themeMode: null,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: [
         {
           id: 'typographyBlockId1',
@@ -158,6 +161,7 @@ describe('BlockRenderer', () => {
       themeMode: null,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: [
         {
           id: 'typographyBlockId1',
@@ -456,6 +460,7 @@ describe('BlockRenderer', () => {
           size: null,
           startIconId: null,
           endIconId: null,
+          submitEnabled: null,
           action: null,
           children: []
         }
@@ -494,6 +499,7 @@ describe('BlockRenderer', () => {
           size: null,
           startIconId: null,
           endIconId: null,
+          submitEnabled: null,
           action: null,
           children: []
         }

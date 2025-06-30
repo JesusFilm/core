@@ -33,6 +33,27 @@ describe('ResponsesItem', () => {
     )
   })
 
+  it('should link to journey visitors page as an icon button with modified href if fromJourneyList prop is true', async () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider mocks={[]}>
+          <JourneyProvider
+            value={{
+              journey: defaultJourney,
+              variant: 'admin'
+            }}
+          >
+            <ResponsesItem variant="icon-button" fromJourneyList />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    expect(screen.getByRole('link', { name: 'Responses' })).toHaveAttribute(
+      'href',
+      '/journeys/journey-id/reports/visitors?withSubmittedText=true&from=journey-list'
+    )
+  })
+
   it('should display responses count next to button', async () => {
     const getVisitorCountMock: MockedResponse<GetJourneyVisitorsCount> = {
       request: {

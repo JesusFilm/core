@@ -4,6 +4,7 @@ import type { Page } from 'playwright-core'
 
 import { getEmail, getPassword } from '../framework/helpers'
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const sixtySecondsTimeout = 60000
 
 export class LoginPage {
@@ -30,9 +31,7 @@ export class LoginPage {
 
   async waitUntilDiscoverPageLoaded() {
     await expect(
-      this.page.locator(
-        'div[data-testid="JourneysAdminContainedIconButton"] button'
-      )
+      this.page.locator('div[data-testid="JourneysAdminContainedIconButton"]')
     ).toBeVisible({ timeout: 65000 })
   }
 
@@ -54,11 +53,11 @@ export class LoginPage {
   //   await this.page.locator('ul[role="listbox"] li[role="option"]').first().click()
   // }
 
-  async login(): Promise<void> {
-    const email = await getEmail()
+  async login(accountKey: string = 'admin'): Promise<void> {
+    const email = await getEmail(accountKey)
     await this.fillExistingEmail(email)
     await this.clickSubmitButton()
-    const password = await getPassword()
+    const password = await getPassword(accountKey)
     await this.fillExistingPassword(password)
     await this.clickSubmitButton()
     await this.waitUntilDiscoverPageLoaded()
@@ -66,6 +65,7 @@ export class LoginPage {
 
   async logInWithCreatedNewUser(userName: string) {
     await this.fillExistingEmail(userName)
+    console.log(`userName : ${userName}`)
     await this.clickSubmitButton()
     const password = await getPassword()
     await this.fillExistingPassword(password)

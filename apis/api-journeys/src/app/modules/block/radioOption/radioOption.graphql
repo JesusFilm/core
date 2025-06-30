@@ -1,10 +1,22 @@
-type RadioOptionBlock implements Block {
-  id: ID!
-  journeyId: ID!
-  parentBlockId: ID
-  parentOrder: Int
-  label: String!
+input RadioOptionBlockClassNamesInput {
+  self: String!
+}
+
+type RadioOptionBlockClassNames {
+  self: String! @shareable
+}
+
+type RadioOptionBlock implements Block @key(fields: "id") {
+  id: ID! @shareable
+  journeyId: ID! @shareable
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  label: String! @shareable
   action: Action
+  """
+  classNames is an object of tailwind class names for the block
+  """
+  classNames: RadioOptionBlockClassNames! @shareable
 }
 
 input RadioOptionBlockCreateInput {
@@ -12,11 +24,13 @@ input RadioOptionBlockCreateInput {
   journeyId: ID!
   parentBlockId: ID!
   label: String!
+  classNames: RadioOptionBlockClassNamesInput
 }
 
 input RadioOptionBlockUpdateInput {
   parentBlockId: ID
   label: String
+  classNames: RadioOptionBlockClassNamesInput
 }
 
 extend type Mutation {

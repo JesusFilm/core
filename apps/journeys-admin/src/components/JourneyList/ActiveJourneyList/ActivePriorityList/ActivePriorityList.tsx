@@ -1,13 +1,16 @@
 import { ApolloQueryResult, OperationVariables } from '@apollo/client'
-import Box from '@mui/material/Box'
+import Grid from '@mui/material/Grid'
 import { User } from 'next-firebase-auth'
 import { ReactElement, useMemo } from 'react'
+
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import {
   GetAdminJourneys,
   GetAdminJourneys_journeys as Journey
 } from '../../../../../__generated__/GetAdminJourneys'
 import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
+import { JourneyFields } from '../../../../../__generated__/JourneyFields'
 import { JourneyCard } from '../../JourneyCard'
 import { JourneyCardVariant } from '../../JourneyCard/journeyCardVariant'
 import { SortOrder } from '../../JourneySort'
@@ -71,42 +74,36 @@ export function ActivePriorityList({
     return sortJourneys(activeJourneys, sortOrder)
   }, [activeJourneys, sortOrder])
 
+  const allActiveJourneys = useMemo(
+    () => ({
+      [JourneyCardVariant.actionRequired]: sortedActionRequiredJourneys,
+      [JourneyCardVariant.new]: sortedNewJourneys,
+      [JourneyCardVariant.default]: sortedJourneys
+    }),
+    [sortedActionRequiredJourneys, sortedNewJourneys, sortedJourneys]
+  )
+
   return (
-    <>
-      {sortedActionRequiredJourneys.map((journey) => (
-        <JourneyCard
-          key={journey.id}
-          journey={journey}
-          refetch={refetch}
-          variant={JourneyCardVariant.actionRequired}
-        />
-      ))}
-      {sortedNewJourneys.map((journey) => (
-        <JourneyCard
-          key={journey.id}
-          journey={journey}
-          refetch={refetch}
-          variant={JourneyCardVariant.new}
-        />
-      ))}
-      {(sortedActionRequiredJourneys.length > 0 ||
-        sortedNewJourneys.length > 0) &&
-        sortedJourneys.length > 0 && (
-          <Box
-            aria-label="big-divider"
-            sx={{
-              height: 8,
-              width: '100%',
-              borderTop: '1px solid',
-              borderLeft: '1px solid',
-              borderRight: '1px solid',
-              borderColor: 'divider'
-            }}
-          />
-        )}
-      {sortedJourneys.map((journey) => (
-        <JourneyCard key={journey.id} journey={journey} refetch={refetch} />
-      ))}
-    </>
+    <Grid container spacing={4} rowSpacing={{ xs: 2.5, sm: 4 }}>
+      {Object.entries(allActiveJourneys).map(([key, journeys]) =>
+        journeys.map((journey) => (
+          <Grid key={journey.id} size={{ xs: 12, sm: 6, md: 6, lg: 3, xl: 3 }}>
+            <JourneyProvider
+              value={{
+                journey: journey as unknown as JourneyFields,
+                variant: 'admin'
+              }}
+            >
+              <JourneyCard
+                key={journey.id}
+                journey={journey}
+                refetch={refetch}
+                variant={key as JourneyCardVariant}
+              />
+            </JourneyProvider>
+          </Grid>
+        ))
+      )}
+    </Grid>
   )
 }

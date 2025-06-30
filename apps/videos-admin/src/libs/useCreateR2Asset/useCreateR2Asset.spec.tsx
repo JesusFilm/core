@@ -7,6 +7,7 @@ import { getCreateR2AssetMock } from './useCreateR2Asset.mock'
 const createR2AssetMock = getCreateR2AssetMock({
   videoId: 'video-id',
   fileName: 'test.txt',
+  originalFilename: 'test.txt',
   contentType: 'text/vtt',
   contentLength: 100
 })
@@ -25,6 +26,7 @@ describe('useCreateR2AssetMutation', () => {
           input: {
             videoId: 'video-id',
             fileName: 'test.txt',
+            originalFilename: 'test.txt',
             contentType: 'text/vtt',
             contentLength: 100
           }

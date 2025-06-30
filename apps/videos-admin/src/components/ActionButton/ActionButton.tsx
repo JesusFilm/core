@@ -1,7 +1,6 @@
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
-import { useTranslations } from 'next-intl'
 import { ReactElement, useState } from 'react'
 
 import More from '@core/shared/ui/icons/More'
@@ -15,7 +14,6 @@ interface ActionButtonProps {
 }
 
 export function ActionButton({ actions }: ActionButtonProps): ReactElement {
-  const t = useTranslations()
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
 
@@ -34,13 +32,13 @@ export function ActionButton({ actions }: ActionButtonProps): ReactElement {
       </IconButton>
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
         {actions.view != null && (
-          <MenuItem onClick={actions.view}>{t('View')}</MenuItem>
+          <MenuItem onClick={actions.view}>View</MenuItem>
         )}
         {actions.edit != null && (
-          <MenuItem onClick={actions.edit}>{t('Edit')}</MenuItem>
+          <MenuItem onClick={actions.edit}>Edit</MenuItem>
         )}
         {actions.delete != null && (
-          <MenuItem onClick={actions.delete}>{t('Delete')}</MenuItem>
+          <MenuItem onClick={actions.delete}>Delete</MenuItem>
         )}
       </Menu>
     </div>

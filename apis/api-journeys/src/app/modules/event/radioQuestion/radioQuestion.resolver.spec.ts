@@ -72,7 +72,7 @@ describe('RadioQuestionSubmissionEventResolver', () => {
         visitor: {
           connect: { id: 'visitor.id' }
         },
-        journeyId: 'journey.id'
+        journey: { connect: { id: 'journey.id' } }
       })
     })
 
