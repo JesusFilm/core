@@ -58,16 +58,16 @@ export function VideoTitle({
       </h1>
       <div
         className={`overflow-hidden transition-all duration-500 ease-in-out ${
-          show ? 'max-h-14' : 'max-h-0'
+          show ? 'max-h-30' : 'max-h-0'
         }`}
       >
         <button
           id="play-button-lg"
           onClick={(e) => onClick?.(e)}
-          className="z-2 flex w-[220px] items-center justify-center gap-2 rounded 
-        bg-[#CB333B] py-2 text-[15px] font-medium leading-loose 
+          className="z-2 flex min-w-[220px] items-center justify-center gap-2  
+        bg-[#CB333B] p-4 text-2xl font-medium leading-loose 
         tracking-wide text-white shadow-md transition-colors
-        hover:bg-[#A4343A] font-sans
+        hover:bg-[#A4343A] font-sans  rounded-[8px]
         "
           style={{
             display: showButton ? 'flex' : 'none'
