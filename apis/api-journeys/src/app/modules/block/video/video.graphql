@@ -1,7 +1,3 @@
-input VideoBlockClassNamesInput {
-  self: String!
-}
-
 extend type Video @key(fields: "id primaryLanguageId") {
   id: ID! @external
   primaryLanguageId: ID! @external
@@ -12,10 +8,6 @@ enum VideoBlockSource {
   youTube
   cloudflare
   mux
-}
-
-type VideoBlockClassNames {
-  self: String! @shareable
 }
 
 enum VideoBlockObjectFit {

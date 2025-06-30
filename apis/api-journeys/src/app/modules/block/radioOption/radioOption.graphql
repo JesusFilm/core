@@ -1,11 +1,3 @@
-input RadioOptionBlockClassNamesInput {
-  self: String!
-}
-
-type RadioOptionBlockClassNames {
-  self: String! @shareable
-}
-
 type RadioOptionBlock implements Block @key(fields: "id") {
   id: ID! @shareable
   journeyId: ID! @shareable

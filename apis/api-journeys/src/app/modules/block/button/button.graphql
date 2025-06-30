@@ -24,20 +24,12 @@ enum ButtonAlignment {
   justify
 }
 
-input ButtonBlockClassNamesInput {
-  self: String!
-}
-
-type ButtonBlockClassNames {
-  self: String! @shareable
-}
-
 input ButtonBlockSettingsInput {
   alignment: ButtonAlignment
 }
 
 type ButtonBlockSettings {
-  alignment: ButtonAlignment
+  alignment: ButtonAlignment @shareable
 }
 
 type ButtonBlock implements Block @key(fields: "id") {

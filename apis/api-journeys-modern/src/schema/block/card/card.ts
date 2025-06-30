@@ -4,10 +4,6 @@ import { Block } from '../block'
 import { ThemeMode, type ThemeModeType } from './enums/themeMode'
 import { ThemeName, type ThemeNameType } from './enums/themeName'
 
-interface CardBlockClassNamesType {
-  self: string
-}
-
 export const CardBlock = builder.prismaObject('Block', {
   interfaces: [Block],
   variant: 'CardBlock',

@@ -25,14 +25,6 @@ enum TypographyAlign {
   right
 }
 
-input TypographyBlockClassNamesInput {
-  self: String!
-}
-
-type TypographyBlockClassNames {
-  self: String! @shareable
-}
-
 type TypographyBlock implements Block @key(fields: "id") {
   id: ID! @shareable
   journeyId: ID! @shareable
