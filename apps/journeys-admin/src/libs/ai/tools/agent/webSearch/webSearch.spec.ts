@@ -1,8 +1,20 @@
+import { openai } from '@ai-sdk/openai'
+import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
 import { generateText } from 'ai'
+import { z } from 'zod'
 
-import { langfuse } from '../../../langfuse/server'
+import { langfuse, langfuseEnvironment } from '../../../langfuse/server'
 
 import { agentWebSearch } from './webSearch'
+
+jest.mock('@ai-sdk/openai', () => ({
+  openai: {
+    responses: jest.fn(),
+    tools: {
+      webSearchPreview: jest.fn()
+    }
+  }
+}))
 
 jest.mock('ai', () => ({
   ...jest.requireActual('ai'),
@@ -16,55 +28,221 @@ jest.mock('../../../langfuse/server', () => ({
   langfuseEnvironment: 'test'
 }))
 
-const mockedGenerateText = generateText as jest.Mock
-const mockedGetPrompt = langfuse.getPrompt as jest.Mock
-
 describe('agentWebSearch', () => {
+  let mockClient: ApolloClient<NormalizedCacheObject>
+  const mockLangfuseTraceId = 'test-trace-id-123'
+  const mockToolOptions = { langfuseTraceId: mockLangfuseTraceId }
+  const originalEnv = process.env
+
+  const mockOpenaiModel = 'mocked-gpt-4o-mini-model'
+  const mockWebSearchTool = { searchContextSize: 'high' }
+  const mockSystemPrompt = {
+    prompt: 'You are a helpful web search assistant.',
+    toJSON: jest
+      .fn()
+      .mockReturnValue({ id: 'prompt-123', content: 'system prompt' })
+  }
+  const mockGenerateTextResult = {
+    text: 'Here are the search results for your query...'
+  }
+
   beforeEach(() => {
-    jest.clearAllMocks()
+    process.env = { ...originalEnv }
+
+    mockClient = {
+      query: jest.fn(),
+      mutate: jest.fn()
+    } as unknown as ApolloClient<NormalizedCacheObject>
+    ;(openai.responses as jest.Mock).mockReturnValue(mockOpenaiModel)
+    ;(openai.tools.webSearchPreview as jest.Mock).mockReturnValue(
+      mockWebSearchTool
+    )
+    ;(langfuse.getPrompt as jest.Mock).mockResolvedValue(mockSystemPrompt)
+    ;(generateText as jest.Mock).mockResolvedValue(mockGenerateTextResult)
+
+    process.env.VERCEL_ENV = 'development'
   })
 
-  it('should return a web search result', async () => {
-    const prompt = 'search for churches in new york'
-    const url = 'example.com'
-    const mockSystemPrompt = 'You are a web search assistant.'
-    const mockCompiledPrompt = { compile: () => mockSystemPrompt }
-    const mockResponse = {
-      text: 'Found 100 churches.'
-    }
+  afterEach(() => {
+    jest.clearAllMocks()
+    jest.restoreAllMocks()
+    process.env = originalEnv
+  })
 
-    mockedGetPrompt.mockResolvedValue(mockCompiledPrompt)
-    mockedGenerateText.mockResolvedValue(mockResponse)
+  describe('Tool Structure', () => {
+    it('should return a tool with correct parameters schema', () => {
+      const tool = agentWebSearch(mockClient, mockToolOptions)
 
-    const tool = agentWebSearch()
-    const result = await tool.execute(
-      { prompt, url },
-      { toolCallId: '123', messages: [] }
-    )
+      expect(tool.parameters).toBeInstanceOf(z.ZodObject)
 
-    expect(mockedGetPrompt).toHaveBeenCalledWith(
-      'system/ai/tools/agent/webSearch',
-      undefined,
-      expect.any(Object)
-    )
-    expect(mockedGenerateText).toHaveBeenCalledWith(
-      expect.objectContaining({
-        system: mockSystemPrompt,
-        prompt: `\n\nSCOPED_URL: ${url} ${prompt}`
+      const parametersShape = tool.parameters.shape as {
+        prompt: z.ZodTypeAny
+        url: z.ZodTypeAny
+      }
+
+      expect(parametersShape.prompt).toBeInstanceOf(z.ZodString)
+      expect(parametersShape.prompt.description).toBe(
+        'The query to search the web for.'
+      )
+
+      expect(parametersShape.url).toBeInstanceOf(z.ZodOptional)
+      expect(parametersShape.url.description).toBe(
+        'The URL to scope your results to.'
+      )
+    })
+
+    it('should validate parameters correctly', () => {
+      const tool = agentWebSearch(mockClient, mockToolOptions)
+
+      expect(() =>
+        tool.parameters.parse({
+          prompt: 'search query',
+          url: 'https://example.com'
+        })
+      ).not.toThrow()
+
+      expect(() =>
+        tool.parameters.parse({
+          prompt: 'search query'
+        })
+      ).not.toThrow()
+
+      expect(() =>
+        tool.parameters.parse({
+          url: 'https://example.com' // missing required prompt
+        })
+      ).toThrow()
+
+      expect(() =>
+        tool.parameters.parse({
+          prompt: 123 // invalid type
+        })
+      ).toThrow()
+    })
+  })
+
+  describe('Successful Execution', () => {
+    it('should execute web search without URL scoping', async () => {
+      const tool = agentWebSearch(mockClient, mockToolOptions)
+      const searchPrompt = 'What is artificial intelligence?'
+
+      const result = await tool.execute!(
+        { prompt: searchPrompt },
+        { toolCallId: 'test-call-id', messages: [] }
+      )
+
+      expect(langfuse.getPrompt).toHaveBeenCalledWith(
+        'ai-tools-agent-web-search-system-prompt',
+        undefined,
+        {
+          label: langfuseEnvironment,
+          cacheTtlSeconds: 60
+        }
+      )
+
+      expect(openai.responses).toHaveBeenCalledWith('gpt-4o-mini')
+      expect(openai.tools.webSearchPreview).toHaveBeenCalledWith({
+        searchContextSize: 'high'
       })
-    )
-    expect(result).toEqual(mockResponse.text)
+
+      expect(generateText).toHaveBeenCalledWith({
+        model: mockOpenaiModel,
+        system: mockSystemPrompt.prompt,
+        prompt: ` ${searchPrompt}`,
+        tools: {
+          web_search_preview: mockWebSearchTool
+        },
+        toolChoice: { type: 'tool', toolName: 'web_search_preview' },
+        experimental_telemetry: {
+          isEnabled: true,
+          functionId: 'agent-web-search',
+          metadata: {
+            langfuseTraceId: mockLangfuseTraceId,
+            langfusePrompt: mockSystemPrompt.toJSON(),
+            langfuseUpdateParent: false
+          }
+        }
+      })
+
+      expect(result).toBe(mockGenerateTextResult.text)
+    })
+
+    it('should execute web search with URL scoping', async () => {
+      const tool = agentWebSearch(mockClient, mockToolOptions)
+      const searchPrompt = 'pricing information'
+      const scopedUrl = 'https://openai.com'
+
+      const result = await tool.execute!(
+        { prompt: searchPrompt, url: scopedUrl },
+        { toolCallId: 'test-call-id', messages: [] }
+      )
+
+      expect(generateText).toHaveBeenCalledWith(
+        expect.objectContaining({
+          prompt: `\n\nSCOPED_URL: ${scopedUrl} ${searchPrompt}`
+        })
+      )
+
+      expect(result).toBe(mockGenerateTextResult.text)
+    })
+
+    it('should handle preview environment with zero cache TTL', async () => {
+      process.env.VERCEL_ENV = 'preview'
+
+      const tool = agentWebSearch(mockClient, mockToolOptions)
+
+      await tool.execute!(
+        { prompt: 'test query' },
+        { toolCallId: 'test-call-id', messages: [] }
+      )
+
+      expect(langfuse.getPrompt).toHaveBeenCalledWith(
+        'ai-tools-agent-web-search-system-prompt',
+        undefined,
+        {
+          label: langfuseEnvironment,
+          cacheTtlSeconds: 0
+        }
+      )
+    })
+
+    it('should include correct telemetry metadata', async () => {
+      const tool = agentWebSearch(mockClient, mockToolOptions)
+
+      await tool.execute!(
+        { prompt: 'test query' },
+        { toolCallId: 'test-call-id', messages: [] }
+      )
+
+      expect(generateText).toHaveBeenCalledWith(
+        expect.objectContaining({
+          experimental_telemetry: {
+            isEnabled: true,
+            functionId: 'agent-web-search',
+            metadata: {
+              langfuseTraceId: mockLangfuseTraceId,
+              langfusePrompt: mockSystemPrompt.toJSON(),
+              langfuseUpdateParent: false
+            }
+          }
+        })
+      )
+
+      expect(mockSystemPrompt.toJSON).toHaveBeenCalled()
+    })
   })
 
   describe('Error Handling', () => {
     it('should handle Langfuse prompt retrieval failure', async () => {
       const mockError = new Error('Langfuse API error')
 
-      const mockSystemPrompt = 'You are a web search assistant.'
-      const mockCompiledPrompt = { compile: () => mockSystemPrompt }
+      ;(langfuse.getPrompt as jest.Mock).mockRejectedValue(mockError)
 
-      mockedGetPrompt.mockResolvedValue(mockCompiledPrompt)
-      mockedGenerateText.mockRejectedValue(new Error('AI error'))
+      const tool = agentWebSearch(mockClient, mockToolOptions)
+      const result = await tool.execute!(
+        { prompt: 'test query' },
+        { toolCallId: 'test-call-id', messages: [] }
+      )
 
       expect(result).toBe(`Error performing web search: ${mockError}`)
     })
@@ -75,7 +253,7 @@ describe('agentWebSearch', () => {
       ;(generateText as jest.Mock).mockRejectedValue(mockError)
 
       const tool = agentWebSearch(mockClient, mockToolOptions)
-      const result = await tool.execute(
+      const result = await tool.execute!(
         { prompt: 'test query' },
         { toolCallId: 'test-call-id', messages: [] }
       )
@@ -97,7 +275,7 @@ describe('agentWebSearch', () => {
       )
 
       const tool = agentWebSearch(mockClient, mockToolOptions)
-      const result = await tool.execute(
+      const result = await tool.execute!(
         { prompt: 'test query' },
         { toolCallId: 'test-call-id', messages: [] }
       )
@@ -110,7 +288,7 @@ describe('agentWebSearch', () => {
     it('should use correct Langfuse environment', async () => {
       const tool = agentWebSearch(mockClient, mockToolOptions)
 
-      await tool.execute(
+      await tool.execute!(
         { prompt: 'test query' },
         { toolCallId: 'test-call-id', messages: [] }
       )
@@ -137,7 +315,7 @@ describe('agentWebSearch', () => {
 
         const tool = agentWebSearch(mockClient, mockToolOptions)
 
-        await tool.execute(
+        await tool.execute!(
           { prompt: 'test query' },
           { toolCallId: 'test-call-id', messages: [] }
         )
@@ -158,7 +336,7 @@ describe('agentWebSearch', () => {
 
       const tool = agentWebSearch(mockClient, customToolOptions)
 
-      await tool.execute(
+      await tool.execute!(
         { prompt: 'test query' },
         { toolCallId: 'test-call-id', messages: [] }
       )
@@ -179,7 +357,7 @@ describe('agentWebSearch', () => {
     it('should handle empty search prompt', async () => {
       const tool = agentWebSearch(mockClient, mockToolOptions)
 
-      const result = await tool.execute(
+      const result = await tool.execute!(
         { prompt: '' },
         { toolCallId: 'test-call-id', messages: [] }
       )
@@ -197,7 +375,7 @@ describe('agentWebSearch', () => {
       const longPrompt = 'a'.repeat(10000)
       const tool = agentWebSearch(mockClient, mockToolOptions)
 
-      const result = await tool.execute(
+      const result = await tool.execute!(
         { prompt: longPrompt },
         { toolCallId: 'test-call-id', messages: [] }
       )
@@ -216,7 +394,7 @@ describe('agentWebSearch', () => {
         'https://example.com/search?q=test%20query&sort=date'
       const tool = agentWebSearch(mockClient, mockToolOptions)
 
-      const result = await tool.execute(
+      const result = await tool.execute!(
         { prompt: 'search query', url: urlWithSpecialChars },
         { toolCallId: 'test-call-id', messages: [] }
       )
