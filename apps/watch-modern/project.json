@@ -175,7 +175,7 @@
       "options": {
         "commands": [
           {
-            "command": "DOPPLER_TOKEN=$DOPPLER_WATCH_MODERN_TOKEN doppler secrets download --no-file --format=env-no-quotes --project watch-modern > apps/watch-modern/.env"
+            "command": "DOPPLER_TOKEN=$DOPPLER_WATCH_TOKEN doppler secrets download --no-file --format=env-no-quotes --project watch > apps/watch-modern/.env"
           }
         ]
       }
