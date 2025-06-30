@@ -103,6 +103,7 @@ import HelpSquareContained from './HelpSquareContained'
 import Home3 from './Home3'
 import Home4 from './Home4'
 import Image3 from './Image3'
+import ImageFocus from './ImageFocus'
 import ImageX from './ImageX'
 import Inbox2 from './Inbox2'
 import InformationCircleContained from './InformationCircleContained'
@@ -318,6 +319,7 @@ export type IconName =
   | 'Home3'
   | 'Home4'
   | 'Image3'
+  | 'ImageFocus'
   | 'ImageX'
   | 'Inbox2'
   | 'InformationCircleContained'
@@ -537,6 +539,7 @@ const iconComponents: IconComponents = {
   Home3,
   Home4,
   Image3,
+  ImageFocus,
   ImageX,
   Inbox2,
   InformationCircleContained,
