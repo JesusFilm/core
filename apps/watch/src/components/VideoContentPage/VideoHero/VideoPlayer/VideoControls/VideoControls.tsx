@@ -21,7 +21,7 @@ import fscreen from 'fscreen'
 import debounce from 'lodash/debounce'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
-import { MouseEventHandler, ReactElement, useEffect } from 'react'
+import { MouseEventHandler, ReactElement, useEffect, useState } from 'react'
 import Player from 'video.js/dist/types/player'
 
 import { isMobile } from '@core/shared/ui/deviceUtils'
@@ -73,6 +73,7 @@ export function VideoControls({
   player,
   onVisibleChanged
 }: VideoControlProps): ReactElement {
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false)
   const {
     state: {
       player: {
@@ -94,11 +95,10 @@ export function VideoControls({
     dispatch
   } = useWatch()
 
-  const { id, title, snippet, variant, images, imageAlt } = useVideo()
+  const { id, title, variant, images, imageAlt } = useVideo()
   const visible = !play || active || loading
 
   const videoTitle = title?.[0]?.value ?? ''
-  const videoSnippet = snippet?.[0]?.value ?? ''
 
   useEffect(() => {
     onVisibleChanged?.(!play || active || loading)
@@ -312,12 +312,13 @@ export function VideoControls({
         loading: true
       })
     )
-    player.on('playing', () =>
+    player.on('playing', () => {
+      setInitialLoadComplete(true)
       dispatch({
         type: 'SetPlayerLoading',
         loading: false
       })
-    )
+    })
     player.on('ended', () => {
       eventToDataLayer(
         'video_ended',
@@ -484,7 +485,18 @@ export function VideoControls({
       data-testid="VideoControls"
     >
       {!loading ? (
-        <VideoTitle videoTitle={videoTitle} videoSnippet={videoSnippet} />
+        <Container maxWidth="xxl" sx={{ zIndex: 2 }}>
+          <VideoTitle
+            videoTitle={videoTitle}
+            variant="unmute"
+            showButton
+            onClick={(e) => {
+              e.stopPropagation()
+              if (mute || volume === 0) handleMute()
+              if (!play) void player?.play()
+            }}
+          />
+        </Container>
       ) : (
         <>
           <Box
@@ -510,7 +522,17 @@ export function VideoControls({
               }}
             />
           )}
-          <VideoTitle videoTitle={videoTitle} videoSnippet={videoSnippet} />
+          <Container maxWidth="xxl" sx={{ zIndex: 2 }}>
+            <VideoTitle
+              showButton={!initialLoadComplete}
+              videoTitle={videoTitle}
+              onClick={(e) => {
+                e.stopPropagation()
+                if (mute || volume === 0) handleMute()
+                if (!play) void player?.play()
+              }}
+            />
+          </Container>
           <Box
             sx={{
               zIndex: 0,

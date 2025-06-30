@@ -1,0 +1,76 @@
+---
+description: 
+globs: *.spec.tsx
+alwaysApply: false
+---
+# Frontend Testing Standards
+
+## Testing Implementation Guidelines
+
+Follow these rules when writing tests in the frontend:
+
+### Import Management
+- Remove unused imports immediately after writing tests
+- Only import what's actually used in the test file
+- Group imports logically: external libraries, types, internal modules
+- Use `@testing-library/react` package (render, screen, waitFor, etc.)
+
+### Test Structure Standards
+- **Use reusable defaults**: Create `defaultInitialState` and default GraphQL mocks for common scenarios
+- **No custom TestWrapper functions**: Render components directly with providers
+- **Combine basic rendering tests**: Don't create separate tests for each UI element - combine into one comprehensive rendering test
+- **One focused assertion per test**: Each test should verify a single specific behavior
+
+### Mocking Strategy
+- **Mock external libraries only**: `next/router`, `next-i18next`, Apollo Client
+- **Don't mock internal components**: Use real implementations of child components and internal utilities
+- **Special exceptions for complex hooks**: Only mock internal hooks when specifically testing their interaction (like `useLanguageActions`)
+- **Use MockedProvider for GraphQL**: Always provide proper mocks with correct `__typename` properties
+
+### Component Rendering Pattern
+```typescript
+// Standard rendering pattern
+render(
+  <MockedProvider mocks={[defaultMock]} addTypename={false}>
+    <LanguagePreferenceProvider initialState={defaultInitialState}>
+      <ComponentUnderTest />
+    </LanguagePreferenceProvider>
+  </MockedProvider>
+)
+```
+
+### Test Organization
+- **Remove redundant tests**: Don't test the same functionality multiple times
+- **Use descriptive test names**: Clearly state what behavior is being tested
+- **Extend defaults with spread**: Use `{...defaultInitialState, customProp: value}` instead of creating new wrapper functions
+- **Focus tests on component logic**: Test currentLanguage computation, state changes, user interactions, not just element existence
+
+### Default Setup Pattern
+```typescript
+// Create reusable defaults at top of describe block
+const defaultInitialState = {
+  siteLanguage: 'en',
+  audioLanguage: '529',
+  subtitleLanguage: '529',
+  subtitleOn: false
+}
+
+const defaultMockResponse: MockedResponse<Query> = {
+  request: { query: QUERY, variables: { id: 'test' } },
+  result: { data: { /* properly typed mock data */ } }
+}
+```
+
+### What NOT to do
+- ❌ Don't create custom TestWrapper functions for every test variation
+- ❌ Don't mock internal components or utilities unless absolutely necessary
+- ❌ Don't create separate tests for basic element existence (combine them)
+- ❌ Don't leave unused imports or variables
+- ❌ Don't create overly complex test setup when simple rendering will suffice
+
+### Preferred Test Categories
+1. **Basic rendering** - One test covering all main UI elements
+2. **Logic branches** - Test different code paths (currentLanguage computation, conditional rendering)
+3. **User interactions** - Test onChange handlers, button clicks, form submissions
+4. **Integration points** - Test GraphQL queries, hook interactions, router navigation
+5. **Edge cases** - Test null/undefined values, missing data scenarios
