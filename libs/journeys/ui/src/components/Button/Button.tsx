@@ -141,7 +141,7 @@ export function Button({
 
   const justifyContent = {
     [ButtonAlignment.left]: 'flex-start',
-    [ButtonAlignment.center]: 'flex-center',
+    [ButtonAlignment.center]: 'center',
     [ButtonAlignment.right]: 'flex-end',
     [ButtonAlignment.justify]: 'space-evenly'
   }
@@ -290,7 +290,9 @@ export function Button({
               ? 5
               : size === 'small'
                 ? 4
-                : 5
+                : 5,
+        display: 'flex',
+        justifyContent: justifyContent[settings?.alignment ?? ButtonAlignment.justify]
       }}
       data-testid={`JourneysButton-${blockId}`}
     >
@@ -302,10 +304,8 @@ export function Button({
         startIcon={startIcon != null ? <Icon {...startIcon} /> : undefined}
         endIcon={endIcon != null ? <Icon {...endIcon} /> : undefined}
         onClick={handleClick}
-        fullWidth
+        fullWidth={settings?.alignment === ButtonAlignment.justify}
         sx={{
-          justifyContent:
-            justifyContent[settings?.alignment ?? ButtonAlignment.center],
           ...(editableLabel != null
             ? {
                 '&:hover': {

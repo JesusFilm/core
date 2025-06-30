@@ -2,7 +2,7 @@ import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
@@ -46,8 +46,14 @@ export function Alignment(): ReactElement {
     | undefined
 
   const [alignment, setAlignment] = useState<ButtonAlignment>(
-    ButtonAlignment.center
+    selectedBlock?.settings?.alignment ?? ButtonAlignment.justify
   )
+
+  useEffect(() => {
+    if (selectedBlock?.settings?.alignment != null) {
+      setAlignment(selectedBlock.settings.alignment)
+    }
+  }, [selectedBlock?.settings?.alignment])
 
   const temp_handleAlignmentChange = (
     _event: React.MouseEvent<HTMLElement>,
@@ -132,7 +138,7 @@ export function Alignment(): ReactElement {
         }}
         data-testid="Alignment"
       >
-        {options.map((option, idx) => (
+        {options.map((option) => (
           <ToggleButton
             key={option.value}
             value={option.value}

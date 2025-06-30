@@ -28,6 +28,7 @@ import { Alignment } from './Alignment'
 import { Color } from './Color'
 import { Size } from './Size'
 import { Variant } from './Variant'
+import { ButtonAlignment } from 'libs/journeys/ui/__generated__/globalTypes'
 
 export function Button({
   id,
@@ -37,7 +38,8 @@ export function Button({
   startIconId,
   endIconId,
   action,
-  children
+  children,
+  settings
 }: TreeBlock<ButtonBlock>): ReactElement {
   const { dispatch } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
@@ -92,7 +94,7 @@ export function Button({
         id={`${id}-button-alignment`}
         icon={<AlignLeft />}
         name={t('Alignment')}
-        value={"<ALIGNMENT STATE HERE>"}
+        value={capitalize(settings?.alignment?.toString() ?? ButtonAlignment.justify)}
       >
         <Alignment />
       </Accordion>
