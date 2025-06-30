@@ -1,8 +1,0 @@
-@import 'tailwindcss';
-
-@import '../../../libs/journeys/ui/src/globals.css';
-
-@layer components {
-  @import 'swiper/css';
-  @import 'swiper/css/pagination';
-}
