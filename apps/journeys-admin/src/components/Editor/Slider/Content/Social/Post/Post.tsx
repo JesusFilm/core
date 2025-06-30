@@ -82,7 +82,10 @@ export function Post(): ReactElement {
                   width: 208,
                   height: 158,
                   display: 'flex',
-                  flexDirection: 'column'
+                  flexDirection: 'column',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  borderRadius: '5px'
                 }}
               >
                 {journey?.primaryImageBlock?.src == null ? (
@@ -95,18 +98,26 @@ export function Post(): ReactElement {
                     bgcolor="background.default"
                   />
                 ) : (
-                  <Image
-                    src={journey.primaryImageBlock.src}
-                    alt={journey.primaryImageBlock.alt ?? ''}
-                    width={208}
-                    height={158}
-                    draggable="false"
-                    style={{
-                      borderRadius: '5px',
-                      maxWidth: '100%',
-                      objectFit: 'cover'
+                  <Box
+                    sx={{
+                      position: 'relative',
+                      width: '100%',
+                      height: '100%',
+                      transform: `scale(${(journey.primaryImageBlock.scale ?? 100) / 100})`,
+                      transformOrigin: `${journey.primaryImageBlock.focalLeft ?? 50}% ${journey.primaryImageBlock.focalTop ?? 50}%`
                     }}
-                  />
+                  >
+                    <Image
+                      src={journey.primaryImageBlock.src}
+                      alt={journey.primaryImageBlock.alt ?? ''}
+                      fill
+                      draggable="false"
+                      style={{
+                        objectFit: 'cover',
+                        objectPosition: `${journey.primaryImageBlock.focalLeft ?? 50}% ${journey.primaryImageBlock.focalTop ?? 50}%`
+                      }}
+                    />
+                  </Box>
                 )}
               </CardMedia>
             </Tooltip>
