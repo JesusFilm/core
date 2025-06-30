@@ -84,6 +84,7 @@ export const mockNewCardBlock: TreeBlock<CardBlock> = {
   themeMode: ThemeMode.dark,
   themeName: ThemeName.base,
   fullscreen: false,
+  backdropBlur: null,
   children: []
 }
 
@@ -133,7 +134,8 @@ export const mockStepBlockCreateFromAction: MockedResponse<
         coverBlockId: null,
         themeMode: ThemeMode.dark,
         themeName: ThemeName.base,
-        fullscreen: false
+        fullscreen: false,
+        backdropBlur: null
       },
       blockUpdateAction: {
         parentBlockId: mockOriginButtonBlock.id,

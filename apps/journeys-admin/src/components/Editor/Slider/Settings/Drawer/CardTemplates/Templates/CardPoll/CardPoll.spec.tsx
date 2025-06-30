@@ -58,6 +58,7 @@ describe('CardPoll', () => {
     themeMode: null,
     themeName: null,
     fullscreen: false,
+    backdropBlur: null,
     children: []
   }
   const step: TreeBlock = {
@@ -247,6 +248,7 @@ describe('CardPoll', () => {
           themeMode: null,
           themeName: null,
           fullscreen: true,
+          backdropBlur: null,
           __typename: 'CardBlock'
         }
       }
