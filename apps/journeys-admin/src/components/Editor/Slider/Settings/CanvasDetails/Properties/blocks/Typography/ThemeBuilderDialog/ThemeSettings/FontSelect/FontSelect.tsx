@@ -1,4 +1,5 @@
 import FormControl from '@mui/material/FormControl'
+import FormHelperText from '@mui/material/FormHelperText'
 import InputAdornment from '@mui/material/InputAdornment'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
@@ -18,6 +19,7 @@ interface FontSelectProps {
   icon: ReactNode
   labelId: string
   selectId: string
+  helperText?: string
 }
 
 export function FontSelect({
@@ -27,7 +29,8 @@ export function FontSelect({
   onChange,
   icon,
   labelId,
-  selectId
+  selectId,
+  helperText
 }: FontSelectProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -58,6 +61,7 @@ export function FontSelect({
             </MenuItem>
           ))}
         </Select>
+        <FormHelperText>{helperText}</FormHelperText>
       </FormControl>
     </Stack>
   )

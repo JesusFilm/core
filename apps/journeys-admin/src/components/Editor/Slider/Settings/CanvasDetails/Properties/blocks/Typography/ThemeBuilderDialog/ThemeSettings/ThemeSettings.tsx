@@ -71,6 +71,7 @@ export function ThemeSettings({
         icon={<Header1Icon />}
         labelId="header-font-select-label"
         selectId="header-font-select"
+        helperText={t('Used for large text elements like titles and headings.')}
       />
       <FontSelect
         label={t('Body Text')}
@@ -80,6 +81,7 @@ export function ThemeSettings({
         icon={<Type2Icon />}
         labelId="body-font-select-label"
         selectId="body-font-select"
+        helperText={t('Used for paragraphs, subheadings, and smaller content.')}
       />
       <FontSelect
         label={t('Label Text')}
@@ -89,6 +91,7 @@ export function ThemeSettings({
         icon={<Type3Icon />}
         labelId="labels-font-select-label"
         selectId="labels-font-select"
+        helperText={t('Used for buttons, forms, and interface elements.')}
       />
     </Stack>
   )
