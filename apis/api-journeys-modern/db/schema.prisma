@@ -536,15 +536,15 @@ model JourneyEventsExportLog {
 }
 
 model JourneyTheme {
-  id            String   @id @default(uuid())
-  journeyId     String   @unique
-  userId        String
-  primaryFont   String?
-  secondaryFont String?
-  accentFont    String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @default(now())
-  journey       Journey  @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  id         String   @id @default(uuid())
+  journeyId  String   @unique
+  userId     String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now())
+  bodyFont   String?
+  headerFont String?
+  labelFont  String?
+  journey    Journey  @relation(fields: [journeyId], references: [id], onDelete: Cascade)
 
   @@index([journeyId])
   @@index([userId])

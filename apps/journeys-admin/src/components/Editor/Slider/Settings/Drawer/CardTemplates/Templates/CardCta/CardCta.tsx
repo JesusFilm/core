@@ -446,6 +446,7 @@ export function CardCta(): ReactElement {
       themeMode: ThemeMode.dark,
       themeName: ThemeName.base,
       fullscreen: false,
+      backdropBlur: null,
       __typename: 'CardBlock'
     } satisfies CardBlock
 
