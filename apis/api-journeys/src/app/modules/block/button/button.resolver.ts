@@ -42,7 +42,7 @@ export class ButtonBlockResolver {
           journey: { connect: { id: input.journeyId } },
           parentBlock: { connect: { id: input.parentBlockId } },
           parentOrder,
-          settings: (input.settings ?? {}) as Prisma.InputJsonValue
+          settings: (input.settings ?? {}) as Prisma.JsonObject
         },
         include: {
           action: true,
@@ -106,9 +106,13 @@ export class ButtonBlockResolver {
       })
     return await this.blockService.update(id, {
       ...input,
-      settings: (input.settings ?? undefined) as
-        | Prisma.InputJsonValue
-        | undefined
+      settings:
+        input.settings != null
+          ? {
+              ...((block.settings ?? {}) as Prisma.JsonObject),
+              ...(input.settings as Prisma.JsonObject)
+            }
+          : undefined
     })
   }
 }
