@@ -11,26 +11,26 @@ import AlignCenterIcon from '@core/shared/ui/icons/AlignCenter'
 import AlignJustifyIcon from '@core/shared/ui/icons/AlignJustify'
 import AlignLeftIcon from '@core/shared/ui/icons/AlignLeft'
 import AlignRightIcon from '@core/shared/ui/icons/AlignRight'
-import { cn } from '@core/shared/ui/tailwind'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import { ButtonBlockUpdateAlignment } from '../../../../../../../../../../__generated__/ButtonBlockUpdateAlignment'
-import { ButtonBlockClassNamesInput } from '../../../../../../../../../../__generated__/globalTypes'
+import {
+  ButtonBlockUpdateAlignment,
+  ButtonBlockUpdateAlignmentVariables
+} from '../../../../../../../../../../__generated__/ButtonBlockUpdateAlignment'
+import { ButtonAlignment } from '../../../../../../../../../../__generated__/globalTypes'
 
-interface ButtonBlockUpdateAlignmentVariablesCustom {
-  id: string
-  classNames: ButtonBlockClassNamesInput
-}
+// type ButtonAlignment =
+//   ButtonBlockUpdateAlignmentVariables['settings']['alignment']
 
 export const BUTTON_BLOCK_UPDATE = gql`
   mutation ButtonBlockUpdateAlignment(
     $id: ID!
-    $classNames: ButtonBlockClassNamesInput!
+    $settings: ButtonBlockSettingsInput!
   ) {
-    buttonBlockUpdate(id: $id, input: { classNames: $classNames }) {
+    buttonBlockUpdate(id: $id, input: { settings: $settings }) {
       id
-      classNames {
-        self
+      settings {
+        alignment
       }
     }
   }
@@ -39,7 +39,7 @@ export const BUTTON_BLOCK_UPDATE = gql`
 export function Alignment(): ReactElement {
   const [buttonBlockUpdate] = useMutation<
     ButtonBlockUpdateAlignment,
-    ButtonBlockUpdateAlignmentVariablesCustom
+    ButtonBlockUpdateAlignmentVariables
   >(BUTTON_BLOCK_UPDATE)
 
   const { state, dispatch } = useEditor()
@@ -48,28 +48,35 @@ export function Alignment(): ReactElement {
     | TreeBlock<ButtonBlock>
     | undefined
 
-  const [alignment, setAlignment] = useState<
-    'justify-start' | 'justify-center' | 'justify-end' | 'justify-evenly'
-  >('justify-start')
+  const [alignment, setAlignment] = useState<ButtonAlignment>(
+    ButtonAlignment.center
+  )
 
   const temp_handleAlignmentChange = (
     _event: React.MouseEvent<HTMLElement>,
-    newAlignment:
-      | 'justify-start'
-      | 'justify-center'
-      | 'justify-end'
-      | 'justify-evenly'
-      | null
+    newAlignment: ButtonAlignment | null
   ) => {
     if (newAlignment !== null) setAlignment(newAlignment)
   }
 
   function handleChange(alignment: string): void {
     if (selectedBlock == null || alignment == null) return
+
+    // Map the CSS class values to ButtonAlignment enum values
+    const alignmentMap: Record<string, ButtonAlignment> = {
+      'justify-start': ButtonAlignment.left,
+      'justify-center': ButtonAlignment.center,
+      'justify-end': ButtonAlignment.right,
+      'justify-evenly': ButtonAlignment.justify
+    }
+
+    const buttonAlignment = alignmentMap[alignment]
+    if (!buttonAlignment) return
+
     add({
       parameters: {
-        execute: { alignment },
-        undo: { alignment: selectedBlock.classNames?.self }
+        execute: { alignment: buttonAlignment },
+        undo: { alignment: selectedBlock.settings?.alignment }
       },
       execute({ alignment }) {
         dispatch({
@@ -80,20 +87,20 @@ export function Alignment(): ReactElement {
         void buttonBlockUpdate({
           variables: {
             id: selectedBlock.id,
-            classNames: {
-              self: alignment
+            settings: {
+              alignment
             }
           },
-          optimisticResponse: () => ({
+          optimisticResponse: {
             buttonBlockUpdate: {
               id: selectedBlock.id,
-              classNames: {
-                __typename: 'ButtonBlockClassNames',
-                self: cn(selectedBlock.classNames?.self, alignment)
+              settings: {
+                __typename: 'ButtonBlockSettings',
+                alignment
               },
               __typename: 'ButtonBlock'
             }
-          })
+          }
         })
       }
     })
