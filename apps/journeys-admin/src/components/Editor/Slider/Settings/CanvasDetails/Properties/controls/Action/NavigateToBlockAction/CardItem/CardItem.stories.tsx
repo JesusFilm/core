@@ -36,6 +36,7 @@ const step = {
       themeMode: 'dark',
       themeName: 'base',
       fullscreen: false,
+      backdropBlur: null,
       children: []
     }
   ]

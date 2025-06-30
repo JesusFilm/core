@@ -244,6 +244,7 @@ describe('EditorContext', () => {
           themeMode: null,
           themeName: null,
           fullscreen: false,
+          backdropBlur: null,
           children: []
         }
         const step: TreeBlock = {
@@ -287,6 +288,7 @@ describe('EditorContext', () => {
           themeMode: null,
           themeName: null,
           fullscreen: false,
+          backdropBlur: null,
           children: []
         }
         const step: TreeBlock = {
@@ -347,6 +349,7 @@ describe('EditorContext', () => {
           themeMode: null,
           themeName: null,
           fullscreen: false,
+          backdropBlur: null,
           children: []
         }
         const step: TreeBlock = {
@@ -533,6 +536,7 @@ describe('EditorContext', () => {
           themeMode: null,
           themeName: null,
           fullscreen: false,
+          backdropBlur: null,
           children: []
         }
         const originalStep: TreeBlock = {
@@ -625,6 +629,7 @@ describe('EditorContext', () => {
           themeMode: null,
           themeName: null,
           fullscreen: false,
+          backdropBlur: null,
           children: []
         }
         const persistentStep: TreeBlock = {
@@ -690,6 +695,7 @@ describe('EditorContext', () => {
           themeMode: null,
           themeName: null,
           fullscreen: false,
+          backdropBlur: null,
           children: []
         }
         const step: TreeBlock = {
@@ -757,6 +763,7 @@ describe('EditorContext', () => {
           themeMode: null,
           themeName: null,
           fullscreen: false,
+          backdropBlur: null,
           children: []
         }
         const step: TreeBlock = {
