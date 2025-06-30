@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 
@@ -153,10 +154,10 @@ describe('SiteLanguageSelect', () => {
     expect(mockUpdateSiteLanguage).toBeDefined()
   })
 
-  it('should handle geolocation API failure gracefully', async () => {
+  it('should fallback to all languages when geolocation fails', async () => {
+    const user = userEvent.setup()
     // Mock fetch to reject
     fetchMock.mockRejectedValue(new Error('Geolocation failed'))
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
 
     render(
       <MockedProvider mocks={[]} addTypename={false}>
@@ -166,18 +167,20 @@ describe('SiteLanguageSelect', () => {
       </MockedProvider>
     )
 
-    await waitFor(() => {
-      expect(consoleSpy).toHaveBeenCalledWith(
-        'Error fetching geolocation or browser language:',
-        expect.any(Error)
-      )
-    })
-
-    // Component should still render correctly
+    // Component should render correctly
     expect(screen.getByText('Site Language')).toBeInTheDocument()
-    expect(screen.getByRole('combobox')).toBeInTheDocument()
+    const combobox = screen.getByRole('combobox')
+    expect(combobox).toBeInTheDocument()
 
-    consoleSpy.mockRestore()
+    // Open the dropdown to see available options
+    await user.click(combobox)
+
+    await waitFor(() => {
+      // Should fall back to showing all available languages when geolocation fails
+      // Check that key languages are available in the dropdown
+      expect(screen.getByText('English')).toBeInTheDocument()
+      expect(screen.getByText('Español')).toBeInTheDocument()
+    })
   })
 
   it('should filter out header and divider items in handleLanguageChange', async () => {
