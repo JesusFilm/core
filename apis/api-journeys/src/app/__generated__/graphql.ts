@@ -304,10 +304,6 @@ export class BlockDuplicateIdMap {
     newId: string;
 }
 
-export class ButtonBlockClassNamesInput {
-    self: string;
-}
-
 export class ButtonBlockSettingsInput {
     alignment?: Nullable<ButtonAlignment>;
 }
@@ -336,10 +332,6 @@ export class ButtonBlockUpdateInput {
     settings?: Nullable<ButtonBlockSettingsInput>;
 }
 
-export class CardBlockClassNamesInput {
-    self: string;
-}
-
 export class CardBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
@@ -361,10 +353,6 @@ export class CardBlockUpdateInput {
     themeName?: Nullable<ThemeName>;
 }
 
-export class IconBlockClassNamesInput {
-    self: string;
-}
-
 export class IconBlockCreateInput {
     id?: Nullable<string>;
     parentBlockId: string;
@@ -378,10 +366,6 @@ export class IconBlockUpdateInput {
     name?: Nullable<IconName>;
     color?: Nullable<IconColor>;
     size?: Nullable<IconSize>;
-}
-
-export class ImageBlockClassNamesInput {
-    self: string;
 }
 
 export class ImageBlockCreateInput {
@@ -411,10 +395,6 @@ export class ImageBlockUpdateInput {
     focalLeft?: Nullable<number>;
 }
 
-export class RadioOptionBlockClassNamesInput {
-    self: string;
-}
-
 export class RadioOptionBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
@@ -433,10 +413,6 @@ export class RadioQuestionBlockCreateInput {
     parentBlockId: string;
 }
 
-export class SignUpBlockClassNamesInput {
-    self: string;
-}
-
 export class SignUpBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
@@ -448,10 +424,6 @@ export class SignUpBlockUpdateInput {
     parentBlockId?: Nullable<string>;
     submitIconId?: Nullable<string>;
     submitLabel?: Nullable<string>;
-}
-
-export class SpacerBlockClassNamesInput {
-    self: string;
 }
 
 export class SpacerBlockCreateInput {
@@ -489,10 +461,6 @@ export class StepBlockPositionUpdateInput {
     y?: Nullable<number>;
 }
 
-export class TextResponseBlockClassNamesInput {
-    self: string;
-}
-
 export class TextResponseBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
@@ -512,10 +480,6 @@ export class TextResponseBlockUpdateInput {
     integrationId?: Nullable<string>;
 }
 
-export class TypographyBlockClassNamesInput {
-    self: string;
-}
-
 export class TypographyBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
@@ -532,10 +496,6 @@ export class TypographyBlockUpdateInput {
     variant?: Nullable<TypographyVariant>;
     color?: Nullable<TypographyColor>;
     align?: Nullable<TypographyAlign>;
-}
-
-export class VideoBlockClassNamesInput {
-    self: string;
 }
 
 export class VideoBlockCreateInput {
@@ -1344,11 +1304,6 @@ export abstract class IQuery {
     abstract visitor(id: string): Visitor | Promise<Visitor>;
 }
 
-export class ButtonBlockClassNames {
-    __typename?: 'ButtonBlockClassNames';
-    self: string;
-}
-
 export class ButtonBlockSettings {
     __typename?: 'ButtonBlockSettings';
     alignment?: Nullable<ButtonAlignment>;
@@ -1369,11 +1324,6 @@ export class ButtonBlock implements Block {
     action?: Nullable<Action>;
     submitEnabled?: Nullable<boolean>;
     settings: ButtonBlockSettings;
-}
-
-export class CardBlockClassNames {
-    __typename?: 'CardBlockClassNames';
-    self: string;
 }
 
 export class CardBlock implements Block {
@@ -1413,11 +1363,6 @@ export class GridItemBlock implements Block {
     sm: number;
 }
 
-export class IconBlockClassNames {
-    __typename?: 'IconBlockClassNames';
-    self: string;
-}
-
 export class IconBlock implements Block {
     __typename?: 'IconBlock';
     id: string;
@@ -1427,11 +1372,6 @@ export class IconBlock implements Block {
     name?: Nullable<IconName>;
     color?: Nullable<IconColor>;
     size?: Nullable<IconSize>;
-}
-
-export class ImageBlockClassNames {
-    __typename?: 'ImageBlockClassNames';
-    self: string;
 }
 
 export class ImageBlock implements Block {
@@ -1448,11 +1388,6 @@ export class ImageBlock implements Block {
     scale?: Nullable<number>;
     focalTop?: Nullable<number>;
     focalLeft?: Nullable<number>;
-}
-
-export class RadioOptionBlockClassNames {
-    __typename?: 'RadioOptionBlockClassNames';
-    self: string;
 }
 
 export class RadioOptionBlock implements Block {
@@ -1473,11 +1408,6 @@ export class RadioQuestionBlock implements Block {
     parentOrder?: Nullable<number>;
 }
 
-export class SignUpBlockClassNames {
-    __typename?: 'SignUpBlockClassNames';
-    self: string;
-}
-
 export class SignUpBlock implements Block {
     __typename?: 'SignUpBlock';
     id: string;
@@ -1487,11 +1417,6 @@ export class SignUpBlock implements Block {
     action?: Nullable<Action>;
     submitIconId?: Nullable<string>;
     submitLabel?: Nullable<string>;
-}
-
-export class SpacerBlockClassNames {
-    __typename?: 'SpacerBlockClassNames';
-    self: string;
 }
 
 export class SpacerBlock implements Block {
@@ -1516,11 +1441,6 @@ export class StepBlock implements Block {
     slug?: Nullable<string>;
 }
 
-export class TextResponseBlockClassNames {
-    __typename?: 'TextResponseBlockClassNames';
-    self: string;
-}
-
 export class TextResponseBlock implements Block {
     __typename?: 'TextResponseBlock';
     id: string;
@@ -1537,11 +1457,6 @@ export class TextResponseBlock implements Block {
     integrationId?: Nullable<string>;
 }
 
-export class TypographyBlockClassNames {
-    __typename?: 'TypographyBlockClassNames';
-    self: string;
-}
-
 export class TypographyBlock implements Block {
     __typename?: 'TypographyBlock';
     id: string;
@@ -1552,11 +1467,6 @@ export class TypographyBlock implements Block {
     variant?: Nullable<TypographyVariant>;
     color?: Nullable<TypographyColor>;
     align?: Nullable<TypographyAlign>;
-}
-
-export class VideoBlockClassNames {
-    __typename?: 'VideoBlockClassNames';
-    self: string;
 }
 
 export class VideoBlock implements Block {

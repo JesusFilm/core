@@ -1,11 +1,3 @@
-input SignUpBlockClassNamesInput {
-  self: String!
-}
-
-type SignUpBlockClassNames {
-  self: String! @shareable
-}
-
 type SignUpBlock implements Block @key(fields: "id") {
   id: ID! @shareable
   journeyId: ID! @shareable

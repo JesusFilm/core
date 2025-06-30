@@ -40,14 +40,6 @@ enum IconSize {
   inherit
 }
 
-input IconBlockClassNamesInput {
-  self: String!
-}
-
-type IconBlockClassNames {
-  self: String! @shareable
-}
-
 type IconBlock implements Block @key(fields: "id") {
   id: ID! @shareable
   journeyId: ID! @shareable

@@ -151,15 +151,6 @@ export type ButtonBlock = Block & {
   variant?: Maybe<ButtonVariant>;
 };
 
-export type ButtonBlockClassNames = {
-  __typename?: 'ButtonBlockClassNames';
-  self: Scalars['String']['output'];
-};
-
-export type ButtonBlockClassNamesInput = {
-  self: Scalars['String']['input'];
-};
-
 export type ButtonBlockCreateInput = {
   color?: InputMaybe<ButtonColor>;
   id?: InputMaybe<Scalars['ID']['input']>;
@@ -286,15 +277,6 @@ export type CardBlock = Block & {
    * themeName from journey
    */
   themeName?: Maybe<ThemeName>;
-};
-
-export type CardBlockClassNames = {
-  __typename?: 'CardBlockClassNames';
-  self: Scalars['String']['output'];
-};
-
-export type CardBlockClassNamesInput = {
-  self: Scalars['String']['input'];
 };
 
 export type CardBlockCreateInput = {
@@ -684,15 +666,6 @@ export type IconBlock = Block & {
   size?: Maybe<IconSize>;
 };
 
-export type IconBlockClassNames = {
-  __typename?: 'IconBlockClassNames';
-  self: Scalars['String']['output'];
-};
-
-export type IconBlockClassNamesInput = {
-  self: Scalars['String']['input'];
-};
-
 export type IconBlockCreateInput = {
   color?: InputMaybe<IconColor>;
   /** ID should be unique Response UUID (Provided for optimistic mutation result matching) */
@@ -777,15 +750,6 @@ export type ImageBlock = Block & {
   scale?: Maybe<Scalars['Int']['output']>;
   src?: Maybe<Scalars['String']['output']>;
   width: Scalars['Int']['output'];
-};
-
-export type ImageBlockClassNames = {
-  __typename?: 'ImageBlockClassNames';
-  self: Scalars['String']['output'];
-};
-
-export type ImageBlockClassNamesInput = {
-  self: Scalars['String']['input'];
 };
 
 export type ImageBlockCreateInput = {
@@ -3575,15 +3539,6 @@ export type RadioOptionBlock = Block & {
   parentOrder?: Maybe<Scalars['Int']['output']>;
 };
 
-export type RadioOptionBlockClassNames = {
-  __typename?: 'RadioOptionBlockClassNames';
-  self: Scalars['String']['output'];
-};
-
-export type RadioOptionBlockClassNamesInput = {
-  self: Scalars['String']['input'];
-};
-
 export type RadioOptionBlockCreateInput = {
   id?: InputMaybe<Scalars['ID']['input']>;
   journeyId: Scalars['ID']['input'];
@@ -3720,15 +3675,6 @@ export type SignUpBlock = Block & {
   submitLabel?: Maybe<Scalars['String']['output']>;
 };
 
-export type SignUpBlockClassNames = {
-  __typename?: 'SignUpBlockClassNames';
-  self: Scalars['String']['output'];
-};
-
-export type SignUpBlockClassNamesInput = {
-  self: Scalars['String']['input'];
-};
-
 export type SignUpBlockCreateInput = {
   id?: InputMaybe<Scalars['ID']['input']>;
   journeyId: Scalars['ID']['input'];
@@ -3808,15 +3754,6 @@ export type SpacerBlock = Block & {
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
   spacing?: Maybe<Scalars['Int']['output']>;
-};
-
-export type SpacerBlockClassNames = {
-  __typename?: 'SpacerBlockClassNames';
-  self: Scalars['String']['output'];
-};
-
-export type SpacerBlockClassNamesInput = {
-  self: Scalars['String']['input'];
 };
 
 export type SpacerBlockCreateInput = {
@@ -4081,15 +4018,6 @@ export type TextResponseBlock = Block & {
   type?: Maybe<TextResponseType>;
 };
 
-export type TextResponseBlockClassNames = {
-  __typename?: 'TextResponseBlockClassNames';
-  self: Scalars['String']['output'];
-};
-
-export type TextResponseBlockClassNamesInput = {
-  self: Scalars['String']['input'];
-};
-
 export type TextResponseBlockCreateInput = {
   id?: InputMaybe<Scalars['ID']['input']>;
   journeyId: Scalars['ID']['input'];
@@ -4183,15 +4111,6 @@ export type TypographyBlock = Block & {
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
   variant?: Maybe<TypographyVariant>;
-};
-
-export type TypographyBlockClassNames = {
-  __typename?: 'TypographyBlockClassNames';
-  self: Scalars['String']['output'];
-};
-
-export type TypographyBlockClassNamesInput = {
-  self: Scalars['String']['input'];
 };
 
 export type TypographyBlockCreateInput = {
@@ -4621,15 +4540,6 @@ export type VideoBlock = Block & {
    * For other sources only videoId needs to be set.
    */
   videoVariantLanguageId?: Maybe<Scalars['ID']['output']>;
-};
-
-export type VideoBlockClassNames = {
-  __typename?: 'VideoBlockClassNames';
-  self: Scalars['String']['output'];
-};
-
-export type VideoBlockClassNamesInput = {
-  self: Scalars['String']['input'];
 };
 
 export type VideoBlockCreateInput = {
