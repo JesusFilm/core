@@ -49,9 +49,10 @@ export const baseComponents: Required<Pick<ThemeOptions, 'components'>> = {
           style: {
             fontSize: '16px',
             fontWeight: 700,
-            height: '56px',
+            minHeight: '56px',
             padding: '14.5px 24px',
-            borderRadius: '32px'
+            borderRadius: '32px',
+            lineHeight: 1
           }
         },
         {
@@ -59,9 +60,10 @@ export const baseComponents: Required<Pick<ThemeOptions, 'components'>> = {
           style: {
             fontSize: '16px',
             fontWeight: 700,
-            height: '48px',
+            minHeight: '48px',
             padding: '12px 24px',
-            borderRadius: '24px'
+            borderRadius: '24px',
+            lineHeight: 1
           }
         },
         {
@@ -69,9 +71,10 @@ export const baseComponents: Required<Pick<ThemeOptions, 'components'>> = {
           style: {
             fontSize: '14px',
             fontWeight: 700,
-            height: '44px',
+            minHeight: '44px',
             padding: '11.5px 16px',
-            borderRadius: '24px'
+            borderRadius: '24px',
+            lineHeight: 1
           }
         }
       ]
