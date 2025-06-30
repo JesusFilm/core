@@ -1,5 +1,6 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { ResultOf, graphql } from 'gql.tada'
+import { Context } from 'hono'
 import { timeout } from 'hono/timeout'
 
 import { getApolloClient } from '../../../../../../lib/apolloClient'
@@ -49,6 +50,14 @@ const GET_VIDEO_LANGUAGES = graphql(`
 `)
 
 export const mediaComponentLanguages = new OpenAPIHono()
+
+const setCorsHeaders = (c: Context) => {
+  c.header('Access-Control-Allow-Origin', '*')
+  c.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+  c.header('Access-Control-Allow-Headers', '*')
+  c.header('Access-Control-Expose-Headers', '*')
+}
+
 mediaComponentLanguages.route('/:languageId', mediaComponentLanguage)
 
 const QuerySchema = z.object({
@@ -100,6 +109,7 @@ const route = createRoute({
 })
 
 mediaComponentLanguages.openapi(route, async (c) => {
+  setCorsHeaders(c)
   const mediaComponentId = c.req.param('mediaComponentId')
 
   const apiKey = c.req.query('apiKey')
@@ -292,4 +302,9 @@ mediaComponentLanguages.openapi(route, async (c) => {
     }
   }
   return c.json(response)
+})
+
+mediaComponentLanguages.options('*', (c) => {
+  setCorsHeaders(c)
+  return c.body(null, 204)
 })

@@ -1,5 +1,6 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { ResultOf, graphql } from 'gql.tada'
+import { Context } from 'hono'
 import { HTTPException } from 'hono/http-exception'
 import { timeout } from 'hono/timeout'
 
@@ -210,9 +211,18 @@ const route = createRoute({
 })
 
 export const mediaComponents = new OpenAPIHono()
+
+const setCorsHeaders = (c: Context) => {
+  c.header('Access-Control-Allow-Origin', '*')
+  c.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+  c.header('Access-Control-Allow-Headers', '*')
+  c.header('Access-Control-Expose-Headers', '*')
+}
+
 mediaComponents.route('/:mediaComponentId', mediaComponent)
 
 mediaComponents.openapi(route, async (c) => {
+  setCorsHeaders(c)
   const page = c.req.query('page') == null ? 1 : Number(c.req.query('page'))
   const limit =
     c.req.query('limit') == null ? 10000 : Number(c.req.query('limit'))
@@ -419,4 +429,9 @@ mediaComponents.openapi(route, async (c) => {
   })
 
   return c.json(response)
+})
+
+mediaComponents.options('*', (c) => {
+  setCorsHeaders(c)
+  return c.body(null, 204)
 })
