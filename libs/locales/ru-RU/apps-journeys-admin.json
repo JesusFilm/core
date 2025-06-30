@@ -243,6 +243,7 @@
   "Outlined": "Обрисованный",
   "Invalid {{ HEX }} color code": "Неверный код цвета {{ HEX }}",
   "Palette": "Палитра",
+  "Adjust the blur level of your background image.": "Настрой уровень размытия фонового изображения.",
   "Adjust View": "Отрегулируй вид",
   "None": "Нет",
   "Layout": "Расположение",
