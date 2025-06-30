@@ -137,7 +137,6 @@ export enum ButtonAlignment {
 export type ButtonBlock = Block & {
   __typename?: 'ButtonBlock';
   action?: Maybe<Action>;
-  classNames?: Maybe<ButtonBlockClassNames>;
   color?: Maybe<ButtonColor>;
   endIconId?: Maybe<Scalars['ID']['output']>;
   id: Scalars['ID']['output'];
@@ -145,7 +144,7 @@ export type ButtonBlock = Block & {
   label: Scalars['String']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
-  settings: ButtonBlockSettings;
+  settings?: Maybe<ButtonBlockSettings>;
   size?: Maybe<ButtonSize>;
   startIconId?: Maybe<Scalars['ID']['output']>;
   submitEnabled?: Maybe<Scalars['Boolean']['output']>;
@@ -154,7 +153,6 @@ export type ButtonBlock = Block & {
 
 export type ButtonBlockClassNames = {
   __typename?: 'ButtonBlockClassNames';
-  /** Tailwind class names for the button block */
   self: Scalars['String']['output'];
 };
 
@@ -176,11 +174,12 @@ export type ButtonBlockCreateInput = {
 
 export type ButtonBlockSettings = {
   __typename?: 'ButtonBlockSettings';
-  alignment?: Maybe<Scalars['String']['output']>;
+  /** Alignment of the button */
+  alignment?: Maybe<ButtonAlignment>;
 };
 
 export type ButtonBlockSettingsInput = {
-  alignment?: InputMaybe<Scalars['String']['input']>;
+  alignment?: InputMaybe<ButtonAlignment>;
 };
 
 export type ButtonBlockUpdateInput = {
@@ -676,7 +675,6 @@ export type HostUpdateInput = {
 
 export type IconBlock = Block & {
   __typename?: 'IconBlock';
-  classNames: IconBlockClassNames;
   color?: Maybe<IconColor>;
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
@@ -688,7 +686,6 @@ export type IconBlock = Block & {
 
 export type IconBlockClassNames = {
   __typename?: 'IconBlockClassNames';
-  /** Tailwind class names for the icon block */
   self: Scalars['String']['output'];
 };
 
@@ -770,7 +767,6 @@ export type ImageBlock = Block & {
    * Find a frontend implementation at https://github.com/woltapp/blurhash
    */
   blurhash: Scalars['String']['output'];
-  classNames: ImageBlockClassNames;
   focalLeft?: Maybe<Scalars['Int']['output']>;
   focalTop?: Maybe<Scalars['Int']['output']>;
   height: Scalars['Int']['output'];
@@ -785,7 +781,6 @@ export type ImageBlock = Block & {
 
 export type ImageBlockClassNames = {
   __typename?: 'ImageBlockClassNames';
-  /** Tailwind class names for the image block */
   self: Scalars['String']['output'];
 };
 
@@ -3573,7 +3568,6 @@ export type QueryShortLinksConnectionEdge = {
 export type RadioOptionBlock = Block & {
   __typename?: 'RadioOptionBlock';
   action?: Maybe<Action>;
-  classNames: RadioOptionBlockClassNames;
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
   label: Scalars['String']['output'];
@@ -3583,7 +3577,6 @@ export type RadioOptionBlock = Block & {
 
 export type RadioOptionBlockClassNames = {
   __typename?: 'RadioOptionBlockClassNames';
-  /** Tailwind class names for the radio option block */
   self: Scalars['String']['output'];
 };
 
@@ -3719,7 +3712,6 @@ export type ShortLinkDomainVerfication = {
 export type SignUpBlock = Block & {
   __typename?: 'SignUpBlock';
   action?: Maybe<Action>;
-  classNames: SignUpBlockClassNames;
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
@@ -3730,7 +3722,6 @@ export type SignUpBlock = Block & {
 
 export type SignUpBlockClassNames = {
   __typename?: 'SignUpBlockClassNames';
-  /** Tailwind class names for the sign up block */
   self: Scalars['String']['output'];
 };
 
@@ -3812,7 +3803,6 @@ export type SiteSharedLink = {
 
 export type SpacerBlock = Block & {
   __typename?: 'SpacerBlock';
-  classNames: SpacerBlockClassNames;
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
@@ -3822,7 +3812,6 @@ export type SpacerBlock = Block & {
 
 export type SpacerBlockClassNames = {
   __typename?: 'SpacerBlockClassNames';
-  /** Tailwind class names for the spacer block */
   self: Scalars['String']['output'];
 };
 
@@ -4078,7 +4067,6 @@ export type TeamUpdateInput = {
 
 export type TextResponseBlock = Block & {
   __typename?: 'TextResponseBlock';
-  classNames: TextResponseBlockClassNames;
   hint?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   integrationId?: Maybe<Scalars['String']['output']>;
@@ -4095,7 +4083,6 @@ export type TextResponseBlock = Block & {
 
 export type TextResponseBlockClassNames = {
   __typename?: 'TextResponseBlockClassNames';
-  /** Tailwind class names for the text response block */
   self: Scalars['String']['output'];
 };
 
@@ -4189,7 +4176,6 @@ export enum TypographyAlign {
 export type TypographyBlock = Block & {
   __typename?: 'TypographyBlock';
   align?: Maybe<TypographyAlign>;
-  classNames: TypographyBlockClassNames;
   color?: Maybe<TypographyColor>;
   content: Scalars['String']['output'];
   id: Scalars['ID']['output'];
@@ -4201,7 +4187,6 @@ export type TypographyBlock = Block & {
 
 export type TypographyBlockClassNames = {
   __typename?: 'TypographyBlockClassNames';
-  /** Tailwind class names for the typography block */
   self: Scalars['String']['output'];
 };
 
@@ -4569,7 +4554,6 @@ export type VideoBlock = Block & {
   /** action that should be performed when the video ends */
   action?: Maybe<Action>;
   autoplay?: Maybe<Scalars['Boolean']['output']>;
-  classNames: VideoBlockClassNames;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field
@@ -4641,7 +4625,6 @@ export type VideoBlock = Block & {
 
 export type VideoBlockClassNames = {
   __typename?: 'VideoBlockClassNames';
-  /** Tailwind class names for the video block */
   self: Scalars['String']['output'];
 };
 

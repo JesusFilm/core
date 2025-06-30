@@ -13,6 +13,13 @@ export enum ButtonAction {
   NavigateToBlockAction = "NavigateToBlockAction",
 }
 
+export enum ButtonAlignment {
+  center = "center",
+  justify = "justify",
+  left = "left",
+  right = "right",
+}
+
 export enum ButtonColor {
   error = "error",
   inherit = "inherit",
@@ -302,7 +309,7 @@ export interface ButtonBlockCreateInput {
 }
 
 export interface ButtonBlockSettingsInput {
-  alignment?: string | null;
+  alignment?: ButtonAlignment | null;
 }
 
 export interface ButtonBlockUpdateInput {
