@@ -1,10 +1,15 @@
 import { google } from '@ai-sdk/google'
+import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
 import { generateObject, tool } from 'ai'
 import { z } from 'zod'
 
+import { ToolOptions } from '../..'
 import { langfuse, langfuseEnvironment } from '../../../langfuse/server'
 
-export function agentGetPersonalizationQuestions() {
+export function agentGetPersonalizationQuestions(
+  _client: ApolloClient<NormalizedCacheObject>,
+  { langfuseTraceId }: ToolOptions
+) {
   return tool({
     description:
       'From a given markdown, returns a structured list of questions to ask the user in order to personalize the journey.',
@@ -37,7 +42,16 @@ export function agentGetPersonalizationQuestions() {
                 question: z.string()
               })
             )
-          })
+          }),
+          experimental_telemetry: {
+            isEnabled: true,
+            functionId: 'agent-get-personalization-questions',
+            metadata: {
+              langfuseTraceId,
+              langfusePrompt: prompt.toJSON(),
+              langfuseUpdateParent: false
+            }
+          }
         })
 
         return personalizationQuestions

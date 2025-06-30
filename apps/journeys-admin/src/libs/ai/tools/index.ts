@@ -6,10 +6,20 @@ import { tools as blockTools } from './block'
 import { tools as clientTools } from './client'
 import { tools as journeyTools } from './journey'
 
-export function tools(client: ApolloClient<NormalizedCacheObject>): ToolSet {
+export interface ToolOptions {
+  langfuseTraceId: string
+}
+
+export function tools(
+  client: ApolloClient<NormalizedCacheObject>,
+  { langfuseTraceId }: ToolOptions
+): ToolSet {
   const allTools: Record<
     string,
-    | ((client: ApolloClient<NormalizedCacheObject>) => Tool)
+    | ((
+        client: ApolloClient<NormalizedCacheObject>,
+        options: ToolOptions
+      ) => Tool)
     | (() => Tool)
     | Tool
   > = {
@@ -27,9 +37,12 @@ export function tools(client: ApolloClient<NormalizedCacheObject>): ToolSet {
       try {
         // Attempt to call with client
         instantiatedTools[key] = (
-          toolOrFactory as (client: ApolloClient<NormalizedCacheObject>) => Tool
-        )(client)
-      } catch (e) {
+          toolOrFactory as (
+            client: ApolloClient<NormalizedCacheObject>,
+            options: ToolOptions
+          ) => Tool
+        )(client, { langfuseTraceId })
+      } catch {
         // If it fails, assume it's a factory without arguments
         instantiatedTools[key] = (toolOrFactory as () => Tool)()
       }

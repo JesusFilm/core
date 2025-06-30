@@ -1,3 +1,4 @@
+import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
 import { generateObject } from 'ai'
 
 import { langfuse } from '../../../langfuse/server'
@@ -20,14 +21,24 @@ const mockedGenerateObject = generateObject as jest.Mock
 const mockedGetPrompt = langfuse.getPrompt as jest.Mock
 
 describe('agentGetPersonalizationQuestions', () => {
+  let mockClient: ApolloClient<NormalizedCacheObject>
+
   beforeEach(() => {
     jest.clearAllMocks()
+
+    mockClient = {
+      query: jest.fn(),
+      mutate: jest.fn()
+    } as unknown as ApolloClient<NormalizedCacheObject>
   })
 
   it('should return a structured object with personalization questions', async () => {
     const markdown = 'Welcome to [Church Name]! Our event is on [Event Date].'
     const mockSystemPrompt = 'You are a personalization assistant.'
-    const mockCompiledPrompt = { compile: () => mockSystemPrompt }
+    const mockCompiledPrompt = {
+      compile: () => mockSystemPrompt,
+      toJSON: () => ({ prompt: mockSystemPrompt })
+    }
     const mockResponse = {
       questions: [
         {
@@ -44,7 +55,9 @@ describe('agentGetPersonalizationQuestions', () => {
     mockedGetPrompt.mockResolvedValue(mockCompiledPrompt)
     mockedGenerateObject.mockResolvedValue({ object: mockResponse })
 
-    const tool = agentGetPersonalizationQuestions()
+    const tool = agentGetPersonalizationQuestions(mockClient, {
+      langfuseTraceId: 'test-trace-id'
+    })
     const result = await tool.execute(
       { markdown },
       {
@@ -75,7 +88,9 @@ describe('agentGetPersonalizationQuestions', () => {
     mockedGetPrompt.mockResolvedValue(mockCompiledPrompt)
     mockedGenerateObject.mockRejectedValue(new Error('AI error'))
 
-    const tool = agentGetPersonalizationQuestions()
+    const tool = agentGetPersonalizationQuestions(mockClient, {
+      langfuseTraceId: 'test-trace-id'
+    })
     const result = await tool.execute(
       { markdown },
       {
