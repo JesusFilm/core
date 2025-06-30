@@ -38,27 +38,33 @@ export const actionSchema = z.union([
 export const blockActionUpdateInputSchema = z.object({
   gtmEventName: z
     .string()
+    .nullable()
+    .optional()
     .describe('Google Tag Manager event name for analytics.'),
   email: z
     .string()
+    .nullable()
     .optional()
     .describe(
       'Email to send to. If this is provided, you must not provide the url, target and blockId fields'
     ),
   url: z
     .string()
+    .nullable()
     .optional()
     .describe(
       'URL to navigate to. If this is provided, you must not provide the email, blockId. You must also provide a target.'
     ),
   target: z
     .string()
+    .nullable()
     .optional()
     .describe(
       'Target of the link like _blank, _self, etc. If this is provided, you must not provide the email, blockId. You must also provide a url.'
     ),
   blockId: z
     .string()
+    .nullable()
     .optional()
     .describe(
       'ID of the block to navigate to. If this is provided, you must not provide the email, url and target fields.'

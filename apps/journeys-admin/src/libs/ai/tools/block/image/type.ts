@@ -1,6 +1,13 @@
 import { z } from 'zod'
 
-import { ImageBlockUpdateInput } from '../../../../../../__generated__/globalTypes'
+import {
+  ImageBlockClassNamesInput,
+  ImageBlockUpdateInput
+} from '../../../../../../__generated__/globalTypes'
+
+export const imageBlockClassNamesInputSchema = z.object({
+  self: z.string().describe('Tailwind CSS class names for the image element')
+}) satisfies z.ZodType<ImageBlockClassNamesInput>
 
 export const blockImageUpdateInputSchema = z.object({
   parentBlockId: z
@@ -43,5 +50,9 @@ export const blockImageUpdateInputSchema = z.object({
     .number()
     .nullable()
     .optional()
-    .describe('The focal point position from the left (percentage)')
+    .describe('The focal point position from the left (percentage)'),
+  classNames: imageBlockClassNamesInputSchema
+    .nullable()
+    .optional()
+    .describe('Tailwind CSS class names for styling the image element')
 }) satisfies z.ZodType<ImageBlockUpdateInput>

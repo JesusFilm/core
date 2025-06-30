@@ -2,11 +2,18 @@ import { z } from 'zod'
 
 import { BlockFields_RadioOptionBlock } from '../../../../../../__generated__/BlockFields'
 import {
+  RadioOptionBlockClassNamesInput,
   RadioOptionBlockCreateInput,
   RadioOptionBlockUpdateInput
 } from '../../../../../../__generated__/globalTypes'
 import { actionSchema } from '../action/type'
 import { blockSchema } from '../type'
+
+export const radioOptionBlockClassNamesInputSchema = z.object({
+  self: z
+    .string()
+    .describe('Tailwind CSS class names for the radio option element')
+}) satisfies z.ZodType<RadioOptionBlockClassNamesInput>
 
 export const blockRadioOptionSchema = blockSchema.extend({
   __typename: z.literal('RadioOptionBlock'),
@@ -22,6 +29,18 @@ export const blockRadioOptionCreateInputSchema = z.object({
 }) satisfies z.ZodType<RadioOptionBlockCreateInput>
 
 export const blockRadioOptionUpdateInputSchema = z.object({
-  parentBlockId: z.string().optional().describe('ID of the parent block'),
-  label: z.string().optional().describe('Label of the radio option block')
+  parentBlockId: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('ID of the parent block'),
+  label: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('Label of the radio option block'),
+  classNames: radioOptionBlockClassNamesInputSchema
+    .nullable()
+    .optional()
+    .describe('Tailwind CSS class names for styling the radio option element')
 }) satisfies z.ZodType<RadioOptionBlockUpdateInput>

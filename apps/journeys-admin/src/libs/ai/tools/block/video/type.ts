@@ -5,11 +5,16 @@ import {
   BlockFields_VideoBlock_mediaVideo
 } from '../../../../../../__generated__/BlockFields'
 import {
+  VideoBlockClassNamesInput,
   VideoBlockObjectFit,
   VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../../../../__generated__/globalTypes'
 import { actionSchema } from '../action/type'
+
+export const videoBlockClassNamesInputSchema = z.object({
+  self: z.string().describe('Tailwind CSS class names for the video element')
+}) satisfies z.ZodType<VideoBlockClassNamesInput>
 
 export const blockVideoSourceEnum = z
   .nativeEnum(VideoBlockSource)
@@ -72,7 +77,11 @@ export const blockVideoUpdateInputSchema = z.object({
   objectFit: blockVideoObjectFitEnum
     .nullable()
     .optional()
-    .describe('How the video should fit within its container')
+    .describe('How the video should fit within its container'),
+  classNames: videoBlockClassNamesInputSchema
+    .nullable()
+    .optional()
+    .describe('Tailwind CSS class names for styling the video element')
 }) satisfies z.ZodType<VideoBlockUpdateInput>
 
 const videoTitleSchema = z.object({
