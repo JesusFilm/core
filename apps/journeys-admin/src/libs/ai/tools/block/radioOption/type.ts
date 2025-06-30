@@ -22,10 +22,18 @@ export const blockRadioOptionSchema = blockSchema.extend({
 }) satisfies z.ZodType<BlockFields_RadioOptionBlock>
 
 export const blockRadioOptionCreateInputSchema = z.object({
-  id: z.string().optional().describe('Optional ID for the new block'),
+  id: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('Optional ID for the new block'),
   journeyId: z.string().describe('ID of the journey this block belongs to'),
   parentBlockId: z.string().describe('ID of the parent block'),
-  label: z.string().describe('Label of the radio option block')
+  label: z.string().describe('Label of the radio option block'),
+  classNames: radioOptionBlockClassNamesInputSchema
+    .nullable()
+    .optional()
+    .describe('Tailwind CSS class names for styling the radio option element')
 }) satisfies z.ZodType<RadioOptionBlockCreateInput>
 
 export const blockRadioOptionUpdateInputSchema = z.object({

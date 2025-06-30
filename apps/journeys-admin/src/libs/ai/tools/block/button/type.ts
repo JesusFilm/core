@@ -35,26 +35,33 @@ export const blockButtonSchema = blockSchema.extend({
   action: actionSchema
 }) satisfies z.ZodType<BlockFields_ButtonBlock>
 
-export const blockButtonCreateInputSchema = blockButtonSchema
-  .pick({
-    journeyId: true,
-    parentBlockId: true,
-    label: true,
-    size: true,
-    submitEnabled: true
-  })
-  .extend({
-    parentBlockId: z
-      .string()
-      .describe(
-        'ID of the parent block. The parent block must be a card block!'
-      ),
-    variant: buttonVariantEnum
-      .nullable()
-      .optional()
-      .describe('Variant of the button'),
-    color: buttonColorEnum.nullable().optional().describe('Color of the button')
-  }) satisfies z.ZodType<ButtonBlockCreateInput>
+export const blockButtonCreateInputSchema = z.object({
+  id: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('Unique identifier for the block'),
+  journeyId: z.string().describe('ID of the journey this block belongs to'),
+  parentBlockId: z
+    .string()
+    .describe('ID of the parent block. The parent block must be a card block!'),
+  label: z.string().describe('Label for the button'),
+  variant: buttonVariantEnum
+    .nullable()
+    .optional()
+    .describe('Variant of the button'),
+  color: buttonColorEnum.nullable().optional().describe('Color of the button'),
+  size: buttonSizeEnum.nullable().optional().describe('Size of the button'),
+  submitEnabled: z
+    .boolean()
+    .nullable()
+    .optional()
+    .describe('Whether the button is enabled'),
+  classNames: buttonBlockClassNamesInputSchema
+    .nullable()
+    .optional()
+    .describe('Tailwind CSS class names for styling the button element')
+}) satisfies z.ZodType<ButtonBlockCreateInput>
 
 export const blockButtonUpdateInputSchema = z.object({
   parentBlockId: z

@@ -1,4 +1,5 @@
 export {
+  blockVideoCreateInputSchema,
   blockVideoObjectFitEnum,
   blockVideoSourceEnum,
   blockVideoUpdateInputSchema,

@@ -1,3 +1,6 @@
 export { blockImageCreate } from './create'
 export { blockImageUpdate } from './update'
-export { blockImageUpdateInputSchema } from './type'
+export {
+  blockImageCreateInputSchema,
+  blockImageUpdateInputSchema
+} from './type'

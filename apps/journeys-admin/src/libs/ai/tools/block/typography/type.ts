@@ -41,17 +41,32 @@ export const blockTypographySchema = blockSchema.extend({
 }) satisfies z.ZodType<BlockFields_TypographyBlock>
 
 export const blockTypographyCreateInputSchema = z.object({
-  id: z.string().optional().describe('Optional ID for the new block'),
+  id: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('Optional ID for the new block'),
   journeyId: z.string().describe('ID of the journey this block belongs to'),
   parentBlockId: z
     .string()
     .describe('ID of the parent block. The parent block must be a card block!'),
   content: z.string().describe('Text content of the typography block'),
   variant: blockTypographyVariantEnum
+    .nullable()
     .optional()
     .describe('Typography style variant'),
-  color: blockTypographyColorEnum.optional().describe('Color of the text'),
-  align: blockTypographyAlignEnum.optional().describe('Text alignment')
+  color: blockTypographyColorEnum
+    .nullable()
+    .optional()
+    .describe('Color of the text'),
+  align: blockTypographyAlignEnum
+    .nullable()
+    .optional()
+    .describe('Text alignment'),
+  classNames: typographyBlockClassNamesInputSchema
+    .nullable()
+    .optional()
+    .describe('Tailwind CSS class names for styling the typography element')
 }) satisfies z.ZodType<TypographyBlockCreateInput>
 
 export const blockTypographyUpdateInputSchema = z.object({

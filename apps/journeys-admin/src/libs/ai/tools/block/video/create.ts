@@ -8,7 +8,13 @@ import {
 } from '../../../../../../__generated__/AiBlockVideoCreateMutation'
 import { VideoBlockCreateInput } from '../../../../../../__generated__/globalTypes'
 
-import { blockVideoUpdateInputSchema } from './type'
+import {
+  blockVideoCreateInputSchema,
+  blockVideoObjectFitEnum,
+  blockVideoSourceEnum,
+  blockVideoUpdateInputSchema,
+  videoBlockClassNamesInputSchema
+} from './type'
 
 export const AI_BLOCK_VIDEO_CREATE = gql`
   mutation AiBlockVideoCreateMutation($input: VideoBlockCreateInput!) {
@@ -17,10 +23,6 @@ export const AI_BLOCK_VIDEO_CREATE = gql`
     }
   }
 `
-
-export const blockVideoCreateInputSchema = blockVideoUpdateInputSchema.merge(
-  z.object({ journeyId: z.string(), parentBlockId: z.string() })
-) satisfies z.ZodType<VideoBlockCreateInput>
 
 export function blockVideoCreate(
   client: ApolloClient<NormalizedCacheObject>

@@ -38,31 +38,52 @@ export const blockCardSchema = blockSchema.extend({
   action: actionSchema
 }) satisfies z.ZodType<BlockFields_CardBlock>
 
-export const blockCardCreateInputSchema = blockCardSchema
-  .pick({
-    id: true,
-    journeyId: true,
-    parentBlockId: true,
-    backgroundColor: true,
-    backdropBlur: true,
-    fullscreen: true,
-    themeMode: true,
-    themeName: true
-  })
-  .merge(
-    z.object({
-      backgroundColor: z
-        .string()
-        .describe(
-          'Background color of the card (hex). Use #30313D as the default value if no other color is specified.'
-        ),
-      parentBlockId: z
-        .string()
-        .describe(
-          'ID of the parent block. This should be the step block that the card is inside of.'
-        )
-    })
-  ) satisfies z.ZodType<CardBlockCreateInput>
+export const blockCardCreateInputSchema = z.object({
+  id: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('Unique identifier for the block'),
+  journeyId: z.string().describe('ID of the journey this block belongs to'),
+  parentBlockId: z
+    .string()
+    .describe(
+      'ID of the parent block. This should be the step block that the card is inside of.'
+    ),
+  backgroundColor: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      'Background color of the card (hex). Use #30313D as the default value if no other color is specified.'
+    ),
+  backdropBlur: z
+    .number()
+    .nullable()
+    .optional()
+    .describe('Backdrop blur value for the card'),
+  fullscreen: z
+    .boolean()
+    .nullable()
+    .optional()
+    .describe('Whether the card is fullscreen'),
+  themeMode: themeModeEnum
+    .nullable()
+    .optional()
+    .describe(
+      'Theme mode of the card. Use dark as the default value if no other theme mode is specified.'
+    ),
+  themeName: themeNameEnum
+    .nullable()
+    .optional()
+    .describe(
+      'Theme name of the card. Use base as the default value if no other theme name is specified.'
+    ),
+  classNames: cardBlockClassNamesInputSchema
+    .nullable()
+    .optional()
+    .describe('Tailwind CSS class names for styling the card element')
+}) satisfies z.ZodType<CardBlockCreateInput>
 
 export const blockCardUpdateInputSchema = z.object({
   parentBlockId: z

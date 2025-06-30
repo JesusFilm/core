@@ -6,8 +6,13 @@ import {
   AiBlockImageCreateMutation,
   AiBlockImageCreateMutationVariables
 } from '../../../../../../__generated__/AiBlockImageCreateMutation'
+import { ImageBlockCreateInput } from '../../../../../../__generated__/globalTypes'
 
-import { blockImageUpdateInputSchema } from './type'
+import {
+  blockImageCreateInputSchema,
+  blockImageUpdateInputSchema,
+  imageBlockClassNamesInputSchema
+} from './type'
 
 export const AI_BLOCK_IMAGE_CREATE = gql`
   mutation AiBlockImageCreateMutation($input: ImageBlockCreateInput!) {
@@ -16,10 +21,6 @@ export const AI_BLOCK_IMAGE_CREATE = gql`
     }
   }
 `
-
-export const blockImageCreateInputSchema = blockImageUpdateInputSchema.merge(
-  z.object({ journeyId: z.string(), alt: z.string().default('') })
-)
 
 export function blockImageCreate(
   client: ApolloClient<NormalizedCacheObject>

@@ -6,6 +6,7 @@ import {
 } from '../../../../../../__generated__/BlockFields'
 import {
   VideoBlockClassNamesInput,
+  VideoBlockCreateInput,
   VideoBlockObjectFit,
   VideoBlockSource,
   VideoBlockUpdateInput
@@ -199,3 +200,80 @@ export const blockVideoUpdateSchema = z.object({
     .describe('Action to perform when the video ends'),
   mediaVideo: mediaVideoSchema
 }) satisfies z.ZodType<BlockFields_VideoBlock>
+
+export const blockVideoCreateInputSchema = z.object({
+  id: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('Unique identifier for the block'),
+  journeyId: z.string().describe('ID of the journey this block belongs to'),
+  parentBlockId: z.string().describe('ID of the parent block'),
+  startAt: z
+    .number()
+    .nullable()
+    .optional()
+    .describe('The start time of the video in seconds'),
+  endAt: z
+    .number()
+    .nullable()
+    .optional()
+    .describe('The end time of the video in seconds'),
+  duration: z
+    .number()
+    .nullable()
+    .optional()
+    .describe('The duration of the video in seconds'),
+  description: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('Description of the video'),
+  muted: z
+    .boolean()
+    .nullable()
+    .optional()
+    .describe('Whether the video should be muted by default'),
+  autoplay: z
+    .boolean()
+    .nullable()
+    .optional()
+    .describe('Whether the video should autoplay'),
+  videoId: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('ID of the video from the video service'),
+  videoVariantLanguageId: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('Language variant ID for the video'),
+  source: blockVideoSourceEnum
+    .nullable()
+    .optional()
+    .describe('Source of the video (internal, youTube, etc.)'),
+  posterBlockId: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('ID of the poster image block'),
+  fullsize: z
+    .boolean()
+    .nullable()
+    .optional()
+    .describe('Whether the video should display in full size'),
+  isCover: z
+    .boolean()
+    .nullable()
+    .optional()
+    .describe('Whether this video is used as a cover'),
+  objectFit: blockVideoObjectFitEnum
+    .nullable()
+    .optional()
+    .describe('How the video should fit within its container'),
+  classNames: videoBlockClassNamesInputSchema
+    .nullable()
+    .optional()
+    .describe('Tailwind CSS class names for styling the video element')
+}) satisfies z.ZodType<VideoBlockCreateInput>
