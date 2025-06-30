@@ -66,5 +66,6 @@ export const LANGUAGE_CODES = {
   id: '16639',
   ja: '7083',
   vi: '3887',
-  th: '13169'
+  th: '13169',
+  bn: '176243'
 }
