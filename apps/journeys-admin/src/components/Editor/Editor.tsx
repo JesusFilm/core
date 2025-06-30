@@ -1,3 +1,4 @@
+import dynamic from 'next/dynamic'
 import { User } from 'next-firebase-auth'
 import { ReactElement } from 'react'
 import { HotkeysProvider } from 'react-hotkeys-hook'
