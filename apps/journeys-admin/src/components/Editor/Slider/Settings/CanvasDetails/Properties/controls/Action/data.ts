@@ -28,6 +28,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             id: 'image0.id',
@@ -110,6 +111,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             id: 'image1.id',
@@ -211,6 +213,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             id: 'image2.id',
@@ -322,6 +325,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             id: 'image3.id',
@@ -439,6 +443,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             id: 'image4.id',

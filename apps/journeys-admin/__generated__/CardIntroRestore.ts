@@ -64,6 +64,10 @@ export interface CardIntroRestore_subtitle_CardBlock {
    */
   backgroundColor: string | null;
   /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
+  /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
    * as a background. Blocks are often of type ImageBlock or VideoBlock.
@@ -488,6 +492,10 @@ export interface CardIntroRestore_title_CardBlock {
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
   backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
@@ -914,6 +922,10 @@ export interface CardIntroRestore_body_CardBlock {
    */
   backgroundColor: string | null;
   /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
+  /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
    * as a background. Blocks are often of type ImageBlock or VideoBlock.
@@ -1338,6 +1350,10 @@ export interface CardIntroRestore_button_CardBlock {
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
   backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
@@ -1764,6 +1780,10 @@ export interface CardIntroRestore_startIcon_CardBlock {
    */
   backgroundColor: string | null;
   /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
+  /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
    * as a background. Blocks are often of type ImageBlock or VideoBlock.
@@ -2189,6 +2209,10 @@ export interface CardIntroRestore_endIcon_CardBlock {
    */
   backgroundColor: string | null;
   /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
+  /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
    * as a background. Blocks are often of type ImageBlock or VideoBlock.
@@ -2613,6 +2637,10 @@ export interface CardIntroRestore_video_CardBlock {
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
   backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used

@@ -69,6 +69,15 @@ export function Button({
       </Accordion>
 
       <Accordion
+        id={`${id}-button-variant`}
+        icon={<TransformIcon />}
+        name={t('Variant')}
+        value={capitalize(buttonVariant?.toString() ?? ButtonVariant.contained)}
+      >
+        <Variant />
+      </Accordion>
+
+      <Accordion
         id={`${id}-button-color`}
         icon={<ColorDisplayIcon color={buttonColor} />}
         name={t('Color')}
@@ -84,15 +93,6 @@ export function Button({
         value={capitalize(size?.toString() ?? ButtonSize.medium)}
       >
         <Size />
-      </Accordion>
-
-      <Accordion
-        id={`${id}-button-variant`}
-        icon={<TransformIcon />}
-        name={t('Variant')}
-        value={capitalize(buttonVariant?.toString() ?? ButtonVariant.contained)}
-      >
-        <Variant />
       </Accordion>
 
       <Accordion

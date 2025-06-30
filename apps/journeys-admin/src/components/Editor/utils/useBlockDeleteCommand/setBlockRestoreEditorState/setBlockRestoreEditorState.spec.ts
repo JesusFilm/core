@@ -34,6 +34,7 @@ describe('setBlockRestoreEditorState', () => {
         children: [],
         coverBlockId: null,
         fullscreen: false,
+        backdropBlur: null,
         id: 'card1.id',
         parentBlockId: 'stepId',
         parentOrder: 0,
