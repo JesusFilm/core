@@ -48,6 +48,7 @@ enum ButtonSize {
 enum ButtonVariant {
   text
   contained
+  outlined
 }
 
 type CardBlock implements Block
@@ -60,6 +61,11 @@ type CardBlock implements Block
 
   """backgroundColor should be a HEX color value e.g #FFFFFF for white."""
   backgroundColor: String @shareable
+
+  """
+  backdropBlur should be a number representing blur amount in pixels e.g 20.
+  """
+  backdropBlur: Int @shareable
 
   """
   coverBlockId is present if a child block should be used as a cover.

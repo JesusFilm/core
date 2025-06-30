@@ -52,7 +52,13 @@ export function AIGallery({
         const src = `https://imagedelivery.net/${
           process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY ?? ''
         }/${data?.createImageBySegmindPrompt?.id}/public`
-        await onChange({ src, alt: `Prompt: ${prompt}` })
+        await onChange({
+          src,
+          alt: `Prompt: ${prompt}`,
+          scale: 100,
+          focalLeft: 50,
+          focalTop: 50
+        })
       } else {
         enqueueSnackbar(t('Something went wrong, please try again!'), {
           variant: 'error',

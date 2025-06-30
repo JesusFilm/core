@@ -599,7 +599,7 @@ export class JourneyPage {
   async clickThreeDotBesideSortByOption() {
     await this.page
       .locator(
-        'div[aria-label="journey status tabs"] button svg[data-testid="MoreIcon"]'
+        'div[aria-label="journey status tabs"] button[data-testid="JourneyListMenuButton"]'
       )
       .click()
   }

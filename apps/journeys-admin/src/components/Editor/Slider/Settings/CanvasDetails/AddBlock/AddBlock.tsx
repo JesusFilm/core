@@ -1,4 +1,4 @@
-import Grid from '@mui/material/Grid'
+import Grid from '@mui/material/GridLegacy'
 import { useTranslation } from 'next-i18next'
 import type { ReactElement } from 'react'
 

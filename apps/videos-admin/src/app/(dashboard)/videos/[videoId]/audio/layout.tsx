@@ -3,6 +3,7 @@
 import { useQuery } from '@apollo/client'
 import AddIcon from '@mui/icons-material/Add'
 import DeleteIcon from '@mui/icons-material/Delete'
+import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import ListItem from '@mui/material/ListItem'
@@ -22,11 +23,14 @@ const GET_ADMIN_VIDEO_VARIANTS = graphql(`
   query GetAdminVideoVariants($id: ID!, $languageId: ID) {
     adminVideo(id: $id) {
       id
+      slug
+      published
       variants(input: { onlyPublished: false }) {
         id
         published
         language {
           id
+          slug
           name(languageId: $languageId) {
             value
           }
@@ -110,8 +114,14 @@ export default function ClientLayout({
             marginTop: 8
           }}
         >
-          {({ index, data }) => {
-            const variant = data[index]
+          {({ index, data: variants }) => {
+            const variant = variants[index]
+            const canPreview =
+              variant.published &&
+              data?.adminVideo?.published &&
+              data?.adminVideo?.slug &&
+              variant.language?.slug
+
             return (
               <ListItem
                 key={variant.id}
@@ -147,29 +157,59 @@ export default function ClientLayout({
                   />
                   <PublishedChip published={variant.published} />
                 </Box>
-                <IconButton
-                  size="small"
-                  onClick={(event) => {
-                    event.stopPropagation()
-                    router.push(
-                      `/videos/${videoId}/audio/${variant.id}/delete`,
-                      {
-                        scroll: false
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <IconButton
+                    size="small"
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      if (canPreview) {
+                        window.open(
+                          `${process.env.NEXT_PUBLIC_WATCH_URL ?? ''}/watch/${data?.adminVideo?.slug}.html/${variant.language.slug}.html`,
+                          '_blank',
+                          'noopener,noreferrer'
+                        )
                       }
-                    )
-                  }}
-                  aria-label="delete variant"
-                  sx={{
-                    color: 'error.main',
-                    ml: 1,
-                    '&:hover': {
-                      backgroundColor: 'error.light',
-                      color: 'error.contrastText'
-                    }
-                  }}
-                >
-                  <DeleteIcon fontSize="small" />
-                </IconButton>
+                    }}
+                    aria-label="preview variant"
+                    disabled={!canPreview}
+                    sx={{
+                      color: canPreview ? 'primary.main' : 'action.disabled',
+                      '&:hover': canPreview
+                        ? {
+                            backgroundColor: 'primary.light',
+                            color: 'primary.contrastText'
+                          }
+                        : {},
+                      '&.Mui-disabled': {
+                        color: 'action.disabled'
+                      }
+                    }}
+                  >
+                    <OpenInNewIcon fontSize="small" />
+                  </IconButton>
+                  <IconButton
+                    size="small"
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      router.push(
+                        `/videos/${videoId}/audio/${variant.id}/delete`,
+                        {
+                          scroll: false
+                        }
+                      )
+                    }}
+                    aria-label="delete variant"
+                    sx={{
+                      color: 'error.main',
+                      '&:hover': {
+                        backgroundColor: 'error.light',
+                        color: 'error.contrastText'
+                      }
+                    }}
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                </Box>
               </ListItem>
             )
           }}

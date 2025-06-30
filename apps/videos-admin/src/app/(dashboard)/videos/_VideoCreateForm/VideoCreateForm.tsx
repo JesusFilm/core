@@ -8,7 +8,7 @@ import { Form, Formik } from 'formik'
 import { ResultOf, VariablesOf, graphql } from 'gql.tada'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useMemo } from 'react'
+import { ReactElement, useMemo, useState } from 'react'
 import { InferType, mixed, object, string } from 'yup'
 
 import { FormSelectField } from '../../../../components/FormSelectField'
@@ -39,6 +39,19 @@ export const GET_PARENT_VIDEO_LABEL = graphql(`
     adminVideo(id: $videoId) {
       id
       label
+      origin {
+        id
+      }
+    }
+  }
+`)
+
+export const GET_VIDEO_ORIGINS = graphql(`
+  query GetVideoOrigins {
+    videoOrigins {
+      id
+      name
+      description
     }
   }
 `)
@@ -64,12 +77,15 @@ export function VideoCreateForm({
   onCreateSuccess
 }: VideoCreateFormProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
   const validationSchema = object().shape({
     id: string().trim().required('ID is required'),
     slug: string().trim().required('Slug is required'),
     label: mixed<VideoLabel>()
       .oneOf(Object.values(VideoLabel))
-      .required('Label is required')
+      .required('Label is required'),
+    originId: string().trim().required('Origin is required')
   })
 
   const router = useRouter()
@@ -78,6 +94,9 @@ export function VideoCreateForm({
     variables: { videoId: parentId || '' },
     skip: !parentId
   })
+
+  const { data: originsData, loading: originsLoading } =
+    useQuery(GET_VIDEO_ORIGINS)
 
   const [createVideo] = useMutation(CREATE_VIDEO)
   const [createEdition] = useMutation(CREATE_EDITION)
@@ -100,58 +119,91 @@ export function VideoCreateForm({
     }
   }, [parentId, parentData])
 
-  const handleSubmit = async (values: InferType<typeof validationSchema>) => {
-    await createVideo({
-      variables: {
-        input: {
-          id: values.id,
-          slug: values.slug,
-          label: values.label,
-          primaryLanguageId: '529',
-          noIndex: false,
-          published: false,
-          childIds: []
-        }
-      },
-      onCompleted: async (data) => {
-        const videoId = data.videoCreate.id
+  // Format origins for dropdown
+  const originOptions = useMemo(() => {
+    if (!originsData?.videoOrigins) return []
 
-        await createEdition({
-          variables: {
-            input: {
-              videoId,
-              name: 'base'
-            }
-          },
-          onCompleted: () => {
+    return originsData.videoOrigins.map((origin) => ({
+      value: origin.id,
+      label: `${origin.id} - ${origin.name}`
+    }))
+  }, [originsData])
+
+  const handleSubmit = async (values: InferType<typeof validationSchema>) => {
+    if (isSubmitting) return
+
+    setIsSubmitting(true)
+
+    try {
+      await createVideo({
+        variables: {
+          input: {
+            id: values.id,
+            slug: values.slug,
+            label: values.label,
+            originId: values.originId,
+            primaryLanguageId: '529',
+            noIndex: false,
+            published: false,
+            childIds: []
+          }
+        },
+        update: (cache, { data }) => {
+          if (!data?.videoCreate) return
+
+          // Invalidate all adminVideos and adminVideosCount queries in the cache
+          // This ensures that any active queries will refetch and show the new video
+          cache.evict({ fieldName: 'adminVideos' })
+          cache.evict({ fieldName: 'adminVideosCount' })
+          cache.gc()
+        },
+        onCompleted: async (data) => {
+          const videoId = data.videoCreate.id
+
+          try {
+            await createEdition({
+              variables: {
+                input: {
+                  videoId,
+                  name: 'base'
+                }
+              }
+            })
+
             enqueueSnackbar('Successfully created video.', {
               variant: 'success'
             })
 
             if (onCreateSuccess != null) {
-              onCreateSuccess(videoId)
+              await onCreateSuccess(videoId)
             } else {
               router.push(`/videos/${videoId}`)
             }
-          },
-          onError: () => {
+          } catch (error) {
             enqueueSnackbar('Failed to create video edition.', {
               variant: 'error'
             })
+          } finally {
+            setIsSubmitting(false)
           }
-        })
-      },
-      onError: () => {
-        // TODO: proper error handling for specific errors
-        enqueueSnackbar('Something went wrong.', { variant: 'error' })
-      }
-    })
+        },
+        onError: () => {
+          // TODO: proper error handling for specific errors
+          enqueueSnackbar('Something went wrong.', { variant: 'error' })
+          setIsSubmitting(false)
+        }
+      })
+    } catch (error) {
+      enqueueSnackbar('Something went wrong.', { variant: 'error' })
+      setIsSubmitting(false)
+    }
   }
 
   const initialValues: InferType<typeof validationSchema> = {
     id: '',
     slug: '',
-    label: suggestedLabel || ('' as VideoLabel)
+    label: suggestedLabel || ('' as VideoLabel),
+    originId: parentData?.adminVideo?.origin?.id || ''
   }
 
   // Get explanatory text for the suggested label
@@ -178,6 +230,13 @@ export function VideoCreateForm({
     >
       <Form data-testid="VideoCreateForm">
         <Stack gap={2}>
+          <FormSelectField
+            name="originId"
+            label="Origin"
+            options={originOptions}
+            fullWidth
+            disabled={originsLoading}
+          />
           <FormTextField name="id" label="ID" fullWidth />
           <FormTextField name="slug" label="Slug" fullWidth />
           <FormSelectField
@@ -206,8 +265,16 @@ export function VideoCreateForm({
             >
               <Typography>Cancel</Typography>
             </Button>
-            <Button variant="contained" type="submit" fullWidth>
-              <Typography>Create</Typography>
+            <Button
+              variant="contained"
+              type="submit"
+              fullWidth
+              sx={{
+                opacity: isSubmitting ? 0.7 : 1,
+                pointerEvents: isSubmitting ? 'none' : 'auto'
+              }}
+            >
+              <Typography>{isSubmitting ? 'Creating...' : 'Create'}</Typography>
             </Button>
           </Stack>
         </Stack>

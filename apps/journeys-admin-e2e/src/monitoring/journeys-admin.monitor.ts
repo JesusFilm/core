@@ -23,8 +23,6 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
       'Email & password environment variables are not set in checkly.'
     )
   }
-  const context = await browser.newContext()
-  const page = await context.newPage()
 
   const email = process.env.PLAYWRIGHT_EMAIL
   const password = process.env.PLAYWRIGHT_PASSWORD
@@ -32,7 +30,15 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
   const startTime = Date.now()
   const stepTiming: { [key: string]: number } = {}
 
+  // Declare variables that need cleanup
+  let context: any = null
+  let page: any = null
+  let previewPage: any = null
+
   try {
+    context = await browser.newContext()
+    page = await context.newPage()
+
     // Step 1: Navigate to login page
     const loginStart = Date.now()
     await page.goto('https://admin.nextstep.is/', { timeout })
@@ -61,20 +67,7 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
     })
     stepTiming['dashboard_load'] = Date.now() - dashboardStart
 
-    // Step 4: Journeys 'Trash All' then 'Delete All Forever'
-    const trashAllStart = Date.now()
-    // Trash all journeys
-    await expect(page.getByTestId('NavigationListItemDiscover')).toBeVisible()
-    await page
-      .getByTestId('journey-list')
-      .getByRole('button')
-      .getByTestId('MoreIcon')
-      .click()
-    await page.getByText('Trash All').click()
-    await page.getByRole('button', { name: 'Trash' }).click()
-    stepTiming['trash_all'] = Date.now() - trashAllStart
-
-    // Step 5: Template selection
+    // Step 4: Template selection
     const templateStart = Date.now()
     await expect(page.getByTestId('NavigationListItemTemplates')).toBeVisible({
       timeout
@@ -93,7 +86,7 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
       .click({ timeout })
     stepTiming['template_selection'] = Date.now() - templateStart
 
-    // Step 6: Template usage and team selection
+    // Step 5: Template usage and team selection
     const teamStart = Date.now()
     await page
       .getByTestId('JourneysAdminTemplateViewHeader')
@@ -106,7 +99,7 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
     await page.getByRole('button', { name: 'Add' }).click({ timeout })
     stepTiming['team_selection'] = Date.now() - teamStart
 
-    // Step 7: Journey editing
+    // Step 6: Journey editing
     const editStart = Date.now()
 
     // Wait for the iframe to be present with explicit timeout
@@ -136,11 +129,11 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
 
     stepTiming['journey_editing'] = Date.now() - editStart
 
-    // Step 8: Preview journey
+    // Step 7: Preview journey
     const previewStart = Date.now()
     await page.getByRole('link', { name: 'Preview' }).click({ timeout })
 
-    const previewPage = await page.waitForEvent('popup', { timeout })
+    previewPage = await page.waitForEvent('popup', { timeout })
 
     const overlayContainer = previewPage.getByTestId(
       'CardOverlayContentContainer'
@@ -176,8 +169,6 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
     })
     // Log total duration as a metric
     console.log(`METRIC total_duration ${totalDuration}`)
-    await page.close()
-    await context.close()
   } catch (error) {
     // Enhanced error logging for monitoring
     console.error('=== Monitoring Alert ===')
@@ -190,8 +181,15 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
   } finally {
     // Ensure resources are cleaned up even on error
     try {
-      if (page && !page.isClosed()) await page.close()
-      if (context) await context.close()
+      if (previewPage && !previewPage.isClosed()) {
+        await previewPage.close()
+      }
+      if (page && !page.isClosed()) {
+        await page.close()
+      }
+      if (context) {
+        await context.close()
+      }
     } catch (cleanupError) {
       console.error('Error during cleanup:', cleanupError)
     }
