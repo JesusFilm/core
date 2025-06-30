@@ -47,19 +47,26 @@ export function SocialPreviewNode(): ReactElement {
   }, [showTooltip])
 
   function handleClick(): void {
-    dispatch({
-      type: 'SetSelectedBlockAction',
-      selectedBlock: undefined
-    })
-    dispatch({ type: 'SetSelectedStepAction', selectedStep: undefined })
-    dispatch({
-      type: 'SetActiveSlideAction',
-      activeSlide: ActiveSlide.Content
-    })
-    dispatch({
-      type: 'SetActiveContentAction',
-      activeContent: ActiveContent.Social
-    })
+    if (activeContent !== ActiveContent.Social) {
+      dispatch({
+        type: 'SetSelectedBlockAction',
+        selectedBlock: undefined
+      })
+      dispatch({ type: 'SetSelectedStepAction', selectedStep: undefined })
+      dispatch({
+        type: 'SetActiveSlideAction',
+        activeSlide: ActiveSlide.JourneyFlow
+      })
+      dispatch({
+        type: 'SetActiveContentAction',
+        activeContent: ActiveContent.Social
+      })
+    } else {
+      dispatch({
+        type: 'SetActiveSlideAction',
+        activeSlide: ActiveSlide.Content
+      })
+    }
   }
 
   async function handleSourceConnect(
@@ -166,9 +173,7 @@ export function SocialPreviewNode(): ReactElement {
                 width: 118.5,
                 height: 90,
                 display: 'flex',
-                flexDirection: 'column',
-                overflow: 'hidden',
-                borderRadius: '5px'
+                flexDirection: 'column'
               }}
             >
               {journey?.primaryImageBlock?.src == null ? (
@@ -194,8 +199,7 @@ export function SocialPreviewNode(): ReactElement {
                   style={{
                     borderRadius: 5,
                     maxWidth: '100%',
-                    objectFit: 'cover',
-                    objectPosition: `${journey.primaryImageBlock.focalLeft ?? 50}% ${journey.primaryImageBlock.focalTop ?? 50}%`
+                    objectFit: 'cover'
                   }}
                 />
               )}

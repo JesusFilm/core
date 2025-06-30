@@ -108,10 +108,6 @@ describe('Editor', () => {
     } as unknown as NextRouter)
   })
 
-  afterEach(() => {
-    jest.clearAllMocks()
-  })
-
   it('should render the Toolbar', () => {
     render(
       <MockedProvider>
@@ -125,8 +121,22 @@ describe('Editor', () => {
     expect(screen.getByTestId('Toolbar')).toBeInTheDocument()
   })
 
+  it('should render the Slider', async () => {
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <ThemeProvider>
+            <Editor journey={journey} />
+          </ThemeProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    expect(screen.getByTestId('Slider')).toBeInTheDocument()
+  })
+
   it('should render the Fab', async () => {
     ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
+
     render(
       <MockedProvider>
         <SnackbarProvider>
@@ -212,21 +222,5 @@ describe('Editor', () => {
     await waitFor(() =>
       expect(screen.getByText('Test selected step')).toBeInTheDocument()
     )
-  })
-
-  describe('mdDown', () => {
-    it('should render the Slider', async () => {
-      ;(useMediaQuery as jest.Mock).mockImplementation(() => false)
-      render(
-        <MockedProvider>
-          <SnackbarProvider>
-            <ThemeProvider>
-              <Editor journey={journey} />
-            </ThemeProvider>
-          </SnackbarProvider>
-        </MockedProvider>
-      )
-      expect(screen.getByTestId('Slider')).toBeInTheDocument()
-    })
   })
 })

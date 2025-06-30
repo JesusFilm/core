@@ -6,7 +6,6 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyAnalytics } from '@core/journeys/ui/useJourneyAnalyticsQuery/useJourneyAnalyticsQuery.mock'
 
 import { GetJourney_journey } from '../../../../../../__generated__/GetJourney'
-import { TestEditorState } from '../../../../../libs/TestEditorState'
 
 import { earliestStatsCollected } from './AnalyticsOverlaySwitch'
 
@@ -52,7 +51,6 @@ describe('AnalyticsOverlaySwitch', () => {
                   {showAnalytics?.toString()}
                 </div>
                 <div data-testid="analytics">{JSON.stringify(analytics)}</div>
-                <TestEditorState />
                 <AnalyticsOverlaySwitch />
               </>
             )}
@@ -78,7 +76,6 @@ describe('AnalyticsOverlaySwitch', () => {
       targetMap: {}
     })
     screen.getByRole('checkbox').click()
-    expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
     expect(showAnalytics).toHaveTextContent('false')
   })
 })

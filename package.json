@@ -195,7 +195,7 @@
     "stylis": "^4.3.0",
     "stylis-plugin-rtl": "^2.1.1",
     "subscriptions-transport-ws": "^0.11.0",
-    "swiper": "^11.2.8",
+    "swiper": "^11.0.3",
     "swr": "^2.0.0",
     "tailwind-merge": "^3.3.1",
     "ts-morph": "^24.0.0",
@@ -367,9 +367,6 @@
     "workerDirectory": "./.storybook/static"
   },
   "overrides": {
-    "react-is": "^18.3.1",
-    "html-tokenize": {
-      "readable-stream": "^2.3.8"
-    }
+    "react-is": "^18.3.1"
   }
 }

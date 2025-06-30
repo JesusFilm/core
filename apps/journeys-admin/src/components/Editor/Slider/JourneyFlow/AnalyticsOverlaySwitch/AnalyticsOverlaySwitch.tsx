@@ -5,7 +5,7 @@ import { formatISO } from 'date-fns'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useJourneyAnalyticsQuery } from '@core/journeys/ui/useJourneyAnalyticsQuery'
 
@@ -32,10 +32,6 @@ export function AnalyticsOverlaySwitch(): ReactElement {
       dispatch({
         type: 'SetAnalyticsAction',
         analytics
-      })
-      dispatch({
-        type: 'SetActiveSlideAction',
-        activeSlide: ActiveSlide.JourneyFlow
       })
     }
   })

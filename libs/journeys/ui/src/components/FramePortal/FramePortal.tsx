@@ -18,9 +18,6 @@ import { createPortal } from 'react-dom'
 import { prefixer } from 'stylis'
 import rtlPlugin from 'stylis-plugin-rtl'
 
-// Import the globals.css to ensure Tailwind styles are available
-import '../../globals.css'
-
 interface ContentProps {
   children: ReactNode
   document: Document
@@ -28,109 +25,14 @@ interface ContentProps {
 
 function Content({ children, document }: ContentProps): ReactElement {
   const cache = useMemo(() => {
-    // Copy the parent document's head content completely
-    document.head.innerHTML = window.document.head.innerHTML
+    document.head.innerHTML = `${window.document.head.innerHTML}<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans&family=El+Messiri:wght@400;600;700&display=swap" rel="stylesheet" />`
 
-    // Add the Google Fonts link if not already present
-    const googleFontsHref =
-      'https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans&family=El+Messiri:wght@400;600;700&display=swap'
-    if (!document.querySelector(`link[href="${googleFontsHref}"]`)) {
-      const googleFontsLink = document.createElement('link')
-      googleFontsLink.href = googleFontsHref
-      googleFontsLink.rel = 'stylesheet'
-      document.head.appendChild(googleFontsLink)
-    }
-
-    // Find and boost Tailwind utility specificity to override MUI
-    const tailwindBoostStyle = document.createElement('style')
-    tailwindBoostStyle.setAttribute('data-tailwind-boost', 'true')
-
-    // Create CSS that gives Tailwind utilities higher specificity than MUI
-    let boostCSS = `
-      /* Boost Tailwind utility specificity to override MUI CSS-in-JS */
-      /* Background utilities */
-    `
-
-    // Find all Tailwind background utilities in the copied styles
-    const allStyles = Array.from(document.querySelectorAll('style'))
-      .map((style) => style.textContent || '')
-      .join('\n')
-
-    // Extract background utilities and boost their specificity
-    const bgMatches = allStyles.match(/\.bg-[a-zA-Z0-9-]+\s*{[^}]+}/g) || []
-    bgMatches.forEach((rule) => {
-      const className = rule.match(/\.bg-[a-zA-Z0-9-]+/)?.[0]
-      if (className) {
-        boostCSS += `
-          .MuiButton-root${className},
-          .MuiBox-root${className},
-          .MuiTypography-root${className},
-          [class*="Mui"]${className} {
-            ${rule.replace(/\.bg-[a-zA-Z0-9-]+\s*{/, '').replace('}', '')}
-            background-image: none !important;
-          }
-        `
-      }
-    })
-
-    // Extract text utilities and boost their specificity
-    const textMatches = allStyles.match(/\.text-[a-zA-Z0-9-]+\s*{[^}]+}/g) || []
-    textMatches.forEach((rule) => {
-      const className = rule.match(/\.text-[a-zA-Z0-9-]+/)?.[0]
-      if (className) {
-        boostCSS += `
-          .MuiButton-root${className},
-          .MuiBox-root${className},
-          .MuiTypography-root${className},
-          [class*="Mui"]${className} {
-            ${rule.replace(/\.text-[a-zA-Z0-9-]+\s*{/, '').replace('}', '')}
-          }
-        `
-      }
-    })
-
-    // Extract other common utilities (padding, margin, flex, etc.)
-    const otherUtilities = [
-      /\.p-[a-zA-Z0-9-]+\s*{[^}]+}/g,
-      /\.m-[a-zA-Z0-9-]+\s*{[^}]+}/g,
-      /\.px-[a-zA-Z0-9-]+\s*{[^}]+}/g,
-      /\.py-[a-zA-Z0-9-]+\s*{[^}]+}/g,
-      /\.mx-[a-zA-Z0-9-]+\s*{[^}]+}/g,
-      /\.my-[a-zA-Z0-9-]+\s*{[^}]+}/g,
-      /\.flex\s*{[^}]+}/g,
-      /\.font-[a-zA-Z0-9-]+\s*{[^}]+}/g,
-      /\.rounded[a-zA-Z0-9-]*\s*{[^}]+}/g
-    ]
-
-    otherUtilities.forEach((regex) => {
-      const matches = allStyles.match(regex) || []
-      matches.forEach((rule) => {
-        const className = rule.match(/\.[a-zA-Z0-9-]+/)?.[0]
-        if (className) {
-          boostCSS += `
-            .MuiButton-root${className},
-            .MuiBox-root${className},
-            .MuiTypography-root${className},
-            [class*="Mui"]${className} {
-              ${rule.replace(/\.[a-zA-Z0-9-]+\s*{/, '').replace('}', '')}
-            }
-          `
-        }
-      })
-    })
-
-    tailwindBoostStyle.textContent = boostCSS
-    document.head.appendChild(tailwindBoostStyle)
-
-    // Create the Emotion cache that will work with the iframe document
-    const iframeCache = createCache({
+    return createCache({
       key: 'iframe',
       container: document.head,
-      prepend: false, // Don't prepend, let it append after existing styles
+      prepend: true,
       stylisPlugins: document.dir === 'rtl' ? [prefixer, rtlPlugin] : []
     })
-
-    return iframeCache
   }, [document])
 
   useEffect(() => {

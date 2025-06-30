@@ -87,16 +87,12 @@ export function Slider(): ReactElement {
     [breakpoints.values.xs]: {
       direction: 'vertical',
       centeredSlides: true,
-      centeredSlidesBounds: true,
-      spaceBetween: 0,
-      slidesPerView: 1.1
+      centeredSlidesBounds: true
     },
     [breakpoints.values.md]: {
       direction: 'horizontal',
       centeredSlides: false,
-      centeredSlidesBounds: false,
-      slidesPerView: 'auto',
-      spaceBetween: 0
+      centeredSlidesBounds: false
     }
   }
 
@@ -149,6 +145,7 @@ export function Slider(): ReactElement {
       data-testid="Slider"
       ref={swiperRef}
       grabCursor
+      slidesPerView="auto"
       breakpoints={swiperBreakpoints}
       onActiveIndexChange={(swiper) => {
         dispatch({
@@ -251,7 +248,10 @@ export function Slider(): ReactElement {
         sx={{
           p: { xs: 0, md: 4 },
           width: { xs: '100%', md: 'calc(100% - 408px)' },
-          height: '100%'
+          height: {
+            xs: `calc(100svh - ${EDIT_TOOLBAR_HEIGHT}px - 50px)`,
+            md: '100%'
+          }
         }}
       >
         <Box
@@ -269,14 +269,17 @@ export function Slider(): ReactElement {
             overflow: 'hidden'
           }}
         >
-          <JourneyFlow flowType="mobile" />
+          <JourneyFlow />
         </Box>
       </StyledSwiperSlide>
       <StyledSwiperSlide
         sx={{
           p: { xs: 0, md: 4 },
           width: { xs: '100%', md: 'calc(100% - 120px - 360px)' },
-          height: '100%',
+          height: {
+            xs: `calc(100svh - ${EDIT_TOOLBAR_HEIGHT}px - 100px)`,
+            md: '100%'
+          },
           display: 'flex',
           flexDirection: { xs: 'column', md: 'row' },
           justifyContent: { md: 'space-between' },
@@ -293,11 +296,10 @@ export function Slider(): ReactElement {
             },
             alignItems: 'center',
             justifyContent: 'center',
-            height: '40px',
-            flexShrink: 0
+            height: '40px'
           }}
         >
-          <Zoom in={activeSlide !== ActiveSlide.Content}>
+          <Zoom in={activeSlide === ActiveSlide.JourneyFlow}>
             <Box
               sx={{
                 width: 56,
@@ -308,16 +310,7 @@ export function Slider(): ReactElement {
             />
           </Zoom>
         </Box>
-        <Box
-          sx={{
-            flexGrow: 1,
-            display: 'flex',
-            overflow: 'hidden',
-            height: '100%'
-          }}
-        >
-          <Content />
-        </Box>
+        <Content />
       </StyledSwiperSlide>
       <StyledSwiperSlide
         sx={{
@@ -327,7 +320,10 @@ export function Slider(): ReactElement {
             xs: '100%',
             md: DRAWER_WIDTH + Number.parseInt(theme.spacing(8)) // 328 DRAWER_WIDTH + 16px * 2 (padding L & R)
           }),
-          height: '100%',
+          height: {
+            xs: `calc(100svh - ${EDIT_TOOLBAR_HEIGHT}px - 50px)`,
+            md: '100%'
+          },
           pointerEvents: showAnalytics === true ? 'none' : 'auto'
         }}
       >

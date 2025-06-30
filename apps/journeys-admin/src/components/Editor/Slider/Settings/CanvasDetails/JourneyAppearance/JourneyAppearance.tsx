@@ -6,7 +6,7 @@ import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 
-import { EditorDrawer } from '../../Drawer/EditorDrawer'
+import { Drawer } from '../../Drawer'
 import { WebsiteToggle } from '../WebsiteToggle'
 
 const Reactions = dynamic(
@@ -78,7 +78,7 @@ export function JourneyAppearance(): ReactElement {
   }, [dispatch])
 
   return (
-    <EditorDrawer title={t('Journey Appearance')} onClose={onClose}>
+    <Drawer title={t('Journey Appearance')} onClose={onClose}>
       {websiteMode && <WebsiteToggle />}
       {journey?.website === true ? (
         <>
@@ -95,6 +95,6 @@ export function JourneyAppearance(): ReactElement {
           <Chat />
         </>
       )}
-    </EditorDrawer>
+    </Drawer>
   )
 }
