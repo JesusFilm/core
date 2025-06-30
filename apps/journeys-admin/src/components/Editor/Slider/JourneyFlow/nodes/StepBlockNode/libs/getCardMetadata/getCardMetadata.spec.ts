@@ -154,6 +154,7 @@ const card: TreeBlock<CardBlock> = {
   themeMode: null,
   themeName: null,
   fullscreen: false,
+  backdropBlur: null,
   children: [image, typography, button1, radioQuestionBlock]
 }
 

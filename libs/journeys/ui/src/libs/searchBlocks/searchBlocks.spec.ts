@@ -15,6 +15,7 @@ describe('searchBlocks', () => {
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             __typename: 'TypographyBlock',
@@ -81,6 +82,7 @@ describe('searchBlocks', () => {
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             __typename: 'TypographyBlock',

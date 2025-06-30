@@ -39,6 +39,7 @@ describe('AddBlock', () => {
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             id: 'typography0.id',

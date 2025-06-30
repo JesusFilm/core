@@ -47,6 +47,7 @@ const block: TreeBlock<Block> = {
       themeMode: null,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: [
         {
           id: 'image0.id',

@@ -88,6 +88,7 @@ const card: TreeBlock<CardBlock> = {
   themeMode: null,
   themeName: null,
   fullscreen: false,
+  backdropBlur: null,
   children: [image, button, radioQuestionBlock]
 }
 
