@@ -56,7 +56,6 @@ export function agentGetPersonalizationQuestions(
 
         return personalizationQuestions
       } catch (error) {
-        console.error('Error getting personalization questions:', error)
         return { error: 'Failed to get personalization questions' }
       }
     }
