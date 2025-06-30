@@ -46,7 +46,7 @@ resource "aws_security_group" "eks-cluster" {
 resource "aws_eks_cluster" "this" {
   name     = "${var.name}-${var.env}"
   role_arn = aws_iam_role.eks-cluster.arn
-  version  = "1.31"
+  version  = "1.30"
 
   vpc_config {
     security_group_ids = concat([aws_security_group.eks-cluster.id], var.security_group_ids)
