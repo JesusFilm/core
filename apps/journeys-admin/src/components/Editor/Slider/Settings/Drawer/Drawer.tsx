@@ -10,7 +10,7 @@ import type { ReactElement, ReactNode } from 'react'
 
 import X2Icon from '@core/shared/ui/icons/X2'
 
-import { DRAWER_WIDTH, EDIT_TOOLBAR_HEIGHT } from '../../../constants'
+import { DRAWER_WIDTH } from '../../../constants'
 
 interface DrawerTitleProps {
   title?: string
@@ -110,7 +110,7 @@ export function Drawer({
           borderBottomRightRadius: 0,
           width: { xs: 'auto', md: DRAWER_WIDTH },
           left: { xs: 0, md: 'auto' },
-          top: { xs: 0, md: `calc(15px + ${EDIT_TOOLBAR_HEIGHT}px)` },
+          top: { xs: 0, md: 15 },
           right: { xs: 0, md: 16 },
           bottom: 0,
           height: 'calc(100% - 20px)'
@@ -121,11 +121,7 @@ export function Drawer({
       <Box
         data-testid="SettingsDrawerContent"
         className="swiper-no-swiping"
-        sx={{
-          flexGrow: 1,
-          overflow: 'auto',
-          mb: { md: 4 }
-        }}
+        sx={{ flexGrow: 1, overflow: 'auto', mb: { md: 4 } }}
       >
         {children}
       </Box>

@@ -1,6 +1,3 @@
-import { Theme } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
-import dynamic from 'next/dynamic'
 import { User } from 'next-firebase-auth'
 import { ReactElement } from 'react'
 import { HotkeysProvider } from 'react-hotkeys-hook'
@@ -15,7 +12,6 @@ import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney
 
 import { Fab } from './Fab'
 import { Hotkeys } from './Hotkeys'
-import { SinglePageEditor } from './SinglePageEditor/SinglePageEditor'
 import { Slider } from './Slider'
 import { Toolbar } from './Toolbar'
 
@@ -45,7 +41,6 @@ export function Editor({
   initialState,
   user
 }: EditorProps): ReactElement {
-  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
   const steps =
     journey != null
       ? (transformer(journey.blocks ?? []) as Array<TreeBlock<StepBlock>>)
@@ -74,7 +69,7 @@ export function Editor({
           />
           <Hotkeys />
           <Toolbar user={user} />
-          {mdUp ? <SinglePageEditor /> : <Slider />}
+          <Slider />
           <Fab variant="mobile" />
         </HotkeysProvider>
       </EditorProvider>

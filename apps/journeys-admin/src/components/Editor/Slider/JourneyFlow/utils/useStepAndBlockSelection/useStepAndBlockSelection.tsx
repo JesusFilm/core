@@ -1,4 +1,4 @@
-import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 export function useStepAndBlockSelection(): (stepId: string) => void {
   const {
@@ -19,10 +19,6 @@ export function useStepAndBlockSelection(): (stepId: string) => void {
         selectedAttributeId: `${selectedStep?.id ?? ''}-next-block`
       })
     } else {
-      dispatch({
-        type: 'SetEditorFocusAction',
-        activeSlide: ActiveSlide.JourneyFlow
-      })
       dispatch({ type: 'SetSelectedStepAction', selectedStep: currentStep })
     }
   }

@@ -9,7 +9,7 @@ import {
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 
-import { EditorDrawer } from '../Drawer/EditorDrawer'
+import { Drawer } from '../Drawer'
 
 import { ActionCards } from './ActionCards'
 import { ActionEditor } from './ActionEditor'
@@ -26,29 +26,19 @@ export function GoalDetails(): ReactElement {
     dispatch({ type: 'SetSelectedGoalUrlAction', selectedGoalUrl: url })
   }
   function onClose(): void {
-    if (selectedStep != null) {
-      dispatch({
-        type: 'SetActiveContentAction',
-        activeContent: ActiveContent.Canvas
-      })
-      dispatch({
-        type: 'SetActiveSlideAction',
-        activeSlide: ActiveSlide.JourneyFlow
-      })
-    } else {
-      dispatch({
-        type: 'SetActiveContentAction',
-        activeContent: ActiveContent.Social
-      })
-      dispatch({
-        type: 'SetActiveSlideAction',
-        activeSlide: ActiveSlide.Content
-      })
-    }
+    dispatch({
+      type: 'SetActiveContentAction',
+      activeContent:
+        selectedStep == null ? ActiveContent.Social : ActiveContent.Canvas
+    })
+    dispatch({
+      type: 'SetActiveSlideAction',
+      activeSlide: ActiveSlide.JourneyFlow
+    })
   }
 
   return (
-    <EditorDrawer
+    <Drawer
       data-testid="GoalDetails"
       title={selectedGoalUrl != null ? t('Goal Details') : t('Information')}
       onClose={onClose}
@@ -69,6 +59,6 @@ export function GoalDetails(): ReactElement {
           <ActionInformation />
         )}
       </Box>
-    </EditorDrawer>
+    </Drawer>
   )
 }

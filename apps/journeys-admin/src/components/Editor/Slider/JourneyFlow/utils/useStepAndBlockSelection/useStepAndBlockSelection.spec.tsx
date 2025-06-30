@@ -40,7 +40,6 @@ describe('useStepAndBlockSelection', () => {
       )
     })
     expect(screen.getByText('selectedStep: step1.id')).toBeInTheDocument()
-    expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
     act(() => result.current(step2.id))
     expect(screen.getByText('selectedStep: step2.id')).toBeInTheDocument()
   })

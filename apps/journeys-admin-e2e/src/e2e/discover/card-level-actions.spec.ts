@@ -240,7 +240,7 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.validateWebsiteFooterSectionInCard(footerTitle) //Verifying the Selected Image, Display Title and menu icon are showing at the top of the card
     await cardLevelActionPage.expandJourneyAppearance('Menu') // clicking on the 'Menu' tab from the tab list of footer properties drawer
     await cardLevelActionPage.clickCreateMenuCardButtonInMenuFooter() //Click create menu card button to create menu card
-    await cardLevelActionPage.clickRightSideArrowIcon() //Click Left Chevron button to navigate to react flow panel
+    await cardLevelActionPage.clickleftSideArrowIcon() //Click Left Chevron button to navigate to react flow panel
     await cardLevelActionPage.validateMenuCardInReactFlow() //Verifying the Menu card in react flow panel
   })
 })

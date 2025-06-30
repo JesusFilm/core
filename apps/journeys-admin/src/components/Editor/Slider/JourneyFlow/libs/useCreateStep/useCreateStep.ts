@@ -53,6 +53,7 @@ export function useCreateStep(): (input: CreateStepInput) => void {
       themeMode: ThemeMode.dark,
       themeName: ThemeName.base,
       fullscreen: false,
+      backdropBlur: null,
       coverBlockId: null,
       backgroundColor: null,
       parentOrder: 0

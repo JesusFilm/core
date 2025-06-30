@@ -9,7 +9,7 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 
 import type { BlockFields_CardBlock as CardBlock } from '../../../../../../../__generated__/BlockFields'
-import { EditorDrawer } from '../../Drawer/EditorDrawer'
+import { Drawer } from '../../Drawer'
 
 import { NewButtonButton } from './NewButtonButton'
 import { NewImageButton } from './NewImageButton'
@@ -41,7 +41,7 @@ export function AddBlock(): ReactElement {
   }
 
   return (
-    <EditorDrawer title={t('Add a block')} onClose={onClose}>
+    <Drawer title={t('Add a block')} onClose={onClose}>
       <Grid p={5} container spacing={4}>
         <Grid item xs={6} md={12}>
           <NewTypographyButton />
@@ -65,6 +65,6 @@ export function AddBlock(): ReactElement {
           <NewSpacerButton />
         </Grid>
       </Grid>
-    </EditorDrawer>
+    </Drawer>
   )
 }

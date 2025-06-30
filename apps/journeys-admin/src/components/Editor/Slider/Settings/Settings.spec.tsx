@@ -8,7 +8,7 @@ import {
   EditorProvider
 } from '@core/journeys/ui/EditorProvider'
 
-import { Settings } from './Settings'
+import { Settings } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -16,46 +16,6 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('Settings', () => {
-  it('renders with CanvasDetails by default', () => {
-    render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <EditorProvider>
-            <Settings />
-          </EditorProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByTestId('Settings')).toBeInTheDocument()
-  })
-
-  it('renders with GoalDetails when activeContent is Goals', () => {
-    render(
-      <MockedProvider>
-        <EditorProvider initialState={{ activeContent: ActiveContent.Goals }}>
-          <Settings />
-        </EditorProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByTestId('Settings')).toBeInTheDocument()
-    expect(screen.getByText('Information')).toBeInTheDocument()
-  })
-
-  it('renders with SocialDetails when activeContent is Social', () => {
-    render(
-      <MockedProvider>
-        <EditorProvider initialState={{ activeContent: ActiveContent.Social }}>
-          <Settings />
-        </EditorProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByTestId('Settings')).toBeInTheDocument()
-    expect(screen.getByText('Social Share Preview')).toBeInTheDocument()
-  })
-
   it('should display social details', () => {
     render(
       <MockedProvider>

@@ -1,5 +1,4 @@
-import { EmotionCache } from '@emotion/cache'
-import { createEmotionCache as createEmotionCacheNext } from '@mui/material-nextjs/v14-pagesRouter'
+import createCache, { EmotionCache } from '@emotion/cache'
 import { prefixer } from 'stylis'
 import rtlPlugin from 'stylis-plugin-rtl'
 
@@ -13,10 +12,9 @@ export function createEmotionCache({
   rtl,
   prepend = false
 }: EmotionCacheProps): EmotionCache {
-  return createEmotionCacheNext({
+  return createCache({
     key: 'css',
     prepend,
-    stylisPlugins: rtl === true ? [prefixer, rtlPlugin] : [],
-    enableCssLayer: true
+    stylisPlugins: rtl === true ? [prefixer, rtlPlugin] : []
   })
 }

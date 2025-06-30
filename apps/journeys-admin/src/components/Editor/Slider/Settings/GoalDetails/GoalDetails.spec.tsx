@@ -122,7 +122,7 @@ describe('GoalDetails', () => {
       async () => await userEvent.click(screen.getByTestId('X2Icon'))
     )
 
-    expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
+    expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
     expect(screen.getByText('activeContent: social')).toBeInTheDocument()
   })
 

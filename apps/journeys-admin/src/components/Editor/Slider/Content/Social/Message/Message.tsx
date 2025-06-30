@@ -120,10 +120,7 @@ export function Message(): ReactElement {
                         style={{
                           borderRadius: '5px',
                           maxWidth: '100%',
-                          objectFit: 'cover',
-                          objectPosition: `${journey.primaryImageBlock.focalLeft ?? 50}% ${journey.primaryImageBlock.focalTop ?? 50}%`,
-                          transform: `scale(${(journey.primaryImageBlock.scale ?? 100) / 100})`,
-                          transformOrigin: `${journey.primaryImageBlock.focalLeft ?? 50}% ${journey.primaryImageBlock.focalTop ?? 50}%`
+                          objectFit: 'cover'
                         }}
                       />
                     )}

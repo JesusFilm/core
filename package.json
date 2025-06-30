@@ -105,6 +105,8 @@
     "@pothos/tracing-opentelemetry": "^1.1.0",
     "@prisma/client": "^6.0.0",
     "@prisma/instrumentation": "^6.0.0",
+    "@radix-ui/react-dialog": "^1.1.14",
+    "@radix-ui/react-slot": "^1.2.3",
     "@react-email/components": "^0.0.36",
     "@react-email/render": "^1.0.5",
     "@storybook/core-server": "^8.4.0",
@@ -117,8 +119,9 @@
     "blurhash": "^2.0.5",
     "bullmq": "^5.1.11",
     "cache-manager": "^6.4.1",
+    "class-variance-authority": "^0.7.1",
     "cloudflare": "^4.0.0",
-    "clsx": "^2.0.0",
+    "clsx": "^2.1.1",
     "commander": "^13.1.0",
     "cors": "^2.8.5",
     "cross-fetch": "^4.0.0",
@@ -146,6 +149,7 @@
     "keyv": "^5.3.2",
     "launchdarkly-node-server-sdk": "^7.0.3",
     "lodash": "^4.17.21",
+    "lucide-react": "^0.513.0",
     "nanoid": "^3.3.7",
     "nestjs-ddtrace": "6.0.0",
     "nestjs-pino": "^4.0.0",
@@ -191,7 +195,7 @@
     "stylis": "^4.3.0",
     "stylis-plugin-rtl": "^2.1.1",
     "subscriptions-transport-ws": "^0.11.0",
-    "swiper": "^11.2.8",
+    "swiper": "^11.0.3",
     "swr": "^2.0.0",
     "tailwind-merge": "^3.3.1",
     "ts-morph": "^24.0.0",
@@ -365,9 +369,6 @@
     "workerDirectory": "./.storybook/static"
   },
   "overrides": {
-    "react-is": "^18.3.1",
-    "html-tokenize": {
-      "readable-stream": "^2.3.8"
-    }
+    "react-is": "^18.3.1"
   }
 }

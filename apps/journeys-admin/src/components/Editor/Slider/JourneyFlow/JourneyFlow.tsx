@@ -93,18 +93,12 @@ export const GET_STEP_BLOCKS_WITH_POSITION = gql`
   }
 `
 
-interface JourneyFlowProps {
-  flowType?: 'mobile' | 'desktop'
-}
-
-export function JourneyFlow({
-  flowType = 'desktop'
-}: JourneyFlowProps): ReactElement {
+export function JourneyFlow(): ReactElement {
   const router = useRouter()
   const { editorAnalytics } = useFlags()
   const theme = useTheme()
   const {
-    state: { steps, showAnalytics, analytics },
+    state: { steps, activeSlide, showAnalytics, analytics },
     dispatch
   } = useEditor()
   const { journey } = useJourney()
@@ -543,28 +537,29 @@ export function JourneyFlow({
         }}
         elevateEdgesOnSelect
       >
-        <>
-          <Panel position="top-right">
-            {showAnalytics !== true && (
-              <NewStepButton disabled={steps == null || loading} />
-            )}
-          </Panel>
-          {editorAnalytics && (
-            <Panel position="top-left">
-              <>
-                <AnalyticsOverlaySwitch />
-                <Fade in={showAnalytics} unmountOnExit>
-                  <Box>
-                    <JourneyAnalyticsCard />
-                  </Box>
-                </Fade>
-              </>
+        {activeSlide === ActiveSlide.JourneyFlow && (
+          <>
+            <Panel position="top-right">
+              {showAnalytics !== true && (
+                <NewStepButton disabled={steps == null || loading} />
+              )}
             </Panel>
-          )}
-          <Controls handleReset={allBlockPositionUpdate} />
-        </>
+            {editorAnalytics && (
+              <Panel position="top-left">
+                <>
+                  <AnalyticsOverlaySwitch />
+                  <Fade in={showAnalytics} unmountOnExit>
+                    <Box>
+                      <JourneyAnalyticsCard />
+                    </Box>
+                  </Fade>
+                </>
+              </Panel>
+            )}
+            <Controls handleReset={allBlockPositionUpdate} />
+          </>
+        )}
         <Background
-          id={flowType}
           color="#aaa"
           gap={16}
           style={

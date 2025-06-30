@@ -1,7 +1,6 @@
 import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
 import type { EmotionCache } from '@emotion/cache'
-import GlobalStyles from '@mui/material/GlobalStyles'
-import { AppCacheProvider } from '@mui/material-nextjs/v14-pagesRouter'
+import { CacheProvider } from '@emotion/react'
 import { GoogleTagManager } from '@next/third-parties/google'
 import { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
@@ -20,7 +19,12 @@ import { ThemeProvider } from '../src/components/ThemeProvider'
 import { useApollo } from '../src/libs/apolloClient'
 import { initAuth } from '../src/libs/firebaseClient/initAuth'
 
-import './globals.css'
+import 'swiper/css'
+import 'swiper/css/a11y'
+import 'swiper/css/mousewheel'
+import 'swiper/css/navigation'
+import 'swiper/css/pagination'
+import '../public/swiper-pagination-override.css'
 
 initAuth()
 const clientSideEmotionCache = createEmotionCache({})
@@ -61,8 +65,7 @@ function JourneysAdminApp({
 
   return (
     <FlagsProvider flags={pageProps.flags}>
-      <AppCacheProvider emotionCache={emotionCache}>
-        <GlobalStyles styles="@layer theme, base, mui, css, components, utilities;" />
+      <CacheProvider value={emotionCache}>
         <ThemeProvider>
           <DefaultSeo
             titleTemplate={t('%s | Next Steps')}
@@ -130,7 +133,7 @@ function JourneysAdminApp({
             </TeamProvider>
           </ApolloProvider>
         </ThemeProvider>
-      </AppCacheProvider>
+      </CacheProvider>
     </FlagsProvider>
   )
 }
