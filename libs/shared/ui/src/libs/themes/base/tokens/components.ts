@@ -49,7 +49,7 @@ export const baseComponents: Required<Pick<ThemeOptions, 'components'>> = {
           style: {
             fontSize: '16px',
             fontWeight: 700,
-            minHeight: '56px',
+            height: '56px',
             padding: '14.5px 24px',
             borderRadius: '32px'
           }
@@ -59,7 +59,7 @@ export const baseComponents: Required<Pick<ThemeOptions, 'components'>> = {
           style: {
             fontSize: '16px',
             fontWeight: 700,
-            minHeight: '48px',
+            height: '48px',
             padding: '12px 24px',
             borderRadius: '24px'
           }
@@ -69,7 +69,7 @@ export const baseComponents: Required<Pick<ThemeOptions, 'components'>> = {
           style: {
             fontSize: '14px',
             fontWeight: 700,
-            minHeight: '44px',
+            height: '44px',
             padding: '11.5px 16px',
             borderRadius: '24px'
           }
