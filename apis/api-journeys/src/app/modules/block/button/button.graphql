@@ -33,11 +33,11 @@ type ButtonBlockClassNames {
 }
 
 input ButtonBlockSettingsInput {
-  alignment: String
+  alignment: ButtonAlignment
 }
 
 type ButtonBlockSettings {
-  alignment: String
+  alignment: ButtonAlignment
 }
 
 type ButtonBlock implements Block @key(fields: "id") {

@@ -8,21 +8,6 @@ interface CardBlockClassNamesType {
   self: string
 }
 
-const CardBlockClassNamesRef = builder.objectRef<CardBlockClassNamesType>(
-  'CardBlockClassNames'
-)
-
-export const CardBlockClassNames = builder.objectType(CardBlockClassNamesRef, {
-  fields: (t) => ({
-    self: t.string({
-      nullable: false,
-      directives: { shareable: true },
-      description: 'Tailwind class names for the card block',
-      resolve: (classNames: CardBlockClassNamesType) => classNames.self
-    })
-  })
-})
-
 export const CardBlock = builder.prismaObject('Block', {
   interfaces: [Block],
   variant: 'CardBlock',
@@ -81,13 +66,6 @@ themeMode from journey`,
       description: `themeName can override journey themeName. If nothing is set then use
 themeName from journey`,
       resolve: (block) => block.themeName as ThemeNameType
-    }),
-    classNames: t.field({
-      type: CardBlockClassNamesRef,
-      nullable: false,
-      directives: { shareable: true },
-      resolve: ({ classNames }) =>
-        classNames as unknown as CardBlockClassNamesType
     })
   }),
   directives: { key: { fields: 'id' } }

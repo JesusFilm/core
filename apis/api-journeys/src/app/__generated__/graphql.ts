@@ -309,7 +309,7 @@ export class ButtonBlockClassNamesInput {
 }
 
 export class ButtonBlockSettingsInput {
-    alignment?: Nullable<string>;
+    alignment?: Nullable<ButtonAlignment>;
 }
 
 export class ButtonBlockCreateInput {
@@ -1351,7 +1351,7 @@ export class ButtonBlockClassNames {
 
 export class ButtonBlockSettings {
     __typename?: 'ButtonBlockSettings';
-    alignment?: Nullable<string>;
+    alignment?: Nullable<ButtonAlignment>;
 }
 
 export class ButtonBlock implements Block {
