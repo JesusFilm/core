@@ -125,6 +125,7 @@ describe('BlockRenderer', () => {
       themeMode: null,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: [
         {
           id: 'typographyBlockId1',
@@ -160,6 +161,7 @@ describe('BlockRenderer', () => {
       themeMode: null,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: [
         {
           id: 'typographyBlockId1',

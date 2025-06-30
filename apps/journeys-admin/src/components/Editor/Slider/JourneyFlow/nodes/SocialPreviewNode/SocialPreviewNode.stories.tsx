@@ -75,6 +75,7 @@ const stepAndCardBlockCreateMock: MockedResponse<
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         __typename: 'CardBlock'
       }
     }

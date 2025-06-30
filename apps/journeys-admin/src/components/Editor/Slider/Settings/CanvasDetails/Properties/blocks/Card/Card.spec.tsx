@@ -27,6 +27,7 @@ describe('Card', () => {
       themeMode: ThemeMode.light,
       themeName: ThemeName.base,
       fullscreen: false,
+      backdropBlur: null,
       children: []
     }
     render(
@@ -64,6 +65,7 @@ describe('Card', () => {
       themeMode: null,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: []
     }
 
@@ -149,6 +151,7 @@ describe('Card', () => {
         themeMode: ThemeMode.light,
         themeName: ThemeName.base,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             __typename: 'ImageBlock',
@@ -198,6 +201,7 @@ describe('Card', () => {
         themeMode: ThemeMode.light,
         themeName: ThemeName.base,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             id: 'video1.id',
@@ -276,6 +280,7 @@ describe('Card', () => {
         themeMode: ThemeMode.light,
         themeName: ThemeName.base,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             id: 'video1.id',
@@ -353,6 +358,7 @@ describe('Card', () => {
         themeMode: ThemeMode.light,
         themeName: ThemeName.base,
         fullscreen: false,
+        backdropBlur: null,
         children: []
       }
       render(
@@ -378,6 +384,7 @@ describe('Card', () => {
         themeMode: ThemeMode.dark,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: []
       }
       render(
@@ -403,6 +410,7 @@ describe('Card', () => {
         themeMode: ThemeMode.light,
         themeName: ThemeName.base,
         fullscreen: false,
+        backdropBlur: null,
         children: []
       }
       render(
@@ -434,6 +442,7 @@ describe('Card', () => {
         themeMode: ThemeMode.light,
         themeName: ThemeName.base,
         fullscreen: true,
+        backdropBlur: null,
         children: []
       }
       render(
@@ -459,6 +468,7 @@ describe('Card', () => {
         themeMode: ThemeMode.light,
         themeName: ThemeName.base,
         fullscreen: false,
+        backdropBlur: null,
         children: []
       }
       render(

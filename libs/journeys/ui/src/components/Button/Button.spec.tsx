@@ -121,6 +121,7 @@ const activeBlock: TreeBlock<StepBlock> = {
       themeMode: null,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: [
         {
           __typename: 'TypographyBlock',
@@ -407,6 +408,7 @@ describe('Button', () => {
           themeMode: null,
           themeName: null,
           fullscreen: false,
+          backdropBlur: null,
           children: []
         }
       ]

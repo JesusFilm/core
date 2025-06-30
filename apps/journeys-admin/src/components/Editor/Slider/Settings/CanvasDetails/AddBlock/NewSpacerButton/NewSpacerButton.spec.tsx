@@ -75,6 +75,7 @@ describe('NewSpacerButton', () => {
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: []
       }
     ]

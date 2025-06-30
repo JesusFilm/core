@@ -56,6 +56,7 @@ describe('CardVideo', () => {
     themeMode: null,
     themeName: null,
     fullscreen: false,
+    backdropBlur: null,
     children: []
   }
   const step: TreeBlock = {

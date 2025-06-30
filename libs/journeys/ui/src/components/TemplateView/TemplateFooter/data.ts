@@ -60,7 +60,8 @@ export const journey: Journey = {
       coverBlockId: 'image1.id',
       themeMode: null,
       themeName: null,
-      fullscreen: false
+      fullscreen: false,
+      backdropBlur: null
     },
     {
       __typename: 'ButtonBlock',
@@ -114,7 +115,8 @@ export const journey: Journey = {
       coverBlockId: 'image2.id',
       themeMode: null,
       themeName: null,
-      fullscreen: false
+      fullscreen: false,
+      backdropBlur: null
     },
     {
       id: 'signup.id',

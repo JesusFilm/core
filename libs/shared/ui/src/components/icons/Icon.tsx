@@ -30,6 +30,7 @@ import BarChartSquare3 from './BarChartSquare3'
 import BarGroup3 from './BarGroup3'
 import Bell2 from './Bell2'
 import Bible from './Bible'
+import Blur from './Blur'
 import Book from './Book'
 import Box from './Box'
 import Bulb from './Bulb'
@@ -245,6 +246,7 @@ export type IconName =
   | 'BarGroup3'
   | 'Bell2'
   | 'Bible'
+  | 'Blur'
   | 'Book'
   | 'Box'
   | 'Bulb'
@@ -464,6 +466,7 @@ const iconComponents: IconComponents = {
   BarGroup3,
   Bell2,
   Bible,
+  Blur,
   Book,
   Box,
   Bulb,

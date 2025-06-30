@@ -14,27 +14,6 @@ import {
   type TypographyVariantType
 } from './enums/typographyVariant'
 
-interface TypographyBlockClassNamesType {
-  self: string
-}
-
-const TypographyBlockClassNamesRef =
-  builder.objectRef<TypographyBlockClassNamesType>('TypographyBlockClassNames')
-
-export const TypographyBlockClassNames = builder.objectType(
-  TypographyBlockClassNamesRef,
-  {
-    fields: (t) => ({
-      self: t.string({
-        nullable: false,
-        directives: { shareable: true },
-        description: 'Tailwind class names for the typography block',
-        resolve: (classNames: TypographyBlockClassNamesType) => classNames.self
-      })
-    })
-  }
-)
-
 export const TypographyBlock = builder.prismaObject('Block', {
   variant: 'TypographyBlock',
   interfaces: [Block],
@@ -78,13 +57,6 @@ export const TypographyBlock = builder.prismaObject('Block', {
       nullable: true,
       directives: { shareable: true },
       resolve: (block) => block.align as TypographyAlignType
-    }),
-    classNames: t.field({
-      type: TypographyBlockClassNamesRef,
-      nullable: false,
-      directives: { shareable: true },
-      resolve: ({ classNames }) =>
-        classNames as unknown as TypographyBlockClassNamesType
     })
   })
 })

@@ -57,6 +57,7 @@ describe('CardCta', () => {
     themeMode: null,
     themeName: null,
     fullscreen: false,
+    backdropBlur: null,
     children: []
   }
   const step: TreeBlock = {
@@ -380,6 +381,7 @@ describe('CardCta', () => {
           themeMode: null,
           themeName: null,
           fullscreen: false,
+          backdropBlur: null,
           __typename: 'CardBlock'
         }
       }

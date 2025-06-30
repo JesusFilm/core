@@ -48,6 +48,7 @@ export const cardBlock = {
   themeMode: null,
   themeName: null,
   fullscreen: false,
+  backdropBlur: null,
   children: []
 } as unknown as TreeBlock<CardBlock>
 
@@ -109,6 +110,7 @@ const selectedStep: TreeBlock<StepBlock> = {
       themeMode: null,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: [selectedBlock, block1, block2]
     }
   ]
@@ -141,7 +143,8 @@ export const restoreStepMock: MockedResponse<
           backgroundColor: null,
           themeMode: null,
           themeName: null,
-          fullscreen: false
+          fullscreen: false,
+          backdropBlur: null
         },
         selectedBlock,
         block1,
