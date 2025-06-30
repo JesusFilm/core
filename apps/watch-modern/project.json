@@ -1,0 +1,200 @@
+{
+  "name": "watch-modern",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/watch-modern",
+  "projectType": "application",
+  "tags": ["doppler_config:stg_dev"],
+  "implicitDependencies": ["locales"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["cp -r libs/locales apps/watch/public", "nx _build watch"],
+        "parallel": false
+      },
+      "configurations": {
+        "production": {
+          "commands": [
+            "cp -r libs/locales apps/watch/public",
+            "CI=true nx _build watch --prod"
+          ]
+        }
+      }
+    },
+    "_build": {
+      "executor": "@nx/next:build",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/watch"
+      },
+      "configurations": {
+        "production": {}
+      }
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "VERCEL_PROJECT_ID=$WATCH_MODERN_VERCEL_PROJECT_ID npx vercel pull --environment=preview --token=$VERCEL_TOKEN",
+          "echo \"VERCEL_ENV=\\\"$NEXT_PUBLIC_VERCEL_ENV\\\"\" >> .vercel/.env.preview.local",
+          "echo \"VERCEL_GIT_COMMIT_SHA=\\\"$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA\\\"\" >> .vercel/.env.preview.local",
+          "npx vercel build",
+          "VERCEL_PROJECT_ID=$WATCH_MODERN_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz > apps/watch-modern/.vercel-url"
+        ],
+        "parallel": false
+      },
+      "configurations": {
+        "production": {
+          "commands": [
+            "VERCEL_PROJECT_ID=$WATCH_MODERN_VERCEL_PROJECT_ID npx vercel pull --environment=production --token=$VERCEL_TOKEN",
+            "echo \"VERCEL_ENV=\\\"$NEXT_PUBLIC_VERCEL_ENV\\\"\" >> .vercel/.env.production.local",
+            "echo \"VERCEL_GIT_COMMIT_SHA=\\\"$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA\\\"\" >> .vercel/.env.production.local",
+            "npx vercel build --prod",
+            "VERCEL_PROJECT_ID=$WATCH_MODERN_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/watch-modern/.vercel-url"
+          ]
+        }
+      }
+    },
+    "upload-sourcemaps": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx @datadog/datadog-ci sourcemaps upload dist/apps/watch-modern/.next/static --service=watch-modern --release-version=$GIT_COMMIT_SHA --minified-path-prefix=/_next/static/"
+        ],
+        "parallel": false
+      }
+    },
+    "vercel-alias": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx vercel alias set $(cat apps/watch-modern/.vercel-url) watch-$PR_NUMBER-jesusfilm.vercel.app --token=$VERCEL_TOKEN --scope=jesusfilm",
+          "echo \"https://watch-modern-$PR_NUMBER-jesusfilm.vercel.app\" > apps/watch-modern/.vercel-url"
+        ],
+        "parallel": false
+      }
+    },
+    "serve": {
+      "executor": "@nx/next:server",
+      "options": {
+        "buildTarget": "watch-modern:_build",
+        "dev": true,
+        "hostname": "0.0.0.0",
+        "port": 4800
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "watch-modern:_build:production",
+          "dev": false
+        },
+        "development": {
+          "buildTarget": "watch-modern:_build:development",
+          "dev": true
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "serve-all": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "nf start"
+          },
+          {
+            "command": "nx serve watch-modern"
+          }
+        ],
+        "parallel": true
+      }
+    },
+    "generate-test-data": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "NEXT_PUBLIC_GATEWAY_URL=http://127.0.0.1:4000 npx ts-node apps/watch-modern/src/components/Videos/testData.generator.ts"
+      }
+    },
+    "export": {
+      "executor": "@nx/next:export",
+      "options": {
+        "buildTarget": "watch-modern:build:production"
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/apps/watch-modern"],
+      "options": {
+        "jestConfig": "apps/watch-modern/jest.config.ts"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/watch-modern/eslint",
+        "cacheStrategy": "content"
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsc -b apps/watch-modern/tsconfig.json"
+      }
+    },
+    "demo": {
+      "executor": "@nx/storybook:storybook",
+      "options": {
+        "port": 4400,
+        "configDir": ".storybook"
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
+    },
+    "codegen": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "rm -rf node_modules/apollo-language-server/node_modules/graphql"
+          },
+          {
+            "command": "rm -rf apps/watch-modern/__generated__"
+          },
+          {
+            "command": "npx apollo client:codegen --config apps/watch-modern/apollo.config.js --target typescript --outputFlat apps/watch-modern/__generated__"
+          }
+        ]
+      }
+    },
+    "fetch-secrets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "DOPPLER_TOKEN=$DOPPLER_WATCH_MODERN_TOKEN doppler secrets download --no-file --format=env-no-quotes --project watch-modern > apps/watch-modern/.env"
+          }
+        ]
+      }
+    },
+    "extract-translations": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "npx i18next --config apps/watch-modern/i18next-parser.config.js"
+          }
+        ]
+      }
+    },
+    "codecov": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "codecov -f coverage/apps/watch-modern/cobertura-coverage.xml -F apps.watch-modern"
+      }
+    }
+  }
+}
