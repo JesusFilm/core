@@ -106,6 +106,11 @@ export function ThemePreview({
       rtl={rtl}
       locale={locale}
       nested
+      fontFamilies={{
+        headerFont,
+        bodyFont,
+        labelFont: labelsFont
+      }}
     >
       <Box
         sx={{

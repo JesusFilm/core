@@ -6,7 +6,10 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { GetJourney_journey_journeyTheme } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 import { Dialog } from '@core/shared/ui/Dialog'
+
+import { FontLoader } from '../../../../../../../FontLoader'
 
 import { ThemePreview } from './ThemePreview'
 import { ThemeSettings } from './ThemeSettings'
@@ -89,6 +92,13 @@ export function ThemeBuilderDialog({
       }}
       dialogActionChildren={dialogActionChildren}
     >
+      <FontLoader
+        journeyTheme={{
+          headerFont,
+          bodyFont,
+          labelFont: labelsFont
+        }}
+      />
       <Stack
         direction={{ xs: 'column', sm: 'row' }}
         spacing={5}

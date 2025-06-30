@@ -4,7 +4,11 @@ import WebFont from 'webfontloader'
 import { GetJourney_journey_journeyTheme as JourneyTheme } from '../../../../__generated__/GetJourney'
 
 interface FontLoaderProps {
-  journeyTheme: JourneyTheme | null
+  journeyTheme: {
+    headerFont: string
+    bodyFont: string
+    labelFont: string
+  } | null
 }
 
 export function FontLoader({ journeyTheme }: FontLoaderProps): null {

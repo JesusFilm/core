@@ -65,7 +65,13 @@ export function Editor({
         }}
       >
         <HotkeysProvider>
-          <FontLoader journeyTheme={journey?.journeyTheme ?? null} />
+          <FontLoader
+            journeyTheme={{
+              headerFont: journey?.journeyTheme?.headerFont ?? '',
+              bodyFont: journey?.journeyTheme?.bodyFont ?? '',
+              labelFont: journey?.journeyTheme?.labelFont ?? ''
+            }}
+          />
           <Hotkeys />
           <Toolbar user={user} />
           {mdUp ? <SinglePageEditor /> : <Slider />}
