@@ -1887,9 +1887,9 @@ type JourneyTheme @join__type(graph: API_JOURNEYS)  {
   journeyId: ID!
   journey: Journey!
   userId: ID!
-  primaryFont: String
-  secondaryFont: String
-  accentFont: String
+  headerFont: String
+  bodyFont: String
+  labelFont: String
   createdAt: DateTime!
   updatedAt: DateTime!
 }
@@ -4341,15 +4341,15 @@ input JourneyProfileUpdateInput @join__type(graph: API_JOURNEYS)  {
 
 input JourneyThemeCreateInput @join__type(graph: API_JOURNEYS)  {
   journeyId: ID!
-  primaryFont: String
-  secondaryFont: String
-  accentFont: String
+  headerFont: String
+  bodyFont: String
+  labelFont: String
 }
 
 input JourneyThemeUpdateInput @join__type(graph: API_JOURNEYS)  {
-  primaryFont: String
-  secondaryFont: String
-  accentFont: String
+  headerFont: String
+  bodyFont: String
+  labelFont: String
 }
 
 input JourneyVisitorFilter @join__type(graph: API_JOURNEYS)  {
