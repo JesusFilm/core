@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor, within } from '@testing-library/react'
+import { HttpResponse, http } from 'msw'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -7,6 +8,7 @@ import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 import { GET_TAGS } from '@core/journeys/ui/useTagsQuery'
 
+import { mswServer } from '../../../../../../../test/mswServer'
 import { JOURNEY_SETTINGS_UPDATE } from '../../../../../../libs/useJourneyUpdateMutation/useJourneyUpdateMutation'
 
 import {
@@ -17,6 +19,10 @@ import {
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
+}))
+
+jest.mock('next-firebase-auth', () => ({
+  useUser: () => ({ getIdToken: () => Promise.resolve('token') })
 }))
 
 describe('TemplateSettingsDialog', () => {
@@ -495,5 +501,33 @@ describe('TemplateSettingsDialog', () => {
         'Categories'
       )
     })
+  })
+
+  it('AI tab: generates context with MSW', async () => {
+    mswServer.use(
+      http.post('/api/journey/context', () => {
+        return HttpResponse.json({ text: 'AI context from test' })
+      })
+    )
+    const { getByRole, getByLabelText, findByDisplayValue } = render(
+      <MockedProvider mocks={[]}>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: defaultJourney,
+              variant: 'admin'
+            }}
+          >
+            <TemplateSettingsDialog open onClose={onClose} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('tab', { name: 'AI' }))
+    await waitFor(() => {
+      expect(getByLabelText('AI Context')).toBeInTheDocument()
+    })
+    fireEvent.click(getByRole('button', { name: 'Generate with AI' }))
+    await findByDisplayValue('AI context from test')
   })
 })
