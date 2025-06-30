@@ -866,6 +866,8 @@ export type Journey = {
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
   blocks?: Maybe<Array<Block>>;
   chatButtons: Array<ChatButton>;
+  /** context is a field for internal AI notes. It should only be used by template publishers. */
+  context?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
   creatorDescription?: Maybe<Scalars['String']['output']>;
   creatorImageBlock?: Maybe<ImageBlock>;
@@ -1129,6 +1131,8 @@ export type JourneyThemeUpdateInput = {
 };
 
 export type JourneyUpdateInput = {
+  /** context is a field for internal AI notes. It should only be used by template publishers. */
+  context?: InputMaybe<Scalars['String']['input']>;
   creatorDescription?: InputMaybe<Scalars['String']['input']>;
   creatorImageBlockId?: InputMaybe<Scalars['ID']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
