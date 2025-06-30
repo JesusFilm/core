@@ -11,6 +11,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 import {
   ButtonAction,
+  ButtonAlignment,
   ButtonClickEventCreateInput,
   ButtonVariant,
   ChatOpenEventCreateInput
@@ -97,7 +98,8 @@ export function Button({
   action,
   children,
   editableLabel,
-  submitEnabled
+  submitEnabled,
+  settings
 }: ButtonProps): ReactElement {
   const [buttonClickEventCreate] = useMutation<
     ButtonClickEventCreate,
@@ -301,8 +303,10 @@ export function Button({
         endIcon={endIcon != null ? <Icon {...endIcon} /> : undefined}
         onClick={handleClick}
         fullWidth
-        sx={
-          editableLabel != null
+        sx={{
+          justifyContent:
+            justifyContent[settings?.alignment ?? ButtonAlignment.center],
+          ...(editableLabel != null
             ? {
                 '&:hover': {
                   backgroundColor: (() => {
@@ -318,8 +322,8 @@ export function Button({
                   })()
                 }
               }
-            : undefined
-        }
+            : undefined)
+        }}
       >
         <span>
           {editableLabel != null

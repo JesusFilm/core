@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonVariant, ButtonColor, ButtonSize } from "./globalTypes";
+import { ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment } from "./globalTypes";
 
 // ====================================================
 // GraphQL fragment: ButtonFields
@@ -32,6 +32,14 @@ export interface ButtonFields_action_EmailAction {
 
 export type ButtonFields_action = ButtonFields_action_NavigateToBlockAction | ButtonFields_action_LinkAction | ButtonFields_action_EmailAction;
 
+export interface ButtonFields_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface ButtonFields {
   __typename: "ButtonBlock";
   id: string;
@@ -45,4 +53,5 @@ export interface ButtonFields {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: ButtonFields_action | null;
+  settings: ButtonFields_settings | null;
 }

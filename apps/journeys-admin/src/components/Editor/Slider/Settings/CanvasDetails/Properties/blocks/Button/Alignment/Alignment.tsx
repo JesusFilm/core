@@ -19,9 +19,6 @@ import {
 } from '../../../../../../../../../../__generated__/ButtonBlockUpdateAlignment'
 import { ButtonAlignment } from '../../../../../../../../../../__generated__/globalTypes'
 
-// type ButtonAlignment =
-//   ButtonBlockUpdateAlignmentVariables['settings']['alignment']
-
 export const BUTTON_BLOCK_UPDATE = gql`
   mutation ButtonBlockUpdateAlignment(
     $id: ID!
@@ -59,23 +56,14 @@ export function Alignment(): ReactElement {
     if (newAlignment !== null) setAlignment(newAlignment)
   }
 
-  function handleChange(alignment: string): void {
+  function handleChange(alignment: ButtonAlignment): void {
     if (selectedBlock == null || alignment == null) return
 
-    // Map the CSS class values to ButtonAlignment enum values
-    const alignmentMap: Record<string, ButtonAlignment> = {
-      'justify-start': ButtonAlignment.left,
-      'justify-center': ButtonAlignment.center,
-      'justify-end': ButtonAlignment.right,
-      'justify-evenly': ButtonAlignment.justify
-    }
-
-    const buttonAlignment = alignmentMap[alignment]
-    if (!buttonAlignment) return
+    if (!alignment) return
 
     add({
       parameters: {
-        execute: { alignment: buttonAlignment },
+        execute: { alignment },
         undo: { alignment: selectedBlock.settings?.alignment }
       },
       execute({ alignment }) {
@@ -108,22 +96,22 @@ export function Alignment(): ReactElement {
 
   const options = [
     {
-      value: 'justify-start',
+      value: ButtonAlignment.left,
       ariaLabel: 'Align Left',
       icon: <AlignLeftIcon />
     },
     {
-      value: 'justify-center',
+      value: ButtonAlignment.center,
       ariaLabel: 'Align Center',
       icon: <AlignCenterIcon />
     },
     {
-      value: 'justify-end',
+      value: ButtonAlignment.right,
       ariaLabel: 'Align Right',
       icon: <AlignRightIcon />
     },
     {
-      value: 'justify-evenly',
+      value: ButtonAlignment.justify,
       ariaLabel: 'Align Justify',
       icon: <AlignJustifyIcon />
     }
