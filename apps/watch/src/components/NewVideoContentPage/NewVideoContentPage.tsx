@@ -19,6 +19,7 @@ import { BibleCitations } from './BibleCitations'
 import { ContentMetadata } from './ContentMetadata'
 import { ContentPageBlurFilter } from './ContentPageBlurFilter'
 import { DiscussionQuestions } from './DiscussionQuestions'
+import { NewVideoContentHeader } from './NewVideoContentHeader'
 import { VideoCarousel } from './VideoCarousel'
 import { VideoContentHero } from './VideoContentHero'
 
@@ -125,6 +126,7 @@ export function NewVideoContentPage(): ReactElement {
         isFullscreen={isFullscreen}
       >
         <ContentPageBlurFilter>
+          <NewVideoContentHeader loading={loading} videos={filteredChildren} />
           {((container?.childrenCount ?? 0) > 0 || childrenCount > 0) &&
             (filteredChildren.length === children.length ||
               filteredChildren.length > 0) && (

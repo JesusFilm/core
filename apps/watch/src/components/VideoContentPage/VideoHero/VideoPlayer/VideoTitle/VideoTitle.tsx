@@ -67,7 +67,7 @@ export function VideoTitle({
           className="z-2 flex min-w-[220px] items-center justify-center gap-2  
         bg-[#CB333B] p-4 text-2xl font-medium leading-loose 
         tracking-wide text-white shadow-md transition-colors
-        hover:bg-[#A4343A] font-sans  rounded-[8px]
+        hover:bg-[#A4343A] font-sans  rounded-[8px] cursor-pointer
         "
           style={{
             display: showButton ? 'flex' : 'none'
