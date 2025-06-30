@@ -12,9 +12,9 @@ const mockBibleCitations: VideoContentFields_bibleCitations[] = [
       name: [{ __typename: 'BibleBookName', value: 'Genesis' }]
     },
     chapterStart: 1,
-    chapterEnd: 1,
+    chapterEnd: null,
     verseStart: 1,
-    verseEnd: 1
+    verseEnd: null
   },
   {
     __typename: 'BibleCitation',
@@ -23,9 +23,9 @@ const mockBibleCitations: VideoContentFields_bibleCitations[] = [
       name: [{ __typename: 'BibleBookName', value: 'John' }]
     },
     chapterStart: 3,
-    chapterEnd: 3,
+    chapterEnd: null,
     verseStart: 16,
-    verseEnd: 16
+    verseEnd: null
   }
 ]
 
