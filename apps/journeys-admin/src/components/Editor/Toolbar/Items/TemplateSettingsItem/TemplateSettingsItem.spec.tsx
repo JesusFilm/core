@@ -21,6 +21,10 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: () => true
 }))
 
+jest.mock('next-firebase-auth', () => ({
+  useUser: () => ({ getIdToken: () => Promise.resolve('token') })
+}))
+
 describe('TemplateSettingsItem', () => {
   const push = jest.fn()
   const on = jest.fn()
