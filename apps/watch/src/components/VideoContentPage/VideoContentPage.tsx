@@ -8,9 +8,9 @@ import { NextSeo } from 'next-seo'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { GetLanguagesSlug } from '../../../__generated__/GetLanguagesSlug'
-import { getCookie } from '../../libs/cookieHandler'
 import { useVideoChildren } from '../../libs/useVideoChildren'
 import { useVideo } from '../../libs/videoContext'
+import { audioLanguageRedirect } from '../../libs/watchContext/audioLanguageRedirect'
 import { GET_LANGUAGES_SLUG } from '../AudioLanguageDialog/AudioLanguageDialog'
 import { DownloadDialog } from '../DownloadDialog'
 import { PageWrapper } from '../PageWrapper'
@@ -59,33 +59,13 @@ export function VideoContentPage(): ReactElement {
 
   // Handle locale checking and redirect
   useEffect(() => {
-    const cookieAudioLanguageId = getCookie('AUDIO_LANGUAGE')
-    if (languageVariantsLoading || cookieAudioLanguageId == null) return
-    const selectedLanguageSlug =
-      languageVariantsData?.video?.variantLanguagesWithSlug?.find(
-        (languages) => languages.language?.id === cookieAudioLanguageId
-      )?.slug
-
-    // Get current language slug from router
-    const currentPath = router.asPath
-    const currentLanguageSlug = currentPath
-      .split('/')
-      .pop()
-      ?.replace('.html', '')
-    const selectedLanguage = selectedLanguageSlug?.split('/')[1]
-
-    if (
-      selectedLanguageSlug == null ||
-      selectedLanguage === currentLanguageSlug
-    )
-      return
-
-    void router.push(
-      `/watch${
-        container?.slug != null ? `/${container.slug}/` : '/'
-      }${selectedLanguageSlug}`
-    )
-  }, [id, languageVariantsLoading])
+    void audioLanguageRedirect({
+      languageVariantsLoading,
+      languageVariantsData,
+      router,
+      containerSlug: container?.slug
+    })
+  }, [languageVariantsLoading, languageVariantsData, router, container?.slug])
 
   const ogSlug = getSlug(container?.slug, label, variant?.slug)
   const realChildren = children.filter((video) => video.variant !== null)

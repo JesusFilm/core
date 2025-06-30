@@ -1,0 +1,1 @@
+export { subtitleUpdate } from './subtitleUpdate'

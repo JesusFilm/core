@@ -1,2 +1,4 @@
-export { siteLanguageReorder } from './siteLanguageReorder'
-export type { ExtendedLanguageOption } from './siteLanguageReorder'
+export {
+  siteLanguageReorder,
+  type ExtendedLanguageOption
+} from './siteLanguageReorder'

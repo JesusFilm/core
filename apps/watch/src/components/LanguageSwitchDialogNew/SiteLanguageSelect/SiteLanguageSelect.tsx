@@ -68,8 +68,7 @@ export function SiteLanguageSelect(): ReactElement {
         })
 
         setLanguages(finalLanguages)
-      } catch (error) {
-        console.error('Error fetching geolocation or browser language:', error)
+      } catch {
         // If geolocation fails, still use the utility function for consistency
         const finalLanguages = siteLanguageReorder({
           languages: formattedLanguages,

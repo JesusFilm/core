@@ -1,3 +1,4 @@
-export { selectLanguageForVideo } from './audioLanguageSetter'
-
-export type { AudioLanguageSetterParams } from './audioLanguageSetter'
+export {
+  selectLanguageForVideo,
+  type AudioLanguageSetterParams
+} from './audioLanguageSetter'

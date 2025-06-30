@@ -10,6 +10,7 @@ import 'videojs-mux'
 
 import { useVideo } from '../../../../libs/videoContext'
 import { useWatch } from '../../../../libs/watchContext'
+import { subtitleUpdate } from '../../../../libs/watchContext/subtitleUpdate'
 
 import { VideoControls } from './VideoControls'
 
@@ -77,69 +78,13 @@ export function VideoPlayer({
   useEffect(() => {
     if (player == null) return
 
-    const tracks = player.textTracks?.() ?? []
-
-    // Use currentSubtitleOn if available (based on availability), otherwise fall back to user preference
-    const shouldShowSubtitles = currentSubtitleOn ?? subtitleOn
-
-    if (!shouldShowSubtitles || subtitleLanguage == null) {
-      // Disable all subtitle tracks when subtitles should be off
-      for (let i = 0; i < tracks.length; i++) {
-        const track = tracks[i]
-        if (track.kind === 'subtitles') {
-          track.mode = 'disabled'
-        }
-      }
-      return
-    }
-
-    const selected = videoSubtitleLanguages?.find(
-      (subtitle) => subtitle.language.id === subtitleLanguage
-    )
-
-    if (selected == null) return
-
-    // Check if track with this ID already exists
-    let existingTrack: TextTrack | null = null
-    for (let i = 0; i < tracks.length; i++) {
-      const track = tracks[i]
-      if (track.id === subtitleLanguage) {
-        existingTrack = track
-        break
-      }
-    }
-
-    // If track doesn't exist, add it
-    if (existingTrack == null) {
-      player.addRemoteTextTrack(
-        {
-          id: subtitleLanguage,
-          src: selected.value,
-          kind: 'subtitles',
-          language:
-            selected.language.bcp47 === null
-              ? undefined
-              : selected.language.bcp47,
-          label: selected.language.name.map((name) => name.value).join(', '),
-          mode: 'showing',
-          default: true
-        },
-        true
-      )
-    }
-
-    // Update track modes: show selected language, disable others
-    const updatedTracks = player.textTracks?.() ?? []
-    for (let i = 0; i < updatedTracks.length; i++) {
-      const track = updatedTracks[i]
-      if (track.kind === 'subtitles') {
-        if (track.id === subtitleLanguage) {
-          track.mode = 'showing'
-        } else {
-          track.mode = 'disabled'
-        }
-      }
-    }
+    subtitleUpdate({
+      player,
+      videoSubtitleLanguages,
+      subtitleLanguage,
+      subtitleOn,
+      currentSubtitleOn
+    })
   }, [
     player,
     videoSubtitleLanguages,

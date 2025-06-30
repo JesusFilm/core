@@ -22,11 +22,9 @@ const defaultInitialState = {
 
 const Template: StoryObj<typeof LanguageSwitchDialog> = {
   render: () => (
-    // <MockedProvider mocks={[getAllLanguagesMock]} addTypename={false}>
     <WatchProvider initialState={defaultInitialState}>
       <LanguageSwitchDialog open={true} handleClose={noop} />
     </WatchProvider>
-    // </MockedProvider>
   )
 }
 
