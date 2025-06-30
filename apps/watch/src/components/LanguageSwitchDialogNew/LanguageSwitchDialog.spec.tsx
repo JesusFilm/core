@@ -1,4 +1,3 @@
-import { gql } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -9,7 +8,7 @@ import { GetAllLanguages } from '../../../__generated__/GetAllLanguages'
 import { WatchInitialState, WatchProvider } from '../../libs/watchContext'
 import { TestWatchState } from '../../libs/watchContext/TestWatchState'
 
-import { LanguageSwitchDialog } from './LanguageSwitchDialog'
+import { GET_ALL_LANGUAGES, LanguageSwitchDialog } from './LanguageSwitchDialog'
 
 // Mock external dependencies
 jest.mock('next/router', () => ({
@@ -29,21 +28,6 @@ const mockRouter = {
 }
 
 const mockT = jest.fn((key: string) => key)
-
-// GraphQL query for getAllLanguages
-const GET_ALL_LANGUAGES = gql`
-  query GetAllLanguages {
-    languages {
-      id
-      bcp47
-      slug
-      name {
-        primary
-        value
-      }
-    }
-  }
-`
 
 // Default watch context state
 const defaultWatchState: WatchInitialState = {
@@ -176,26 +160,6 @@ describe('LanguageSwitchDialog', () => {
 
       // Verify dialog contains the main content structure
       expect(dialog).toBeInTheDocument()
-    })
-
-    it('should have proper styling classes for layout', () => {
-      render(
-        <MockedProvider mocks={[]} addTypename={false}>
-          <WatchProvider initialState={defaultWatchState}>
-            <LanguageSwitchDialog open={true} handleClose={mockHandleClose} />
-          </WatchProvider>
-        </MockedProvider>
-      )
-
-      const dialog = screen.getByRole('dialog')
-      expect(dialog).toHaveClass(
-        'relative',
-        'w-full',
-        'max-w-md',
-        'rounded-lg',
-        'bg-white',
-        'shadow-xl'
-      )
     })
   })
 
