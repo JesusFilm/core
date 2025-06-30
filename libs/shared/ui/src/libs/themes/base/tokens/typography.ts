@@ -165,6 +165,10 @@ export const createCustomTypography = (
       caption: {
         ...typographyOptions?.caption,
         fontFamily: bodyFontFamily
+      },
+      button: {
+        ...typographyOptions?.button,
+        fontFamily: labelFontFamily
       }
     }
   }
