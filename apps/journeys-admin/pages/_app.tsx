@@ -11,7 +11,6 @@ import { SnackbarProvider } from 'notistack'
 import { ReactElement, useEffect } from 'react'
 
 import { TeamProvider } from '@core/journeys/ui/TeamProvider'
-import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import i18nConfig from '../next-i18next.config'
@@ -27,7 +26,6 @@ import 'swiper/css/pagination'
 import '../public/swiper-pagination-override.css'
 
 initAuth()
-const clientSideEmotionCache = createEmotionCache({})
 
 type JourneysAdminAppProps = NextJsAppProps<{
   userSerialized?: string
@@ -41,7 +39,7 @@ type JourneysAdminAppProps = NextJsAppProps<{
 function JourneysAdminApp({
   Component,
   pageProps,
-  emotionCache = clientSideEmotionCache
+  emotionCache
 }: JourneysAdminAppProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 

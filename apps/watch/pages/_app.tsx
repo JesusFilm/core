@@ -12,7 +12,6 @@ import { DefaultSeo } from 'next-seo'
 import { type ReactElement, useEffect } from 'react'
 
 import { InstantSearchProvider } from '@core/journeys/ui/algolia/InstantSearchProvider'
-import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
@@ -26,7 +25,6 @@ import 'swiper/css/navigation'
 import '../public/watch/global.css'
 import './fonts/fonts.css'
 
-const clientSideEmotionCache = createEmotionCache({ prepend: false })
 const notoSerif = Noto_Serif({
   weight: ['500', '700'],
   subsets: ['latin']
@@ -71,7 +69,7 @@ type WatchAppProps = NextJsAppProps<{
 function WatchApp({
   Component,
   pageProps,
-  emotionCache = clientSideEmotionCache
+  emotionCache
 }: WatchAppProps): ReactElement {
   useEffect(() => {
     // Remove the server-side injected CSS.
