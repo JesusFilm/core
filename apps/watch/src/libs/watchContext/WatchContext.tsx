@@ -241,6 +241,16 @@ export const reducer = (state: WatchState, action: WatchAction): WatchState => {
     case 'SetVideoSubtitleLanguages': {
       const videoSubtitleLanguages = action.videoSubtitleLanguages
 
+      const langPrefMet =
+        state?.audioLanguage === state?.currentAudioLanguage?.language.id
+
+      if (langPrefMet) {
+        return {
+          ...state,
+          videoSubtitleLanguages
+        }
+      }
+
       // Check if user's subtitle preference is available
       const subtitleAvailable = videoSubtitleLanguages.some(
         (subtitle) => subtitle.language.id === state.subtitleLanguage
