@@ -44,9 +44,9 @@ export const blockStepSchema = blockSchema.extend({
 export const blockStepCreateInputSchema = z.object({
   id: z
     .string()
-    .nullable()
-    .optional()
-    .describe('Unique identifier for the block'),
+    .describe(
+      'Unique identifier for the block, generate a new uuid using the generateUuid tool'
+    ),
   journeyId: z.string().describe('ID of the journey this block belongs to'),
   nextBlockId: z
     .string()
