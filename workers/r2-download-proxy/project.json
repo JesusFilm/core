@@ -1,0 +1,37 @@
+{
+  "name": "r2-download-proxy",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "workers/r2-download-proxy/src",
+  "projectType": "application",
+  "tags": ["type:worker"],
+  "targets": {
+    "deploy:dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "wrangler deploy --env dev",
+        "cwd": "workers/r2-download-proxy"
+      }
+    },
+    "deploy:stage": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "wrangler deploy --env stage",
+        "cwd": "workers/r2-download-proxy"
+      }
+    },
+    "deploy:prod": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "wrangler deploy --env prod",
+        "cwd": "workers/r2-download-proxy"
+      }
+    },
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "wrangler dev",
+        "cwd": "workers/r2-download-proxy"
+      }
+    }
+  }
+}

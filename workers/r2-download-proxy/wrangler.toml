@@ -1,0 +1,26 @@
+name = "r2-download-proxy-dev"
+compatibility_date = "2024-01-01" 
+compatibility_flags = ["nodejs_compat"]
+main = "src/index.ts"
+
+[vars]
+# Development environment variables
+ALLOWED_ORIGINS = "http://localhost:4300,http://localhost:4500"
+
+[env.stage]
+name = "r2-download-proxy-stage"
+routes = [
+  { pattern = "r2-proxy-stage.jesusfilm.org/*", zone_name = "jesusfilm.org" }
+]
+
+[env.stage.vars]
+ALLOWED_ORIGINS = "https://develop.jesusfilm.org,https://watch-stage.jesusfilm.org"
+
+[env.prod]
+name = "r2-download-proxy-prod" 
+routes = [
+  { pattern = "r2-proxy.jesusfilm.org/*", zone_name = "jesusfilm.org" }
+]
+
+[env.prod.vars]
+ALLOWED_ORIGINS = "https://www.jesusfilm.org,https://watch.jesusfilm.org" 
