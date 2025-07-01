@@ -1,6 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import MuiButton from '@mui/material/Button'
+import Typography from '@mui/material/Typography'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { useFormikContext } from 'formik'
 import { useRouter } from 'next/router'
@@ -325,13 +326,19 @@ export function Button({
             : undefined)
         }}
       >
-        <span>
+        <Typography
+          variant="inherit"
+          sx={{
+            overflowWrap: 'break-word',
+            wordBreak: 'break-word'
+          }}
+        >
           {editableLabel != null
             ? editableLabel
             : label !== ''
               ? label
               : fallbackLabel}
-        </span>
+        </Typography>
       </MuiButton>
     </Box>
   )
