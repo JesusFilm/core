@@ -53,6 +53,7 @@ export async function importMuxVideos(
   while (hasMore) {
     const variants = await prisma.videoVariant.findMany({
       where: {
+        // id: '2_20528-0-PaperHats',
         muxVideoId: null,
         masterHeight: { not: null },
         masterUrl: { not: null },
@@ -68,7 +69,7 @@ export async function importMuxVideos(
 
     for (const variant of variants) {
       logger?.info(`Importing mux video for variant ${variant.id}`)
-      await new Promise((resolve) => setTimeout(resolve, 1000)) // wait 1 sec to avoid rate limit
+      await new Promise((resolve) => setTimeout(resolve, 1500)) // wait 1.5 sec to avoid rate limit
       let muxVideoId: string | null = null
       try {
         muxVideoId = await createMuxAsset(
@@ -136,7 +137,8 @@ export async function updateHls(mux: Mux, logger?: Logger): Promise<void> {
         muxVideoId: { not: null },
         hls: { not: { startsWith: 'https://stream.mux.com' } },
         muxVideo: {
-          playbackId: { not: null }
+          assetId: { not: null },
+          playbackId: null
         }
       },
       include: {
@@ -148,15 +150,44 @@ export async function updateHls(mux: Mux, logger?: Logger): Promise<void> {
     logger?.info(`Found ${variants.length} variants to update`)
 
     for (const variant of variants) {
-      logger?.info(`Updating hls for variant ${variant.id}`)
-      await prisma.videoVariant.update({
-        where: {
-          id: variant.id
-        },
-        data: {
-          hls: `https://stream.mux.com/${variant.muxVideo?.playbackId}`
+      logger?.info(`Attempting to update hls for variant ${variant.id}`)
+      await new Promise((resolve) => setTimeout(resolve, 1500)) // wait 1.5 sec to avoid rate limit
+
+      let muxVideo: Mux.Video.Asset | null = null
+      try {
+        muxVideo = await mux.video.assets.retrieve(
+          variant.muxVideo?.assetId as string
+        )
+      } catch (error) {
+        logger?.error(`Error retrieving mux upload for variant ${variant.id}`)
+        continue
+      }
+      try {
+        const playbackId = muxVideo?.playback_ids?.[0].id
+        if (playbackId != null && muxVideo.status === 'ready') {
+          await prisma.videoVariant.update({
+            where: {
+              id: variant.id
+            },
+            data: {
+              hls: `https://stream.mux.com/${playbackId}`,
+              muxVideo: {
+                update: {
+                  playbackId
+                }
+              }
+            }
+          })
         }
-      })
+      } catch (error) {
+        if (error instanceof Error) {
+          logger?.error(
+            `Error updating video variant ${variant.id}: ${error.message}`
+          )
+        } else {
+          logger?.error(`Error updating video variant ${variant.id}`)
+        }
+      }
     }
 
     if (variants.length === 0) {

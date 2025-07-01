@@ -83,6 +83,9 @@ async function main(): Promise<void> {
         './videoChildren'
       )
     )
+  }
+
+  if (process.env.DEPLOYMENT_ENV === 'prod') {
     run(
       await import(
         /* webpackChunkName: "mux-videos" */
