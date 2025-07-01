@@ -35,15 +35,12 @@ export function BibleCitationCard({
     async function fetchScripture(): Promise<void> {
       try {
         const bookName = citation.bibleBook.name[0].value.toLowerCase()
-        console.log(
-          `https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/${LOCALE_TO_BIBLE_VERSION_MAP[locale].bibleVersion}/books/${bookName}/chapters/${citation.chapterStart}/verses/${citation.verseStart}.json`
-        )
         const { data } = await axios.get<FBVScripture>(
           `https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/${LOCALE_TO_BIBLE_VERSION_MAP[locale].bibleVersion}/books/${bookName}/chapters/${citation.chapterStart}/verses/${citation.verseStart}.json`
         )
         setScripture(data)
       } catch (err) {
-        console.error('Error fetching scripture:', err)
+        setScripture(null)
       }
     }
 
