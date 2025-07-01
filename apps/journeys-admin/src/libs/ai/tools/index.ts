@@ -4,6 +4,7 @@ import { ToolSet } from 'ai'
 import { tools as agentTools } from './agent'
 import { tools as blockTools } from './block'
 import { tools as clientTools } from './client'
+import { generateUuid } from './generateUuid'
 import { tools as journeyTools } from './journey'
 
 export interface ToolOptions {
@@ -27,6 +28,7 @@ export function tools(
         key,
         tool(client, { langfuseTraceId })
       ])
-    )
+    ),
+    generateUuid: generateUuid()
   }
 }
