@@ -58,7 +58,8 @@ export function ThemeSettings({
     FontFamily.NotoSans,
     FontFamily.Nunito,
     FontFamily.Raleway,
-    FontFamily.Georgia
+    FontFamily.Georgia,
+    FontFamily.Baloo
   ]
 
   return (
@@ -66,7 +67,7 @@ export function ThemeSettings({
       <FontSelect
         label={t('Header Text')}
         value={headerFont}
-        options={headerFontOptions}
+        options={headerFontOptions.sort()}
         onChange={onHeaderFontChange}
         icon={<Header1Icon />}
         labelId="header-font-select-label"
@@ -76,7 +77,7 @@ export function ThemeSettings({
       <FontSelect
         label={t('Body Text')}
         value={bodyFont}
-        options={bodyFontOptions}
+        options={bodyFontOptions.sort()}
         onChange={onBodyFontChange}
         icon={<Type2Icon />}
         labelId="body-font-select-label"
@@ -86,7 +87,7 @@ export function ThemeSettings({
       <FontSelect
         label={t('Label Text')}
         value={labelsFont}
-        options={labelsFontOptions}
+        options={labelsFontOptions.sort()}
         onChange={onLabelsFontChange}
         icon={<Type3Icon />}
         labelId="labels-font-select-label"

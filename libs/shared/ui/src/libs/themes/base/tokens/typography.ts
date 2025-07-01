@@ -9,6 +9,15 @@ declare module '@mui/material/styles' {
   }
 }
 
+export function createFontFamilyString(font?: string): string {
+  const fonts: string[] = []
+  if (font) {
+    fonts.push(`"${font}"`)
+  }
+  fonts.push('Montserrat', '"Open Sans"', 'sans-serif')
+  return fonts.join(',')
+}
+
 export const baseTypography: Pick<ThemeOptions, 'typography'> = {
   typography: {
     fontFamily: [
@@ -90,7 +99,6 @@ export const baseTypography: Pick<ThemeOptions, 'typography'> = {
   }
 }
 
-// Create a custom typography configuration based on fontFamilies
 export const createCustomTypography = (
   baseTypography: Pick<ThemeOptions, 'typography'>,
   fontFamilies?: FontFamilies
@@ -101,15 +109,6 @@ export const createCustomTypography = (
     typeof baseTypography.typography === 'function'
       ? {}
       : baseTypography.typography
-
-  function createFontFamilyString(font?: string): string {
-    const fonts: string[] = []
-    if (font) {
-      fonts.push(`"${font}"`)
-    }
-    fonts.push('Montserrat', '"Open Sans"', 'sans-serif')
-    return fonts.join(',')
-  }
 
   const headerFontFamily = createFontFamilyString(headerFont)
   const bodyFontFamily = createFontFamilyString(bodyFont)

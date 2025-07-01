@@ -106,7 +106,8 @@ export const TextResponse = ({
           id={`textResponse-label-${blockId}`}
           variant="subtitle2"
           sx={{
-            fontSize: 14
+            fontSize: 14,
+            fontWeight: 500
           }}
         >
           {label.trim() === '' ? t('Label') : label}

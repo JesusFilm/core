@@ -3,6 +3,7 @@ import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
+import { Formik } from 'formik'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -90,7 +91,7 @@ export function ThemePreview({
     parentOrder: 0,
     label: 'Label',
     placeholder: 'Placeholder text',
-    hint: null,
+    hint: 'Hint text',
     minRows: null,
     required: null,
     integrationId: null,
@@ -127,75 +128,80 @@ export function ThemePreview({
             borderRadius: 3
           }}
         >
-          <Stack direction="column" spacing={6}>
-            <Stack direction="column" spacing={4}>
-              <Stack direction="column" spacing={4} sx={{ width: '100%' }}>
-                <Typography
-                  {...{
-                    __typename: 'TypographyBlock',
-                    id: 'heading1',
-                    parentBlockId: 'question',
-                    parentOrder: 0,
-                    align: TypographyAlign.left,
-                    color: TypographyColor.primary,
-                    variant: TypographyVariant.h1,
-                    content: t('Display Text'),
-                    children: []
-                  }}
-                />
-                <Typography
-                  {...{
-                    __typename: 'TypographyBlock',
-                    id: 'heading2',
-                    parentBlockId: 'question',
-                    parentOrder: 0,
-                    align: TypographyAlign.left,
-                    color: TypographyColor.primary,
-                    variant: TypographyVariant.h2,
-                    content: t('This is a Heading'),
-                    children: []
-                  }}
-                />
-              </Stack>
-              <Stack direction="column" spacing={2} sx={{ width: '100%' }}>
-                <Typography
-                  {...{
-                    __typename: 'TypographyBlock',
-                    id: 'heading5',
-                    parentBlockId: 'question',
-                    parentOrder: 0,
-                    align: TypographyAlign.left,
-                    color: TypographyColor.primary,
-                    variant: TypographyVariant.h5,
-                    content: t(
-                      'This is a subheading that supports additional content'
-                    ),
-                    children: []
-                  }}
-                />
-                <Typography
-                  {...{
-                    __typename: 'TypographyBlock',
-                    id: 'body1',
-                    parentBlockId: 'question',
-                    parentOrder: 0,
-                    align: TypographyAlign.left,
-                    color: TypographyColor.primary,
-                    variant: TypographyVariant.body1,
-                    content: t(
-                      'This is body text, used for general content like paragraphs and instructions.'
-                    ),
-                    children: []
-                  }}
-                />
-              </Stack>
-            </Stack>
+          <Formik
+            initialValues={{ [textResponseBlock.id]: '' }}
+            onSubmit={() => {}}
+          >
             <Stack direction="column" spacing={6}>
-              <Button {...buttonBlock} />
-              <RadioQuestion {...radioQuestionBlock} />
-              <TextResponse {...textResponseBlock} />
+              <Stack direction="column" spacing={4}>
+                <Stack direction="column" spacing={4} sx={{ width: '100%' }}>
+                  <Typography
+                    {...{
+                      __typename: 'TypographyBlock',
+                      id: 'heading1',
+                      parentBlockId: 'question',
+                      parentOrder: 0,
+                      align: TypographyAlign.left,
+                      color: TypographyColor.primary,
+                      variant: TypographyVariant.h1,
+                      content: t('Display Text'),
+                      children: []
+                    }}
+                  />
+                  <Typography
+                    {...{
+                      __typename: 'TypographyBlock',
+                      id: 'heading2',
+                      parentBlockId: 'question',
+                      parentOrder: 0,
+                      align: TypographyAlign.left,
+                      color: TypographyColor.primary,
+                      variant: TypographyVariant.h2,
+                      content: t('This is a Heading'),
+                      children: []
+                    }}
+                  />
+                </Stack>
+                <Stack direction="column" spacing={2} sx={{ width: '100%' }}>
+                  <Typography
+                    {...{
+                      __typename: 'TypographyBlock',
+                      id: 'heading5',
+                      parentBlockId: 'question',
+                      parentOrder: 0,
+                      align: TypographyAlign.left,
+                      color: TypographyColor.primary,
+                      variant: TypographyVariant.h5,
+                      content: t(
+                        'This is a subheading that supports additional content'
+                      ),
+                      children: []
+                    }}
+                  />
+                  <Typography
+                    {...{
+                      __typename: 'TypographyBlock',
+                      id: 'body1',
+                      parentBlockId: 'question',
+                      parentOrder: 0,
+                      align: TypographyAlign.left,
+                      color: TypographyColor.primary,
+                      variant: TypographyVariant.body1,
+                      content: t(
+                        'This is body text, used for general content like paragraphs and instructions.'
+                      ),
+                      children: []
+                    }}
+                  />
+                </Stack>
+              </Stack>
+              <Stack direction="column" spacing={6}>
+                <Button {...buttonBlock} />
+                <RadioQuestion {...radioQuestionBlock} />
+                <TextResponse {...textResponseBlock} />
+              </Stack>
             </Stack>
-          </Stack>
+          </Formik>
         </Paper>
       </Box>
     </ThemeProvider>

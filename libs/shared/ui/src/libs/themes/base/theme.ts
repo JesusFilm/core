@@ -7,7 +7,7 @@ import { FontFamilies } from '..'
 
 import { baseBreakpoints } from './tokens/breakpoints'
 import { baseColorsDark, baseColorsLight } from './tokens/colors'
-import { baseComponents } from './tokens/components'
+import { createBaseComponents } from './tokens/components'
 import { baseSpacing } from './tokens/spacing'
 import {
   baseTypographyArabic,
@@ -29,6 +29,8 @@ export const baseTheme = (
       ? baseTypographyUrdu
       : baseTypographyArabic
     : createCustomTypography(baseTypographyLTR, fontFamilies)
+
+  const baseComponents = createBaseComponents(fontFamilies)
 
   return {
     ...baseSpacing,

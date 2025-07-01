@@ -1,4 +1,3 @@
-import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
@@ -6,7 +5,6 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { GetJourney_journey_journeyTheme } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { FontLoader } from '../../../../../../../FontLoader'
@@ -42,7 +40,6 @@ export function ThemeBuilderDialog({
   const { journey } = useJourney()
 
   const journeyTheme = journey?.journeyTheme
-  console.log(journeyTheme)
 
   const [headerFont, setHeaderFont] = useState<string>(
     journeyTheme?.headerFont ?? ''

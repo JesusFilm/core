@@ -7,7 +7,7 @@ import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, ReactNode } from 'react'
+import { KeyboardEvent, ReactElement, ReactNode } from 'react'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
@@ -34,6 +34,17 @@ export function FontSelect({
 }: FontSelectProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
+  const handleKeyDown = (
+    event: KeyboardEvent<HTMLLIElement>,
+    font: string
+  ): void => {
+    // Trigger onChange when user navigates with arrow keys
+    if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+      onChange(font)
+      // Don't prevent default to allow normal keyboard navigation
+    }
+  }
+
   return (
     <Stack spacing={1}>
       <FormControl variant="filled">
@@ -56,7 +67,14 @@ export function FontSelect({
           }}
         >
           {options.map((font) => (
-            <MenuItem key={font} value={font}>
+            <MenuItem
+              key={font}
+              value={font}
+              // onMouseOver={() => onChange(font)}
+              // onKeyUp={(e) => handleKeyDown(e, font)}
+              tabIndex={0}
+              aria-label={font}
+            >
               {font}
             </MenuItem>
           ))}
