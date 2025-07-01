@@ -1,6 +1,6 @@
 import { ApolloProvider, type NormalizedCacheObject } from '@apollo/client'
 import type { EmotionCache } from '@emotion/cache'
-import { CacheProvider } from '@emotion/react'
+import { AppCacheProvider } from '@mui/material-nextjs/v14-pagesRouter'
 import { GoogleTagManager } from '@next/third-parties/google'
 import type { AppProps as NextJsAppProps } from 'next/app'
 import { Noto_Serif } from 'next/font/google'
@@ -106,7 +106,7 @@ function WatchApp({
       `}</style>
       <FlagsProvider flags={pageProps.flags}>
         <ApolloProvider client={client}>
-          <CacheProvider value={emotionCache}>
+          <AppCacheProvider emotionCache={emotionCache}>
             <DefaultSeo
               titleTemplate="%s | Jesus Film Project"
               defaultTitle="Watch | Jesus Film Project"
@@ -166,7 +166,7 @@ function WatchApp({
                 <Component {...pageProps} />
               </InstantSearchProvider>
             </ThemeProvider>
-          </CacheProvider>
+          </AppCacheProvider>
         </ApolloProvider>
       </FlagsProvider>
     </>

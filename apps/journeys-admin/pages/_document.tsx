@@ -1,5 +1,6 @@
 import {
   DocumentHeadTags,
+  type DocumentHeadTagsProps,
   documentGetInitialProps
 } from '@mui/material-nextjs/v14-pagesRouter'
 import Document, { Head, Html, Main, NextScript } from 'next/document'
@@ -7,9 +8,7 @@ import { ReactElement } from 'react'
 
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 
-export default class MyDocument extends Document<{
-  emotionStyleTags: ReactElement[]
-}> {
+export default class MyDocument extends Document<DocumentHeadTagsProps> {
   render(): ReactElement {
     return (
       <Html lang="en">
@@ -51,31 +50,7 @@ export default class MyDocument extends Document<{
 // `getInitialProps` belongs to `_document` (instead of `_app`),
 // it's compatible with static-site generation (SSG).
 MyDocument.getInitialProps = async (ctx) => {
-  // Resolution order
-  //
-  // On the server:
-  // 1. app.getInitialProps
-  // 2. page.getInitialProps
-  // 3. document.getInitialProps
-  // 4. app.render
-  // 5. page.render
-  // 6. document.render
-  //
-  // On the server with error:
-  // 1. document.getInitialProps
-  // 2. app.render
-  // 3. page.render
-  // 4. document.render
-  //
-  // On the client
-  // 1. app.getInitialProps
-  // 2. page.getInitialProps
-  // 3. app.render
-  // 4. page.render
-
-  const initialProps = await documentGetInitialProps(ctx, {
+  return await documentGetInitialProps(ctx, {
     emotionCache: createEmotionCache({})
   })
-
-  return initialProps
 }
