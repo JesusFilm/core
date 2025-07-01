@@ -1,8 +1,9 @@
-import type { EmotionCache } from '@emotion/cache'
-import createEmotionServer from '@emotion/server/create-instance'
-import type { AppType, Enhancer } from 'next/dist/shared/lib/utils'
+import {
+  DocumentHeadTags,
+  documentGetInitialProps
+} from '@mui/material-nextjs/v14-pagesRouter'
 import Document, { Head, Html, Main, NextScript } from 'next/document'
-import { FunctionComponent, ReactElement } from 'react'
+import { ReactElement } from 'react'
 
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
@@ -73,7 +74,7 @@ export default class MyDocument extends Document<{
             content={this.theme.palette.background.default}
           />
           {/* Inject MUI styles first to match with the prepend: true configuration. */}
-          {this.props.emotionStyleTags}
+          <DocumentHeadTags {...this.props} />
         </Head>
         <body>
           <Main />
@@ -109,43 +110,16 @@ MyDocument.getInitialProps = async (ctx) => {
   // 3. app.render
   // 4. page.render
 
-  const originalRenderPage = ctx.renderPage
-
-  // You can consider sharing the same emotion cache between all the SSR requests to speed up performance.
-  // However, be aware that it can have global side effects.
-  const cache = createEmotionCache({})
-  // eslint-disable-next-line @typescript-eslint/unbound-method
-  const { extractCriticalToChunks } = createEmotionServer(cache)
-
   let pageProps: Pick<JourneyFields, 'language'> | undefined
 
-  ctx.renderPage = async () =>
-    await originalRenderPage({
-      enhanceApp: ((App: FunctionComponent<{ emotionCache: EmotionCache }>) => {
-        return function EnhanceApp(props) {
-          pageProps = props.pageProps.journey
-          return <App emotionCache={cache} {...props} />
-        }
-      }) as unknown as Enhancer<AppType>
-    })
-
-  const initialProps = await Document.getInitialProps(ctx)
-  // This is important. It prevents emotion to render invalid HTML.
-  // See https://github.com/mui/material-ui/issues/26561#issuecomment-855286153
-  const emotionStyles = extractCriticalToChunks(initialProps.html)
-  const emotionStyleTags = emotionStyles.styles.map((style) => (
-    <style
-      data-emotion={`${style.key} ${style.ids.join(' ')}`}
-      key={style.key}
-      dangerouslySetInnerHTML={{ __html: style.css }}
-    />
-  ))
+  const initialProps = await documentGetInitialProps(ctx, {
+    emotionCache: createEmotionCache({})
+  })
 
   const { rtl, locale } = getJourneyRTL(pageProps)
 
   return {
     ...initialProps,
-    emotionStyleTags,
     rtl,
     locale
   }
