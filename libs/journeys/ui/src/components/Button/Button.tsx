@@ -304,8 +304,8 @@ export function Button({
         startIcon={startIcon != null ? <Icon {...startIcon} /> : undefined}
         endIcon={endIcon != null ? <Icon {...endIcon} /> : undefined}
         onClick={handleClick}
-        fullWidth={settings?.alignment === ButtonAlignment.justify}
         sx={{
+          width: settings?.alignment === ButtonAlignment.justify ? '100%' : '33%',
           ...(editableLabel != null
             ? {
                 '&:hover': {
