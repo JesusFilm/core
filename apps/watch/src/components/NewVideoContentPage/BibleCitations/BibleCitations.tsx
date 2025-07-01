@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import { ReactElement } from 'react'
 import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -46,10 +45,7 @@ export function BibleCitations({
           <SwiperSlide key={i} className="max-w-[400px]">
             <BibleCitationCard
               citation={citation}
-              imageUrl={
-                bibleImages?.[i] ??
-                'https://images.unsplash.com/photo-1480869799327-03916a613b29?q=80&w=1632&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-              }
+              imageUrl={bibleImages?.[i] ?? bibleImages[0]}
             />
           </SwiperSlide>
         ))}

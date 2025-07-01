@@ -5,7 +5,8 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { Icon } from '@core/shared/ui/icons/Icon'
 
-import { Button } from '../../../../shadcn/Button'
+import { Button } from '../../../../Button'
+
 
 interface BibleQuotesCarouselHeaderProps {
   bibleQuotesTitle: string

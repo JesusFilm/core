@@ -101,7 +101,7 @@ describe('BibleCitationCard', () => {
 
     await waitFor(() => {
       expect(mockAxiosGet).toHaveBeenCalledWith(
-        'https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/en-bsb/books/john/chapters/3/verses/16.json'
+        'https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/en-asv/books/john/chapters/3/verses/16.json'
       )
     })
   })
@@ -122,9 +122,6 @@ describe('BibleCitationCard', () => {
   })
 
   it('should handle axios request failure gracefully', async () => {
-    const consoleSpy = jest
-      .spyOn(console, 'error')
-      .mockImplementation(jest.fn())
     mockAxiosGet.mockRejectedValue(new Error('Network error'))
 
     render(
@@ -133,18 +130,8 @@ describe('BibleCitationCard', () => {
         imageUrl="https://example.com/image.jpg"
       />
     )
-
-    await waitFor(() => {
-      expect(consoleSpy).toHaveBeenCalledWith(
-        'Error fetching scripture:',
-        expect.any(Error)
-      )
-    })
-
     // Should still render citation reference
     expect(screen.getByText('John 3:16')).toBeInTheDocument()
-
-    consoleSpy.mockRestore()
   })
 
   it('should show "Read more" link when verseEnd is present', async () => {
@@ -249,7 +236,7 @@ describe('BibleCitationCard', () => {
 
     await waitFor(() => {
       expect(mockAxiosGet).toHaveBeenCalledWith(
-        expect.stringContaining('en-bsb')
+        expect.stringContaining('en-asv')
       )
     })
   })
@@ -272,7 +259,7 @@ describe('BibleCitationCard', () => {
 
     await waitFor(() => {
       expect(mockAxiosGet).toHaveBeenCalledWith(
-        expect.stringContaining('en-bsb')
+        expect.stringContaining('en-asv')
       )
     })
   })

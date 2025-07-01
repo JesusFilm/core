@@ -283,9 +283,9 @@ model Journey {
   logoImageBlockId          String?                     @unique
   menuStepBlockId           String?                     @unique
   menuButtonIcon            JourneyMenuButtonIcon?
+  fromTemplateId            String?
   socialNodeX               Int?                        @default(-240)
   socialNodeY               Int?                        @default(-46)
-  fromTemplateId            String?
   actions                   Action[]
   blocks                    Block[]
   chatButtons               ChatButton[]
@@ -410,7 +410,8 @@ model Block {
   focalLeft               Int?                 @default(50)
   scale                   Int?
   slug                    String?
-  classNames              Json                 @default("{\"self\": \"\"}")
+  backdropBlur            Int?
+  settings                Json                 @default("{}")
   targetActions           Action[]             @relation("Block")
   action                  Action?
   coverBlock              Block?               @relation("CoverBlock", fields: [coverBlockId], references: [id])

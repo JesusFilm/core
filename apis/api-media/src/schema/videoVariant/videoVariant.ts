@@ -7,6 +7,7 @@ import {
   videoCacheReset,
   videoVariantCacheReset
 } from '../../lib/videoCacheReset'
+import { updateVideoVariantInAlgolia } from '../../workers/algolia/service'
 import { builder } from '../builder'
 import { deleteR2File } from '../cloudflare/r2/asset'
 import { Language } from '../language'
@@ -184,6 +185,12 @@ builder.mutationFields((t) => ({
       const { id, videoId } = newVariant
 
       try {
+        await updateVideoVariantInAlgolia(id)
+      } catch (error) {
+        console.error('Algolia update error:', error)
+      }
+
+      try {
         void videoVariantCacheReset(id)
         void videoCacheReset(videoId)
       } catch (error) {
@@ -223,6 +230,12 @@ builder.mutationFields((t) => ({
 
       // Store the videoId before the try/catch block
       const videoId = input.videoId ?? updated.videoId
+
+      try {
+        await updateVideoVariantInAlgolia(updated.id)
+      } catch (error) {
+        console.error('Algolia update error:', error)
+      }
 
       try {
         void videoVariantCacheReset(updated.id)
@@ -332,7 +345,11 @@ builder.mutationFields((t) => ({
         ...query,
         where: { id }
       })
-
+      try {
+        await updateVideoVariantInAlgolia(id)
+      } catch (error) {
+        console.error('Algolia update error:', error)
+      }
       try {
         void videoVariantCacheReset(id)
         void videoCacheReset(videoId)

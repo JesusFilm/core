@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { VideoProvider } from '../../libs/videoContext'
@@ -53,8 +53,90 @@ describe('NewContentPage', () => {
     )
     const user = userEvent.setup()
 
-    await user.click(screen.getByRole('button', { name: 'Share' }))
+    await user.click(screen.getByRole('button', { name: 'Download' }))
 
-    expect(screen.getByTestId('ShareDialog')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(screen.getByTestId('DownloadDialog')).toBeInTheDocument()
+    )
+  })
+
+  const videoWithBibleCitations = {
+    ...videos[0],
+    bibleCitations: [
+      {
+        __typename: 'BibleCitation' as const,
+        bibleBook: {
+          __typename: 'BibleBook' as const,
+          name: [{ __typename: 'BibleBookName' as const, value: 'Genesis' }]
+        },
+        chapterStart: 1,
+        chapterEnd: null,
+        verseStart: 1,
+        verseEnd: null
+      },
+      {
+        __typename: 'BibleCitation' as const,
+        bibleBook: {
+          __typename: 'BibleBook' as const,
+          name: [{ __typename: 'BibleBookName' as const, value: 'John' }]
+        },
+        chapterStart: 3,
+        chapterEnd: null,
+        verseStart: 16,
+        verseEnd: null
+      }
+    ]
+  }
+
+  it('should render bible citations', async () => {
+    render(
+      <MockedProvider>
+        <VideoProvider value={{ content: videoWithBibleCitations }}>
+          <NewVideoContentPage />
+        </VideoProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByText('Genesis 1:1')).toBeInTheDocument()
+      expect(screen.getByText('John 3:16')).toBeInTheDocument()
+    })
+  })
+
+  it('should render free resource card', () => {
+    render(
+      <MockedProvider>
+        <VideoProvider value={{ content: videoWithBibleCitations }}>
+          <NewVideoContentPage />
+        </VideoProvider>
+      </MockedProvider>
+    )
+    expect(screen.getByText('Free Resources')).toBeInTheDocument()
+    expect(
+      screen.getByText('Want to grow deep in your understanding of the Bible?')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: 'Join Our Bible Study' })
+    ).toBeInTheDocument()
+  })
+
+  it('should open new tab when free resource button is clicked', async () => {
+    const user = userEvent.setup()
+    window.open = jest.fn()
+    render(
+      <MockedProvider>
+        <VideoProvider value={{ content: videoWithBibleCitations }}>
+          <NewVideoContentPage />
+        </VideoProvider>
+      </MockedProvider>
+    )
+    const freeResourceButton = screen.getByRole('link', {
+      name: 'Join Our Bible Study'
+    })
+    await user.click(freeResourceButton)
+    expect(window.open).toHaveBeenCalledWith(
+      'https://join.bsfinternational.org/?utm_source=jesusfilm-watch',
+      '_blank'
+    )
   })
 })

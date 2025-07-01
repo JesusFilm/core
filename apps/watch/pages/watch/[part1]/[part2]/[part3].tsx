@@ -1,5 +1,6 @@
 import { ApolloError, gql } from '@apollo/client'
 import { GetStaticPaths, GetStaticProps } from 'next'
+import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
@@ -17,13 +18,15 @@ import {
 } from '../../../../__generated__/GetVideoContentPart3'
 import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 import i18nConfig from '../../../../next-i18next.config'
-import NewVideoContentPage from '../../../../src/components/NewVideoContentPage'
+import { NewVideoContentPage } from '../../../../src/components/NewVideoContentPage'
 import { createApolloClient } from '../../../../src/libs/apolloClient'
+import { getCookie } from '../../../../src/libs/cookieHandler'
 import { getFlags } from '../../../../src/libs/getFlags'
 import { LanguageProvider } from '../../../../src/libs/languageContext/LanguageContext'
 import { slugMap } from '../../../../src/libs/slugMap'
 import { VIDEO_CONTENT_FIELDS } from '../../../../src/libs/videoContentFields'
 import { VideoProvider } from '../../../../src/libs/videoContext'
+import { WatchProvider } from '../../../../src/libs/watchContext/WatchContext'
 
 export const GET_VIDEO_CONTAINER_PART_2 = gql`
   ${VIDEO_CONTENT_FIELDS}
@@ -52,17 +55,29 @@ export default function Part3Page({
   container,
   content
 }: Part3PageProps): ReactElement {
+  const { i18n } = useTranslation()
   const searchClient = useInstantSearchClient()
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
+
+  const initialWatchState = {
+    siteLanguage: i18n?.language ?? 'en',
+    audioLanguage: getCookie('AUDIO_LANGUAGE') ?? '529',
+    subtitleLanguage: getCookie('SUBTITLE_LANGUAGE') ?? '529',
+    subtitleOn: (getCookie('SUBTITLES_ON') ?? 'false') === 'true',
+    videoId: content.id,
+    videoVariantSlug: content.variant?.slug
+  }
 
   return (
     <InstantSearch searchClient={searchClient} indexName={indexName} insights>
       <SnackbarProvider>
-        <LanguageProvider>
-          <VideoProvider value={{ content, container }}>
-            <NewVideoContentPage />
-          </VideoProvider>
-        </LanguageProvider>
+        <WatchProvider initialState={initialWatchState}>
+          <LanguageProvider>
+            <VideoProvider value={{ content, container }}>
+              <NewVideoContentPage />
+            </VideoProvider>
+          </LanguageProvider>
+        </WatchProvider>
       </SnackbarProvider>
     </InstantSearch>
   )

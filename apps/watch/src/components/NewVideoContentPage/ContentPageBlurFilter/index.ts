@@ -1,3 +1,1 @@
-import { ContentPageBlurFilter } from './ContentPageBlurFilter'
-
-export { ContentPageBlurFilter }
+export { ContentPageBlurFilter } from './ContentPageBlurFilter'

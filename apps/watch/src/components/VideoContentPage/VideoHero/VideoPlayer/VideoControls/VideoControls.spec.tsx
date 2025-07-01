@@ -13,6 +13,7 @@ import videojs from 'video.js'
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
 import { VideoProvider } from '../../../../../libs/videoContext'
+import { WatchProvider } from '../../../../../libs/watchContext'
 import { videos } from '../../../../Videos/__generated__/testData'
 
 import { VideoControls } from './VideoControls'
@@ -70,9 +71,18 @@ describe('VideoControls', () => {
     }))
     render(
       <MockedProvider>
-        <VideoProvider value={{ content: videos[0] }}>
-          <VideoControls player={player} />
-        </VideoProvider>
+        <WatchProvider
+          initialState={{
+            siteLanguage: 'en',
+            audioLanguage: 'en',
+            subtitleLanguage: 'en',
+            subtitleOn: false
+          }}
+        >
+          <VideoProvider value={{ content: videos[0] }}>
+            <VideoControls player={player} />
+          </VideoProvider>
+        </WatchProvider>
       </MockedProvider>
     )
     fireEvent.click(screen.getByTestId('PlayArrowRoundedIcon'))
@@ -88,9 +98,18 @@ describe('VideoControls', () => {
     }))
     render(
       <MockedProvider>
-        <VideoProvider value={{ content: videos[0] }}>
-          <VideoControls player={player} />
-        </VideoProvider>
+        <WatchProvider
+          initialState={{
+            siteLanguage: 'en',
+            audioLanguage: 'en',
+            subtitleLanguage: 'en',
+            subtitleOn: false
+          }}
+        >
+          <VideoProvider value={{ content: videos[0] }}>
+            <VideoControls player={player} />
+          </VideoProvider>
+        </WatchProvider>
       </MockedProvider>
     )
     fireEvent.click(screen.getByTestId('PauseRoundedIcon'))
@@ -103,21 +122,39 @@ describe('VideoControls', () => {
     }))
     render(
       <MockedProvider>
-        <VideoProvider value={{ content: videos[0] }}>
-          <VideoControls player={player} />
-        </VideoProvider>
+        <WatchProvider
+          initialState={{
+            siteLanguage: 'en',
+            audioLanguage: 'en',
+            subtitleLanguage: 'en',
+            subtitleOn: false
+          }}
+        >
+          <VideoProvider value={{ content: videos[0] }}>
+            <VideoControls player={player} />
+          </VideoProvider>
+        </WatchProvider>
       </MockedProvider>
     )
-    fireEvent.click(screen.getByTestId('VolumeOffOutlinedIcon'))
+    fireEvent.click(screen.getAllByTestId('VolumeOffOutlinedIcon')[0])
     expect(mutedStub).toHaveBeenCalled()
   })
 
   it('opens audio language dialog on language button click', async () => {
     const { getByRole, getByTestId } = render(
       <MockedProvider>
-        <VideoProvider value={{ content: videos[0] }}>
-          <VideoControls player={player} />
-        </VideoProvider>
+        <WatchProvider
+          initialState={{
+            siteLanguage: 'en',
+            audioLanguage: 'en',
+            subtitleLanguage: 'en',
+            subtitleOn: false
+          }}
+        >
+          <VideoProvider value={{ content: videos[0] }}>
+            <VideoControls player={player} />
+          </VideoProvider>
+        </WatchProvider>
       </MockedProvider>
     )
     fireEvent.click(getByTestId('LanguageOutlinedIcon'))
@@ -133,9 +170,18 @@ describe('VideoControls', () => {
       }))
     const { getByTestId } = render(
       <MockedProvider>
-        <VideoProvider value={{ content: videos[0] }}>
-          <VideoControls player={player} />
-        </VideoProvider>
+        <WatchProvider
+          initialState={{
+            siteLanguage: 'en',
+            audioLanguage: 'en',
+            subtitleLanguage: 'en',
+            subtitleOn: false
+          }}
+        >
+          <VideoProvider value={{ content: videos[0] }}>
+            <VideoControls player={player} />
+          </VideoProvider>
+        </WatchProvider>
       </MockedProvider>
     )
     fireEvent.click(getByTestId('FullscreenOutlinedIcon'))
@@ -146,9 +192,18 @@ describe('VideoControls', () => {
     ;(global.navigator.userAgent as unknown as string) = 'Mac'
     const { getByTestId } = render(
       <MockedProvider>
-        <VideoProvider value={{ content: videos[0] }}>
-          <VideoControls player={player} />
-        </VideoProvider>
+        <WatchProvider
+          initialState={{
+            siteLanguage: 'en',
+            audioLanguage: 'en',
+            subtitleLanguage: 'en',
+            subtitleOn: false
+          }}
+        >
+          <VideoProvider value={{ content: videos[0] }}>
+            <VideoControls player={player} />
+          </VideoProvider>
+        </WatchProvider>
       </MockedProvider>
     )
     fireEvent.click(getByTestId('FullscreenOutlinedIcon'))

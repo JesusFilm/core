@@ -9,7 +9,7 @@ import { VideoContentFields_bibleCitations as BibleCitation } from '../../../../
 import { formatScripture } from './utils/formatScripture'
 
 const LOCALE_TO_BIBLE_VERSION_MAP = {
-  en: { bibleVersion: 'en-bsb', bibleGatewayLinkVersion: 'NIV' }
+  en: { bibleVersion: 'en-asv', bibleGatewayLinkVersion: 'NIV' }
 } as const
 
 interface BibleCitationCardProps {
@@ -40,7 +40,7 @@ export function BibleCitationCard({
         )
         setScripture(data)
       } catch (err) {
-        console.error('Error fetching scripture:', err)
+        setScripture(null)
       }
     }
 

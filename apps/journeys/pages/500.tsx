@@ -33,6 +33,7 @@ export function Custom500(): ReactElement {
     {
       __typename: 'CardBlock',
       backgroundColor: '#30313D',
+      backdropBlur: null,
       coverBlockId: '500-imageBlock-id',
       fullscreen: false,
       id: '500-cardBlock-id',

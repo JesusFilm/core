@@ -204,7 +204,8 @@ export const ImageBlur = {
     ...Default.args,
     coverBlockId: image.id,
     children: [...content, image],
-    fullscreen: true
+    fullscreen: true,
+    backdropBlur: null
   }
 }
 
