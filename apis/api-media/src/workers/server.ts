@@ -83,6 +83,12 @@ async function main(): Promise<void> {
         './videoChildren'
       )
     )
+    run(
+      await import(
+        /* webpackChunkName: "mux-videos" */
+        './muxVideos'
+      )
+    )
   }
 
   run(
