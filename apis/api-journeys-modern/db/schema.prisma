@@ -410,6 +410,8 @@ model Block {
   focalLeft               Int?                 @default(50)
   scale                   Int?
   slug                    String?
+  backdropBlur            Int?
+  settings                Json                 @default("{}")
   targetActions           Action[]             @relation("Block")
   action                  Action?
   coverBlock              Block?               @relation("CoverBlock", fields: [coverBlockId], references: [id])
