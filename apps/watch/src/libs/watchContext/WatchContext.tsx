@@ -221,6 +221,7 @@ export const reducer = (state: WatchState, action: WatchAction): WatchState => {
       for (const lang of videoAudioLanguages) {
         const siteLanguageMapping = LANGUAGE_MAPPINGS[state.siteLanguage]
         const siteLanguageSlugs = siteLanguageMapping?.languageSlugs || []
+
         if (
           lang.language.id === state.audioLanguage ||
           siteLanguageSlugs.includes(lang.slug || '')
@@ -231,7 +232,6 @@ export const reducer = (state: WatchState, action: WatchAction): WatchState => {
       }
 
       // If no matches found, currentAudioLanguage remains undefined
-
       return {
         ...state,
         videoAudioLanguages,

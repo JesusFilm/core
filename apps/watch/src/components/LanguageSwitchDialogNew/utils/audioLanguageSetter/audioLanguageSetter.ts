@@ -145,8 +145,7 @@ function updateURLIfNeeded({ router, targetSlug }: UpdateURLParams): void {
  *
  * @param params - Configuration object with language data and UI update functions
  */
-function setLanguageAndHelper({
-  language,
+function setHelper({
   isPreferred,
   preferredLanguage,
   setHelperText,
@@ -209,7 +208,7 @@ export function selectLanguageForVideo({
     preferredAudioLanguage != null &&
     currentAudioLanguage.language.id === preferredAudioLanguage.id
   ) {
-    setLanguageAndHelper({
+    setHelper({
       language: preferredAudioLanguage,
       isPreferred: true,
       setHelperText,
@@ -223,7 +222,7 @@ export function selectLanguageForVideo({
       (lang) => lang.id === currentAudioLanguage.language.id
     )
     if (matchingLanguage) {
-      setLanguageAndHelper({
+      setHelper({
         language: matchingLanguage,
         isPreferred: false,
         preferredLanguage: preferredAudioLanguage,
@@ -235,7 +234,7 @@ export function selectLanguageForVideo({
   }
   // Scenario 3: Use path language
   else if (pathLanguage != null) {
-    setLanguageAndHelper({
+    setHelper({
       language: pathLanguage,
       isPreferred: false,
       preferredLanguage: preferredAudioLanguage,
@@ -245,7 +244,7 @@ export function selectLanguageForVideo({
   }
   // Scenario 4: Fallback to preferred language
   else if (preferredAudioLanguage != null) {
-    setLanguageAndHelper({
+    setHelper({
       language: preferredAudioLanguage,
       isPreferred: true,
       setHelperText,
