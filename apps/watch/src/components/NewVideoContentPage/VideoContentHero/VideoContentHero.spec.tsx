@@ -2,6 +2,7 @@ import { render } from '@testing-library/react'
 import fscreen from 'fscreen'
 
 import { VideoProvider } from '../../../libs/videoContext'
+import { WatchProvider } from '../../../libs/watchContext'
 import { videos } from '../../Videos/__generated__/testData'
 
 import { VideoContentHero } from './VideoContentHero'
@@ -36,7 +37,16 @@ describe('VideoContentHero', () => {
   it('adds and removes fullscreenchange event listener', () => {
     const { unmount } = render(
       <VideoProvider value={{ content: videos[0] }}>
-        <VideoContentHero isFullscreen setIsFullscreen={setIsFullscreen} />
+        <WatchProvider
+          initialState={{
+            siteLanguage: 'en',
+            audioLanguage: 'en',
+            subtitleLanguage: 'en',
+            subtitleOn: false
+          }}
+        >
+          <VideoContentHero isFullscreen setIsFullscreen={setIsFullscreen} />
+        </WatchProvider>
       </VideoProvider>
     )
     expect(mockedFscreen.addEventListener).toHaveBeenCalledWith(
@@ -58,7 +68,16 @@ describe('VideoContentHero', () => {
     it('calls setIsFullscreen and scrolls to top when entering fullscreen', () => {
       render(
         <VideoProvider value={{ content: videos[0] }}>
-          <VideoContentHero isFullscreen setIsFullscreen={setIsFullscreen} />
+          <WatchProvider
+            initialState={{
+              siteLanguage: 'en',
+              audioLanguage: 'en',
+              subtitleLanguage: 'en',
+              subtitleOn: false
+            }}
+          >
+            <VideoContentHero isFullscreen setIsFullscreen={setIsFullscreen} />
+          </WatchProvider>
         </VideoProvider>
       )
       const fullscreenchangeCallback = (
@@ -78,7 +97,16 @@ describe('VideoContentHero', () => {
     it('calls setIsFullscreen and scrolls to top when entering fullscreen', () => {
       render(
         <VideoProvider value={{ content: videos[0] }}>
-          <VideoContentHero isFullscreen setIsFullscreen={setIsFullscreen} />
+          <WatchProvider
+            initialState={{
+              siteLanguage: 'en',
+              audioLanguage: 'en',
+              subtitleLanguage: 'en',
+              subtitleOn: false
+            }}
+          >
+            <VideoContentHero isFullscreen setIsFullscreen={setIsFullscreen} />
+          </WatchProvider>
         </VideoProvider>
       )
       const fullscreenchangeCallback = (
@@ -98,7 +126,16 @@ describe('VideoContentHero', () => {
     it('calls setIsFullscreen when exiting fullscreen', () => {
       render(
         <VideoProvider value={{ content: videos[0] }}>
-          <VideoContentHero isFullscreen setIsFullscreen={setIsFullscreen} />
+          <WatchProvider
+            initialState={{
+              siteLanguage: 'en',
+              audioLanguage: 'en',
+              subtitleLanguage: 'en',
+              subtitleOn: false
+            }}
+          >
+            <VideoContentHero isFullscreen setIsFullscreen={setIsFullscreen} />
+          </WatchProvider>
         </VideoProvider>
       )
       const fullscreenchangeCallback = (

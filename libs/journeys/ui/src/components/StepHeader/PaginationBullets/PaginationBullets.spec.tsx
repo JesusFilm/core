@@ -26,6 +26,7 @@ describe('PaginationBullets', () => {
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             __typename: 'RadioQuestionBlock',

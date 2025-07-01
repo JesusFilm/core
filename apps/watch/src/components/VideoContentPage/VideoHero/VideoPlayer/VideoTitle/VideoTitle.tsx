@@ -1,28 +1,45 @@
+import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
+import VolumeOff from '@mui/icons-material/VolumeOff'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { useWatch } from '../../../../../libs/watchContext'
 
 interface VideoTitleProps {
   videoTitle: string
-  videoSnippet: string
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
+  variant?: 'play' | 'unmute'
+  style?: React.CSSProperties
+  showButton: boolean
 }
 
 export function VideoTitle({
   videoTitle,
-  videoSnippet
+  onClick,
+  variant = 'play',
+  showButton
 }: VideoTitleProps): ReactElement {
+  const { t } = useTranslation('apps-watch')
   const {
     state: {
-      player: { play, active, loading }
+      player: { play, active, loading, mute, volume }
     }
   } = useWatch()
   const visible = !play || active || loading
 
+  const show =
+    (mute || volume === 0) && variant === 'unmute'
+      ? true
+      : variant === 'play'
+        ? true
+        : false
+
   return (
     <div
       className={`
-        w-full z-[2] flex flex-col
-        px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12
+        pb-4 
+        gap-4 
+        w-full z-[2] flex flex-col 
         transition-opacity duration-[225ms]
         ${visible ? 'opacity-100' : 'opacity-0'}
         ${visible ? 'delay-0' : 'delay-[2000ms]'}
@@ -39,17 +56,29 @@ export function VideoTitle({
       >
         {videoTitle}
       </h1>
-
-      <h4
-        data-testid="ContainerHeroDescription"
-        className="
-          opacity-50 mix-blend-screen z-[2] 
-          uppercase tracking-[0.1em] text-white
-          text-sm md:text-base lg:text-lg font-sans
-        "
+      <div
+        className={`overflow-hidden transition-all duration-500 ease-in-out ${
+          show ? 'max-h-30' : 'max-h-0'
+        }`}
       >
-        {videoSnippet}
-      </h4>
+        <button
+          id="play-button-lg"
+          onClick={(e) => onClick?.(e)}
+          className="z-2 flex min-w-[220px] items-center justify-center gap-2  
+        bg-[#CB333B] p-4 text-2xl font-medium leading-loose 
+        tracking-wide text-white shadow-md transition-colors
+        hover:bg-[#A4343A] font-sans  rounded-[8px] cursor-pointer
+        "
+          style={{
+            display: showButton ? 'flex' : 'none'
+          }}
+        >
+          {variant === 'play' && <PlayArrowRounded fontSize="large" />}
+          {variant === 'unmute' && <VolumeOff fontSize="large" />}
+          {variant === 'play' && t('Play')}
+          {variant === 'unmute' && t('Play with sound')}
+        </button>
+      </div>
     </div>
   )
 }

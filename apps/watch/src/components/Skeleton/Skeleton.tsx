@@ -13,7 +13,8 @@ export function Skeleton({
 }: SkeletonProps): ReactElement {
   return (
     <div
-      className={`w-[${width}px] h-[${height}px] rounded-lg animate-pulse bg-text-secondary ${className}`}
+      className={`rounded-lg animate-pulse bg-text-secondary ${className}`}
+      style={{ width: `${width}px`, height: `${height}px` }}
     />
   )
 }

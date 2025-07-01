@@ -7,8 +7,8 @@ describe('Skeleton', () => {
     const { container } = render(<Skeleton />)
     const skeletonElement = container.firstChild as HTMLElement
     expect(skeletonElement).toBeInTheDocument()
-    expect(skeletonElement.className).toContain('w-[5px]')
-    expect(skeletonElement.className).toContain('h-[5px]')
+    expect(skeletonElement).toHaveStyle('width: 5px')
+    expect(skeletonElement).toHaveStyle('height: 5px')
     expect(skeletonElement.className).toContain('rounded-lg')
     expect(skeletonElement.className).toContain('animate-pulse')
     expect(skeletonElement.className).toContain('bg-text-secondary')
@@ -18,8 +18,8 @@ describe('Skeleton', () => {
     const { container } = render(<Skeleton height={100} width={200} />)
     const skeletonElement = container.firstChild as HTMLElement
     expect(skeletonElement).toBeInTheDocument()
-    expect(skeletonElement.className).toContain('w-[200px]')
-    expect(skeletonElement.className).toContain('h-[100px]')
+    expect(skeletonElement).toHaveStyle('width: 200px')
+    expect(skeletonElement).toHaveStyle('height: 100px')
   })
 
   it('should render with custom className', () => {
@@ -27,7 +27,7 @@ describe('Skeleton', () => {
     const skeletonElement = container.firstChild as HTMLElement
     expect(skeletonElement).toBeInTheDocument()
     expect(skeletonElement.className).toContain('custom-class')
-    expect(skeletonElement.className).toContain('w-[5px]')
-    expect(skeletonElement.className).toContain('h-[5px]')
+    expect(skeletonElement).toHaveStyle('width: 5px')
+    expect(skeletonElement).toHaveStyle('height: 5px')
   })
 })

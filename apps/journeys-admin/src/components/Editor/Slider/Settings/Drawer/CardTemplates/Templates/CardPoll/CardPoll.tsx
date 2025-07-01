@@ -313,6 +313,7 @@ export function CardPoll(): ReactElement {
       themeMode: ThemeMode.dark,
       themeName: ThemeName.base,
       fullscreen: true,
+      backdropBlur: null,
       __typename: 'CardBlock'
     } satisfies CardBlock
 
