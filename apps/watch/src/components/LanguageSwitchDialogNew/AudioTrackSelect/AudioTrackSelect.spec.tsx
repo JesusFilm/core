@@ -162,7 +162,14 @@ describe('AudioTrackSelect', () => {
     expect(screen.getByText('English Native')).toBeInTheDocument()
   })
 
-  it('should handle when audioLanguage does not match any language in allLanguages', () => {
+  it('should handle when audioLanguage does not match any language in allLanguages and path slug also does not match', () => {
+    // Mock router with a path that doesn't match any language slug
+    const mockRouterWithNonMatchingPath = {
+      ...mockRouter,
+      asPath: '/watch/video-slug/nonexistent-language'
+    }
+    useRouterMock.mockReturnValue(mockRouterWithNonMatchingPath)
+
     const initialLanguageState = {
       siteLanguage: 'en',
       audioLanguage: 'nonexistent-id', // This won't match any language
@@ -198,9 +205,159 @@ describe('AudioTrackSelect', () => {
       </MockedProvider>
     )
 
-    // Should not display any native name since no language matches
+    // Should not display any native name since no language matches audioLanguage or path slug
     expect(screen.queryByText('English Native')).not.toBeInTheDocument()
     // But should still render the basic components
+    expect(screen.getByText('Audio Track')).toBeInTheDocument()
+  })
+
+  it('should use path slug when currentAudioLanguage is undefined and audioLanguage does not match', () => {
+    // Mock router with a path that matches a language slug
+    const mockRouterWithMatchingPath = {
+      ...mockRouter,
+      asPath: '/watch/video-slug/spanish.html'
+    }
+    useRouterMock.mockReturnValue(mockRouterWithMatchingPath)
+
+    const initialLanguageState = {
+      siteLanguage: 'en',
+      audioLanguage: 'nonexistent-id', // This won't match any language
+      subtitleLanguage: '529',
+      subtitleOn: false,
+      currentAudioLanguage: undefined, // No current audio language
+      allLanguages: [
+        {
+          __typename: 'Language' as const,
+          id: '529',
+          slug: 'english',
+          bcp47: 'en',
+          name: [
+            {
+              __typename: 'LanguageName' as const,
+              value: 'English',
+              primary: true
+            },
+            {
+              __typename: 'LanguageName' as const,
+              value: 'English Native',
+              primary: false
+            }
+          ]
+        },
+        {
+          __typename: 'Language' as const,
+          id: '496',
+          slug: 'spanish',
+          bcp47: 'es',
+          name: [
+            {
+              __typename: 'LanguageName' as const,
+              value: 'Spanish',
+              primary: true
+            },
+            {
+              __typename: 'LanguageName' as const,
+              value: 'Español',
+              primary: false
+            }
+          ]
+        }
+      ]
+    }
+
+    render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <WatchProvider initialState={initialLanguageState}>
+          <AudioTrackSelect />
+        </WatchProvider>
+      </MockedProvider>
+    )
+
+    // Should display Spanish native name since path slug 'spanish' matches
+    expect(screen.getByText('Español')).toBeInTheDocument()
+    expect(screen.getByText('Audio Track')).toBeInTheDocument()
+  })
+
+  it('should prioritize currentAudioLanguage over path slug', () => {
+    // Mock router with a path that matches a different language
+    const mockRouterWithDifferentPath = {
+      ...mockRouter,
+      asPath: '/watch/video-slug/english.html'
+    }
+    useRouterMock.mockReturnValue(mockRouterWithDifferentPath)
+
+    const initialLanguageState = {
+      siteLanguage: 'en',
+      audioLanguage: 'nonexistent-id', // This won't match any language
+      subtitleLanguage: '529',
+      subtitleOn: false,
+      currentAudioLanguage: {
+        __typename: 'LanguageWithSlug' as const,
+        slug: 'spanish',
+        language: {
+          __typename: 'Language' as const,
+          id: '496',
+          slug: 'spanish',
+          name: [
+            {
+              __typename: 'LanguageName' as const,
+              value: 'Spanish',
+              primary: true
+            }
+          ]
+        }
+      },
+      allLanguages: [
+        {
+          __typename: 'Language' as const,
+          id: '529',
+          slug: 'english',
+          bcp47: 'en',
+          name: [
+            {
+              __typename: 'LanguageName' as const,
+              value: 'English',
+              primary: true
+            },
+            {
+              __typename: 'LanguageName' as const,
+              value: 'English Native',
+              primary: false
+            }
+          ]
+        },
+        {
+          __typename: 'Language' as const,
+          id: '496',
+          slug: 'spanish',
+          bcp47: 'es',
+          name: [
+            {
+              __typename: 'LanguageName' as const,
+              value: 'Spanish',
+              primary: true
+            },
+            {
+              __typename: 'LanguageName' as const,
+              value: 'Español',
+              primary: false
+            }
+          ]
+        }
+      ]
+    }
+
+    render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <WatchProvider initialState={initialLanguageState}>
+          <AudioTrackSelect />
+        </WatchProvider>
+      </MockedProvider>
+    )
+
+    // Should display Spanish native name from currentAudioLanguage, not English from path
+    expect(screen.getByText('Español')).toBeInTheDocument()
+    expect(screen.queryByText('English Native')).not.toBeInTheDocument()
     expect(screen.getByText('Audio Track')).toBeInTheDocument()
   })
 
