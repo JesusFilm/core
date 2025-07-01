@@ -6,13 +6,8 @@ import {
   AiBlockImageCreateMutation,
   AiBlockImageCreateMutationVariables
 } from '../../../../../../__generated__/AiBlockImageCreateMutation'
-import { ImageBlockCreateInput } from '../../../../../../__generated__/globalTypes'
 
-import {
-  blockImageCreateInputSchema,
-  blockImageUpdateInputSchema,
-  imageBlockClassNamesInputSchema
-} from './type'
+import { blockImageCreateInputSchema } from './type'
 
 export const AI_BLOCK_IMAGE_CREATE = gql`
   mutation AiBlockImageCreateMutation($input: ImageBlockCreateInput!) {

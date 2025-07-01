@@ -2,8 +2,9 @@ import { z } from 'zod'
 
 import { BlockFields_ButtonBlock } from '../../../../../../__generated__/BlockFields'
 import {
-  ButtonBlockClassNamesInput,
+  ButtonAlignment,
   ButtonBlockCreateInput,
+  ButtonBlockSettingsInput,
   ButtonBlockUpdateInput,
   ButtonColor,
   ButtonSize,
@@ -15,10 +16,14 @@ import { blockSchema } from '../type'
 export const buttonVariantEnum = z.nativeEnum(ButtonVariant)
 export const buttonColorEnum = z.nativeEnum(ButtonColor)
 export const buttonSizeEnum = z.nativeEnum(ButtonSize)
+export const buttonAlignmentEnum = z.nativeEnum(ButtonAlignment)
 
-export const buttonBlockClassNamesInputSchema = z.object({
-  self: z.string().describe('Tailwind CSS class names for the button element')
-}) satisfies z.ZodType<ButtonBlockClassNamesInput>
+export const buttonBlockSettingsInputSchema = z.object({
+  alignment: buttonAlignmentEnum
+    .nullable()
+    .optional()
+    .describe('Alignment of the button')
+}) satisfies z.ZodType<ButtonBlockSettingsInput>
 
 export const blockButtonSchema = blockSchema.extend({
   parentBlockId: z
@@ -57,10 +62,10 @@ export const blockButtonCreateInputSchema = z.object({
     .nullable()
     .optional()
     .describe('Whether the button is enabled'),
-  classNames: buttonBlockClassNamesInputSchema
+  settings: buttonBlockSettingsInputSchema
     .nullable()
     .optional()
-    .describe('Tailwind CSS class names for styling the button element')
+    .describe('Settings for the button including alignment')
 }) satisfies z.ZodType<ButtonBlockCreateInput>
 
 export const blockButtonUpdateInputSchema = z.object({
@@ -87,8 +92,8 @@ export const blockButtonUpdateInputSchema = z.object({
     .nullable()
     .optional()
     .describe('Whether the button is enabled'),
-  classNames: buttonBlockClassNamesInputSchema
+  settings: buttonBlockSettingsInputSchema
     .nullable()
     .optional()
-    .describe('Tailwind CSS class names for styling the button element')
+    .describe('Settings for the button including alignment')
 }) satisfies z.ZodType<ButtonBlockUpdateInput>

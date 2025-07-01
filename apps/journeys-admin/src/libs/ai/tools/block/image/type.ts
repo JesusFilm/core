@@ -1,14 +1,9 @@
 import { z } from 'zod'
 
 import {
-  ImageBlockClassNamesInput,
   ImageBlockCreateInput,
   ImageBlockUpdateInput
 } from '../../../../../../__generated__/globalTypes'
-
-export const imageBlockClassNamesInputSchema = z.object({
-  self: z.string().describe('Tailwind CSS class names for the image element')
-}) satisfies z.ZodType<ImageBlockClassNamesInput>
 
 export const blockImageCreateInputSchema = z.object({
   id: z
@@ -58,11 +53,7 @@ export const blockImageCreateInputSchema = z.object({
     .number()
     .nullable()
     .optional()
-    .describe('The focal point position from the left (percentage)'),
-  classNames: imageBlockClassNamesInputSchema
-    .nullable()
-    .optional()
-    .describe('Tailwind CSS class names for styling the image element')
+    .describe('The focal point position from the left (percentage)')
 }) satisfies z.ZodType<ImageBlockCreateInput>
 
 export const blockImageUpdateInputSchema = z.object({
@@ -106,9 +97,5 @@ export const blockImageUpdateInputSchema = z.object({
     .number()
     .nullable()
     .optional()
-    .describe('The focal point position from the left (percentage)'),
-  classNames: imageBlockClassNamesInputSchema
-    .nullable()
-    .optional()
-    .describe('Tailwind CSS class names for styling the image element')
+    .describe('The focal point position from the left (percentage)')
 }) satisfies z.ZodType<ImageBlockUpdateInput>

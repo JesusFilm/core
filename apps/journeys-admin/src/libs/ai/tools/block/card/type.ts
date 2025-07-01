@@ -2,7 +2,6 @@ import { z } from 'zod'
 
 import { BlockFields_CardBlock } from '../../../../../../__generated__/BlockFields'
 import {
-  CardBlockClassNamesInput,
   CardBlockCreateInput,
   CardBlockUpdateInput,
   ThemeMode,
@@ -13,10 +12,6 @@ import { blockSchema } from '../type'
 
 export const themeModeEnum = z.nativeEnum(ThemeMode)
 export const themeNameEnum = z.nativeEnum(ThemeName)
-
-export const cardBlockClassNamesInputSchema = z.object({
-  self: z.string().describe('Tailwind CSS class names for the card element')
-}) satisfies z.ZodType<CardBlockClassNamesInput>
 
 export const blockCardSchema = blockSchema.extend({
   label: z.string().describe('Label for the card'),
@@ -78,11 +73,7 @@ export const blockCardCreateInputSchema = z.object({
     .optional()
     .describe(
       'Theme name of the card. Use base as the default value if no other theme name is specified.'
-    ),
-  classNames: cardBlockClassNamesInputSchema
-    .nullable()
-    .optional()
-    .describe('Tailwind CSS class names for styling the card element')
+    )
 }) satisfies z.ZodType<CardBlockCreateInput>
 
 export const blockCardUpdateInputSchema = z.object({
@@ -120,9 +111,5 @@ export const blockCardUpdateInputSchema = z.object({
   themeName: themeNameEnum
     .nullable()
     .optional()
-    .describe('Theme name of the card'),
-  classNames: cardBlockClassNamesInputSchema
-    .nullable()
-    .optional()
-    .describe('Tailwind CSS class names for styling the card element')
+    .describe('Theme name of the card')
 }) satisfies z.ZodType<CardBlockUpdateInput>

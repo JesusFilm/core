@@ -6,15 +6,8 @@ import {
   AiBlockVideoCreateMutation,
   AiBlockVideoCreateMutationVariables
 } from '../../../../../../__generated__/AiBlockVideoCreateMutation'
-import { VideoBlockCreateInput } from '../../../../../../__generated__/globalTypes'
 
-import {
-  blockVideoCreateInputSchema,
-  blockVideoObjectFitEnum,
-  blockVideoSourceEnum,
-  blockVideoUpdateInputSchema,
-  videoBlockClassNamesInputSchema
-} from './type'
+import { blockVideoCreateInputSchema } from './type'
 
 export const AI_BLOCK_VIDEO_CREATE = gql`
   mutation AiBlockVideoCreateMutation($input: VideoBlockCreateInput!) {

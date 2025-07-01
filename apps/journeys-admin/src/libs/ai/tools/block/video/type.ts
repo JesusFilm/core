@@ -5,17 +5,12 @@ import {
   BlockFields_VideoBlock_mediaVideo
 } from '../../../../../../__generated__/BlockFields'
 import {
-  VideoBlockClassNamesInput,
   VideoBlockCreateInput,
   VideoBlockObjectFit,
   VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../../../../__generated__/globalTypes'
 import { actionSchema } from '../action/type'
-
-export const videoBlockClassNamesInputSchema = z.object({
-  self: z.string().describe('Tailwind CSS class names for the video element')
-}) satisfies z.ZodType<VideoBlockClassNamesInput>
 
 export const blockVideoSourceEnum = z
   .nativeEnum(VideoBlockSource)
@@ -78,11 +73,7 @@ export const blockVideoUpdateInputSchema = z.object({
   objectFit: blockVideoObjectFitEnum
     .nullable()
     .optional()
-    .describe('How the video should fit within its container'),
-  classNames: videoBlockClassNamesInputSchema
-    .nullable()
-    .optional()
-    .describe('Tailwind CSS class names for styling the video element')
+    .describe('How the video should fit within its container')
 }) satisfies z.ZodType<VideoBlockUpdateInput>
 
 const videoTitleSchema = z.object({
@@ -199,6 +190,8 @@ export const blockVideoUpdateSchema = z.object({
     .nullable()
     .describe('Action to perform when the video ends'),
   mediaVideo: mediaVideoSchema
+    .nullable()
+    .describe('Media video associated with the video block')
 }) satisfies z.ZodType<BlockFields_VideoBlock>
 
 export const blockVideoCreateInputSchema = z.object({
@@ -271,9 +264,5 @@ export const blockVideoCreateInputSchema = z.object({
   objectFit: blockVideoObjectFitEnum
     .nullable()
     .optional()
-    .describe('How the video should fit within its container'),
-  classNames: videoBlockClassNamesInputSchema
-    .nullable()
-    .optional()
-    .describe('Tailwind CSS class names for styling the video element')
+    .describe('How the video should fit within its container')
 }) satisfies z.ZodType<VideoBlockCreateInput>

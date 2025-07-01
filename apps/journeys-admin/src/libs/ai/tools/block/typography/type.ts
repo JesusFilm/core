@@ -3,7 +3,6 @@ import { z } from 'zod'
 import { BlockFields_TypographyBlock } from '../../../../../../__generated__/BlockFields'
 import {
   TypographyAlign,
-  TypographyBlockClassNamesInput,
   TypographyBlockCreateInput,
   TypographyBlockUpdateInput,
   TypographyColor,
@@ -22,12 +21,6 @@ export const blockTypographyColorEnum = z
 export const blockTypographyAlignEnum = z
   .nativeEnum(TypographyAlign)
   .describe('Text alignment options')
-
-export const typographyBlockClassNamesInputSchema = z.object({
-  self: z
-    .string()
-    .describe('Tailwind CSS class names for the typography element')
-}) satisfies z.ZodType<TypographyBlockClassNamesInput>
 
 export const blockTypographySchema = blockSchema.extend({
   id: z.string().describe('Unique identifier for the block'),
@@ -62,11 +55,7 @@ export const blockTypographyCreateInputSchema = z.object({
   align: blockTypographyAlignEnum
     .nullable()
     .optional()
-    .describe('Text alignment'),
-  classNames: typographyBlockClassNamesInputSchema
-    .nullable()
-    .optional()
-    .describe('Tailwind CSS class names for styling the typography element')
+    .describe('Text alignment')
 }) satisfies z.ZodType<TypographyBlockCreateInput>
 
 export const blockTypographyUpdateInputSchema = z.object({
@@ -91,9 +80,5 @@ export const blockTypographyUpdateInputSchema = z.object({
   align: blockTypographyAlignEnum
     .nullable()
     .optional()
-    .describe('Text alignment'),
-  classNames: typographyBlockClassNamesInputSchema
-    .nullable()
-    .optional()
-    .describe('Tailwind CSS class names for styling the typography element')
+    .describe('Text alignment')
 }) satisfies z.ZodType<TypographyBlockUpdateInput>
