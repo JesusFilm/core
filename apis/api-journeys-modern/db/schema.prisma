@@ -283,9 +283,9 @@ model Journey {
   logoImageBlockId          String?                     @unique
   menuStepBlockId           String?                     @unique
   menuButtonIcon            JourneyMenuButtonIcon?
+  fromTemplateId            String?
   socialNodeX               Int?                        @default(-240)
   socialNodeY               Int?                        @default(-46)
-  fromTemplateId            String?
   actions                   Action[]
   blocks                    Block[]
   chatButtons               ChatButton[]
@@ -300,7 +300,6 @@ model Journey {
   journeyEventsExportLogs   JourneyEventsExportLog[]
   journeyNotifications      JourneyNotification[]
   journeyTags               JourneyTag[]
-  journeyTheme              JourneyTheme?
   journeyVisitors           JourneyVisitor[]
   qrCode                    QrCode[]
   userInvites               UserInvite[]
@@ -411,8 +410,8 @@ model Block {
   focalLeft               Int?                 @default(50)
   scale                   Int?
   slug                    String?
-  classNames              Json                 @default("{\"self\": \"\"}")
   backdropBlur            Int?
+  settings                Json                 @default("{}")
   targetActions           Action[]             @relation("Block")
   action                  Action?
   coverBlock              Block?               @relation("CoverBlock", fields: [coverBlockId], references: [id])
@@ -533,21 +532,6 @@ model JourneyEventsExportLog {
 
   @@index([journeyId])
   @@index([createdAt])
-}
-
-model JourneyTheme {
-  id         String   @id @default(uuid())
-  journeyId  String   @unique
-  userId     String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @default(now())
-  bodyFont   String?
-  headerFont String?
-  labelFont  String?
-  journey    Journey  @relation(fields: [journeyId], references: [id], onDelete: Cascade)
-
-  @@index([journeyId])
-  @@index([userId])
 }
 
 enum MessagePlatform {
