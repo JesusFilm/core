@@ -76,7 +76,7 @@ describe('subtitleUpdate', () => {
       videoSubtitleLanguages: mockSubtitleLanguages,
       subtitleLanguage: '529', // English
       subtitleOn: true,
-      currentSubtitleOn: null
+      autoSubtitle: null
     })
 
     // Should add the English subtitle track
@@ -108,7 +108,7 @@ describe('subtitleUpdate', () => {
       videoSubtitleLanguages: mockSubtitleLanguages,
       subtitleLanguage: '529',
       subtitleOn: true,
-      currentSubtitleOn: null
+      autoSubtitle: null
     })
 
     // English track should remain showing, no new track added
@@ -131,7 +131,7 @@ describe('subtitleUpdate', () => {
       videoSubtitleLanguages: mockSubtitleLanguages,
       subtitleLanguage: '22658', // Spanish
       subtitleOn: true,
-      currentSubtitleOn: null
+      autoSubtitle: null
     })
 
     // Should disable English and enable Spanish
@@ -140,17 +140,17 @@ describe('subtitleUpdate', () => {
     expect(mockPlayer.addRemoteTextTrack).not.toHaveBeenCalled() // Track already exists
   })
 
-  it('should override user subtitle on preference if currentSubtitleOn is true', () => {
-    // Setup: User has subtitles OFF, but currentSubtitleOn forces them ON
+  it('should override user subtitle on preference if autoSubtitle is true', () => {
+    // Setup: User has subtitles OFF, but autoSubtitle forces them ON
     subtitleUpdate({
       player: mockPlayer as any,
       videoSubtitleLanguages: mockSubtitleLanguages,
       subtitleLanguage: '529', // English
       subtitleOn: false, // User preference is OFF
-      currentSubtitleOn: true // But availability-based override is ON
+      autoSubtitle: true // But availability-based override is ON
     })
 
-    // Should still add subtitle track because currentSubtitleOn overrides user preference
+    // Should still add subtitle track because autoSubtitle overrides user preference
     expect(mockPlayer.addRemoteTextTrack).toHaveBeenCalledWith(
       {
         id: '529',
@@ -186,7 +186,7 @@ describe('subtitleUpdate', () => {
       videoSubtitleLanguages: mockSubtitleLanguages,
       subtitleLanguage: '529',
       subtitleOn: false,
-      currentSubtitleOn: null
+      autoSubtitle: null
     })
 
     // All subtitle tracks should be disabled
@@ -195,7 +195,7 @@ describe('subtitleUpdate', () => {
     expect(mockPlayer.addRemoteTextTrack).not.toHaveBeenCalled()
   })
 
-  it('should handle when currentSubtitleOn overrides user preference to disable', () => {
+  it('should handle when autoSubtitle overrides user preference to disable', () => {
     // Setup: Add existing subtitle track
     mockTracks.push({
       id: '529',
@@ -203,16 +203,16 @@ describe('subtitleUpdate', () => {
       mode: 'showing'
     })
 
-    // User wants subtitles ON, but currentSubtitleOn forces them OFF
+    // User wants subtitles ON, but autoSubtitle forces them OFF
     subtitleUpdate({
       player: mockPlayer as any,
       videoSubtitleLanguages: mockSubtitleLanguages,
       subtitleLanguage: '529',
       subtitleOn: true, // User preference is ON
-      currentSubtitleOn: false // But availability-based override is OFF
+      autoSubtitle: false // But availability-based override is OFF
     })
 
-    // Should disable subtitle tracks because currentSubtitleOn overrides user preference
+    // Should disable subtitle tracks because autoSubtitle overrides user preference
     expect(mockTracks[0].mode).toBe('disabled')
     expect(mockPlayer.addRemoteTextTrack).not.toHaveBeenCalled()
   })
@@ -223,7 +223,7 @@ describe('subtitleUpdate', () => {
       videoSubtitleLanguages: mockSubtitleLanguages,
       subtitleLanguage: '529',
       subtitleOn: true,
-      currentSubtitleOn: null
+      autoSubtitle: null
     })
 
     // No operations should be performed
@@ -236,7 +236,7 @@ describe('subtitleUpdate', () => {
       videoSubtitleLanguages: mockSubtitleLanguages,
       subtitleLanguage: '999', // Non-existent language ID
       subtitleOn: true,
-      currentSubtitleOn: null
+      autoSubtitle: null
     })
 
     // No track should be added
@@ -268,7 +268,7 @@ describe('subtitleUpdate', () => {
       videoSubtitleLanguages: mockSubtitleLanguagesWithNullBcp47,
       subtitleLanguage: '529',
       subtitleOn: true,
-      currentSubtitleOn: null
+      autoSubtitle: null
     })
 
     // Should add track with undefined language when bcp47 is null

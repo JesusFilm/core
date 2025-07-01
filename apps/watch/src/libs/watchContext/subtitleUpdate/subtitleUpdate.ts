@@ -7,20 +7,20 @@ export function subtitleUpdate({
   videoSubtitleLanguages,
   subtitleLanguage,
   subtitleOn,
-  currentSubtitleOn
+  autoSubtitle
 }: {
   player: Player & { textTracks?: () => TextTrackList }
   videoSubtitleLanguages?: SubtitleLanguage[] | null
   subtitleLanguage: string | null
   subtitleOn: boolean
-  currentSubtitleOn?: boolean | null
+  autoSubtitle?: boolean | null
 }): void {
   if (player == null) return
 
   const tracks = player.textTracks?.() ?? []
 
-  // Use currentSubtitleOn if available (based on availability), otherwise fall back to user preference
-  const shouldShowSubtitles = currentSubtitleOn ?? subtitleOn
+  // Use autoSubtitle if available (based on availability), otherwise fall back to user preference
+  const shouldShowSubtitles = autoSubtitle ?? subtitleOn
 
   if (!shouldShowSubtitles || subtitleLanguage == null) {
     // Disable all subtitle tracks when subtitles should be off

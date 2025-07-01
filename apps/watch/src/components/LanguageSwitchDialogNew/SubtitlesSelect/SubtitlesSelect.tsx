@@ -22,7 +22,7 @@ export function SubtitlesSelect(): ReactElement {
       allLanguages,
       subtitleLanguage,
       subtitleOn,
-      currentSubtitleOn,
+      autoSubtitle,
       videoId,
       videoSubtitleLanguages,
       videoVariantSlug,
@@ -55,7 +55,7 @@ export function SubtitlesSelect(): ReactElement {
     }
   }, [videoId, videoSubtitleLanguages, getSubtitleLanguages])
 
-  const preferredSubtitleOn = currentSubtitleOn ?? subtitleOn
+  const preferredSubtitleOn = autoSubtitle ?? subtitleOn
 
   // Compute current subtitle display object directly from context
   const currentSubtitle =

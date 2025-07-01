@@ -171,7 +171,7 @@ describe('WatchContext', () => {
         expect(result.videoSubtitleLanguages).toEqual(
           mockVideoSubtitleLanguages
         )
-        expect(result.currentSubtitleOn).toBe(true)
+        expect(result.autoSubtitle).toBe(true)
       })
 
       it('should disable subtitles when language does not match', () => {
@@ -195,7 +195,7 @@ describe('WatchContext', () => {
 
         const result = reducer(stateWithDifferentLanguage, action)
 
-        expect(result.currentSubtitleOn).toBe(false)
+        expect(result.autoSubtitle).toBe(false)
       })
     })
 

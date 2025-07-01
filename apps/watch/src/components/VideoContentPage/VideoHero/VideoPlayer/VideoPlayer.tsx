@@ -26,7 +26,7 @@ export function VideoPlayer({
     state: {
       subtitleLanguage,
       subtitleOn,
-      currentSubtitleOn,
+      autoSubtitle,
       videoSubtitleLanguages
     }
   } = useWatch()
@@ -83,14 +83,14 @@ export function VideoPlayer({
       videoSubtitleLanguages,
       subtitleLanguage,
       subtitleOn,
-      currentSubtitleOn
+      autoSubtitle
     })
   }, [
     player,
     videoSubtitleLanguages,
     subtitleLanguage,
     subtitleOn,
-    currentSubtitleOn
+    autoSubtitle
   ])
 
   return (

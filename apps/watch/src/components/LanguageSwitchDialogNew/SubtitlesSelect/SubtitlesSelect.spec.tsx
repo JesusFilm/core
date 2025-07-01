@@ -388,7 +388,7 @@ describe('SubtitlesSelect', () => {
     const stateWithSubtitlesOn = {
       ...defaultInitialState,
       subtitleOn: true,
-      currentSubtitleOn: true
+      autoSubtitle: true
     }
 
     render(
@@ -410,23 +410,23 @@ describe('SubtitlesSelect', () => {
     expect(checkbox).toBeInTheDocument()
   })
 
-  it('should respect currentSubtitleOn preference over subtitleOn', () => {
-    const stateWithCurrentSubtitleOnDifferent = {
+  it('should respect autoSubtitle preference over subtitleOn', () => {
+    const stateWithAutoSubtitleDifferent = {
       ...defaultInitialState,
       subtitleOn: false,
-      currentSubtitleOn: true // This should take precedence
+      autoSubtitle: true // This should take precedence
     }
 
     render(
       <MockedProvider mocks={[defaultGetSubtitlesMock]} addTypename={false}>
-        <WatchProvider initialState={stateWithCurrentSubtitleOnDifferent}>
+        <WatchProvider initialState={stateWithAutoSubtitleDifferent}>
           <SubtitlesSelect />
         </WatchProvider>
       </MockedProvider>
     )
 
     const checkbox = screen.getByRole('checkbox')
-    expect(checkbox).toBeChecked() // Should be checked due to currentSubtitleOn being true
+    expect(checkbox).toBeChecked() // Should be checked due to AutoSubtitle being true
   })
 
   it('should call GET_SUBTITLES query and apply the returned subtitle languages', async () => {

@@ -35,7 +35,7 @@ export interface WatchState {
   /** Currently selected audio language object (based on availability and preferences) */
   currentAudioLanguage?: AudioLanguage
   /** Whether subtitles should be enabled (based on availability) */
-  currentSubtitleOn?: boolean
+  autoSubtitle?: boolean
 }
 
 /**
@@ -249,7 +249,7 @@ export const reducer = (state: WatchState, action: WatchAction): WatchState => {
       return {
         ...state,
         videoSubtitleLanguages,
-        currentSubtitleOn: subtitleAvailable
+        autoSubtitle: subtitleAvailable
       }
     }
     case 'SetCurrentVideo':
