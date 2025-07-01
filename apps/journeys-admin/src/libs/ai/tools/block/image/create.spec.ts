@@ -4,11 +4,8 @@ import { z } from 'zod'
 import { AiBlockImageCreateMutation } from '../../../../../../__generated__/AiBlockImageCreateMutation'
 import { ImageBlockCreateInput } from '../../../../../../__generated__/globalTypes'
 
-import {
-  AI_BLOCK_IMAGE_CREATE,
-  blockImageCreate,
-  blockImageCreateInputSchema
-} from './create'
+import { AI_BLOCK_IMAGE_CREATE, blockImageCreate } from './create'
+import { blockImageCreateInputSchema } from './type'
 
 describe('blockImageCreate', () => {
   let mockClient: ApolloClient<NormalizedCacheObject>
