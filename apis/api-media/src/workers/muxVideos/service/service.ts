@@ -53,7 +53,6 @@ export async function importMuxVideos(
   while (hasMore) {
     const variants = await prisma.videoVariant.findMany({
       where: {
-        // id: '2_20528-0-PaperHats',
         muxVideoId: null,
         masterHeight: { not: null },
         masterUrl: { not: null },
@@ -88,24 +87,35 @@ export async function importMuxVideos(
         continue
       }
 
+      if (muxVideoId == null) {
+        logger?.error(`Mux video id is null for variant ${variant.id}`)
+        continue
+      }
+
       try {
-        await prisma.$transaction(async (tx) => {
-          await tx.muxVideo.create({
-            data: {
-              assetId: muxVideoId,
-              userId: 'system'
+        await prisma.videoVariant.update({
+          where: {
+            id: variant.id
+          },
+          data: {
+            muxVideo: {
+              create: {
+                assetId: muxVideoId,
+                userId: 'system'
+              }
             }
-          })
-          await tx.videoVariant.update({
-            where: {
-              id: variant.id
-            },
-            data: {
-              muxVideoId: muxVideoId
-            }
-          })
+          }
         })
       } catch (error) {
+        // remove mux video if error
+        await prisma.muxVideo.delete({
+          where: {
+            id: muxVideoId
+          }
+        })
+
+        await mux.video.assets.delete(muxVideoId)
+
         if (error instanceof Error) {
           logger?.error(
             `Error updating video variant ${variant.id}: ${error.message}`
@@ -170,7 +180,7 @@ export async function updateHls(mux: Mux, logger?: Logger): Promise<void> {
               id: variant.id
             },
             data: {
-              hls: `https://stream.mux.com/${playbackId}`,
+              hls: `https://stream.mux.com/${playbackId}.m3u8`,
               muxVideo: {
                 update: {
                   playbackId

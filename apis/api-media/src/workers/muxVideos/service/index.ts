@@ -1,1 +1,1 @@
-export { importS3Videos } from './muxVideos'
+export { service } from './service'
