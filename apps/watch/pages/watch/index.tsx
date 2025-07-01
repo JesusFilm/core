@@ -75,7 +75,7 @@ function HomePage({
             routing={createInstantSearchRouter()}
           >
             <Configure ruleContexts={['home_page']} />
-            <VideoHomePage />
+            <VideoHomePage languageId={localLanguageId} />
           </InstantSearch>
         </WatchProvider>
       </ApolloProvider>
