@@ -427,6 +427,12 @@ type PageInfo
   endCursor: String
 }
 
+enum Platform {
+  arclight
+  journeys
+  watch
+}
+
 type Query {
   getTranscodeAssetProgress(jobId: String!): Int
   getMyCloudflareImages(offset: Int, limit: Int): [CloudflareImage!]!
@@ -481,6 +487,7 @@ type Query {
   video(id: ID!, idType: IdType = databaseId): Video!
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   videosCount(where: VideosFilter): Int!
+  videoOrigins: [VideoOrigin!]!
   videoEditions: [VideoEdition!]!
   videoEdition(id: ID!): VideoEdition
   videoVariant(id: ID!): VideoVariant!
@@ -800,6 +807,9 @@ type Video
   subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]!
   variant(languageId: ID): VideoVariant
   images(aspectRatio: ImageAspectRatio): [CloudflareImage!]!
+  restrictDownloadPlatforms: [Platform!]!
+  restrictViewPlatforms: [Platform!]!
+  publishedAt: Date
 }
 
 enum VideoBlockSource {
@@ -817,6 +827,7 @@ input VideoCreateInput {
   slug: String!
   noIndex: Boolean!
   childIds: [String!]!
+  originId: String!
 }
 
 type VideoDescription {
@@ -987,6 +998,8 @@ input VideoUpdateInput {
   noIndex: Boolean
   childIds: [String!]
   keywordIds: [String!]
+  restrictDownloadPlatforms: [Platform!]
+  restrictViewPlatforms: [Platform!]
 }
 
 type VideoVariant {

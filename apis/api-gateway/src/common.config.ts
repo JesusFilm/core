@@ -19,6 +19,8 @@ export const commonConfig = defineConfig({
       const headers: Record<string, string> = {
         'user-agent': request.headers.get('user-agent') ?? '',
         'x-forwarded-for': request.headers.get('x-forwarded-for') ?? '',
+        'x-graphql-client-name':
+          request.headers.get('x-graphql-client-name') ?? '',
         'interop-token': request.headers.get('interop-token') ?? ''
       }
       if (subgraphName === 'api-analytics')

@@ -63,6 +63,7 @@ const card: TreeBlock<CardBlock> = {
   themeMode: null,
   themeName: null,
   fullscreen: false,
+  backdropBlur: null,
   children: []
 }
 const video: TreeBlock<VideoBlock> = {
@@ -121,7 +122,7 @@ const image: TreeBlock<ImageBlock> = {
   width: 1920,
   height: 1080,
   blurhash: '',
-  scale: null,
+  scale: 100,
   children: [],
   focalLeft: 50,
   focalTop: 50

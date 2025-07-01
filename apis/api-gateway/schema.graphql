@@ -104,7 +104,7 @@ type Error implements BaseError @join__type(graph: API_ANALYTICS)  @join__type(g
   message: String
 }
 
-type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_MEDIA)  @join__type(graph: API_USERS)  {
+type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_LANGUAGES)  @join__type(graph: API_MEDIA)  @join__type(graph: API_USERS)  {
   siteCreate(input: SiteCreateInput!) : MutationSiteCreateResult! @join__field(graph: API_ANALYTICS) 
   blockDeleteAction(id: ID!, """
   drop this parameter after merging teams
@@ -362,6 +362,9 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   journeyNotificationUpdate(input: JourneyNotificationUpdateInput!) : JourneyNotification! @join__field(graph: API_JOURNEYS) 
   journeyProfileCreate: JourneyProfile! @join__field(graph: API_JOURNEYS) 
   journeyProfileUpdate(input: JourneyProfileUpdateInput!) : JourneyProfile! @join__field(graph: API_JOURNEYS) 
+  journeyThemeCreate(input: JourneyThemeCreateInput!) : JourneyTheme! @join__field(graph: API_JOURNEYS) 
+  journeyThemeUpdate(id: ID!, input: JourneyThemeUpdateInput!) : JourneyTheme! @join__field(graph: API_JOURNEYS) 
+  journeyThemeDelete(id: ID!) : JourneyTheme! @join__field(graph: API_JOURNEYS) 
   updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput!) : JourneysEmailPreference @join__field(graph: API_JOURNEYS) 
   qrCodeCreate(input: QrCodeCreateInput!) : QrCode! @join__field(graph: API_JOURNEYS) 
   qrCodeUpdate(id: ID!, input: QrCodeUpdateInput!) : QrCode! @join__field(graph: API_JOURNEYS) 
@@ -402,6 +405,9 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!) : JourneyEventsExportLog! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!) : Boolean! @join__field(graph: API_JOURNEYS_MODERN) 
+  audioPreviewCreate(input: MutationAudioPreviewCreateInput!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
+  audioPreviewUpdate(input: MutationAudioPreviewUpdateInput!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
+  audioPreviewDelete(languageId: ID!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
   """
   Transcode an asset. Returns the bullmq job ID.
   """
@@ -597,6 +603,7 @@ type Journey @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API
   socialNodeX: Int @join__field(graph: API_JOURNEYS) 
   socialNodeY: Int @join__field(graph: API_JOURNEYS) 
   fromTemplateId: String @join__field(graph: API_JOURNEYS) 
+  journeyTheme: JourneyTheme @join__field(graph: API_JOURNEYS) 
   userJourneys: [UserJourney!] @join__field(graph: API_JOURNEYS) 
 }
 
@@ -631,6 +638,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, first: Int, after: String) : JourneyEventsConnection! @join__field(graph: API_JOURNEYS) 
   journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter) : Int! @join__field(graph: API_JOURNEYS) 
   getJourneyProfile: JourneyProfile @join__field(graph: API_JOURNEYS) 
+  journeyTheme(journeyId: ID!) : JourneyTheme @join__field(graph: API_JOURNEYS) 
   """
   Get a list of Visitor Information by Journey
   """
@@ -798,6 +806,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   video(id: ID!, idType: IdType = databaseId) : Video! @join__field(graph: API_MEDIA) 
   videos(where: VideosFilter, offset: Int, limit: Int) : [Video!]! @join__field(graph: API_MEDIA) 
   videosCount(where: VideosFilter) : Int! @join__field(graph: API_MEDIA) 
+  videoOrigins: [VideoOrigin!]! @join__field(graph: API_MEDIA) 
   videoEditions: [VideoEdition!]! @join__field(graph: API_MEDIA) 
   videoEdition(id: ID!) : VideoEdition @join__field(graph: API_MEDIA) 
   videoVariant(id: ID!) : VideoVariant! @join__field(graph: API_MEDIA) 
@@ -811,11 +820,11 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   userByEmail(email: String!) : User @join__field(graph: API_USERS) 
 }
 
-type ButtonBlockClassNames @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
+type ButtonBlockSettings @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   """
-  Tailwind class names for the button block
+  Alignment of the button
   """
-  self: String!
+  alignment: ButtonAlignment
 }
 
 type ButtonBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -831,17 +840,7 @@ type ButtonBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @
   endIconId: ID
   action: Action @join__field(graph: API_JOURNEYS) 
   submitEnabled: Boolean
-  """
-  classNames is an object of tailwind class names for the block
-  """
-  classNames: ButtonBlockClassNames @join__field(graph: API_JOURNEYS, type: "ButtonBlockClassNames!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ButtonBlockClassNames") 
-}
-
-type CardBlockClassNames @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  Tailwind class names for the card block
-  """
-  self: String!
+  settings: ButtonBlockSettings @join__field(graph: API_JOURNEYS, type: "ButtonBlockSettings!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ButtonBlockSettings") 
 }
 
 type CardBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -854,6 +853,10 @@ type CardBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @jo
   """
   backgroundColor: String
   """
+  backdropBlur should be a number representing blur amount in pixels e.g 20.
+  """
+  backdropBlur: Int
+  """
   coverBlockId is present if a child block should be used as a cover.
   This child block should not be rendered normally, instead it should be used
   as a background. Blocks are often of type ImageBlock or VideoBlock.
@@ -865,10 +868,6 @@ type CardBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @jo
   background.
   """
   fullscreen: Boolean!
-  """
-  classNames is an object of tailwind class names for the block
-  """
-  classNames: CardBlockClassNames!
   """
   themeMode can override journey themeMode. If nothing is set then use
   themeMode from journey
@@ -902,13 +901,6 @@ type GridItemBlock implements Block @join__type(graph: API_JOURNEYS, key: "id") 
   sm: Int!
 }
 
-type IconBlockClassNames @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  Tailwind class names for the icon block
-  """
-  self: String!
-}
-
 type IconBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
   id: ID!
   journeyId: ID!
@@ -917,17 +909,6 @@ type IconBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @jo
   name: IconName
   color: IconColor
   size: IconSize
-  """
-  classNames is an object of tailwind class names for the block
-  """
-  classNames: IconBlockClassNames @join__field(graph: API_JOURNEYS, type: "IconBlockClassNames")  @join__field(graph: API_JOURNEYS_MODERN, type: "IconBlockClassNames!") 
-}
-
-type ImageBlockClassNames @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  Tailwind class names for the image block
-  """
-  self: String!
 }
 
 type ImageBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -947,17 +928,6 @@ type ImageBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @j
   scale: Int
   focalTop: Int
   focalLeft: Int
-  """
-  classNames is an object of tailwind class names for the block
-  """
-  classNames: ImageBlockClassNames!
-}
-
-type RadioOptionBlockClassNames @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  Tailwind class names for the radio option block
-  """
-  self: String!
 }
 
 type RadioOptionBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -967,10 +937,6 @@ type RadioOptionBlock implements Block @join__type(graph: API_JOURNEYS, key: "id
   parentOrder: Int
   label: String!
   action: Action @join__field(graph: API_JOURNEYS) 
-  """
-  classNames is an object of tailwind class names for the block
-  """
-  classNames: RadioOptionBlockClassNames!
 }
 
 type RadioQuestionBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -978,13 +944,6 @@ type RadioQuestionBlock implements Block @join__type(graph: API_JOURNEYS, key: "
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-}
-
-type SignUpBlockClassNames @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  Tailwind class names for the sign up block
-  """
-  self: String!
 }
 
 type SignUpBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -995,17 +954,6 @@ type SignUpBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @
   action: Action @join__field(graph: API_JOURNEYS) 
   submitIconId: ID
   submitLabel: String
-  """
-  classNames is an object of tailwind class names for the block
-  """
-  classNames: SignUpBlockClassNames!
-}
-
-type SpacerBlockClassNames @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  Tailwind class names for the spacer block
-  """
-  self: String!
 }
 
 type SpacerBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -1014,10 +962,6 @@ type SpacerBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @
   parentBlockId: ID
   parentOrder: Int
   spacing: Int
-  """
-  classNames is an object of tailwind class names for the block
-  """
-  classNames: SpacerBlockClassNames!
 }
 
 type StepBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -1055,13 +999,6 @@ type StepBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @jo
   slug: String
 }
 
-type TextResponseBlockClassNames @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  Tailwind class names for the text response block
-  """
-  self: String!
-}
-
 type TextResponseBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
   id: ID!
   journeyId: ID!
@@ -1075,17 +1012,6 @@ type TextResponseBlock implements Block @join__type(graph: API_JOURNEYS, key: "i
   type: TextResponseType
   routeId: String
   integrationId: String
-  """
-  classNames is an object of tailwind class names for the block
-  """
-  classNames: TextResponseBlockClassNames!
-}
-
-type TypographyBlockClassNames @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  Tailwind class names for the typography block
-  """
-  self: String!
 }
 
 type TypographyBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -1097,10 +1023,6 @@ type TypographyBlock implements Block @join__type(graph: API_JOURNEYS, key: "id"
   variant: TypographyVariant
   color: TypographyColor
   align: TypographyAlign
-  """
-  classNames is an object of tailwind class names for the block
-  """
-  classNames: TypographyBlockClassNames!
 }
 
 type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId", extension: true)  @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", extension: true)  @join__type(graph: API_MEDIA, key: "id primaryLanguageId")  {
@@ -1139,13 +1061,9 @@ type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId", extensi
   subtitles(languageId: ID, primary: Boolean, edition: String) : [VideoSubtitle!]! @join__field(graph: API_MEDIA) 
   variant(languageId: ID) : VideoVariant @join__field(graph: API_MEDIA) 
   images(aspectRatio: ImageAspectRatio) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
-}
-
-type VideoBlockClassNames @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  Tailwind class names for the video block
-  """
-  self: String!
+  restrictDownloadPlatforms: [Platform!]! @join__field(graph: API_MEDIA) 
+  restrictViewPlatforms: [Platform!]! @join__field(graph: API_MEDIA) 
+  publishedAt: Date @join__field(graph: API_MEDIA) 
 }
 
 type VideoBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -1225,10 +1143,6 @@ type VideoBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @j
   how the video should display within the VideoBlock
   """
   objectFit: VideoBlockObjectFit
-  """
-  classNames is an object of tailwind class names for the block
-  """
-  classNames: VideoBlockClassNames!
   mediaVideo: MediaVideo @join__field(graph: API_JOURNEYS_MODERN) 
 }
 
@@ -1866,6 +1780,18 @@ type JourneyProfile @join__type(graph: API_JOURNEYS, key: "id")  {
   plausibleDashboardViewed: Boolean
 }
 
+type JourneyTheme @join__type(graph: API_JOURNEYS)  {
+  id: ID!
+  journeyId: ID!
+  journey: Journey!
+  userId: ID!
+  headerFont: String
+  bodyFont: String
+  labelFont: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
 type JourneyVisitor @join__type(graph: API_JOURNEYS, key: "visitorId journeyId")  {
   visitorId: ID!
   journeyId: ID!
@@ -2122,8 +2048,9 @@ type UserInvite @join__type(graph: API_JOURNEYS, key: "id")  {
   removedAt: DateTime
 }
 
-type User @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_MEDIA, key: "id", extension: true)  @join__type(graph: API_USERS, key: "id")  {
+type User @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_LANGUAGES, key: "id", extension: true)  @join__type(graph: API_MEDIA, key: "id", extension: true)  @join__type(graph: API_USERS, key: "id")  {
   id: ID!
+  languageUserRoles: [LanguageRole!]! @join__field(graph: API_LANGUAGES) 
   mediaUserRoles: [MediaRole!]! @join__field(graph: API_MEDIA) 
   firstName: String! @join__field(graph: API_USERS) 
   lastName: String @join__field(graph: API_USERS) 
@@ -2378,7 +2305,8 @@ type YouTube @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId"
   source: VideoBlockSource!
 }
 
-type AudioPreview @join__type(graph: API_LANGUAGES)  {
+type AudioPreview @join__type(graph: API_LANGUAGES, key: "languageId")  {
+  languageId: ID!
   language: Language!
   value: String!
   duration: Int!
@@ -3037,6 +2965,13 @@ enum ButtonSize @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEY
   large @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
+enum ButtonAlignment @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
+  left @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  center @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  right @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  justify @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
 enum GridDirection @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   columnReverse @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
   column @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
@@ -3282,6 +3217,10 @@ enum LanguageIdType @join__type(graph: API_LANGUAGES)  {
   bcp47 @join__enumValue(graph: API_LANGUAGES) 
 }
 
+enum LanguageRole @join__type(graph: API_LANGUAGES)  {
+  publisher @join__enumValue(graph: API_LANGUAGES) 
+}
+
 enum DefaultPlatform @join__type(graph: API_MEDIA)  {
   ios @join__enumValue(graph: API_MEDIA) 
   android @join__enumValue(graph: API_MEDIA) 
@@ -3311,6 +3250,12 @@ enum Service @join__type(graph: API_MEDIA)  {
   apiTags @join__enumValue(graph: API_MEDIA) 
   apiUsers @join__enumValue(graph: API_MEDIA) 
   apiVideos @join__enumValue(graph: API_MEDIA) 
+}
+
+enum Platform @join__type(graph: API_MEDIA)  {
+  arclight @join__enumValue(graph: API_MEDIA) 
+  journeys @join__enumValue(graph: API_MEDIA) 
+  watch @join__enumValue(graph: API_MEDIA) 
 }
 
 enum UnsplashPhotoOrientation @join__type(graph: API_MEDIA)  {
@@ -3400,8 +3345,8 @@ input BlockDuplicateIdMap @join__type(graph: API_JOURNEYS)  {
   newId: ID!
 }
 
-input ButtonBlockClassNamesInput @join__type(graph: API_JOURNEYS)  {
-  self: String!
+input ButtonBlockSettingsInput @join__type(graph: API_JOURNEYS)  {
+  alignment: ButtonAlignment
 }
 
 input ButtonBlockCreateInput @join__type(graph: API_JOURNEYS)  {
@@ -3413,7 +3358,7 @@ input ButtonBlockCreateInput @join__type(graph: API_JOURNEYS)  {
   color: ButtonColor
   size: ButtonSize
   submitEnabled: Boolean
-  classNames: ButtonBlockClassNamesInput
+  settings: ButtonBlockSettingsInput
 }
 
 input ButtonBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
@@ -3425,11 +3370,7 @@ input ButtonBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
   startIconId: ID
   endIconId: ID
   submitEnabled: Boolean
-  classNames: ButtonBlockClassNamesInput
-}
-
-input CardBlockClassNamesInput @join__type(graph: API_JOURNEYS)  {
-  self: String!
+  settings: ButtonBlockSettingsInput
 }
 
 input CardBlockCreateInput @join__type(graph: API_JOURNEYS)  {
@@ -3437,24 +3378,20 @@ input CardBlockCreateInput @join__type(graph: API_JOURNEYS)  {
   journeyId: ID!
   parentBlockId: ID!
   backgroundColor: String
+  backdropBlur: Int
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
-  classNames: CardBlockClassNamesInput
 }
 
 input CardBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
   parentBlockId: ID
   coverBlockId: ID
   backgroundColor: String
+  backdropBlur: Int
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
-  classNames: CardBlockClassNamesInput
-}
-
-input IconBlockClassNamesInput @join__type(graph: API_JOURNEYS)  {
-  self: String!
 }
 
 input IconBlockCreateInput @join__type(graph: API_JOURNEYS)  {
@@ -3467,18 +3404,12 @@ input IconBlockCreateInput @join__type(graph: API_JOURNEYS)  {
   name: IconName
   color: IconColor
   size: IconSize
-  classNames: IconBlockClassNamesInput
 }
 
 input IconBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
   name: IconName
   color: IconColor
   size: IconSize
-  classNames: IconBlockClassNamesInput
-}
-
-input ImageBlockClassNamesInput @join__type(graph: API_JOURNEYS)  {
-  self: String!
 }
 
 input ImageBlockCreateInput @join__type(graph: API_JOURNEYS)  {
@@ -3503,7 +3434,6 @@ input ImageBlockCreateInput @join__type(graph: API_JOURNEYS)  {
   scale: Int
   focalTop: Int
   focalLeft: Int
-  classNames: ImageBlockClassNamesInput
 }
 
 input ImageBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
@@ -3519,11 +3449,6 @@ input ImageBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
   scale: Int
   focalTop: Int
   focalLeft: Int
-  classNames: ImageBlockClassNamesInput
-}
-
-input RadioOptionBlockClassNamesInput @join__type(graph: API_JOURNEYS)  {
-  self: String!
 }
 
 input RadioOptionBlockCreateInput @join__type(graph: API_JOURNEYS)  {
@@ -3531,13 +3456,11 @@ input RadioOptionBlockCreateInput @join__type(graph: API_JOURNEYS)  {
   journeyId: ID!
   parentBlockId: ID!
   label: String!
-  classNames: RadioOptionBlockClassNamesInput
 }
 
 input RadioOptionBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
   parentBlockId: ID
   label: String
-  classNames: RadioOptionBlockClassNamesInput
 }
 
 input RadioQuestionBlockCreateInput @join__type(graph: API_JOURNEYS)  {
@@ -3546,27 +3469,17 @@ input RadioQuestionBlockCreateInput @join__type(graph: API_JOURNEYS)  {
   parentBlockId: ID!
 }
 
-input SignUpBlockClassNamesInput @join__type(graph: API_JOURNEYS)  {
-  self: String!
-}
-
 input SignUpBlockCreateInput @join__type(graph: API_JOURNEYS)  {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
   submitLabel: String!
-  classNames: SignUpBlockClassNamesInput
 }
 
 input SignUpBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
   parentBlockId: ID
   submitIconId: ID
   submitLabel: String
-  classNames: SignUpBlockClassNamesInput
-}
-
-input SpacerBlockClassNamesInput @join__type(graph: API_JOURNEYS)  {
-  self: String!
 }
 
 input SpacerBlockCreateInput @join__type(graph: API_JOURNEYS)  {
@@ -3574,13 +3487,11 @@ input SpacerBlockCreateInput @join__type(graph: API_JOURNEYS)  {
   journeyId: ID!
   parentBlockId: ID!
   spacing: Int
-  classNames: SpacerBlockClassNamesInput
 }
 
 input SpacerBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
   parentBlockId: ID
   spacing: Int
-  classNames: SpacerBlockClassNamesInput
 }
 
 input StepBlockCreateInput @join__type(graph: API_JOURNEYS)  {
@@ -3629,16 +3540,11 @@ input StepBlockPositionUpdateInput @join__type(graph: API_JOURNEYS)  {
   y: Int
 }
 
-input TextResponseBlockClassNamesInput @join__type(graph: API_JOURNEYS)  {
-  self: String!
-}
-
 input TextResponseBlockCreateInput @join__type(graph: API_JOURNEYS)  {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
   label: String!
-  classNames: TextResponseBlockClassNamesInput
 }
 
 input TextResponseBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
@@ -3651,11 +3557,6 @@ input TextResponseBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
   routeId: String
   type: TextResponseType
   integrationId: String
-  classNames: TextResponseBlockClassNamesInput
-}
-
-input TypographyBlockClassNamesInput @join__type(graph: API_JOURNEYS)  {
-  self: String!
 }
 
 input TypographyBlockCreateInput @join__type(graph: API_JOURNEYS)  {
@@ -3666,7 +3567,6 @@ input TypographyBlockCreateInput @join__type(graph: API_JOURNEYS)  {
   variant: TypographyVariant
   color: TypographyColor
   align: TypographyAlign
-  classNames: TypographyBlockClassNamesInput
 }
 
 input TypographyBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
@@ -3675,11 +3575,6 @@ input TypographyBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
   variant: TypographyVariant
   color: TypographyColor
   align: TypographyAlign
-  classNames: TypographyBlockClassNamesInput
-}
-
-input VideoBlockClassNamesInput @join__type(graph: API_JOURNEYS)  {
-  self: String!
 }
 
 input VideoBlockCreateInput @join__type(graph: API_JOURNEYS)  {
@@ -3730,7 +3625,6 @@ input VideoBlockCreateInput @join__type(graph: API_JOURNEYS)  {
   how the video should display within the VideoBlock
   """
   objectFit: VideoBlockObjectFit
-  classNames: VideoBlockClassNamesInput
 }
 
 input VideoBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
@@ -3773,7 +3667,6 @@ input VideoBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
   how the video should display within the VideoBlock
   """
   objectFit: VideoBlockObjectFit
-  classNames: VideoBlockClassNamesInput
 }
 
 input ChatButtonCreateInput @join__type(graph: API_JOURNEYS)  {
@@ -4297,6 +4190,19 @@ input JourneyProfileUpdateInput @join__type(graph: API_JOURNEYS)  {
   plausibleDashboardViewed: Boolean
 }
 
+input JourneyThemeCreateInput @join__type(graph: API_JOURNEYS)  {
+  journeyId: ID!
+  headerFont: String
+  bodyFont: String
+  labelFont: String
+}
+
+input JourneyThemeUpdateInput @join__type(graph: API_JOURNEYS)  {
+  headerFont: String
+  bodyFont: String
+  labelFont: String
+}
+
 input JourneyVisitorFilter @join__type(graph: API_JOURNEYS)  {
   journeyId: String!
   hasChatStarted: Boolean
@@ -4525,6 +4431,24 @@ input LanguagesFilter @join__type(graph: API_LANGUAGES)  {
   iso3: [String!]
 }
 
+input MutationAudioPreviewCreateInput @join__type(graph: API_LANGUAGES)  {
+  languageId: ID!
+  value: String!
+  duration: Int!
+  size: Int!
+  bitrate: Int!
+  codec: String!
+}
+
+input MutationAudioPreviewUpdateInput @join__type(graph: API_LANGUAGES)  {
+  languageId: ID!
+  value: String
+  duration: Int
+  size: Int
+  bitrate: Int
+  codec: String
+}
+
 input CloudflareR2CreateInput @join__type(graph: API_MEDIA)  {
   id: String
   """
@@ -4654,6 +4578,7 @@ input VideoCreateInput @join__type(graph: API_MEDIA)  {
   slug: String!
   noIndex: Boolean!
   childIds: [String!]!
+  originId: String!
 }
 
 input VideoEditionCreateInput @join__type(graph: API_MEDIA)  {
@@ -4742,6 +4667,8 @@ input VideoUpdateInput @join__type(graph: API_MEDIA)  {
   noIndex: Boolean
   childIds: [String!]
   keywordIds: [String!]
+  restrictDownloadPlatforms: [Platform!]
+  restrictViewPlatforms: [Platform!]
 }
 
 input VideoVariantCreateInput @join__type(graph: API_MEDIA)  {

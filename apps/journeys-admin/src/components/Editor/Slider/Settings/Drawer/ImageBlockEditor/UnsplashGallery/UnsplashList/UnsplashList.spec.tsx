@@ -68,7 +68,10 @@ describe('UnsplashList', () => {
       blurhash: 'LEA,%vRjE1ay.AV@WAj@tnoef5ju',
       height: 1480,
       src: 'https://images.unsplash.com/photo-1?ixid=1&q=80&w=1080',
-      width: 1080
+      width: 1080,
+      scale: 100,
+      focalLeft: 50,
+      focalTop: 50
     })
   })
 
