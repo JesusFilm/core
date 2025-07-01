@@ -4,11 +4,8 @@ import { z } from 'zod'
 import { AiBlockVideoCreateMutation } from '../../../../../../__generated__/AiBlockVideoCreateMutation'
 import { VideoBlockCreateInput } from '../../../../../../__generated__/globalTypes'
 
-import {
-  AI_BLOCK_VIDEO_CREATE,
-  blockVideoCreate,
-  blockVideoCreateInputSchema
-} from './create'
+import { AI_BLOCK_VIDEO_CREATE, blockVideoCreate } from './create'
+import { blockVideoCreateInputSchema } from './type'
 
 describe('blockVideoCreate', () => {
   let mockClient: ApolloClient<NormalizedCacheObject>
