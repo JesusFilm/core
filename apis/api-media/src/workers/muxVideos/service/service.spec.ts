@@ -5,7 +5,7 @@ import { Logger } from 'pino'
 
 import { prismaMock } from '../../../../test/prismaMock'
 
-import { createMuxAsset, importMuxVideos, updateHls, service } from './service'
+import { createMuxAsset, importMuxVideos, service, updateHls } from './service'
 
 // Mock the entire Mux module
 const mockMux = mockDeep<Mux>()
