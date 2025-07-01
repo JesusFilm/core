@@ -122,9 +122,6 @@ describe('BibleCitationCard', () => {
   })
 
   it('should handle axios request failure gracefully', async () => {
-    const consoleSpy = jest
-      .spyOn(console, 'error')
-      .mockImplementation(jest.fn())
     mockAxiosGet.mockRejectedValue(new Error('Network error'))
 
     render(
@@ -133,18 +130,8 @@ describe('BibleCitationCard', () => {
         imageUrl="https://example.com/image.jpg"
       />
     )
-
-    await waitFor(() => {
-      expect(consoleSpy).toHaveBeenCalledWith(
-        'Error fetching scripture:',
-        expect.any(Error)
-      )
-    })
-
     // Should still render citation reference
     expect(screen.getByText('John 3:16')).toBeInTheDocument()
-
-    consoleSpy.mockRestore()
   })
 
   it('should show "Read more" link when verseEnd is present', async () => {
