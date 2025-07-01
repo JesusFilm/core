@@ -105,7 +105,8 @@ const blocks: Blocks[] = [
     coverBlockId: '9caf671e-713e-492d-ac8a-b33e71fc5e18',
     themeMode: null,
     themeName: null,
-    fullscreen: false
+    fullscreen: false,
+    backdropBlur: null
   }
 ]
 

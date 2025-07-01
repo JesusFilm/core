@@ -137,7 +137,8 @@ export const publishedJourney: Journey = {
       backgroundColor: null,
       themeMode: null,
       themeName: null,
-      fullscreen: false
+      fullscreen: false,
+      backdropBlur: null
     },
     {
       id: 'image0.id',
@@ -231,7 +232,8 @@ export const blocks: Block[] = [
     backgroundColor: null,
     themeMode: null,
     themeName: null,
-    fullscreen: false
+    fullscreen: false,
+    backdropBlur: null
   },
   {
     id: 'typographyBlockId1',
@@ -358,7 +360,8 @@ export const blocks: Block[] = [
     backgroundColor: null,
     themeMode: null,
     themeName: null,
-    fullscreen: false
+    fullscreen: false,
+    backdropBlur: null
   },
   {
     id: 'typographyBlockId3',
@@ -441,7 +444,8 @@ export const blocks: Block[] = [
     backgroundColor: null,
     themeMode: null,
     themeName: null,
-    fullscreen: false
+    fullscreen: false,
+    backdropBlur: null
   },
   {
     id: 'typographyBlockId5',
@@ -540,7 +544,8 @@ export const blocks: Block[] = [
     backgroundColor: null,
     themeMode: null,
     themeName: null,
-    fullscreen: false
+    fullscreen: false,
+    backdropBlur: null
   },
   {
     id: 'typographyBlockId7',
@@ -693,7 +698,8 @@ export const blocks: Block[] = [
     backgroundColor: null,
     themeMode: null,
     themeName: null,
-    fullscreen: false
+    fullscreen: false,
+    backdropBlur: null
   },
   {
     __typename: 'ImageBlock',
@@ -745,7 +751,8 @@ export const blocks: Block[] = [
     backgroundColor: null,
     themeMode: null,
     themeName: null,
-    fullscreen: false
+    fullscreen: false,
+    backdropBlur: null
   },
   {
     id: 'image6.id',
