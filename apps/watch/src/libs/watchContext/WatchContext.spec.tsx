@@ -8,8 +8,7 @@ import {
   WatchProvider,
   WatchState,
   reducer,
-  useWatch,
-  videoPlayerInitialState
+  useWatch
 } from './WatchContext'
 
 describe('WatchContext', () => {
@@ -18,22 +17,7 @@ describe('WatchContext', () => {
       siteLanguage: 'en',
       audioLanguage: '529',
       subtitleLanguage: '529',
-      subtitleOn: false,
-      player: {
-        play: false,
-        active: false,
-        currentTime: '00:00',
-        progress: 0,
-        volume: 0.5,
-        mute: false,
-        fullscreen: false,
-        openSubtitleDialog: false,
-        loadSubtitleDialog: false,
-        loading: false,
-        duration: '00:00',
-        durationSeconds: 0,
-        progressPercentNotYetEmitted: [10, 25, 50, 75, 90]
-      }
+      subtitleOn: false
     }
 
     describe('SetLanguagePreferences', () => {
@@ -367,136 +351,6 @@ describe('WatchContext', () => {
         })
       })
     })
-
-    describe('SetPlayerPlay', () => {
-      it('should set player play state', () => {
-        const action: WatchAction = { type: 'SetPlayerPlay', play: true }
-        const result = reducer(defaultState, action)
-        expect(result.player.play).toBe(true)
-      })
-    })
-
-    describe('SetPlayerActive', () => {
-      it('should set player active state', () => {
-        const action: WatchAction = { type: 'SetPlayerActive', active: true }
-        const result = reducer(defaultState, action)
-        expect(result.player.active).toBe(true)
-      })
-    })
-
-    describe('SetPlayerCurrentTime', () => {
-      it('should set player current time', () => {
-        const action: WatchAction = {
-          type: 'SetPlayerCurrentTime',
-          currentTime: '1:23'
-        }
-        const result = reducer(defaultState, action)
-        expect(result.player.currentTime).toBe('1:23')
-      })
-    })
-
-    describe('SetPlayerProgress', () => {
-      it('should set player progress', () => {
-        const action: WatchAction = { type: 'SetPlayerProgress', progress: 50 }
-        const result = reducer(defaultState, action)
-        expect(result.player.progress).toBe(50)
-      })
-    })
-
-    describe('SetPlayerVolume', () => {
-      it('should set player volume', () => {
-        const action: WatchAction = { type: 'SetPlayerVolume', volume: 0.8 }
-        const result = reducer(defaultState, action)
-        expect(result.player.volume).toBe(0.8)
-      })
-    })
-
-    describe('SetPlayerMute', () => {
-      it('should set player mute state', () => {
-        const action: WatchAction = { type: 'SetPlayerMute', mute: true }
-        const result = reducer(defaultState, action)
-        expect(result.player.mute).toBe(true)
-      })
-    })
-
-    describe('SetPlayerFullscreen', () => {
-      it('should set player fullscreen state', () => {
-        const action: WatchAction = {
-          type: 'SetPlayerFullscreen',
-          fullscreen: true
-        }
-        const result = reducer(defaultState, action)
-        expect(result.player.fullscreen).toBe(true)
-      })
-    })
-
-    describe('SetPlayerOpenSubtitleDialog', () => {
-      it('should set open subtitle dialog state', () => {
-        const action: WatchAction = {
-          type: 'SetPlayerOpenSubtitleDialog',
-          openSubtitleDialog: true
-        }
-        const result = reducer(defaultState, action)
-        expect(result.player.openSubtitleDialog).toBe(true)
-      })
-    })
-
-    describe('SetPlayerLoadSubtitleDialog', () => {
-      it('should set load subtitle dialog state', () => {
-        const action: WatchAction = {
-          type: 'SetPlayerLoadSubtitleDialog',
-          loadSubtitleDialog: true
-        }
-        const result = reducer(defaultState, action)
-        expect(result.player.loadSubtitleDialog).toBe(true)
-      })
-    })
-
-    describe('SetPlayerLoading', () => {
-      it('should set player loading state', () => {
-        const action: WatchAction = {
-          type: 'SetPlayerLoading',
-          loading: true
-        }
-        const result = reducer(defaultState, action)
-        expect(result.player.loading).toBe(true)
-      })
-    })
-
-    describe('SetPlayerDurationSeconds', () => {
-      it('should set player duration in seconds', () => {
-        const action: WatchAction = {
-          type: 'SetPlayerDurationSeconds',
-          durationSeconds: 180
-        }
-        const result = reducer(defaultState, action)
-        expect(result.player.durationSeconds).toBe(180)
-      })
-    })
-
-    describe('SetPlayerDuration', () => {
-      it('should set player duration string', () => {
-        const action: WatchAction = {
-          type: 'SetPlayerDuration',
-          duration: '3:00'
-        }
-        const result = reducer(defaultState, action)
-        expect(result.player.duration).toBe('3:00')
-      })
-    })
-
-    describe('SetPlayerProgressPercentNotYetEmitted', () => {
-      it('should set progress percent not yet emitted', () => {
-        const action: WatchAction = {
-          type: 'SetPlayerProgressPercentNotYetEmitted',
-          progressPercentNotYetEmitted: [25, 50, 75, 90]
-        }
-        const result = reducer(defaultState, action)
-        expect(result.player.progressPercentNotYetEmitted).toEqual([
-          25, 50, 75, 90
-        ])
-      })
-    })
   })
 
   describe('WatchProvider', () => {
@@ -525,8 +379,7 @@ describe('WatchContext', () => {
         audioLanguage: '529',
         subtitleLanguage: '529',
         subtitleOn: false,
-        loading: false,
-        player: videoPlayerInitialState
+        loading: false
       })
     })
 
@@ -554,8 +407,7 @@ describe('WatchContext', () => {
         subtitleLanguage: '529',
         subtitleOn: false,
         loading: false,
-        videoId: 'test-video',
-        player: videoPlayerInitialState
+        videoId: 'test-video'
       })
     })
   })

@@ -23,6 +23,7 @@ import { createApolloClient } from '../../../../src/libs/apolloClient'
 import { getCookie } from '../../../../src/libs/cookieHandler'
 import { getFlags } from '../../../../src/libs/getFlags'
 import { LanguageProvider } from '../../../../src/libs/languageContext/LanguageContext'
+import { PlayerProvider } from '../../../../src/libs/playerContext/PlayerContext'
 import { slugMap } from '../../../../src/libs/slugMap'
 import { VIDEO_CONTENT_FIELDS } from '../../../../src/libs/videoContentFields'
 import { VideoProvider } from '../../../../src/libs/videoContext'
@@ -72,11 +73,13 @@ export default function Part3Page({
     <InstantSearch searchClient={searchClient} indexName={indexName} insights>
       <SnackbarProvider>
         <WatchProvider initialState={initialWatchState}>
-          <LanguageProvider>
-            <VideoProvider value={{ content, container }}>
-              <NewVideoContentPage />
-            </VideoProvider>
-          </LanguageProvider>
+          <PlayerProvider>
+            <LanguageProvider>
+              <VideoProvider value={{ content, container }}>
+                <NewVideoContentPage />
+              </VideoProvider>
+            </LanguageProvider>
+          </PlayerProvider>
         </WatchProvider>
       </SnackbarProvider>
     </InstantSearch>

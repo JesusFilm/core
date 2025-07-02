@@ -27,8 +27,8 @@ import Player from 'video.js/dist/types/player'
 import { isMobile } from '@core/shared/ui/deviceUtils'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
+import { usePlayer } from '../../../../../libs/playerContext'
 import { useVideo } from '../../../../../libs/videoContext'
-import { useWatch } from '../../../../../libs/watchContext'
 import { HeroOverlay } from '../../../../HeroOverlay/HeroOverlay'
 import { SubtitleDialogProps } from '../../../../SubtitleDialog/SubtitleDialog'
 import { AudioLanguageButton } from '../../../AudioLanguageButton'
@@ -76,24 +76,22 @@ export function VideoControls({
   const [initialLoadComplete, setInitialLoadComplete] = useState(false)
   const {
     state: {
-      player: {
-        play,
-        active,
-        currentTime,
-        progress,
-        volume,
-        mute,
-        fullscreen,
-        openSubtitleDialog,
-        loadSubtitleDialog,
-        loading,
-        duration,
-        durationSeconds,
-        progressPercentNotYetEmitted
-      }
+      play,
+      active,
+      loading,
+      currentTime,
+      progress,
+      volume,
+      mute,
+      fullscreen,
+      openSubtitleDialog,
+      loadSubtitleDialog,
+      duration,
+      durationSeconds,
+      progressPercentNotYetEmitted
     },
     dispatch
-  } = useWatch()
+  } = usePlayer()
 
   const { id, title, variant, images, imageAlt } = useVideo()
   const visible = !play || active || loading
@@ -109,11 +107,11 @@ export function VideoControls({
     if (variant?.duration != null && variant.duration > 0) {
       const roundedDuration = Math.round(variant.duration)
       dispatch({
-        type: 'SetPlayerDurationSeconds',
+        type: 'SetDurationSeconds',
         durationSeconds: roundedDuration
       })
       dispatch({
-        type: 'SetPlayerDuration',
+        type: 'SetDuration',
         duration: secondsToTimeFormat(roundedDuration, { trimZeroes: true })
       })
     } else {
@@ -132,11 +130,11 @@ export function VideoControls({
         ) {
           const roundedDuration = Math.round(playerDuration)
           dispatch({
-            type: 'SetPlayerDurationSeconds',
+            type: 'SetDurationSeconds',
             durationSeconds: roundedDuration
           })
           dispatch({
-            type: 'SetPlayerDuration',
+            type: 'SetDuration',
             duration: secondsToTimeFormat(roundedDuration, { trimZeroes: true })
           })
           if (retryTimeout) {
@@ -145,11 +143,11 @@ export function VideoControls({
           }
         } else if (playerDuration === Infinity) {
           dispatch({
-            type: 'SetPlayerDurationSeconds',
+            type: 'SetDurationSeconds',
             durationSeconds: 0
           })
           dispatch({
-            type: 'SetPlayerDuration',
+            type: 'SetDuration',
             duration: 'Live'
           })
         } else if (state === 'retry' && retryCount < maxRetries) {
@@ -194,7 +192,7 @@ export function VideoControls({
       )
       const [, ...rest] = progressPercentNotYetEmitted
       dispatch({
-        type: 'SetPlayerProgressPercentNotYetEmitted',
+        type: 'SetProgressPercentNotYetEmitted',
         progressPercentNotYetEmitted: rest
       })
     }
@@ -210,7 +208,7 @@ export function VideoControls({
 
   useEffect(() => {
     dispatch({
-      type: 'SetPlayerVolume',
+      type: 'SetVolume',
       volume: (player.volume() ?? 1) * 100
     })
     player.on('play', () => {
@@ -242,7 +240,7 @@ export function VideoControls({
         )
       }
       dispatch({
-        type: 'SetPlayerPlay',
+        type: 'SetPlay',
         play: true
       })
     })
@@ -262,60 +260,60 @@ export function VideoControls({
         )
       }
       dispatch({
-        type: 'SetPlayerPlay',
+        type: 'SetPlay',
         play: false
       })
     })
     player.on('timeupdate', () => {
       dispatch({
-        type: 'SetPlayerCurrentTime',
+        type: 'SetCurrentTime',
         currentTime: secondsToTimeFormat(player.currentTime() ?? 0, {
           trimZeroes: true
         })
       })
       dispatch({
-        type: 'SetPlayerProgress',
+        type: 'SetProgress',
         progress: Math.round(player.currentTime() ?? 0)
       })
     })
     player.on('volumechange', () => {
       dispatch({
-        type: 'SetPlayerMute',
+        type: 'SetMute',
         mute: player.muted() ?? false
       })
       dispatch({
-        type: 'SetPlayerVolume',
+        type: 'SetVolume',
         volume: (player.volume() ?? 1) * 100
       })
     })
     player.on('fullscreenchange', () => {
       dispatch({
-        type: 'SetPlayerFullscreen',
+        type: 'SetFullscreen',
         fullscreen: player.isFullscreen() ?? false
       })
     })
     player.on('useractive', () =>
       dispatch({
-        type: 'SetPlayerActive',
+        type: 'SetActive',
         active: true
       })
     )
     player.on('userinactive', () =>
       dispatch({
-        type: 'SetPlayerActive',
+        type: 'SetActive',
         active: false
       })
     )
     player.on('waiting', () =>
       dispatch({
-        type: 'SetPlayerLoading',
+        type: 'SetLoading',
         loading: true
       })
     )
     player.on('playing', () => {
       setInitialLoadComplete(true)
       dispatch({
-        type: 'SetPlayerLoading',
+        type: 'SetLoading',
         loading: false
       })
     })
@@ -335,13 +333,13 @@ export function VideoControls({
     })
     player.on('canplay', () =>
       dispatch({
-        type: 'SetPlayerLoading',
+        type: 'SetLoading',
         loading: false
       })
     )
     player.on('canplaythrough', () =>
       dispatch({
-        type: 'SetPlayerLoading',
+        type: 'SetLoading',
         loading: false
       })
     )
@@ -374,7 +372,7 @@ export function VideoControls({
         )
       }
       dispatch({
-        type: 'SetPlayerFullscreen',
+        type: 'SetFullscreen',
         fullscreen: fscreen.fullscreenElement != null
       })
     })
@@ -392,16 +390,20 @@ export function VideoControls({
     if (fullscreen) {
       fscreen.exitFullscreen()
       dispatch({
-        type: 'SetPlayerFullscreen',
+        type: 'SetFullscreen',
         fullscreen: false
       })
     } else {
       if (isMobile()) {
         void player.requestFullscreen()
+        dispatch({
+          type: 'SetFullscreen',
+          fullscreen: true
+        })
       } else {
         await fscreen.requestFullscreen(document.documentElement)
         dispatch({
-          type: 'SetPlayerFullscreen',
+          type: 'SetFullscreen',
           fullscreen: true
         })
       }
@@ -411,7 +413,7 @@ export function VideoControls({
   function handleSeek(_event: Event, value: number | number[]): void {
     if (!Array.isArray(value)) {
       dispatch({
-        type: 'SetPlayerProgress',
+        type: 'SetProgress',
         progress: value
       })
       player.currentTime(value)
@@ -420,13 +422,17 @@ export function VideoControls({
 
   function handleMute(): void {
     player.muted(!mute)
+    dispatch({
+      type: 'SetMute',
+      mute: !mute
+    })
   }
 
   function handleVolume(_event: Event, value: number | number[]): void {
     if (!Array.isArray(value)) {
       if (mute === true) handleMute()
       dispatch({
-        type: 'SetPlayerVolume',
+        type: 'SetVolume',
         volume: value
       })
       player.volume(value / 100)
@@ -455,11 +461,11 @@ export function VideoControls({
 
   function handleClick(): void {
     dispatch({
-      type: 'SetPlayerOpenSubtitleDialog',
+      type: 'SetOpenSubtitleDialog',
       openSubtitleDialog: true
     })
     dispatch({
-      type: 'SetPlayerLoadSubtitleDialog',
+      type: 'SetLoadSubtitleDialog',
       loadSubtitleDialog: true
     })
   }
@@ -753,7 +759,7 @@ export function VideoControls({
                   player={player}
                   onClose={() =>
                     dispatch({
-                      type: 'SetPlayerOpenSubtitleDialog',
+                      type: 'SetOpenSubtitleDialog',
                       openSubtitleDialog: false
                     })
                   }
