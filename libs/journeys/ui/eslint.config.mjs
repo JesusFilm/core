@@ -18,7 +18,8 @@ export default [
       'libs/journeys/ui/eslint.config.js',
       'libs/journeys/ui/jest.config.ts',
       'libs/journeys/ui/i18next-parser.config.js',
-      'libs/journeys/ui/apollo.config.js'
+      'libs/journeys/ui/apollo.config.js',
+      'libs/journeys/ui/postcss.config.mjs'
     ]
   },
   {
