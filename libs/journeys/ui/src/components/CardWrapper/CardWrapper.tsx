@@ -29,7 +29,7 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
     return (
       <Card
         {...{ ...block, children: blocks }}
-        wrappers={childrenProps?.wrappers}
+        wrappers={childrenProps?.wrappers ?? {}}
       />
     )
   }

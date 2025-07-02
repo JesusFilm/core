@@ -70,7 +70,7 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
             {...{ ...block, children: blocks }}
             wrappers={
               (children as ReactElement<{ wrappers?: WrappersProps }>)?.props
-                ?.wrappers
+                ?.wrappers ?? {}
             }
           />
           {blocks.length === 0 && !lgUp && (
