@@ -28,6 +28,20 @@ describe('interop', () => {
       })
     })
 
+    it('should handle ipAddress list without spaces after comma', () => {
+      process.env.INTEROP_TOKEN = 'correct-token'
+      process.env.NAT_ADDRESSES = '1.1.1.1'
+      expect(
+        getInteropContext({
+          interopToken: 'correct-token',
+          ipAddress: '1.1.1.1,10.11.10.220'
+        })
+      ).toEqual({
+        interopToken: 'correct-token',
+        ipAddress: '1.1.1.1'
+      })
+    })
+
     it('should return null when interopToken is incorrect', () => {
       process.env.INTEROP_TOKEN = 'correct-token'
       expect(

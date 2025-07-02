@@ -18,8 +18,10 @@ export function getInteropContext({
     return null
 
   const normalizedIpAddress = (
-    ipAddressInput === '' ? '127.0.0.1' : (ipAddressInput ?? '127.0.0.1')
-  ).split(', ')[0]
+    ipAddressInput === '' ? '127.0.0.1' : ipAddressInput ?? '127.0.0.1'
+  )
+    .split(',')[0]
+    .trim()
 
   const ipAddress = z
     .string()
