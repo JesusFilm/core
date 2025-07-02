@@ -65,21 +65,20 @@ describe('Form', () => {
   })
 
   describe('Form Submission Flow', () => {
-    it('should handle form submission via submit button', async () => {
-      render(<Form {...defaultProps} />)
+    it('should handle form submission via submit button with valid input', async () => {
+      render(<Form {...defaultProps} input="Test message" />)
 
       const submitButton = screen.getByRole('button')
+      expect(submitButton).not.toBeDisabled()
       await userEvent.click(submitButton)
 
       expect(mockHandleSubmit).toHaveBeenCalledTimes(1)
     })
 
-    it('should handle form submission via Enter key and prevent default', async () => {
-      render(<Form {...defaultProps} />)
+    it('should handle form submission via Enter key with valid input', async () => {
+      render(<Form {...defaultProps} input="Test message" />)
 
       const textField = screen.getByRole('textbox')
-      await userEvent.type(textField, 'Test message')
-
       fireEvent.keyDown(textField, { key: 'Enter', code: 'Enter' })
 
       expect(mockHandleSubmit).toHaveBeenCalledTimes(1)
@@ -218,22 +217,35 @@ describe('Form', () => {
     })
   })
 
-  describe('Edge Cases', () => {
-    it('should handle empty input and form submission', async () => {
-      render(<Form {...defaultProps} input="" />)
+  describe('Empty Input Validation', () => {
+    it('should handle empty input correctly', async () => {
+      const { rerender } = render(<Form {...defaultProps} input="" />)
 
       const textField = screen.getByRole('textbox')
       const submitButton = screen.getByRole('button')
 
-      expect(textField).toHaveValue('')
+      expect(submitButton).not.toBeDisabled()
 
-      // Should allow submission of empty form
-      await userEvent.click(submitButton)
-      expect(mockHandleSubmit).toHaveBeenCalledTimes(1)
-
-      // Should allow Enter key submission with empty input
+      textField.focus()
       fireEvent.keyDown(textField, { key: 'Enter', code: 'Enter' })
-      expect(mockHandleSubmit).toHaveBeenCalledTimes(2)
+      expect(mockHandleSubmit).not.toHaveBeenCalled()
+
+      rerender(<Form {...defaultProps} input="Hello AI" />)
+      const enabledSubmitButton = screen.getByRole('button')
+      expect(enabledSubmitButton).not.toBeDisabled()
+    })
+
+    it('should handle whitespace-only input correctly', async () => {
+      render(<Form {...defaultProps} input="   " />)
+
+      const textField = screen.getByRole('textbox')
+      const submitButton = screen.getByRole('button')
+
+      expect(submitButton).toBeDisabled()
+
+      textField.focus()
+      fireEvent.keyDown(textField, { key: 'Enter', code: 'Enter' })
+      expect(mockHandleSubmit).not.toHaveBeenCalled()
     })
   })
 })

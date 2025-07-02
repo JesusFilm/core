@@ -29,9 +29,21 @@ export function Form({
 }: FormProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
+  const isInputEmpty = (value: string): boolean => {
+    return value.trim().length === 0
+  }
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (isInputEmpty(input)) {
+      return
+    }
+    handleSubmit(e)
+  }
+
   return (
     <Box sx={{ p: 4, pt: 0, '&:last-child': { pb: 6 } }}>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleFormSubmit}>
         <Box
           sx={{
             border: (theme) => `1px solid ${theme.palette.divider}`,
@@ -50,7 +62,9 @@ export function Form({
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault()
-                void handleSubmit()
+                if (!isInputEmpty(input)) {
+                  handleSubmit(e)
+                }
               }
             }}
             disabled={error != null || waitForToolResult}
@@ -100,7 +114,9 @@ export function Form({
                 <Button
                   data-testid="FormSubmitButton"
                   type="submit"
-                  disabled={error != null || waitForToolResult}
+                  disabled={
+                    error != null || waitForToolResult || isInputEmpty(input)
+                  }
                   variant="contained"
                   size="small"
                   sx={{
