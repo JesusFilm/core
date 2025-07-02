@@ -184,6 +184,12 @@
         "command": "npm run ts-node apis/api-media/src/workers/cli.ts seed"
       }
     },
+    "queue-mux-videos": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-media/src/workers/cli.ts mux-videos"
+      }
+    },
     "export-language-slugs": {
       "executor": "nx:run-commands",
       "options": {
