@@ -81,6 +81,11 @@ export interface MenuBlockCreate_card {
   fullscreen: boolean;
 }
 
+export interface MenuBlockCreate_heading_settings {
+  __typename: "TypographyBlockSettings";
+  color: string | null;
+}
+
 export interface MenuBlockCreate_heading {
   __typename: "TypographyBlock";
   id: string;
@@ -90,6 +95,12 @@ export interface MenuBlockCreate_heading {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: MenuBlockCreate_heading_settings;
+}
+
+export interface MenuBlockCreate_subHeading_settings {
+  __typename: "TypographyBlockSettings";
+  color: string | null;
 }
 
 export interface MenuBlockCreate_subHeading {
@@ -101,6 +112,7 @@ export interface MenuBlockCreate_subHeading {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: MenuBlockCreate_subHeading_settings;
 }
 
 export interface MenuBlockCreate_button1_action_NavigateToBlockAction {

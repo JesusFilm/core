@@ -40,6 +40,11 @@ const typographyProps: ComponentProps<typeof Typography> = {
   variant: TypographyVariant.h3,
   content: 'Some block above',
   children: []
+,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
 }
 
 const signUpProps: ComponentProps<typeof SignUp> = {

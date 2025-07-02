@@ -27,7 +27,12 @@ describe('searchBlocks', () => {
             color: null,
             align: null,
             children: []
-          },
+          ,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
+},
           {
             __typename: 'RadioQuestionBlock',
             id: 'RadioQuestion1',
@@ -94,7 +99,12 @@ describe('searchBlocks', () => {
             color: null,
             align: null,
             children: []
-          },
+          ,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
+},
           {
             __typename: 'RadioQuestionBlock',
             id: 'RadioQuestion1',

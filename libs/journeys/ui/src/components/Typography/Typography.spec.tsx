@@ -20,6 +20,11 @@ const block: TreeBlock<TypographyFields> = {
   color: TypographyColor.primary,
   align: TypographyAlign.left,
   children: []
+,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
 }
 
 describe('Typography', () => {

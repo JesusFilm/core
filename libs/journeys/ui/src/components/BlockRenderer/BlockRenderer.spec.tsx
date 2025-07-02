@@ -137,7 +137,12 @@ describe('BlockRenderer', () => {
           content: 'How did we get here?',
           variant: null,
           children: []
-        }
+        ,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
+}
       ]
     }
     const { getByText } = render(
@@ -173,7 +178,12 @@ describe('BlockRenderer', () => {
           content: 'How did we get here?',
           variant: null,
           children: []
-        }
+        ,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
+}
       ]
     }
     const { getByTestId, getByText } = render(
@@ -546,7 +556,12 @@ describe('BlockRenderer', () => {
       content: 'How did we get here?',
       variant: null,
       children: []
-    }
+    ,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
+}
     const { getByText } = render(<BlockRenderer block={block} />)
     expect(getByText('How did we get here?')).toBeInTheDocument()
   })
@@ -562,7 +577,12 @@ describe('BlockRenderer', () => {
       content: 'How did we get here?',
       variant: null,
       children: []
-    }
+    ,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
+}
     const { getByTestId } = render(
       <BlockRenderer
         block={block}

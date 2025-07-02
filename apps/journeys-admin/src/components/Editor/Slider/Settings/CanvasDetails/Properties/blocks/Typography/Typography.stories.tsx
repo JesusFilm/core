@@ -41,6 +41,11 @@ const block: TreeBlock<TypographyBlock> = {
   content: '',
   variant: null,
   children: []
+,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
 }
 
 const Template: StoryObj<ComponentProps<typeof Typography>> = {
@@ -75,7 +80,12 @@ export const Filled = {
     content: 'Text goes here',
     variant: TypographyVariant.overline,
     children: []
+  ,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
   }
+}
 }
 
 export default Demo

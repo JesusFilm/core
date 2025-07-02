@@ -237,7 +237,12 @@ export function CardPoll(): ReactElement {
       content: t('Got an Opinion?'),
       variant: TypographyVariant.h6,
       __typename: 'TypographyBlock'
-    } satisfies TypographyBlock
+    ,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
+} satisfies TypographyBlock
 
     const title = {
       id: uuidv4(),
@@ -248,7 +253,12 @@ export function CardPoll(): ReactElement {
       content: t("Which of Jesus' teachings challenges you the most?"),
       variant: TypographyVariant.h2,
       __typename: 'TypographyBlock'
-    } satisfies TypographyBlock
+    ,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
+} satisfies TypographyBlock
 
     const radioQuestionBlock = {
       id: uuidv4(),
@@ -302,7 +312,12 @@ export function CardPoll(): ReactElement {
       content: t('↑ Select an answer to continue'),
       variant: TypographyVariant.caption,
       __typename: 'TypographyBlock'
-    } satisfies TypographyBlock
+    ,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
+} satisfies TypographyBlock
 
     const cardBlock = {
       id: cardId,

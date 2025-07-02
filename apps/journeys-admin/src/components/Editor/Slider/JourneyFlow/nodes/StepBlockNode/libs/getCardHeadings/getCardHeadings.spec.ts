@@ -18,6 +18,11 @@ const typography1: TreeBlock<TypographyBlock> = {
   content: 'title',
   variant: TypographyVariant.body1,
   children: []
+,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
 }
 
 const typography2: TreeBlock<TypographyBlock> = {
@@ -30,6 +35,11 @@ const typography2: TreeBlock<TypographyBlock> = {
   content: 'subtitle content',
   variant: TypographyVariant.h1,
   children: []
+,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
 }
 
 const children: Array<TreeBlock<BlockFields>> = [typography1]

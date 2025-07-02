@@ -24,6 +24,10 @@ describe('Typography properties', () => {
     color: null,
     content: 'Typography',
     variant: null,
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    },
     children: []
   }
 
@@ -44,7 +48,7 @@ describe('Typography properties', () => {
     ).toBeInTheDocument()
   })
 
-  it('shows filled attributes', () => {
+  it('shows filled attributes with enum colors', () => {
     const block: TreeBlock<TypographyBlock> = {
       id: 'typography1.id',
       __typename: 'TypographyBlock',
@@ -54,6 +58,10 @@ describe('Typography properties', () => {
       color: TypographyColor.secondary,
       content: 'Typography',
       variant: TypographyVariant.h2,
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      },
       children: []
     }
     const { getByRole } = render(
@@ -67,6 +75,66 @@ describe('Typography properties', () => {
     expect(getByRole('button', { name: 'Color Secondary' })).toBeInTheDocument()
     expect(
       getByRole('button', { name: 'Text Alignment Center' })
+    ).toBeInTheDocument()
+  })
+
+  it('shows filled attributes with hex color from settings', () => {
+    const block: TreeBlock<TypographyBlock> = {
+      id: 'typography1.id',
+      __typename: 'TypographyBlock',
+      parentBlockId: null,
+      parentOrder: 0,
+      align: TypographyAlign.center,
+      color: null,
+      content: 'Typography',
+      variant: TypographyVariant.h2,
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: '#C52D3A'
+      },
+      children: []
+    }
+    const { getByRole } = render(
+      <MockedProvider>
+        <Typography {...block} />
+      </MockedProvider>
+    )
+    expect(
+      getByRole('button', { name: 'Text Variant Header 2' })
+    ).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Color Primary' })).toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'Text Alignment Center' })
+    ).toBeInTheDocument()
+  })
+
+  it('shows disabled color for empty content', () => {
+    const block: TreeBlock<TypographyBlock> = {
+      id: 'typography1.id',
+      __typename: 'TypographyBlock',
+      parentBlockId: null,
+      parentOrder: 0,
+      align: null,
+      color: null,
+      content: '',
+      variant: null,
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: '#C52D3A'
+      },
+      children: []
+    }
+    const { getByRole } = render(
+      <MockedProvider>
+        <Typography {...block} />
+      </MockedProvider>
+    )
+    expect(
+      getByRole('button', { name: 'Text Variant Body 2' })
+    ).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Color Primary' })).toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'Text Alignment Left' })
     ).toBeInTheDocument()
   })
 

@@ -104,7 +104,11 @@ describe('CardForm', () => {
           journeyId: 'journeyId',
           parentBlockId: 'cardId',
           content: 'Prayer Request',
-          variant: TypographyVariant.h6
+          variant: TypographyVariant.h6,
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          }
         },
         titleInput: {
           id: 'titleId',
@@ -113,7 +117,11 @@ describe('CardForm', () => {
           journeyId: 'journeyId',
           parentBlockId: 'cardId',
           content: 'How can we pray for you?',
-          variant: TypographyVariant.h1
+          variant: TypographyVariant.h1,
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          }
         },
         textResponseInput: {
           id: 'textResponseId',
@@ -156,7 +164,11 @@ describe('CardForm', () => {
           content:
             "Each day, we pray for those in our city. We'd be grateful to include your personal needs.",
           variant: TypographyVariant.caption,
-          color: TypographyColor.secondary
+          color: TypographyColor.secondary,
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          }
         },
         journeyId: 'journeyId',
         cardId: 'cardId',
@@ -189,6 +201,10 @@ describe('CardForm', () => {
           color: null,
           content: 'Prayer Request',
           variant: TypographyVariant.h6,
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          },
           __typename: 'TypographyBlock'
         },
         title: {
@@ -199,6 +215,10 @@ describe('CardForm', () => {
           color: null,
           content: 'How can we pray for you?',
           variant: TypographyVariant.h1,
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          },
           __typename: 'TypographyBlock'
         },
         textResponse: {
@@ -270,6 +290,10 @@ describe('CardForm', () => {
           content:
             "Each day, we pray for those in our city. We'd be grateful to include your personal needs.",
           variant: TypographyVariant.caption,
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          },
           __typename: 'TypographyBlock'
         },
         cardBlockUpdate: {

@@ -133,7 +133,12 @@ const activeBlock: TreeBlock<StepBlock> = {
           variant: null,
           parentOrder: 0,
           children: []
-        }
+        ,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
+}
       ]
     }
   ]

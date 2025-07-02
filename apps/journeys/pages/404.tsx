@@ -63,7 +63,11 @@ export function Custom404(): ReactElement {
       id: '404-typog-id',
       parentBlockId: '404-cardBlock-id',
       parentOrder: 0,
-      variant: TypographyVariant.h2
+      variant: TypographyVariant.h2,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
     },
     {
       __typename: 'TypographyBlock',
@@ -73,7 +77,11 @@ export function Custom404(): ReactElement {
       id: 'typog2-id',
       parentBlockId: '404-cardBlock-id',
       parentOrder: 1,
-      variant: TypographyVariant.h5
+      variant: TypographyVariant.h5,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
     },
     {
       __typename: 'ButtonBlock',

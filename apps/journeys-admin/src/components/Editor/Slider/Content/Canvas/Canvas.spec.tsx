@@ -47,7 +47,12 @@ describe('Canvas', () => {
         color: TypographyColor.primary,
         align: TypographyAlign.left,
         children: []
-      }
+      ,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
+}
     ]
   }
   const step1: TreeBlock<StepBlock> = {

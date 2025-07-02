@@ -33,6 +33,11 @@ const heading: TreeBlock<TypographyFields> = {
   content: 'Question',
   variant: TypographyVariant.h3,
   children: []
+,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
 }
 
 const description: TreeBlock<TypographyFields> = {
@@ -45,6 +50,11 @@ const description: TreeBlock<TypographyFields> = {
   content: 'Description',
   variant: TypographyVariant.body2,
   children: []
+,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
 }
 
 const block: TreeBlock<RadioQuestionFields> = {

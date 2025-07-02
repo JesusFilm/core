@@ -33,7 +33,12 @@ export const Default = {
     selectedBlock: {
       __typename: 'TypographyBlock',
       id: 'typographyBlock.id'
-    }
+    ,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
+}
   }
 }
 

@@ -55,7 +55,12 @@ describe('DuplicateBlock', () => {
     color: TypographyColor.primary,
     align: TypographyAlign.center,
     children: []
+  ,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
   }
+}
 
   const blockOrder = block?.parentOrder != null ? block.parentOrder : 0
 
@@ -80,7 +85,12 @@ describe('DuplicateBlock', () => {
           {
             __typename: 'TypographyBlock',
             id: 'duplicatedId'
-          } as unknown as TypographyBlock
+          ,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
+} as unknown as TypographyBlock
         ]
       }
     }
@@ -273,11 +283,21 @@ describe('DuplicateBlock', () => {
     const duplicateBlockResultMock = jest.fn(() => ({
       data: {
         blockDuplicate: [
-          { __typename: 'TypographyBlock', id: block.id },
+          { __typename: 'TypographyBlock', id: block.id ,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
+},
           {
             __typename: 'TypographyBlock',
             id: 'duplicatedId'
-          }
+          ,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
+}
         ]
       }
     }))

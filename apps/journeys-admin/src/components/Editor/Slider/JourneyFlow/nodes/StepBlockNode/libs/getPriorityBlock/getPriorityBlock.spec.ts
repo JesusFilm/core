@@ -106,6 +106,11 @@ const typography: TreeBlock<TypographyBlock> = {
   color: null,
   align: null,
   children: []
+,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
 }
 
 const video: TreeBlock<VideoBlock> = {

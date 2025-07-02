@@ -240,6 +240,11 @@ export interface TextResponseWithButtonRestore_textResponse_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface TextResponseWithButtonRestore_textResponse_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  color: string | null;
+}
+
 export interface TextResponseWithButtonRestore_textResponse_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -249,6 +254,7 @@ export interface TextResponseWithButtonRestore_textResponse_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: TextResponseWithButtonRestore_textResponse_TypographyBlock_settings;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_Video_title {
@@ -669,6 +675,11 @@ export interface TextResponseWithButtonRestore_button_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface TextResponseWithButtonRestore_button_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  color: string | null;
+}
+
 export interface TextResponseWithButtonRestore_button_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -678,6 +689,7 @@ export interface TextResponseWithButtonRestore_button_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: TextResponseWithButtonRestore_button_TypographyBlock_settings;
 }
 
 export interface TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_Video_title {
@@ -1098,6 +1110,11 @@ export interface TextResponseWithButtonRestore_startIcon_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface TextResponseWithButtonRestore_startIcon_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  color: string | null;
+}
+
 export interface TextResponseWithButtonRestore_startIcon_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -1107,6 +1124,7 @@ export interface TextResponseWithButtonRestore_startIcon_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: TextResponseWithButtonRestore_startIcon_TypographyBlock_settings;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_Video_title {
@@ -1527,6 +1545,11 @@ export interface TextResponseWithButtonRestore_endIcon_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface TextResponseWithButtonRestore_endIcon_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  color: string | null;
+}
+
 export interface TextResponseWithButtonRestore_endIcon_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -1536,6 +1559,7 @@ export interface TextResponseWithButtonRestore_endIcon_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: TextResponseWithButtonRestore_endIcon_TypographyBlock_settings;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_Video_title {

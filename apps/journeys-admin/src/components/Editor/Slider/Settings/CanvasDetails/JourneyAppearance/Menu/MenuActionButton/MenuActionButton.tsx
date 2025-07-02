@@ -92,7 +92,12 @@ export function MenuActionButton(): ReactElement {
       content: t('Menu'),
       variant: TypographyVariant.h1,
       align: TypographyAlign.center
-    } satisfies TypographyBlock
+    ,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
+} satisfies TypographyBlock
 
     const subHeading = {
       __typename: 'TypographyBlock' as const,
@@ -103,7 +108,12 @@ export function MenuActionButton(): ReactElement {
       content: t('Helping people discover Jesus.'),
       variant: TypographyVariant.subtitle2,
       align: TypographyAlign.center
-    } satisfies TypographyBlock
+    ,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
+} satisfies TypographyBlock
 
     const button1 = {
       __typename: 'ButtonBlock',

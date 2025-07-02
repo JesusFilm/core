@@ -62,7 +62,12 @@ export function NewTypographyButton(): ReactElement {
           : TypographyVariant.h1,
       __typename: 'TypographyBlock',
       children: []
-    }
+    ,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
+}
 
     addBlock({
       block: typographyBlock,

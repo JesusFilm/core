@@ -9,6 +9,11 @@ import { TypographyBlockCreateInput, TypographyAlign, TypographyColor, Typograph
 // GraphQL mutation operation: TypographyBlockCreate
 // ====================================================
 
+export interface TypographyBlockCreate_typographyBlockCreate_settings {
+  __typename: "TypographyBlockSettings";
+  color: string | null;
+}
+
 export interface TypographyBlockCreate_typographyBlockCreate {
   __typename: "TypographyBlock";
   id: string;
@@ -18,6 +23,7 @@ export interface TypographyBlockCreate_typographyBlockCreate {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: TypographyBlockCreate_typographyBlockCreate_settings;
 }
 
 export interface TypographyBlockCreate {

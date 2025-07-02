@@ -254,6 +254,11 @@ export interface GetJourney_journey_blocks_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface GetJourney_journey_blocks_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  color: string | null;
+}
+
 export interface GetJourney_journey_blocks_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -263,6 +268,7 @@ export interface GetJourney_journey_blocks_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: GetJourney_journey_blocks_TypographyBlock_settings;
 }
 
 export interface GetJourney_journey_blocks_VideoBlock_mediaVideo_Video_title {

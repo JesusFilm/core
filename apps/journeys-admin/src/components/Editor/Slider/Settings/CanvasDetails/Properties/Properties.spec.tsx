@@ -175,7 +175,12 @@ describe('Properties', () => {
       __typename: 'TypographyBlock',
       id: 'block.id',
       children: []
-    } as unknown as TreeBlock
+    ,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
+} as unknown as TreeBlock
 
     render(
       <MockedProvider>

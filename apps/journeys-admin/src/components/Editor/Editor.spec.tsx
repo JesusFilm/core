@@ -184,7 +184,12 @@ describe('Editor', () => {
           variant: null,
           color: null,
           align: null
-        }
+        ,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
+}
       ]
     }
 

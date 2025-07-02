@@ -319,7 +319,12 @@ export function CardCta(): ReactElement {
       content: t("Let's Connect"),
       variant: TypographyVariant.h6,
       __typename: 'TypographyBlock'
-    } satisfies TypographyBlock
+    ,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
+} satisfies TypographyBlock
 
     const title = {
       id: uuidv4(),
@@ -330,7 +335,12 @@ export function CardCta(): ReactElement {
       content: t("From 'hello' to heartfelt conversations"),
       variant: TypographyVariant.h3,
       __typename: 'TypographyBlock'
-    } satisfies TypographyBlock
+    ,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
+} satisfies TypographyBlock
 
     const buttonBlock1 = {
       id: uuidv4(),

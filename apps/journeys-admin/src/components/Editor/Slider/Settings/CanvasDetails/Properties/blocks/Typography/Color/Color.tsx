@@ -7,7 +7,6 @@ import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import { TypographyColor } from '../../../../../../../../../../__generated__/globalTypes'
 import {
   TypographyBlockUpdateColor,
   TypographyBlockUpdateColorVariables
@@ -16,10 +15,15 @@ import { ColorDisplayIcon } from '../../../controls/ColorDisplayIcon'
 import { ToggleButtonGroup } from '../../../controls/ToggleButtonGroup'
 
 export const TYPOGRAPHY_BLOCK_UPDATE_COLOR = gql`
-  mutation TypographyBlockUpdateColor($id: ID!, $color: TypographyColor!) {
-    typographyBlockUpdate(id: $id, input: { color: $color }) {
+  mutation TypographyBlockUpdateColor(
+    $id: ID!
+    $settings: TypographyBlockSettingsInput!
+  ) {
+    typographyBlockUpdate(id: $id, input: { settings: $settings }) {
       id
-      color
+      settings {
+        color
+      }
     }
   }
 `
@@ -39,14 +43,14 @@ export function Color(): ReactElement {
     | TreeBlock<TypographyBlock>
     | undefined
 
-  function handleChange(color: TypographyColor): void {
+  function handleChange(color: string): void {
     if (selectedBlock == null || color == null) return
 
     add({
       parameters: {
         execute: { color },
         undo: {
-          color: selectedBlock.color
+          color: selectedBlock.settings?.color
         }
       },
       execute({ color }) {
@@ -58,12 +62,15 @@ export function Color(): ReactElement {
         void typographyBlockUpdate({
           variables: {
             id: selectedBlock.id,
-            color
+            settings: { color }
           },
           optimisticResponse: {
             typographyBlockUpdate: {
               id: selectedBlock.id,
-              color,
+              settings: {
+                color,
+                __typename: 'TypographyBlockSettings'
+              },
               __typename: 'TypographyBlock'
             }
           }
@@ -74,25 +81,25 @@ export function Color(): ReactElement {
 
   const options = [
     {
-      value: TypographyColor.primary,
+      value: '#C52D3A',
       label: t('Primary'),
-      icon: <ColorDisplayIcon color={TypographyColor.primary} />
+      icon: <ColorDisplayIcon color="#C52D3A" />
     },
     {
-      value: TypographyColor.secondary,
+      value: '#444451',
       label: t('Secondary'),
-      icon: <ColorDisplayIcon color={TypographyColor.secondary} />
+      icon: <ColorDisplayIcon color="#444451" />
     },
     {
-      value: TypographyColor.error,
+      value: '#B62D1C',
       label: t('Error'),
-      icon: <ColorDisplayIcon color={TypographyColor.error} />
+      icon: <ColorDisplayIcon color="#B62D1C" />
     }
   ]
 
   return (
     <ToggleButtonGroup
-      value={selectedBlock?.color ?? TypographyColor.primary}
+      value={selectedBlock?.settings?.color ?? '#C52D3A'}
       onChange={handleChange}
       options={options}
       testId="Color"

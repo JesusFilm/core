@@ -5,7 +5,6 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import { TypographyColor } from '../../../../../../../../../../__generated__/globalTypes'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 
 import { TYPOGRAPHY_BLOCK_UPDATE_COLOR } from './Color'
@@ -23,6 +22,10 @@ describe('Typography color selector', () => {
       color: null,
       content: '',
       variant: null,
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      },
       children: []
     }
     const { getByRole } = render(
@@ -44,16 +47,24 @@ describe('Typography color selector', () => {
       parentBlockId: 'parentBlockId',
       parentOrder: 0,
       align: null,
-      color: TypographyColor.error,
+      color: null,
       content: '',
       variant: null,
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: '#B62D1C' // Error color
+      },
       children: []
     }
     const result = jest.fn(() => ({
       data: {
         typographyBlockUpdate: {
           id: 'id',
-          color: TypographyColor.secondary
+          settings: {
+            color: '#444451',
+            __typename: 'TypographyBlockSettings'
+          },
+          __typename: 'TypographyBlock'
         }
       }
     }))
@@ -65,7 +76,7 @@ describe('Typography color selector', () => {
               query: TYPOGRAPHY_BLOCK_UPDATE_COLOR,
               variables: {
                 id: 'id',
-                color: TypographyColor.secondary
+                settings: { color: '#444451' }
               }
             },
             result
@@ -89,16 +100,24 @@ describe('Typography color selector', () => {
       parentBlockId: 'parentBlockId',
       parentOrder: 0,
       align: null,
-      color: TypographyColor.error,
+      color: null,
       content: '',
       variant: null,
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: '#B62D1C' // Error color
+      },
       children: []
     }
     const result1 = jest.fn(() => ({
       data: {
         typographyBlockUpdate: {
           id: 'id',
-          color: TypographyColor.secondary
+          settings: {
+            color: '#444451',
+            __typename: 'TypographyBlockSettings'
+          },
+          __typename: 'TypographyBlock'
         }
       }
     }))
@@ -106,7 +125,11 @@ describe('Typography color selector', () => {
       data: {
         typographyBlockUpdate: {
           id: 'id',
-          color: TypographyColor.error
+          settings: {
+            color: '#B62D1C',
+            __typename: 'TypographyBlockSettings'
+          },
+          __typename: 'TypographyBlock'
         }
       }
     }))
@@ -118,7 +141,7 @@ describe('Typography color selector', () => {
               query: TYPOGRAPHY_BLOCK_UPDATE_COLOR,
               variables: {
                 id: 'id',
-                color: TypographyColor.secondary
+                settings: { color: '#444451' }
               }
             },
             result: result1
@@ -128,7 +151,7 @@ describe('Typography color selector', () => {
               query: TYPOGRAPHY_BLOCK_UPDATE_COLOR,
               variables: {
                 id: 'id',
-                color: TypographyColor.error
+                settings: { color: '#B62D1C' }
               }
             },
             result: result2

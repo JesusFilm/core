@@ -48,7 +48,12 @@ describe('SelectableWrapper', () => {
     color: null,
     align: null,
     children: []
+  ,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
   }
+}
 
   const buttonBlock: TreeBlock<ButtonFields> = {
     __typename: 'ButtonBlock',

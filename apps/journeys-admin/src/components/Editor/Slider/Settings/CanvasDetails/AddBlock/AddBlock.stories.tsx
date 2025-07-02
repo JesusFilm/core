@@ -65,7 +65,12 @@ const disabledStep: TreeBlock<StepBlock> = {
           color: TypographyColor.primary,
           align: TypographyAlign.center,
           children: []
-        }
+        ,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
+}
       ]
     }
   ]

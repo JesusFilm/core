@@ -80,7 +80,12 @@ export const Filled = {
               content: 'Title',
               variant: TypographyVariant.h1,
               children: []
-            },
+            ,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
+},
             {
               __typename: 'TypographyBlock',
               id: 'typog2.id',
@@ -91,7 +96,12 @@ export const Filled = {
               content: 'Subtitle',
               variant: null,
               children: []
-            }
+            ,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
+}
           ]
         }
       ]

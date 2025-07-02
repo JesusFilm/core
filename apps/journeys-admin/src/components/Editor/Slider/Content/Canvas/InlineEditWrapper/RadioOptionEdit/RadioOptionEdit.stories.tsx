@@ -99,7 +99,12 @@ const steps: Array<TreeBlock<StepBlock>> = [
             content: 'Question',
             variant: TypographyVariant.h3,
             children: []
-          },
+          ,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
+},
           {
             id: 'typographyBlockId2',
             __typename: 'TypographyBlock',
@@ -110,7 +115,12 @@ const steps: Array<TreeBlock<StepBlock>> = [
             content: 'Description',
             variant: TypographyVariant.body2,
             children: []
-          },
+          ,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
+},
           block
         ]
       }

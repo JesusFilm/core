@@ -32,6 +32,11 @@ const typographyProps: ComponentProps<typeof Typography> = {
   variant: TypographyVariant.h3,
   content: 'How can we help you know more about Jesus?',
   children: []
+,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
 }
 
 const children: Array<TreeBlock<RadioOptionFields>> = [

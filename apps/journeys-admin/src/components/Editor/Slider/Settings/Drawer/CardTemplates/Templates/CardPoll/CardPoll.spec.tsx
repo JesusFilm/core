@@ -99,7 +99,11 @@ describe('CardPoll', () => {
           content: 'Got an Opinion?',
           align: null,
           color: null,
-          variant: TypographyVariant.h6
+          variant: TypographyVariant.h6,
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          }
         },
         titleInput: {
           id: 'titleId',
@@ -108,7 +112,11 @@ describe('CardPoll', () => {
           align: null,
           color: null,
           content: "Which of Jesus' teachings challenges you the most?",
-          variant: TypographyVariant.h2
+          variant: TypographyVariant.h2,
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          }
         },
         radioQuestionInput: {
           id: 'radioQuestionId',
@@ -146,7 +154,11 @@ describe('CardPoll', () => {
           content: '↑ Select an answer to continue',
           align: null,
           variant: TypographyVariant.caption,
-          color: TypographyColor.secondary
+          color: TypographyColor.secondary,
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          }
         },
         journeyId: 'journeyId',
         cardId: 'cardId',
@@ -177,8 +189,12 @@ describe('CardPoll', () => {
           parentOrder: 0,
           align: null,
           color: null,
-          content: 'Got an Opinion`?',
+          content: 'Got an Opinion?',
           variant: TypographyVariant.h6,
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          },
           __typename: 'TypographyBlock'
         },
         title: {
@@ -189,6 +205,10 @@ describe('CardPoll', () => {
           color: null,
           content: "Which of Jesus' teachings challenges you the most?",
           variant: TypographyVariant.h2,
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          },
           __typename: 'TypographyBlock'
         },
         radioQuestion: {
@@ -237,6 +257,10 @@ describe('CardPoll', () => {
           color: TypographyColor.secondary,
           content: '↑ Select an answer to continue',
           variant: TypographyVariant.caption,
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          },
           __typename: 'TypographyBlock'
         },
         cardBlockUpdate: {
