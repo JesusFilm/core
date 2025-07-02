@@ -23,7 +23,11 @@ const testVideo: Video = {
   noIndex: false,
   childIds: [],
   locked: false,
-  availableLanguages: ['529']
+  availableLanguages: ['529'],
+  originId: null,
+  restrictDownloadPlatforms: [],
+  restrictViewPlatforms: [],
+  publishedAt: null
 }
 
 const testTranslation: ProcessedTranslation = {

@@ -1,6 +1,6 @@
 import { FirebaseError } from '@firebase/util'
-import LoadingButton from '@mui/lab/LoadingButton'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
 import Divider from '@mui/material/Divider'
 import FormControl from '@mui/material/FormControl'
@@ -88,7 +88,7 @@ export function PasswordForm({
         />
       </FormControl>
       {error != null && <span>{error.message}</span>}
-      <LoadingButton
+      <Button
         loading={loading}
         disabled={loading || disabled}
         variant="contained"
@@ -97,7 +97,7 @@ export function PasswordForm({
         loadingIndicator={<CircularProgress size={16} />}
       >
         Sign in
-      </LoadingButton>
+      </Button>
       <Divider>or</Divider>
       {children}
     </Box>

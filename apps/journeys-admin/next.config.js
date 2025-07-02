@@ -90,14 +90,14 @@ const nextConfig = {
     // handled by github actions
     ignoreDuringBuilds: process.env.CI === 'true'
   },
-  transpilePackages: ['shared-ui', 'shared-ui-dynamic'],
-  outputFileTracingExcludes: {
-    '*': [
-      'node_modules/@swc/core-linux-x64-gnu',
-      'node_modules/@swc/core-linux-x64-musl',
-      'node_modules/esbuild-linux-64/bin'
-    ]
-  },
+  transpilePackages: [
+    'shared-ui',
+    'shared-ui-dynamic',
+    '@mui/x-data-grid',
+    '@mui/x-date-pickers',
+    '@mui/x-tree-view',
+    '@mui/x-charts'
+  ],
   experimental: {
     fallbackNodePolyfills: false
   }

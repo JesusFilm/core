@@ -148,12 +148,12 @@ test.describe('single media component link', () => {
     expect(data).toMatchObject({
       mediaComponentId: '10_DarkroomFaith',
       linkedMediaComponentIds: expect.any(Object),
-      __embedded: {
+      _embedded: {
         contains: expect.any(Array)
       }
     })
 
-    const component = data.__embedded.contains[0]
+    const component = data._embedded.contains[0]
     expect(component).toMatchObject({
       mediaComponentId: expect.any(String),
       componentType: expect.any(String),

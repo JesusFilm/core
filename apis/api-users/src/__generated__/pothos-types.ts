@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { Prisma, User } from ".prisma/api-users-client";
+import type { Prisma, User } from ".prisma/api-users-client/index.js";
 export default interface PrismaTypes {
     User: {
         Name: "User";

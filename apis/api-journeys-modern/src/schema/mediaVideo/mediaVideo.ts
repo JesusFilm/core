@@ -1,8 +1,7 @@
 import { VideoBlockSource as PrismaVideoBlockSource } from '.prisma/api-journeys-modern-client'
 
+import { VideoBlockSource } from '../block/video/enums/videoSource'
 import { builder } from '../builder'
-
-import { VideoBlockSource } from './enums/videoSource'
 
 const MuxVideo = builder.externalRef(
   'MuxVideo',
@@ -82,7 +81,7 @@ Video.implement({
   })
 })
 
-const MediaVideo = builder.unionType('MediaVideo', {
+export const MediaVideo = builder.unionType('MediaVideo', {
   types: [MuxVideo, Video, YouTube],
   resolveType: (video) => {
     switch (video.source) {
@@ -96,41 +95,4 @@ const MediaVideo = builder.unionType('MediaVideo', {
         return null
     }
   }
-})
-
-const VideoBlock = builder.externalRef(
-  'VideoBlock',
-  builder.selection<{
-    id: string
-    source: PrismaVideoBlockSource
-    videoId: string | null
-    videoVariantLanguageId: string | null
-  }>('id source videoId videoVariantLanguageId')
-)
-
-VideoBlock.implement({
-  externalFields: (t) => ({
-    id: t.id({ nullable: false }),
-    videoId: t.id({
-      nullable: true
-    }),
-    source: t.field({
-      type: VideoBlockSource,
-      nullable: false
-    }),
-    videoVariantLanguageId: t.id()
-  }),
-  fields: (t) => ({
-    mediaVideo: t.field({
-      type: MediaVideo,
-      resolve: (video) =>
-        video.videoId != null && video.source !== 'cloudflare'
-          ? {
-              id: video.videoId,
-              source: video.source,
-              primaryLanguageId: video.videoVariantLanguageId
-            }
-          : null
-    })
-  })
 })

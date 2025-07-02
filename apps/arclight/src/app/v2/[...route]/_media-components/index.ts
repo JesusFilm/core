@@ -95,7 +95,6 @@ const GET_VIDEOS_WITH_FALLBACK = graphql(`
       availableLanguages
       variant {
         hls
-        duration
         lengthInMilliseconds
         language {
           bcp47
@@ -233,6 +232,7 @@ mediaComponents.openapi(route, async (c) => {
       : c.req.query('ids')?.split(',').filter(Boolean)
   const metadataLanguageTags =
     c.req.query('metadataLanguageTags')?.split(',').filter(Boolean) ?? []
+  const apiSessionId = c.req.query('apiSessionId') ?? '6622f10d2260a8.05128925'
 
   const languageResult = await getLanguageIdsFromTags(metadataLanguageTags)
   if (languageResult instanceof HTTPException) {
@@ -345,9 +345,10 @@ mediaComponents.openapi(route, async (c) => {
             video.description[0]?.value ??
             video.fallbackDescription[0]?.value ??
             '',
-          studyQuestions: video.studyQuestions.map(
-            (question) => question.value
-          ),
+          studyQuestions:
+            video.studyQuestions.length > 0
+              ? video.studyQuestions.map((question) => question.value)
+              : video.fallbackStudyQuestions.map((question) => question.value),
           metadataLanguageTag: video.title[0]?.language.bcp47 ?? 'en',
           ...(expand.includes('languageIds')
             ? {
@@ -384,7 +385,7 @@ mediaComponents.openapi(route, async (c) => {
         limit,
         pages: lastPage,
         total,
-        apiSessionId: '',
+        apiSessionId: apiSessionId,
         _links: {
           self: {
             href: `http://api.arclight.org/v2/media-components?${queryString}`

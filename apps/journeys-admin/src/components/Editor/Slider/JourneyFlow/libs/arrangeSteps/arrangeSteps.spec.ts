@@ -44,6 +44,7 @@ const card: TreeBlock<CardBlock> = {
   themeMode: ThemeMode.light,
   themeName: ThemeName.base,
   fullscreen: false,
+  backdropBlur: null,
   children: [button]
 }
 

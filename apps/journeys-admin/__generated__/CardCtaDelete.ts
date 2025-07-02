@@ -19,6 +19,10 @@ export interface CardCtaDelete_cardBlockUpdate {
    */
   backgroundColor: string | null;
   /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
+  /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
    * as a background. Blocks are often of type ImageBlock or VideoBlock.

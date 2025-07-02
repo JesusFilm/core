@@ -1,8 +1,17 @@
 import compact from 'lodash/compact'
 
+import { Platform } from '.prisma/api-media-client'
+
 import { prisma } from '../../lib/prisma'
+import {
+  videoCacheReset,
+  videoVariantCacheReset
+} from '../../lib/videoCacheReset'
+import { updateVideoVariantInAlgolia } from '../../workers/algolia/service'
 import { builder } from '../builder'
+import { deleteR2File } from '../cloudflare/r2/asset'
 import { Language } from '../language'
+import { deleteVideo } from '../mux/video/service'
 
 import { VideoVariantCreateInput } from './inputs/videoVariantCreate'
 import { VideoVariantFilter } from './inputs/videoVariantFilter'
@@ -19,7 +28,33 @@ builder.prismaObject('VideoVariant', {
     dash: t.exposeString('dash'),
     share: t.exposeString('share'),
     downloadable: t.exposeBoolean('downloadable', { nullable: false }),
-    downloads: t.relation('downloads', { nullable: false }),
+    downloads: t.prismaField({
+      type: ['VideoVariantDownload'],
+      nullable: false,
+      resolve: async (query, parent, _args, context) => {
+        // If clientName matches a platform in restrictDownloadPlatforms, return empty array
+        if (context.clientName && parent.videoId) {
+          const video = await prisma.video.findUnique({
+            where: { id: parent.videoId },
+            select: { restrictDownloadPlatforms: true }
+          })
+
+          if (
+            video?.restrictDownloadPlatforms.includes(
+              context.clientName as Platform
+            )
+          ) {
+            return []
+          }
+        }
+
+        // Otherwise, return the downloads
+        return await prisma.videoVariantDownload.findMany({
+          ...query,
+          where: { videoVariantId: parent.id }
+        })
+      }
+    }),
     duration: t.int({
       nullable: false,
       resolve: ({ duration }) => duration ?? 0
@@ -133,22 +168,35 @@ builder.mutationFields((t) => ({
           version: input.version ?? undefined
         }
       })
-
       const video = await prisma.video.findUnique({
         where: { id: newVariant.videoId },
         select: { availableLanguages: true }
       })
-
       const currentLanguages = video?.availableLanguages || []
       const updatedLanguages = Array.from(
         new Set([...currentLanguages, newVariant.languageId])
       )
-
       await prisma.video.update({
         where: { id: newVariant.videoId },
         data: { availableLanguages: updatedLanguages }
       })
 
+      // Save the videoId before the try/catch block
+      const { id, videoId } = newVariant
+
+      try {
+        await updateVideoVariantInAlgolia(id)
+      } catch (error) {
+        console.error('Algolia update error:', error)
+      }
+
+      try {
+        void videoVariantCacheReset(id)
+        void videoCacheReset(videoId)
+      } catch (error) {
+        // Log the error but don't throw it
+        console.error('Cache reset error:', error)
+      }
       return newVariant
     }
   }),
@@ -159,7 +207,7 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoVariantUpdateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
-      return await prisma.videoVariant.update({
+      const updated = await prisma.videoVariant.update({
         ...query,
         where: { id: input.id },
         data: {
@@ -179,6 +227,27 @@ builder.mutationFields((t) => ({
           version: input.version ?? undefined
         }
       })
+
+      // Store the videoId before the try/catch block
+      const videoId = input.videoId ?? updated.videoId
+
+      try {
+        await updateVideoVariantInAlgolia(updated.id)
+      } catch (error) {
+        console.error('Algolia update error:', error)
+      }
+
+      try {
+        void videoVariantCacheReset(updated.id)
+        // Reset the video cache if we have a videoId
+        if (videoId) {
+          void videoCacheReset(videoId)
+        }
+      } catch (error) {
+        // Log the error but don't throw it
+        console.error('Cache reset error:', error)
+      }
+      return updated
     }
   }),
   videoVariantDelete: t.withAuth({ isPublisher: true }).prismaField({
@@ -188,10 +257,107 @@ builder.mutationFields((t) => ({
       id: t.arg.id({ required: true })
     },
     resolve: async (query, _parent, { id }) => {
-      return await prisma.videoVariant.delete({
+      // Get the video variant with all associated assets
+      const variant = await prisma.videoVariant.findUnique({
+        where: { id },
+        include: {
+          downloads: {
+            include: {
+              asset: true
+            }
+          },
+          asset: true,
+          muxVideo: true
+        }
+      })
+
+      if (variant == null) {
+        throw new Error(`VideoVariant with id ${id} not found`)
+      }
+
+      // Store videoId to use later
+      const { videoId } = variant
+
+      // Clean up R2 assets
+      const assetsToDelete: string[] = []
+
+      // Add main variant asset if it exists
+      if (variant.assetId != null) {
+        assetsToDelete.push(variant.assetId)
+      }
+
+      // Add download assets if they exist
+      if (variant.downloads) {
+        variant.downloads.forEach((download) => {
+          if (download.assetId != null) {
+            assetsToDelete.push(download.assetId)
+          }
+        })
+      }
+
+      // Delete R2 assets
+      for (const assetId of assetsToDelete) {
+        try {
+          // Get the R2 asset record to get the fileName
+          const r2Asset = await prisma.cloudflareR2.findUnique({
+            where: { id: assetId },
+            select: { fileName: true }
+          })
+
+          if (r2Asset?.fileName != null) {
+            // Delete the actual file from Cloudflare R2 storage
+            await deleteR2File(r2Asset.fileName)
+          }
+
+          // Delete the database record
+          await prisma.cloudflareR2.delete({
+            where: { id: assetId }
+          })
+        } catch (error) {
+          // Log error but continue with other deletions
+          console.error(`Failed to delete R2 asset ${assetId}:`, error)
+        }
+      }
+
+      // Clean up Mux asset
+      if (variant.muxVideoId != null && variant.muxVideo != null) {
+        try {
+          // Delete from Mux service first (using assetId, not our database ID)
+          if (variant.muxVideo.assetId != null) {
+            await deleteVideo(variant.muxVideo.assetId, false)
+          }
+
+          // Delete from our database
+          await prisma.muxVideo.delete({
+            where: { id: variant.muxVideoId }
+          })
+        } catch (error) {
+          // Log error but continue with variant deletion
+          console.error(
+            `Failed to delete Mux video ${variant.muxVideoId}:`,
+            error
+          )
+        }
+      }
+
+      // Delete the video variant
+      const deleted = await prisma.videoVariant.delete({
         ...query,
         where: { id }
       })
+      try {
+        await updateVideoVariantInAlgolia(id)
+      } catch (error) {
+        console.error('Algolia update error:', error)
+      }
+      try {
+        void videoVariantCacheReset(id)
+        void videoCacheReset(videoId)
+      } catch (error) {
+        // Log the error but don't throw it
+        console.error('Cache reset error:', error)
+      }
+      return deleted
     }
   })
 }))

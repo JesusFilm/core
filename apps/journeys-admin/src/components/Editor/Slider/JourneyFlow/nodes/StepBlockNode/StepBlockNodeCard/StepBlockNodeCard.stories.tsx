@@ -56,6 +56,7 @@ export const Filled = {
           themeName: null,
           themeMode: null,
           fullscreen: false,
+          backdropBlur: null,
           children: [
             {
               __typename: 'ImageBlock',

@@ -57,6 +57,7 @@ describe('CardCta', () => {
     themeMode: null,
     themeName: null,
     fullscreen: false,
+    backdropBlur: null,
     children: []
   }
   const step: TreeBlock = {
@@ -122,7 +123,8 @@ describe('CardCta', () => {
           parentBlockId: 'cardId',
           label: 'Chat with us',
           variant: ButtonVariant.contained,
-          size: ButtonSize.large
+          size: ButtonSize.large,
+          submitEnabled: null
         },
         startIcon1Input: {
           id: 'startIcon1Id',
@@ -146,7 +148,8 @@ describe('CardCta', () => {
           parentBlockId: 'cardId',
           label: 'Email us',
           variant: ButtonVariant.contained,
-          size: ButtonSize.large
+          size: ButtonSize.large,
+          submitEnabled: null
         },
         startIcon2Input: {
           id: 'startIcon2Id',
@@ -171,7 +174,8 @@ describe('CardCta', () => {
           label: 'More about us',
           variant: ButtonVariant.text,
           color: ButtonColor.secondary,
-          size: ButtonSize.large
+          size: ButtonSize.large,
+          submitEnabled: null
         },
         startIcon3Input: {
           id: 'startIcon3Id',
@@ -377,6 +381,7 @@ describe('CardCta', () => {
           themeMode: null,
           themeName: null,
           fullscreen: false,
+          backdropBlur: null,
           __typename: 'CardBlock'
         }
       }

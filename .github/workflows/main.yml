@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   build:
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: blacksmith-4vcpu-ubuntu-2204
     strategy:
       matrix:
         node-version: [22]
@@ -50,6 +50,36 @@ jobs:
         with:
           key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
           path: ./node_modules
+      - name: Mount Journeys Next.js Cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-journeys-nextjs-cache
+          path: apps/journeys/.next
+      - name: Mount Journeys Admin Next.js Cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-journeys-admin-nextjs-cache
+          path: apps/journeys-admin/.next
+      - name: Mount Watch Next.js Cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-watch-nextjs-cache
+          path: apps/watch/.next
+      - name: Mount Arclight Next.js Cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-arclight-nextjs-cache
+          path: apps/arclight/.next
+      - name: Mount Short Links Next.js Cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-short-links-nextjs-cache
+          path: apps/short-links/.next
+      - name: Mount Videos Admin Next.js Cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-videos-admin-nextjs-cache
+          path: apps/videos-admin/.next
       - name: NPM Install
         run: npm install --silent
       - name: generate prisma imports
@@ -83,12 +113,13 @@ jobs:
           DOPPLER_WATCH_TOKEN: ${{ secrets.DOPPLER_WATCH_TOKEN }}
           DOPPLER_WATCH_ADMIN_TOKEN: ${{ secrets.DOPPLER_WATCH_ADMIN_TOKEN }}
           DOPPLER_VIDEOS_ADMIN_TOKEN: ${{ secrets.DOPPLER_VIDEOS_ADMIN_TOKEN }}
+          DOPPLER_VIDEO_IMPORTER_TOKEN: ${{ secrets.DOPPLER_VIDEO_IMPORTER_TOKEN }}
           DOPPLER_GITHUB_SERVICE_TOKEN: ${{ secrets.DOPPLER_GITHUB_SERVICE_TOKEN }}
           DOPPLER_CONFIG: stg
         with:
           targets: fetch-secrets,build
   test:
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: blacksmith-4vcpu-ubuntu-2204
     strategy:
       fail-fast: false
       matrix:
@@ -130,6 +161,36 @@ jobs:
         with:
           key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
           path: ./node_modules
+      - name: Mount Journeys Next.js Cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-journeys-nextjs-cache
+          path: apps/journeys/.next
+      - name: Mount Journeys Admin Next.js Cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-journeys-admin-nextjs-cache
+          path: apps/journeys-admin/.next
+      - name: Mount Watch Next.js Cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-watch-nextjs-cache
+          path: apps/watch/.next
+      - name: Mount Arclight Next.js Cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-arclight-nextjs-cache
+          path: apps/arclight/.next
+      - name: Mount Short Links Next.js Cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-short-links-nextjs-cache
+          path: apps/short-links/.next
+      - name: Mount Videos Admin Next.js Cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-videos-admin-nextjs-cache
+          path: apps/videos-admin/.next
       - name: NPM Install
         run: npm install --silent
       - name: generate prisma imports

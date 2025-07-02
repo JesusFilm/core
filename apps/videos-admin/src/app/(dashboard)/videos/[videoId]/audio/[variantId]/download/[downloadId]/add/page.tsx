@@ -93,6 +93,12 @@ const GET_TRANSCODE_ASSET_PROGRESS = graphql(`
   }
 `)
 
+const UPDATE_DOWNLOAD_SIZES_FROM_MUX = graphql(`
+  mutation UpdateDownloadSizesFromMux($videoVariantId: ID!) {
+    updateVideoVariantDownloadSizesFromMux(videoVariantId: $videoVariantId)
+  }
+`)
+
 export default function AddVideoVariantDownloadDialog({
   params: { videoId, variantId, downloadId: languageId }
 }: AddVideoVariantDownloadDialogProps): ReactElement {
@@ -114,6 +120,9 @@ export default function AddVideoVariantDownloadDialog({
     null
   )
   const [enableMuxDownload] = useMutation(ENABLE_MUX_DOWNLOAD)
+  const [updateDownloadSizesFromMux] = useMutation(
+    UPDATE_DOWNLOAD_SIZES_FROM_MUX
+  )
 
   const { data } = useSuspenseQuery(GET_ADMIN_VIDEO_VARIANT, {
     variables: { id: variantId }
@@ -342,8 +351,31 @@ export default function AddVideoVariantDownloadDialog({
               }
             }
           })
-          enqueueSnackbar('Downloads created', { variant: 'success' })
-          // router.push(returnUrl, { scroll: false })
+          enqueueSnackbar(
+            'Downloads created. Mux may not generate download sizes immediately and may need to be re-run using "Update Sizes from Mux".',
+            { variant: 'success' }
+          )
+
+          // Start polling to update sizes once static renditions are ready
+          const updateSizesInterval = setInterval(async () => {
+            try {
+              await updateDownloadSizesFromMux({
+                variables: { videoVariantId: variantId }
+              })
+              clearInterval(updateSizesInterval)
+              enqueueSnackbar('Download sizes updated', { variant: 'success' })
+            } catch (error) {
+              // Silently retry until static renditions are ready
+              console.log('Waiting for static renditions to be ready...')
+            }
+          }, 10000) // Check every 10 seconds
+
+          // Stop polling after 5 minutes
+          setTimeout(() => {
+            clearInterval(updateSizesInterval)
+          }, 300000)
+
+          router.push(returnUrl, { scroll: false })
         } catch (error) {
           enqueueSnackbar(
             error.message ?? 'Failed to create downloads from Mux',
@@ -531,7 +563,7 @@ export default function AddVideoVariantDownloadDialog({
                   <MenuItem value="high">Upload high 720p (2500kbps)</MenuItem>
                   <MenuItem value="sd">Upload SD 360p (1000kbps)</MenuItem>
                   <MenuItem value="low">Upload low 270p (500kbps)</MenuItem>
-                  <MenuItem
+                  {/* <MenuItem
                     value="generate-high"
                     disabled={!data.videoVariant.asset?.id}
                   >
@@ -587,7 +619,7 @@ export default function AddVideoVariantDownloadDialog({
                     )
                       ? ' (no high quality download available)'
                       : ''}
-                  </MenuItem>
+                  </MenuItem> */}
                 </Select>
                 <FormHelperText sx={{ minHeight: 20 }}>
                   {errors.quality != null &&

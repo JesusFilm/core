@@ -258,7 +258,10 @@ describe('HostResolver', () => {
       showDisplayTitle: null,
       menuButtonIcon: null,
       logoImageBlockId: null,
-      menuStepBlockId: null
+      menuStepBlockId: null,
+      socialNodeX: null,
+      socialNodeY: null,
+      fromTemplateId: null
     }
 
     it('deletes an existing host', async () => {

@@ -17,6 +17,7 @@ import { Item } from '../Item/Item'
 
 interface AnalyticsItemProps {
   variant: ComponentProps<typeof Item>['variant']
+  fromJourneyList?: boolean
 }
 
 export const GET_JOURNEY_PLAUSIBLE_VISITORS = gql`
@@ -33,7 +34,10 @@ export const GET_JOURNEY_PLAUSIBLE_VISITORS = gql`
   }
 `
 
-export function AnalyticsItem({ variant }: AnalyticsItemProps): ReactElement {
+export function AnalyticsItem({
+  variant,
+  fromJourneyList = false
+}: AnalyticsItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
 
@@ -53,14 +57,24 @@ export function AnalyticsItem({ variant }: AnalyticsItemProps): ReactElement {
       })
   }, [journey?.id, loadPlausibleVisitors])
 
+  const linkHref = fromJourneyList
+    ? `/journeys/${journey?.id}/reports?from=journey-list`
+    : `/journeys/${journey?.id}/reports`
+
+  const buttonProps = fromJourneyList
+    ? {
+        sx: {
+          minWidth: 30,
+          '& > .MuiButton-startIcon > .MuiSvgIcon-root': {
+            fontSize: '20px'
+          }
+        }
+      }
+    : {}
+
   return (
     <Box data-testid="AnalyticsItem">
-      <NextLink
-        href={`/journeys/${journey?.id}/reports`}
-        passHref
-        legacyBehavior
-        prefetch={false}
-      >
+      <NextLink href={linkHref} passHref legacyBehavior prefetch={false}>
         <Item
           variant={variant}
           label={t('Analytics')}
@@ -69,6 +83,7 @@ export function AnalyticsItem({ variant }: AnalyticsItemProps): ReactElement {
           countLabel={t('{{count}} visitors', {
             count: data?.journeyAggregateVisitors?.visitors?.value ?? 0
           })}
+          ButtonProps={buttonProps}
         />
       </NextLink>
     </Box>

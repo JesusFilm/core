@@ -74,7 +74,7 @@ jobs:
           - app: journeys-admin
             github-ref-name: stage
             github-event-name: push
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: blacksmith-4vcpu-ubuntu-2204
     outputs:
       url: ${{ steps.deployment-url.outputs.deployment-url }}
     permissions:
@@ -107,6 +107,11 @@ jobs:
         with:
           key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
           path: ./node_modules
+      - name: Mount Next.js Cache for ${{ matrix.app }}
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-${{ matrix.app }}-nextjs-cache
+          path: apps/${{ matrix.app }}/.next
       - name: Mount playwright cache
         uses: useblacksmith/stickydisk@v1
         with:
@@ -178,11 +183,19 @@ jobs:
         run: npx nx run ${{ matrix.app }}-e2e:e2e
         env:
           DEPLOYMENT_URL: ${{ steps.deployment-url.outputs.deployment-url }}
-          PLAYWRIGHT_EMAIL: ${{ secrets.PLAYWRIGHT_EMAIL }}
-          PLAYWRIGHT_PASSWORD: ${{ secrets.PLAYWRIGHT_PASSWORD }}
           PLAYWRIGHT_USER: ${{ secrets.PLAYWRIGHT_USER }}
           PLAYWRIGHT_TEAM_NAME: ${{ secrets.PLAYWRIGHT_TEAM_NAME }}
           EXAMPLE_EMAIL_TOKEN: ${{ secrets.EXAMPLE_EMAIL_TOKEN }}
+          PLAYWRIGHT_EMAIL: ${{ secrets.PLAYWRIGHT_EMAIL }}
+          PLAYWRIGHT_PASSWORD: ${{ secrets.PLAYWRIGHT_PASSWORD }}
+          PLAYWRIGHT_EMAIL2: ${{ secrets.PLAYWRIGHT_EMAIL2 }}
+          PLAYWRIGHT_PASSWORD2: ${{ secrets.PLAYWRIGHT_PASSWORD2 }}
+          PLAYWRIGHT_EMAIL3: ${{ secrets.PLAYWRIGHT_EMAIL3 }}
+          PLAYWRIGHT_PASSWORD3: ${{ secrets.PLAYWRIGHT_PASSWORD3 }}
+          PLAYWRIGHT_EMAIL4: ${{ secrets.PLAYWRIGHT_EMAIL4 }}
+          PLAYWRIGHT_PASSWORD4: ${{ secrets.PLAYWRIGHT_PASSWORD4 }}
+          PLAYWRIGHT_EMAIL5: ${{ secrets.PLAYWRIGHT_EMAIL5 }}
+          PLAYWRIGHT_PASSWORD5: ${{ secrets.PLAYWRIGHT_PASSWORD5 }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -258,11 +271,11 @@ jobs:
         with:
           key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
           path: ./node_modules
-      - name: Mount next cache
+      - name: Mount Next.js Cache for ${{ matrix.app }}
         uses: useblacksmith/stickydisk@v1
         with:
-          key: ${{ github.repository }}-${{ matrix.app }}-next-cache
-          path: ./apps/${{ matrix.app }}/.next
+          key: ${{ github.repository }}-${{ matrix.app }}-nextjs-cache
+          path: apps/${{ matrix.app }}/.next
       - name: NPM Install
         run: npm install --silent
       - uses: nrwl/nx-set-shas@v4

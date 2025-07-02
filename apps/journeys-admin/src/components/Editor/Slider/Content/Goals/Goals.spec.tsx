@@ -105,7 +105,8 @@ const blocks: Blocks[] = [
     coverBlockId: '9caf671e-713e-492d-ac8a-b33e71fc5e18',
     themeMode: null,
     themeName: null,
-    fullscreen: false
+    fullscreen: false,
+    backdropBlur: null
   }
 ]
 
@@ -135,6 +136,7 @@ describe('Goals', () => {
     description: 'my cool journey',
     status: JourneyStatus.draft,
     createdAt: '2021-11-19T12:34:56.647Z',
+    updatedAt: '2021-11-19T12:34:56.647Z',
     publishedAt: null,
     blocks: [],
     primaryImageBlock: null,

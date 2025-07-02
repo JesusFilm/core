@@ -336,6 +336,7 @@ export function CardForm(): ReactElement {
       themeMode: ThemeMode.dark,
       themeName: ThemeName.base,
       fullscreen: true,
+      backdropBlur: null,
       __typename: 'CardBlock'
     } satisfies CardBlock
 
@@ -388,7 +389,7 @@ export function CardForm(): ReactElement {
               variant: buttonBlock.buttonVariant,
               color: buttonBlock.buttonColor,
               size: buttonBlock.size,
-              submitEnabled: true
+              submitEnabled: buttonBlock.submitEnabled
             },
             buttonId: buttonBlock.id,
             buttonUpdateInput: {

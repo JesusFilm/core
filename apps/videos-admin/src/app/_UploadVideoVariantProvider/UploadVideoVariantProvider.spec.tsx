@@ -87,7 +87,7 @@ const createVideoVariantMock = {
         videoId: 'video-id',
         edition: 'base',
         languageId: 'language-id',
-        slug: 'video-id/en',
+        slug: 'video-slug/en',
         downloadable: true,
         published: true,
         muxVideoId: 'mux-id',
@@ -100,10 +100,11 @@ const createVideoVariantMock = {
       videoVariantCreate: {
         id: 'language-id_video-id',
         videoId: 'video-id',
-        slug: 'video-id/en',
+        slug: 'video-slug/en',
         hls: 'https://stream.mux.com/playback-id.m3u8',
         language: {
           id: 'language-id',
+          slug: 'en',
           name: {
             value: 'English',
             primary: true
@@ -167,7 +168,7 @@ const createVideoVariantErrorMock = {
         videoId: 'video-id',
         edition: 'base',
         languageId: 'language-id',
-        slug: 'video-id/en',
+        slug: 'video-slug/en',
         downloadable: true,
         published: true,
         muxVideoId: 'mux-id',
@@ -190,7 +191,8 @@ const initialStateForTests = {
   languageSlug: null,
   videoId: null,
   published: null,
-  onComplete: undefined
+  onComplete: undefined,
+  videoSlug: null
 }
 
 const mockEnqueueSnackbar = jest.fn()
@@ -258,7 +260,8 @@ describe('UploadVideoVariantContext', () => {
           'language-id',
           'en',
           'base',
-          true
+          true,
+          'video-slug'
         )
       })
 
@@ -333,7 +336,8 @@ describe('UploadVideoVariantContext', () => {
           'language-id',
           'en',
           'base',
-          true
+          true,
+          'video-slug'
         )
       })
 
@@ -374,7 +378,8 @@ describe('UploadVideoVariantContext', () => {
           'language-id',
           'en',
           'base',
-          true
+          true,
+          'video-slug'
         )
       })
 
@@ -412,7 +417,8 @@ describe('UploadVideoVariantContext', () => {
           'language-id',
           'en',
           'base',
-          true
+          true,
+          'video-slug'
         )
       })
 
@@ -428,7 +434,8 @@ describe('UploadVideoVariantContext', () => {
           onComplete: undefined,
           published: null,
           uploadProgress: 0,
-          videoId: null
+          videoId: null,
+          videoSlug: null
         })
       })
 
@@ -477,7 +484,8 @@ describe('UploadVideoVariantContext', () => {
           'language-id',
           'en',
           'base',
-          true
+          true,
+          'video-slug'
         )
       })
 
@@ -541,7 +549,8 @@ describe('UploadVideoVariantContext', () => {
           'language-id',
           'en',
           'base',
-          true
+          true,
+          'video-slug'
         )
       })
 

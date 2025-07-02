@@ -42,6 +42,7 @@ const defaultNode = {
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: []
       }
     ],
@@ -64,6 +65,7 @@ const defaultNode = {
             themeMode: null,
             themeName: null,
             fullscreen: false,
+            backdropBlur: null,
             children: [
               {
                 __typename: 'TypographyBlock',
@@ -140,6 +142,7 @@ const videoNode = {
         themeMode: 'dark',
         themeName: 'base',
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             __typename: 'VideoBlock',
@@ -202,6 +205,7 @@ const videoNode = {
             themeMode: 'dark',
             themeName: 'base',
             fullscreen: false,
+            backdropBlur: null,
             children: []
           }
         ]
@@ -224,6 +228,7 @@ const videoNode = {
             themeMode: 'dark',
             themeName: 'base',
             fullscreen: false,
+            backdropBlur: null,
             children: [
               {
                 __typename: 'VideoBlock',
@@ -294,6 +299,7 @@ const typographyNode = {
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             __typename: 'TypographyBlock',
@@ -362,6 +368,7 @@ const typographyNode = {
             themeMode: null,
             themeName: null,
             fullscreen: false,
+            backdropBlur: null,
             children: [
               {
                 __typename: 'TypographyBlock',
@@ -438,6 +445,7 @@ const textResponseNode = {
         themeMode: 'dark',
         themeName: 'base',
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             __typename: 'TextResponseBlock',
@@ -485,6 +493,7 @@ const textResponseNode = {
             themeMode: 'dark',
             themeName: 'base',
             fullscreen: false,
+            backdropBlur: null,
             children: [
               {
                 __typename: 'TextResponseBlock',
@@ -540,6 +549,7 @@ const buttonNode = {
         themeMode: 'dark',
         themeName: 'base',
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             __typename: 'ButtonBlock',
@@ -598,6 +608,7 @@ const buttonNode = {
             themeMode: 'dark',
             themeName: 'base',
             fullscreen: false,
+            backdropBlur: null,
             children: [
               {
                 __typename: 'ButtonBlock',
@@ -664,6 +675,7 @@ const signUpNode = {
         themeMode: 'dark',
         themeName: 'base',
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             __typename: 'SignUpBlock',
@@ -708,6 +720,7 @@ const signUpNode = {
             themeMode: 'dark',
             themeName: 'base',
             fullscreen: false,
+            backdropBlur: null,
             children: [
               {
                 __typename: 'SignUpBlock',

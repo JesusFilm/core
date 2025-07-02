@@ -1,5 +1,4 @@
 import { Meta, StoryObj } from '@storybook/react'
-import noop from 'lodash/noop'
 import { ComponentProps } from 'react'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
@@ -43,8 +42,6 @@ const Template: StoryObj<
       <TemplateViewHeader
         isPublisher={args.isPublisher}
         authUser={args.authUser}
-        openTeamDialog={false}
-        setOpenTeamDialog={noop}
       />
     </JourneyProvider>
   )

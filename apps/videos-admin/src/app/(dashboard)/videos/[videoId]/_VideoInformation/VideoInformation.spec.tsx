@@ -1,367 +1,207 @@
+import { NetworkStatus, useSuspenseQuery } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 
-import {
-  CREATE_VIDEO_TITLE,
-  UPDATE_VIDEO_INFORMATION,
-  VideoInformation
-} from './VideoInformation'
+import { VideoInformation } from './VideoInformation'
 
-// Mock Next's navigation hooks
-const mockPush = jest.fn()
-jest.mock('next/navigation', () => ({
-  useRouter: () => ({
-    push: mockPush
-  })
-}))
-
-// Mock the notistack hook
-const mockEnqueueSnackbar = jest.fn()
-jest.mock('notistack', () => ({
-  useSnackbar: () => ({
-    enqueueSnackbar: mockEnqueueSnackbar
-  })
-}))
-
-// Mock the useSuspenseQuery hook
+// Mock useSuspenseQuery hook
 jest.mock('@apollo/client', () => {
-  const originalModule = jest.requireActual('@apollo/client')
+  const original = jest.requireActual('@apollo/client')
   return {
-    ...originalModule,
-    useSuspenseQuery: jest.fn((query, options) => {
-      // Return mock data based on query variables
-      if (options.variables.id === '1_jf-0-0') {
-        // Check if we need to return empty title array
-        if (query.definitions[0].__id === 'EmptyTitleTest') {
-          return {
-            data: {
-              adminVideo: {
-                id: '1_jf-0-0',
-                label: 'featureFilm',
-                published: true,
-                slug: 'jesus',
-                title: []
-              }
-            }
-          }
-        }
-
-        // Return default data
-        return {
-          data: {
-            adminVideo: {
-              id: '1_jf-0-0',
-              label: 'featureFilm',
-              published: true,
-              slug: 'jesus',
-              title: [
-                {
-                  id: 'bb35d6a2-682e-4909-9218-4fbf5f4cd5b8',
-                  value: 'JESUS'
-                }
-              ]
-            }
-          }
-        }
-      }
-      return originalModule.useSuspenseQuery(query, options)
-    })
+    ...original,
+    useSuspenseQuery: jest.fn()
   }
 })
 
-const mockVideoId = '1_jf-0-0'
+// Mock notistack
+const mockEnqueueSnackbar = jest.fn()
+jest.mock('notistack', () => ({
+  useSnackbar: () => ({ enqueueSnackbar: mockEnqueueSnackbar })
+}))
 
-const mockCreateVideoTitle = {
-  request: {
-    query: CREATE_VIDEO_TITLE,
-    variables: {
-      input: {
-        videoId: '1_jf-0-0',
-        value: 'new title',
-        primary: true,
-        languageId: '529'
-      }
+// Mock next/navigation
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: jest.fn()
+  })
+}))
+
+const mockVideoId = 'test-video-id'
+
+const mockVideoData = {
+  adminVideo: {
+    id: mockVideoId,
+    label: 'featureFilm',
+    published: false,
+    slug: 'test-video',
+    primaryLanguageId: '529',
+    keywords: [],
+    title: [{ id: 'title-id', value: 'Test Video Title' }],
+    snippet: [{ id: 'snippet-id', value: 'Test video snippet' }],
+    description: [{ id: 'desc-id', value: 'Test video description' }],
+    imageAlt: [{ id: 'alt-id', value: 'Test image alt text' }],
+    images: [{ id: 'banner-image-id', aspectRatio: 'banner' }],
+    variant: {
+      id: 'variant-id',
+      slug: 'test-video',
+      hls: 'https://example.com/video.m3u8',
+      dash: null,
+      muxVideo: null,
+      language: { id: '529', slug: 'en' }
     }
-  },
-  result: jest.fn(() => ({
-    data: {
-      videoTitleCreate: {
-        id: 'bb35d6a2-682e-4909-9218-4fbf5f4cd5b8',
-        value: 'new title'
-      }
-    }
-  }))
+  }
 }
 
 describe('VideoInformation', () => {
-  const mockUpdateVideoInformation = {
-    request: {
-      query: UPDATE_VIDEO_INFORMATION,
-      variables: {
-        titleInput: {
-          id: 'bb35d6a2-682e-4909-9218-4fbf5f4cd5b8',
-          value: 'new title'
-        },
-        infoInput: {
-          id: '1_jf-0-0',
-          slug: 'jesus',
-          published: true,
-          label: 'featureFilm'
-        }
-      }
-    },
-    result: jest.fn(() => ({
-      data: {
-        videoTitleUpdate: {
-          id: 'bb35d6a2-682e-4909-9218-4fbf5f4cd5b8',
-          value: 'new title'
-        },
-        videoUpdate: {
-          id: '1_jf-0-0',
-          slug: 'jesus',
-          published: true,
-          label: 'featureFilm'
-        }
-      }
-    }))
-  }
-
   beforeEach(() => {
     jest.clearAllMocks()
-
-    // Reset useSuspenseQuery mock implementation for each test
-    const apolloModule = require('@apollo/client')
-    apolloModule.useSuspenseQuery.mockImplementation((query, options) => {
-      if (options.variables.id === '1_jf-0-0') {
-        return {
-          data: {
-            adminVideo: {
-              id: '1_jf-0-0',
-              label: 'featureFilm',
-              published: true,
-              slug: 'jesus',
-              title: [
-                {
-                  id: 'bb35d6a2-682e-4909-9218-4fbf5f4cd5b8',
-                  value: 'JESUS'
-                }
-              ]
-            }
-          }
-        }
-      }
+    // Default mock implementation for useSuspenseQuery
+    const mockedUseSuspenseQuery = useSuspenseQuery as jest.MockedFunction<
+      typeof useSuspenseQuery
+    >
+    mockedUseSuspenseQuery.mockReturnValue({
+      data: mockVideoData,
+      fetchMore: jest.fn(),
+      subscribeToMore: jest.fn(),
+      client: {} as any,
+      error: undefined,
+      networkStatus: NetworkStatus.ready,
+      refetch: jest.fn()
     })
   })
 
-  it('should show disabled save button if values not changed', async () => {
+  it('should render video information form', async () => {
     render(
-      <MockedProvider mocks={[mockUpdateVideoInformation]}>
+      <MockedProvider>
         <VideoInformation videoId={mockVideoId} />
       </MockedProvider>
     )
-
-    expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
-  })
-
-  it('should enable save button if title field has been changed', async () => {
-    render(
-      <MockedProvider mocks={[mockUpdateVideoInformation]}>
-        <VideoInformation videoId={mockVideoId} />
-      </MockedProvider>
-    )
-
-    expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
-    expect(
-      screen.queryByRole('button', { name: 'Cancel' })
-    ).not.toBeInTheDocument()
-    expect(screen.getByRole('textbox', { name: 'Title' })).toHaveValue('JESUS')
-
-    fireEvent.change(screen.getByRole('textbox', { name: 'Title' }), {
-      target: { value: 'Hello' }
-    })
-    expect(screen.getByRole('textbox', { name: 'Title' })).toHaveValue('Hello')
-    expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
-    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
-  })
-
-  it('should enable save button if status has been changed', async () => {
-    render(
-      <MockedProvider mocks={[mockUpdateVideoInformation]}>
-        <VideoInformation videoId={mockVideoId} />
-      </MockedProvider>
-    )
-
-    expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
-    expect(
-      screen.queryByRole('button', { name: 'Cancel' })
-    ).not.toBeInTheDocument()
-
-    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Status' }))
-    fireEvent.click(screen.getByRole('option', { name: 'Draft' }))
-    expect(screen.getByRole('combobox', { name: 'Status' })).toHaveTextContent(
-      'Draft'
-    )
-    expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
-    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
-  })
-
-  it('should enable form buttons if label has been changed', async () => {
-    render(
-      <MockedProvider mocks={[mockUpdateVideoInformation]}>
-        <VideoInformation videoId={mockVideoId} />
-      </MockedProvider>
-    )
-
-    expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
-    expect(
-      screen.queryByRole('button', { name: 'Cancel' })
-    ).not.toBeInTheDocument()
-
-    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Label' }))
-    fireEvent.click(screen.getByRole('option', { name: 'Short Film' }))
-    expect(screen.getByRole('combobox', { name: 'Label' })).toHaveTextContent(
-      'Short Film'
-    )
-    expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
-    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
-  })
-
-  it('should create video title if none exists', async () => {
-    // Update the mock for this specific test
-    const apolloModule = require('@apollo/client')
-    apolloModule.useSuspenseQuery.mockImplementation((query, options) => {
-      if (options.variables.id === '1_jf-0-0') {
-        return {
-          data: {
-            adminVideo: {
-              id: '1_jf-0-0',
-              label: 'featureFilm',
-              published: true,
-              slug: 'jesus',
-              title: []
-            }
-          }
-        }
-      }
-    })
-
-    render(
-      <MockedProvider
-        mocks={[mockCreateVideoTitle, mockUpdateVideoInformation]}
-      >
-        <VideoInformation videoId={mockVideoId} />
-      </MockedProvider>
-    )
-
-    const user = userEvent.setup()
-
-    const textbox = screen.getByRole('textbox', { name: 'Title' })
-    expect(textbox).toHaveValue('')
-
-    await user.type(textbox, 'new title')
-    await user.click(screen.getByRole('button', { name: 'Save' }))
 
     await waitFor(() => {
-      expect(mockCreateVideoTitle.result).toHaveBeenCalled()
+      expect(screen.getByLabelText('Title')).toBeInTheDocument()
+      expect(screen.getByLabelText('Video URL')).toBeInTheDocument()
+      expect(screen.getByLabelText('Status')).toBeInTheDocument()
+      expect(screen.getByLabelText('Label')).toBeInTheDocument()
     })
-    expect(mockUpdateVideoInformation.result).toHaveBeenCalled()
 
-    // Verify the router was called with the appropriate parameters during form submission
-    expect(mockPush).toHaveBeenCalledWith('?update=information', {
-      scroll: false
-    })
-    expect(mockPush).toHaveBeenLastCalledWith('?', { scroll: false })
+    // Check that form has the correct values
+    expect(screen.getByDisplayValue('Test Video Title')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('test-video')).toBeInTheDocument()
   })
 
-  it('should update video information on submit', async () => {
+  it('should show validation warnings for incomplete video when trying to publish', async () => {
+    // Mock incomplete video data
+    const incompleteVideoData = {
+      adminVideo: {
+        ...mockVideoData.adminVideo,
+        snippet: [], // Missing snippet
+        description: [], // Missing description
+        imageAlt: [], // Missing image alt
+        images: [], // Missing images
+        variant: null // Missing variant
+      }
+    }
+
+    const mockedUseSuspenseQuery = useSuspenseQuery as jest.MockedFunction<
+      typeof useSuspenseQuery
+    >
+    mockedUseSuspenseQuery.mockReturnValue({
+      data: incompleteVideoData,
+      fetchMore: jest.fn(),
+      subscribeToMore: jest.fn(),
+      client: {} as any,
+      error: undefined,
+      networkStatus: NetworkStatus.ready,
+      refetch: jest.fn()
+    })
+
     render(
-      <MockedProvider mocks={[mockUpdateVideoInformation]}>
+      <MockedProvider>
         <VideoInformation videoId={mockVideoId} />
       </MockedProvider>
     )
 
-    expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
-    expect(screen.getByRole('textbox', { name: 'Title' })).toHaveValue('JESUS')
-
-    fireEvent.change(screen.getByRole('textbox', { name: 'Title' }), {
-      target: { value: 'new title' }
+    await waitFor(() => {
+      expect(screen.getByLabelText('Status')).toBeInTheDocument()
     })
-    expect(screen.getByRole('textbox', { name: 'Title' })).toHaveValue(
-      'new title'
-    )
-    expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
-    fireEvent.click(screen.getByRole('button', { name: 'Save' }))
-    await waitFor(() =>
-      expect(mockUpdateVideoInformation.result).toHaveBeenCalled()
-    )
 
-    // Verify router was called correctly
-    expect(mockPush).toHaveBeenCalledWith('?update=information', {
-      scroll: false
+    // Change status to published to trigger validation
+    const statusSelect = screen.getByLabelText('Status')
+    fireEvent.mouseDown(statusSelect)
+
+    await waitFor(() => {
+      const publishedOption = screen.getByText('Published')
+      fireEvent.click(publishedOption)
     })
-    expect(mockPush).toHaveBeenLastCalledWith('?', { scroll: false })
 
-    // Verify snackbar was called on success
-    expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
-      'Successfully updated video information',
-      { variant: 'success' }
-    )
+    // Should show validation warnings
+    await waitFor(() => {
+      expect(screen.getByText('Missing Required Fields')).toBeInTheDocument()
+      expect(screen.getByText('Short Description')).toBeInTheDocument()
+      expect(screen.getByText('Description')).toBeInTheDocument()
+      expect(screen.getByText('Image Alt Text')).toBeInTheDocument()
+      expect(screen.getByText('Banner Image')).toBeInTheDocument()
+      expect(screen.getByText('Published Video Content')).toBeInTheDocument()
+    })
+
+    // Save button should be disabled
+    const saveButton = screen.getByRole('button', { name: /save/i })
+    expect(saveButton).toBeDisabled()
   })
 
-  it('should require title field', async () => {
+  it('should not require video content for collection videos', async () => {
+    // Mock collection video data
+    const collectionVideoData = {
+      adminVideo: {
+        ...mockVideoData.adminVideo,
+        label: 'collection',
+        snippet: [], // Missing snippet
+        description: [], // Missing description
+        imageAlt: [], // Missing image alt
+        images: [], // Missing images
+        variant: null // Collections don't need variants
+      }
+    }
+
+    const mockedUseSuspenseQuery = useSuspenseQuery as jest.MockedFunction<
+      typeof useSuspenseQuery
+    >
+    mockedUseSuspenseQuery.mockReturnValue({
+      data: collectionVideoData,
+      fetchMore: jest.fn(),
+      subscribeToMore: jest.fn(),
+      client: {} as any,
+      error: undefined,
+      networkStatus: NetworkStatus.ready,
+      refetch: jest.fn()
+    })
+
     render(
-      <MockedProvider mocks={[mockUpdateVideoInformation]}>
+      <MockedProvider>
         <VideoInformation videoId={mockVideoId} />
       </MockedProvider>
     )
 
-    expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
-    expect(screen.getByRole('textbox', { name: 'Title' })).toHaveValue('JESUS')
-
-    fireEvent.change(screen.getByRole('textbox', { name: 'Title' }), {
-      target: { value: '' }
+    await waitFor(() => {
+      expect(screen.getByLabelText('Status')).toBeInTheDocument()
     })
-    await waitFor(() =>
-      expect(screen.getByText('Title is required')).toBeInTheDocument()
-    )
-    expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
-  })
 
-  it('should reset form when cancel button is clicked', async () => {
-    render(
-      <MockedProvider mocks={[mockUpdateVideoInformation]}>
-        <VideoInformation videoId={mockVideoId} />
-      </MockedProvider>
-    )
+    // Change status to published
+    const statusSelect = screen.getByLabelText('Status')
+    fireEvent.mouseDown(statusSelect)
 
-    const user = userEvent.setup()
+    await waitFor(() => {
+      const publishedOption = screen.getByText('Published')
+      fireEvent.click(publishedOption)
+    })
 
-    const title = screen.getByRole('textbox', { name: 'Title' })
-    const status = screen.getByRole('combobox', { name: 'Status' })
-    const label = screen.getByRole('combobox', { name: 'Label' })
-
-    expect(title).toHaveValue('JESUS')
-    expect(status).toHaveTextContent('Published')
-    expect(label).toHaveTextContent('Feature Film')
-
-    await user.clear(title)
-    await user.type(title, 'Title')
-
-    await user.click(status)
-    await user.click(screen.getByRole('option', { name: 'Draft' }))
-
-    await user.click(label)
-    await user.click(screen.getByRole('option', { name: 'Short Film' }))
-
-    expect(title).toHaveValue('Title')
-    expect(status).toHaveTextContent('Draft')
-    expect(label).toHaveTextContent('Short Film')
-
-    await user.click(screen.getByRole('button', { name: 'Cancel' }))
-
-    expect(title).toHaveValue('JESUS')
-    expect(status).toHaveTextContent('Published')
-    expect(label).toHaveTextContent('Feature Film')
+    // Should show some validation warnings but NOT video content
+    await waitFor(() => {
+      expect(screen.getByText('Missing Required Fields')).toBeInTheDocument()
+      // Should not show "Published Video Content" requirement for collections
+      expect(
+        screen.queryByText('Published Video Content')
+      ).not.toBeInTheDocument()
+    })
   })
 })

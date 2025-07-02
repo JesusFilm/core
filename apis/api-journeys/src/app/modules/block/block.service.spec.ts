@@ -209,7 +209,8 @@ describe('BlockService', () => {
               'action'
             ),
             typename: 'CardBlock',
-            journey: { connect: { id: journey.id } }
+            journey: { connect: { id: journey.id } },
+            settings: {}
           }
         })
       ).toEqual(blockResponse)
