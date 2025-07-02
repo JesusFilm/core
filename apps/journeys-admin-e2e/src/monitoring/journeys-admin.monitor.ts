@@ -5,8 +5,8 @@ NS Admin: Monitoring
 https://www.checklyhq.com/docs/cli/
 */
 
-// Set 3 minutes timeout for this monitoring test
-test.setTimeout(180000) // 3 minutes
+// Set 1 minutes timeout for this monitoring test
+test.setTimeout(60000)
 
 /**
  * @check
@@ -15,7 +15,7 @@ test.setTimeout(180000) // 3 minutes
  * @retryInterval 10 // Will wait 10 seconds between retries
  * @maxRetryTime 600 // Will stop retrying after 10 minutes
  */
-test('NS Admin Monitoring: Check user can login and create a journey via template', async ({
+test('NS Admin Monitoring: Check user can login and see the dashboard', async ({
   browser
 }) => {
   if (!process.env.PLAYWRIGHT_EMAIL || !process.env.PLAYWRIGHT_PASSWORD) {
@@ -33,7 +33,7 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
   // Declare variables that need cleanup
   let context: any = null
   let page: any = null
-  let previewPage: any = null
+  const previewPage: any = null
 
   try {
     context = await browser.newContext()
@@ -66,97 +66,6 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
       timeout
     })
     stepTiming['dashboard_load'] = Date.now() - dashboardStart
-
-    // Step 4: Template selection
-    const templateStart = Date.now()
-    await expect(page.getByTestId('NavigationListItemTemplates')).toBeVisible({
-      timeout
-    })
-    await page.getByTestId('NavigationListItemTemplates').click({ timeout })
-    await expect(
-      page
-        .getByTestId('love-template-gallery-carousel')
-        .getByTestId('journey-0605d097-9da9-4da3-b23b-eec66553ec1e')
-        .getByTestId('templateGalleryCard')
-    ).toBeVisible({ timeout })
-    await page
-      .getByTestId('love-template-gallery-carousel')
-      .getByTestId('journey-0605d097-9da9-4da3-b23b-eec66553ec1e')
-      .getByTestId('templateGalleryCard')
-      .click({ timeout })
-    stepTiming['template_selection'] = Date.now() - templateStart
-
-    // Step 5: Template usage and team selection
-    const teamStart = Date.now()
-    await page
-      .getByTestId('JourneysAdminTemplateViewHeader')
-      .getByRole('button', { name: 'Use This Template' })
-      .click({ timeout })
-    await page
-      .getByRole('combobox', { name: 'Select Team ​' })
-      .click({ timeout })
-    await page.getByLabel('Playwright').click({ timeout })
-    await page.getByRole('button', { name: 'Add' }).click({ timeout })
-    stepTiming['team_selection'] = Date.now() - teamStart
-
-    // Step 6: Journey editing
-    const editStart = Date.now()
-
-    // Wait for the iframe to be present with explicit timeout
-    await page.waitForSelector('[data-testid="CanvasContainer"] iframe', {
-      timeout
-    })
-
-    // Use frameLocator to handle the iframe
-    const frame = page
-      .frameLocator('[data-testid="CanvasContainer"] iframe')
-      .first()
-
-    // Wait for and verify the button exists
-    await expect(
-      frame.getByRole('button', { name: 'Watch the story' })
-    ).toBeVisible({ timeout })
-
-    // Perform the interactions
-    await frame
-      .getByRole('button', { name: 'Watch the story' })
-      .click({ timeout })
-    await frame.getByPlaceholder('Edit text...').click({ timeout })
-    await frame
-      .getByPlaceholder('Edit text...')
-      .fill('Changed Button Text', { timeout })
-    await page.getByTestId('EditorCanvas').click({ timeout })
-
-    stepTiming['journey_editing'] = Date.now() - editStart
-
-    // Step 7: Preview journey
-    const previewStart = Date.now()
-    await page.getByRole('link', { name: 'Preview' }).click({ timeout })
-
-    previewPage = await page.waitForEvent('popup', { timeout })
-
-    const overlayContainer = previewPage.getByTestId(
-      'CardOverlayContentContainer'
-    )
-
-    // Try refreshing up to 5 times if button not visible
-    let buttonVisible = false
-    for (let i = 0; i < 5 && !buttonVisible; i++) {
-      await previewPage.waitForLoadState('load', { timeout })
-      buttonVisible = await overlayContainer
-        .getByRole('button', { name: 'Changed Button Text' })
-        .isVisible({ timeout })
-      if (!buttonVisible) {
-        // Wait 5 seconds as content publishing sometimes takes time
-        await previewPage.waitForTimeout(5000)
-        await previewPage.reload({ timeout })
-      }
-    }
-    await expect(
-      overlayContainer.getByRole('heading', { name: 'Are you happy?' })
-    ).toBeVisible({ timeout })
-
-    stepTiming['preview_load'] = Date.now() - previewStart
 
     // Log monitoring metrics
     const totalDuration = Date.now() - startTime

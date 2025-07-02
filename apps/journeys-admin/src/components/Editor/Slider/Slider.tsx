@@ -2,8 +2,9 @@ import { gql, useMutation, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Collapse from '@mui/material/Collapse'
 import IconButton from '@mui/material/IconButton'
-import { darken, styled, useTheme } from '@mui/material/styles'
+import { darken, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import Zoom from '@mui/material/Zoom'
 import { useTranslation } from 'next-i18next'
 import { type ReactElement, useEffect, useRef, useState } from 'react'
@@ -46,13 +47,9 @@ export const GET_JOURNEY_FLOW_BACK_BUTTON_CLICKED = gql`
   }
 `
 
-const StyledSwiper = styled(Swiper)(() => ({}))
-const StyledSwiperSlide = styled(SwiperSlide)(({ theme }) => ({
-  boxSizing: 'border-box'
-}))
-
 export function Slider(): ReactElement {
   const { breakpoints } = useTheme()
+  const isMdUp = useMediaQuery(breakpoints.up('md'))
   const swiperRef = useRef<SwiperRef>(null)
   const [showBackButtonHelp, setShowBackButtonHelp] = useState<
     boolean | undefined
@@ -141,7 +138,7 @@ export function Slider(): ReactElement {
   }
 
   return (
-    <StyledSwiper
+    <Swiper
       data-testid="Slider"
       ref={swiperRef}
       grabCursor
@@ -154,7 +151,7 @@ export function Slider(): ReactElement {
         })
       }}
       onTransitionEnd={resetCanvasFocus}
-      sx={{
+      style={{
         height: `calc(100svh - ${EDIT_TOOLBAR_HEIGHT}px)`
       }}
     >
@@ -243,15 +240,15 @@ export function Slider(): ReactElement {
           </Collapse>
         </IconButton>
       </Box>
-      <StyledSwiperSlide
+      <SwiperSlide
         className="swiper-no-swiping"
-        sx={{
-          p: { xs: 0, md: 4 },
-          width: { xs: '100%', md: 'calc(100% - 408px)' },
-          height: {
-            xs: `calc(100svh - ${EDIT_TOOLBAR_HEIGHT}px - 50px)`,
-            md: '100%'
-          }
+        style={{
+          padding: isMdUp ? '32px' : '0',
+          width: isMdUp ? 'calc(100% - 408px)' : '100%',
+          height: isMdUp
+            ? '100%'
+            : `calc(100svh - ${EDIT_TOOLBAR_HEIGHT}px - 50px)`,
+          boxSizing: 'border-box'
         }}
       >
         <Box
@@ -271,20 +268,20 @@ export function Slider(): ReactElement {
         >
           <JourneyFlow />
         </Box>
-      </StyledSwiperSlide>
-      <StyledSwiperSlide
-        sx={{
-          p: { xs: 0, md: 4 },
-          width: { xs: '100%', md: 'calc(100% - 120px - 360px)' },
-          height: {
-            xs: `calc(100svh - ${EDIT_TOOLBAR_HEIGHT}px - 100px)`,
-            md: '100%'
-          },
+      </SwiperSlide>
+      <SwiperSlide
+        style={{
+          padding: isMdUp ? '32px' : '0',
+          width: isMdUp ? 'calc(100% - 120px - 360px)' : '100%',
+          height: isMdUp
+            ? '100%'
+            : `calc(100svh - ${EDIT_TOOLBAR_HEIGHT}px - 100px)`,
           display: 'flex',
-          flexDirection: { xs: 'column', md: 'row' },
-          justifyContent: { md: 'space-between' },
+          flexDirection: isMdUp ? 'row' : 'column',
+          justifyContent: isMdUp ? 'space-between' : 'flex-start',
           position: 'relative',
-          pointerEvents: showAnalytics === true ? 'none' : 'auto'
+          pointerEvents: showAnalytics === true ? 'none' : 'auto',
+          boxSizing: 'border-box'
         }}
       >
         {/* slide bar (mobile bottom) */}
@@ -311,24 +308,20 @@ export function Slider(): ReactElement {
           </Zoom>
         </Box>
         <Content />
-      </StyledSwiperSlide>
-      <StyledSwiperSlide
-        sx={{
-          p: { xs: 0, md: 4 },
-          pb: { md: 0 },
-          width: (theme) => ({
-            xs: '100%',
-            md: DRAWER_WIDTH + Number.parseInt(theme.spacing(8)) // 328 DRAWER_WIDTH + 16px * 2 (padding L & R)
-          }),
-          height: {
-            xs: `calc(100svh - ${EDIT_TOOLBAR_HEIGHT}px - 50px)`,
-            md: '100%'
-          },
-          pointerEvents: showAnalytics === true ? 'none' : 'auto'
+      </SwiperSlide>
+      <SwiperSlide
+        style={{
+          padding: isMdUp ? '32px 32px 0 32px' : '0',
+          width: isMdUp ? `${DRAWER_WIDTH + 64}px` : '100%', // 328 DRAWER_WIDTH + 32px * 2 (padding L & R)
+          height: isMdUp
+            ? '100%'
+            : `calc(100svh - ${EDIT_TOOLBAR_HEIGHT}px - 50px)`,
+          pointerEvents: showAnalytics === true ? 'none' : 'auto',
+          boxSizing: 'border-box'
         }}
       >
         <Settings />
-      </StyledSwiperSlide>
-    </StyledSwiper>
+      </SwiperSlide>
+    </Swiper>
   )
 }

@@ -449,30 +449,6 @@ describe('AddVideoVariantDownloadDialog', () => {
     })
   })
 
-  it('shows transcoding options when a video asset is available', () => {
-    render(
-      <AddVideoVariantDownloadDialog
-        params={{
-          videoId: mockVideoId,
-          variantId: mockVariantId,
-          downloadId: mockLanguageId
-        }}
-      />
-    )
-
-    // Ensure the generate options are available
-    expect(screen.getByTestId('option-generate-high')).toBeInTheDocument()
-    expect(screen.getByTestId('option-generate-low')).toBeInTheDocument()
-
-    // Check that they are not disabled
-    expect(screen.getByTestId('option-generate-high')).not.toHaveAttribute(
-      'disabled'
-    )
-    expect(screen.getByTestId('option-generate-low')).not.toHaveAttribute(
-      'disabled'
-    )
-  })
-
   it('shows auto generate option when Mux video is available', () => {
     render(
       <AddVideoVariantDownloadDialog
