@@ -6,6 +6,7 @@ import { usePlausible } from 'next-plausible'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
+  ButtonAlignment,
   ButtonColor,
   ButtonSize,
   ButtonVariant,
@@ -99,6 +100,10 @@ const block: TreeBlock<ButtonFields> = {
   endIconId: null,
   action: null,
   submitEnabled: false,
+  settings: {
+    __typename: 'ButtonBlockSettings',
+    alignment: ButtonAlignment.justify
+  },
   children: []
 }
 
@@ -738,6 +743,59 @@ describe('Button', () => {
       },
       undefined
     )
+  })
+
+  it('should apply left alignment styles correctly', () => {
+    const leftAlignedButton = {
+      ...block,
+      settings: {
+        __typename: 'ButtonBlockSettings' as const,
+        alignment: ButtonAlignment.left
+      }
+    }
+
+    render(
+      <MockedProvider>
+        <Button {...leftAlignedButton} />
+      </MockedProvider>
+    )
+
+    const buttonContainer = screen.getByTestId(`JourneysButton-${block.id}`)
+    expect(buttonContainer).toHaveStyle({
+      display: 'flex',
+      justifyContent: 'flex-start'
+    })
+
+    const button = screen.getByRole('button')
+    expect(button).toHaveStyle({
+      width: 'fit-content',
+      maxWidth: '75%'
+    })
+  })
+
+  it('should default to justify alignment when no alignment is specified', () => {
+    const buttonWithoutAlignment = {
+      ...block,
+      settings: null
+    }
+
+    render(
+      <MockedProvider>
+        <Button {...buttonWithoutAlignment} />
+      </MockedProvider>
+    )
+
+    const buttonContainer = screen.getByTestId(`JourneysButton-${block.id}`)
+    expect(buttonContainer).toHaveStyle({
+      display: 'flex',
+      justifyContent: 'space-evenly'
+    })
+
+    const button = screen.getByRole('button')
+    expect(button).toHaveStyle({
+      width: '100%',
+      maxWidth: '100%'
+    })
   })
 
   describe('button label rendering', () => {
