@@ -98,20 +98,48 @@ export const Default = {
   }
 }
 
+const EllipsisJourneyDetailsComponent = (): ReactElement => {
+  return (
+    <Box width={400}>
+      <JourneyProvider
+        value={{
+          journey: {
+            ...defaultJourney,
+            title:
+              'Some extra long title where it will cause ellipsis to appear I hope this is long enough',
+            description:
+              'Some extra long description where it will cause ellipsis to appear I hope this is long enough'
+          },
+          variant: 'admin'
+        }}
+      >
+        <Box
+          sx={{
+            maxWidth: { xs: 220, sm: '100%' },
+            display: 'block',
+            textAlign: 'left',
+            overflow: 'hidden',
+            whiteSpace: { xs: 'unset', sm: 'nowrap' },
+            textOverflow: 'ellipsis',
+            borderRadius: '8px',
+            flexShrink: 1,
+            px: 0
+          }}
+        >
+          <JourneyDetails />
+        </Box>
+      </JourneyProvider>
+    </Box>
+  )
+}
+
 export const Ellipsis = {
-  ...Template,
+  render: () => <EllipsisJourneyDetailsComponent />,
   parameters: {
     apolloClient: {
       mocks: [getLanguagesMock]
     }
-  },
-  decorators: [
-    (Story: StoryFn<typeof JourneyDetails>) => (
-      <Box width={400}>
-        <Story />
-      </Box>
-    )
-  ]
+  }
 }
 
 export default JourneyDetailsStory

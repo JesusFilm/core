@@ -6,7 +6,10 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { Trans, useTranslation } from 'next-i18next'
 import type { MouseEvent, ReactElement } from 'react'
 
-import type { WrapperProps } from '@core/journeys/ui/BlockRenderer'
+import type {
+  WrapperProps,
+  WrappersProps
+} from '@core/journeys/ui/BlockRenderer'
 import { Card } from '@core/journeys/ui/Card'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
@@ -65,7 +68,10 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
         >
           <Card
             {...{ ...block, children: blocks }}
-            wrappers={children.props.wrappers}
+            wrappers={
+              (children as ReactElement<{ wrappers?: WrappersProps }>)?.props
+                ?.wrappers
+            }
           />
           {blocks.length === 0 && !lgUp && (
             <Stack

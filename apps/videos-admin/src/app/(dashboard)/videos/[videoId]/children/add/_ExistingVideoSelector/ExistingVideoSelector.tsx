@@ -9,7 +9,7 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { graphql } from 'gql.tada'
-import { useEffect, useRef, useState } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 
 const SEARCH_VIDEOS = graphql(`
   query SearchVideos($title: String!) {
@@ -70,7 +70,7 @@ const filter = createFilterOptions<VideoOption>()
 export function ExistingVideoSelector({
   onSelect,
   onCancel
-}: ExistingVideoSelectorProps): JSX.Element {
+}: ExistingVideoSelectorProps): ReactElement {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedVideo, setSelectedVideo] = useState<VideoOption | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
