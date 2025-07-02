@@ -72,7 +72,8 @@ const getMyMuxVideoMock = {
         id: 'mux-id',
         assetId: 'asset-id',
         playbackId: 'playback-id',
-        readyToStream: true
+        readyToStream: true,
+        duration: 120
       }
     }
   }
@@ -91,7 +92,9 @@ const createVideoVariantMock = {
         downloadable: true,
         published: true,
         muxVideoId: 'mux-id',
-        hls: 'https://stream.mux.com/playback-id.m3u8'
+        hls: 'https://stream.mux.com/playback-id.m3u8',
+        duration: 120,
+        lengthInMilliseconds: 120000
       }
     }
   },
@@ -172,7 +175,9 @@ const createVideoVariantErrorMock = {
         downloadable: true,
         published: true,
         muxVideoId: 'mux-id',
-        hls: 'https://stream.mux.com/playback-id.m3u8'
+        hls: 'https://stream.mux.com/playback-id.m3u8',
+        duration: 120,
+        lengthInMilliseconds: 120000
       }
     }
   },
