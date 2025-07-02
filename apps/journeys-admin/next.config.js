@@ -98,6 +98,13 @@ const nextConfig = {
     '@mui/x-tree-view',
     '@mui/x-charts'
   ],
+  outputFileTracingExcludes: {
+    '*': [
+      'node_modules/@swc/core-linux-x64-gnu',
+      'node_modules/@swc/core-linux-x64-musl',
+      'node_modules/esbuild-linux-64/bin'
+    ]
+  },
   experimental: {
     fallbackNodePolyfills: false
   }

@@ -141,7 +141,7 @@ describe('CardWrapper', () => {
         themeName: null,
         wrappers: {}
       },
-      undefined
+      {}
     )
   })
 
@@ -259,7 +259,7 @@ describe('CardWrapper', () => {
         themeName: null,
         wrappers: {}
       },
-      undefined
+      {}
     )
   })
 

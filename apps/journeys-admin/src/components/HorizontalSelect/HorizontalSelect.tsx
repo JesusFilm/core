@@ -56,48 +56,43 @@ export function HorizontalSelect({
         ...sx
       }}
     >
-      {Children.toArray(children).map((child) => {
-        if (!isValidElement(child)) return null
-
-        // Safely access child props with proper type checking
-        const childProps = (
-          child as ReactElement<{ id?: string; draggableId?: string }>
-        )?.props
-        const childId = childProps?.id ?? childProps?.draggableId
-
-        return (
-          <Box
-            key={childId}
-            sx={{
-              borderRadius: 2,
-              transition: '0.1s outline ease-out',
-              position: 'relative',
-              outline: (theme) =>
-                id === childId && isDragging !== true
-                  ? `2px solid ${theme.palette.primary.main} `
-                  : '2px solid transparent',
-              border: '3px solid transparent',
-              cursor: 'pointer'
-            }}
-            onClick={() => {
-              if (childId) {
-                onChange?.(childId)
-              }
-            }}
-          >
+      {Children.toArray(children).map(
+        (child) =>
+          isValidElement(child) && (
             <Box
+              key={child.props.id ?? child.props.draggableId}
+              // ref={id === child.props.draggableId ? selectedRef : undefined}
               sx={{
-                top: 0,
-                right: 0,
-                bottom: 0,
-                left: 0,
-                zIndex: 1
+                borderRadius: 2,
+                transition: '0.1s outline ease-out',
+                position: 'relative',
+                outline: (theme) =>
+                  id === (child.props.id ?? child.props.draggableId) &&
+                  isDragging !== true
+                    ? `2px solid ${theme.palette.primary.main} `
+                    : '2px solid transparent',
+                border: '3px solid transparent',
+                cursor: 'pointer'
               }}
-            />
-            {child}
-          </Box>
-        )
-      })}
+              onClick={() => {
+                onChange?.(
+                  (child.props.id ?? child.props.draggableId) as string
+                )
+              }}
+            >
+              <Box
+                sx={{
+                  top: 0,
+                  right: 0,
+                  bottom: 0,
+                  left: 0,
+                  zIndex: 1
+                }}
+              />
+              {child}
+            </Box>
+          )
+      )}
       {footer != null && (
         <Box
           sx={{

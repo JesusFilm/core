@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
 
-import type { WrapperProps, WrappersProps } from '../BlockRenderer'
+import type { WrapperProps } from '../BlockRenderer'
 import { Card } from '../Card'
 
 export function CardWrapper({ block, children }: WrapperProps): ReactElement {
@@ -20,16 +20,10 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
       }
       return child
     })
-
-    // Safely access children props with proper type checking
-    const childrenProps = (
-      children as ReactElement<{ wrappers?: WrappersProps }>
-    )?.props
-
     return (
       <Card
         {...{ ...block, children: blocks }}
-        wrappers={childrenProps?.wrappers ?? {}}
+        wrappers={children.props.wrappers}
       />
     )
   }

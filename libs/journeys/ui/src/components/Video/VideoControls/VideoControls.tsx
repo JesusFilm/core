@@ -56,7 +56,7 @@ export function VideoControls({
     // Explicit muted state since player.muted state lags when video paused
     muted: initialMuted,
     playing: false,
-    action: 'play' as const
+    action: 'play'
   })
 
   // Explicit fullscreen state since player.fullscreen state lags when video paused

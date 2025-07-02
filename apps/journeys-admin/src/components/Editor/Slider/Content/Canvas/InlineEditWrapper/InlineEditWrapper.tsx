@@ -1,7 +1,7 @@
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { WrapperProps, WrappersProps } from '@core/journeys/ui/BlockRenderer'
+import { WrapperProps } from '@core/journeys/ui/BlockRenderer'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { Typography } from '@core/journeys/ui/Typography'
 
@@ -59,15 +59,10 @@ export function InlineEditWrapper({
       if (showEditable) component = <RadioOptionEdit {...block} />
       break
     case 'RadioQuestionBlock':
-      if (showEditable) {
-        // Safely access children props with proper type checking
-        const childrenProps = (
-          children as ReactElement<{ wrappers?: WrappersProps }>
-        )?.props
+      if (showEditable)
         component = (
-          <RadioQuestionEdit {...block} wrappers={childrenProps?.wrappers} />
+          <RadioQuestionEdit {...block} wrappers={children.props.wrappers} />
         )
-      }
       break
     case 'SignUpBlock':
       if (showEditable) component = <SignUpEdit {...block} />
