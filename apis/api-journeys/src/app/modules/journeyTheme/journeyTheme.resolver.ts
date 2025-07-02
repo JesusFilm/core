@@ -95,7 +95,7 @@ export class JourneyThemeResolver {
     @Args('input') input: JourneyThemeUpdateInput
   ): Promise<JourneyTheme> {
     const journeyTheme = await this.prismaService.journeyTheme.findUnique({
-      where: { id },
+      where: { journeyId: id },
       include: {
         journey: {
           include: {
@@ -119,7 +119,7 @@ export class JourneyThemeResolver {
     }
 
     return await this.prismaService.journeyTheme.update({
-      where: { id },
+      where: { journeyId: id },
       data: {
         headerFont: input.headerFont ?? undefined,
         bodyFont: input.bodyFont ?? undefined,

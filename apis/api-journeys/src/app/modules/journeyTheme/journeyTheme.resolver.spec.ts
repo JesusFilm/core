@@ -262,7 +262,7 @@ describe('JourneyThemeResolver', () => {
       ).resolves.toEqual(updatedJourneyTheme)
 
       expect(prismaService.journeyTheme.update).toHaveBeenCalledWith({
-        where: { id: 'journeyThemeId' },
+        where: { journeyId: 'journeyThemeId' },
         data: {
           headerFont: 'Helvetica',
           bodyFont: 'Times New Roman',
