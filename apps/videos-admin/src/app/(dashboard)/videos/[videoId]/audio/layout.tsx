@@ -13,7 +13,7 @@ import ListItemText from '@mui/material/ListItemText'
 import Typography from '@mui/material/Typography'
 import { graphql } from 'gql.tada'
 import { usePathname, useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { PublishedChip } from '../../../../../components/PublishedChip'
 import { Section } from '../../../../../components/Section'
@@ -62,11 +62,46 @@ export default function ClientLayout({
     )
   }, [pathname])
 
-  const handleAddAudioLanguage = (): void => {
+  const handleAddAudioLanguage = useCallback((): void => {
     router.push(`/videos/${videoId}/audio/add`, {
       scroll: false
     })
-  }
+  }, [router, videoId])
+
+  const handleVariantClick = useCallback(
+    (variantId: string): void => {
+      router.push(`/videos/${videoId}/audio/${variantId}`, {
+        scroll: false
+      })
+    },
+    [router, videoId]
+  )
+
+  const handlePreviewClick = useCallback(
+    (
+      event: React.MouseEvent,
+      videoSlug: string,
+      languageSlug: string
+    ): void => {
+      event.stopPropagation()
+      window.open(
+        `${process.env.NEXT_PUBLIC_WATCH_URL ?? ''}/watch/${videoSlug}.html/${languageSlug}.html`,
+        '_blank',
+        'noopener,noreferrer'
+      )
+    },
+    []
+  )
+
+  const handleDeleteClick = useCallback(
+    (event: React.MouseEvent, variantId: string): void => {
+      event.stopPropagation()
+      router.push(`/videos/${videoId}/audio/${variantId}/delete`, {
+        scroll: false
+      })
+    },
+    [router, videoId]
+  )
 
   const renderContent = () => {
     if (loading) {
@@ -124,34 +159,10 @@ export default function ClientLayout({
               data?.adminVideo?.slug &&
               variant.language?.slug
 
-            const handleVariantClick = (): void => {
-              router.push(`/videos/${videoId}/audio/${variant.id}`, {
-                scroll: false
-              })
-            }
-
-            const handlePreviewClick = (event: React.MouseEvent): void => {
-              event.stopPropagation()
-              if (canPreview) {
-                window.open(
-                  `${process.env.NEXT_PUBLIC_WATCH_URL ?? ''}/watch/${data?.adminVideo?.slug}.html/${variant.language.slug}.html`,
-                  '_blank',
-                  'noopener,noreferrer'
-                )
-              }
-            }
-
-            const handleDeleteClick = (event: React.MouseEvent): void => {
-              event.stopPropagation()
-              router.push(`/videos/${videoId}/audio/${variant.id}/delete`, {
-                scroll: false
-              })
-            }
-
             return (
               <ListItem
                 key={variant.id}
-                onClick={handleVariantClick}
+                onClick={() => handleVariantClick(variant.id)}
                 sx={{
                   border: '1px solid',
                   borderColor: 'divider',
@@ -180,7 +191,18 @@ export default function ClientLayout({
                 <Box sx={{ display: 'flex', gap: 1 }}>
                   <IconButton
                     size="small"
-                    onClick={handlePreviewClick}
+                    onClick={
+                      canPreview &&
+                      data?.adminVideo?.slug &&
+                      variant.language?.slug
+                        ? (event) =>
+                            handlePreviewClick(
+                              event,
+                              data.adminVideo.slug,
+                              variant.language.slug
+                            )
+                        : undefined
+                    }
                     aria-label="preview variant"
                     disabled={!canPreview}
                     sx={{
@@ -200,7 +222,7 @@ export default function ClientLayout({
                   </IconButton>
                   <IconButton
                     size="small"
-                    onClick={handleDeleteClick}
+                    onClick={(event) => handleDeleteClick(event, variant.id)}
                     aria-label="delete variant"
                     sx={{
                       color: 'error.main',
