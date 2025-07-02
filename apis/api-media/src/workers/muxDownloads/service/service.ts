@@ -33,16 +33,10 @@ async function getVideoVariantsWithMuxDownloads(): Promise<
       }
     },
     where: {
-      muxVideo: {
-        assetId: {
-          not: null
-        }
-      },
+      muxVideoId: { not: null },
       downloads: {
         some: {
-          size: {
-            lte: 0
-          }
+          size: 0
         }
       }
     }
