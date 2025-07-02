@@ -12,6 +12,7 @@ import videojs from 'video.js'
 
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
+import { PlayerProvider } from '../../../../../libs/playerContext/PlayerContext'
 import { VideoProvider } from '../../../../../libs/videoContext'
 import { WatchProvider } from '../../../../../libs/watchContext'
 import { videos } from '../../../../Videos/__generated__/testData'
@@ -79,9 +80,11 @@ describe('VideoControls', () => {
             subtitleOn: false
           }}
         >
-          <VideoProvider value={{ content: videos[0] }}>
-            <VideoControls player={player} />
-          </VideoProvider>
+          <PlayerProvider>
+            <VideoProvider value={{ content: videos[0] }}>
+              <VideoControls player={player} />
+            </VideoProvider>
+          </PlayerProvider>
         </WatchProvider>
       </MockedProvider>
     )
@@ -106,9 +109,11 @@ describe('VideoControls', () => {
             subtitleOn: false
           }}
         >
-          <VideoProvider value={{ content: videos[0] }}>
-            <VideoControls player={player} />
-          </VideoProvider>
+          <PlayerProvider>
+            <VideoProvider value={{ content: videos[0] }}>
+              <VideoControls player={player} />
+            </VideoProvider>
+          </PlayerProvider>
         </WatchProvider>
       </MockedProvider>
     )
@@ -130,9 +135,11 @@ describe('VideoControls', () => {
             subtitleOn: false
           }}
         >
-          <VideoProvider value={{ content: videos[0] }}>
-            <VideoControls player={player} />
-          </VideoProvider>
+          <PlayerProvider>
+            <VideoProvider value={{ content: videos[0] }}>
+              <VideoControls player={player} />
+            </VideoProvider>
+          </PlayerProvider>
         </WatchProvider>
       </MockedProvider>
     )
@@ -151,9 +158,11 @@ describe('VideoControls', () => {
             subtitleOn: false
           }}
         >
-          <VideoProvider value={{ content: videos[0] }}>
-            <VideoControls player={player} />
-          </VideoProvider>
+          <PlayerProvider>
+            <VideoProvider value={{ content: videos[0] }}>
+              <VideoControls player={player} />
+            </VideoProvider>
+          </PlayerProvider>
         </WatchProvider>
       </MockedProvider>
     )
@@ -178,9 +187,11 @@ describe('VideoControls', () => {
             subtitleOn: false
           }}
         >
-          <VideoProvider value={{ content: videos[0] }}>
-            <VideoControls player={player} />
-          </VideoProvider>
+          <PlayerProvider>
+            <VideoProvider value={{ content: videos[0] }}>
+              <VideoControls player={player} />
+            </VideoProvider>
+          </PlayerProvider>
         </WatchProvider>
       </MockedProvider>
     )
@@ -200,9 +211,11 @@ describe('VideoControls', () => {
             subtitleOn: false
           }}
         >
-          <VideoProvider value={{ content: videos[0] }}>
-            <VideoControls player={player} />
-          </VideoProvider>
+          <PlayerProvider>
+            <VideoProvider value={{ content: videos[0] }}>
+              <VideoControls player={player} />
+            </VideoProvider>
+          </PlayerProvider>
         </WatchProvider>
       </MockedProvider>
     )

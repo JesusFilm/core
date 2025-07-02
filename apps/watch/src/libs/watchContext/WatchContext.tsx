@@ -52,46 +52,6 @@ export interface WatchState {
   currentAudioLanguage?: AudioLanguage
   /** Whether subtitles should be enabled (based on availability) */
   currentSubtitleOn?: boolean
-  /** Video player state */
-  player: VideoPlayerState
-}
-
-/**
- * State interface for the video player
- */
-export interface VideoPlayerState {
-  play: boolean
-  active: boolean
-  currentTime: string
-  progress: number
-  progressPercentNotYetEmitted: number[]
-  volume: number
-  mute: boolean
-  fullscreen: boolean
-  openSubtitleDialog: boolean
-  loadSubtitleDialog: boolean
-  loading: boolean
-  durationSeconds: number
-  duration: string
-}
-
-/**
- * Initial state for the video player
- */
-export const videoPlayerInitialState: VideoPlayerState = {
-  play: false,
-  active: true,
-  currentTime: '0:00',
-  progress: 0,
-  progressPercentNotYetEmitted: [10, 25, 50, 75, 90],
-  volume: 0,
-  mute: true,
-  fullscreen: false,
-  openSubtitleDialog: false,
-  loadSubtitleDialog: false,
-  loading: false,
-  durationSeconds: 0,
-  duration: '0:00'
 }
 
 /**
@@ -199,127 +159,6 @@ interface UpdateSubtitlesOnAction {
 }
 
 /**
- * Actions for controlling the video player state
- */
-
-/**
- * Action to set the player's playing state.
- */
-interface SetPlayerPlayAction {
-  type: 'SetPlayerPlay'
-  /** Whether the video should be playing. */
-  play: boolean
-}
-
-/**
- * Action to set the player's active state.
- */
-interface SetPlayerActiveAction {
-  type: 'SetPlayerActive'
-  /** Whether the player controls are active/visible. */
-  active: boolean
-}
-
-/**
- * Action to set the current playback time.
- */
-interface SetPlayerCurrentTimeAction {
-  type: 'SetPlayerCurrentTime'
-  /** The current time as a formatted string (e.g., '1:23'). */
-  currentTime: string
-}
-
-/**
- * Action to set the playback progress.
- */
-interface SetPlayerProgressAction {
-  type: 'SetPlayerProgress'
-  /** The playback progress as a percentage (0-100). */
-  progress: number
-}
-
-/**
- * Action to set the player's volume.
- */
-interface SetPlayerVolumeAction {
-  type: 'SetPlayerVolume'
-  /** The volume level (0-1). */
-  volume: number
-}
-
-/**
- * Action to set the player's mute state.
- */
-interface SetPlayerMuteAction {
-  type: 'SetPlayerMute'
-  /** Whether the player is muted. */
-  mute: boolean
-}
-
-/**
- * Action to set the player's fullscreen state.
- */
-interface SetPlayerFullscreenAction {
-  type: 'SetPlayerFullscreen'
-  /** Whether the player is in fullscreen mode. */
-  fullscreen: boolean
-}
-
-/**
- * Action to open or close the subtitle selection dialog.
- */
-interface SetPlayerOpenSubtitleDialogAction {
-  type: 'SetPlayerOpenSubtitleDialog'
-  /** Whether the subtitle dialog should be open. */
-  openSubtitleDialog: boolean
-}
-
-/**
- * Action to set the loading state for the subtitle dialog.
- */
-interface SetPlayerLoadSubtitleDialogAction {
-  type: 'SetPlayerLoadSubtitleDialog'
-  /** Whether the subtitle dialog is loading content. */
-  loadSubtitleDialog: boolean
-}
-
-/**
- * Action to set the player's loading state.
- */
-interface SetPlayerLoadingAction {
-  type: 'SetPlayerLoading'
-  /** Whether the player is in a loading state. */
-  loading: boolean
-}
-
-/**
- * Action to set the total duration of the video in seconds.
- */
-interface SetPlayerDurationSecondsAction {
-  type: 'SetPlayerDurationSeconds'
-  /** The total duration in seconds. */
-  durationSeconds: number
-}
-
-/**
- * Action to set the total duration of the video as a formatted string.
- */
-interface SetPlayerDurationAction {
-  type: 'SetPlayerDuration'
-  /** The total duration as a formatted string (e.g., '10:00'). */
-  duration: string
-}
-
-/**
- * Action to update the list of progress percentages that have not yet been emitted.
- */
-interface SetPlayerProgressPercentNotYetEmittedAction {
-  type: 'SetPlayerProgressPercentNotYetEmitted'
-  /** An array of progress percentages (e.g., [10, 25, 50, 75, 90]). */
-  progressPercentNotYetEmitted: number[]
-}
-
-/**
  * Union type of all possible actions for the watch context
  */
 export type WatchAction =
@@ -334,19 +173,6 @@ export type WatchAction =
   | UpdateAudioLanguageAction
   | UpdateSubtitleLanguageAction
   | UpdateSubtitlesOnAction
-  | SetPlayerPlayAction
-  | SetPlayerActiveAction
-  | SetPlayerCurrentTimeAction
-  | SetPlayerProgressAction
-  | SetPlayerVolumeAction
-  | SetPlayerMuteAction
-  | SetPlayerFullscreenAction
-  | SetPlayerOpenSubtitleDialogAction
-  | SetPlayerLoadSubtitleDialogAction
-  | SetPlayerLoadingAction
-  | SetPlayerDurationSecondsAction
-  | SetPlayerDurationAction
-  | SetPlayerProgressPercentNotYetEmittedAction
 
 /**
  * Initial state type for WatchProvider - contains the core fields required for initialization
@@ -370,8 +196,7 @@ const WatchContext = createContext<{
     audioLanguage: '529',
     subtitleLanguage: '529',
     subtitleOn: false,
-    loading: false,
-    player: videoPlayerInitialState
+    loading: false
   },
   dispatch: () => null
 })
@@ -508,69 +333,6 @@ export const reducer = (state: WatchState, action: WatchAction): WatchState => {
         subtitleOn: newSubtitlesOn
       }
     }
-    // Video Player Actions
-    case 'SetPlayerPlay':
-      return { ...state, player: { ...state.player, play: action.play } }
-    case 'SetPlayerActive':
-      return { ...state, player: { ...state.player, active: action.active } }
-    case 'SetPlayerCurrentTime':
-      return {
-        ...state,
-        player: { ...state.player, currentTime: action.currentTime }
-      }
-    case 'SetPlayerProgress':
-      return {
-        ...state,
-        player: { ...state.player, progress: action.progress }
-      }
-    case 'SetPlayerVolume':
-      return { ...state, player: { ...state.player, volume: action.volume } }
-    case 'SetPlayerMute':
-      return { ...state, player: { ...state.player, mute: action.mute } }
-    case 'SetPlayerFullscreen':
-      return {
-        ...state,
-        player: { ...state.player, fullscreen: action.fullscreen }
-      }
-    case 'SetPlayerOpenSubtitleDialog':
-      return {
-        ...state,
-        player: {
-          ...state.player,
-          openSubtitleDialog: action.openSubtitleDialog
-        }
-      }
-    case 'SetPlayerLoadSubtitleDialog':
-      return {
-        ...state,
-        player: {
-          ...state.player,
-          loadSubtitleDialog: action.loadSubtitleDialog
-        }
-      }
-    case 'SetPlayerLoading':
-      return {
-        ...state,
-        player: { ...state.player, loading: action.loading }
-      }
-    case 'SetPlayerDurationSeconds':
-      return {
-        ...state,
-        player: { ...state.player, durationSeconds: action.durationSeconds }
-      }
-    case 'SetPlayerDuration':
-      return {
-        ...state,
-        player: { ...state.player, duration: action.duration }
-      }
-    case 'SetPlayerProgressPercentNotYetEmitted':
-      return {
-        ...state,
-        player: {
-          ...state.player,
-          progressPercentNotYetEmitted: action.progressPercentNotYetEmitted
-        }
-      }
   }
 }
 
@@ -598,8 +360,7 @@ interface WatchProviderProps {
 export function WatchProvider({ children, initialState }: WatchProviderProps) {
   const [state, dispatch] = useReducer(reducer, {
     ...initialState,
-    loading: false,
-    player: videoPlayerInitialState
+    loading: false
   })
   return (
     <WatchContext.Provider value={{ state, dispatch }}>
