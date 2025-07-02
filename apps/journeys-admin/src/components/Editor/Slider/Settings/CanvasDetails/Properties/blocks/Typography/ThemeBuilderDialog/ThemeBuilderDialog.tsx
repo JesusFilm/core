@@ -1,12 +1,22 @@
+import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next'
+import { enqueueSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 
+import {
+  CreateJourneyFonts,
+  CreateJourneyFontsVariables
+} from '../../../../../../../../../../__generated__/CreateJourneyFonts'
+import {
+  UpdateJourneyFonts,
+  UpdateJourneyFontsVariables
+} from '../../../../../../../../../../__generated__/UpdateJourneyFonts'
 import { FontLoader } from '../../../../../../../FontLoader'
 
 import { ThemePreview } from './ThemePreview'
@@ -16,6 +26,32 @@ interface ThemeBuilderDialogProps {
   open: boolean
   onClose: () => void
 }
+
+export const JOURNEY_FONTS_UPDATE = gql`
+  mutation UpdateJourneyFonts($id: ID!, $input: JourneyThemeUpdateInput!) {
+    journeyThemeUpdate(id: $id, input: $input) {
+      __typename
+      id
+      journeyId
+      headerFont
+      bodyFont
+      labelFont
+    }
+  }
+`
+
+export const JOURNEY_FONTS_CREATE = gql`
+  mutation CreateJourneyFonts($input: JourneyThemeCreateInput!) {
+    journeyThemeCreate(input: $input) {
+      __typename
+      id
+      journeyId
+      headerFont
+      bodyFont
+      labelFont
+    }
+  }
+`
 
 export enum FontFamily {
   Montserrat = 'Montserrat',
@@ -39,26 +75,103 @@ export function ThemeBuilderDialog({
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
 
+  const [updateJourneyFonts, { loading }] = useMutation<
+    UpdateJourneyFonts,
+    UpdateJourneyFontsVariables
+  >(JOURNEY_FONTS_UPDATE)
+
+  const [createJourneyFonts, { loading: createLoading }] = useMutation<
+    CreateJourneyFonts,
+    CreateJourneyFontsVariables
+  >(JOURNEY_FONTS_CREATE)
+
   const journeyTheme = journey?.journeyTheme
 
   const [headerFont, setHeaderFont] = useState<string>(
     journeyTheme?.headerFont ?? ''
   )
   const [bodyFont, setBodyFont] = useState<string>(journeyTheme?.bodyFont ?? '')
-  const [labelsFont, setLabelsFont] = useState<string>(
+  const [labelFont, setLabelFont] = useState<string>(
     journeyTheme?.labelFont ?? ''
   )
 
-  const handleHeaderFontChange = (font: string): void => {
+  function handleHeaderFontChange(font: string): void {
     setHeaderFont(font)
   }
 
-  const handleBodyFontChange = (font: string): void => {
+  function handleBodyFontChange(font: string): void {
     setBodyFont(font)
   }
 
-  const handleLabelsFontChange = (font: string): void => {
-    setLabelsFont(font)
+  function handleLabelsFontChange(font: string): void {
+    setLabelFont(font)
+  }
+
+  async function handleSubmit(): Promise<void> {
+    if (journey == null) return
+
+    const journeyTheme = journey.journeyTheme
+
+    if (journeyTheme == null) {
+      await createJourneyFonts({
+        variables: {
+          input: {
+            journeyId: journey.id,
+            headerFont,
+            bodyFont,
+            labelFont
+          }
+        },
+        update(cache, { data }) {
+          if (data?.journeyThemeCreate == null) return
+          cache.modify({
+            id: cache.identify({ __typename: 'Journey', id: journey.id }),
+            fields: {
+              journeyTheme() {
+                return data.journeyThemeCreate
+              }
+            }
+          })
+        },
+        onCompleted() {
+          onClose()
+          enqueueSnackbar(t('Theme created'), {
+            variant: 'success',
+            preventDuplicate: true
+          })
+        },
+        onError() {
+          enqueueSnackbar(t('Failed to create theme'), {
+            variant: 'error',
+            preventDuplicate: true
+          })
+        }
+      })
+    } else {
+      await updateJourneyFonts({
+        variables: {
+          id: journeyTheme.id,
+          input: {
+            headerFont,
+            bodyFont,
+            labelFont
+          }
+        },
+        onCompleted() {
+          onClose()
+          enqueueSnackbar(t('Fonts updated'), {
+            variant: 'success',
+            preventDuplicate: true
+          })
+        },
+        onError() {
+          enqueueSnackbar(t('Failed to update fonts'), {
+            variant: 'error',
+            preventDuplicate: true
+          })
+        }
+      })
+    }
   }
 
   const dialogActionChildren = (
@@ -66,7 +179,12 @@ export function ThemeBuilderDialog({
       <Button variant="outlined" color="secondary" onClick={onClose}>
         {t('Cancel')}
       </Button>
-      <Button variant="contained" color="primary" onClick={onClose}>
+      <Button
+        loading={loading || createLoading}
+        variant="contained"
+        color="primary"
+        onClick={handleSubmit}
+      >
         {t('Confirm')}
       </Button>
     </Stack>
@@ -76,6 +194,7 @@ export function ThemeBuilderDialog({
     <Dialog
       open={open}
       onClose={onClose}
+      loading={loading || createLoading}
       sx={{
         '& .MuiDialog-paper': {
           maxWidth: '100%',
@@ -89,13 +208,7 @@ export function ThemeBuilderDialog({
       }}
       dialogActionChildren={dialogActionChildren}
     >
-      <FontLoader
-        journeyTheme={{
-          headerFont,
-          bodyFont,
-          labelFont: labelsFont
-        }}
-      />
+      <FontLoader fonts={[headerFont, bodyFont, labelFont]} />
       <Stack
         direction={{ xs: 'column', sm: 'row' }}
         spacing={5}
@@ -112,7 +225,7 @@ export function ThemeBuilderDialog({
           <ThemeSettings
             headerFont={headerFont}
             bodyFont={bodyFont}
-            labelsFont={labelsFont}
+            labelsFont={labelFont}
             onHeaderFontChange={handleHeaderFontChange}
             onBodyFontChange={handleBodyFontChange}
             onLabelsFontChange={handleLabelsFontChange}
@@ -126,7 +239,7 @@ export function ThemeBuilderDialog({
           <ThemePreview
             headerFont={headerFont}
             bodyFont={bodyFont}
-            labelsFont={labelsFont}
+            labelsFont={labelFont}
           />
         </Box>
       </Stack>

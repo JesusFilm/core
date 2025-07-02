@@ -1,31 +1,17 @@
 import { useEffect, useMemo } from 'react'
 import WebFont from 'webfontloader'
 
-import { GetJourney_journey_journeyTheme as JourneyTheme } from '../../../../__generated__/GetJourney'
-
 interface FontLoaderProps {
-  journeyTheme: {
-    headerFont: string
-    bodyFont: string
-    labelFont: string
-  } | null
+  fonts: (string | null)[]
 }
 
-export function FontLoader({ journeyTheme }: FontLoaderProps): null {
+export function FontLoader({ fonts }: FontLoaderProps): null {
   const fontFamilies = useMemo(
     () =>
-      journeyTheme
-        ? [
-            ...new Set([
-              journeyTheme.headerFont,
-              journeyTheme.bodyFont,
-              journeyTheme.labelFont
-            ])
-          ]
-            .filter(Boolean)
-            .map(formatFontWithWeights)
+      fonts && fonts.length > 0
+        ? [...new Set(fonts)].filter(Boolean).map(formatFontWithWeights)
         : [],
-    [journeyTheme]
+    [fonts]
   )
 
   function formatFontWithWeights(font: string): string {

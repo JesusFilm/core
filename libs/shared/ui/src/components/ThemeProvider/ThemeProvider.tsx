@@ -2,7 +2,7 @@
 
 import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles'
-import { ReactElement, ReactNode, useMemo } from 'react'
+import { ReactElement, ReactNode } from 'react'
 
 import {
   FontFamilies,
@@ -31,15 +31,13 @@ export const ThemeProvider = ({
   nested,
   fontFamilies
 }: ThemeProviderProps): ReactElement => {
-  const theme = useMemo(() => {
-    return getTheme({
-      themeName,
-      themeMode,
-      rtl,
-      locale,
-      fontFamilies
-    })
-  }, [themeName, themeMode, rtl, locale, fontFamilies])
+  const theme = getTheme({
+    themeName,
+    themeMode,
+    rtl,
+    locale,
+    fontFamilies
+  })
 
   return (
     <MuiThemeProvider theme={theme}>

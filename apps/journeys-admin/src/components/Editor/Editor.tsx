@@ -62,11 +62,11 @@ export function Editor({
       >
         <HotkeysProvider>
           <FontLoader
-            journeyTheme={{
-              headerFont: journey?.journeyTheme?.headerFont ?? '',
-              bodyFont: journey?.journeyTheme?.bodyFont ?? '',
-              labelFont: journey?.journeyTheme?.labelFont ?? ''
-            }}
+            fonts={[
+              journey?.journeyTheme?.headerFont ?? null,
+              journey?.journeyTheme?.bodyFont ?? null,
+              journey?.journeyTheme?.labelFont ?? null
+            ]}
           />
           <Hotkeys />
           <Toolbar user={user} />
