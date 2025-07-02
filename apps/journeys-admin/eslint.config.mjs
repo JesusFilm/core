@@ -18,6 +18,7 @@ export default [
     ignores: [
       'apps/journeys-admin/eslint.config.js',
       'apps/journeys-admin/jest.config.ts',
+      'apps/journeys-admin/postcss.config.mjs',
       'apps/journeys-admin/.next/*'
     ]
   },
