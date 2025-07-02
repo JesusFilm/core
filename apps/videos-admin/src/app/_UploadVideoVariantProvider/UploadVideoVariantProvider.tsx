@@ -49,6 +49,7 @@ export const GET_MY_MUX_VIDEO = graphql(`
       assetId
       playbackId
       readyToStream
+      duration
     }
   }
 `)
@@ -180,7 +181,8 @@ export function UploadVideoVariantProvider({
         stopPolling()
         await handleCreateVideoVariant(
           data.getMyMuxVideo.id,
-          data.getMyMuxVideo.playbackId
+          data.getMyMuxVideo.playbackId,
+          data.getMyMuxVideo.duration
         )
       }
     },
@@ -194,7 +196,8 @@ export function UploadVideoVariantProvider({
 
   const handleCreateVideoVariant = async (
     muxId: string,
-    playbackId: string
+    playbackId: string,
+    duration?: number | null
   ) => {
     if (
       state.videoId == null ||
@@ -204,6 +207,10 @@ export function UploadVideoVariantProvider({
       state.videoSlug == null
     )
       return
+
+    // Calculate lengthInMilliseconds from duration (duration is in seconds)
+    const durationInSeconds = duration ?? 0
+    const lengthInMilliseconds = durationInSeconds * 1000
 
     try {
       await createVideoVariant({
@@ -217,7 +224,9 @@ export function UploadVideoVariantProvider({
             downloadable: true,
             published: true,
             muxVideoId: muxId,
-            hls: `https://stream.mux.com/${playbackId}.m3u8`
+            hls: `https://stream.mux.com/${playbackId}.m3u8`,
+            duration: durationInSeconds,
+            lengthInMilliseconds: lengthInMilliseconds
           }
         },
         onCompleted: () => {
