@@ -1,9 +1,9 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 
 import {
-  WatchProvider,
-  videoPlayerInitialState
-} from '../../../../../libs/watchContext'
+  PlayerProvider,
+  playerInitialState
+} from '../../../../../libs/playerContext'
 
 import { VideoTitle } from './VideoTitle'
 
@@ -13,20 +13,14 @@ jest.mock('next-i18next', () => ({
   })
 }))
 
-const initialState = {
-  siteLanguage: 'en',
-  audioLanguage: 'en',
-  subtitleLanguage: 'en',
-  subtitleOn: true,
-  player: videoPlayerInitialState
-}
+const initialState = playerInitialState
 
 describe('VideoTitle', () => {
   it('should render the video title', () => {
     render(
-      <WatchProvider initialState={initialState}>
+      <PlayerProvider initialState={initialState}>
         <VideoTitle videoTitle="Test Video" showButton />
-      </WatchProvider>
+      </PlayerProvider>
     )
     expect(
       screen.getByRole('heading', { name: 'Test Video' })
@@ -35,9 +29,9 @@ describe('VideoTitle', () => {
 
   it('should be visible when not playing', () => {
     render(
-      <WatchProvider initialState={initialState}>
+      <PlayerProvider initialState={initialState}>
         <VideoTitle videoTitle="Test Video" showButton />
-      </WatchProvider>
+      </PlayerProvider>
     )
     const container = screen.getByRole('heading', {
       name: 'Test Video'
@@ -49,12 +43,13 @@ describe('VideoTitle', () => {
   it('should be visible when player is active', () => {
     const state = {
       ...initialState,
-      player: { ...initialState.player, play: false, active: true }
+      play: false,
+      active: true
     }
     render(
-      <WatchProvider initialState={state}>
+      <PlayerProvider initialState={state}>
         <VideoTitle videoTitle="Test Video" showButton />
-      </WatchProvider>
+      </PlayerProvider>
     )
     const container = screen.getByRole('heading', {
       name: 'Test Video'
@@ -65,18 +60,18 @@ describe('VideoTitle', () => {
 
   it('should render play button', () => {
     render(
-      <WatchProvider initialState={initialState}>
+      <PlayerProvider initialState={initialState}>
         <VideoTitle videoTitle="Test Video" showButton />
-      </WatchProvider>
+      </PlayerProvider>
     )
     expect(screen.getByRole('button', { name: 'Play' })).toBeInTheDocument()
   })
 
   it('should not render play button when showButton is false', () => {
     const { container } = render(
-      <WatchProvider initialState={initialState}>
+      <PlayerProvider initialState={initialState}>
         <VideoTitle videoTitle="Test Video" showButton={false} />
-      </WatchProvider>
+      </PlayerProvider>
     )
     const button = container.querySelector('#play-button-lg')
     expect(button).not.toBeVisible()
@@ -85,9 +80,9 @@ describe('VideoTitle', () => {
   it('should call onClick when play button is clicked', () => {
     const onClick = jest.fn()
     render(
-      <WatchProvider initialState={initialState}>
+      <PlayerProvider initialState={initialState}>
         <VideoTitle videoTitle="Test Video" showButton onClick={onClick} />
-      </WatchProvider>
+      </PlayerProvider>
     )
     fireEvent.click(screen.getByRole('button', { name: 'Play' }))
     expect(onClick).toHaveBeenCalled()
@@ -95,12 +90,13 @@ describe('VideoTitle', () => {
 
   it('should show unmute button when muted', () => {
     const state = {
-      ...initialState
+      ...initialState,
+      mute: true
     }
     render(
-      <WatchProvider initialState={state}>
+      <PlayerProvider initialState={state}>
         <VideoTitle videoTitle="Test Video" showButton variant="unmute" />
-      </WatchProvider>
+      </PlayerProvider>
     )
     expect(
       screen.getByRole('button', { name: 'Play with sound' })
@@ -111,17 +107,17 @@ describe('VideoTitle', () => {
     const onClick = jest.fn()
     const state = {
       ...initialState,
-      player: { ...initialState.player, mute: true }
+      mute: true
     }
     render(
-      <WatchProvider initialState={state}>
+      <PlayerProvider initialState={state}>
         <VideoTitle
           videoTitle="Test Video"
           showButton
           variant="unmute"
           onClick={onClick}
         />
-      </WatchProvider>
+      </PlayerProvider>
     )
     fireEvent.click(screen.getByRole('button', { name: 'Play with sound' }))
     expect(onClick).toHaveBeenCalled()

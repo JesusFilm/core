@@ -396,6 +396,10 @@ export function VideoControls({
     } else {
       if (isMobile()) {
         void player.requestFullscreen()
+        dispatch({
+          type: 'SetFullscreen',
+          fullscreen: true
+        })
       } else {
         await fscreen.requestFullscreen(document.documentElement)
         dispatch({
@@ -418,6 +422,10 @@ export function VideoControls({
 
   function handleMute(): void {
     player.muted(!mute)
+    dispatch({
+      type: 'SetMute',
+      mute: !mute
+    })
   }
 
   function handleVolume(_event: Event, value: number | number[]): void {
