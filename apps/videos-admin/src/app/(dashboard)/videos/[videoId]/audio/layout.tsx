@@ -199,7 +199,7 @@ export default function ClientLayout({
                             handlePreviewClick(
                               event,
                               data.adminVideo.slug,
-                              variant.language.slug
+                              variant.language.slug as string
                             )
                         : undefined
                     }
