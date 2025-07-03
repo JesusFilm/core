@@ -11,7 +11,7 @@ import { updateVideoVariantInAlgolia } from '../../workers/algolia/service'
 import { builder } from '../builder'
 import { deleteR2File } from '../cloudflare/r2/asset'
 import { Language } from '../language'
-import { deleteVideo, enableDownload } from '../mux/video/service'
+import { deleteVideo, enableDownload, getStaticRenditions } from '../mux/video/service'
 
 import { VideoVariantCreateInput } from './inputs/videoVariantCreate'
 import { VideoVariantFilter } from './inputs/videoVariantFilter'
@@ -397,6 +397,12 @@ async function createStaticRenditions(
       return
     }
 
+    // Check what static renditions are already available from Mux
+    const existingRenditions = await getStaticRenditions(muxVideo.assetId, false)
+    const availableResolutions = new Set(
+      existingRenditions?.files?.map(file => file.resolution || file.resolution_tier) || []
+    )
+
     // Define rendition configurations
     const renditions = [
       { resolution: '270p', quality: 'low', height: 270, width: 480 },
@@ -405,14 +411,24 @@ async function createStaticRenditions(
       { resolution: '1080p', quality: 'highest', height: 1080, width: 1920 }
     ]
 
-    // Enable Mux downloads for all resolutions in parallel
-    await Promise.allSettled(
-      renditions.map(({ resolution }) =>
-        enableDownload(muxVideo.assetId!, false, resolution)
-      )
+    // Only enable downloads for resolutions that don't exist yet
+    const missingResolutions = renditions.filter(
+      ({ resolution }) => !availableResolutions.has(resolution)
     )
 
+    if (missingResolutions.length > 0) {
+      console.log(`Enabling downloads for missing resolutions: ${missingResolutions.map(r => r.resolution).join(', ')}`)
+      await Promise.allSettled(
+        missingResolutions.map(({ resolution }) =>
+          enableDownload(muxVideo.assetId!, false, resolution)
+        )
+      )
+    } else {
+      console.log('All static renditions already available from Mux')
+    }
+
     // Create video variant downloads for all qualities in parallel
+    // Note: We create records for all renditions since Mux creates them automatically with downloadable=true
     await Promise.allSettled(
       renditions.map(({ resolution, quality, height, width }) =>
         prisma.videoVariantDownload.create({

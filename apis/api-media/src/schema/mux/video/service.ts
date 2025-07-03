@@ -26,12 +26,18 @@ function getClient(userGenerated: boolean): Mux {
   })
 }
 
+/**
+ * Creates a Mux video asset from a URL with static renditions enabled by default.
+ * This allows Mux to automatically generate MP4 files for download as soon as
+ * the video is processed, improving performance for video variant creation.
+ */
+
 type ResolutionTier = '1080p' | '1440p' | '2160p' | undefined
 
 export async function createVideoByDirectUpload(
   userGenerated: boolean,
   maxResolution: ResolutionTier = '1080p',
-  downloadable = false
+  downloadable = true // Default to true for automatic static renditions
 ): Promise<{ id: string; uploadUrl: string }> {
   if (process.env.CORS_ORIGIN == null) throw new Error('Missing CORS_ORIGIN')
 
@@ -61,7 +67,7 @@ export async function createVideoFromUrl(
   url: string,
   userGenerated: boolean,
   maxResolution: ResolutionTier = '1080p',
-  downloadable = false
+  downloadable = true // Default to true for automatic static renditions
 ): Promise<Mux.Video.Asset> {
   return await getClient(userGenerated).video.assets.create({
     inputs: [
