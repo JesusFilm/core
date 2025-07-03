@@ -108,9 +108,6 @@ export async function importMany(
     logger?.warn(`${inValidRowIds.length} invalid rows will be skipped`)
   }
 
-  if (shortLinks.length !== rows.length)
-    throw new Error(`some rows do not match schema: ${inValidRowIds.join(',')}`)
-
   const result = await prisma.shortLink.createMany({
     data: shortLinks,
     skipDuplicates: true
