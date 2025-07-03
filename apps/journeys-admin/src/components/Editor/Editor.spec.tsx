@@ -172,7 +172,8 @@ describe('Editor', () => {
           coverBlockId: null,
           themeMode: ThemeMode.light,
           themeName: ThemeName.base,
-          fullscreen: false
+          fullscreen: false,
+          backdropBlur: null
         },
         {
           __typename: 'TypographyBlock',

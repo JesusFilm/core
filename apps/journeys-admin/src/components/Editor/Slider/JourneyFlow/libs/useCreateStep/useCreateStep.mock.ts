@@ -37,6 +37,7 @@ export const mockNewCardBlock: TreeBlock<CardBlock> = {
   themeMode: ThemeMode.dark,
   themeName: ThemeName.base,
   fullscreen: false,
+  backdropBlur: null,
   children: []
 }
 

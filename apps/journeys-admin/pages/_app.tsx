@@ -1,6 +1,7 @@
 import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
 import type { EmotionCache } from '@emotion/cache'
-import { CacheProvider } from '@emotion/react'
+import GlobalStyles from '@mui/material/GlobalStyles'
+import { AppCacheProvider } from '@mui/material-nextjs/v14-pagesRouter'
 import { GoogleTagManager } from '@next/third-parties/google'
 import { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
@@ -11,7 +12,6 @@ import { SnackbarProvider } from 'notistack'
 import { ReactElement, useEffect } from 'react'
 
 import { TeamProvider } from '@core/journeys/ui/TeamProvider'
-import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import i18nConfig from '../next-i18next.config'
@@ -19,15 +19,9 @@ import { ThemeProvider } from '../src/components/ThemeProvider'
 import { useApollo } from '../src/libs/apolloClient'
 import { initAuth } from '../src/libs/firebaseClient/initAuth'
 
-import 'swiper/css'
-import 'swiper/css/a11y'
-import 'swiper/css/mousewheel'
-import 'swiper/css/navigation'
-import 'swiper/css/pagination'
-import '../public/swiper-pagination-override.css'
+import './globals.css'
 
 initAuth()
-const clientSideEmotionCache = createEmotionCache({})
 
 type JourneysAdminAppProps = NextJsAppProps<{
   userSerialized?: string
@@ -41,7 +35,7 @@ type JourneysAdminAppProps = NextJsAppProps<{
 function JourneysAdminApp({
   Component,
   pageProps,
-  emotionCache = clientSideEmotionCache
+  emotionCache
 }: JourneysAdminAppProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -65,7 +59,8 @@ function JourneysAdminApp({
 
   return (
     <FlagsProvider flags={pageProps.flags}>
-      <CacheProvider value={emotionCache}>
+      <AppCacheProvider emotionCache={emotionCache}>
+        <GlobalStyles styles="@layer theme, base, mui, css, iframe, components, utilities;" />
         <ThemeProvider>
           <DefaultSeo
             titleTemplate={t('%s | Next Steps')}
@@ -133,7 +128,7 @@ function JourneysAdminApp({
             </TeamProvider>
           </ApolloProvider>
         </ThemeProvider>
-      </CacheProvider>
+      </AppCacheProvider>
     </FlagsProvider>
   )
 }

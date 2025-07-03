@@ -556,7 +556,7 @@ model Block {
   menuStepBlockParent     Journey?             @relation("MenuStepBlock")
   logoImageBlockParent    Journey?             @relation("LogoImageBlock")
   slug                    String?
-  classNames              Json                 @default("{ \"self\": \"\"}") // tailwind class names
+  settings                Json                 @default("{ }") // block settings
 
   @@unique([slug, journeyId])
   @@index(journeyId)
