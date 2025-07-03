@@ -25,6 +25,7 @@ import {
 import { TextResponseFields } from '@core/journeys/ui/TextResponse/__generated__/TextResponseFields'
 import { TextResponse } from '@core/journeys/ui/TextResponse'
 import { Typography } from '@core/journeys/ui/Typography'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 interface ThemePreviewProps {
   headerFont: string
@@ -40,49 +41,13 @@ export function ThemePreview({
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
+  const {
+    state: { selectedStep }
+  } = useEditor()
 
-  const buttonBlock: TreeBlock<ButtonFields> = {
-    __typename: 'ButtonBlock',
-    id: 'button',
-    parentBlockId: 'question',
-    parentOrder: 0,
-    label: 'Button',
-    buttonVariant: ButtonVariant.contained,
-    buttonColor: ButtonColor.error,
-    size: ButtonSize.large,
-    startIconId: null,
-    endIconId: null,
-    action: null,
-    submitEnabled: false,
-    children: []
-  }
-
-  const radioQuestionBlock: TreeBlock<RadioQuestionFields> = {
-    __typename: 'RadioQuestionBlock',
-    id: 'RadioQuestion1',
-    parentBlockId: 'parent.id',
-    parentOrder: 0,
-    children: [
-      {
-        __typename: 'RadioOptionBlock',
-        id: 'RadioOption1',
-        label: 'Poll Block Option',
-        parentBlockId: 'RadioQuestion1',
-        parentOrder: 0,
-        action: null,
-        children: []
-      },
-      {
-        __typename: 'RadioOptionBlock',
-        id: 'RadioOption2',
-        label: 'Poll Block Option',
-        parentBlockId: 'RadioQuestion1',
-        parentOrder: 1,
-        action: null,
-        children: []
-      }
-    ]
-  }
+  const currentCard = selectedStep?.children.find(
+    (child) => child.__typename === 'CardBlock'
+  )
 
   const textResponseBlock: TreeBlock<TextResponseFields> = {
     __typename: 'TextResponseBlock',
@@ -103,7 +68,7 @@ export function ThemePreview({
   return (
     <ThemeProvider
       themeName={ThemeName.base}
-      themeMode={ThemeMode.light}
+      themeMode={currentCard?.themeMode ?? ThemeMode.light}
       rtl={rtl}
       locale={locale}
       nested
@@ -196,8 +161,51 @@ export function ThemePreview({
                 </Stack>
               </Stack>
               <Stack direction="column" spacing={6}>
-                <Button {...buttonBlock} />
-                <RadioQuestion {...radioQuestionBlock} />
+                <Button
+                  {...{
+                    __typename: 'ButtonBlock',
+                    id: 'button',
+                    parentBlockId: 'question',
+                    parentOrder: 0,
+                    label: 'Button',
+                    buttonVariant: ButtonVariant.contained,
+                    buttonColor: ButtonColor.error,
+                    size: ButtonSize.large,
+                    startIconId: null,
+                    endIconId: null,
+                    action: null,
+                    submitEnabled: false,
+                    children: []
+                  }}
+                />
+                <RadioQuestion
+                  {...{
+                    __typename: 'RadioQuestionBlock',
+                    id: 'RadioQuestion1',
+                    parentBlockId: 'parent.id',
+                    parentOrder: 0,
+                    children: [
+                      {
+                        __typename: 'RadioOptionBlock',
+                        id: 'RadioOption1',
+                        label: 'Poll Block Option',
+                        parentBlockId: 'RadioQuestion1',
+                        parentOrder: 0,
+                        action: null,
+                        children: []
+                      },
+                      {
+                        __typename: 'RadioOptionBlock',
+                        id: 'RadioOption2',
+                        label: 'Poll Block Option',
+                        parentBlockId: 'RadioQuestion1',
+                        parentOrder: 1,
+                        action: null,
+                        children: []
+                      }
+                    ]
+                  }}
+                />
                 <TextResponse {...textResponseBlock} />
               </Stack>
             </Stack>
