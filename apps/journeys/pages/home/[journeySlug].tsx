@@ -46,7 +46,7 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
   }
 
   function formatFontName(font: string): string {
-    return encodeURIComponent(font.trim()).replace(/%20/g, '+')
+    return font.trim().replace(/ /g, '+')
   }
 
   const googleFontsUrl = `https://fonts.googleapis.com/css2?${journeyFonts.map((font) => `family=${formatFontName(font)}:wght@400;500;600;700;800`).join('&')}&display=swap`
