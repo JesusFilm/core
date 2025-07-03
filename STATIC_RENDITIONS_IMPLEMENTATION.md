@@ -11,7 +11,7 @@ When creating a new audio language in videos-admin, the system now automatically
 The system automatically creates static renditions for the following qualities:
 
 | Quality | Resolution | Dimensions | Quality Level |
-|---------|------------|------------|---------------|
+| ------- | ---------- | ---------- | ------------- |
 | Low     | 270p       | 480×270    | `low`         |
 | SD      | 360p       | 640×360    | `sd`          |
 | High    | 720p       | 1280×720   | `high`        |
@@ -20,8 +20,9 @@ The system automatically creates static renditions for the following qualities:
 ### Files Modified
 
 1. **`apps/videos-admin/src/app/_UploadVideoVariantProvider/UploadVideoVariantProvider.tsx`**
+
    - Added `CREATE_VIDEO_VARIANT_DOWNLOAD` mutation
-   - Added `ENABLE_MUX_DOWNLOAD` mutation  
+   - Added `ENABLE_MUX_DOWNLOAD` mutation
    - Added `createStaticRenditions()` function
    - Modified `handleCreateVideoVariant()` to call static renditions creation after successful video variant creation
 
@@ -32,7 +33,7 @@ The system automatically creates static renditions for the following qualities:
 ### How It Works
 
 1. **Audio Language Upload**: User uploads a new audio language file via the videos-admin interface
-2. **Mux Video Creation**: File is uploaded to R2 and a Mux video is created 
+2. **Mux Video Creation**: File is uploaded to R2 and a Mux video is created
 3. **Video Variant Creation**: A video variant is created with the Mux video reference
 4. **Static Renditions Generation**: After successful video variant creation:
    - Mux downloads are enabled for 270p, 360p, 720p, and 1080p resolutions
@@ -49,6 +50,7 @@ The system automatically creates static renditions for the following qualities:
 ### URLs and Storage
 
 Static renditions are stored as video variant downloads with:
+
 - **URLs**: Mux stream URLs in the format `https://stream.mux.com/{playbackId}/{resolution}.mp4`
 - **Quality mapping**: low (270p), sd (360p), high (720p), highest (1080p)
 - **Database**: Stored in the `videovariantdownloads` table with the appropriate quality levels
@@ -63,6 +65,7 @@ Static renditions are stored as video variant downloads with:
 ## Testing
 
 The implementation includes comprehensive tests that verify:
+
 - Static renditions are created after successful video variant creation
 - All four quality levels are properly configured
 - Error handling works correctly
