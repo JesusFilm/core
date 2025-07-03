@@ -30,28 +30,28 @@ export function VideoCarousel({
   const prevRef = useRef<HTMLDivElement>(null)
   const swiperBreakpoints: SwiperOptions['breakpoints'] = {
     [breakpoints.values.xs]: {
+      slidesPerGroup: 1,
+      slidesPerView: 1.4
+    },
+    [breakpoints.values.sm]: {
       slidesPerGroup: 2,
       slidesPerView: 2.4
     },
-    [breakpoints.values.sm]: {
+    [breakpoints.values.md]: {
       slidesPerGroup: 3,
       slidesPerView: 3.4
     },
-    [breakpoints.values.md]: {
+    [breakpoints.values.lg]: {
+      slidesPerGroup: 3,
+      slidesPerView: 3.4
+    },
+    [breakpoints.values.xl]: {
       slidesPerGroup: 4,
       slidesPerView: 4.4
     },
-    [breakpoints.values.lg]: {
-      slidesPerGroup: 5,
-      slidesPerView: 5.4
-    },
-    [breakpoints.values.xl]: {
-      slidesPerGroup: 6,
-      slidesPerView: 6.4
-    },
     [breakpoints.values.xxl]: {
-      slidesPerGroup: 7,
-      slidesPerView: 7.4
+      slidesPerGroup: 4,
+      slidesPerView: 4.4
     }
   }
 

@@ -41,7 +41,7 @@ export function VideoGrid({
     >
       {(videos?.length ?? 0) > 0 &&
         videos?.map((video, index) => (
-          <Grid item key={index} xs={12} md={4} xl={3}>
+          <Grid item key={index} xs={12} md={6} xl={4}>
             <VideoCard
               video={video}
               containerSlug={containerSlug}
@@ -52,17 +52,17 @@ export function VideoGrid({
         ))}
       {loading && videos?.length === 0 && (
         <>
-          <Grid item xs={12} md={4} xl={3}>
+          <Grid item xs={12} md={6} xl={4}>
             <VideoCard variant={variant} />
           </Grid>
-          <Grid item xs={12} md={4} xl={3}>
+          <Grid item xs={12} md={6} xl={4}>
             <VideoCard variant={variant} />
           </Grid>
           <Grid
             item
             xs={12}
-            md={4}
-            xl={3}
+            md={6}
+            xl={4}
             sx={{ display: { xs: 'none', md: 'block' } }}
           >
             <VideoCard variant={variant} />
@@ -70,8 +70,8 @@ export function VideoGrid({
           <Grid
             item
             xs={12}
-            md={4}
-            xl={3}
+            md={6}
+            xl={4}
             sx={{ display: { xs: 'none', xl: 'block' } }}
           >
             <VideoCard variant={variant} />

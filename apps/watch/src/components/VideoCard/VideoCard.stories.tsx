@@ -20,31 +20,31 @@ const Template: StoryObj<typeof VideoCard> = {
     return (
       <InstantSearchTestWrapper>
         <Grid container spacing={2} rowSpacing={8}>
-          <Grid item xs={12} md={4} xl={3}>
+          <Grid item xs={12} md={6} xl={4}>
             <VideoCard video={videos[0]} {...args} />
           </Grid>
-          <Grid item xs={12} md={4} xl={3}>
+          <Grid item xs={12} md={6} xl={4}>
             <VideoCard video={videos[2]} {...args} active />
           </Grid>
-          <Grid item xs={12} md={4} xl={3}>
+          <Grid item xs={12} md={6} xl={4}>
             <VideoCard video={videos[5]} {...args} />
           </Grid>
-          <Grid item xs={12} md={4} xl={3}>
+          <Grid item xs={12} md={6} xl={4}>
             <VideoCard video={videos[6]} index={0} {...args} />
           </Grid>
-          <Grid item xs={12} md={4} xl={3}>
+          <Grid item xs={12} md={6} xl={4}>
             <VideoCard video={videos[9]} index={1} {...args} />
           </Grid>
-          <Grid item xs={12} md={4} xl={3}>
+          <Grid item xs={12} md={6} xl={4}>
             <VideoCard video={videos[12]} index={2} {...args} />
           </Grid>
-          <Grid item xs={12} md={4} xl={3}>
+          <Grid item xs={12} md={6} xl={4}>
             <VideoCard video={videos[2]} index={3} {...args} />
           </Grid>
-          <Grid item xs={12} md={4} xl={3}>
+          <Grid item xs={12} md={6} xl={4}>
             <VideoCard {...args} />
           </Grid>
-          <Grid item xs={12} md={4} xl={3}>
+          <Grid item xs={12} md={6} xl={4}>
             <VideoCard {...args} />
           </Grid>
         </Grid>
