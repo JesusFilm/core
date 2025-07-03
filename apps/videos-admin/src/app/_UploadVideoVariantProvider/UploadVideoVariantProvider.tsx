@@ -222,7 +222,7 @@ export function UploadVideoVariantProvider({
             languageId: state.languageId,
             slug: `${state.videoSlug}/${state.languageSlug}`,
             downloadable: true,
-            published: true,
+            published: state.published ?? false,
             muxVideoId: muxId,
             hls: `https://stream.mux.com/${playbackId}.m3u8`,
             duration: durationInSeconds,

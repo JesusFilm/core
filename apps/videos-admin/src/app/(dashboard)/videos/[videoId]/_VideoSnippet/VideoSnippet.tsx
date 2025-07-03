@@ -143,6 +143,7 @@ export function VideoSnippet({ videoId }: VideoSnippetProps): ReactElement {
               minRows={6}
               maxRows={6}
               spellCheck={true}
+              placeholder="Please enter a short description, up to 160 characters."
             />
             <Divider sx={{ mx: -4 }} />
             <Stack direction="row" justifyContent="flex-end" gap={1}>

@@ -11,6 +11,7 @@ interface FormTextFieldProps
 export function FormTextField({
   name,
   helperText = '',
+  placeholder = undefined,
   ...fieldProps
 }: FormTextFieldProps): ReactElement {
   const [formikProps, meta] = useField(name)
@@ -21,6 +22,7 @@ export function FormTextField({
     <TextField
       {...fieldProps}
       {...formikProps}
+      placeholder={placeholder}
       helperText={hasError ? meta.error : helperText}
       error={hasError}
     />

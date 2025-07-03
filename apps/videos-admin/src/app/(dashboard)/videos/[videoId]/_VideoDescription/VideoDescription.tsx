@@ -146,6 +146,7 @@ export function VideoDescription({
               minRows={6}
               maxRows={6}
               spellCheck={true}
+              placeholder="Please enter a description, up to 5000 characters."
             />
             <Divider sx={{ mx: -4 }} />
             <Stack direction="row" justifyContent="flex-end" gap={1}>
