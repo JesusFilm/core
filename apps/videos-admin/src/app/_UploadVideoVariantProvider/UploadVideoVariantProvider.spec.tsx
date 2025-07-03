@@ -9,6 +9,8 @@ import { getCreateR2AssetMock } from '../../libs/useCreateR2Asset/useCreateR2Ass
 import {
   CREATE_MUX_VIDEO_UPLOAD_BY_URL,
   CREATE_VIDEO_VARIANT,
+  CREATE_VIDEO_VARIANT_DOWNLOAD,
+  ENABLE_MUX_DOWNLOAD,
   GET_MY_MUX_VIDEO,
   UploadVideoVariantProvider,
   useUploadVideoVariant
@@ -184,6 +186,170 @@ const createVideoVariantErrorMock = {
   error: new Error('Variant creation failed')
 }
 
+// Mock for enabling Mux downloads
+const enableMuxDownloadMocks = [
+  {
+    request: {
+      query: ENABLE_MUX_DOWNLOAD,
+      variables: { id: 'mux-id', resolution: '270p' }
+    },
+    result: {
+      data: {
+        enableMuxDownload: { id: 'mux-id' }
+      }
+    }
+  },
+  {
+    request: {
+      query: ENABLE_MUX_DOWNLOAD,
+      variables: { id: 'mux-id', resolution: '360p' }
+    },
+    result: {
+      data: {
+        enableMuxDownload: { id: 'mux-id' }
+      }
+    }
+  },
+  {
+    request: {
+      query: ENABLE_MUX_DOWNLOAD,
+      variables: { id: 'mux-id', resolution: '720p' }
+    },
+    result: {
+      data: {
+        enableMuxDownload: { id: 'mux-id' }
+      }
+    }
+  },
+  {
+    request: {
+      query: ENABLE_MUX_DOWNLOAD,
+      variables: { id: 'mux-id', resolution: '1080p' }
+    },
+    result: {
+      data: {
+        enableMuxDownload: { id: 'mux-id' }
+      }
+    }
+  }
+]
+
+// Mock for creating video variant downloads
+const createVideoVariantDownloadMocks = [
+  {
+    request: {
+      query: CREATE_VIDEO_VARIANT_DOWNLOAD,
+      variables: {
+        input: {
+          videoVariantId: 'language-id_video-id',
+          quality: 'low',
+          size: 0,
+          height: 270,
+          width: 480,
+          url: 'https://stream.mux.com/playback-id/270p.mp4',
+          version: 0
+        }
+      }
+    },
+    result: {
+      data: {
+        videoVariantDownloadCreate: {
+          id: 'download-low',
+          quality: 'low',
+          url: 'https://stream.mux.com/playback-id/270p.mp4',
+          height: 270,
+          width: 480,
+          size: 0
+        }
+      }
+    }
+  },
+  {
+    request: {
+      query: CREATE_VIDEO_VARIANT_DOWNLOAD,
+      variables: {
+        input: {
+          videoVariantId: 'language-id_video-id',
+          quality: 'sd',
+          size: 0,
+          height: 360,
+          width: 640,
+          url: 'https://stream.mux.com/playback-id/360p.mp4',
+          version: 0
+        }
+      }
+    },
+    result: {
+      data: {
+        videoVariantDownloadCreate: {
+          id: 'download-sd',
+          quality: 'sd',
+          url: 'https://stream.mux.com/playback-id/360p.mp4',
+          height: 360,
+          width: 640,
+          size: 0
+        }
+      }
+    }
+  },
+  {
+    request: {
+      query: CREATE_VIDEO_VARIANT_DOWNLOAD,
+      variables: {
+        input: {
+          videoVariantId: 'language-id_video-id',
+          quality: 'high',
+          size: 0,
+          height: 720,
+          width: 1280,
+          url: 'https://stream.mux.com/playback-id/720p.mp4',
+          version: 0
+        }
+      }
+    },
+    result: {
+      data: {
+        videoVariantDownloadCreate: {
+          id: 'download-high',
+          quality: 'high',
+          url: 'https://stream.mux.com/playback-id/720p.mp4',
+          height: 720,
+          width: 1280,
+          size: 0
+        }
+      }
+    }
+  },
+  {
+    request: {
+      query: CREATE_VIDEO_VARIANT_DOWNLOAD,
+      variables: {
+        input: {
+          videoVariantId: 'language-id_video-id',
+          quality: 'highest',
+          size: 0,
+          height: 1080,
+          width: 1920,
+          url: 'https://stream.mux.com/playback-id/1080p.mp4',
+          version: 0
+        }
+      }
+    },
+    result: {
+      data: {
+        videoVariantDownloadCreate: {
+          id: 'download-highest',
+          quality: 'highest',
+          url: 'https://stream.mux.com/playback-id/1080p.mp4',
+          height: 1080,
+          width: 1920,
+          size: 0
+        }
+      }
+    }
+  }
+]
+
 // Initial state for comparison in tests
 const initialStateForTests = {
   isUploading: false,
@@ -251,7 +417,9 @@ describe('UploadVideoVariantContext', () => {
         createR2AssetMock, // Use the mock as is, it already has a jest.fn() for result
         { ...createMuxVideoUploadByUrlMock, result: muxCreateResult },
         { ...getMyMuxVideoMock, result: getMuxVideoResult },
-        { ...createVideoVariantMock, result: createVariantResult }
+        { ...createVideoVariantMock, result: createVariantResult },
+        ...enableMuxDownloadMocks,
+        ...createVideoVariantDownloadMocks
       ]
 
       const { result } = renderHook(() => useUploadVideoVariant(), {
@@ -475,7 +643,9 @@ describe('UploadVideoVariantContext', () => {
         createR2AssetMock, // Use the mock as is
         { ...createMuxVideoUploadByUrlMock, result: muxCreateResult },
         { ...getMyMuxVideoMock, result: getMuxVideoResult },
-        { ...createVideoVariantMock, result: createVariantResult }
+        { ...createVideoVariantMock, result: createVariantResult },
+        ...enableMuxDownloadMocks,
+        ...createVideoVariantDownloadMocks
       ]
 
       const { result } = renderHook(() => useUploadVideoVariant(), {
@@ -584,7 +754,9 @@ describe('UploadVideoVariantContext', () => {
         createR2AssetMock,
         { ...createMuxVideoUploadByUrlMock, result: muxCreateResult },
         { ...getMyMuxVideoMock, result: getMuxVideoResult },
-        { ...createPublishedVariantMock, result: createVariantResult }
+        { ...createPublishedVariantMock, result: createVariantResult },
+        ...enableMuxDownloadMocks,
+        ...createVideoVariantDownloadMocks
       ]
 
       const { result } = renderHook(() => useUploadVideoVariant(), {

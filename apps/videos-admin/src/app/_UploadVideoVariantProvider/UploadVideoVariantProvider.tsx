@@ -42,6 +42,27 @@ export const CREATE_VIDEO_VARIANT = graphql(`
   }
 `)
 
+export const CREATE_VIDEO_VARIANT_DOWNLOAD = graphql(`
+  mutation CreateVideoVariantDownload($input: VideoVariantDownloadCreateInput!) {
+    videoVariantDownloadCreate(input: $input) {
+      id
+      quality
+      url
+      height
+      width
+      size
+    }
+  }
+`)
+
+export const ENABLE_MUX_DOWNLOAD = graphql(`
+  mutation EnableMuxDownload($id: ID!, $resolution: String) {
+    enableMuxDownload(id: $id, resolution: $resolution) {
+      id
+    }
+  }
+`)
+
 export const GET_MY_MUX_VIDEO = graphql(`
   query GetMyMuxVideo($id: ID!, $userGenerated: Boolean) {
     getMyMuxVideo(id: $id, userGenerated: $userGenerated) {
@@ -168,6 +189,8 @@ export function UploadVideoVariantProvider({
   const [createR2Asset] = useCreateR2AssetMutation()
   const [createMuxVideo] = useMutation(CREATE_MUX_VIDEO_UPLOAD_BY_URL)
   const [createVideoVariant] = useMutation(CREATE_VIDEO_VARIANT)
+  const [createVideoVariantDownload] = useMutation(CREATE_VIDEO_VARIANT_DOWNLOAD)
+  const [enableMuxDownload] = useMutation(ENABLE_MUX_DOWNLOAD)
   const [getMyMuxVideo, { stopPolling }] = useLazyQuery(GET_MY_MUX_VIDEO, {
     pollInterval: 1000,
     notifyOnNetworkStatusChange: true,
@@ -194,6 +217,90 @@ export function UploadVideoVariantProvider({
     }
   })
 
+  const createStaticRenditions = async (
+    videoVariantId: string,
+    muxVideoId: string,
+    playbackId: string
+  ): Promise<void> => {
+    try {
+      // Enable Mux downloads for all required resolutions
+      await Promise.all([
+        enableMuxDownload({
+          variables: { id: muxVideoId, resolution: '270p' }
+        }),
+        enableMuxDownload({
+          variables: { id: muxVideoId, resolution: '360p' }
+        }),
+        enableMuxDownload({
+          variables: { id: muxVideoId, resolution: '720p' }
+        }),
+        enableMuxDownload({
+          variables: { id: muxVideoId, resolution: '1080p' }
+        })
+      ])
+
+      // Create video variant downloads for all required qualities
+      await Promise.all([
+        createVideoVariantDownload({
+          variables: {
+            input: {
+              videoVariantId: videoVariantId,
+              quality: 'low',
+              size: 0,
+              height: 270,
+              width: 480,
+              url: `https://stream.mux.com/${playbackId}/270p.mp4`,
+              version: 0
+            }
+          }
+        }),
+        createVideoVariantDownload({
+          variables: {
+            input: {
+              videoVariantId: videoVariantId,
+              quality: 'sd',
+              size: 0,
+              height: 360,
+              width: 640,
+              url: `https://stream.mux.com/${playbackId}/360p.mp4`,
+              version: 0
+            }
+          }
+        }),
+        createVideoVariantDownload({
+          variables: {
+            input: {
+              videoVariantId: videoVariantId,
+              quality: 'high',
+              size: 0,
+              height: 720,
+              width: 1280,
+              url: `https://stream.mux.com/${playbackId}/720p.mp4`,
+              version: 0
+            }
+          }
+        }),
+        createVideoVariantDownload({
+          variables: {
+            input: {
+              videoVariantId: videoVariantId,
+              quality: 'highest',
+              size: 0,
+              height: 1080,
+              width: 1920,
+              url: `https://stream.mux.com/${playbackId}/1080p.mp4`,
+              version: 0
+            }
+          }
+        })
+      ])
+    } catch (error) {
+      // Log error but don't fail the entire process
+      console.error('Failed to create static renditions:', error)
+      enqueueSnackbar('Static renditions creation failed', { variant: 'warning' })
+    }
+  }
+
   const handleCreateVideoVariant = async (
     muxId: string,
     playbackId: string,
@@ -211,12 +318,13 @@ export function UploadVideoVariantProvider({
     // Calculate lengthInMilliseconds from duration (duration is in seconds)
     const durationInSeconds = duration ?? 0
     const lengthInMilliseconds = durationInSeconds * 1000
+    const videoVariantId = `${state.languageId}_${state.videoId}`
 
     try {
       await createVideoVariant({
         variables: {
           input: {
-            id: `${state.languageId}_${state.videoId}`,
+            id: videoVariantId,
             videoId: state.videoId,
             edition: state.edition,
             languageId: state.languageId,
@@ -229,7 +337,9 @@ export function UploadVideoVariantProvider({
             lengthInMilliseconds: lengthInMilliseconds
           }
         },
-        onCompleted: () => {
+        onCompleted: async () => {
+          // Create static renditions after video variant is successfully created
+          await createStaticRenditions(videoVariantId, muxId, playbackId)
           state.onComplete?.()
         },
         update: (cache, { data }) => {
