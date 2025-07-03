@@ -33,25 +33,23 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
   }
 
   // Get journey-specific fonts if they exist
-  const journeyFonts = journey.journeyTheme
-    ? [
-        ...new Set([
-          journey.journeyTheme.headerFont,
-          journey.journeyTheme.bodyFont,
-          journey.journeyTheme.labelFont
-        ])
-      ].filter(Boolean)
-    : ['Baloo 2', 'Nunito', 'Oswald']
+  const defaultFonts = ['Montserrat', 'Open Sans', 'El Messiri']
+  const journeyFonts = getSortedValidFonts([
+    ...defaultFonts,
+    journey?.journeyTheme?.headerFont ?? '',
+    journey?.journeyTheme?.bodyFont ?? '',
+    journey?.journeyTheme?.labelFont ?? ''
+  ])
 
-  const fontLink =
-    journeyFonts.length > 0
-      ? `https://fonts.googleapis.com/css2?${journeyFonts
-          .map(
-            (font) =>
-              `family=${encodeURIComponent(font as string)}:wght@400;500;600;700;800`
-          )
-          .join('&')}&display=swap`
-      : null
+  function getSortedValidFonts(fonts: string[]): string[] {
+    return [...new Set(fonts.filter((font) => font !== ''))].sort()
+  }
+
+  function formatFontName(font: string): string {
+    return encodeURIComponent(font.trim()).replace(/%20/g, '+')
+  }
+
+  const googleFontsUrl = `https://fonts.googleapis.com/css2?${journeyFonts.map((font) => `family=${formatFontName(font)}:wght@400;500;600;700;800`).join('&')}&display=swap`
 
   return (
     <>
@@ -66,7 +64,7 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
           }%2F${journey.slug}&format=json`}
           title={journey.seoTitle ?? undefined}
         />
-        {fontLink && <link rel="stylesheet" href={fontLink} />}
+        <link rel="stylesheet" href={googleFontsUrl} />
       </Head>
       <NextSeo
         nofollow

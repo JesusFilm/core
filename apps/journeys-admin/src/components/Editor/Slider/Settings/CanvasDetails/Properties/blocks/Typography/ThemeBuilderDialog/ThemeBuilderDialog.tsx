@@ -124,12 +124,21 @@ export function ThemeBuilderDialog({
         },
         update(cache, { data }) {
           if (data?.journeyThemeCreate == null) return
-          cache.modify({
+
+          cache.writeFragment({
             id: cache.identify({ __typename: 'Journey', id: journey.id }),
-            fields: {
-              journeyTheme() {
-                return data.journeyThemeCreate
+            fragment: gql`
+              fragment JourneyWithTheme on Journey {
+                journeyTheme {
+                  id
+                  headerFont
+                  bodyFont
+                  labelFont
+                }
               }
+            `,
+            data: {
+              journeyTheme: data.journeyThemeCreate
             }
           })
         },
@@ -239,7 +248,7 @@ export function ThemeBuilderDialog({
           <ThemePreview
             headerFont={headerFont}
             bodyFont={bodyFont}
-            labelsFont={labelFont}
+            labelFont={labelFont}
           />
         </Box>
       </Stack>

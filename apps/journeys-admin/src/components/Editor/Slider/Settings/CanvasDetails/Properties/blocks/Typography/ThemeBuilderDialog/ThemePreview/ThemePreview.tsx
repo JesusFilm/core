@@ -29,13 +29,13 @@ import { Typography } from '@core/journeys/ui/Typography'
 interface ThemePreviewProps {
   headerFont: string
   bodyFont: string
-  labelsFont: string
+  labelFont: string
 }
 
 export function ThemePreview({
   headerFont,
   bodyFont,
-  labelsFont
+  labelFont
 }: ThemePreviewProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
@@ -110,7 +110,7 @@ export function ThemePreview({
       fontFamilies={{
         headerFont,
         bodyFont,
-        labelFont: labelsFont
+        labelFont
       }}
     >
       <Box

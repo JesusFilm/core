@@ -18,14 +18,38 @@ import { createPortal } from 'react-dom'
 import { prefixer } from 'stylis'
 import rtlPlugin from 'stylis-plugin-rtl'
 
+import { FontFamilies } from '@core/shared/ui/themes'
+
 interface ContentProps {
   children: ReactNode
   document: Document
+  fontFamilies?: FontFamilies
 }
 
-function Content({ children, document }: ContentProps): ReactElement {
+function Content({
+  children,
+  document,
+  fontFamilies
+}: ContentProps): ReactElement {
   const cache = useMemo(() => {
-    document.head.innerHTML = `${window.document.head.innerHTML}<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans&family=El+Messiri:wght@400;600;700&display=swap" rel="stylesheet" />`
+    const defaultFonts = ['Montserrat', 'Open Sans', 'El Messiri']
+    const validFonts = getSortedValidFonts([
+      ...defaultFonts,
+      ...Object.values(fontFamilies ?? {})
+    ])
+
+    function getSortedValidFonts(fonts: string[]): string[] {
+      return [...new Set(fonts.filter((font) => font !== ''))].sort()
+    }
+
+    function formatFontName(font: string): string {
+      return encodeURIComponent(font.trim()).replace(/%20/g, '+')
+    }
+
+    const googleFontsUrl = `https://fonts.googleapis.com/css2?${validFonts.map((font) => `family=${formatFontName(font)}:wght@400;500;600;700;800`).join('&')}&display=swap`
+
+    console.log('googleFontsUrl', googleFontsUrl)
+    document.head.innerHTML = `${window.document.head.innerHTML}<link href="${googleFontsUrl}" rel="stylesheet" />`
 
     return createCache({
       key: 'iframe',
@@ -33,7 +57,7 @@ function Content({ children, document }: ContentProps): ReactElement {
       prepend: true,
       stylisPlugins: document.dir === 'rtl' ? [prefixer, rtlPlugin] : []
     })
-  }, [document])
+  }, [document, fontFamilies])
 
   useEffect(() => {
     document.body.style.backgroundColor = 'transparent'
@@ -49,11 +73,12 @@ const StyledFrame = styled('iframe')(() => ({
 interface FrameProps
   extends Omit<ComponentProps<typeof StyledFrame>, 'children'> {
   children: ((props: { document: Document }) => ReactNode) | ReactNode
+  fontFamilies?: FontFamilies
 }
 
 export const FramePortal = memo(
   forwardRef<HTMLIFrameElement, FrameProps>(function FramePortal(
-    { children, dir, ...rest },
+    { children, dir, fontFamilies, ...rest },
     ref
   ): ReactElement {
     const frameRef = useRef<HTMLIFrameElement>(null)
@@ -89,7 +114,7 @@ export const FramePortal = memo(
         {iframeLoaded &&
           document != null &&
           createPortal(
-            <Content document={document}>
+            <Content document={document} fontFamilies={fontFamilies}>
               {isFunction(children) ? children({ document }) : children}
             </Content>,
             document.body

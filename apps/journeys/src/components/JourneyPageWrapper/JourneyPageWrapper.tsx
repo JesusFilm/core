@@ -31,24 +31,11 @@ export function JourneyPageWrapper({
     themeMode: journey.themeMode
   }
 
-  // Create font family strings based on journey theme
   const fontFamilies = {
-    primaryFontFamily: journey.journeyTheme?.primaryFont
-      ? journey.journeyTheme.primaryFont
-      : rtl && locale !== 'ur'
-        ? 'El Messiri'
-        : 'Nunito',
-    secondaryFontFamily: journey.journeyTheme?.secondaryFont
-      ? journey.journeyTheme.secondaryFont
-      : rtl && locale !== 'ur'
-        ? 'Tajawal'
-        : 'Nunito',
-    accentFontFamily: journey.journeyTheme?.accentFont
-      ? journey.journeyTheme.accentFont
-      : 'Tahoma'
+    headerFont: journey.journeyTheme?.headerFont ?? '',
+    bodyFont: journey.journeyTheme?.bodyFont ?? '',
+    labelFont: journey.journeyTheme?.labelFont ?? ''
   }
-
-  console.log('JourneyPageWrapper fontFamilies:', fontFamilies)
 
   return (
     <PlausibleProvider

@@ -18,9 +18,9 @@ export enum ThemeName {
 }
 
 export interface FontFamilies {
-  headerFont?: string
-  bodyFont?: string
-  labelFont?: string
+  headerFont: string
+  bodyFont: string
+  labelFont: string
 }
 
 interface ThemeProps {

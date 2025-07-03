@@ -9,9 +9,9 @@ declare module '@mui/material/styles' {
   }
 }
 
-export function createFontFamilyString(font?: string): string {
+export function createFontFamilyString(font: string): string {
   const fonts: string[] = []
-  if (font) {
+  if (font !== '') {
     fonts.push(`"${font}"`)
   }
   fonts.push('Montserrat', '"Open Sans"', 'sans-serif')
@@ -110,9 +110,9 @@ export const createCustomTypography = (
       ? {}
       : baseTypography.typography
 
-  const headerFontFamily = createFontFamilyString(headerFont)
-  const bodyFontFamily = createFontFamilyString(bodyFont)
-  const labelFontFamily = createFontFamilyString(labelFont)
+  const headerFontFamily = createFontFamilyString(headerFont ?? '')
+  const bodyFontFamily = createFontFamilyString(bodyFont ?? '')
+  const labelFontFamily = createFontFamilyString(labelFont ?? '')
 
   return {
     typography: {

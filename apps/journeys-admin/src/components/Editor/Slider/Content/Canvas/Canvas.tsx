@@ -1,6 +1,7 @@
 import { keyframes } from '@emotion/react'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
+import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react'
 import { CSSTransition, TransitionGroup } from 'react-transition-group'
@@ -48,6 +49,14 @@ const fadeIn = keyframes`
     opacity: 1;
   }
 `
+
+// const FontLoader = dynamic(
+//   async () =>
+//     await import(
+//       /* webpackChunkName: "Editor/FontLoader" */ '../../../FontLoader/FontLoader'
+//     ).then((mod) => mod.FontLoader),
+//   { ssr: false }
+// )
 
 export function Canvas(): ReactElement {
   const frameRef = useRef<HTMLIFrameElement>(null)
@@ -139,26 +148,16 @@ export function Canvas(): ReactElement {
   const theme =
     selectedStep != null ? getStepTheme(selectedStep, journey) : null
 
-  const fontFamilies = useMemo((): FontFamilies | undefined => {
-    if (!journey?.journeyTheme) return undefined
+  const journeyTheme = journey?.journeyTheme
+  const fontFamilies = useMemo(() => {
+    if (journeyTheme == null) return
 
-    const fonts: Partial<FontFamilies> = {}
-
-    if (journey.journeyTheme.headerFont) {
-      fonts.headerFont = journey.journeyTheme.headerFont
+    return {
+      headerFont: journeyTheme?.headerFont ?? '',
+      bodyFont: journeyTheme?.bodyFont ?? '',
+      labelFont: journeyTheme?.labelFont ?? ''
     }
-
-    if (journey.journeyTheme.bodyFont) {
-      fonts.bodyFont = journey.journeyTheme.bodyFont
-    }
-
-    if (journey.journeyTheme.labelFont) {
-      fonts.labelFont = journey.journeyTheme.labelFont
-    }
-
-    // Only return if at least one font is defined
-    return Object.keys(fonts).length > 0 ? (fonts as FontFamilies) : undefined
-  }, [journey])
+  }, [journeyTheme])
 
   return (
     <Stack
@@ -237,6 +236,7 @@ export function Canvas(): ReactElement {
               dir={rtl ? 'rtl' : 'ltr'}
               // frameRef assists to see if user is copying text from typog blocks
               ref={frameRef}
+              fontFamilies={fontFamilies}
               scrolling="no"
             >
               {({ document }) => (
@@ -246,6 +246,13 @@ export function Canvas(): ReactElement {
                   locale={locale}
                   fontFamilies={fontFamilies}
                 >
+                  {/* <FontLoader
+                    fonts={[
+                      journey?.journeyTheme?.headerFont ?? null,
+                      journey?.journeyTheme?.bodyFont ?? null,
+                      journey?.journeyTheme?.labelFont ?? null
+                    ]}
+                  /> */}
                   <Hotkeys document={document} />
                   <TransitionGroup
                     component={Box}

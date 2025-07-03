@@ -9,7 +9,7 @@ export function FontLoader({ fonts }: FontLoaderProps): null {
   const fontFamilies = useMemo(
     () =>
       fonts && fonts.length > 0
-        ? [...new Set(fonts)].filter(Boolean).map(formatFontWithWeights)
+        ? [...new Set(fonts)].filter(Boolean).sort().map(formatFontWithWeights)
         : [],
     [fonts]
   )
