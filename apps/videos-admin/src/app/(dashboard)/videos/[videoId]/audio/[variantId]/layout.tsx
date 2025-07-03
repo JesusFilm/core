@@ -4,6 +4,7 @@ import { useMutation, useSuspenseQuery } from '@apollo/client'
 import DeleteIcon from '@mui/icons-material/Delete'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import CircularProgress from '@mui/material/CircularProgress'
 import FormControl from '@mui/material/FormControl'
 import IconButton from '@mui/material/IconButton'
 import Paper from '@mui/material/Paper'
@@ -95,7 +96,9 @@ export default function VariantDialog({
     variables: { id: variantId, languageId: DEFAULT_VIDEO_LANGUAGE_ID }
   })
 
-  const [updateAdminVideoVariant] = useMutation(UPDATE_ADMIN_VIDEO_VARIANT)
+  const [updateAdminVideoVariant, { loading: mutationLoading }] = useMutation(
+    UPDATE_ADMIN_VIDEO_VARIANT
+  )
 
   const handleSubmit = async (
     values: FormikValues,
@@ -108,6 +111,9 @@ export default function VariantDialog({
       onCompleted: () => {
         enqueueSnackbar('Variant updated', { variant: 'success' })
         resetForm({ values })
+        router.push(`/videos/${videoId}/audio`, {
+          scroll: false
+        })
       },
       onError: () => {
         enqueueSnackbar('Error updating variant', { variant: 'error' })
@@ -199,15 +205,23 @@ export default function VariantDialog({
                       </FormControl>
                     </Stack>
                     <Stack direction="row" spacing={1}>
-                      <CancelButton show={dirty} handleCancel={resetForm} />
+                      <CancelButton
+                        show={dirty && !mutationLoading}
+                        handleCancel={resetForm}
+                      />
                       <Button
                         variant="contained"
                         size="small"
                         color="info"
                         type="submit"
-                        disabled={!dirty}
+                        disabled={!dirty || mutationLoading}
+                        startIcon={
+                          mutationLoading ? (
+                            <CircularProgress size={16} color="inherit" />
+                          ) : undefined
+                        }
                       >
-                        Save
+                        {mutationLoading ? 'Saving...' : 'Save'}
                       </Button>
                     </Stack>
                   </Stack>
