@@ -14,6 +14,22 @@ import {
   type TypographyVariantType
 } from './enums/typographyVariant'
 
+interface TypographyBlockSettingsType {
+  color: string
+}
+
+const TypographyBlockSettingsRef =
+  builder.objectRef<TypographyBlockSettingsType>('TypographyBlockSettings')
+
+const TypographyBlockSettings = builder.objectType(TypographyBlockSettingsRef, {
+  fields: (t) => ({
+    color: t.string({
+      nullable: true,
+      resolve: (settings: TypographyBlockSettingsType) => settings.color
+    })
+  })
+})
+
 export const TypographyBlock = builder.prismaObject('Block', {
   variant: 'TypographyBlock',
   interfaces: [Block],
@@ -57,6 +73,13 @@ export const TypographyBlock = builder.prismaObject('Block', {
       nullable: true,
       directives: { shareable: true },
       resolve: (block) => block.align as TypographyAlignType
+    }),
+    settings: t.field({
+      type: TypographyBlockSettings,
+      nullable: true,
+      directives: { shareable: true },
+      resolve: (block) =>
+        block.settings as unknown as TypographyBlockSettingsType
     })
   })
 })
