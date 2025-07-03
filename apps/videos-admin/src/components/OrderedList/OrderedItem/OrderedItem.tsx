@@ -93,12 +93,12 @@ export function OrderedItem({
         ...style,
         display: 'flex',
         flexDirection: 'row',
-        gap: 2,
+        gap: 3,
         alignItems: 'center',
         border: '1px solid',
         borderColor: 'divider',
         backgroundColor: 'background.default',
-        p: 1,
+        p: 2,
         borderRadius: 1,
         width: '100%',
         ...sx
@@ -134,8 +134,8 @@ export function OrderedItem({
         <Box
           sx={{
             position: 'relative',
-            height: 48,
-            width: { xs: 'auto', sm: 80 },
+            height: 72,
+            width: { xs: 'auto', sm: 120 },
             borderRadius: 0.75,
             overflow: 'hidden',
             flexShrink: 0,
@@ -156,7 +156,7 @@ export function OrderedItem({
           ) : (
             <ImageIcon
               sx={{
-                fontSize: 24,
+                fontSize: 32,
                 color: 'text.secondary'
               }}
             />
@@ -164,10 +164,10 @@ export function OrderedItem({
         </Box>
       )}
       <Box>
-        <Typography variant="subtitle2">{`${idx + 1}. ${label}`}</Typography>
+        <Typography variant="subtitle1" fontWeight="medium">{`${idx + 1}. ${label}`}</Typography>
         {subtitle != null && (
           <Typography
-            variant="caption"
+            variant="body2"
             color="text.secondary"
           >{`${subtitle}`}</Typography>
         )}

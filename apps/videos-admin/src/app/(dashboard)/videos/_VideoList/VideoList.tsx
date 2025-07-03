@@ -313,7 +313,7 @@ export function VideoList(): ReactElement {
     {
       field: 'locked',
       headerName: 'Locked',
-      width: 68,
+      width: 100,
       renderCell: (params) => <LockedCell {...params} />,
       filterOperators: getGridBooleanOperators().filter(
         (operator) => operator.value === 'is'
@@ -322,7 +322,7 @@ export function VideoList(): ReactElement {
     {
       field: 'id',
       headerName: 'ID',
-      minWidth: 150,
+      minWidth: 220,
       filterOperators: getGridStringOperators().filter(
         (operator) => operator.value === 'equals'
       )
@@ -330,7 +330,7 @@ export function VideoList(): ReactElement {
     {
       field: 'title',
       headerName: 'Title',
-      minWidth: 200,
+      minWidth: 300,
       filterOperators: getGridStringOperators().filter(
         (operator) => operator.value === 'equals'
       )
@@ -338,7 +338,7 @@ export function VideoList(): ReactElement {
     {
       field: 'published',
       headerName: 'Published',
-      width: 112,
+      width: 140,
       filterOperators: getGridBooleanOperators().filter(
         (operator) => operator.value === 'is'
       ),
@@ -688,7 +688,7 @@ export function VideoList(): ReactElement {
         getRowClassName={(params) =>
           params.indexRelativeToCurrentPage % 2 === 0 ? 'even' : 'odd'
         }
-        density="compact"
+        rowHeight={60}
         data-testid="VideoListDataGrid"
         loading={loading}
         rows={rows}
