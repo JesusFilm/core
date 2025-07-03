@@ -1,18 +1,17 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect } from 'react'
 import WebFont from 'webfontloader'
 
 interface FontLoaderProps {
-  fonts: (string | null)[]
+  fonts: string[]
 }
 
 export function FontLoader({ fonts }: FontLoaderProps): null {
-  const fontFamilies = useMemo(
-    () =>
-      fonts && fonts.length > 0
-        ? [...new Set(fonts)].filter(Boolean).sort().map(formatFontWithWeights)
-        : [],
-    [fonts]
-  )
+  const validFonts = getSortedUniqueFonts(fonts)
+  const fontFamilies = validFonts.map(formatFontWithWeights)
+
+  function getSortedUniqueFonts(fonts: string[]): string[] {
+    return [...new Set(fonts.filter((font) => font !== ''))].sort()
+  }
 
   function formatFontWithWeights(font: string): string {
     return `${font}:400,500,600,700,800`

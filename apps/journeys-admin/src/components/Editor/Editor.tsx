@@ -63,9 +63,9 @@ export function Editor({
         <HotkeysProvider>
           <FontLoader
             fonts={[
-              journey?.journeyTheme?.headerFont ?? null,
-              journey?.journeyTheme?.bodyFont ?? null,
-              journey?.journeyTheme?.labelFont ?? null
+              journey?.journeyTheme?.headerFont ?? '',
+              journey?.journeyTheme?.bodyFont ?? '',
+              journey?.journeyTheme?.labelFont ?? ''
             ]}
           />
           <Hotkeys />

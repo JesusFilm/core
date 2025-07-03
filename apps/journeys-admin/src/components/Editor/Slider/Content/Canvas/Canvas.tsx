@@ -50,14 +50,6 @@ const fadeIn = keyframes`
   }
 `
 
-// const FontLoader = dynamic(
-//   async () =>
-//     await import(
-//       /* webpackChunkName: "Editor/FontLoader" */ '../../../FontLoader/FontLoader'
-//     ).then((mod) => mod.FontLoader),
-//   { ssr: false }
-// )
-
 export function Canvas(): ReactElement {
   const frameRef = useRef<HTMLIFrameElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -246,13 +238,6 @@ export function Canvas(): ReactElement {
                   locale={locale}
                   fontFamilies={fontFamilies}
                 >
-                  {/* <FontLoader
-                    fonts={[
-                      journey?.journeyTheme?.headerFont ?? null,
-                      journey?.journeyTheme?.bodyFont ?? null,
-                      journey?.journeyTheme?.labelFont ?? null
-                    ]}
-                  /> */}
                   <Hotkeys document={document} />
                   <TransitionGroup
                     component={Box}
