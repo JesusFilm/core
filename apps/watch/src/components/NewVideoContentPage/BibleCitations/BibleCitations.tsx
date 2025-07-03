@@ -1,10 +1,10 @@
-import Image from 'next/image'
 import { ReactElement } from 'react'
 import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { VideoContentFields_bibleCitations as BibleCitation } from '../../../../__generated__/VideoContentFields'
 
+import { BibleCitationCard } from './BibleCitationsCard/BibleCitationCard'
 import { FreeResourceCard, type FreeResourceProps } from './FreeResourceCard'
 
 const bibleImages = [
@@ -43,26 +43,10 @@ export function BibleCitations({
       >
         {bibleCitations.map((citation, i) => (
           <SwiperSlide key={i} className="max-w-[400px]">
-            <div
-              className="relative h-[400px] w-[400px] flex flex-col justify-end rounded-lg overflow-hidden border border-white/10 bg-black/10"
-              style={{ backgroundColor: '#1A1815' }}
-            >
-              <Image
-                fill
-                src={
-                  bibleImages?.[i] ??
-                  'https://images.unsplash.com/photo-1480869799327-03916a613b29?q=80&w=1632&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-                }
-                alt="Bible Citation"
-                className="absolute top-0 object-cover overflow-hidden rounded-lg  [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_20%,transparent_100%)] [mask-size:cover]"
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              />
-              <div className="p-8 z-10">
-                <span className="relative font-bold text-xs uppercase tracking-wider text-white/80">
-                  {`${citation.bibleBook.name[0].value} ${citation.chapterStart}:${citation.verseStart}`}
-                </span>
-              </div>
-            </div>
+            <BibleCitationCard
+              citation={citation}
+              imageUrl={bibleImages?.[i] ?? bibleImages[0]}
+            />
           </SwiperSlide>
         ))}
         {freeResource != null && (
