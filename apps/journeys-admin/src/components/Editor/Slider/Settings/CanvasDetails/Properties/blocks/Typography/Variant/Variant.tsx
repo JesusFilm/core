@@ -1,7 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { ReactElement, useMemo } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
@@ -48,12 +48,24 @@ export function Variant(): ReactElement {
     | TreeBlock<TypographyBlock>
     | undefined
 
+  const journeyTheme = journey?.journeyTheme
+  const fontFamilies = useMemo(() => {
+    if (journeyTheme == null) return
+
+    return {
+      headerFont: journeyTheme?.headerFont ?? '',
+      bodyFont: journeyTheme?.bodyFont ?? '',
+      labelFont: journeyTheme?.labelFont ?? ''
+    }
+  }, [journeyTheme])
+
   const withJourneyTheme = (children): ReactElement => (
     <ThemeProvider
       themeName={ThemeName.base}
       themeMode={ThemeMode.light}
       rtl={rtl}
       locale={locale}
+      fontFamilies={fontFamilies}
       nested
     >
       {children}
