@@ -1,9 +1,8 @@
-import { ReactElement } from 'react'
 import { useTheme } from '@mui/material/styles'
+import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../__generated__/BlockFields'
 import {
@@ -16,17 +15,9 @@ interface ColorDisplayIconProps {
   color: TypographyColor | ButtonColor | IconColor | string | null
 }
 
-enum DisplayColor {
-  primary = 'primary.main',
-  secondary = 'secondary.main',
-  error = 'error.main',
-  inherit = 'primary.contrastText'
-}
-
 export function ColorDisplayIcon({
   color
 }: ColorDisplayIconProps): ReactElement {
-  const { journey } = useJourney()
   const {
     state: { selectedStep }
   } = useEditor()
@@ -42,10 +33,12 @@ export function ColorDisplayIcon({
       <span
         style={{
           backgroundColor: color,
-          width: '16px',
-          height: '16px',
+          width: '24px',
+          height: '24px',
           borderRadius: '50%',
-          display: 'inline-block'
+          display: 'inline-block',
+          border: '2px solid white',
+          boxShadow: '0 3px 8px rgba(0, 0, 0, 0.3)'
         }}
       />
     )
@@ -78,7 +71,9 @@ export function ColorDisplayIcon({
         width: '16px',
         height: '16px',
         borderRadius: '50%',
-        display: 'inline-block'
+        display: 'inline-block',
+        border: '2px solid white',
+        boxShadow: '0 3px 8px rgba(0, 0, 0, 0.3)'
       }}
     />
   )

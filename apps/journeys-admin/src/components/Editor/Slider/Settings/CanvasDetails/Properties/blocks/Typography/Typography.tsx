@@ -18,10 +18,26 @@ import { Color } from './Color'
 import { Variant } from './Variant'
 
 export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
-  const { id, align, color, variant } = block
+  const { id, align, color, variant, settings } = block
   const { t } = useTranslation('apps-journeys-admin')
 
   const { dispatch } = useEditor()
+
+  // Get the effective color - prioritize settings.color (hex) over legacy color (enum)
+  const getEffectiveColor = () => {
+    // First check if there's a valid hex color in settings
+    if (settings?.color && settings.color.trim() !== '') {
+      return settings.color
+    }
+    // If settings is empty {} or settings.color is empty/null, fall back to legacy enum color
+    if (color) {
+      return color
+    }
+    // When both are null (new blocks), return default color for display
+    return '#FEFEFE'
+  }
+
+  const effectiveColor = getEffectiveColor()
 
   useEffect(() => {
     dispatch({
@@ -45,9 +61,9 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
 
       <Accordion
         id={`${id}-typography-color`}
-        icon={<ColorDisplayIcon color={color} />}
+        icon={<ColorDisplayIcon color={effectiveColor} />}
         name={t('Color')}
-        value={capitalize(color?.toString() ?? 'primary')}
+        value={capitalize(effectiveColor?.toString() ?? ' ')}
       >
         <Color />
       </Accordion>

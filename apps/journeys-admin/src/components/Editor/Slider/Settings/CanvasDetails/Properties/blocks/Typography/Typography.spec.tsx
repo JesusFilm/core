@@ -42,7 +42,7 @@ describe('Typography properties', () => {
     expect(
       getByRole('button', { name: 'Text Variant Body 2' })
     ).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Color Primary' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Color #fefefe' })).toBeInTheDocument()
     expect(
       getByRole('button', { name: 'Text Alignment Left' })
     ).toBeInTheDocument()
@@ -102,7 +102,7 @@ describe('Typography properties', () => {
     expect(
       getByRole('button', { name: 'Text Variant Header 2' })
     ).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Color Primary' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Color #c52d3a' })).toBeInTheDocument()
     expect(
       getByRole('button', { name: 'Text Alignment Center' })
     ).toBeInTheDocument()
@@ -132,7 +132,7 @@ describe('Typography properties', () => {
     expect(
       getByRole('button', { name: 'Text Variant Body 2' })
     ).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Color Primary' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Color #c52d3a' })).toBeInTheDocument()
     expect(
       getByRole('button', { name: 'Text Alignment Left' })
     ).toBeInTheDocument()
