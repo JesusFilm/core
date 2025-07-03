@@ -30,8 +30,9 @@ const GET_EDITION = graphql(`
         primary
         language {
           id
-          name(languageId: $languageId, primary: true) {
+          name(languageId: $languageId) {
             value
+            primary
           }
         }
       }
@@ -190,9 +191,19 @@ export default function EditEditionPage({
                     justifyContent: 'space-between'
                   }}
                 >
-                  <Typography variant="h6">
-                    {subtitle.language.name[0].value}
-                  </Typography>
+                  <Stack>
+                    <Typography variant="h6">
+                      {subtitle.language.name.find(({ primary }) => !primary)?.value || 
+                       subtitle.language.name.find(({ primary }) => primary)?.value}
+                    </Typography>
+                    <Typography 
+                      variant="body2" 
+                      color="text.secondary"
+                      sx={{ fontWeight: 300, fontSize: '0.875rem' }}
+                    >
+                      {subtitle.language.name.find(({ primary }) => primary)?.value}
+                    </Typography>
+                  </Stack>
                   <ActionButton
                     actions={{
                       edit: () =>
