@@ -287,8 +287,18 @@ export function VideoCreateForm({
             fullWidth
             disabled={originsLoading}
           />
-          <FormTextField name="id" label="ID" fullWidth />
-          <FormTextField name="slug" label="Slug" fullWidth />
+          <FormTextField
+            name="id"
+            label="ID"
+            placeholder="eg. 1_jf_0_0"
+            fullWidth
+          />
+          <FormTextField
+            name="slug"
+            label="Slug"
+            placeholder="eg. jesus-walks-on-water"
+            fullWidth
+          />
           <FormSelectField
             name="label"
             label="Label"
