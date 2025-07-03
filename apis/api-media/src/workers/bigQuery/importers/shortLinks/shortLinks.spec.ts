@@ -220,7 +220,7 @@ describe('bigQuery/importers/shortLinks', () => {
       )
     })
 
-    it('should throw error if some rows do not match schema', async () => {
+    it('should skip invalid rows and continue processing', async () => {
       // Mock the domain creation
       prismaMock.shortLinkDomain.upsert.mockResolvedValue({
         id: mockDomainId,
@@ -231,6 +231,10 @@ describe('bigQuery/importers/shortLinks', () => {
         services: [PrismaService.apiMedia]
       })
 
+      // Mock createMany to return count of 0 (no valid rows to insert)
+      prismaMock.shortLink.createMany.mockResolvedValue({ count: 0 })
+
+      // This should not throw, but should skip invalid rows
       await expect(
         importMany([
           {
@@ -244,9 +248,13 @@ describe('bigQuery/importers/shortLinks', () => {
             timestamp: { value: '2023-01-01T12:00:00Z' }
           }
         ])
-      ).rejects.toThrow(
-        'some rows do not match schema: invalid-row-1,invalid-row-2'
-      )
+      ).resolves.toBeUndefined()
+
+      // Should call createMany with empty array since all rows are invalid
+      expect(prismaMock.shortLink.createMany).toHaveBeenCalledWith({
+        data: [],
+        skipDuplicates: true
+      })
     })
   })
 })
