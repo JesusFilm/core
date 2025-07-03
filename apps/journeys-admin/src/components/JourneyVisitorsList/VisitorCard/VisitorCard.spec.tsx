@@ -50,7 +50,7 @@ describe('VisitorCard', () => {
     const { getByRole, getAllByText } = render(
       <VisitorCard visitorNode={visitorNode} loading={false} />
     )
-    expect(getAllByText('FirstName LastName')).toHaveLength(3)
+    expect(getAllByText('FirstName LastName')).toHaveLength(2)
     expect(getByRole('link')).toHaveAttribute(
       'href',
       '/reports/visitors/visitor.id-012345678901'
@@ -65,7 +65,7 @@ describe('VisitorCard', () => {
     const { getByRole, getAllByText } = render(
       <VisitorCard visitorNode={visitorNode} loading={false} />
     )
-    expect(getAllByText('FirstName LastName')).toHaveLength(3)
+    expect(getAllByText('FirstName LastName')).toHaveLength(2)
     expect(getByRole('link')).toHaveAttribute(
       'href',
       '/reports/visitors/visitor.id-012345678901?journeyId=journeyId'
