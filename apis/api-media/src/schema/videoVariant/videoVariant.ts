@@ -11,7 +11,7 @@ import { updateVideoVariantInAlgolia } from '../../workers/algolia/service'
 import { builder } from '../builder'
 import { deleteR2File } from '../cloudflare/r2/asset'
 import { Language } from '../language'
-import { deleteVideo } from '../mux/video/service'
+import { deleteVideo, enableDownload } from '../mux/video/service'
 
 import { VideoVariantCreateInput } from './inputs/videoVariantCreate'
 import { VideoVariantFilter } from './inputs/videoVariantFilter'
@@ -197,6 +197,16 @@ builder.mutationFields((t) => ({
         // Log the error but don't throw it
         console.error('Cache reset error:', error)
       }
+
+      // Create static renditions if we have a muxVideoId and hls URL
+      if (input.muxVideoId && input.hls) {
+        try {
+          await createStaticRenditions(id, input.muxVideoId, input.hls)
+        } catch (error) {
+          console.error('Failed to create static renditions:', error)
+        }
+      }
+
       return newVariant
     }
   }),
@@ -361,3 +371,67 @@ builder.mutationFields((t) => ({
     }
   })
 }))
+
+async function createStaticRenditions(
+  videoVariantId: string,
+  muxVideoId: string,
+  hlsUrl: string
+): Promise<void> {
+  try {
+    // Extract playbackId from HLS URL (e.g., "https://stream.mux.com/PLAYBACK_ID.m3u8")
+    const playbackIdMatch = hlsUrl.match(/stream\.mux\.com\/([^.]+)\.m3u8/)
+    if (!playbackIdMatch) {
+      console.error('Could not extract playbackId from HLS URL:', hlsUrl)
+      return
+    }
+    const playbackId = playbackIdMatch[1]
+
+    // Get the Mux video to get the assetId
+    const muxVideo = await prisma.muxVideo.findUnique({
+      where: { id: muxVideoId },
+      select: { assetId: true }
+    })
+
+    if (!muxVideo?.assetId) {
+      console.error('No assetId found for muxVideoId:', muxVideoId)
+      return
+    }
+
+    // Define rendition configurations
+    const renditions = [
+      { resolution: '270p', quality: 'low', height: 270, width: 480 },
+      { resolution: '360p', quality: 'sd', height: 360, width: 640 },
+      { resolution: '720p', quality: 'high', height: 720, width: 1280 },
+      { resolution: '1080p', quality: 'highest', height: 1080, width: 1920 }
+    ]
+
+    // Enable Mux downloads for all resolutions in parallel
+    await Promise.allSettled(
+      renditions.map(({ resolution }) =>
+        enableDownload(muxVideo.assetId!, false, resolution)
+      )
+    )
+
+    // Create video variant downloads for all qualities in parallel
+    await Promise.allSettled(
+      renditions.map(({ resolution, quality, height, width }) =>
+        prisma.videoVariantDownload.create({
+          data: {
+            videoVariantId,
+            quality,
+            size: 0,
+            height,
+            width,
+            url: `https://stream.mux.com/${playbackId}/${resolution}.mp4`,
+            version: 0
+          }
+        })
+      )
+    )
+
+    console.log(`Successfully created static renditions for videoVariant: ${videoVariantId}`)
+  } catch (error) {
+    // Log error but don't fail the entire video variant creation
+    console.error('Failed to create static renditions:', error)
+  }
+}
