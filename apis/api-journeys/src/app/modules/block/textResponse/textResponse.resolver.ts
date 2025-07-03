@@ -100,6 +100,8 @@ export class TextResponseBlockResolver {
         }
       )
 
-    return await this.blockService.update(id, input)
+    return await this.blockService.update(id, {
+      ...input
+    })
   }
 }

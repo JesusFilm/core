@@ -25,6 +25,66 @@ describe('ExistingVideoSelector', () => {
     {
       request: {
         query: SEARCH_VIDEOS,
+        variables: { title: 't' }
+      },
+      result: {
+        data: {
+          adminVideos: [
+            {
+              id: 'video1',
+              title: [{ primary: true, value: 'Test Video 1' }]
+            },
+            {
+              id: 'video2',
+              title: [{ primary: true, value: 'Test Video 2' }]
+            }
+          ]
+        }
+      }
+    },
+    {
+      request: {
+        query: SEARCH_VIDEOS,
+        variables: { title: 'te' }
+      },
+      result: {
+        data: {
+          adminVideos: [
+            {
+              id: 'video1',
+              title: [{ primary: true, value: 'Test Video 1' }]
+            },
+            {
+              id: 'video2',
+              title: [{ primary: true, value: 'Test Video 2' }]
+            }
+          ]
+        }
+      }
+    },
+    {
+      request: {
+        query: SEARCH_VIDEOS,
+        variables: { title: 'tes' }
+      },
+      result: {
+        data: {
+          adminVideos: [
+            {
+              id: 'video1',
+              title: [{ primary: true, value: 'Test Video 1' }]
+            },
+            {
+              id: 'video2',
+              title: [{ primary: true, value: 'Test Video 2' }]
+            }
+          ]
+        }
+      }
+    },
+    {
+      request: {
+        query: SEARCH_VIDEOS,
         variables: { title: 'test' }
       },
       result: {

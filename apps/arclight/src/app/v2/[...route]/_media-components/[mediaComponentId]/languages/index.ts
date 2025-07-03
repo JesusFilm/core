@@ -3,6 +3,7 @@ import { ResultOf, graphql } from 'gql.tada'
 import { timeout } from 'hono/timeout'
 
 import { getApolloClient } from '../../../../../../lib/apolloClient'
+import { getDefaultPlatformForApiKey } from '../../../../../../lib/getPlatformFromApiKey'
 import {
   getWebEmbedPlayer,
   getWebEmbedSharePlayer
@@ -101,10 +102,18 @@ const route = createRoute({
 mediaComponentLanguages.openapi(route, async (c) => {
   const mediaComponentId = c.req.param('mediaComponentId')
 
-  const apiKey = c.req.query('apiKey') ?? '616db012e9a951.51499299'
-  const platform = c.req.query('platform') ?? 'ios'
+  const apiKey = c.req.query('apiKey')
+
+  let platform = c.req.query('platform')
+  if (!platform && apiKey) {
+    platform = await getDefaultPlatformForApiKey(apiKey)
+  }
+  if (!platform) {
+    platform = 'ios' // Default platform for this route
+  }
+
   const languageIds = c.req.query('languageIds')?.split(',') ?? []
-  const apiSessionId = '6622f10d2260a8.05128925'
+  const apiSessionId = c.req.query('apiSessionId') ?? '6622f10d2260a8.05128925'
 
   const { data } = await getApolloClient().query<
     ResultOf<typeof GET_VIDEO_LANGUAGES>

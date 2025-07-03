@@ -47,6 +47,7 @@ const initialValues: FormikValues = {
 const GET_ADMIN_VIDEO_VARIANTS = graphql(`
   query GetAdminVideoVariants($id: ID!) {
     adminVideo(id: $id) {
+      slug
       variants {
         id
         language {
@@ -87,6 +88,8 @@ export default function AddAudioLanguageDialog({
   const returnUrl = `/videos/${videoId}/audio`
   const handleSubmit = async (values: FormikValues): Promise<void> => {
     if (values.language == null || values.file == null) return
+    const videoSlug = variantsData.adminVideo.slug
+    if (!videoSlug) return
     await startUpload(
       values.file,
       videoId,
@@ -94,6 +97,7 @@ export default function AddAudioLanguageDialog({
       values.language.slug,
       values.edition,
       values.published === 'published',
+      videoSlug,
       () => {
         router.push(returnUrl, {
           scroll: false

@@ -150,6 +150,7 @@ export class BlockService {
           'action',
           'slug'
         ]),
+        settings: block.settings ?? {},
         journey: {
           connect: { id: block.journeyId }
         }

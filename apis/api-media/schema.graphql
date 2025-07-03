@@ -1,6 +1,14 @@
 extend schema
   @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@shareable"])
 
+type ArclightApiKey
+  @key(fields: "key")
+{
+  key: String!
+  desc: String
+  defaultPlatform: DefaultPlatform!
+}
+
 interface BaseError {
   message: String
 }
@@ -83,6 +91,12 @@ input CloudflareR2CreateInput {
 A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
 scalar Date
+
+enum DefaultPlatform {
+  ios
+  android
+  web
+}
 
 type Error implements BaseError
   @shareable
@@ -168,6 +182,7 @@ type Mutation {
   bibleCitationCreate(input: MutationBibleCitationCreateInput!): BibleCitation
   bibleCitationUpdate(input: MutationBibleCitationUpdateInput!): BibleCitation
   bibleCitationDelete(id: ID!): Boolean
+  createKeyword(value: String!, languageId: String!): Keyword!
   createMuxVideoUploadByFile(name: String!, userGenerated: Boolean): MuxVideo!
   createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean): MuxVideo!
   enableMuxDownload(id: ID!, resolution: String): MuxVideo
@@ -214,6 +229,9 @@ type Mutation {
   videoTitleCreate(input: VideoTranslationCreateInput!): VideoTitle!
   videoTitleUpdate(input: VideoTranslationUpdateInput!): VideoTitle!
   videoTitleDelete(id: ID!): VideoTitle!
+  videoOriginCreate(input: MutationVideoOriginCreateInput!): VideoOrigin!
+  videoOriginUpdate(input: MutationVideoOriginUpdateInput!): VideoOrigin!
+  videoOriginDelete(id: ID!): VideoOrigin!
   videoEditionCreate(input: VideoEditionCreateInput!): VideoEdition!
   videoEditionUpdate(input: VideoEditionUpdateInput!): VideoEdition!
   videoEditionDelete(id: ID!): VideoEdition!
@@ -223,6 +241,7 @@ type Mutation {
   videoVariantDownloadCreate(input: VideoVariantDownloadCreateInput!): VideoVariantDownload!
   videoVariantDownloadUpdate(input: VideoVariantDownloadUpdateInput!): VideoVariantDownload!
   videoVariantDownloadDelete(id: ID!): VideoVariantDownload!
+  updateVideoVariantDownloadSizesFromMux(videoVariantId: ID!): Boolean!
 }
 
 input MutationBibleCitationCreateInput {
@@ -335,6 +354,17 @@ type MutationShortLinkUpdateSuccess {
   data: ShortLink!
 }
 
+input MutationVideoOriginCreateInput {
+  name: String!
+  description: String
+}
+
+input MutationVideoOriginUpdateInput {
+  id: ID!
+  name: String
+  description: String
+}
+
 type MuxVideo
   @key(fields: "id primaryLanguageId")
 {
@@ -397,6 +427,12 @@ type PageInfo
   endCursor: String
 }
 
+enum Platform {
+  arclight
+  journeys
+  watch
+}
+
 type Query {
   getTranscodeAssetProgress(jobId: String!): Int
   getMyCloudflareImages(offset: Int, limit: Int): [CloudflareImage!]!
@@ -451,12 +487,15 @@ type Query {
   video(id: ID!, idType: IdType = databaseId): Video!
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   videosCount(where: VideosFilter): Int!
+  videoOrigins: [VideoOrigin!]!
   videoEditions: [VideoEdition!]!
   videoEdition(id: ID!): VideoEdition
   videoVariant(id: ID!): VideoVariant!
   videoVariants(input: VideoVariantFilter): [VideoVariant!]!
   tags: [Tag!]!
   taxonomies(category: String, languageCodes: [String!]): [Taxonomy!]!
+  arclightApiKeys: [ArclightApiKey!]!
+  arclightApiKeyByKey(key: String!): ArclightApiKey
 }
 
 union QueryShortLinkByPathResult = NotFoundError | QueryShortLinkByPathSuccess
@@ -736,6 +775,7 @@ type Video
   @shareable
 {
   bibleCitations: [BibleCitation!]!
+  origin: VideoOrigin
   source: VideoBlockSource @shareable
   keywords(languageId: ID): [Keyword!]!
   id: ID!
@@ -767,6 +807,9 @@ type Video
   subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]!
   variant(languageId: ID): VideoVariant
   images(aspectRatio: ImageAspectRatio): [CloudflareImage!]!
+  restrictDownloadPlatforms: [Platform!]!
+  restrictViewPlatforms: [Platform!]!
+  publishedAt: Date
 }
 
 enum VideoBlockSource {
@@ -784,6 +827,7 @@ input VideoCreateInput {
   slug: String!
   noIndex: Boolean!
   childIds: [String!]!
+  originId: String!
 }
 
 type VideoDescription {
@@ -827,6 +871,12 @@ enum VideoLabel {
   shortFilm
   trailer
   behindTheScenes
+}
+
+type VideoOrigin {
+  id: ID!
+  name: String!
+  description: String
 }
 
 type VideoSnippet {
@@ -947,6 +997,9 @@ input VideoUpdateInput {
   slug: String
   noIndex: Boolean
   childIds: [String!]
+  keywordIds: [String!]
+  restrictDownloadPlatforms: [Platform!]
+  restrictViewPlatforms: [Platform!]
 }
 
 type VideoVariant {

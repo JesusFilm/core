@@ -342,8 +342,12 @@ export default function AddVideoVariantDownloadDialog({
               }
             }
           })
-          enqueueSnackbar('Downloads created', { variant: 'success' })
-          // router.push(returnUrl, { scroll: false })
+          enqueueSnackbar(
+            'Downloads created. The download sizes will be automatically updated when they become available.',
+            { variant: 'success' }
+          )
+
+          router.push(returnUrl, { scroll: false })
         } catch (error) {
           enqueueSnackbar(
             error.message ?? 'Failed to create downloads from Mux',
@@ -531,7 +535,7 @@ export default function AddVideoVariantDownloadDialog({
                   <MenuItem value="high">Upload high 720p (2500kbps)</MenuItem>
                   <MenuItem value="sd">Upload SD 360p (1000kbps)</MenuItem>
                   <MenuItem value="low">Upload low 270p (500kbps)</MenuItem>
-                  <MenuItem
+                  {/* <MenuItem
                     value="generate-high"
                     disabled={!data.videoVariant.asset?.id}
                   >
@@ -587,7 +591,7 @@ export default function AddVideoVariantDownloadDialog({
                     )
                       ? ' (no high quality download available)'
                       : ''}
-                  </MenuItem>
+                  </MenuItem> */}
                 </Select>
                 <FormHelperText sx={{ minHeight: 20 }}>
                   {errors.quality != null &&

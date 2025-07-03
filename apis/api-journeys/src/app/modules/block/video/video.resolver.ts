@@ -257,7 +257,9 @@ export class VideoBlockResolver {
         }
         break
     }
-    return await this.blockService.update(id, input)
+    return await this.blockService.update(id, {
+      ...input
+    })
   }
 
   @ResolveField('video')

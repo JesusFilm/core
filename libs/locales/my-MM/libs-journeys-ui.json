@@ -29,6 +29,8 @@
   "Strategy": "Strategy",
   "Case Study Preview": "Case Study Preview",
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}} {{secondLanguage}}</2>": "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}, {{secondLanguage}}</2>",
+  "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_other": "<0>Journey Templates</0><1>in</1><2>{{count}} languages</2>",
+  "<0>Journey Templates</0><1>in</1><2>All Languages</2>_zero": "<0>Journey Templates</0><1>in</1><2>All Languages</2>",
   "Available Languages": "Available Languages",
   "Topics, holidays, felt needs, collections": "Topics, holidays, felt needs, collections",
   "Audience": "Audience",
@@ -75,7 +77,6 @@
   "Visit a Website": "Visit a Website",
   "Untitled": "Untitled",
   "Step {{number}}": "Step {{number}}",
-  "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_other": "<0>Journey Templates</0><1>in</1><2>{{count}} languages</2>",
   "{{count}} more cards_other": "{{count}} more cards",
   "{{count}} Cards_other": "{{count}} Cards",
   "{{count}} Videos_other": "{{count}} Videos"

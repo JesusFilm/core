@@ -33,6 +33,7 @@ const card: TreeBlock<CardBlock> = {
   themeMode: null,
   themeName: null,
   fullscreen: true,
+  backdropBlur: null,
   children: [image]
 }
 
@@ -46,6 +47,7 @@ const emptyCard: TreeBlock<CardBlock> = {
   themeMode: null,
   themeName: null,
   fullscreen: true,
+  backdropBlur: null,
   children: []
 }
 

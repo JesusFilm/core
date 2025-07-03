@@ -154,7 +154,7 @@ export function TeamMenu(): ReactElement {
       )}
 
       <IconButton edge="end" color="inherit" onClick={handleShowMenu}>
-        <MoreIcon />
+        <MoreIcon data-testid="MoreIcon" />
       </IconButton>
       <Menu
         id="edit-journey-actions"

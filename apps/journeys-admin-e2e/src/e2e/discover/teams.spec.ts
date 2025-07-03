@@ -61,10 +61,10 @@ test.describe('Teams', () => {
     const journeyPage = new JourneyPage(page)
     const teamPage = new TeamsPage(page)
 
-    const journeyName = await journeyPage.getJourneyName() // getting the journey name
     await journeyLevelActions.setBrowserContext(context) // setting the context
     await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
+    const journeyName = await journeyPage.getJourneyName() // getting the journey name
     await teamPage.clickThreeDotOfTeams() //click three dot from the Discovery page teams section
     await teamPage.clickThreeDotOptions('Custom Domain') //select Custom Domain from the three dot menu
     await teamPage.enterCustomDomainName(domainName) //Entering custom domain

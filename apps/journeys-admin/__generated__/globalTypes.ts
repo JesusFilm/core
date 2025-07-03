@@ -13,6 +13,13 @@ export enum ButtonAction {
   NavigateToBlockAction = "NavigateToBlockAction",
 }
 
+export enum ButtonAlignment {
+  center = "center",
+  justify = "justify",
+  left = "left",
+  right = "right",
+}
+
 export enum ButtonColor {
   error = "error",
   inherit = "inherit",
@@ -28,6 +35,7 @@ export enum ButtonSize {
 
 export enum ButtonVariant {
   contained = "contained",
+  outlined = "outlined",
   text = "text",
 }
 
@@ -297,6 +305,11 @@ export interface ButtonBlockCreateInput {
   color?: ButtonColor | null;
   size?: ButtonSize | null;
   submitEnabled?: boolean | null;
+  settings?: ButtonBlockSettingsInput | null;
+}
+
+export interface ButtonBlockSettingsInput {
+  alignment?: ButtonAlignment | null;
 }
 
 export interface ButtonBlockUpdateInput {
@@ -308,6 +321,7 @@ export interface ButtonBlockUpdateInput {
   startIconId?: string | null;
   endIconId?: string | null;
   submitEnabled?: boolean | null;
+  settings?: ButtonBlockSettingsInput | null;
 }
 
 export interface ButtonClickEventCreateInput {
@@ -325,6 +339,7 @@ export interface CardBlockCreateInput {
   journeyId: string;
   parentBlockId: string;
   backgroundColor?: string | null;
+  backdropBlur?: number | null;
   fullscreen?: boolean | null;
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
@@ -334,6 +349,7 @@ export interface CardBlockUpdateInput {
   parentBlockId?: string | null;
   coverBlockId?: string | null;
   backgroundColor?: string | null;
+  backdropBlur?: number | null;
   fullscreen?: boolean | null;
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
@@ -509,6 +525,8 @@ export interface JourneyUpdateInput {
   menuButtonIcon?: JourneyMenuButtonIcon | null;
   menuStepBlockId?: string | null;
   logoImageBlockId?: string | null;
+  socialNodeX?: number | null;
+  socialNodeY?: number | null;
 }
 
 export interface JourneyVisitorFilter {

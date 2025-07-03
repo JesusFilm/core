@@ -43,9 +43,12 @@ export const NavButton = forwardRef<HTMLDivElement, NavButtonProps>(
         data-testid="NavButton"
       >
         {variant === 'prev' ? (
-          <NavigateBeforeIcon fontSize="large" />
+          <NavigateBeforeIcon
+            data-testid="NavigateBeforeIcon"
+            fontSize="large"
+          />
         ) : (
-          <NavigateNextIcon fontSize="large" />
+          <NavigateNextIcon data-testid="NavigateNextIcon" fontSize="large" />
         )}
       </Stack>
     )

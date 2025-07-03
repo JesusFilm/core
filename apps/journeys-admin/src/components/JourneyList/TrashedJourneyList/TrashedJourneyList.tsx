@@ -1,6 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
-import Card from '@mui/material/Card'
+import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
@@ -164,40 +164,46 @@ export function TrashedJourneyList({
       {sortedJourneys == null ? (
         <LoadingJourneyList hideHelperText />
       ) : (
-        <Box>
-          {sortedJourneys.map((journey) => (
-            <JourneyProvider
-              key={journey.id}
-              value={{
-                journey: journey as unknown as JourneyFields,
-                variant: 'admin'
-              }}
-            >
-              <JourneyCard
+        <Box
+          sx={{
+            mt: { xs: 3, sm: 2 },
+            px: { xs: 5, sm: 0 }
+          }}
+        >
+          <Grid container spacing={4} rowSpacing={{ xs: 2.5, sm: 4 }}>
+            {sortedJourneys.map((journey) => (
+              <Grid
                 key={journey.id}
-                journey={journey}
-                refetch={refetch}
-              />
-            </JourneyProvider>
-          ))}
+                size={{ xs: 12, sm: 6, md: 6, lg: 3, xl: 3 }}
+              >
+                <JourneyProvider
+                  value={{
+                    journey: journey as unknown as JourneyFields,
+                    variant: 'admin'
+                  }}
+                >
+                  <JourneyCard
+                    key={journey.id}
+                    journey={journey}
+                    refetch={refetch}
+                  />
+                </JourneyProvider>
+              </Grid>
+            ))}
+          </Grid>
           {sortedJourneys.length === 0 && (
             <>
-              <Card
-                variant="outlined"
+              <Box
                 sx={{
                   display: 'flex',
                   flexDirection: 'column',
-                  py: 20,
-                  borderBottomLeftRadius: { xs: 0, sm: 12 },
-                  borderBottomRightRadius: { xs: 0, sm: 12 },
-                  borderTopLeftRadius: 0,
-                  borderTopRightRadius: 0
+                  pt: 30
                 }}
               >
                 <Typography variant="subtitle1" align="center">
                   {t('Your trashed journeys will appear here.')}
                 </Typography>
-              </Card>
+              </Box>
             </>
           )}
         </Box>

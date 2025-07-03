@@ -1,8 +1,8 @@
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import LanguageIcon from '@mui/icons-material/Language'
 import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded'
-import LoadingButton from '@mui/lab/LoadingButton'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
 import CircularProgress from '@mui/material/CircularProgress'
 import FormControlLabel from '@mui/material/FormControlLabel'
@@ -203,7 +203,7 @@ export function DownloadDialog({
                     {t('Terms of Use')}
                   </Link>
                 </FormGroup>
-                <LoadingButton
+                <Button
                   type="submit"
                   variant="contained"
                   size="small"
@@ -222,7 +222,7 @@ export function DownloadDialog({
                   }
                 >
                   {t('Download')}
-                </LoadingButton>
+                </Button>
               </Stack>
               <TermsOfUseDialog
                 open={openTerms}

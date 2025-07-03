@@ -35,7 +35,6 @@ export function TemplateView({
   const { journey } = useJourney()
   const { breakpoints } = useTheme()
   const { t } = useTranslation('libs-journeys-ui')
-  const [openTeamDialog, setOpenTeamDialog] = useState(false)
 
   const tagIds = journey?.tags.map((tag) => tag.id)
   const { data } = useJourneysQuery({
@@ -104,18 +103,9 @@ export function TemplateView({
         }}
       >
         <Stack sx={{ gap: { xs: 3, sm: 7, md: 0 } }}>
-          <TemplateViewHeader
-            isPublisher={isPublisher}
-            authUser={authUser}
-            openTeamDialog={openTeamDialog}
-            setOpenTeamDialog={setOpenTeamDialog}
-          />
+          <TemplateViewHeader isPublisher={isPublisher} authUser={authUser} />
           <TemplateTags tags={journey?.tags} />
-          <TemplatePreviewTabs
-            authUser={authUser}
-            openTeamDialog={openTeamDialog}
-            setOpenTeamDialog={setOpenTeamDialog}
-          />
+          <TemplatePreviewTabs authUser={authUser} />
           <Typography
             variant="body2"
             sx={{ display: { xs: 'block', sm: 'none' } }}
@@ -160,11 +150,7 @@ export function TemplateView({
               }}
             />
           )}
-          <TemplateFooter
-            signedIn={authUser?.id != null}
-            openTeamDialog={openTeamDialog}
-            setOpenTeamDialog={setOpenTeamDialog}
-          />
+          <TemplateFooter signedIn={authUser?.id != null} />
         </Stack>
       </Container>
     </Paper>

@@ -96,6 +96,7 @@ export default function VariantDialog({
   })
 
   const [updateAdminVideoVariant] = useMutation(UPDATE_ADMIN_VIDEO_VARIANT)
+
   const handleSubmit = async (
     values: FormikValues,
     { resetForm }: FormikProps<FormikValues>
@@ -222,21 +223,22 @@ export default function VariantDialog({
                 </Box>
                 <>
                   <Typography variant="h4">Downloads</Typography>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() =>
-                      router.push(
-                        `/videos/${videoId}/audio/${variantId}/download/${data.videoVariant.language.id}/add`,
-                        {
-                          scroll: false
-                        }
-                      )
-                    }
-                    sx={{ my: 2 }}
-                  >
-                    Add Download
-                  </Button>
+                  <Stack direction="row" spacing={2} sx={{ my: 2 }}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() =>
+                        router.push(
+                          `/videos/${videoId}/audio/${variantId}/download/${data.videoVariant.language.id}/add`,
+                          {
+                            scroll: false
+                          }
+                        )
+                      }
+                    >
+                      Add Download
+                    </Button>
+                  </Stack>
 
                   {data.videoVariant.downloads.length === 0 ? (
                     <Typography>No downloads available</Typography>
