@@ -43,7 +43,9 @@ export const CREATE_VIDEO_VARIANT = graphql(`
 `)
 
 export const CREATE_VIDEO_VARIANT_DOWNLOAD = graphql(`
-  mutation CreateVideoVariantDownload($input: VideoVariantDownloadCreateInput!) {
+  mutation CreateVideoVariantDownload(
+    $input: VideoVariantDownloadCreateInput!
+  ) {
     videoVariantDownloadCreate(input: $input) {
       id
       quality
@@ -189,7 +191,9 @@ export function UploadVideoVariantProvider({
   const [createR2Asset] = useCreateR2AssetMutation()
   const [createMuxVideo] = useMutation(CREATE_MUX_VIDEO_UPLOAD_BY_URL)
   const [createVideoVariant] = useMutation(CREATE_VIDEO_VARIANT)
-  const [createVideoVariantDownload] = useMutation(CREATE_VIDEO_VARIANT_DOWNLOAD)
+  const [createVideoVariantDownload] = useMutation(
+    CREATE_VIDEO_VARIANT_DOWNLOAD
+  )
   const [enableMuxDownload] = useMutation(ENABLE_MUX_DOWNLOAD)
   const [getMyMuxVideo, { stopPolling }] = useLazyQuery(GET_MY_MUX_VIDEO, {
     pollInterval: 1000,
@@ -297,7 +301,9 @@ export function UploadVideoVariantProvider({
     } catch (error) {
       // Log error but don't fail the entire process
       console.error('Failed to create static renditions:', error)
-      enqueueSnackbar('Static renditions creation failed', { variant: 'warning' })
+      enqueueSnackbar('Static renditions creation failed', {
+        variant: 'warning'
+      })
     }
   }
 
