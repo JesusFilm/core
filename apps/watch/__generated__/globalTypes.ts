@@ -227,7 +227,11 @@ export enum VideoLabel {
 }
 
 export enum VideoVariantDownloadQuality {
+  distroHigh = "distroHigh",
+  distroLow = "distroLow",
+  distroSd = "distroSd",
   high = "high",
+  highest = "highest",
   low = "low",
   sd = "sd",
 }
