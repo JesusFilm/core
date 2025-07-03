@@ -161,10 +161,16 @@ export default function EditEditionPage({
             }}
           >
             {data.videoEdition?.videoSubtitles.map((subtitle) => {
-              const primaryName = subtitle.language.name.find(({ primary }) => primary)?.value
-              const nonPrimaryName = subtitle.language.name.find(({ primary }) => !primary)?.value
-              const displayName = nonPrimaryName || primaryName || 'Unknown Language'
-              const shouldShowSecondaryName = nonPrimaryName && primaryName && nonPrimaryName !== primaryName
+              const primaryName = subtitle.language.name.find(
+                ({ primary }) => primary
+              )?.value
+              const nonPrimaryName = subtitle.language.name.find(
+                ({ primary }) => !primary
+              )?.value
+              const displayName =
+                nonPrimaryName || primaryName || 'Unknown Language'
+              const shouldShowSecondaryName =
+                nonPrimaryName && primaryName && nonPrimaryName !== primaryName
 
               const handleClick = () => {
                 router.push(
@@ -183,77 +189,75 @@ export default function EditEditionPage({
               }
 
               return (
-              <Box
-                key={subtitle.id}
-                role="button"
-                tabIndex={0}
-                aria-label={`Edit ${displayName} subtitle`}
-                sx={{
-                  p: 1,
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  borderRadius: 1,
-                  minWidth: 200,
-                  bgcolor: 'background.paper',
-                  '&:hover': {
-                    borderColor: 'action.hover',
-                    cursor: 'pointer'
-                  },
-                  '&:focus': {
-                    borderColor: 'primary.main',
-                    outline: 'none'
-                  },
-                  maxHeight: 95
-                }}
-                onClick={handleClick}
-                onKeyDown={handleKeyDown}
-              >
-                <Stack
+                <Box
+                  key={subtitle.id}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Edit ${displayName} subtitle`}
                   sx={{
                     p: 1,
-                    flexDirection: 'row',
-                    justifyContent: 'space-between'
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    borderRadius: 1,
+                    minWidth: 200,
+                    bgcolor: 'background.paper',
+                    '&:hover': {
+                      borderColor: 'action.hover',
+                      cursor: 'pointer'
+                    },
+                    '&:focus': {
+                      borderColor: 'primary.main',
+                      outline: 'none'
+                    },
+                    maxHeight: 95
                   }}
+                  onClick={handleClick}
+                  onKeyDown={handleKeyDown}
                 >
-                  <Stack>
-                    <Typography variant="h6">
-                      {displayName}
-                    </Typography>
-                    {shouldShowSecondaryName && (
-                      <Typography 
-                        variant="body2" 
-                        color="text.secondary"
-                        sx={{ fontWeight: 300, fontSize: '0.875rem' }}
-                      >
-                        {primaryName}
-                      </Typography>
+                  <Stack
+                    sx={{
+                      p: 1,
+                      flexDirection: 'row',
+                      justifyContent: 'space-between'
+                    }}
+                  >
+                    <Stack>
+                      <Typography variant="h6">{displayName}</Typography>
+                      {shouldShowSecondaryName && (
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ fontWeight: 300, fontSize: '0.875rem' }}
+                        >
+                          {primaryName}
+                        </Typography>
+                      )}
+                    </Stack>
+                    <ActionButton
+                      actions={{
+                        edit: () =>
+                          router.push(
+                            `/videos/${videoId}/editions/${editionId}/subtitles/${subtitle.id}`,
+                            {
+                              scroll: false
+                            }
+                          ),
+                        delete: () =>
+                          router.push(
+                            `/videos/${videoId}/editions/${editionId}/subtitles/${subtitle.id}/delete`,
+                            {
+                              scroll: false
+                            }
+                          )
+                      }}
+                    />
+                  </Stack>
+                  <Stack direction="row" alignItems="center" gap={1}>
+                    {subtitle.primary && (
+                      <Chip label="Primary" color="success" variant="filled" />
                     )}
                   </Stack>
-                  <ActionButton
-                    actions={{
-                      edit: () =>
-                        router.push(
-                          `/videos/${videoId}/editions/${editionId}/subtitles/${subtitle.id}`,
-                          {
-                            scroll: false
-                          }
-                        ),
-                      delete: () =>
-                        router.push(
-                          `/videos/${videoId}/editions/${editionId}/subtitles/${subtitle.id}/delete`,
-                          {
-                            scroll: false
-                          }
-                        )
-                    }}
-                  />
-                </Stack>
-                <Stack direction="row" alignItems="center" gap={1}>
-                  {subtitle.primary && (
-                    <Chip label="Primary" color="success" variant="filled" />
-                  )}
-                </Stack>
-              </Box>
+                </Box>
               )
             })}
           </Box>
