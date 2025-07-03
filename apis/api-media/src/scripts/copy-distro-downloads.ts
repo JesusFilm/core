@@ -2,26 +2,29 @@ import { VideoVariantDownloadQuality } from '.prisma/api-media-client'
 
 import { prisma } from '../lib/prisma'
 
-// Quality mapping from regular to distro
+// Quality mapping from regular to distro/highest
 const QUALITY_MAPPING: Record<
   VideoVariantDownloadQuality,
-  VideoVariantDownloadQuality
+  VideoVariantDownloadQuality[]
 > = {
-  low: VideoVariantDownloadQuality.distroLow,
-  sd: VideoVariantDownloadQuality.distroSd,
-  high: VideoVariantDownloadQuality.distroHigh,
-  // These don't have distro equivalents, so we skip them
-  highest: VideoVariantDownloadQuality.highest,
-  distroLow: VideoVariantDownloadQuality.distroLow,
-  distroSd: VideoVariantDownloadQuality.distroSd,
-  distroHigh: VideoVariantDownloadQuality.distroHigh
+  low: [VideoVariantDownloadQuality.distroLow],
+  sd: [VideoVariantDownloadQuality.distroSd],
+  high: [
+    VideoVariantDownloadQuality.distroHigh,
+    VideoVariantDownloadQuality.highest
+  ],
+  // These don't have equivalents, so we skip them
+  highest: [],
+  distroLow: [],
+  distroSd: [],
+  distroHigh: []
 }
 
 const BATCH_SIZE = 1000
 
 /**
  * Copies existing VideoVariantDownloads to their matched distro downloads
- * Maps: low -> distroLow, sd -> distroSd, high -> distroHigh
+ * Maps: low -> distroLow, sd -> distroSd, high -> distroHigh + highest
  */
 async function copyToDistroDownloads(): Promise<void> {
   console.log('Starting copy of VideoVariantDownloads to distro downloads...')
@@ -83,26 +86,28 @@ async function copyToDistroDownloads(): Promise<void> {
       const distroDownloads = []
 
       for (const download of downloads) {
-        const distroQuality = QUALITY_MAPPING[download.quality]
+        const targetQualities = QUALITY_MAPPING[download.quality]
 
-        // Skip if no distro equivalent (shouldn't happen with our filter, but safety check)
-        if (!distroQuality || distroQuality === download.quality) {
+        // Skip if no target equivalents (shouldn't happen with our filter, but safety check)
+        if (!targetQualities || targetQualities.length === 0) {
           skipped++
           continue
         }
 
-        // Prepare distro download data
-        distroDownloads.push({
-          quality: distroQuality,
-          size: download.size,
-          height: download.height,
-          width: download.width,
-          bitrate: download.bitrate,
-          version: download.version,
-          url: download.url,
-          assetId: download.assetId,
-          videoVariantId: download.videoVariantId
-        })
+        // Create a download for each target quality
+        for (const targetQuality of targetQualities) {
+          distroDownloads.push({
+            quality: targetQuality,
+            size: download.size,
+            height: download.height,
+            width: download.width,
+            bitrate: download.bitrate,
+            version: download.version,
+            url: download.url,
+            assetId: download.assetId,
+            videoVariantId: download.videoVariantId
+          })
+        }
       }
 
       // Batch insert distro downloads

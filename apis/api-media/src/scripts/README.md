@@ -109,20 +109,20 @@ nx run api-media:copy-distro-downloads
 The script will:
 
 1. Find all VideoVariantDownloads with qualities: `low`, `sd`, `high`
-2. For each download, create a corresponding distro download:
+2. For each download, create corresponding downloads:
    - `low` → `distroLow`
    - `sd` → `distroSd`
-   - `high` → `distroHigh`
+   - `high` → `distroHigh` + `highest`
 3. Process downloads in batches of 1000 for optimal performance
 4. Preserve all original metadata (size, dimensions, bitrate, etc.)
 
 ### Quality Mapping
 
-| Original Quality | Distro Quality |
-| ---------------- | -------------- |
-| low              | distroLow      |
-| sd               | distroSd       |
-| high             | distroHigh     |
+| Original Quality | Target Qualities    |
+| ---------------- | ------------------- |
+| low              | distroLow           |
+| sd               | distroSd            |
+| high             | distroHigh, highest |
 
 ### Error Handling
 

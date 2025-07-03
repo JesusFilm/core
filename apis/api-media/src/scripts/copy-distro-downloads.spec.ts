@@ -128,7 +128,7 @@ describe('copyToDistroDownloads', () => {
     })
   })
 
-  it('should copy high quality downloads to distroHigh', async () => {
+  it('should copy high quality downloads to both distroHigh and highest', async () => {
     // Mock count query
     prismaMock.videoVariantDownload.count.mockResolvedValue(1)
 
@@ -153,11 +153,22 @@ describe('copyToDistroDownloads', () => {
 
     await copyToDistroDownloads()
 
-    // Verify createMany was called with correct distroHigh data
+    // Verify createMany was called with both distroHigh and highest data
     expect(prismaMock.videoVariantDownload.createMany).toHaveBeenCalledWith({
       data: [
         {
           quality: VideoVariantDownloadQuality.distroHigh,
+          size: 2000,
+          height: 1080,
+          width: 1920,
+          bitrate: 5000,
+          version: 1,
+          url: 'https://example.com/video-hd.mp4',
+          assetId: 'asset3',
+          videoVariantId: 'variant3'
+        },
+        {
+          quality: VideoVariantDownloadQuality.highest,
           size: 2000,
           height: 1080,
           width: 1920,
@@ -266,7 +277,7 @@ describe('copyToDistroDownloads', () => {
       }
     )
 
-    // Verify createMany was called twice
+    // Verify createMany was called twice (once per batch)
     expect(prismaMock.videoVariantDownload.createMany).toHaveBeenCalledTimes(2)
   })
 })
