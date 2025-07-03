@@ -136,7 +136,10 @@ describe('ImageBlockEditor', () => {
         blurhash: 'LEA,%vRjE1ay.AV@WAj@tnoef5ju',
         height: 720,
         src: 'https://images.unsplash.com/photo-1618777618311-92f986a6519d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MDYwNDN8MHwxfGNvbGxlY3Rpb258MXw0OTI0NTU2fHx8fHwyfHwxNzIxODUyNzc0fA&ixlib=rb-4.0.3&q=80&w=1080',
-        width: 1080
+        width: 1080,
+        scale: 100,
+        focalLeft: 50,
+        focalTop: 50
       })
     )
   })

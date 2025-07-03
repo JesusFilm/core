@@ -423,6 +423,7 @@ model Journey {
   Event                     Event[]
   journeyEventsExportLogs   JourneyEventsExportLog[]
   fromTemplateId            String?
+  journeyTheme              JourneyTheme?
 
   @@index(title)
 }
@@ -487,6 +488,7 @@ model Block {
   endIconId               String?
   action                  Action?
   backgroundColor         String?
+  backdropBlur            Int?
   coverBlockId            String?              @unique
   fullscreen              Boolean?
   themeMode               String?
@@ -554,7 +556,7 @@ model Block {
   menuStepBlockParent     Journey?             @relation("MenuStepBlock")
   logoImageBlockParent    Journey?             @relation("LogoImageBlock")
   slug                    String?
-  classNames              Json                 @default("{ \"self\": \"\"}") // tailwind class names
+  settings                Json                 @default("{ }") // block settings
 
   @@unique([slug, journeyId])
   @@index(journeyId)
@@ -660,4 +662,19 @@ model JourneyEventsExportLog {
 
   @@index(journeyId)
   @@index(createdAt)
+}
+
+model JourneyTheme {
+  id         String   @id @default(uuid())
+  journeyId  String   @unique
+  journey    Journey  @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  userId     String
+  headerFont String?
+  bodyFont   String?
+  labelFont  String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+
+  @@index(journeyId)
+  @@index(userId)
 }

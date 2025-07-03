@@ -4,25 +4,6 @@ import { Block } from '../block'
 import { ThemeMode, type ThemeModeType } from './enums/themeMode'
 import { ThemeName, type ThemeNameType } from './enums/themeName'
 
-interface CardBlockClassNamesType {
-  self: string
-}
-
-const CardBlockClassNamesRef = builder.objectRef<CardBlockClassNamesType>(
-  'CardBlockClassNames'
-)
-
-export const CardBlockClassNames = builder.objectType(CardBlockClassNamesRef, {
-  fields: (t) => ({
-    self: t.string({
-      nullable: false,
-      directives: { shareable: true },
-      description: 'Tailwind class names for the card block',
-      resolve: (classNames: CardBlockClassNamesType) => classNames.self
-    })
-  })
-})
-
 export const CardBlock = builder.prismaObject('Block', {
   interfaces: [Block],
   variant: 'CardBlock',
@@ -45,6 +26,11 @@ export const CardBlock = builder.prismaObject('Block', {
       nullable: true,
       directives: { shareable: true },
       description: `backgroundColor should be a HEX color value e.g #FFFFFF for white.`
+    }),
+    backdropBlur: t.exposeInt('backdropBlur', {
+      nullable: true,
+      directives: { shareable: true },
+      description: `backdropBlur should be a number representing blur amount in pixels e.g 20.`
     }),
     coverBlockId: t.exposeID('coverBlockId', {
       nullable: true,
@@ -76,13 +62,6 @@ themeMode from journey`,
       description: `themeName can override journey themeName. If nothing is set then use
 themeName from journey`,
       resolve: (block) => block.themeName as ThemeNameType
-    }),
-    classNames: t.field({
-      type: CardBlockClassNamesRef,
-      nullable: false,
-      directives: { shareable: true },
-      resolve: ({ classNames }) =>
-        classNames as unknown as CardBlockClassNamesType
     })
   }),
   directives: { key: { fields: 'id' } }

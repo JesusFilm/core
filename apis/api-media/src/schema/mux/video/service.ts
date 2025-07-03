@@ -106,10 +106,11 @@ export async function enableDownload(
   const existingAsset =
     await getClient(userGenerated).video.assets.retrieve(assetId)
 
-  // skip if the resolution already exists
+  // skip if the resolution already exists - check both resolution_tier and resolution fields
   if (
     existingAsset.static_renditions?.files?.some(
-      (file) => file.resolution === resolution
+      (file) =>
+        file.resolution_tier === resolution || file.resolution === resolution
     )
   )
     return
@@ -122,4 +123,12 @@ export async function enableDownload(
       }
     }
   )
+}
+
+export async function getStaticRenditions(
+  assetId: string,
+  userGenerated: boolean
+): Promise<Mux.Video.Asset['static_renditions']> {
+  const asset = await getClient(userGenerated).video.assets.retrieve(assetId)
+  return asset.static_renditions
 }
