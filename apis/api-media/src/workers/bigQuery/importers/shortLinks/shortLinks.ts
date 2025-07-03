@@ -97,14 +97,26 @@ export async function importOne(row: unknown): Promise<void> {
   })
 }
 
-export async function importMany(rows: unknown[]): Promise<void> {
+export async function importMany(
+  rows: unknown[],
+  logger?: Logger
+): Promise<void> {
   const schema = await getShortLinkSchema()
   const { data: shortLinks, inValidRowIds } = parseMany(schema, rows, 'keyword')
+
+  if (inValidRowIds.length > 0) {
+    logger?.warn(`${inValidRowIds.length} invalid rows will be skipped`)
+  }
+
   if (shortLinks.length !== rows.length)
     throw new Error(`some rows do not match schema: ${inValidRowIds.join(',')}`)
 
-  await prisma.shortLink.createMany({
+  const result = await prisma.shortLink.createMany({
     data: shortLinks,
     skipDuplicates: true
   })
+
+  logger?.info(
+    `Inserted ${result.count} new shortlinks, skipped ${shortLinks.length - result.count} duplicates`
+  )
 }

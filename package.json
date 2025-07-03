@@ -57,6 +57,7 @@
     "@emotion/react": "^11.13.3",
     "@emotion/server": "^11.11.0",
     "@emotion/styled": "^11.13.0",
+    "@google-cloud/bigquery": "^8.1.0",
     "@graphql-hive/gateway": "^1.0.7",
     "@graphql-yoga/plugin-graphql-sse": "^3.13.6",
     "@graphql-yoga/plugin-response-cache": "^3.8.0",
