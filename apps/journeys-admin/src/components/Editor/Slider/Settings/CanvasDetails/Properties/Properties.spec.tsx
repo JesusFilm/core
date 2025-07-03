@@ -59,6 +59,7 @@ describe('Properties', () => {
       __typename: 'CardBlock',
       id: 'block.id',
       fullscreen: false,
+      backdropBlur: null,
       children: []
     }
     const selectedStep = {}
@@ -336,6 +337,7 @@ describe('Properties', () => {
       __typename: 'CardBlock',
       id: 'block.id',
       fullscreen: false,
+      backdropBlur: null,
       children: []
     }
     const selectedStep = {}
@@ -382,6 +384,7 @@ describe('Properties', () => {
       themeMode: ThemeMode.light,
       themeName: ThemeName.base,
       fullscreen: false,
+      backdropBlur: null,
       children: []
     }
 
