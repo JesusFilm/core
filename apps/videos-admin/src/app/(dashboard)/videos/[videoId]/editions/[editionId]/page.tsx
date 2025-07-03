@@ -160,8 +160,34 @@ export default function EditEditionPage({
               minHeight: 200
             }}
           >
-            {data.videoEdition?.videoSubtitles.map((subtitle) => (
+            {data.videoEdition?.videoSubtitles.map((subtitle) => {
+              const primaryName = subtitle.language.name.find(({ primary }) => primary)?.value
+              const nonPrimaryName = subtitle.language.name.find(({ primary }) => !primary)?.value
+              const displayName = nonPrimaryName || primaryName || 'Unknown Language'
+              const shouldShowSecondaryName = nonPrimaryName && primaryName && nonPrimaryName !== primaryName
+
+              const handleClick = () => {
+                router.push(
+                  `/videos/${videoId}/editions/${editionId}/subtitle/${subtitle.id}`,
+                  {
+                    scroll: false
+                  }
+                )
+              }
+
+              const handleKeyDown = (event: React.KeyboardEvent) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault()
+                  handleClick()
+                }
+              }
+
+              return (
               <Box
+                key={subtitle.id}
+                role="button"
+                tabIndex={0}
+                aria-label={`Edit ${displayName} subtitle`}
                 sx={{
                   p: 1,
                   border: '1px solid',
@@ -173,16 +199,14 @@ export default function EditEditionPage({
                     borderColor: 'action.hover',
                     cursor: 'pointer'
                   },
+                  '&:focus': {
+                    borderColor: 'primary.main',
+                    outline: 'none'
+                  },
                   maxHeight: 95
                 }}
-                onClick={() =>
-                  router.push(
-                    `/videos/${videoId}/editions/${editionId}/subtitle/${subtitle.id}`,
-                    {
-                      scroll: false
-                    }
-                  )
-                }
+                onClick={handleClick}
+                onKeyDown={handleKeyDown}
               >
                 <Stack
                   sx={{
@@ -193,16 +217,17 @@ export default function EditEditionPage({
                 >
                   <Stack>
                     <Typography variant="h6">
-                      {subtitle.language.name.find(({ primary }) => !primary)?.value || 
-                       subtitle.language.name.find(({ primary }) => primary)?.value}
+                      {displayName}
                     </Typography>
-                    <Typography 
-                      variant="body2" 
-                      color="text.secondary"
-                      sx={{ fontWeight: 300, fontSize: '0.875rem' }}
-                    >
-                      {subtitle.language.name.find(({ primary }) => primary)?.value}
-                    </Typography>
+                    {shouldShowSecondaryName && (
+                      <Typography 
+                        variant="body2" 
+                        color="text.secondary"
+                        sx={{ fontWeight: 300, fontSize: '0.875rem' }}
+                      >
+                        {primaryName}
+                      </Typography>
+                    )}
                   </Stack>
                   <ActionButton
                     actions={{
@@ -229,7 +254,8 @@ export default function EditEditionPage({
                   )}
                 </Stack>
               </Box>
-            ))}
+              )
+            })}
           </Box>
         ) : (
           <Box sx={{ display: 'grid', placeItems: 'center', height: 200 }}>
