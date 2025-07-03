@@ -16,6 +16,10 @@ import { ActivePriorityList } from './ActivePriorityList'
 import '../../../../../test/i18n'
 
 describe('ActivePriorityList', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
   it('should show journeyCard in default priority for owners', () => {
     const user = { id: 'user1.id' } as unknown as User
     const { getAllByLabelText } = render(
@@ -77,43 +81,5 @@ describe('ActivePriorityList', () => {
     expect(getAllByLabelText('journey-card')[3].textContent).toContain(
       'Default Journey'
     )
-  })
-
-  it('should show big divider if there is a new journey and normal journeys', () => {
-    const user = { id: 'user1.id' } as unknown as User
-    const { getByLabelText } = render(
-      <MockedProvider>
-        <ThemeProvider>
-          <SnackbarProvider>
-            <ActivePriorityList
-              journeys={[journey, newJourney]}
-              sortOrder={SortOrder.TITLE}
-              refetch={jest.fn()}
-              user={user}
-            />
-          </SnackbarProvider>
-        </ThemeProvider>
-      </MockedProvider>
-    )
-    expect(getByLabelText('big-divider')).toBeInTheDocument()
-  })
-
-  it('should show big divider if there is a journey with access requested and normal journeys', () => {
-    const user = { id: 'user1.id' } as unknown as User
-    const { getByLabelText } = render(
-      <MockedProvider>
-        <ThemeProvider>
-          <SnackbarProvider>
-            <ActivePriorityList
-              journeys={[journey, pendingActionJourney]}
-              sortOrder={SortOrder.TITLE}
-              refetch={jest.fn()}
-              user={user}
-            />
-          </SnackbarProvider>
-        </ThemeProvider>
-      </MockedProvider>
-    )
-    expect(getByLabelText('big-divider')).toBeInTheDocument()
   })
 })

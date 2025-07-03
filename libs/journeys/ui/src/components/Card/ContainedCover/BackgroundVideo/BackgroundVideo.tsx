@@ -4,7 +4,7 @@ import { CSSProperties, ReactElement, useEffect, useRef } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
-import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
+import { defaultBackgroundVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
 import {
   VideoBlockObjectFit,
@@ -41,7 +41,7 @@ export function BackgroundVideo({
   useEffect(() => {
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
-        ...defaultVideoJsOptions,
+        ...defaultBackgroundVideoJsOptions,
         autoplay: true,
         controls: false,
         controlBar: false,
@@ -91,6 +91,27 @@ export function BackgroundVideo({
           (endAt != null && currentTime >= endAt)
         ) {
           player?.pause()
+        }
+      })
+
+      player.ready(() => {
+        if (
+          mediaVideo?.__typename === 'MuxVideo' &&
+          mediaVideo?.playbackId != null
+        ) {
+          player.src({
+            src: `https://stream.mux.com/${mediaVideo.playbackId}.m3u8`,
+            type: 'application/x-mpegURL'
+          })
+        }
+        if (
+          mediaVideo?.__typename === 'Video' &&
+          mediaVideo?.variant?.hls != null
+        ) {
+          player.src({
+            src: mediaVideo.variant.hls,
+            type: 'application/x-mpegURL'
+          })
         }
       })
     }

@@ -1,0 +1,1 @@
+export { getTextResponseLabel } from './getTextResponseLabel'

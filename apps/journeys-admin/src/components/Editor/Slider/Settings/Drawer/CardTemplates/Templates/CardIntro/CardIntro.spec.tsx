@@ -60,6 +60,7 @@ describe('CardIntro', () => {
     themeMode: null,
     themeName: null,
     fullscreen: false,
+    backdropBlur: null,
     children: []
   }
   const step: TreeBlock = {
@@ -188,6 +189,7 @@ describe('CardIntro', () => {
           size: null,
           startIconId: null,
           endIconId: null,
+          submitEnabled: null,
           action: null,
           __typename: 'ButtonBlock'
         },
@@ -219,6 +221,7 @@ describe('CardIntro', () => {
           size: null,
           startIconId: 'startIconId',
           endIconId: 'endIconId',
+          submitEnabled: null,
           action: null,
           __typename: 'ButtonBlock'
         },

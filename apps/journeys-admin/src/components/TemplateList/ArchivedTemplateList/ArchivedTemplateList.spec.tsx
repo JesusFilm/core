@@ -65,12 +65,12 @@ describe('ArchivedTemplateList', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getAllByLabelText('template-card')[0].textContent).toContain(
-        '1 year ago'
+      expect(getAllByLabelText('journey-card')[0].textContent).toContain(
+        '11 months ago'
       )
     )
-    expect(getAllByLabelText('template-card')[1].textContent).toContain(
-      '20 years ago'
+    expect(getAllByLabelText('journey-card')[1].textContent).toContain(
+      '1 year ago'
     )
   })
 
@@ -106,27 +106,44 @@ describe('ArchivedTemplateList', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getAllByLabelText('template-card')[0].textContent).toContain(
-        'a lower case title20 years agoEnglish'
+      expect(getAllByLabelText('journey-card')[0].textContent).toContain(
+        'a lower case title'
       )
     )
-    expect(getAllByLabelText('template-card')[1].textContent).toContain(
-      'An Old Template Heading1 year ago - Template created before the current year should also show the year in the dateEnglish'
+    expect(getAllByLabelText('journey-card')[1].textContent).toContain(
+      'An Old Template'
     )
   })
 
-  it('should render loading skeleton', async () => {
-    const { getAllByLabelText } = render(
-      <MockedProvider mocks={[]}>
+  it('should display no archived templates message', async () => {
+    const { getByText } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_ADMIN_JOURNEYS,
+              variables: {
+                status: [JourneyStatus.archived],
+                template: true
+              }
+            },
+            result: {
+              data: {
+                journeys: []
+              }
+            }
+          }
+        ]}
+      >
         <ThemeProvider>
           <SnackbarProvider>
-            <ArchivedTemplateList />
+            <ArchivedTemplateList sortOrder={SortOrder.TITLE} />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getAllByLabelText('template-card')).toHaveLength(3)
+      expect(getByText('No archived templates.')).toBeInTheDocument()
     )
   })
 
@@ -233,7 +250,7 @@ describe('ArchivedTemplateList', () => {
     })
 
     it('should trash all templates', async () => {
-      const { getByText } = render(
+      const { getByText, getByRole } = render(
         <MockedProvider
           mocks={[archivedJourneysMock, trashJourneysMock, noJourneysMock]}
         >
@@ -247,12 +264,12 @@ describe('ArchivedTemplateList', () => {
       await waitFor(() =>
         expect(getByText('Default Template Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Trash'))
+      fireEvent.click(getByRole('button', { name: 'Trash' }))
       await waitFor(() => expect(result).toHaveBeenCalled())
     })
 
     it('should show error', async () => {
-      const { getByText } = render(
+      const { getByText, getByRole } = render(
         <MockedProvider
           mocks={[
             archivedJourneysMock,
@@ -271,7 +288,7 @@ describe('ArchivedTemplateList', () => {
       await waitFor(() =>
         expect(getByText('Default Template Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Trash'))
+      fireEvent.click(getByRole('button', { name: 'Trash' }))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
     })
   })

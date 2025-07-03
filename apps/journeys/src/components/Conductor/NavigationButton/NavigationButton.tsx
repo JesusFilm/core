@@ -104,7 +104,6 @@ export function NavigationButton({
   // should always be called with nextActiveBlock()
   // should match with other handleNextNavigationEventCreate functions
   // places used:
-  // libs/journeys/ui/src/components/Card/Card.tsx
   // journeys/src/components/Conductor/NavigationButton/NavigationButton.tsx
   // journeys/src/components/Conductor/SwipeNavigation/SwipeNavigation.tsx
   // journeys/src/components/Conductor/HotkeyNavigation/HotkeyNavigation.tsx

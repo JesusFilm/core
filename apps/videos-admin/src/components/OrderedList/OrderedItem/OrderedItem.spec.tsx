@@ -1,5 +1,4 @@
 import { fireEvent, render, screen, within } from '@testing-library/react'
-import { NextIntlClientProvider } from 'next-intl'
 
 import Edit2 from '@core/shared/ui/icons/Edit2'
 import EyeOpen from '@core/shared/ui/icons/EyeOpen'
@@ -8,11 +7,7 @@ import { OrderedItem } from './OrderedItem'
 
 describe('OrderedItem', () => {
   it('should render', () => {
-    render(
-      <NextIntlClientProvider locale="en">
-        <OrderedItem id="item.id" label="Ordered item" idx={0} />
-      </NextIntlClientProvider>
-    )
+    render(<OrderedItem id="item.id" label="Ordered item" idx={0} />)
 
     expect(
       screen.getByRole('button', { name: 'ordered-item-drag-handle' })
@@ -26,14 +21,12 @@ describe('OrderedItem', () => {
     const viewHandlerMock = jest.fn()
 
     render(
-      <NextIntlClientProvider locale="en">
-        <OrderedItem
-          id="item.id"
-          label="Ordered item"
-          idx={0}
-          menuActions={[{ label: 'View', handler: viewHandlerMock }]}
-        />
-      </NextIntlClientProvider>
+      <OrderedItem
+        id="item.id"
+        label="Ordered item"
+        idx={0}
+        menuActions={[{ label: 'View', handler: viewHandlerMock }]}
+      />
     )
 
     const actions = screen.getByRole('button', { name: 'ordered-item-actions' })
@@ -61,29 +54,27 @@ describe('OrderedItem', () => {
     const editOnClick = jest.fn()
 
     render(
-      <NextIntlClientProvider locale="en">
-        <OrderedItem
-          id="item.id"
-          label="Ordered item"
-          idx={0}
-          iconButtons={[
-            {
-              Icon: EyeOpen,
-              events: {
-                onClick: viewOnClick
-              },
-              name: 'View'
+      <OrderedItem
+        id="item.id"
+        label="Ordered item"
+        idx={0}
+        iconButtons={[
+          {
+            Icon: EyeOpen,
+            events: {
+              onClick: viewOnClick
             },
-            {
-              Icon: Edit2,
-              events: {
-                onClick: editOnClick
-              },
-              name: 'Edit'
-            }
-          ]}
-        />
-      </NextIntlClientProvider>
+            name: 'View'
+          },
+          {
+            Icon: Edit2,
+            events: {
+              onClick: editOnClick
+            },
+            name: 'Edit'
+          }
+        ]}
+      />
     )
 
     const viewButton = screen.getByTestId('EyeOpenIcon')
@@ -97,17 +88,15 @@ describe('OrderedItem', () => {
 
   it('should render image', async () => {
     render(
-      <NextIntlClientProvider locale="en">
-        <OrderedItem
-          id="item.id"
-          label="Ordered item"
-          idx={0}
-          img={{
-            src: 'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf-0-0.mobileCinematicHigh.jpg',
-            alt: 'JESUS'
-          }}
-        />
-      </NextIntlClientProvider>
+      <OrderedItem
+        id="item.id"
+        label="Ordered item"
+        idx={0}
+        img={{
+          src: 'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf-0-0.mobileCinematicHigh.jpg',
+          alt: 'JESUS'
+        }}
+      />
     )
 
     expect(screen.getByRole('img')).toBeInTheDocument()

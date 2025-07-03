@@ -1,8 +1,8 @@
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import LanguageIcon from '@mui/icons-material/Language'
 import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded'
-import LoadingButton from '@mui/lab/LoadingButton'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
 import CircularProgress from '@mui/material/CircularProgress'
 import FormControlLabel from '@mui/material/FormControlLabel'
@@ -22,6 +22,7 @@ import useDownloader from 'react-use-downloader'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
+import { VideoVariantDownloadQuality } from '../../../__generated__/globalTypes'
 import { useVideo } from '../../libs/videoContext'
 
 import { TermsOfUseDialog } from './TermsOfUseDialog'
@@ -161,12 +162,19 @@ export function DownloadDialog({
                 error={errors.file != null}
                 select
               >
-                {downloads.map((download) => (
-                  <MenuItem key={download.quality} value={download.url}>
-                    {download.quality.charAt(0).toUpperCase()}
-                    {download.quality.slice(1)} ({formatBytes(download.size)})
-                  </MenuItem>
-                ))}
+                {downloads
+                  .filter(({ quality }) =>
+                    [
+                      VideoVariantDownloadQuality.high,
+                      VideoVariantDownloadQuality.low
+                    ].includes(quality)
+                  )
+                  .map((download) => (
+                    <MenuItem key={download.quality} value={download.url}>
+                      {download.quality.charAt(0).toUpperCase()}
+                      {download.quality.slice(1)} ({formatBytes(download.size)})
+                    </MenuItem>
+                  ))}
               </TextField>
               <Stack
                 direction={{ xs: 'column', sm: 'row' }}
@@ -195,7 +203,7 @@ export function DownloadDialog({
                     {t('Terms of Use')}
                   </Link>
                 </FormGroup>
-                <LoadingButton
+                <Button
                   type="submit"
                   variant="contained"
                   size="small"
@@ -214,7 +222,7 @@ export function DownloadDialog({
                   }
                 >
                   {t('Download')}
-                </LoadingButton>
+                </Button>
               </Stack>
               <TermsOfUseDialog
                 open={openTerms}

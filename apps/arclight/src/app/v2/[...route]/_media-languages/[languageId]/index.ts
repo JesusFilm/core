@@ -3,6 +3,7 @@ import { ResultOf, graphql } from 'gql.tada'
 import { HTTPException } from 'hono/http-exception'
 
 import { getApolloClient } from '../../../../../lib/apolloClient'
+import { generateCacheKey, getWithStaleCache } from '../../../../../lib/cache'
 import { getLanguageIdsFromTags } from '../../../../../lib/getLanguageIdsFromTags'
 
 const GET_LANGUAGE = graphql(`
@@ -88,12 +89,14 @@ const ResponseSchema = z.object({
       description: z.string()
     })
   }),
-  audioPreview: z.object({
-    url: z.string(),
-    audioBitrate: z.number(),
-    audioContainer: z.string(),
-    sizeInBytes: z.number()
-  }),
+  audioPreview: z
+    .object({
+      url: z.string(),
+      audioBitrate: z.number(),
+      audioContainer: z.string(),
+      sizeInBytes: z.number()
+    })
+    .nullable(),
   primaryCountryId: z.string(),
   name: z.string(),
   nameNative: z.string(),
@@ -151,103 +154,110 @@ mediaLanguage.openapi(route, async (c) => {
 
   const { metadataLanguageId, fallbackLanguageId } = languageResult
 
-  const { data } = await getApolloClient().query<ResultOf<typeof GET_LANGUAGE>>(
-    {
+  const queryObject = c.req.query()
+  const cacheKey = generateCacheKey([
+    'media-language',
+    languageId ?? '',
+    ...metadataLanguageTags
+  ])
+
+  const response = await getWithStaleCache(cacheKey, async () => {
+    const { data } = await getApolloClient().query<
+      ResultOf<typeof GET_LANGUAGE>
+    >({
       query: GET_LANGUAGE,
       variables: {
         id: languageId,
         metadataLanguageId,
         fallbackLanguageId
       }
-    }
-  )
-  const language = data.language
+    })
+    const language = data.language
 
-  const queryObject = c.req.query()
-
-  if (language == null)
-    return c.json(
-      {
+    if (language == null)
+      return {
         message: `${languageId}:\n  The requested language ID '${languageId}'not found.\n`,
         logref: 404
-      },
-      404
-    )
+      }
 
-  if (
-    metadataLanguageTags.length > 0 &&
-    language.name[0]?.value == null &&
-    language.fallbackName[0]?.value == null
-  ) {
-    return c.json(
-      {
-        message: `Unable to generate metadata for media language [${languageId}] acceptable according to metadata language(s) [${metadataLanguageTags.join(
-          ','
-        )}]`,
+    if (
+      metadataLanguageTags.length > 0 &&
+      language.name[0]?.value == null &&
+      language.fallbackName[0]?.value == null
+    ) {
+      return {
+        message: `Unable to generate metadata for media language [${languageId}] acceptable according to metadata language(s) [${metadataLanguageTags.join(',')}]`,
         logref: 406
-      },
-      400
-    )
-  }
-  const queryString = new URLSearchParams(queryObject).toString()
-
-  const response = {
-    languageId: Number(language.id),
-    iso3: language.iso3,
-    bcp47: language.bcp47,
-    counts: {
-      speakerCount: {
-        value: language.countryLanguages
-          .filter(({ suggested }) => !suggested)
-          .reduce((acc, { speakers }) => acc + speakers, 0),
-        description: 'Number of speakers'
-      },
-      countriesCount: {
-        value: language.countryLanguages.filter(({ suggested }) => !suggested)
-          .length,
-        description: 'Number of countries'
-      },
-      ...(language.labeledVideoCounts.seriesCount > 0 && {
-        series: {
-          value: language.labeledVideoCounts.seriesCount,
-          description: 'Series'
-        }
-      }),
-      ...(language.labeledVideoCounts.featureFilmCount > 0 && {
-        featureFilm: {
-          value: language.labeledVideoCounts.featureFilmCount,
-          description: 'Feature Film'
-        }
-      }),
-      ...(language.labeledVideoCounts.shortFilmCount > 0 && {
-        shortFilm: {
-          value: language.labeledVideoCounts.shortFilmCount,
-          description: 'Short Film'
-        }
-      })
-    },
-    audioPreview:
-      language.audioPreview != null
-        ? {
-            url: language.audioPreview.value,
-            audioBitrate: language.audioPreview.bitrate,
-            audioContainer: language.audioPreview.codec,
-            sizeInBytes: language.audioPreview.size
-          }
-        : null,
-    primaryCountryId:
-      language.countryLanguages.find(({ primary }) => primary)?.country.id ??
-      '',
-    name: language.name[0]?.value ?? language.fallbackName[0]?.value ?? '',
-    nameNative: language.nameNative.find(({ primary }) => primary)?.value,
-    alternateLanguageName: '',
-    alternateLanguageNameNative: '',
-    metadataLanguageTag: metadataLanguageTags[0] ?? 'en',
-    _links: {
-      self: {
-        href: `http://api.arclight.org/v2/media-languages/${languageId}?${queryString}`
       }
     }
+    const queryString = new URLSearchParams(queryObject).toString()
+
+    return {
+      languageId: Number(language.id),
+      iso3: language.iso3,
+      bcp47: language.bcp47,
+      counts: {
+        speakerCount: {
+          value: language.countryLanguages
+            .filter(({ suggested }) => !suggested)
+            .reduce((acc, { speakers }) => acc + speakers, 0),
+          description: 'Number of speakers'
+        },
+        countriesCount: {
+          value: language.countryLanguages.filter(({ suggested }) => !suggested)
+            .length,
+          description: 'Number of countries'
+        },
+        ...(language.labeledVideoCounts.seriesCount > 0 && {
+          series: {
+            value: language.labeledVideoCounts.seriesCount,
+            description: 'Series'
+          }
+        }),
+        ...(language.labeledVideoCounts.featureFilmCount > 0 && {
+          featureFilm: {
+            value: language.labeledVideoCounts.featureFilmCount,
+            description: 'Feature Film'
+          }
+        }),
+        ...(language.labeledVideoCounts.shortFilmCount > 0 && {
+          shortFilm: {
+            value: language.labeledVideoCounts.shortFilmCount,
+            description: 'Short Film'
+          }
+        })
+      },
+      audioPreview:
+        language.audioPreview != null
+          ? {
+              url: language.audioPreview.value,
+              audioBitrate: language.audioPreview.bitrate,
+              audioContainer: language.audioPreview.codec,
+              sizeInBytes: language.audioPreview.size
+            }
+          : null,
+      primaryCountryId:
+        language.countryLanguages.find(({ primary }) => primary)?.country.id ??
+        '',
+      name: language.name[0]?.value ?? language.fallbackName[0]?.value ?? '',
+      nameNative:
+        language.nameNative.find(({ primary }) => primary)?.value ??
+        language.name[0]?.value ??
+        language.fallbackName[0]?.value ??
+        '',
+      alternateLanguageName: '',
+      alternateLanguageNameNative: '',
+      metadataLanguageTag: metadataLanguageTags[0] ?? 'en',
+      _links: {
+        self: {
+          href: `http://api.arclight.org/v2/media-languages/${languageId}?${queryString}`
+        }
+      }
+    }
+  })
+
+  if ('message' in response) {
+    return c.json(response, response.logref === 406 ? 400 : 404)
   }
 
   return c.json(response)

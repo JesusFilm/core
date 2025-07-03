@@ -32,6 +32,7 @@ export function Custom404(): ReactElement {
     {
       __typename: 'CardBlock',
       backgroundColor: '#30313D',
+      backdropBlur: null,
       coverBlockId: '404-imageBlock-id',
       fullscreen: false,
       id: '404-cardBlock-id',
@@ -85,6 +86,7 @@ export function Custom404(): ReactElement {
       parentOrder: 2,
       size: ButtonSize.large,
       startIconId: '404-icon-id',
+      submitEnabled: null,
       action: {
         gtmEventName: null,
         parentBlockId: '404-button-id',

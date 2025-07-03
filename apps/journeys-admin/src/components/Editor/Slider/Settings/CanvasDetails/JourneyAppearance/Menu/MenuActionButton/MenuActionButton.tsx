@@ -77,6 +77,7 @@ export function MenuActionButton(): ReactElement {
       themeMode: ThemeMode.dark,
       themeName: ThemeName.base,
       fullscreen: false,
+      backdropBlur: null,
       coverBlockId: null,
       backgroundColor: null,
       parentOrder: 0
@@ -115,6 +116,7 @@ export function MenuActionButton(): ReactElement {
       size: ButtonSize.large,
       startIconId: null,
       endIconId: null,
+      submitEnabled: null,
       action: null
     } satisfies ButtonBlock
 
@@ -129,6 +131,7 @@ export function MenuActionButton(): ReactElement {
       size: ButtonSize.large,
       startIconId: null,
       endIconId: null,
+      submitEnabled: null,
       action: null
     } satisfies ButtonBlock
 
@@ -143,6 +146,7 @@ export function MenuActionButton(): ReactElement {
       size: ButtonSize.large,
       startIconId: null,
       endIconId: null,
+      submitEnabled: null,
       action: null
     } satisfies ButtonBlock
 

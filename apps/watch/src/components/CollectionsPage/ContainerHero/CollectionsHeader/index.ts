@@ -1,0 +1,1 @@
+export { CollectionsHeader } from './CollectionsHeader'

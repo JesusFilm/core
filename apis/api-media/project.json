@@ -93,7 +93,7 @@
       "configurations": {
         "production": {
           "commands": [
-            "npx prisma migrate deploy --schema apis/api-media/db/schema.prisma"
+            "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_MEDIA=postgresql://postgres:postgres@db:5432/media?schema=public \"npx prisma migrate deploy --schema apis/api-media/db/schema.prisma\""
           ]
         }
       }
@@ -102,7 +102,15 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma migrate reset --schema apis/api-media/db/schema.prisma --force"
+          "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_MEDIA=postgresql://postgres:postgres@db:5432/media?schema=public \"npx prisma migrate reset --schema apis/api-media/db/schema.prisma --force\""
+        ]
+      }
+    },
+    "prisma-resolve-squash": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx prisma migrate resolve --schema apis/api-media/db/schema.prisma --applied 000000000000_squashed_migrations"
         ]
       }
     },
@@ -140,10 +148,10 @@
         "command": "codecov -f coverage/apis/api-media/cobertura-coverage.xml -F apps.api-media"
       }
     },
-    "queue-ingest": {
+    "queue-video-children": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm run ts-node apis/api-media/src/workers/cli.ts big-query"
+        "command": "npm run ts-node apis/api-media/src/workers/cli.ts video-children"
       }
     },
     "queue-crowdin": {
@@ -170,10 +178,22 @@
         "command": "npm run ts-node apis/api-media/src/workers/cli.ts blocklist"
       }
     },
+    "queue-publish": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-media/src/workers/cli.ts publish"
+      }
+    },
     "queue-seed": {
       "executor": "nx:run-commands",
       "options": {
         "command": "npm run ts-node apis/api-media/src/workers/cli.ts seed"
+      }
+    },
+    "queue-mux-downloads": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-media/src/workers/cli.ts mux-downloads"
       }
     },
     "export-language-slugs": {
@@ -190,6 +210,18 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "gql.tada generate output --tsconfig apis/api-media/tsconfig.json"
+      }
+    },
+    "data-export": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-media/src/workers/cli.ts data-export"
+      }
+    },
+    "data-import": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-media/src/scripts/data-import.ts"
       }
     }
   }

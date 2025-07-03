@@ -34,6 +34,7 @@ describe('cloudflare/r2/asset', () => {
           cloudflareR2Create(input: $input) {
             id
             fileName
+            originalFilename
             uploadUrl
             userId
             publicUrl
@@ -54,6 +55,7 @@ describe('cloudflare/r2/asset', () => {
         prismaMock.cloudflareR2.create.mockResolvedValue({
           id: 'id',
           fileName: 'fileName',
+          originalFilename: 'originalFilename.jpg',
           uploadUrl: 'presignedUrl',
           userId: 'testUserId',
           publicUrl: 'https://assets.jesusfilm.org/fileName',
@@ -69,6 +71,7 @@ describe('cloudflare/r2/asset', () => {
             input: {
               id: 'id',
               fileName: 'fileName',
+              originalFilename: 'originalFilename.jpg',
               videoId: 'videoId',
               contentType: 'image/jpeg',
               contentLength: 0
@@ -79,6 +82,7 @@ describe('cloudflare/r2/asset', () => {
           data: {
             id: 'id',
             fileName: 'fileName',
+            originalFilename: 'originalFilename.jpg',
             uploadUrl: 'presignedUrl',
             userId: 'testUserId',
             publicUrl: 'https://assets.jesusfilm.org/fileName',
@@ -95,6 +99,10 @@ describe('cloudflare/r2/asset', () => {
         expect(result).toHaveProperty(
           'data.cloudflareR2Create.fileName',
           'fileName'
+        )
+        expect(result).toHaveProperty(
+          'data.cloudflareR2Create.originalFilename',
+          'originalFilename.jpg'
         )
         expect(result).toHaveProperty(
           'data.cloudflareR2Create.uploadUrl',
@@ -121,6 +129,7 @@ describe('cloudflare/r2/asset', () => {
             input: {
               id: 'id',
               fileName: 'fileName',
+              originalFilename: 'originalFilename.jpg',
               videoId: 'videoId',
               contentType: 'image/jpeg',
               contentLength: 0
@@ -137,6 +146,7 @@ describe('cloudflare/r2/asset', () => {
           cloudflareR2Delete(id: $id) {
             id
             fileName
+            originalFilename
             uploadUrl
             userId
             publicUrl
@@ -157,6 +167,7 @@ describe('cloudflare/r2/asset', () => {
         prismaMock.cloudflareR2.delete.mockResolvedValue({
           id: 'id',
           fileName: 'fileName',
+          originalFilename: 'originalFilename.jpg',
           uploadUrl: 'presignedUrl',
           userId: 'testUserId',
           publicUrl: 'https://assets.jesusfilm.org/fileName',
@@ -183,6 +194,10 @@ describe('cloudflare/r2/asset', () => {
         expect(result).toHaveProperty(
           'data.cloudflareR2Delete.fileName',
           'fileName'
+        )
+        expect(result).toHaveProperty(
+          'data.cloudflareR2Delete.originalFilename',
+          'originalFilename.jpg'
         )
         expect(result).toHaveProperty(
           'data.cloudflareR2Delete.uploadUrl',

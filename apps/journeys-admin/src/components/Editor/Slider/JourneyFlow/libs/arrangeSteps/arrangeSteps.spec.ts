@@ -24,6 +24,7 @@ const button: TreeBlock<ButtonBlock> = {
   size: ButtonSize.medium,
   startIconId: null,
   endIconId: null,
+  submitEnabled: null,
   action: {
     __typename: 'NavigateToBlockAction',
     parentBlockId: 'responseAction.id',
@@ -43,6 +44,7 @@ const card: TreeBlock<CardBlock> = {
   themeMode: ThemeMode.light,
   themeName: ThemeName.base,
   fullscreen: false,
+  backdropBlur: null,
   children: [button]
 }
 

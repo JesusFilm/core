@@ -30,10 +30,10 @@ export async function cli(argv = process.argv): Promise<void> {
       queue = new Queue(queueName, { connection })
       break
     }
-    case 'big-query': {
+    case 'video-children': {
       const config = await import(
-        /* webpackChunkName: "big-query" */
-        './bigQuery'
+        /* webpackChunkName: "video-children" */
+        './videoChildren'
       )
       queueName = config.queueName
       jobName = config.jobName
@@ -64,6 +64,36 @@ export async function cli(argv = process.argv): Promise<void> {
       const config = await import(
         /* webpackChunkName: "seed" */
         './seed'
+      )
+      queueName = config.queueName
+      jobName = config.jobName
+      queue = new Queue(queueName, { connection })
+      break
+    }
+    case 'data-export': {
+      const config = await import(
+        /* webpackChunkName: "data-export" */
+        './dataExport'
+      )
+      queueName = config.queueName
+      jobName = config.jobName
+      queue = new Queue(queueName, { connection })
+      break
+    }
+    case 'publish': {
+      const config = await import(
+        /* webpackChunkName: "published" */
+        './published'
+      )
+      queueName = config.queueName
+      jobName = config.jobName
+      queue = new Queue(queueName, { connection })
+      break
+    }
+    case 'mux-downloads': {
+      const config = await import(
+        /* webpackChunkName: "mux-downloads" */
+        './muxDownloads'
       )
       queueName = config.queueName
       jobName = config.jobName

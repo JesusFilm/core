@@ -128,19 +128,16 @@ test('media component returns 400 for non-existent ID', async ({ request }) => {
   })
 })
 
-test('media component returns 400 for invalid language with no fallback content', async ({
+test('media component returns 200 and defaults to english for invalid language with no fallback content', async ({
   request
 }) => {
   const response = await request.get(
     `${await getBaseUrl()}/v2/media-components/${mediaComponentId}?${createQueryParams({ metadataLanguageTags: 'xx' })}`
   )
 
-  expect(response.status()).toBe(400)
+  expect(response.ok()).toBeTruthy()
+  expect(response.status()).toBe(200)
   const data = await response.json()
-  expect(data).toMatchObject({
-    message: expect.stringContaining(
-      'Not acceptable metadata language tag(s): xx'
-    ),
-    logref: 400
-  })
+  expect(data).toHaveProperty('metadataLanguageTag')
+  expect(data.metadataLanguageTag).toBe('en')
 })

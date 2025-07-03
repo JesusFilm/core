@@ -144,6 +144,7 @@ describe('transformSteps', () => {
             themeName: null,
             themeMode: null,
             fullscreen: false,
+            backdropBlur: null,
             children: [
               {
                 __typename: 'ButtonBlock',
@@ -156,6 +157,7 @@ describe('transformSteps', () => {
                 size: null,
                 startIconId: null,
                 endIconId: null,
+                submitEnabled: null,
                 action: {
                   __typename: 'NavigateToBlockAction',
                   parentBlockId: 'button1.id',
@@ -242,6 +244,7 @@ describe('transformSteps', () => {
             themeName: null,
             themeMode: null,
             fullscreen: false,
+            backdropBlur: null,
             children: [
               {
                 __typename: 'ButtonBlock',
@@ -254,6 +257,7 @@ describe('transformSteps', () => {
                 size: null,
                 startIconId: null,
                 endIconId: null,
+                submitEnabled: null,
                 action: {
                   __typename: 'NavigateToBlockAction',
                   parentBlockId: 'button1.id',
@@ -316,6 +320,7 @@ describe('transformSteps', () => {
             themeName: null,
             themeMode: null,
             fullscreen: false,
+            backdropBlur: null,
             children: [
               {
                 __typename: 'ButtonBlock',
@@ -328,6 +333,7 @@ describe('transformSteps', () => {
                 size: null,
                 startIconId: null,
                 endIconId: null,
+                submitEnabled: null,
                 action: {
                   __typename: 'LinkAction',
                   parentBlockId: 'button1.id',
@@ -347,6 +353,7 @@ describe('transformSteps', () => {
                 size: null,
                 startIconId: null,
                 endIconId: null,
+                submitEnabled: null,
                 action: {
                   __typename: 'EmailAction',
                   parentBlockId: 'button2.id',

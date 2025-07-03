@@ -41,8 +41,12 @@ function createLogger(pinoLogger: PinoLogger): Logger {
       pinoLogger.debug(...args)
     },
 
-    child(name: string) {
-      return createLogger(pinoLogger.child({ name }))
+    child(name: string | Record<string, string | number>) {
+      if (typeof name === 'string') {
+        return createLogger(pinoLogger.child({ name }))
+      } else {
+        return createLogger(pinoLogger.child(name))
+      }
     }
   }
 }

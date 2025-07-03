@@ -6,11 +6,13 @@ import { CaslFactory } from '@core/nest/common/CaslAuthModule'
 
 import { blockAcl } from '../../../modules/block/block.acl'
 import { customDomainAcl } from '../../../modules/customDomain/customDomain.acl'
+import { eventAcl } from '../../../modules/event/event.acl'
 import { hostAcl } from '../../../modules/host/host.acl'
 import { integrationAcl } from '../../../modules/integration/integration.acl'
 import { journeyAcl } from '../../../modules/journey/journey.acl'
 import { JourneyCollectionAcl } from '../../../modules/journeyCollection/journeyCollection.acl'
 import { journeyNotificationAcl } from '../../../modules/journeyNotification/journeyNotification.acl'
+import { JourneyThemeAcl } from '../../../modules/journeyTheme/journeyTheme.acl'
 import { journeyVisitorAcl } from '../../../modules/journeyVisitor/journeyVisitor.acl'
 import { qrCodeAcl } from '../../../modules/qrCode/qrCode.acl'
 import { teamAcl } from '../../../modules/team/team.acl'
@@ -55,12 +57,14 @@ export class AppCaslFactory extends CaslFactory<Role> {
     const acls = [
       blockAcl,
       customDomainAcl,
+      eventAcl,
       hostAcl,
       integrationAcl,
       qrCodeAcl,
       journeyAcl,
       JourneyCollectionAcl,
       journeyNotificationAcl,
+      JourneyThemeAcl,
       journeyVisitorAcl,
       teamAcl,
       userInviteAcl,

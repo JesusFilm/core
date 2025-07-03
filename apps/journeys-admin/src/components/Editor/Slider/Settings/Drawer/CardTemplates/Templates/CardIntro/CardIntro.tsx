@@ -239,6 +239,7 @@ export function CardIntro(): ReactElement {
       size: null,
       startIconId: null,
       endIconId: null,
+      submitEnabled: null,
       action: null,
       __typename: 'ButtonBlock'
     } satisfies ButtonBlock
@@ -266,7 +267,8 @@ export function CardIntro(): ReactElement {
     const buttonBlockUpdate = {
       ...buttonBlock,
       startIconId: startIconBlock.id,
-      endIconId: endIconBlock.id
+      endIconId: endIconBlock.id,
+      submitEnabled: null
     } satisfies ButtonBlock
 
     const videoBlock = {

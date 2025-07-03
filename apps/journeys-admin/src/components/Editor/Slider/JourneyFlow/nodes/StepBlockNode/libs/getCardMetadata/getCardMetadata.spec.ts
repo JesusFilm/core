@@ -38,6 +38,7 @@ const button1: TreeBlock<ButtonBlock> = {
   size: null,
   startIconId: null,
   endIconId: null,
+  submitEnabled: null,
   action: null,
   children: []
 }
@@ -153,6 +154,7 @@ const card: TreeBlock<CardBlock> = {
   themeMode: null,
   themeName: null,
   fullscreen: false,
+  backdropBlur: null,
   children: [image, typography, button1, radioQuestionBlock]
 }
 

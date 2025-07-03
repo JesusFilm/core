@@ -28,6 +28,7 @@ export enum ButtonSize {
 
 export enum ButtonVariant {
   contained = "contained",
+  outlined = "outlined",
   text = "text",
 }
 
@@ -408,6 +409,7 @@ export interface VisitorUpdateInput {
   status?: VisitorStatus | null;
   countryCode?: string | null;
   referrer?: string | null;
+  phone?: string | null;
 }
 
 //==============================================================

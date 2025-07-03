@@ -1,5 +1,5 @@
 import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
-import { registerApolloClient } from '@apollo/experimental-nextjs-app-support'
+import { registerApolloClient } from '@apollo/client-integration-nextjs'
 
 const ONE_HOUR_IN_SECONDS = 60 * 60 // 60 seconds times 60 minutes
 

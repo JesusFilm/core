@@ -17,12 +17,17 @@ jest.mock('./service', () => ({
   }),
   getVideo: jest.fn().mockResolvedValue({
     id: 'assetId',
-    status: 'ready'
+    status: 'ready',
+    playback_ids: [{ id: 'playbackId' }],
+    duration: 10
   }),
   deleteVideo: jest.fn().mockResolvedValue({
     id: 'assetId'
   }),
-  enableDownload: jest.fn().mockResolvedValue(undefined)
+  enableDownload: jest.fn().mockResolvedValue(undefined),
+  getUpload: jest.fn().mockResolvedValue({
+    asset_id: 'assetId'
+  })
 }))
 
 describe('mux/video', () => {
@@ -52,8 +57,8 @@ describe('mux/video', () => {
   describe('queries', () => {
     describe('getMyMuxVideos', () => {
       const GET_MY_MUX_VIDEOS = graphql(`
-        query GetMyMuxVideos {
-          getMyMuxVideos {
+        query GetMyMuxVideos($offset: Int, $limit: Int) {
+          getMyMuxVideos(offset: $offset, limit: $limit) {
             id
             playbackId
             uploadUrl
@@ -90,7 +95,11 @@ describe('mux/video', () => {
           } as unknown as MuxVideo
         ])
         const data = await authClient({
-          document: GET_MY_MUX_VIDEOS
+          document: GET_MY_MUX_VIDEOS,
+          variables: {
+            offset: 0,
+            limit: 10
+          }
         })
         expect(data).toHaveProperty('data.getMyMuxVideos', [
           {
@@ -106,7 +115,11 @@ describe('mux/video', () => {
 
       it('should return null when not authorized', async () => {
         const data = await client({
-          document: GET_MY_MUX_VIDEOS
+          document: GET_MY_MUX_VIDEOS,
+          variables: {
+            offset: 0,
+            limit: 10
+          }
         })
         expect(data).toHaveProperty('data', null)
       })
@@ -114,8 +127,8 @@ describe('mux/video', () => {
 
     describe('getMyMuxVideo', () => {
       const GET_MY_MUX_VIDEO = graphql(`
-        query GetMyMuxVideo($id: ID!) {
-          getMyMuxVideo(id: $id) {
+        query GetMyMuxVideo($id: ID!, $userGenerated: Boolean) {
+          getMyMuxVideo(id: $id, userGenerated: $userGenerated) {
             id
             playbackId
             uploadUrl
@@ -148,7 +161,8 @@ describe('mux/video', () => {
         const data = await authClient({
           document: GET_MY_MUX_VIDEO,
           variables: {
-            id: 'videoId'
+            id: 'videoId',
+            userGenerated: true
           }
         })
         expect(data).toHaveProperty('data.getMyMuxVideo', {
@@ -164,7 +178,8 @@ describe('mux/video', () => {
         const data = await client({
           document: GET_MY_MUX_VIDEO,
           variables: {
-            id: 'videoId'
+            id: 'videoId',
+            userGenerated: true
           }
         })
         expect(data).toHaveProperty('data', null)
@@ -173,8 +188,8 @@ describe('mux/video', () => {
 
     describe('getMuxVideo', () => {
       const GET_MUX_VIDEO = graphql(`
-        query GetMuxVideo($id: ID!) {
-          getMuxVideo(id: $id) {
+        query GetMuxVideo($id: ID!, $userGenerated: Boolean) {
+          getMuxVideo(id: $id, userGenerated: $userGenerated) {
             id
             playbackId
             uploadUrl
@@ -207,7 +222,8 @@ describe('mux/video', () => {
         const data = await client({
           document: GET_MUX_VIDEO,
           variables: {
-            id: 'videoId'
+            id: 'videoId',
+            userGenerated: false
           }
         })
         expect(data).toHaveProperty('data.getMuxVideo', {
@@ -224,8 +240,14 @@ describe('mux/video', () => {
   describe('mutations', () => {
     describe('createMuxVideoUploadByFile', () => {
       const CREATE_MUX_VIDEO_UPLOAD_BY_FILE = graphql(`
-        mutation CreateMuxVideoUploadByFile($name: String!) {
-          createMuxVideoUploadByFile(name: $name) {
+        mutation CreateMuxVideoUploadByFile(
+          $name: String!
+          $userGenerated: Boolean
+        ) {
+          createMuxVideoUploadByFile(
+            name: $name
+            userGenerated: $userGenerated
+          ) {
             id
             playbackId
             uploadUrl
@@ -258,7 +280,8 @@ describe('mux/video', () => {
         const result = await authClient({
           document: CREATE_MUX_VIDEO_UPLOAD_BY_FILE,
           variables: {
-            name: 'videoName'
+            name: 'videoName',
+            userGenerated: true
           }
         })
         expect(prismaMock.muxVideo.create).toHaveBeenCalledWith({
@@ -282,7 +305,8 @@ describe('mux/video', () => {
         const result = await client({
           document: CREATE_MUX_VIDEO_UPLOAD_BY_FILE,
           variables: {
-            name: 'videoName'
+            name: 'videoName',
+            userGenerated: true
           }
         })
         expect(result).toHaveProperty('data', null)
@@ -291,8 +315,11 @@ describe('mux/video', () => {
 
     describe('createMuxVideoUploadByUrl', () => {
       const CREATE_MUX_VIDEO_UPLOAD_BY_URL = graphql(`
-        mutation CreateMuxVideoUploadByUrl($url: String!) {
-          createMuxVideoUploadByUrl(url: $url) {
+        mutation CreateMuxVideoUploadByUrl(
+          $url: String!
+          $userGenerated: Boolean
+        ) {
+          createMuxVideoUploadByUrl(url: $url, userGenerated: $userGenerated) {
             id
             playbackId
             uploadUrl
@@ -325,7 +352,8 @@ describe('mux/video', () => {
         const result = await authClient({
           document: CREATE_MUX_VIDEO_UPLOAD_BY_URL,
           variables: {
-            url: 'https://example.com/video.mp4'
+            url: 'https://example.com/video.mp4',
+            userGenerated: true
           }
         })
         expect(prismaMock.muxVideo.create).toHaveBeenCalledWith({
@@ -347,7 +375,8 @@ describe('mux/video', () => {
         const result = await client({
           document: CREATE_MUX_VIDEO_UPLOAD_BY_URL,
           variables: {
-            url: 'https://example.com/video.mp4'
+            url: 'https://example.com/video.mp4',
+            userGenerated: true
           }
         })
         expect(result).toHaveProperty('data', null)
@@ -356,8 +385,8 @@ describe('mux/video', () => {
 
     describe('deleteMuxVideo', () => {
       const DELETE_MUX_VIDEO = graphql(`
-        mutation DeleteMuxVideo($id: ID!) {
-          deleteMuxVideo(id: $id)
+        mutation DeleteMuxVideo($id: ID!, $userGenerated: Boolean) {
+          deleteMuxVideo(id: $id, userGenerated: $userGenerated)
         }
       `)
 
@@ -384,7 +413,8 @@ describe('mux/video', () => {
         const result = await authClient({
           document: DELETE_MUX_VIDEO,
           variables: {
-            id: 'videoId'
+            id: 'videoId',
+            userGenerated: false
           }
         })
         expect(prismaMock.muxVideo.findUniqueOrThrow).toHaveBeenCalledWith({
@@ -419,7 +449,8 @@ describe('mux/video', () => {
         const result = await authClient({
           document: DELETE_MUX_VIDEO,
           variables: {
-            id: 'videoId'
+            id: 'videoId',
+            userGenerated: true
           }
         })
         expect(prismaMock.muxVideo.findUniqueOrThrow).toHaveBeenCalledWith({
@@ -434,19 +465,33 @@ describe('mux/video', () => {
 
     describe('enableMuxDownload', () => {
       const ENABLE_MUX_DOWNLOAD = graphql(`
-        mutation EnableMuxDownload($id: ID!) {
-          enableMuxDownload(id: $id) {
+        mutation EnableMuxDownload($id: ID!, $resolution: String) {
+          enableMuxDownload(id: $id, resolution: $resolution) {
             id
             downloadable
           }
         }
       `)
 
-      it('should enable download for a video', async () => {
+      it('should enable download for a video with default resolution', async () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
           roles: ['publisher']
+        })
+        prismaMock.muxVideo.findUniqueOrThrow.mockResolvedValue({
+          id: 'videoId',
+          playbackId: 'playbackId',
+          uploadId: 'uploadId',
+          assetId: 'assetId',
+          duration: 10,
+          name: 'videoName',
+          uploadUrl: null,
+          userId: 'testUserId',
+          createdAt: new Date(),
+          readyToStream: true,
+          downloadable: false,
+          updatedAt: new Date()
         })
         prismaMock.muxVideo.update.mockResolvedValue({
           id: 'videoId',
@@ -469,7 +514,7 @@ describe('mux/video', () => {
           }
         })
 
-        expect(enableDownload).toHaveBeenCalledWith('videoId')
+        expect(enableDownload).toHaveBeenCalledWith('assetId', false, '1080p')
 
         // Check that the database was updated
         expect(prismaMock.muxVideo.update).toHaveBeenCalledWith({
@@ -484,6 +529,102 @@ describe('mux/video', () => {
           id: 'videoId',
           downloadable: true
         })
+      })
+
+      it('should enable download for a video with custom resolution', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        prismaMock.muxVideo.findUniqueOrThrow.mockResolvedValue({
+          id: 'videoId',
+          playbackId: 'playbackId',
+          uploadId: 'uploadId',
+          assetId: 'assetId',
+          duration: 10,
+          name: 'videoName',
+          uploadUrl: null,
+          userId: 'testUserId',
+          createdAt: new Date(),
+          readyToStream: true,
+          downloadable: false,
+          updatedAt: new Date()
+        })
+        prismaMock.muxVideo.update.mockResolvedValue({
+          id: 'videoId',
+          playbackId: 'playbackId',
+          uploadId: 'uploadId',
+          assetId: 'assetId',
+          duration: 10,
+          name: 'videoName',
+          uploadUrl: null,
+          userId: 'testUserId',
+          createdAt: new Date(),
+          readyToStream: true,
+          downloadable: true,
+          updatedAt: new Date()
+        })
+        const result = await publisherClient({
+          document: ENABLE_MUX_DOWNLOAD,
+          variables: {
+            id: 'videoId',
+            resolution: '720p'
+          }
+        })
+
+        expect(enableDownload).toHaveBeenCalledWith('assetId', false, '720p')
+
+        // Check that the database was updated
+        expect(prismaMock.muxVideo.update).toHaveBeenCalledWith({
+          where: { id: 'videoId' },
+          data: {
+            downloadable: true
+          }
+        })
+
+        // Check the response
+        expect(result).toHaveProperty('data.enableMuxDownload', {
+          id: 'videoId',
+          downloadable: true
+        })
+      })
+
+      it('should throw an error for invalid resolution', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        prismaMock.muxVideo.findUniqueOrThrow.mockResolvedValue({
+          id: 'videoId',
+          playbackId: 'playbackId',
+          uploadId: 'uploadId',
+          assetId: 'assetId',
+          duration: 10,
+          name: 'videoName',
+          uploadUrl: null,
+          userId: 'testUserId',
+          createdAt: new Date(),
+          readyToStream: true,
+          downloadable: false,
+          updatedAt: new Date()
+        })
+
+        const result = (await publisherClient({
+          document: ENABLE_MUX_DOWNLOAD,
+          variables: {
+            id: 'videoId',
+            resolution: 'invalid'
+          }
+        })) as {
+          data: any
+          errors?: { message: string; extensions?: { code: string } }[]
+        }
+
+        expect(result.errors).toBeDefined()
+        expect(result.errors?.[0]?.message).toBe('Invalid resolution')
+        expect(result.errors?.[0]?.extensions?.code).toBe('BAD_REQUEST')
       })
 
       it('should fail if not authenticated', async () => {

@@ -1,8 +1,6 @@
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
+import IconButton from '@mui/material/IconButton'
 import Skeleton from '@mui/material/Skeleton'
-import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
@@ -19,8 +17,6 @@ export function Large({
   imageBlock,
   onClick
 }: LargeProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
-
   return (
     <Box
       overflow="hidden"
@@ -65,8 +61,7 @@ export function Large({
       ) : (
         <GridEmptyIcon fontSize="large" />
       )}
-      <Button
-        variant="contained"
+      <IconButton
         size="small"
         sx={{
           position: 'absolute',
@@ -75,14 +70,9 @@ export function Large({
           borderRadius: 4,
           backgroundColor: 'background.paper'
         }}
-        startIcon={
-          <Edit2Icon fontSize="small" sx={{ color: 'secondary.dark' }} />
-        }
       >
-        <Typography variant="caption" color="secondary.dark">
-          {t('Change')}
-        </Typography>
-      </Button>
+        <Edit2Icon fontSize="small" sx={{ color: 'secondary.dark' }} />
+      </IconButton>
     </Box>
   )
 }

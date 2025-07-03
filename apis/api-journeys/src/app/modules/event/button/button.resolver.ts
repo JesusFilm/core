@@ -3,7 +3,6 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 
-import { Prisma } from '.prisma/api-journeys-client'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 
@@ -45,8 +44,8 @@ export class ButtonClickEventResolver {
         typename: 'ButtonClickEvent',
         visitor: { connect: { id: visitor.id } },
         stepId: input.stepId ?? undefined,
-        journeyId
-      } as unknown as Prisma.EventCreateInput)
+        journey: { connect: { id: journeyId } }
+      })
     ]
 
     if (input.action === ButtonAction.LinkAction) {
@@ -110,7 +109,7 @@ export class ChatOpenEventResolver {
         typename: 'ChatOpenEvent',
         visitor: { connect: { id: visitor.id } },
         stepId: input.stepId ?? undefined,
-        journeyId
+        journey: { connect: { id: journeyId } }
       })
     ]
 

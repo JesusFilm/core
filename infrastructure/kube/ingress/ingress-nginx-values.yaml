@@ -1,0 +1,48 @@
+controller:
+  name: controller
+  image:
+    # Update to version 1.12.1
+    tag: 'v1.12.1'
+  resources:
+    requests:
+      cpu: 100m
+      memory: 90Mi
+  service:
+    enabled: true
+    type: LoadBalancer
+    ports:
+      http: 80
+      https: 443
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
+      service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: 'true'
+      service.beta.kubernetes.io/aws-load-balancer-type: 'external'
+      service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: 'instance'
+      service.beta.kubernetes.io/aws-load-balancer-scheme: 'internet-facing'
+    externalTrafficPolicy: Local
+  admissionWebhooks:
+    enabled: true
+  config:
+    allow-snippet-annotations: 'false'
+    use-forwarded-headers: 'true'
+  metrics:
+    enabled: false
+  nodeSelector:
+    kubernetes.io/os: linux
+  podSecurityContext:
+    runAsUser: 101
+    runAsNonRoot: true
+
+rbac:
+  create: true
+
+serviceAccount:
+  create: true
+  name: 'ingress-nginx'
+  automountServiceAccountToken: true
+
+ingressClassResource:
+  name: nginx
+  enabled: true
+  default: false
+  controllerValue: 'k8s.io/ingress-nginx'

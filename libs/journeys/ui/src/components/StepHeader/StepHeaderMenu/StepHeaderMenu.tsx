@@ -52,6 +52,34 @@ export function StepHeaderMenu(): ReactElement {
   }
   const isEmpty = menuButtonIcon === null && variant === 'admin'
 
+  const getIconTestId = (
+    Icon: typeof SvgIcon | null | undefined,
+    menuButtonIcon: JourneyMenuButtonIcon | null | undefined,
+    variant: string | undefined
+  ): string | undefined => {
+    // Check for specific icon components first
+    if (Icon === X2) return 'X2Icon'
+
+    // Check for menu button icon types
+    switch (menuButtonIcon) {
+      case JourneyMenuButtonIcon.chevronDown:
+        return 'ChevronDownIcon'
+      case JourneyMenuButtonIcon.home3:
+        return 'Home3Icon'
+      case JourneyMenuButtonIcon.home4:
+        return 'Home4Icon'
+      default:
+        break
+    }
+
+    // Special case for admin variant with null menu button icon
+    if (variant === 'admin' && menuButtonIcon === null) {
+      return 'Menu1Icon'
+    }
+
+    return undefined
+  }
+
   return (
     <Box
       sx={{
@@ -72,7 +100,9 @@ export function StepHeaderMenu(): ReactElement {
         <>
           {variant === 'default' && menuStepBlock != null ? (
             <IconButton onClick={handleClick}>
-              <Icon />
+              <Icon
+                data-testid={getIconTestId(Icon, menuButtonIcon, variant)}
+              />
             </IconButton>
           ) : (
             <Icon
@@ -80,6 +110,7 @@ export function StepHeaderMenu(): ReactElement {
                 color: ({ palette }) =>
                   isEmpty ? palette.grey[700] : undefined
               }}
+              data-testid={getIconTestId(Icon, menuButtonIcon, variant)}
             />
           )}
         </>

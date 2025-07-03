@@ -16,6 +16,7 @@ builder.prismaObject('VideoStudyQuestion', {
     id: t.exposeID('id', { nullable: false }),
     value: t.exposeString('value', { nullable: false }),
     primary: t.exposeBoolean('primary', { nullable: false }),
+    order: t.exposeInt('order', { nullable: false }),
     language: t.field({
       type: Language,
       nullable: false,

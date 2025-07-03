@@ -1,1 +1,0 @@
-export { VariantDialog } from './VariantDialog'

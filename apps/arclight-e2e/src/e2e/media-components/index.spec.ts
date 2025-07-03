@@ -165,7 +165,7 @@ test.describe('media components', () => {
     expect(data._embedded.mediaComponents.length).toBeLessThanOrEqual(2)
   })
 
-  test('media components returns 400 for invalid language with no fallback content', async ({
+  test('media components returns 200 and defaults to english for invalid language with no fallback content', async ({
     request
   }) => {
     const response = await request.get(
@@ -175,11 +175,13 @@ test.describe('media components', () => {
       })}`
     )
 
-    expect(response.status()).toBe(400)
+    expect(response.ok()).toBeTruthy()
+    expect(response.status()).toBe(200)
     const data = await response.json()
-    expect(data).toMatchObject({
-      message: expect.any(String),
-      logref: 400
-    })
+    expect(data._embedded.mediaComponents.length).toBeGreaterThan(0)
+    expect(data._embedded.mediaComponents[0]).toHaveProperty(
+      'metadataLanguageTag'
+    )
+    expect(data._embedded.mediaComponents[0].metadataLanguageTag).toBe('en')
   })
 })

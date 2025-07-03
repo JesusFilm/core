@@ -22,21 +22,22 @@ type Journey @key(fields: "id") {
   """
   private title for creators
   """
-  title: String!
-  language: Language!
+  title: String! @shareable
+  language: Language! @shareable
+  languageId: String! @shareable
   themeMode: ThemeMode!
   themeName: ThemeName!
-  description: String
+  description: String @shareable
   creatorDescription: String
-  slug: String!
+  slug: String! @shareable
   archivedAt: DateTime
   deletedAt: DateTime
   publishedAt: DateTime
   trashedAt: DateTime
   featuredAt: DateTime
-  updatedAt: DateTime!
-  createdAt: DateTime!
-  status: JourneyStatus!
+  updatedAt: DateTime! @shareable
+  createdAt: DateTime! @shareable
+  status: JourneyStatus! @shareable
   """
   title for seo and sharing
   """
@@ -67,6 +68,9 @@ type Journey @key(fields: "id") {
   showMenu: Boolean
   showDisplayTitle: Boolean
   menuButtonIcon: JourneyMenuButtonIcon
+  socialNodeX: Int
+  socialNodeY: Int
+  fromTemplateId: String
 }
 
 enum IdType {
@@ -210,6 +214,8 @@ input JourneyUpdateInput {
   menuButtonIcon: JourneyMenuButtonIcon
   menuStepBlockId: ID
   logoImageBlockId: ID
+  socialNodeX: Int
+  socialNodeY: Int
 }
 
 extend type UserJourney {

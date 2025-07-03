@@ -1,0 +1,1 @@
+export { VideoTabView } from './VideoTabs'

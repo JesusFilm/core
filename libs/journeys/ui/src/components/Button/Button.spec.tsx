@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { useFormikContext } from 'formik'
 import { usePlausible } from 'next-plausible'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -71,6 +72,20 @@ const mockUsePlausible = usePlausible as jest.MockedFunction<
   typeof usePlausible
 >
 
+jest.mock('next-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
+jest.mock('formik', () => ({
+  __esModule: true,
+  useFormikContext: jest.fn()
+}))
+
 const block: TreeBlock<ButtonFields> = {
   __typename: 'ButtonBlock',
   id: 'button',
@@ -83,6 +98,7 @@ const block: TreeBlock<ButtonFields> = {
   startIconId: null,
   endIconId: null,
   action: null,
+  submitEnabled: false,
   children: []
 }
 
@@ -105,6 +121,7 @@ const activeBlock: TreeBlock<StepBlock> = {
       themeMode: null,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: [
         {
           __typename: 'TypographyBlock',
@@ -140,6 +157,150 @@ describe('Button', () => {
 
   afterAll(() => {
     Object.defineProperty(window, 'location', originalLocation)
+  })
+
+  describe('form validation handling', () => {
+    beforeEach(() => {
+      jest.clearAllMocks()
+    })
+
+    const submitButtonMock = {
+      ...block,
+      label: 'Submit Form',
+      submitEnabled: true
+    }
+
+    const mockButtonClickEvent = {
+      request: {
+        query: BUTTON_CLICK_EVENT_CREATE,
+        variables: {
+          input: {
+            id: 'uuid',
+            blockId: 'button',
+            stepId: 'step.id',
+            label: 'stepName',
+            value: 'Submit Form',
+            action: undefined,
+            actionValue: undefined
+          }
+        }
+      },
+      result: jest.fn(() => ({
+        data: {
+          buttonClickEventCreate: {
+            id: 'uuid',
+            __typename: 'ButtonClickEvent',
+            action: undefined,
+            actionValue: undefined
+          }
+        }
+      }))
+    }
+
+    it('should not submit form on empty form', async () => {
+      mockUuidv4.mockReturnValueOnce('uuid')
+      const validateFormMock = jest.fn().mockResolvedValue({})
+      const handleSubmitMock = jest.fn()
+
+      blockHistoryVar([activeBlock])
+      treeBlocksVar([activeBlock])
+
+      const formikContextMock = {
+        values: { field1: '', field2: '' },
+        validateForm: validateFormMock,
+        handleSubmit: handleSubmitMock
+      }
+
+      const useFormikContextMock = useFormikContext as jest.Mock
+      useFormikContextMock.mockReturnValue(formikContextMock)
+
+      render(
+        <MockedProvider mocks={[mockButtonClickEvent]}>
+          <Button {...submitButtonMock} />
+        </MockedProvider>
+      )
+
+      const submitButton = screen.getByRole('button', { name: 'Submit Form' })
+
+      fireEvent.click(submitButton)
+
+      await waitFor(() => {
+        expect(validateFormMock).toHaveBeenCalled()
+        expect(mockButtonClickEvent.result).toHaveBeenCalled()
+        expect(handleSubmitMock).not.toHaveBeenCalled()
+      })
+    })
+
+    it('should prevent handleAction when validaton fails', async () => {
+      mockUuidv4.mockReturnValueOnce('uuid')
+      const validateFormMock = jest.fn().mockResolvedValue({
+        field1: 'Error'
+      })
+      const handleSubmitMock = jest.fn()
+
+      blockHistoryVar([activeBlock])
+      treeBlocksVar([activeBlock])
+
+      const formikContextMock = {
+        values: { field1: 'asd', field2: '' },
+        validateForm: validateFormMock,
+        handleSubmit: handleSubmitMock
+      }
+
+      const useFormikContextMock = useFormikContext as jest.Mock
+      useFormikContextMock.mockReturnValue(formikContextMock)
+
+      render(
+        <MockedProvider mocks={[mockButtonClickEvent]}>
+          <Button {...submitButtonMock} />
+        </MockedProvider>
+      )
+
+      const submitButton = screen.getByRole('button', { name: 'Submit Form' })
+
+      fireEvent.click(submitButton)
+
+      await waitFor(() => {
+        expect(validateFormMock).toHaveBeenCalled()
+        expect(mockButtonClickEvent.result).not.toHaveBeenCalled()
+        expect(handleAction).not.toHaveBeenCalled()
+      })
+    })
+
+    it('should create button click event if form is valid and not empty', async () => {
+      mockUuidv4.mockReturnValueOnce('uuid')
+      const validateFormMock = jest.fn().mockResolvedValue({})
+      const handleSubmitMock = jest.fn()
+
+      blockHistoryVar([activeBlock])
+      treeBlocksVar([activeBlock])
+
+      const formikContextMock = {
+        values: { field1: 'asd', field2: '' },
+        validateForm: validateFormMock,
+        handleSubmit: handleSubmitMock
+      }
+
+      const useFormikContextMock = useFormikContext as jest.Mock
+      useFormikContextMock.mockReturnValue(formikContextMock)
+
+      render(
+        <MockedProvider mocks={[mockButtonClickEvent]}>
+          <JourneyProvider>
+            <Button {...submitButtonMock} />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      const submitButton = screen.getByRole('button', { name: 'Submit Form' })
+      fireEvent.click(submitButton)
+
+      await waitFor(() => {
+        expect(validateFormMock).toHaveBeenCalled()
+        expect(mockButtonClickEvent.result).toHaveBeenCalled()
+        expect(handleAction).toHaveBeenCalled()
+      })
+    })
   })
 
   it('should create a buttonClickEvent onClick', async () => {
@@ -247,6 +408,7 @@ describe('Button', () => {
           themeMode: null,
           themeName: null,
           fullscreen: false,
+          backdropBlur: null,
           children: []
         }
       ]
@@ -578,18 +740,168 @@ describe('Button', () => {
     )
   })
 
-  it('should show default button text if button label is empty', () => {
+  describe('button label rendering', () => {
+    it('should display custom label when provided', () => {
+      render(
+        <MockedProvider>
+          <Button {...block} label="Custom Label" />
+        </MockedProvider>
+      )
+      expect(screen.getByRole('button')).toHaveTextContent('Custom Label')
+    })
+
+    it('should display "Submit" when submitEnabled is true and no label is provided', () => {
+      const submitButton = {
+        ...block,
+        label: '',
+        submitEnabled: true
+      }
+      render(
+        <MockedProvider>
+          <Button {...submitButton} />
+        </MockedProvider>
+      )
+      expect(screen.getByRole('button')).toHaveTextContent('Submit')
+    })
+
+    it('should display "Button" when submitEnabled is false and no label is provided', () => {
+      const regularButton = {
+        ...block,
+        label: '',
+        submitEnabled: false
+      }
+      render(
+        <MockedProvider>
+          <Button {...regularButton} />
+        </MockedProvider>
+      )
+      expect(screen.getByRole('button')).toHaveTextContent('Button')
+    })
+
+    it('should prioritize custom label over submitEnabled status', () => {
+      const buttonWithLabelAndSubmitEnabled = {
+        ...block,
+        label: 'Custom Label',
+        submitEnabled: true
+      }
+      render(
+        <MockedProvider>
+          <Button {...buttonWithLabelAndSubmitEnabled} />
+        </MockedProvider>
+      )
+      expect(screen.getByRole('button')).toHaveTextContent('Custom Label')
+    })
+
+    it('should display editable label component when provided', () => {
+      const EditableLabelComponent = () => (
+        <span data-testid="editable-label">Editable Label</span>
+      )
+
+      const buttonWithEditableLabel = {
+        ...block,
+        label: 'Regular Label',
+        editableLabel: <EditableLabelComponent />
+      }
+
+      render(
+        <MockedProvider>
+          <Button {...buttonWithEditableLabel} />
+        </MockedProvider>
+      )
+
+      expect(screen.getByTestId('editable-label')).toBeInTheDocument()
+      expect(screen.getByTestId('editable-label')).toHaveTextContent(
+        'Editable Label'
+      )
+      expect(screen.queryByText('Regular Label')).not.toBeInTheDocument()
+    })
+  })
+
+  it('should submit form when submitEnabled is true', () => {
     const emptyButtonLabelMock = {
       ...block,
-      label: ''
+      label: '',
+      submitEnabled: true
     }
     render(
       <MockedProvider>
         <Button {...emptyButtonLabelMock} />
       </MockedProvider>
     )
-    expect(screen.getByRole('button', { name: 'Submit' })).toHaveTextContent(
-      'Submit'
+    const submitButton = screen.getByRole('button', { name: 'Submit' })
+    expect(submitButton).toHaveTextContent('Submit')
+    expect(submitButton).toHaveAttribute('type', 'submit')
+  })
+
+  it('should have type="submit" when submitEnabled is true and variant is not admin', () => {
+    const buttonMock = {
+      ...block,
+      submitEnabled: true
+    }
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey, variant: 'default' }}>
+          <Button {...buttonMock} />
+        </JourneyProvider>
+      </MockedProvider>
     )
+    const button = screen.getByRole('button')
+    expect(button).toHaveAttribute('type', 'submit')
+  })
+
+  it('should have type="button" when submitEnabled is false and variant is not admin', () => {
+    const buttonMock = {
+      ...block,
+      submitEnabled: false
+    }
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey, variant: 'default' }}>
+          <Button {...buttonMock} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    const button = screen.getByRole('button')
+    expect(button).toHaveAttribute('type', 'button')
+  })
+
+  it('should have type="button" when submitEnabled is true and variant is admin', () => {
+    const buttonMock = {
+      ...block,
+      submitEnabled: true,
+      variant: 'admin'
+    }
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <Button {...buttonMock} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    const button = screen.getByRole('button')
+    expect(button).toHaveAttribute('type', 'button')
+  })
+
+  it('should trigger form submission when clicked in a form context', () => {
+    const handleSubmit = jest.fn((e) => e.preventDefault())
+    const submitButtonMock = {
+      ...block,
+      label: 'Submit Form',
+      submitEnabled: true
+    }
+
+    render(
+      <MockedProvider>
+        <form onSubmit={handleSubmit} data-testid="test-form">
+          <Button {...submitButtonMock} />
+        </form>
+      </MockedProvider>
+    )
+
+    const submitButton = screen.getByRole('button', { name: 'Submit Form' })
+    expect(submitButton).toHaveAttribute('type', 'submit')
+
+    fireEvent.click(submitButton)
+    expect(handleSubmit).toHaveBeenCalledTimes(1)
   })
 })

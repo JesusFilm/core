@@ -1,8 +1,9 @@
+'use client'
+
 import { MockedProvider } from '@apollo/client/testing'
-import { render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
-import { NextIntlClientProvider } from 'next-intl'
 
 import { getLanguagesMock } from '@core/journeys/ui/useLanguagesQuery/useLanguagesQuery.mock'
 
@@ -13,16 +14,14 @@ describe('FormLanguageSelect', () => {
     const handleSubmit = jest.fn()
 
     render(
-      <NextIntlClientProvider locale="en">
-        <MockedProvider mocks={[getLanguagesMock]}>
-          <Formik initialValues={{ language: '' }} onSubmit={handleSubmit}>
-            <Form>
-              <FormLanguageSelect name="language" label="Language" />
-              <button type="submit">Submit</button>
-            </Form>
-          </Formik>
-        </MockedProvider>
-      </NextIntlClientProvider>
+      <MockedProvider mocks={[getLanguagesMock]}>
+        <Formik initialValues={{ language: '' }} onSubmit={handleSubmit}>
+          <Form>
+            <FormLanguageSelect name="language" label="Language" />
+            <button type="submit">Submit</button>
+          </Form>
+        </Formik>
+      </MockedProvider>
     )
 
     const user = userEvent.setup()
@@ -34,7 +33,7 @@ describe('FormLanguageSelect', () => {
 
     // Select a language
     await user.click(languageSelect)
-    await waitFor(async () => {
+    await act(async () => {
       await user.click(screen.getByRole('option', { name: 'English' }))
     })
 
@@ -57,19 +56,17 @@ describe('FormLanguageSelect', () => {
     }
 
     render(
-      <NextIntlClientProvider locale="en">
-        <MockedProvider mocks={[getLanguagesMock]}>
-          <Formik initialValues={{ language: '529' }} onSubmit={jest.fn()}>
-            <Form>
-              <FormLanguageSelect
-                name="language"
-                label="Language"
-                initialLanguage={initialLanguage}
-              />
-            </Form>
-          </Formik>
-        </MockedProvider>
-      </NextIntlClientProvider>
+      <MockedProvider mocks={[getLanguagesMock]}>
+        <Formik initialValues={{ language: '529' }} onSubmit={jest.fn()}>
+          <Form>
+            <FormLanguageSelect
+              name="language"
+              label="Language"
+              initialLanguage={initialLanguage}
+            />
+          </Form>
+        </Formik>
+      </MockedProvider>
     )
 
     // Check that the initial language is selected
@@ -79,24 +76,20 @@ describe('FormLanguageSelect', () => {
 
   it('should filter out existing languages', async () => {
     // Create a mock of existing languages
-    const existingLanguages = new Map([
-      ['528', { id: 'subtitle1' }] // Spanish
-    ])
+    const existingLanguages = ['528'] // Spanish
 
     render(
-      <NextIntlClientProvider locale="en">
-        <MockedProvider mocks={[getLanguagesMock]}>
-          <Formik initialValues={{ language: '' }} onSubmit={jest.fn()}>
-            <Form>
-              <FormLanguageSelect
-                name="language"
-                label="Language"
-                existingLanguages={existingLanguages}
-              />
-            </Form>
-          </Formik>
-        </MockedProvider>
-      </NextIntlClientProvider>
+      <MockedProvider mocks={[getLanguagesMock]}>
+        <Formik initialValues={{ language: '' }} onSubmit={jest.fn()}>
+          <Form>
+            <FormLanguageSelect
+              name="language"
+              label="Language"
+              existingLanguageIds={existingLanguages}
+            />
+          </Form>
+        </Formik>
+      </MockedProvider>
     )
 
     const user = userEvent.setup()
@@ -106,7 +99,7 @@ describe('FormLanguageSelect', () => {
     await user.click(languageSelect)
 
     // Wait for the dropdown to load
-    await waitFor(() => {
+    await act(async () => {
       // English should be in the dropdown
       expect(
         screen.getByRole('option', { name: 'English' })
@@ -124,32 +117,27 @@ describe('FormLanguageSelect', () => {
 
   it('should include parent object language when filtering', async () => {
     // Create a mock of existing languages
-    const existingLanguages = new Map([
-      ['529', { id: 'subtitle1' }], // English
-      ['528', { id: 'subtitle2' }] // Spanish
-    ])
+    const existingLanguages = ['529', '528'] // English, Spanish
 
     render(
-      <NextIntlClientProvider locale="en">
-        <MockedProvider mocks={[getLanguagesMock]}>
-          <Formik initialValues={{ language: '529' }} onSubmit={jest.fn()}>
-            <Form>
-              <FormLanguageSelect
-                name="language"
-                label="Language"
-                existingLanguages={existingLanguages}
-                parentObjectId="subtitle1"
-                initialLanguage={{
-                  id: '529',
-                  localName: 'English',
-                  nativeName: 'English',
-                  slug: 'english'
-                }}
-              />
-            </Form>
-          </Formik>
-        </MockedProvider>
-      </NextIntlClientProvider>
+      <MockedProvider mocks={[getLanguagesMock]}>
+        <Formik initialValues={{ language: '529' }} onSubmit={jest.fn()}>
+          <Form>
+            <FormLanguageSelect
+              name="language"
+              label="Language"
+              existingLanguageIds={existingLanguages}
+              parentObjectId="subtitle1"
+              initialLanguage={{
+                id: '529',
+                localName: 'English',
+                nativeName: 'English',
+                slug: 'english'
+              }}
+            />
+          </Form>
+        </Formik>
+      </MockedProvider>
     )
 
     const user = userEvent.setup()
@@ -159,7 +147,7 @@ describe('FormLanguageSelect', () => {
     await user.click(languageSelect)
 
     // Wait for the dropdown to load
-    await waitFor(() => {
+    await act(async () => {
       // English should be in the dropdown because it's the parent object's language
       expect(
         screen.getByRole('option', { name: 'English' })
@@ -177,26 +165,24 @@ describe('FormLanguageSelect', () => {
 
   it('should show validation error', async () => {
     render(
-      <NextIntlClientProvider locale="en">
-        <MockedProvider mocks={[getLanguagesMock]}>
-          <Formik
-            initialValues={{ language: '' }}
-            onSubmit={jest.fn()}
-            validate={(values) => {
-              const errors: { language?: string } = {}
-              if (!values.language) {
-                errors.language = 'Language is required'
-              }
-              return errors
-            }}
-          >
-            <Form>
-              <FormLanguageSelect name="language" label="Language" />
-              <button type="submit">Submit</button>
-            </Form>
-          </Formik>
-        </MockedProvider>
-      </NextIntlClientProvider>
+      <MockedProvider mocks={[getLanguagesMock]}>
+        <Formik
+          initialValues={{ language: '' }}
+          onSubmit={jest.fn()}
+          validate={(values) => {
+            const errors: { language?: string } = {}
+            if (!values.language) {
+              errors.language = 'Language is required'
+            }
+            return errors
+          }}
+        >
+          <Form>
+            <FormLanguageSelect name="language" label="Language" />
+            <button type="submit">Submit</button>
+          </Form>
+        </Formik>
+      </MockedProvider>
     )
 
     const user = userEvent.setup()
@@ -205,7 +191,7 @@ describe('FormLanguageSelect', () => {
     await user.click(screen.getByRole('button', { name: 'Submit' }))
 
     // Check that the error message is displayed
-    await waitFor(() => {
+    await act(async () => {
       expect(screen.getByText('Language is required')).toBeInTheDocument()
     })
   })

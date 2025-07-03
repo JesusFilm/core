@@ -28,6 +28,7 @@ export enum ButtonSize {
 
 export enum ButtonVariant {
   contained = "contained",
+  outlined = "outlined",
   text = "text",
 }
 
@@ -228,6 +229,7 @@ export enum VideoLabel {
 export enum VideoVariantDownloadQuality {
   high = "high",
   low = "low",
+  sd = "sd",
 }
 
 export interface ButtonClickEventCreateInput {

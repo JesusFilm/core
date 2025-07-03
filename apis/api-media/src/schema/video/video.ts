@@ -3,9 +3,11 @@ import compact from 'lodash/compact'
 import isEmpty from 'lodash/isEmpty'
 import orderBy from 'lodash/orderBy'
 
-import { Prisma } from '.prisma/api-media-client'
+import { Prisma, Platform as PrismaPlatform } from '.prisma/api-media-client'
 
 import { prisma } from '../../lib/prisma'
+import { videoCacheReset } from '../../lib/videoCacheReset'
+import { updateVideoInAlgolia } from '../../workers/algolia/service'
 import { builder } from '../builder'
 import { ImageAspectRatio } from '../cloudflare/image/enums'
 import { IdType, IdTypeShape } from '../enums/idType'
@@ -13,11 +15,32 @@ import { Language, LanguageWithSlug } from '../language'
 import { VideoSource, VideoSourceShape } from '../videoSource/videoSource'
 import { VideoVariantFilter } from '../videoVariant/inputs/videoVariantFilter'
 
+import { Platform } from './enums/platform'
 import { VideoLabel } from './enums/videoLabel'
 import { VideoCreateInput } from './inputs/videoCreate'
 import { VideosFilter } from './inputs/videosFilter'
 import { VideoUpdateInput } from './inputs/videoUpdate'
 import { videosFilter } from './lib/videosFilter'
+
+// Helper function to check if video viewing is restricted for the current platform
+function isVideoViewRestricted(
+  restrictViewPlatforms: PrismaPlatform[],
+  clientName?: string
+): boolean {
+  return (
+    clientName != null &&
+    clientName !== '' &&
+    restrictViewPlatforms.includes(clientName as PrismaPlatform)
+  )
+}
+
+function isValidClientName(clientName?: string): boolean {
+  return (
+    clientName != null &&
+    clientName !== '' &&
+    Object.values(PrismaPlatform).includes(clientName as PrismaPlatform)
+  )
+}
 
 interface Info {
   variableValues:
@@ -59,6 +82,9 @@ const Video = builder.prismaObject('Video', {
       query: () => ({
         orderBy: { order: 'asc' }
       })
+    }),
+    origin: t.relation('origin', {
+      nullable: true
     }),
     source: t.field({
       type: VideoSource,
@@ -197,14 +223,26 @@ const Video = builder.prismaObject('Video', {
     children: t.prismaField({
       type: ['Video'],
       nullable: false,
-      async resolve(query, parent) {
+      async resolve(query, parent, _args, context) {
         if (parent.childIds.length === 0) return []
+
+        const whereCondition: Prisma.VideoWhereInput = {
+          id: { in: parent.childIds }
+        }
+
+        // Add platform restriction filter if clientName is provided
+        if (isValidClientName(context.clientName)) {
+          whereCondition.NOT = {
+            restrictViewPlatforms: {
+              has: context.clientName as PrismaPlatform
+            }
+          }
+        }
+
         return orderBy(
           await prisma.video.findMany({
             ...query,
-            where: {
-              id: { in: parent.childIds }
-            }
+            where: whereCondition
           }),
           ({ id }) => parent.childIds.indexOf(id),
           'asc'
@@ -220,14 +258,25 @@ const Video = builder.prismaObject('Video', {
     parents: t.prismaField({
       type: ['Video'],
       nullable: false,
-      async resolve(query, child: { id: string }) {
-        return await prisma.video.findMany({
-          ...query,
-          where: {
-            childIds: {
-              has: child.id
+      async resolve(query, child: { id: string }, _args, context) {
+        const whereCondition: Prisma.VideoWhereInput = {
+          childIds: {
+            has: child.id
+          }
+        }
+
+        // Add platform restriction filter if clientName is provided
+        if (isValidClientName(context.clientName)) {
+          whereCondition.NOT = {
+            restrictViewPlatforms: {
+              has: context.clientName as PrismaPlatform
             }
           }
+        }
+
+        return await prisma.video.findMany({
+          ...query,
+          where: whereCondition
         })
       }
     }),
@@ -356,7 +405,18 @@ const Video = builder.prismaObject('Video', {
         },
         orderBy: { aspectRatio: 'desc' }
       })
-    })
+    }),
+    restrictDownloadPlatforms: t.withAuth({ isPublisher: true }).field({
+      type: [Platform],
+      nullable: false,
+      resolve: ({ restrictDownloadPlatforms }) => restrictDownloadPlatforms
+    }),
+    restrictViewPlatforms: t.withAuth({ isPublisher: true }).field({
+      type: [Platform],
+      nullable: false,
+      resolve: ({ restrictViewPlatforms }) => restrictViewPlatforms
+    }),
+    publishedAt: t.expose('publishedAt', { type: 'Date', nullable: true })
   })
 })
 
@@ -429,17 +489,27 @@ builder.queryFields((t) => ({
         defaultValue: IdTypeShape.databaseId
       })
     },
-    resolve: async (query, _parent, { id, idType }) => {
+    resolve: async (query, _parent, { id, idType }, context) => {
       try {
-        return idType === IdTypeShape.slug
-          ? await prisma.video.findFirstOrThrow({
-              ...query,
-              where: { variants: { some: { slug: id } }, published: true }
-            })
-          : await prisma.video.findUniqueOrThrow({
-              ...query,
-              where: { id, published: true }
-            })
+        const video =
+          idType === IdTypeShape.slug
+            ? await prisma.video.findFirstOrThrow({
+                ...query,
+                where: { variants: { some: { slug: id } }, published: true }
+              })
+            : await prisma.video.findUniqueOrThrow({
+                ...query,
+                where: { id, published: true }
+              })
+
+        // Check if video viewing is restricted for the current platform
+        if (
+          isVideoViewRestricted(video.restrictViewPlatforms, context.clientName)
+        ) {
+          throw new GraphQLError(`Video not found with id ${idType}:${id}`)
+        }
+
+        return video
       } catch (err) {
         if (
           err instanceof Prisma.PrismaClientKnownRequestError &&
@@ -459,9 +529,20 @@ builder.queryFields((t) => ({
       offset: t.arg.int({ required: false }),
       limit: t.arg.int({ required: false })
     },
-    resolve: async (query, _parent, { offset, limit, where }) => {
+    resolve: async (query, _parent, { offset, limit, where }, context) => {
       const filter = videosFilter(where ?? {})
       filter.published = true
+
+      // Add platform restriction filter if clientName is provided
+      if (isValidClientName(context.clientName)) {
+        filter.NOT = {
+          ...filter.NOT,
+          restrictViewPlatforms: {
+            has: context.clientName as PrismaPlatform
+          }
+        }
+      }
+
       return await prisma.video.findMany({
         ...query,
         where: filter,
@@ -473,9 +554,20 @@ builder.queryFields((t) => ({
   videosCount: t.int({
     args: { where: t.arg({ type: VideosFilter, required: false }) },
     nullable: false,
-    resolve: async (_parent, { where }) => {
+    resolve: async (_parent, { where }, context) => {
       const filter = videosFilter(where ?? {})
       filter.published = true
+
+      // Add platform restriction filter if clientName is provided
+      if (isValidClientName(context.clientName)) {
+        filter.NOT = {
+          ...filter.NOT,
+          restrictViewPlatforms: {
+            has: context.clientName as PrismaPlatform
+          }
+        }
+      }
+
       return await prisma.video.count({
         where: filter
       })
@@ -491,10 +583,27 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoCreateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
-      return await prisma.video.create({
+      const data = {
+        ...input,
+        // Set publishedAt to current timestamp if published is true
+        publishedAt: input.published ? new Date() : undefined
+      }
+
+      const video = await prisma.video.create({
         ...query,
-        data: input
+        data
       })
+      try {
+        await updateVideoInAlgolia(video.id)
+      } catch (error) {
+        console.error('Algolia update error:', error)
+      }
+
+      try {
+        await videoCacheReset(video.id)
+      } catch {}
+
+      return video
     }
   }),
   videoUpdate: t.withAuth({ isPublisher: true }).prismaField({
@@ -504,22 +613,55 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoUpdateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
-      return await prisma.video.update({
+      // If published is being set to true, we need to check if publishedAt should be set
+      let publishedAtUpdate = undefined
+      if (input.published === true) {
+        // Check if the video already has a publishedAt value
+        const existingVideo = await prisma.video.findUnique({
+          where: { id: input.id },
+          select: { publishedAt: true }
+        })
+
+        // Only set publishedAt if it's not already set
+        if (existingVideo?.publishedAt == null) {
+          publishedAtUpdate = new Date()
+        }
+      }
+
+      const video = await prisma.video.update({
         ...query,
         where: { id: input.id },
         data: {
           label: input.label ?? undefined,
           primaryLanguageId: input.primaryLanguageId ?? undefined,
           published: input.published ?? undefined,
+          publishedAt: publishedAtUpdate,
           slug: input.slug ?? undefined,
           noIndex: input.noIndex ?? undefined,
-          childIds: input.childIds ?? undefined
+          childIds: input.childIds ?? undefined,
+          restrictDownloadPlatforms:
+            input.restrictDownloadPlatforms ?? undefined,
+          restrictViewPlatforms: input.restrictViewPlatforms ?? undefined,
+          ...(input.keywordIds
+            ? { keywords: { set: input.keywordIds.map((id) => ({ id })) } }
+            : {})
         },
         include: {
           ...query.include,
           children: true
         }
       })
+      try {
+        await updateVideoInAlgolia(video.id)
+      } catch (error) {
+        console.error('Algolia update error:', error)
+      }
+
+      try {
+        await videoCacheReset(video.id)
+      } catch {}
+
+      return video
     }
   })
 }))

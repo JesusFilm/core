@@ -24,6 +24,7 @@ import {
   Host,
   Journey,
   JourneyCollection,
+  JourneyTheme,
   Prisma,
   Team,
   UserJourney,
@@ -50,6 +51,7 @@ import {
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
+import { RevalidateJob } from '../../lib/prisma.types'
 import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
 import { BlockService } from '../block/block.service'
 import { PlausibleJob } from '../plausible/plausible.consumer'
@@ -62,6 +64,8 @@ const FIVE_DAYS = 5 * 24 * 60 * 60 // in seconds
 @Resolver('Journey')
 export class JourneyResolver {
   constructor(
+    @InjectQueue('api-journeys-revalidate')
+    private readonly revalidateQueue: Queue<RevalidateJob>,
     @InjectQueue('api-journeys-plausible')
     private readonly plausibleQueue: Queue<PlausibleJob>,
     private readonly blockService: BlockService,
@@ -492,6 +496,7 @@ export class JourneyResolver {
       originalBlocks,
       id,
       null,
+      true,
       duplicateStepIds,
       undefined,
       duplicateJourneyId,
@@ -590,6 +595,9 @@ export class JourneyResolver {
                 publishedAt: new Date(),
                 featuredAt: null,
                 template: false,
+                fromTemplateId: journey.template
+                  ? id
+                  : (journey.fromTemplateId ?? null),
                 team: { connect: { id: teamId } },
                 userJourneys: {
                   create: {
@@ -639,7 +647,8 @@ export class JourneyResolver {
             typename: block.typename,
             journey: {
               connect: { id: duplicateJourneyId }
-            }
+            },
+            settings: block.settings ?? {}
           }))
         )
         // update block references after import
@@ -781,6 +790,13 @@ export class JourneyResolver {
 
         const updatedJourney = await tx.journey.update({
           where: { id },
+          include: {
+            team: {
+              include: {
+                customDomains: true
+              }
+            }
+          },
           data: {
             ...omit(input, ['tagIds']),
             title: input.title ?? undefined,
@@ -798,6 +814,18 @@ export class JourneyResolver {
             updatedJourney.id,
             input.slug
           )
+        }
+
+        if (
+          input.seoTitle != null ||
+          input.seoDescription != null ||
+          input.primaryImageBlockId != null
+        ) {
+          await this.revalidateQueue.add('revalidate', {
+            slug: updatedJourney.slug,
+            hostname: updatedJourney.team.customDomains[0]?.name,
+            fbReScrape: true
+          })
         }
 
         return updatedJourney
@@ -1143,6 +1171,13 @@ export class JourneyResolver {
       where: {
         journeyCollectionJourneys: { some: { journeyId: parent.id } }
       }
+    })
+  }
+
+  @ResolveField()
+  async journeyTheme(@Parent() journey: Journey): Promise<JourneyTheme | null> {
+    return await this.prismaService.journeyTheme.findUnique({
+      where: { journeyId: journey.id }
     })
   }
 }

@@ -47,6 +47,7 @@ const block: TreeBlock<Block> = {
       themeMode: null,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: [
         {
           id: 'image0.id',
@@ -97,6 +98,7 @@ const block: TreeBlock<Block> = {
           size: ButtonSize.large,
           startIconId: 'icon',
           endIconId: null,
+          submitEnabled: null,
           action: null,
           children: [
             {

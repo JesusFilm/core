@@ -29,7 +29,7 @@ jobs:
       ECS_SERVICE: ${{ inputs.name}}-${{ inputs.env }}-service
       ECR_REPOSITORY: jfp-${{ inputs.name }}-${{ inputs.env }}
       IMAGE_TAG: ${{ github.sha }}
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     strategy:
       matrix:
         node-version: [22]
@@ -39,18 +39,24 @@ jobs:
         with:
           fetch-depth: 0
       - uses: nrwl/nx-set-shas@v4
-      - uses: actions/setup-node@v4
+      - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
 
-      - name: Cache Node Modules
-        id: cache-node-modules
-        uses: actions/cache@v4
+      - name: Get Node Version
+        id: node-version
+        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
+
+      - name: Mount NPM Cache
+        uses: useblacksmith/stickydisk@v1
         with:
-          path: node_modules
-          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-${{ matrix.node-version }}-
+          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache
+          path: ~/.npm
+      - name: Mount node_modules
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
+          path: ./node_modules
 
       - name: NPM Install
         run: npm install --silent
@@ -96,17 +102,29 @@ jobs:
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
       - name: Login to Amazon ECR
+        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         id: login-ecr-ecs
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build, tag, and push the image to Amazon ECR
+      - name: Set up Docker Buildx
+        if: contains(steps.affected-apps.outputs.apps, inputs.name)
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push Docker image to Amazon ECR
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
         id: build-image-ecs
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr-ecs.outputs.registry }}
+        uses: useblacksmith/build-push-action@v1
+        with:
+          context: .
+          file: apis/${{ inputs.name }}/Dockerfile
+          push: true
+          tags: |
+            ${{ steps.login-ecr-ecs.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+            ${{ steps.login-ecr-ecs.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+          build-args: |
+            SERVICE_VERSION=${{ env.IMAGE_TAG }}
+
+      - name: Set image output
+        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         run: |
-          # Build a docker container and push it to ECR 
-          docker build --build-arg SERVICE_VERSION=$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest . -f apis/${{ inputs.name }}/Dockerfile
-          echo "Pushing image to ECR..."
-          docker push -a $ECR_REGISTRY/$ECR_REPOSITORY
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          echo "image=${{ steps.login-ecr-ecs.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}" >> $GITHUB_OUTPUT

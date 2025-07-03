@@ -59,6 +59,7 @@ function addActionToStep(action: Action): TreeBlock<StepBlock> {
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             __typename: 'ButtonBlock',
@@ -71,6 +72,7 @@ function addActionToStep(action: Action): TreeBlock<StepBlock> {
             size: null,
             startIconId: null,
             endIconId: null,
+            submitEnabled: null,
             children: [],
             action
           }

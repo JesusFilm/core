@@ -28,6 +28,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             id: 'image0.id',
@@ -78,6 +79,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             size: ButtonSize.large,
             startIconId: null,
             endIconId: null,
+            submitEnabled: null,
             action: {
               parentBlockId: 'button.id',
               __typename: 'NavigateToBlockAction',
@@ -109,6 +111,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             id: 'image1.id',
@@ -158,6 +161,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             size: ButtonSize.large,
             startIconId: null,
             endIconId: null,
+            submitEnabled: null,
             action: {
               parentBlockId: 'button1.id',
               __typename: 'LinkAction',
@@ -177,6 +181,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             size: ButtonSize.large,
             startIconId: null,
             endIconId: null,
+            submitEnabled: null,
             action: {
               parentBlockId: 'button2.id',
               __typename: 'EmailAction',
@@ -208,6 +213,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             id: 'image2.id',
@@ -319,6 +325,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             id: 'image3.id',
@@ -357,6 +364,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             size: ButtonSize.large,
             startIconId: null,
             endIconId: null,
+            submitEnabled: null,
             action: {
               parentBlockId: 'button3.id',
               __typename: 'NavigateToBlockAction',
@@ -435,6 +443,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             id: 'image4.id',
@@ -496,6 +505,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             size: ButtonSize.large,
             startIconId: null,
             endIconId: null,
+            submitEnabled: null,
             action: {
               parentBlockId: 'button2.id',
               __typename: 'NavigateToBlockAction',

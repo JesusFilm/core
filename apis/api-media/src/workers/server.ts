@@ -51,47 +51,65 @@ function run({
 }
 
 async function main(): Promise<void> {
-  run(
-    await import(
-      /* webpackChunkName: "algolia" */
-      './algolia'
-    )
-  )
-  run(
+  if (process.env.NODE_ENV === 'production') {
+    // run(
+    //   await import(
+    //     /* webpackChunkName: "algolia" */
+    //     './algolia'
+    //   )
+    // )
+      run(
     await import(
       /* webpackChunkName: "asset-uploader" */
       './assetUploader'
     )
   )
-  run(
-    await import(
-      /* webpackChunkName: "big-query" */
-      './bigQuery'
-    )
-  )
-  run(
-    await import(
-      /* webpackChunkName: "blocklist" */
-      './blocklist'
-    )
-  )
-  run(
-    await import(
-      /* webpackChunkName: "crowdin" */
-      './crowdin'
-    )
-  )
-  run(
-    await import(
-      /* webpackChunkName: "seed" */
-      './seed'
-    )
-  )
-  if (process.env.DEPLOYMENT_ENV === 'prod') {
+
     run(
       await import(
-        /* webpackChunkName: "subtitle-uploader" */
-        './subtitleUploader'
+        /* webpackChunkName: "crowdin" */
+        './crowdin'
+      )
+    )
+    run(
+      await import(
+        /* webpackChunkName: "blocklist" */
+        './blocklist'
+      )
+    )
+
+    run(
+      await import(
+        /* webpackChunkName: "data-export" */
+        './dataExport'
+      )
+    )
+    run(
+      await import(
+        /* webpackChunkName: "video-children" */
+        './videoChildren'
+      )
+    )
+    run(
+      await import(
+        /* webpackChunkName: "mux-downloads" */
+        './muxDownloads'
+      )
+    )
+
+  run(
+    await import(
+      /* webpackChunkName: "published" */
+      './published'
+    )
+  )
+}
+
+  if (process.env.NODE_ENV !== 'production') {
+    run(
+      await import(
+        /* webpackChunkName: "seed" */
+        './seed'
       )
     )
   }

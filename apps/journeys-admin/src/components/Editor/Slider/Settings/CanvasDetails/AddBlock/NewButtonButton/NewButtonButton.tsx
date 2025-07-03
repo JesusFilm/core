@@ -66,6 +66,19 @@ export function NewButtonButton(): ReactElement {
     ) as TreeBlock<CardBlock> | undefined
 
     if (card == null || journey == null) return
+
+    const hasTextInputs = card.children.some(
+      (block) => block.__typename === 'TextResponseBlock'
+    )
+
+    const hasSubmitButton = card.children.some(
+      (block) =>
+        block.__typename === 'ButtonBlock' &&
+        (block as TreeBlock<ButtonBlock>).submitEnabled === true
+    )
+
+    const shouldBeSubmitButton = hasTextInputs && !hasSubmitButton
+
     const button: ButtonBlock = {
       id: uuidv4(),
       __typename: 'ButtonBlock',
@@ -77,7 +90,8 @@ export function NewButtonButton(): ReactElement {
       parentOrder: card.children.length ?? 0,
       startIconId: uuidv4(),
       endIconId: uuidv4(),
-      action: null
+      action: null,
+      submitEnabled: shouldBeSubmitButton
     }
 
     addBlock({
@@ -89,10 +103,11 @@ export function NewButtonButton(): ReactElement {
               id: button.id,
               journeyId: journey.id,
               parentBlockId: button.parentBlockId,
-              label: '',
+              label: button.label,
               variant: button.buttonVariant,
               color: button.buttonColor,
-              size: button.size
+              size: button.size,
+              submitEnabled: shouldBeSubmitButton
             },
             iconBlockCreateInput1: {
               id: button.startIconId,

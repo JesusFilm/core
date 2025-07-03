@@ -77,9 +77,6 @@ terraform.tfstate.backup
 # ignore old locale files
 /libs/locales/**/*_old.json
 
-# ignore app router locale files
-/apps/**/src/locales
-
 .nx/cache
 .nx/workspace-data
 
@@ -91,3 +88,6 @@ terraform.tfstate.backup
 # ignore exports
 /exports/*
 /imports/*
+
+# node sea
+sea-prep.blob

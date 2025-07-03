@@ -1,7 +1,7 @@
 import { ResultOf, graphql } from 'gql.tada'
-import { HTTPException } from 'hono/http-exception'
 
 import { getApolloClient } from './apolloClient'
+import { generateCacheKey, getWithStaleCache } from './cache'
 
 const GET_LANGUAGE_ID_FROM_BCP47 = graphql(`
   query GetLanguageIdFromBCP47($bcp47: ID!) {
@@ -24,13 +24,13 @@ const LANGUAGE_MAPPINGS = new Map<string, string>([
   ['es-MX', 'es'],
   ['pt-BR', 'pt'],
   ['tr-TR', 'tr'],
-  ['zh-Hans', 'zh-Hans'],
+  ['zh-Hans', 'zh-hans'],
   ['fa-IR', 'fa'],
   ['ur-PK', 'ur'],
   ['he-IL', 'he'],
   ['hi-IN', 'hi'],
   ['fr-FR', 'fr'],
-  ['zh-Hant', 'zh-Hant'],
+  ['zh-Hant', 'zh-hant'],
   ['ru-RU', 'ru'],
   ['de-DE', 'de'],
   ['id-ID', 'id'],
@@ -51,40 +51,40 @@ function matchLocales(metadataLanguageTags: string[]): string | undefined {
 }
 
 async function fetchLanguageId(languageTag: string): Promise<string> {
-  const { data } = await getApolloClient().query<
-    ResultOf<typeof GET_LANGUAGE_ID_FROM_BCP47>
-  >({
-    query: GET_LANGUAGE_ID_FROM_BCP47,
-    variables: { bcp47: languageTag }
+  const cacheKey = generateCacheKey(['bcp47', languageTag])
+  return await getWithStaleCache(cacheKey, async () => {
+    const { data } = await getApolloClient().query<
+      ResultOf<typeof GET_LANGUAGE_ID_FROM_BCP47>
+    >({
+      query: GET_LANGUAGE_ID_FROM_BCP47,
+      variables: { bcp47: languageTag }
+    })
+    return data.language?.id ?? ''
   })
-
-  return data.language?.id ?? ''
 }
 
 export async function getLanguageIdsFromTags(
   metadataLanguageTags: string[]
-): Promise<LanguageIds | HTTPException> {
+): Promise<LanguageIds> {
   const DEFAULT_LANGUAGE_ID = '529'
+  let metadataLanguageId = DEFAULT_LANGUAGE_ID
+  const fallbackLanguageId = DEFAULT_LANGUAGE_ID
 
   if (metadataLanguageTags.length === 0) {
     return {
-      metadataLanguageId: DEFAULT_LANGUAGE_ID,
-      fallbackLanguageId: DEFAULT_LANGUAGE_ID
+      metadataLanguageId,
+      fallbackLanguageId
     }
   }
 
   const metadataLanguageTag =
     matchLocales(metadataLanguageTags) ?? metadataLanguageTags[0]
 
-  const metadataLanguageId = await fetchLanguageId(metadataLanguageTag)
+  metadataLanguageId = await fetchLanguageId(metadataLanguageTag)
 
   if (!metadataLanguageId) {
-    throw new HTTPException(400, {
-      message: `Not acceptable metadata language tag(s): ${metadataLanguageTag}`
-    })
+    metadataLanguageId = DEFAULT_LANGUAGE_ID
   }
-
-  const fallbackLanguageId = DEFAULT_LANGUAGE_ID
 
   return { metadataLanguageId, fallbackLanguageId }
 }

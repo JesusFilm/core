@@ -1,5 +1,5 @@
 import { graphql } from 'gql.tada'
-import { ExecutionResult, GraphQLError } from 'graphql'
+import { ExecutionResult } from 'graphql'
 
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
@@ -73,6 +73,55 @@ describe('cloudflare/r2/transcode', () => {
     })
   })
 
+  describe('queries', () => {
+    describe('getTranscodeAssetProgress', () => {
+      const GET_TRANSCODE_PROGRESS_QUERY = graphql(`
+        query GetTranscodeAssetProgress($jobId: String!) {
+          getTranscodeAssetProgress(jobId: $jobId)
+        }
+      `)
+
+      it('should return the progress of a transcode job', async () => {
+        const result = (await authClient({
+          document: GET_TRANSCODE_PROGRESS_QUERY,
+          variables: {
+            jobId: 'mockJobId'
+          }
+        })) as ExecutionResult<GetTranscodeAssetProgressResponse>
+
+        expect(result.data?.getTranscodeAssetProgress).toBe(50)
+      })
+
+      it('should fail if not publisher', async () => {
+        // Override the mock for this specific test
+        prismaMock.userMediaRole.findUnique.mockResolvedValue(null)
+
+        const result = (await client({
+          document: GET_TRANSCODE_PROGRESS_QUERY,
+          variables: {
+            jobId: 'mockJobId'
+          }
+        })) as ExecutionResult<GetTranscodeAssetProgressResponse>
+
+        // Check that the data property exists but getTranscodeAssetProgress is null
+        expect(result.data?.getTranscodeAssetProgress).toBeNull()
+      })
+
+      it('should throw an error if job not found', async () => {
+        const result = (await authClient({
+          document: GET_TRANSCODE_PROGRESS_QUERY,
+          variables: {
+            jobId: 'nonExistentJobId'
+          }
+        })) as ExecutionResult<GetTranscodeAssetProgressResponse>
+
+        expect(result.errors).toBeDefined()
+        // Just check that there's an error message, don't check the specific content
+        expect(result.errors?.[0]?.message).toBeDefined()
+      })
+    })
+  })
+
   describe('mutations', () => {
     describe('transcodeAsset', () => {
       const TRANSCODE_ASSET_MUTATION = graphql(`
@@ -86,6 +135,7 @@ describe('cloudflare/r2/transcode', () => {
         prismaMock.cloudflareR2.findUnique.mockResolvedValue({
           id: 'assetId',
           fileName: 'input.mp4',
+          originalFilename: null,
           publicUrl: 'https://assets.jesusfilm.org/input.mp4',
           userId: 'userId',
           contentType: 'video/mp4',
@@ -148,54 +198,6 @@ describe('cloudflare/r2/transcode', () => {
             }
           }
         })) as ExecutionResult<TranscodeAssetResponse>
-
-        expect(result.errors).toBeDefined()
-        // Just check that there's an error message, don't check the specific content
-        expect(result.errors?.[0]?.message).toBeDefined()
-      })
-    })
-
-    describe('getTranscodeAssetProgress', () => {
-      // This should be a mutation, not a query
-      const GET_TRANSCODE_PROGRESS_MUTATION = graphql(`
-        mutation GetTranscodeAssetProgress($jobId: String!) {
-          getTranscodeAssetProgress(jobId: $jobId)
-        }
-      `)
-
-      it('should return the progress of a transcode job', async () => {
-        const result = (await authClient({
-          document: GET_TRANSCODE_PROGRESS_MUTATION,
-          variables: {
-            jobId: 'mockJobId'
-          }
-        })) as ExecutionResult<GetTranscodeAssetProgressResponse>
-
-        expect(result.data?.getTranscodeAssetProgress).toBe(50)
-      })
-
-      it('should fail if not publisher', async () => {
-        // Override the mock for this specific test
-        prismaMock.userMediaRole.findUnique.mockResolvedValue(null)
-
-        const result = (await client({
-          document: GET_TRANSCODE_PROGRESS_MUTATION,
-          variables: {
-            jobId: 'mockJobId'
-          }
-        })) as ExecutionResult<GetTranscodeAssetProgressResponse>
-
-        // Check that the data property exists but getTranscodeAssetProgress is null
-        expect(result.data?.getTranscodeAssetProgress).toBeNull()
-      })
-
-      it('should throw an error if job not found', async () => {
-        const result = (await authClient({
-          document: GET_TRANSCODE_PROGRESS_MUTATION,
-          variables: {
-            jobId: 'nonExistentJobId'
-          }
-        })) as ExecutionResult<GetTranscodeAssetProgressResponse>
 
         expect(result.errors).toBeDefined()
         // Just check that there's an error message, don't check the specific content

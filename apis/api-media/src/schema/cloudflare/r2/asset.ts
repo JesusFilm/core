@@ -1,4 +1,8 @@
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import {
+  DeleteObjectCommand,
+  PutObjectCommand,
+  S3Client
+} from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 
 import { prisma } from '../../../lib/prisma'
@@ -41,12 +45,26 @@ export async function getPresignedUrl(
   )
 }
 
+export async function deleteR2File(fileName: string): Promise<void> {
+  if (process.env.CLOUDFLARE_R2_BUCKET == null)
+    throw new Error('Missing CLOUDFLARE_R2_BUCKET')
+
+  const client = getClient()
+  await client.send(
+    new DeleteObjectCommand({
+      Bucket: process.env.CLOUDFLARE_R2_BUCKET,
+      Key: fileName
+    })
+  )
+}
+
 builder.prismaObject('CloudflareR2', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
     contentLength: t.exposeInt('contentLength', { nullable: false }),
     contentType: t.exposeString('contentType', { nullable: false }),
     fileName: t.exposeString('fileName', { nullable: false }),
+    originalFilename: t.exposeString('originalFilename'),
     uploadUrl: t.withAuth({ isPublisher: true }).exposeString('uploadUrl'),
     userId: t
       .withAuth({ isPublisher: true })
@@ -81,6 +99,7 @@ builder.mutationFields((t) => ({
           videoId: input.videoId,
           userId: user.id,
           fileName: input.fileName,
+          originalFilename: input.originalFilename,
           uploadUrl,
           publicUrl: `${process.env.CLOUDFLARE_R2_CUSTOM_DOMAIN}/${input.fileName}`,
           contentType: input.contentType,

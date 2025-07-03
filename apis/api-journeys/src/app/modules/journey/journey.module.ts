@@ -17,7 +17,10 @@ import { JourneyResolver } from './journey.resolver'
 @Module({
   imports: [
     CaslAuthModule.register(AppCaslFactory),
-    BullModule.registerQueue({ name: 'api-journeys-plausible' })
+    BullModule.registerQueue(
+      { name: 'api-journeys-plausible' },
+      { name: 'api-journeys-revalidate' }
+    )
   ],
   providers: [
     JourneyResolver,

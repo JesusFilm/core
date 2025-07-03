@@ -1,5 +1,5 @@
 export enum JourneyCardVariant {
-  default,
-  new,
-  actionRequired
+  default = 'default',
+  new = 'new',
+  actionRequired = 'actionRequired'
 }

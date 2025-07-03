@@ -13,6 +13,13 @@ export enum ButtonAction {
   NavigateToBlockAction = "NavigateToBlockAction",
 }
 
+export enum ButtonAlignment {
+  center = "center",
+  justify = "justify",
+  left = "left",
+  right = "right",
+}
+
 export enum ButtonColor {
   error = "error",
   inherit = "inherit",
@@ -28,7 +35,27 @@ export enum ButtonSize {
 
 export enum ButtonVariant {
   contained = "contained",
+  outlined = "outlined",
   text = "text",
+}
+
+export enum EventType {
+  ButtonClickEvent = "ButtonClickEvent",
+  ChatOpenEvent = "ChatOpenEvent",
+  JourneyViewEvent = "JourneyViewEvent",
+  RadioQuestionSubmissionEvent = "RadioQuestionSubmissionEvent",
+  SignUpSubmissionEvent = "SignUpSubmissionEvent",
+  StepNextEvent = "StepNextEvent",
+  StepPreviousEvent = "StepPreviousEvent",
+  StepViewEvent = "StepViewEvent",
+  TextResponseSubmissionEvent = "TextResponseSubmissionEvent",
+  VideoCollapseEvent = "VideoCollapseEvent",
+  VideoCompleteEvent = "VideoCompleteEvent",
+  VideoExpandEvent = "VideoExpandEvent",
+  VideoPauseEvent = "VideoPauseEvent",
+  VideoPlayEvent = "VideoPlayEvent",
+  VideoProgressEvent = "VideoProgressEvent",
+  VideoStartEvent = "VideoStartEvent",
 }
 
 export enum IconColor {
@@ -278,6 +305,11 @@ export interface ButtonBlockCreateInput {
   color?: ButtonColor | null;
   size?: ButtonSize | null;
   submitEnabled?: boolean | null;
+  settings?: ButtonBlockSettingsInput | null;
+}
+
+export interface ButtonBlockSettingsInput {
+  alignment?: ButtonAlignment | null;
 }
 
 export interface ButtonBlockUpdateInput {
@@ -289,6 +321,7 @@ export interface ButtonBlockUpdateInput {
   startIconId?: string | null;
   endIconId?: string | null;
   submitEnabled?: boolean | null;
+  settings?: ButtonBlockSettingsInput | null;
 }
 
 export interface ButtonClickEventCreateInput {
@@ -306,6 +339,7 @@ export interface CardBlockCreateInput {
   journeyId: string;
   parentBlockId: string;
   backgroundColor?: string | null;
+  backdropBlur?: number | null;
   fullscreen?: boolean | null;
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
@@ -315,6 +349,7 @@ export interface CardBlockUpdateInput {
   parentBlockId?: string | null;
   coverBlockId?: string | null;
   backgroundColor?: string | null;
+  backdropBlur?: number | null;
   fullscreen?: boolean | null;
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
@@ -432,6 +467,19 @@ export interface JourneyCollectionUpdateInput {
   journeyIds?: string[] | null;
 }
 
+export interface JourneyEventsExportLogInput {
+  journeyId: string;
+  eventsFilter: EventType[];
+  dateRangeStart?: any | null;
+  dateRangeEnd?: any | null;
+}
+
+export interface JourneyEventsFilter {
+  typenames?: string[] | null;
+  periodRangeStart?: any | null;
+  periodRangeEnd?: any | null;
+}
+
 export interface JourneyNotificationUpdateInput {
   journeyId: string;
   visitorInteractionEmail: boolean;
@@ -477,6 +525,8 @@ export interface JourneyUpdateInput {
   menuButtonIcon?: JourneyMenuButtonIcon | null;
   menuStepBlockId?: string | null;
   logoImageBlockId?: string | null;
+  socialNodeX?: number | null;
+  socialNodeY?: number | null;
 }
 
 export interface JourneyVisitorFilter {
@@ -817,6 +867,7 @@ export interface VisitorUpdateInput {
   status?: VisitorStatus | null;
   countryCode?: string | null;
   referrer?: string | null;
+  phone?: string | null;
 }
 
 //==============================================================
