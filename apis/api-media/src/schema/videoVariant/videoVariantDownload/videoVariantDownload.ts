@@ -1,8 +1,5 @@
-import { GraphQLError } from 'graphql'
-
 import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
-import { getStaticRenditions } from '../../mux/video/service'
 
 import { VideoVariantDownloadQuality } from './enums/videoVariantDownloadQuality'
 import { VideoVariantDownloadCreateInput } from './inputs/videoVariantDownloadCreate'
@@ -83,76 +80,5 @@ builder.mutationFields((t) => ({
         where: { id }
       })
     }
-  }),
-  updateVideoVariantDownloadSizesFromMux: t
-    .withAuth({ isPublisher: true })
-    .field({
-      type: 'Boolean',
-      nullable: false,
-      args: {
-        videoVariantId: t.arg({ type: 'ID', required: true })
-      },
-      resolve: async (_parent, { videoVariantId }) => {
-        // Get the video variant with mux video info
-        const videoVariant = await prisma.videoVariant.findUniqueOrThrow({
-          where: { id: videoVariantId },
-          include: {
-            muxVideo: true,
-            downloads: true
-          }
-        })
-
-        if (!videoVariant.muxVideo?.assetId) {
-          throw new GraphQLError('No Mux asset found for this video variant', {
-            extensions: { code: 'NOT_FOUND' }
-          })
-        }
-
-        // Get static renditions from Mux
-        const staticRenditions = await getStaticRenditions(
-          videoVariant.muxVideo.assetId,
-          false
-        )
-
-        if (!staticRenditions?.files) {
-          throw new GraphQLError('No static renditions found', {
-            extensions: { code: 'NOT_FOUND' }
-          })
-        }
-
-        // Map Mux resolution to our quality levels
-        const resolutionToQuality: Record<string, string> = {
-          '720p': 'high',
-          '360p': 'sd',
-          '270p': 'low'
-        }
-
-        // Update each download with the correct size
-        for (const download of videoVariant.downloads) {
-          // Find the corresponding static rendition file
-          const staticFile = staticRenditions.files.find((file) => {
-            // Use resolution field first (which contains the actual quality like "720p", "360p", "270p")
-            // Then fall back to resolution_tier if resolution is not available
-            const muxResolution = file.resolution || file.resolution_tier
-            return (
-              muxResolution &&
-              resolutionToQuality[muxResolution] === download.quality
-            )
-          })
-
-          if (staticFile?.filesize && staticFile.status === 'ready') {
-            const newSize = parseInt(staticFile.filesize, 10)
-
-            await prisma.videoVariantDownload.update({
-              where: { id: download.id },
-              data: {
-                size: newSize
-              }
-            })
-          }
-        }
-
-        return true
-      }
-    })
+  })
 }))
