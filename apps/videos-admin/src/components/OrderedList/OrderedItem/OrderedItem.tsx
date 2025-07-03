@@ -164,7 +164,10 @@ export function OrderedItem({
         </Box>
       )}
       <Box>
-        <Typography variant="subtitle1" fontWeight="medium">{`${idx + 1}. ${label}`}</Typography>
+        <Typography
+          variant="subtitle1"
+          fontWeight="medium"
+        >{`${idx + 1}. ${label}`}</Typography>
         {subtitle != null && (
           <Typography
             variant="body2"
