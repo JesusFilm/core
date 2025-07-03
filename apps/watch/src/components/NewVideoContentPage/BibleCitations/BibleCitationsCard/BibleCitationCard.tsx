@@ -54,7 +54,7 @@ export function BibleCitationCard({
           `https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/${LOCALE_TO_BIBLE_VERSION_MAP[siteLanguage].bibleVersion}/books/${bookName}/chapters/${citation.chapterStart}/verses/${citation.verseStart}.json`
         )
         setScripture(data)
-      } catch (_err) {
+      } catch (_) {
         setScripture(null)
       }
     }
