@@ -61,9 +61,6 @@ export function PaletteColorPicker({
                 <CheckIcon
                   data-testid="CheckIcon"
                   sx={{ fontSize: 45, color: 'background.default' }}
-                  onClick={() => {
-                    onChange(addAlphaToHex(color, opacity))
-                  }}
                 />
               </Box>
             )}
