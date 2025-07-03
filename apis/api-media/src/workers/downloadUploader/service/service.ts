@@ -27,8 +27,9 @@ async function uploadToR2FromUrl(
   url: string,
   fileName: string,
   contentType: string,
+  expectedSize?: number,
   logger?: Logger
-): Promise<string> {
+): Promise<{ publicUrl: string; actualSize: number }> {
   if (process.env.CLOUDFLARE_R2_BUCKET == null)
     throw new Error('Missing CLOUDFLARE_R2_BUCKET')
   if (process.env.CLOUDFLARE_R2_CUSTOM_DOMAIN == null)
@@ -44,8 +45,42 @@ async function uploadToR2FromUrl(
   }
 
   const fileBuffer = await response.arrayBuffer()
+  const actualSize = fileBuffer.byteLength
 
-  logger?.info(`Uploading file to R2: ${fileName}`)
+  // Validate file size if expected size is provided and > 0
+  if (expectedSize != null && expectedSize > 0) {
+    const sizeDifference = Math.abs(actualSize - expectedSize)
+    const sizeTolerancePercent = 0.05 // 5% tolerance
+    const maxToleranceBytes = expectedSize * sizeTolerancePercent
+
+    if (sizeDifference > maxToleranceBytes) {
+      logger?.warn(
+        {
+          expectedSize,
+          actualSize,
+          sizeDifference,
+          fileName
+        },
+        'Downloaded file size differs significantly from expected size'
+      )
+    } else {
+      logger?.info(
+        {
+          expectedSize,
+          actualSize,
+          fileName
+        },
+        'Downloaded file size matches expected size within tolerance'
+      )
+    }
+  }
+
+  // Validate that the file is not empty
+  if (actualSize === 0) {
+    throw new Error(`Downloaded file is empty: ${fileName}`)
+  }
+
+  logger?.info(`Uploading file to R2: ${fileName} (${actualSize} bytes)`)
 
   const client = getClient()
   await client.send(
@@ -60,7 +95,7 @@ async function uploadToR2FromUrl(
   const publicUrl = `${process.env.CLOUDFLARE_R2_CUSTOM_DOMAIN}/${fileName}`
   logger?.info(`File uploaded to R2: ${publicUrl}`)
 
-  return publicUrl
+  return { publicUrl, actualSize }
 }
 
 export async function service(logger?: Logger): Promise<void> {
@@ -68,6 +103,7 @@ export async function service(logger?: Logger): Promise<void> {
 
   const downloadsWithoutAssets = await prisma.videoVariantDownload.findMany({
     where: {
+      id: 'b465cf65-dba9-4400-8c87-7ad8c0b4c620',
       assetId: null,
       url: { not: '' }
     },
@@ -105,36 +141,55 @@ export async function service(logger?: Logger): Promise<void> {
       const contentType =
         fileExtension === '.mp4' ? 'video/mp4' : 'application/octet-stream'
 
+      const expectedSize =
+        download.size && download.size > 0 ? download.size : undefined
+
       const asset = await prisma.cloudflareR2.create({
         data: {
           fileName,
           userId: 'system',
           contentType,
-          contentLength: download.size ? Math.floor(download.size) : 0,
+          contentLength: expectedSize ? Math.floor(expectedSize) : 0,
           videoId
         }
       })
 
       logger?.info(`Created CloudflareR2 asset: ${asset.id}`)
 
-      const publicUrl = await uploadToR2FromUrl(
+      const { publicUrl, actualSize } = await uploadToR2FromUrl(
         download.url,
         fileName,
         contentType,
+        expectedSize,
         logger
       )
 
+      // Update the asset with the actual size and public URL
       await prisma.cloudflareR2.update({
         where: { id: asset.id },
-        data: { publicUrl }
+        data: {
+          publicUrl,
+          contentLength: actualSize
+        }
       })
+
+      // Update the download with the actual size if it was 0 or null
+      const updateData: { assetId: string; url: string; size?: number } = {
+        assetId: asset.id,
+        url: publicUrl
+      }
+
+      if (expectedSize == null || expectedSize === 0) {
+        updateData.size = actualSize
+        logger?.info(
+          { downloadId: download.id, actualSize },
+          'Updated download size with actual file size'
+        )
+      }
 
       await prisma.videoVariantDownload.update({
         where: { id: download.id },
-        data: {
-          assetId: asset.id,
-          url: publicUrl
-        }
+        data: updateData
       })
 
       logger?.info(`Successfully processed download: ${download.id}`)
