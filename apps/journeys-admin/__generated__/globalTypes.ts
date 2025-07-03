@@ -732,6 +732,11 @@ export interface TypographyBlockCreateInput {
   variant?: TypographyVariant | null;
   color?: TypographyColor | null;
   align?: TypographyAlign | null;
+  settings?: TypographyBlockSettingsInput | null;
+}
+
+export interface TypographyBlockSettingsInput {
+  color?: string | null;
 }
 
 export interface TypographyBlockUpdateInput {
@@ -740,6 +745,7 @@ export interface TypographyBlockUpdateInput {
   variant?: TypographyVariant | null;
   color?: TypographyColor | null;
   align?: TypographyAlign | null;
+  settings?: TypographyBlockSettingsInput | null;
 }
 
 export interface UserInviteCreateInput {
