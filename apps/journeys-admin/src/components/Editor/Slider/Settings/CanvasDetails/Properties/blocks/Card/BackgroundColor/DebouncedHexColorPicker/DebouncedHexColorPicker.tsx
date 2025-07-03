@@ -38,7 +38,7 @@ export function DebouncedHexColorPicker({
 
   return (
     <HexAlphaColorPicker
-      data-testId="HexColorPicker"
+      data-testid="HexColorPicker"
       color={value}
       onChange={handleChange}
       {...props}
