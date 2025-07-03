@@ -70,8 +70,8 @@ describe('ColorDisplayIcon', () => {
     )
     const span = container.querySelector('span')
     expect(span).toHaveStyle('background-color: rgb(197, 45, 58)')
-    expect(span).toHaveStyle('width: 16px')
-    expect(span).toHaveStyle('height: 16px')
+    expect(span).toHaveStyle('width: 24px')
+    expect(span).toHaveStyle('height: 24px')
     expect(span).toHaveStyle('border-radius: 50%')
   })
 
