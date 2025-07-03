@@ -5,19 +5,19 @@ import AddIcon from '@mui/icons-material/Add'
 import DeleteIcon from '@mui/icons-material/Delete'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import Box from '@mui/material/Box'
+import CircularProgress from '@mui/material/CircularProgress'
 import IconButton from '@mui/material/IconButton'
+import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
+import Typography from '@mui/material/Typography'
 import { graphql } from 'gql.tada'
 import { usePathname, useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
-import { FixedSizeList } from 'react-window'
+import { useCallback, useEffect, useState } from 'react'
 
 import { PublishedChip } from '../../../../../components/PublishedChip'
 import { Section } from '../../../../../components/Section'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
-
-const ITEM_SIZE = 75
 
 const GET_ADMIN_VIDEO_VARIANTS = graphql(`
   query GetAdminVideoVariants($id: ID!, $languageId: ID) {
@@ -51,32 +51,9 @@ export default function ClientLayout({
   const pathname = usePathname()
   const [reloadOnPathChange, setReloadOnPathChange] = useState(false)
 
-  const { data, refetch } = useQuery(GET_ADMIN_VIDEO_VARIANTS, {
+  const { data, loading, refetch } = useQuery(GET_ADMIN_VIDEO_VARIANTS, {
     variables: { id: videoId, languageId: DEFAULT_VIDEO_LANGUAGE_ID }
   })
-
-  const [size, setSize] = useState<{
-    height: number
-    width: number
-  }>({
-    height: 0,
-    width: 0
-  })
-
-  function getVariantSectionDimensions(): void {
-    const section = document.getElementById('Audio Languages-section')
-    if (section == null) return
-    const { width, height } = section.getBoundingClientRect()
-    setSize({ width, height })
-  }
-
-  useEffect(() => {
-    getVariantSectionDimensions()
-    window.addEventListener('resize', getVariantSectionDimensions)
-    return () => {
-      window.removeEventListener('resize', getVariantSectionDimensions)
-    }
-  }, [])
 
   useEffect(() => {
     if (reloadOnPathChange) void refetch()
@@ -85,37 +62,97 @@ export default function ClientLayout({
     )
   }, [pathname])
 
-  return (
-    <>
-      <Section
-        boxProps={{
-          sx: { p: 2, height: 'calc(100vh - 400px)' }
-        }}
-        title="Audio Languages"
-        variant="outlined"
-        action={{
-          label: 'Add Audio Language',
-          startIcon: <AddIcon />,
-          onClick: () =>
-            router.push(`/videos/${videoId}/audio/add`, {
-              scroll: false
-            })
-        }}
-      >
-        <FixedSizeList
-          width={size.width - 20}
-          height={size.height - 90}
-          itemData={data?.adminVideo.variants}
-          itemCount={data?.adminVideo.variants.length ?? 0}
-          itemSize={ITEM_SIZE}
-          itemKey={(index, data) => data[index].id}
-          overscanCount={10}
-          style={{
-            marginTop: 8
+  const handleAddAudioLanguage = useCallback((): void => {
+    router.push(`/videos/${videoId}/audio/add`, {
+      scroll: false
+    })
+  }, [router, videoId])
+
+  const handleVariantClick = useCallback(
+    (variantId: string): void => {
+      router.push(`/videos/${videoId}/audio/${variantId}`, {
+        scroll: false
+      })
+    },
+    [router, videoId]
+  )
+
+  const handlePreviewClick = useCallback(
+    (
+      event: React.MouseEvent,
+      videoSlug: string,
+      languageSlug: string
+    ): void => {
+      event.stopPropagation()
+      window.open(
+        `${process.env.NEXT_PUBLIC_WATCH_URL ?? ''}/watch/${videoSlug}.html/${languageSlug}.html`,
+        '_blank',
+        'noopener,noreferrer'
+      )
+    },
+    []
+  )
+
+  const handleDeleteClick = useCallback(
+    (event: React.MouseEvent, variantId: string): void => {
+      event.stopPropagation()
+      router.push(`/videos/${videoId}/audio/${variantId}/delete`, {
+        scroll: false
+      })
+    },
+    [router, videoId]
+  )
+
+  const renderContent = () => {
+    if (loading) {
+      return (
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: 'calc(100% - 60px)',
+            gap: 2
           }}
         >
-          {({ index, data: variants }) => {
-            const variant = variants[index]
+          <CircularProgress size={40} />
+          <Typography variant="body2" color="text.secondary">
+            Loading audio languages...
+          </Typography>
+        </Box>
+      )
+    }
+
+    if (!data?.adminVideo.variants || data.adminVideo.variants.length === 0) {
+      return (
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: 'calc(100% - 60px)',
+            gap: 2
+          }}
+        >
+          <Typography variant="body2" color="text.secondary">
+            No audio languages found
+          </Typography>
+        </Box>
+      )
+    }
+
+    return (
+      <Box
+        sx={{
+          height: 'calc(100% - 60px)',
+          overflow: 'auto',
+          mt: 1
+        }}
+      >
+        <List disablePadding>
+          {data.adminVideo.variants.map((variant) => {
             const canPreview =
               variant.published &&
               data?.adminVideo?.published &&
@@ -125,26 +162,20 @@ export default function ClientLayout({
             return (
               <ListItem
                 key={variant.id}
-                onClick={() =>
-                  router.push(`/videos/${videoId}/audio/${variant.id}`, {
-                    scroll: false
-                  })
-                }
+                onClick={() => handleVariantClick(variant.id)}
                 sx={{
                   border: '1px solid',
                   borderColor: 'divider',
                   backgroundColor: 'background.default',
                   borderRadius: 1,
                   p: 1,
+                  mb: 1,
                   '&:hover': {
                     cursor: 'pointer',
                     backgroundColor: 'action.hover'
                   },
                   transition: 'background-color 0.3s ease',
-                  // ...style,
-                  // css below the spread styles will override react-window styles, use with caution
-                  height: 66,
-                  width: 'calc(100% - 20px)',
+                  minHeight: 66,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between'
@@ -160,16 +191,18 @@ export default function ClientLayout({
                 <Box sx={{ display: 'flex', gap: 1 }}>
                   <IconButton
                     size="small"
-                    onClick={(event) => {
-                      event.stopPropagation()
-                      if (canPreview) {
-                        window.open(
-                          `${process.env.NEXT_PUBLIC_WATCH_URL ?? ''}/watch/${data?.adminVideo?.slug}.html/${variant.language.slug}.html`,
-                          '_blank',
-                          'noopener,noreferrer'
-                        )
-                      }
-                    }}
+                    onClick={
+                      canPreview &&
+                      data?.adminVideo?.slug &&
+                      variant.language?.slug
+                        ? (event) =>
+                            handlePreviewClick(
+                              event,
+                              data.adminVideo.slug,
+                              variant.language.slug as string
+                            )
+                        : undefined
+                    }
                     aria-label="preview variant"
                     disabled={!canPreview}
                     sx={{
@@ -189,15 +222,7 @@ export default function ClientLayout({
                   </IconButton>
                   <IconButton
                     size="small"
-                    onClick={(event) => {
-                      event.stopPropagation()
-                      router.push(
-                        `/videos/${videoId}/audio/${variant.id}/delete`,
-                        {
-                          scroll: false
-                        }
-                      )
-                    }}
+                    onClick={(event) => handleDeleteClick(event, variant.id)}
                     aria-label="delete variant"
                     sx={{
                       color: 'error.main',
@@ -212,8 +237,27 @@ export default function ClientLayout({
                 </Box>
               </ListItem>
             )
-          }}
-        </FixedSizeList>
+          })}
+        </List>
+      </Box>
+    )
+  }
+
+  return (
+    <>
+      <Section
+        boxProps={{
+          sx: { p: 2, height: 'calc(100vh - 400px)' }
+        }}
+        title="Audio Languages"
+        variant="outlined"
+        action={{
+          label: 'Add Audio Language',
+          startIcon: <AddIcon />,
+          onClick: handleAddAudioLanguage
+        }}
+      >
+        {renderContent()}
       </Section>
       {children}
     </>
