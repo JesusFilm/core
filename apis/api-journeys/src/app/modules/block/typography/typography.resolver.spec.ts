@@ -114,7 +114,8 @@ describe('TypographyBlockResolver', () => {
           parentBlock: { connect: { id: 'parentBlockId' } },
           parentOrder: 2,
           typename: 'TypographyBlock',
-          variant: 'h2'
+          variant: 'h2',
+          settings: {}
         },
         include: {
           action: true,
