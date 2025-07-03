@@ -55,6 +55,9 @@ export default function Part3Page({
   container,
   content
 }: Part3PageProps): ReactElement {
+  console.log('container', container)
+  console.log('content', content)
+
   const { i18n } = useTranslation()
   const searchClient = useInstantSearchClient()
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''

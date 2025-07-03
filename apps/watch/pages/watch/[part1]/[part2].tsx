@@ -51,6 +51,7 @@ const DynamicVideoContainerPage = dynamic(
 )
 
 export default function Part2Page({ content }: Part2PageProps): ReactElement {
+  console.log('content', content)
   const { i18n } = useTranslation()
 
   const initialWatchState = {
