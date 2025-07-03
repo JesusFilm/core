@@ -93,3 +93,43 @@ You can trigger a manual export using:
 ```bash
 nx run api-media:data-export
 ```
+
+## Copy Distro Downloads Script
+
+The copy distro downloads script copies existing VideoVariantDownloads to their matched distro downloads. This is useful for creating distribution center versions of video downloads.
+
+### Usage
+
+```bash
+nx run api-media:copy-distro-downloads
+```
+
+### Process
+
+The script will:
+
+1. Find all VideoVariantDownloads with qualities: `low`, `sd`, `high`
+2. For each download, create a corresponding distro download:
+   - `low` → `distroLow`
+   - `sd` → `distroSd`
+   - `high` → `distroHigh`
+3. Process downloads in batches of 1000 for optimal performance
+4. Preserve all original metadata (size, dimensions, bitrate, etc.)
+
+### Quality Mapping
+
+| Original Quality | Distro Quality |
+| ---------------- | -------------- |
+| low              | distroLow      |
+| sd               | distroSd       |
+| high             | distroHigh     |
+
+### Error Handling
+
+The script includes error handling for:
+
+- Database connection issues
+- Batch processing failures
+- Progress tracking and reporting
+
+If any error occurs, the script will exit with a non-zero code and display an appropriate error message.
