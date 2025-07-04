@@ -74,7 +74,8 @@ export function simplifyJourney(
         src: imageBlock.src ?? '',
         alt: imageBlock.alt ?? '',
         width: imageBlock.width ?? 0,
-        height: imageBlock.height ?? 0
+        height: imageBlock.height ?? 0,
+        blurHash: imageBlock.blurhash ?? ''
       }
     }
 
@@ -87,7 +88,8 @@ export function simplifyJourney(
           src: bgImageBlock.src ?? '',
           alt: bgImageBlock.alt ?? '',
           width: bgImageBlock.width ?? 0,
-          height: bgImageBlock.height ?? 0
+          height: bgImageBlock.height ?? 0,
+          blurHash: bgImageBlock.blurhash ?? ''
         }
       }
     }

@@ -100,7 +100,8 @@ export async function updateSimpleJourney(
           src: card.image.src,
           alt: card.image.alt,
           width: card.image.width ?? 0,
-          height: card.image.height ?? 0
+          height: card.image.height ?? 0,
+          blurhash: card.image.blurHash ?? ''
         }
       })
     }
@@ -165,7 +166,8 @@ export async function updateSimpleJourney(
           alt: card.backgroundImage.alt,
           parentBlockId: cardBlockId,
           width: card.backgroundImage.width ?? 0,
-          height: card.backgroundImage.height ?? 0
+          height: card.backgroundImage.height ?? 0,
+          blurhash: card.backgroundImage.blurHash ?? ''
         }
       })
       await prisma.block.update({
