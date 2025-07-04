@@ -69,14 +69,26 @@ export function simplifyJourney(
       (block) =>
         block.typename === 'ImageBlock' && block.id != stepBlock.coverBlockId
     )
-    if (imageBlock) card.image = imageBlock.src ?? undefined
+    if (imageBlock) {
+      card.image = {
+        src: imageBlock.src ?? '',
+        alt: imageBlock.alt ?? '',
+        width: imageBlock.width ?? 0,
+        height: imageBlock.height ?? 0
+      }
+    }
 
     if (stepBlock.coverBlockId) {
       const bgImageBlock = journey.blocks.find(
         (block) => block.id === stepBlock.coverBlockId
       )
       if (bgImageBlock && bgImageBlock.typename === 'ImageBlock') {
-        card.backgroundImage = bgImageBlock.src ?? undefined
+        card.backgroundImage = {
+          src: bgImageBlock.src ?? '',
+          alt: bgImageBlock.alt ?? '',
+          width: bgImageBlock.width ?? 0,
+          height: bgImageBlock.height ?? 0
+        }
       }
     }
 

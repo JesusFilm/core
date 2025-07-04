@@ -30,6 +30,25 @@ export const journeySimpleButtonSchema = z.object({
 })
 export type JourneySimpleButton = z.infer<typeof journeySimpleButtonSchema>
 
+// Image type
+export const journeySimpleImageSchema = z.object({
+  src: z.string().url().describe('A URL for the image.'),
+  alt: z.string().describe('Alt text for the image for accessibility.'),
+  width: z
+    .number()
+    .int()
+    .positive()
+    .optional()
+    .describe('Width of the image in pixels.'),
+  height: z
+    .number()
+    .int()
+    .positive()
+    .optional()
+    .describe('Height of the image in pixels.')
+})
+export type JourneySimpleImage = z.infer<typeof journeySimpleImageSchema>
+
 // Card type
 export const journeySimpleCardSchema = z.object({
   heading: z
@@ -44,22 +63,12 @@ export const journeySimpleCardSchema = z.object({
     .array(journeySimplePollOptionSchema)
     .optional()
     .describe('An array of poll options for this card, if present.'),
-  image: z
-    .string()
+  image: journeySimpleImageSchema
     .optional()
-    .describe('A URL for an image to display in the card.'),
-  imageAlt: z
-    .string()
+    .describe('Image object for the card.'),
+  backgroundImage: journeySimpleImageSchema
     .optional()
-    .describe('Alt text for the image for accessibility.'),
-  backgroundImage: z
-    .string()
-    .optional()
-    .describe('A URL for a background image for the card.'),
-  backgroundImageAlt: z
-    .string()
-    .optional()
-    .describe('Alt text for the background image for accessibility.'),
+    .describe('Background image object for the card.'),
   nextCard: z
     .number()
     .int()
