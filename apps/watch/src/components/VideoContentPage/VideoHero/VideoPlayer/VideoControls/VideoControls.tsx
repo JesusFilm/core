@@ -26,16 +26,20 @@ import Player from 'video.js/dist/types/player'
 import { isMobile } from '@core/shared/ui/deviceUtils'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
+import { setCookie } from '../../../../../libs/cookieHandler'
 import { useVideo } from '../../../../../libs/videoContext'
-import { SubtitleDialogProps } from '../../../../SubtitleDialog/SubtitleDialog'
+import { useWatch } from '../../../../../libs/watchContext'
 import { AudioLanguageButton } from '../../../AudioLanguageButton'
 
-const DynamicSubtitleDialog = dynamic<SubtitleDialogProps>(
+const DynamicLanguageSwitchDialog = dynamic<{
+  open: boolean
+  handleClose: () => void
+}>(
   async () =>
     await import(
-      /* webpackChunkName: "SubtitleDialog" */
-      '../../../../SubtitleDialog'
-    ).then((mod) => mod.SubtitleDialog)
+      /* webpackChunkName: "LanguageSwitchDialog" */
+      '../../../../LanguageSwitchDialogNew/LanguageSwitchDialog'
+    ).then((mod) => mod.LanguageSwitchDialog)
 )
 
 interface VideoControlProps {
@@ -78,8 +82,10 @@ export function VideoControls({
   const [volume, setVolume] = useState(0)
   const [mute, setMute] = useState(false)
   const [fullscreen, setFullscreen] = useState(false)
-  const [openSubtitleDialog, setOpenSubtitleDialog] = useState(false)
-  const [loadSubtitleDialog, setLoadSubtitleDialog] = useState(false)
+  const [openLanguageSwitchDialog, setOpenLanguageSwitchDialog] =
+    useState(false)
+  const [loadLanguageSwitchDialog, setLoadLanguageSwitchDialog] =
+    useState(false)
   const [loading, setLoading] = useState(false)
 
   const duration = secondsToTimeFormat(player.duration() ?? 1, {
@@ -87,6 +93,7 @@ export function VideoControls({
   })
   const durationSeconds = Math.round(player.duration() ?? 1)
   const { id, title, variant } = useVideo()
+  const { dispatch } = useWatch()
   const visible = !play || active || loading
 
   useEffect(() => {
@@ -294,8 +301,15 @@ export function VideoControls({
   }
 
   function handleClick(): void {
-    setOpenSubtitleDialog(true)
-    setLoadSubtitleDialog(true)
+    // Set subtitles on when opening language dialog
+    dispatch({
+      type: 'UpdateSubtitlesOn',
+      enabled: true
+    })
+    setCookie('SUBTITLES_ON', 'true')
+
+    setOpenLanguageSwitchDialog(true)
+    setLoadLanguageSwitchDialog(true)
   }
 
   return (
@@ -521,11 +535,10 @@ export function VideoControls({
                   </IconButton>
                 </Stack>
               </Stack>
-              {loadSubtitleDialog && (
-                <DynamicSubtitleDialog
-                  open={openSubtitleDialog}
-                  player={player}
-                  onClose={() => setOpenSubtitleDialog(false)}
+              {loadLanguageSwitchDialog && (
+                <DynamicLanguageSwitchDialog
+                  open={openLanguageSwitchDialog}
+                  handleClose={() => setOpenLanguageSwitchDialog(false)}
                 />
               )}
             </Container>

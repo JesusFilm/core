@@ -4,7 +4,6 @@ import LanguageOutlined from '@mui/icons-material/LanguageOutlined'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
-import { alpha } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
@@ -13,17 +12,19 @@ import { ReactElement, useState } from 'react'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
+import { getCookie } from '../../../libs/cookieHandler'
+import { LANGUAGE_MAPPINGS } from '../../../libs/localeMapping'
 import { useVideo } from '../../../libs/videoContext'
 
-const DynamicAudioLanguageDialog = dynamic<{
+const DynamicLanguageSwitchDialog = dynamic<{
   open: boolean
-  onClose: () => void
+  handleClose: () => void
 }>(
   async () =>
     await import(
-      /* webpackChunkName: "AudioLanguageDialog" */
-      '../../AudioLanguageDialog'
-    ).then((mod) => mod.AudioLanguageDialog)
+      /* webpackChunkName: "LanguageSwitchDialog" */
+      '../../LanguageSwitchDialogNew/LanguageSwitchDialog'
+    ).then((mod) => mod.LanguageSwitchDialog)
 )
 
 interface AudioLanguageButtonProps {
@@ -34,20 +35,21 @@ export function AudioLanguageButton({
   componentVariant
 }: AudioLanguageButtonProps): ReactElement {
   const { t } = useTranslation('apps-watch')
-  const { variant, variantLanguagesCount } = useVideo()
-  const [openAudioLanguageDialog, setOpenAudioLanguageDialog] = useState(false)
-  const [loadAudioLanguageDialog, setLoadAudioLanguageDialog] = useState(false)
+  const { variantLanguagesCount } = useVideo()
+  const [openLanguageSwitchDialog, setOpenLanguageSwitchDialog] =
+    useState(false)
+  const [loadLanguageSwitchDialog, setLoadLanguageSwitchDialog] =
+    useState(false)
 
-  const nativeName = variant?.language?.name.find(
-    ({ primary }) => !primary
-  )?.value
-  const localName = variant?.language?.name.find(
-    ({ primary }) => primary
-  )?.value
+  // Get current locale from cookie and match with localeMapping
+  const currentLocale = getCookie('NEXT_LOCALE') || 'en'
+  const languageMapping = LANGUAGE_MAPPINGS[currentLocale]
+
+  const localName = languageMapping?.localName
 
   function handleClick(): void {
-    setOpenAudioLanguageDialog(true)
-    setLoadAudioLanguageDialog(true)
+    setOpenLanguageSwitchDialog(true)
+    setLoadLanguageSwitchDialog(true)
   }
 
   return (
@@ -80,7 +82,7 @@ export function AudioLanguageButton({
               overflow: 'hidden'
             }}
           >
-            {localName ?? nativeName}
+            {localName}
           </Typography>
           <Box
             sx={{
@@ -103,10 +105,10 @@ export function AudioLanguageButton({
           <LanguageOutlined sx={{ color: '#ffffff' }} />
         </IconButton>
       )}
-      {loadAudioLanguageDialog && (
-        <DynamicAudioLanguageDialog
-          open={openAudioLanguageDialog}
-          onClose={() => setOpenAudioLanguageDialog(false)}
+      {loadLanguageSwitchDialog && (
+        <DynamicLanguageSwitchDialog
+          open={openLanguageSwitchDialog}
+          handleClose={() => setOpenLanguageSwitchDialog(false)}
         />
       )}
     </ThemeProvider>
