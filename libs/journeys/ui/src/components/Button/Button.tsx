@@ -309,6 +309,7 @@ export function Button({
           outline: '2px solid',
           outlineColor: editableLabel != null ? '#C52D3A' : 'transparent',
           outlineOffset: '5px',
+          zIndex: editableLabel != null ? 1 : 0,
           width: (settings?.alignment ?? ButtonAlignment.justify) === ButtonAlignment.justify ? '100%' : 'fit-content',
           maxWidth: (settings?.alignment ?? ButtonAlignment.justify) === ButtonAlignment.justify ? '100%' : '75%',
           ...(editableLabel != null

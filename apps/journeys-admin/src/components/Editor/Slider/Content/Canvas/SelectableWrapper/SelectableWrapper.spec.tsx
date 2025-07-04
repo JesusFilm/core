@@ -188,12 +188,6 @@ describe('SelectableWrapper', () => {
       outlineColor: '#C52D3A'
     })
 
-    fireEvent.click(getByText('button label'))
-    expect(getByTestId(`SelectableWrapper-${buttonBlock.id}`)).toHaveStyle({
-      outline: '2px solid',
-      zIndex: '1',
-      outlineColor: '#C52D3A'
-    })
     fireEvent.click(getByText('sign up label'))
     await waitFor(() =>
       expect(getByTestId(`SelectableWrapper-${signUpBlock.id}`)).toHaveStyle({

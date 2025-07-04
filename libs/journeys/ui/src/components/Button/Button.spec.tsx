@@ -745,6 +745,47 @@ describe('Button', () => {
     )
   })
 
+  it('should show red outline when editableLabel is provided', () => {
+    const EditableLabelComponent = () => (
+      <span data-testid="editable-label">Edit Me</span>
+    )
+
+    const buttonWithEditableLabel = {
+      ...block,
+      editableLabel: <EditableLabelComponent />
+    }
+
+    render(
+      <MockedProvider>
+        <Button {...buttonWithEditableLabel} />
+      </MockedProvider>
+    )
+
+    const button = screen.getByRole('button')
+    expect(button).toHaveStyle({
+      outline: '2px solid',
+      outlineColor: '#C52D3A',
+      outlineOffset: '5px',
+      zIndex: '1'
+    })
+  })
+
+  it('should not show red outline when editableLabel is not provided', () => {
+    render(
+      <MockedProvider>
+        <Button {...block} />
+      </MockedProvider>
+    )
+
+    const button = screen.getByRole('button')
+    expect(button).toHaveStyle({
+      outline: '2px solid',
+      outlineColor: 'transparent',
+      outlineOffset: '5px',
+      zIndex: '0'
+    })
+  })
+
   it('should apply left alignment styles correctly', () => {
     const leftAlignedButton = {
       ...block,
