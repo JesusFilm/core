@@ -799,6 +799,10 @@ export class JourneyResolver {
           },
           data: {
             ...omit(input, ['tagIds']),
+            context:
+              journey.template === true
+                ? (input.context ?? undefined)
+                : undefined,
             title: input.title ?? undefined,
             languageId: input.languageId ?? undefined,
             slug: input.slug ?? undefined,
