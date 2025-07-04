@@ -131,7 +131,9 @@ export async function updateSimpleJourney(
                       blockId: stepBlocks[option.nextCard].id
                     }
                   }
-                : undefined
+                : option.url
+                  ? { create: { url: option.url } }
+                  : undefined
           }
         })
       }
@@ -152,7 +154,9 @@ export async function updateSimpleJourney(
                     blockId: stepBlocks[card.button.nextCard].id
                   }
                 }
-              : undefined
+              : card.button.url
+                ? { create: { url: card.button.url } }
+                : undefined
         }
       })
     }

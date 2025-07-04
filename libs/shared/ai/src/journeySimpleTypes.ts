@@ -9,7 +9,13 @@ export const journeySimplePollOptionSchema = z.object({
     .nonnegative()
     .optional()
     .describe(
-      'The index of the next card to navigate to if this option is selected.'
+      'The index of the next card to navigate to if this option is selected. Should only provide one of url or nextCard.'
+    ),
+  url: z
+    .string()
+    .optional()
+    .describe(
+      'A URL to navigate to when the poll option is selected. Should only provide one of url or nextCard.'
     )
 })
 export type JourneySimplePollOption = z.infer<
@@ -25,7 +31,13 @@ export const journeySimpleButtonSchema = z.object({
     .nonnegative()
     .optional()
     .describe(
-      'The index of the next card to navigate to when the button is pressed.'
+      'The index of the next card to navigate to when the button is pressed. Should only provide one of url or nextCard.'
+    ),
+  url: z
+    .string()
+    .optional()
+    .describe(
+      'A URL to navigate to when the button is pressed. Should only provide one of url or nextCard.'
     )
 })
 export type JourneySimpleButton = z.infer<typeof journeySimpleButtonSchema>

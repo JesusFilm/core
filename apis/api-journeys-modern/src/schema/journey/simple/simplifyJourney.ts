@@ -44,7 +44,8 @@ export function simplifyJourney(
         text: buttonBlock.label ?? '',
         nextCard: buttonBlock.action?.blockId
           ? stepBlocks.findIndex((s) => s.id === buttonBlock.action?.blockId)
-          : undefined
+          : undefined,
+        url: buttonBlock.action?.url ?? undefined
       }
     }
 
@@ -61,7 +62,8 @@ export function simplifyJourney(
         text: option.label ?? '',
         nextCard: option.action?.blockId
           ? stepBlocks.findIndex((s) => s.id === option.action?.blockId)
-          : undefined
+          : undefined,
+        url: option.action?.url ?? undefined
       }))
     }
 
