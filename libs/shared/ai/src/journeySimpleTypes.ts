@@ -44,12 +44,10 @@ export const journeySimpleCardSchema = z.object({
     .describe('An array of poll options for this card, if present.'),
   image: z
     .string()
-    .url()
     .optional()
     .describe('A URL for an image to display in the card.'),
   backgroundImage: z
     .string()
-    .url()
     .optional()
     .describe('A URL for a background image for the card.'),
   nextCard: z

@@ -1,7 +1,6 @@
-import { journeyGet } from './get'
-import { journeyUpdate } from './update'
+import { journeySimpleGet, journeySimpleUpdate } from './simple'
 
 export const tools = {
-  journeyGet,
-  journeyUpdate
+  journeySimpleGet,
+  journeySimpleUpdate
 }
