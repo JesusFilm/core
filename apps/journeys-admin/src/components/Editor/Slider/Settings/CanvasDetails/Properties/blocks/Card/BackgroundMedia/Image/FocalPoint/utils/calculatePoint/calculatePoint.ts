@@ -6,7 +6,7 @@ const MAX_VALUE = 100
 
 export function calculatePoint(
   e: React.MouseEvent | MouseEvent,
-  imageRef: RefObject<HTMLDivElement>
+  imageRef: RefObject<HTMLDivElement | null>
 ): Position | null {
   if (imageRef.current == null) return null
   const boundingRect = imageRef.current.getBoundingClientRect()

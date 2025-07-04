@@ -26,7 +26,7 @@ export function MessageBubble({
   direction = 'left',
   children
 }: MessageBubbleProps): ReactElement {
-  const ref = useRef<HTMLDivElement>()
+  const ref = useRef<HTMLDivElement | null>(null)
   const [clientHeight, setClientHeight] = useState(ref?.current?.clientHeight)
   useEffect(() => {
     setClientHeight(ref?.current?.clientHeight)
