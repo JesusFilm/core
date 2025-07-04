@@ -13,6 +13,7 @@ import TransformIcon from '@core/shared/ui/icons/Transform'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/BlockFields'
 import {
+  ButtonAlignment,
   ButtonColor,
   ButtonSize,
   ButtonVariant
@@ -28,7 +29,6 @@ import { Alignment } from './Alignment'
 import { Color } from './Color'
 import { Size } from './Size'
 import { Variant } from './Variant'
-import { ButtonAlignment } from 'libs/journeys/ui/__generated__/globalTypes'
 
 export function Button({
   id,
