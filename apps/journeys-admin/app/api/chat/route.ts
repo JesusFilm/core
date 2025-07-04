@@ -72,7 +72,11 @@ export async function POST(req: NextRequest) {
     undefined,
     {
       label: langfuseEnvironment,
-      cacheTtlSeconds: process.env.VERCEL_ENV === 'preview' ? 0 : 60
+      cacheTtlSeconds:
+        langfuseEnvironment === 'development' ||
+        process.env.VERCEL_ENV === 'preview'
+          ? 0
+          : 60
     }
   )
 
