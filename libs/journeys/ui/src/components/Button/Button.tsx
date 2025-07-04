@@ -306,6 +306,9 @@ export function Button({
         endIcon={endIcon != null ? <Icon {...endIcon} /> : undefined}
         onClick={handleClick}
         sx={{
+          outline: '2px solid',
+          outlineColor: editableLabel != null ? '#C52D3A' : 'transparent',
+          outlineOffset: '5px',
           width: (settings?.alignment ?? ButtonAlignment.justify) === ButtonAlignment.justify ? '100%' : 'fit-content',
           maxWidth: (settings?.alignment ?? ButtonAlignment.justify) === ButtonAlignment.justify ? '100%' : '75%',
           ...(editableLabel != null
