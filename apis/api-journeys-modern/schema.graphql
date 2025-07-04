@@ -315,6 +315,11 @@ enum JourneyStatus {
   trashed
 }
 
+"""
+The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar Json
+
 type Language
   @key(fields: "id")
   @extends
@@ -345,6 +350,10 @@ type MuxVideo
   id: ID! @external
   primaryLanguageId: ID @external
   source: VideoBlockSource! @shareable
+}
+
+type Query {
+  journeySimpleGet(id: ID!): Json
 }
 
 type RadioOptionBlock implements Block

@@ -7,6 +7,7 @@ export const journeySimplePollOptionSchema = z.object({
     .number()
     .int()
     .nonnegative()
+    .optional()
     .describe(
       'The index of the next card to navigate to if this option is selected.'
     )
@@ -22,6 +23,7 @@ export const journeySimpleButtonSchema = z.object({
     .number()
     .int()
     .nonnegative()
+    .optional()
     .describe(
       'The index of the next card to navigate to when the button is pressed.'
     )
