@@ -26,7 +26,7 @@ export function agentWebSearch(
     parameters: z.object({
       prompt: z.string().describe('The query to search the web for.')
     }),
-    execute: async ({ prompt, url }) => {
+    execute: async ({ prompt }) => {
       const app = new FirecrawlApp()
 
       const searchResult = await app.search(prompt, {
