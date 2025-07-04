@@ -17,7 +17,6 @@ interface QuestionsProps {
   questions: QuestionData[]
   questionsTitle?: string
   askButtonText?: string
-  onOpenDialog?: () => void
   contentId: string
 }
 
@@ -25,7 +24,6 @@ export const Questions = ({
   questions,
   questionsTitle = 'Related questions',
   askButtonText = 'Ask yours',
-  onOpenDialog,
   contentId
 }: QuestionsProps): ReactElement => {
   const [openQuestion, setOpenQuestion] = useState<number | null>(null)

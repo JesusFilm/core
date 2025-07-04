@@ -17,7 +17,7 @@ describe('AudioLanguageButton', () => {
     )
     fireEvent.click(getByRole('button'))
     await waitFor(() =>
-      expect(getByText('2039 Languages Available')).toBeInTheDocument()
+      expect(getByText('2206 Languages Available')).toBeInTheDocument()
     )
   })
 
@@ -30,6 +30,6 @@ describe('AudioLanguageButton', () => {
       </MockedProvider>
     )
     await waitFor(() => fireEvent.click(getByTestId('LanguageOutlinedIcon')))
-    expect(getByText('2039 Languages Available')).toBeInTheDocument()
+    expect(getByText('2206 Languages Available')).toBeInTheDocument()
   })
 })
