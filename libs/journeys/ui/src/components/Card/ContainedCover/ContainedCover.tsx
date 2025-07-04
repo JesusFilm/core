@@ -19,6 +19,7 @@ import { getJourneyRTL } from '../../../libs/rtl'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { VideoFields } from '../../Video/__generated__/VideoFields'
 import { OverlayContent } from '../OverlayContent'
+import { addAlphaToHex, stripAlphaFromHex } from '../utils/colorOpacityUtils'
 
 import { BackgroundVideo } from './BackgroundVideo'
 
@@ -96,10 +97,26 @@ export function ContainedCover({
     }
   }, [contentRef])
 
-  const overlayGradient = (direction: string): string =>
-    `linear-gradient(to ${direction}, transparent 0%,  ${backgroundColor}14 10%, ${backgroundColor}33 17%, ${backgroundColor}60 25%, ${backgroundColor}b0 40%, ${backgroundColor}e6 60%, ${backgroundColor} 98%)`
+  const baseBackgroundColor = stripAlphaFromHex(backgroundColor)
 
-  const overlayImageMask = `linear-gradient(to top, transparent 0%, ${backgroundColor}14 5%, ${backgroundColor}33 10%, ${backgroundColor}60 15%, ${backgroundColor}b0 20%, ${backgroundColor}e6 25%, ${backgroundColor} 30%)`
+  const overlayGradient = (direction: string): string =>
+    `linear-gradient(to ${direction},
+    transparent 0%,
+    ${addAlphaToHex(baseBackgroundColor, 8)} 10%,
+    ${addAlphaToHex(baseBackgroundColor, 20)} 17%,
+    ${addAlphaToHex(baseBackgroundColor, 38)} 25%,
+    ${addAlphaToHex(baseBackgroundColor, 69)} 40%,
+    ${addAlphaToHex(baseBackgroundColor, 90)} 60%,
+    ${addAlphaToHex(baseBackgroundColor, 100)} 98%)`
+
+  const overlayImageMask = `linear-gradient(to top,
+    transparent 0%,
+    ${addAlphaToHex(baseBackgroundColor, 8)} 5%,   
+    ${addAlphaToHex(baseBackgroundColor, 20)} 10%,  
+    ${addAlphaToHex(baseBackgroundColor, 38)} 15%,  
+    ${addAlphaToHex(baseBackgroundColor, 69)} 20%,  
+    ${addAlphaToHex(baseBackgroundColor, 90)} 25%,  
+    ${addAlphaToHex(baseBackgroundColor, 100)} 30%)`
 
   return (
     <>
@@ -266,7 +283,7 @@ export function ContainedCover({
                   xs: overlayGradient('bottom'),
                   sm: overlayGradient('right')
                 },
-                backgroundColor: `${backgroundColor}d9`
+                backgroundColor: `${backgroundColor}`
               }}
             />
             <OverlayContent
