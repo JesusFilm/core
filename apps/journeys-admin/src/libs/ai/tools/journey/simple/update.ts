@@ -1,25 +1,22 @@
-import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
+import { ApolloClient, NormalizedCacheObject, gql } from '@apollo/client'
 import { Tool, tool } from 'ai'
 import { z } from 'zod'
 import { zodToJsonSchema } from 'zod-to-json-schema'
 
-import {
-  JourneySimple,
-  journeySimpleSchema
-} from '@core/shared/ai/journeySimpleTypes'
+import { journeySimpleSchema } from '@core/shared/ai/journeySimpleTypes'
 
 import { ToolOptions } from '../..'
+import {
+  JourneySimpleUpdate,
+  JourneySimpleUpdateVariables
+} from '../../../../../../__generated__/JourneySimpleUpdate'
 
-// Simulated GraphQL endpoint for updating a journey
-async function fakeGraphQLUpdateJourney(
-  journeyId: string,
-  journey: JourneySimple
-): Promise<JourneySimple> {
-  // Simulate network delay
-  await new Promise((res) => setTimeout(res, 100))
-  // Return the journey as-is (could modify to simulate backend processing)
-  return journey
-}
+// GraphQL mutation declaration
+export const JOURNEY_SIMPLE_UPDATE = gql`
+  mutation JourneySimpleUpdate($id: ID!, $journey: Json!) {
+    journeySimpleUpdate(id: $id, journey: $journey)
+  }
+`
 
 function getSchemaDescription(schema: typeof journeySimpleSchema): string {
   const jsonSchema = zodToJsonSchema(schema)
@@ -27,7 +24,7 @@ function getSchemaDescription(schema: typeof journeySimpleSchema): string {
 }
 
 export function journeySimpleUpdate(
-  _client: ApolloClient<NormalizedCacheObject>,
+  client: ApolloClient<NormalizedCacheObject>,
   _options: ToolOptions
 ): Tool {
   return tool({
@@ -42,8 +39,14 @@ export function journeySimpleUpdate(
       )
     }),
     execute: async ({ journeyId, journey }) => {
-      const updated = await fakeGraphQLUpdateJourney(journeyId, journey)
-      const result = journeySimpleSchema.safeParse(updated)
+      const { data } = await client.mutate<
+        JourneySimpleUpdate,
+        JourneySimpleUpdateVariables
+      >({
+        mutation: JOURNEY_SIMPLE_UPDATE,
+        variables: { id: journeyId, journey }
+      })
+      const result = journeySimpleSchema.safeParse(data?.journeySimpleUpdate)
       if (!result.success) {
         throw new Error(
           'Returned journey is invalid: ' +
