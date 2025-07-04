@@ -30,8 +30,7 @@ export const baseTypography: Pick<ThemeOptions, 'typography'> = {
     h1: {
       fontSize: 40,
       fontWeight: 700,
-      lineHeight: '50px',
-      textShadow: '0px 1px 3px rgba(0, 0, 0, 0.25)'
+      lineHeight: '50px'
     },
     h2: {
       fontSize: 32,

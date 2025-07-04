@@ -59,9 +59,6 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
             id={`${id}-typography-variant`}
             icon={<Type2Icon />}
             name={t('Text Variant')}
-            value={capitalize(
-              lowerCase(variant?.toString() ?? 'body2').replace('h', 'header')
-            )}
           >
             <Variant />
           </Accordion>

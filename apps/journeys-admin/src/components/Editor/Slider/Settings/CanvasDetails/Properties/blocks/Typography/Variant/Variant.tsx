@@ -107,97 +107,79 @@ export function Variant(): ReactElement {
 
   const options = [
     {
-      value: TypographyVariant.h1,
+      value: TypographyVariant.caption,
       label: withJourneyTheme(
-        <Typography variant={TypographyVariant.h1}>{t('Header 1')}</Typography>
-      ),
-      icon: <DashIcon />
-    },
-    {
-      value: TypographyVariant.h2,
-      label: withJourneyTheme(
-        <Typography variant={TypographyVariant.h2}>{t('Header 2')}</Typography>
-      ),
-      icon: <DashIcon />
-    },
-    {
-      value: TypographyVariant.h3,
-      label: withJourneyTheme(
-        <Typography variant={TypographyVariant.h3}>{t('Header 3')}</Typography>
-      ),
-      icon: <DashIcon />
-    },
-    {
-      value: TypographyVariant.h4,
-      label: withJourneyTheme(
-        <Typography variant={TypographyVariant.h4}>{t('Header 4')}</Typography>
-      ),
-      icon: <DashIcon />
-    },
-    {
-      value: TypographyVariant.h5,
-      label: withJourneyTheme(
-        <Typography variant={TypographyVariant.h5}>{t('Header 5')}</Typography>
-      ),
-      icon: <DashIcon />
-    },
-    {
-      value: TypographyVariant.h6,
-      label: withJourneyTheme(
-        <Typography variant={TypographyVariant.h6}>{t('Header 6')}</Typography>
-      ),
-      icon: <DashIcon />
-    },
-    {
-      value: TypographyVariant.subtitle1,
-      label: withJourneyTheme(
-        <Typography variant={TypographyVariant.subtitle1}>
-          {t('Subtitle 1')}
+        <Typography variant={TypographyVariant.caption}>
+          {t('Small Body')}
         </Typography>
-      ),
-      icon: <DashIcon />
-    },
-    {
-      value: TypographyVariant.subtitle2,
-      label: withJourneyTheme(
-        <Typography variant={TypographyVariant.subtitle2}>
-          {t('Subtitle 2')}
-        </Typography>
-      ),
-      icon: <DashIcon />
-    },
-    {
-      value: TypographyVariant.body1,
-      label: withJourneyTheme(
-        <Typography variant={TypographyVariant.body1}>{t('Body 1')}</Typography>
       ),
       icon: <DashIcon />
     },
     {
       value: TypographyVariant.body2,
       label: withJourneyTheme(
-        <Typography variant={TypographyVariant.body2}>{t('Body 2')}</Typography>
+        <Typography variant={TypographyVariant.body2}>{t('Normal Body')}</Typography>
       ),
       icon: <DashIcon />
     },
     {
-      value: TypographyVariant.caption,
+      value: TypographyVariant.body1,
       label: withJourneyTheme(
-        <Typography variant={TypographyVariant.caption}>
-          {t('Caption')}
-        </Typography>
+        <Typography variant={TypographyVariant.body1}>{t('Large Body')}</Typography>
       ),
       icon: <DashIcon />
     },
     {
-      value: TypographyVariant.overline,
+      value: TypographyVariant.h6,
       label: withJourneyTheme(
-        <Typography variant={TypographyVariant.overline}>
-          {t('Overline')}
-        </Typography>
+        <Typography variant={TypographyVariant.h6}>{t('HEADING 4')}</Typography>
+      ),
+      icon: <DashIcon />
+    },
+    {
+      value: TypographyVariant.h5,
+      label: withJourneyTheme(
+        <Typography variant={TypographyVariant.h5}>{t('Heading 3')}</Typography>
+      ),
+      icon: <DashIcon />
+    },
+    {
+      value: TypographyVariant.h4,
+      label: withJourneyTheme(
+        <Typography variant={TypographyVariant.h4}>{t('Heading 2')}</Typography>
+      ),
+      icon: <DashIcon />
+    },
+    {
+      value: TypographyVariant.h3,
+      label: withJourneyTheme(
+        <Typography variant={TypographyVariant.h3}>{t('Heading 1')}</Typography>
+      ),
+      icon: <DashIcon />
+    },
+    {
+      value: TypographyVariant.h2,
+      label: withJourneyTheme(
+        <Typography variant={TypographyVariant.h2}>{t('Title')}</Typography>
+      ),
+      icon: <DashIcon />
+    },
+    {
+      value: TypographyVariant.h1,
+      label: withJourneyTheme(
+        <Typography variant={TypographyVariant.h1}>{t('Display')}</Typography>
       ),
       icon: <DashIcon />
     }
+    // {
+    //   value: TypographyVariant.overline,
+    //   label: withJourneyTheme(
+    //     <Typography variant={TypographyVariant.overline}>
+    //       {t('Overline')}
+    //     </Typography>
+    //   ),
+    //   icon: <DashIcon />
+    // }
   ]
 
   return (
