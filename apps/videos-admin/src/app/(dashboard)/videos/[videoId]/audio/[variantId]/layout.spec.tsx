@@ -118,7 +118,7 @@ jest.mock('../../../../../../components/FormSelectField', () => ({
   FormSelectField: ({ children, name, label, options, onChange }) => (
     <div data-testid="mock-form-select-field" data-name={name}>
       <label data-testid="mock-form-select-label">{label}</label>
-      <select data-testid="mock-form-select" onChange={onChange}>
+      <select data-testid="mock-form-select" name={name} onChange={onChange}>
         {options.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}
@@ -177,6 +177,13 @@ jest.mock('@apollo/client', () => {
   }
 })
 
+// Mock notistack
+jest.mock('notistack', () => ({
+  useSnackbar: () => ({
+    enqueueSnackbar: jest.fn()
+  })
+}))
+
 describe('VariantDialog', () => {
   const mockVariantId = 'variant-123'
   const mockVideoId = 'video-456'
@@ -195,38 +202,49 @@ describe('VariantDialog', () => {
         push: mockRouterPush
       }))
 
+    // Mock useMutation to return the expected array format
+    const mockMutation = jest.fn()
+    jest
+      .spyOn(require('@apollo/client'), 'useMutation')
+      .mockReturnValue([
+        mockMutation,
+        { loading: false, error: null, data: null }
+      ])
+    
+
     // Mock the query result
     const { useSuspenseQuery, useMutation } = require('@apollo/client')
     useSuspenseQuery.mockReturnValue({
       data: {
         videoVariant: {
           id: mockVariantId,
+          published: true,
           hls: 'https://example.com/video.m3u8',
+          downloads: [
+            {
+              id: 'download-1',
+              url: 'https://example.com/download/hd.mp4',
+              quality: 'HD',
+              size: 1024 * 1024 * 10, // 10 MB
+              width: 1920,
+              height: 1080
+            },
+            {
+              id: 'download-2',
+              url: 'https://example.com/download/sd.mp4',
+              quality: 'SD',
+              size: 1024 * 1024 * 5, // 5 MB
+              width: 640,
+              height: 480
+            }
+          ],
           language: {
             id: 'lang-123',
             name: [{ value: 'English' }]
           },
           videoEdition: {
-            name: 'Standard'
-          },
-          downloads: [
-            {
-              id: 'download-1',
-              quality: 'HD',
-              size: 1024 * 1024 * 10, // 10 MB
-              width: 1920,
-              height: 1080,
-              url: 'https://example.com/download/hd.mp4'
-            },
-            {
-              id: 'download-2',
-              quality: 'SD',
-              size: 1024 * 1024 * 5, // 5 MB
-              width: 640,
-              height: 480,
-              url: 'https://example.com/download/sd.mp4'
-            }
-          ]
+            name: 'Standard Edition'
+          }
         }
       }
     })

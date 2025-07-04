@@ -75,6 +75,7 @@ const UPDATE_ADMIN_VIDEO_VARIANT = graphql(`
   mutation UpdateAdminVideoVariant($input: VideoVariantUpdateInput!) {
     videoVariantUpdate(input: $input) {
       id
+      published
     }
   }
 `)
