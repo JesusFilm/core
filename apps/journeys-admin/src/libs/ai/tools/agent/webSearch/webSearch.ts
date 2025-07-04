@@ -53,32 +53,25 @@ export function agentWebSearch(
     execute: async ({ searchQuery, prompt }) => {
       const app = new FirecrawlApp({ apiKey: process.env.FIRECRAWL_API_KEY })
 
-      console.log('Searching the web for:', searchQuery)
-
       const searchResult = await app.search(searchQuery, {
         limit: 1,
         maxAge: 3600000 // 1 hour in milliseconds
       })
 
-      console.log('searchResult.data', searchResult.data)
-
       if (!searchResult.success) {
         throw new Error(`Failed to search: ${searchResult.error}`)
       }
 
-      if (searchResult.data.length === 0) {
+      const url = searchResult.data[0]?.url
+
+      if (url == undefined) {
         throw new Error('No results found')
       }
 
-      const extractResult = await app.extract(
-        [`${searchResult.data[0].url.replace(/\/$/, '')}/*`],
-        {
-          prompt,
-          schema
-        }
-      )
-
-      console.log('extractResult.data', extractResult.data)
+      const extractResult = await app.extract([`${url.replace(/\/$/, '')}/*`], {
+        prompt,
+        schema
+      })
 
       if (!extractResult.success) {
         throw new Error(`Failed to extract: ${extractResult.error}`)
