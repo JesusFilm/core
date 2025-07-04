@@ -16,6 +16,20 @@ const schema = z.object({
   title: z.string().describe('The title of the website.'),
   description: z.string().describe('The description of the website.'),
   url: z.string().describe('The main URL of the website.'),
+  colorPalette: z
+    .array(
+      z.object({
+        name: z
+          .string()
+          .describe(
+            'The name of the color and its purpose on the website. E.g. "primary" or "background".'
+          ),
+        hex: z.string().describe('The hex code of the color.')
+      })
+    )
+    .describe(
+      'The color palette of the website. Should be a number of colors that are used on the website.'
+    ),
   keyLinks: z
     .array(
       z.object({
