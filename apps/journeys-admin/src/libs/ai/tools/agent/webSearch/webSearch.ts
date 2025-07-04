@@ -56,36 +56,58 @@ export function agentWebSearch(
       searchQuery: z
         .string()
         .describe(
-          'The query to search the web for. Will find a number of websites to scrape.'
-        ),
+          'The query to search the web for. Will find a number of websites to scrape. Only provide searchQuery or url, not both.'
+        )
+        .optional(),
+      url: z
+        .string()
+        .describe(
+          'If you already have a URL to scrape, you can provide it here. Otherwise, the agent will search the web for a number of websites to scrape. Only provide url or searchQuery, not both.'
+        )
+        .optional(),
       prompt: z
         .string()
         .describe(
           'The prompt to use to scrape the website. Should direct the agent on what elements to focus on.'
         )
     }),
-    execute: async ({ searchQuery, prompt }) => {
-      const app = new FirecrawlApp({ apiKey: process.env.FIRECRAWL_API_KEY })
-
-      const searchResult = await app.search(searchQuery, {
-        limit: 1,
-        maxAge: 3600000 // 1 hour in milliseconds
-      })
-
-      if (!searchResult.success) {
-        throw new Error(`Failed to search: ${searchResult.error}`)
+    execute: async ({ searchQuery, url, prompt }) => {
+      if (searchQuery && url) {
+        throw new Error('Only provide searchQuery or url, not both.')
       }
 
-      const url = searchResult.data[0]?.url
+      if (!searchQuery && !url) {
+        throw new Error('Either searchQuery or url must be provided.')
+      }
 
-      if (url == undefined) {
+      const app = new FirecrawlApp({ apiKey: process.env.FIRECRAWL_API_KEY })
+
+      let urlToScrape = url
+
+      if (urlToScrape == undefined) {
+        const searchResult = await app.search(searchQuery, {
+          limit: 1,
+          maxAge: 3600000 // 1 hour in milliseconds
+        })
+
+        if (!searchResult.success) {
+          throw new Error(`Failed to search: ${searchResult.error}`)
+        }
+
+        urlToScrape = searchResult.data[0]?.url
+      }
+
+      if (urlToScrape == undefined) {
         throw new Error('No results found')
       }
 
-      const extractResult = await app.extract([`${url.replace(/\/$/, '')}/*`], {
-        prompt,
-        schema
-      })
+      const extractResult = await app.extract(
+        [`${urlToScrape.replace(/\/$/, '')}/*`],
+        {
+          prompt,
+          schema
+        }
+      )
 
       if (!extractResult.success) {
         throw new Error(`Failed to extract: ${extractResult.error}`)

@@ -29,15 +29,6 @@ export function agentGenerateImage(
           model: openai.image('dall-e-3'),
           prompt,
           n
-          // Commented out, experimental_telemetry is not supported on generateImage
-          // experimental_telemetry: {
-          //   isEnabled: true,
-          //   functionId: 'agentGenerateImage',
-          //   metadata: {
-          //     langfuseTraceId,
-          //     langfuseUpdateParent: false
-          //   }
-          // }
         })
 
         const result = await Promise.all(
