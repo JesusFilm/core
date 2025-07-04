@@ -240,6 +240,11 @@ export interface BlockDuplicate_blockDuplicate_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface BlockDuplicate_blockDuplicate_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  color: string | null;
+}
+
 export interface BlockDuplicate_blockDuplicate_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -249,6 +254,7 @@ export interface BlockDuplicate_blockDuplicate_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: BlockDuplicate_blockDuplicate_TypographyBlock_settings;
 }
 
 export interface BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_title {

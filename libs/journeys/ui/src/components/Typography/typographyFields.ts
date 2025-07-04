@@ -9,5 +9,8 @@ export const TYPOGRAPHY_FIELDS = gql`
     color
     content
     variant
+    settings {
+      color
+    }
   }
 `

@@ -318,7 +318,11 @@ export function CardCta(): ReactElement {
       color: null,
       content: t("Let's Connect"),
       variant: TypographyVariant.h6,
-      __typename: 'TypographyBlock'
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     } satisfies TypographyBlock
 
     const title = {
@@ -329,7 +333,11 @@ export function CardCta(): ReactElement {
       color: null,
       content: t("From 'hello' to heartfelt conversations"),
       variant: TypographyVariant.h3,
-      __typename: 'TypographyBlock'
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     } satisfies TypographyBlock
 
     const buttonBlock1 = {

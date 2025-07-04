@@ -240,6 +240,11 @@ export interface BlockFields_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface BlockFields_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  color: string | null;
+}
+
 export interface BlockFields_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -249,6 +254,7 @@ export interface BlockFields_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: BlockFields_TypographyBlock_settings;
 }
 
 export interface BlockFields_VideoBlock_mediaVideo_Video_title {

@@ -240,6 +240,11 @@ export interface CardFormRestore_image_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardFormRestore_image_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  color: string | null;
+}
+
 export interface CardFormRestore_image_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -249,6 +254,7 @@ export interface CardFormRestore_image_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardFormRestore_image_TypographyBlock_settings;
 }
 
 export interface CardFormRestore_image_VideoBlock_mediaVideo_Video_title {
@@ -669,6 +675,11 @@ export interface CardFormRestore_subtitle_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardFormRestore_subtitle_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  color: string | null;
+}
+
 export interface CardFormRestore_subtitle_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -678,6 +689,7 @@ export interface CardFormRestore_subtitle_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardFormRestore_subtitle_TypographyBlock_settings;
 }
 
 export interface CardFormRestore_subtitle_VideoBlock_mediaVideo_Video_title {
@@ -1098,6 +1110,11 @@ export interface CardFormRestore_title_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardFormRestore_title_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  color: string | null;
+}
+
 export interface CardFormRestore_title_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -1107,6 +1124,7 @@ export interface CardFormRestore_title_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardFormRestore_title_TypographyBlock_settings;
 }
 
 export interface CardFormRestore_title_VideoBlock_mediaVideo_Video_title {
@@ -1527,6 +1545,11 @@ export interface CardFormRestore_textResponse_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardFormRestore_textResponse_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  color: string | null;
+}
+
 export interface CardFormRestore_textResponse_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -1536,6 +1559,7 @@ export interface CardFormRestore_textResponse_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardFormRestore_textResponse_TypographyBlock_settings;
 }
 
 export interface CardFormRestore_textResponse_VideoBlock_mediaVideo_Video_title {
@@ -1956,6 +1980,11 @@ export interface CardFormRestore_button_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardFormRestore_button_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  color: string | null;
+}
+
 export interface CardFormRestore_button_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -1965,6 +1994,7 @@ export interface CardFormRestore_button_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardFormRestore_button_TypographyBlock_settings;
 }
 
 export interface CardFormRestore_button_VideoBlock_mediaVideo_Video_title {
@@ -2385,6 +2415,11 @@ export interface CardFormRestore_startIcon_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardFormRestore_startIcon_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  color: string | null;
+}
+
 export interface CardFormRestore_startIcon_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -2394,6 +2429,7 @@ export interface CardFormRestore_startIcon_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardFormRestore_startIcon_TypographyBlock_settings;
 }
 
 export interface CardFormRestore_startIcon_VideoBlock_mediaVideo_Video_title {
@@ -2814,6 +2850,11 @@ export interface CardFormRestore_endIcon_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardFormRestore_endIcon_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  color: string | null;
+}
+
 export interface CardFormRestore_endIcon_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -2823,6 +2864,7 @@ export interface CardFormRestore_endIcon_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardFormRestore_endIcon_TypographyBlock_settings;
 }
 
 export interface CardFormRestore_endIcon_VideoBlock_mediaVideo_Video_title {
@@ -3243,6 +3285,11 @@ export interface CardFormRestore_body_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardFormRestore_body_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  color: string | null;
+}
+
 export interface CardFormRestore_body_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -3252,6 +3299,7 @@ export interface CardFormRestore_body_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardFormRestore_body_TypographyBlock_settings;
 }
 
 export interface CardFormRestore_body_VideoBlock_mediaVideo_Video_title {

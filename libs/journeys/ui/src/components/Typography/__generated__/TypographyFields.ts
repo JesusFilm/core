@@ -9,6 +9,11 @@ import { TypographyAlign, TypographyColor, TypographyVariant } from "./../../../
 // GraphQL fragment: TypographyFields
 // ====================================================
 
+export interface TypographyFields_settings {
+  __typename: "TypographyBlockSettings";
+  color: string | null;
+}
+
 export interface TypographyFields {
   __typename: "TypographyBlock";
   id: string;
@@ -18,4 +23,5 @@ export interface TypographyFields {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: TypographyFields_settings;
 }

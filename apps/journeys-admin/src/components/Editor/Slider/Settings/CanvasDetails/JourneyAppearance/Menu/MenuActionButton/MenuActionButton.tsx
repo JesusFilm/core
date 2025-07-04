@@ -91,7 +91,11 @@ export function MenuActionButton(): ReactElement {
       color: null,
       content: t('Menu'),
       variant: TypographyVariant.h1,
-      align: TypographyAlign.center
+      align: TypographyAlign.center,
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     } satisfies TypographyBlock
 
     const subHeading = {
@@ -102,7 +106,11 @@ export function MenuActionButton(): ReactElement {
       color: null,
       content: t('Helping people discover Jesus.'),
       variant: TypographyVariant.subtitle2,
-      align: TypographyAlign.center
+      align: TypographyAlign.center,
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     } satisfies TypographyBlock
 
     const button1 = {

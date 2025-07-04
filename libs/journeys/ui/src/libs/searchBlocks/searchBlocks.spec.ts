@@ -26,7 +26,11 @@ describe('searchBlocks', () => {
             variant: null,
             color: null,
             align: null,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             __typename: 'RadioQuestionBlock',
@@ -93,7 +97,11 @@ describe('searchBlocks', () => {
             variant: null,
             color: null,
             align: null,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             __typename: 'RadioQuestionBlock',

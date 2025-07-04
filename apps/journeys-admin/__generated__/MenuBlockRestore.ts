@@ -250,6 +250,11 @@ export interface MenuBlockRestore_stepRestore_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface MenuBlockRestore_stepRestore_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  color: string | null;
+}
+
 export interface MenuBlockRestore_stepRestore_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -259,6 +264,7 @@ export interface MenuBlockRestore_stepRestore_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: MenuBlockRestore_stepRestore_TypographyBlock_settings;
 }
 
 export interface MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_Video_title {

@@ -28,6 +28,11 @@ export interface CardFormCreate_image {
   focalLeft: number | null;
 }
 
+export interface CardFormCreate_subtitle_settings {
+  __typename: "TypographyBlockSettings";
+  color: string | null;
+}
+
 export interface CardFormCreate_subtitle {
   __typename: "TypographyBlock";
   id: string;
@@ -37,6 +42,12 @@ export interface CardFormCreate_subtitle {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardFormCreate_subtitle_settings;
+}
+
+export interface CardFormCreate_title_settings {
+  __typename: "TypographyBlockSettings";
+  color: string | null;
 }
 
 export interface CardFormCreate_title {
@@ -48,6 +59,7 @@ export interface CardFormCreate_title {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardFormCreate_title_settings;
 }
 
 export interface CardFormCreate_textResponse {
@@ -161,6 +173,11 @@ export interface CardFormCreate_buttonUpdate {
   action: CardFormCreate_buttonUpdate_action | null;
 }
 
+export interface CardFormCreate_body_settings {
+  __typename: "TypographyBlockSettings";
+  color: string | null;
+}
+
 export interface CardFormCreate_body {
   __typename: "TypographyBlock";
   id: string;
@@ -170,6 +187,7 @@ export interface CardFormCreate_body {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardFormCreate_body_settings;
 }
 
 export interface CardFormCreate_cardBlockUpdate {
