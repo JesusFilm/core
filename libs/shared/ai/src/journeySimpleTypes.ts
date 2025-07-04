@@ -32,7 +32,7 @@ export type JourneySimpleButton = z.infer<typeof journeySimpleButtonSchema>
 
 // Image type
 export const journeySimpleImageSchema = z.object({
-  src: z.string().url().describe('A URL for the image.'),
+  src: z.string().describe('A URL for the image.'),
   alt: z.string().describe('Alt text for the image for accessibility.'),
   width: z
     .number()
