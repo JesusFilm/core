@@ -147,6 +147,8 @@ export function Button({
     [ButtonAlignment.justify]: 'space-evenly'
   }
 
+  const alignment = settings?.alignment ?? ButtonAlignment.justify
+
   const buttonType = submitEnabled
     ? variant !== 'admin'
       ? 'submit'
@@ -293,7 +295,7 @@ export function Button({
                 ? 4
                 : 5,
         display: 'flex',
-        justifyContent: justifyContent[settings?.alignment ?? ButtonAlignment.justify]
+        justifyContent: justifyContent[alignment]
       }}
       data-testid={`JourneysButton-${blockId}`}
     >
@@ -310,8 +312,8 @@ export function Button({
           outlineColor: editableLabel != null ? '#C52D3A' : 'transparent',
           outlineOffset: '5px',
           zIndex: editableLabel != null ? 1 : 0,
-          width: (settings?.alignment ?? ButtonAlignment.justify) === ButtonAlignment.justify ? '100%' : 'fit-content',
-          maxWidth: (settings?.alignment ?? ButtonAlignment.justify) === ButtonAlignment.justify ? '100%' : '75%',
+          width: alignment === ButtonAlignment.justify ? '100%' : 'fit-content',
+          maxWidth: alignment === ButtonAlignment.justify ? '100%' : '75%',
           ...(editableLabel != null
             ? {
                 '&:hover': {

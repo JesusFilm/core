@@ -55,13 +55,6 @@ export function Alignment(): ReactElement {
     }
   }, [selectedBlock?.settings?.alignment])
 
-  const temp_handleAlignmentChange = (
-    _event: React.MouseEvent<HTMLElement>,
-    newAlignment: ButtonAlignment | null
-  ) => {
-    if (newAlignment !== null) setAlignment(newAlignment)
-  }
-
   function handleChange(alignment: ButtonAlignment): void {
     if (selectedBlock == null || alignment == null) return
 
@@ -129,7 +122,6 @@ export function Alignment(): ReactElement {
         value={alignment}
         exclusive
         fullWidth
-        onChange={temp_handleAlignmentChange}
         aria-label="Horizontal Alignment"
         sx={{
           borderRadius: 4,

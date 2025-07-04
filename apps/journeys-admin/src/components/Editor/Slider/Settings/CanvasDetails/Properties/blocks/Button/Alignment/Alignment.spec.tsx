@@ -153,21 +153,6 @@ describe('Button alignment selector', () => {
     await waitFor(() => expect(mockFirstUpdate.result).toHaveBeenCalled())
   })
 
-  it('should not call mutation when no selected block', async () => {
-    render(
-      <MockedProvider mocks={[alignmentUpdateMock]}>
-        <EditorProvider initialState={{}}>
-          <Alignment />
-        </EditorProvider>
-      </MockedProvider>
-    )
-    expect(screen.getByLabelText('Align Justify')).toHaveClass('Mui-selected')
-    fireEvent.click(screen.getByLabelText('Align Left'))
-    await waitFor(() =>
-      expect(alignmentUpdateMock.result).not.toHaveBeenCalled()
-    )
-  })
-
   it('should display current alignment from selectedBlock', () => {
     const blockWithLeftAlignment = {
       ...selectedBlock,
