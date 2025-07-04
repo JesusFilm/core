@@ -72,7 +72,8 @@ const getMyMuxVideoMock = {
         id: 'mux-id',
         assetId: 'asset-id',
         playbackId: 'playback-id',
-        readyToStream: true
+        readyToStream: true,
+        duration: 120
       }
     }
   }
@@ -89,9 +90,11 @@ const createVideoVariantMock = {
         languageId: 'language-id',
         slug: 'video-slug/en',
         downloadable: true,
-        published: true,
+        published: false,
         muxVideoId: 'mux-id',
-        hls: 'https://stream.mux.com/playback-id.m3u8'
+        hls: 'https://stream.mux.com/playback-id.m3u8',
+        duration: 120,
+        lengthInMilliseconds: 120000
       }
     }
   },
@@ -170,9 +173,11 @@ const createVideoVariantErrorMock = {
         languageId: 'language-id',
         slug: 'video-slug/en',
         downloadable: true,
-        published: true,
+        published: false,
         muxVideoId: 'mux-id',
-        hls: 'https://stream.mux.com/playback-id.m3u8'
+        hls: 'https://stream.mux.com/playback-id.m3u8',
+        duration: 120,
+        lengthInMilliseconds: 120000
       }
     }
   },
@@ -260,7 +265,7 @@ describe('UploadVideoVariantContext', () => {
           'language-id',
           'en',
           'base',
-          true,
+          false,
           'video-slug'
         )
       })
@@ -336,7 +341,7 @@ describe('UploadVideoVariantContext', () => {
           'language-id',
           'en',
           'base',
-          true,
+          false,
           'video-slug'
         )
       })
@@ -378,7 +383,7 @@ describe('UploadVideoVariantContext', () => {
           'language-id',
           'en',
           'base',
-          true,
+          false,
           'video-slug'
         )
       })
@@ -417,7 +422,7 @@ describe('UploadVideoVariantContext', () => {
           'language-id',
           'en',
           'base',
-          true,
+          false,
           'video-slug'
         )
       })
@@ -484,7 +489,7 @@ describe('UploadVideoVariantContext', () => {
           'language-id',
           'en',
           'base',
-          true,
+          false,
           'video-slug'
         )
       })
@@ -520,6 +525,95 @@ describe('UploadVideoVariantContext', () => {
       })
     })
 
+    it('creates published variant when published is true', async () => {
+      const file = new File(['test'], 'test.mp4', { type: 'video/mp4' })
+
+      // Create a mock for published variant
+      const createPublishedVariantMock = {
+        request: {
+          query: CREATE_VIDEO_VARIANT,
+          variables: {
+            input: {
+              id: 'language-id_video-id',
+              videoId: 'video-id',
+              edition: 'base',
+              languageId: 'language-id',
+              slug: 'video-slug/en',
+              downloadable: true,
+              published: true,
+              muxVideoId: 'mux-id',
+              hls: 'https://stream.mux.com/playback-id.m3u8',
+              duration: 120,
+              lengthInMilliseconds: 120000
+            }
+          }
+        },
+        result: {
+          data: {
+            videoVariantCreate: {
+              id: 'language-id_video-id',
+              videoId: 'video-id',
+              slug: 'video-slug/en',
+              hls: 'https://stream.mux.com/playback-id.m3u8',
+              published: true,
+              language: {
+                id: 'language-id',
+                slug: 'en',
+                name: {
+                  value: 'English',
+                  primary: true
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // Create result functions to track when mocks are called
+      const muxCreateResult = jest
+        .fn()
+        .mockReturnValue(createMuxVideoUploadByUrlMock.result)
+      const getMuxVideoResult = jest
+        .fn()
+        .mockReturnValue(getMyMuxVideoMock.result)
+      const createVariantResult = jest
+        .fn()
+        .mockReturnValue(createPublishedVariantMock.result)
+
+      const mocks = [
+        createR2AssetMock,
+        { ...createMuxVideoUploadByUrlMock, result: muxCreateResult },
+        { ...getMyMuxVideoMock, result: getMuxVideoResult },
+        { ...createPublishedVariantMock, result: createVariantResult }
+      ]
+
+      const { result } = renderHook(() => useUploadVideoVariant(), {
+        wrapper: createWrapper(mocks)
+      })
+
+      await act(async () => {
+        await result.current.startUpload(
+          file,
+          'video-id',
+          'language-id',
+          'en',
+          'base',
+          true, // published = true
+          'video-slug'
+        )
+      })
+
+      // Should call all the mutations with published: true
+      await waitFor(() => {
+        expect(createVariantResult).toHaveBeenCalled()
+      })
+
+      // Should show success snackbar
+      expect(mockEnqueueSnackbar).toHaveBeenCalledWith('Audio Language Added', {
+        variant: 'success'
+      })
+    })
+
     it('handles variant creation error', async () => {
       const file = new File(['test'], 'test.mp4', { type: 'video/mp4' })
 
@@ -549,7 +643,7 @@ describe('UploadVideoVariantContext', () => {
           'language-id',
           'en',
           'base',
-          true,
+          false,
           'video-slug'
         )
       })

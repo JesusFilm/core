@@ -184,6 +184,12 @@
         "command": "npm run ts-node apis/api-media/src/workers/cli.ts seed"
       }
     },
+    "queue-mux-downloads": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-media/src/workers/cli.ts mux-downloads"
+      }
+    },
     "export-language-slugs": {
       "executor": "nx:run-commands",
       "options": {
@@ -210,6 +216,12 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "npm run ts-node apis/api-media/src/scripts/data-import.ts"
+      }
+    },
+    "copy-distro-downloads": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-media/src/scripts/copy-distro-downloads.ts"
       }
     }
   }

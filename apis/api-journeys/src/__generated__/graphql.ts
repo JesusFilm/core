@@ -1552,7 +1552,6 @@ export type Mutation = {
   typographyBlockCreate: TypographyBlock;
   typographyBlockUpdate: TypographyBlock;
   updateJourneysEmailPreference?: Maybe<JourneysEmailPreference>;
-  updateVideoVariantDownloadSizesFromMux: Scalars['Boolean']['output'];
   userImpersonate?: Maybe<Scalars['String']['output']>;
   userInviteAcceptAll: Array<UserInvite>;
   userInviteCreate?: Maybe<UserInvite>;
@@ -2229,11 +2228,6 @@ export type MutationTypographyBlockUpdateArgs = {
 
 export type MutationUpdateJourneysEmailPreferenceArgs = {
   input: JourneysEmailPreferenceUpdateInput;
-};
-
-
-export type MutationUpdateVideoVariantDownloadSizesFromMuxArgs = {
-  videoVariantId: Scalars['ID']['input'];
 };
 
 
@@ -4110,6 +4104,7 @@ export type TypographyBlock = Block & {
   journeyId: Scalars['ID']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
+  settings: TypographyBlockSettings;
   variant?: Maybe<TypographyVariant>;
 };
 
@@ -4120,7 +4115,17 @@ export type TypographyBlockCreateInput = {
   id?: InputMaybe<Scalars['ID']['input']>;
   journeyId: Scalars['ID']['input'];
   parentBlockId: Scalars['ID']['input'];
+  settings?: InputMaybe<TypographyBlockSettingsInput>;
   variant?: InputMaybe<TypographyVariant>;
+};
+
+export type TypographyBlockSettings = {
+  __typename?: 'TypographyBlockSettings';
+  color?: Maybe<Scalars['String']['output']>;
+};
+
+export type TypographyBlockSettingsInput = {
+  color?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type TypographyBlockUpdateInput = {
@@ -4128,6 +4133,7 @@ export type TypographyBlockUpdateInput = {
   color?: InputMaybe<TypographyColor>;
   content?: InputMaybe<Scalars['String']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
+  settings?: InputMaybe<TypographyBlockSettingsInput>;
   variant?: InputMaybe<TypographyVariant>;
 };
 
@@ -5154,7 +5160,11 @@ export type VideoVariantDownloadCreateInput = {
 };
 
 export enum VideoVariantDownloadQuality {
+  DistroHigh = 'distroHigh',
+  DistroLow = 'distroLow',
+  DistroSd = 'distroSd',
   High = 'high',
+  Highest = 'highest',
   Low = 'low',
   Sd = 'sd'
 }

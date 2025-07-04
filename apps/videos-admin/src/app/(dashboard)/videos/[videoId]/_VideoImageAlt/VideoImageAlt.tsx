@@ -143,6 +143,7 @@ export function VideoImageAlt({ videoId }: VideoImageAltProps): ReactElement {
                 onChange={handleChange}
                 helperText={errors.imageAlt as string}
                 spellCheck={true}
+                placeholder="Please enter a short image description, up to 160 characters."
               />
             </Stack>
             <Divider sx={{ mx: -4 }} />
