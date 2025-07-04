@@ -74,13 +74,8 @@ const UPDATE_ADMIN_VIDEO_VARIANT = graphql(`
   mutation UpdateAdminVideoVariant($input: VideoVariantUpdateInput!) {
     videoVariantUpdate(input: $input) {
       id
+      published
     }
-  }
-`)
-
-const UPDATE_DOWNLOAD_SIZES_FROM_MUX = graphql(`
-  mutation UpdateDownloadSizesFromMux($videoVariantId: ID!) {
-    updateVideoVariantDownloadSizesFromMux(videoVariantId: $videoVariantId)
   }
 `)
 
@@ -102,28 +97,6 @@ export default function VariantDialog({
   })
 
   const [updateAdminVideoVariant] = useMutation(UPDATE_ADMIN_VIDEO_VARIANT)
-  const [updateDownloadSizesFromMux] = useMutation(
-    UPDATE_DOWNLOAD_SIZES_FROM_MUX
-  )
-
-  const handleUpdateSizes = async (): Promise<void> => {
-    try {
-      await updateDownloadSizesFromMux({
-        variables: { videoVariantId: variantId }
-      })
-      await refetch()
-      enqueueSnackbar('Download sizes updated successfully', {
-        variant: 'success'
-      })
-    } catch (error) {
-      enqueueSnackbar(
-        'Failed to update sizes. Mux may not have generated download files yet - please try again in a few minutes.',
-        {
-          variant: 'warning'
-        }
-      )
-    }
-  }
 
   const handleSubmit = async (
     values: FormikValues,
@@ -136,6 +109,9 @@ export default function VariantDialog({
       onCompleted: () => {
         enqueueSnackbar('Variant updated', { variant: 'success' })
         resetForm({ values })
+        router.push(`/videos/${videoId}/audio`, {
+          scroll: false
+        })
       },
       onError: () => {
         enqueueSnackbar('Error updating variant', { variant: 'error' })
@@ -266,15 +242,6 @@ export default function VariantDialog({
                     >
                       Add Download
                     </Button>
-                    {data.videoVariant.downloads.some((d) => d.size === 0) && (
-                      <Button
-                        variant="outlined"
-                        color="secondary"
-                        onClick={handleUpdateSizes}
-                      >
-                        Update Sizes from Mux
-                      </Button>
-                    )}
                   </Stack>
 
                   {data.videoVariant.downloads.length === 0 ? (
