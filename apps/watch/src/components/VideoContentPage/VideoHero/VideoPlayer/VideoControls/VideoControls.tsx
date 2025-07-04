@@ -20,6 +20,7 @@ import { sendGTMEvent } from '@next/third-parties/google'
 import fscreen from 'fscreen'
 import debounce from 'lodash/debounce'
 import dynamic from 'next/dynamic'
+import Image from 'next/image'
 import { MouseEventHandler, ReactElement, useEffect, useState } from 'react'
 import Player from 'video.js/dist/types/player'
 
@@ -27,8 +28,11 @@ import { isMobile } from '@core/shared/ui/deviceUtils'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import { useVideo } from '../../../../../libs/videoContext'
+import { useWatch } from '../../../../../libs/watchContext'
+import { HeroOverlay } from '../../../../HeroOverlay/HeroOverlay'
 import { SubtitleDialogProps } from '../../../../SubtitleDialog/SubtitleDialog'
 import { AudioLanguageButton } from '../../../AudioLanguageButton'
+import { VideoTitle } from '../VideoTitle'
 
 const DynamicSubtitleDialog = dynamic<SubtitleDialogProps>(
   async () =>
@@ -69,29 +73,112 @@ export function VideoControls({
   player,
   onVisibleChanged
 }: VideoControlProps): ReactElement {
-  const [play, setPlay] = useState(false)
-  const [active, setActive] = useState(true)
-  const [currentTime, setCurrentTime] = useState<string>()
-  const [progress, setProgress] = useState(0)
-  const [progressPercentNotYetEmitted, setProgressPercentNotYetEmitted] =
-    useState([10, 25, 50, 75, 90])
-  const [volume, setVolume] = useState(0)
-  const [mute, setMute] = useState(false)
-  const [fullscreen, setFullscreen] = useState(false)
-  const [openSubtitleDialog, setOpenSubtitleDialog] = useState(false)
-  const [loadSubtitleDialog, setLoadSubtitleDialog] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false)
+  const {
+    state: {
+      player: {
+        play,
+        active,
+        currentTime,
+        progress,
+        volume,
+        mute,
+        fullscreen,
+        openSubtitleDialog,
+        loadSubtitleDialog,
+        loading,
+        duration,
+        durationSeconds,
+        progressPercentNotYetEmitted
+      }
+    },
+    dispatch
+  } = useWatch()
 
-  const duration = secondsToTimeFormat(player.duration() ?? 1, {
-    trimZeroes: true
-  })
-  const durationSeconds = Math.round(player.duration() ?? 1)
-  const { id, title, variant } = useVideo()
+  const { id, title, variant, images, imageAlt } = useVideo()
   const visible = !play || active || loading
+
+  const videoTitle = title?.[0]?.value ?? ''
 
   useEffect(() => {
     onVisibleChanged?.(!play || active || loading)
   }, [play, active, loading, onVisibleChanged])
+
+  // Set duration from variant data instead of trying to detect from HLS stream
+  useEffect(() => {
+    if (variant?.duration != null && variant.duration > 0) {
+      const roundedDuration = Math.round(variant.duration)
+      dispatch({
+        type: 'SetPlayerDurationSeconds',
+        durationSeconds: roundedDuration
+      })
+      dispatch({
+        type: 'SetPlayerDuration',
+        duration: secondsToTimeFormat(roundedDuration, { trimZeroes: true })
+      })
+    } else {
+      // Fallback to player detection for edge cases
+      let retryCount = 0
+      const maxRetries = 3
+      let retryTimeout: NodeJS.Timeout | undefined
+
+      const updateDuration = (state: string): void => {
+        const playerDuration = player.duration()
+
+        if (
+          playerDuration != null &&
+          !isNaN(playerDuration) &&
+          playerDuration > 0
+        ) {
+          const roundedDuration = Math.round(playerDuration)
+          dispatch({
+            type: 'SetPlayerDurationSeconds',
+            durationSeconds: roundedDuration
+          })
+          dispatch({
+            type: 'SetPlayerDuration',
+            duration: secondsToTimeFormat(roundedDuration, { trimZeroes: true })
+          })
+          if (retryTimeout) {
+            clearTimeout(retryTimeout)
+            retryTimeout = undefined
+          }
+        } else if (playerDuration === Infinity) {
+          dispatch({
+            type: 'SetPlayerDurationSeconds',
+            durationSeconds: 0
+          })
+          dispatch({
+            type: 'SetPlayerDuration',
+            duration: 'Live'
+          })
+        } else if (state === 'retry' && retryCount < maxRetries) {
+          retryCount++
+          const delay = 1000 * retryCount
+
+          retryTimeout = setTimeout(() => {
+            updateDuration('retry')
+          }, delay)
+        }
+      }
+      // Only add fallback listeners if variant duration is not available
+      const events = ['durationchange', 'loadedmetadata', 'canplay']
+      events.forEach((event) => {
+        player.on(event, () => updateDuration(event))
+      })
+
+      updateDuration('initial')
+
+      return () => {
+        if (retryTimeout) {
+          clearTimeout(retryTimeout)
+        }
+        events.forEach((event) => {
+          player.off(event, updateDuration)
+        })
+      }
+    }
+  }, [player, variant?.duration])
 
   useEffect(() => {
     if ((progress / durationSeconds) * 100 > progressPercentNotYetEmitted[0]) {
@@ -106,7 +193,10 @@ export function VideoControls({
         Math.round((progress / durationSeconds) * 100)
       )
       const [, ...rest] = progressPercentNotYetEmitted
-      setProgressPercentNotYetEmitted(rest)
+      dispatch({
+        type: 'SetPlayerProgressPercentNotYetEmitted',
+        progressPercentNotYetEmitted: rest
+      })
     }
   }, [
     id,
@@ -119,7 +209,10 @@ export function VideoControls({
   ])
 
   useEffect(() => {
-    setVolume((player.volume() ?? 1) * 100)
+    dispatch({
+      type: 'SetPlayerVolume',
+      volume: (player.volume() ?? 1) * 100
+    })
     player.on('play', () => {
       if ((player.currentTime() ?? 0) < 0.02) {
         eventToDataLayer(
@@ -148,7 +241,10 @@ export function VideoControls({
           )
         )
       }
-      setPlay(true)
+      dispatch({
+        type: 'SetPlayerPlay',
+        play: true
+      })
     })
     player.on('pause', () => {
       if ((player.currentTime() ?? 0) > 0.02) {
@@ -165,27 +261,65 @@ export function VideoControls({
           )
         )
       }
-      setPlay(false)
+      dispatch({
+        type: 'SetPlayerPlay',
+        play: false
+      })
     })
     player.on('timeupdate', () => {
-      setCurrentTime(
-        secondsToTimeFormat(player.currentTime() ?? 0, { trimZeroes: true })
-      )
-      setProgress(Math.round(player.currentTime() ?? 0))
+      dispatch({
+        type: 'SetPlayerCurrentTime',
+        currentTime: secondsToTimeFormat(player.currentTime() ?? 0, {
+          trimZeroes: true
+        })
+      })
+      dispatch({
+        type: 'SetPlayerProgress',
+        progress: Math.round(player.currentTime() ?? 0)
+      })
     })
     player.on('volumechange', () => {
-      setMute(player.muted() ?? false)
-      setVolume((player.volume() ?? 1) * 100)
+      dispatch({
+        type: 'SetPlayerMute',
+        mute: player.muted() ?? false
+      })
+      dispatch({
+        type: 'SetPlayerVolume',
+        volume: (player.volume() ?? 1) * 100
+      })
     })
     player.on('fullscreenchange', () => {
-      setFullscreen(player.isFullscreen() ?? false)
+      dispatch({
+        type: 'SetPlayerFullscreen',
+        fullscreen: player.isFullscreen() ?? false
+      })
     })
-    player.on('useractive', () => setActive(true))
-    player.on('userinactive', () => setActive(false))
-    player.on('waiting', () => setLoading(true))
-    player.on('playing', () => setLoading(false))
+    player.on('useractive', () =>
+      dispatch({
+        type: 'SetPlayerActive',
+        active: true
+      })
+    )
+    player.on('userinactive', () =>
+      dispatch({
+        type: 'SetPlayerActive',
+        active: false
+      })
+    )
+    player.on('waiting', () =>
+      dispatch({
+        type: 'SetPlayerLoading',
+        loading: true
+      })
+    )
+    player.on('playing', () => {
+      setInitialLoadComplete(true)
+      dispatch({
+        type: 'SetPlayerLoading',
+        loading: false
+      })
+    })
     player.on('ended', () => {
-      setLoading(false)
       eventToDataLayer(
         'video_ended',
         id,
@@ -199,8 +333,18 @@ export function VideoControls({
         )
       )
     })
-    player.on('canplay', () => setLoading(false))
-    player.on('canplaythrough', () => setLoading(false))
+    player.on('canplay', () =>
+      dispatch({
+        type: 'SetPlayerLoading',
+        loading: false
+      })
+    )
+    player.on('canplaythrough', () =>
+      dispatch({
+        type: 'SetPlayerLoading',
+        loading: false
+      })
+    )
     fscreen.addEventListener('fullscreenchange', () => {
       if (fscreen.fullscreenElement != null) {
         eventToDataLayer(
@@ -229,9 +373,12 @@ export function VideoControls({
           )
         )
       }
-      setFullscreen(fscreen.fullscreenElement != null)
+      dispatch({
+        type: 'SetPlayerFullscreen',
+        fullscreen: fscreen.fullscreenElement != null
+      })
     })
-  }, [id, player, setFullscreen, loading, title, variant])
+  }, [id, player, dispatch, loading, title, variant])
 
   function handlePlay(): void {
     if (!play) {
@@ -244,20 +391,29 @@ export function VideoControls({
   async function handleFullscreen(): Promise<void> {
     if (fullscreen) {
       fscreen.exitFullscreen()
-      setFullscreen(false)
+      dispatch({
+        type: 'SetPlayerFullscreen',
+        fullscreen: false
+      })
     } else {
       if (isMobile()) {
         void player.requestFullscreen()
       } else {
         await fscreen.requestFullscreen(document.documentElement)
-        setFullscreen(true)
+        dispatch({
+          type: 'SetPlayerFullscreen',
+          fullscreen: true
+        })
       }
     }
   }
 
   function handleSeek(_event: Event, value: number | number[]): void {
     if (!Array.isArray(value)) {
-      setProgress(value)
+      dispatch({
+        type: 'SetPlayerProgress',
+        progress: value
+      })
       player.currentTime(value)
     }
   }
@@ -268,7 +424,11 @@ export function VideoControls({
 
   function handleVolume(_event: Event, value: number | number[]): void {
     if (!Array.isArray(value)) {
-      setVolume(value)
+      if (mute === true) handleMute()
+      dispatch({
+        type: 'SetPlayerVolume',
+        volume: value
+      })
       player.volume(value / 100)
     }
   }
@@ -294,8 +454,14 @@ export function VideoControls({
   }
 
   function handleClick(): void {
-    setOpenSubtitleDialog(true)
-    setLoadSubtitleDialog(true)
+    dispatch({
+      type: 'SetPlayerOpenSubtitleDialog',
+      openSubtitleDialog: true
+    })
+    dispatch({
+      type: 'SetPlayerLoadSubtitleDialog',
+      loadSubtitleDialog: true
+    })
   }
 
   return (
@@ -306,7 +472,11 @@ export function VideoControls({
         right: 0,
         bottom: 0,
         left: 0,
-        cursor: visible ? undefined : 'none'
+        cursor: visible ? undefined : 'none',
+        zIndex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-end'
       }}
       onClick={getClickHandler(handlePlay, () => {
         void handleFullscreen()
@@ -314,6 +484,69 @@ export function VideoControls({
       onMouseMove={() => player.userActive(true)}
       data-testid="VideoControls"
     >
+      {!loading ? (
+        <Container maxWidth="xxl" sx={{ zIndex: 2 }}>
+          <VideoTitle
+            videoTitle={videoTitle}
+            variant="unmute"
+            showButton
+            onClick={(e) => {
+              e.stopPropagation()
+              if (mute || volume === 0) handleMute()
+              if (!play) void player?.play()
+            }}
+          />
+        </Container>
+      ) : (
+        <>
+          <Box
+            sx={{
+              display: 'flex',
+              flexGrow: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingTop: '104px',
+              zIndex: 2
+            }}
+          >
+            <CircularProgress size={65} />
+          </Box>
+          {images[0]?.mobileCinematicHigh != null && (
+            <Image
+              src={images[0].mobileCinematicHigh}
+              alt={imageAlt[0].value}
+              fill
+              sizes="100vw"
+              style={{
+                objectFit: 'cover'
+              }}
+            />
+          )}
+          <Container maxWidth="xxl" sx={{ zIndex: 2 }}>
+            <VideoTitle
+              showButton={!initialLoadComplete}
+              videoTitle={videoTitle}
+              onClick={(e) => {
+                e.stopPropagation()
+                if (mute || volume === 0) handleMute()
+                if (!play) void player?.play()
+              }}
+            />
+          </Container>
+          <Box
+            sx={{
+              zIndex: 0,
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0
+            }}
+          >
+            <HeroOverlay />
+          </Box>
+        </>
+      )}
       <Fade
         in={visible}
         style={{
@@ -322,41 +555,7 @@ export function VideoControls({
         }}
         timeout={{ exit: 2225 }}
       >
-        <Box
-          sx={{
-            height: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'flex-end'
-          }}
-        >
-          <Box
-            sx={{
-              display: 'flex',
-              flexGrow: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
-              paddingTop: '104px'
-            }}
-          >
-            {!loading ? (
-              <IconButton
-                sx={{
-                  fontSize: 100,
-                  display: { xs: 'flex', md: 'none' }
-                }}
-              >
-                {play ? (
-                  <PauseRounded fontSize="inherit" />
-                ) : (
-                  <PlayArrowRounded fontSize="inherit" />
-                )}
-              </IconButton>
-            ) : (
-              <CircularProgress size={65} />
-            )}
-          </Box>
-
+        <Box>
           <Box
             sx={{
               background:
@@ -438,18 +637,42 @@ export function VideoControls({
                   <Typography
                     variant="body2"
                     color="secondary.contrastText"
-                    sx={{ display: 'flex', gap: 1 }}
+                    sx={{ display: 'flex', gap: 1, zIndex: 2 }}
                   >
-                    <span>{currentTime ?? '0:00'}</span>
+                    <span>
+                      <p className="font-sans">{currentTime ?? '0:00'}</p>
+                    </span>
                     <span>/</span>
                     {duration === '0:00' ? (
                       <Skeleton width={27} sx={{ bgcolor: 'grey.800' }} />
                     ) : (
-                      <span>{duration}</span>
+                      <span>
+                        <p className="font-sans">{duration}</p>
+                      </span>
                     )}
                   </Typography>
                 )}
                 <Stack direction="row" spacing={2}>
+                  <Stack
+                    alignItems="center"
+                    spacing={2}
+                    direction="row"
+                    sx={{
+                      display: { xs: 'flex', md: 'none' }
+                    }}
+                  >
+                    <IconButton onClick={handleMute}>
+                      {mute || volume === 0 ? (
+                        <VolumeOffOutlined />
+                      ) : volume > 60 ? (
+                        <VolumeUpOutlined />
+                      ) : volume > 30 ? (
+                        <VolumeDownOutlined />
+                      ) : (
+                        <VolumeMuteOutlined />
+                      )}
+                    </IconButton>
+                  </Stack>
                   <Stack
                     alignItems="center"
                     spacing={2}
@@ -512,7 +735,10 @@ export function VideoControls({
                   >
                     <SubtitlesOutlined />
                   </IconButton>
-                  <IconButton onClick={handleFullscreen}>
+                  <IconButton
+                    onClick={handleFullscreen}
+                    data-testid="FullscreenButton"
+                  >
                     {fullscreen ? (
                       <FullscreenExitOutlined />
                     ) : (
@@ -525,7 +751,12 @@ export function VideoControls({
                 <DynamicSubtitleDialog
                   open={openSubtitleDialog}
                   player={player}
-                  onClose={() => setOpenSubtitleDialog(false)}
+                  onClose={() =>
+                    dispatch({
+                      type: 'SetPlayerOpenSubtitleDialog',
+                      openSubtitleDialog: false
+                    })
+                  }
                 />
               )}
             </Container>

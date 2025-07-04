@@ -18,7 +18,7 @@ import {
 } from '../../../../__generated__/GetVideoContentPart3'
 import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 import i18nConfig from '../../../../next-i18next.config'
-import { VideoContentPage } from '../../../../src/components/VideoContentPage'
+import { NewVideoContentPage } from '../../../../src/components/NewVideoContentPage'
 import { createApolloClient } from '../../../../src/libs/apolloClient'
 import { getCookie } from '../../../../src/libs/cookieHandler'
 import { getFlags } from '../../../../src/libs/getFlags'
@@ -74,7 +74,7 @@ export default function Part3Page({
         <WatchProvider initialState={initialWatchState}>
           <LanguageProvider>
             <VideoProvider value={{ content, container }}>
-              <VideoContentPage />
+              <NewVideoContentPage />
             </VideoProvider>
           </LanguageProvider>
         </WatchProvider>

@@ -5,8 +5,6 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { Icon } from '@core/shared/ui/icons/Icon'
 
-import { Button } from '../../../../Button'
-
 interface BibleQuotesCarouselHeaderProps {
   bibleQuotesTitle: string
   shareButtonText: string
@@ -57,7 +55,7 @@ export function BibleQuotesCarouselHeader({
             {bibleQuotesTitle}
           </h3>
         </div>
-        <Button
+        <button
           onClick={handleShare}
           aria-label="Share Bible quotes"
           tabIndex={0}
@@ -76,7 +74,7 @@ export function BibleQuotesCarouselHeader({
             }}
           />
           <span>{shareButtonText}</span>
-        </Button>
+        </button>
       </div>
     </div>
   )
