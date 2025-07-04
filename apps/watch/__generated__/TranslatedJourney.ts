@@ -16,11 +16,6 @@ export interface TranslatedJourney_blocks_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
   content: string;
-,
-  settings: {
-    __typename: 'TypographyBlockSettings',
-    color: null
-  }
 }
 
 export interface TranslatedJourney_blocks_ButtonBlock {
