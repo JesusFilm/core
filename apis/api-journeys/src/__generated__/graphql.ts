@@ -4104,6 +4104,7 @@ export type TypographyBlock = Block & {
   journeyId: Scalars['ID']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
+  settings: TypographyBlockSettings;
   variant?: Maybe<TypographyVariant>;
 };
 
@@ -4114,7 +4115,17 @@ export type TypographyBlockCreateInput = {
   id?: InputMaybe<Scalars['ID']['input']>;
   journeyId: Scalars['ID']['input'];
   parentBlockId: Scalars['ID']['input'];
+  settings?: InputMaybe<TypographyBlockSettingsInput>;
   variant?: InputMaybe<TypographyVariant>;
+};
+
+export type TypographyBlockSettings = {
+  __typename?: 'TypographyBlockSettings';
+  color?: Maybe<Scalars['String']['output']>;
+};
+
+export type TypographyBlockSettingsInput = {
+  color?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type TypographyBlockUpdateInput = {
@@ -4122,6 +4133,7 @@ export type TypographyBlockUpdateInput = {
   color?: InputMaybe<TypographyColor>;
   content?: InputMaybe<Scalars['String']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
+  settings?: InputMaybe<TypographyBlockSettingsInput>;
   variant?: InputMaybe<TypographyVariant>;
 };
 
