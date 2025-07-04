@@ -1,5 +1,4 @@
 import { useEffect, useMemo } from 'react'
-import WebFont from 'webfontloader'
 
 interface FontLoaderProps {
   fonts: string[]
@@ -20,13 +19,21 @@ export function FontLoader({ fonts }: FontLoaderProps): null {
   }, [fonts])
 
   useEffect(() => {
-    if (fontFamilies.length === 0) return
+    // Only run in browser environment and if there are fonts to load
+    if (typeof window === 'undefined' || fontFamilies.length === 0) return
 
-    WebFont.load({
-      google: {
-        families: fontFamilies
-      }
-    })
+    // Dynamic import WebFont only on client side
+    void import(/* webpackChunkName: "webfontloader" */ 'webfontloader')
+      .then((WebFont) => {
+        WebFont.load({
+          google: {
+            families: fontFamilies
+          }
+        })
+      })
+      .catch((error) => {
+        console.error('Failed to load web fonts:', error)
+      })
   }, [fontFamilies])
 
   return null
