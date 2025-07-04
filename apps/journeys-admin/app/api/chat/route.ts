@@ -1,5 +1,5 @@
 import { google } from '@ai-sdk/google'
-import { streamText } from 'ai'
+import { NoSuchToolError, generateObject, streamText } from 'ai'
 import { jwtDecode } from 'jwt-decode'
 import { NextRequest } from 'next/server'
 import { v4 as uuidv4 } from 'uuid'
@@ -98,6 +98,30 @@ export async function POST(req: NextRequest) {
         userId: decoded.user_id,
         sessionId: sessionId ?? `${decoded.user_id}-${decoded.auth_time}`
       }
+    },
+    experimental_repairToolCall: async ({
+      toolCall,
+      tools,
+      parameterSchema,
+      error
+    }) => {
+      if (NoSuchToolError.isInstance(error)) return null // do not attempt to fix invalid tool names
+
+      const tool = tools[toolCall.toolName]
+
+      const { object: repairedArgs } = await generateObject({
+        model: google('gemini-2.0-flash'),
+        schema: tool.parameters,
+        prompt: [
+          `The model tried to call the tool "${toolCall.toolName}"` +
+            ` with the following arguments:`,
+          JSON.stringify(toolCall.args),
+          `The tool accepts the following schema:`,
+          JSON.stringify(parameterSchema(toolCall)),
+          'Please fix the arguments.'
+        ].join('\n')
+      })
+      return { ...toolCall, args: JSON.stringify(repairedArgs) }
     },
     maxSteps: 5,
     onFinish: async (result) => {
