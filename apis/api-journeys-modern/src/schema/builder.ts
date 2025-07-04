@@ -14,6 +14,7 @@ import {
   DateTimeISOResolver,
   DateTimeResolver
 } from 'graphql-scalars'
+import { GraphQLJSONObject } from 'graphql-type-json'
 
 import { Prisma, Role } from '.prisma/api-journeys-modern-client'
 import { User } from '@core/yoga/firebaseClient'
@@ -67,6 +68,7 @@ export const builder = new SchemaBuilder<{
     DateTime: { Input: Date; Output: Date }
     ID: { Input: string; Output: number | string }
     JourneyStatus: { Input: string; Output: string }
+    Json: { Input: unknown; Output: unknown }
   }
 }>({
   plugins: [
@@ -118,3 +120,4 @@ builder.subscriptionType({})
 builder.addScalarType('Date', DateResolver)
 builder.addScalarType('DateTimeISO', DateTimeISOResolver)
 builder.addScalarType('DateTime', DateTimeResolver)
+builder.addScalarType('Json', GraphQLJSONObject)

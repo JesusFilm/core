@@ -9,6 +9,8 @@ import { DefaultArgs } from '@prisma/client/runtime/library'
 
 import { Action } from '../../lib/auth/ability'
 
+export { Action } from '../../lib/auth/ability'
+
 // Extend the User type to include roles
 interface User extends BaseUser {
   roles?: string[]
