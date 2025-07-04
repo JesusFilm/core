@@ -15,11 +15,21 @@ const imageSchema = z.object({
 const schema = z.object({
   title: z.string().describe('The title of the website.'),
   description: z.string().describe('The description of the website.'),
-  url: z.string().describe('The URL of the website.'),
+  url: z.string().describe('The main URL of the website.'),
+  keyLinks: z
+    .array(
+      z.object({
+        url: z.string().describe('The URL of the key link.'),
+        title: z.string().describe('The title of the key link.')
+      })
+    )
+    .describe('The key links of the website.'),
   content: z
-    .string()
-    .describe('The content of the website in markdown format.'),
-  logo: imageSchema.describe('The logo of the website.'),
+    .array(z.string().describe('The content of the page in markdown format.'))
+    .describe('A number of scraped pages from the website in markdown format.'),
+  logo: imageSchema.describe(
+    'The logo of the website. Is often found in the header of the website.'
+  ),
   images: z.array(imageSchema).describe('The images available on the website.')
 })
 
@@ -29,38 +39,41 @@ export function agentWebSearch(
 ): Tool {
   return tool({
     parameters: z.object({
-      prompt: z.string().describe('The query to search the web for.')
+      prompt: z
+        .string()
+        .describe(
+          'The query to search the web for. Will find a number of websites to scrape.'
+        )
     }),
     execute: async ({ prompt }) => {
-      const app = new FirecrawlApp()
+      const app = new FirecrawlApp({ apiKey: process.env.FIRECRAWL_API_KEY })
 
       const searchResult = await app.search(prompt, {
-        limit: 1
+        limit: 5
       })
 
       if (!searchResult.success) {
         throw new Error(`Failed to search: ${searchResult.error}`)
       }
 
-      if (searchResult.data.results.length === 0) {
-        return 'No results found'
+      if (searchResult.data.length === 0) {
+        throw new Error('No results found')
       }
 
-      const url = searchResult.data.results[0].url
+      const extractResult = await app.extract(
+        searchResult.data.map(({ url }) => url),
+        {
+          limit: 5,
+          maxAge: 3600000, // 1 hour in milliseconds
+          schema
+        }
+      )
 
-      const scrapeResult = await app.scrapeUrl(url, {
-        formats: ['markdown'],
-        maxAge: 3600000, // 1 hour in milliseconds
-        jsonOptions: { schema: schema }
-      })
-
-      if (!scrapeResult.success) {
-        throw new Error(`Failed to scrape: ${scrapeResult.error}`)
+      if (!extractResult.success) {
+        throw new Error(`Failed to extract: ${extractResult.error}`)
       }
 
-      console.log(scrapeResult.json)
-
-      return scrapeResult.json
+      return extractResult.data
     }
   })
 }
