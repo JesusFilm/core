@@ -210,7 +210,6 @@ describe('VariantDialog', () => {
         mockMutation,
         { loading: false, error: null, data: null }
       ])
-    
 
     // Mock the query result
     const { useSuspenseQuery, useMutation } = require('@apollo/client')
