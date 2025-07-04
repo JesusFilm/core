@@ -12,6 +12,8 @@ import { ReactElement, useState } from 'react'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
+import { getCookie } from '../../../libs/cookieHandler'
+import { LANGUAGE_MAPPINGS } from '../../../libs/localeMapping'
 import { useVideo } from '../../../libs/videoContext'
 
 const DynamicLanguageSwitchDialog = dynamic<{
@@ -33,18 +35,17 @@ export function AudioLanguageButton({
   componentVariant
 }: AudioLanguageButtonProps): ReactElement {
   const { t } = useTranslation('apps-watch')
-  const { variant, variantLanguagesCount } = useVideo()
+  const { variantLanguagesCount } = useVideo()
   const [openLanguageSwitchDialog, setOpenLanguageSwitchDialog] =
     useState(false)
   const [loadLanguageSwitchDialog, setLoadLanguageSwitchDialog] =
     useState(false)
 
-  const nativeName = variant?.language?.name.find(
-    ({ primary }) => !primary
-  )?.value
-  const localName = variant?.language?.name.find(
-    ({ primary }) => primary
-  )?.value
+  // Get current locale from cookie and match with localeMapping
+  const currentLocale = getCookie('NEXT_LOCALE') || 'en'
+  const languageMapping = LANGUAGE_MAPPINGS[currentLocale]
+
+  const localName = languageMapping?.localName
 
   function handleClick(): void {
     setOpenLanguageSwitchDialog(true)
@@ -81,7 +82,7 @@ export function AudioLanguageButton({
               overflow: 'hidden'
             }}
           >
-            {localName ?? nativeName}
+            {localName}
           </Typography>
           <Box
             sx={{

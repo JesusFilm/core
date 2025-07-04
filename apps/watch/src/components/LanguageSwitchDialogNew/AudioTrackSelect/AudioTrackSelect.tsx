@@ -125,8 +125,6 @@ export function AudioTrackSelect(): ReactElement {
     return undefined
   })()
 
-  // console.log(currentLanguage)
-
   useEffect(() => {
     // Run automatic selection logic based on current state
     if (allLanguages == null || loading) return
