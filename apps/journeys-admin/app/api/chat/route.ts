@@ -67,7 +67,8 @@ export async function POST(req: NextRequest) {
   const client = createApolloClient(token.split(' ')[1])
 
   const systemPrompt = await langfuse.getPrompt(
-    'ai-chat-system-prompt',
+    //'ai-chat-system-prompt',
+    'system/api/chat/route',
     undefined,
     {
       label: langfuseEnvironment,
