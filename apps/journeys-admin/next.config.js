@@ -15,6 +15,10 @@ const nextConfig = {
   i18n,
   images: {
     remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**'
+      },
       { protocol: 'http', hostname: 'localhost' },
       { protocol: 'https', hostname: 'unsplash.com' },
       { protocol: 'https', hostname: 'images.unsplash.com' },
