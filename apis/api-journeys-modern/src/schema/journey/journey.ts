@@ -4,6 +4,7 @@ import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 import { Language } from '../language'
 
+import { Action, journeyAcl } from './journey.acl'
 import { getSimpleJourney, updateSimpleJourney } from './simple'
 
 // Define JourneyStatus enum to match api-journeys
@@ -85,8 +86,23 @@ builder.mutationField('journeySimpleUpdate', (t) =>
       id: t.arg({ type: 'ID', required: true }),
       journey: t.arg({ type: 'Json', required: true })
     },
-    resolve: async (_parent, { id, journey }) => {
-      // 1. Validate input
+    resolve: async (_parent, { id, journey }, context) => {
+      // 1. Fetch journey with ACL info
+      const dbJourney = await prisma.journey.findUnique({
+        where: { id },
+        include: {
+          userJourneys: true,
+          team: { include: { userTeams: true } }
+        }
+      })
+      if (!dbJourney) throw new Error('Journey not found')
+
+      // 2. Check ACL
+      if (!journeyAcl(Action.Update, dbJourney, context.user)) {
+        throw new Error('You do not have permission to update this journey')
+      }
+
+      // 3. Validate input
       const result = journeySimpleSchema.safeParse(journey)
       if (!result.success) {
         throw new Error(
@@ -95,10 +111,10 @@ builder.mutationField('journeySimpleUpdate', (t) =>
         )
       }
 
-      // 2. Update journey and blocks using the service
+      // 4. Update journey and blocks using the service
       await updateSimpleJourney(id, result.data)
 
-      // 3. Return the updated journey in simple format
+      // 5. Return the updated journey in simple format
       return getSimpleJourney(id)
     }
   })
