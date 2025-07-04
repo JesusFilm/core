@@ -48,10 +48,18 @@ export const journeySimpleCardSchema = z.object({
     .string()
     .optional()
     .describe('A URL for an image to display in the card.'),
+  imageAlt: z
+    .string()
+    .optional()
+    .describe('Alt text for the image for accessibility.'),
   backgroundImage: z
     .string()
     .optional()
     .describe('A URL for a background image for the card.'),
+  backgroundImageAlt: z
+    .string()
+    .optional()
+    .describe('Alt text for the background image for accessibility.'),
   nextCard: z
     .number()
     .int()

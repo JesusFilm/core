@@ -97,7 +97,8 @@ export async function updateSimpleJourney(
           typename: 'ImageBlock',
           parentBlockId: cardBlockId,
           parentOrder: parentOrder++,
-          src: card.image
+          src: card.image,
+          alt: card.imageAlt ?? ''
         }
       })
     }
@@ -159,7 +160,8 @@ export async function updateSimpleJourney(
           journeyId,
           typename: 'ImageBlock',
           src: card.backgroundImage,
-          parentBlockId: cardBlockId
+          parentBlockId: cardBlockId,
+          alt: card.backgroundImageAlt ?? ''
         }
       })
       await prisma.block.update({
