@@ -45,7 +45,11 @@ export const journeySimpleImageSchema = z.object({
     .int()
     .positive()
     .optional()
-    .describe('Height of the image in pixels.')
+    .describe('Height of the image in pixels.'),
+  blurHash: z
+    .string()
+    .optional()
+    .describe('A compact representation of a placeholder for the image.')
 })
 export type JourneySimpleImage = z.infer<typeof journeySimpleImageSchema>
 
