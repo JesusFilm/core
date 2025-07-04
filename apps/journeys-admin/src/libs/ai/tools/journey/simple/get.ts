@@ -1,43 +1,15 @@
-import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
+import { ApolloClient, NormalizedCacheObject, gql } from '@apollo/client'
 import { Tool, tool } from 'ai'
 import { z } from 'zod'
 import { zodToJsonSchema } from 'zod-to-json-schema'
 
-import {
-  JourneySimple,
-  journeySimpleSchema
-} from '@core/shared/ai/journeySimpleTypes'
+import { journeySimpleSchema } from '@core/shared/ai/journeySimpleTypes'
 
 import { ToolOptions } from '../..'
-
-// Example stubbed journey data (top-level)
-const stubbedJourney: JourneySimple = {
-  title: 'Sample Journey',
-  description: 'A sample journey for demonstration purposes.',
-  cards: [
-    {
-      heading: 'Welcome',
-      text: 'This is the first card.',
-      button: { text: 'Continue', nextCard: 1 },
-      poll: [
-        { text: 'Option 1', nextCard: 2 },
-        { text: 'Option 2', nextCard: 3 }
-      ],
-      image: 'https://example.com/image.jpg',
-      backgroundImage: 'https://example.com/bg.jpg',
-      nextCard: 1
-    },
-    {
-      heading: 'Second Card',
-      text: 'This is the second card.',
-      nextCard: 2
-    },
-    {
-      heading: 'Third Card',
-      text: 'This is the third card.'
-    }
-  ]
-}
+import {
+  JourneySimpleGet,
+  JourneySimpleGetVariables
+} from '../../../../../../__generated__/JourneySimpleGet'
 
 /**
  * Helper to generate a JSON schema description from a Zod schema
@@ -47,9 +19,16 @@ function getSchemaDescription(schema: typeof journeySimpleSchema): string {
   return JSON.stringify(jsonSchema, null, 2)
 }
 
+// GraphQL query declaration
+export const JOURNEY_SIMPLE_GET = gql`
+  query JourneySimpleGet($id: ID!) {
+    journeySimpleGet(id: $id)
+  }
+`
+
 // Tool factory function for the AI tools system
 export function journeySimpleGet(
-  _client: ApolloClient<NormalizedCacheObject>,
+  client: ApolloClient<NormalizedCacheObject>,
   _options: ToolOptions
 ): Tool {
   return tool({
@@ -61,11 +40,19 @@ export function journeySimpleGet(
       journeyId: z.string().describe('The ID of the journey to fetch.')
     }),
     execute: async ({ journeyId }) => {
-      // Validate the stubbed data before returning
-      const result = journeySimpleSchema.safeParse(stubbedJourney)
+      // Call the real backend GraphQL query
+      const { data } = await client.query<
+        JourneySimpleGet,
+        JourneySimpleGetVariables
+      >({
+        query: JOURNEY_SIMPLE_GET,
+        variables: { id: journeyId }
+      })
+      // Validate the returned data with the Zod schema
+      const result = journeySimpleSchema.safeParse(data.journeySimpleGet)
       if (!result.success) {
         throw new Error(
-          'Stubbed journey data is invalid: ' +
+          'Returned journey is invalid: ' +
             JSON.stringify(result.error.format())
         )
       }
