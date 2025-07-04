@@ -74,6 +74,7 @@ const UPDATE_ADMIN_VIDEO_VARIANT = graphql(`
   mutation UpdateAdminVideoVariant($input: VideoVariantUpdateInput!) {
     videoVariantUpdate(input: $input) {
       id
+      published
     }
   }
 `)
@@ -108,6 +109,9 @@ export default function VariantDialog({
       onCompleted: () => {
         enqueueSnackbar('Variant updated', { variant: 'success' })
         resetForm({ values })
+        router.push(`/videos/${videoId}/audio`, {
+          scroll: false
+        })
       },
       onError: () => {
         enqueueSnackbar('Error updating variant', { variant: 'error' })
