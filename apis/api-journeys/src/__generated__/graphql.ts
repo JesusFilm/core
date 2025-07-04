@@ -1490,6 +1490,7 @@ export type Mutation = {
   journeyProfileUpdate: JourneyProfile;
   /** Sets journey status to published */
   journeyPublish?: Maybe<Journey>;
+  journeySimpleUpdate?: Maybe<Scalars['Json']['output']>;
   /** Updates template */
   journeyTemplate: Journey;
   journeyThemeCreate: JourneyTheme;
@@ -1981,6 +1982,12 @@ export type MutationJourneyProfileUpdateArgs = {
 
 export type MutationJourneyPublishArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationJourneySimpleUpdateArgs = {
+  id: Scalars['ID']['input'];
+  journey: Scalars['Json']['input'];
 };
 
 
