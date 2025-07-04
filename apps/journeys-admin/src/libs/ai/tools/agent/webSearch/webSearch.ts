@@ -39,18 +39,28 @@ export function agentWebSearch(
 ): Tool {
   return tool({
     parameters: z.object({
-      prompt: z
+      searchQuery: z
         .string()
         .describe(
           'The query to search the web for. Will find a number of websites to scrape.'
+        ),
+      prompt: z
+        .string()
+        .describe(
+          'The prompt to use to scrape the website. Should direct the agent on what elements to focus on.'
         )
     }),
-    execute: async ({ prompt }) => {
+    execute: async ({ searchQuery, prompt }) => {
       const app = new FirecrawlApp({ apiKey: process.env.FIRECRAWL_API_KEY })
 
-      const searchResult = await app.search(prompt, {
-        limit: 5
+      console.log('Searching the web for:', searchQuery)
+
+      const searchResult = await app.search(searchQuery, {
+        limit: 1,
+        maxAge: 3600000 // 1 hour in milliseconds
       })
+
+      console.log('searchResult.data', searchResult.data)
 
       if (!searchResult.success) {
         throw new Error(`Failed to search: ${searchResult.error}`)
@@ -61,13 +71,14 @@ export function agentWebSearch(
       }
 
       const extractResult = await app.extract(
-        searchResult.data.map(({ url }) => url),
+        [`${searchResult.data[0].url.replace(/\/$/, '')}/*`],
         {
-          limit: 5,
-          maxAge: 3600000, // 1 hour in milliseconds
+          prompt,
           schema
         }
       )
+
+      console.log('extractResult.data', extractResult.data)
 
       if (!extractResult.success) {
         throw new Error(`Failed to extract: ${extractResult.error}`)
