@@ -80,7 +80,7 @@ export function ThemePreview({
     >
       <Box
         sx={{
-          p: 10,
+          p: { xs: 0, sm: 10 },
           width: '100%',
           background: 'linear-gradient(to bottom, #E6E7F180 0%, #B2B4C280 100%)'
         }}
@@ -90,7 +90,8 @@ export function ThemePreview({
             pt: 17,
             pb: 15,
             px: 10,
-            borderRadius: 3
+            borderRadius: 3,
+            width: 390
           }}
         >
           <Formik

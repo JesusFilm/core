@@ -45,79 +45,79 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
   }, [dispatch, id])
 
   return (
-    <Box
-      data-testid="TypographyProperties"
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-        position: 'relative'
-      }}
-    >
-      <Box>
-        <Accordion
-          id={`${id}-typography-variant`}
-          icon={<Type2Icon />}
-          name={t('Text Variant')}
-          value={capitalize(
-            lowerCase(variant?.toString() ?? 'body2').replace('h', 'header')
-          )}
-        >
-          <Variant />
-        </Accordion>
-
-        <Accordion
-          id={`${id}-typography-color`}
-          icon={<ColorDisplayIcon color={color} />}
-          name={t('Color')}
-          value={capitalize(color?.toString() ?? 'primary')}
-        >
-          <Color />
-        </Accordion>
-
-        <Accordion
-          id={`${id}-typography-alignment`}
-          icon={<AlignLeftIcon />}
-          name={t('Text Alignment')}
-          value={capitalize(align?.toString() ?? 'Left')}
-        >
-          <Align />
-        </Accordion>
-      </Box>
-
-      <Stack
+    <>
+      <Box
+        data-testid="TypographyProperties"
         sx={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          padding: 2,
-          backgroundColor: 'background.default',
-          height: 64,
-          justifyContent: 'center'
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%'
         }}
       >
-        <Button
-          color="primary"
+        <Box>
+          <Accordion
+            id={`${id}-typography-variant`}
+            icon={<Type2Icon />}
+            name={t('Text Variant')}
+            value={capitalize(
+              lowerCase(variant?.toString() ?? 'body2').replace('h', 'header')
+            )}
+          >
+            <Variant />
+          </Accordion>
+
+          <Accordion
+            id={`${id}-typography-color`}
+            icon={<ColorDisplayIcon color={color} />}
+            name={t('Color')}
+            value={capitalize(color?.toString() ?? 'primary')}
+          >
+            <Color />
+          </Accordion>
+
+          <Accordion
+            id={`${id}-typography-alignment`}
+            icon={<AlignLeftIcon />}
+            name={t('Text Alignment')}
+            value={capitalize(align?.toString() ?? 'Left')}
+          >
+            <Align />
+          </Accordion>
+        </Box>
+
+        <Box sx={{ flexGrow: 1 }} />
+
+        <Stack
           sx={{
-            width: '100%',
-            justifyContent: 'center',
-            color: '#B42318'
+            backgroundColor: 'background.default',
+            height: 64,
+            justifyContent: 'center'
           }}
-          startIcon={<Type1Icon sx={{ color: '#B42318' }} />}
-          onClick={() => setOpenThemeBuilderDialog(true)}
         >
-          <MuiTypography variant="subtitle2">
-            {t('Edit Font Theme')}
-          </MuiTypography>
-        </Button>
-      </Stack>
+          <Button
+            color="primary"
+            sx={{
+              p: 4,
+              width: '100%',
+              justifyContent: 'center',
+              color: '#B42318',
+              borderRadius: 0
+            }}
+            startIcon={<Type1Icon sx={{ color: '#B42318' }} />}
+            onClick={() => setOpenThemeBuilderDialog(true)}
+          >
+            <MuiTypography variant="subtitle2">
+              {t('Edit Font Theme')}
+            </MuiTypography>
+          </Button>
+        </Stack>
+      </Box>
       {openThemeBuilderDialog && (
         <ThemeBuilderDialog
           open={openThemeBuilderDialog}
           onClose={() => setOpenThemeBuilderDialog(false)}
         />
       )}
-    </Box>
+    </>
   )
 }
