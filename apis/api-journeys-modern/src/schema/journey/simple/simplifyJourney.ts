@@ -14,8 +14,13 @@ export function simplifyJourney(
   )
 
   const cards = stepBlocks.map((stepBlock) => {
-    const childBlocks = journey.blocks.filter(
+    const cardBlock = journey.blocks.filter(
       (block) => block.parentBlockId === stepBlock.id
+    )[0]
+    if (!cardBlock) throw new Error('Card block not found')
+
+    const childBlocks = journey.blocks.filter(
+      (block) => block.parentBlockId === cardBlock.id
     )
 
     const card: JourneySimpleCard = {}
