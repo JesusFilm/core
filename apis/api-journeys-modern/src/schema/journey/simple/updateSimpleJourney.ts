@@ -24,13 +24,24 @@ export async function updateSimpleJourney(
   // Array of { id: stepBlockId, cardId: cardBlockId }
   const stepBlocks: { id: string; cardId: string }[] = []
 
+  // Grid layout constants
+  const CARD_SPACING_X = 400
+  const CARD_SPACING_Y = 300
+
   // 1. Create StepBlocks and CardBlocks
   for (let i = 0; i < simple.cards.length; i++) {
+    const row = i % 3
+    const col = Math.floor(i / 3)
+    const x = col * CARD_SPACING_X
+    const y = row * CARD_SPACING_Y
+
     const stepBlock = await prisma.block.create({
       data: {
         journeyId,
         typename: 'StepBlock',
-        parentOrder: i
+        parentOrder: i,
+        x,
+        y
       }
     })
 
