@@ -107,7 +107,6 @@ describe('CardCta', () => {
           content: "Let's Connect",
           variant: TypographyVariant.h6,
           settings: {
-            __typename: 'TypographyBlockSettings',
             color: null
           }
         },
@@ -120,7 +119,6 @@ describe('CardCta', () => {
           content: "From 'hello' to heartfelt conversations",
           variant: TypographyVariant.h3,
           settings: {
-            __typename: 'TypographyBlockSettings',
             color: null
           }
         },

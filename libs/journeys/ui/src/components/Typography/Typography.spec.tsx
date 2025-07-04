@@ -19,8 +19,7 @@ const block: TreeBlock<TypographyFields> = {
   variant: TypographyVariant.h3,
   color: TypographyColor.primary,
   align: TypographyAlign.left,
-  children: []
-,
+  children: [],
   settings: {
     __typename: 'TypographyBlockSettings',
     color: null

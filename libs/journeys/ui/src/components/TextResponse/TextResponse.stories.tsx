@@ -42,8 +42,7 @@ const typographyProps: ComponentProps<typeof Typography> = {
   color: null,
   variant: TypographyVariant.h3,
   content: 'Some block above',
-  children: []
-,
+  children: [],
   settings: {
     __typename: 'TypographyBlockSettings',
     color: null

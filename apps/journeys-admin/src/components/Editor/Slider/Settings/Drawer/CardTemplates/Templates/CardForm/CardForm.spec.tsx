@@ -106,7 +106,6 @@ describe('CardForm', () => {
           content: 'Prayer Request',
           variant: TypographyVariant.h6,
           settings: {
-            __typename: 'TypographyBlockSettings',
             color: null
           }
         },
@@ -119,7 +118,6 @@ describe('CardForm', () => {
           content: 'How can we pray for you?',
           variant: TypographyVariant.h1,
           settings: {
-            __typename: 'TypographyBlockSettings',
             color: null
           }
         },
@@ -166,7 +164,6 @@ describe('CardForm', () => {
           variant: TypographyVariant.caption,
           color: TypographyColor.secondary,
           settings: {
-            __typename: 'TypographyBlockSettings',
             color: null
           }
         },

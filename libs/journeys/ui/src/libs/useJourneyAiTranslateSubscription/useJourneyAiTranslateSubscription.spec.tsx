@@ -27,13 +27,12 @@ const translatedJourney = {
     {
       id: 'block-1',
       __typename: 'TypographyBlock',
-      content: 'Contenido traducido'
-    ,
-  settings: {
-    __typename: 'TypographyBlockSettings',
-    color: null
-  }
-},
+      content: 'Contenido traducido',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
+    },
     {
       id: 'block-2',
       __typename: 'ButtonBlock',

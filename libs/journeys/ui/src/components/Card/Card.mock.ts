@@ -134,13 +134,12 @@ export const block: TreeBlock<CardBlock> = {
       color: null,
       content: 'How did we get here?',
       variant: null,
-      children: []
-    ,
-  settings: {
-    __typename: 'TypographyBlockSettings',
-    color: null
-  }
-}
+      children: [],
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
+    }
   ]
 }
 

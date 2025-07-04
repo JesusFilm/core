@@ -101,7 +101,6 @@ describe('CardPoll', () => {
           color: null,
           variant: TypographyVariant.h6,
           settings: {
-            __typename: 'TypographyBlockSettings',
             color: null
           }
         },
@@ -114,7 +113,6 @@ describe('CardPoll', () => {
           content: "Which of Jesus' teachings challenges you the most?",
           variant: TypographyVariant.h2,
           settings: {
-            __typename: 'TypographyBlockSettings',
             color: null
           }
         },
@@ -156,7 +154,6 @@ describe('CardPoll', () => {
           variant: TypographyVariant.caption,
           color: TypographyColor.secondary,
           settings: {
-            __typename: 'TypographyBlockSettings',
             color: null
           }
         },

@@ -100,7 +100,6 @@ const cardQuoteCreateMock: MockedResponse<
         align: null,
         color: null,
         settings: {
-          __typename: 'TypographyBlockSettings',
           color: null
         }
       },
@@ -114,7 +113,6 @@ const cardQuoteCreateMock: MockedResponse<
         align: null,
         color: null,
         settings: {
-          __typename: 'TypographyBlockSettings',
           color: null
         }
       },
@@ -127,7 +125,6 @@ const cardQuoteCreateMock: MockedResponse<
         align: null,
         color: TypographyColor.secondary,
         settings: {
-          __typename: 'TypographyBlockSettings',
           color: null
         }
       },

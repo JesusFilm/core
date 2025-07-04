@@ -31,8 +31,7 @@ const typographyProps: ComponentProps<typeof Typography> = {
   color: null,
   variant: TypographyVariant.h3,
   content: 'How can we help you know more about Jesus?',
-  children: []
-,
+  children: [],
   settings: {
     __typename: 'TypographyBlockSettings',
     color: null

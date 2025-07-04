@@ -91,7 +91,6 @@ describe('CardIntro', () => {
           content: 'Interactive Video',
           variant: TypographyVariant.h6,
           settings: {
-            __typename: 'TypographyBlockSettings',
             color: null
           }
         },
@@ -104,7 +103,6 @@ describe('CardIntro', () => {
           content: "Jesus: History's Most Influential Figure?",
           variant: TypographyVariant.h1,
           settings: {
-            __typename: 'TypographyBlockSettings',
             color: null
           }
         },
@@ -118,7 +116,6 @@ describe('CardIntro', () => {
             'Journey through time, from dusty roads to modern cities, to understand the lasting impact and relevance of Jesus.',
           variant: TypographyVariant.body1,
           settings: {
-            __typename: 'TypographyBlockSettings',
             color: null
           }
         },
