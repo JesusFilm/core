@@ -25,11 +25,43 @@ jest.mock('fscreen', () => ({
   }
 }))
 
+jest.mock('../../../../../libs/cookieHandler', () => ({
+  setCookie: jest.fn(),
+  getCookie: jest.fn()
+}))
+
+const mockDispatch = jest.fn()
+jest.mock('../../../../../libs/watchContext', () => ({
+  ...jest.requireActual('../../../../../libs/watchContext'),
+  useWatch: jest.fn(() => ({
+    state: {
+      siteLanguage: 'en',
+      audioLanguage: '529',
+      subtitleLanguage: '529',
+      subtitleOn: false
+    },
+    dispatch: mockDispatch
+  }))
+}))
+
+const mockSetCookie = jest.mocked(
+  require('../../../../../libs/cookieHandler').setCookie
+)
+const mockGetCookie = jest.mocked(
+  require('../../../../../libs/cookieHandler').getCookie
+)
+
 describe('VideoControls', () => {
   let player
 
   beforeEach(() => {
     jest.clearAllMocks()
+    mockSetCookie.mockClear()
+    mockGetCookie.mockClear()
+    mockDispatch.mockClear()
+
+    // Set default return value for getCookie
+    mockGetCookie.mockReturnValue('en')
 
     const video = document.createElement('video')
     document.body.appendChild(video)
@@ -166,5 +198,32 @@ describe('VideoControls', () => {
     )
   })
 
-  // TODO: Subtitle Dialog click
+  it('sets cookie, dispatches action, and opens dialog when subtitle button is clicked', async () => {
+    const { getByTestId, getByRole } = render(
+      <MockedProvider>
+        <VideoProvider value={{ content: videos[0] }}>
+          <VideoControls player={player} />
+        </VideoProvider>
+      </MockedProvider>
+    )
+
+    // Click the subtitle button (SubtitlesOutlined icon) - using same pattern as other tests
+    fireEvent.click(getByTestId('SubtitlesOutlinedIcon'))
+
+    // Verify cookie was set
+    expect(mockSetCookie).toHaveBeenCalledWith('SUBTITLES_ON', 'true')
+
+    // Verify dispatch was called with correct action
+    expect(mockDispatch).toHaveBeenCalledWith({
+      type: 'UpdateSubtitlesOn',
+      enabled: true
+    })
+
+    // Verify dialog opens
+    await waitFor(() =>
+      expect(
+        getByRole('dialog', { name: 'Language Settings' })
+      ).toBeInTheDocument()
+    )
+  })
 })

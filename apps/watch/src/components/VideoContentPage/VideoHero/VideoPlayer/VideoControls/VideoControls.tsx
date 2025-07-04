@@ -26,7 +26,9 @@ import Player from 'video.js/dist/types/player'
 import { isMobile } from '@core/shared/ui/deviceUtils'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
+import { setCookie } from '../../../../../libs/cookieHandler'
 import { useVideo } from '../../../../../libs/videoContext'
+import { useWatch } from '../../../../../libs/watchContext'
 import { AudioLanguageButton } from '../../../AudioLanguageButton'
 
 const DynamicLanguageSwitchDialog = dynamic<{
@@ -91,6 +93,7 @@ export function VideoControls({
   })
   const durationSeconds = Math.round(player.duration() ?? 1)
   const { id, title, variant } = useVideo()
+  const { dispatch } = useWatch()
   const visible = !play || active || loading
 
   useEffect(() => {
@@ -298,6 +301,13 @@ export function VideoControls({
   }
 
   function handleClick(): void {
+    // Set subtitles on when opening language dialog
+    dispatch({
+      type: 'UpdateSubtitlesOn',
+      enabled: true
+    })
+    setCookie('SUBTITLES_ON', 'true')
+
     setOpenLanguageSwitchDialog(true)
     setLoadLanguageSwitchDialog(true)
   }

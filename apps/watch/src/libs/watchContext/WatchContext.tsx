@@ -289,7 +289,6 @@ export const reducer = (state: WatchState, action: WatchAction): WatchState => {
       const newAudioLanguage = selectedLangObj?.id ?? state.audioLanguage
       const newSubtitleLanguage = selectedLangObj?.id ?? state.subtitleLanguage
 
-      // Pure state update - no side effects
       return {
         ...state,
         loading: true,
@@ -301,7 +300,6 @@ export const reducer = (state: WatchState, action: WatchAction): WatchState => {
     case 'UpdateAudioLanguage': {
       const newAudioLanguage = action.languageId
 
-      // Pure state update - no side effects
       return {
         ...state,
         loading: true,
@@ -312,7 +310,6 @@ export const reducer = (state: WatchState, action: WatchAction): WatchState => {
     case 'UpdateSubtitleLanguage': {
       const newSubtitleLanguage = action.languageId
 
-      // Pure state update - no side effects
       return {
         ...state,
         subtitleLanguage: newSubtitleLanguage
@@ -321,7 +318,6 @@ export const reducer = (state: WatchState, action: WatchAction): WatchState => {
     case 'UpdateSubtitlesOn': {
       const newSubtitlesOn = action.enabled
 
-      // Pure state update - no side effects
       return {
         ...state,
         subtitleOn: newSubtitlesOn
