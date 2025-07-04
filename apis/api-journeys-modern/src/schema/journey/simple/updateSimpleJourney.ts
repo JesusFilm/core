@@ -21,8 +21,10 @@ export async function updateSimpleJourney(
     }
   })
 
-  const stepBlockIds: string[] = []
+  // Array of { id: stepBlockId, cardId: cardBlockId }
+  const stepBlocks: { id: string; cardId: string }[] = []
 
+  // 1. Create StepBlocks and CardBlocks
   for (let i = 0; i < simple.cards.length; i++) {
     const stepBlock = await prisma.block.create({
       data: {
@@ -31,12 +33,24 @@ export async function updateSimpleJourney(
         parentOrder: i
       }
     })
-    stepBlockIds.push(stepBlock.id)
+
+    // Create CardBlock as child of StepBlock
+    const cardBlock = await prisma.block.create({
+      data: {
+        journeyId,
+        typename: 'CardBlock',
+        parentBlockId: stepBlock.id,
+        parentOrder: 0 // always first child
+      }
+    })
+
+    stepBlocks.push({ id: stepBlock.id, cardId: cardBlock.id })
   }
 
+  // 2. For each card, create content blocks as children of CardBlock
   for (let i = 0; i < simple.cards.length; i++) {
     const card = simple.cards[i]
-    const stepBlockId = stepBlockIds[i]
+    const { id: stepBlockId, cardId: cardBlockId } = stepBlocks[i]
     let parentOrder = 0
 
     if (card.heading) {
@@ -44,7 +58,7 @@ export async function updateSimpleJourney(
         data: {
           journeyId,
           typename: 'TypographyBlock',
-          parentBlockId: stepBlockId,
+          parentBlockId: cardBlockId,
           parentOrder: parentOrder++,
           content: card.heading,
           variant: 'h3'
@@ -57,7 +71,7 @@ export async function updateSimpleJourney(
         data: {
           journeyId,
           typename: 'TypographyBlock',
-          parentBlockId: stepBlockId,
+          parentBlockId: cardBlockId,
           parentOrder: parentOrder++,
           content: card.text,
           variant: 'body1'
@@ -70,7 +84,7 @@ export async function updateSimpleJourney(
         data: {
           journeyId,
           typename: 'ImageBlock',
-          parentBlockId: stepBlockId,
+          parentBlockId: cardBlockId,
           parentOrder: parentOrder++,
           src: card.image
         }
@@ -82,7 +96,7 @@ export async function updateSimpleJourney(
         data: {
           journeyId,
           typename: 'RadioQuestionBlock',
-          parentBlockId: stepBlockId,
+          parentBlockId: cardBlockId,
           parentOrder: parentOrder++
         }
       })
@@ -99,7 +113,7 @@ export async function updateSimpleJourney(
               option.nextCard !== undefined
                 ? {
                     create: {
-                      blockId: stepBlockIds[option.nextCard]
+                      blockId: stepBlocks[option.nextCard].id
                     }
                   }
                 : undefined
@@ -113,14 +127,14 @@ export async function updateSimpleJourney(
         data: {
           journeyId,
           typename: 'ButtonBlock',
-          parentBlockId: stepBlockId,
+          parentBlockId: cardBlockId,
           parentOrder: parentOrder++,
           label: card.button.text,
           action:
             card.button.nextCard !== undefined
               ? {
                   create: {
-                    blockId: stepBlockIds[card.button.nextCard]
+                    blockId: stepBlocks[card.button.nextCard].id
                   }
                 }
               : undefined
@@ -133,11 +147,12 @@ export async function updateSimpleJourney(
         data: {
           journeyId,
           typename: 'ImageBlock',
-          src: card.backgroundImage
+          src: card.backgroundImage,
+          parentBlockId: cardBlockId
         }
       })
       await prisma.block.update({
-        where: { id: stepBlockId },
+        where: { id: cardBlockId },
         data: { coverBlockId: bgImage.id }
       })
     }
@@ -145,7 +160,7 @@ export async function updateSimpleJourney(
     if (card.nextCard !== undefined) {
       await prisma.block.update({
         where: { id: stepBlockId },
-        data: { nextBlockId: stepBlockIds[card.nextCard] }
+        data: { nextBlockId: stepBlocks[card.nextCard].id }
       })
     }
   }
