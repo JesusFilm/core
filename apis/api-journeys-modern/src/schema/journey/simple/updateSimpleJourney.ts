@@ -99,8 +99,8 @@ export async function updateSimpleJourney(
           parentOrder: parentOrder++,
           src: card.image.src,
           alt: card.image.alt,
-          width: card.image.width ?? 0,
-          height: card.image.height ?? 0,
+          width: card.image.width ?? 1,
+          height: card.image.height ?? 1,
           blurhash: card.image.blurHash ?? ''
         }
       })
@@ -165,8 +165,8 @@ export async function updateSimpleJourney(
           src: card.backgroundImage.src,
           alt: card.backgroundImage.alt,
           parentBlockId: cardBlockId,
-          width: card.backgroundImage.width ?? 0,
-          height: card.backgroundImage.height ?? 0,
+          width: card.backgroundImage.width ?? 1,
+          height: card.backgroundImage.height ?? 1,
           blurhash: card.backgroundImage.blurHash ?? ''
         }
       })
