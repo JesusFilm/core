@@ -32,13 +32,12 @@ export const Default = {
   args: {
     selectedBlock: {
       __typename: 'TypographyBlock',
-      id: 'typographyBlock.id'
-    ,
-  settings: {
-    __typename: 'TypographyBlockSettings',
-    color: null
-  }
-}
+      id: 'typographyBlock.id',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
+    }
   }
 }
 

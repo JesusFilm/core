@@ -40,8 +40,7 @@ const block: TreeBlock<TypographyBlock> = {
   color: null,
   content: '',
   variant: null,
-  children: []
-,
+  children: [],
   settings: {
     __typename: 'TypographyBlockSettings',
     color: null
@@ -79,13 +78,12 @@ export const Filled = {
     color: TypographyColor.error,
     content: 'Text goes here',
     variant: TypographyVariant.overline,
-    children: []
-  ,
-  settings: {
-    __typename: 'TypographyBlockSettings',
-    color: null
+    children: [],
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    }
   }
-}
 }
 
 export default Demo

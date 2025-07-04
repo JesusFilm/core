@@ -26,13 +26,12 @@ describe('updatedSelected', () => {
     variant: TypographyVariant.h1,
     color: TypographyColor.primary,
     align: TypographyAlign.center,
-    children: []
-  ,
-  settings: {
-    __typename: 'TypographyBlockSettings',
-    color: null
+    children: [],
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    }
   }
-}
   const block1: TreeBlock<TypographyBlock> = {
     ...selectedBlock,
     id: 'typography1.id',

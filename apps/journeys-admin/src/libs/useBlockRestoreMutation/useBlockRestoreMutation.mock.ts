@@ -78,8 +78,7 @@ const selectedBlock: TreeBlock<TypographyBlock> = {
   variant: TypographyVariant.h1,
   color: TypographyColor.primary,
   align: TypographyAlign.center,
-  children: []
-,
+  children: [],
   settings: {
     __typename: 'TypographyBlockSettings',
     color: null

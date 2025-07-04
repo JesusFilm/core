@@ -181,13 +181,12 @@ export function CardQuote(): ReactElement {
       color: null,
       content: t('The Bible Says:'),
       variant: TypographyVariant.h6,
-      __typename: 'TypographyBlock'
-    ,
-  settings: {
-    __typename: 'TypographyBlockSettings',
-    color: null
-  }
-} satisfies TypographyBlock
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
+    } satisfies TypographyBlock
 
     const title = {
       id: uuidv4(),
@@ -199,13 +198,12 @@ export function CardQuote(): ReactElement {
         'Blessed are the peacemakers, for they shall be called sons of God.'
       ),
       variant: TypographyVariant.h3,
-      __typename: 'TypographyBlock'
-    ,
-  settings: {
-    __typename: 'TypographyBlockSettings',
-    color: null
-  }
-} satisfies TypographyBlock
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
+    } satisfies TypographyBlock
 
     const body = {
       id: uuidv4(),
@@ -215,13 +213,12 @@ export function CardQuote(): ReactElement {
       color: TypographyColor.secondary,
       content: t('– Jesus Christ'),
       variant: TypographyVariant.body1,
-      __typename: 'TypographyBlock'
-    ,
-  settings: {
-    __typename: 'TypographyBlockSettings',
-    color: null
-  }
-} satisfies TypographyBlock
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
+    } satisfies TypographyBlock
 
     const cardBlock = {
       id: cardId,

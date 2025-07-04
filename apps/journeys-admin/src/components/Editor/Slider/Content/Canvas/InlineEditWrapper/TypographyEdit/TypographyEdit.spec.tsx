@@ -30,13 +30,12 @@ describe('TypographyEdit', () => {
     content: 'test content',
     align: null,
     color: null,
-    children: []
-  ,
-  settings: {
-    __typename: 'TypographyBlockSettings',
-    color: null
+    children: [],
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    }
   }
-}
 
   const mockUpdateSuccess1 = {
     request: {
@@ -52,13 +51,12 @@ describe('TypographyEdit', () => {
           {
             __typename: 'TypographyBlock',
             id: 'typography.id',
-            content: 'test'
-          ,
-  settings: {
-    __typename: 'TypographyBlockSettings',
-    color: null
-  }
-}
+            content: 'test',
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
+          }
         ]
       }
     }))
@@ -78,13 +76,12 @@ describe('TypographyEdit', () => {
           {
             __typename: 'TypographyBlock',
             id: 'typography.id',
-            content: 'test content'
-          ,
-  settings: {
-    __typename: 'TypographyBlockSettings',
-    color: null
-  }
-}
+            content: 'test content',
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
+          }
         ]
       }
     }))

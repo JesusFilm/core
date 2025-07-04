@@ -270,13 +270,12 @@ export function CardForm(): ReactElement {
       color: null,
       content: t('Prayer Request'),
       variant: TypographyVariant.h6,
-      __typename: 'TypographyBlock'
-    ,
-  settings: {
-    __typename: 'TypographyBlockSettings',
-    color: null
-  }
-} satisfies TypographyBlock
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
+    } satisfies TypographyBlock
 
     const title = {
       id: uuidv4(),
@@ -286,13 +285,12 @@ export function CardForm(): ReactElement {
       color: null,
       content: t('How can we pray for you?'),
       variant: TypographyVariant.h1,
-      __typename: 'TypographyBlock'
-    ,
-  settings: {
-    __typename: 'TypographyBlockSettings',
-    color: null
-  }
-} satisfies TypographyBlock
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
+    } satisfies TypographyBlock
 
     const textResponseBlock = {
       id: uuidv4(),
@@ -334,13 +332,12 @@ export function CardForm(): ReactElement {
         "Each day, we pray for those in our city. We'd be grateful to include your personal needs."
       ),
       variant: TypographyVariant.caption,
-      __typename: 'TypographyBlock'
-    ,
-  settings: {
-    __typename: 'TypographyBlockSettings',
-    color: null
-  }
-} satisfies TypographyBlock
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
+    } satisfies TypographyBlock
 
     const cardBlock = {
       id: cardId,

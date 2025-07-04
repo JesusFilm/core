@@ -80,13 +80,12 @@ describe('NewTypographyButton', () => {
     content: '',
     variant: TypographyVariant.h1,
     __typename: 'TypographyBlock',
-    children: []
-  ,
-  settings: {
-    __typename: 'TypographyBlockSettings',
-    color: null
+    children: [],
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    }
   }
-}
 
   it('should check if the mutation gets called', async () => {
     const result = jest.fn(() => ({
@@ -369,13 +368,12 @@ describe('NewTypographyButton', () => {
           color: null,
           content: '',
           variant: null,
-          __typename: 'TypographyBlock'
-        ,
-  settings: {
-    __typename: 'TypographyBlockSettings',
-    color: null
-  }
-}
+          __typename: 'TypographyBlock',
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          }
+        }
       }
     }))
     const { getByRole } = render(

@@ -17,8 +17,7 @@ const typography1: TreeBlock<TypographyBlock> = {
   color: null,
   content: 'title',
   variant: TypographyVariant.body1,
-  children: []
-,
+  children: [],
   settings: {
     __typename: 'TypographyBlockSettings',
     color: null
@@ -34,8 +33,7 @@ const typography2: TreeBlock<TypographyBlock> = {
   color: null,
   content: 'subtitle content',
   variant: TypographyVariant.h1,
-  children: []
-,
+  children: [],
   settings: {
     __typename: 'TypographyBlockSettings',
     color: null

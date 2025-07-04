@@ -32,8 +32,7 @@ const heading: TreeBlock<TypographyFields> = {
   color: null,
   content: 'Question',
   variant: TypographyVariant.h3,
-  children: []
-,
+  children: [],
   settings: {
     __typename: 'TypographyBlockSettings',
     color: null
@@ -49,8 +48,7 @@ const description: TreeBlock<TypographyFields> = {
   color: null,
   content: 'Description',
   variant: TypographyVariant.body2,
-  children: []
-,
+  children: [],
   settings: {
     __typename: 'TypographyBlockSettings',
     color: null

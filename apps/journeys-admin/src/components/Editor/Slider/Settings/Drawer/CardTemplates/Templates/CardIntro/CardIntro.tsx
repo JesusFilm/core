@@ -202,13 +202,12 @@ export function CardIntro(): ReactElement {
       color: null,
       content: t('Interactive Video'),
       variant: TypographyVariant.h6,
-      __typename: 'TypographyBlock'
-    ,
-  settings: {
-    __typename: 'TypographyBlockSettings',
-    color: null
-  }
-} satisfies TypographyBlock
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
+    } satisfies TypographyBlock
 
     const title = {
       id: uuidv4(),
@@ -218,13 +217,12 @@ export function CardIntro(): ReactElement {
       color: null,
       content: t("Jesus: History's Most Influential Figure?"),
       variant: TypographyVariant.h1,
-      __typename: 'TypographyBlock'
-    ,
-  settings: {
-    __typename: 'TypographyBlockSettings',
-    color: null
-  }
-} satisfies TypographyBlock
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
+    } satisfies TypographyBlock
 
     const body = {
       id: uuidv4(),
@@ -236,13 +234,12 @@ export function CardIntro(): ReactElement {
         'Journey through time, from dusty roads to modern cities, to understand the lasting impact and relevance of Jesus.'
       ),
       variant: TypographyVariant.body1,
-      __typename: 'TypographyBlock'
-    ,
-  settings: {
-    __typename: 'TypographyBlockSettings',
-    color: null
-  }
-} satisfies TypographyBlock
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
+    } satisfies TypographyBlock
 
     const buttonBlock = {
       id: uuidv4(),
