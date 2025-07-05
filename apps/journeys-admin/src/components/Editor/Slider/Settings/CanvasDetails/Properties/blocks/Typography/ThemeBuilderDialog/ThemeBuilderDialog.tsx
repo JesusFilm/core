@@ -2,6 +2,8 @@ import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
+import { Theme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTranslation } from 'next-i18next'
 import { enqueueSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
@@ -58,6 +60,7 @@ export function ThemeBuilderDialog({
   onClose
 }: ThemeBuilderDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { journey } = useJourney()
 
   const [updateJourneyFonts, { loading }] = useMutation<
@@ -173,6 +176,7 @@ export function ThemeBuilderDialog({
       open={open}
       onClose={onClose}
       loading={loading || createLoading}
+      fullscreen={!smUp}
       sx={{
         '& .MuiDialog-paper': {
           maxWidth: '100%',
@@ -211,7 +215,7 @@ export function ThemeBuilderDialog({
       >
         <Box
           sx={{
-            width: 380
+            width: { xs: '100%', sm: 380 }
           }}
         >
           <ThemeSettings
@@ -225,7 +229,7 @@ export function ThemeBuilderDialog({
         </Box>
         <Box
           sx={{
-            width: 476
+            width: { xs: '100%', sm: 476 }
           }}
         >
           <ThemePreview

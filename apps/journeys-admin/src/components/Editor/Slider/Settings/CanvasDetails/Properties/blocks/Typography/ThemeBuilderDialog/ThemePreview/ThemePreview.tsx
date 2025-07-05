@@ -41,13 +41,6 @@ export function ThemePreview({
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
-  const {
-    state: { selectedStep }
-  } = useEditor()
-
-  const currentCard = selectedStep?.children.find(
-    (child) => child.__typename === 'CardBlock'
-  )
 
   const textResponseBlock: TreeBlock<TextResponseFields> = {
     __typename: 'TextResponseBlock',
@@ -68,7 +61,7 @@ export function ThemePreview({
   return (
     <ThemeProvider
       themeName={ThemeName.base}
-      themeMode={currentCard?.themeMode ?? ThemeMode.light}
+      themeMode={ThemeMode.light}
       rtl={rtl}
       locale={locale}
       nested
@@ -91,16 +84,16 @@ export function ThemePreview({
             pb: 15,
             px: 10,
             borderRadius: 3,
-            width: 390
+            width: { xs: '100%', sm: 390 }
           }}
         >
           <Formik
             initialValues={{ [textResponseBlock.id]: '' }}
             onSubmit={() => {}}
           >
-            <Stack direction="column" spacing={6}>
-              <Stack direction="column" spacing={4}>
-                <Stack direction="column" spacing={4} sx={{ width: '100%' }}>
+            <Stack spacing={6}>
+              <Stack spacing={4}>
+                <Stack spacing={4} sx={{ width: '100%' }}>
                   <Typography
                     {...{
                       __typename: 'TypographyBlock',
@@ -128,7 +121,7 @@ export function ThemePreview({
                     }}
                   />
                 </Stack>
-                <Stack direction="column" spacing={2} sx={{ width: '100%' }}>
+                <Stack spacing={2} sx={{ width: '100%' }}>
                   <Typography
                     {...{
                       __typename: 'TypographyBlock',
@@ -161,7 +154,7 @@ export function ThemePreview({
                   />
                 </Stack>
               </Stack>
-              <Stack direction="column" spacing={6}>
+              <Stack spacing={6}>
                 <Button
                   {...{
                     __typename: 'ButtonBlock',
