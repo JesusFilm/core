@@ -183,22 +183,6 @@ export function ThemeBuilderDialog({
     }
   }
 
-  const dialogActionChildren = (
-    <Stack direction="row" justifyContent="space-between" width="100%">
-      <Button variant="outlined" color="secondary" onClick={onClose}>
-        {t('Cancel')}
-      </Button>
-      <Button
-        loading={loading || createLoading}
-        variant="contained"
-        color="primary"
-        onClick={handleSubmit}
-      >
-        {t('Confirm')}
-      </Button>
-    </Stack>
-  )
-
   return (
     <Dialog
       open={open}
@@ -215,7 +199,21 @@ export function ThemeBuilderDialog({
         title: t('Select Fonts'),
         closeButton: true
       }}
-      dialogActionChildren={dialogActionChildren}
+      dialogActionChildren={
+        <Stack direction="row" justifyContent="space-between" width="100%">
+          <Button variant="outlined" color="secondary" onClick={onClose}>
+            {t('Cancel')}
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSubmit}
+            disabled={loading || createLoading}
+          >
+            {t('Confirm')}
+          </Button>
+        </Stack>
+      }
     >
       <FontLoader fonts={[headerFont, bodyFont, labelFont]} />
       <Stack

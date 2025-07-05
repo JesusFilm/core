@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider/EditorProvider'
@@ -82,5 +82,19 @@ describe('Typography properties', () => {
     expect(
       getByText('selectedAttributeId: typography1.id-typography-variant')
     ).toBeInTheDocument()
+  })
+
+  it('should open theme builder dialog', async () => {
+    const { getByRole } = render(
+      <MockedProvider>
+        <EditorProvider>
+          <Typography {...block} />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button', { name: 'Edit Font Theme' }))
+    await waitFor(() => {
+      expect(getByRole('dialog', { name: 'Select Fonts' })).toBeInTheDocument()
+    })
   })
 })
