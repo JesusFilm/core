@@ -75,6 +75,7 @@ export function ThemePreview({
         sx={{
           p: { xs: 0, sm: 10 },
           width: '100%',
+          borderRadius: { xs: 3, sm: 0 },
           background: 'linear-gradient(to bottom, #E6E7F180 0%, #B2B4C280 100%)'
         }}
       >
@@ -84,7 +85,8 @@ export function ThemePreview({
             pb: 15,
             px: 10,
             borderRadius: 3,
-            width: { xs: '100%', sm: 390 }
+            width: { xs: '100%', sm: 390 },
+            backgroundColor: (theme) => theme.palette.background.default + '80'
           }}
         >
           <Formik

@@ -229,7 +229,8 @@ export function ThemeBuilderDialog({
         </Box>
         <Box
           sx={{
-            width: { xs: '100%', sm: 476 }
+            width: { xs: '100%', sm: 476 },
+            pb: { xs: 6, sm: 0 }
           }}
         >
           <ThemePreview
