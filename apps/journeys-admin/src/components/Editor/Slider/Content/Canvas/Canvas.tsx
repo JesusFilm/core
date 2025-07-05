@@ -1,8 +1,9 @@
 import { keyframes } from '@emotion/react'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
+import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
-import { type ReactElement, useEffect, useRef, useState } from 'react'
+import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react'
 import { CSSTransition, TransitionGroup } from 'react-transition-group'
 
 import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
@@ -20,7 +21,7 @@ import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
+import { FontFamilies, ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { Hotkeys } from '../../../Hotkeys'
 
@@ -139,6 +140,17 @@ export function Canvas(): ReactElement {
   const theme =
     selectedStep != null ? getStepTheme(selectedStep, journey) : null
 
+  const journeyTheme = journey?.journeyTheme
+  const fontFamilies = useMemo(() => {
+    if (journeyTheme == null) return
+
+    return {
+      headerFont: journeyTheme?.headerFont ?? '',
+      bodyFont: journeyTheme?.bodyFont ?? '',
+      labelFont: journeyTheme?.labelFont ?? ''
+    }
+  }, [journeyTheme])
+
   return (
     <Stack
       ref={containerRef}
@@ -216,10 +228,16 @@ export function Canvas(): ReactElement {
               dir={rtl ? 'rtl' : 'ltr'}
               // frameRef assists to see if user is copying text from typog blocks
               ref={frameRef}
+              fontFamilies={fontFamilies}
               scrolling="no"
             >
               {({ document }) => (
-                <ThemeProvider {...theme} rtl={rtl} locale={locale}>
+                <ThemeProvider
+                  {...theme}
+                  rtl={rtl}
+                  locale={locale}
+                  fontFamilies={fontFamilies}
+                >
                   <Hotkeys document={document} />
                   <TransitionGroup
                     component={Box}

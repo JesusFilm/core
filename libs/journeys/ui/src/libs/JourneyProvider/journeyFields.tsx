@@ -100,5 +100,11 @@ export const JOURNEY_FIELDS = gql`
     menuStepBlock {
       ...StepFields
     }
+    journeyTheme {
+      id
+      headerFont
+      bodyFont
+      labelFont
+    }
   }
 `
