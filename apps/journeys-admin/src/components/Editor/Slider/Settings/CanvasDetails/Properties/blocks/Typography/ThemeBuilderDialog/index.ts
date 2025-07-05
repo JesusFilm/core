@@ -1,1 +1,1 @@
-export { ThemeBuilderDialog, FontFamily } from './ThemeBuilderDialog'
+export { ThemeBuilderDialog } from './ThemeBuilderDialog'

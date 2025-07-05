@@ -1,1 +1,1 @@
-export { ThemeSettings } from './ThemeSettings'
+export { ThemeSettings, FontFamily } from './ThemeSettings'

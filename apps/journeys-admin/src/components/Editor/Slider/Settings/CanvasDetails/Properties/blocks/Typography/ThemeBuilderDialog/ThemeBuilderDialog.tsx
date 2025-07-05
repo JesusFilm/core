@@ -53,21 +53,6 @@ export const JOURNEY_FONTS_CREATE = gql`
   }
 `
 
-export enum FontFamily {
-  Montserrat = 'Montserrat',
-  Inter = 'Inter',
-  Oswald = 'Oswald',
-  PlayfairDisplay = 'Playfair Display',
-  Georgia = 'Georgia',
-  CormorantGaramond = 'Cormorant Garamond',
-  NotoSans = 'Noto Sans',
-  BerkshireSwash = 'Berkshire Swash',
-  Cinzel = 'Cinzel',
-  Baloo = 'Baloo 2',
-  Nunito = 'Nunito',
-  Raleway = 'Raleway'
-}
-
 export function ThemeBuilderDialog({
   open,
   onClose

@@ -6,9 +6,22 @@ import Header1Icon from '@core/shared/ui/icons/Header1'
 import Type2Icon from '@core/shared/ui/icons/Type2'
 import Type3Icon from '@core/shared/ui/icons/Type3'
 
-import { FontFamily } from '../ThemeBuilderDialog'
-
 import { FontSelect } from './FontSelect'
+
+export enum FontFamily {
+  Montserrat = 'Montserrat',
+  Inter = 'Inter',
+  Oswald = 'Oswald',
+  PlayfairDisplay = 'Playfair Display',
+  Georgia = 'Georgia',
+  CormorantGaramond = 'Cormorant Garamond',
+  NotoSans = 'Noto Sans',
+  BerkshireSwash = 'Berkshire Swash',
+  Cinzel = 'Cinzel',
+  Baloo = 'Baloo 2',
+  Nunito = 'Nunito',
+  Raleway = 'Raleway'
+}
 
 interface ThemeSettingsProps {
   onHeaderFontChange: (font: string) => void
