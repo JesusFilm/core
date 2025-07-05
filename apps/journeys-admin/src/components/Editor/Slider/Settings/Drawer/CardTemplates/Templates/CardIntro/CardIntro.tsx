@@ -269,8 +269,7 @@ export function CardIntro(): ReactElement {
       ...buttonBlock,
       startIconId: startIconBlock.id,
       endIconId: endIconBlock.id,
-      submitEnabled: null,
-      settings: null
+      submitEnabled: null
     } satisfies ButtonBlock
 
     const videoBlock = {
