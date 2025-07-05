@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { TextResponseBlockCreateInput, ButtonBlockCreateInput, IconBlockCreateInput, ButtonBlockUpdateInput, TextResponseType, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor } from "./globalTypes";
+import { TextResponseBlockCreateInput, ButtonBlockCreateInput, IconBlockCreateInput, ButtonBlockUpdateInput, TextResponseType, ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, IconName, IconSize, IconColor } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: TextResponseWithButtonCreate
@@ -47,6 +47,14 @@ export interface TextResponseWithButtonCreate_button_action_EmailAction {
 
 export type TextResponseWithButtonCreate_button_action = TextResponseWithButtonCreate_button_action_NavigateToBlockAction | TextResponseWithButtonCreate_button_action_LinkAction | TextResponseWithButtonCreate_button_action_EmailAction;
 
+export interface TextResponseWithButtonCreate_button_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface TextResponseWithButtonCreate_button {
   __typename: "ButtonBlock";
   id: string;
@@ -60,6 +68,7 @@ export interface TextResponseWithButtonCreate_button {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: TextResponseWithButtonCreate_button_action | null;
+  settings: TextResponseWithButtonCreate_button_settings | null;
 }
 
 export interface TextResponseWithButtonCreate_startIcon {
@@ -105,6 +114,14 @@ export interface TextResponseWithButtonCreate_buttonUpdate_action_EmailAction {
 
 export type TextResponseWithButtonCreate_buttonUpdate_action = TextResponseWithButtonCreate_buttonUpdate_action_NavigateToBlockAction | TextResponseWithButtonCreate_buttonUpdate_action_LinkAction | TextResponseWithButtonCreate_buttonUpdate_action_EmailAction;
 
+export interface TextResponseWithButtonCreate_buttonUpdate_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface TextResponseWithButtonCreate_buttonUpdate {
   __typename: "ButtonBlock";
   id: string;
@@ -118,6 +135,7 @@ export interface TextResponseWithButtonCreate_buttonUpdate {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: TextResponseWithButtonCreate_buttonUpdate_action | null;
+  settings: TextResponseWithButtonCreate_buttonUpdate_settings | null;
 }
 
 export interface TextResponseWithButtonCreate {

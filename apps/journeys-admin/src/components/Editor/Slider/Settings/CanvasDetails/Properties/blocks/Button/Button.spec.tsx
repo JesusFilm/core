@@ -6,6 +6,7 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider/EditorProvider'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/BlockFields'
 import {
+  ButtonAlignment,
   ButtonColor,
   ButtonSize,
   ButtonVariant,
@@ -31,6 +32,10 @@ describe('Button attributes', () => {
     endIconId: null,
     submitEnabled: null,
     action: null,
+    settings: {
+      __typename: 'ButtonBlockSettings',
+      alignment: ButtonAlignment.justify
+    },
     children: []
   }
 

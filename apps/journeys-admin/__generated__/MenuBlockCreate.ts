@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { StepBlockCreateInput, CardBlockCreateInput, TypographyBlockCreateInput, ButtonBlockCreateInput, JourneyUpdateInput, ThemeMode, ThemeName, TypographyAlign, TypographyColor, TypographyVariant, ButtonVariant, ButtonColor, ButtonSize } from "./globalTypes";
+import { StepBlockCreateInput, CardBlockCreateInput, TypographyBlockCreateInput, ButtonBlockCreateInput, JourneyUpdateInput, ThemeMode, ThemeName, TypographyAlign, TypographyColor, TypographyVariant, ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: MenuBlockCreate
@@ -126,6 +126,14 @@ export interface MenuBlockCreate_button1_action_EmailAction {
 
 export type MenuBlockCreate_button1_action = MenuBlockCreate_button1_action_NavigateToBlockAction | MenuBlockCreate_button1_action_LinkAction | MenuBlockCreate_button1_action_EmailAction;
 
+export interface MenuBlockCreate_button1_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface MenuBlockCreate_button1 {
   __typename: "ButtonBlock";
   id: string;
@@ -139,6 +147,7 @@ export interface MenuBlockCreate_button1 {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: MenuBlockCreate_button1_action | null;
+  settings: MenuBlockCreate_button1_settings | null;
 }
 
 export interface MenuBlockCreate_button2_action_NavigateToBlockAction {
@@ -164,6 +173,14 @@ export interface MenuBlockCreate_button2_action_EmailAction {
 
 export type MenuBlockCreate_button2_action = MenuBlockCreate_button2_action_NavigateToBlockAction | MenuBlockCreate_button2_action_LinkAction | MenuBlockCreate_button2_action_EmailAction;
 
+export interface MenuBlockCreate_button2_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface MenuBlockCreate_button2 {
   __typename: "ButtonBlock";
   id: string;
@@ -177,6 +194,7 @@ export interface MenuBlockCreate_button2 {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: MenuBlockCreate_button2_action | null;
+  settings: MenuBlockCreate_button2_settings | null;
 }
 
 export interface MenuBlockCreate_button3_action_NavigateToBlockAction {
@@ -202,6 +220,14 @@ export interface MenuBlockCreate_button3_action_EmailAction {
 
 export type MenuBlockCreate_button3_action = MenuBlockCreate_button3_action_NavigateToBlockAction | MenuBlockCreate_button3_action_LinkAction | MenuBlockCreate_button3_action_EmailAction;
 
+export interface MenuBlockCreate_button3_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface MenuBlockCreate_button3 {
   __typename: "ButtonBlock";
   id: string;
@@ -215,6 +241,7 @@ export interface MenuBlockCreate_button3 {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: MenuBlockCreate_button3_action | null;
+  settings: MenuBlockCreate_button3_settings | null;
 }
 
 export interface MenuBlockCreate_journeyUpdate_menuStepBlock {

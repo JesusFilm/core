@@ -56,6 +56,7 @@ export const textResponseWithButtonRestoreMock: MockedResponse<
           endIconId: 'endIcon.id',
           action: null,
           submitEnabled: true,
+          settings: null,
           __typename: 'ButtonBlock'
         }
       ],

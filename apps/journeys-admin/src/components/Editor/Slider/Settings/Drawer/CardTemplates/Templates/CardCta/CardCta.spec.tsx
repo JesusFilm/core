@@ -246,6 +246,7 @@ describe('CardCta', () => {
           endIconId: null,
           submitEnabled: null,
           action: null,
+          settings: null,
           __typename: 'ButtonBlock'
         },
         startIcon1: {
@@ -278,6 +279,7 @@ describe('CardCta', () => {
           endIconId: 'endIcon1Id',
           submitEnabled: null,
           action: null,
+          settings: null,
           __typename: 'ButtonBlock'
         },
         button2: {
@@ -292,6 +294,7 @@ describe('CardCta', () => {
           endIconId: null,
           submitEnabled: null,
           action: null,
+          settings: null,
           __typename: 'ButtonBlock'
         },
         startIcon2: {
@@ -324,6 +327,7 @@ describe('CardCta', () => {
           endIconId: 'endIcon2Id',
           submitEnabled: null,
           action: null,
+          settings: null,
           __typename: 'ButtonBlock'
         },
         button3: {
@@ -338,6 +342,7 @@ describe('CardCta', () => {
           endIconId: null,
           submitEnabled: null,
           action: null,
+          settings: null,
           __typename: 'ButtonBlock'
         },
         startIcon3: {
@@ -370,6 +375,7 @@ describe('CardCta', () => {
           endIconId: 'endIcon3Id',
           submitEnabled: null,
           action: null,
+          settings: null,
           __typename: 'ButtonBlock'
         },
         cardBlockUpdate: {

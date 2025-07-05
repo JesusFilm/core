@@ -32,7 +32,8 @@ describe('Button variant selector', () => {
     endIconId: null,
     submitEnabled: null,
     action: null,
-    children: []
+    children: [],
+    settings: null
   }
 
   const variantUpdateMock = {

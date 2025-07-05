@@ -32,7 +32,8 @@ describe('Button size selector', () => {
     endIconId: null,
     submitEnabled: null,
     action: null,
-    children: []
+    children: [],
+    settings: null
   }
 
   const sizeUpdateMock = {

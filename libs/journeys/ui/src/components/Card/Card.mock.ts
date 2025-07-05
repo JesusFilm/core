@@ -191,7 +191,8 @@ export const buttonBlock: TreeBlock<ButtonFields> = {
   endIconId: null,
   action: action,
   submitEnabled: null,
-  children: []
+  children: [],
+  settings: null
 }
 
 export const videoBlock: TreeBlock<VideoFields> = {

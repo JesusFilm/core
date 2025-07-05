@@ -40,7 +40,8 @@ const button1: TreeBlock<ButtonBlock> = {
   endIconId: null,
   submitEnabled: null,
   action: null,
-  children: []
+  children: [],
+  settings: null
 }
 
 const image: TreeBlock<ImageBlock> = {

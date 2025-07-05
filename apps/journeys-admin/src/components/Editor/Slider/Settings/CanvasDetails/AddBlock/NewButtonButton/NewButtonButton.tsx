@@ -16,6 +16,7 @@ import {
 } from '../../../../../../../../__generated__/BlockFields'
 import { ButtonBlockCreate } from '../../../../../../../../__generated__/ButtonBlockCreate'
 import {
+  ButtonAlignment,
   ButtonColor,
   ButtonSize,
   ButtonVariant
@@ -91,7 +92,11 @@ export function NewButtonButton(): ReactElement {
       startIconId: uuidv4(),
       endIconId: uuidv4(),
       action: null,
-      submitEnabled: shouldBeSubmitButton
+      submitEnabled: shouldBeSubmitButton,
+      settings: {
+        __typename: 'ButtonBlockSettings',
+        alignment: ButtonAlignment.justify
+      }
     }
 
     addBlock({
@@ -107,7 +112,10 @@ export function NewButtonButton(): ReactElement {
               variant: button.buttonVariant,
               color: button.buttonColor,
               size: button.size,
-              submitEnabled: shouldBeSubmitButton
+              submitEnabled: shouldBeSubmitButton,
+              settings: {
+                alignment: ButtonAlignment.justify
+              }
             },
             iconBlockCreateInput1: {
               id: button.startIconId,

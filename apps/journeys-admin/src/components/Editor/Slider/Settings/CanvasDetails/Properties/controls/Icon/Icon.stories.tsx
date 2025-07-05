@@ -47,7 +47,8 @@ export const Default: StoryObj<typeof Icon> = {
           iconColor: null,
           children: []
         }
-      ]
+      ],
+      settings: null
     }
 
     return (
@@ -90,7 +91,8 @@ export const Filled: StoryObj<typeof Icon> = {
           iconColor: IconColor.primary,
           children: []
         }
-      ]
+      ],
+      settings: null
     }
 
     return (

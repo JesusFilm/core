@@ -131,7 +131,8 @@ const block: TreeBlock<StepFields> = {
       endIconId: null,
       submitEnabled: null,
       action: null,
-      children: []
+      children: [],
+      settings: null
     },
     {
       __typename: 'ButtonBlock',
@@ -146,7 +147,8 @@ const block: TreeBlock<StepFields> = {
       endIconId: null,
       submitEnabled: null,
       action: null,
-      children: []
+      children: [],
+      settings: null
     }
   ]
 }

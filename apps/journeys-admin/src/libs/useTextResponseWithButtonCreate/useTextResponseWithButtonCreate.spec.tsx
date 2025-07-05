@@ -7,6 +7,7 @@ import type {
   BlockFields_TextResponseBlock as TextResponseBlock
 } from '../../../__generated__/BlockFields'
 import {
+  ButtonAlignment,
   ButtonColor,
   ButtonSize,
   ButtonVariant
@@ -43,6 +44,10 @@ describe('useTextResponseWithButtonCreate', () => {
       endIconId: 'endIcon.id',
       action: null,
       submitEnabled: true,
+      settings: {
+        __typename: 'ButtonBlockSettings',
+        alignment: ButtonAlignment.justify
+      },
       __typename: 'ButtonBlock' as const
     } satisfies ButtonBlock
   }

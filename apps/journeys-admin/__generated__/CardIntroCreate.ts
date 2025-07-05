@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { TypographyBlockCreateInput, ButtonBlockCreateInput, ButtonBlockUpdateInput, IconBlockCreateInput, VideoBlockCreateInput, TypographyAlign, TypographyColor, TypographyVariant, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { TypographyBlockCreateInput, ButtonBlockCreateInput, ButtonBlockUpdateInput, IconBlockCreateInput, VideoBlockCreateInput, TypographyAlign, TypographyColor, TypographyVariant, ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, IconName, IconSize, IconColor, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardIntroCreate
@@ -65,6 +65,14 @@ export interface CardIntroCreate_button_action_EmailAction {
 
 export type CardIntroCreate_button_action = CardIntroCreate_button_action_NavigateToBlockAction | CardIntroCreate_button_action_LinkAction | CardIntroCreate_button_action_EmailAction;
 
+export interface CardIntroCreate_button_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardIntroCreate_button {
   __typename: "ButtonBlock";
   id: string;
@@ -78,6 +86,7 @@ export interface CardIntroCreate_button {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardIntroCreate_button_action | null;
+  settings: CardIntroCreate_button_settings | null;
 }
 
 export interface CardIntroCreate_startIcon {
@@ -123,6 +132,14 @@ export interface CardIntroCreate_buttonBlockUpdate_action_EmailAction {
 
 export type CardIntroCreate_buttonBlockUpdate_action = CardIntroCreate_buttonBlockUpdate_action_NavigateToBlockAction | CardIntroCreate_buttonBlockUpdate_action_LinkAction | CardIntroCreate_buttonBlockUpdate_action_EmailAction;
 
+export interface CardIntroCreate_buttonBlockUpdate_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardIntroCreate_buttonBlockUpdate {
   __typename: "ButtonBlock";
   id: string;
@@ -136,6 +153,7 @@ export interface CardIntroCreate_buttonBlockUpdate {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardIntroCreate_buttonBlockUpdate_action | null;
+  settings: CardIntroCreate_buttonBlockUpdate_settings | null;
 }
 
 export interface CardIntroCreate_video_mediaVideo_Video_title {

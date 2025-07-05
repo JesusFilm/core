@@ -31,7 +31,8 @@ const button: TreeBlock<ButtonBlock> = {
     gtmEventName: 'responseAction',
     blockId: 'step1.id'
   },
-  children: []
+  children: [],
+  settings: null
 }
 
 const card: TreeBlock<CardBlock> = {

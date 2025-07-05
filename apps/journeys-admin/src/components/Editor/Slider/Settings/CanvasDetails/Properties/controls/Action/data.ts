@@ -86,7 +86,8 @@ export const steps: Array<TreeBlock<StepBlock>> = [
               gtmEventName: 'gtmEventName',
               blockId: 'step1.id'
             },
-            children: []
+            children: [],
+            settings: null
           }
         ]
       }
@@ -168,7 +169,8 @@ export const steps: Array<TreeBlock<StepBlock>> = [
               gtmEventName: 'gtmEventName',
               url: 'https://www.google.com'
             },
-            children: []
+            children: [],
+            settings: null
           },
           {
             __typename: 'ButtonBlock',
@@ -188,7 +190,8 @@ export const steps: Array<TreeBlock<StepBlock>> = [
               gtmEventName: 'gtmEventName',
               email: 'imissedmondshen@gmail.com'
             },
-            children: []
+            children: [],
+            settings: null
           }
         ]
       }
@@ -371,7 +374,8 @@ export const steps: Array<TreeBlock<StepBlock>> = [
               gtmEventName: 'gtmEventName',
               blockId: 'step4.id'
             },
-            children: []
+            children: [],
+            settings: null
           },
           {
             id: 'typographyBlockId2',
@@ -512,7 +516,8 @@ export const steps: Array<TreeBlock<StepBlock>> = [
               gtmEventName: 'gtmEventName',
               blockId: 'step0.id'
             },
-            children: []
+            children: [],
+            settings: null
           }
         ]
       }

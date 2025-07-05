@@ -127,7 +127,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 iconSize: IconSize.md,
                 children: []
               }
-            ]
+            ],
+            settings: null
           }
         ]
       }
@@ -220,7 +221,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 iconSize: IconSize.md,
                 children: []
               }
-            ]
+            ],
+            settings: null
           }
         ]
       }
@@ -633,7 +635,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 iconSize: IconSize.md,
                 children: []
               }
-            ]
+            ],
+            settings: null
           }
         ]
       }

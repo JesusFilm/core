@@ -80,7 +80,8 @@ export const journey: Journey = {
         parentBlockId: 'button1.id',
         gtmEventName: null,
         url: 'https://www.google.com/'
-      }
+      },
+      settings: null
     },
     {
       __typename: 'StepBlock',

@@ -6,12 +6,14 @@ import { ReactElement, useEffect } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
+import AlignLeft from '@core/shared/ui/icons/AlignLeft'
 import LinkIcon from '@core/shared/ui/icons/Link'
 import SpaceHorizontalIcon from '@core/shared/ui/icons/SpaceHorizontal'
 import TransformIcon from '@core/shared/ui/icons/Transform'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/BlockFields'
 import {
+  ButtonAlignment,
   ButtonColor,
   ButtonSize,
   ButtonVariant
@@ -23,6 +25,7 @@ import { getAction } from '../../controls/Action/utils/actions'
 import { ColorDisplayIcon } from '../../controls/ColorDisplayIcon'
 import { Icon, icons } from '../../controls/Icon'
 
+import { Alignment } from './Alignment'
 import { Color } from './Color'
 import { Size } from './Size'
 import { Variant } from './Variant'
@@ -35,7 +38,8 @@ export function Button({
   startIconId,
   endIconId,
   action,
-  children
+  children,
+  settings
 }: TreeBlock<ButtonBlock>): ReactElement {
   const { dispatch } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
@@ -69,15 +73,6 @@ export function Button({
       </Accordion>
 
       <Accordion
-        id={`${id}-button-variant`}
-        icon={<TransformIcon />}
-        name={t('Variant')}
-        value={capitalize(buttonVariant?.toString() ?? ButtonVariant.contained)}
-      >
-        <Variant />
-      </Accordion>
-
-      <Accordion
         id={`${id}-button-color`}
         icon={<ColorDisplayIcon color={buttonColor} />}
         name={t('Color')}
@@ -93,6 +88,26 @@ export function Button({
         value={capitalize(size?.toString() ?? ButtonSize.medium)}
       >
         <Size />
+      </Accordion>
+
+      <Accordion
+        id={`${id}-button-alignment`}
+        icon={<AlignLeft />}
+        name={t('Alignment')}
+        value={capitalize(
+          settings?.alignment?.toString() ?? ButtonAlignment.justify
+        )}
+      >
+        <Alignment />
+      </Accordion>
+
+      <Accordion
+        id={`${id}-button-variant`}
+        icon={<TransformIcon />}
+        name={t('Variant')}
+        value={capitalize(buttonVariant?.toString() ?? ButtonVariant.contained)}
+      >
+        <Variant />
       </Accordion>
 
       <Accordion

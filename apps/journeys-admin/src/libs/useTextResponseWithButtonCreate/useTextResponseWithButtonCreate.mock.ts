@@ -1,6 +1,7 @@
 import { MockedResponse } from '@apollo/client/testing'
 
 import {
+  ButtonAlignment,
   ButtonColor,
   ButtonSize,
   ButtonVariant
@@ -33,7 +34,10 @@ export const textResponseWithButtonCreateMock: MockedResponse<
         variant: ButtonVariant.contained,
         color: ButtonColor.primary,
         size: ButtonSize.medium,
-        submitEnabled: true
+        submitEnabled: true,
+        settings: {
+          alignment: ButtonAlignment.justify
+        }
       },
       iconInput1: {
         id: 'startIcon.id',
@@ -83,6 +87,10 @@ export const textResponseWithButtonCreateMock: MockedResponse<
         endIconId: null,
         action: null,
         submitEnabled: true,
+        settings: {
+          __typename: 'ButtonBlockSettings',
+          alignment: ButtonAlignment.justify
+        },
         __typename: 'ButtonBlock'
       },
       startIcon: {
@@ -115,6 +123,10 @@ export const textResponseWithButtonCreateMock: MockedResponse<
         endIconId: 'endIcon.id',
         action: null,
         submitEnabled: true,
+        settings: {
+          __typename: 'ButtonBlockSettings',
+          alignment: ButtonAlignment.justify
+        },
         __typename: 'ButtonBlock'
       }
     }

@@ -31,7 +31,8 @@ const button: TreeBlock<ButtonBlock> = {
   endIconId: null,
   submitEnabled: null,
   action: buttonAction,
-  children: []
+  children: [],
+  settings: null
 }
 
 const RadioOption1: TreeBlock<RadioOptionFields> = {

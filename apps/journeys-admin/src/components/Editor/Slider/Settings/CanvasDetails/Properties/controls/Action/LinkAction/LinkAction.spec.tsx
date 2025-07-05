@@ -40,7 +40,8 @@ describe('LinkAction', () => {
       gtmEventName: 'gtmEventName',
       url: 'https://www.google.com'
     },
-    children: []
+    children: [],
+    settings: null
   }
 
   it('displays the action url', async () => {
