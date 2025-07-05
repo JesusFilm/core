@@ -68,7 +68,8 @@ describe('SelectableWrapper', () => {
       gtmEventName: 'gtmEventName',
       url: 'https://www.google.com'
     },
-    children: []
+    children: [],
+    settings: null
   }
 
   const imageBlock: TreeBlock<ImageFields> = {

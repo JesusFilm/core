@@ -24,7 +24,8 @@ const buttonBase = {
   startIconId: null,
   endIconId: null,
   submitEnabled: null,
-  action: null
+  action: null,
+  settings: null
 }
 
 export const mockMenuStep: TreeBlock<Step & { x: number; y: number }> = {

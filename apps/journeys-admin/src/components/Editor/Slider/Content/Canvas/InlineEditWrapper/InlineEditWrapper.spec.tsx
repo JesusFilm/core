@@ -111,7 +111,8 @@ describe('InlineEditWrapper', () => {
       endIconId: null,
       submitEnabled: null,
       action: null,
-      children: []
+      children: [],
+      settings: null
     }
 
     const { getByDisplayValue, getByText, getByTestId } = render(
