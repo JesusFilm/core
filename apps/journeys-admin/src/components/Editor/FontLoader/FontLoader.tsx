@@ -28,11 +28,14 @@ export function FontLoader({ fonts }: FontLoaderProps): null {
         WebFont.load({
           google: {
             families: fontFamilies
+          },
+          fontinactive: (familyName, fvd) => {
+            throw new Error(`Font inactive: ${familyName} (${fvd})`)
           }
         })
       })
       .catch((error) => {
-        console.error('Failed to load web fonts:', error)
+        console.error(error)
       })
   }, [fontFamilies])
 
