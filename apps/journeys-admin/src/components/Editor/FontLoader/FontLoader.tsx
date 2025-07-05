@@ -4,7 +4,7 @@ interface FontLoaderProps {
   fonts: string[]
 }
 
-export function FontLoader({ fonts }: FontLoaderProps): null {
+export function FontLoader({ fonts }: FontLoaderProps): void {
   function getSortedUniqueFonts(fonts: string[]): string[] {
     return [...new Set(fonts.filter((font) => font !== ''))].sort()
   }
@@ -36,5 +36,5 @@ export function FontLoader({ fonts }: FontLoaderProps): null {
       })
   }, [fontFamilies])
 
-  return null
+  return
 }
