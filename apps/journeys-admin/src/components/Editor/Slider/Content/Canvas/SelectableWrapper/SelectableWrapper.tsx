@@ -128,7 +128,8 @@ export function SelectableWrapper({
           sx: {
             borderRadius,
             outline: '2px solid',
-            outlineColor: selectedBlock?.id === block.id ? '#C52D3A' : 'transparent',
+            outlineColor:
+              selectedBlock?.id === block.id ? '#C52D3A' : 'transparent',
             outlineOffset: '5px',
             transition: (theme) => theme.transitions.create('outline-color'),
             zIndex: selectedBlock?.id === block.id ? 1 : 0,

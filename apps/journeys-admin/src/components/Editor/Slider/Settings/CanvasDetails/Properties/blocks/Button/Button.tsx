@@ -94,7 +94,9 @@ export function Button({
         id={`${id}-button-alignment`}
         icon={<AlignLeft />}
         name={t('Alignment')}
-        value={capitalize(settings?.alignment?.toString() ?? ButtonAlignment.justify)}
+        value={capitalize(
+          settings?.alignment?.toString() ?? ButtonAlignment.justify
+        )}
       >
         <Alignment />
       </Accordion>

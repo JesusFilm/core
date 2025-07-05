@@ -106,7 +106,7 @@ export function NewTextResponseButton(): ReactElement {
         action: null,
         submitEnabled: true,
         settings: {
-          __typename: 'ButtonBlockSettings',  
+          __typename: 'ButtonBlockSettings',
           alignment: ButtonAlignment.justify
         }
       }
