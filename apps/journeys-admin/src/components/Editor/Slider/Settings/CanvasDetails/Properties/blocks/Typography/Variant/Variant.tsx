@@ -8,7 +8,6 @@ import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
-import DashIcon from '@core/shared/ui/icons/Dash'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../../__generated__/BlockFields'
@@ -112,64 +111,59 @@ export function Variant(): ReactElement {
         <Typography variant={TypographyVariant.caption}>
           {t('Small Body')}
         </Typography>
-      ),
-      icon: <DashIcon />
+      )
     },
     {
       value: TypographyVariant.body2,
       label: withJourneyTheme(
-        <Typography variant={TypographyVariant.body2}>{t('Normal Body')}</Typography>
-      ),
-      icon: <DashIcon />
+        <Typography variant={TypographyVariant.body2}>
+          {t('Normal Body')}
+        </Typography>
+      )
     },
     {
       value: TypographyVariant.body1,
       label: withJourneyTheme(
-        <Typography variant={TypographyVariant.body1}>{t('Large Body')}</Typography>
-      ),
-      icon: <DashIcon />
+        <Typography variant={TypographyVariant.body1}>
+          {t('Large Body')}
+        </Typography>
+      )
     },
     {
       value: TypographyVariant.h6,
       label: withJourneyTheme(
         <Typography variant={TypographyVariant.h6}>{t('HEADING 4')}</Typography>
-      ),
-      icon: <DashIcon />
+      )
     },
     {
       value: TypographyVariant.h5,
       label: withJourneyTheme(
         <Typography variant={TypographyVariant.h5}>{t('Heading 3')}</Typography>
-      ),
-      icon: <DashIcon />
+      )
     },
     {
       value: TypographyVariant.h4,
       label: withJourneyTheme(
         <Typography variant={TypographyVariant.h4}>{t('Heading 2')}</Typography>
-      ),
-      icon: <DashIcon />
+      )
     },
     {
       value: TypographyVariant.h3,
       label: withJourneyTheme(
         <Typography variant={TypographyVariant.h3}>{t('Heading 1')}</Typography>
-      ),
-      icon: <DashIcon />
+      )
     },
     {
       value: TypographyVariant.h2,
       label: withJourneyTheme(
         <Typography variant={TypographyVariant.h2}>{t('Title')}</Typography>
-      ),
-      icon: <DashIcon />
+      )
     },
     {
       value: TypographyVariant.h1,
       label: withJourneyTheme(
         <Typography variant={TypographyVariant.h1}>{t('Display')}</Typography>
-      ),
-      icon: <DashIcon />
+      )
     }
     // {
     //   value: TypographyVariant.overline,
