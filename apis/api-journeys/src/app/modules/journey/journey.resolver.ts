@@ -648,7 +648,7 @@ export class JourneyResolver {
             journey: {
               connect: { id: duplicateJourneyId }
             },
-            classNames: block.classNames ?? { self: '' }
+            settings: block.settings ?? {}
           }))
         )
         // update block references after import
