@@ -1,5 +1,6 @@
 import { ApolloClient, NormalizedCacheObject, gql } from '@apollo/client'
 import { Tool, tool } from 'ai'
+import isEqual from 'lodash/isEqual'
 import { z } from 'zod'
 import { zodToJsonSchema } from 'zod-to-json-schema'
 
@@ -39,21 +40,19 @@ export function journeySimpleUpdate(
       )
     }),
     execute: async ({ journeyId, journey }) => {
-      const { data } = await client.mutate<
+      const { data, errors } = await client.mutate<
         JourneySimpleUpdate,
         JourneySimpleUpdateVariables
       >({
         mutation: JOURNEY_SIMPLE_UPDATE,
         variables: { id: journeyId, journey }
       })
-      const result = journeySimpleSchema.safeParse(data?.journeySimpleUpdate)
-      if (!result.success) {
-        throw new Error(
-          'Returned journey is invalid: ' +
-            JSON.stringify(result.error.format())
-        )
+      if (data?.journeySimpleUpdate == null) {
+        return { success: false, errors }
       }
-      return result.data
+      return {
+        success: isEqual(data.journeySimpleUpdate, journey)
+      }
     }
   })
 }

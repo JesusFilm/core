@@ -84,7 +84,7 @@ export function agentWebSearch(
 
       let urlToScrape = url
 
-      if (urlToScrape == undefined) {
+      if (urlToScrape == null && searchQuery != null) {
         const searchResult = await app.search(searchQuery, {
           limit: 1,
           maxAge: 3600000 // 1 hour in milliseconds
@@ -97,7 +97,7 @@ export function agentWebSearch(
         urlToScrape = searchResult.data[0]?.url
       }
 
-      if (urlToScrape == undefined) {
+      if (urlToScrape == null) {
         throw new Error('No results found')
       }
 

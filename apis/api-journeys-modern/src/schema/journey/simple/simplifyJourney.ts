@@ -13,7 +13,7 @@ export function simplifyJourney(
     (block) => block.typename === 'StepBlock'
   )
 
-  const cards = stepBlocks.map((stepBlock) => {
+  const cards = stepBlocks.map((stepBlock, index) => {
     const cardBlock = journey.blocks.filter(
       (block) => block.parentBlockId === stepBlock.id
     )[0]
@@ -23,7 +23,9 @@ export function simplifyJourney(
       (block) => block.parentBlockId === cardBlock.id
     )
 
-    const card: JourneySimpleCard = {}
+    const card: JourneySimpleCard = {
+      id: `card-${index + 1}`
+    }
 
     const headingBlock = childBlocks.find(
       (block) => block.typename === 'TypographyBlock' && block.variant === 'h3'
@@ -40,11 +42,15 @@ export function simplifyJourney(
       (block) => block.typename === 'ButtonBlock'
     )
     if (buttonBlock) {
+      const nextStepBlockIndex = buttonBlock.action?.blockId
+        ? stepBlocks.findIndex((s) => s.id === buttonBlock.action?.blockId)
+        : -1
       card.button = {
         text: buttonBlock.label ?? '',
-        nextCard: buttonBlock.action?.blockId
-          ? stepBlocks.findIndex((s) => s.id === buttonBlock.action?.blockId)
-          : undefined,
+        nextCard:
+          nextStepBlockIndex >= 0
+            ? `card-${nextStepBlockIndex + 1}`
+            : undefined,
         url: buttonBlock.action?.url ?? undefined
       }
     }
@@ -58,13 +64,19 @@ export function simplifyJourney(
           block.typename === 'RadioOptionBlock' &&
           block.parentBlockId === pollBlock.id
       )
-      card.poll = pollOptions.map((option) => ({
-        text: option.label ?? '',
-        nextCard: option.action?.blockId
+      card.poll = pollOptions.map((option) => {
+        const nextStepBlockIndex = option.action?.blockId
           ? stepBlocks.findIndex((s) => s.id === option.action?.blockId)
-          : undefined,
-        url: option.action?.url ?? undefined
-      }))
+          : -1
+        return {
+          text: option.label ?? '',
+          nextCard:
+            nextStepBlockIndex >= 0
+              ? `card-${nextStepBlockIndex + 1}`
+              : undefined,
+          url: option.action?.url ?? undefined
+        }
+      })
     }
 
     const imageBlock = childBlocks.find(
@@ -97,9 +109,12 @@ export function simplifyJourney(
     }
 
     if (stepBlock.nextBlockId) {
-      card.nextCard = stepBlocks.findIndex(
+      const nextStepBlockIndex = stepBlocks.findIndex(
         (s) => s.id === stepBlock.nextBlockId
       )
+      if (nextStepBlockIndex >= 0) {
+        card.defaultNextCard = `card-${nextStepBlockIndex + 1}`
+      }
     }
 
     return card

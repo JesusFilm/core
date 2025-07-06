@@ -22,14 +22,18 @@ export async function updateSimpleJourney(
   })
 
   // Array of { id: stepBlockId, cardId: cardBlockId }
-  const stepBlocks: { id: string; cardId: string }[] = []
+  const stepBlocks: {
+    stepBlockId: string
+    cardBlockId: string
+    simpleCardId: string
+  }[] = []
 
   // Grid layout constants
   const CARD_SPACING_X = 400
   const CARD_SPACING_Y = 300
 
   // 1. Create StepBlocks and CardBlocks
-  for (let i = 0; i < simple.cards.length; i++) {
+  for (const [i, simpleCard] of simple.cards.entries()) {
     const row = i % 3
     const col = Math.floor(i / 3)
     const x = col * CARD_SPACING_X
@@ -55,13 +59,18 @@ export async function updateSimpleJourney(
       }
     })
 
-    stepBlocks.push({ id: stepBlock.id, cardId: cardBlock.id })
+    stepBlocks.push({
+      stepBlockId: stepBlock.id,
+      cardBlockId: cardBlock.id,
+      simpleCardId: simpleCard.id
+    })
   }
 
   // 2. For each card, create content blocks as children of CardBlock
-  for (let i = 0; i < simple.cards.length; i++) {
-    const card = simple.cards[i]
-    const { id: stepBlockId, cardId: cardBlockId } = stepBlocks[i]
+  for (const card of simple.cards) {
+    const { stepBlockId, cardBlockId } = stepBlocks.find(
+      (s) => s.simpleCardId === card.id
+    )!
     let parentOrder = 0
 
     if (card.heading) {
@@ -115,8 +124,11 @@ export async function updateSimpleJourney(
           parentOrder: parentOrder++
         }
       })
-      for (let j = 0; j < card.poll.length; j++) {
-        const option = card.poll[j]
+      for (const [j, option] of card.poll.entries()) {
+        const nextStepBlock =
+          option.nextCard != null
+            ? stepBlocks.find((s) => s.simpleCardId === option.nextCard)
+            : undefined
         await prisma.block.create({
           data: {
             journeyId,
@@ -125,10 +137,10 @@ export async function updateSimpleJourney(
             parentOrder: j,
             label: option.text,
             action:
-              option.nextCard !== undefined
+              nextStepBlock != null
                 ? {
                     create: {
-                      blockId: stepBlocks[option.nextCard].id
+                      blockId: nextStepBlock.stepBlockId
                     }
                   }
                 : option.url
@@ -139,7 +151,11 @@ export async function updateSimpleJourney(
       }
     }
 
-    if (card.button) {
+    if (card.button != null) {
+      const nextStepBlock =
+        card.button.nextCard != null
+          ? stepBlocks.find((s) => s.simpleCardId === card.button?.nextCard)
+          : undefined
       await prisma.block.create({
         data: {
           journeyId,
@@ -148,10 +164,10 @@ export async function updateSimpleJourney(
           parentOrder: parentOrder++,
           label: card.button.text,
           action:
-            card.button.nextCard !== undefined
+            nextStepBlock != null
               ? {
                   create: {
-                    blockId: stepBlocks[card.button.nextCard].id
+                    blockId: nextStepBlock.stepBlockId
                   }
                 }
               : card.button.url
@@ -180,11 +196,17 @@ export async function updateSimpleJourney(
       })
     }
 
-    if (card.nextCard !== undefined) {
-      await prisma.block.update({
-        where: { id: stepBlockId },
-        data: { nextBlockId: stepBlocks[card.nextCard].id }
-      })
+    if (card.defaultNextCard != null) {
+      const nextStepBlock =
+        card.defaultNextCard != null
+          ? stepBlocks.find((s) => s.simpleCardId === card.defaultNextCard)
+          : undefined
+      if (nextStepBlock != null) {
+        await prisma.block.update({
+          where: { id: stepBlockId },
+          data: { nextBlockId: nextStepBlock.stepBlockId }
+        })
+      }
     }
   }
 }

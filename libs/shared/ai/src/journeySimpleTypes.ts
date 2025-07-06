@@ -4,12 +4,10 @@ import { z } from 'zod'
 export const journeySimplePollOptionSchema = z.object({
   text: z.string().describe('The text label for the poll option.'),
   nextCard: z
-    .number()
-    .int()
-    .nonnegative()
+    .string()
     .optional()
     .describe(
-      'The index of the next card to navigate to if this option is selected. Should only provide one of url or nextCard.'
+      'The id of the card to navigate to if this option is selected. Something like card-1, card-2, etc. Should only provide one of url or nextCard.'
     ),
   url: z
     .string()
@@ -26,12 +24,10 @@ export type JourneySimplePollOption = z.infer<
 export const journeySimpleButtonSchema = z.object({
   text: z.string().describe('The text label displayed on the button.'),
   nextCard: z
-    .number()
-    .int()
-    .nonnegative()
+    .string()
     .optional()
     .describe(
-      'The index of the next card to navigate to when the button is pressed. Should only provide one of url or nextCard.'
+      'The id of the card to navigate to when the button is pressed. Something like card-1, card-2, etc. Should only provide one of url or nextCard.'
     ),
   url: z
     .string()
@@ -67,6 +63,9 @@ export type JourneySimpleImage = z.infer<typeof journeySimpleImageSchema>
 
 // Card type
 export const journeySimpleCardSchema = z.object({
+  id: z
+    .string()
+    .describe('The id of the card. Something like card-1, card-2, etc.'),
   heading: z
     .string()
     .optional()
@@ -85,13 +84,11 @@ export const journeySimpleCardSchema = z.object({
   backgroundImage: journeySimpleImageSchema
     .optional()
     .describe('Background image object for the card.'),
-  nextCard: z
-    .number()
-    .int()
-    .nonnegative()
+  defaultNextCard: z
+    .string()
     .optional()
     .describe(
-      'The index of the next card to navigate to after this card, if present.'
+      'The id of the card to navigate to after this card by default. Something like card-1, card-2, etc.'
     )
 })
 export type JourneySimpleCard = z.infer<typeof journeySimpleCardSchema>
