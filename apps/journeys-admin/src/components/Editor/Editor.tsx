@@ -1,4 +1,3 @@
-import dynamic from 'next/dynamic'
 import { User } from 'next-firebase-auth'
 import { ReactElement } from 'react'
 import { HotkeysProvider } from 'react-hotkeys-hook'
@@ -12,17 +11,10 @@ import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/Block
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 
 import { Fab } from './Fab'
+import { FontLoader } from './FontLoader/FontLoader'
 import { Hotkeys } from './Hotkeys'
 import { Slider } from './Slider'
 import { Toolbar } from './Toolbar'
-
-const FontLoader = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "Editor/FontLoader" */ './FontLoader/FontLoader'
-    ).then((mod) => mod.FontLoader),
-  { ssr: false }
-)
 
 interface EditorProps {
   journey?: Journey

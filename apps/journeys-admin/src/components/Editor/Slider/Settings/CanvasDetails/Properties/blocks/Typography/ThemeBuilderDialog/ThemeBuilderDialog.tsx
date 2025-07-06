@@ -2,6 +2,8 @@ import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
+import { Theme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTranslation } from 'next-i18next'
 import { enqueueSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
@@ -53,26 +55,12 @@ export const JOURNEY_FONTS_CREATE = gql`
   }
 `
 
-export enum FontFamily {
-  Montserrat = 'Montserrat',
-  Inter = 'Inter',
-  Oswald = 'Oswald',
-  PlayfairDisplay = 'Playfair Display',
-  Georgia = 'Georgia',
-  CormorantGaramond = 'Cormorant Garamond',
-  NotoSans = 'Noto Sans',
-  BerkshireSwash = 'Berkshire Swash',
-  Cinzel = 'Cinzel',
-  Baloo = 'Baloo 2',
-  Nunito = 'Nunito',
-  Raleway = 'Raleway'
-}
-
 export function ThemeBuilderDialog({
   open,
   onClose
 }: ThemeBuilderDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { journey } = useJourney()
 
   const [updateJourneyFonts, { loading }] = useMutation<
@@ -183,27 +171,12 @@ export function ThemeBuilderDialog({
     }
   }
 
-  const dialogActionChildren = (
-    <Stack direction="row" justifyContent="space-between" width="100%">
-      <Button variant="outlined" color="secondary" onClick={onClose}>
-        {t('Cancel')}
-      </Button>
-      <Button
-        loading={loading || createLoading}
-        variant="contained"
-        color="primary"
-        onClick={handleSubmit}
-      >
-        {t('Confirm')}
-      </Button>
-    </Stack>
-  )
-
   return (
     <Dialog
       open={open}
       onClose={onClose}
       loading={loading || createLoading}
+      fullscreen={!smUp}
       sx={{
         '& .MuiDialog-paper': {
           maxWidth: '100%',
@@ -215,7 +188,21 @@ export function ThemeBuilderDialog({
         title: t('Select Fonts'),
         closeButton: true
       }}
-      dialogActionChildren={dialogActionChildren}
+      dialogActionChildren={
+        <Stack direction="row" justifyContent="space-between" width="100%">
+          <Button variant="outlined" color="secondary" onClick={onClose}>
+            {t('Cancel')}
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSubmit}
+            disabled={loading || createLoading}
+          >
+            {t('Confirm')}
+          </Button>
+        </Stack>
+      }
     >
       <FontLoader fonts={[headerFont, bodyFont, labelFont]} />
       <Stack
@@ -228,7 +215,7 @@ export function ThemeBuilderDialog({
       >
         <Box
           sx={{
-            width: 380
+            width: { xs: '100%', sm: 380 }
           }}
         >
           <ThemeSettings
@@ -242,7 +229,8 @@ export function ThemeBuilderDialog({
         </Box>
         <Box
           sx={{
-            width: 476
+            width: { xs: '100%', sm: 476 },
+            pb: { xs: 6, sm: 0 }
           }}
         >
           <ThemePreview
