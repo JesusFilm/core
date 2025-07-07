@@ -130,6 +130,40 @@ jest.mock('../../../../../../components/FormSelectField', () => ({
   )
 }))
 
+// Mock CircularProgress
+jest.mock('@mui/material/CircularProgress', () => ({
+  __esModule: true,
+  default: ({ size, color }) => (
+    <div
+      data-testid="mock-circular-progress"
+      data-size={size}
+      data-color={color}
+    >
+      Loading...
+    </div>
+  )
+}))
+
+// Mock FormControl
+jest.mock('@mui/material/FormControl', () => ({
+  __esModule: true,
+  default: ({ children, variant, size, sx }) => (
+    <div
+      data-testid="mock-form-control"
+      data-variant={variant}
+      data-size={size}
+    >
+      {children}
+    </div>
+  )
+}))
+
+// Mock DeleteIcon
+jest.mock('@mui/icons-material/Delete', () => ({
+  __esModule: true,
+  default: () => <span data-testid="mock-delete-icon">🗑️</span>
+}))
+
 // Mock MenuItem
 jest.mock('@mui/material/MenuItem', () => ({
   __esModule: true,
@@ -181,7 +215,10 @@ jest.mock('@apollo/client', () => {
 jest.mock('notistack', () => ({
   useSnackbar: () => ({
     enqueueSnackbar: jest.fn()
-  })
+  }),
+  SnackbarProvider: ({ children }) => (
+    <div data-testid="mock-snackbar-provider">{children}</div>
+  )
 }))
 
 describe('VariantDialog', () => {
