@@ -41,7 +41,13 @@ describe('AgentGenerateImageTool', () => {
       toolName: 'agentGenerateImage',
       args: { prompt: 'test prompt' },
       state: 'result' as const,
-      result: [{ src: 'https://example.com/generated-image.png' }]
+      result: [
+        {
+          url: 'https://example.com/generated-image.png',
+          width: 256,
+          height: 256
+        }
+      ]
     }
   }
 
@@ -88,9 +94,9 @@ describe('AgentGenerateImageTool', () => {
         toolInvocation: {
           ...resultPart.toolInvocation,
           result: [
-            { src: 'https://example.com/image1.png' },
-            { src: 'https://example.com/image2.png' },
-            { src: 'https://example.com/image3.png' }
+            { url: 'https://example.com/image1.png', width: 256, height: 256 },
+            { url: 'https://example.com/image2.png', width: 256, height: 256 },
+            { url: 'https://example.com/image3.png', width: 256, height: 256 }
           ]
         }
       }

@@ -283,7 +283,14 @@ describe('ToolInvocationPart', () => {
         toolName: 'agentGenerateImage',
         args: {},
         state: 'result' as const,
-        result: [{ src: 'https://example.com/generated.png' }]
+        result: [
+          {
+            url: 'https://example.com/generated.png',
+            width: 256,
+            height: 256,
+            blurhash: 'blurhash'
+          }
+        ]
       }
     } as ToolInvocationUIPart
 
@@ -310,6 +317,8 @@ describe('ToolInvocationPart', () => {
       expect(image).toBeInTheDocument()
       expect(image).toHaveAttribute('src', 'https://example.com/generated.png')
       expect(image).toHaveAttribute('alt', 'Generated image')
+      expect(image).toHaveAttribute('width', '256')
+      expect(image).toHaveAttribute('height', '256')
     })
   })
 

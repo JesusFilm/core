@@ -224,7 +224,7 @@ describe('Form', () => {
       const textField = screen.getByRole('textbox')
       const submitButton = screen.getByRole('button')
 
-      expect(submitButton).not.toBeDisabled()
+      expect(submitButton).toBeDisabled()
 
       textField.focus()
       fireEvent.keyDown(textField, { key: 'Enter', code: 'Enter' })
