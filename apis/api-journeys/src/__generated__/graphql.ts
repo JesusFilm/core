@@ -4104,7 +4104,7 @@ export type TypographyBlock = Block & {
   journeyId: Scalars['ID']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
-  settings: TypographyBlockSettings;
+  settings?: Maybe<TypographyBlockSettings>;
   variant?: Maybe<TypographyVariant>;
 };
 
@@ -4121,6 +4121,7 @@ export type TypographyBlockCreateInput = {
 
 export type TypographyBlockSettings = {
   __typename?: 'TypographyBlockSettings';
+  /** Color of the typography */
   color?: Maybe<Scalars['String']['output']>;
 };
 
