@@ -1574,6 +1574,7 @@ export type Mutation = {
   videoCollapseEventCreate: VideoCollapseEvent;
   videoCompleteEventCreate: VideoCompleteEvent;
   videoCreate: Video;
+  videoDelete: Video;
   videoDescriptionCreate: VideoDescription;
   videoDescriptionDelete: VideoDescription;
   videoDescriptionUpdate: VideoDescription;
@@ -2331,6 +2332,11 @@ export type MutationVideoCompleteEventCreateArgs = {
 
 export type MutationVideoCreateArgs = {
   input: VideoCreateInput;
+};
+
+
+export type MutationVideoDeleteArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
