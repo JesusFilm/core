@@ -26,7 +26,7 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
   // Get the effective color - prioritize settings.color (hex) over legacy color (enum)
   const getEffectiveColor = () => {
     // First check if there's a valid hex color in settings
-    if (settings?.color && settings.color.trim() !== '') {
+    if (settings?.color) {
       return settings.color
     }
     // If settings is empty {} or settings.color is empty/null, fall back to legacy enum color
