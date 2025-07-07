@@ -4,7 +4,7 @@ import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
 
-import { Block } from '.prisma/api-journeys-client'
+import { Block, Prisma } from '.prisma/api-journeys-client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 
 import {
@@ -41,7 +41,8 @@ export class TypographyBlockResolver {
           typename: 'TypographyBlock',
           journey: { connect: { id: input.journeyId } },
           parentBlock: { connect: { id: input.parentBlockId } },
-          parentOrder
+          parentOrder,
+          settings: (input.settings ?? {}) as Prisma.JsonObject
         },
         include: {
           action: true,
@@ -85,7 +86,14 @@ export class TypographyBlockResolver {
         extensions: { code: 'FORBIDDEN' }
       })
     return await this.blockService.update(id, {
-      ...input
+      ...input,
+      settings:
+        input.settings != null
+          ? {
+              ...((block.settings ?? {}) as Prisma.JsonObject),
+              ...(input.settings as Prisma.JsonObject)
+            }
+          : undefined
     })
   }
 }
