@@ -1,6 +1,5 @@
 import { ApolloClient, NormalizedCacheObject, gql } from '@apollo/client'
 import { Tool, tool } from 'ai'
-import isEqual from 'lodash/isEqual'
 import { z } from 'zod'
 import { zodToJsonSchema } from 'zod-to-json-schema'
 
@@ -51,7 +50,8 @@ export function journeySimpleUpdate(
         return { success: false, errors }
       }
       return {
-        success: isEqual(data.journeySimpleUpdate, journey)
+        success: true,
+        data: data.journeySimpleUpdate
       }
     }
   })

@@ -26,12 +26,14 @@ export function AgentGenerateImageTool({
         <Stack gap={2} direction="row">
           {part.toolInvocation.result.map((image) => (
             <Image
-              src={image.src}
+              src={image.url}
               alt="Generated image"
-              width={256}
-              height={256}
+              width={image.width}
+              height={image.height}
+              blurDataURL={image.blurhash}
               style={{
-                borderRadius: 5
+                borderRadius: 5,
+                maxWidth: '60%'
               }}
             />
           ))}

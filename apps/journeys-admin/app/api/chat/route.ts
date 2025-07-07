@@ -16,8 +16,6 @@ import { createApolloClient } from '../../../src/libs/apolloClient'
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30
 
-export const runtime = 'edge'
-
 export function errorHandler(error: unknown) {
   if (error == null) {
     return 'unknown error'

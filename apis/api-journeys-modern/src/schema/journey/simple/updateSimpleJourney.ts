@@ -73,7 +73,7 @@ export async function updateSimpleJourney(
     )!
     let parentOrder = 0
 
-    if (card.heading) {
+    if (card.heading != null) {
       await prisma.block.create({
         data: {
           journeyId,
@@ -86,7 +86,7 @@ export async function updateSimpleJourney(
       })
     }
 
-    if (card.text) {
+    if (card.text != null) {
       await prisma.block.create({
         data: {
           journeyId,
@@ -99,7 +99,7 @@ export async function updateSimpleJourney(
       })
     }
 
-    if (card.image) {
+    if (card.image != null) {
       await prisma.block.create({
         data: {
           journeyId,
@@ -110,12 +110,12 @@ export async function updateSimpleJourney(
           alt: card.image.alt,
           width: card.image.width ?? 1,
           height: card.image.height ?? 1,
-          blurhash: card.image.blurHash ?? ''
+          blurhash: card.image.blurhash ?? ''
         }
       })
     }
 
-    if (card.poll && card.poll.length > 0) {
+    if (card.poll != null && card.poll.length > 0) {
       const radioQuestion = await prisma.block.create({
         data: {
           journeyId,
@@ -177,7 +177,7 @@ export async function updateSimpleJourney(
       })
     }
 
-    if (card.backgroundImage) {
+    if (card.backgroundImage != null) {
       const bgImage = await prisma.block.create({
         data: {
           journeyId,
@@ -187,7 +187,7 @@ export async function updateSimpleJourney(
           parentBlockId: cardBlockId,
           width: card.backgroundImage.width ?? 1,
           height: card.backgroundImage.height ?? 1,
-          blurhash: card.backgroundImage.blurHash ?? ''
+          blurhash: card.backgroundImage.blurhash ?? ''
         }
       })
       await prisma.block.update({

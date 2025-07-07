@@ -81,7 +81,7 @@ export function simplifyJourney(
 
     const imageBlock = childBlocks.find(
       (block) =>
-        block.typename === 'ImageBlock' && block.id != stepBlock.coverBlockId
+        block.typename === 'ImageBlock' && block.id != cardBlock.coverBlockId
     )
     if (imageBlock) {
       card.image = {
@@ -89,13 +89,13 @@ export function simplifyJourney(
         alt: imageBlock.alt ?? '',
         width: imageBlock.width ?? 0,
         height: imageBlock.height ?? 0,
-        blurHash: imageBlock.blurhash ?? ''
+        blurhash: imageBlock.blurhash ?? ''
       }
     }
 
     if (stepBlock.coverBlockId) {
       const bgImageBlock = journey.blocks.find(
-        (block) => block.id === stepBlock.coverBlockId
+        (block) => block.id === cardBlock.coverBlockId
       )
       if (bgImageBlock && bgImageBlock.typename === 'ImageBlock') {
         card.backgroundImage = {
@@ -103,7 +103,7 @@ export function simplifyJourney(
           alt: bgImageBlock.alt ?? '',
           width: bgImageBlock.width ?? 0,
           height: bgImageBlock.height ?? 0,
-          blurHash: bgImageBlock.blurhash ?? ''
+          blurhash: bgImageBlock.blurhash ?? ''
         }
       }
     }

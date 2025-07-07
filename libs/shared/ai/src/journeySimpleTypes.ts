@@ -42,21 +42,14 @@ export type JourneySimpleButton = z.infer<typeof journeySimpleButtonSchema>
 export const journeySimpleImageSchema = z.object({
   src: z.string().describe('A URL for the image.'),
   alt: z.string().describe('Alt text for the image for accessibility.'),
-  width: z
-    .number()
-    .int()
-    .positive()
-    .optional()
-    .describe('Width of the image in pixels.'),
+  width: z.number().int().positive().describe('Width of the image in pixels.'),
   height: z
     .number()
     .int()
     .positive()
-    .optional()
     .describe('Height of the image in pixels.'),
-  blurHash: z
+  blurhash: z
     .string()
-    .optional()
     .describe('A compact representation of a placeholder for the image.')
 })
 export type JourneySimpleImage = z.infer<typeof journeySimpleImageSchema>

@@ -1,6 +1,8 @@
 import { createVertex } from '@ai-sdk/google-vertex/edge'
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
 import { experimental_generateImage as generateImage, tool } from 'ai'
+import { encode } from 'blurhash'
+import sharp from 'sharp'
 import { z } from 'zod'
 
 import { ToolOptions } from '../..'
@@ -30,21 +32,73 @@ export function agentGenerateImage(
         .default(1)
         .describe(
           'The number of images to generate. Should be 1 unless you want to provide an array of images for the user to select from.'
+        ),
+      aspectRatio: z
+        .string()
+        .optional()
+        .default('9:16')
+        .describe(
+          'The aspect ratio of the image. Should be in the format "width:height" in lowest common denominator format. If generating a background image, use 9:16.'
         )
     }),
-    execute: async ({ prompt, n }) => {
+    execute: async ({ prompt, n, aspectRatio }) => {
       try {
         const { images } = await generateImage({
           model: vertex.image('imagen-3.0-fast-generate-001'),
-          prompt,
-          n
+          prompt: `Do not put any text on the image.\n${prompt}`,
+          n,
+          aspectRatio: aspectRatio as `${number}:${number}`
         })
 
         const result = await Promise.all(
-          images.map(async (image) => await upload(client, image.uint8Array))
+          images.map(async (image) => {
+            const sharpImage = sharp(image.uint8Array)
+            const metadata = await sharpImage.metadata()
+            const { width, height, format } = metadata
+            if (width == null || height == null || !format)
+              throw new Error('Invalid image dimensions or format')
+
+            let outputBuffer: Buffer
+            switch (format) {
+              case 'jpeg':
+                outputBuffer = await sharpImage.jpeg().toBuffer()
+                break
+              case 'png':
+                outputBuffer = await sharpImage.png().toBuffer()
+                break
+              case 'webp':
+                outputBuffer = await sharpImage.webp().toBuffer()
+                break
+              default:
+                // fallback to PNG if format is unknown
+                outputBuffer = await sharpImage.png().toBuffer()
+                break
+            }
+
+            const imageResponse = await upload(
+              client,
+              new Uint8Array(outputBuffer)
+            )
+            if (imageResponse.success) {
+              const rawBuffer = await sharpImage.raw().ensureAlpha().toBuffer()
+              return {
+                url: imageResponse.src,
+                width,
+                height,
+                blurHash: encode(
+                  new Uint8ClampedArray(rawBuffer),
+                  width,
+                  height,
+                  4,
+                  4
+                )
+              }
+            }
+            return null
+          })
         )
 
-        return result
+        return result.filter((image) => image != null)
       } catch (error) {
         return `Error generating image: ${error}`
       }
