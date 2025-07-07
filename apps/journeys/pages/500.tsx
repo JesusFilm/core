@@ -101,7 +101,8 @@ export function Custom500(): ReactElement {
         parentBlockId: '500-button-id',
         url: '/',
         __typename: 'LinkAction'
-      }
+      },
+      settings: null
     },
     {
       __typename: 'IconBlock',

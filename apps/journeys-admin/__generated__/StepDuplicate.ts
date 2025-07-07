@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { BlockDuplicateIdMap, ButtonVariant, ButtonColor, ButtonSize, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { BlockDuplicateIdMap, ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: StepDuplicate
@@ -39,6 +39,14 @@ export interface StepDuplicate_blockDuplicate_ButtonBlock_action_EmailAction {
 
 export type StepDuplicate_blockDuplicate_ButtonBlock_action = StepDuplicate_blockDuplicate_ButtonBlock_action_NavigateToBlockAction | StepDuplicate_blockDuplicate_ButtonBlock_action_LinkAction | StepDuplicate_blockDuplicate_ButtonBlock_action_EmailAction;
 
+export interface StepDuplicate_blockDuplicate_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface StepDuplicate_blockDuplicate_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -52,6 +60,7 @@ export interface StepDuplicate_blockDuplicate_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: StepDuplicate_blockDuplicate_ButtonBlock_action | null;
+  settings: StepDuplicate_blockDuplicate_ButtonBlock_settings | null;
 }
 
 export interface StepDuplicate_blockDuplicate_CardBlock {

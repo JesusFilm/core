@@ -244,6 +244,7 @@ describe('CardForm', () => {
           endIconId: 'endIconId',
           action: null,
           submitEnabled: true,
+          settings: null,
           __typename: 'ButtonBlock'
         },
         startIcon: {
@@ -276,6 +277,7 @@ describe('CardForm', () => {
           endIconId: 'endIconId',
           action: null,
           submitEnabled: true,
+          settings: null,
           __typename: 'ButtonBlock'
         },
         body: {

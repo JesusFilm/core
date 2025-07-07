@@ -44,7 +44,8 @@ describe('getStepHeading', () => {
             endIconId: null,
             submitEnabled: null,
             action: null,
-            children: []
+            children: [],
+            settings: null
           },
           {
             __typename: 'TypographyBlock',
@@ -74,7 +75,8 @@ describe('getStepHeading', () => {
             endIconId: null,
             submitEnabled: null,
             action: null,
-            children: []
+            children: [],
+            settings: null
           },
           {
             __typename: 'TypographyBlock',

@@ -100,7 +100,8 @@ export function Custom404(): ReactElement {
         parentBlockId: '404-button-id',
         url: '/',
         __typename: 'LinkAction'
-      }
+      },
+      settings: null
     },
     {
       __typename: 'IconBlock',

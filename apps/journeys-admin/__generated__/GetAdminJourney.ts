@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform, JourneyMenuButtonIcon } from "./globalTypes";
+import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform, JourneyMenuButtonIcon } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetAdminJourney
@@ -53,6 +53,14 @@ export interface GetAdminJourney_journey_blocks_ButtonBlock_action_EmailAction {
 
 export type GetAdminJourney_journey_blocks_ButtonBlock_action = GetAdminJourney_journey_blocks_ButtonBlock_action_NavigateToBlockAction | GetAdminJourney_journey_blocks_ButtonBlock_action_LinkAction | GetAdminJourney_journey_blocks_ButtonBlock_action_EmailAction;
 
+export interface GetAdminJourney_journey_blocks_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface GetAdminJourney_journey_blocks_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -66,6 +74,7 @@ export interface GetAdminJourney_journey_blocks_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: GetAdminJourney_journey_blocks_ButtonBlock_action | null;
+  settings: GetAdminJourney_journey_blocks_ButtonBlock_settings | null;
 }
 
 export interface GetAdminJourney_journey_blocks_CardBlock {

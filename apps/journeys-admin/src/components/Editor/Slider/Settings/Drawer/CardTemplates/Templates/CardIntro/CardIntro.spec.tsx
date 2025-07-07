@@ -212,6 +212,7 @@ describe('CardIntro', () => {
           endIconId: null,
           submitEnabled: null,
           action: null,
+          settings: null,
           __typename: 'ButtonBlock'
         },
         startIcon: {
@@ -244,6 +245,7 @@ describe('CardIntro', () => {
           endIconId: 'endIconId',
           submitEnabled: null,
           action: null,
+          settings: null,
           __typename: 'ButtonBlock'
         },
         video: {

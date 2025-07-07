@@ -119,7 +119,8 @@ const block: TreeBlock<Block> = {
               iconSize: IconSize.md,
               children: []
             }
-          ]
+          ],
+          settings: null
         }
       ]
     }

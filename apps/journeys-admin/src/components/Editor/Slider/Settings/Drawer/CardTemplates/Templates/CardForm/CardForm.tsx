@@ -319,7 +319,8 @@ export function CardForm(): ReactElement {
       startIconId: uuidv4(),
       endIconId: uuidv4(),
       action: null,
-      submitEnabled: true
+      submitEnabled: true,
+      settings: null
     } satisfies ButtonBlock
 
     const body = {

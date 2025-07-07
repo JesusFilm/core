@@ -125,7 +125,8 @@ export function MenuActionButton(): ReactElement {
       startIconId: null,
       endIconId: null,
       submitEnabled: null,
-      action: null
+      action: null,
+      settings: null
     } satisfies ButtonBlock
 
     const button2 = {
@@ -140,7 +141,8 @@ export function MenuActionButton(): ReactElement {
       startIconId: null,
       endIconId: null,
       submitEnabled: null,
-      action: null
+      action: null,
+      settings: null
     } satisfies ButtonBlock
 
     const button3 = {
@@ -155,7 +157,8 @@ export function MenuActionButton(): ReactElement {
       startIconId: null,
       endIconId: null,
       submitEnabled: null,
-      action: null
+      action: null,
+      settings: null
     } satisfies ButtonBlock
 
     const createdBlocks = [
