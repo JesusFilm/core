@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CardBlockUpdateInput, ButtonVariant, ButtonColor, ButtonSize, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { CardBlockUpdateInput, ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardFormRestore
@@ -39,6 +39,14 @@ export interface CardFormRestore_image_ButtonBlock_action_EmailAction {
 
 export type CardFormRestore_image_ButtonBlock_action = CardFormRestore_image_ButtonBlock_action_NavigateToBlockAction | CardFormRestore_image_ButtonBlock_action_LinkAction | CardFormRestore_image_ButtonBlock_action_EmailAction;
 
+export interface CardFormRestore_image_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardFormRestore_image_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -52,6 +60,7 @@ export interface CardFormRestore_image_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardFormRestore_image_ButtonBlock_action | null;
+  settings: CardFormRestore_image_ButtonBlock_settings | null;
 }
 
 export interface CardFormRestore_image_CardBlock {
@@ -468,6 +477,14 @@ export interface CardFormRestore_subtitle_ButtonBlock_action_EmailAction {
 
 export type CardFormRestore_subtitle_ButtonBlock_action = CardFormRestore_subtitle_ButtonBlock_action_NavigateToBlockAction | CardFormRestore_subtitle_ButtonBlock_action_LinkAction | CardFormRestore_subtitle_ButtonBlock_action_EmailAction;
 
+export interface CardFormRestore_subtitle_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardFormRestore_subtitle_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -481,6 +498,7 @@ export interface CardFormRestore_subtitle_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardFormRestore_subtitle_ButtonBlock_action | null;
+  settings: CardFormRestore_subtitle_ButtonBlock_settings | null;
 }
 
 export interface CardFormRestore_subtitle_CardBlock {
@@ -897,6 +915,14 @@ export interface CardFormRestore_title_ButtonBlock_action_EmailAction {
 
 export type CardFormRestore_title_ButtonBlock_action = CardFormRestore_title_ButtonBlock_action_NavigateToBlockAction | CardFormRestore_title_ButtonBlock_action_LinkAction | CardFormRestore_title_ButtonBlock_action_EmailAction;
 
+export interface CardFormRestore_title_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardFormRestore_title_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -910,6 +936,7 @@ export interface CardFormRestore_title_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardFormRestore_title_ButtonBlock_action | null;
+  settings: CardFormRestore_title_ButtonBlock_settings | null;
 }
 
 export interface CardFormRestore_title_CardBlock {
@@ -1326,6 +1353,14 @@ export interface CardFormRestore_textResponse_ButtonBlock_action_EmailAction {
 
 export type CardFormRestore_textResponse_ButtonBlock_action = CardFormRestore_textResponse_ButtonBlock_action_NavigateToBlockAction | CardFormRestore_textResponse_ButtonBlock_action_LinkAction | CardFormRestore_textResponse_ButtonBlock_action_EmailAction;
 
+export interface CardFormRestore_textResponse_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardFormRestore_textResponse_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -1339,6 +1374,7 @@ export interface CardFormRestore_textResponse_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardFormRestore_textResponse_ButtonBlock_action | null;
+  settings: CardFormRestore_textResponse_ButtonBlock_settings | null;
 }
 
 export interface CardFormRestore_textResponse_CardBlock {
@@ -1755,6 +1791,14 @@ export interface CardFormRestore_button_ButtonBlock_action_EmailAction {
 
 export type CardFormRestore_button_ButtonBlock_action = CardFormRestore_button_ButtonBlock_action_NavigateToBlockAction | CardFormRestore_button_ButtonBlock_action_LinkAction | CardFormRestore_button_ButtonBlock_action_EmailAction;
 
+export interface CardFormRestore_button_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardFormRestore_button_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -1768,6 +1812,7 @@ export interface CardFormRestore_button_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardFormRestore_button_ButtonBlock_action | null;
+  settings: CardFormRestore_button_ButtonBlock_settings | null;
 }
 
 export interface CardFormRestore_button_CardBlock {
@@ -2184,6 +2229,14 @@ export interface CardFormRestore_startIcon_ButtonBlock_action_EmailAction {
 
 export type CardFormRestore_startIcon_ButtonBlock_action = CardFormRestore_startIcon_ButtonBlock_action_NavigateToBlockAction | CardFormRestore_startIcon_ButtonBlock_action_LinkAction | CardFormRestore_startIcon_ButtonBlock_action_EmailAction;
 
+export interface CardFormRestore_startIcon_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardFormRestore_startIcon_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -2197,6 +2250,7 @@ export interface CardFormRestore_startIcon_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardFormRestore_startIcon_ButtonBlock_action | null;
+  settings: CardFormRestore_startIcon_ButtonBlock_settings | null;
 }
 
 export interface CardFormRestore_startIcon_CardBlock {
@@ -2613,6 +2667,14 @@ export interface CardFormRestore_endIcon_ButtonBlock_action_EmailAction {
 
 export type CardFormRestore_endIcon_ButtonBlock_action = CardFormRestore_endIcon_ButtonBlock_action_NavigateToBlockAction | CardFormRestore_endIcon_ButtonBlock_action_LinkAction | CardFormRestore_endIcon_ButtonBlock_action_EmailAction;
 
+export interface CardFormRestore_endIcon_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardFormRestore_endIcon_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -2626,6 +2688,7 @@ export interface CardFormRestore_endIcon_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardFormRestore_endIcon_ButtonBlock_action | null;
+  settings: CardFormRestore_endIcon_ButtonBlock_settings | null;
 }
 
 export interface CardFormRestore_endIcon_CardBlock {
@@ -3042,6 +3105,14 @@ export interface CardFormRestore_body_ButtonBlock_action_EmailAction {
 
 export type CardFormRestore_body_ButtonBlock_action = CardFormRestore_body_ButtonBlock_action_NavigateToBlockAction | CardFormRestore_body_ButtonBlock_action_LinkAction | CardFormRestore_body_ButtonBlock_action_EmailAction;
 
+export interface CardFormRestore_body_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardFormRestore_body_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -3055,6 +3126,7 @@ export interface CardFormRestore_body_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardFormRestore_body_ButtonBlock_action | null;
+  settings: CardFormRestore_body_ButtonBlock_settings | null;
 }
 
 export interface CardFormRestore_body_CardBlock {
