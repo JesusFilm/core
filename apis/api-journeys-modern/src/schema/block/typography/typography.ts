@@ -23,8 +23,11 @@ const TypographyBlockSettingsRef =
 
 const TypographyBlockSettings = builder.objectType(TypographyBlockSettingsRef, {
   fields: (t) => ({
-    color: t.string({
+    color: t.field({
+      type: 'String',
       nullable: true,
+      directives: { shareable: true },
+      description: 'Color of the typography',
       resolve: (settings: TypographyBlockSettingsType) => settings.color
     })
   })
