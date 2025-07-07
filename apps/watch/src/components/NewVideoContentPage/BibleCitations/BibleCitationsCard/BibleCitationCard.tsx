@@ -1,15 +1,28 @@
 import axios from 'axios'
 import Image from 'next/image'
-import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { VideoContentFields_bibleCitations as BibleCitation } from '../../../../../__generated__/VideoContentFields'
+import { useWatch } from '../../../../libs/watchContext'
 
 import { formatScripture } from './utils/formatScripture'
 
 const LOCALE_TO_BIBLE_VERSION_MAP = {
-  en: { bibleVersion: 'en-asv', bibleGatewayLinkVersion: 'NIV' }
+  en: { bibleVersion: 'en-asv', bibleGatewayLinkVersion: 'NIV' },
+  es: { bibleVersion: 'es-rvr1960', bibleGatewayLinkVersion: 'NVI' },
+  fr: { bibleVersion: 'fr-s21', bibleGatewayLinkVersion: 'BDS' },
+  id: { bibleVersion: 'id-tlab', bibleGatewayLinkVersion: 'TB' },
+  ja: { bibleVersion: 'ja-jc', bibleGatewayLinkVersion: 'SHINK2017' },
+  ko: { bibleVersion: 'ko-askv', bibleGatewayLinkVersion: 'NKRV' },
+  ru: { bibleVersion: 'ru-synod', bibleGatewayLinkVersion: 'SYNOD' },
+  th: { bibleVersion: 'th-tkjv', bibleGatewayLinkVersion: 'TNCV' },
+  tr: { bibleVersion: 'tr-tcl02', bibleGatewayLinkVersion: 'TC-2009' },
+  zh: { bibleVersion: 'zh-cunp-s', bibleGatewayLinkVersion: 'CUVMPT' },
+  'zh-Hans-CN': {
+    bibleVersion: 'zh-cn-cmn-s-cuv',
+    bibleGatewayLinkVersion: 'CUVS'
+  }
 } as const
 
 interface BibleCitationCardProps {
@@ -28,18 +41,20 @@ export function BibleCitationCard({
 }: BibleCitationCardProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   const [scripture, setScripture] = useState<FBVScripture | null>(null)
-  const router = useRouter()
-  const locale = router?.locale ?? 'en'
+
+  const {
+    state: { siteLanguage }
+  } = useWatch()
 
   useEffect(() => {
     async function fetchScripture(): Promise<void> {
       try {
         const bookName = citation.bibleBook.name[0].value.toLowerCase()
         const { data } = await axios.get<FBVScripture>(
-          `https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/${LOCALE_TO_BIBLE_VERSION_MAP[locale].bibleVersion}/books/${bookName}/chapters/${citation.chapterStart}/verses/${citation.verseStart}.json`
+          `https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/${LOCALE_TO_BIBLE_VERSION_MAP[siteLanguage].bibleVersion}/books/${bookName}/chapters/${citation.chapterStart}/verses/${citation.verseStart}.json`
         )
         setScripture(data)
-      } catch (err) {
+      } catch (_) {
         setScripture(null)
       }
     }
@@ -49,7 +64,7 @@ export function BibleCitationCard({
 
   const bibleGatewayUrl = `https://www.biblegateway.com/passage/?search=${encodeURIComponent(
     `${citation.bibleBook.name[0].value} ${citation.chapterStart}${citation.chapterEnd != null ? `-${citation.chapterEnd}` : ''}${citation.verseEnd != null ? `:${citation.verseStart}-${citation.verseEnd}` : `:${citation.verseStart}`}`
-  )}&version=${LOCALE_TO_BIBLE_VERSION_MAP[locale].bibleGatewayLinkVersion}`
+  )}&version=${LOCALE_TO_BIBLE_VERSION_MAP[siteLanguage].bibleGatewayLinkVersion}`
 
   return (
     <div

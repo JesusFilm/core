@@ -8,8 +8,8 @@ import { MuxMetadata } from '@core/shared/ui/muxMetadataType'
 
 import 'videojs-mux'
 
+import { usePlayer } from '../../../../libs/playerContext/PlayerContext'
 import { useVideo } from '../../../../libs/videoContext'
-import { useWatch } from '../../../../libs/watchContext'
 import { VideoControls } from '../../../VideoContentPage/VideoHero/VideoPlayer/VideoControls'
 
 interface HeroVideoProps {
@@ -19,10 +19,8 @@ interface HeroVideoProps {
 export function HeroVideo({ isFullscreen }: HeroVideoProps): ReactElement {
   const { variant, ...video } = useVideo()
   const {
-    state: {
-      player: { mute }
-    }
-  } = useWatch()
+    state: { mute }
+  } = usePlayer()
   const [playerReady, setPlayerReady] = useState(false)
 
   const title = video.title?.[0]?.value ?? ''

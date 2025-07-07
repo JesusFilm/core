@@ -3,7 +3,7 @@ import VolumeOff from '@mui/icons-material/VolumeOff'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { useWatch } from '../../../../../libs/watchContext'
+import { usePlayer } from '../../../../../libs/playerContext'
 
 interface VideoTitleProps {
   videoTitle: string
@@ -21,10 +21,8 @@ export function VideoTitle({
 }: VideoTitleProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   const {
-    state: {
-      player: { play, active, loading, mute, volume }
-    }
-  } = useWatch()
+    state: { play, active, loading, mute, volume }
+  } = usePlayer()
   const visible = !play || active || loading
 
   const show =

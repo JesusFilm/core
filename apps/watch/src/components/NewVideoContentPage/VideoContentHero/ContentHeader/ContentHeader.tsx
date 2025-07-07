@@ -2,15 +2,13 @@ import Image from 'next/image'
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
 
-import { useWatch } from '../../../../libs/watchContext'
+import { usePlayer } from '../../../../libs/playerContext/PlayerContext'
 import { AudioLanguageButton } from '../../../VideoContentPage/AudioLanguageButton'
 
 export function ContentHeader(): ReactElement {
   const {
-    state: {
-      player: { play, active, loading }
-    }
-  } = useWatch()
+    state: { play, active, loading }
+  } = usePlayer()
   const visible = !play || active || loading
   return (
     <div
