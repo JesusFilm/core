@@ -337,7 +337,8 @@ export function Button({
           variant="inherit"
           sx={{
             overflowWrap: 'break-word',
-            wordBreak: 'break-word'
+            wordBreak: 'break-word',
+            width: 'inherit'
           }}
         >
           {editableLabel != null
