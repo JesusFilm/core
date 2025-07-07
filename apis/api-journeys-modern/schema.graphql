@@ -487,7 +487,8 @@ type TypographyBlock implements Block
 }
 
 type TypographyBlockSettings {
-  color: String
+  """Color of the typography"""
+  color: String @shareable
 }
 
 enum TypographyColor {
