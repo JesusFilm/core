@@ -25,6 +25,8 @@ const TypographyBlockSettings = builder.objectType(TypographyBlockSettingsRef, {
   fields: (t) => ({
     color: t.string({
       nullable: true,
+      directives: { shareable: true },
+      description: 'Color of the typography',
       resolve: (settings: TypographyBlockSettingsType) => settings.color
     })
   })
@@ -78,8 +80,8 @@ export const TypographyBlock = builder.prismaObject('Block', {
       type: TypographyBlockSettings,
       nullable: true,
       directives: { shareable: true },
-      resolve: (block) =>
-        block.settings as unknown as TypographyBlockSettingsType
+      resolve: ({ settings }) =>
+        settings as unknown as TypographyBlockSettingsType
     })
   })
 })
