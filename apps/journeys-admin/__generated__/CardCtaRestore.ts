@@ -242,6 +242,9 @@ export interface CardCtaRestore_imageRestore_TextResponseBlock {
 
 export interface CardCtaRestore_imageRestore_TypographyBlock_settings {
   __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
   color: string | null;
 }
 
@@ -254,7 +257,7 @@ export interface CardCtaRestore_imageRestore_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
-  settings: CardCtaRestore_imageRestore_TypographyBlock_settings;
+  settings: CardCtaRestore_imageRestore_TypographyBlock_settings | null;
 }
 
 export interface CardCtaRestore_imageRestore_VideoBlock_mediaVideo_Video_title {
@@ -677,6 +680,9 @@ export interface CardCtaRestore_subtitleRestore_TextResponseBlock {
 
 export interface CardCtaRestore_subtitleRestore_TypographyBlock_settings {
   __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
   color: string | null;
 }
 
@@ -689,7 +695,7 @@ export interface CardCtaRestore_subtitleRestore_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
-  settings: CardCtaRestore_subtitleRestore_TypographyBlock_settings;
+  settings: CardCtaRestore_subtitleRestore_TypographyBlock_settings | null;
 }
 
 export interface CardCtaRestore_subtitleRestore_VideoBlock_mediaVideo_Video_title {
@@ -1112,6 +1118,9 @@ export interface CardCtaRestore_titleRestore_TextResponseBlock {
 
 export interface CardCtaRestore_titleRestore_TypographyBlock_settings {
   __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
   color: string | null;
 }
 
@@ -1124,7 +1133,7 @@ export interface CardCtaRestore_titleRestore_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
-  settings: CardCtaRestore_titleRestore_TypographyBlock_settings;
+  settings: CardCtaRestore_titleRestore_TypographyBlock_settings | null;
 }
 
 export interface CardCtaRestore_titleRestore_VideoBlock_mediaVideo_Video_title {
@@ -1547,6 +1556,9 @@ export interface CardCtaRestore_button1Restore_TextResponseBlock {
 
 export interface CardCtaRestore_button1Restore_TypographyBlock_settings {
   __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
   color: string | null;
 }
 
@@ -1559,7 +1571,7 @@ export interface CardCtaRestore_button1Restore_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
-  settings: CardCtaRestore_button1Restore_TypographyBlock_settings;
+  settings: CardCtaRestore_button1Restore_TypographyBlock_settings | null;
 }
 
 export interface CardCtaRestore_button1Restore_VideoBlock_mediaVideo_Video_title {
@@ -1982,6 +1994,9 @@ export interface CardCtaRestore_startIcon1Restore_TextResponseBlock {
 
 export interface CardCtaRestore_startIcon1Restore_TypographyBlock_settings {
   __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
   color: string | null;
 }
 
@@ -1994,7 +2009,7 @@ export interface CardCtaRestore_startIcon1Restore_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
-  settings: CardCtaRestore_startIcon1Restore_TypographyBlock_settings;
+  settings: CardCtaRestore_startIcon1Restore_TypographyBlock_settings | null;
 }
 
 export interface CardCtaRestore_startIcon1Restore_VideoBlock_mediaVideo_Video_title {
@@ -2417,6 +2432,9 @@ export interface CardCtaRestore_endIcon1Restore_TextResponseBlock {
 
 export interface CardCtaRestore_endIcon1Restore_TypographyBlock_settings {
   __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
   color: string | null;
 }
 
@@ -2429,7 +2447,7 @@ export interface CardCtaRestore_endIcon1Restore_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
-  settings: CardCtaRestore_endIcon1Restore_TypographyBlock_settings;
+  settings: CardCtaRestore_endIcon1Restore_TypographyBlock_settings | null;
 }
 
 export interface CardCtaRestore_endIcon1Restore_VideoBlock_mediaVideo_Video_title {
@@ -2852,6 +2870,9 @@ export interface CardCtaRestore_button2Restore_TextResponseBlock {
 
 export interface CardCtaRestore_button2Restore_TypographyBlock_settings {
   __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
   color: string | null;
 }
 
@@ -2864,7 +2885,7 @@ export interface CardCtaRestore_button2Restore_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
-  settings: CardCtaRestore_button2Restore_TypographyBlock_settings;
+  settings: CardCtaRestore_button2Restore_TypographyBlock_settings | null;
 }
 
 export interface CardCtaRestore_button2Restore_VideoBlock_mediaVideo_Video_title {
@@ -3287,6 +3308,9 @@ export interface CardCtaRestore_startIcon2Restore_TextResponseBlock {
 
 export interface CardCtaRestore_startIcon2Restore_TypographyBlock_settings {
   __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
   color: string | null;
 }
 
@@ -3299,7 +3323,7 @@ export interface CardCtaRestore_startIcon2Restore_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
-  settings: CardCtaRestore_startIcon2Restore_TypographyBlock_settings;
+  settings: CardCtaRestore_startIcon2Restore_TypographyBlock_settings | null;
 }
 
 export interface CardCtaRestore_startIcon2Restore_VideoBlock_mediaVideo_Video_title {
@@ -3722,6 +3746,9 @@ export interface CardCtaRestore_endIcon2Restore_TextResponseBlock {
 
 export interface CardCtaRestore_endIcon2Restore_TypographyBlock_settings {
   __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
   color: string | null;
 }
 
@@ -3734,7 +3761,7 @@ export interface CardCtaRestore_endIcon2Restore_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
-  settings: CardCtaRestore_endIcon2Restore_TypographyBlock_settings;
+  settings: CardCtaRestore_endIcon2Restore_TypographyBlock_settings | null;
 }
 
 export interface CardCtaRestore_endIcon2Restore_VideoBlock_mediaVideo_Video_title {
@@ -4157,6 +4184,9 @@ export interface CardCtaRestore_button3Restore_TextResponseBlock {
 
 export interface CardCtaRestore_button3Restore_TypographyBlock_settings {
   __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
   color: string | null;
 }
 
@@ -4169,7 +4199,7 @@ export interface CardCtaRestore_button3Restore_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
-  settings: CardCtaRestore_button3Restore_TypographyBlock_settings;
+  settings: CardCtaRestore_button3Restore_TypographyBlock_settings | null;
 }
 
 export interface CardCtaRestore_button3Restore_VideoBlock_mediaVideo_Video_title {
@@ -4592,6 +4622,9 @@ export interface CardCtaRestore_startIcon3Restore_TextResponseBlock {
 
 export interface CardCtaRestore_startIcon3Restore_TypographyBlock_settings {
   __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
   color: string | null;
 }
 
@@ -4604,7 +4637,7 @@ export interface CardCtaRestore_startIcon3Restore_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
-  settings: CardCtaRestore_startIcon3Restore_TypographyBlock_settings;
+  settings: CardCtaRestore_startIcon3Restore_TypographyBlock_settings | null;
 }
 
 export interface CardCtaRestore_startIcon3Restore_VideoBlock_mediaVideo_Video_title {
@@ -5027,6 +5060,9 @@ export interface CardCtaRestore_endIcon3Restore_TextResponseBlock {
 
 export interface CardCtaRestore_endIcon3Restore_TypographyBlock_settings {
   __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
   color: string | null;
 }
 
@@ -5039,7 +5075,7 @@ export interface CardCtaRestore_endIcon3Restore_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
-  settings: CardCtaRestore_endIcon3Restore_TypographyBlock_settings;
+  settings: CardCtaRestore_endIcon3Restore_TypographyBlock_settings | null;
 }
 
 export interface CardCtaRestore_endIcon3Restore_VideoBlock_mediaVideo_Video_title {

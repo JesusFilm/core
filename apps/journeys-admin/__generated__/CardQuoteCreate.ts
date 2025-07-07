@@ -30,6 +30,9 @@ export interface CardQuoteCreate_image {
 
 export interface CardQuoteCreate_subtitle_settings {
   __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
   color: string | null;
 }
 
@@ -42,11 +45,14 @@ export interface CardQuoteCreate_subtitle {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
-  settings: CardQuoteCreate_subtitle_settings;
+  settings: CardQuoteCreate_subtitle_settings | null;
 }
 
 export interface CardQuoteCreate_title_settings {
   __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
   color: string | null;
 }
 
@@ -59,11 +65,14 @@ export interface CardQuoteCreate_title {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
-  settings: CardQuoteCreate_title_settings;
+  settings: CardQuoteCreate_title_settings | null;
 }
 
 export interface CardQuoteCreate_body_settings {
   __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
   color: string | null;
 }
 
@@ -76,7 +85,7 @@ export interface CardQuoteCreate_body {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
-  settings: CardQuoteCreate_body_settings;
+  settings: CardQuoteCreate_body_settings | null;
 }
 
 export interface CardQuoteCreate_cardBlockUpdate {

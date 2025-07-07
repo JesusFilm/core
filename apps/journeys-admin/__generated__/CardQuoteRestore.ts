@@ -242,6 +242,9 @@ export interface CardQuoteRestore_image_TextResponseBlock {
 
 export interface CardQuoteRestore_image_TypographyBlock_settings {
   __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
   color: string | null;
 }
 
@@ -254,7 +257,7 @@ export interface CardQuoteRestore_image_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
-  settings: CardQuoteRestore_image_TypographyBlock_settings;
+  settings: CardQuoteRestore_image_TypographyBlock_settings | null;
 }
 
 export interface CardQuoteRestore_image_VideoBlock_mediaVideo_Video_title {
@@ -677,6 +680,9 @@ export interface CardQuoteRestore_subtitle_TextResponseBlock {
 
 export interface CardQuoteRestore_subtitle_TypographyBlock_settings {
   __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
   color: string | null;
 }
 
@@ -689,7 +695,7 @@ export interface CardQuoteRestore_subtitle_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
-  settings: CardQuoteRestore_subtitle_TypographyBlock_settings;
+  settings: CardQuoteRestore_subtitle_TypographyBlock_settings | null;
 }
 
 export interface CardQuoteRestore_subtitle_VideoBlock_mediaVideo_Video_title {
@@ -1112,6 +1118,9 @@ export interface CardQuoteRestore_title_TextResponseBlock {
 
 export interface CardQuoteRestore_title_TypographyBlock_settings {
   __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
   color: string | null;
 }
 
@@ -1124,7 +1133,7 @@ export interface CardQuoteRestore_title_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
-  settings: CardQuoteRestore_title_TypographyBlock_settings;
+  settings: CardQuoteRestore_title_TypographyBlock_settings | null;
 }
 
 export interface CardQuoteRestore_title_VideoBlock_mediaVideo_Video_title {
@@ -1547,6 +1556,9 @@ export interface CardQuoteRestore_body_TextResponseBlock {
 
 export interface CardQuoteRestore_body_TypographyBlock_settings {
   __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
   color: string | null;
 }
 
@@ -1559,7 +1571,7 @@ export interface CardQuoteRestore_body_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
-  settings: CardQuoteRestore_body_TypographyBlock_settings;
+  settings: CardQuoteRestore_body_TypographyBlock_settings | null;
 }
 
 export interface CardQuoteRestore_body_VideoBlock_mediaVideo_Video_title {

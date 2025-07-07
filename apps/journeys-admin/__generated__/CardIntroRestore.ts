@@ -242,6 +242,9 @@ export interface CardIntroRestore_subtitle_TextResponseBlock {
 
 export interface CardIntroRestore_subtitle_TypographyBlock_settings {
   __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
   color: string | null;
 }
 
@@ -254,7 +257,7 @@ export interface CardIntroRestore_subtitle_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
-  settings: CardIntroRestore_subtitle_TypographyBlock_settings;
+  settings: CardIntroRestore_subtitle_TypographyBlock_settings | null;
 }
 
 export interface CardIntroRestore_subtitle_VideoBlock_mediaVideo_Video_title {
@@ -677,6 +680,9 @@ export interface CardIntroRestore_title_TextResponseBlock {
 
 export interface CardIntroRestore_title_TypographyBlock_settings {
   __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
   color: string | null;
 }
 
@@ -689,7 +695,7 @@ export interface CardIntroRestore_title_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
-  settings: CardIntroRestore_title_TypographyBlock_settings;
+  settings: CardIntroRestore_title_TypographyBlock_settings | null;
 }
 
 export interface CardIntroRestore_title_VideoBlock_mediaVideo_Video_title {
@@ -1112,6 +1118,9 @@ export interface CardIntroRestore_body_TextResponseBlock {
 
 export interface CardIntroRestore_body_TypographyBlock_settings {
   __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
   color: string | null;
 }
 
@@ -1124,7 +1133,7 @@ export interface CardIntroRestore_body_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
-  settings: CardIntroRestore_body_TypographyBlock_settings;
+  settings: CardIntroRestore_body_TypographyBlock_settings | null;
 }
 
 export interface CardIntroRestore_body_VideoBlock_mediaVideo_Video_title {
@@ -1547,6 +1556,9 @@ export interface CardIntroRestore_button_TextResponseBlock {
 
 export interface CardIntroRestore_button_TypographyBlock_settings {
   __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
   color: string | null;
 }
 
@@ -1559,7 +1571,7 @@ export interface CardIntroRestore_button_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
-  settings: CardIntroRestore_button_TypographyBlock_settings;
+  settings: CardIntroRestore_button_TypographyBlock_settings | null;
 }
 
 export interface CardIntroRestore_button_VideoBlock_mediaVideo_Video_title {
@@ -1982,6 +1994,9 @@ export interface CardIntroRestore_startIcon_TextResponseBlock {
 
 export interface CardIntroRestore_startIcon_TypographyBlock_settings {
   __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
   color: string | null;
 }
 
@@ -1994,7 +2009,7 @@ export interface CardIntroRestore_startIcon_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
-  settings: CardIntroRestore_startIcon_TypographyBlock_settings;
+  settings: CardIntroRestore_startIcon_TypographyBlock_settings | null;
 }
 
 export interface CardIntroRestore_startIcon_VideoBlock_mediaVideo_Video_title {
@@ -2417,6 +2432,9 @@ export interface CardIntroRestore_endIcon_TextResponseBlock {
 
 export interface CardIntroRestore_endIcon_TypographyBlock_settings {
   __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
   color: string | null;
 }
 
@@ -2429,7 +2447,7 @@ export interface CardIntroRestore_endIcon_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
-  settings: CardIntroRestore_endIcon_TypographyBlock_settings;
+  settings: CardIntroRestore_endIcon_TypographyBlock_settings | null;
 }
 
 export interface CardIntroRestore_endIcon_VideoBlock_mediaVideo_Video_title {
@@ -2852,6 +2870,9 @@ export interface CardIntroRestore_video_TextResponseBlock {
 
 export interface CardIntroRestore_video_TypographyBlock_settings {
   __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
   color: string | null;
 }
 
@@ -2864,7 +2885,7 @@ export interface CardIntroRestore_video_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
-  settings: CardIntroRestore_video_TypographyBlock_settings;
+  settings: CardIntroRestore_video_TypographyBlock_settings | null;
 }
 
 export interface CardIntroRestore_video_VideoBlock_mediaVideo_Video_title {

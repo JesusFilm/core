@@ -252,6 +252,9 @@ export interface StepDuplicate_blockDuplicate_TextResponseBlock {
 
 export interface StepDuplicate_blockDuplicate_TypographyBlock_settings {
   __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
   color: string | null;
 }
 
@@ -264,7 +267,7 @@ export interface StepDuplicate_blockDuplicate_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
-  settings: StepDuplicate_blockDuplicate_TypographyBlock_settings;
+  settings: StepDuplicate_blockDuplicate_TypographyBlock_settings | null;
 }
 
 export interface StepDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_title {

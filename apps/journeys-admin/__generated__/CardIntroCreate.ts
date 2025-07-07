@@ -11,6 +11,9 @@ import { TypographyBlockCreateInput, ButtonBlockCreateInput, ButtonBlockUpdateIn
 
 export interface CardIntroCreate_subtitle_settings {
   __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
   color: string | null;
 }
 
@@ -23,11 +26,14 @@ export interface CardIntroCreate_subtitle {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
-  settings: CardIntroCreate_subtitle_settings;
+  settings: CardIntroCreate_subtitle_settings | null;
 }
 
 export interface CardIntroCreate_title_settings {
   __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
   color: string | null;
 }
 
@@ -40,11 +46,14 @@ export interface CardIntroCreate_title {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
-  settings: CardIntroCreate_title_settings;
+  settings: CardIntroCreate_title_settings | null;
 }
 
 export interface CardIntroCreate_body_settings {
   __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
   color: string | null;
 }
 
@@ -57,7 +66,7 @@ export interface CardIntroCreate_body {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
-  settings: CardIntroCreate_body_settings;
+  settings: CardIntroCreate_body_settings | null;
 }
 
 export interface CardIntroCreate_button_action_NavigateToBlockAction {

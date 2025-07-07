@@ -242,6 +242,9 @@ export interface BlockDuplicate_blockDuplicate_TextResponseBlock {
 
 export interface BlockDuplicate_blockDuplicate_TypographyBlock_settings {
   __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
   color: string | null;
 }
 
@@ -254,7 +257,7 @@ export interface BlockDuplicate_blockDuplicate_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
-  settings: BlockDuplicate_blockDuplicate_TypographyBlock_settings;
+  settings: BlockDuplicate_blockDuplicate_TypographyBlock_settings | null;
 }
 
 export interface BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_title {

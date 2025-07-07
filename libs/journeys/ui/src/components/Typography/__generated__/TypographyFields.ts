@@ -11,6 +11,9 @@ import { TypographyAlign, TypographyColor, TypographyVariant } from "./../../../
 
 export interface TypographyFields_settings {
   __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
   color: string | null;
 }
 
@@ -23,5 +26,5 @@ export interface TypographyFields {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
-  settings: TypographyFields_settings;
+  settings: TypographyFields_settings | null;
 }

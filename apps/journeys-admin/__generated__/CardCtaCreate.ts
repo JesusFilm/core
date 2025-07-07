@@ -30,6 +30,9 @@ export interface CardCtaCreate_image {
 
 export interface CardCtaCreate_subtitle_settings {
   __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
   color: string | null;
 }
 
@@ -42,11 +45,14 @@ export interface CardCtaCreate_subtitle {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
-  settings: CardCtaCreate_subtitle_settings;
+  settings: CardCtaCreate_subtitle_settings | null;
 }
 
 export interface CardCtaCreate_title_settings {
   __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
   color: string | null;
 }
 
@@ -59,7 +65,7 @@ export interface CardCtaCreate_title {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
-  settings: CardCtaCreate_title_settings;
+  settings: CardCtaCreate_title_settings | null;
 }
 
 export interface CardCtaCreate_button1_action_NavigateToBlockAction {

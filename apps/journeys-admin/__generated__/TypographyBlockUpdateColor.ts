@@ -11,13 +11,16 @@ import { TypographyBlockSettingsInput } from "./globalTypes";
 
 export interface TypographyBlockUpdateColor_typographyBlockUpdate_settings {
   __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
   color: string | null;
 }
 
 export interface TypographyBlockUpdateColor_typographyBlockUpdate {
   __typename: "TypographyBlock";
   id: string;
-  settings: TypographyBlockUpdateColor_typographyBlockUpdate_settings;
+  settings: TypographyBlockUpdateColor_typographyBlockUpdate_settings | null;
 }
 
 export interface TypographyBlockUpdateColor {

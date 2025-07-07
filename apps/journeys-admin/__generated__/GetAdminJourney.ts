@@ -256,6 +256,9 @@ export interface GetAdminJourney_journey_blocks_TextResponseBlock {
 
 export interface GetAdminJourney_journey_blocks_TypographyBlock_settings {
   __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
   color: string | null;
 }
 
@@ -268,7 +271,7 @@ export interface GetAdminJourney_journey_blocks_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
-  settings: GetAdminJourney_journey_blocks_TypographyBlock_settings;
+  settings: GetAdminJourney_journey_blocks_TypographyBlock_settings | null;
 }
 
 export interface GetAdminJourney_journey_blocks_VideoBlock_mediaVideo_Video_title {

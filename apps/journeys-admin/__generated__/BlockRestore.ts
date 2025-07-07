@@ -252,6 +252,9 @@ export interface BlockRestore_blockRestore_TextResponseBlock {
 
 export interface BlockRestore_blockRestore_TypographyBlock_settings {
   __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
   color: string | null;
 }
 
@@ -264,7 +267,7 @@ export interface BlockRestore_blockRestore_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
-  settings: BlockRestore_blockRestore_TypographyBlock_settings;
+  settings: BlockRestore_blockRestore_TypographyBlock_settings | null;
 }
 
 export interface BlockRestore_blockRestore_VideoBlock_mediaVideo_Video_title {
