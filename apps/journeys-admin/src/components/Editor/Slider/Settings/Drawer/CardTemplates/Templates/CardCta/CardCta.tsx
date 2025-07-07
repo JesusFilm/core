@@ -344,6 +344,7 @@ export function CardCta(): ReactElement {
       endIconId: null,
       submitEnabled: null,
       action: null,
+      settings: null,
       __typename: 'ButtonBlock'
     } satisfies ButtonBlock
 
@@ -379,6 +380,7 @@ export function CardCta(): ReactElement {
       endIconId: null,
       submitEnabled: null,
       action: null,
+      settings: null,
       __typename: 'ButtonBlock'
     } satisfies ButtonBlock
 
@@ -414,6 +416,7 @@ export function CardCta(): ReactElement {
       endIconId: null,
       submitEnabled: null,
       action: null,
+      settings: null,
       __typename: 'ButtonBlock'
     } satisfies ButtonBlock
 
