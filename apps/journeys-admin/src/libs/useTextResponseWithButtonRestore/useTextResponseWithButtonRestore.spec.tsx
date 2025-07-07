@@ -42,6 +42,7 @@ describe('useTextResponseWithButtonRestore', () => {
       endIconId: 'endIcon.id',
       action: null,
       submitEnabled: true,
+      settings: null,
       __typename: 'ButtonBlock' as const
     } satisfies ButtonBlock
   }

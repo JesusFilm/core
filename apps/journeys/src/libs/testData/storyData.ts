@@ -485,7 +485,8 @@ export const imageBlocks: TreeBlock[] = [
                 iconSize: IconSize.md,
                 children: []
               }
-            ]
+            ],
+            settings: null
           },
           {
             id: 'image0.id',
@@ -573,7 +574,8 @@ export const imageBlocks: TreeBlock[] = [
                 iconSize: IconSize.md,
                 children: []
               }
-            ]
+            ],
+            settings: null
           },
           {
             id: 'image0.id',
@@ -859,7 +861,8 @@ export const imageBlocks: TreeBlock[] = [
                 iconSize: IconSize.md,
                 children: []
               }
-            ]
+            ],
+            settings: null
           }
         ]
       }
@@ -1770,7 +1773,8 @@ export const videoLoop: TreeBlock[] = [
                 iconSize: IconSize.md,
                 children: []
               }
-            ]
+            ],
+            settings: null
           },
           {
             id: 'video1.id',
