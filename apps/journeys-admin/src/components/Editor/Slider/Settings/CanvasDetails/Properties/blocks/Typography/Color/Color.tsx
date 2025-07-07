@@ -68,10 +68,7 @@ export function Color(): ReactElement {
   // Get effective color: prioritize settings.color (hex), then fall back to legacy color (enum), then null for default
   const getEffectiveColor = (): string | null => {
     // First check if there's a valid hex color in settings
-    if (
-      selectedBlock?.settings?.color &&
-      selectedBlock.settings.color.trim() !== ''
-    ) {
+    if (selectedBlock?.settings?.color) {
       return selectedBlock.settings.color
     }
     // If settings is empty {} or settings.color is empty/null, fall back to legacy enum color

@@ -151,4 +151,34 @@ describe('Typography properties', () => {
       getByText('selectedAttributeId: typography1.id-typography-variant')
     ).toBeInTheDocument()
   })
+
+  it('shows settings color overriding block color', () => {
+    const block: TreeBlock<TypographyBlock> = {
+      id: 'typography1.id',
+      __typename: 'TypographyBlock',
+      parentBlockId: null,
+      parentOrder: 0,
+      align: null,
+      color: TypographyColor.primary,
+      content: 'Typography',
+      variant: null,
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: '#444451'
+      },
+      children: []
+    }
+    const { getByRole } = render(
+      <MockedProvider>
+        <Typography {...block} />
+      </MockedProvider>
+    )
+    expect(
+      getByRole('button', { name: 'Text Variant Body 2' })
+    ).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Color #444451' })).toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'Text Alignment Left' })
+    ).toBeInTheDocument()
+  })
 })
