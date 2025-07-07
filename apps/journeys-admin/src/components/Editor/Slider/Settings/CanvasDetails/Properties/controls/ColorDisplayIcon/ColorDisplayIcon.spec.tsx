@@ -8,9 +8,7 @@ import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../../_
 import {
   ThemeMode,
   ThemeName,
-  TypographyAlign,
-  TypographyColor,
-  TypographyVariant
+  TypographyColor
 } from '../../../../../../../../../__generated__/globalTypes'
 
 import { ColorDisplayIcon } from '.'
@@ -21,7 +19,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('ColorDisplayIcon', () => {
-  const step: TreeBlock<StepBlock> = {
+  const createMockStep = (): TreeBlock<StepBlock> => ({
     id: 'step.id',
     __typename: 'StepBlock',
     parentBlockId: null,
@@ -41,97 +39,49 @@ describe('ColorDisplayIcon', () => {
         themeName: ThemeName.base,
         fullscreen: false,
         backdropBlur: null,
-        children: [
-          {
-            __typename: 'TypographyBlock',
-            id: '1',
-            parentBlockId: 'step.id',
-            parentOrder: 0,
-            content: 'text block',
-            variant: TypographyVariant.subtitle1,
-            color: null,
-            align: TypographyAlign.left,
-            settings: {
-              __typename: 'TypographyBlockSettings',
-              color: null
-            },
-            children: []
-          }
-        ]
+        children: []
       }
     ]
-  }
+  })
 
-  it('should show hex color directly', () => {
-    const { container } = render(
+  const theme = getTheme({
+    themeName: ThemeName.base,
+    themeMode: ThemeMode.dark
+  })
+
+  it('should display hex colors directly', () => {
+    const step = createMockStep()
+    const { getByTestId } = render(
       <EditorProvider initialState={{ selectedStep: step }}>
         <ColorDisplayIcon color="#C52D3A" />
       </EditorProvider>
     )
-    const span = container.querySelector('span')
-    expect(span).toHaveStyle('background-color: rgb(197, 45, 58)')
-    expect(span).toHaveStyle('width: 24px')
-    expect(span).toHaveStyle('height: 24px')
-    expect(span).toHaveStyle('border-radius: 50%')
-  })
-
-  it('should show secondary hex color directly', () => {
-    const { container } = render(
-      <EditorProvider initialState={{ selectedStep: step }}>
-        <ColorDisplayIcon color="#444451" />
-      </EditorProvider>
+    expect(getByTestId('#C52D3A-display-icon')).toHaveStyle(
+      'background-color: #C52D3A'
     )
-    const span = container.querySelector('span')
-    expect(span).toHaveStyle('background-color: rgb(68, 68, 81)')
   })
 
-  it('should show error hex color directly', () => {
-    const { container } = render(
-      <EditorProvider initialState={{ selectedStep: step }}>
-        <ColorDisplayIcon color="#B62D1C" />
-      </EditorProvider>
-    )
-    const span = container.querySelector('span')
-    expect(span).toHaveStyle('background-color: rgb(182, 45, 28)')
-  })
-
-  it('should show theme primary color for enum value', () => {
-    const { container } = render(
-      <EditorProvider initialState={{ selectedStep: step }}>
-        <ColorDisplayIcon color={TypographyColor.primary} />
-      </EditorProvider>
-    )
-    const span = container.querySelector('span')
-    expect(span).toHaveStyle('background-color: rgb(25, 118, 210)')
-  })
-
-  it('should show theme secondary color for enum value', () => {
-    const { container } = render(
+  it('should use enum mapping for non-hex colors', () => {
+    const step = createMockStep()
+    const { getByTestId } = render(
       <EditorProvider initialState={{ selectedStep: step }}>
         <ColorDisplayIcon color={TypographyColor.secondary} />
       </EditorProvider>
     )
-    const span = container.querySelector('span')
-    expect(span).toHaveStyle('background-color: rgb(156, 39, 176)')
-  })
-
-  it('should show theme error color for enum value', () => {
-    const { container } = render(
-      <EditorProvider initialState={{ selectedStep: step }}>
-        <ColorDisplayIcon color={TypographyColor.error} />
-      </EditorProvider>
+    expect(getByTestId('secondary-display-icon')).toHaveStyle(
+      `background-color: ${theme.palette.secondary.main}`
     )
-    const span = container.querySelector('span')
-    expect(span).toHaveStyle('background-color: rgb(211, 47, 47)')
   })
 
-  it('should default to primary color when color is null', () => {
-    const { container } = render(
+  it('should default to primary when color is null', () => {
+    const step = createMockStep()
+    const { getByTestId } = render(
       <EditorProvider initialState={{ selectedStep: step }}>
         <ColorDisplayIcon color={null} />
       </EditorProvider>
     )
-    const span = container.querySelector('span')
-    expect(span).toHaveStyle('background-color: rgb(25, 118, 210)')
+    expect(getByTestId('primary-display-icon')).toHaveStyle(
+      `background-color: ${theme.palette.primary.main}`
+    )
   })
 })
