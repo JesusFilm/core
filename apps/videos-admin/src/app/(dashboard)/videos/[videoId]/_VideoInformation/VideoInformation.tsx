@@ -362,6 +362,7 @@ export function VideoInformation({
                 helperText={errors.title as string}
                 sx={{ flexGrow: 1 }}
                 spellCheck={true}
+                placeholder="Please enter a title, up to 60 characters."
               />
               <TextField
                 id="url"
