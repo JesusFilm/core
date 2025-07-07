@@ -1,3 +1,4 @@
+import { AssetOptions } from '@mux/mux-node/resources/video/assets'
 import { GraphQLError } from 'graphql'
 
 import { Prisma } from '.prisma/api-media-client'
@@ -12,7 +13,8 @@ import {
   deleteVideo,
   enableDownload,
   getUpload,
-  getVideo
+  getVideo,
+  mapStaticResolutionTierToDownloadQuality
 } from './service'
 
 const MuxVideo = builder.prismaObject('MuxVideo', {
@@ -126,6 +128,29 @@ builder.queryFields((t) => ({
               duration: Math.ceil(muxVideo.duration ?? 0)
             }
           })
+          // Auto add downloads for all available resolutions (size will be updated later)
+          if (muxVideo.static_renditions?.files != null) {
+            const data = muxVideo.static_renditions.files
+              .filter(
+                (file) =>
+                  file.resolution_tier != null &&
+                  mapStaticResolutionTierToDownloadQuality(
+                    file.resolution_tier
+                  ) != null
+              )
+              .map((file) => ({
+                muxVideoId: video.id,
+                quality: mapStaticResolutionTierToDownloadQuality(
+                  file.resolution_tier as AssetOptions.StaticRendition['resolution']
+                ),
+                url: `https://stream.mux.com/${muxVideo.playback_ids?.[0].id}/${file.resolution_tier}.mp4`
+              }))
+            if (data.length > 0) {
+              await prisma.videoVariantDownload.createMany({
+                data: data as Prisma.VideoVariantDownloadCreateManyInput[]
+              })
+            }
+          }
         }
       }
       return video
@@ -191,12 +216,17 @@ builder.mutationFields((t) => ({
       nullable: false,
       args: {
         name: t.arg({ type: 'String', required: true }),
-        userGenerated: t.arg({ type: 'Boolean', required: false })
+        userGenerated: t.arg({ type: 'Boolean', required: false }),
+        downloadable: t.arg({
+          type: 'Boolean',
+          required: false,
+          defaultValue: false
+        })
       },
       resolve: async (
         query,
         _root,
-        { name, userGenerated },
+        { name, userGenerated, downloadable },
         { user, currentRoles }
       ) => {
         if (user == null)
@@ -207,8 +237,11 @@ builder.mutationFields((t) => ({
         const isUserGenerated = !currentRoles.includes('publisher')
           ? true
           : (userGenerated ?? true)
-        const { id, uploadUrl } =
-          await createVideoByDirectUpload(isUserGenerated)
+        const { id, uploadUrl } = await createVideoByDirectUpload(
+          isUserGenerated,
+          undefined,
+          downloadable ?? false
+        )
 
         return await prisma.muxVideo.create({
           ...query,
@@ -216,7 +249,8 @@ builder.mutationFields((t) => ({
             uploadId: id,
             uploadUrl,
             userId: user.id,
-            name
+            name,
+            downloadable: downloadable ?? false
           }
         })
       }
@@ -226,12 +260,17 @@ builder.mutationFields((t) => ({
     nullable: false,
     args: {
       url: t.arg({ type: 'String', required: true }),
-      userGenerated: t.arg({ type: 'Boolean', required: false })
+      userGenerated: t.arg({ type: 'Boolean', required: false }),
+      downloadable: t.arg({
+        type: 'Boolean',
+        required: false,
+        defaultValue: false
+      })
     },
     resolve: async (
       query,
       _root,
-      { url, userGenerated },
+      { url, userGenerated, downloadable },
       { user, currentRoles }
     ) => {
       if (user == null)
@@ -243,13 +282,19 @@ builder.mutationFields((t) => ({
         ? true
         : (userGenerated ?? true)
 
-      const { id } = await createVideoFromUrl(url, isUserGenerated)
+      const { id } = await createVideoFromUrl(
+        url,
+        isUserGenerated,
+        undefined,
+        downloadable ?? false
+      )
 
       return await prisma.muxVideo.create({
         ...query,
         data: {
           assetId: id,
-          userId: user.id
+          userId: user.id,
+          downloadable: downloadable ?? false
         }
       })
     }

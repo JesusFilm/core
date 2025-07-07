@@ -183,8 +183,8 @@ type Mutation {
   bibleCitationUpdate(input: MutationBibleCitationUpdateInput!): BibleCitation
   bibleCitationDelete(id: ID!): Boolean
   createKeyword(value: String!, languageId: String!): Keyword!
-  createMuxVideoUploadByFile(name: String!, userGenerated: Boolean): MuxVideo!
-  createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean): MuxVideo!
+  createMuxVideoUploadByFile(name: String!, userGenerated: Boolean, downloadable: Boolean = false): MuxVideo!
+  createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean, downloadable: Boolean = false): MuxVideo!
   enableMuxDownload(id: ID!, resolution: String): MuxVideo
   deleteMuxVideo(id: ID!, userGenerated: Boolean): Boolean!
 

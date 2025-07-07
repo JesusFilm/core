@@ -1,4 +1,7 @@
 import Mux from '@mux/mux-node'
+import { AssetOptions } from '@mux/mux-node/resources/video/assets'
+
+import { VideoVariantDownloadQuality } from '.prisma/api-media-client'
 
 function getClient(userGenerated: boolean): Mux {
   if (userGenerated) {
@@ -28,6 +31,23 @@ function getClient(userGenerated: boolean): Mux {
 
 type ResolutionTier = '1080p' | '1440p' | '2160p' | undefined
 
+export function mapStaticResolutionTierToDownloadQuality(
+  resolutionTier: AssetOptions.StaticRendition['resolution']
+): VideoVariantDownloadQuality | null {
+  switch (resolutionTier) {
+    case '270p':
+      return VideoVariantDownloadQuality.low
+    case '360p':
+      return VideoVariantDownloadQuality.sd
+    case '720p':
+      return VideoVariantDownloadQuality.high
+    case 'highest':
+      return VideoVariantDownloadQuality.highest
+    default:
+      return null
+  }
+}
+
 export async function createVideoByDirectUpload(
   userGenerated: boolean,
   maxResolution: ResolutionTier = '1080p',
@@ -41,7 +61,14 @@ export async function createVideoByDirectUpload(
       encoding_tier: 'smart',
       playback_policy: ['public'],
       max_resolution_tier: maxResolution,
-      mp4_support: downloadable ? 'capped-1080p' : 'none'
+      static_renditions: downloadable
+        ? [
+            { resolution: '270p' },
+            { resolution: '360p' },
+            { resolution: '720p' },
+            { resolution: 'highest' }
+          ]
+        : []
     }
   })
 
@@ -72,7 +99,14 @@ export async function createVideoFromUrl(
     encoding_tier: 'smart',
     playback_policy: ['public'],
     max_resolution_tier: maxResolution,
-    mp4_support: downloadable ? 'capped-1080p' : 'none'
+    static_renditions: downloadable
+      ? [
+          { resolution: '270p' },
+          { resolution: '360p' },
+          { resolution: '720p' },
+          { resolution: 'highest' }
+        ]
+      : []
   })
 }
 
