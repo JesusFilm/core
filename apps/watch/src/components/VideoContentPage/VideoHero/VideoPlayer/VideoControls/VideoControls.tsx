@@ -42,7 +42,7 @@ const DynamicLanguageSwitchDialog = dynamic<{
   async () =>
     await import(
       /* webpackChunkName: "LanguageSwitchDialog" */
-      '../../../../LanguageSwitchDialogNew/LanguageSwitchDialog'
+      '../../../../LanguageSwitchDialog/LanguageSwitchDialog'
     ).then((mod) => mod.LanguageSwitchDialog)
 )
 

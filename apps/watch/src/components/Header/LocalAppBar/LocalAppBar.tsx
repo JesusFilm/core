@@ -15,7 +15,7 @@ const DynamicLanguageSwitchDialog = dynamic(
   () =>
     import(
       /* webpackChunkName: "LanguageSwitchDialog" */
-      '../../LanguageSwitchDialogNew'
+      '../../LanguageSwitchDialog'
     ).then((mod) => mod.LanguageSwitchDialog),
   { ssr: false }
 )
