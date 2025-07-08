@@ -10,8 +10,10 @@ import { videoCacheReset } from '../../lib/videoCacheReset'
 import { updateVideoInAlgolia } from '../../workers/algolia/service'
 import { builder } from '../builder'
 import { ImageAspectRatio } from '../cloudflare/image/enums'
+import { deleteR2File } from '../cloudflare/r2/asset'
 import { IdType, IdTypeShape } from '../enums/idType'
 import { Language, LanguageWithSlug } from '../language'
+import { deleteVideo } from '../mux/video/service'
 import { VideoSource, VideoSourceShape } from '../videoSource/videoSource'
 import { VideoVariantFilter } from '../videoVariant/inputs/videoVariantFilter'
 
@@ -662,6 +664,118 @@ builder.mutationFields((t) => ({
       } catch {}
 
       return video
+    }
+  }),
+  videoDelete: t.withAuth({ isPublisher: true }).prismaField({
+    type: 'Video',
+    nullable: false,
+    args: {
+      id: t.arg.id({ required: true })
+    },
+    resolve: async (query, _parent, { id }) => {
+      // First, get the video to check if it has ever been published
+      const video = await prisma.video.findUnique({
+        where: { id },
+        select: {
+          id: true,
+          published: true,
+          publishedAt: true,
+          // Get data for cleanup that won't cascade automatically
+          variants: {
+            select: {
+              muxVideoId: true,
+              muxVideo: {
+                select: {
+                  assetId: true
+                }
+              }
+            }
+          },
+          cloudflareAssets: {
+            select: {
+              id: true,
+              fileName: true
+            }
+          }
+        }
+      })
+
+      if (video == null) {
+        throw new GraphQLError(`Video with id ${id} not found`)
+      }
+
+      // Only allow deletion of videos that have never been published (publishedAt is null)
+      if (video.publishedAt != null) {
+        throw new GraphQLError(
+          'Cannot delete videos that have been published. Only draft videos that have never been published can be deleted.'
+        )
+      }
+
+      // Clean up assets that won't cascade automatically
+
+      // 1. Delete CloudflareR2 assets (these don't cascade)
+      for (const asset of video.cloudflareAssets) {
+        try {
+          // Delete the actual file from Cloudflare R2 storage
+          if (asset.fileName != null) {
+            await deleteR2File(asset.fileName)
+          }
+
+          // Delete the database record
+          await prisma.cloudflareR2.delete({
+            where: { id: asset.id }
+          })
+        } catch (error) {
+          // Log error but continue with other deletions
+          console.error(`Failed to delete R2 asset ${asset.id}:`, error)
+        }
+      }
+
+      // 2. Clean up Mux assets (these don't cascade and need external API calls)
+      for (const variant of video.variants) {
+        if (variant.muxVideoId != null && variant.muxVideo?.assetId != null) {
+          try {
+            // Delete from Mux service first
+            await deleteVideo(variant.muxVideo.assetId, false)
+
+            // Delete from our database
+            await prisma.muxVideo.delete({
+              where: { id: variant.muxVideoId }
+            })
+          } catch (error) {
+            // Log error but continue with deletion
+            console.error(
+              `Failed to delete Mux video ${variant.muxVideoId}:`,
+              error
+            )
+          }
+        }
+      }
+
+      // 3. Delete BibleCitations manually (these don't cascade)
+      await prisma.bibleCitation.deleteMany({
+        where: { videoId: id }
+      })
+
+      // 4. Delete the video (this will cascade delete most related records automatically)
+      const deletedVideo = await prisma.video.delete({
+        ...query,
+        where: { id }
+      })
+
+      try {
+        await updateVideoInAlgolia(id)
+      } catch (error) {
+        console.error('Algolia update error:', error)
+      }
+
+      try {
+        await videoCacheReset(id)
+      } catch (error) {
+        console.error('Cache reset error:', error)
+      }
+
+      return deletedVideo
     }
   })
 }))

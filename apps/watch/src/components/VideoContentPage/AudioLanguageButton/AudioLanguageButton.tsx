@@ -4,11 +4,10 @@ import LanguageOutlined from '@mui/icons-material/LanguageOutlined'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
-import { alpha } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useCallback, useState } from 'react'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
@@ -49,6 +48,10 @@ export function AudioLanguageButton({
     setOpenAudioLanguageDialog(true)
     setLoadAudioLanguageDialog(true)
   }
+
+  const handleAudioLanguageDialogClose = useCallback(() => {
+    setOpenAudioLanguageDialog(false)
+  }, [])
 
   return (
     <ThemeProvider themeName={ThemeName.website} themeMode={ThemeMode.light}>
@@ -106,7 +109,7 @@ export function AudioLanguageButton({
       {loadAudioLanguageDialog && (
         <DynamicAudioLanguageDialog
           open={openAudioLanguageDialog}
-          onClose={() => setOpenAudioLanguageDialog(false)}
+          onClose={handleAudioLanguageDialogClose}
         />
       )}
     </ThemeProvider>
