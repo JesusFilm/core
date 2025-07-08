@@ -103,9 +103,13 @@ export function HeroVideo({ isFullscreen }: HeroVideoProps): ReactElement {
 
   return (
     <div
-      className={`fixed top-0 left-0 right-0 mx-auto z-0 vjs-hide-loading-spinners ${
-        isFullscreen ? 'h-full max-w-full' : 'h-[90%] md:h-[80%] max-w-[1920px]'
-      }`}
+      className={`fixed top-0 left-0 right-0 mx-auto z-0 vjs-hide-loading-spinners 
+        [body[style*='padding-right']_&]:right-5
+        ${
+          isFullscreen
+            ? 'h-full max-w-full'
+            : 'h-[90%] md:h-[80%] max-w-[1920px]'
+        }`}
       data-testid="ContentHeroVideoContainer"
     >
       {variant?.hls && (
