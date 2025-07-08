@@ -76,7 +76,8 @@ const step1: TreeBlock<StepBlock> = {
             gtmEventName: null,
             blockId: 'step2.id'
           },
-          children: []
+          children: [],
+          settings: null
         }
       ]
     }

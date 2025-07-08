@@ -21,7 +21,13 @@ import fscreen from 'fscreen'
 import debounce from 'lodash/debounce'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
-import { MouseEventHandler, ReactElement, useEffect, useState } from 'react'
+import {
+  MouseEventHandler,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useState
+} from 'react'
 import Player from 'video.js/dist/types/player'
 
 import { isMobile } from '@core/shared/ui/deviceUtils'
@@ -470,6 +476,13 @@ export function VideoControls({
     })
   }
 
+  const handleSubtitleDialogClose = useCallback(() => {
+    dispatch({
+      type: 'SetOpenSubtitleDialog',
+      openSubtitleDialog: false
+    })
+  }, [dispatch])
+
   return (
     <Box
       sx={{
@@ -757,12 +770,7 @@ export function VideoControls({
                 <DynamicSubtitleDialog
                   open={openSubtitleDialog}
                   player={player}
-                  onClose={() =>
-                    dispatch({
-                      type: 'SetOpenSubtitleDialog',
-                      openSubtitleDialog: false
-                    })
-                  }
+                  onClose={handleSubtitleDialogClose}
                 />
               )}
             </Container>
