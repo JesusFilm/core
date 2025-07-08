@@ -17,11 +17,13 @@ describe('FontSelect', () => {
         icon={<Header1Icon />}
         labelId="label-id"
         selectId="select-id"
+        helperText="Helper text"
       />
     )
     expect(screen.getByRole('combobox', { name: 'Label' })).toHaveTextContent(
       'Option 1'
     )
+    expect(screen.getByText('Helper text')).toBeInTheDocument()
 
     fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Label' }))
     expect(screen.getByRole('option', { name: 'Option 2' })).toBeInTheDocument()
@@ -42,6 +44,21 @@ describe('FontSelect', () => {
     expect(screen.getByRole('combobox', { name: 'Label' })).toHaveTextContent(
       'None'
     )
+  })
+
+  it('should render without helper text', () => {
+    render(
+      <FontSelect
+        label="Label"
+        value="Option 1"
+        options={['Option 1', 'Option 2']}
+        onChange={handleChange}
+        icon={<Header1Icon />}
+        labelId="label-id"
+        selectId="select-id"
+      />
+    )
+    expect(screen.queryByText('Helper text')).not.toBeInTheDocument()
   })
 
   it('should call onChange when option is selected', () => {
