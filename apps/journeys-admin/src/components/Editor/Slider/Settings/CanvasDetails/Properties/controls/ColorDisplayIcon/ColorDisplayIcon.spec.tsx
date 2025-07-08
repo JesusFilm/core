@@ -2,9 +2,11 @@ import { render } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { getTheme } from '@core/shared/ui/themes'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../../__generated__/BlockFields'
+import { GetJourney_journey as Journey } from '../../../../../../../../../__generated__/GetJourney'
 import {
   ThemeMode,
   ThemeName,
@@ -13,13 +15,10 @@ import {
 
 import { ColorDisplayIcon } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
-  __esModule: true,
-  default: () => true
-}))
-
 describe('ColorDisplayIcon', () => {
-  const createMockStep = (): TreeBlock<StepBlock> => ({
+  const createMockStep = (
+    themeMode: ThemeMode = ThemeMode.dark
+  ): TreeBlock<StepBlock> => ({
     id: 'step.id',
     __typename: 'StepBlock',
     parentBlockId: null,
@@ -35,18 +34,13 @@ describe('ColorDisplayIcon', () => {
         coverBlockId: null,
         parentOrder: 0,
         backgroundColor: null,
-        themeMode: ThemeMode.dark,
+        themeMode,
         themeName: ThemeName.base,
         fullscreen: false,
         backdropBlur: null,
         children: []
       }
     ]
-  })
-
-  const theme = getTheme({
-    themeName: ThemeName.base,
-    themeMode: ThemeMode.dark
   })
 
   it('should display hex colors directly', () => {
@@ -61,15 +55,53 @@ describe('ColorDisplayIcon', () => {
     )
   })
 
-  it('should use enum mapping for non-hex colors', () => {
+  it('should use dark theme mapping for non-hex colors', () => {
     const step = createMockStep()
     const { getByTestId } = render(
-      <EditorProvider initialState={{ selectedStep: step }}>
-        <ColorDisplayIcon color={TypographyColor.secondary} />
-      </EditorProvider>
+      <JourneyProvider
+        value={{
+          journey: {
+            id: 'journey.id',
+            themeMode: ThemeMode.dark
+          } as unknown as Journey,
+          variant: 'admin'
+        }}
+      >
+        <EditorProvider initialState={{ selectedStep: step }}>
+          <ColorDisplayIcon color={TypographyColor.secondary} />
+        </EditorProvider>
+      </JourneyProvider>
     )
     expect(getByTestId('secondary-display-icon')).toHaveStyle(
-      `background-color: ${theme.palette.secondary.main}`
+      `background-color: ${
+        getTheme({ themeName: ThemeName.base, themeMode: ThemeMode.dark })
+          .palette.secondary.main
+      }`
+    )
+  })
+
+  it('should use light theme mapping for non-hex colors', () => {
+    const step = createMockStep(ThemeMode.light)
+    const { getByTestId } = render(
+      <JourneyProvider
+        value={{
+          journey: {
+            id: 'journey.id',
+            themeMode: ThemeMode.light
+          } as unknown as Journey,
+          variant: 'admin'
+        }}
+      >
+        <EditorProvider initialState={{ selectedStep: step }}>
+          <ColorDisplayIcon color={TypographyColor.primary} />
+        </EditorProvider>
+      </JourneyProvider>
+    )
+    expect(getByTestId('primary-display-icon')).toHaveStyle(
+      `background-color: ${
+        getTheme({ themeName: ThemeName.base, themeMode: ThemeMode.light })
+          .palette.primary.main
+      }`
     )
   })
 
@@ -81,7 +113,10 @@ describe('ColorDisplayIcon', () => {
       </EditorProvider>
     )
     expect(getByTestId('primary-display-icon')).toHaveStyle(
-      `background-color: ${theme.palette.primary.main}`
+      `background-color: ${
+        getTheme({ themeName: ThemeName.base, themeMode: ThemeMode.dark })
+          .palette.primary.main
+      }`
     )
   })
 })

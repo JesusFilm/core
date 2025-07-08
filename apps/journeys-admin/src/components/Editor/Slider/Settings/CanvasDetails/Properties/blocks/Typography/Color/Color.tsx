@@ -9,10 +9,19 @@ import { object, string } from 'yup'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
+import { getTheme } from '@core/shared/ui/themes'
 
-import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import { TypographyColor } from '../../../../../../../../../../__generated__/globalTypes'
+import {
+  BlockFields_CardBlock as CardBlock,
+  BlockFields_TypographyBlock as TypographyBlock
+} from '../../../../../../../../../../__generated__/BlockFields'
+import {
+  ThemeMode,
+  ThemeName,
+  TypographyColor
+} from '../../../../../../../../../../__generated__/globalTypes'
 import {
   TypographyBlockUpdateColor,
   TypographyBlockUpdateColorVariables
@@ -46,22 +55,34 @@ export function Color(): ReactElement {
     state: { selectedBlock: stateSelectedBlock, selectedStep },
     dispatch
   } = useEditor()
+  const { journey } = useJourney()
 
   const selectedBlock = stateSelectedBlock as
     | TreeBlock<TypographyBlock>
     | undefined
 
-  // Convert TypographyColor enum to hex color
+  // Get the card that contains this typography block
+  const card = selectedStep?.children.find(
+    (block) => block.__typename === 'CardBlock'
+  ) as TreeBlock<CardBlock> | undefined
+
+  // Convert TypographyColor enum to theme-aware hex color
   function enumToHex(enumColor: TypographyColor | null): string {
+    // Get the current theme
+    const theme = getTheme({
+      themeName: card?.themeName ?? journey?.themeName ?? ThemeName.base,
+      themeMode: card?.themeMode ?? journey?.themeMode ?? ThemeMode.dark
+    })
+
     switch (enumColor) {
       case TypographyColor.primary:
-        return '#C52D3A'
+        return theme.palette.primary.main
       case TypographyColor.secondary:
-        return '#444451'
+        return theme.palette.secondary.main
       case TypographyColor.error:
-        return '#B62D1C'
+        return theme.palette.error.main
       default:
-        return '#C52D3A'
+        return theme.palette.primary.main
     }
   }
 
