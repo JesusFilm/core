@@ -230,10 +230,13 @@ export enum VideoVariantDownloadQuality {
   distroHigh = "distroHigh",
   distroLow = "distroLow",
   distroSd = "distroSd",
+  fhd = "fhd",
   high = "high",
   highest = "highest",
   low = "low",
+  qhd = "qhd",
   sd = "sd",
+  uhd = "uhd",
 }
 
 export interface ButtonClickEventCreateInput {

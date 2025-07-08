@@ -3308,13 +3308,16 @@ enum VideoLabel @join__type(graph: API_MEDIA)  {
 }
 
 enum VideoVariantDownloadQuality @join__type(graph: API_MEDIA)  {
-  low @join__enumValue(graph: API_MEDIA) 
-  sd @join__enumValue(graph: API_MEDIA) 
-  high @join__enumValue(graph: API_MEDIA) 
-  highest @join__enumValue(graph: API_MEDIA) 
   distroLow @join__enumValue(graph: API_MEDIA) 
   distroSd @join__enumValue(graph: API_MEDIA) 
   distroHigh @join__enumValue(graph: API_MEDIA) 
+  low @join__enumValue(graph: API_MEDIA) 
+  sd @join__enumValue(graph: API_MEDIA) 
+  high @join__enumValue(graph: API_MEDIA) 
+  fhd @join__enumValue(graph: API_MEDIA) 
+  qhd @join__enumValue(graph: API_MEDIA) 
+  uhd @join__enumValue(graph: API_MEDIA) 
+  highest @join__enumValue(graph: API_MEDIA) 
 }
 
 input SiteCreateInput @join__type(graph: API_ANALYTICS)  {

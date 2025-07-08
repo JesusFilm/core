@@ -1,7 +1,7 @@
 import { AssetOptions } from '@mux/mux-node/resources/video/assets'
 import { GraphQLError } from 'graphql'
 
-import { Prisma } from '.prisma/api-media-client'
+import { Prisma, VideoVariantDownloadQuality } from '.prisma/api-media-client'
 
 import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
@@ -11,7 +11,9 @@ import {
   createVideoByDirectUpload,
   createVideoFromUrl,
   deleteVideo,
+  downloadsReadyToStore,
   enableDownload,
+  getHighestResolutionDownload,
   getUpload,
   getVideo,
   mapStaticResolutionTierToDownloadQuality
@@ -117,7 +119,8 @@ builder.queryFields((t) => ({
 
         if (
           muxVideo.status === 'ready' &&
-          muxVideo.playback_ids?.[0].id != null
+          muxVideo.playback_ids?.[0].id != null &&
+          downloadsReadyToStore(muxVideo)
         ) {
           video = await prisma.muxVideo.update({
             ...query,
@@ -130,24 +133,36 @@ builder.queryFields((t) => ({
           })
           // Auto add downloads for all available resolutions (size will be updated later)
           if (muxVideo.static_renditions?.files != null) {
-            const data = muxVideo.static_renditions.files
-              .filter(
-                (file) =>
-                  file.resolution_tier != null &&
-                  mapStaticResolutionTierToDownloadQuality(
-                    file.resolution_tier
-                  ) != null
-              )
-              .map((file) => ({
-                muxVideoId: video.id,
-                quality: mapStaticResolutionTierToDownloadQuality(
-                  file.resolution_tier as AssetOptions.StaticRendition['resolution']
-                ),
-                url: `https://stream.mux.com/${muxVideo.playback_ids?.[0].id}/${file.resolution_tier}.mp4`
-              }))
-            if (data.length > 0) {
+            const validDownloads: Prisma.VideoVariantDownloadCreateManyInput[] =
+              muxVideo.static_renditions.files
+                .filter(
+                  (file) =>
+                    file != null &&
+                    file.resolution_tier != null &&
+                    file.status !== 'skipped' &&
+                    file.status !== 'errored' &&
+                    mapStaticResolutionTierToDownloadQuality(
+                      file.resolution_tier
+                    ) != null
+                )
+                .map((file) => ({
+                  muxVideoId: video.id,
+                  quality: mapStaticResolutionTierToDownloadQuality(
+                    file.resolution_tier as AssetOptions.StaticRendition['resolution']
+                  ) as VideoVariantDownloadQuality,
+                  url: `https://stream.mux.com/${muxVideo.playback_ids?.[0].id}/${file.resolution_tier}.mp4`,
+                  version: 1,
+                  size: file.filesize ? parseInt(file.filesize) : 0,
+                  height: file.height ?? 0,
+                  width: file.width ?? 0,
+                  bitrate: file.bitrate ?? 0
+                }))
+            if (validDownloads.length > 0) {
+              // find the highest quality by enum up to uhd since mux doesn't generate highest enum
+              const highest = getHighestResolutionDownload(validDownloads)
+              const data = [...validDownloads, highest]
               await prisma.videoVariantDownload.createMany({
-                data: data as Prisma.VideoVariantDownloadCreateManyInput[]
+                data: data
               })
             }
           }

@@ -1076,13 +1076,16 @@ input VideoVariantDownloadCreateInput {
 }
 
 enum VideoVariantDownloadQuality {
-  low
-  sd
-  high
-  highest
   distroLow
   distroSd
   distroHigh
+  low
+  sd
+  high
+  fhd
+  qhd
+  uhd
+  highest
 }
 
 input VideoVariantDownloadUpdateInput {

@@ -5166,10 +5166,13 @@ export enum VideoVariantDownloadQuality {
   DistroHigh = 'distroHigh',
   DistroLow = 'distroLow',
   DistroSd = 'distroSd',
+  Fhd = 'fhd',
   High = 'high',
   Highest = 'highest',
   Low = 'low',
-  Sd = 'sd'
+  Qhd = 'qhd',
+  Sd = 'sd',
+  Uhd = 'uhd'
 }
 
 export type VideoVariantDownloadUpdateInput = {
