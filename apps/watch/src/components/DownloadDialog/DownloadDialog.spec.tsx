@@ -86,7 +86,7 @@ describe('DownloadDialog', () => {
 
     await waitFor(() => {
       expect(onDownload).toHaveBeenCalledWith(
-        video.variant?.downloads[1].url,
+        video.variant?.downloads[0].url,
         `${video.title[0].value}.mp4`
       )
     })

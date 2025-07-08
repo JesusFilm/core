@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from '@storybook/react'
-import { ComponentPropsWithoutRef } from 'react'
+import { ComponentProps } from 'react'
 
 import Header1Icon from '@core/shared/ui/icons/Header1'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
@@ -13,7 +13,7 @@ const FontSelectStory: Meta<typeof FontSelect> = {
     'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Typography/ThemeBuilderDialog/ThemeSettings/FontSelect'
 }
 
-const Template: StoryObj<ComponentPropsWithoutRef<typeof FontSelect>> = {
+const Template: StoryObj<ComponentProps<typeof FontSelect>> = {
   render: (args) => <FontSelect {...args} />
 }
 

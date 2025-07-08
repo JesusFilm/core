@@ -209,6 +209,8 @@ import UsersProfiles3 from './UsersProfiles3'
 import Viber from './Viber'
 import VideoOn from './VideoOn'
 import Vk from './Vk'
+import Volume5 from './Volume5'
+import VolumeOff from './VolumeOff'
 import Web from './Web'
 import WhatsApp from './WhatsApp'
 import X1 from './X1'
@@ -427,6 +429,8 @@ export type IconName =
   | 'Viber'
   | 'VideoOn'
   | 'Vk'
+  | 'VolumeOff'
+  | 'Volume5'
   | 'Web'
   | 'WhatsApp'
   | 'X1'
@@ -649,6 +653,8 @@ const iconComponents: IconComponents = {
   Viber,
   VideoOn,
   Vk,
+  VolumeOff,
+  Volume5,
   Web,
   WhatsApp,
   X1,

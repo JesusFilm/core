@@ -5,7 +5,7 @@ import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikValues } from 'formik'
 import compact from 'lodash/compact'
 import { useRouter } from 'next/router'
-import { ComponentProps, ReactElement } from 'react'
+import { ComponentProps, ReactElement, memo } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
@@ -34,7 +34,7 @@ export const GET_LANGUAGES_SLUG = gql`
 interface AudioLanguageDialogProps
   extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {}
 
-export function AudioLanguageDialog({
+export const AudioLanguageDialog = memo(function AudioLanguageDialog({
   open,
   onClose
 }: AudioLanguageDialogProps): ReactElement {
@@ -169,4 +169,4 @@ export function AudioLanguageDialog({
       )}
     </>
   )
-}
+})

@@ -49,7 +49,11 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
     return font.trim().replace(/ /g, '+')
   }
 
-  const googleFontsUrl = `https://fonts.googleapis.com/css2?${journeyFonts.map((font) => `family=${formatFontName(font)}:wght@400;500;600;700;800`).join('&')}&display=swap`
+  const fontsParam = journeyFonts
+    .map((font) => `family=${formatFontName(font)}:wght@400;500;600;700;800`)
+    .join('&')
+
+  const googleFontsUrl = `https://fonts.googleapis.com/css2?${fontsParam}&display=swap`
 
   return (
     <>

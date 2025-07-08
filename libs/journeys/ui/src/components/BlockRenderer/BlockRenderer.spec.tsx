@@ -63,7 +63,8 @@ describe('BlockRenderer', () => {
       endIconId: null,
       submitEnabled: null,
       action: null,
-      children: []
+      children: [],
+      settings: null
     }
     const { getByText } = render(
       <MockedProvider>
@@ -89,7 +90,8 @@ describe('BlockRenderer', () => {
       endIconId: null,
       submitEnabled: null,
       action: null,
-      children: []
+      children: [],
+      settings: null
     }
     const { getByTestId, getByText } = render(
       <MockedProvider>
@@ -462,7 +464,8 @@ describe('BlockRenderer', () => {
           endIconId: null,
           submitEnabled: null,
           action: null,
-          children: []
+          children: [],
+          settings: null
         }
       ]
     }
@@ -501,7 +504,8 @@ describe('BlockRenderer', () => {
           endIconId: null,
           submitEnabled: null,
           action: null,
-          children: []
+          children: [],
+          settings: null
         }
       ]
     }

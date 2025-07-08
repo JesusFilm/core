@@ -46,7 +46,11 @@ function Content({
       return font.trim().replace(/ /g, '+')
     }
 
-    const googleFontsUrl = `https://fonts.googleapis.com/css2?${validFonts.map((font) => `family=${formatFontName(font)}:wght@400;500;600;700;800`).join('&')}&display=swap`
+    const fontsParam = validFonts
+      .map((font) => `family=${formatFontName(font)}:wght@400;500;600;700;800`)
+      .join('&')
+
+    const googleFontsUrl = `https://fonts.googleapis.com/css2?${fontsParam}&display=swap`
 
     document.head.innerHTML = `${window.document.head.innerHTML}<link href="${googleFontsUrl}" rel="stylesheet" />`
 

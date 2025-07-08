@@ -188,7 +188,8 @@ export const publishedJourney: Journey = {
       startIconId: 'icon',
       endIconId: null,
       submitEnabled: null,
-      action: null
+      action: null,
+      settings: null
     },
     {
       id: 'icon',
@@ -274,7 +275,8 @@ export const blocks: Block[] = [
       parentBlockId: 'button0.id',
       gtmEventName: 'gtmEventName',
       blockId: 'step1.id'
-    }
+    },
+    settings: null
   },
   {
     id: 'icon0-1.id',
@@ -401,7 +403,8 @@ export const blocks: Block[] = [
       parentBlockId: 'button1.id',
       gtmEventName: 'gtmEventName',
       blockId: 'step2.id'
-    }
+    },
+    settings: null
   },
   {
     id: 'icon1-1.id',
@@ -817,7 +820,8 @@ export const blocks: Block[] = [
       parentBlockId: 'button3.id',
       gtmEventName: 'gtmEventName',
       blockId: 'step6.id'
-    }
+    },
+    settings: null
   },
   {
     id: 'icon6-1.id',
