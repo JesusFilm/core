@@ -36,16 +36,13 @@ describe('Typography color selector', () => {
       </MockedProvider>
     )
 
-    // Should show the color swatch with default color (matches actual display behavior)
     expect(getByTestId('Swatch-typography-color-#FEFEFE')).toBeInTheDocument()
     expect(getByTestId('Swatch-typography-color-#FEFEFE')).toHaveStyle({
       backgroundColor: '#FEFEFE'
     })
 
-    // Should show the text input with the current color
     expect(getByRole('textbox')).toHaveValue('#FEFEFE')
 
-    // Should show the color picker
     expect(getByTestId('typographyColorPicker')).toBeInTheDocument()
   })
 
@@ -73,13 +70,11 @@ describe('Typography color selector', () => {
       </MockedProvider>
     )
 
-    // Should show the correct color swatch
     expect(getByTestId('Swatch-typography-color-#B62D1C')).toBeInTheDocument()
     expect(getByTestId('Swatch-typography-color-#B62D1C')).toHaveStyle({
       backgroundColor: '#B62D1C'
     })
 
-    // Should show the correct color in text input
     expect(getByRole('textbox')).toHaveValue('#B62D1C')
   })
 
