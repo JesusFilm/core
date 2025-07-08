@@ -23,63 +23,119 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: jest.fn()
 }))
 
-const mockJourney: JourneyFields = {
-  __typename: 'Journey',
-  id: 'journey-id',
-  slug: 'test-journey',
-  title: 'Test Journey',
-  description: 'Test description',
-  status: JourneyStatus.draft,
-  language: {
-    __typename: 'Language',
-    id: 'language-id',
-    bcp47: 'en',
-    iso3: 'eng',
-    name: []
-  },
-  createdAt: '2021-11-19T12:34:56.789Z',
-  updatedAt: '2021-11-19T12:34:56.789Z',
-  publishedAt: null,
-  featuredAt: null,
-  themeName: ThemeName.base,
-  themeMode: ThemeMode.light,
-  strategySlug: null,
-  seoTitle: null,
-  seoDescription: null,
-  template: null,
-  blocks: [],
-  primaryImageBlock: null,
-  creatorDescription: null,
-  creatorImageBlock: null,
-  userJourneys: [],
-  chatButtons: [],
-  host: null,
-  team: null,
-  tags: [],
-  website: null,
-  showShareButton: null,
-  showLikeButton: null,
-  showDislikeButton: null,
-  displayTitle: null,
-  logoImageBlock: null,
-  menuButtonIcon: null,
-  menuStepBlock: null,
-  journeyTheme: {
-    __typename: 'JourneyTheme',
-    id: 'theme-id',
-    headerFont: 'Roboto',
-    bodyFont: 'Open Sans',
-    labelFont: 'Lato'
-  }
-}
-
-const mockJourneyWithoutTheme: JourneyFields = {
-  ...mockJourney,
-  journeyTheme: null
-}
-
 describe('ThemeBuilderDialog', () => {
   const handleClose = jest.fn()
+
+  const mockJourney: JourneyFields = {
+    __typename: 'Journey',
+    id: 'journey-id',
+    slug: 'test-journey',
+    title: 'Test Journey',
+    description: 'Test description',
+    status: JourneyStatus.draft,
+    language: {
+      __typename: 'Language',
+      id: 'language-id',
+      bcp47: 'en',
+      iso3: 'eng',
+      name: []
+    },
+    createdAt: '2021-11-19T12:34:56.789Z',
+    updatedAt: '2021-11-19T12:34:56.789Z',
+    publishedAt: null,
+    featuredAt: null,
+    themeName: ThemeName.base,
+    themeMode: ThemeMode.light,
+    strategySlug: null,
+    seoTitle: null,
+    seoDescription: null,
+    template: null,
+    blocks: [],
+    primaryImageBlock: null,
+    creatorDescription: null,
+    creatorImageBlock: null,
+    userJourneys: [],
+    chatButtons: [],
+    host: null,
+    team: null,
+    tags: [],
+    website: null,
+    showShareButton: null,
+    showLikeButton: null,
+    showDislikeButton: null,
+    displayTitle: null,
+    logoImageBlock: null,
+    menuButtonIcon: null,
+    menuStepBlock: null,
+    journeyTheme: {
+      __typename: 'JourneyTheme',
+      id: 'theme-id',
+      headerFont: 'Roboto',
+      bodyFont: 'Open Sans',
+      labelFont: 'Lato'
+    }
+  }
+
+  const mockJourneyWithoutTheme: JourneyFields = {
+    ...mockJourney,
+    journeyTheme: null
+  }
+
+  const updateMock = {
+    request: {
+      query: JOURNEY_FONTS_UPDATE,
+      variables: {
+        id: 'theme-id',
+        input: {
+          headerFont: 'Roboto',
+          bodyFont: 'Open Sans',
+          labelFont: 'Lato'
+        }
+      }
+    },
+    result: jest.fn(() => {
+      return {
+        data: {
+          journeyThemeUpdate: {
+            __typename: 'JourneyTheme',
+            id: 'theme-id',
+            journeyId: 'journey-id',
+            headerFont: 'Roboto',
+            bodyFont: 'Open Sans',
+            labelFont: 'Lato'
+          }
+        }
+      }
+    })
+  }
+
+  const createMock = {
+    request: {
+      query: JOURNEY_FONTS_CREATE,
+      variables: {
+        input: {
+          journeyId: 'journey-id',
+          headerFont: '',
+          bodyFont: '',
+          labelFont: ''
+        }
+      }
+    },
+    result: jest.fn(() => {
+      return {
+        data: {
+          journeyThemeCreate: {
+            __typename: 'JourneyTheme',
+            id: 'new-theme-id',
+            journeyId: 'journey-id',
+            headerFont: '',
+            bodyFont: '',
+            labelFont: ''
+          }
+        }
+      }
+    })
+  }
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -100,15 +156,6 @@ describe('ThemeBuilderDialog', () => {
     expect(screen.getByText('Select Fonts')).toBeInTheDocument()
     expect(screen.getByText('Cancel')).toBeInTheDocument()
     expect(screen.getByText('Confirm')).toBeInTheDocument()
-    expect(screen.getByRole('combobox', { name: 'Header Font' })).toHaveValue(
-      'Roboto'
-    )
-    expect(
-      screen.getByRole('combobox', { name: 'Body Font' })
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole('combobox', { name: 'Label Font' })
-    ).toBeInTheDocument()
   })
 
   it('should initialize with journey theme values', () => {
@@ -122,9 +169,39 @@ describe('ThemeBuilderDialog', () => {
       </SnackbarProvider>
     )
 
-    expect(mockJourney.journeyTheme?.headerFont).toBe('Roboto')
-    expect(mockJourney.journeyTheme?.bodyFont).toBe('Open Sans')
-    expect(mockJourney.journeyTheme?.labelFont).toBe('Lato')
+    expect(
+      screen.getByRole('combobox', { name: 'Header Text' })
+    ).toHaveTextContent('Roboto')
+    expect(
+      screen.getByRole('combobox', { name: 'Body Text' })
+    ).toHaveTextContent('Open Sans')
+    expect(
+      screen.getByRole('combobox', { name: 'Label Text' })
+    ).toHaveTextContent('Lato')
+  })
+
+  it('should show none in dropdowns when journey theme is null', () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <JourneyProvider
+            value={{ journey: mockJourneyWithoutTheme, variant: 'admin' }}
+          >
+            <ThemeBuilderDialog open onClose={handleClose} />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    expect(
+      screen.getByRole('combobox', { name: 'Header Text' })
+    ).toHaveTextContent('None')
+    expect(
+      screen.getByRole('combobox', { name: 'Body Text' })
+    ).toHaveTextContent('None')
+    expect(
+      screen.getByRole('combobox', { name: 'Label Text' })
+    ).toHaveTextContent('None')
   })
 
   it('should call onClose when cancel button is clicked', () => {
@@ -139,36 +216,10 @@ describe('ThemeBuilderDialog', () => {
     )
 
     fireEvent.click(screen.getByText('Cancel'))
-    expect(handleClose).toHaveBeenCalledTimes(1)
+    expect(handleClose).toHaveBeenCalled()
   })
 
   it('should update journey fonts when confirm is clicked and theme exists', async () => {
-    const updateMock = {
-      request: {
-        query: JOURNEY_FONTS_UPDATE,
-        variables: {
-          id: 'theme-id',
-          input: {
-            headerFont: 'Roboto',
-            bodyFont: 'Open Sans',
-            labelFont: 'Lato'
-          }
-        }
-      },
-      result: {
-        data: {
-          journeyThemeUpdate: {
-            __typename: 'JourneyTheme',
-            id: 'theme-id',
-            journeyId: 'journey-id',
-            headerFont: 'Roboto',
-            bodyFont: 'Open Sans',
-            labelFont: 'Lato'
-          }
-        }
-      }
-    }
-
     render(
       <SnackbarProvider>
         <MockedProvider mocks={[updateMock]}>
@@ -182,37 +233,13 @@ describe('ThemeBuilderDialog', () => {
     fireEvent.click(screen.getByText('Confirm'))
 
     await waitFor(() => {
-      expect(handleClose).toHaveBeenCalledTimes(1)
+      expect(updateMock.result).toHaveBeenCalled()
     })
+    expect(handleClose).toHaveBeenCalled()
+    expect(screen.getByText('Fonts updated')).toBeInTheDocument()
   })
 
   it('should create journey fonts when confirm is clicked and theme does not exist', async () => {
-    const createMock = {
-      request: {
-        query: JOURNEY_FONTS_CREATE,
-        variables: {
-          input: {
-            journeyId: 'journey-id',
-            headerFont: '',
-            bodyFont: '',
-            labelFont: ''
-          }
-        }
-      },
-      result: {
-        data: {
-          journeyThemeCreate: {
-            __typename: 'JourneyTheme',
-            id: 'new-theme-id',
-            journeyId: 'journey-id',
-            headerFont: '',
-            bodyFont: '',
-            labelFont: ''
-          }
-        }
-      }
-    }
-
     render(
       <SnackbarProvider>
         <MockedProvider mocks={[createMock]}>
@@ -226,10 +253,11 @@ describe('ThemeBuilderDialog', () => {
     )
 
     fireEvent.click(screen.getByText('Confirm'))
-
     await waitFor(() => {
-      expect(handleClose).toHaveBeenCalledTimes(1)
+      expect(createMock.result).toHaveBeenCalled()
     })
+    expect(handleClose).toHaveBeenCalled()
+    expect(screen.getByText('Theme created')).toBeInTheDocument()
   })
 
   it('should show error snackbar when update fails', async () => {
@@ -247,7 +275,6 @@ describe('ThemeBuilderDialog', () => {
       },
       error: new Error('Update failed')
     }
-
     render(
       <SnackbarProvider>
         <MockedProvider mocks={[errorMock]}>
@@ -259,14 +286,12 @@ describe('ThemeBuilderDialog', () => {
     )
 
     fireEvent.click(screen.getByText('Confirm'))
-
-    // We can't easily test for the snackbar message since we're using the real SnackbarProvider
     await waitFor(() => {
-      // Just wait for the error to be processed
+      expect(screen.getByText('Failed to update fonts')).toBeInTheDocument()
     })
   })
 
-  it('should show error snackbar when create fails', async () => {
+  it('should show error snackbar when theme creation fails', async () => {
     const errorMock = {
       request: {
         query: JOURNEY_FONTS_CREATE,
@@ -295,16 +320,14 @@ describe('ThemeBuilderDialog', () => {
     )
 
     fireEvent.click(screen.getByText('Confirm'))
-
-    // We can't easily test for the snackbar message since we're using the real SnackbarProvider
     await waitFor(() => {
-      // Just wait for the error to be processed
+      expect(screen.getByText('Failed to create theme')).toBeInTheDocument()
     })
   })
 
   it('should disable confirm button while loading', async () => {
-    // Create a mock that doesn't resolve immediately
     const loadingMock = {
+      delay: 30,
       request: {
         query: JOURNEY_FONTS_UPDATE,
         variables: {
@@ -316,7 +339,7 @@ describe('ThemeBuilderDialog', () => {
           }
         }
       },
-      result: () => {
+      result: jest.fn(() => {
         return {
           data: {
             journeyThemeUpdate: {
@@ -329,7 +352,7 @@ describe('ThemeBuilderDialog', () => {
             }
           }
         }
-      }
+      })
     }
 
     render(
@@ -342,10 +365,7 @@ describe('ThemeBuilderDialog', () => {
       </SnackbarProvider>
     )
 
-    const confirmButton = screen.getByText('Confirm')
-    fireEvent.click(confirmButton)
-
-    // Button should be disabled during loading
-    expect(confirmButton).toBeDisabled()
+    fireEvent.click(screen.getByText('Confirm'))
+    expect(screen.getByText('Confirm')).toBeDisabled()
   })
 })

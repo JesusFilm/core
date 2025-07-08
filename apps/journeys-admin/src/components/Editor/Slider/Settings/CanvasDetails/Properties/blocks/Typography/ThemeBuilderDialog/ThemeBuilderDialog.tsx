@@ -175,7 +175,6 @@ export function ThemeBuilderDialog({
     <Dialog
       open={open}
       onClose={onClose}
-      loading={loading || createLoading}
       fullscreen={!smUp}
       sx={{
         '& .MuiDialog-paper': {
