@@ -533,7 +533,7 @@ describe('WatchContext', () => {
         audioLanguage: '529',
         subtitleLanguage: '529',
         subtitleOn: false,
-        loading: false, // Provider sets loading to false initially
+        loading: false,
         videoId: 'test-video'
       })
     })

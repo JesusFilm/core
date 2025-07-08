@@ -17,6 +17,7 @@ import { getCookie } from '../../../src/libs/cookieHandler'
 import { getFlags } from '../../../src/libs/getFlags'
 import { getLanguageIdFromLocale } from '../../../src/libs/getLanguageIdFromLocale'
 import { LanguageProvider } from '../../../src/libs/languageContext/LanguageContext'
+import { PlayerProvider } from '../../../src/libs/playerContext/PlayerContext'
 import { slugMap } from '../../../src/libs/slugMap'
 import { VIDEO_CONTENT_FIELDS } from '../../../src/libs/videoContentFields'
 import { VideoProvider } from '../../../src/libs/videoContext'
@@ -35,20 +36,20 @@ interface Part2PageProps {
   content: VideoContentFields
 }
 
-const DynamicVideoContentPage = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "VideoContentPage" */
-      '../../../src/components/VideoContentPage'
-    )
-)
-
 const DynamicVideoContainerPage = dynamic(
   async () =>
     await import(
       /* webpackChunkName: "VideoContainerPage" */
       '../../../src/components/VideoContainerPage'
     )
+)
+
+const DynamicNewContentPage = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "NewContentPage" */
+      '../../../src/components/NewVideoContentPage'
+    ).then((mod) => mod.NewVideoContentPage)
 )
 
 export default function Part2Page({ content }: Part2PageProps): ReactElement {
@@ -68,11 +69,13 @@ export default function Part2Page({ content }: Part2PageProps): ReactElement {
       <WatchProvider initialState={initialWatchState}>
         <LanguageProvider>
           <VideoProvider value={{ content }}>
-            {content.variant?.hls != null ? (
-              <DynamicVideoContentPage />
-            ) : (
-              <DynamicVideoContainerPage />
-            )}
+            <PlayerProvider>
+              {content.variant?.hls != null ? (
+                <DynamicNewContentPage />
+              ) : (
+                <DynamicVideoContainerPage />
+              )}
+            </PlayerProvider>
           </VideoProvider>
         </LanguageProvider>
       </WatchProvider>

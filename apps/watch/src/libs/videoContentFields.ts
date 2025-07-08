@@ -20,6 +20,17 @@ export const VIDEO_CONTENT_FIELDS = gql`
       value
       primary
     }
+    bibleCitations {
+      bibleBook {
+        name {
+          value
+        }
+      }
+      chapterStart
+      chapterEnd
+      verseStart
+      verseEnd
+    }
     title(languageId: $languageId, primary: true) {
       value
     }
