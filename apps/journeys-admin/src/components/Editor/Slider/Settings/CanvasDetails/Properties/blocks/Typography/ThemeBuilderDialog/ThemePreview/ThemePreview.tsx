@@ -1,17 +1,22 @@
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
+import { Formik } from 'formik'
+import noop from 'lodash/noop'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { Formik } from 'formik'
 
 import { TreeBlock } from '@core/journeys/ui/block'
+import { Button } from '@core/journeys/ui/Button'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { RadioQuestion } from '@core/journeys/ui/RadioQuestion'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import { TextResponse } from '@core/journeys/ui/TextResponse'
+import { TextResponseFields } from '@core/journeys/ui/TextResponse/__generated__/TextResponseFields'
+import { Typography } from '@core/journeys/ui/Typography'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
-import { Button } from '@core/journeys/ui/Button'
+
 import {
   ButtonColor,
   ButtonSize,
@@ -19,10 +24,7 @@ import {
   TypographyAlign,
   TypographyColor,
   TypographyVariant
-} from 'libs/journeys/ui/__generated__/globalTypes'
-import { TextResponseFields } from '@core/journeys/ui/TextResponse/__generated__/TextResponseFields'
-import { TextResponse } from '@core/journeys/ui/TextResponse'
-import { Typography } from '@core/journeys/ui/Typography'
+} from '../../../../../../../../../../../__generated__/globalTypes'
 
 interface ThemePreviewProps {
   headerFont: string
@@ -88,7 +90,7 @@ export function ThemePreview({
         >
           <Formik
             initialValues={{ [textResponseBlock.id]: '' }}
-            onSubmit={() => {}}
+            onSubmit={noop}
           >
             <Stack spacing={6}>
               <Stack spacing={4}>
