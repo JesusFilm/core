@@ -47,7 +47,6 @@ export function VideoHeroOverlay({
           src={images[0].mobileCinematicHigh}
           alt={imageAlt[0].value}
           fill
-          sizes="100vw"
           style={{
             objectFit: 'cover'
           }}
