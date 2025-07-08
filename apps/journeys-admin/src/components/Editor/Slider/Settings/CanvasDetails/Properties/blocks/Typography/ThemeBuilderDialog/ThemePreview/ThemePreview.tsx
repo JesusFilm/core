@@ -170,7 +170,8 @@ export function ThemePreview({
                     endIconId: null,
                     action: null,
                     submitEnabled: false,
-                    children: []
+                    children: [],
+                    settings: null
                   }}
                 />
                 <RadioQuestion
