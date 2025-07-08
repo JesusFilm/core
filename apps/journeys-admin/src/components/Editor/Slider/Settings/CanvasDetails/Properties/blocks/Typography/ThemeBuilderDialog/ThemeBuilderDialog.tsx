@@ -55,6 +55,12 @@ export const JOURNEY_FONTS_CREATE = gql`
   }
 `
 
+/**
+ * Dialog for customizing theme typography settings
+ * @param open - Boolean indicating whether the dialog is open
+ * @param onClose - Callback function triggered when the dialog is closed
+ * @returns Theme builder dialog component
+ */
 export function ThemeBuilderDialog({
   open,
   onClose

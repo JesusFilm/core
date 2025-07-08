@@ -32,6 +32,13 @@ interface ThemePreviewProps {
   labelFont: string
 }
 
+/**
+ * Renders a preview of the theme with the specified font families
+ * @param headerFont - Font family to use for headings
+ * @param bodyFont - Font family to use for body text
+ * @param labelFont - Font family to use for labels
+ * @returns A preview of the theme with sample UI components
+ */
 export function ThemePreview({
   headerFont,
   bodyFont,

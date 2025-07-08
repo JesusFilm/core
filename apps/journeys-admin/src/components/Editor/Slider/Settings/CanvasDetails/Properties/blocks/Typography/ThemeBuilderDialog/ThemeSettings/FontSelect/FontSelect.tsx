@@ -22,6 +22,18 @@ interface FontSelectProps {
   helperText?: string
 }
 
+/**
+ * A dropdown component for selecting fonts
+ * @param label - The label text for the select field
+ * @param value - The currently selected font value
+ * @param options - Array of available font options
+ * @param onChange - Callback function triggered when selection changes
+ * @param icon - Icon to display with the select
+ * @param labelId - ID for the label element (for accessibility)
+ * @param selectId - ID for the select element
+ * @param helperText - Optional helper text displayed below the select
+ * @returns Font selection dropdown component
+ */
 export function FontSelect({
   label,
   value,
