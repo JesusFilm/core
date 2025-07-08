@@ -96,7 +96,10 @@ builder.queryFields((t) => ({
         : (userGenerated ?? true)
       let video = await prisma.muxVideo.findFirstOrThrow({
         ...query,
-        where: { id, userId: user.id }
+        where: { id, userId: user.id },
+        include: {
+          videoVariants: true
+        }
       })
 
       if (video.assetId == null && video.uploadId != null) {
@@ -107,6 +110,9 @@ builder.queryFields((t) => ({
             where: { id },
             data: {
               assetId: muxUpload.asset_id
+            },
+            include: {
+              videoVariants: true
             }
           })
         }
@@ -120,7 +126,7 @@ builder.queryFields((t) => ({
         if (
           muxVideo.status === 'ready' &&
           muxVideo.playback_ids?.[0].id != null &&
-          downloadsReadyToStore(muxVideo)
+          (!video.downloadable || downloadsReadyToStore(muxVideo))
         ) {
           video = await prisma.muxVideo.update({
             ...query,
@@ -129,10 +135,16 @@ builder.queryFields((t) => ({
               readyToStream: muxVideo.status === 'ready',
               playbackId: muxVideo.playback_ids?.[0].id,
               duration: Math.ceil(muxVideo.duration ?? 0)
+            },
+            include: {
+              videoVariants: true
             }
           })
           // Auto add downloads for all available resolutions (size will be updated later)
-          if (muxVideo.static_renditions?.files != null) {
+          if (
+            muxVideo.static_renditions?.files != null &&
+            video.videoVariants.length > 0
+          ) {
             const validDownloads: Prisma.VideoVariantDownloadCreateManyInput[] =
               muxVideo.static_renditions.files
                 .filter(
@@ -146,7 +158,7 @@ builder.queryFields((t) => ({
                     ) != null
                 )
                 .map((file) => ({
-                  muxVideoId: video.id,
+                  videoVariantId: video.videoVariants[0].id,
                   quality: mapStaticResolutionTierToDownloadQuality(
                     file.resolution_tier as AssetOptions.StaticRendition['resolution']
                   ) as VideoVariantDownloadQuality,

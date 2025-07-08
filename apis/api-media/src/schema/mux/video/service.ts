@@ -79,15 +79,20 @@ export function getHighestResolutionDownload(
   return highest
 }
 
-export function downloadsReadyToStore(staticRenditions: Mux.Video): boolean {
+export function downloadsReadyToStore(muxVideo: Mux.Video.Asset): boolean {
   return (
-    staticRenditions.files?.every((file) => file.status === 'ready') ?? false
+    muxVideo.static_renditions?.files?.every(
+      (file) =>
+        file.status === 'ready' ||
+        file.status === 'skipped' ||
+        file.status === 'errored'
+    ) ?? false
   )
 }
 
 export async function createVideoByDirectUpload(
   userGenerated: boolean,
-  maxResolution: ResolutionTier | undefined,
+  maxResolution?: ResolutionTier,
   downloadable = false
 ): Promise<{ id: string; uploadUrl: string }> {
   if (process.env.CORS_ORIGIN == null) throw new Error('Missing CORS_ORIGIN')
@@ -126,7 +131,7 @@ export async function createVideoByDirectUpload(
 export async function createVideoFromUrl(
   url: string,
   userGenerated: boolean,
-  maxResolution: ResolutionTier | undefined,
+  maxResolution?: ResolutionTier,
   downloadable = false
 ): Promise<Mux.Video.Asset> {
   return await getClient(userGenerated).video.assets.create({
