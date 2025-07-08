@@ -111,7 +111,8 @@ export function Variant(): ReactElement {
         <Typography variant={TypographyVariant.caption}>
           {t('Small Body')}
         </Typography>
-      )
+      ),
+      icon: <></>
     },
     {
       value: TypographyVariant.body2,
@@ -119,7 +120,8 @@ export function Variant(): ReactElement {
         <Typography variant={TypographyVariant.body2}>
           {t('Normal Body')}
         </Typography>
-      )
+      ),
+      icon: <></>
     },
     {
       value: TypographyVariant.body1,
@@ -127,43 +129,50 @@ export function Variant(): ReactElement {
         <Typography variant={TypographyVariant.body1}>
           {t('Large Body')}
         </Typography>
-      )
+      ),
+      icon: <></>
     },
     {
       value: TypographyVariant.h6,
       label: withJourneyTheme(
         <Typography variant={TypographyVariant.h6}>{t('Heading 4')}</Typography>
-      )
+      ),
+      icon: <></>
     },
     {
       value: TypographyVariant.h5,
       label: withJourneyTheme(
         <Typography variant={TypographyVariant.h5}>{t('Heading 3')}</Typography>
-      )
+      ),
+      icon: <></>
     },
     {
       value: TypographyVariant.h4,
       label: withJourneyTheme(
         <Typography variant={TypographyVariant.h4}>{t('Heading 2')}</Typography>
-      )
+      ),
+      icon: <></>
     },
     {
       value: TypographyVariant.h3,
       label: withJourneyTheme(
         <Typography variant={TypographyVariant.h3}>{t('Heading 1')}</Typography>
-      )
+      ),
+      icon: <></>
     },
     {
       value: TypographyVariant.h2,
       label: withJourneyTheme(
         <Typography variant={TypographyVariant.h2}>{t('Title')}</Typography>
-      )
+      ),
+      icon: <></>
     },
     {
       value: TypographyVariant.h1,
       label: withJourneyTheme(
         <Typography variant={TypographyVariant.h1}>{t('Display')}</Typography>
-      )
+      ),
+      icon: <></>
     }
   ]
 

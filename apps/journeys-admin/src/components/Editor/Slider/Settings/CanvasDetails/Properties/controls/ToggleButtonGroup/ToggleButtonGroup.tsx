@@ -69,7 +69,7 @@ export function ToggleButtonGroup({
               }
             }}
           >
-            <Stack sx={{ ml: 1, mr: 2 }}>{icon}</Stack>
+            {icon != null && <Stack sx={{ ml: 1, mr: 2 }}>{icon}</Stack>}
             {typeof label === 'string' ? (
               <Typography variant="subtitle2">{label}</Typography>
             ) : (
