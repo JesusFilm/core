@@ -8,12 +8,10 @@ import { Formik } from 'formik'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { RadioQuestion } from '@core/journeys/ui/RadioQuestion'
-import { RadioQuestionFields } from '@core/journeys/ui/RadioQuestion/__generated__/RadioQuestionFields'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import { Button } from '@core/journeys/ui/Button'
-import { ButtonFields } from '@core/journeys/ui/Button/__generated__/ButtonFields'
 import {
   ButtonColor,
   ButtonSize,
@@ -25,7 +23,6 @@ import {
 import { TextResponseFields } from '@core/journeys/ui/TextResponse/__generated__/TextResponseFields'
 import { TextResponse } from '@core/journeys/ui/TextResponse'
 import { Typography } from '@core/journeys/ui/Typography'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 interface ThemePreviewProps {
   headerFont: string
