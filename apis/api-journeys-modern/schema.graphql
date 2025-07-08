@@ -483,6 +483,12 @@ type TypographyBlock implements Block
   variant: TypographyVariant @shareable
   color: TypographyColor @shareable
   align: TypographyAlign @shareable
+  settings: TypographyBlockSettings @shareable
+}
+
+type TypographyBlockSettings {
+  """Color of the typography"""
+  color: String @shareable
 }
 
 enum TypographyColor {

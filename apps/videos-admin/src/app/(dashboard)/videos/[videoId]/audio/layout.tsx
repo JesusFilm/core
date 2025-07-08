@@ -58,7 +58,10 @@ export default function ClientLayout({
   useEffect(() => {
     if (reloadOnPathChange) void refetch()
     setReloadOnPathChange(
-      (pathname?.includes('add') || pathname?.includes('delete')) ?? false
+      (pathname?.includes('add') ||
+        pathname?.includes('delete') ||
+        /\/audio\/[^/]+$/.test(pathname || '')) ??
+        false
     )
   }, [pathname])
 

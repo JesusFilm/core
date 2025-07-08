@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
 
 // Import the component under test
 import VariantDialog from './layout'
@@ -117,7 +118,7 @@ jest.mock('../../../../../../components/FormSelectField', () => ({
   FormSelectField: ({ children, name, label, options, onChange }) => (
     <div data-testid="mock-form-select-field" data-name={name}>
       <label data-testid="mock-form-select-label">{label}</label>
-      <select data-testid="mock-form-select" onChange={onChange}>
+      <select data-testid="mock-form-select" name={name} onChange={onChange}>
         {options.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}
@@ -127,6 +128,40 @@ jest.mock('../../../../../../components/FormSelectField', () => ({
       {children}
     </div>
   )
+}))
+
+// Mock CircularProgress
+jest.mock('@mui/material/CircularProgress', () => ({
+  __esModule: true,
+  default: ({ size, color }) => (
+    <div
+      data-testid="mock-circular-progress"
+      data-size={size}
+      data-color={color}
+    >
+      Loading...
+    </div>
+  )
+}))
+
+// Mock FormControl
+jest.mock('@mui/material/FormControl', () => ({
+  __esModule: true,
+  default: ({ children, variant, size, sx }) => (
+    <div
+      data-testid="mock-form-control"
+      data-variant={variant}
+      data-size={size}
+    >
+      {children}
+    </div>
+  )
+}))
+
+// Mock DeleteIcon
+jest.mock('@mui/icons-material/Delete', () => ({
+  __esModule: true,
+  default: () => <span data-testid="mock-delete-icon">🗑️</span>
 }))
 
 // Mock MenuItem
@@ -171,9 +206,20 @@ jest.mock('@apollo/client', () => {
   const originalModule = jest.requireActual('@apollo/client')
   return {
     ...originalModule,
-    useSuspenseQuery: jest.fn()
+    useSuspenseQuery: jest.fn(),
+    useMutation: jest.fn()
   }
 })
+
+// Mock notistack
+jest.mock('notistack', () => ({
+  useSnackbar: () => ({
+    enqueueSnackbar: jest.fn()
+  }),
+  SnackbarProvider: ({ children }) => (
+    <div data-testid="mock-snackbar-provider">{children}</div>
+  )
+}))
 
 describe('VariantDialog', () => {
   const mockVariantId = 'variant-123'
@@ -193,53 +239,81 @@ describe('VariantDialog', () => {
         push: mockRouterPush
       }))
 
+    // Mock useMutation to return the expected array format
+    const mockMutation = jest.fn()
+    jest
+      .spyOn(require('@apollo/client'), 'useMutation')
+      .mockReturnValue([
+        mockMutation,
+        { loading: false, error: null, data: null }
+      ])
+
     // Mock the query result
-    const { useSuspenseQuery } = require('@apollo/client')
+    const { useSuspenseQuery, useMutation } = require('@apollo/client')
     useSuspenseQuery.mockReturnValue({
       data: {
         videoVariant: {
           id: mockVariantId,
+          published: true,
           hls: 'https://example.com/video.m3u8',
+          downloads: [
+            {
+              id: 'download-1',
+              url: 'https://example.com/download/hd.mp4',
+              quality: 'HD',
+              size: 1024 * 1024 * 10, // 10 MB
+              width: 1920,
+              height: 1080
+            },
+            {
+              id: 'download-2',
+              url: 'https://example.com/download/sd.mp4',
+              quality: 'SD',
+              size: 1024 * 1024 * 5, // 5 MB
+              width: 640,
+              height: 480
+            }
+          ],
           language: {
             id: 'lang-123',
             name: [{ value: 'English' }]
           },
           videoEdition: {
-            name: 'Standard'
-          },
-          downloads: [
-            {
-              id: 'download-1',
-              quality: 'HD',
-              size: 1024 * 1024 * 10, // 10 MB
-              width: 1920,
-              height: 1080,
-              url: 'https://example.com/download/hd.mp4'
-            },
-            {
-              id: 'download-2',
-              quality: 'SD',
-              size: 1024 * 1024 * 5, // 5 MB
-              width: 640,
-              height: 480,
-              url: 'https://example.com/download/sd.mp4'
-            }
-          ]
+            name: 'Standard Edition'
+          }
         }
       }
     })
+
+    // Mock useMutation to return the expected array format
+    useMutation.mockReturnValue([
+      jest.fn(),
+      { loading: false, error: null, data: null }
+    ])
   })
 
-  it('renders the variant dialog with all components', () => {
-    render(
+  const renderComponent = (mutationLoading = false) => {
+    const { useMutation } = require('@apollo/client')
+    useMutation.mockReturnValue([
+      jest.fn(),
+      { loading: mutationLoading, error: null, data: null }
+    ])
+
+    return render(
       <MockedProvider>
-        <VariantDialog
-          params={{ variantId: mockVariantId, videoId: mockVideoId }}
-        >
-          <div>Child content</div>
-        </VariantDialog>
+        <SnackbarProvider>
+          <VariantDialog
+            params={{ variantId: mockVariantId, videoId: mockVideoId }}
+          >
+            <div>Child content</div>
+          </VariantDialog>
+        </SnackbarProvider>
       </MockedProvider>
     )
+  }
+
+  it('renders the variant dialog with all components', () => {
+    renderComponent()
 
     // Check dialog title
     expect(screen.getByTestId('dialog-title')).toHaveTextContent(
@@ -288,15 +362,7 @@ describe('VariantDialog', () => {
   })
 
   it('navigates back when dialog is closed', () => {
-    render(
-      <MockedProvider>
-        <VariantDialog
-          params={{ variantId: mockVariantId, videoId: mockVideoId }}
-        >
-          <div>Child content</div>
-        </VariantDialog>
-      </MockedProvider>
-    )
+    renderComponent()
 
     // Click close button
     fireEvent.click(screen.getByTestId('close-button'))
@@ -309,15 +375,7 @@ describe('VariantDialog', () => {
   })
 
   it('navigates to add download page when add download button is clicked', () => {
-    render(
-      <MockedProvider>
-        <VariantDialog
-          params={{ variantId: mockVariantId, videoId: mockVideoId }}
-        >
-          <div>Child content</div>
-        </VariantDialog>
-      </MockedProvider>
-    )
+    renderComponent()
 
     // Click add download button
     fireEvent.click(screen.getByText('Add Download'))
@@ -330,15 +388,7 @@ describe('VariantDialog', () => {
   })
 
   it('navigates to delete download page when delete button is clicked', () => {
-    render(
-      <MockedProvider>
-        <VariantDialog
-          params={{ variantId: mockVariantId, videoId: mockVideoId }}
-        >
-          <div>Child content</div>
-        </VariantDialog>
-      </MockedProvider>
-    )
+    renderComponent()
 
     // Click the first delete button
     const deleteButtons = screen.getAllByTestId('mock-icon-button-Delete')
@@ -371,15 +421,7 @@ describe('VariantDialog', () => {
       }
     })
 
-    render(
-      <MockedProvider>
-        <VariantDialog
-          params={{ variantId: mockVariantId, videoId: mockVideoId }}
-        >
-          <div>Child content</div>
-        </VariantDialog>
-      </MockedProvider>
-    )
+    renderComponent()
 
     // Check if "No downloads available" message is shown
     expect(screen.getByText('No downloads available')).toBeInTheDocument()
@@ -406,15 +448,7 @@ describe('VariantDialog', () => {
       }
     })
 
-    render(
-      <MockedProvider>
-        <VariantDialog
-          params={{ variantId: mockVariantId, videoId: mockVideoId }}
-        >
-          <div>Child content</div>
-        </VariantDialog>
-      </MockedProvider>
-    )
+    renderComponent()
 
     // Check that the edition chip is not rendered
     expect(
@@ -442,20 +476,36 @@ describe('VariantDialog', () => {
       }
     })
 
-    render(
-      <MockedProvider>
-        <VariantDialog
-          params={{ variantId: mockVariantId, videoId: mockVideoId }}
-        >
-          <div>Child content</div>
-        </VariantDialog>
-      </MockedProvider>
-    )
+    renderComponent()
 
     // Check that the video player shows "No HLS stream"
     expect(screen.getByTestId('mock-variant-video')).toHaveTextContent(
       'No HLS stream'
     )
     expect(screen.queryByTestId('hls-source')).not.toBeInTheDocument()
+  })
+
+  it('shows loading state when mutation is loading', () => {
+    renderComponent(true)
+
+    // Check that Save button shows loading state
+    const saveButton = screen.getByText('Saving...')
+    expect(saveButton).toBeInTheDocument()
+
+    // Check that Cancel button is hidden during loading
+    const cancelButton = screen.getByTestId('mock-cancel-button')
+    expect(cancelButton).toHaveStyle('display: none')
+  })
+
+  it('shows normal state when mutation is not loading', () => {
+    renderComponent(false)
+
+    // Check that Save button shows normal state
+    const saveButton = screen.getByText('Save')
+    expect(saveButton).toBeInTheDocument()
+
+    // Check that Cancel button is hidden when form is not dirty
+    const cancelButton = screen.getByTestId('mock-cancel-button')
+    expect(cancelButton).toHaveStyle('display: none')
   })
 })

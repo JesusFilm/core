@@ -35,6 +35,25 @@ export interface VideoContentFields_studyQuestions {
   primary: boolean;
 }
 
+export interface VideoContentFields_bibleCitations_bibleBook_name {
+  __typename: "BibleBookName";
+  value: string;
+}
+
+export interface VideoContentFields_bibleCitations_bibleBook {
+  __typename: "BibleBook";
+  name: VideoContentFields_bibleCitations_bibleBook_name[];
+}
+
+export interface VideoContentFields_bibleCitations {
+  __typename: "BibleCitation";
+  bibleBook: VideoContentFields_bibleCitations_bibleBook;
+  chapterStart: number;
+  chapterEnd: number | null;
+  verseStart: number | null;
+  verseEnd: number | null;
+}
+
 export interface VideoContentFields_title {
   __typename: "VideoTitle";
   value: string;
@@ -84,6 +103,7 @@ export interface VideoContentFields {
   snippet: VideoContentFields_snippet[];
   description: VideoContentFields_description[];
   studyQuestions: VideoContentFields_studyQuestions[];
+  bibleCitations: VideoContentFields_bibleCitations[];
   title: VideoContentFields_title[];
   variant: VideoContentFields_variant | null;
   variantLanguagesCount: number;

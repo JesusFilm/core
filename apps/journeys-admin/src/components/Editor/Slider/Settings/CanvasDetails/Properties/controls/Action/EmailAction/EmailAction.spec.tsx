@@ -39,7 +39,8 @@ describe('EmailAction', () => {
       gtmEventName: 'gtmEventName',
       email: 'imissedmondshen@gmail.com'
     },
-    children: []
+    children: [],
+    settings: null
   }
 
   it('displays the action email', async () => {
