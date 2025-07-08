@@ -160,5 +160,6 @@ export const journey: Journey = {
   displayTitle: null,
   logoImageBlock: null,
   menuButtonIcon: null,
-  menuStepBlock: null
+  menuStepBlock: null,
+  journeyTheme: null
 }
