@@ -70,9 +70,9 @@ describe('NewContentPage', () => {
           name: [{ __typename: 'BibleBookName' as const, value: 'Genesis' }]
         },
         chapterStart: 1,
-        chapterEnd: 1,
+        chapterEnd: null,
         verseStart: 1,
-        verseEnd: 1
+        verseEnd: null
       },
       {
         __typename: 'BibleCitation' as const,
@@ -81,14 +81,14 @@ describe('NewContentPage', () => {
           name: [{ __typename: 'BibleBookName' as const, value: 'John' }]
         },
         chapterStart: 3,
-        chapterEnd: 3,
+        chapterEnd: null,
         verseStart: 16,
-        verseEnd: 16
+        verseEnd: null
       }
     ]
   }
 
-  it('should render bible citations', () => {
+  it('should render bible citations', async () => {
     render(
       <MockedProvider>
         <VideoProvider value={{ content: videoWithBibleCitations }}>
@@ -96,8 +96,11 @@ describe('NewContentPage', () => {
         </VideoProvider>
       </MockedProvider>
     )
-    expect(screen.getByText('Genesis 1:1')).toBeInTheDocument()
-    expect(screen.getByText('John 3:16')).toBeInTheDocument()
+
+    await waitFor(() => {
+      expect(screen.getByText('Genesis 1:1')).toBeInTheDocument()
+      expect(screen.getByText('John 3:16')).toBeInTheDocument()
+    })
   })
 
   it('should render free resource card', () => {
