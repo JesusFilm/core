@@ -132,7 +132,7 @@ export function Variant(): ReactElement {
     {
       value: TypographyVariant.h6,
       label: withJourneyTheme(
-        <Typography variant={TypographyVariant.h6}>{t('HEADING 4')}</Typography>
+        <Typography variant={TypographyVariant.h6}>{t('Heading 4')}</Typography>
       )
     },
     {
@@ -165,15 +165,6 @@ export function Variant(): ReactElement {
         <Typography variant={TypographyVariant.h1}>{t('Display')}</Typography>
       )
     }
-    // {
-    //   value: TypographyVariant.overline,
-    //   label: withJourneyTheme(
-    //     <Typography variant={TypographyVariant.overline}>
-    //       {t('Overline')}
-    //     </Typography>
-    //   ),
-    //   icon: <DashIcon />
-    // }
   ]
 
   return (

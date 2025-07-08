@@ -35,7 +35,7 @@ export const baseTypography: Pick<ThemeOptions, 'typography'> = {
     h2: {
       fontSize: 36,
       fontWeight: 800,
-      lineHeight: '39px'
+      lineHeight: '42px'
     },
     h3: {
       fontSize: 28,
@@ -48,7 +48,7 @@ export const baseTypography: Pick<ThemeOptions, 'typography'> = {
       lineHeight: '27px'
     },
     h5: {
-      fontSize: 22,
+      fontSize: 18,
       fontWeight: 700,
       lineHeight: '22px'
     },
