@@ -32,6 +32,16 @@ interface ThemeSettingsProps {
   labelsFont: string
 }
 
+/**
+ * Component for configuring theme font settings
+ * @param onHeaderFontChange - Callback function when header font is changed
+ * @param onBodyFontChange - Callback function when body font is changed
+ * @param onLabelsFontChange - Callback function when labels font is changed
+ * @param headerFont - Current header font value
+ * @param bodyFont - Current body font value
+ * @param labelsFont - Current labels font value
+ * @returns Theme settings configuration interface
+ */
 export function ThemeSettings({
   onHeaderFontChange,
   onBodyFontChange,

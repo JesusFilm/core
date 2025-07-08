@@ -138,15 +138,15 @@ export const createCustomTypography = (
       },
       h6: {
         ...typographyOptions?.h6,
-        fontFamily: labelFontFamily
+        fontFamily: headerFontFamily
       },
       subtitle1: {
         ...typographyOptions?.subtitle1,
-        fontFamily: labelFontFamily
+        fontFamily: headerFontFamily
       },
       subtitle2: {
         ...typographyOptions?.subtitle2,
-        fontFamily: labelFontFamily
+        fontFamily: headerFontFamily
       },
       body1: {
         ...typographyOptions?.body1,
