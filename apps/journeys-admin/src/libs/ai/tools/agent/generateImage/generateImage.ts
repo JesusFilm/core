@@ -1,4 +1,4 @@
-import { createVertex } from '@ai-sdk/google-vertex/edge'
+import { createVertex } from '@ai-sdk/google-vertex'
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
 import { experimental_generateImage as generateImage, tool } from 'ai'
 import { encode } from 'blurhash'
@@ -11,9 +11,11 @@ import { upload } from './upload'
 
 const vertex = createVertex({
   project: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!,
-  googleCredentials: {
-    clientEmail: process.env.PRIVATE_FIREBASE_CLIENT_EMAIL!,
-    privateKey: process.env.PRIVATE_FIREBASE_PRIVATE_KEY!
+  googleAuthOptions: {
+    credentials: {
+      client_email: process.env.PRIVATE_FIREBASE_CLIENT_EMAIL!,
+      private_key: process.env.PRIVATE_FIREBASE_PRIVATE_KEY!
+    }
   }
 })
 
