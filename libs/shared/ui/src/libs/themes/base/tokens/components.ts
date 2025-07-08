@@ -47,34 +47,34 @@ export const baseComponents: Required<Pick<ThemeOptions, 'components'>> = {
             size: 'large'
           },
           style: {
-            fontSize: '16px',
+            fontSize: '18px',
+            lineHeight: '24px',
             fontWeight: 700,
             minHeight: '56px',
             padding: '14.5px 24px',
-            borderRadius: '32px',
-            lineHeight: 1
+            borderRadius: '32px'
           }
         },
         {
           props: { size: 'medium' },
           style: {
             fontSize: '16px',
+            lineHeight: '20px',
             fontWeight: 700,
             minHeight: '48px',
             padding: '12px 24px',
-            borderRadius: '24px',
-            lineHeight: 1
+            borderRadius: '24px'
           }
         },
         {
           props: { size: 'small' },
           style: {
             fontSize: '14px',
+            lineHeight: '18px',
             fontWeight: 700,
             minHeight: '40px',
             padding: '11.5px 16px',
-            borderRadius: '24px',
-            lineHeight: 1
+            borderRadius: '24px'
           }
         }
       ]
