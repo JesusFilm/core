@@ -1,6 +1,7 @@
 import { gql } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
+import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { SxProps } from '@mui/system/styleFunctionSx'
 import { useFormikContext } from 'formik'
@@ -58,6 +59,7 @@ export const TextResponse = ({
 }: TextResponseProps): ReactElement => {
   const { t } = useTranslation('libs-journeys-ui')
   const [value, setValue] = useState('')
+  const theme = useTheme()
 
   const formikContext = useFormikContext<{
     [key: string]: string
@@ -107,7 +109,8 @@ export const TextResponse = ({
           variant="subtitle2"
           sx={{
             fontSize: 14,
-            fontWeight: 500
+            fontWeight: 500,
+            fontFamily: theme.typography.button.fontFamily
           }}
         >
           {label.trim() === '' ? t('Label') : label}
@@ -139,7 +142,14 @@ export const TextResponse = ({
             },
             input: {
               sx: {
-                pt: 0
+                pt: 0,
+                fontSize: 16,
+                fontFamily: theme.typography.button.fontFamily
+              }
+            },
+            formHelperText: {
+              sx: {
+                fontFamily: theme.typography.button.fontFamily
               }
             }
           }}
