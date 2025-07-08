@@ -39,7 +39,6 @@ export function ColorDisplayIcon({
     (block) => block.__typename === 'CardBlock'
   ) as TreeBlock<CardBlock> | undefined
 
-  // Determine backgroundColor: hex color directly, otherwise use legacy enum mapping
   const backgroundColor =
     typeof color === 'string' && color.startsWith('#')
       ? color

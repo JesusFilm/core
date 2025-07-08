@@ -23,17 +23,11 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
 
   const { dispatch } = useEditor()
 
-  // Get the effective color - prioritize settings.color (hex) over legacy color (enum)
+  // Returns the effective color for display, prioritizing a hex color from settings,
+  // then falling back to the legacy enum color, and finally a default if both are missing.
   const getEffectiveColor = () => {
-    // First check if there's a valid hex color in settings
-    if (settings?.color) {
-      return settings.color
-    }
-    // If settings is empty {} or settings.color is empty/null, fall back to legacy enum color
-    if (color) {
-      return color
-    }
-    // When both are null (new blocks), return default color for display
+    if (settings?.color) return settings.color
+    if (color) return color
     return '#FEFEFE'
   }
 

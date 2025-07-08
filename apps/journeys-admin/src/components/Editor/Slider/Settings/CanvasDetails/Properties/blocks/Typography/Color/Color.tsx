@@ -61,14 +61,11 @@ export function Color(): ReactElement {
     | TreeBlock<TypographyBlock>
     | undefined
 
-  // Get the card that contains this typography block
   const card = selectedStep?.children.find(
     (block) => block.__typename === 'CardBlock'
   ) as TreeBlock<CardBlock> | undefined
 
-  // Convert TypographyColor enum to theme-aware hex color
   function enumToHex(enumColor: TypographyColor | null): string {
-    // Get the current theme
     const theme = getTheme({
       themeName: card?.themeName ?? journey?.themeName ?? ThemeName.base,
       themeMode: card?.themeMode ?? journey?.themeMode ?? ThemeMode.dark
@@ -86,21 +83,19 @@ export function Color(): ReactElement {
     }
   }
 
-  // Get effective color: prioritize settings.color (hex), then fall back to legacy color (enum), then null for default
+  // Returns the effective color for display, prioritizing a hex color from settings,
+  // then falling back to the legacy enum color, and finally a null if both are missing.
   const getEffectiveColor = (): string | null => {
-    // First check if there's a valid hex color in settings
     if (selectedBlock?.settings?.color) {
       return selectedBlock.settings.color
     }
-    // If settings is empty {} or settings.color is empty/null, fall back to legacy enum color
     if (selectedBlock?.color) {
       return enumToHex(selectedBlock.color)
     }
-    // When both are null (new blocks), return null to indicate default browser behavior
     return null
   }
 
-  const selectedColor = getEffectiveColor() ?? '#FEFEFE' // Fallback for color picker display only
+  const selectedColor = getEffectiveColor() ?? '#FEFEFE'
 
   function handleChange(color: string): void {
     if (selectedBlock == null || color == null) return
