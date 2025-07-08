@@ -17,6 +17,7 @@ import {
   JOURNEY_FONTS_UPDATE,
   ThemeBuilderDialog
 } from './ThemeBuilderDialog'
+import { FontFamily } from './ThemeSettings'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -70,9 +71,9 @@ describe('ThemeBuilderDialog', () => {
     journeyTheme: {
       __typename: 'JourneyTheme',
       id: 'theme-id',
-      headerFont: 'Roboto',
-      bodyFont: 'Open Sans',
-      labelFont: 'Lato'
+      headerFont: FontFamily.Montserrat,
+      bodyFont: FontFamily.Inter,
+      labelFont: FontFamily.Nunito
     }
   }
 
@@ -87,9 +88,9 @@ describe('ThemeBuilderDialog', () => {
       variables: {
         id: 'theme-id',
         input: {
-          headerFont: 'Roboto',
-          bodyFont: 'Open Sans',
-          labelFont: 'Lato'
+          headerFont: FontFamily.Montserrat,
+          bodyFont: FontFamily.Inter,
+          labelFont: FontFamily.Nunito
         }
       }
     },
@@ -100,9 +101,9 @@ describe('ThemeBuilderDialog', () => {
             __typename: 'JourneyTheme',
             id: 'theme-id',
             journeyId: 'journey-id',
-            headerFont: 'Roboto',
-            bodyFont: 'Open Sans',
-            labelFont: 'Lato'
+            headerFont: FontFamily.Montserrat,
+            bodyFont: FontFamily.Inter,
+            labelFont: FontFamily.Nunito
           }
         }
       }
@@ -171,13 +172,13 @@ describe('ThemeBuilderDialog', () => {
 
     expect(
       screen.getByRole('combobox', { name: 'Header Text' })
-    ).toHaveTextContent('Roboto')
+    ).toHaveTextContent(FontFamily.Montserrat)
     expect(
       screen.getByRole('combobox', { name: 'Body Text' })
-    ).toHaveTextContent('Open Sans')
+    ).toHaveTextContent(FontFamily.Inter)
     expect(
       screen.getByRole('combobox', { name: 'Label Text' })
-    ).toHaveTextContent('Lato')
+    ).toHaveTextContent(FontFamily.Nunito)
   })
 
   it('should show none in dropdowns when journey theme is null', () => {
@@ -267,9 +268,9 @@ describe('ThemeBuilderDialog', () => {
         variables: {
           id: 'theme-id',
           input: {
-            headerFont: 'Roboto',
-            bodyFont: 'Open Sans',
-            labelFont: 'Lato'
+            headerFont: FontFamily.Montserrat,
+            bodyFont: FontFamily.Inter,
+            labelFont: FontFamily.Nunito
           }
         }
       },
@@ -333,9 +334,9 @@ describe('ThemeBuilderDialog', () => {
         variables: {
           id: 'theme-id',
           input: {
-            headerFont: 'Roboto',
-            bodyFont: 'Open Sans',
-            labelFont: 'Lato'
+            headerFont: FontFamily.Montserrat,
+            bodyFont: FontFamily.Inter,
+            labelFont: FontFamily.Nunito
           }
         }
       },
@@ -346,9 +347,9 @@ describe('ThemeBuilderDialog', () => {
               __typename: 'JourneyTheme',
               id: 'theme-id',
               journeyId: 'journey-id',
-              headerFont: 'Roboto',
-              bodyFont: 'Open Sans',
-              labelFont: 'Lato'
+              headerFont: FontFamily.Montserrat,
+              bodyFont: FontFamily.Inter,
+              labelFont: FontFamily.Nunito
             }
           }
         }
