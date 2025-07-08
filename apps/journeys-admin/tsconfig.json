@@ -1,8 +1,6 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
     "jsx": "preserve",
     "jsxImportSource": "@emotion/react",
     "allowJs": true,
@@ -14,13 +12,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "incremental": true,
-    "tsBuildInfoFile": "../../.cache/journeys-admin/tsc/.tsbuildinfo",
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
-    "strictNullChecks": true
+    "tsBuildInfoFile": "../../.cache/journeys-admin/tsc/.tsbuildinfo"
   },
   "include": [
     "**/*.ts",
@@ -29,8 +21,7 @@
     "**/*.jsx",
     "next-env.d.ts",
     "../../libs/journeys/ui/src/ImageBlockProvider/ImageBlockProvider.tsx",
-    "eslint.config.mjs",
-    ".next/types/**/*.ts"
+    "eslint.config.mjs"
   ],
   "exclude": ["node_modules", "jest.config.ts"]
 }
