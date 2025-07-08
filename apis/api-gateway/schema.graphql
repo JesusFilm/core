@@ -458,6 +458,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   shortLinkDelete(id: String!) : MutationShortLinkDeleteResult! @join__field(graph: API_MEDIA) 
   videoCreate(input: VideoCreateInput!) : Video! @join__field(graph: API_MEDIA) 
   videoUpdate(input: VideoUpdateInput!) : Video! @join__field(graph: API_MEDIA) 
+  videoDelete(id: ID!) : Video! @join__field(graph: API_MEDIA) 
   videoDescriptionCreate(input: VideoTranslationCreateInput!) : VideoDescription! @join__field(graph: API_MEDIA) 
   videoDescriptionUpdate(input: VideoTranslationUpdateInput!) : VideoDescription! @join__field(graph: API_MEDIA) 
   videoDescriptionDelete(id: ID!) : VideoDescription! @join__field(graph: API_MEDIA) 
@@ -1013,7 +1014,10 @@ type TextResponseBlock implements Block @join__type(graph: API_JOURNEYS, key: "i
   integrationId: String
 }
 
-type TypographyBlockSettings @join__type(graph: API_JOURNEYS)  {
+type TypographyBlockSettings @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  Color of the typography
+  """
   color: String
 }
 
@@ -1026,7 +1030,7 @@ type TypographyBlock implements Block @join__type(graph: API_JOURNEYS, key: "id"
   variant: TypographyVariant
   color: TypographyColor
   align: TypographyAlign
-  settings: TypographyBlockSettings! @join__field(graph: API_JOURNEYS) 
+  settings: TypographyBlockSettings @join__field(graph: API_JOURNEYS, type: "TypographyBlockSettings!")  @join__field(graph: API_JOURNEYS_MODERN, type: "TypographyBlockSettings") 
 }
 
 type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId", extension: true)  @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", extension: true)  @join__type(graph: API_MEDIA, key: "id primaryLanguageId")  {

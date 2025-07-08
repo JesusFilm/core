@@ -16,6 +16,7 @@ import type {
   BlockFields_TextResponseBlock as TextResponseBlock
 } from '../../../../../../../../__generated__/BlockFields'
 import {
+  ButtonAlignment,
   ButtonColor,
   ButtonSize,
   ButtonVariant
@@ -103,7 +104,11 @@ export function NewTextResponseButton(): ReactElement {
         startIconId: uuidv4(),
         endIconId: uuidv4(),
         action: null,
-        submitEnabled: true
+        submitEnabled: true,
+        settings: {
+          __typename: 'ButtonBlockSettings',
+          alignment: ButtonAlignment.justify
+        }
       }
 
       const blocks = { textResponseBlock, buttonBlock }

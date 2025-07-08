@@ -159,6 +159,8 @@ const iconNames: IconName[] = [
   'Minimise2',
   'MinusCircleContained',
   'More',
+  'VolumeOff',
+  'Volume5',
   'PackagePlus',
   'Palette',
   'Passport',
