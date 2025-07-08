@@ -128,7 +128,7 @@ describe('DeleteVideoPage', () => {
       fireEvent.click(screen.getByTestId('close-button'))
 
       // Check if router.push was called with the correct path
-      expect(mockRouterPush).toHaveBeenCalledWith('/videos', {
+      expect(mockRouterPush).toHaveBeenCalledWith(`/videos/${mockVideoId}`, {
         scroll: false
       })
     })

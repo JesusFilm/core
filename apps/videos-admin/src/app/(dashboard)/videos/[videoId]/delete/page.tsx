@@ -92,7 +92,7 @@ export default function DeleteVideoPage({
   return (
     <Dialog
       open={true}
-      onClose={() => router.push('/videos', { scroll: false })}
+      onClose={() => router.push(`/videos/${videoId}`, { scroll: false })}
       dialogTitle={{
         title: 'Delete Video',
         closeButton: true
