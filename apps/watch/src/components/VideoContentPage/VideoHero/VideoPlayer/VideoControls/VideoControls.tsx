@@ -511,7 +511,14 @@ export function VideoControls({
             showButton
             onClick={(e) => {
               e.stopPropagation()
-              if (mute || volume === 0) handleMute()
+              if (mute) handleMute()
+              if (volume === 0) {
+                dispatch({
+                  type: 'SetVolume',
+                  volume: 100
+                })
+                player.volume(100 / 100)
+              }
               if (!play) void player?.play()
             }}
           />
@@ -547,7 +554,14 @@ export function VideoControls({
               videoTitle={videoTitle}
               onClick={(e) => {
                 e.stopPropagation()
-                if (mute || volume === 0) handleMute()
+                if (mute) handleMute()
+                if (volume === 0) {
+                  dispatch({
+                    type: 'SetVolume',
+                    volume: 100
+                  })
+                  player.volume(100 / 100)
+                }
                 if (!play) void player?.play()
               }}
             />
