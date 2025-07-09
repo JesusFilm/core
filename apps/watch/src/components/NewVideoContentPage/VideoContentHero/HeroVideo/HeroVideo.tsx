@@ -11,6 +11,8 @@ import 'videojs-mux'
 
 import { usePlayer } from '../../../../libs/playerContext/PlayerContext'
 import { useVideo } from '../../../../libs/videoContext'
+import { useWatch } from '../../../../libs/watchContext'
+import { subtitleUpdate } from '../../../../libs/watchContext/subtitleUpdate'
 import { VideoControls } from '../../../VideoContentPage/VideoHero/VideoPlayer/VideoControls'
 
 interface HeroVideoProps {
@@ -22,12 +24,22 @@ export function HeroVideo({ isFullscreen }: HeroVideoProps): ReactElement {
   const {
     state: { mute }
   } = usePlayer()
+  const {
+    state: {
+      subtitleLanguage,
+      subtitleOn,
+      autoSubtitle,
+      videoSubtitleLanguages
+    }
+  } = useWatch()
   const [playerReady, setPlayerReady] = useState(false)
 
   const title = last(video.title)?.value ?? ''
 
   const videoRef = useRef<HTMLVideoElement>(null)
-  const playerRef = useRef<Player | null>(null)
+  const playerRef = useRef<
+    (Player & { textTracks?: () => TextTrackList }) | null
+  >(null)
 
   const pauseVideoOnScrollAway = useCallback((): void => {
     const scrollY = window.scrollY
@@ -101,6 +113,25 @@ export function HeroVideo({ isFullscreen }: HeroVideoProps): ReactElement {
       setPlayerReady(false)
     }
   }, [variant?.hls, title, variant?.id])
+
+  useEffect(() => {
+    const player = playerRef.current
+    if (player == null) return
+
+    subtitleUpdate({
+      player,
+      videoSubtitleLanguages,
+      subtitleLanguage,
+      subtitleOn,
+      autoSubtitle
+    })
+  }, [
+    playerRef,
+    videoSubtitleLanguages,
+    subtitleLanguage,
+    subtitleOn,
+    autoSubtitle
+  ])
 
   return (
     <div
