@@ -40,6 +40,8 @@ import { SubtitleDialogProps } from '../../../../SubtitleDialog/SubtitleDialog'
 import { AudioLanguageButton } from '../../../AudioLanguageButton'
 import { VideoTitle } from '../VideoTitle'
 
+import { handleVideoTitleClick } from './utils/handleVideoTitleClick'
+
 const DynamicSubtitleDialog = dynamic<SubtitleDialogProps>(
   async () =>
     await import(
@@ -511,15 +513,13 @@ export function VideoControls({
             showButton
             onClick={(e) => {
               e.stopPropagation()
-              if (mute) handleMute()
-              if (volume === 0) {
-                dispatch({
-                  type: 'SetVolume',
-                  volume: 100
-                })
-                player.volume(100 / 100)
-              }
-              if (!play) void player?.play()
+              handleVideoTitleClick({
+                player,
+                dispatch,
+                mute,
+                volume,
+                play
+              })
             }}
           />
         </Container>
@@ -554,15 +554,13 @@ export function VideoControls({
               videoTitle={videoTitle}
               onClick={(e) => {
                 e.stopPropagation()
-                if (mute) handleMute()
-                if (volume === 0) {
-                  dispatch({
-                    type: 'SetVolume',
-                    volume: 100
-                  })
-                  player.volume(100 / 100)
-                }
-                if (!play) void player?.play()
+                handleVideoTitleClick({
+                  player,
+                  dispatch,
+                  mute,
+                  volume,
+                  play
+                })
               }}
             />
           </Container>
