@@ -966,6 +966,49 @@ describe('video', () => {
       })
       expect(data).toHaveProperty('data.videos', result)
     })
+
+    it('should query videoVariants with different variable precedence', async () => {
+      prismaMock.video.findMany.mockResolvedValueOnce(videos)
+      // children
+      prismaMock.video.findMany.mockResolvedValueOnce(children)
+      // parents
+      prismaMock.video.findMany.mockResolvedValueOnce(parents)
+      // variantLanguages
+      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
+        { languageId: 'languageId' } as unknown as VideoVariant
+      ])
+      // variantLanguagesCount
+      prismaMock.videoVariant.count.mockResolvedValueOnce(1)
+      // childrenCount
+      prismaMock.video.count.mockResolvedValueOnce(1)
+      // variantLanguagesWithSlug
+      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
+        { languageId: 'languageId', slug: 'slug' } as unknown as VideoVariant
+      ])
+      // variant - test the precedence logic
+      prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
+        id: 'variantId'
+      } as unknown as VideoVariant)
+
+      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
+        {
+          id: 'variantId1',
+          languageId: 'languageId1'
+        } as unknown as VideoVariant,
+        {
+          id: 'variantId2',
+          languageId: 'languageId2'
+        } as unknown as VideoVariant
+      ])
+
+      const data = await client({
+        document: VIDEOS_QUERY,
+        variables: {
+          languageId: '987'
+        }
+      })
+      expect(data).toHaveProperty('data.videos', result)
+    })
   })
 
   describe('video', () => {

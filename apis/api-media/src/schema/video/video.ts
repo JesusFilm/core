@@ -355,6 +355,8 @@ const Video = builder.prismaObject('Video', {
           (info.variableValues.id as string | undefined) ??
           (info.variableValues.contentId as string | undefined) ??
           (info.variableValues._1_contentId as string | undefined) ??
+          (info.variableValues.containerId as string | undefined) ??
+          (info.variableValues._1_containerId as string | undefined) ??
           ''
         const requestedLanguage = variableValueId.includes('/')
           ? variableValueId.substring(variableValueId.lastIndexOf('/') + 1)
