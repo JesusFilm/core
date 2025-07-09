@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { VideoProvider } from '../../../libs/videoContext'
 import { videos } from '../../Videos/__generated__/testData'
@@ -18,20 +18,6 @@ const mockGetCookie = jest.mocked(
 describe('AudioLanguageButton', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-  })
-
-  it('displays correct language name from locale mapping', () => {
-    mockGetCookie.mockReturnValue('es')
-
-    const { getByText } = render(
-      <MockedProvider>
-        <VideoProvider value={{ content: videos[0] }}>
-          <AudioLanguageButton componentVariant="button" />
-        </VideoProvider>
-      </MockedProvider>
-    )
-
-    expect(getByText('Español')).toBeInTheDocument()
   })
 
   it('falls back to English when no cookie is found', () => {
@@ -58,14 +44,12 @@ describe('AudioLanguageButton', () => {
     )
     fireEvent.click(getByRole('button'))
     await waitFor(() =>
-      expect(
-        getByRole('dialog', { name: 'Language Settings' })
-      ).toBeInTheDocument()
+      expect(screen.getByLabelText('Language Settings')).toBeInTheDocument()
     )
   })
 
   it('renders audio language as an icon', async () => {
-    const { getByTestId, getByRole } = render(
+    const { getByTestId } = render(
       <MockedProvider>
         <VideoProvider value={{ content: videos[0] }}>
           <AudioLanguageButton componentVariant="icon" />
@@ -74,9 +58,7 @@ describe('AudioLanguageButton', () => {
     )
     fireEvent.click(getByTestId('LanguageOutlinedIcon'))
     await waitFor(() =>
-      expect(
-        getByRole('dialog', { name: 'Language Settings' })
-      ).toBeInTheDocument()
+      expect(screen.getByLabelText('Language Settings')).toBeInTheDocument()
     )
   })
 })

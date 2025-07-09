@@ -47,6 +47,7 @@ export const LanguageSwitchDialog = memo(function LanguageSwitchDialog({
     state: { allLanguages },
     dispatch
   } = useWatch()
+
   const [getAllLanguages, { loading: languagesLoading }] =
     useLazyQuery<GetAllLanguages>(GET_ALL_LANGUAGES, {
       onCompleted: (data) => {

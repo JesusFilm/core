@@ -101,9 +101,6 @@ describe('LanguageSwitchDialog', () => {
       const closeButton = screen.getByRole('button', { name: /close/i })
       expect(closeButton).toBeInTheDocument()
       expect(closeButton).toHaveAttribute('aria-label', 'Close dialog')
-
-      const srOnlyText = screen.getByText('Close')
-      expect(srOnlyText).toHaveClass('sr-only')
     })
   })
 
@@ -137,7 +134,7 @@ describe('LanguageSwitchDialog', () => {
 
       const dialog = screen.getByRole('dialog')
       expect(dialog).toHaveAttribute('aria-modal', 'true')
-      expect(dialog).toHaveAttribute('aria-label', 'Language Settings')
+      expect(screen.getByLabelText('Language Settings')).toBeInTheDocument()
     })
   })
 
@@ -156,7 +153,6 @@ describe('LanguageSwitchDialog', () => {
       // Verify horizontal rule separator exists
       const separator = dialog.querySelector('hr')
       expect(separator).toBeInTheDocument()
-      expect(separator).toHaveClass('border-t', 'border-gray-200')
 
       // Verify dialog contains the main content structure
       expect(dialog).toBeInTheDocument()

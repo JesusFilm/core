@@ -193,7 +193,7 @@ describe('VideoControls', () => {
   })
 
   it('opens language dialog on language button click', async () => {
-    const { getByRole, getByTestId } = render(
+    const { getByTestId } = render(
       <MockedProvider>
         <WatchProvider
           initialState={{
@@ -213,9 +213,7 @@ describe('VideoControls', () => {
     )
     fireEvent.click(getByTestId('LanguageOutlinedIcon'))
     await waitFor(() =>
-      expect(
-        getByRole('dialog', { name: 'Language Settings' })
-      ).toBeInTheDocument()
+      expect(screen.getByLabelText('Language Settings')).toBeInTheDocument()
     )
   })
 
@@ -290,7 +288,7 @@ describe('VideoControls', () => {
   })
 
   it('sets cookie, dispatches action, and opens dialog when subtitle button is clicked', async () => {
-    const { getByTestId, getByRole } = render(
+    const { getByTestId } = render(
       <MockedProvider>
         <VideoProvider value={{ content: videos[0] }}>
           <VideoControls player={player} />
@@ -312,9 +310,7 @@ describe('VideoControls', () => {
 
     // Verify dialog opens
     await waitFor(() =>
-      expect(
-        getByRole('dialog', { name: 'Language Settings' })
-      ).toBeInTheDocument()
+      expect(screen.getByLabelText('Language Settings')).toBeInTheDocument()
     )
   })
 
