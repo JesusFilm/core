@@ -104,6 +104,19 @@ export function Variant(): ReactElement {
     })
   }
 
+  /**
+   * Typography variant options with their corresponding UI labels.
+   * Note: The mapping is intentional but non-obvious:
+   * - TypographyVariant.h1 → "Display" (largest text)
+   * - TypographyVariant.h2 → "Title"
+   * - TypographyVariant.h3 → "Heading 1"
+   * - TypographyVariant.h4 → "Heading 2"
+   * - TypographyVariant.h5 → "Heading 3"
+   * - TypographyVariant.h6 → "Heading 4"
+   * - TypographyVariant.body1 → "Large Body"
+   * - TypographyVariant.body2 → "Normal Body"
+   * - TypographyVariant.caption → "Small Body" (smallest text)
+   */
   const options = [
     {
       value: TypographyVariant.caption,
