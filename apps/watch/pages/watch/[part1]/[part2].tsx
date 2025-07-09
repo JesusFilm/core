@@ -43,12 +43,12 @@ const DynamicVideoContainerPage = dynamic(
     )
 )
 
-const DynamicNewContentPage = dynamic(
+const DynamicVideoContentPage = dynamic(
   async () =>
     await import(
       /* webpackChunkName: "NewContentPage" */
-      '../../../src/components/NewVideoContentPage'
-    ).then((mod) => mod.NewVideoContentPage)
+      '../../../src/components/VideoContentPage'
+    ).then((mod) => mod.VideoContentPage)
 )
 
 export default function Part2Page({ content }: Part2PageProps): ReactElement {
@@ -70,7 +70,7 @@ export default function Part2Page({ content }: Part2PageProps): ReactElement {
           <VideoProvider value={{ content }}>
             <PlayerProvider>
               {content.variant?.hls != null ? (
-                <DynamicNewContentPage />
+                <DynamicVideoContentPage />
               ) : (
                 <DynamicVideoContainerPage />
               )}
