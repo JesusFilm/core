@@ -15,15 +15,9 @@ const Accordion = styled((props: AccordionProps) => (
 ))(({ theme }) => ({
   overflow: 'hidden',
   border: `1px solid ${theme.palette.divider}`,
-  '&:not(:last-child)': {
-    borderBottom: 0
-  },
-  '&::before': {
-    display: 'none'
-  },
-  '&:hover': {
-    bgcolor: 'white'
-  }
+  '&:not(:last-child)': { borderBottom: 0 },
+  '&::before': { display: 'none' },
+  '&:hover': { bgcolor: 'white' }
 }))
 
 const AccordionSummary = styled((props: AccordionSummaryProps) => (
@@ -32,12 +26,8 @@ const AccordionSummary = styled((props: AccordionSummaryProps) => (
     {...props}
   />
 ))(({ theme }) => ({
-  '&:hover': {
-    backgroundColor: alpha(theme.palette.common.white, 0.1)
-  },
-  [`& .${accordionSummaryClasses.content}`]: {
-    marginLeft: theme.spacing(1)
-  }
+  '&:hover': { backgroundColor: alpha(theme.palette.common.white, 0.1) },
+  [`& .${accordionSummaryClasses.content}`]: { marginLeft: theme.spacing(1) }
 }))
 
 const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
@@ -62,23 +52,15 @@ export function Question({
     <Accordion
       expanded={isOpen}
       onChange={onToggle}
-      sx={{
-        bgcolor: 'transparent',
-        borderWidth: 0
-      }}
+      sx={{ bgcolor: 'transparent', borderWidth: 0 }}
     >
       <AccordionSummary>
         <HelpSquareContained
-          sx={{
-            opacity: 0.2,
-            mr: 6,
-            mt: 1,
-            color: 'common.white'
-          }}
+          sx={{ opacity: 0.2, mr: 6, mt: 1, color: 'common.white' }}
         />
-        <p className="text-md md:text-lg font-semibold text-stone-100 sm:pr-4 md:text-balance leading-[1.6]">
+        <h3 className="text-md md:text-lg font-semibold text-stone-100 sm:pr-4 md:text-balance leading-[1.6]">
           {question}
-        </p>
+        </h3>
       </AccordionSummary>
       <AccordionDetails>
         <p className="text-stone-200/80">{answer}</p>
