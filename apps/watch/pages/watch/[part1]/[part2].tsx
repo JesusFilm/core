@@ -46,7 +46,7 @@ const DynamicVideoContainerPage = dynamic(
 const DynamicVideoContentPage = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "NewContentPage" */
+      /* webpackChunkName: "VideoContentPage" */
       '../../../src/components/VideoContentPage'
     ).then((mod) => mod.VideoContentPage)
 )
