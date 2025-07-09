@@ -26,8 +26,7 @@ describe('FontLoader', () => {
             'Montserrat:400,500,600,700,800',
             'Open Sans:400,500,600,700,800'
           ]
-        },
-        fontinactive: expect.any(Function)
+        }
       })
     })
   })
@@ -43,8 +42,7 @@ describe('FontLoader', () => {
             'Montserrat:400,500,600,700,800',
             'Open Sans:400,500,600,700,800'
           ]
-        },
-        fontinactive: expect.any(Function)
+        }
       })
     })
   })
