@@ -1,8 +1,12 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 
-import { VideoContentFields_studyQuestions as StudyQuestions } from '../../../../../__generated__/VideoContentFields'
-
 import { Question } from './Question'
+
+jest.mock('next-i18next', () => ({
+  useTranslation: jest.fn().mockReturnValue({
+    t: (key: string) => key
+  })
+}))
 
 describe('Question', () => {
   beforeEach(() => {
@@ -21,6 +25,47 @@ describe('Question', () => {
         ]}
       />
     )
+
+    fireEvent.click(screen.getByText('What did you learn from this video?'))
+
+    expect(
+      screen.getByText(
+        'Have a private discussion with someone who is ready to listen.'
+      )
+    ).toBeVisible()
+    expect(
+      screen.getByRole('button', { name: 'Chat with a person' })
+    ).toBeVisible()
+    expect(
+      screen.getByRole('button', { name: 'Ask a Bible question' })
+    ).toBeVisible()
+  })
+
+  it('hides the content when the question is closed', () => {
+    render(
+      <Question
+        questions={[
+          {
+            value: 'What did you learn from this video?',
+            __typename: 'VideoStudyQuestion'
+          }
+        ]}
+      />
+    )
+
+    expect(
+      screen.queryByText(
+        'Have a private discussion with someone who is ready to listen.'
+      )
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Chat with a person' })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Ask a Bible question' })
+    ).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByText('What did you learn from this video?'))
 
     expect(
       screen.getByText(
@@ -46,6 +91,7 @@ describe('Question', () => {
         ]}
       />
     )
+    fireEvent.click(screen.getByText('What did you learn from this video?'))
 
     fireEvent.click(screen.getByRole('button', { name: 'Chat with a person' }))
     expect(window.open).toHaveBeenCalledWith(
@@ -65,6 +111,7 @@ describe('Question', () => {
         ]}
       />
     )
+    fireEvent.click(screen.getByText('What did you learn from this video?'))
 
     fireEvent.click(
       screen.getByRole('button', { name: 'Ask a Bible question' })
