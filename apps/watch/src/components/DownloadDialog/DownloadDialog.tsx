@@ -74,11 +74,15 @@ export function DownloadDialog({
   }
 
   const validationSchema = object().shape({
-    file: string().test(
-      'no-downloads',
-      t('No Downloads Available'),
-      (file) => file === ''
-    )
+    file: string().test('no-downloads', t('No Downloads Available'), (file) => {
+      if (file == null || file === '') {
+        // fail validation
+        return false
+      } else {
+        // pass validation
+        return true
+      }
+    })
   })
 
   return (
