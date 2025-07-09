@@ -29,7 +29,11 @@ export function PaletteColorPicker({
   }
 
   return (
-    <Grid container spacing={3} sx={{ p: 4 }}>
+    <Grid
+      container
+      spacing={{ xs: 4, sm: 3 }}
+      sx={{ p: 4, justifyContent: 'center' }}
+    >
       {colors.map((color) => {
         const selected = isSameColor(selectedColor, color)
         return (

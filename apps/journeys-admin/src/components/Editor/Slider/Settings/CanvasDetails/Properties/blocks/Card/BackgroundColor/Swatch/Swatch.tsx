@@ -18,9 +18,18 @@ export function Swatch({
       id={id}
       sx={{
         backgroundColor: color,
-        minWidth: variant === 'rounded' ? 49 : 56,
-        width: variant === 'rounded' ? 49 : 56,
-        height: variant === 'rounded' ? 49 : 56,
+        minWidth: {
+          xs: 56,
+          sm: variant === 'rounded' ? 49 : 56
+        },
+        width: {
+          xs: 56,
+          sm: variant === 'rounded' ? 49 : 56
+        },
+        height: {
+          xs: 56,
+          sm: variant === 'rounded' ? 49 : 56
+        },
         borderRadius: variant === 'rounded' ? '50%' : 2,
         border: '1px solid rgba(0, 0, 0, 0.2)'
       }}

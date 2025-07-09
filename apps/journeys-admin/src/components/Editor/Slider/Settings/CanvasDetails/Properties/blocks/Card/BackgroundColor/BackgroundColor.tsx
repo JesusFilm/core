@@ -339,40 +339,7 @@ export function BackgroundColor(): ReactElement {
           onEditClick={() => handleTabChange({}, 1)}
         />
       </Stack>
-      <Stack
-        sx={{
-          [cardTheme.breakpoints.down('sm')]: { display: 'none' },
-          alignItems: 'center'
-        }}
-      >
-        <Box sx={{ width: '100%' }}>{palettePicker}</Box>
-      </Stack>
-
-      <Box
-        sx={{
-          [cardTheme.breakpoints.up('sm')]: {
-            display: 'none'
-          }
-        }}
-      >
-        <Tabs
-          value={tabValue}
-          onChange={handleTabChange}
-          aria-label="background tabs"
-          variant="fullWidth"
-          centered
-        >
-          <Tab label={t('Palette')} {...tabA11yProps('background-color', 0)} />
-          <Tab label={t('Custom')} {...tabA11yProps('background-color', 1)} />
-        </Tabs>
-        <Divider />
-        <TabPanel name="background-color" value={tabValue} index={0}>
-          {palettePicker}
-        </TabPanel>
-        <TabPanel name="background-color" value={tabValue} index={1}>
-          {hexColorPicker}
-        </TabPanel>
-      </Box>
+      {palettePicker}
 
       {cardBlock?.fullscreen && (
         <>
