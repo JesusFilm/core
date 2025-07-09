@@ -34,7 +34,7 @@ export const VIDEO_CONTENT_FIELDS = gql`
     title(languageId: $languageId, primary: true) {
       value
     }
-    variant(languageId: $languageId) {
+    variant {
       id
       duration
       hls

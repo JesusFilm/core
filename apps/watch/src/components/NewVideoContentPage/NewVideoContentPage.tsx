@@ -54,7 +54,10 @@ export function NewVideoContentPage(): ReactElement {
   const variantSlug = container?.variant?.slug ?? variant?.slug
   const watchUrl = getWatchUrl(container?.slug, label, variant?.slug)
 
-  const { children, loading } = useVideoChildren(variantSlug, router.locale)
+  const { children, loading } = useVideoChildren(
+    variantSlug,
+    variant?.language.bcp47 ?? 'en'
+  )
 
   const { loading: languageVariantsLoading, data: languageVariantsData } =
     useQuery<GetLanguagesSlug>(GET_LANGUAGES_SLUG, {
