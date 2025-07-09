@@ -19,6 +19,7 @@ import Typography from '@mui/material/Typography'
 import { sendGTMEvent } from '@next/third-parties/google'
 import fscreen from 'fscreen'
 import debounce from 'lodash/debounce'
+import last from 'lodash/last'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import { MouseEventHandler, ReactElement, useEffect, useState } from 'react'
@@ -103,7 +104,7 @@ export function VideoControls({
   const { id, title, variant, images, imageAlt } = useVideo()
   const visible = !play || active || loading
 
-  const videoTitle = title?.[0]?.value ?? ''
+  const videoTitle = last(title)?.value ?? ''
 
   useEffect(() => {
     onVisibleChanged?.(!play || active || loading)

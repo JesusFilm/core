@@ -1,3 +1,4 @@
+import last from 'lodash/last'
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
@@ -23,7 +24,7 @@ export function HeroVideo({ isFullscreen }: HeroVideoProps): ReactElement {
   } = usePlayer()
   const [playerReady, setPlayerReady] = useState(false)
 
-  const title = video.title?.[0]?.value ?? ''
+  const title = last(video.title)?.value ?? ''
 
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<Player | null>(null)
