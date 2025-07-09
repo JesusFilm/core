@@ -1,9 +1,9 @@
-import { AssetOptions } from '@mux/mux-node/resources/video/assets'
 import { GraphQLError } from 'graphql'
 
-import { Prisma, VideoVariantDownloadQuality } from '.prisma/api-media-client'
+import { Prisma } from '.prisma/api-media-client'
 
 import { prisma } from '../../../lib/prisma'
+import { queue as processVideoDownloadsQueue } from '../../../workers/processVideoDownloads/queue'
 import { builder } from '../../builder'
 import { VideoSource, VideoSourceShape } from '../../videoSource/videoSource'
 
@@ -11,12 +11,9 @@ import {
   createVideoByDirectUpload,
   createVideoFromUrl,
   deleteVideo,
-  downloadsReadyToStore,
   enableDownload,
-  getHighestResolutionDownload,
   getUpload,
-  getVideo,
-  mapStaticResolutionTierToDownloadQuality
+  getVideo
 } from './service'
 
 const MuxVideo = builder.prismaObject('MuxVideo', {
@@ -96,10 +93,7 @@ builder.queryFields((t) => ({
         : (userGenerated ?? true)
       let video = await prisma.muxVideo.findFirstOrThrow({
         ...query,
-        where: { id, userId: user.id },
-        include: {
-          videoVariants: true
-        }
+        where: { id, userId: user.id }
       })
 
       if (video.assetId == null && video.uploadId != null) {
@@ -110,9 +104,6 @@ builder.queryFields((t) => ({
             where: { id },
             data: {
               assetId: muxUpload.asset_id
-            },
-            include: {
-              videoVariants: true
             }
           })
         }
@@ -125,8 +116,7 @@ builder.queryFields((t) => ({
 
         if (
           muxVideo.status === 'ready' &&
-          muxVideo.playback_ids?.[0].id != null &&
-          (!video.downloadable || downloadsReadyToStore(muxVideo))
+          muxVideo.playback_ids?.[0].id != null
         ) {
           video = await prisma.muxVideo.update({
             ...query,
@@ -135,47 +125,23 @@ builder.queryFields((t) => ({
               readyToStream: muxVideo.status === 'ready',
               playbackId: muxVideo.playback_ids?.[0].id,
               duration: Math.ceil(muxVideo.duration ?? 0)
-            },
-            include: {
-              videoVariants: true
             }
           })
-          // Auto add downloads for all available resolutions (size will be updated later)
-          if (
-            muxVideo.static_renditions?.files != null &&
-            video.videoVariants.length > 0
-          ) {
-            const validDownloads: Prisma.VideoVariantDownloadCreateManyInput[] =
-              muxVideo.static_renditions.files
-                .filter(
-                  (file) =>
-                    file != null &&
-                    file.resolution_tier != null &&
-                    file.status !== 'skipped' &&
-                    file.status !== 'errored' &&
-                    mapStaticResolutionTierToDownloadQuality(
-                      file.resolution_tier
-                    ) != null
-                )
-                .map((file) => ({
-                  videoVariantId: video.videoVariants[0].id,
-                  quality: mapStaticResolutionTierToDownloadQuality(
-                    file.resolution_tier as AssetOptions.StaticRendition['resolution']
-                  ) as VideoVariantDownloadQuality,
-                  url: `https://stream.mux.com/${muxVideo.playback_ids?.[0].id}/${file.resolution_tier}.mp4`,
-                  version: 1,
-                  size: file.filesize ? parseInt(file.filesize) : 0,
-                  height: file.height ?? 0,
-                  width: file.width ?? 0,
-                  bitrate: file.bitrate ?? 0
-                }))
-            if (validDownloads.length > 0) {
-              // find the highest quality by enum up to uhd since mux doesn't generate highest enum
-              const highest = getHighestResolutionDownload(validDownloads)
-              const data = [...validDownloads, highest]
-              await prisma.videoVariantDownload.createMany({
-                data: data
+
+          // Queue download processing if the video is downloadable
+          if (video.downloadable) {
+            try {
+              await processVideoDownloadsQueue.add('process-video-downloads', {
+                videoId: video.id,
+                assetId: video.assetId,
+                isUserGenerated
               })
+            } catch (error) {
+              // Log error but don't fail the request - downloads can be processed later
+              console.error(
+                'Failed to queue video downloads processing:',
+                error
+              )
             }
           }
         }
