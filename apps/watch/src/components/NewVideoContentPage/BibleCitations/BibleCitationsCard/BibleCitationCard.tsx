@@ -49,7 +49,10 @@ export function BibleCitationCard({
   useEffect(() => {
     async function fetchScripture(): Promise<void> {
       try {
-        const bookName = citation.bibleBook.name[0].value.toLowerCase()
+        const bookName = citation.bibleBook.name[0].value
+          .toLowerCase()
+          .replace(' ', '')
+
         const { data } = await axios.get<FBVScripture>(
           `https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/${LOCALE_TO_BIBLE_VERSION_MAP[siteLanguage].bibleVersion}/books/${bookName}/chapters/${citation.chapterStart}/verses/${citation.verseStart}.json`
         )
