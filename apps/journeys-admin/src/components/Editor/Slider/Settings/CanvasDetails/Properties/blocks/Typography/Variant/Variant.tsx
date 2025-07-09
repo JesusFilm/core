@@ -1,13 +1,16 @@
 import { gql, useMutation } from '@apollo/client'
+import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
+import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useMemo } from 'react'
+import { ReactElement, useMemo, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import Type1Icon from '@core/shared/ui/icons/Type1'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../../__generated__/BlockFields'
@@ -31,6 +34,15 @@ export const TYPOGRAPHY_BLOCK_UPDATE_VARIANT = gql`
   }
 `
 
+const ThemeBuilderDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "ThemeBuilderDialog" */
+      '../ThemeBuilderDialog'
+    ).then((mod) => mod.ThemeBuilderDialog),
+  { ssr: false }
+)
+
 export function Variant(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [typographyBlockUpdate] = useMutation<TypographyBlockUpdateVariant>(
@@ -46,6 +58,8 @@ export function Variant(): ReactElement {
   const selectedBlock = stateSelectedBlock as
     | TreeBlock<TypographyBlock>
     | undefined
+
+  const [openThemeBuilderDialog, setOpenThemeBuilderDialog] = useState(false)
 
   const journeyTheme = journey?.journeyTheme
   const fontFamilies = useMemo(() => {
@@ -189,12 +203,40 @@ export function Variant(): ReactElement {
     }
   ]
 
+  const editFontThemeButton = (
+    <Button
+      color="primary"
+      sx={{
+        backgroundColor: 'background.default',
+        height: 64,
+        p: 4,
+        width: '100%',
+        justifyContent: 'center',
+        color: '#B42318',
+        borderRadius: 3
+      }}
+      startIcon={<Type1Icon sx={{ color: '#B42318' }} />}
+      onClick={() => setOpenThemeBuilderDialog(true)}
+    >
+      <Typography variant="subtitle2">{t('Edit Font Theme')}</Typography>
+    </Button>
+  )
+
   return (
-    <ToggleButtonGroup
-      value={selectedBlock?.variant ?? TypographyVariant.body2}
-      onChange={handleChange}
-      options={options}
-      testId="Variant"
-    />
+    <>
+      <ToggleButtonGroup
+        value={selectedBlock?.variant ?? TypographyVariant.body2}
+        onChange={handleChange}
+        options={options}
+        testId="Variant"
+        children={editFontThemeButton}
+      />
+      {openThemeBuilderDialog && (
+        <ThemeBuilderDialog
+          open={openThemeBuilderDialog}
+          onClose={() => setOpenThemeBuilderDialog(false)}
+        />
+      )}
+    </>
   )
 }
