@@ -171,7 +171,7 @@ export function DownloadDialog({
                 onBlur={handleBlur}
                 helperText={errors.file}
                 error={errors.file != null}
-                // disabled={values.file === ''}
+                disabled={values.file === ''}
                 select
               >
                 {downloads
