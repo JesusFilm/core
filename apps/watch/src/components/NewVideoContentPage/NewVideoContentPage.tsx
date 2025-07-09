@@ -88,16 +88,27 @@ export function NewVideoContentPage(): ReactElement {
         }
       ] as unknown as VideoContentFields_studyQuestions[]
 
-    const nonPrimaryQuestions = studyQuestions.filter(
-      (q) => q.primary === false
+    const { nonPrimary, primary } = studyQuestions.reduce(
+      (acc, q) => {
+        if (q.primary === false) {
+          acc.nonPrimary.push(q)
+        } else if (q.primary === true) {
+          acc.primary.push(q)
+        }
+        return acc
+      },
+      {
+        nonPrimary: [] as VideoContentFields_studyQuestions[],
+        primary: [] as VideoContentFields_studyQuestions[]
+      }
     )
-    if (nonPrimaryQuestions.length > 0) {
-      return nonPrimaryQuestions
+
+    if (nonPrimary.length > 0) {
+      return nonPrimary
     }
 
-    const primaryQuestions = studyQuestions.filter((q) => q.primary === true)
-    if (primaryQuestions.length > 0) {
-      return primaryQuestions
+    if (primary.length > 0) {
+      return primary
     }
 
     return [

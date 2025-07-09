@@ -14,6 +14,7 @@ import { GetLanguagesSlug } from '../../../../__generated__/GetLanguagesSlug'
 import { useLanguageActions, useWatch } from '../../../libs/watchContext'
 import { GET_LANGUAGES_SLUG } from '../../AudioLanguageDialog/AudioLanguageDialog'
 import { selectLanguageForVideo } from '../utils/audioLanguageSetter'
+import { getCurrentAudioLanguage } from '../utils/getCurrentAudioLanguage'
 import { renderInput } from '../utils/renderInput'
 import { renderOption } from '../utils/renderOption'
 
@@ -59,71 +60,12 @@ export const AudioTrackSelect = memo(function AudioTrackSelect(): ReactElement {
     }
   }, [videoId, videoAudioLanguages, getAudioLanguages])
 
-  // Compute current language display object with priority logic:
-  // 1. Use currentAudioLanguage if available
-  // 2. If undefined, use slug from path
-  // 3. If that's null, fallback to audioLanguage
-  const currentLanguage = (() => {
-    if (!allLanguages) return undefined
-
-    // Priority 1: Use currentAudioLanguage if available
-    if (currentAudioLanguage) {
-      const selectedLanguage = allLanguages.find(
-        (lang) => lang.id === currentAudioLanguage.language.id
-      )
-      return selectedLanguage
-        ? {
-            id: selectedLanguage.id,
-            localName: selectedLanguage.name.find(({ primary }) => primary)
-              ?.value,
-            nativeName: selectedLanguage.name.find(({ primary }) => !primary)
-              ?.value,
-            slug: selectedLanguage.slug
-          }
-        : undefined
-    }
-
-    // Priority 2: Use slug from path
-    const currentPath = router.asPath
-    const currentLanguageSlug = currentPath
-      .split('/')
-      .pop()
-      ?.replace('.html', '')
-    if (currentLanguageSlug) {
-      const selectedLanguage = allLanguages.find(
-        (lang) => lang.slug === currentLanguageSlug
-      )
-      if (selectedLanguage) {
-        return {
-          id: selectedLanguage.id,
-          localName: selectedLanguage.name.find(({ primary }) => primary)
-            ?.value,
-          nativeName: selectedLanguage.name.find(({ primary }) => !primary)
-            ?.value,
-          slug: selectedLanguage.slug
-        }
-      }
-    }
-
-    // Priority 3: Fallback to audioLanguage
-    if (audioLanguage) {
-      const selectedLanguage = allLanguages.find(
-        (lang) => lang.id === audioLanguage
-      )
-      return selectedLanguage
-        ? {
-            id: selectedLanguage.id,
-            localName: selectedLanguage.name.find(({ primary }) => primary)
-              ?.value,
-            nativeName: selectedLanguage.name.find(({ primary }) => !primary)
-              ?.value,
-            slug: selectedLanguage.slug
-          }
-        : undefined
-    }
-
-    return undefined
-  })()
+  const currentLanguage = getCurrentAudioLanguage({
+    allLanguages,
+    currentAudioLanguage,
+    routerAsPath: router.asPath,
+    audioLanguage
+  })
 
   useEffect(() => {
     // Run automatic selection logic based on current state
