@@ -10,7 +10,7 @@ import IconButton from '@mui/material/IconButton'
 import Slider from '@mui/material/Slider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { MouseEvent } from 'react'
+import { MouseEvent, ReactElement } from 'react'
 
 import VideoJsPlayer from '../../utils/videoJsTypes'
 import { VideoSettings } from '../VideoSettings'
@@ -57,7 +57,7 @@ export function DesktopControls({
   handleFullscreen,
   handleToggleStats,
   player
-}: DesktopControlsProps): JSX.Element {
+}: DesktopControlsProps): ReactElement {
   return (
     <Stack
       data-testid="desktop-controls"

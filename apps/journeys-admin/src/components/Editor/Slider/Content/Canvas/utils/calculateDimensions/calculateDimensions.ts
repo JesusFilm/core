@@ -5,7 +5,7 @@ import { EDIT_TOOLBAR_HEIGHT } from '../../../../../constants'
 export const CARD_WIDTH = 324
 export const CARD_HEIGHT = 674
 
-export function calculateScale(ref: RefObject<HTMLDivElement>): number {
+export function calculateScale(ref: RefObject<HTMLDivElement | null>): number {
   const current = ref.current
   if (current == null) return 0
 

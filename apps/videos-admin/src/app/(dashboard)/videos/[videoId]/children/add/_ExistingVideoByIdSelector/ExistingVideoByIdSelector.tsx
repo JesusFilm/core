@@ -8,7 +8,7 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { graphql } from 'gql.tada'
-import { useState } from 'react'
+import { ReactElement, useState } from 'react'
 
 const GET_VIDEO_BY_ID = graphql(`
   query GetVideoById($id: ID!) {
@@ -30,7 +30,7 @@ export interface ExistingVideoByIdSelectorProps {
 export function ExistingVideoByIdSelector({
   onSelect,
   onCancel
-}: ExistingVideoByIdSelectorProps): JSX.Element {
+}: ExistingVideoByIdSelectorProps): ReactElement {
   const [videoId, setVideoId] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
