@@ -33,7 +33,8 @@ describe('useBlockActionDeleteMutation', () => {
       gtmEventName: null,
       parentBlockId: 'step1.id',
       blockId: 'step2.id'
-    }
+    },
+    settings: null
   }
 
   it('should delete block action', async () => {
