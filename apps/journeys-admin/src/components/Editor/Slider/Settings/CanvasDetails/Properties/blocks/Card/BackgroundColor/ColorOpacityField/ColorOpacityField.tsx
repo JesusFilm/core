@@ -15,7 +15,6 @@ import Edit2Icon from '@core/shared/ui/icons/Edit2'
 interface ColorOpacityFieldProps {
   color: string
   onColorChange: (color: string) => Promise<void>
-  onEditClick: () => void
 }
 
 interface FormValues {
@@ -30,8 +29,7 @@ type FormikHandlers = Pick<
 
 export function ColorOpacityField({
   color,
-  onColorChange,
-  onEditClick
+  onColorChange
 }: ColorOpacityFieldProps): ReactElement {
   const initialColorValue = stripAlphaFromHex(color)
   const initialOpacityValue = getOpacityFromHex(color)
@@ -175,10 +173,7 @@ export function ColorOpacityField({
                   },
                   startAdornment: (
                     <InputAdornment position="start">
-                      <Edit2Icon
-                        onClick={onEditClick}
-                        style={{ cursor: 'pointer' }}
-                      />
+                      <Edit2Icon style={{ cursor: 'pointer' }} />
                     </InputAdornment>
                   )
                 }

@@ -14,7 +14,6 @@ const ThemeWrapper = ({ children }: { children: React.ReactNode }) => (
 
 describe('ColorOpacityField', () => {
   const mockOnColorChange = jest.fn()
-  const mockOnEditClick = jest.fn()
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -27,7 +26,6 @@ describe('ColorOpacityField', () => {
           <ColorOpacityField
             color="#FF0000FF"
             onColorChange={mockOnColorChange}
-            onEditClick={mockOnEditClick}
           />
         </ThemeWrapper>
       )
@@ -49,7 +47,6 @@ describe('ColorOpacityField', () => {
           <ColorOpacityField
             color="#00FF00"
             onColorChange={mockOnColorChange}
-            onEditClick={mockOnEditClick}
           />
         </ThemeWrapper>
       )
@@ -71,7 +68,6 @@ describe('ColorOpacityField', () => {
           <ColorOpacityField
             color="#0000FF80"
             onColorChange={mockOnColorChange}
-            onEditClick={mockOnEditClick}
           />
         </ThemeWrapper>
       )
@@ -93,7 +89,6 @@ describe('ColorOpacityField', () => {
           <ColorOpacityField
             color="#FF0000"
             onColorChange={mockOnColorChange}
-            onEditClick={mockOnEditClick}
           />
         </ThemeWrapper>
       )
@@ -107,7 +102,6 @@ describe('ColorOpacityField', () => {
           <ColorOpacityField
             color="#FF0000"
             onColorChange={mockOnColorChange}
-            onEditClick={mockOnEditClick}
           />
         </ThemeWrapper>
       )
@@ -123,7 +117,6 @@ describe('ColorOpacityField', () => {
           <ColorOpacityField
             color="#000000"
             onColorChange={mockOnColorChange}
-            onEditClick={mockOnEditClick}
           />
         </ThemeWrapper>
       )
@@ -147,7 +140,6 @@ describe('ColorOpacityField', () => {
           <ColorOpacityField
             color="#000000"
             onColorChange={mockOnColorChange}
-            onEditClick={mockOnEditClick}
           />
         </ThemeWrapper>
       )
@@ -176,7 +168,6 @@ describe('ColorOpacityField', () => {
           <ColorOpacityField
             color="#FF0000"
             onColorChange={mockOnColorChange}
-            onEditClick={mockOnEditClick}
           />
         </ThemeWrapper>
       )
@@ -201,7 +192,6 @@ describe('ColorOpacityField', () => {
           <ColorOpacityField
             color="#FF0000"
             onColorChange={mockOnColorChange}
-            onEditClick={mockOnEditClick}
           />
         </ThemeWrapper>
       )
@@ -225,7 +215,6 @@ describe('ColorOpacityField', () => {
           <ColorOpacityField
             color="#000000"
             onColorChange={mockOnColorChange}
-            onEditClick={mockOnEditClick}
           />
         </ThemeWrapper>
       )
@@ -249,7 +238,6 @@ describe('ColorOpacityField', () => {
           <ColorOpacityField
             color="#000000"
             onColorChange={mockOnColorChange}
-            onEditClick={mockOnEditClick}
           />
         </ThemeWrapper>
       )
@@ -271,6 +259,60 @@ describe('ColorOpacityField', () => {
         expect(mockOnColorChange).toHaveBeenCalledWith('#123456AB')
       })
     })
+
+    it('handles empty color input and resets to previous value on Enter key', async () => {
+      render(
+        <ThemeWrapper>
+          <ColorOpacityField
+            color="#FF0000"
+            onColorChange={mockOnColorChange}
+          />
+        </ThemeWrapper>
+      )
+
+      const colorInput = screen
+        .getByTestId('bgColorTextField')
+        .querySelector('input')
+      const opacityInput = screen
+        .getByTestId('bgOpacityTextField')
+        .querySelector('input')
+
+      await userEvent.clear(colorInput as HTMLInputElement)
+      fireEvent.keyDown(colorInput as HTMLInputElement, { key: 'Enter' })
+
+      await waitFor(() => {
+        expect(colorInput).toHaveValue('#FF0000')
+        expect(opacityInput).toHaveValue('100')
+        expect(mockOnColorChange).not.toHaveBeenCalled()
+      })
+    })
+
+    it('handles empty opacity input and resets to previous value on Enter key', async () => {
+      render(
+        <ThemeWrapper>
+          <ColorOpacityField
+            color="#FF000080"
+            onColorChange={mockOnColorChange}
+          />
+        </ThemeWrapper>
+      )
+
+      const colorInput = screen
+        .getByTestId('bgColorTextField')
+        .querySelector('input')
+      const opacityInput = screen
+        .getByTestId('bgOpacityTextField')
+        .querySelector('input')
+
+      await userEvent.clear(opacityInput as HTMLInputElement)
+      fireEvent.keyDown(opacityInput as HTMLInputElement, { key: 'Enter' })
+
+      await waitFor(() => {
+        expect(colorInput).toHaveValue('#FF0000')
+        expect(opacityInput).toHaveValue('50') // 0x80 = 50%
+        expect(mockOnColorChange).not.toHaveBeenCalled()
+      })
+    })
   })
 
   describe('Opacity Input Validation', () => {
@@ -280,7 +322,6 @@ describe('ColorOpacityField', () => {
           <ColorOpacityField
             color="#FF0000"
             onColorChange={mockOnColorChange}
-            onEditClick={mockOnEditClick}
           />
         </ThemeWrapper>
       )
@@ -304,7 +345,6 @@ describe('ColorOpacityField', () => {
           <ColorOpacityField
             color="#FF0000"
             onColorChange={mockOnColorChange}
-            onEditClick={mockOnEditClick}
           />
         </ThemeWrapper>
       )
@@ -340,7 +380,6 @@ describe('ColorOpacityField', () => {
           <ColorOpacityField
             color="#FF0000FF"
             onColorChange={mockOnColorChange}
-            onEditClick={mockOnEditClick}
           />
         </ThemeWrapper>
       )
@@ -365,7 +404,6 @@ describe('ColorOpacityField', () => {
           <ColorOpacityField
             color="#FF0000FF"
             onColorChange={mockOnColorChange}
-            onEditClick={mockOnEditClick}
           />
         </ThemeWrapper>
       )
@@ -390,7 +428,6 @@ describe('ColorOpacityField', () => {
           <ColorOpacityField
             color="#FF0000FF"
             onColorChange={mockOnColorChange}
-            onEditClick={mockOnEditClick}
           />
         </ThemeWrapper>
       )
@@ -415,7 +452,6 @@ describe('ColorOpacityField', () => {
           <ColorOpacityField
             color="#FF0000"
             onColorChange={mockOnColorChange}
-            onEditClick={mockOnEditClick}
           />
         </ThemeWrapper>
       )
@@ -439,7 +475,6 @@ describe('ColorOpacityField', () => {
           <ColorOpacityField
             color="#FF0000"
             onColorChange={mockOnColorChange}
-            onEditClick={mockOnEditClick}
           />
         </ThemeWrapper>
       )
@@ -465,7 +500,6 @@ describe('ColorOpacityField', () => {
           <ColorOpacityField
             color="#000000"
             onColorChange={mockOnColorChange}
-            onEditClick={mockOnEditClick}
           />
         </ThemeWrapper>
       )
@@ -504,7 +538,6 @@ describe('ColorOpacityField', () => {
           <ColorOpacityField
             color="#FF0000FF"
             onColorChange={mockOnColorChange}
-            onEditClick={mockOnEditClick}
           />
         </ThemeWrapper>
       )
@@ -526,30 +559,12 @@ describe('ColorOpacityField', () => {
   })
 
   describe('Edit Button Functionality', () => {
-    it('calls onEditClick when edit icon is clicked', async () => {
-      render(
-        <ThemeWrapper>
-          <ColorOpacityField
-            color="#FF0000"
-            onColorChange={mockOnColorChange}
-            onEditClick={mockOnEditClick}
-          />
-        </ThemeWrapper>
-      )
-
-      const editIcon = screen.getByTestId('Edit2Icon')
-      fireEvent.click(editIcon)
-
-      expect(mockOnEditClick).toHaveBeenCalledTimes(1)
-    })
-
     it('displays edit icon with pointer cursor', () => {
       render(
         <ThemeWrapper>
           <ColorOpacityField
             color="#FF0000"
             onColorChange={mockOnColorChange}
-            onEditClick={mockOnEditClick}
           />
         </ThemeWrapper>
       )
@@ -566,7 +581,6 @@ describe('ColorOpacityField', () => {
           <ColorOpacityField
             color="#FF0000FF"
             onColorChange={mockOnColorChange}
-            onEditClick={mockOnEditClick}
           />
         </ThemeWrapper>
       )
@@ -587,7 +601,6 @@ describe('ColorOpacityField', () => {
           <ColorOpacityField
             color="#00FF0080"
             onColorChange={mockOnColorChange}
-            onEditClick={mockOnEditClick}
           />
         </ThemeWrapper>
       )
@@ -604,7 +617,6 @@ describe('ColorOpacityField', () => {
           <ColorOpacityField
             color="#FF0000"
             onColorChange={mockOnColorChange}
-            onEditClick={mockOnEditClick}
           />
         </ThemeWrapper>
       )
@@ -621,7 +633,6 @@ describe('ColorOpacityField', () => {
           <ColorOpacityField
             color="#FF0000"
             onColorChange={mockOnColorChange}
-            onEditClick={mockOnEditClick}
           />
         </ThemeWrapper>
       )
@@ -640,7 +651,6 @@ describe('ColorOpacityField', () => {
           <ColorOpacityField
             color="#FF0000"
             onColorChange={mockOnColorChange}
-            onEditClick={mockOnEditClick}
           />
         </ThemeWrapper>
       )
@@ -655,7 +665,6 @@ describe('ColorOpacityField', () => {
           <ColorOpacityField
             color="#FF0000"
             onColorChange={mockOnColorChange}
-            onEditClick={mockOnEditClick}
             data-testid="custom-color-opacity-field"
           />
         </ThemeWrapper>

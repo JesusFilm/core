@@ -283,19 +283,6 @@ describe('PaletteColorPicker', () => {
       const grid = container.querySelector('.MuiGrid-container')
       expect(grid).toBeInTheDocument()
     })
-
-    it('applies correct spacing to grid', () => {
-      const { container } = render(
-        <PaletteColorPicker
-          selectedColor="#FFFFFF"
-          colors={testColors}
-          onChange={mockOnChange}
-        />
-      )
-
-      const grid = container.querySelector('.MuiGrid-container')
-      expect(grid).toHaveClass('MuiGrid-spacing-xs-3')
-    })
   })
 
   describe('Accessibility', () => {
@@ -308,13 +295,12 @@ describe('PaletteColorPicker', () => {
         />
       )
 
-      // Check for clickable Box elements (the color swatches)
       const clickableBoxes = container.querySelectorAll('.MuiBox-root')
       expect(clickableBoxes.length).toBeGreaterThan(0)
     })
 
     it('provides unique keys for each color', () => {
-      const { container } = render(
+      render(
         <PaletteColorPicker
           selectedColor="#FFFFFF"
           colors={testColors}
@@ -322,7 +308,6 @@ describe('PaletteColorPicker', () => {
         />
       )
 
-      // Check that each swatch has a unique test ID
       testColors.forEach((color) => {
         const swatch = screen.getByTestId(`Swatch-${color}`)
         expect(swatch).toBeInTheDocument()

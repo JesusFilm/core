@@ -327,7 +327,7 @@ export function BackgroundColor(): ReactElement {
     <>
       {hexColorPicker}
       <Stack
-        sx={{ p: 4, pt: 0 }}
+        sx={{ p: 4, pt: 0, justifyContent: 'center' }}
         spacing={3}
         direction="row"
         data-testid="BackgroundColor"
@@ -336,7 +336,6 @@ export function BackgroundColor(): ReactElement {
         <ColorOpacityField
           color={selectedColor}
           onColorChange={handleColorChange}
-          onEditClick={() => handleTabChange({}, 1)}
         />
       </Stack>
       {palettePicker}
