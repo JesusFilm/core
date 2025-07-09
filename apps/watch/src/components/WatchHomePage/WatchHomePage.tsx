@@ -35,6 +35,7 @@ export function WatchHomePage({
       hero={<HomeHero />}
       headerThemeMode={ThemeMode.dark}
       hideHeaderSpacer
+      showLanguageSwitcher
     >
       <ThemeProvider
         themeName={ThemeName.website}

@@ -1,5 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { type NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
@@ -89,6 +89,19 @@ describe('VideoContentPage', () => {
     )
 
     expect(getAllByRole('button', { name: 'Play' })).toHaveLength(1)
+  })
+
+  it('should show language switcher', () => {
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <VideoProvider value={{ content: videos[0] }}>
+            <VideoContentPage />
+          </VideoProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    expect(screen.getByTestId('LanguageRoundedIcon')).toBeInTheDocument()
   })
 
   it('should render description', () => {

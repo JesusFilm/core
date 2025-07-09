@@ -108,6 +108,7 @@ export function VideoContentPage(): ReactElement {
       />
       <PageWrapper
         hideHeader
+        showLanguageSwitcher
         hero={
           <>
             <VideoHero

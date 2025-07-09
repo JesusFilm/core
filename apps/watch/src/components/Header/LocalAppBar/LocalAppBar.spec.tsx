@@ -73,10 +73,20 @@ describe('LocalAppBar', () => {
     expect(menuButton).toHaveAttribute('aria-expanded', 'false')
   })
 
+  it('should hide language switcher by default', () => {
+    render(
+      <MockedProvider>
+        <LocalAppBar onMenuClick={jest.fn()} />
+      </MockedProvider>
+    )
+
+    expect(screen.queryByTestId('LanguageRoundedIcon')).not.toBeInTheDocument()
+  })
+
   it('should open the language switcher dialog when language selector is clicked', async () => {
     render(
       <MockedProvider>
-        <LocalAppBar onMenuClick={mockOnMenuClick} />
+        <LocalAppBar onMenuClick={mockOnMenuClick} showLanguageSwitcher />
       </MockedProvider>
     )
 

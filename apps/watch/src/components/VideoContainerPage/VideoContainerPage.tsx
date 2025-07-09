@@ -36,6 +36,7 @@ export function VideoContainerPage(): ReactElement {
       hero={<ContainerHero openDialog={handleOpenDialog} />}
       headerThemeMode={ThemeMode.dark}
       hideHeaderSpacer
+      showLanguageSwitcher
     >
       <Container maxWidth="xxl" data-testid="VideoContainerPage">
         <Stack
