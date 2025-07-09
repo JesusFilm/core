@@ -40,7 +40,7 @@ export function PageWrapper({
         <Header
           themeMode={headerThemeMode}
           hideSpacer={hideHeaderSpacer}
-          showLanguageSwitcher
+          showLanguageSwitcher={showLanguageSwitcher}
         />
       )}
       <Stack

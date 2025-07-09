@@ -81,7 +81,7 @@ export function Header({
               hideSpacer={hideSpacer}
               onMenuClick={() => setDrawerOpen((prev) => !prev)}
               menuOpen={drawerOpen}
-              showLanguageSwitcher
+              showLanguageSwitcher={showLanguageSwitcher}
             />
           </Box>
         )}
