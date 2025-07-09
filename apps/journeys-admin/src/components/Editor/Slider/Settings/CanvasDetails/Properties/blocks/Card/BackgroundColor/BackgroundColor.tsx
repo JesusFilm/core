@@ -1,15 +1,10 @@
 import { gql, useApolloClient, useMutation } from '@apollo/client'
-import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
-import Tab from '@mui/material/Tab'
-import Tabs from '@mui/material/Tabs'
 import TextField from '@mui/material/TextField'
 import Tooltip from '@mui/material/Tooltip'
-import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
-import { object, string } from 'yup'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
@@ -21,7 +16,6 @@ import {
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import BlurIcon from '@core/shared/ui/icons/Blur'
-import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
 
 import { CardBlockBackgroundColorUpdate } from '../../../../../../../../../../__generated__/CardBlockBackgroundColorUpdate'
@@ -122,7 +116,6 @@ export function BackgroundColor(): ReactElement {
     rtl,
     locale
   })
-  const [tabValue, setTabValue] = useState(0)
   const [selectedColor, setSelectedColor] = useState(
     cardBlock?.backgroundColor ?? cardTheme.palette.background.paper
   )
@@ -142,10 +135,6 @@ export function BackgroundColor(): ReactElement {
     setBlurPercentage(percentageValue)
     setInputValue(`${percentageValue}%`)
   }, [cardBlock?.backdropBlur])
-
-  function handleTabChange(_event, newValue: number): void {
-    setTabValue(newValue)
-  }
 
   function handleBlurSliderChange(_: Event, newValue: number): void {
     setBlurPercentage(newValue)
@@ -339,7 +328,6 @@ export function BackgroundColor(): ReactElement {
         />
       </Stack>
       {palettePicker}
-
       {cardBlock?.fullscreen && (
         <>
           <Divider />
