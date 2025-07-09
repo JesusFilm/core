@@ -1,6 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import useMediaQuery from '@mui/material/useMediaQuery'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { render } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider/EditorProvider'
@@ -14,11 +13,6 @@ import {
 import { TestEditorState } from '../../../../../../../../libs/TestEditorState'
 
 import { Typography } from '.'
-
-jest.mock('@mui/material/useMediaQuery', () => ({
-  __esModule: true,
-  default: jest.fn()
-}))
 
 describe('Typography properties', () => {
   const block: TreeBlock<TypographyBlock> = {
@@ -84,21 +78,5 @@ describe('Typography properties', () => {
     expect(
       getByText('selectedAttributeId: typography1.id-typography-variant')
     ).toBeInTheDocument()
-  })
-
-  it('should open theme builder dialog', async () => {
-    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
-
-    const { getByRole } = render(
-      <MockedProvider>
-        <EditorProvider>
-          <Typography {...block} />
-        </EditorProvider>
-      </MockedProvider>
-    )
-    fireEvent.click(getByRole('button', { name: 'Edit Font Theme' }))
-    await waitFor(() => {
-      expect(getByRole('dialog', { name: 'Select Fonts' })).toBeInTheDocument()
-    })
   })
 })

@@ -1,4 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -13,6 +14,11 @@ import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoI
 import { TYPOGRAPHY_BLOCK_UPDATE_VARIANT } from './Variant'
 
 import { Variant } from '.'
+
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: jest.fn()
+}))
 
 describe('Typography variant selector', () => {
   it('should show variant properties', () => {
@@ -179,5 +185,21 @@ describe('Typography variant selector', () => {
     await waitFor(() => expect(result1).toHaveBeenCalled())
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(result2).toHaveBeenCalled())
+  })
+
+  it('should open theme builder dialog', async () => {
+    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
+
+    const { getByRole } = render(
+      <MockedProvider>
+        <EditorProvider>
+          <Variant />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button', { name: 'Edit Font Theme' }))
+    await waitFor(() => {
+      expect(getByRole('dialog', { name: 'Select Fonts' })).toBeInTheDocument()
+    })
   })
 })
