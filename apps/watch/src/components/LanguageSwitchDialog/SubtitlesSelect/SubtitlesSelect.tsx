@@ -91,7 +91,7 @@ export const SubtitlesSelect = memo(function SubtitlesSelect(): ReactElement {
   }
 
   return (
-    <div className="mt-6 mx-6">
+    <div className="mx-6 font-sans">
       <div className="flex items-center justify-between">
         <label
           htmlFor="subtitles-select"

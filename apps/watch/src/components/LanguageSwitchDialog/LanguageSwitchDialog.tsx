@@ -5,6 +5,7 @@ import Dialog from '@mui/material/Dialog'
 import DialogContent from '@mui/material/DialogContent'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
+import Stack from '@mui/material/Stack'
 import { ThemeProvider } from '@mui/material/styles'
 import { useRouter } from 'next/router'
 import { ReactElement, memo, useEffect } from 'react'
@@ -82,21 +83,24 @@ export const LanguageSwitchDialog = memo(function LanguageSwitchDialog({
         fullWidth
         aria-label="Language Settings"
       >
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 2 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
           <IconButton
             onClick={handleClose}
             size="small"
             aria-label="Close dialog"
+            sx={{ m: 2 }}
           >
             <CloseIcon />
           </IconButton>
         </Box>
 
-        <DialogContent sx={{ pt: 0, pb: 3 }}>
-          <SiteLanguageSelect />
-          <Divider sx={{ my: 3 }} />
-          <AudioTrackSelect />
-          <SubtitlesSelect />
+        <DialogContent sx={{ pt: 0, pb: 6, px: 0 }}>
+          <Stack gap={8}>
+            <SiteLanguageSelect />
+            <Divider />
+            <AudioTrackSelect />
+            <SubtitlesSelect />
+          </Stack>
         </DialogContent>
       </Dialog>
     </ThemeProvider>

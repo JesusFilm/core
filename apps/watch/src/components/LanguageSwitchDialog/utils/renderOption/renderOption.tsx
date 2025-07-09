@@ -84,7 +84,10 @@ export const renderOption = (props: ListChildComponentProps) => {
       tabIndex={0}
       sx={{
         display: 'block',
-        cursor: 'pointer'
+        cursor: 'pointer',
+        '&:hover': {
+          backgroundColor: 'action.hover'
+        }
       }}
     >
       <Box

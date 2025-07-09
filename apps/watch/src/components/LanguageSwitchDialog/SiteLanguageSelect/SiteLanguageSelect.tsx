@@ -92,7 +92,7 @@ export const SiteLanguageSelect = memo(
     }
 
     return (
-      <div className="mx-6">
+      <div className="mx-6 font-sans">
         <label
           htmlFor="language-select"
           className="block text-xl font-medium text-gray-700 ml-7"

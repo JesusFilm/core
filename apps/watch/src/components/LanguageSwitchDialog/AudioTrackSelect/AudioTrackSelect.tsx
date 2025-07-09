@@ -166,7 +166,7 @@ export const AudioTrackSelect = memo(function AudioTrackSelect(): ReactElement {
   }
 
   return (
-    <div className="mb-4 mx-6">
+    <div className="mx-6 font-sans">
       <div className="flex items-center justify-between">
         <label
           htmlFor="audio-select"
