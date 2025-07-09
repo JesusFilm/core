@@ -1,9 +1,8 @@
 import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
-import { Form, Formik } from 'formik'
-import { useTranslation } from 'next-i18next'
-import { ReactElement, useCallback } from 'react'
+import { Form, Formik, FormikContextType, FormikHelpers } from 'formik'
+import { ReactElement } from 'react'
 
 import {
   addAlphaToHex,
@@ -17,105 +16,115 @@ interface ColorOpacityFieldProps {
   color: string
   onColorChange: (color: string) => Promise<void>
   onEditClick: () => void
-  'data-testid'?: string
 }
+
+interface FormValues {
+  color: string
+  opacity: number
+}
+
+type FormikHandlers = Pick<
+  FormikContextType<FormValues>,
+  'setFieldValue' | 'handleSubmit'
+>
 
 export function ColorOpacityField({
   color,
   onColorChange,
-  onEditClick,
-  'data-testid': dataTestId
+  onEditClick
 }: ColorOpacityFieldProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
-
   const initialColorValue = stripAlphaFromHex(color)
   const initialOpacityValue = getOpacityFromHex(color)
 
-  const validateAndSubmit = useCallback(
-    async (
-      values: { color: string; opacity: number },
-      { setFieldValue }: any
-    ) => {
-      const { color: inputColor, opacity: inputOpacity } = values
+  async function validateAndSubmit(
+    values: FormValues,
+    { setFieldValue }: FormikHelpers<FormValues>
+  ): Promise<void> {
+    const { color: inputColor, opacity: inputOpacity } = values
+    const isColorValid = isValidHex(inputColor)
+    const isOpacityValid =
+      !isNaN(inputOpacity) && inputOpacity >= 0 && inputOpacity <= 100
 
-      // Validate color
-      const isColorValid = inputColor.trim() !== '' && isValidHex(inputColor)
-      // Validate opacity
-      const isOpacityValid =
-        !isNaN(inputOpacity) && inputOpacity >= 0 && inputOpacity <= 100
+    if (!isColorValid) {
+      void setFieldValue('color', initialColorValue)
+    }
 
-      // If color is invalid, reset it to the previous valid value
-      if (!isColorValid) {
-        setFieldValue('color', initialColorValue)
+    if (!isOpacityValid) {
+      void setFieldValue('opacity', initialOpacityValue)
+    }
+
+    if (isColorValid && isOpacityValid) {
+      const combinedColorWithOpacity = addAlphaToHex(inputColor, inputOpacity)
+      await onColorChange(combinedColorWithOpacity)
+    }
+  }
+
+  function validateAndExtractColor(
+    value: string,
+    { setFieldValue }: FormikHandlers
+  ): boolean {
+    if (isValidHex(value)) {
+      const baseColor = stripAlphaFromHex(value)
+      const extractedOpacity = getOpacityFromHex(value)
+      void setFieldValue('color', baseColor)
+      void setFieldValue('opacity', extractedOpacity)
+      return true
+    }
+    return false
+  }
+
+  function validateOpacity(
+    value: string,
+    { setFieldValue }: FormikHandlers
+  ): boolean {
+    const parsedOpacity = parseInt(value, 10)
+    if (isNaN(parsedOpacity) || parsedOpacity < 0 || parsedOpacity > 100) {
+      void setFieldValue('opacity', initialOpacityValue)
+      return false
+    }
+    return true
+  }
+
+  function handleKeyDown(
+    e: React.KeyboardEvent<HTMLDivElement>,
+    formikHandlers: FormikHandlers,
+    validator: (value: string, handlers: FormikHandlers) => boolean
+  ) {
+    if (e.key === 'Enter') {
+      const target = e.target as HTMLInputElement
+      const isValid = validator(target.value, formikHandlers)
+      if (!isValid) {
+        const initialValue =
+          target.name === 'color' ? initialColorValue : initialOpacityValue
+        void formikHandlers.setFieldValue(target.name, initialValue)
+        return
       }
+      formikHandlers.handleSubmit()
+    }
+  }
 
-      // If opacity is invalid, reset it to the previous valid value
-      if (!isOpacityValid) {
-        setFieldValue('opacity', initialOpacityValue)
-      }
+  function handleColorBlur(
+    e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>,
+    formikHandlers: FormikHandlers
+  ): void {
+    const { handleSubmit } = formikHandlers
+    if (!validateAndExtractColor(e.target.value, formikHandlers)) {
+      void formikHandlers.setFieldValue('color', initialColorValue)
+      return
+    }
+    handleSubmit()
+  }
 
-      // Only proceed with color change if both values are valid
-      if (isColorValid && isOpacityValid) {
-        const combinedColorWithOpacity = addAlphaToHex(inputColor, inputOpacity)
-        await onColorChange(combinedColorWithOpacity)
-      }
-    },
-    [onColorChange, initialColorValue, initialOpacityValue]
-  )
-
-  const handleColorBlur = useCallback(
-    (
-      e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>,
-      formikProps: any
-    ) => {
-      const value = e.target.value
-      if (value.trim() !== '' && !isValidHex(value)) {
-        formikProps.setFieldValue('color', initialColorValue)
-      } else if (isValidHex(value) && value.length === 9) {
-        // If it's a valid 8-digit hex, update the opacity field too
-        const extractedOpacity = getOpacityFromHex(value)
-        formikProps.setFieldValue('opacity', extractedOpacity)
-        // Strip alpha and show base color in the color field
-        const baseColor = stripAlphaFromHex(value)
-        formikProps.setFieldValue('color', baseColor)
-      }
-      formikProps.handleSubmit()
-    },
-    [initialColorValue]
-  )
-
-  const handleColorKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLDivElement>, formikProps: any) => {
-      if (e.key === 'Enter') {
-        const target = e.target as HTMLInputElement
-        const value = target.value
-        if (isValidHex(value) && value.length === 9) {
-          // If it's a valid 8-digit hex, update the opacity field too
-          const extractedOpacity = getOpacityFromHex(value)
-          formikProps.setFieldValue('opacity', extractedOpacity)
-          // Strip alpha and show base color in the color field
-          const baseColor = stripAlphaFromHex(value)
-          formikProps.setFieldValue('color', baseColor)
-        }
-        formikProps.handleSubmit()
-      }
-    },
-    []
-  )
-
-  const handleOpacityBlur = useCallback(
-    (
-      e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>,
-      formikProps: any
-    ) => {
-      const value = parseFloat(e.target.value)
-      if (isNaN(value) || value < 0 || value > 100) {
-        formikProps.setFieldValue('opacity', initialOpacityValue)
-      }
-      formikProps.handleSubmit()
-    },
-    [initialOpacityValue]
-  )
+  function handleOpacityBlur(
+    e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>,
+    formikHandlers: FormikHandlers
+  ): void {
+    if (!validateOpacity(e.target.value, formikHandlers)) {
+      void formikHandlers.setFieldValue('opacity', initialOpacityValue)
+      return
+    }
+    formikHandlers.handleSubmit()
+  }
 
   return (
     <Formik
@@ -128,7 +137,11 @@ export function ColorOpacityField({
     >
       {({ values, handleSubmit, handleChange, setFieldValue }) => (
         <Form onSubmit={handleSubmit}>
-          <Stack direction="row" sx={{ height: 56 }}>
+          <Stack
+            direction="row"
+            sx={{ height: 56 }}
+            data-testid="ColorOpacityField"
+          >
             <TextField
               name="color"
               value={values.color}
@@ -138,7 +151,11 @@ export function ColorOpacityField({
                 handleColorBlur(e, { setFieldValue, handleSubmit })
               }
               onKeyDown={(e) =>
-                handleColorKeyDown(e, { setFieldValue, handleSubmit })
+                handleKeyDown(
+                  e,
+                  { setFieldValue, handleSubmit },
+                  validateAndExtractColor
+                )
               }
               hiddenLabel
               size="small"
@@ -175,11 +192,13 @@ export function ColorOpacityField({
               onBlur={(e) =>
                 handleOpacityBlur(e, { setFieldValue, handleSubmit })
               }
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  handleSubmit()
-                }
-              }}
+              onKeyDown={(e) =>
+                handleKeyDown(
+                  e,
+                  { setFieldValue, handleSubmit },
+                  validateOpacity
+                )
+              }
               hiddenLabel
               size="small"
               data-testid="bgOpacityTextField"

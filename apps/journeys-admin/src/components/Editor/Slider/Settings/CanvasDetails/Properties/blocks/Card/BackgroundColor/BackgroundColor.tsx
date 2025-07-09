@@ -337,7 +337,6 @@ export function BackgroundColor(): ReactElement {
           color={selectedColor}
           onColorChange={handleColorChange}
           onEditClick={() => handleTabChange({}, 1)}
-          data-testid="BackgroundColorOpacityField"
         />
       </Stack>
       <Stack
