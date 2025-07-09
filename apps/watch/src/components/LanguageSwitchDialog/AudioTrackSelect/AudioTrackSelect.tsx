@@ -2,7 +2,7 @@ import { useLazyQuery } from '@apollo/client'
 import SpatialAudioOffOutlinedIcon from '@mui/icons-material/SpatialAudioOffOutlined'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, memo, useEffect, useState } from 'react'
 
 import {
   LanguageAutocomplete,
@@ -17,7 +17,7 @@ import { selectLanguageForVideo } from '../utils/audioLanguageSetter'
 import { renderInput } from '../utils/renderInput'
 import { renderOption } from '../utils/renderOption'
 
-export function AudioTrackSelect(): ReactElement {
+export const AudioTrackSelect = memo(function AudioTrackSelect(): ReactElement {
   const {
     state: {
       allLanguages,
@@ -201,4 +201,4 @@ export function AudioTrackSelect(): ReactElement {
       </div>
     </div>
   )
-}
+})

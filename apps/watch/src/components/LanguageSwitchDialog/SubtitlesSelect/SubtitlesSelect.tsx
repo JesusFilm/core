@@ -1,7 +1,7 @@
 import { useLazyQuery } from '@apollo/client'
 import ClosedCaptionOffOutlinedIcon from '@mui/icons-material/ClosedCaptionOffOutlined'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement, memo, useEffect } from 'react'
 
 import {
   LanguageAutocomplete,
@@ -15,7 +15,7 @@ import { GET_SUBTITLES } from '../../SubtitleDialog/SubtitleDialog'
 import { renderInput } from '../utils/renderInput'
 import { renderOption } from '../utils/renderOption'
 
-export function SubtitlesSelect(): ReactElement {
+export const SubtitlesSelect = memo(function SubtitlesSelect(): ReactElement {
   const { t } = useTranslation()
   const {
     state: {
@@ -136,4 +136,4 @@ export function SubtitlesSelect(): ReactElement {
       </div>
     </div>
   )
-}
+})
