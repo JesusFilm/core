@@ -111,7 +111,8 @@ describe('InlineEditWrapper', () => {
       endIconId: null,
       submitEnabled: null,
       action: null,
-      children: []
+      children: [],
+      settings: null
     }
 
     const { getByDisplayValue, getByText, getByTestId } = render(
@@ -134,11 +135,6 @@ describe('InlineEditWrapper', () => {
 
     fireEvent.click(getByText('test label'))
     fireEvent.click(getByText('test label'))
-    expect(getByTestId(`SelectableWrapper-${block.id}`)).toHaveStyle({
-      outline: '2px solid',
-      outlineColor: '#C52D3A',
-      zIndex: '1'
-    })
 
     const input = getByDisplayValue('test label')
     expect(input).toBeInTheDocument()

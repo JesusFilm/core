@@ -158,9 +158,16 @@ model VideoTitle {
 }
 
 enum VideoVariantDownloadQuality {
-  low // 2x0p
-  sd // 360p
-  high // 720p
+  distroLow // transcoded 2x0p for distribution centers
+  distroSd // transcoded 360p for distribution centers
+  distroHigh // transcoded 720p for distribution centers
+  low // mux 2x0p
+  sd // mux 360p
+  high // mux 720p  
+  fhd // mux 1080p
+  qhd // mux 1440p
+  uhd // mux 2160p
+  highest // higest available quality,
 }
 
 model VideoVariantDownload {

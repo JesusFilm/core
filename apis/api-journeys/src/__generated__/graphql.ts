@@ -167,10 +167,13 @@ export type ButtonBlockSettings = {
   __typename?: 'ButtonBlockSettings';
   /** Alignment of the button */
   alignment?: Maybe<ButtonAlignment>;
+  /** Color of the button */
+  color?: Maybe<Scalars['String']['output']>;
 };
 
 export type ButtonBlockSettingsInput = {
   alignment?: InputMaybe<ButtonAlignment>;
+  color?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type ButtonBlockUpdateInput = {
@@ -1552,7 +1555,6 @@ export type Mutation = {
   typographyBlockCreate: TypographyBlock;
   typographyBlockUpdate: TypographyBlock;
   updateJourneysEmailPreference?: Maybe<JourneysEmailPreference>;
-  updateVideoVariantDownloadSizesFromMux: Scalars['Boolean']['output'];
   userImpersonate?: Maybe<Scalars['String']['output']>;
   userInviteAcceptAll: Array<UserInvite>;
   userInviteCreate?: Maybe<UserInvite>;
@@ -1575,6 +1577,7 @@ export type Mutation = {
   videoCollapseEventCreate: VideoCollapseEvent;
   videoCompleteEventCreate: VideoCompleteEvent;
   videoCreate: Video;
+  videoDelete: Video;
   videoDescriptionCreate: VideoDescription;
   videoDescriptionDelete: VideoDescription;
   videoDescriptionUpdate: VideoDescription;
@@ -1812,12 +1815,14 @@ export type MutationCreateKeywordArgs = {
 
 
 export type MutationCreateMuxVideoUploadByFileArgs = {
+  downloadable?: InputMaybe<Scalars['Boolean']['input']>;
   name: Scalars['String']['input'];
   userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
 export type MutationCreateMuxVideoUploadByUrlArgs = {
+  downloadable?: InputMaybe<Scalars['Boolean']['input']>;
   url: Scalars['String']['input'];
   userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
 };
@@ -2232,11 +2237,6 @@ export type MutationUpdateJourneysEmailPreferenceArgs = {
 };
 
 
-export type MutationUpdateVideoVariantDownloadSizesFromMuxArgs = {
-  videoVariantId: Scalars['ID']['input'];
-};
-
-
 export type MutationUserImpersonateArgs = {
   email: Scalars['String']['input'];
 };
@@ -2337,6 +2337,11 @@ export type MutationVideoCompleteEventCreateArgs = {
 
 export type MutationVideoCreateArgs = {
   input: VideoCreateInput;
+};
+
+
+export type MutationVideoDeleteArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -4110,6 +4115,7 @@ export type TypographyBlock = Block & {
   journeyId: Scalars['ID']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
+  settings?: Maybe<TypographyBlockSettings>;
   variant?: Maybe<TypographyVariant>;
 };
 
@@ -4120,7 +4126,18 @@ export type TypographyBlockCreateInput = {
   id?: InputMaybe<Scalars['ID']['input']>;
   journeyId: Scalars['ID']['input'];
   parentBlockId: Scalars['ID']['input'];
+  settings?: InputMaybe<TypographyBlockSettingsInput>;
   variant?: InputMaybe<TypographyVariant>;
+};
+
+export type TypographyBlockSettings = {
+  __typename?: 'TypographyBlockSettings';
+  /** Color of the typography */
+  color?: Maybe<Scalars['String']['output']>;
+};
+
+export type TypographyBlockSettingsInput = {
+  color?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type TypographyBlockUpdateInput = {
@@ -4128,6 +4145,7 @@ export type TypographyBlockUpdateInput = {
   color?: InputMaybe<TypographyColor>;
   content?: InputMaybe<Scalars['String']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
+  settings?: InputMaybe<TypographyBlockSettingsInput>;
   variant?: InputMaybe<TypographyVariant>;
 };
 
@@ -5154,9 +5172,16 @@ export type VideoVariantDownloadCreateInput = {
 };
 
 export enum VideoVariantDownloadQuality {
+  DistroHigh = 'distroHigh',
+  DistroLow = 'distroLow',
+  DistroSd = 'distroSd',
+  Fhd = 'fhd',
   High = 'high',
+  Highest = 'highest',
   Low = 'low',
-  Sd = 'sd'
+  Qhd = 'qhd',
+  Sd = 'sd',
+  Uhd = 'uhd'
 }
 
 export type VideoVariantDownloadUpdateInput = {

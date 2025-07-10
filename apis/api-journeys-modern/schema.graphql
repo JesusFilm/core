@@ -37,6 +37,9 @@ type ButtonBlock implements Block
 type ButtonBlockSettings {
   """Alignment of the button"""
   alignment: ButtonAlignment @shareable
+
+  """Color of the button"""
+  color: String @shareable
 }
 
 enum ButtonColor {
@@ -483,6 +486,12 @@ type TypographyBlock implements Block
   variant: TypographyVariant @shareable
   color: TypographyColor @shareable
   align: TypographyAlign @shareable
+  settings: TypographyBlockSettings @shareable
+}
+
+type TypographyBlockSettings {
+  """Color of the typography"""
+  color: String @shareable
 }
 
 enum TypographyColor {
