@@ -12,7 +12,7 @@ import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 import { ThemeMode } from '@core/shared/ui/themes'
 
 import { GetLanguagesSlug } from '../../../__generated__/GetLanguagesSlug'
-import { VideoContentFields_studyQuestions } from '../../../__generated__/VideoContentFields'
+import { VideoContentFields_studyQuestions as StudyQuestions } from '../../../__generated__/VideoContentFields'
 import { useVideoChildren } from '../../libs/useVideoChildren'
 import { getWatchUrl } from '../../libs/utils/getWatchUrl'
 import { useVideo } from '../../libs/videoContext'
@@ -89,7 +89,7 @@ export function NewVideoContentPage(): ReactElement {
             'If you could ask the creator of this video a question, what would it be?'
           )
         }
-      ] as unknown as VideoContentFields_studyQuestions[]
+      ] as unknown as StudyQuestions[]
 
     const { nonPrimary, primary } = studyQuestions.reduce(
       (acc, q) => {
@@ -101,8 +101,8 @@ export function NewVideoContentPage(): ReactElement {
         return acc
       },
       {
-        nonPrimary: [] as VideoContentFields_studyQuestions[],
-        primary: [] as VideoContentFields_studyQuestions[]
+        nonPrimary: [] as StudyQuestions[],
+        primary: [] as StudyQuestions[]
       }
     )
 
@@ -120,7 +120,7 @@ export function NewVideoContentPage(): ReactElement {
           'If you could ask the creator of this video a question, what would it be?'
         )
       }
-    ] as unknown as VideoContentFields_studyQuestions[]
+    ] as unknown as StudyQuestions[]
   }, [studyQuestions])
 
   const handleFreeResourceClick = () => {

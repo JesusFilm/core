@@ -2,7 +2,7 @@ import { useLazyQuery } from '@apollo/client'
 import SpatialAudioOffOutlinedIcon from '@mui/icons-material/SpatialAudioOffOutlined'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, memo, useEffect, useState } from 'react'
+import { ReactElement, memo, useEffect, useMemo, useState } from 'react'
 
 import {
   LanguageAutocomplete,
@@ -96,12 +96,15 @@ export const AudioTrackSelect = memo(function AudioTrackSelect(): ReactElement {
     audioLanguagesLoading
   ])
 
-  const languages =
-    allLanguages?.map((language: Language) => ({
-      id: language.id,
-      name: language.name,
-      slug: language.slug
-    })) ?? []
+  const languages = useMemo(
+    () =>
+      allLanguages?.map((language: Language) => ({
+        id: language.id,
+        name: language.name,
+        slug: language.slug
+      })) ?? [],
+    [allLanguages]
+  )
 
   function handleChange(language: LanguageOption): void {
     updateAudioLanguage(language.id)

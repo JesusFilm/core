@@ -1,7 +1,7 @@
 import { useLazyQuery } from '@apollo/client'
 import ClosedCaptionOffOutlinedIcon from '@mui/icons-material/ClosedCaptionOffOutlined'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, memo, useEffect } from 'react'
+import { ReactElement, memo, useEffect, useMemo } from 'react'
 
 import {
   LanguageAutocomplete,
@@ -58,33 +58,41 @@ export const SubtitlesSelect = memo(function SubtitlesSelect(): ReactElement {
   const preferredSubtitleOn = autoSubtitle ?? subtitleOn
 
   // Compute current subtitle display object directly from context
-  const currentSubtitle =
-    subtitleLanguage && allLanguages
-      ? (() => {
-          const selectedLanguage = allLanguages.find(
-            (lang) => lang.id === subtitleLanguage
-          )
-          return selectedLanguage
-            ? {
-                id: selectedLanguage.id,
-                localName: selectedLanguage.name.find(({ primary }) => primary)
-                  ?.value,
-                nativeName: selectedLanguage.name.find(
-                  ({ primary }) => !primary
-                )?.value,
-                slug: selectedLanguage.slug
-              }
-            : undefined
-        })()
-      : undefined
+  const currentSubtitle = useMemo(
+    () =>
+      subtitleLanguage && allLanguages
+        ? (() => {
+            const selectedLanguage = allLanguages.find(
+              (lang) => lang.id === subtitleLanguage
+            )
+            return selectedLanguage
+              ? {
+                  id: selectedLanguage.id,
+                  localName: selectedLanguage.name.find(
+                    ({ primary }) => primary
+                  )?.value,
+                  nativeName: selectedLanguage.name.find(
+                    ({ primary }) => !primary
+                  )?.value,
+                  slug: selectedLanguage.slug
+                }
+              : undefined
+          })()
+        : undefined,
+    [subtitleLanguage, allLanguages]
+  )
 
-  const allLanguageSubtitles = allLanguages
-    ?.filter((language) => SUBTITLE_LANGUAGE_IDS.includes(language.id))
-    .map((language) => ({
-      id: language.id,
-      name: language.name,
-      slug: language.slug
-    }))
+  const allLanguageSubtitles = useMemo(
+    () =>
+      allLanguages
+        ?.filter((language) => SUBTITLE_LANGUAGE_IDS.includes(language.id))
+        .map((language) => ({
+          id: language.id,
+          name: language.name,
+          slug: language.slug
+        })),
+    [allLanguages]
+  )
 
   function handleChange(language: LanguageOption): void {
     updateSubtitleLanguage(language.id)
