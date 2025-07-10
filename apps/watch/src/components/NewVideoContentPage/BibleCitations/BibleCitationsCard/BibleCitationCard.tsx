@@ -51,7 +51,7 @@ export function BibleCitationCard({
       try {
         const bookName = citation.bibleBook.name[0].value
           .toLowerCase()
-          .replace(' ', '')
+          .replace(/ /g, '')
 
         const { data } = await axios.get<FBVScripture>(
           `https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/${LOCALE_TO_BIBLE_VERSION_MAP[siteLanguage].bibleVersion}/books/${bookName}/chapters/${citation.chapterStart}/verses/${citation.verseStart}.json`
