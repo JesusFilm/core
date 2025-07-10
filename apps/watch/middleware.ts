@@ -4,7 +4,7 @@ import {
   DEFAULT_LOCALE,
   LANGUAGE_MAPPINGS,
   SUPPORTED_LOCALES
-} from './src/config/locales'
+} from './src/libs/localeMapping'
 
 interface LanguagePriority {
   code: string

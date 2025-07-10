@@ -18,8 +18,8 @@ export function ContentMetadata({
   description,
   label
 }: ContentMetadataProps): ReactElement {
-  const { label: labelText, color } = getLabelDetails(label)
   const { t } = useTranslation('apps-watch')
+  const { label: labelText, color } = getLabelDetails(t, label)
   const [showDownload, setShowDownload] = useState(false)
 
   return (

@@ -182,11 +182,11 @@ export const getStaticPaths: GetStaticPaths = () => {
   return {
     paths: [
       {
+        locale: 'en',
         params: {
           part1: 'jesus.html',
           part2: 'the-beginning',
-          part3: 'english.html',
-          locale: 'en'
+          part3: 'english.html'
         }
       }
     ],

@@ -171,7 +171,7 @@ describe('WatchContext', () => {
         expect(result.videoSubtitleLanguages).toEqual(
           mockVideoSubtitleLanguages
         )
-        expect(result.currentSubtitleOn).toBe(true)
+        expect(result.autoSubtitle).toBe(true)
       })
 
       it('should disable subtitles when language does not match', () => {
@@ -195,7 +195,134 @@ describe('WatchContext', () => {
 
         const result = reducer(stateWithDifferentLanguage, action)
 
-        expect(result.currentSubtitleOn).toBe(false)
+        expect(result.autoSubtitle).toBe(false)
+      })
+
+      it('should not set autoSubtitle when language preference is met (langPrefMet is true)', () => {
+        const stateWithMatchingAudioLanguage = {
+          ...defaultState,
+          audioLanguage: '529',
+          currentAudioLanguage: {
+            language: { id: '529', bcp47: 'en' },
+            slug: 'english',
+            __typename: 'LanguageWithSlug'
+          } as any
+        }
+
+        const mockVideoSubtitleLanguages = [
+          {
+            language: { id: '529', bcp47: 'en' },
+            value: 'English subtitles',
+            __typename: 'VideoSubtitle'
+          }
+        ] as any
+
+        const action: WatchAction = {
+          type: 'SetVideoSubtitleLanguages',
+          videoSubtitleLanguages: mockVideoSubtitleLanguages
+        }
+
+        const result = reducer(stateWithMatchingAudioLanguage, action)
+
+        expect(result.videoSubtitleLanguages).toEqual(
+          mockVideoSubtitleLanguages
+        )
+        expect(result.autoSubtitle).toBeUndefined()
+      })
+
+      it('should set autoSubtitle to true when language preference is not met and subtitle language is available', () => {
+        const stateWithNonMatchingAudioLanguage = {
+          ...defaultState,
+          audioLanguage: '496',
+          subtitleLanguage: '529',
+          currentAudioLanguage: {
+            language: { id: '999', bcp47: 'fr' },
+            slug: 'french',
+            __typename: 'LanguageWithSlug'
+          } as any
+        }
+
+        const mockVideoSubtitleLanguages = [
+          {
+            language: { id: '529', bcp47: 'en' },
+            value: 'English subtitles',
+            __typename: 'VideoSubtitle'
+          }
+        ] as any
+
+        const action: WatchAction = {
+          type: 'SetVideoSubtitleLanguages',
+          videoSubtitleLanguages: mockVideoSubtitleLanguages
+        }
+
+        const result = reducer(stateWithNonMatchingAudioLanguage, action)
+
+        expect(result.videoSubtitleLanguages).toEqual(
+          mockVideoSubtitleLanguages
+        )
+        expect(result.autoSubtitle).toBe(true)
+      })
+
+      it('should set autoSubtitle to false when language preference is not met and subtitle language is not available', () => {
+        const stateWithNonMatchingAudioLanguage = {
+          ...defaultState,
+          audioLanguage: '496',
+          subtitleLanguage: '999',
+          currentAudioLanguage: {
+            language: { id: '777', bcp47: 'fr' },
+            slug: 'french',
+            __typename: 'LanguageWithSlug'
+          } as any
+        }
+
+        const mockVideoSubtitleLanguages = [
+          {
+            language: { id: '529', bcp47: 'en' },
+            value: 'English subtitles',
+            __typename: 'VideoSubtitle'
+          }
+        ] as any
+
+        const action: WatchAction = {
+          type: 'SetVideoSubtitleLanguages',
+          videoSubtitleLanguages: mockVideoSubtitleLanguages
+        }
+
+        const result = reducer(stateWithNonMatchingAudioLanguage, action)
+
+        expect(result.videoSubtitleLanguages).toEqual(
+          mockVideoSubtitleLanguages
+        )
+        expect(result.autoSubtitle).toBe(false)
+      })
+
+      it('should handle case when currentAudioLanguage is undefined', () => {
+        const stateWithUndefinedCurrentAudioLanguage = {
+          ...defaultState,
+          audioLanguage: '496',
+          subtitleLanguage: '529',
+          currentAudioLanguage: undefined
+        }
+
+        const mockVideoSubtitleLanguages = [
+          {
+            language: { id: '529', bcp47: 'en' },
+            value: 'English subtitles',
+            __typename: 'VideoSubtitle'
+          }
+        ] as any
+
+        const action: WatchAction = {
+          type: 'SetVideoSubtitleLanguages',
+          videoSubtitleLanguages: mockVideoSubtitleLanguages
+        }
+
+        const result = reducer(stateWithUndefinedCurrentAudioLanguage, action)
+
+        expect(result.videoSubtitleLanguages).toEqual(
+          mockVideoSubtitleLanguages
+        )
+        expect(result.autoSubtitle).toBe(true)
       })
     })
 

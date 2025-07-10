@@ -7,22 +7,22 @@ import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useCallback, useState } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { useVideo } from '../../../libs/videoContext'
 
-const DynamicAudioLanguageDialog = dynamic<{
+const DynamicLanguageSwitchDialog = dynamic<{
   open: boolean
-  onClose: () => void
+  handleClose: () => void
 }>(
   async () =>
     await import(
-      /* webpackChunkName: "AudioLanguageDialog" */
-      '../../AudioLanguageDialog'
-    ).then((mod) => mod.AudioLanguageDialog)
+      /* webpackChunkName: "LanguageSwitchDialog" */
+      '../../LanguageSwitchDialog/LanguageSwitchDialog'
+    ).then((mod) => mod.LanguageSwitchDialog)
 )
 
 interface AudioLanguageButtonProps {
@@ -34,8 +34,10 @@ export function AudioLanguageButton({
 }: AudioLanguageButtonProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   const { variant, variantLanguagesCount } = useVideo()
-  const [openAudioLanguageDialog, setOpenAudioLanguageDialog] = useState(false)
-  const [loadAudioLanguageDialog, setLoadAudioLanguageDialog] = useState(false)
+  const [openLanguageSwitchDialog, setOpenLanguageSwitchDialog] =
+    useState(false)
+  const [loadLanguageSwitchDialog, setLoadLanguageSwitchDialog] =
+    useState(false)
 
   const nativeName = variant?.language?.name.find(
     ({ primary }) => !primary
@@ -45,13 +47,9 @@ export function AudioLanguageButton({
   )?.value
 
   function handleClick(): void {
-    setOpenAudioLanguageDialog(true)
-    setLoadAudioLanguageDialog(true)
+    setOpenLanguageSwitchDialog(true)
+    setLoadLanguageSwitchDialog(true)
   }
-
-  const handleAudioLanguageDialogClose = useCallback(() => {
-    setOpenAudioLanguageDialog(false)
-  }, [])
 
   return (
     <ThemeProvider themeName={ThemeName.website} themeMode={ThemeMode.light}>
@@ -106,10 +104,10 @@ export function AudioLanguageButton({
           <LanguageOutlined sx={{ color: '#ffffff' }} />
         </IconButton>
       )}
-      {loadAudioLanguageDialog && (
-        <DynamicAudioLanguageDialog
-          open={openAudioLanguageDialog}
-          onClose={handleAudioLanguageDialogClose}
+      {loadLanguageSwitchDialog && (
+        <DynamicLanguageSwitchDialog
+          open={openLanguageSwitchDialog}
+          handleClose={() => setOpenLanguageSwitchDialog(false)}
         />
       )}
     </ThemeProvider>

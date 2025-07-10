@@ -188,11 +188,9 @@ export function DownloadDialog({
                   )
                   .map((download) => (
                     <MenuItem key={download.quality} value={download.url}>
-                      {t(
-                        download.quality === VideoVariantDownloadQuality.high
-                          ? t('High')
-                          : t('Low')
-                      )}{' '}
+                      {download.quality === VideoVariantDownloadQuality.high
+                        ? t('High')
+                        : t('Low')}{' '}
                       ({formatBytes(download.size)})
                     </MenuItem>
                   ))}

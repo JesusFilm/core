@@ -5,6 +5,7 @@ import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikValues } from 'formik'
 import compact from 'lodash/compact'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement, memo } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'

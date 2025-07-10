@@ -9,8 +9,6 @@ import Image from 'next/image'
 import NextLink from 'next/link'
 import { MouseEventHandler, ReactElement, useState } from 'react'
 
-import { useFlags } from '@core/shared/ui/FlagsProvider'
-
 import logo from '../assets/logo.svg'
 
 const DynamicLanguageSwitchDialog = dynamic(
@@ -26,16 +24,17 @@ interface LocalAppBarProps extends AppBarProps {
   onMenuClick: MouseEventHandler<HTMLButtonElement>
   hideSpacer?: boolean
   menuOpen?: boolean
+  showLanguageSwitcher?: boolean
 }
 
 export function LocalAppBar({
   onMenuClick,
   hideSpacer = false,
   menuOpen = false,
+  showLanguageSwitcher = false,
   ...props
 }: LocalAppBarProps): ReactElement {
   const [openLanguagesDialog, setOpenLanguagesDialog] = useState(false)
-  const { watchLanguageSwitcher } = useFlags()
 
   return (
     <AppBar
@@ -87,7 +86,7 @@ export function LocalAppBar({
             </Box>
           </NextLink>
           <Box data-testid="MenuBox">
-            {watchLanguageSwitcher && (
+            {showLanguageSwitcher && (
               <>
                 <IconButton
                   color="inherit"
@@ -95,7 +94,8 @@ export function LocalAppBar({
                   data-testid="LanguageSelector"
                   onClick={() => setOpenLanguagesDialog(true)}
                   sx={{
-                    mr: 8
+                    mr: 8,
+                    zIndex: (theme) => theme.zIndex.drawer + 1
                   }}
                 >
                   <LanguageRoundedIcon

@@ -1,48 +1,33 @@
 import type { Meta, StoryObj } from '@storybook/react'
+import noop from 'lodash/noop'
 
-import { LanguageSwitchDialog } from './LanguageSwitchDialog'
+import { watchConfig } from '../../libs/storybook'
+import { WatchProvider } from '../../libs/watchContext'
 
-const meta: Meta<typeof LanguageSwitchDialog> = {
-  title: 'Watch/LanguageSwitchDialog',
+import { LanguageSwitchDialog } from '.'
+
+const LanguageSwitchDialogStory: Meta<typeof LanguageSwitchDialog> = {
+  ...watchConfig,
   component: LanguageSwitchDialog,
-  parameters: {
-    layout: 'fullscreen',
-    docs: {
-      description: {
-        component:
-          'A full-screen dialog component for switching between different languages.'
-      }
-    }
-  },
-  argTypes: {
-    open: {
-      control: 'boolean',
-      description: 'Controls whether the dialog is open or closed'
-    },
-    handleClose: {
-      action: 'closed',
-      description: 'Callback function when the dialog is closed'
-    }
-  }
+  title: 'Watch/LanguageSwitchDialog'
 }
 
-export default meta
-type Story = StoryObj<typeof LanguageSwitchDialog>
-
-export const Default: Story = {
-  args: {
-    open: true,
-    handleClose: () => {
-      console.log('Dialog closed')
-    }
-  }
+const defaultInitialState = {
+  siteLanguage: 'en',
+  audioLanguage: '529',
+  subtitleLanguage: '529',
+  subtitleOn: false,
+  videoId: 'video123'
 }
 
-export const Closed: Story = {
-  args: {
-    open: false,
-    handleClose: () => {
-      console.log('Dialog closed')
-    }
-  }
+const Template: StoryObj<typeof LanguageSwitchDialog> = {
+  render: () => (
+    <WatchProvider initialState={defaultInitialState}>
+      <LanguageSwitchDialog open={true} handleClose={noop} />
+    </WatchProvider>
+  )
 }
+
+export const Default = { ...Template }
+
+export default LanguageSwitchDialogStory
