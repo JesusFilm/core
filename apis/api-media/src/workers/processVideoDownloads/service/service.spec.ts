@@ -101,7 +101,13 @@ const mockVideoVariants = [
     createdAt: new Date(),
     updatedAt: new Date(),
     studyQuestionCount: 0,
-    childrenCount: 0
+    childrenCount: 0,
+    published: true,
+    lengthInMilliseconds: 120000,
+    masterUrl: null,
+    masterWidth: null,
+    masterHeight: null,
+    version: 1
   },
   {
     id: 'variant-2',
@@ -121,7 +127,13 @@ const mockVideoVariants = [
     createdAt: new Date(),
     updatedAt: new Date(),
     studyQuestionCount: 0,
-    childrenCount: 0
+    childrenCount: 0,
+    published: true,
+    lengthInMilliseconds: 150000,
+    masterUrl: null,
+    masterWidth: null,
+    masterHeight: null,
+    version: 1
   }
 ] as any[]
 
@@ -249,11 +261,11 @@ describe('processVideoDownloads service', () => {
           status: 'ready',
           files: [
             {
-              ...mockMuxVideoAsset.static_renditions!.files![0],
+              ...mockMuxVideoAsset.static_renditions.files[0],
               status: 'errored'
             },
             {
-              ...mockMuxVideoAsset.static_renditions!.files![1],
+              ...mockMuxVideoAsset.static_renditions.files[1],
               status: 'ready'
             }
           ]
@@ -286,11 +298,11 @@ describe('processVideoDownloads service', () => {
           status: 'ready',
           files: [
             {
-              ...mockMuxVideoAsset.static_renditions!.files![0],
+              ...mockMuxVideoAsset.static_renditions.files[0],
               status: 'skipped'
             },
             {
-              ...mockMuxVideoAsset.static_renditions!.files![1],
+              ...mockMuxVideoAsset.static_renditions.files[1],
               status: 'ready'
             }
           ]
@@ -316,7 +328,7 @@ describe('processVideoDownloads service', () => {
             status: 'preparing',
             files: [
               {
-                ...mockMuxVideoAsset.static_renditions!.files![0],
+                ...mockMuxVideoAsset.static_renditions.files[0],
                 status: 'processing'
               }
             ]
@@ -347,11 +359,11 @@ describe('processVideoDownloads service', () => {
           status: 'ready',
           files: [
             {
-              ...mockMuxVideoAsset.static_renditions!.files![0],
+              ...mockMuxVideoAsset.static_renditions.files[0],
               status: 'ready'
             },
             {
-              ...mockMuxVideoAsset.static_renditions!.files![1],
+              ...mockMuxVideoAsset.static_renditions.files[1],
               status: 'errored'
             }
           ]

@@ -11,6 +11,7 @@ import { ButtonVariant, type ButtonVariantType } from './enums/buttonVariant'
 
 interface ButtonBlockSettingsType {
   alignment: ButtonAlignmentType
+  color: string
 }
 
 const ButtonBlockSettingsRef = builder.objectRef<ButtonBlockSettingsType>(
@@ -25,6 +26,12 @@ export const ButtonBlockSettings = builder.objectType(ButtonBlockSettingsRef, {
       directives: { shareable: true },
       description: 'Alignment of the button',
       resolve: (settings: ButtonBlockSettingsType) => settings.alignment
+    }),
+    color: t.string({
+      nullable: true,
+      directives: { shareable: true },
+      description: 'Color of the button',
+      resolve: (settings: ButtonBlockSettingsType) => settings.color
     })
   })
 })
