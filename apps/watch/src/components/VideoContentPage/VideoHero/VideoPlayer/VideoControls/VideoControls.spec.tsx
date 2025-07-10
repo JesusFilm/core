@@ -30,11 +30,43 @@ jest.mock('fscreen', () => ({
   }
 }))
 
+jest.mock('../../../../../libs/cookieHandler', () => ({
+  setCookie: jest.fn(),
+  getCookie: jest.fn()
+}))
+
+const mockDispatch = jest.fn()
+jest.mock('../../../../../libs/watchContext', () => ({
+  ...jest.requireActual('../../../../../libs/watchContext'),
+  useWatch: jest.fn(() => ({
+    state: {
+      siteLanguage: 'en',
+      audioLanguage: '529',
+      subtitleLanguage: '529',
+      subtitleOn: false
+    },
+    dispatch: mockDispatch
+  }))
+}))
+
+const mockSetCookie = jest.mocked(
+  require('../../../../../libs/cookieHandler').setCookie
+)
+const mockGetCookie = jest.mocked(
+  require('../../../../../libs/cookieHandler').getCookie
+)
+
 describe('VideoControls', () => {
   let player
 
   beforeEach(() => {
     jest.clearAllMocks()
+    mockSetCookie.mockClear()
+    mockGetCookie.mockClear()
+    mockDispatch.mockClear()
+
+    // Set default return value for getCookie
+    mockGetCookie.mockReturnValue('en')
 
     const video = document.createElement('video')
     document.body.appendChild(video)
@@ -160,8 +192,8 @@ describe('VideoControls', () => {
     })
   })
 
-  it('opens audio language dialog on language button click', async () => {
-    const { getByRole, getByTestId } = render(
+  it('opens language dialog on language button click', async () => {
+    const { getByTestId } = render(
       <MockedProvider>
         <WatchProvider
           initialState={{
@@ -180,7 +212,9 @@ describe('VideoControls', () => {
       </MockedProvider>
     )
     fireEvent.click(getByTestId('LanguageOutlinedIcon'))
-    await waitFor(() => expect(getByRole('combobox')).toHaveValue('English'))
+    await waitFor(() =>
+      expect(screen.getByLabelText('Language Settings')).toBeInTheDocument()
+    )
   })
 
   it('fullscreens the video player on fullscreen icon click when mobile', async () => {
@@ -253,35 +287,31 @@ describe('VideoControls', () => {
     })
   })
 
-  it('opens subtitle dialog on subtitle icon click', async () => {
-    render(
+  it('sets cookie, dispatches action, and opens dialog when subtitle button is clicked', async () => {
+    const { getByTestId } = render(
       <MockedProvider>
-        <WatchProvider
-          initialState={{
-            siteLanguage: 'en',
-            audioLanguage: 'en',
-            subtitleLanguage: 'en',
-            subtitleOn: false
-          }}
-        >
-          <PlayerProvider>
-            <VideoProvider value={{ content: videos[0] }}>
-              <VideoControls player={player} />
-              <TestPlayerState />
-            </VideoProvider>
-          </PlayerProvider>
-        </WatchProvider>
+        <VideoProvider value={{ content: videos[0] }}>
+          <VideoControls player={player} />
+        </VideoProvider>
       </MockedProvider>
     )
-    expect(
-      screen.getByText('player.openSubtitleDialog: false')
-    ).toBeInTheDocument()
-    fireEvent.click(screen.getByTestId('SubtitlesOutlinedIcon'))
-    await waitFor(() => {
-      expect(
-        screen.getByText('player.openSubtitleDialog: true')
-      ).toBeInTheDocument()
+
+    // Click the subtitle button (SubtitlesOutlined icon) - using same pattern as other tests
+    fireEvent.click(getByTestId('SubtitlesOutlinedIcon'))
+
+    // Verify cookie was set
+    expect(mockSetCookie).toHaveBeenCalledWith('SUBTITLES_ON', 'true')
+
+    // Verify dispatch was called with correct action
+    expect(mockDispatch).toHaveBeenCalledWith({
+      type: 'UpdateSubtitlesOn',
+      enabled: true
     })
+
+    // Verify dialog opens
+    await waitFor(() =>
+      expect(screen.getByLabelText('Language Settings')).toBeInTheDocument()
+    )
   })
 
   it('updates progress on timeupdate event handler', async () => {

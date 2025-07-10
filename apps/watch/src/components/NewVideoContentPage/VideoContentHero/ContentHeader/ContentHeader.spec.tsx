@@ -107,7 +107,7 @@ describe('ContentHeader', () => {
     await user.click(screen.getByTestId('LanguageOutlinedIcon'))
 
     await waitFor(() =>
-      expect(screen.getByRole('combobox')).toHaveValue('English')
+      expect(screen.getByLabelText('Language Settings')).toBeInTheDocument()
     )
   })
 })

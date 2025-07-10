@@ -32,6 +32,7 @@ export interface VideoContentFields_description {
 export interface VideoContentFields_studyQuestions {
   __typename: "VideoStudyQuestion";
   value: string;
+  primary: boolean;
 }
 
 export interface VideoContentFields_bibleCitations_bibleBook_name {

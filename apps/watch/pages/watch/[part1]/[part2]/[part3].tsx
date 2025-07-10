@@ -22,6 +22,7 @@ import { NewVideoContentPage } from '../../../../src/components/NewVideoContentP
 import { createApolloClient } from '../../../../src/libs/apolloClient'
 import { getCookie } from '../../../../src/libs/cookieHandler'
 import { getFlags } from '../../../../src/libs/getFlags'
+import { getLanguageIdFromLocale } from '../../../../src/libs/getLanguageIdFromLocale'
 import { LanguageProvider } from '../../../../src/libs/languageContext/LanguageContext'
 import { PlayerProvider } from '../../../../src/libs/playerContext/PlayerContext'
 import { slugMap } from '../../../../src/libs/slugMap'
@@ -129,13 +130,15 @@ export const getStaticProps: GetStaticProps<Part3PageProps> = async (
       client.query<GetVideoContainerPart2, GetVideoContainerPart2Variables>({
         query: GET_VIDEO_CONTAINER_PART_2,
         variables: {
-          containerId: `${containerId}/${languageId}`
+          containerId: `${containerId}/${languageId}`,
+          languageId: getLanguageIdFromLocale(context.locale)
         }
       }),
       client.query<GetVideoContentPart3, GetVideoContentPart3Variables>({
         query: GET_VIDEO_CONTENT_PART_3,
         variables: {
-          contentId: `${contentId}/${languageId}`
+          contentId: `${contentId}/${languageId}`,
+          languageId: getLanguageIdFromLocale(context.locale)
         }
       })
     ])
@@ -179,11 +182,11 @@ export const getStaticPaths: GetStaticPaths = () => {
   return {
     paths: [
       {
+        locale: 'en',
         params: {
           part1: 'jesus.html',
           part2: 'the-beginning',
-          part3: 'english.html',
-          locale: 'en'
+          part3: 'english.html'
         }
       }
     ],
