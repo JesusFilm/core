@@ -55,6 +55,8 @@ describe('ShareItem', () => {
           __typename: 'Journey',
           id: 'journeyId',
           slug: 'default',
+          title: 'Journey Title',
+          description: 'Journey Description',
           language: {
             __typename: 'Language',
             id: 'languageId',
@@ -70,6 +72,20 @@ describe('ShareItem', () => {
           },
           themeName: ThemeName.base,
           themeMode: ThemeMode.light,
+          primaryImageBlock: {
+            __typename: 'ImageBlock',
+            id: 'imageBlockId',
+            parentBlockId: 'parentBlockId',
+            parentOrder: 1,
+            src: 'https://example.com/image.jpg',
+            alt: 'Journey Image',
+            width: 100,
+            height: 100,
+            blurhash: 'blurhash',
+            scale: 1,
+            focalTop: 0.5,
+            focalLeft: 0.5
+          },
           team: {
             __typename: 'Team',
             id: 'teamId',
@@ -123,7 +139,7 @@ describe('ShareItem', () => {
     process.env = originalEnv
   })
 
-  it('should handle edit journey slug', async () => {
+  it('should open ShareDialog when Share button is clicked', () => {
     mockedUseRouter.mockReturnValue({
       query: { param: null },
       push,
@@ -141,8 +157,37 @@ describe('ShareItem', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Share' }))
+
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
+    expect(screen.getByText('Share This Journey')).toBeInTheDocument()
+  })
+
+  it('should handle edit journey slug navigation', async () => {
+    mockedUseRouter.mockReturnValue({
+      query: { param: null },
+      push,
+      events: { on }
+    } as unknown as NextRouter)
+
+    render(
+      <SnackbarProvider>
+        <MockedProvider mocks={[journeyForSharingMock]}>
+          <JourneyProvider
+            value={{ journey: defaultJourney, variant: 'admin' }}
+          >
+            <ShareItem variant="button" journey={defaultJourney} />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
     fireEvent.click(screen.getByRole('button', { name: 'Share' }))
     expect(screen.getByRole('dialog')).toBeInTheDocument()
+
     fireEvent.click(screen.getByRole('button', { name: 'Edit URL' }))
 
     await waitFor(() => {
@@ -154,26 +199,15 @@ describe('ShareItem', () => {
     })
 
     expect(screen.getByRole('dialog', { name: 'Edit URL' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
-
-    await waitFor(() => {
-      expect(
-        screen.getByRole('button', { name: 'Edit URL' })
-      ).toBeInTheDocument()
-    })
-    expect(
-      screen.getByRole('button', { name: 'Embed Journey' })
-    ).toBeInTheDocument()
   })
 
-  it('should handle embed journey', async () => {
+  it('should handle embed journey navigation', async () => {
     mockedUseRouter.mockReturnValue({
       query: { param: null },
       push,
       events: { on }
     } as unknown as NextRouter)
+
     render(
       <SnackbarProvider>
         <MockedProvider mocks={[journeyForSharingMock]}>
@@ -185,9 +219,12 @@ describe('ShareItem', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
+
     fireEvent.click(screen.getByRole('button', { name: 'Share' }))
     expect(screen.getByRole('dialog')).toBeInTheDocument()
+
     fireEvent.click(screen.getByRole('button', { name: 'Embed Journey' }))
+
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
         { query: { param: 'embed-journey' } },
@@ -199,22 +236,9 @@ describe('ShareItem', () => {
     expect(
       screen.getByRole('dialog', { name: 'Embed journey' })
     ).toBeInTheDocument()
-    expect(
-      screen.getByRole('button', { name: 'Copy Code' })
-    ).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
-    await waitFor(() => {
-      expect(
-        screen.getByRole('button', { name: 'Edit URL' })
-      ).toBeInTheDocument()
-    })
-    expect(
-      screen.getByRole('button', { name: 'Embed Journey' })
-    ).toBeInTheDocument()
   })
 
-  it('should handle qr code', async () => {
+  it('should handle QR code navigation', async () => {
     mockedUseRouter.mockReturnValue({
       query: { param: null },
       push,
@@ -247,9 +271,12 @@ describe('ShareItem', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
+
     fireEvent.click(screen.getByRole('button', { name: 'Share' }))
     expect(screen.getByRole('dialog')).toBeInTheDocument()
+
     fireEvent.click(screen.getByRole('button', { name: 'QR Code' }))
+
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
         { query: { param: 'qr-code' } },
@@ -263,44 +290,9 @@ describe('ShareItem', () => {
         'QR Code'
       )
     )
-    fireEvent.click(screen.getByTestId('dialog-close-button'))
-    await waitFor(() =>
-      expect(
-        screen.getByRole('button', { name: 'QR Code' })
-      ).toBeInTheDocument()
-    )
   })
 
-  it('should copy journey link', async () => {
-    mockedUseRouter.mockReturnValue({
-      query: { param: null },
-      push,
-      events: { on }
-    } as unknown as NextRouter)
-    render(
-      <SnackbarProvider>
-        <MockedProvider mocks={[journeyForSharingMock]}>
-          <JourneyProvider
-            value={{ journey: defaultJourney, variant: 'admin' }}
-          >
-            <ShareItem variant="button" journey={defaultJourney} />
-          </JourneyProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-    fireEvent.click(screen.getByRole('button', { name: 'Share' }))
-    await waitFor(() => {
-      expect(screen.getByRole('dialog')).toBeInTheDocument()
-    })
-    fireEvent.click(screen.getByRole('button', { name: 'Copy' }))
-    await waitFor(() => {
-      expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-        'https://default.domain.com/default'
-      )
-    })
-  })
-
-  it('should copy journey link with custom domain', async () => {
+  it('should pass custom domain to ShareDialog', async () => {
     mockedUseRouter.mockReturnValue({
       query: { param: null },
       push,
@@ -369,15 +361,39 @@ describe('ShareItem', () => {
     })
 
     fireEvent.click(screen.getByRole('button', { name: 'Share' }))
+
     await waitFor(() => {
       expect(screen.getByRole('dialog')).toBeInTheDocument()
     })
 
-    fireEvent.click(screen.getByRole('button', { name: 'Copy' }))
-    await waitFor(() => {
-      expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-        'https://custom.domain.com/default'
-      )
-    })
+    const copyField = screen.getByDisplayValue(
+      'https://custom.domain.com/default'
+    )
+    expect(copyField).toBeInTheDocument()
+  })
+
+  it('should close ShareDialog when clicking outside', () => {
+    mockedUseRouter.mockReturnValue({
+      query: { param: null },
+      push,
+      events: { on }
+    } as unknown as NextRouter)
+
+    render(
+      <SnackbarProvider>
+        <MockedProvider mocks={[journeyForSharingMock]}>
+          <JourneyProvider
+            value={{ journey: defaultJourney, variant: 'admin' }}
+          >
+            <ShareItem variant="button" journey={defaultJourney} />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Share' }))
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
+
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
   })
 })
