@@ -74,7 +74,7 @@ export function Button({
 
       <Accordion
         id={`${id}-button-color`}
-        icon={<ColorDisplayIcon color={buttonColor} />}
+        icon={<ColorDisplayIcon color={settings?.color ?? buttonColor} />}
         name={t('Color')}
         value={capitalize(buttonColor?.toString() ?? ButtonColor.primary)}
       >

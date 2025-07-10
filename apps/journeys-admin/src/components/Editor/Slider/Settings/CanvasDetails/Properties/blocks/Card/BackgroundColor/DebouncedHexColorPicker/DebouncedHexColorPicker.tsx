@@ -27,6 +27,10 @@ export function DebouncedHexColorPicker({
     }
   }, [debouncedChange])
 
+  useEffect(() => {
+    setValue(color)
+  }, [color])
+
   async function handleChange(value: string): Promise<void> {
     void debouncedChange(value.toUpperCase())
     setValue(value.toUpperCase())

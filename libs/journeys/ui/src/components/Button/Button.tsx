@@ -281,6 +281,8 @@ export function Button({
     handleAction(router, action, nextStepSlug)
   }
 
+  const effectiveColor = settings?.color ?? buttonColor
+
   return (
     // Margin added via Box so it's ignored by admin selection border outline
     <Box
@@ -302,12 +304,12 @@ export function Button({
       <MuiButton
         type={buttonType}
         variant={buttonVariant ?? ButtonVariant.contained}
-        color={buttonColor ?? undefined}
         size={size ?? undefined}
         startIcon={startIcon != null ? <Icon {...startIcon} /> : undefined}
         endIcon={endIcon != null ? <Icon {...endIcon} /> : undefined}
         onClick={handleClick}
         sx={{
+          backgroundColor: effectiveColor,
           outline: '2px solid',
           outlineColor: editableLabel != null ? '#C52D3A' : 'transparent',
           outlineOffset: '5px',

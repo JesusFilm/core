@@ -38,6 +38,10 @@ export interface ButtonBlockCreate_buttonBlockCreate_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface ButtonBlockCreate_buttonBlockCreate {
@@ -105,6 +109,10 @@ export interface ButtonBlockCreate_buttonBlockUpdate_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface ButtonBlockCreate_buttonBlockUpdate {

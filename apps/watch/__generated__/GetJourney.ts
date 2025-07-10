@@ -59,6 +59,10 @@ export interface GetJourney_journey_blocks_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface GetJourney_journey_blocks_ButtonBlock {

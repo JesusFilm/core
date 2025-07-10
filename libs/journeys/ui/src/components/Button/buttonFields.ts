@@ -21,6 +21,7 @@ export const BUTTON_FIELDS = gql`
     submitEnabled
     settings {
       alignment
+      color
     }
   }
 `

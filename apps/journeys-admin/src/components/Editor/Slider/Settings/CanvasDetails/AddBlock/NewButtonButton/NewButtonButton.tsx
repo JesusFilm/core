@@ -95,6 +95,7 @@ export function NewButtonButton(): ReactElement {
       submitEnabled: shouldBeSubmitButton,
       settings: {
         __typename: 'ButtonBlockSettings',
+        color: null,
         alignment: ButtonAlignment.justify
       }
     }
@@ -114,7 +115,8 @@ export function NewButtonButton(): ReactElement {
               size: button.size,
               submitEnabled: shouldBeSubmitButton,
               settings: {
-                alignment: ButtonAlignment.justify
+                alignment: ButtonAlignment.justify,
+                color: button.settings?.color
               }
             },
             iconBlockCreateInput1: {
