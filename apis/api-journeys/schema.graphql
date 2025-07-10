@@ -599,10 +599,12 @@ enum ButtonAlignment {
 
 input ButtonBlockSettingsInput {
   alignment: ButtonAlignment
+  color: String
 }
 
 type ButtonBlockSettings {
   alignment: ButtonAlignment @shareable
+  color: String @shareable
 }
 
 type ButtonBlock implements Block
