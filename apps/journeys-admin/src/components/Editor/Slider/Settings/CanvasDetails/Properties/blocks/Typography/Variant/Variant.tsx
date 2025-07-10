@@ -212,10 +212,12 @@ export function Variant(): ReactElement {
         p: 4,
         width: '100%',
         justifyContent: 'center',
-        color: '#B42318',
-        borderRadius: 3
+        borderRadius: 3,
+        '&:hover': {
+          backgroundColor: '#E0E0E0'
+        }
       }}
-      startIcon={<Type1Icon sx={{ color: '#B42318' }} />}
+      startIcon={<Type1Icon />}
       onClick={() => setOpenThemeBuilderDialog(true)}
     >
       <Typography variant="subtitle2">{t('Edit Font Theme')}</Typography>
