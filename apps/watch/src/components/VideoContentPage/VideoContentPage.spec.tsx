@@ -27,7 +27,7 @@ const mockedUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
   typeof useAlgoliaVideos
 >
 const mockRouter: Partial<NextRouter> = {
-  push: jest.fn(),
+  replace: jest.fn(),
   asPath: '/watch/video-slug/english.html',
   locale: 'en'
 }
@@ -217,7 +217,9 @@ describe('VideoContentPage', () => {
     )
 
     await waitFor(() => {
-      expect(mockRouter.push).toHaveBeenCalledWith('/watch/video-slug/spanish')
+      expect(mockRouter.replace).toHaveBeenCalledWith(
+        '/watch/video-slug/spanish'
+      )
     })
   })
 })
