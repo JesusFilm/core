@@ -6,7 +6,7 @@ import { logger } from '../lib/logger'
 import { queueName } from './config'
 import { service } from './service'
 
-new Worker(queueName, processJob, {
+export const worker = new Worker(queueName, processJob, {
   connection
 })
 
