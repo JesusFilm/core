@@ -4,5 +4,6 @@
   "branchPrefix": "00-00-RB-chore-",
   "reviewers": ["mikeallisonJS", "tataihono"],
   "assignees": ["mikeallisonJS"],
-  "prConcurrentLimit": 4
+  "prConcurrentLimit": 4,
+  "rangeStrategy": "auto"
 }
