@@ -167,10 +167,13 @@ export type ButtonBlockSettings = {
   __typename?: 'ButtonBlockSettings';
   /** Alignment of the button */
   alignment?: Maybe<ButtonAlignment>;
+  /** Color of the button */
+  color?: Maybe<Scalars['String']['output']>;
 };
 
 export type ButtonBlockSettingsInput = {
   alignment?: InputMaybe<ButtonAlignment>;
+  color?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type ButtonBlockUpdateInput = {
