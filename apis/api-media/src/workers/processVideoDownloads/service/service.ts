@@ -6,7 +6,6 @@ import { Logger } from 'pino'
 import {
   MuxVideo,
   Prisma,
-  VideoVariant,
   VideoVariantDownloadQuality
 } from '.prisma/api-media-client'
 
@@ -27,7 +26,10 @@ export async function service(
 
   logger?.info(
     { videoId, assetId },
-    'Starting video downloads processing with static rendition monitoring'
+    'Starting video downloads processing with static rendition monitoring for videoId: ' +
+      videoId +
+      ' and assetId: ' +
+      assetId
   )
 
   try {
@@ -115,7 +117,7 @@ function getHighestResolutionDownload(
       highest = download
     }
   }
-  return highest
+  return { ...highest, quality: VideoVariantDownloadQuality.highest }
 }
 
 function downloadsReadyToStore(muxVideo: Mux.Video.Asset): boolean {
@@ -147,10 +149,6 @@ async function monitorStaticRenditionStatus(
 
       // Check if static renditions exist
       if (!muxVideo.static_renditions?.files) {
-        // logger?.info(
-        //   { assetId, attempt: attempts + 1, maxAttempts },
-        //   'No static renditions found yet, continuing to monitor'
-        // )
         attempts++
         await new Promise((resolve) =>
           setTimeout(resolve, monitoringIntervalMs)
@@ -165,16 +163,6 @@ async function monitorStaticRenditionStatus(
           filesize: file?.filesize
         })
       )
-
-      //   logger?.info(
-      //     {
-      //       assetId,
-      //       attempt: attempts + 1,
-      //       maxAttempts,
-      //       renditionStatuses
-      //     },
-      //     'Monitoring static rendition status'
-      //   )
 
       // Check if any static renditions are errored
       const hasErrored = muxVideo.static_renditions.files.some(
@@ -197,10 +185,6 @@ async function monitorStaticRenditionStatus(
       )
 
       if (allReady) {
-        logger?.info(
-          { assetId, totalAttempts: attempts + 1, renditionStatuses },
-          'All static renditions are ready'
-        )
         return { finalStatus: 'ready', muxVideoAsset: muxVideo }
       }
 
@@ -243,7 +227,6 @@ async function processVideoDownloads(
     muxVideoAsset.playback_ids?.[0].id != null &&
     (!muxVideo.downloadable || downloadsReadyToStore(muxVideoAsset))
   ) {
-    console.log(muxVideo)
     // Update video metadata
     await prisma.muxVideo.update({
       where: { id: muxVideo.id },
@@ -257,8 +240,6 @@ async function processVideoDownloads(
     const videoVariants = await prisma.videoVariant.findMany({
       where: { muxVideoId: muxVideo.id }
     }) // doesn't seem to work with include on the muxVideo object
-
-    console.log(videoVariants)
 
     // Process downloads if ready and video has variants
     if (
@@ -290,19 +271,48 @@ async function processVideoDownloads(
               bitrate: file.bitrate ?? 0
             }))
 
-        console.log('validDownloads', validDownloads)
-
         if (validDownloads.length > 0) {
           // Find the highest quality by enum up to uhd since mux doesn't generate highest enum
           const highest = getHighestResolutionDownload(validDownloads)
           const data = [...validDownloads, highest]
 
-          await prisma.videoVariantDownload.createMany({
-            data: data
-          })
+          // Create downloads individually to handle duplicates gracefully
+          let createdCount = 0
+          for (const download of data) {
+            try {
+              await prisma.videoVariantDownload.create({
+                data: download
+              })
+              createdCount++
+            } catch (error: any) {
+              // Skip if already exists (P2002 constraint violation)
+              if (error?.code === 'P2002') {
+                logger?.info(
+                  {
+                    videoVariantId: videoVariant.id,
+                    quality: download.quality
+                  },
+                  'Download already exists, skipping'
+                )
+              } else {
+                logger?.error(
+                  {
+                    error,
+                    videoVariantId: videoVariant.id,
+                    quality: download.quality
+                  },
+                  'Failed to create individual download'
+                )
+              }
+            }
+          }
 
           logger?.info(
-            { videoId: muxVideo.id, downloadsCount: data.length },
+            {
+              videoId: muxVideo.id,
+              videoVariantId: videoVariant.id,
+              downloadsCount: createdCount
+            },
             'Successfully created video downloads'
           )
         }
