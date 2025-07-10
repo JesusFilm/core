@@ -42,9 +42,7 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
   ])
 
   function getSortedValidFonts(fonts: string[]): string[] {
-    return [
-      ...new Set(fonts.filter((font) => font !== '' && font !== 'Georgia'))
-    ].sort()
+    return [...new Set(fonts.filter((font) => font !== ''))].sort()
   }
 
   function formatFontName(font: string): string {

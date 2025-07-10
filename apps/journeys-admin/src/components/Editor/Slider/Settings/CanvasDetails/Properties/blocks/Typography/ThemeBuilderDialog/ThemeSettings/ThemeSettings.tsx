@@ -13,14 +13,14 @@ export enum FontFamily {
   Inter = 'Inter',
   Oswald = 'Oswald',
   PlayfairDisplay = 'Playfair Display',
-  Georgia = 'Georgia',
   CormorantGaramond = 'Cormorant Garamond',
   NotoSans = 'Noto Sans',
   BerkshireSwash = 'Berkshire Swash',
   Cinzel = 'Cinzel',
   Baloo = 'Baloo 2',
   Nunito = 'Nunito',
-  Raleway = 'Raleway'
+  Raleway = 'Raleway',
+  Gelasio = 'Gelasio'
 }
 
 export const HEADER_FONT_OPTIONS = [
@@ -28,7 +28,7 @@ export const HEADER_FONT_OPTIONS = [
   FontFamily.Inter,
   FontFamily.Oswald,
   FontFamily.PlayfairDisplay,
-  FontFamily.Georgia,
+  FontFamily.Gelasio,
   FontFamily.CormorantGaramond,
   FontFamily.NotoSans,
   FontFamily.BerkshireSwash,
@@ -42,7 +42,7 @@ export const BODY_FONT_OPTIONS = [
   FontFamily.Nunito,
   FontFamily.Raleway,
   FontFamily.NotoSans,
-  FontFamily.Georgia,
+  FontFamily.Gelasio,
   FontFamily.CormorantGaramond
 ]
 
@@ -52,7 +52,7 @@ export const LABELS_FONT_OPTIONS = [
   FontFamily.NotoSans,
   FontFamily.Nunito,
   FontFamily.Raleway,
-  FontFamily.Georgia,
+  FontFamily.Gelasio,
   FontFamily.Baloo
 ]
 
