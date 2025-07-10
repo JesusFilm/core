@@ -6,6 +6,7 @@ import { HTTPException } from 'hono/http-exception'
 import { handle } from 'hono/vercel'
 
 import { getApolloClient } from '../../lib/apolloClient'
+import { findDownloadWithFallback } from '../../lib/downloadHelpers'
 
 import { GET_SHORT_LINK_QUERY } from './queries'
 
@@ -73,6 +74,10 @@ const setCorsHeaders = (c: any) => {
   c.header('Access-Control-Expose-Headers', '*')
 }
 
+const DownloadQuerySchema = z.object({
+  apiKey: z.string().optional().describe('API key for authentication')
+})
+
 const hlsRoute = createRoute({
   method: 'get',
   path: '/hls/:mediaComponentId/:languageId',
@@ -135,7 +140,8 @@ const lowQualityRoute = createRoute({
     params: z.object({
       mediaComponentId: z.string().describe('The ID of the media component'),
       languageId: z.string().describe('The ID of the language')
-    })
+    }),
+    query: DownloadQuerySchema
   },
   responses: {
     302: {
@@ -175,7 +181,8 @@ const highQualityRoute = createRoute({
     params: z.object({
       mediaComponentId: z.string().describe('The ID of the media component'),
       languageId: z.string().describe('The ID of the language')
-    })
+    }),
+    query: DownloadQuerySchema
   },
   responses: {
     302: {
@@ -324,9 +331,11 @@ app.openapi(hlsRoute, async (c) => {
 app.openapi(lowQualityRoute, async (c) => {
   setCorsHeaders(c)
   const { mediaComponentId, languageId } = c.req.param()
+  const apiKey = c.req.query('apiKey')
+
   try {
     const variant = await getVideoVariant(mediaComponentId, languageId)
-    const download = variant.downloads?.find((d) => d.quality === 'low')
+    const download = findDownloadWithFallback(variant.downloads, 'low', apiKey)
 
     if (!download?.url) {
       return c.json({ error: 'Low quality download URL not available' }, 404)
@@ -347,9 +356,11 @@ app.openapi(lowQualityRoute, async (c) => {
 app.openapi(highQualityRoute, async (c) => {
   setCorsHeaders(c)
   const { mediaComponentId, languageId } = c.req.param()
+  const apiKey = c.req.query('apiKey')
+
   try {
     const variant = await getVideoVariant(mediaComponentId, languageId)
-    const download = variant.downloads?.find((d) => d.quality === 'high')
+    const download = findDownloadWithFallback(variant.downloads, 'high', apiKey)
 
     if (!download?.url) {
       return c.json({ error: 'High quality download URL not available' }, 404)
