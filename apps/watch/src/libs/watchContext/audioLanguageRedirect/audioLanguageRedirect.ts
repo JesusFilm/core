@@ -34,7 +34,7 @@ export async function audioLanguageRedirect({
   if (selectedLanguageSlug == null || selectedLanguage === currentLanguageSlug)
     return
 
-  await router.push(
+  await router.replace(
     `/watch${
       containerSlug != null ? `/${containerSlug}/` : '/'
     }${selectedLanguageSlug}`
