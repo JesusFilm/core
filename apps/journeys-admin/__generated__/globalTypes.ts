@@ -310,6 +310,7 @@ export interface ButtonBlockCreateInput {
 
 export interface ButtonBlockSettingsInput {
   alignment?: ButtonAlignment | null;
+  color?: string | null;
 }
 
 export interface ButtonBlockUpdateInput {
