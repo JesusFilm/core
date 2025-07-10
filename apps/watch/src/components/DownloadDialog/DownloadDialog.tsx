@@ -18,6 +18,7 @@ import Image from 'next/image'
 import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement, useEffect, useState } from 'react'
 import useDownloader from 'react-use-downloader'
+import { object, string } from 'yup'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
@@ -68,9 +69,21 @@ export function DownloadDialog({
   }, [percentage, onClose])
 
   const initialValues = {
-    file: downloads[0].url,
+    file: downloads[0]?.url ?? '',
     terms: false
   }
+
+  const validationSchema = object().shape({
+    file: string().test('no-downloads', t('No Downloads Available'), (file) => {
+      if (file == null || file === '') {
+        // fail validation
+        return false
+      } else {
+        // pass validation
+        return true
+      }
+    })
+  })
 
   return (
     <Dialog
@@ -148,6 +161,8 @@ export function DownloadDialog({
           onSubmit={(values) => {
             void download(values.file, `${title[0].value}.mp4`)
           }}
+          validationSchema={validationSchema}
+          validateOnMount
         >
           {({ values, errors, handleChange, handleBlur, setFieldValue }) => (
             <Form>
@@ -160,6 +175,7 @@ export function DownloadDialog({
                 onBlur={handleBlur}
                 helperText={errors.file}
                 error={errors.file != null}
+                disabled={values.file === ''}
                 select
               >
                 {downloads

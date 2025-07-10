@@ -82,7 +82,8 @@ const content: TreeBlock[] = [
         iconSize: IconSize.md,
         children: []
       }
-    ]
+    ],
+    settings: null
   }
 ]
 

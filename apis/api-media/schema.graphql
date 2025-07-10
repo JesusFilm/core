@@ -211,6 +211,7 @@ type Mutation {
   shortLinkDelete(id: String!): MutationShortLinkDeleteResult!
   videoCreate(input: VideoCreateInput!): Video!
   videoUpdate(input: VideoUpdateInput!): Video!
+  videoDelete(id: ID!): Video!
   videoDescriptionCreate(input: VideoTranslationCreateInput!): VideoDescription!
   videoDescriptionUpdate(input: VideoTranslationUpdateInput!): VideoDescription!
   videoDescriptionDelete(id: ID!): VideoDescription!
