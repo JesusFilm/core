@@ -825,6 +825,10 @@ type ButtonBlockSettings @join__type(graph: API_JOURNEYS)  @join__type(graph: AP
   Alignment of the button
   """
   alignment: ButtonAlignment
+  """
+  Color of the button
+  """
+  color: String
 }
 
 type ButtonBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -3359,6 +3363,7 @@ input BlockDuplicateIdMap @join__type(graph: API_JOURNEYS)  {
 
 input ButtonBlockSettingsInput @join__type(graph: API_JOURNEYS)  {
   alignment: ButtonAlignment
+  color: String
 }
 
 input ButtonBlockCreateInput @join__type(graph: API_JOURNEYS)  {
