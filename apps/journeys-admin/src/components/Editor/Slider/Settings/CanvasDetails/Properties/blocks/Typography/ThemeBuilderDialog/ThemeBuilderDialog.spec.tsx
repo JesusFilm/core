@@ -288,7 +288,7 @@ describe('ThemeBuilderDialog', () => {
 
     fireEvent.click(screen.getByText('Confirm'))
     await waitFor(() => {
-      expect(screen.getByText('Failed to update fonts')).toBeInTheDocument()
+      expect(screen.queryByText('Failed to update fonts')).toBeInTheDocument()
     })
   })
 
@@ -322,7 +322,7 @@ describe('ThemeBuilderDialog', () => {
 
     fireEvent.click(screen.getByText('Confirm'))
     await waitFor(() => {
-      expect(screen.getByText('Failed to create theme')).toBeInTheDocument()
+      expect(screen.queryByText('Failed to create theme')).toBeInTheDocument()
     })
   })
 
