@@ -168,10 +168,13 @@ export type ButtonBlockSettings = {
   __typename?: 'ButtonBlockSettings';
   /** Alignment of the button */
   alignment?: Maybe<ButtonAlignment>;
+  /** Color of the button */
+  color?: Maybe<Scalars['String']['output']>;
 };
 
 export type ButtonBlockSettingsInput = {
   alignment?: InputMaybe<ButtonAlignment>;
+  color?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type ButtonBlockUpdateInput = {
@@ -1814,12 +1817,14 @@ export type MutationCreateKeywordArgs = {
 
 
 export type MutationCreateMuxVideoUploadByFileArgs = {
+  downloadable?: InputMaybe<Scalars['Boolean']['input']>;
   name: Scalars['String']['input'];
   userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
 export type MutationCreateMuxVideoUploadByUrlArgs = {
+  downloadable?: InputMaybe<Scalars['Boolean']['input']>;
   url: Scalars['String']['input'];
   userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
 };
@@ -5184,10 +5189,13 @@ export enum VideoVariantDownloadQuality {
   DistroHigh = 'distroHigh',
   DistroLow = 'distroLow',
   DistroSd = 'distroSd',
+  Fhd = 'fhd',
   High = 'high',
   Highest = 'highest',
   Low = 'low',
-  Sd = 'sd'
+  Qhd = 'qhd',
+  Sd = 'sd',
+  Uhd = 'uhd'
 }
 
 export type VideoVariantDownloadUpdateInput = {
