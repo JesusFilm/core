@@ -23,6 +23,39 @@ export enum FontFamily {
   Raleway = 'Raleway'
 }
 
+export const HEADER_FONT_OPTIONS = [
+  FontFamily.Montserrat,
+  FontFamily.Inter,
+  FontFamily.Oswald,
+  FontFamily.PlayfairDisplay,
+  FontFamily.Georgia,
+  FontFamily.CormorantGaramond,
+  FontFamily.NotoSans,
+  FontFamily.BerkshireSwash,
+  FontFamily.Cinzel,
+  FontFamily.Baloo
+]
+
+export const BODY_FONT_OPTIONS = [
+  FontFamily.Montserrat,
+  FontFamily.Inter,
+  FontFamily.Nunito,
+  FontFamily.Raleway,
+  FontFamily.NotoSans,
+  FontFamily.Georgia,
+  FontFamily.CormorantGaramond
+]
+
+export const LABELS_FONT_OPTIONS = [
+  FontFamily.Montserrat,
+  FontFamily.Inter,
+  FontFamily.NotoSans,
+  FontFamily.Nunito,
+  FontFamily.Raleway,
+  FontFamily.Georgia,
+  FontFamily.Baloo
+]
+
 interface ThemeSettingsProps {
   onHeaderFontChange: (font: string) => void
   onBodyFontChange: (font: string) => void
@@ -52,45 +85,12 @@ export function ThemeSettings({
 }: ThemeSettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
-  const headerFontOptions = [
-    FontFamily.Montserrat,
-    FontFamily.Inter,
-    FontFamily.Oswald,
-    FontFamily.PlayfairDisplay,
-    FontFamily.Georgia,
-    FontFamily.CormorantGaramond,
-    FontFamily.NotoSans,
-    FontFamily.BerkshireSwash,
-    FontFamily.Cinzel,
-    FontFamily.Baloo
-  ]
-
-  const bodyFontOptions = [
-    FontFamily.Montserrat,
-    FontFamily.Inter,
-    FontFamily.Nunito,
-    FontFamily.Raleway,
-    FontFamily.NotoSans,
-    FontFamily.Georgia,
-    FontFamily.CormorantGaramond
-  ]
-
-  const labelsFontOptions = [
-    FontFamily.Montserrat,
-    FontFamily.Inter,
-    FontFamily.NotoSans,
-    FontFamily.Nunito,
-    FontFamily.Raleway,
-    FontFamily.Georgia,
-    FontFamily.Baloo
-  ]
-
   return (
     <Stack spacing={4} sx={{ width: '100%' }}>
       <FontSelect
         label={t('Header Text')}
         value={headerFont}
-        options={headerFontOptions.sort()}
+        options={HEADER_FONT_OPTIONS.sort()}
         onChange={onHeaderFontChange}
         icon={<Header1Icon />}
         labelId="header-font-select-label"
@@ -100,7 +100,7 @@ export function ThemeSettings({
       <FontSelect
         label={t('Body Text')}
         value={bodyFont}
-        options={bodyFontOptions.sort()}
+        options={BODY_FONT_OPTIONS.sort()}
         onChange={onBodyFontChange}
         icon={<Type2Icon />}
         labelId="body-font-select-label"
@@ -110,7 +110,7 @@ export function ThemeSettings({
       <FontSelect
         label={t('Label Text')}
         value={labelsFont}
-        options={labelsFontOptions.sort()}
+        options={LABELS_FONT_OPTIONS.sort()}
         onChange={onLabelsFontChange}
         icon={<Type3Icon />}
         labelId="labels-font-select-label"

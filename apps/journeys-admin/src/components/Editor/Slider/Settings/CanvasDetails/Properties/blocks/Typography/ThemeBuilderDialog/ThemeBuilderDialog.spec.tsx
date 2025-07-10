@@ -116,9 +116,9 @@ describe('ThemeBuilderDialog', () => {
       variables: {
         input: {
           journeyId: 'journey-id',
-          headerFont: '',
-          bodyFont: '',
-          labelFont: ''
+          headerFont: FontFamily.Montserrat,
+          bodyFont: FontFamily.Montserrat,
+          labelFont: FontFamily.Montserrat
         }
       }
     },
@@ -129,9 +129,9 @@ describe('ThemeBuilderDialog', () => {
             __typename: 'JourneyTheme',
             id: 'new-theme-id',
             journeyId: 'journey-id',
-            headerFont: '',
-            bodyFont: '',
-            labelFont: ''
+            headerFont: FontFamily.Montserrat,
+            bodyFont: FontFamily.Montserrat,
+            labelFont: FontFamily.Montserrat
           }
         }
       }
@@ -181,7 +181,7 @@ describe('ThemeBuilderDialog', () => {
     ).toHaveTextContent(FontFamily.Nunito)
   })
 
-  it('should show none in dropdowns when journey theme is null', () => {
+  it('should show Montserrat in dropdowns when journey theme is null', () => {
     render(
       <SnackbarProvider>
         <MockedProvider>
@@ -196,13 +196,13 @@ describe('ThemeBuilderDialog', () => {
 
     expect(
       screen.getByRole('combobox', { name: 'Header Text' })
-    ).toHaveTextContent('None')
+    ).toHaveTextContent(FontFamily.Montserrat)
     expect(
       screen.getByRole('combobox', { name: 'Body Text' })
-    ).toHaveTextContent('None')
+    ).toHaveTextContent(FontFamily.Montserrat)
     expect(
       screen.getByRole('combobox', { name: 'Label Text' })
-    ).toHaveTextContent('None')
+    ).toHaveTextContent(FontFamily.Montserrat)
   })
 
   it('should call onClose when cancel button is clicked', () => {
@@ -299,9 +299,9 @@ describe('ThemeBuilderDialog', () => {
         variables: {
           input: {
             journeyId: 'journey-id',
-            headerFont: '',
-            bodyFont: '',
-            labelFont: ''
+            headerFont: FontFamily.Montserrat,
+            bodyFont: FontFamily.Montserrat,
+            labelFont: FontFamily.Montserrat
           }
         }
       },

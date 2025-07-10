@@ -22,7 +22,12 @@ import {
 import { FontLoader } from '../../../../../../../FontLoader'
 
 import { ThemePreview } from './ThemePreview'
-import { ThemeSettings } from './ThemeSettings'
+import {
+  BODY_FONT_OPTIONS,
+  HEADER_FONT_OPTIONS,
+  LABELS_FONT_OPTIONS,
+  ThemeSettings
+} from './ThemeSettings'
 
 interface ThemeBuilderDialogProps {
   open: boolean
@@ -82,12 +87,22 @@ export function ThemeBuilderDialog({
   const journeyTheme = journey?.journeyTheme
 
   const [headerFont, setHeaderFont] = useState<string>(
-    journeyTheme?.headerFont ?? ''
+    journeyTheme?.headerFont ?? 'Montserrat'
   )
-  const [bodyFont, setBodyFont] = useState<string>(journeyTheme?.bodyFont ?? '')
+  const [bodyFont, setBodyFont] = useState<string>(
+    journeyTheme?.bodyFont ?? 'Montserrat'
+  )
   const [labelFont, setLabelFont] = useState<string>(
-    journeyTheme?.labelFont ?? ''
+    journeyTheme?.labelFont ?? 'Montserrat'
   )
+
+  const allFontOptions = [
+    ...new Set([
+      ...HEADER_FONT_OPTIONS,
+      ...BODY_FONT_OPTIONS,
+      ...LABELS_FONT_OPTIONS
+    ])
+  ]
 
   function handleHeaderFontChange(font: string): void {
     setHeaderFont(font)
@@ -209,7 +224,7 @@ export function ThemeBuilderDialog({
         </Stack>
       }
     >
-      <FontLoader fonts={[headerFont, bodyFont, labelFont]} />
+      <FontLoader fonts={allFontOptions} />
       <Stack
         direction={{ xs: 'column', sm: 'row' }}
         spacing={5}

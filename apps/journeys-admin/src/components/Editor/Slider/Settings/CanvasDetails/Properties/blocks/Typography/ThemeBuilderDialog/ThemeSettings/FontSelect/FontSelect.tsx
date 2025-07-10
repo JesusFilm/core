@@ -5,7 +5,6 @@ import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, ReactNode } from 'react'
 
@@ -60,12 +59,6 @@ export function FontSelect({
           startAdornment={
             <InputAdornment position="start">{icon}</InputAdornment>
           }
-          renderValue={(value) => {
-            if (value === '') {
-              return <Typography>{t('None')}</Typography>
-            }
-            return value
-          }}
         >
           {options.map((font) => (
             <MenuItem key={font} value={font} tabIndex={0} aria-label={font}>
