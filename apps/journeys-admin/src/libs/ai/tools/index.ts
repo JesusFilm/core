@@ -4,6 +4,7 @@ import { ToolSet } from 'ai'
 import { tools as agentTools } from './agent'
 // import { tools as clientTools } from './client'
 import { tools as journeyTools } from './journey'
+import { youTubeTranscriptTool } from './youtube'
 
 export interface ToolOptions {
   langfuseTraceId: string
@@ -16,7 +17,8 @@ export function tools(
   const tools = {
     ...agentTools,
     // ...clientTools,
-    ...journeyTools
+    ...journeyTools,
+    youTubeTranscriptTool
   }
 
   return {
