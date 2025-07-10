@@ -4,7 +4,5 @@
   "branchPrefix": "00-00-RB-chore-",
   "reviewers": ["mikeallisonJS", "tataihono"],
   "assignees": ["mikeallisonJS"],
-  "labels": ["effort: 1", "priority: 2day", "type: chore"],
-  "prConcurrentLimit": 4,
-  "rangeStrategy": "bump"
+  "prConcurrentLimit": 4
 }
