@@ -428,8 +428,8 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   bibleCitationUpdate(input: MutationBibleCitationUpdateInput!) : BibleCitation @join__field(graph: API_MEDIA) 
   bibleCitationDelete(id: ID!) : Boolean @join__field(graph: API_MEDIA) 
   createKeyword(value: String!, languageId: String!) : Keyword! @join__field(graph: API_MEDIA) 
-  createMuxVideoUploadByFile(name: String!, userGenerated: Boolean) : MuxVideo! @join__field(graph: API_MEDIA) 
-  createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean) : MuxVideo! @join__field(graph: API_MEDIA) 
+  createMuxVideoUploadByFile(name: String!, userGenerated: Boolean, downloadable: Boolean = false) : MuxVideo! @join__field(graph: API_MEDIA) 
+  createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean, downloadable: Boolean = false) : MuxVideo! @join__field(graph: API_MEDIA) 
   enableMuxDownload(id: ID!, resolution: String) : MuxVideo @join__field(graph: API_MEDIA) 
   deleteMuxVideo(id: ID!, userGenerated: Boolean) : Boolean! @join__field(graph: API_MEDIA) 
   """
@@ -3309,13 +3309,16 @@ enum VideoLabel @join__type(graph: API_MEDIA)  {
 }
 
 enum VideoVariantDownloadQuality @join__type(graph: API_MEDIA)  {
-  low @join__enumValue(graph: API_MEDIA) 
-  sd @join__enumValue(graph: API_MEDIA) 
-  high @join__enumValue(graph: API_MEDIA) 
-  highest @join__enumValue(graph: API_MEDIA) 
   distroLow @join__enumValue(graph: API_MEDIA) 
   distroSd @join__enumValue(graph: API_MEDIA) 
   distroHigh @join__enumValue(graph: API_MEDIA) 
+  low @join__enumValue(graph: API_MEDIA) 
+  sd @join__enumValue(graph: API_MEDIA) 
+  high @join__enumValue(graph: API_MEDIA) 
+  fhd @join__enumValue(graph: API_MEDIA) 
+  qhd @join__enumValue(graph: API_MEDIA) 
+  uhd @join__enumValue(graph: API_MEDIA) 
+  highest @join__enumValue(graph: API_MEDIA) 
 }
 
 input SiteCreateInput @join__type(graph: API_ANALYTICS)  {
