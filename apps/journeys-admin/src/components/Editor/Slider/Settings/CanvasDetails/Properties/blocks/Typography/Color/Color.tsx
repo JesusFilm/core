@@ -150,7 +150,7 @@ export function Color(): ReactElement {
 
   return (
     <>
-      <Box sx={{ p: 4 }}>
+      <Box sx={{ px: 4, pb: 4 }}>
         <DebouncedHexColorPicker
           data-testid="typographyColorPicker"
           color={selectedColor}
