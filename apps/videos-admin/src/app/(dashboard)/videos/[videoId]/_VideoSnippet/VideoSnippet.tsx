@@ -79,6 +79,7 @@ export function VideoSnippet({ videoId }: VideoSnippetProps): ReactElement {
           enqueueSnackbar('Video short description created', {
             variant: 'success'
           })
+          resetForm({ values })
         },
         onError: () => {
           enqueueSnackbar('Failed to create video short description', {
