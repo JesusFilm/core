@@ -26,11 +26,9 @@ function getClient(userGenerated: boolean): Mux {
   })
 }
 
-type ResolutionTier = '1080p' | '1440p' | '2160p' | undefined
-
 export async function createVideoByDirectUpload(
   userGenerated: boolean,
-  maxResolution?: ResolutionTier,
+  maxResolution?: Mux.Video.Asset['max_resolution_tier'],
   downloadable = false
 ): Promise<{ id: string; uploadUrl: string }> {
   if (process.env.CORS_ORIGIN == null) throw new Error('Missing CORS_ORIGIN')
@@ -69,7 +67,7 @@ export async function createVideoByDirectUpload(
 export async function createVideoFromUrl(
   url: string,
   userGenerated: boolean,
-  maxResolution?: ResolutionTier,
+  maxResolution?: Mux.Video.Asset['max_resolution_tier'],
   downloadable = false
 ): Promise<Mux.Video.Asset> {
   return await getClient(userGenerated).video.assets.create({

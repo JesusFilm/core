@@ -32,32 +32,29 @@ export async function service(
 
   try {
     // Get the latest video data with variants
-    const video = await prisma.muxVideo.findUnique({
-      where: { id: videoId },
-      include: {
-        videoVariants: true
-      }
+    const muxVideo = await prisma.muxVideo.findUnique({
+      where: { id: videoId }
     })
 
-    if (!video) {
+    if (!muxVideo) {
       logger?.warn({ videoId }, 'Video not found')
       return
     }
 
-    if (!video.assetId) {
+    if (!muxVideo.assetId) {
       logger?.warn({ videoId }, 'Video has no asset ID')
       return
     }
 
     // Monitor the static rendition status until it reaches a final state
-    const { finalStatus, muxVideo } = await monitorStaticRenditionStatus(
-      video.assetId,
+    const { finalStatus, muxVideoAsset } = await monitorStaticRenditionStatus(
+      muxVideo.assetId,
       isUserGenerated,
       logger
     )
 
     if (finalStatus === 'ready') {
-      await processVideoDownloads(video, muxVideo, logger)
+      await processVideoDownloads(muxVideo, muxVideoAsset, logger)
     }
 
     logger?.info(
@@ -137,8 +134,8 @@ async function monitorStaticRenditionStatus(
   isUserGenerated: boolean,
   logger?: Logger
 ): Promise<
-  | { finalStatus: 'ready'; muxVideo: Mux.Video.Asset }
-  | { finalStatus: 'timeout'; muxVideo: null }
+  | { finalStatus: 'ready'; muxVideoAsset: Mux.Video.Asset }
+  | { finalStatus: 'timeout'; muxVideoAsset: null }
 > {
   const monitoringIntervalMs = 10000 // 10 seconds
   const maxAttempts = 180 // 30 minutes (180 * 10 seconds)
@@ -204,7 +201,7 @@ async function monitorStaticRenditionStatus(
           { assetId, totalAttempts: attempts + 1, renditionStatuses },
           'All static renditions are ready'
         )
-        return { finalStatus: 'ready', muxVideo }
+        return { finalStatus: 'ready', muxVideoAsset: muxVideo }
       }
 
       // Continue monitoring if renditions are still processing
@@ -233,70 +230,82 @@ async function monitorStaticRenditionStatus(
     },
     'Static rendition monitoring reached maximum attempts without final status'
   )
-  return { finalStatus: 'timeout', muxVideo: null }
+  return { finalStatus: 'timeout', muxVideoAsset: null }
 }
 
 async function processVideoDownloads(
-  video: MuxVideo & { videoVariants: VideoVariant[] },
-  muxVideo: Mux.Video.Asset,
+  muxVideo: MuxVideo,
+  muxVideoAsset: Mux.Video.Asset,
   logger?: Logger
 ): Promise<void> {
   if (
-    muxVideo.status === 'ready' &&
-    muxVideo.playback_ids?.[0].id != null &&
-    (!video.downloadable || downloadsReadyToStore(muxVideo))
+    muxVideoAsset.status === 'ready' &&
+    muxVideoAsset.playback_ids?.[0].id != null &&
+    (!muxVideo.downloadable || downloadsReadyToStore(muxVideoAsset))
   ) {
+    console.log(muxVideo)
     // Update video metadata
     await prisma.muxVideo.update({
-      where: { id: video.id },
+      where: { id: muxVideo.id },
       data: {
-        readyToStream: muxVideo.status === 'ready',
-        playbackId: muxVideo.playback_ids?.[0].id,
-        duration: Math.ceil(muxVideo.duration ?? 0)
+        readyToStream: muxVideoAsset.status === 'ready',
+        playbackId: muxVideoAsset.playback_ids?.[0].id,
+        duration: Math.ceil(muxVideoAsset.duration ?? 0)
       }
     })
 
+    const videoVariants = await prisma.videoVariant.findMany({
+      where: { muxVideoId: muxVideo.id }
+    }) // doesn't seem to work with include on the muxVideo object
+
+    console.log(videoVariants)
+
     // Process downloads if ready and video has variants
     if (
-      muxVideo.static_renditions?.files != null &&
-      video.videoVariants.length > 0
+      muxVideoAsset.static_renditions?.files != null &&
+      videoVariants.length > 0
     ) {
-      const validDownloads: Prisma.VideoVariantDownloadCreateManyInput[] =
-        muxVideo.static_renditions.files
-          .filter(
-            (file) =>
-              file != null &&
-              file.resolution != null &&
-              file.status !== 'skipped' &&
-              file.status !== 'errored' &&
-              mapStaticResolutionTierToDownloadQuality(file.resolution) != null
+      for (const videoVariant of videoVariants) {
+        const validDownloads: Prisma.VideoVariantDownloadCreateManyInput[] =
+          muxVideoAsset.static_renditions.files
+            .filter(
+              (file) =>
+                file != null &&
+                file.resolution != null &&
+                file.status !== 'skipped' &&
+                file.status !== 'errored' &&
+                mapStaticResolutionTierToDownloadQuality(file.resolution) !=
+                  null
+            )
+            .map((file) => ({
+              videoVariantId: videoVariant.id,
+              quality: mapStaticResolutionTierToDownloadQuality(
+                file.resolution as AssetOptions.StaticRendition['resolution']
+              ) as VideoVariantDownloadQuality,
+              url: `https://stream.mux.com/${muxVideoAsset.playback_ids?.[0].id}/${file.resolution}.mp4`,
+              version: 1,
+              size: file.filesize ? parseInt(file.filesize) : 0,
+              height: file.height ?? 0,
+              width: file.width ?? 0,
+              bitrate: file.bitrate ?? 0
+            }))
+
+        console.log('validDownloads', validDownloads)
+
+        if (validDownloads.length > 0) {
+          // Find the highest quality by enum up to uhd since mux doesn't generate highest enum
+          const highest = getHighestResolutionDownload(validDownloads)
+          const data = [...validDownloads, highest]
+
+          await prisma.videoVariantDownload.createMany({
+            data: data
+          })
+
+          logger?.info(
+            { videoId: muxVideo.id, downloadsCount: data.length },
+            'Successfully created video downloads'
           )
-          .map((file) => ({
-            videoVariantId: video.videoVariants[0].id,
-            quality: mapStaticResolutionTierToDownloadQuality(
-              file.resolution as AssetOptions.StaticRendition['resolution']
-            ) as VideoVariantDownloadQuality,
-            url: `https://stream.mux.com/${muxVideo.playback_ids?.[0].id}/${file.resolution}.mp4`,
-            version: 1,
-            size: file.filesize ? parseInt(file.filesize) : 0,
-            height: file.height ?? 0,
-            width: file.width ?? 0,
-            bitrate: file.bitrate ?? 0
-          }))
-
-      if (validDownloads.length > 0) {
-        // Find the highest quality by enum up to uhd since mux doesn't generate highest enum
-        const highest = getHighestResolutionDownload(validDownloads)
-        const data = [...validDownloads, highest]
-
-        await prisma.videoVariantDownload.createMany({
-          data: data
-        })
-
-        logger?.info(
-          { videoId: video.id, downloadsCount: data.length },
-          'Successfully created video downloads'
-        )
+        }
       }
     }
   }
