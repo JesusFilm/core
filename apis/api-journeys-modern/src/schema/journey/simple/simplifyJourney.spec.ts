@@ -19,7 +19,15 @@ describe('simplifyJourney', () => {
       ...baseJourney,
       blocks: [
         { id: 'step-1', typename: 'StepBlock' },
-        { id: 'card-1', typename: 'CardBlock', parentBlockId: 'step-1' }
+        { id: 'card-1', typename: 'CardBlock', parentBlockId: 'step-1' },
+        // Add a button to satisfy navigation requirement
+        {
+          id: 'button-1',
+          typename: 'ButtonBlock',
+          parentBlockId: 'card-1',
+          label: 'Next',
+          action: { url: 'https://example.com' }
+        }
       ] as any
     }
     const result = simplifyJourney(journey)
@@ -106,7 +114,15 @@ describe('simplifyJourney', () => {
           blurhash: ''
         },
         { id: 'step-2', typename: 'StepBlock' },
-        { id: 'card-2', typename: 'CardBlock', parentBlockId: 'step-2' }
+        { id: 'card-2', typename: 'CardBlock', parentBlockId: 'step-2' },
+        // Add a button to card-2 to satisfy navigation requirement
+        {
+          id: 'button-2',
+          typename: 'ButtonBlock',
+          parentBlockId: 'card-2',
+          label: 'Next',
+          action: { url: 'https://example.com' }
+        }
       ] as any
     }
     const result = simplifyJourney(journey)
@@ -139,6 +155,14 @@ describe('simplifyJourney', () => {
           parentBlockId: 'card-1',
           variant: 'h3',
           content: 'Heading'
+        },
+        // Add a button to satisfy navigation requirement
+        {
+          id: 'button-1',
+          typename: 'ButtonBlock',
+          parentBlockId: 'card-1',
+          label: 'Next',
+          action: { url: 'https://example.com' }
         }
       ] as any
     }
