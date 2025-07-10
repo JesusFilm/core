@@ -3,6 +3,7 @@ import { GraphQLError } from 'graphql'
 import { Prisma } from '.prisma/api-media-client'
 
 import { prisma } from '../../../lib/prisma'
+import { queue as processVideoDownloadsQueue } from '../../../workers/processVideoDownloads/queue'
 import { builder } from '../../builder'
 import { VideoSource, VideoSourceShape } from '../../videoSource/videoSource'
 
@@ -126,6 +127,23 @@ builder.queryFields((t) => ({
               duration: Math.ceil(muxVideo.duration ?? 0)
             }
           })
+
+          // Queue download processing if the video is downloadable
+          if (video.downloadable) {
+            try {
+              await processVideoDownloadsQueue.add('process-video-downloads', {
+                videoId: video.id,
+                assetId: video.assetId,
+                isUserGenerated
+              })
+            } catch (error) {
+              // Log error but don't fail the request - downloads can be processed later
+              console.error(
+                'Failed to queue video downloads processing:',
+                error
+              )
+            }
+          }
         }
       }
       return video
@@ -191,12 +209,17 @@ builder.mutationFields((t) => ({
       nullable: false,
       args: {
         name: t.arg({ type: 'String', required: true }),
-        userGenerated: t.arg({ type: 'Boolean', required: false })
+        userGenerated: t.arg({ type: 'Boolean', required: false }),
+        downloadable: t.arg({
+          type: 'Boolean',
+          required: false,
+          defaultValue: false
+        })
       },
       resolve: async (
         query,
         _root,
-        { name, userGenerated },
+        { name, userGenerated, downloadable },
         { user, currentRoles }
       ) => {
         if (user == null)
@@ -207,8 +230,11 @@ builder.mutationFields((t) => ({
         const isUserGenerated = !currentRoles.includes('publisher')
           ? true
           : (userGenerated ?? true)
-        const { id, uploadUrl } =
-          await createVideoByDirectUpload(isUserGenerated)
+        const { id, uploadUrl } = await createVideoByDirectUpload(
+          isUserGenerated,
+          undefined,
+          downloadable ?? false
+        )
 
         return await prisma.muxVideo.create({
           ...query,
@@ -216,7 +242,8 @@ builder.mutationFields((t) => ({
             uploadId: id,
             uploadUrl,
             userId: user.id,
-            name
+            name,
+            downloadable: downloadable ?? false
           }
         })
       }
@@ -226,12 +253,17 @@ builder.mutationFields((t) => ({
     nullable: false,
     args: {
       url: t.arg({ type: 'String', required: true }),
-      userGenerated: t.arg({ type: 'Boolean', required: false })
+      userGenerated: t.arg({ type: 'Boolean', required: false }),
+      downloadable: t.arg({
+        type: 'Boolean',
+        required: false,
+        defaultValue: false
+      })
     },
     resolve: async (
       query,
       _root,
-      { url, userGenerated },
+      { url, userGenerated, downloadable },
       { user, currentRoles }
     ) => {
       if (user == null)
@@ -243,13 +275,19 @@ builder.mutationFields((t) => ({
         ? true
         : (userGenerated ?? true)
 
-      const { id } = await createVideoFromUrl(url, isUserGenerated)
+      const { id } = await createVideoFromUrl(
+        url,
+        isUserGenerated,
+        undefined,
+        downloadable ?? false
+      )
 
       return await prisma.muxVideo.create({
         ...query,
         data: {
           assetId: id,
-          userId: user.id
+          userId: user.id,
+          downloadable: downloadable ?? false
         }
       })
     }
