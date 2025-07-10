@@ -17,7 +17,10 @@ const QUALITY_MAPPING: Record<
   highest: [],
   distroLow: [],
   distroSd: [],
-  distroHigh: []
+  distroHigh: [],
+  fhd: [],
+  qhd: [],
+  uhd: []
 }
 
 const BATCH_SIZE = 1000

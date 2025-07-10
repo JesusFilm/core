@@ -13,6 +13,7 @@ import { ReactElement, useState } from 'react'
 import minimalLogo from '../../../assets/minimal-logo.png'
 import { MenuButton } from '../../../components/MenuButton'
 import { ToggleColorMode } from '../../../components/ToggleColorMode'
+import { getEnvironmentBannerHeight } from '../../../libs/environment'
 
 import { SideMenuMobile } from './_SideMenuMobile'
 
@@ -33,6 +34,7 @@ const Toolbar = styled(MuiToolbar)({
 
 export function AppNavbar(): ReactElement {
   const [open, setOpen] = useState(false)
+  const environmentBannerHeight = getEnvironmentBannerHeight()
 
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen)
@@ -47,7 +49,8 @@ export function AppNavbar(): ReactElement {
         bgcolor: 'background.paper',
         backgroundImage: 'none',
         borderBottom: '1px solid',
-        borderColor: 'divider'
+        borderColor: 'divider',
+        top: `${environmentBannerHeight}px`
       }}
       data-testid="AppNavbar"
     >
