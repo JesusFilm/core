@@ -6,7 +6,9 @@ interface FontLoaderProps {
 
 export function FontLoader({ fonts }: FontLoaderProps): null {
   function getSortedUniqueFonts(fonts: string[]): string[] {
-    return [...new Set(fonts.filter((font) => font !== ''))].sort()
+    return [
+      ...new Set(fonts.filter((font) => font !== '' && font !== 'Georgia'))
+    ].sort()
   }
 
   function formatFontWithWeights(font: string): string {
