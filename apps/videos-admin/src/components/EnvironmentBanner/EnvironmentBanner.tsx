@@ -26,7 +26,7 @@ export function EnvironmentBanner(): ReactElement | null {
         backgroundColor: '#ff4444',
         color: 'white',
         textAlign: 'center',
-        py: 1,
+        py: 0.75,
         px: 2,
         position: 'fixed',
         top: 0,
@@ -34,7 +34,11 @@ export function EnvironmentBanner(): ReactElement | null {
         right: 0,
         zIndex: 9999,
         borderBottom: '2px solid #cc0000',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+        boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+        height: '36px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
       }}
     >
       <Typography variant="body2" fontWeight="bold">

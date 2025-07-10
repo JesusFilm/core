@@ -103,11 +103,11 @@ describe('environment utilities', () => {
       expect(getEnvironmentBannerHeight()).toBe(0)
     })
 
-    it('should return 44 when showing banner (staging)', () => {
+    it('should return 38 when showing banner (staging)', () => {
       process.env.NEXT_PUBLIC_GATEWAY_URL =
         'https://api-gateway.stage.central.jesusfilm.org/'
 
-      expect(getEnvironmentBannerHeight()).toBe(44)
+      expect(getEnvironmentBannerHeight()).toBe(38)
     })
   })
 })

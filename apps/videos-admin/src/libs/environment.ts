@@ -16,5 +16,6 @@ export function shouldShowEnvironmentBanner(): boolean {
 export function getEnvironmentBannerHeight(): number {
   // Return the height of the environment banner in pixels
   // This should match the banner height in EnvironmentBanner component
-  return shouldShowEnvironmentBanner() ? 44 : 0 // approximate height with padding
+  // 36px height + 2px border = 38px total
+  return shouldShowEnvironmentBanner() ? 38 : 0
 }
