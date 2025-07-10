@@ -27,6 +27,10 @@ export function DebouncedHexColorPicker({
     }
   }, [debouncedChange])
 
+  useEffect(() => {
+    setValue(color)
+  }, [color])
+
   async function handleChange(value: string): Promise<void> {
     void debouncedChange(value.toUpperCase())
     setValue(value.toUpperCase())
@@ -34,7 +38,8 @@ export function DebouncedHexColorPicker({
 
   return (
     <HexColorPicker
-      data-testId="HexColorPicker"
+      id={`hex-color-picker-${color}`}
+      data-testid="HexColorPicker"
       color={value}
       onChange={handleChange}
       {...props}
