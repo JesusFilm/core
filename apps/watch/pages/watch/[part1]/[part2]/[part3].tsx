@@ -9,6 +9,11 @@ import { InstantSearch } from 'react-instantsearch'
 import { useInstantSearchClient } from '@core/journeys/ui/algolia/InstantSearchProvider'
 
 import {
+  GetSubtitles,
+  GetSubtitlesVariables,
+  GetSubtitles_video_variant_subtitle as VideoVariantSubtitle
+} from '../../../../__generated__/GetSubtitles'
+import {
   GetVideoContainerPart2,
   GetVideoContainerPart2Variables
 } from '../../../../__generated__/GetVideoContainerPart2'
@@ -19,6 +24,7 @@ import {
 import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 import i18nConfig from '../../../../next-i18next.config'
 import { NewVideoContentPage } from '../../../../src/components/NewVideoContentPage'
+import { GET_SUBTITLES } from '../../../../src/components/SubtitleDialog/SubtitleDialog'
 import { createApolloClient } from '../../../../src/libs/apolloClient'
 import { getCookie } from '../../../../src/libs/cookieHandler'
 import { getFlags } from '../../../../src/libs/getFlags'
@@ -51,11 +57,13 @@ export const GET_VIDEO_CONTENT_PART_3 = gql`
 interface Part3PageProps {
   container: VideoContentFields
   content: VideoContentFields
+  videoSubtitleLanguages: VideoVariantSubtitle[]
 }
 
 export default function Part3Page({
   container,
-  content
+  content,
+  videoSubtitleLanguages
 }: Part3PageProps): ReactElement {
   const { i18n } = useTranslation()
   const searchClient = useInstantSearchClient()
@@ -67,7 +75,8 @@ export default function Part3Page({
     subtitleLanguage: getCookie('SUBTITLE_LANGUAGE') ?? '529',
     subtitleOn: (getCookie('SUBTITLES_ON') ?? 'false') === 'true',
     videoId: content.id,
-    videoVariantSlug: content.variant?.slug
+    videoVariantSlug: content.variant?.slug,
+    videoSubtitleLanguages
   }
 
   return (
@@ -148,12 +157,26 @@ export const getStaticProps: GetStaticProps<Part3PageProps> = async (
         notFound: true
       }
     }
+
+    // required for auto-subtitle
+    let subtitleData: GetSubtitles | undefined
+    if (contentData.content.variant?.slug != null) {
+      const { data } = await client.query<GetSubtitles, GetSubtitlesVariables>({
+        query: GET_SUBTITLES,
+        variables: {
+          id: contentData.content.variant.slug
+        }
+      })
+      subtitleData = data
+    }
+
     return {
       revalidate: 3600,
       props: {
         flags: await getFlags(),
         container: containerData.container,
         content: contentData.content,
+        videoSubtitleLanguages: subtitleData?.video?.variant?.subtitle ?? [],
         ...(await serverSideTranslations(
           context.locale ?? 'en',
           ['apps-watch'],
