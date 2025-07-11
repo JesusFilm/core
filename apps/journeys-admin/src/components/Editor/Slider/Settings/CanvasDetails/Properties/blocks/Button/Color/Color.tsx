@@ -142,7 +142,6 @@ export function Color(): ReactElement {
         <Swatch id={`bg-color-${selectedColor}`} color={selectedColor} />
         <TextFieldForm
           id="color"
-          data-testid="bgColorTextField"
           hiddenLabel
           initialValue={selectedColor}
           validationSchema={validationSchema}

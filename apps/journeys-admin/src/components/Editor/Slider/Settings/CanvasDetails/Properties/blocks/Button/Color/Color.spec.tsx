@@ -5,7 +5,12 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import { ButtonColor } from '../../../../../../../../../../__generated__/globalTypes'
+import {
+  ButtonColor,
+  ThemeMode,
+  ThemeName
+} from '../../../../../../../../../../__generated__/globalTypes'
+import { ThemeProvider } from '../../../../../../../../ThemeProvider'
 import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 
@@ -77,18 +82,18 @@ describe('Button color selector', () => {
   it('should show button color properties', () => {
     render(
       <MockedProvider>
-        <EditorProvider initialState={{ selectedBlock }}>
-          <Color />
-        </EditorProvider>
+        <ThemeProvider>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <Color />
+          </EditorProvider>
+        </ThemeProvider>
       </MockedProvider>
     )
-    expect(screen.getByRole('button', { name: 'Primary' })).toHaveClass(
-      'Mui-selected'
-    )
-    expect(
-      screen.getByRole('button', { name: 'Secondary' })
-    ).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Error' })).toBeInTheDocument()
+    expect(screen.getByTestId('bgColorPicker')).toBeInTheDocument()
+    expect(screen.getByTestId('Swatch-bg-color-#26262E')).toHaveStyle({
+      backgroundColor: '#26262E'
+    })
+    expect(screen.getByTestId('JourneysAdminTextFieldForm')).toBeInTheDocument()
   })
 
   it('should change the color property', async () => {
@@ -99,10 +104,7 @@ describe('Button color selector', () => {
         </EditorProvider>
       </MockedProvider>
     )
-    expect(screen.getByRole('button', { name: 'Primary' })).toHaveClass(
-      'Mui-selected'
-    )
-    fireEvent.click(screen.getByRole('button', { name: 'Secondary' }))
+    fireEvent.click(screen.getAllByTestId('Swatch-#B0BEC5')[0])
     await waitFor(() => expect(colorUpdateMock.result).toHaveBeenCalled())
   })
 
