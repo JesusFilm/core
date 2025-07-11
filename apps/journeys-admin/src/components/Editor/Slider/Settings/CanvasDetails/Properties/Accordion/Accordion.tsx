@@ -83,7 +83,7 @@ export function Accordion({
                 <Typography noWrap>{value !== '' ? value : 'None'}</Typography>
               </>
             ) : (
-              <Typography variant="subtitle1" noWrap>
+              <Typography variant="body1" noWrap>
                 {name}
               </Typography>
             )}

@@ -605,6 +605,14 @@ export interface GetPublisherTemplate_publisherTemplate_menuStepBlock {
   slug: string | null;
 }
 
+export interface GetPublisherTemplate_publisherTemplate_journeyTheme {
+  __typename: "JourneyTheme";
+  id: string;
+  headerFont: string | null;
+  bodyFont: string | null;
+  labelFont: string | null;
+}
+
 export interface GetPublisherTemplate_publisherTemplate {
   __typename: "Journey";
   id: string;
@@ -649,6 +657,7 @@ export interface GetPublisherTemplate_publisherTemplate {
   logoImageBlock: GetPublisherTemplate_publisherTemplate_logoImageBlock | null;
   menuButtonIcon: JourneyMenuButtonIcon | null;
   menuStepBlock: GetPublisherTemplate_publisherTemplate_menuStepBlock | null;
+  journeyTheme: GetPublisherTemplate_publisherTemplate_journeyTheme | null;
 }
 
 export interface GetPublisherTemplate {
