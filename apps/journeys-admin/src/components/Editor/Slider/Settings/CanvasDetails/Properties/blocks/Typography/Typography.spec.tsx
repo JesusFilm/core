@@ -39,9 +39,7 @@ describe('Typography properties', () => {
         </EditorProvider>
       </MockedProvider>
     )
-    expect(
-      getByRole('button', { name: 'Text Variant Body 2' })
-    ).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Text Variant' })).toBeInTheDocument()
     expect(getByRole('button', { name: 'Color #FEFEFE' })).toBeInTheDocument()
     expect(
       getByRole('button', { name: 'Text Alignment Left' })
@@ -97,9 +95,7 @@ describe('Typography properties', () => {
         <Typography {...block} />
       </MockedProvider>
     )
-    expect(
-      getByRole('button', { name: 'Text Variant Header 2' })
-    ).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Text Variant' })).toBeInTheDocument()
     expect(getByRole('button', { name: 'Color #C52D3A' })).toBeInTheDocument()
     expect(
       getByRole('button', { name: 'Text Alignment Center' })
@@ -127,9 +123,7 @@ describe('Typography properties', () => {
         <Typography {...block} />
       </MockedProvider>
     )
-    expect(
-      getByRole('button', { name: 'Text Variant Body 2' })
-    ).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Text Variant' })).toBeInTheDocument()
     expect(getByRole('button', { name: 'Color #C52D3A' })).toBeInTheDocument()
     expect(
       getByRole('button', { name: 'Text Alignment Left' })
@@ -171,9 +165,7 @@ describe('Typography properties', () => {
         <Typography {...block} />
       </MockedProvider>
     )
-    expect(
-      getByRole('button', { name: 'Text Variant Body 2' })
-    ).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Text Variant' })).toBeInTheDocument()
     expect(getByRole('button', { name: 'Color #444451' })).toBeInTheDocument()
     expect(
       getByRole('button', { name: 'Text Alignment Left' })
