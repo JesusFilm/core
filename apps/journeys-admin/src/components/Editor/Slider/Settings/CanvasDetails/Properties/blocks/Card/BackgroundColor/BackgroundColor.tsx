@@ -120,6 +120,12 @@ export function BackgroundColor(): ReactElement {
     cardBlock?.backgroundColor ?? cardTheme.palette.background.paper
   )
 
+  useEffect(() => {
+    if (cardBlock?.backgroundColor != null) {
+      setSelectedColor(cardBlock.backgroundColor)
+    }
+  }, [cardBlock?.backgroundColor])
+
   // Store blur as percentage (0-100%), convert to pixels when needed
   const [blurPercentage, setBlurPercentage] = useState(
     Math.round(((cardBlock?.backdropBlur ?? 20) / 25) * 100)
