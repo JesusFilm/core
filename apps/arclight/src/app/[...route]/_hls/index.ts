@@ -87,7 +87,6 @@ const hlsRoute = createRoute({
 export const hls = new OpenAPIHono()
 
 hls.openapi(hlsRoute, async (c) => {
-  console.log('hlsRoute', c.req.param())
   setCorsHeaders(c)
   const { mediaComponentId, languageId } = c.req.param()
   try {
