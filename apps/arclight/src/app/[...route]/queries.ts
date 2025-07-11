@@ -7,6 +7,8 @@ export const GET_SHORT_LINK_QUERY = graphql(`
       ... on QueryShortLinkByPathSuccess {
         data {
           to
+          redirectType
+          brightcoveId
         }
       }
     }

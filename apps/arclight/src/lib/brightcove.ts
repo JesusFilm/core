@@ -63,14 +63,25 @@ function getCache(key: string): any | undefined {
   return entry.data
 }
 
-export async function getBrightcoveVideo(ovpReferenceId: string): Promise<any> {
+/**
+ * Fetches Brightcove video metadata from the Playback API.
+ * @param ovpReferenceId - The Brightcove reference ID
+ * @param forceRefresh - If true, bypasses the cache
+ * @param ip - (Optional) The client IP to forward as X-Forwarded-For
+ */
+export async function getBrightcoveVideo(
+  ovpReferenceId: string,
+  forceRefresh = false,
+  ip?: string
+): Promise<any> {
   if (!ACCOUNT_ID) {
     throw new Error('Brightcove ACCOUNT_ID not configured')
   }
-  const cached = getCache(ovpReferenceId)
-  if (cached) {
-    console.log('[Brightcove] cache hit', ovpReferenceId)
-    return cached
+  if (!forceRefresh) {
+    const cached = getCache(ovpReferenceId)
+    if (cached) {
+      return cached
+    }
   }
 
   if (!POLICY_KEYS.length) {
@@ -78,15 +89,20 @@ export async function getBrightcoveVideo(ovpReferenceId: string): Promise<any> {
   }
 
   for (const [idx, key] of POLICY_KEYS.entries()) {
+    const apiHeaders: HeadersInit = {
+      Authorization: `BCOV-Policy ${key}`
+    }
+    if (ip) {
+      apiHeaders['X-Forwarded-For'] = ip
+      console.log(`[Brightcove] Forwarding IP: ${ip}`)
+    }
     console.log('[Brightcove] fetching video', ovpReferenceId, 'with key', idx)
     const response = await fetch(
       `https://edge.api.brightcove.com/playback/v1/accounts/${ACCOUNT_ID}/videos/ref:${encodeURIComponent(
         ovpReferenceId
       )}`,
       {
-        headers: {
-          Authorization: `BCOV-Policy ${key}`
-        }
+        headers: apiHeaders
       }
     )
 
@@ -97,7 +113,9 @@ export async function getBrightcoveVideo(ovpReferenceId: string): Promise<any> {
         JSON.stringify(json, null, 2)
       )
       console.log('[Brightcove] success with key', idx, 'caching result')
-      setCache(ovpReferenceId, json)
+      if (!forceRefresh) {
+        setCache(ovpReferenceId, json)
+      }
       return json
     }
 
