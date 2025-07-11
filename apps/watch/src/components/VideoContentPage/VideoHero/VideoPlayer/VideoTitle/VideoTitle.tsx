@@ -42,18 +42,16 @@ export function VideoTitle({
         ${visible ? 'opacity-100' : 'opacity-0'}
         ${visible ? 'delay-0' : 'delay-[2000ms]'}
       `}
-      style={{
-        transitionTimingFunction: 'ease-out'
-      }}
+      style={{ transitionTimingFunction: 'ease-out' }}
     >
-      <h1
+      <h2
         className="
           font-bold text-white opacity-90 mix-blend-screen 
           flex-grow mb-1 text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-sans
         "
       >
         {videoTitle}
-      </h1>
+      </h2>
       <div
         className={`overflow-hidden transition-all duration-500 ease-in-out ${
           show ? 'max-h-30' : 'max-h-0'
@@ -67,9 +65,7 @@ export function VideoTitle({
         tracking-wide text-white shadow-md transition-colors
         hover:bg-[#A4343A] font-sans  rounded-[8px] cursor-pointer
         "
-          style={{
-            display: showButton ? 'flex' : 'none'
-          }}
+          style={{ display: showButton ? 'flex' : 'none' }}
         >
           {variant === 'play' && <PlayArrowRounded fontSize="large" />}
           {variant === 'unmute' && <VolumeOff fontSize="large" />}
