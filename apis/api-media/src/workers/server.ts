@@ -91,14 +91,7 @@ async function main(): Promise<void> {
     )
   }
 
-  if (process.env.DEPLOYMENT_ENV === 'prod') {
-    run(
-      await import(
-        /* webpackChunkName: "mux-videos" */
-        './muxVideos'
-      )
-    )
-  }
+  // muxVideos worker has been migrated to a script - run with: nx run api-media:mux-videos
 
   run(
     await import(

@@ -229,6 +229,12 @@
       "options": {
         "command": "npm run ts-node apis/api-media/src/scripts/copy-distro-downloads.ts"
       }
+    },
+    "mux-videos": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-media/src/scripts/mux-videos.ts"
+      }
     }
   }
 }
