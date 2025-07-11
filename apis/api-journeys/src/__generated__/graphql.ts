@@ -2601,12 +2601,12 @@ export type MutationShortLinkCreateInput = {
   id?: InputMaybe<Scalars['String']['input']>;
   /** short link path not including the leading slash (defaults to a random 11 character string that is URL friendly) */
   pathname?: InputMaybe<Scalars['String']['input']>;
+  /** type of video redirect (hls, dl, dh, s) */
+  redirectType?: InputMaybe<RedirectType>;
   /** the service that created this short link */
   service: Service;
   /** the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to */
   to: Scalars['String']['input'];
-  /** type of video redirect (hls, dl, dh, s) */
-  type?: InputMaybe<RedirectType>;
 };
 
 export type MutationShortLinkCreateResult = MutationShortLinkCreateSuccess | NotUniqueError | ZodError;
@@ -2661,10 +2661,10 @@ export type MutationShortLinkUpdateInput = {
   /** brightcove video ID for video redirects */
   brightcoveId?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['String']['input'];
+  /** type of video redirect (hls, dl, dh, s) */
+  redirectType?: InputMaybe<RedirectType>;
   /** the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to */
   to: Scalars['String']['input'];
-  /** type of video redirect (hls, dl, dh, s) */
-  type?: InputMaybe<RedirectType>;
 };
 
 export type MutationShortLinkUpdateResult = MutationShortLinkUpdateSuccess | NotFoundError | ZodError;
@@ -3658,12 +3658,12 @@ export type ShortLink = {
   id: Scalars['ID']['output'];
   /** short link path not including the leading slash */
   pathname: Scalars['String']['output'];
+  /** type of video redirect (hls, dl, dh, s) */
+  redirectType?: Maybe<RedirectType>;
   /** the service that created this short link */
   service: Service;
   /** the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to */
   to: Scalars['String']['output'];
-  /** type of video redirect (hls, dl, dh, s) */
-  type?: Maybe<RedirectType>;
 };
 
 /** A domain that can be used for short links */
@@ -4956,6 +4956,13 @@ export type VideoProgressEventCreateInput = {
   /** source of the video */
   value?: InputMaybe<VideoBlockSource>;
 };
+
+export enum VideoRedirectType {
+  Dh = 'dh',
+  Dl = 'dl',
+  Hls = 'hls',
+  S = 's'
+}
 
 export type VideoSnippet = {
   __typename?: 'VideoSnippet';
