@@ -1,3 +1,5 @@
+import { GraphQLError } from 'graphql'
+
 import {
   JourneySimple,
   journeySimpleSchema
@@ -28,8 +30,13 @@ export async function getSimpleJourney(
       'Zod validation error in getSimpleJourney:',
       result.error.format()
     )
-    throw new Error(
-      'Transformed journey data is invalid. Please contact support.'
+    throw new GraphQLError(
+      'Transformed journey data is invalid. Please contact support.',
+      {
+        extensions: {
+          code: 'INTERNAL_SERVER_ERROR'
+        }
+      }
     )
   }
   return result.data

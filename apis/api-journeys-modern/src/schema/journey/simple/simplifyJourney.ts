@@ -1,4 +1,4 @@
-import { Prisma } from '.prisma/api-journeys-modern-client'
+import type { Prisma } from '.prisma/api-journeys-modern-client'
 import {
   JourneySimple,
   JourneySimpleCard
