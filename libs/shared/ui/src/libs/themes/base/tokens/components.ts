@@ -73,7 +73,7 @@ export const baseComponents: Required<Pick<ThemeOptions, 'components'>> = {
             lineHeight: '18px',
             fontWeight: 700,
             minHeight: '40px',
-            padding: '11.5px 16px',
+            padding: '11px 16px',
             borderRadius: '24px'
           }
         }
