@@ -37,6 +37,9 @@ type ButtonBlock implements Block
 type ButtonBlockSettings {
   """Alignment of the button"""
   alignment: ButtonAlignment @shareable
+
+  """Color of the button"""
+  color: String @shareable
 }
 
 enum ButtonColor {
@@ -315,6 +318,11 @@ enum JourneyStatus {
   trashed
 }
 
+"""
+The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar Json
+
 type Language
   @key(fields: "id")
   @extends
@@ -325,6 +333,7 @@ type Language
 union MediaVideo = MuxVideo | Video | YouTube
 
 type Mutation {
+  journeySimpleUpdate(id: ID!, journey: Json!): Json
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!): Boolean!
@@ -345,6 +354,10 @@ type MuxVideo
   id: ID! @external
   primaryLanguageId: ID @external
   source: VideoBlockSource! @shareable
+}
+
+type Query {
+  journeySimpleGet(id: ID!): Json
 }
 
 type RadioOptionBlock implements Block
