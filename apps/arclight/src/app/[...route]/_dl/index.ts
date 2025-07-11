@@ -1,15 +1,48 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
+import { ResultOf, graphql } from 'gql.tada'
 import { HTTPException } from 'hono/http-exception'
-import { handle } from 'hono/vercel'
 
-import { getApolloClient } from '../../lib/apolloClient'
-import {
-  getBrightcoveVideo,
-  selectBrightcoveSource
-} from '../../lib/brightcove'
-import { getClientIp, setCorsHeaders } from '../_redirectUtils'
+import { getApolloClient } from '../../../lib/apolloClient'
+import { setCorsHeaders } from '../../_redirectUtils'
 
-const app = new OpenAPIHono().basePath('/dl')
+const GET_VIDEO_VARIANT = graphql(`
+  query GetVideoWithVariant($id: ID!, $languageId: ID!) {
+    video(id: $id) {
+      variant(languageId: $languageId) {
+        hls
+        dash
+        share
+        downloads {
+          quality
+          url
+        }
+      }
+    }
+  }
+`)
+
+const getVideoVariant = async (
+  mediaComponentId: string,
+  languageId: string
+) => {
+  try {
+    const { data } = await getApolloClient().query<
+      ResultOf<typeof GET_VIDEO_VARIANT>
+    >({
+      query: GET_VIDEO_VARIANT,
+      variables: {
+        id: mediaComponentId,
+        languageId
+      }
+    })
+    if (!data.video?.variant) {
+      throw new HTTPException(404, { message: 'Video variant not found' })
+    }
+    return data.video.variant
+  } catch (error) {
+    throw new HTTPException(500, { message: 'Failed to fetch video data' })
+  }
+}
 
 const dlRoute = createRoute({
   method: 'get',
@@ -51,65 +84,18 @@ const dlRoute = createRoute({
   }
 } as const)
 
-const GET_VIDEO_VARIANT = /* GraphQL */ `
-  query GetVideoWithVariant($id: ID!, $languageId: ID!) {
-    video(id: $id) {
-      variant(languageId: $languageId) {
-        hls
-        dash
-        share
-        brightcoveId
-        downloads {
-          quality
-          url
-        }
-      }
-    }
-  }
-`
+export const dl = new OpenAPIHono()
 
-const getVideoVariant = async (
-  mediaComponentId: string,
-  languageId: string
-) => {
-  try {
-    const { data } = await getApolloClient().query({
-      query: GET_VIDEO_VARIANT,
-      variables: {
-        id: mediaComponentId,
-        languageId
-      }
-    })
-    if (!data.video?.variant) {
-      throw new HTTPException(404, { message: 'Video variant not found' })
-    }
-    return data.video.variant
-  } catch (error) {
-    throw new HTTPException(500, { message: 'Failed to fetch video data' })
-  }
-}
-
-app.openapi(dlRoute, async (c) => {
+dl.openapi(dlRoute, async (c) => {
   setCorsHeaders(c)
   const { mediaComponentId, languageId } = c.req.param()
-  const clientIp = getClientIp(c)
   try {
     const variant = await getVideoVariant(mediaComponentId, languageId)
     const download = variant.downloads?.find((d: any) => d.quality === 'low')
     if (!download?.url) {
-      const brightcoveId = variant.brightcoveId ?? null
-      if (brightcoveId) {
-        try {
-          const video = await getBrightcoveVideo(brightcoveId, false, clientIp)
-          const src = selectBrightcoveSource(video, 'dl')
-          if (src) {
-            return c.redirect(src, 302)
-          }
-        } catch (err) {}
-      }
       return c.json({ error: 'Low quality download URL not available' }, 404)
     }
-    return c.redirect(download.url)
+    return c.redirect(download.url, 302)
   } catch (error) {
     if (error instanceof HTTPException) {
       if (error.status === 404) {
@@ -120,10 +106,3 @@ app.openapi(dlRoute, async (c) => {
     return c.json({ error: `Internal server error: ${errorMessage}` }, 500)
   }
 })
-
-app.options('*', (c) => {
-  setCorsHeaders(c)
-  return c.body(null, 204)
-})
-
-export const GET = handle(app)

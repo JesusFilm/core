@@ -1,114 +1,27 @@
 import { swaggerUI } from '@hono/swagger-ui'
-import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
-import { ResultOf, graphql } from 'gql.tada'
+import { OpenAPIHono } from '@hono/zod-openapi'
 import { etag } from 'hono/etag'
-import { HTTPException } from 'hono/http-exception'
 import { handle } from 'hono/vercel'
 
-import { getApolloClient } from '../../lib/apolloClient'
-import {
-  getBrightcoveVideo,
-  selectBrightcoveSource
-} from '../../lib/brightcove'
+import { setCorsHeaders } from '../_redirectUtils'
 
-import { GET_SHORT_LINK_QUERY } from './queries'
+import { dh } from './_dh'
+import { dl } from './_dl'
+import { hls } from './_hls'
+import { s } from './_s'
 
 export const dynamic = 'force-dynamic'
 
 const app = new OpenAPIHono().basePath('/')
 app.use(etag())
 
-// Simple logging helper to keep messages consistent
-const log = (...args: unknown[]) => console.log('[Redirects]', ...args)
+// Register route modules
+app.route('/hls', hls)
+app.route('/dl', dl)
+app.route('/dh', dh)
+app.route('/s', s)
 
-log('Gateway URL', process.env.NEXT_PUBLIC_GATEWAY_URL)
-
-const GET_VIDEO_VARIANT = graphql(`
-  query GetVideoWithVariant($id: ID!, $languageId: ID!) {
-    video(id: $id) {
-      variant(languageId: $languageId) {
-        hls
-        dash
-        share
-        downloads {
-          quality
-          url
-        }
-      }
-    }
-  }
-`)
-
-type VideoVariant = {
-  hls: string | null
-  dash: string | null
-  share: string | null
-  brightcoveId?: string | null
-  downloads: Array<{
-    quality: string
-    url: string
-  }> | null
-}
-
-const getVideoVariant = async (
-  mediaComponentId: string,
-  languageId: string
-): Promise<VideoVariant> => {
-  try {
-    console.log('getVideoVariant', mediaComponentId, languageId)
-    console.log('typeof mediaComponentId', typeof mediaComponentId)
-    console.log('typeof languageId', typeof languageId)
-
-    const { data } = await getApolloClient().query<
-      ResultOf<typeof GET_VIDEO_VARIANT>
-    >({
-      query: GET_VIDEO_VARIANT,
-      variables: {
-        id: mediaComponentId,
-        languageId
-      }
-    })
-
-    console.log('data', data)
-
-    if (!data.video?.variant) {
-      throw new HTTPException(404, { message: 'Video variant not found' })
-    }
-
-    return data.video.variant as unknown as VideoVariant
-  } catch (error) {
-    console.error(
-      'Error fetching video variant:',
-      JSON.stringify(error, null, 2)
-    )
-    throw new HTTPException(500, { message: 'Failed to fetch video data' })
-  }
-}
-
-const setCorsHeaders = (c: any) => {
-  c.header('Access-Control-Allow-Origin', '*')
-  c.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
-  c.header('Access-Control-Allow-Headers', '*')
-  c.header('Access-Control-Expose-Headers', '*')
-}
-
-// Helper to get the client IP from Hono context
-function getClientIp(c: any): string | undefined {
-  const forwardedFor = c.req.header('x-forwarded-for')
-  if (forwardedFor) {
-    return forwardedFor.split(',')[0].trim()
-  }
-  const realIp = c.req.header('x-real-ip')
-  if (realIp) {
-    return realIp
-  }
-  // Fallback for direct connections (like localhost)
-  return c.env?.remoteAddr?.address
-}
-
-// Remove all redirect route logic for hls, dl, dh, s, and keyword
-// Only keep non-redirect logic (e.g., OpenAPI docs, unrelated routes)
-
+// Documentation
 app.doc('/redirects-doc.json', {
   openapi: '3.0.0',
   info: {
@@ -119,14 +32,9 @@ app.doc('/redirects-doc.json', {
 
 app.get('/api/redirects-doc', swaggerUI({ url: '/redirects-doc.json' }))
 
-// ... keep any other non-redirect routes here ...
-
+// CORS handling
 app.options('*', (c) => {
-  // Optionally keep CORS preflight for non-redirects
-  c.header('Access-Control-Allow-Origin', '*')
-  c.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
-  c.header('Access-Control-Allow-Headers', '*')
-  c.header('Access-Control-Expose-Headers', '*')
+  setCorsHeaders(c)
   return c.body(null, 204)
 })
 

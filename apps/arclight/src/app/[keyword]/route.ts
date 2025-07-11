@@ -1,16 +1,16 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
+import { ResultOf } from 'gql.tada'
 import { HTTPException } from 'hono/http-exception'
 import { handle } from 'hono/vercel'
-import { ResultOf } from 'gql.tada'
 
 import { getApolloClient } from '../../lib/apolloClient'
 import {
+  BrightcoveSourceCode,
   getBrightcoveVideo,
-  selectBrightcoveSource,
-  BrightcoveSourceCode
+  selectBrightcoveSource
 } from '../../lib/brightcove'
-import { setCorsHeaders, getClientIp } from '../_redirectUtils'
 import { GET_SHORT_LINK_QUERY } from '../[...route]/queries'
+import { getClientIp, setCorsHeaders } from '../_redirectUtils'
 
 const app = new OpenAPIHono().basePath('/')
 
@@ -98,7 +98,9 @@ app.openapi(keywordRoute, async (c) => {
           if (src) {
             return c.redirect(src, 302)
           }
-        } catch (err) {}
+        } catch (err) {
+          console.error('Error getting brightcove video', err)
+        }
       }
       if (to && typeof to === 'string') {
         return c.redirect(to, 302)
