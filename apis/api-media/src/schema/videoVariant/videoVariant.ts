@@ -69,6 +69,7 @@ builder.prismaObject('VideoVariant', {
       resolve: ({ languageId: id }) => ({ id })
     }),
     muxVideo: t.relation('muxVideo', { nullable: true }),
+    brightcoveId: t.exposeString('brightcoveId'),
     published: t.exposeBoolean('published', { nullable: false }),
     videoEdition: t.relation('videoEdition', { nullable: false }),
     subtitle: t.prismaField({
@@ -125,6 +126,7 @@ builder.queryFields((t) => ({
       id: t.arg.id({ required: true })
     },
     resolve: async (query, _parent, { id }) => {
+      console.log('videoVariant', id)
       const videoVariant = await prisma.videoVariant.findUnique({
         ...query,
         where: { id }
@@ -224,7 +226,8 @@ builder.mutationFields((t) => ({
           published: input.published ?? undefined,
           muxVideoId: input.muxVideoId ?? undefined,
           assetId: input.assetId ?? undefined,
-          version: input.version ?? undefined
+          version: input.version ?? undefined,
+          brightcoveId: input.brightcoveId ?? undefined
         }
       })
 
