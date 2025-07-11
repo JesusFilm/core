@@ -1,5 +1,7 @@
 import { ThemeOptions } from '@mui/material/styles'
 
+import { FontFamilies } from '../..'
+
 // Update the Typography's variant prop options
 declare module '@mui/material/styles' {
   interface TypographyPropsVariantOverrides {
@@ -7,55 +9,66 @@ declare module '@mui/material/styles' {
   }
 }
 
+export function createFontFamilyString(font: string): string {
+  const fonts: string[] = []
+  if (font !== '') {
+    fonts.push(`"${font}"`)
+  }
+  fonts.push('Montserrat', '"Open Sans"', 'sans-serif')
+  return fonts.join(',')
+}
+
 export const baseTypography: Pick<ThemeOptions, 'typography'> = {
   typography: {
-    fontFamily: ['"Montserrat","Open Sans","Tahoma","Verdana",sans-serif'].join(
-      ','
-    ),
+    fontFamily: [
+      'Montserrat',
+      '"Open Sans"',
+      'Tahoma',
+      'Verdana',
+      'sans-serif'
+    ].join(','),
     h1: {
-      fontSize: 36,
-      fontWeight: 600,
-      lineHeight: '38px',
-      textShadow: '0px 1px 3px rgba(0, 0, 0, 0.25)'
+      fontSize: 40,
+      fontWeight: 700,
+      lineHeight: '50px'
     },
     h2: {
-      fontSize: 28,
+      fontSize: 36,
       fontWeight: 800,
-      lineHeight: '33px'
+      lineHeight: '42px'
     },
     h3: {
-      fontSize: 24,
-      fontWeight: 800,
-      lineHeight: '28px'
+      fontSize: 28,
+      fontWeight: 700,
+      lineHeight: '34px'
     },
     h4: {
       fontSize: 22,
-      fontWeight: 800,
+      fontWeight: 700,
       lineHeight: '27px'
     },
     h5: {
       fontSize: 18,
-      fontWeight: 800,
-      lineHeight: '23px'
+      fontWeight: 700,
+      lineHeight: '22px'
     },
     h6: {
       fontSize: 14,
       fontWeight: 600,
       lineHeight: '20px',
-      letterSpacing: 2,
-      textTransform: 'uppercase'
+      letterSpacing: 2
     },
     subtitle1: {
-      fontSize: 18,
+      fontSize: 14,
       fontWeight: 600,
-      lineHeight: '24px',
-      letterSpacing: 0.5
+      lineHeight: '20px',
+      letterSpacing: 2
     },
     subtitle2: {
-      fontSize: 16,
+      fontSize: 14,
       fontWeight: 600,
-      lineHeight: '24px',
-      letterSpacing: 0.5
+      lineHeight: '20px',
+      letterSpacing: 2
     },
     body1: {
       fontFamily: '"Open Sans","Tahoma","Verdana",sans-serif',
@@ -81,6 +94,80 @@ export const baseTypography: Pick<ThemeOptions, 'typography'> = {
       fontSize: 12,
       fontWeight: 400,
       lineHeight: '20px'
+    }
+  }
+}
+
+export const createCustomTypography = (
+  baseTypography: Pick<ThemeOptions, 'typography'>,
+  fontFamilies?: FontFamilies
+): Pick<ThemeOptions, 'typography'> => {
+  const { headerFont, bodyFont, labelFont } = fontFamilies ?? {}
+
+  const typographyOptions =
+    typeof baseTypography.typography === 'function'
+      ? {}
+      : baseTypography.typography
+
+  const headerFontFamily = createFontFamilyString(headerFont ?? '')
+  const bodyFontFamily = createFontFamilyString(bodyFont ?? '')
+  const labelFontFamily = createFontFamilyString(labelFont ?? '')
+
+  return {
+    typography: {
+      ...typographyOptions,
+      h1: {
+        ...typographyOptions?.h1,
+        fontFamily: headerFontFamily
+      },
+      h2: {
+        ...typographyOptions?.h2,
+        fontFamily: headerFontFamily
+      },
+      h3: {
+        ...typographyOptions?.h3,
+        fontFamily: headerFontFamily
+      },
+      h4: {
+        ...typographyOptions?.h4,
+        fontFamily: headerFontFamily
+      },
+      h5: {
+        ...typographyOptions?.h5,
+        fontFamily: headerFontFamily
+      },
+      h6: {
+        ...typographyOptions?.h6,
+        fontFamily: headerFontFamily
+      },
+      subtitle1: {
+        ...typographyOptions?.subtitle1,
+        fontFamily: headerFontFamily
+      },
+      subtitle2: {
+        ...typographyOptions?.subtitle2,
+        fontFamily: headerFontFamily
+      },
+      body1: {
+        ...typographyOptions?.body1,
+        fontFamily: bodyFontFamily
+      },
+      body2: {
+        ...typographyOptions?.body2,
+        fontFamily: bodyFontFamily
+      },
+      overline: {
+        ...typographyOptions?.overline,
+        fontFamily: labelFontFamily
+      },
+      caption: {
+        ...typographyOptions?.caption,
+        fontFamily: bodyFontFamily
+      },
+      button: {
+        ...typographyOptions?.button,
+        fontFamily: labelFontFamily
+      }
     }
   }
 }

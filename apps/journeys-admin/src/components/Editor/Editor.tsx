@@ -11,6 +11,7 @@ import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/Block
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 
 import { Fab } from './Fab'
+import { FontLoader } from './FontLoader/FontLoader'
 import { Hotkeys } from './Hotkeys'
 import { Slider } from './Slider'
 import { Toolbar } from './Toolbar'
@@ -52,6 +53,13 @@ export function Editor({
         }}
       >
         <HotkeysProvider>
+          <FontLoader
+            fonts={[
+              journey?.journeyTheme?.headerFont ?? '',
+              journey?.journeyTheme?.bodyFont ?? '',
+              journey?.journeyTheme?.labelFont ?? ''
+            ]}
+          />
           <Hotkeys />
           <Toolbar user={user} />
           <Slider />

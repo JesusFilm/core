@@ -2,9 +2,14 @@
 
 import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles'
-import { ReactElement, ReactNode } from 'react'
+import { ReactElement, ReactNode, useMemo } from 'react'
 
-import { ThemeMode, ThemeName, getTheme } from '../../libs/themes/index'
+import {
+  FontFamilies,
+  ThemeMode,
+  ThemeName,
+  getTheme
+} from '../../libs/themes/index'
 
 interface ThemeProviderProps {
   children: ReactNode
@@ -12,6 +17,7 @@ interface ThemeProviderProps {
   themeMode: ThemeMode
   rtl?: boolean
   locale?: string
+  fontFamilies?: FontFamilies
   /** if nested ThemeProvider then CssBaseline should not be inserted */
   nested?: boolean
 }
@@ -22,9 +28,20 @@ export const ThemeProvider = ({
   children,
   rtl = false,
   locale = '',
-  nested
+  nested,
+  fontFamilies
 }: ThemeProviderProps): ReactElement => {
-  const theme = getTheme({ themeName, themeMode, rtl, locale })
+  const theme = useMemo(
+    () =>
+      getTheme({
+        themeName,
+        themeMode,
+        rtl,
+        locale,
+        fontFamilies
+      }),
+    [themeName, themeMode, rtl, locale, fontFamilies]
+  )
 
   return (
     <MuiThemeProvider theme={theme}>

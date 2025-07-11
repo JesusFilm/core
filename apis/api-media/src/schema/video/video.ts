@@ -16,6 +16,10 @@ import { Language, LanguageWithSlug } from '../language'
 import { deleteVideo } from '../mux/video/service'
 import { VideoSource, VideoSourceShape } from '../videoSource/videoSource'
 import { VideoVariantFilter } from '../videoVariant/inputs/videoVariantFilter'
+import {
+  handleParentVariantCleanup,
+  handleParentVariantCreation
+} from '../videoVariant/videoVariant'
 
 import { Platform } from './enums/platform'
 import { VideoLabel } from './enums/videoLabel'
@@ -617,17 +621,27 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoUpdateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
+      // Get current video data to check if published status is changing
+      const currentVideo =
+        input.published !== undefined
+          ? await prisma.video.findUnique({
+              where: { id: input.id },
+              select: {
+                published: true,
+                publishedAt: true,
+                variants: {
+                  where: { published: true },
+                  select: { languageId: true }
+                }
+              }
+            })
+          : null
+
       // If published is being set to true, we need to check if publishedAt should be set
       let publishedAtUpdate = undefined
       if (input.published === true) {
-        // Check if the video already has a publishedAt value
-        const existingVideo = await prisma.video.findUnique({
-          where: { id: input.id },
-          select: { publishedAt: true }
-        })
-
         // Only set publishedAt if it's not already set
-        if (existingVideo?.publishedAt == null) {
+        if (currentVideo?.publishedAt == null) {
           publishedAtUpdate = new Date()
         }
       }
@@ -655,6 +669,32 @@ builder.mutationFields((t) => ({
           children: true
         }
       })
+
+      // Handle parent variant changes if video published status changed
+      if (currentVideo && input.published !== undefined) {
+        const wasPublished = currentVideo.published
+        const isNowPublished = input.published
+
+        if (
+          wasPublished !== isNowPublished &&
+          currentVideo.variants.length > 0
+        ) {
+          try {
+            for (const variant of currentVideo.variants) {
+              if (isNowPublished) {
+                // Video was unpublished and is now published - create parent variants for all published variants
+                await handleParentVariantCreation(input.id, variant.languageId)
+              } else {
+                // Video was published and is now unpublished - cleanup parent variants for all variants
+                await handleParentVariantCleanup(input.id, variant.languageId)
+              }
+            }
+          } catch (error) {
+            console.error('Parent variant video update error:', error)
+          }
+        }
+      }
+
       try {
         await updateVideoInAlgolia(video.id)
       } catch (error) {

@@ -1,4 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -13,6 +14,11 @@ import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoI
 import { TYPOGRAPHY_BLOCK_UPDATE_VARIANT } from './Variant'
 
 import { Variant } from '.'
+
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: jest.fn()
+}))
 
 describe('Typography variant selector', () => {
   it('should show variant properties', () => {
@@ -34,18 +40,15 @@ describe('Typography variant selector', () => {
         </EditorProvider>
       </MockedProvider>
     )
-    expect(getByRole('button', { name: 'Body 1' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Header 1' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Header 2' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Header 3' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Header 4' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Header 5' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Header 6' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Subtitle 1' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Subtitle 2' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Overline' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Caption' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Body 2' })).toHaveClass('Mui-selected')
+    expect(getByRole('button', { name: 'Small Body' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Normal Body' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Large Body' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Heading 4' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Heading 3' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Heading 2' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Heading 1' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Title' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Display' })).toBeInTheDocument()
   })
 
   it('should change the variant property', async () => {
@@ -64,7 +67,7 @@ describe('Typography variant selector', () => {
       data: {
         typographyBlockUpdate: {
           id: 'id',
-          variant: TypographyVariant.overline
+          variant: TypographyVariant.caption
         }
       }
     }))
@@ -77,7 +80,7 @@ describe('Typography variant selector', () => {
               variables: {
                 id: 'id',
                 input: {
-                  variant: TypographyVariant.overline
+                  variant: TypographyVariant.caption
                 }
               }
             },
@@ -100,10 +103,8 @@ describe('Typography variant selector', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(getByRole('button', { name: 'Header 1' })).toHaveClass(
-      'Mui-selected'
-    )
-    fireEvent.click(getByRole('button', { name: 'Overline' }))
+    expect(getByRole('button', { name: 'Display' })).toHaveClass('Mui-selected')
+    fireEvent.click(getByRole('button', { name: 'Small Body' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
@@ -123,7 +124,7 @@ describe('Typography variant selector', () => {
       data: {
         typographyBlockUpdate: {
           id: 'id',
-          variant: TypographyVariant.overline
+          variant: TypographyVariant.caption
         }
       }
     }))
@@ -144,7 +145,7 @@ describe('Typography variant selector', () => {
               variables: {
                 id: 'id',
                 input: {
-                  variant: TypographyVariant.overline
+                  variant: TypographyVariant.caption
                 }
               }
             },
@@ -180,9 +181,25 @@ describe('Typography variant selector', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(screen.getByRole('button', { name: 'Overline' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Small Body' }))
     await waitFor(() => expect(result1).toHaveBeenCalled())
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(result2).toHaveBeenCalled())
+  })
+
+  it('should open theme builder dialog', async () => {
+    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
+
+    const { getByRole } = render(
+      <MockedProvider>
+        <EditorProvider>
+          <Variant />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button', { name: 'Edit Font Theme' }))
+    await waitFor(() => {
+      expect(getByRole('dialog', { name: 'Select Fonts' })).toBeInTheDocument()
+    })
   })
 })

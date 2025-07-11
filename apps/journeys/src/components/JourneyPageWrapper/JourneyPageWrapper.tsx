@@ -31,6 +31,12 @@ export function JourneyPageWrapper({
     themeMode: journey.themeMode
   }
 
+  const fontFamilies = {
+    headerFont: journey.journeyTheme?.headerFont ?? '',
+    bodyFont: journey.journeyTheme?.bodyFont ?? '',
+    labelFont: journey.journeyTheme?.labelFont ?? ''
+  }
+
   return (
     <PlausibleProvider
       enabled
@@ -44,7 +50,12 @@ export function JourneyPageWrapper({
       }`}
     >
       <JourneyProvider value={{ journey, variant: variant ?? 'default' }}>
-        <ThemeProvider {...journeyTheme} rtl={rtl} locale={locale}>
+        <ThemeProvider
+          {...journeyTheme}
+          rtl={rtl}
+          locale={locale}
+          fontFamilies={fontFamilies}
+        >
           {children}
         </ThemeProvider>
       </JourneyProvider>
