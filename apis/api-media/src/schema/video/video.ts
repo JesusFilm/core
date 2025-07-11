@@ -494,6 +494,7 @@ builder.queryFields((t) => ({
       })
     },
     resolve: async (query, _parent, { id, idType }, context) => {
+      console.log('video', id, idType)
       try {
         const video =
           idType === IdTypeShape.slug
