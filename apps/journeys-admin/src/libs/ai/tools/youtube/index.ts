@@ -1,1 +1,0 @@
-export { youTubeTranscriptTool } from './getTranscript'
