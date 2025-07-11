@@ -159,12 +159,7 @@ export function ColorOpacityField({
               size="small"
               data-testid="bgColorTextField"
               sx={{
-                flex: 1,
-                height: '100%',
-                '& .MuiFilledInput-root': {
-                  height: '100%',
-                  borderTopRightRadius: 0
-                }
+                flex: 1
               }}
               slotProps={{
                 input: {
@@ -175,7 +170,11 @@ export function ColorOpacityField({
                     <InputAdornment position="start">
                       <Edit2Icon style={{ cursor: 'pointer' }} />
                     </InputAdornment>
-                  )
+                  ),
+                  sx: {
+                    height: '100%',
+                    borderTopRightRadius: 0
+                  }
                 }
               }}
             />
@@ -199,15 +198,7 @@ export function ColorOpacityField({
               data-testid="bgOpacityTextField"
               sx={{
                 width: 72,
-                flexShrink: 0,
-                height: '100%',
-                '& .MuiFilledInput-root': {
-                  height: '100%',
-                  borderTopLeftRadius: 0
-                },
-                '& .MuiFilledInput-input': {
-                  textAlign: 'right'
-                }
+                flexShrink: 0
               }}
               slotProps={{
                 input: {
@@ -216,7 +207,12 @@ export function ColorOpacityField({
                   },
                   endAdornment: (
                     <InputAdornment position="end">%</InputAdornment>
-                  )
+                  ),
+                  sx: {
+                    height: '100%',
+                    borderTopLeftRadius: 0,
+                    textAlign: 'right'
+                  }
                 }
               }}
             />
