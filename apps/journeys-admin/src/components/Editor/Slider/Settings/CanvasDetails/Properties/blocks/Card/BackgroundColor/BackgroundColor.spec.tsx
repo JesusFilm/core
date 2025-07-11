@@ -124,22 +124,6 @@ describe('BackgroundColor', () => {
     }
   }
 
-  const cardBlockBackdropBlurUpdateMock: MockedResponse = {
-    request: {
-      query: CARD_BLOCK_BACKDROP_BLUR_UPDATE,
-      variables: { id: 'card1.id', input: { backdropBlur: 15 } }
-    },
-    result: {
-      data: {
-        cardBlockUpdate: {
-          __typename: 'CardBlock',
-          id: 'card1.id',
-          backdropBlur: 15
-        }
-      }
-    }
-  }
-
   describe('Background Color', () => {
     it('shows the selected card color', () => {
       render(
