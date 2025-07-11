@@ -306,6 +306,7 @@ export class BlockDuplicateIdMap {
 
 export class ButtonBlockSettingsInput {
     alignment?: Nullable<ButtonAlignment>;
+    color?: Nullable<string>;
 }
 
 export class ButtonBlockCreateInput {
@@ -1313,6 +1314,7 @@ export abstract class IQuery {
 export class ButtonBlockSettings {
     __typename?: 'ButtonBlockSettings';
     alignment?: Nullable<ButtonAlignment>;
+    color?: Nullable<string>;
 }
 
 export class ButtonBlock implements Block {

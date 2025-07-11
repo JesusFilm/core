@@ -310,6 +310,7 @@ export interface ButtonBlockCreateInput {
 
 export interface ButtonBlockSettingsInput {
   alignment?: ButtonAlignment | null;
+  color?: string | null;
 }
 
 export interface ButtonBlockUpdateInput {
@@ -494,6 +495,19 @@ export interface JourneyProfileUpdateInput {
 
 export interface JourneyTemplateInput {
   template?: boolean | null;
+}
+
+export interface JourneyThemeCreateInput {
+  journeyId: string;
+  headerFont?: string | null;
+  bodyFont?: string | null;
+  labelFont?: string | null;
+}
+
+export interface JourneyThemeUpdateInput {
+  headerFont?: string | null;
+  bodyFont?: string | null;
+  labelFont?: string | null;
 }
 
 export interface JourneyUpdateInput {
