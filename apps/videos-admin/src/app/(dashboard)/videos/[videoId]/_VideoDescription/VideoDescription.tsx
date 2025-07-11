@@ -103,6 +103,7 @@ export function VideoDescription({
           enqueueSnackbar('Video description updated', {
             variant: 'success'
           })
+          resetForm({ values })
         },
         onError: () => {
           enqueueSnackbar('Failed to update video description', {

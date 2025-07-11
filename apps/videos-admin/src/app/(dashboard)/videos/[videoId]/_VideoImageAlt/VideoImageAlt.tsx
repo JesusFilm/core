@@ -102,6 +102,7 @@ export function VideoImageAlt({ videoId }: VideoImageAltProps): ReactElement {
           enqueueSnackbar('Video image alt updated', {
             variant: 'success'
           })
+          resetForm({ values })
         },
         onError: () => {
           enqueueSnackbar('Failed to update video image alt', {
