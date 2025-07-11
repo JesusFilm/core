@@ -19,17 +19,17 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
-    question: 'What did you learn from this video?',
-    answer:
-      'Process what you learned -- Have a private discussion with someone who is ready to listen.',
-    isOpen: false,
-    onToggle: noop
+    questions: [
+      {
+        value: 'What did you learn from this video?',
+        __typename: 'VideoStudyQuestion'
+      }
+    ]
   }
 }
 
 export const Open: Story = {
   args: {
-    ...Default.args,
-    isOpen: true
+    ...Default.args
   }
 }
