@@ -2030,7 +2030,7 @@ type ShortLink @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @jo
   """
   type of video redirect (hls, dl, dh, s)
   """
-  type: RedirectType @join__field(graph: API_MEDIA) 
+  redirectType: RedirectType @join__field(graph: API_MEDIA) 
 }
 
 type QrCode @join__type(graph: API_JOURNEYS)  {
@@ -4576,7 +4576,7 @@ input MutationShortLinkCreateInput @join__type(graph: API_MEDIA)  {
   """
   type of video redirect (hls, dl, dh, s)
   """
-  type: RedirectType
+  redirectType: RedirectType
 }
 
 input MutationShortLinkDomainCreateInput @join__type(graph: API_MEDIA)  {
@@ -4611,7 +4611,7 @@ input MutationShortLinkUpdateInput @join__type(graph: API_MEDIA)  {
   """
   type of video redirect (hls, dl, dh, s)
   """
-  type: RedirectType
+  redirectType: RedirectType
 }
 
 input MutationVideoOriginCreateInput @join__type(graph: API_MEDIA)  {

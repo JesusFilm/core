@@ -56,8 +56,8 @@ describe('shortLink', () => {
           id: 'testId',
           pathname: 'testPath',
           to: 'https://example.com',
-          brightcoveId: '1234567890',
-          type: 'hls',
+          brightcoveId: null,
+          redirectType: null,
           service: 'apiJourneys',
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -86,8 +86,8 @@ describe('shortLink', () => {
                 to: 'https://example.com',
                 domain: { hostname: 'example.com' },
                 service: 'apiJourneys',
-                brightcoveId: '1234567890',
-                type: 'hls'
+                brightcoveId: null,
+                redirectType: null
               }
             }
           }
@@ -154,8 +154,8 @@ describe('shortLink', () => {
           id: 'testId',
           pathname: 'testPath',
           to: 'https://example.com',
-          brightcoveId: '1234567890',
-          type: 'hls',
+          brightcoveId: null,
+          redirectType: null,
           service: 'apiJourneys',
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -185,7 +185,7 @@ describe('shortLink', () => {
                 domain: { hostname: 'example.com' },
                 service: 'apiJourneys',
                 brightcoveId: null,
-                type: null
+                redirectType: null
               }
             }
           }
@@ -250,7 +250,7 @@ describe('shortLink', () => {
           pathname: 'testPath',
           to: 'https://example.com',
           brightcoveId: null,
-          type: null,
+          redirectType: null,
           service: 'apiJourneys',
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -282,7 +282,7 @@ describe('shortLink', () => {
                     domain: { hostname: 'example.com' },
                     service: 'apiJourneys',
                     brightcoveId: null,
-                    type: null
+                    redirectType: null
                   }
                 }
               ],
@@ -305,7 +305,7 @@ describe('shortLink', () => {
           pathname: 'testPath',
           to: 'https://example.com',
           brightcoveId: null,
-          type: null,
+          redirectType: null,
           service: 'apiJourneys',
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -338,7 +338,7 @@ describe('shortLink', () => {
                     domain: { hostname: 'example.com' },
                     service: 'apiJourneys',
                     brightcoveId: null,
-                    type: null
+                    redirectType: null
                   }
                 }
               ],
@@ -422,7 +422,7 @@ describe('shortLink', () => {
           pathname: 'testPath',
           to: 'https://example.com',
           brightcoveId: null,
-          type: null,
+          redirectType: null,
           service: 'apiJourneys',
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -489,7 +489,7 @@ describe('shortLink', () => {
           pathname: 'testPath',
           to: 'https://example.com',
           brightcoveId: null,
-          type: null,
+          redirectType: null,
           service: 'apiJourneys',
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -547,7 +547,7 @@ describe('shortLink', () => {
           pathname: generatedId,
           to: 'https://example.com',
           brightcoveId: null,
-          type: null,
+          redirectType: null,
           service: 'apiJourneys',
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -817,7 +817,7 @@ describe('shortLink', () => {
           pathname: 'testPath',
           to: 'https://example.com',
           brightcoveId: null,
-          type: null,
+          redirectType: null,
           service: 'apiJourneys',
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -852,7 +852,7 @@ describe('shortLink', () => {
                 domain: { hostname: 'example.com' },
                 service: 'apiJourneys',
                 brightcoveId: null,
-                type: null
+                redirectType: null
               }
             }
           }
@@ -993,7 +993,7 @@ describe('shortLink', () => {
           pathname: 'testPath',
           to: 'https://example.com',
           brightcoveId: null,
-          type: null,
+          redirectType: null,
           service: 'apiJourneys',
           createdAt: new Date(),
           updatedAt: new Date(),

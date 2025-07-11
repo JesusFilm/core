@@ -34,7 +34,7 @@ const ShortLink = builder.prismaObject('ShortLink', {
       nullable: true,
       description: 'brightcove video ID for video redirects'
     }),
-    type: t.expose('type', {
+    redirectType: t.expose('type', {
       type: RedirectType,
       nullable: true,
       description: 'type of video redirect (hls, dl, dh, s)'
@@ -207,7 +207,7 @@ builder.mutationFields((t) => ({
           required: false,
           description: 'brightcove video ID for video redirects'
         }),
-        type: t.input.field({
+        redirectType: t.input.field({
           type: RedirectType,
           required: false,
           description: 'type of video redirect (hls, dl, dh, s)'
@@ -244,7 +244,7 @@ builder.mutationFields((t) => ({
             hostname,
             service,
             brightcoveId,
-            type
+            redirectType
           }
         },
         context
@@ -263,7 +263,7 @@ builder.mutationFields((t) => ({
               userId:
                 context.type === 'authenticated' ? context.user.id : undefined,
               brightcoveId,
-              type
+              type: redirectType
             }
           })
         } catch (e) {
@@ -321,18 +321,22 @@ builder.mutationFields((t) => ({
           required: false,
           description: 'brightcove video ID for video redirects'
         }),
-        type: t.input.field({
+        redirectType: t.input.field({
           type: RedirectType,
           required: false,
           description: 'type of video redirect (hls, dl, dh, s)'
         })
       },
-      resolve: async (query, _, { input: { id, to, brightcoveId, type } }) => {
+      resolve: async (
+        query,
+        _,
+        { input: { id, to, brightcoveId, redirectType } }
+      ) => {
         try {
           return await prisma.shortLink.update({
             ...query,
             where: { id },
-            data: { to, brightcoveId, type }
+            data: { to, brightcoveId, type: redirectType }
           })
         } catch (e) {
           if (

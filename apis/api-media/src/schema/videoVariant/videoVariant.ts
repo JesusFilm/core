@@ -69,7 +69,7 @@ builder.prismaObject('VideoVariant', {
       resolve: ({ languageId: id }) => ({ id })
     }),
     muxVideo: t.relation('muxVideo', { nullable: true }),
-    brightcoveId: t.exposeString('brightcoveId'),
+    brightcoveId: t.exposeString('brightcoveId', { nullable: true }),
     published: t.exposeBoolean('published', { nullable: false }),
     videoEdition: t.relation('videoEdition', { nullable: false }),
     subtitle: t.prismaField({

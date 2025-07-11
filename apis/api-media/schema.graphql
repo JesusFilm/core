@@ -293,7 +293,7 @@ input MutationShortLinkCreateInput {
   brightcoveId: String
 
   """type of video redirect (hls, dl, dh, s)"""
-  type: RedirectType
+  redirectType: RedirectType
 }
 
 union MutationShortLinkCreateResult = ZodError | NotUniqueError | MutationShortLinkCreateSuccess
@@ -357,7 +357,7 @@ input MutationShortLinkUpdateInput {
   brightcoveId: String
 
   """type of video redirect (hls, dl, dh, s)"""
-  type: RedirectType
+  redirectType: RedirectType
 }
 
 union MutationShortLinkUpdateResult = ZodError | NotFoundError | MutationShortLinkUpdateSuccess
@@ -595,7 +595,7 @@ type ShortLink
   brightcoveId: String
 
   """type of video redirect (hls, dl, dh, s)"""
-  type: RedirectType
+  redirectType: RedirectType
 }
 
 """A domain that can be used for short links"""
