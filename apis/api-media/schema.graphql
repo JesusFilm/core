@@ -904,6 +904,13 @@ type VideoOrigin {
   description: String
 }
 
+enum VideoRedirectType {
+  hls
+  dl
+  dh
+  s
+}
+
 type VideoSnippet {
   id: ID!
   value: String!

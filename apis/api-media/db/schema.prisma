@@ -488,7 +488,7 @@ model ShortLink {
   /// brightcove video ID for video redirects
   brightcoveId String?
   /// type of video redirect (hls, dl, dh, s)
-  type         VideoRedirectType?
+  redirectType VideoRedirectType?
   createdAt    DateTime           @default(now())
   updatedAt    DateTime           @updatedAt
   domain       ShortLinkDomain    @relation(fields: [domainId], references: [id], onDelete: Restrict)

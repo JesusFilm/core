@@ -3333,6 +3333,13 @@ enum VideoLabel @join__type(graph: API_MEDIA)  {
   behindTheScenes @join__enumValue(graph: API_MEDIA) 
 }
 
+enum VideoRedirectType @join__type(graph: API_MEDIA)  {
+  hls @join__enumValue(graph: API_MEDIA) 
+  dl @join__enumValue(graph: API_MEDIA) 
+  dh @join__enumValue(graph: API_MEDIA) 
+  s @join__enumValue(graph: API_MEDIA) 
+}
+
 enum VideoVariantDownloadQuality @join__type(graph: API_MEDIA)  {
   distroLow @join__enumValue(graph: API_MEDIA) 
   distroSd @join__enumValue(graph: API_MEDIA) 

@@ -34,7 +34,7 @@ const ShortLink = builder.prismaObject('ShortLink', {
       nullable: true,
       description: 'brightcove video ID for video redirects'
     }),
-    redirectType: t.expose('type', {
+    redirectType: t.expose('redirectType', {
       type: RedirectType,
       nullable: true,
       description: 'type of video redirect (hls, dl, dh, s)'
@@ -263,7 +263,7 @@ builder.mutationFields((t) => ({
               userId:
                 context.type === 'authenticated' ? context.user.id : undefined,
               brightcoveId,
-              type: redirectType
+              redirectType
             }
           })
         } catch (e) {
@@ -336,7 +336,7 @@ builder.mutationFields((t) => ({
           return await prisma.shortLink.update({
             ...query,
             where: { id },
-            data: { to, brightcoveId, type: redirectType }
+            data: { to, brightcoveId, redirectType }
           })
         } catch (e) {
           if (
