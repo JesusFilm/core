@@ -66,7 +66,8 @@ export async function POST(req: NextRequest) {
 
   const systemPrompt = await langfuse.getPrompt(
     //'ai-chat-system-prompt',
-    'system/api/chat/route',
+    //'system/api/chat/route',
+    'ai-chat-youtube',
     undefined,
     {
       label: langfuseEnvironment,

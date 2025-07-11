@@ -19,19 +19,24 @@ export function youtubeAnalyzerTool2(
       url: z.string().describe('The full URL of the YouTube video to analyze.')
     }),
     execute: async ({ url }) => {
-      return googleClient.models.generateContent({
-        model: 'gemini-2.0-flash',
-        contents: [
-          {
-            text: 'get the transcript of the video'
-          },
-          {
-            fileData: {
-              fileUri: url
+      try {
+        return await googleClient.models.generateContent({
+          model: 'gemini-2.0-flash',
+          contents: [
+            {
+              text: 'get the transcript of the video'
+            },
+            {
+              fileData: {
+                fileUri: url
+              }
             }
-          }
-        ]
-      })
+          ]
+        })
+      } catch (error) {
+        // Optionally log the error here
+        return { error: 'Failed to analyze YouTube video.' }
+      }
     }
   })
 }
