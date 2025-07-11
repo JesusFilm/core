@@ -81,7 +81,6 @@ export async function importMuxVideos(mux: Mux): Promise<void> {
   while (hasMore) {
     const variants = await prisma.videoVariant.findMany({
       where: {
-        id: '2_5439-0-Breathe',
         muxVideoId: null,
         masterHeight: { not: null },
         masterUrl: { not: null },
