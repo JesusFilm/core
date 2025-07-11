@@ -34,7 +34,8 @@ describe('Button attributes', () => {
     action: null,
     settings: {
       __typename: 'ButtonBlockSettings',
-      alignment: ButtonAlignment.justify
+      alignment: ButtonAlignment.justify,
+      color: null
     },
     children: []
   }

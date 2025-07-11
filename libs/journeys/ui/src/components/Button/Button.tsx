@@ -327,7 +327,7 @@ export function Button({
                         return `${buttonColor ?? 'transparent'}`
                       case ButtonVariant.contained:
                       default:
-                        return `${buttonColor ?? 'primary'}.main`
+                        return effectiveColor
                     }
                   })()
                 }
