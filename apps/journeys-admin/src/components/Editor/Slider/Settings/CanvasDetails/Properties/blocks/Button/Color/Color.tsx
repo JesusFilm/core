@@ -10,7 +10,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
-import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
+import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import {
@@ -21,6 +21,8 @@ import { ButtonColor } from '../../../../../../../../../../__generated__/globalT
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
 import { DebouncedHexColorPicker } from '../../Card/BackgroundColor/DebouncedHexColorPicker'
 import { Swatch } from '../../Card/BackgroundColor/Swatch'
+
+import { convertEnumToHex } from './utils'
 
 export const BUTTON_BLOCK_UPDATE = gql`
   mutation ButtonBlockUpdateColor($id: ID!, $input: ButtonBlockUpdateInput!) {
@@ -57,25 +59,11 @@ export function Color(): ReactElement {
     if (selectedBlock?.settings?.color) {
       return selectedBlock.settings.color
     }
-    return convertEnumToHex(selectedBlock?.buttonColor ?? ButtonColor.primary)
-  }
-
-  function convertEnumToHex(enumColor: ButtonColor): string {
-    const theme = getTheme({
-      themeName: selectedCard?.themeName ?? ThemeName.base,
-      themeMode: selectedCard?.themeMode ?? ThemeMode.light
-    })
-
-    switch (enumColor) {
-      case ButtonColor.primary:
-        return theme.palette.primary.main
-      case ButtonColor.secondary:
-        return theme.palette.secondary.main
-      case ButtonColor.error:
-        return theme.palette.error.main
-      default:
-        return theme.palette.primary.main
-    }
+    return convertEnumToHex(
+      selectedCard?.themeName ?? ThemeName.base,
+      selectedCard?.themeMode ?? ThemeMode.light,
+      selectedBlock?.buttonColor ?? ButtonColor.primary
+    )
   }
 
   function handleChange(color: string): void {
