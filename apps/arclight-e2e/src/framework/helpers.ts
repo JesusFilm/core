@@ -15,7 +15,11 @@ export function createQueryParams(
   params: Record<string, string | string[] | undefined>
 ): URLSearchParams {
   const queryParams = new URLSearchParams()
-  queryParams.append('apiKey', testData.apiKey)
+
+  // Only add default API key if no apiKey is provided in params
+  if (!params.apiKey) {
+    queryParams.append('apiKey', testData.apiKey)
+  }
 
   Object.entries(params).forEach(([key, value]) => {
     if (value != null) {

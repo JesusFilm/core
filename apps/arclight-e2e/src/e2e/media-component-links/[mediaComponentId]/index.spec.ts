@@ -197,4 +197,70 @@ test.describe('single media component link', () => {
     expect(data.linkedMediaComponentIds.containedBy).toBeUndefined()
     expect(data.linkedMediaComponentIds.contains.length).toBeGreaterThan(0)
   })
+
+  test('apiKey parameter affects download sizes', async ({ request }) => {
+    const specialApiKey = '607f41540b2ca6.32427244'
+    const regularApiKey = 'regular_test_key'
+
+    // Get with regular API key
+    const regularResponse = await getMediaComponentLink(request, {
+      ...testCases.withExpandedComponents,
+      params: {
+        ...testCases.withExpandedComponents.params,
+        apiKey: regularApiKey
+      }
+    })
+    expect(regularResponse.ok()).toBeTruthy()
+    const regularData = await regularResponse.json()
+
+    // Get with special API key
+    const specialResponse = await getMediaComponentLink(request, {
+      ...testCases.withExpandedComponents,
+      params: {
+        ...testCases.withExpandedComponents.params,
+        apiKey: specialApiKey
+      }
+    })
+    expect(specialResponse.ok()).toBeTruthy()
+    const specialData = await specialResponse.json()
+
+    // Both should have the same structure
+    expect(regularData).toMatchObject({
+      mediaComponentId: expect.any(String),
+      linkedMediaComponentIds: expect.any(Object),
+      _links: expect.any(Object)
+    })
+    expect(specialData).toMatchObject({
+      mediaComponentId: expect.any(String),
+      linkedMediaComponentIds: expect.any(Object),
+      _links: expect.any(Object)
+    })
+
+    // Verify expanded components structure (should exist due to expand parameter)
+    expect(regularData._embedded?.contains).toBeDefined()
+    expect(specialData._embedded?.contains).toBeDefined()
+    expect(Array.isArray(regularData._embedded?.contains)).toBeTruthy()
+    expect(Array.isArray(specialData._embedded?.contains)).toBeTruthy()
+
+    // Verify component structure in embedded data
+    regularData._embedded.contains.forEach((component: any) => {
+      expect(component).toMatchObject({
+        mediaComponentId: expect.any(String),
+        downloadSizes: expect.objectContaining({
+          approximateSmallDownloadSizeInBytes: expect.any(Number),
+          approximateLargeDownloadSizeInBytes: expect.any(Number)
+        })
+      })
+    })
+
+    specialData._embedded.contains.forEach((component: any) => {
+      expect(component).toMatchObject({
+        mediaComponentId: expect.any(String),
+        downloadSizes: expect.objectContaining({
+          approximateSmallDownloadSizeInBytes: expect.any(Number),
+          approximateLargeDownloadSizeInBytes: expect.any(Number)
+        })
+      })
+    })
+  })
 })
