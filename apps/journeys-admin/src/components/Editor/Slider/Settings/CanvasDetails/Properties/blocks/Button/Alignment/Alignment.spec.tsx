@@ -34,7 +34,8 @@ describe('Button alignment selector', () => {
     action: null,
     settings: {
       __typename: 'ButtonBlockSettings',
-      alignment: ButtonAlignment.justify
+      alignment: ButtonAlignment.justify,
+      color: null
     },
     children: []
   }
@@ -158,7 +159,8 @@ describe('Button alignment selector', () => {
       ...selectedBlock,
       settings: {
         __typename: 'ButtonBlockSettings' as const,
-        alignment: ButtonAlignment.left
+        alignment: ButtonAlignment.left,
+        color: null
       }
     }
 
@@ -180,7 +182,8 @@ describe('Button alignment selector', () => {
       ...selectedBlock,
       settings: {
         __typename: 'ButtonBlockSettings' as const,
-        alignment: null
+        alignment: null,
+        color: null
       }
     }
 

@@ -4,13 +4,16 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
-import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
+import {
+  BlockFields_ButtonBlock as ButtonBlock,
+  BlockFields_CardBlock as CardBlock,
+  BlockFields_StepBlock as StepBlock
+} from '../../../../../../../../../../__generated__/BlockFields'
 import {
   ButtonColor,
   ThemeMode,
   ThemeName
 } from '../../../../../../../../../../__generated__/globalTypes'
-import { ThemeProvider } from '../../../../../../../../ThemeProvider'
 import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 
@@ -38,22 +41,50 @@ describe('Button color selector', () => {
     submitEnabled: null,
     action: null,
     children: [],
-    settings: null
+    settings: {
+      alignment: null,
+      color: null,
+      __typename: 'ButtonBlockSettings'
+    }
   }
+
+  const selectedStep: TreeBlock<StepBlock> = {
+    __typename: 'StepBlock',
+    id: 'id',
+    parentBlockId: 'parentBlockId',
+    parentOrder: 0,
+    children: [
+      {
+        __typename: 'CardBlock',
+        id: 'id',
+        parentBlockId: 'parentBlockId',
+        parentOrder: 0,
+        children: [],
+        themeMode: ThemeMode.dark,
+        themeName: ThemeName.base
+      } as unknown as TreeBlock<CardBlock>
+    ]
+  } as unknown as TreeBlock<StepBlock>
 
   const colorUpdateMock = {
     request: {
       query: BUTTON_BLOCK_UPDATE,
       variables: {
         id: 'id',
-        color: ButtonColor.secondary
+        input: {
+          settings: {
+            color: '#B0BEC5'
+          }
+        }
       }
     },
     result: jest.fn(() => ({
       data: {
         buttonBlockUpdate: {
           id: 'id',
-          color: ButtonColor.secondary
+          settings: {
+            color: '#B0BEC5'
+          }
         }
       }
     }))
@@ -64,14 +95,20 @@ describe('Button color selector', () => {
       query: BUTTON_BLOCK_UPDATE,
       variables: {
         id: 'id',
-        color: ButtonColor.primary
+        input: {
+          settings: {
+            color: '#26262E'
+          }
+        }
       }
     },
     result: jest.fn(() => ({
       data: {
         buttonBlockUpdate: {
           id: 'id',
-          color: ButtonColor.primary
+          settings: {
+            color: '#26262E'
+          }
         }
       }
     }))
@@ -79,14 +116,44 @@ describe('Button color selector', () => {
 
   beforeEach(() => jest.clearAllMocks())
 
-  it('should show button color properties', () => {
+  it('should show button color properties when card is dark mode and settings color is null', () => {
     render(
-      <MockedProvider>
-        <ThemeProvider>
-          <EditorProvider initialState={{ selectedBlock }}>
-            <Color />
-          </EditorProvider>
-        </ThemeProvider>
+      <MockedProvider mocks={[colorUpdateMock]}>
+        <EditorProvider initialState={{ selectedBlock, selectedStep }}>
+          <Color />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    expect(screen.getByTestId('bgColorPicker')).toBeInTheDocument()
+    expect(screen.getByTestId('Swatch-bg-color-#FEFEFE')).toHaveStyle({
+      backgroundColor: '#FEFEFE'
+    })
+    expect(screen.getByTestId('JourneysAdminTextFieldForm')).toBeInTheDocument()
+  })
+
+  it('should show button color properties when card is light mode and settings color is null', () => {
+    const lightModeStep = {
+      ...selectedStep,
+      children: [
+        {
+          __typename: 'CardBlock',
+          id: 'id',
+          parentBlockId: 'parentBlockId',
+          parentOrder: 0,
+          children: [],
+          themeMode: ThemeMode.light,
+          themeName: ThemeName.base
+        } as unknown as TreeBlock<CardBlock>
+      ]
+    }
+
+    render(
+      <MockedProvider mocks={[colorUpdateMock]}>
+        <EditorProvider
+          initialState={{ selectedBlock, selectedStep: lightModeStep }}
+        >
+          <Color />
+        </EditorProvider>
       </MockedProvider>
     )
     expect(screen.getByTestId('bgColorPicker')).toBeInTheDocument()
@@ -96,7 +163,7 @@ describe('Button color selector', () => {
     expect(screen.getByTestId('JourneysAdminTextFieldForm')).toBeInTheDocument()
   })
 
-  it('should change the color property', async () => {
+  it('should change the color property via text field', async () => {
     render(
       <MockedProvider mocks={[colorUpdateMock]}>
         <EditorProvider initialState={{ selectedBlock }}>
@@ -104,8 +171,25 @@ describe('Button color selector', () => {
         </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.click(screen.getAllByTestId('Swatch-#B0BEC5')[0])
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: '#B0BEC5' }
+    })
     await waitFor(() => expect(colorUpdateMock.result).toHaveBeenCalled())
+  })
+
+  it('should not call mutation if invalid hex color is entered', async () => {
+    render(
+      <MockedProvider mocks={[colorUpdateMock]}>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <Color />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: '#INVALIDHEX' }
+    })
+    await waitFor(() => expect(colorUpdateMock.result).not.toHaveBeenCalled())
   })
 
   it('should undo the color change', async () => {
@@ -117,7 +201,10 @@ describe('Button color selector', () => {
         </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.click(screen.getByRole('button', { name: 'Secondary' }))
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: '#B0BEC5' }
+    })
     await waitFor(() => expect(colorUpdateMock.result).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
@@ -139,7 +226,9 @@ describe('Button color selector', () => {
         </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.click(screen.getByRole('button', { name: 'Secondary' }))
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: '#B0BEC5' }
+    })
     await waitFor(() => expect(mockFirstUpdate.result).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
@@ -147,17 +236,5 @@ describe('Button color selector', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(mockFirstUpdate.result).toHaveBeenCalled())
-  })
-
-  it('should not call mutation if no selected block', async () => {
-    render(
-      <MockedProvider mocks={[colorUpdateMock]}>
-        <EditorProvider initialState={{}}>
-          <Color />
-        </EditorProvider>
-      </MockedProvider>
-    )
-    fireEvent.click(screen.getByRole('button', { name: 'Secondary' }))
-    await waitFor(() => expect(colorUpdateMock.result).not.toHaveBeenCalled())
   })
 })
