@@ -17,6 +17,30 @@ import { VideoVariantCreateInput } from './inputs/videoVariantCreate'
 import { VideoVariantFilter } from './inputs/videoVariantFilter'
 import { VideoVariantUpdateInput } from './inputs/videoVariantUpdate'
 
+// Helper function to validate and extract language slug from a variant slug
+function extractLanguageSlugFromVariantSlug(
+  variantSlug: string
+): string | null {
+  if (!variantSlug || typeof variantSlug !== 'string') {
+    return null
+  }
+
+  const lastSlashIndex = variantSlug.lastIndexOf('/')
+  if (lastSlashIndex === -1 || lastSlashIndex === variantSlug.length - 1) {
+    // No slash found or slash is the last character
+    return null
+  }
+
+  const extractedSlug = variantSlug.substring(lastSlashIndex + 1)
+
+  // Validate that the extracted slug is not empty and contains valid slug characters
+  if (!extractedSlug || !/^[a-z0-9-_]+$/i.test(extractedSlug)) {
+    return null
+  }
+
+  return extractedSlug
+}
+
 // Helper function to create empty video variant for parent video
 async function createEmptyParentVariant(
   parentVideoId: string,
@@ -53,41 +77,57 @@ async function createEmptyParentVariant(
     throw new Error(`Parent video with id ${parentVideoId} not found`)
   }
 
-  // Use provided languageSlug or extract from existing variant
-  let resolvedLanguageSlug = languageSlug || languageId // fallback to languageId
-  if (!languageSlug && existingVariantWithLanguage?.slug) {
-    // Extract language slug from existing variant slug
-    resolvedLanguageSlug = existingVariantWithLanguage.slug.substring(
-      existingVariantWithLanguage.slug.lastIndexOf('/') + 1
+  // Use provided languageSlug or extract from existing variant with validation
+  let resolvedLanguageSlug: string
+  if (languageSlug) {
+    resolvedLanguageSlug = languageSlug
+  } else if (existingVariantWithLanguage?.slug) {
+    // Safely extract language slug from existing variant slug
+    const extractedSlug = extractLanguageSlugFromVariantSlug(
+      existingVariantWithLanguage.slug
+    )
+    if (!extractedSlug) {
+      throw new Error(
+        `Invalid slug format in existing variant: ${existingVariantWithLanguage.slug}. Cannot extract language slug.`
+      )
+    }
+    resolvedLanguageSlug = extractedSlug
+  } else {
+    throw new Error(
+      `Cannot determine language slug for languageId: ${languageId}. No existing variant found and no languageSlug provided.`
     )
   }
 
-  // Create empty variant for parent video
-  const newVariant = await prisma.videoVariant.create({
-    data: {
-      id: `${languageId}_${parentVideoId}`,
-      videoId: parentVideoId,
-      edition: 'base',
-      languageId: languageId,
-      slug: `${parentVideo.slug}/${resolvedLanguageSlug}`,
-      hls: '',
-      dash: '',
-      share: '',
-      downloadable: false,
-      published: true,
-      duration: 0,
-      lengthInMilliseconds: 0
-    }
-  })
-
-  // Update parent video's available languages (use data from previous query)
+  // Create empty variant for parent video and update available languages in a single transaction
   const currentLanguages = parentVideo.availableLanguages || []
   const updatedLanguages = Array.from(
     new Set([...currentLanguages, languageId])
   )
-  await prisma.video.update({
-    where: { id: parentVideoId },
-    data: { availableLanguages: updatedLanguages }
+
+  const newVariant = await prisma.$transaction(async (tx) => {
+    const variant = await tx.videoVariant.create({
+      data: {
+        id: `${languageId}_${parentVideoId}`,
+        videoId: parentVideoId,
+        edition: 'base',
+        languageId: languageId,
+        slug: `${parentVideo.slug}/${resolvedLanguageSlug}`,
+        hls: '',
+        dash: '',
+        share: '',
+        downloadable: false,
+        published: true,
+        duration: 0,
+        lengthInMilliseconds: 0
+      }
+    })
+
+    await tx.video.update({
+      where: { id: parentVideoId },
+      data: { availableLanguages: updatedLanguages }
+    })
+
+    return variant
   })
 
   return newVariant
@@ -142,10 +182,21 @@ export async function handleParentVariantCreation(
     select: { slug: true }
   })
 
-  let languageSlug = languageId // fallback to languageId
+  // Safely extract language slug from existing variant with validation
+  let languageSlug: string
   if (existingVariantWithLanguage?.slug) {
-    languageSlug = existingVariantWithLanguage.slug.substring(
-      existingVariantWithLanguage.slug.lastIndexOf('/') + 1
+    const extractedSlug = extractLanguageSlugFromVariantSlug(
+      existingVariantWithLanguage.slug
+    )
+    if (!extractedSlug) {
+      throw new Error(
+        `Invalid slug format in existing variant: ${existingVariantWithLanguage.slug}. Cannot extract language slug.`
+      )
+    }
+    languageSlug = extractedSlug
+  } else {
+    throw new Error(
+      `Cannot determine language slug for languageId: ${languageId}. No existing variant found.`
     )
   }
 
@@ -244,20 +295,21 @@ async function checkAndRemoveEmptyParentVariant(
 
   // If no published child variants exist in this language and we have an empty parent variant, remove it
   if (publishedChildVariantsCount === 0 && parentVariant) {
-    // Delete the empty parent variant and update available languages in parallel
+    // Delete the empty parent variant and update available languages in a single transaction
     const updatedLanguages = parentVideo.availableLanguages.filter(
       (lang) => lang !== languageId
     )
 
-    await Promise.all([
-      prisma.videoVariant.delete({
+    await prisma.$transaction(async (tx) => {
+      await tx.videoVariant.delete({
         where: { id: parentVariant.id }
-      }),
-      prisma.video.update({
+      })
+
+      await tx.video.update({
         where: { id: parentVideoId },
         data: { availableLanguages: updatedLanguages }
       })
-    ])
+    })
   }
 }
 
