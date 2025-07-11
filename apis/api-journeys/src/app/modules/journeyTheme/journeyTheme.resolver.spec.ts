@@ -47,9 +47,10 @@ describe('JourneyThemeResolver', () => {
     creatorImageBlockId: null,
     primaryImageBlockId: null,
     teamId: 'teamId',
-    publishedAt: new Date('2023-01-01T00:00:00Z'),
-    createdAt: new Date('2023-01-01T00:00:00Z'),
-    updatedAt: new Date('2023-01-01T00:00:00Z'),
+    plausibleToken: null,
+    publishedAt: new Date('2021-11-19T12:34:56.647Z'),
+    createdAt: new Date('2021-11-19T12:34:56.647Z'),
+    updatedAt: new Date('2021-11-19T12:34:56.647Z'),
     archivedAt: null,
     trashedAt: null,
     featuredAt: null,
@@ -59,7 +60,6 @@ describe('JourneyThemeResolver', () => {
     template: false,
     hostId: null,
     strategySlug: null,
-    plausibleToken: null,
     website: null,
     showShareButton: null,
     showLikeButton: null,
@@ -76,7 +76,8 @@ describe('JourneyThemeResolver', () => {
     menuStepBlockId: null,
     socialNodeX: null,
     socialNodeY: null,
-    fromTemplateId: null
+    fromTemplateId: null,
+    context: null
   }
 
   const journeyWithUserTeam = {

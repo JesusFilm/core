@@ -540,9 +540,11 @@ export function JourneyFlow(): ReactElement {
         {activeSlide === ActiveSlide.JourneyFlow && (
           <>
             <Panel position="top-right">
-              {showAnalytics !== true && (
-                <NewStepButton disabled={steps == null || loading} />
-              )}
+              <Box sx={{ display: 'flex', gap: 3 }}>
+                {showAnalytics !== true && (
+                  <NewStepButton disabled={steps == null || loading} />
+                )}
+              </Box>
             </Panel>
             {editorAnalytics && (
               <Panel position="top-left">

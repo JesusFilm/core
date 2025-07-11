@@ -1,11 +1,20 @@
 import { MockedProvider, type MockedResponse } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { render, screen, waitFor } from '@testing-library/react'
+import { InfiniteHitsRenderState } from 'instantsearch.js/es/connectors/infinite-hits/connectInfiniteHits'
+import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import { useRouter } from 'next/compat/router'
 import { NextRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+import {
+  InstantSearchApi,
+  useInfiniteHits,
+  useInstantSearch,
+  useSearchBox
+} from 'react-instantsearch'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import type { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import type { GetStepBlocksWithPosition } from '../../../__generated__/GetStepBlocksWithPosition'
@@ -18,6 +27,7 @@ import { mockReactFlow } from '../../../test/mockReactFlow'
 import { ThemeProvider } from '../ThemeProvider'
 
 import { GET_STEP_BLOCKS_WITH_POSITION } from './Slider/JourneyFlow/JourneyFlow'
+import { videoItems } from './Slider/Settings/Drawer/VideoLibrary/data'
 
 import { Editor } from '.'
 
@@ -30,6 +40,50 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: jest.fn()
 }))
+
+jest.mock('next-firebase-auth', () => ({
+  useUser: jest.fn().mockReturnValue({
+    user: {
+      id: '1',
+      email: 'test@test.com',
+      name: 'Test User'
+    }
+  })
+}))
+
+jest.mock('react-instantsearch')
+
+jest.mock('../AiChat', () => ({
+  AiChat: jest.fn()
+}))
+
+const mockUseSearchBox = useSearchBox as jest.MockedFunction<
+  typeof useSearchBox
+>
+const mockUseInstantSearch = useInstantSearch as jest.MockedFunction<
+  typeof useInstantSearch
+>
+const mockUseInfiniteHits = useInfiniteHits as jest.MockedFunction<
+  typeof useInfiniteHits
+>
+
+const searchBox = {
+  refine: jest.fn()
+} as unknown as SearchBoxRenderState
+
+const infiniteHits = {
+  items: videoItems,
+  showMore: jest.fn(),
+  isLastPage: false
+} as unknown as InfiniteHitsRenderState
+
+const instantSearch = {
+  status: 'idle',
+  results: {
+    __isArtificial: false,
+    nbHits: videoItems.length
+  }
+} as unknown as InstantSearchApi
 
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
@@ -104,6 +158,10 @@ describe('Editor', () => {
   beforeEach(() => {
     mockReactFlow()
 
+    mockUseSearchBox.mockReturnValue(searchBox)
+    mockUseInstantSearch.mockReturnValue(instantSearch)
+    mockUseInfiniteHits.mockReturnValue(infiniteHits)
+
     mockedUseRouter.mockReturnValue({
       query: { journeyId: journey.id }
     } as unknown as NextRouter)
@@ -149,6 +207,22 @@ describe('Editor', () => {
     )
 
     expect(screen.getByTestId('Fab')).toBeInTheDocument()
+  })
+
+  it('should render the AiEditButton', () => {
+    render(
+      <FlagsProvider flags={{ aiEditButton: true }}>
+        <MockedProvider>
+          <SnackbarProvider>
+            <ThemeProvider>
+              <Editor journey={journey} />
+            </ThemeProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      </FlagsProvider>
+    )
+
+    expect(screen.getByTestId('AiEditButton')).toBeInTheDocument()
   })
 
   it('should set the selected step', async () => {

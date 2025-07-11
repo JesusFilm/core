@@ -753,6 +753,7 @@ export class JourneyUpdateInput {
     themeMode?: Nullable<ThemeMode>;
     themeName?: Nullable<ThemeName>;
     description?: Nullable<string>;
+    context?: Nullable<string>;
     creatorDescription?: Nullable<string>;
     creatorImageBlockId?: Nullable<string>;
     primaryImageBlockId?: Nullable<string>;
@@ -1199,6 +1200,7 @@ export class Journey {
     themeMode: ThemeMode;
     themeName: ThemeName;
     description?: Nullable<string>;
+    context?: Nullable<string>;
     creatorDescription?: Nullable<string>;
     slug: string;
     archivedAt?: Nullable<DateTime>;
