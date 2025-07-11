@@ -20,19 +20,19 @@ export function youtubeAnalyzerTool2(
     }),
     execute: async ({ url }) => {
       try {
-        return await googleClient.models.generateContent({
-          model: 'gemini-2.0-flash',
-          contents: [
-            {
-              text: 'get the transcript of the video'
-            },
-            {
-              fileData: {
-                fileUri: url
-              }
-            }
-          ]
-        })
+        // return await googleClient.models.generateContent({
+        //   model: 'gemini-2.0-flash',
+        //   contents: [
+        //     {
+        //       text: 'get the transcript of the video'
+        //     },
+        //     {
+        //       fileData: {
+        //         fileUri: url
+        //       }
+        //     }
+        //   ]
+        // })
       } catch (error) {
         // Optionally log the error here
         return { error: 'Failed to analyze YouTube video.' }
