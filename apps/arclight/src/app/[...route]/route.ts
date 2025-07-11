@@ -56,14 +56,20 @@ const getVideoVariant = async (
       }
     })
 
+    // Check if video or variant doesn't exist
     if (!data.video?.variant) {
       throw new HTTPException(404, { message: 'Video variant not found' })
     }
 
     return data.video.variant
   } catch (error) {
+    // Re-throw HTTPExceptions to preserve status codes
+    if (error instanceof HTTPException) {
+      throw error
+    }
+    // For any other error (including GraphQL errors for non-existent videos), return 404
     console.error('Error fetching video variant:', error)
-    throw new HTTPException(500, { message: 'Failed to fetch video data' })
+    throw new HTTPException(404, { message: 'Video variant not found' })
   }
 }
 

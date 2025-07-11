@@ -141,7 +141,8 @@ const ParamsSchema = z.object({
 const QuerySchema = z.object({
   expand: z.string().optional(),
   rel: z.string().optional(),
-  languageIds: z.string().optional()
+  languageIds: z.string().optional(),
+  apiKey: z.string().optional().describe('API key for authentication')
 })
 
 const ResponseSchema = z.object({
