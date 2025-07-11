@@ -1,10 +1,10 @@
-import { JourneySimple } from '@core/shared/ai/journeySimpleTypes'
+import { JourneySimpleUpdate } from '@core/shared/ai/journeySimpleTypes'
 
 import { prisma } from '../../../lib/prisma'
 
 export async function updateSimpleJourney(
   journeyId: string,
-  simple: JourneySimple
+  simple: JourneySimpleUpdate
 ) {
   return prisma.$transaction(async (tx) => {
     // Mark all non-deleted blocks for this journey as deleted
