@@ -59,6 +59,10 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_setti
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock {

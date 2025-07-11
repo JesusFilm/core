@@ -45,6 +45,10 @@ export interface CardQuoteRestore_image_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardQuoteRestore_image_ButtonBlock {
@@ -483,6 +487,10 @@ export interface CardQuoteRestore_subtitle_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardQuoteRestore_subtitle_ButtonBlock {
@@ -921,6 +929,10 @@ export interface CardQuoteRestore_title_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardQuoteRestore_title_ButtonBlock {
@@ -1359,6 +1371,10 @@ export interface CardQuoteRestore_body_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardQuoteRestore_body_ButtonBlock {

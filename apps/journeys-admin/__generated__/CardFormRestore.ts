@@ -45,6 +45,10 @@ export interface CardFormRestore_image_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardFormRestore_image_ButtonBlock {
@@ -483,6 +487,10 @@ export interface CardFormRestore_subtitle_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardFormRestore_subtitle_ButtonBlock {
@@ -921,6 +929,10 @@ export interface CardFormRestore_title_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardFormRestore_title_ButtonBlock {
@@ -1359,6 +1371,10 @@ export interface CardFormRestore_textResponse_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardFormRestore_textResponse_ButtonBlock {
@@ -1797,6 +1813,10 @@ export interface CardFormRestore_button_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardFormRestore_button_ButtonBlock {
@@ -2235,6 +2255,10 @@ export interface CardFormRestore_startIcon_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardFormRestore_startIcon_ButtonBlock {
@@ -2673,6 +2697,10 @@ export interface CardFormRestore_endIcon_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardFormRestore_endIcon_ButtonBlock {
@@ -3111,6 +3139,10 @@ export interface CardFormRestore_body_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardFormRestore_body_ButtonBlock {

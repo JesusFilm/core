@@ -45,6 +45,10 @@ export interface CardCtaRestore_imageRestore_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardCtaRestore_imageRestore_ButtonBlock {
@@ -483,6 +487,10 @@ export interface CardCtaRestore_subtitleRestore_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardCtaRestore_subtitleRestore_ButtonBlock {
@@ -921,6 +929,10 @@ export interface CardCtaRestore_titleRestore_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardCtaRestore_titleRestore_ButtonBlock {
@@ -1359,6 +1371,10 @@ export interface CardCtaRestore_button1Restore_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardCtaRestore_button1Restore_ButtonBlock {
@@ -1797,6 +1813,10 @@ export interface CardCtaRestore_startIcon1Restore_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardCtaRestore_startIcon1Restore_ButtonBlock {
@@ -2235,6 +2255,10 @@ export interface CardCtaRestore_endIcon1Restore_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardCtaRestore_endIcon1Restore_ButtonBlock {
@@ -2673,6 +2697,10 @@ export interface CardCtaRestore_button2Restore_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardCtaRestore_button2Restore_ButtonBlock {
@@ -3111,6 +3139,10 @@ export interface CardCtaRestore_startIcon2Restore_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardCtaRestore_startIcon2Restore_ButtonBlock {
@@ -3549,6 +3581,10 @@ export interface CardCtaRestore_endIcon2Restore_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardCtaRestore_endIcon2Restore_ButtonBlock {
@@ -3987,6 +4023,10 @@ export interface CardCtaRestore_button3Restore_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardCtaRestore_button3Restore_ButtonBlock {
@@ -4425,6 +4465,10 @@ export interface CardCtaRestore_startIcon3Restore_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardCtaRestore_startIcon3Restore_ButtonBlock {
@@ -4863,6 +4907,10 @@ export interface CardCtaRestore_endIcon3Restore_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardCtaRestore_endIcon3Restore_ButtonBlock {

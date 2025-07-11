@@ -45,6 +45,10 @@ export interface CardPollRestore_imageRestore_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardPollRestore_imageRestore_ButtonBlock {
@@ -483,6 +487,10 @@ export interface CardPollRestore_subtitleRestore_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardPollRestore_subtitleRestore_ButtonBlock {
@@ -921,6 +929,10 @@ export interface CardPollRestore_titleRestore_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardPollRestore_titleRestore_ButtonBlock {
@@ -1359,6 +1371,10 @@ export interface CardPollRestore_radioQuestionRestore_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardPollRestore_radioQuestionRestore_ButtonBlock {
@@ -1797,6 +1813,10 @@ export interface CardPollRestore_radioOption1Restore_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardPollRestore_radioOption1Restore_ButtonBlock {
@@ -2235,6 +2255,10 @@ export interface CardPollRestore_radioOption2Restore_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardPollRestore_radioOption2Restore_ButtonBlock {
@@ -2673,6 +2697,10 @@ export interface CardPollRestore_radioOption3Restore_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardPollRestore_radioOption3Restore_ButtonBlock {
@@ -3111,6 +3139,10 @@ export interface CardPollRestore_radioOption4Restore_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardPollRestore_radioOption4Restore_ButtonBlock {
@@ -3549,6 +3581,10 @@ export interface CardPollRestore_bodyRestore_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardPollRestore_bodyRestore_ButtonBlock {

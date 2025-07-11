@@ -102,7 +102,8 @@ const block: TreeBlock<ButtonFields> = {
   submitEnabled: false,
   settings: {
     __typename: 'ButtonBlockSettings',
-    alignment: ButtonAlignment.justify
+    alignment: ButtonAlignment.justify,
+    color: null
   },
   children: []
 }
@@ -791,7 +792,8 @@ describe('Button', () => {
       ...block,
       settings: {
         __typename: 'ButtonBlockSettings' as const,
-        alignment: ButtonAlignment.left
+        alignment: ButtonAlignment.left,
+        color: null
       }
     }
 
@@ -1002,5 +1004,23 @@ describe('Button', () => {
 
     fireEvent.click(submitButton)
     expect(handleSubmit).toHaveBeenCalledTimes(1)
+  })
+
+  it('should apply settings color to button if it exists', () => {
+    const buttonMock = {
+      ...block,
+      settings: {
+        __typename: 'ButtonBlockSettings' as const,
+        alignment: ButtonAlignment.justify,
+        color: '#000000'
+      }
+    }
+    render(
+      <MockedProvider>
+        <Button {...buttonMock} />
+      </MockedProvider>
+    )
+    const button = screen.getByRole('button')
+    expect(button).toHaveStyle({ backgroundColor: '#000000' })
   })
 })
