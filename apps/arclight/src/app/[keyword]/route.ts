@@ -91,15 +91,28 @@ app.openapi(keywordRoute, async (c) => {
       ) {
         try {
           const video = await getBrightcoveVideo(brightcoveId, false, clientIp)
-          const src = selectBrightcoveSource(
-            video,
-            redirectType as BrightcoveSourceCode
-          )
-          if (src) {
-            return c.redirect(src, 302)
+          const validCodes: BrightcoveSourceCode[] = [
+            'hls',
+            'dash',
+            'dh',
+            'dl',
+            's'
+          ]
+          if (validCodes.includes(redirectType as BrightcoveSourceCode)) {
+            const src = selectBrightcoveSource(
+              video,
+              redirectType as BrightcoveSourceCode
+            )
+            if (src) {
+              return c.redirect(src, 302)
+            }
           }
         } catch (err) {
-          console.error('Error getting brightcove video', err)
+          console.error(
+            '[Redirect] Brightcove error for keyword:',
+            keyword,
+            err
+          )
         }
       }
       if (to && typeof to === 'string') {
