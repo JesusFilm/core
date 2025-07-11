@@ -302,7 +302,7 @@ export function ContainedCover({
             className="overlay-gradient"
             sx={{
               background: {
-                xs: `linear-gradient(to top, ${addAlphaToHex(baseBackgroundColor, 100)} ${rtl ? 100 : 0}%, ${addAlphaToHex(baseBackgroundColor, 20)} 60%, ${addAlphaToHex(baseBackgroundColor, 0)} 100%)`,
+                xs: `linear-gradient(to top, ${backgroundColor} ${rtl ? 100 : 0}%, ${backgroundColor} 60%, ${backgroundColor} 100%)`,
                 sm: 'unset'
               }
             }}
