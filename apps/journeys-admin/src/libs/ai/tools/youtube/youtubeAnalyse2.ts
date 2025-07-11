@@ -23,7 +23,7 @@ export function youtubeAnalyzerTool2(
         model: 'gemini-2.0-flash',
         contents: [
           {
-            text: 'Summarize this video in 3 sentences.'
+            text: 'get the transcript of the video'
           },
           {
             fileData: {
