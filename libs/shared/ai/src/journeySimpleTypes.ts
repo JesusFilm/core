@@ -1,41 +1,63 @@
 import { z } from 'zod'
 
 // Poll option type
-export const journeySimplePollOptionSchema = z.object({
-  text: z.string().describe('The text label for the poll option.'),
-  nextCard: z
-    .string()
-    .optional()
-    .describe(
-      'The id of the card to navigate to if this option is selected. Something like card-1, card-2, etc. Should only provide one of url or nextCard.'
-    ),
-  url: z
-    .string()
-    .optional()
-    .describe(
-      'A URL to navigate to when the poll option is selected. Should only provide one of url or nextCard.'
-    )
-})
+export const journeySimplePollOptionSchema = z
+  .object({
+    text: z.string().describe('The text label for the poll option.'),
+    nextCard: z
+      .string()
+      .optional()
+      .describe(
+        'The id of the card to navigate to if this option is selected. Something like card-1, card-2, etc. Should only provide one of url or nextCard.'
+      ),
+    url: z
+      .string()
+      .optional()
+      .describe(
+        'A URL to navigate to when the poll option is selected. Should only provide one of url or nextCard.'
+      )
+  })
+  .superRefine((data, ctx) => {
+    const hasNextCard = !!data.nextCard
+    const hasUrl = !!data.url
+    if (hasNextCard === hasUrl) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Exactly one of nextCard or url must be provided.'
+      })
+    }
+  })
 export type JourneySimplePollOption = z.infer<
   typeof journeySimplePollOptionSchema
 >
 
 // Button type
-export const journeySimpleButtonSchema = z.object({
-  text: z.string().describe('The text label displayed on the button.'),
-  nextCard: z
-    .string()
-    .optional()
-    .describe(
-      'The id of the card to navigate to when the button is pressed. Something like card-1, card-2, etc. Should only provide one of url or nextCard.'
-    ),
-  url: z
-    .string()
-    .optional()
-    .describe(
-      'A URL to navigate to when the button is pressed. Should only provide one of url or nextCard.'
-    )
-})
+export const journeySimpleButtonSchema = z
+  .object({
+    text: z.string().describe('The text label displayed on the button.'),
+    nextCard: z
+      .string()
+      .optional()
+      .describe(
+        'The id of the card to navigate to when the button is pressed. Something like card-1, card-2, etc. Should only provide one of url or nextCard.'
+      ),
+    url: z
+      .string()
+      .optional()
+      .describe(
+        'A URL to navigate to when the button is pressed. Should only provide one of url or nextCard.'
+      )
+  })
+  .superRefine((data, ctx) => {
+    const hasNextCard = !!data.nextCard
+    const hasUrl = !!data.url
+    if (hasNextCard === hasUrl) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Exactly one of nextCard or url must be provided.'
+      })
+    }
+  })
 export type JourneySimpleButton = z.infer<typeof journeySimpleButtonSchema>
 
 // Image type
@@ -55,23 +77,36 @@ export const journeySimpleImageSchema = z.object({
 export type JourneySimpleImage = z.infer<typeof journeySimpleImageSchema>
 
 // Video type
-export const journeySimpleVideoSchema = z.object({
-  url: z.string().describe('The YouTube video URL.'),
-  startAt: z
-    .number()
-    .int()
-    .nonnegative()
-    .optional()
-    .describe('Start time in seconds. If not provided, defaults to 0.'),
-  endAt: z
-    .number()
-    .int()
-    .positive()
-    .optional()
-    .describe(
-      'End time in seconds. If not provided, defaults to the video duration.'
-    )
-})
+export const journeySimpleVideoSchema = z
+  .object({
+    url: z.string().describe('The YouTube video URL.'),
+    startAt: z
+      .number()
+      .int()
+      .nonnegative()
+      .optional()
+      .describe('Start time in seconds. If not provided, defaults to 0.'),
+    endAt: z
+      .number()
+      .int()
+      .positive()
+      .optional()
+      .describe(
+        'End time in seconds. If not provided, defaults to the video duration.'
+      )
+  })
+  .superRefine((data, ctx) => {
+    if (
+      data.startAt !== undefined &&
+      data.endAt !== undefined &&
+      data.endAt <= data.startAt
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'endAt must be greater than startAt if both are provided.'
+      })
+    }
+  })
 export type JourneySimpleVideo = z.infer<typeof journeySimpleVideoSchema>
 
 // Card type
@@ -110,9 +145,46 @@ export const journeySimpleCardSchema = z
         'The id of the card to navigate to after this card by default. Something like card-1, card-2, etc.'
       )
   })
-  .describe(
-    'A card in the journey. If the "video" field is present, only "id", "video", and (optionally) "defaultNextCard" should be set on this card. All other content fields (heading, text, button, poll, image, backgroundImage, etc.) must be omitted.'
-  )
+  .superRefine((data, ctx) => {
+    if (data.video !== undefined) {
+      // Enforce only id, video, and defaultNextCard are present
+      const forbiddenFields = [
+        'heading',
+        'text',
+        'button',
+        'poll',
+        'image',
+        'backgroundImage'
+      ]
+      for (const field of forbiddenFields) {
+        if ((data as Record<string, unknown>)[field] !== undefined) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: `If video is present, ${field} must not be set.`
+          })
+        }
+      }
+      // Enforce defaultNextCard is required for video cards
+      if (data.defaultNextCard === undefined) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'If video is present, defaultNextCard is required.'
+        })
+      }
+    } else {
+      // For non-video cards, require at least one navigation option
+      const hasButton = !!data.button
+      const hasPoll = Array.isArray(data.poll) && data.poll.length > 0
+      const hasDefaultNextCard = !!data.defaultNextCard
+      if (!hasButton && !hasPoll && !hasDefaultNextCard) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message:
+            'At least one of button, poll, or defaultNextCard must be present to provide navigation.'
+        })
+      }
+    }
+  })
 export type JourneySimpleCard = z.infer<typeof journeySimpleCardSchema>
 
 // Journey type

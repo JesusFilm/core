@@ -4,6 +4,17 @@ import { prismaMock } from '../../../../test/prismaMock'
 
 import { updateSimpleJourney } from './updateSimpleJourney'
 
+const txMock = {
+  block: {
+    create: jest.fn(),
+    update: jest.fn(),
+    updateMany: jest.fn()
+  },
+  journey: {
+    update: jest.fn()
+  }
+}
+
 describe('updateSimpleJourney', () => {
   const journeyId = 'jid'
   const simple: JourneySimple = {
@@ -45,13 +56,21 @@ describe('updateSimpleJourney', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    prismaMock.block.create.mockResolvedValue({} as any)
-    prismaMock.block.update.mockResolvedValue({} as any)
+    txMock.block.create.mockResolvedValue({} as any)
+    txMock.block.update.mockResolvedValue({} as any)
+    prismaMock.$transaction.mockImplementation(
+      async (callback) => await callback(txMock as any)
+    )
+  })
+
+  it('wraps all operations in a transaction', async () => {
+    await updateSimpleJourney(journeyId, simple)
+    expect(prismaMock.$transaction).toHaveBeenCalled()
   })
 
   it('marks all non-deleted blocks as deleted', async () => {
     await updateSimpleJourney(journeyId, simple)
-    expect(prismaMock.block.updateMany).toHaveBeenCalledWith({
+    expect(txMock.block.updateMany).toHaveBeenCalledWith({
       where: { journeyId, deletedAt: null },
       data: { deletedAt: expect.any(String) }
     })
@@ -59,7 +78,7 @@ describe('updateSimpleJourney', () => {
 
   it('updates journey title and description', async () => {
     await updateSimpleJourney(journeyId, simple)
-    expect(prismaMock.journey.update).toHaveBeenCalledWith({
+    expect(txMock.journey.update).toHaveBeenCalledWith({
       where: { id: journeyId },
       data: { title: simple.title, description: simple.description }
     })
@@ -68,10 +87,10 @@ describe('updateSimpleJourney', () => {
   it('creates StepBlocks and CardBlocks for each card', async () => {
     await updateSimpleJourney(journeyId, simple)
     // Should create 2 StepBlocks and 2 CardBlocks
-    const stepCalls = prismaMock.block.create.mock.calls.filter(
+    const stepCalls = txMock.block.create.mock.calls.filter(
       ([data]: [any]) => data.data.typename === 'StepBlock'
     )
-    const cardCalls = prismaMock.block.create.mock.calls.filter(
+    const cardCalls = txMock.block.create.mock.calls.filter(
       ([data]: [any]) => data.data.typename === 'CardBlock'
     )
     expect(stepCalls.length).toBe(2)
@@ -81,7 +100,7 @@ describe('updateSimpleJourney', () => {
   it('creates content blocks for heading, text, image, poll, button, backgroundImage, defaultNextCard', async () => {
     await updateSimpleJourney(journeyId, simple)
     // Check for TypographyBlock, ImageBlock, RadioQuestionBlock, RadioOptionBlock, ButtonBlock
-    const types = prismaMock.block.create.mock.calls.map(
+    const types = txMock.block.create.mock.calls.map(
       ([data]: [any]) => data.data.typename
     )
     expect(types).toContain('TypographyBlock')

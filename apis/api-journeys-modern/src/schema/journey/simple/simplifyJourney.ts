@@ -118,7 +118,7 @@ export function simplifyJourney(
       }
     }
 
-    if (stepBlock.coverBlockId) {
+    if (cardBlock.coverBlockId) {
       const bgImageBlock = journey.blocks.find(
         (block) => block.id === cardBlock.coverBlockId
       )

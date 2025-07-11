@@ -1,20 +1,12 @@
 import { journeySimpleSchema } from '@core/shared/ai/journeySimpleTypes'
 
-import { getSimpleJourney } from './getSimpleJourney'
+import { prismaMock } from '../../../../test/prismaMock'
 
-jest.mock('../../../lib/prisma', () => ({
-  prisma: {
-    journey: {
-      findUnique: jest.fn()
-    }
-  }
-}))
+import { getSimpleJourney } from './getSimpleJourney'
 
 jest.mock('./simplifyJourney', () => ({
   simplifyJourney: jest.fn()
 }))
-
-const { prisma } = require('../../../lib/prisma')
 
 const { simplifyJourney } = require('./simplifyJourney')
 
@@ -32,10 +24,10 @@ describe('getSimpleJourney', () => {
   })
 
   it('returns a valid simplified journey for a valid journeyId', async () => {
-    prisma.journey.findUnique.mockResolvedValue(validJourney)
+    prismaMock.journey.findUnique.mockResolvedValue(validJourney as any)
     simplifyJourney.mockReturnValue(validSimple)
     const result = await getSimpleJourney('jid')
-    expect(prisma.journey.findUnique).toHaveBeenCalledWith({
+    expect(prismaMock.journey.findUnique).toHaveBeenCalledWith({
       where: { id: 'jid' },
       include: {
         blocks: { where: { deletedAt: null }, include: { action: true } }
@@ -47,15 +39,15 @@ describe('getSimpleJourney', () => {
   })
 
   it('throws error if journey is not found', async () => {
-    prisma.journey.findUnique.mockResolvedValue(null)
+    prismaMock.journey.findUnique.mockResolvedValue(null)
     await expect(getSimpleJourney('jid')).rejects.toThrow('Journey not found')
   })
 
   it('throws error if transformation result is invalid', async () => {
-    prisma.journey.findUnique.mockResolvedValue(validJourney)
+    prismaMock.journey.findUnique.mockResolvedValue(validJourney as any)
     simplifyJourney.mockReturnValue({ foo: 'bar' })
     await expect(getSimpleJourney('jid')).rejects.toThrow(
-      'Transformed journey data is invalid'
+      'Transformed journey data is invalid. Please contact support.'
     )
   })
 })
