@@ -200,6 +200,28 @@ export async function updateSimpleJourney(
         })
       }
 
+      if (card.video != null) {
+        // Extract videoId from YouTube URL
+        // Expected format: https://youtube.com/watch?v=VIDEO_ID
+        const urlParams = new URLSearchParams(new URL(card.video.url).search)
+        const videoId = urlParams.get('v')
+
+        if (videoId) {
+          await tx.block.create({
+            data: {
+              journeyId,
+              typename: 'VideoBlock',
+              parentBlockId: cardBlockId,
+              parentOrder: parentOrder++,
+              source: 'youTube',
+              videoId,
+              startAt: card.video.startAt ?? null,
+              endAt: card.video.endAt ?? null
+            }
+          })
+        }
+      }
+
       if (card.defaultNextCard != null) {
         const nextStepBlock =
           card.defaultNextCard != null
