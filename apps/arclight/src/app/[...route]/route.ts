@@ -297,6 +297,7 @@ app.doc('/redirects-doc.json', {
 
 app.get('/api/redirects-doc', swaggerUI({ url: '/redirects-doc.json' }))
 
+// Register specific routes first before the generic keyword route
 app.openapi(hlsRoute, async (c) => {
   setCorsHeaders(c)
   const { mediaComponentId, languageId } = c.req.param()
@@ -391,6 +392,7 @@ app.openapi(watchRoute, async (c) => {
   }
 })
 
+// Register the generic keyword route LAST so it doesn't match specific routes
 app.openapi(keywordRoute, async (c) => {
   setCorsHeaders(c)
   const { keyword } = c.req.param()
@@ -439,3 +441,4 @@ app.options('*', (c) => {
 })
 
 export const GET = handle(app)
+export const OPTIONS = handle(app)
