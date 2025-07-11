@@ -104,7 +104,7 @@ describe('Card', () => {
       renderWithProviders(<Card {...card} />)
 
       expect(
-        screen.getByRole('button', { name: 'Filter #30313D' })
+        screen.getByRole('button', { name: 'Filter #30313D (100%)' })
       ).toBeInTheDocument()
       expect(
         screen.getByRole('button', { name: 'Background None' })
@@ -365,7 +365,7 @@ describe('Card', () => {
       renderWithProviders(<Card {...card} />)
 
       expect(
-        screen.getByRole('button', { name: 'Filter #00FFCC' })
+        screen.getByRole('button', { name: 'Filter #00FFCC (100%)' })
       ).toBeInTheDocument()
     })
 
@@ -378,7 +378,7 @@ describe('Card', () => {
       renderWithProviders(<Card {...card} />)
 
       expect(
-        screen.getByRole('button', { name: 'Filter #FEFEFE' })
+        screen.getByRole('button', { name: 'Filter #FEFEFE (100%)' })
       ).toBeInTheDocument()
     })
 
@@ -395,7 +395,7 @@ describe('Card', () => {
       renderWithProviders(<Card {...card} />, { journey })
 
       expect(
-        screen.getByRole('button', { name: 'Filter #30313D' })
+        screen.getByRole('button', { name: 'Filter #30313D (100%)' })
       ).toBeInTheDocument()
     })
 
@@ -404,7 +404,7 @@ describe('Card', () => {
       renderWithProviders(<Card {...card} />)
 
       expect(
-        screen.getByRole('button', { name: 'Filter #FF0000' })
+        screen.getByRole('button', { name: 'Filter #FF0000 (100%)' })
       ).toBeInTheDocument()
     })
 
@@ -418,7 +418,7 @@ describe('Card', () => {
         { selectedBlock: card }
       )
 
-      fireEvent.click(screen.getByText('#00FFCC'))
+      fireEvent.click(screen.getByText('#00FFCC (100%)'))
       expect(
         screen.getByText('selectedAttributeId: card1.id-background-color')
       ).toBeInTheDocument()
@@ -457,7 +457,7 @@ describe('Card', () => {
       renderWithProviders(<Card {...card} />)
 
       expect(
-        screen.getByRole('button', { name: 'Filter #FEFEFE' })
+        screen.getByRole('button', { name: 'Filter #FEFEFE (100%)' })
       ).toBeInTheDocument()
     })
 
@@ -470,7 +470,7 @@ describe('Card', () => {
       renderWithProviders(<Card {...card} />, { journey })
 
       expect(
-        screen.getByRole('button', { name: 'Filter #FEFEFE' })
+        screen.getByRole('button', { name: 'Filter #FEFEFE (100%)' })
       ).toBeInTheDocument()
     })
 
