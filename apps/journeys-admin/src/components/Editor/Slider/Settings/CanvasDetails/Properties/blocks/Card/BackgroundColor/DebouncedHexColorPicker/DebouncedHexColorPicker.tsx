@@ -3,7 +3,7 @@ import {
   ComponentProps,
   ReactElement,
   useEffect,
-  useRef,
+  useMemo,
   useState
 } from 'react'
 import { HexColorPicker } from 'react-colorful'
@@ -15,11 +15,14 @@ export function DebouncedHexColorPicker({
 }: ComponentProps<typeof HexColorPicker>): ReactElement {
   const [value, setValue] = useState(color)
 
-  const debouncedChange = useRef(
-    debounce((value: string) => {
-      onChange?.(value)
-    }, 100)
-  ).current
+  const debouncedChange = useMemo(
+    () =>
+      debounce((value: string) => {
+        onChange?.(value)
+      }, 100),
+
+    [onChange]
+  )
 
   useEffect(() => {
     return () => {

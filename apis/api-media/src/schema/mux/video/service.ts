@@ -26,11 +26,9 @@ function getClient(userGenerated: boolean): Mux {
   })
 }
 
-type ResolutionTier = '1080p' | '1440p' | '2160p' | undefined
-
 export async function createVideoByDirectUpload(
   userGenerated: boolean,
-  maxResolution: ResolutionTier = '1080p',
+  maxResolution?: Mux.Video.Asset['max_resolution_tier'],
   downloadable = false
 ): Promise<{ id: string; uploadUrl: string }> {
   if (process.env.CORS_ORIGIN == null) throw new Error('Missing CORS_ORIGIN')
@@ -40,8 +38,17 @@ export async function createVideoByDirectUpload(
     new_asset_settings: {
       encoding_tier: 'smart',
       playback_policy: ['public'],
-      max_resolution_tier: maxResolution,
-      mp4_support: downloadable ? 'capped-1080p' : 'none'
+      max_resolution_tier: userGenerated ? '1080p' : maxResolution,
+      static_renditions: downloadable
+        ? [
+            { resolution: '270p' },
+            { resolution: '360p' },
+            { resolution: '720p' },
+            { resolution: '1080p' },
+            { resolution: '1440p' },
+            { resolution: '2160p' }
+          ]
+        : []
     }
   })
 
@@ -60,7 +67,7 @@ export async function createVideoByDirectUpload(
 export async function createVideoFromUrl(
   url: string,
   userGenerated: boolean,
-  maxResolution: ResolutionTier = '1080p',
+  maxResolution?: Mux.Video.Asset['max_resolution_tier'],
   downloadable = false
 ): Promise<Mux.Video.Asset> {
   return await getClient(userGenerated).video.assets.create({
@@ -71,8 +78,17 @@ export async function createVideoFromUrl(
     ],
     encoding_tier: 'smart',
     playback_policy: ['public'],
-    max_resolution_tier: maxResolution,
-    mp4_support: downloadable ? 'capped-1080p' : 'none'
+    max_resolution_tier: userGenerated ? '1080p' : maxResolution,
+    static_renditions: downloadable
+      ? [
+          { resolution: '270p' },
+          { resolution: '360p' },
+          { resolution: '720p' },
+          { resolution: '1080p' },
+          { resolution: '1440p' },
+          { resolution: '2160p' }
+        ]
+      : []
   })
 }
 
@@ -106,11 +122,10 @@ export async function enableDownload(
   const existingAsset =
     await getClient(userGenerated).video.assets.retrieve(assetId)
 
-  // skip if the resolution already exists - check both resolution_tier and resolution fields
+  // skip if the resolution already exists
   if (
     existingAsset.static_renditions?.files?.some(
-      (file) =>
-        file.resolution_tier === resolution || file.resolution === resolution
+      (file) => file.resolution === resolution
     )
   )
     return
