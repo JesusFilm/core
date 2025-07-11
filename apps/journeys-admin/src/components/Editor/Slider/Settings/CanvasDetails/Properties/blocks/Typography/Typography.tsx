@@ -57,18 +57,18 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
             <Variant />
           </Accordion>
 
-      <Accordion
-        id={`${id}-typography-color`}
-        icon={<ColorDisplayIcon color={effectiveColor} />}
-        name={t('Color')}
-        value={
-          effectiveColor?.toString().startsWith('#')
-            ? effectiveColor.toString().toUpperCase()
-            : capitalize(effectiveColor?.toString() ?? ' ')
-        }
-      >
-        <Color />
-      </Accordion>
+          <Accordion
+            id={`${id}-typography-color`}
+            icon={<ColorDisplayIcon color={effectiveColor} />}
+            name={t('Color')}
+            value={
+              effectiveColor?.toString().startsWith('#')
+                ? effectiveColor.toString().toUpperCase()
+                : capitalize(effectiveColor?.toString() ?? ' ')
+            }
+          >
+            <Color />
+          </Accordion>
 
           <Accordion
             id={`${id}-typography-alignment`}
