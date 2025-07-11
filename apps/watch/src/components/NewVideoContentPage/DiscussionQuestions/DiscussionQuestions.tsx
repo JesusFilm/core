@@ -1,5 +1,5 @@
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 
 import MessageCircle from '@core/shared/ui/icons/MessageCircle'
 
@@ -15,19 +15,14 @@ export function DiscussionQuestions({
   questions
 }: DiscussionQuestionProps): ReactElement {
   const { t } = useTranslation('apps-watch')
-  const [openQuestion, setOpenQuestion] = useState<number | null>(null)
-
-  const handleQuestionToggle = (idx: number): void => {
-    setOpenQuestion(openQuestion === idx ? null : idx)
-  }
 
   return (
     <div data-testid="ContentDiscussionQuestions">
       <div className="pt-4">
-        <div className="flex flex-wrap items-center justify-between mb-6 px-2">
-          <h4 className="text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-red-100/70">
+        <div className="flex flex-wrap items-center justify-between mb-6 px-2 gap-2">
+          <h2 className="text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-red-100/70">
             {t('Related questions')}
-          </h4>
+          </h2>
           <a
             href="https://issuesiface.com/talk?utm_source=jesusfilm-watch"
             target="_blank"
@@ -46,17 +41,7 @@ export function DiscussionQuestions({
         </div>
 
         <div className="relative">
-          {questions.map((q, i) => (
-            <Question
-              key={i}
-              question={q.value}
-              isOpen={i === openQuestion}
-              onToggle={() => handleQuestionToggle(i)}
-              answer={t(
-                'Process what you learned -- Have a private discussion with someone who is ready to listen.'
-              )}
-            />
-          ))}
+          <Question questions={questions} />
         </div>
       </div>
     </div>
