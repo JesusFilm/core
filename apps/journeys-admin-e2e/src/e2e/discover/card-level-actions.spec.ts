@@ -152,7 +152,6 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.clickActionOfFeedBackProperties() // clicking the action property dropdown in the Button properties drawer
     await cardLevelActionPage.selectEmailOptionInPropertiesOptions() // selecting the 'Email' option in Button action property and enter the email address
     await cardLevelActionPage.clickButtonPropertyDropdown('Color') // clicking the 'Color' property dropdown in the Button properties drawer
-    await cardLevelActionPage.chooseButtonColor('Primary') //Select Button Color as 'Primary Color'
     await cardLevelActionPage.clickButtonPropertyDropdown('Button Size') // clicking the 'Button Size' property dropdown in the Button properties drawer
     await cardLevelActionPage.chooseButtonSize('Small') // Select Button Size as 'Small'
     await cardLevelActionPage.clickButtonPropertyDropdown('Variant') // clicking the 'Variant' property dropdown in the Button properties drawer
