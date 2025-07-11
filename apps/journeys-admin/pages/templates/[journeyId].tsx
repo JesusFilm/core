@@ -13,7 +13,6 @@ import { TemplateView } from '@core/journeys/ui/TemplateView'
 import { GET_JOURNEY, useJourneyQuery } from '@core/journeys/ui/useJourneyQuery'
 import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery'
 import { GET_TAGS } from '@core/journeys/ui/useTagsQuery'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import { GetJourney, GetJourneyVariables } from '../../__generated__/GetJourney'
 import {
@@ -27,7 +26,6 @@ import { PageWrapper } from '../../src/components/PageWrapper'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
 function TemplateDetailsPage(): ReactElement {
-  const { aiCreateButton } = useFlags()
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const user = useUser()
@@ -110,7 +108,7 @@ function TemplateDetailsPage(): ReactElement {
               px: { xs: 6, sm: 8, md: 10 }
             }}
           >
-            <TemplateView authUser={user} flags={{ aiCreateButton }} />
+            <TemplateView authUser={user} />
           </Box>
         </PageWrapper>
       </JourneyProvider>
@@ -124,7 +122,7 @@ export const getServerSideProps: GetStaticProps = withUserTokenSSR()(async ({
   resolvedUrl,
   params
 }) => {
-  const { redirect, apolloClient, translations, flags } = await initAndAuthApp({
+  const { redirect, apolloClient, translations } = await initAndAuthApp({
     user,
     locale,
     resolvedUrl
@@ -181,8 +179,7 @@ export const getServerSideProps: GetStaticProps = withUserTokenSSR()(async ({
   return {
     props: {
       ...translations,
-      initialApolloState: apolloClient.cache.extract(),
-      flags
+      initialApolloState: apolloClient.cache.extract()
     }
   }
 })
