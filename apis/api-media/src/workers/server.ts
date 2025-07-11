@@ -91,8 +91,6 @@ async function main(): Promise<void> {
     )
   }
 
-  // muxVideos worker has been migrated to a script - run with: nx run api-media:mux-videos
-
   run(
     await import(
       /* webpackChunkName: "published" */

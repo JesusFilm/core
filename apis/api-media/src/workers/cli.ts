@@ -80,7 +80,6 @@ export async function cli(argv = process.argv): Promise<void> {
       queue = new Queue(queueName, { connection })
       break
     }
-    // mux-videos worker has been migrated to a script - run with: nx run api-media:mux-videos
     case 'mux-downloads': {
       const config = await import(
         /* webpackChunkName: "mux-downloads" */
