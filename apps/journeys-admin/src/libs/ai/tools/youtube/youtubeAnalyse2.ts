@@ -23,14 +23,12 @@ export function youtubeAnalyzerTool2(
         model: 'gemini-2.0-flash',
         contents: [
           {
-            parts: [
-              { text: 'Summarize this video in 3 sentences.' },
-              {
-                file_data: {
-                  file_uri: 'https://www.youtube.com/watch?v=VIDEO_ID'
-                }
-              }
-            ]
+            text: 'Summarize this video in 3 sentences.'
+          },
+          {
+            fileData: {
+              fileUri: url
+            }
           }
         ]
       })
