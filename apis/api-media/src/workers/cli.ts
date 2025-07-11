@@ -90,6 +90,16 @@ export async function cli(argv = process.argv): Promise<void> {
       queue = new Queue(queueName, { connection })
       break
     }
+    case 'process-video-downloads': {
+      const config = await import(
+        /* webpackChunkName: "process-video-downloads" */
+        './processVideoDownloads'
+      )
+      queueName = config.queueName
+      jobName = config.jobName
+      queue = new Queue(queueName, { connection })
+      break
+    }
     default:
       throw new Error('unknown queue')
   }

@@ -11,6 +11,7 @@ import minimalLogo from '../../../assets/minimal-logo.png'
 import { MenuContent } from '../../../components/MenuContent'
 import { OptionsMenu } from '../../../components/OptionsMenu'
 import { useAuth } from '../../../libs/auth/authContext'
+import { getEnvironmentBannerHeight } from '../../../libs/environment'
 
 const drawerWidth = 240
 
@@ -27,6 +28,7 @@ const Drawer = styled(MuiDrawer)({
 
 export function SideMenu(): ReactElement {
   const auth = useAuth()
+  const environmentBannerHeight = getEnvironmentBannerHeight()
 
   return (
     <Drawer
@@ -34,7 +36,9 @@ export function SideMenu(): ReactElement {
       sx={{
         display: { xs: 'none', md: 'block' },
         [`& .${drawerClasses.paper}`]: {
-          backgroundColor: 'background.paper'
+          backgroundColor: 'background.paper',
+          top: `${environmentBannerHeight}px`,
+          height: `calc(100vh - ${environmentBannerHeight}px)`
         }
       }}
     >
