@@ -81,6 +81,7 @@ export async function importMuxVideos(mux: Mux): Promise<void> {
   while (hasMore) {
     const variants = await prisma.videoVariant.findMany({
       where: {
+        id: '2_5439-0-Breathe',
         muxVideoId: null,
         masterHeight: { not: null },
         masterUrl: { not: null },
@@ -96,7 +97,7 @@ export async function importMuxVideos(mux: Mux): Promise<void> {
 
     for (const variant of variants) {
       logger.info(`Importing mux video for variant ${variant.id}`)
-      await new Promise((resolve) => setTimeout(resolve, 1500)) // wait 1.5 sec to avoid rate limit
+      await new Promise((resolve) => setTimeout(resolve, 2000)) // wait 2 sec to avoid rate limit
       let muxVideoId: string | null = null
       try {
         muxVideoId = await createMuxAsset(
@@ -129,7 +130,8 @@ export async function importMuxVideos(mux: Mux): Promise<void> {
             muxVideo: {
               create: {
                 assetId: muxVideoId,
-                userId: 'system'
+                userId: 'system',
+                downloadable: true
               }
             }
           }
@@ -189,7 +191,7 @@ export async function updateHls(mux: Mux): Promise<void> {
 
     for (const variant of variants) {
       logger.info(`Attempting to update hls for variant ${variant.id}`)
-      await new Promise((resolve) => setTimeout(resolve, 1500)) // wait 1.5 sec to avoid rate limit
+      await new Promise((resolve) => setTimeout(resolve, 2000)) // wait 2 sec to avoid rate limit
 
       let muxVideo: Mux.Video.Asset | null = null
       try {
@@ -211,7 +213,8 @@ export async function updateHls(mux: Mux): Promise<void> {
               hls: `https://stream.mux.com/${playbackId}.m3u8`,
               muxVideo: {
                 update: {
-                  playbackId
+                  playbackId,
+                  readyToStream: true
                 }
               }
             }
