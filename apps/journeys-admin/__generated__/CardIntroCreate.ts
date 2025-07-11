@@ -9,6 +9,14 @@ import { TypographyBlockCreateInput, ButtonBlockCreateInput, ButtonBlockUpdateIn
 // GraphQL mutation operation: CardIntroCreate
 // ====================================================
 
+export interface CardIntroCreate_subtitle_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardIntroCreate_subtitle {
   __typename: "TypographyBlock";
   id: string;
@@ -18,6 +26,15 @@ export interface CardIntroCreate_subtitle {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardIntroCreate_subtitle_settings | null;
+}
+
+export interface CardIntroCreate_title_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
 }
 
 export interface CardIntroCreate_title {
@@ -29,6 +46,15 @@ export interface CardIntroCreate_title {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardIntroCreate_title_settings | null;
+}
+
+export interface CardIntroCreate_body_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
 }
 
 export interface CardIntroCreate_body {
@@ -40,6 +66,7 @@ export interface CardIntroCreate_body {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardIntroCreate_body_settings | null;
 }
 
 export interface CardIntroCreate_button_action_NavigateToBlockAction {

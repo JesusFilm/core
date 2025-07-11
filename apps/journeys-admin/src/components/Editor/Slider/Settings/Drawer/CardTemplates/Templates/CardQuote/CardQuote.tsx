@@ -181,7 +181,11 @@ export function CardQuote(): ReactElement {
       color: null,
       content: t('The Bible Says:'),
       variant: TypographyVariant.h6,
-      __typename: 'TypographyBlock'
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     } satisfies TypographyBlock
 
     const title = {
@@ -194,7 +198,11 @@ export function CardQuote(): ReactElement {
         'Blessed are the peacemakers, for they shall be called sons of God.'
       ),
       variant: TypographyVariant.h3,
-      __typename: 'TypographyBlock'
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     } satisfies TypographyBlock
 
     const body = {
@@ -205,7 +213,11 @@ export function CardQuote(): ReactElement {
       color: TypographyColor.secondary,
       content: t('– Jesus Christ'),
       variant: TypographyVariant.body1,
-      __typename: 'TypographyBlock'
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     } satisfies TypographyBlock
 
     const cardBlock = {
@@ -234,16 +246,34 @@ export function CardQuote(): ReactElement {
               isCover: true
             },
             subtitleInput: {
-              ...omit(subtitle, ['__typename', 'parentOrder']),
+              ...omit(
+                {
+                  ...subtitle,
+                  settings: { color: subtitle.settings?.color }
+                },
+                ['__typename', 'parentOrder']
+              ),
               journeyId: journey.id,
               variant: TypographyVariant.h6
             },
             titleInput: {
-              ...omit(title, ['__typename', 'parentOrder']),
+              ...omit(
+                {
+                  ...title,
+                  settings: { color: title.settings?.color }
+                },
+                ['__typename', 'parentOrder']
+              ),
               journeyId: journey.id
             },
             bodyInput: {
-              ...omit(body, ['__typename', 'parentOrder']),
+              ...omit(
+                {
+                  ...body,
+                  settings: { color: body.settings?.color }
+                },
+                ['__typename', 'parentOrder']
+              ),
               journeyId: journey.id
             },
             cardId: cardBlock.id,

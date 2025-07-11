@@ -34,7 +34,11 @@ describe('getActionLabel', () => {
             color: null,
             variant: TypographyVariant.h2,
             content: 'Step Heading',
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           }
         ]
       }

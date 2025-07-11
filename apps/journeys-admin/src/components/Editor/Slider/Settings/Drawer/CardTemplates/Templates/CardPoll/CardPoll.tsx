@@ -236,7 +236,11 @@ export function CardPoll(): ReactElement {
       color: null,
       content: t('Got an Opinion?'),
       variant: TypographyVariant.h6,
-      __typename: 'TypographyBlock'
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     } satisfies TypographyBlock
 
     const title = {
@@ -247,7 +251,11 @@ export function CardPoll(): ReactElement {
       color: null,
       content: t("Which of Jesus' teachings challenges you the most?"),
       variant: TypographyVariant.h2,
-      __typename: 'TypographyBlock'
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     } satisfies TypographyBlock
 
     const radioQuestionBlock = {
@@ -301,7 +309,11 @@ export function CardPoll(): ReactElement {
       color: TypographyColor.secondary,
       content: t('↑ Select an answer to continue'),
       variant: TypographyVariant.caption,
-      __typename: 'TypographyBlock'
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     } satisfies TypographyBlock
 
     const cardBlock = {
@@ -340,11 +352,23 @@ export function CardPoll(): ReactElement {
               isCover: true
             },
             subtitleInput: {
-              ...omit(subtitle, ['__typename', 'parentOrder']),
+              ...omit(
+                {
+                  ...subtitle,
+                  settings: { color: subtitle.settings?.color }
+                },
+                ['__typename', 'parentOrder']
+              ),
               journeyId: journey.id
             },
             titleInput: {
-              ...omit(title, ['__typename', 'parentOrder']),
+              ...omit(
+                {
+                  ...title,
+                  settings: { color: title.settings?.color }
+                },
+                ['__typename', 'parentOrder']
+              ),
               journeyId: journey.id
             },
             radioQuestionInput: {
@@ -384,7 +408,13 @@ export function CardPoll(): ReactElement {
               journeyId: journey.id
             },
             bodyInput: {
-              ...omit(body, ['__typename', 'parentOrder']),
+              ...omit(
+                {
+                  ...body,
+                  settings: { color: body.settings?.color }
+                },
+                ['__typename', 'parentOrder']
+              ),
               journeyId: journey.id
             },
             journeyId: journey.id,
