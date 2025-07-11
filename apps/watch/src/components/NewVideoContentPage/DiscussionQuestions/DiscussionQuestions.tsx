@@ -19,7 +19,7 @@ export function DiscussionQuestions({
   return (
     <div data-testid="ContentDiscussionQuestions">
       <div className="pt-4">
-        <div className="flex flex-wrap items-center justify-between mb-6 px-2">
+        <div className="flex flex-wrap items-center justify-between mb-6 px-2 gap-2">
           <h2 className="text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-red-100/70">
             {t('Related questions')}
           </h2>
