@@ -22,10 +22,6 @@ export function Swatch({
           xs: 56,
           sm: variant === 'rounded' ? 49 : 56
         },
-        width: {
-          xs: 56,
-          sm: variant === 'rounded' ? 49 : 56
-        },
         height: {
           xs: 56,
           sm: variant === 'rounded' ? 49 : 56
