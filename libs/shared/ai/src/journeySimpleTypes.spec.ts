@@ -4,7 +4,9 @@ import {
   journeySimpleCardSchema,
   journeySimpleCardSchemaUpdate,
   journeySimplePollOptionSchema,
-  journeySimplePollOptionSchemaUpdate
+  journeySimplePollOptionSchemaUpdate,
+  journeySimpleVideoSchema,
+  journeySimpleVideoSchemaUpdate
 } from './journeySimpleTypes'
 
 // journeySimplePollOptionSchema tests
@@ -157,6 +159,149 @@ describe('journeySimpleButtonSchemaUpdate (strict)', () => {
   })
 })
 
+// journeySimpleVideoSchema tests
+
+describe('journeySimpleVideoSchema (base, permissive)', () => {
+  it('validates with only url', () => {
+    expect(
+      journeySimpleVideoSchema.safeParse({
+        url: 'https://youtube.com/watch?v=dQw4w9WgXcQ'
+      }).success
+    ).toBe(true)
+  })
+
+  it('validates with url and startAt', () => {
+    expect(
+      journeySimpleVideoSchema.safeParse({
+        url: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        startAt: 30
+      }).success
+    ).toBe(true)
+  })
+
+  it('validates with url and endAt', () => {
+    expect(
+      journeySimpleVideoSchema.safeParse({
+        url: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        endAt: 120
+      }).success
+    ).toBe(true)
+  })
+
+  it('validates with url, startAt, and endAt', () => {
+    expect(
+      journeySimpleVideoSchema.safeParse({
+        url: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        startAt: 30,
+        endAt: 120
+      }).success
+    ).toBe(true)
+  })
+
+  it('validates with endAt <= startAt (permissive)', () => {
+    expect(
+      journeySimpleVideoSchema.safeParse({
+        url: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        startAt: 120,
+        endAt: 30
+      }).success
+    ).toBe(true)
+  })
+
+  it('validates with startAt = 0', () => {
+    expect(
+      journeySimpleVideoSchema.safeParse({
+        url: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        startAt: 0
+      }).success
+    ).toBe(true)
+  })
+
+  it('fails with negative startAt', () => {
+    expect(
+      journeySimpleVideoSchema.safeParse({
+        url: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        startAt: -10
+      }).success
+    ).toBe(false)
+  })
+
+  it('fails with zero endAt', () => {
+    expect(
+      journeySimpleVideoSchema.safeParse({
+        url: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        endAt: 0
+      }).success
+    ).toBe(false)
+  })
+})
+
+describe('journeySimpleVideoSchemaUpdate (strict)', () => {
+  it('validates with only url', () => {
+    expect(
+      journeySimpleVideoSchemaUpdate.safeParse({
+        url: 'https://youtube.com/watch?v=dQw4w9WgXcQ'
+      }).success
+    ).toBe(true)
+  })
+
+  it('validates with url and startAt', () => {
+    expect(
+      journeySimpleVideoSchemaUpdate.safeParse({
+        url: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        startAt: 30
+      }).success
+    ).toBe(true)
+  })
+
+  it('validates with url and endAt', () => {
+    expect(
+      journeySimpleVideoSchemaUpdate.safeParse({
+        url: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        endAt: 120
+      }).success
+    ).toBe(true)
+  })
+
+  it('validates with valid time range (endAt > startAt)', () => {
+    expect(
+      journeySimpleVideoSchemaUpdate.safeParse({
+        url: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        startAt: 30,
+        endAt: 120
+      }).success
+    ).toBe(true)
+  })
+
+  it('fails with endAt <= startAt (strict)', () => {
+    const result = journeySimpleVideoSchemaUpdate.safeParse({
+      url: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+      startAt: 120,
+      endAt: 30
+    })
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.issues[0].message).toMatch(
+        /endAt must be greater than startAt/
+      )
+    }
+  })
+
+  it('fails with endAt = startAt (strict)', () => {
+    const result = journeySimpleVideoSchemaUpdate.safeParse({
+      url: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+      startAt: 60,
+      endAt: 60
+    })
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.issues[0].message).toMatch(
+        /endAt must be greater than startAt/
+      )
+    }
+  })
+})
+
 // journeySimpleCardSchema tests
 
 describe('journeySimpleCardSchema (base, permissive)', () => {
@@ -184,6 +329,37 @@ describe('journeySimpleCardSchema (base, permissive)', () => {
     expect(
       journeySimpleCardSchema.safeParse({ ...base, defaultNextCard: 'card-2' })
         .success
+    ).toBe(true)
+  })
+
+  it('validates with video', () => {
+    expect(
+      journeySimpleCardSchema.safeParse({
+        ...base,
+        video: { url: 'https://youtube.com/watch?v=dQw4w9WgXcQ' },
+        defaultNextCard: 'card-2'
+      }).success
+    ).toBe(true)
+  })
+
+  it('validates with video and other content (permissive)', () => {
+    expect(
+      journeySimpleCardSchema.safeParse({
+        ...base,
+        video: { url: 'https://youtube.com/watch?v=dQw4w9WgXcQ' },
+        heading: 'Test',
+        text: 'Content',
+        defaultNextCard: 'card-2'
+      }).success
+    ).toBe(true)
+  })
+
+  it('validates with video but no defaultNextCard (permissive)', () => {
+    expect(
+      journeySimpleCardSchema.safeParse({
+        ...base,
+        video: { url: 'https://youtube.com/watch?v=dQw4w9WgXcQ' }
+      }).success
     ).toBe(true)
   })
 
@@ -223,6 +399,95 @@ describe('journeySimpleCardSchemaUpdate (strict)', () => {
     ).toBe(true)
   })
 
+  it('validates with video and defaultNextCard (strict)', () => {
+    expect(
+      journeySimpleCardSchemaUpdate.safeParse({
+        ...base,
+        video: { url: 'https://youtube.com/watch?v=dQw4w9WgXcQ' },
+        defaultNextCard: 'card-2'
+      }).success
+    ).toBe(true)
+  })
+
+  it('fails with video and other content fields (strict)', () => {
+    const result = journeySimpleCardSchemaUpdate.safeParse({
+      ...base,
+      video: { url: 'https://youtube.com/watch?v=dQw4w9WgXcQ' },
+      heading: 'Test',
+      defaultNextCard: 'card-2'
+    })
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.issues[0].message).toMatch(
+        /If video is present, heading must not be set/
+      )
+    }
+  })
+
+  it('fails with video and button (strict)', () => {
+    const result = journeySimpleCardSchemaUpdate.safeParse({
+      ...base,
+      video: { url: 'https://youtube.com/watch?v=dQw4w9WgXcQ' },
+      button: { text: 'B', nextCard: 'card-2' },
+      defaultNextCard: 'card-2'
+    })
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.issues[0].message).toMatch(
+        /If video is present, button must not be set/
+      )
+    }
+  })
+
+  it('fails with video and poll (strict)', () => {
+    const result = journeySimpleCardSchemaUpdate.safeParse({
+      ...base,
+      video: { url: 'https://youtube.com/watch?v=dQw4w9WgXcQ' },
+      poll: [{ text: 'A', nextCard: 'card-2' }],
+      defaultNextCard: 'card-2'
+    })
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.issues[0].message).toMatch(
+        /If video is present, poll must not be set/
+      )
+    }
+  })
+
+  it('fails with video and image (strict)', () => {
+    const result = journeySimpleCardSchemaUpdate.safeParse({
+      ...base,
+      video: { url: 'https://youtube.com/watch?v=dQw4w9WgXcQ' },
+      image: {
+        src: 'test.jpg',
+        alt: 'Test',
+        width: 100,
+        height: 100,
+        blurhash: 'test'
+      },
+      defaultNextCard: 'card-2'
+    })
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.issues[0].message).toMatch(
+        /If video is present, image must not be set/
+      )
+    }
+  })
+
+  it('fails with video but no defaultNextCard (strict)', () => {
+    const result = journeySimpleCardSchemaUpdate.safeParse({
+      ...base,
+      video: { url: 'https://youtube.com/watch?v=dQw4w9WgXcQ' }
+    })
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.issues[0].message).toMatch(
+        /If video is present, defaultNextCard is required/
+      )
+    }
+  })
+
   it('fails with none of button, poll, defaultNextCard (strict)', () => {
     const result = journeySimpleCardSchemaUpdate.safeParse(base)
     expect(result.success).toBe(false)
@@ -254,6 +519,24 @@ describe('journeySimpleCardSchemaUpdate (strict)', () => {
       expect(
         result.error.issues.some((issue) => /Exactly one/.test(issue.message))
       ).toBe(true)
+    }
+  })
+
+  it('fails with invalid video timing (endAt <= startAt, strict)', () => {
+    const result = journeySimpleCardSchemaUpdate.safeParse({
+      ...base,
+      video: {
+        url: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        startAt: 120,
+        endAt: 30
+      },
+      defaultNextCard: 'card-2'
+    })
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.issues[0].message).toMatch(
+        /endAt must be greater than startAt/
+      )
     }
   })
 })
