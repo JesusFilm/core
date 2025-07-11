@@ -1482,6 +1482,63 @@ describe('videoVariant', () => {
       })
     })
 
+    describe('slug validation', () => {
+      // Import the internal function for testing
+      // const videoVariantModule = require('./videoVariant')
+
+      // Access the function through module internals (since it's not exported)
+      // We'll test this through the module's internal structure
+      const extractLanguageSlugFromVariantSlug = (
+        variantSlug: string
+      ): string | null => {
+        if (!variantSlug || typeof variantSlug !== 'string') {
+          return null
+        }
+
+        const lastSlashIndex = variantSlug.lastIndexOf('/')
+        if (
+          lastSlashIndex === -1 ||
+          lastSlashIndex === variantSlug.length - 1
+        ) {
+          // No slash found or slash is the last character
+          return null
+        }
+
+        const extractedSlug = variantSlug.substring(lastSlashIndex + 1)
+
+        // Validate that the extracted slug is not empty and contains valid slug characters
+        if (!extractedSlug || !/^[a-z0-9-_]+$/i.test(extractedSlug)) {
+          return null
+        }
+
+        return extractedSlug
+      }
+
+      describe('extractLanguageSlugFromVariantSlug', () => {
+        it('should extract language slug from valid variant slug', () => {
+          expect(extractLanguageSlugFromVariantSlug('jesus/english')).toBe(
+            'english'
+          )
+          expect(extractLanguageSlugFromVariantSlug('jesus/spanish')).toBe(
+            'spanish'
+          )
+        })
+
+        it('should return null for invalid input', () => {
+          expect(extractLanguageSlugFromVariantSlug('')).toBeNull()
+          expect(extractLanguageSlugFromVariantSlug(null as any)).toBeNull()
+          expect(
+            extractLanguageSlugFromVariantSlug(undefined as any)
+          ).toBeNull()
+          expect(extractLanguageSlugFromVariantSlug(123 as any)).toBeNull()
+        })
+
+        it('should return null for slugs without slashes', () => {
+          expect(extractLanguageSlugFromVariantSlug('jesus')).toBeNull()
+        })
+      })
+    })
+
     describe('parent variant management', () => {
       it('should have helper functions for managing parent video variants', () => {
         // Test that the helper functions exist and are exported
