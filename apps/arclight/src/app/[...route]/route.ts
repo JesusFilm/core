@@ -3,7 +3,7 @@ import { OpenAPIHono } from '@hono/zod-openapi'
 import { etag } from 'hono/etag'
 import { handle } from 'hono/vercel'
 
-import { setCorsHeaders } from '../_redirectUtils'
+import { setCorsHeaders } from '../../lib/redirectUtils'
 
 import { dh } from './_dh'
 import { dl } from './_dl'

@@ -9,8 +9,8 @@ import {
   getBrightcoveVideo,
   selectBrightcoveSource
 } from '../../lib/brightcove'
+import { getClientIp, setCorsHeaders } from '../../lib/redirectUtils'
 import { GET_SHORT_LINK_QUERY } from '../[...route]/queries'
-import { getClientIp, setCorsHeaders } from '../_redirectUtils'
 
 const app = new OpenAPIHono().basePath('/')
 
@@ -91,18 +91,16 @@ app.openapi(keywordRoute, async (c) => {
       ) {
         try {
           const video = await getBrightcoveVideo(brightcoveId, false, clientIp)
-          const validCodes: BrightcoveSourceCode[] = [
-            'hls',
-            'dash',
-            'dh',
-            'dl',
-            's'
-          ]
-          if (validCodes.includes(redirectType as BrightcoveSourceCode)) {
-            const src = selectBrightcoveSource(
-              video,
-              redirectType as BrightcoveSourceCode
+          function isBrightcoveSourceCode(
+            value: string
+          ): value is BrightcoveSourceCode {
+            return ['hls', 'dash', 'dh', 'dl'].includes(
+              value as BrightcoveSourceCode
             )
+          }
+
+          if (isBrightcoveSourceCode(redirectType)) {
+            const src = selectBrightcoveSource(video, redirectType)
             if (src) {
               return c.redirect(src, 302)
             }

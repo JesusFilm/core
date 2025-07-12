@@ -3,7 +3,7 @@ import { ResultOf, graphql } from 'gql.tada'
 import { HTTPException } from 'hono/http-exception'
 
 import { getApolloClient } from '../../../lib/apolloClient'
-import { setCorsHeaders } from '../../_redirectUtils'
+import { setCorsHeaders } from '../../../lib/redirectUtils'
 
 const GET_VIDEO_VARIANT = graphql(`
   query GetVideoWithVariant($id: ID!, $languageId: ID!) {
