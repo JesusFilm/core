@@ -255,7 +255,6 @@ export function VideoPlayer({
       // When video metadata is loaded, apply our custom offset
       vjsPlayer.on('loadedmetadata', () => {
         const duration = vjsPlayer.duration() || 0
-        console.log('Video duration:', duration)
 
         // Only apply offset if we have a valid start or end time
         if (startTime > 0 || (endTime && endTime < duration && endTime > 0)) {

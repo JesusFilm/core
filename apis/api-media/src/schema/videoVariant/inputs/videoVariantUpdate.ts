@@ -18,6 +18,7 @@ export const VideoVariantUpdateInput = builder.inputType(
       downloadable: t.boolean({ required: false }),
       published: t.boolean({ required: false }),
       muxVideoId: t.string({ required: false }),
+      brightcoveId: t.string({ required: false }),
       version: t.int({ required: false })
     })
   }
