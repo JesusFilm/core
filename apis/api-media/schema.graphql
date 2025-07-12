@@ -183,8 +183,8 @@ type Mutation {
   bibleCitationUpdate(input: MutationBibleCitationUpdateInput!): BibleCitation
   bibleCitationDelete(id: ID!): Boolean
   createKeyword(value: String!, languageId: String!): Keyword!
-  createMuxVideoUploadByFile(name: String!, userGenerated: Boolean): MuxVideo!
-  createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean): MuxVideo!
+  createMuxVideoUploadByFile(name: String!, userGenerated: Boolean, downloadable: Boolean = false): MuxVideo!
+  createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean, downloadable: Boolean = false): MuxVideo!
   enableMuxDownload(id: ID!, resolution: String): MuxVideo
   deleteMuxVideo(id: ID!, userGenerated: Boolean): Boolean!
 
@@ -211,6 +211,7 @@ type Mutation {
   shortLinkDelete(id: String!): MutationShortLinkDeleteResult!
   videoCreate(input: VideoCreateInput!): Video!
   videoUpdate(input: VideoUpdateInput!): Video!
+  videoDelete(id: ID!): Video!
   videoDescriptionCreate(input: VideoTranslationCreateInput!): VideoDescription!
   videoDescriptionUpdate(input: VideoTranslationUpdateInput!): VideoDescription!
   videoDescriptionDelete(id: ID!): VideoDescription!
@@ -1076,13 +1077,16 @@ input VideoVariantDownloadCreateInput {
 }
 
 enum VideoVariantDownloadQuality {
-  low
-  sd
-  high
-  highest
   distroLow
   distroSd
   distroHigh
+  low
+  sd
+  high
+  fhd
+  qhd
+  uhd
+  highest
 }
 
 input VideoVariantDownloadUpdateInput {

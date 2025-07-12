@@ -7,6 +7,8 @@ import { prismaMock } from '../../../../test/prismaMock'
 
 import { enableDownload } from './service'
 
+// Mock the processVideoDownloads queue
+
 jest.mock('./service', () => ({
   createVideoByDirectUpload: jest.fn().mockResolvedValue({
     id: 'uploadId',
@@ -28,6 +30,12 @@ jest.mock('./service', () => ({
   getUpload: jest.fn().mockResolvedValue({
     asset_id: 'assetId'
   })
+}))
+
+jest.mock('../../../workers/processVideoDownloads/queue', () => ({
+  queue: {
+    add: jest.fn().mockResolvedValue({ id: 'job-id' })
+  }
 }))
 
 describe('mux/video', () => {
@@ -52,6 +60,14 @@ describe('mux/video', () => {
         id: 'userId'
       }
     }
+  })
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+    const { queue } = jest.requireMock(
+      '../../../workers/processVideoDownloads/queue'
+    )
+    queue.add.mockResolvedValue({ id: 'job-id' })
   })
 
   describe('queries', () => {
@@ -184,6 +200,199 @@ describe('mux/video', () => {
         })
         expect(data).toHaveProperty('data', null)
       })
+
+      it('should queue download processing when video is downloadable and ready', async () => {
+        const { getVideo } = jest.requireMock('./service')
+
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+
+        // First call returns video without playbackId to trigger getVideo call
+        prismaMock.muxVideo.findFirstOrThrow.mockResolvedValue({
+          id: 'videoId',
+          playbackId: null,
+          uploadId: 'uploadId',
+          assetId: 'assetId',
+          duration: 10,
+          name: 'videoName',
+          uploadUrl: 'https://example.com/video.mp4',
+          userId: 'userId',
+          createdAt: new Date(),
+          readyToStream: false,
+          downloadable: true,
+          updatedAt: new Date()
+        })
+
+        // Mock the updated video after getVideo call
+        prismaMock.muxVideo.update.mockResolvedValue({
+          id: 'videoId',
+          playbackId: 'playbackId',
+          uploadId: 'uploadId',
+          assetId: 'assetId',
+          duration: 10,
+          name: 'videoName',
+          uploadUrl: 'https://example.com/video.mp4',
+          userId: 'userId',
+          createdAt: new Date(),
+          readyToStream: true,
+          downloadable: true,
+          updatedAt: new Date()
+        })
+
+        const data = await authClient({
+          document: GET_MY_MUX_VIDEO,
+          variables: {
+            id: 'videoId',
+            userGenerated: false
+          }
+        })
+
+        expect(getVideo).toHaveBeenCalledWith('assetId', false)
+        expect(prismaMock.muxVideo.update).toHaveBeenCalledWith({
+          where: { id: 'videoId' },
+          data: {
+            readyToStream: true,
+            playbackId: 'playbackId',
+            duration: 10
+          }
+        })
+        const { queue } = jest.requireMock(
+          '../../../workers/processVideoDownloads/queue'
+        )
+        expect(queue.add).toHaveBeenCalledWith('process-video-downloads', {
+          videoId: 'videoId',
+          assetId: 'assetId',
+          isUserGenerated: false
+        })
+        expect(data).toHaveProperty('data.getMyMuxVideo.readyToStream', true)
+      })
+
+      it('should not queue download processing when video is not downloadable', async () => {
+        const { getVideo } = jest.requireMock('./service')
+
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+
+        prismaMock.muxVideo.findFirstOrThrow.mockResolvedValue({
+          id: 'videoId',
+          playbackId: null,
+          uploadId: 'uploadId',
+          assetId: 'assetId',
+          duration: 10,
+          name: 'videoName',
+          uploadUrl: 'https://example.com/video.mp4',
+          userId: 'userId',
+          createdAt: new Date(),
+          readyToStream: false,
+          downloadable: false, // Not downloadable
+          updatedAt: new Date()
+        })
+
+        prismaMock.muxVideo.update.mockResolvedValue({
+          id: 'videoId',
+          playbackId: 'playbackId',
+          uploadId: 'uploadId',
+          assetId: 'assetId',
+          duration: 10,
+          name: 'videoName',
+          uploadUrl: 'https://example.com/video.mp4',
+          userId: 'userId',
+          createdAt: new Date(),
+          readyToStream: true,
+          downloadable: false,
+          updatedAt: new Date()
+        })
+
+        await authClient({
+          document: GET_MY_MUX_VIDEO,
+          variables: {
+            id: 'videoId',
+            userGenerated: false
+          }
+        })
+
+        expect(getVideo).toHaveBeenCalledWith('assetId', false)
+        expect(prismaMock.muxVideo.update).toHaveBeenCalled()
+        const { queue } = jest.requireMock(
+          '../../../workers/processVideoDownloads/queue'
+        )
+        expect(queue.add).not.toHaveBeenCalled()
+      })
+
+      it('should handle queue errors gracefully', async () => {
+        const { getVideo } = jest.requireMock('./service')
+        const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
+
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+
+        prismaMock.muxVideo.findFirstOrThrow.mockResolvedValue({
+          id: 'videoId',
+          playbackId: null,
+          uploadId: 'uploadId',
+          assetId: 'assetId',
+          duration: 10,
+          name: 'videoName',
+          uploadUrl: 'https://example.com/video.mp4',
+          userId: 'userId',
+          createdAt: new Date(),
+          readyToStream: false,
+          downloadable: true,
+          updatedAt: new Date()
+        })
+
+        prismaMock.muxVideo.update.mockResolvedValue({
+          id: 'videoId',
+          playbackId: 'playbackId',
+          uploadId: 'uploadId',
+          assetId: 'assetId',
+          duration: 10,
+          name: 'videoName',
+          uploadUrl: 'https://example.com/video.mp4',
+          userId: 'userId',
+          createdAt: new Date(),
+          readyToStream: true,
+          downloadable: true,
+          updatedAt: new Date()
+        })
+
+        // Mock queue to throw error
+        const { queue } = jest.requireMock(
+          '../../../workers/processVideoDownloads/queue'
+        )
+        queue.add.mockRejectedValueOnce(new Error('Queue connection failed'))
+
+        const data = await authClient({
+          document: GET_MY_MUX_VIDEO,
+          variables: {
+            id: 'videoId',
+            userGenerated: false
+          }
+        })
+
+        expect(queue.add).toHaveBeenCalledWith('process-video-downloads', {
+          videoId: 'videoId',
+          assetId: 'assetId',
+          isUserGenerated: false
+        })
+        expect(consoleSpy).toHaveBeenCalledWith(
+          'Failed to queue video downloads processing:',
+          expect.any(Error)
+        )
+        // Should still return the video even if queue fails
+        expect(data).toHaveProperty('data.getMyMuxVideo.readyToStream', true)
+
+        consoleSpy.mockRestore()
+      })
     })
 
     describe('getMuxVideo', () => {
@@ -289,7 +498,8 @@ describe('mux/video', () => {
             name: 'videoName',
             uploadUrl: 'https://example.com/video.mp4',
             uploadId: 'uploadId',
-            userId: 'testUserId'
+            userId: 'testUserId',
+            downloadable: false
           }
         })
         expect(result).toHaveProperty('data.createMuxVideoUploadByFile', {
@@ -359,7 +569,8 @@ describe('mux/video', () => {
         expect(prismaMock.muxVideo.create).toHaveBeenCalledWith({
           data: {
             assetId: 'assetId',
-            userId: 'testUserId'
+            userId: 'testUserId',
+            downloadable: false
           }
         })
         expect(result).toHaveProperty('data.createMuxVideoUploadByUrl', {

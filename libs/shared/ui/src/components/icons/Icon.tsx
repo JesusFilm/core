@@ -99,6 +99,7 @@ import Grid1 from './Grid1'
 import GridEmpty from './GridEmpty'
 import Hash1 from './Hash1'
 import Hash2 from './Hash2'
+import Header1 from './Header1'
 import HelpCircleContained from './HelpCircleContained'
 import HelpSquareContained from './HelpSquareContained'
 import Home3 from './Home3'
@@ -194,6 +195,7 @@ import Transform from './Transform'
 import Trash2 from './Trash2'
 import TrendDown1 from './TrendDown1'
 import TwitterLogo from './TwitterLogo'
+import Type1 from './Type1'
 import Type2 from './Type2'
 import Type3 from './Type3'
 import Upload1 from './Upload1'
@@ -207,6 +209,8 @@ import UsersProfiles3 from './UsersProfiles3'
 import Viber from './Viber'
 import VideoOn from './VideoOn'
 import Vk from './Vk'
+import Volume5 from './Volume5'
+import VolumeOff from './VolumeOff'
 import Web from './Web'
 import WhatsApp from './WhatsApp'
 import X1 from './X1'
@@ -315,6 +319,7 @@ export type IconName =
   | 'GridEmpty'
   | 'Hash1'
   | 'Hash2'
+  | 'Header1'
   | 'HelpCircleContained'
   | 'HelpSquareContained'
   | 'Home3'
@@ -410,6 +415,7 @@ export type IconName =
   | 'Transform'
   | 'TrendDown1'
   | 'TwitterLogo'
+  | 'Type1'
   | 'Type2'
   | 'Type3'
   | 'Upload1'
@@ -423,6 +429,8 @@ export type IconName =
   | 'Viber'
   | 'VideoOn'
   | 'Vk'
+  | 'VolumeOff'
+  | 'Volume5'
   | 'Web'
   | 'WhatsApp'
   | 'X1'
@@ -535,6 +543,7 @@ const iconComponents: IconComponents = {
   GridEmpty,
   Hash1,
   Hash2,
+  Header1,
   HelpCircleContained,
   HelpSquareContained,
   Home3,
@@ -630,6 +639,7 @@ const iconComponents: IconComponents = {
   Transform,
   TrendDown1,
   TwitterLogo,
+  Type1,
   Type2,
   Type3,
   Upload1,
@@ -643,6 +653,8 @@ const iconComponents: IconComponents = {
   Viber,
   VideoOn,
   Vk,
+  VolumeOff,
+  Volume5,
   Web,
   WhatsApp,
   X1,
