@@ -2,5 +2,6 @@ export {
   isValidHex,
   getOpacityFromHex,
   stripAlphaFromHex,
-  addAlphaToHex
+  addAlphaToHex,
+  reduceHexOpacity
 } from './colorOpacityUtils'

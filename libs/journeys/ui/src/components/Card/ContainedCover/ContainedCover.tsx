@@ -19,7 +19,11 @@ import { getJourneyRTL } from '../../../libs/rtl'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { VideoFields } from '../../Video/__generated__/VideoFields'
 import { OverlayContent } from '../OverlayContent'
-import { addAlphaToHex, stripAlphaFromHex } from '../utils/colorOpacityUtils'
+import {
+  addAlphaToHex,
+  reduceHexOpacity,
+  stripAlphaFromHex
+} from '../utils/colorOpacityUtils'
 
 import { BackgroundVideo } from './BackgroundVideo'
 
@@ -117,6 +121,8 @@ export function ContainedCover({
     ${addAlphaToHex(baseBackgroundColor, 69)} 20%,  
     ${addAlphaToHex(baseBackgroundColor, 90)} 25%,  
     ${addAlphaToHex(baseBackgroundColor, 100)} 30%)`
+
+  console.log(backgroundColor)
 
   return (
     <>
@@ -277,11 +283,11 @@ export function ContainedCover({
                 pl: { sm: 50 },
                 WebkitMask: {
                   xs: overlayGradient('bottom'),
-                  sm: overlayGradient('right')
+                  sm: overlayGradient(rtl ? 'right' : 'left')
                 },
                 mask: {
                   xs: overlayGradient('bottom'),
-                  sm: overlayGradient('right')
+                  sm: overlayGradient(rtl ? 'left' : 'right')
                 },
                 backgroundColor: `${backgroundColor}`
               }}
@@ -302,7 +308,13 @@ export function ContainedCover({
             className="overlay-gradient"
             sx={{
               background: {
-                xs: `linear-gradient(to top, ${backgroundColor} ${rtl ? 100 : 0}%, ${backgroundColor} 60%, ${backgroundColor} 100%)`,
+                xs: `linear-gradient(to bottom, ${reduceHexOpacity(
+                  backgroundColor,
+                  100
+                )} 0%, ${reduceHexOpacity(
+                  backgroundColor,
+                  70
+                )} 60%, ${backgroundColor} 100%)`,
                 sm: 'unset'
               }
             }}
