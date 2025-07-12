@@ -1,5 +1,5 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
-import { ResultOf } from 'gql.tada'
+import { ResultOf, graphql } from 'gql.tada'
 import { HTTPException } from 'hono/http-exception'
 import { handle } from 'hono/vercel'
 
@@ -10,7 +10,21 @@ import {
   selectBrightcoveSource
 } from '../../lib/brightcove'
 import { getClientIp, setCorsHeaders } from '../../lib/redirectUtils'
-import { GET_SHORT_LINK_QUERY } from '../[...route]/queries'
+
+export const GET_SHORT_LINK_QUERY = graphql(`
+  query GetShortLinkQuery($hostname: String!, $pathname: String!) {
+    shortLink: shortLinkByPath(hostname: $hostname, pathname: $pathname) {
+      __typename
+      ... on QueryShortLinkByPathSuccess {
+        data {
+          to
+          redirectType
+          brightcoveId
+        }
+      }
+    }
+  }
+`)
 
 const app = new OpenAPIHono().basePath('/')
 
