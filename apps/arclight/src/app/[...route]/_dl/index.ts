@@ -21,25 +21,6 @@ const GET_VIDEO_VARIANT = graphql(`
   }
 `)
 
-const getVideoVariant = async (
-  mediaComponentId: string,
-  languageId: string
-) => {
-  const { data } = await getApolloClient().query<
-    ResultOf<typeof GET_VIDEO_VARIANT>
-  >({
-    query: GET_VIDEO_VARIANT,
-    variables: {
-      id: mediaComponentId,
-      languageId
-    }
-  })
-  if (!data.video?.variant) {
-    throw new HTTPException(404, { message: 'Video variant not found' })
-  }
-  return data.video.variant
-}
-
 export const dl = new OpenAPIHono()
 
 dl.openapi(
@@ -86,7 +67,19 @@ dl.openapi(
     setCorsHeaders(c)
     const { mediaComponentId, languageId } = c.req.param()
     try {
-      const variant = await getVideoVariant(mediaComponentId, languageId)
+      const { data } = await getApolloClient().query<
+        ResultOf<typeof GET_VIDEO_VARIANT>
+      >({
+        query: GET_VIDEO_VARIANT,
+        variables: {
+          id: mediaComponentId,
+          languageId
+        }
+      })
+      if (!data.video?.variant) {
+        return c.json({ error: 'Video variant not found' }, 404)
+      }
+      const variant = data.video.variant
       const download = variant.downloads?.find((d) => d.quality === 'low')
       if (!download?.url) {
         return c.json({ error: 'Low quality download URL not available' }, 404)

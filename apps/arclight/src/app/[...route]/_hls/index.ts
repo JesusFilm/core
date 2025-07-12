@@ -21,32 +21,6 @@ const GET_VIDEO_VARIANT = graphql(`
   }
 `)
 
-const getVideoVariant = async (
-  mediaComponentId: string,
-  languageId: string
-) => {
-  try {
-    const { data } = await getApolloClient().query<
-      ResultOf<typeof GET_VIDEO_VARIANT>
-    >({
-      query: GET_VIDEO_VARIANT,
-      variables: {
-        id: mediaComponentId,
-        languageId
-      }
-    })
-    if (!data.video?.variant) {
-      throw new HTTPException(404, { message: 'Video variant not found' })
-    }
-    const variant = data.video.variant
-  } catch (error) {
-    if (error instanceof HTTPException) {
-      throw error
-    }
-    throw new HTTPException(500, { message: 'Failed to fetch video data' })
-  }
-}
-
 const hlsRoute = createRoute({
   method: 'get',
   path: '/:mediaComponentId/:languageId',
@@ -93,7 +67,19 @@ hls.openapi(hlsRoute, async (c) => {
   setCorsHeaders(c)
   const { mediaComponentId, languageId } = c.req.param()
   try {
-    const variant = await getVideoVariant(mediaComponentId, languageId)
+    const { data } = await getApolloClient().query<
+      ResultOf<typeof GET_VIDEO_VARIANT>
+    >({
+      query: GET_VIDEO_VARIANT,
+      variables: {
+        id: mediaComponentId,
+        languageId
+      }
+    })
+    if (!data.video?.variant) {
+      return c.json({ error: 'Video variant not found' }, 404)
+    }
+    const variant = data.video.variant
     if (variant.hls) {
       return c.redirect(variant.hls, 302)
     }

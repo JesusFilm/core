@@ -21,41 +21,6 @@ const GET_VIDEO_VARIANT = graphql(`
   }
 `)
 
-const getVideoVariant = async (
-  mediaComponentId: string,
-  languageId: string
-) => {
-  try {
-    const { data } = await getApolloClient().query<
-      ResultOf<typeof GET_VIDEO_VARIANT>
-    >({
-      query: GET_VIDEO_VARIANT,
-      variables: {
-        id: mediaComponentId,
-        languageId
-      }
-    })
-    if (!data.video?.variant) {
-      throw new HTTPException(404, { message: 'Video variant not found' })
-    }
-    const variant = data.video.variant
-    const download = variant.downloads?.find((d) => d.quality === 'high')
-    if (!download?.url) {
-      return c.json({ error: 'High quality download URL not available' }, 404)
-    }
-    return c.redirect(download.url, 302)
-  } catch (error) {
-    if (error instanceof HTTPException) {
-      if (error.status === 404) {
-        return c.json({ error: error.message }, 404)
-      }
-    }
-    console.error('Failed to fetch Brightcove video:', error)
-    const errorMessage = error instanceof Error ? error.message : String(error)
-    return c.json({ error: `Internal server error: ${errorMessage}` }, 500)
-  }
-}
-
 const dhRoute = createRoute({
   method: 'get',
   path: '/:mediaComponentId/:languageId',
@@ -102,8 +67,20 @@ dh.openapi(dhRoute, async (c) => {
   setCorsHeaders(c)
   const { mediaComponentId, languageId } = c.req.param()
   try {
-    const variant = await getVideoVariant(mediaComponentId, languageId)
-    const download = variant.downloads?.find((d: any) => d.quality === 'high')
+    const { data } = await getApolloClient().query<
+      ResultOf<typeof GET_VIDEO_VARIANT>
+    >({
+      query: GET_VIDEO_VARIANT,
+      variables: {
+        id: mediaComponentId,
+        languageId
+      }
+    })
+    if (!data.video?.variant) {
+      return c.json({ error: 'Video variant not found' }, 404)
+    }
+    const variant = data.video.variant
+    const download = variant.downloads?.find((d) => d.quality === 'high')
     if (!download?.url) {
       return c.json({ error: 'High quality download URL not available' }, 404)
     }
