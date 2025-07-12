@@ -38,8 +38,11 @@ const getVideoVariant = async (
     if (!data.video?.variant) {
       throw new HTTPException(404, { message: 'Video variant not found' })
     }
-    return data.video.variant
+    const variant = data.video.variant
   } catch (error) {
+    if (error instanceof HTTPException) {
+      throw error
+    }
     throw new HTTPException(500, { message: 'Failed to fetch video data' })
   }
 }

@@ -38,9 +38,21 @@ const getVideoVariant = async (
     if (!data.video?.variant) {
       throw new HTTPException(404, { message: 'Video variant not found' })
     }
-    return data.video.variant
+    const variant = data.video.variant
+    const download = variant.downloads?.find((d) => d.quality === 'high')
+    if (!download?.url) {
+      return c.json({ error: 'High quality download URL not available' }, 404)
+    }
+    return c.redirect(download.url, 302)
   } catch (error) {
-    throw new HTTPException(500, { message: 'Failed to fetch video data' })
+    if (error instanceof HTTPException) {
+      if (error.status === 404) {
+        return c.json({ error: error.message }, 404)
+      }
+    }
+    console.error('Failed to fetch Brightcove video:', error)
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    return c.json({ error: `Internal server error: ${errorMessage}` }, 500)
   }
 }
 
@@ -102,6 +114,7 @@ dh.openapi(dhRoute, async (c) => {
         return c.json({ error: error.message }, 404)
       }
     }
+    console.error('Failed to fetch Brightcove video:', error)
     const errorMessage = error instanceof Error ? error.message : String(error)
     return c.json({ error: `Internal server error: ${errorMessage}` }, 500)
   }
