@@ -142,7 +142,7 @@ Try to define large object data in a `data.ts` file like `languageRefinements` a
 
 ### Storybook Testing
 
-For storybooks we need to utalise mock service workers (MSW) to intercept the algolia API calls and instead return our own data. Note if you are adding the `<SearchBar />` to your page, you will need the `<SearchBarProvider />` and mocks.
+For storybooks we need to utilise mock service workers (MSW) to intercept the algolia API calls and instead return our own data. Note if you are adding the `<SearchBar />` to your page, you will need the `<SearchBarProvider />` and mocks.
 
 ```typescript
 const Template: StoryObj<ComponentProps<typeof SearchBar> & { query: string }> = {
