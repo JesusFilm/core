@@ -122,8 +122,6 @@ export function ContainedCover({
     ${addAlphaToHex(baseBackgroundColor, 90)} 25%,  
     ${addAlphaToHex(baseBackgroundColor, 100)} 30%)`
 
-  console.log(backgroundColor)
-
   return (
     <>
       <Box
