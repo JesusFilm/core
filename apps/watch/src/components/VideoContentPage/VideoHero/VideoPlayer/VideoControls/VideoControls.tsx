@@ -36,6 +36,8 @@ import { HeroOverlay } from '../../../../HeroOverlay/HeroOverlay'
 import { AudioLanguageButton } from '../../../AudioLanguageButton'
 import { VideoTitle } from '../VideoTitle'
 
+import { handleVideoTitleClick } from './utils/handleVideoTitleClick'
+
 const DynamicLanguageSwitchDialog = dynamic<{
   open: boolean
   handleClose: () => void
@@ -507,8 +509,13 @@ export function VideoControls({
             showButton
             onClick={(e) => {
               e.stopPropagation()
-              if (mute || volume === 0) handleMute()
-              if (!play) void player?.play()
+              handleVideoTitleClick({
+                player,
+                dispatch: dispatchPlayer,
+                mute,
+                volume,
+                play
+              })
             }}
           />
         </Container>
@@ -543,8 +550,13 @@ export function VideoControls({
               videoTitle={videoTitle}
               onClick={(e) => {
                 e.stopPropagation()
-                if (mute || volume === 0) handleMute()
-                if (!play) void player?.play()
+                handleVideoTitleClick({
+                  player,
+                  dispatch: dispatchPlayer,
+                  mute,
+                  volume,
+                  play
+                })
               }}
             />
           </Container>
