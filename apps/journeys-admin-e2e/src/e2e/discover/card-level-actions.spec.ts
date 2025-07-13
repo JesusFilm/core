@@ -50,7 +50,7 @@ test.describe('verify card level actions', () => {
       'created'
     ) // clicking on created typography text in the journey card
     await cardLevelActionPage.editTextInJourneyCard() // editing the created typography text in the journey card
-    await cardLevelActionPage.changeFontStyleInJourneyCardText('Header 1') // choosing the font size for edited typography text in the journey card
+    await cardLevelActionPage.changeFontStyleInJourneyCardText('Display') // choosing the font size for edited typography text in the journey card
     await cardLevelActionPage.clickAddBlockBtn() // clicking on done button
     await cardLevelActionPage.verifyTextUpdatedInJourneyCard() // verifying the edited text is updated in the journey card
     await cardLevelActionPage.verifyTextStyleChangedInJourneyCard() // verifying the font size is changed to according to the choosen one.

@@ -19,7 +19,7 @@ export function ContentMetadata({
   label
 }: ContentMetadataProps): ReactElement {
   const { t } = useTranslation('apps-watch')
-  const { label: labelText, color } = getLabelDetails(t, label)
+  const { label: labelText } = getLabelDetails(t, label)
   const [showDownload, setShowDownload] = useState(false)
 
   return (
@@ -28,15 +28,12 @@ export function ContentMetadata({
         <div className="flex flex-col gap-3">
           <div className="flex flex-col gap-2 md:gap-0 md:flex-row justify-between">
             <div>
-              <h4
-                className="text-sm font-semibold xl:text-base 2xl:text-lg tracking-wider uppercase"
-                style={{ color }}
-              >
+              <h4 className="text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-red-100/70">
                 {labelText}
               </h4>
-              <h2 className="text-2xl xl:text-3xl 2xl:text-4xl font-bold mb-0">
+              <h1 className="text-2xl xl:text-3xl 2xl:text-4xl font-bold mb-0">
                 {title}
-              </h2>
+              </h1>
             </div>
             <button
               onClick={() => setShowDownload(true)}

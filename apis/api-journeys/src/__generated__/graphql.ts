@@ -20,6 +20,7 @@ export type Scalars = {
   DateTime: { input: any; output: any; }
   /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.This scalar is serialized to a string in ISO 8601 format and parsed from a string in ISO 8601 format. */
   DateTimeISO: { input: any; output: any; }
+  /** The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
   Json: { input: any; output: any; }
   join__FieldSet: { input: any; output: any; }
   link__Import: { input: any; output: any; }
@@ -167,10 +168,13 @@ export type ButtonBlockSettings = {
   __typename?: 'ButtonBlockSettings';
   /** Alignment of the button */
   alignment?: Maybe<ButtonAlignment>;
+  /** Color of the button */
+  color?: Maybe<Scalars['String']['output']>;
 };
 
 export type ButtonBlockSettingsInput = {
   alignment?: InputMaybe<ButtonAlignment>;
+  color?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type ButtonBlockUpdateInput = {
@@ -1489,6 +1493,7 @@ export type Mutation = {
   journeyProfileUpdate: JourneyProfile;
   /** Sets journey status to published */
   journeyPublish?: Maybe<Journey>;
+  journeySimpleUpdate?: Maybe<Scalars['Json']['output']>;
   /** Updates template */
   journeyTemplate: Journey;
   journeyThemeCreate: JourneyTheme;
@@ -1812,12 +1817,14 @@ export type MutationCreateKeywordArgs = {
 
 
 export type MutationCreateMuxVideoUploadByFileArgs = {
+  downloadable?: InputMaybe<Scalars['Boolean']['input']>;
   name: Scalars['String']['input'];
   userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
 export type MutationCreateMuxVideoUploadByUrlArgs = {
+  downloadable?: InputMaybe<Scalars['Boolean']['input']>;
   url: Scalars['String']['input'];
   userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
 };
@@ -1981,6 +1988,12 @@ export type MutationJourneyProfileUpdateArgs = {
 
 export type MutationJourneyPublishArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationJourneySimpleUpdateArgs = {
+  id: Scalars['ID']['input'];
+  journey: Scalars['Json']['input'];
 };
 
 
@@ -3015,6 +3028,7 @@ export type Query = {
   journeyCollections: Array<Maybe<JourneyCollection>>;
   journeyEventsConnection: JourneyEventsConnection;
   journeyEventsCount: Scalars['Int']['output'];
+  journeySimpleGet?: Maybe<Scalars['Json']['output']>;
   journeyTheme?: Maybe<JourneyTheme>;
   /** Get a JourneyVisitor count by JourneyVisitorFilter */
   journeyVisitorCount: Scalars['Int']['output'];
@@ -3248,6 +3262,11 @@ export type QueryJourneyEventsConnectionArgs = {
 export type QueryJourneyEventsCountArgs = {
   filter?: InputMaybe<JourneyEventsFilter>;
   journeyId: Scalars['ID']['input'];
+};
+
+
+export type QueryJourneySimpleGetArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -5170,10 +5189,13 @@ export enum VideoVariantDownloadQuality {
   DistroHigh = 'distroHigh',
   DistroLow = 'distroLow',
   DistroSd = 'distroSd',
+  Fhd = 'fhd',
   High = 'high',
   Highest = 'highest',
   Low = 'low',
-  Sd = 'sd'
+  Qhd = 'qhd',
+  Sd = 'sd',
+  Uhd = 'uhd'
 }
 
 export type VideoVariantDownloadUpdateInput = {
