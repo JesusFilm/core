@@ -14,4 +14,4 @@ We don't want to use wait unless necessary. We add a comment to explain why, if 
 
 ## Videos Testing
 
-At the moment there isn't seems to be event when video started or ended. So, we've used wait for the video to be completed. These waits can be removed once videos are integrated with events.
+At the moment there doesn't seem to be an event for when video started or ended. So, we've used wait for the video to be completed. These waits can be removed once videos are integrated with events.
