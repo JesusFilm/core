@@ -18,21 +18,21 @@ When starting on a new feature, bug-fix, or refactor you must create a new branc
 
 #### Naming your branch
 
-Your branch should take the following format: `YY-CY-FN-type-summary` where:
+Your branch should take the following format: `{fullname}/{project}-{linearId}-{title}`.
 
-- `YY` is the short-form year
-- `CY` is the cycle number with a leading zero if necessary
-- `FN` is your first and last initial
-- `type` is the type of issue being addressed (build, chore, ci, docs, feat, fix, perf, refactor, revert, style, test)
-- `summary` is a two to four word dash-separated summary of the issue being addressed
+This can be generate from within a Linear ticket's "Properties" pane by clicking the `Copy git branch name` button.
 
-For example `22-01-TN-fix-wrong-user-names`.
+![button - Copy git branch name](..//01-workflow/branch-name-gen.png)
 
-Periodically old branches not being worked on will be deleted. We use the `YY-CY` to determine if it should be removed.
+For example `jacobusbrink/eng-3055-update-docs`.
+
+Periodically old branches not being worked on will be deleted.
 
 #### Feature branches
 
-Features branches take on the format: `feature/YY-CY-FN-summary`
+Use feature branches for long running and large scoped feature implementations.
+
+Features branches take on the format: `feature/YY-CY-FN-summary`.
 
 - `feature/` denotes it's a feature branch
 - `YY` is the short-form year
