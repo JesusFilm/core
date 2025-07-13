@@ -72,8 +72,8 @@ export function reduceHexOpacity(
   const currentOpacity = getOpacityFromHex(hex) ?? 100
 
   // Directly subtract the percentage from the current opacity
-  // Ensure it doesn't go below 0, always return 1% opacity at minimum
-  const newOpacityPercentage = Math.max(1, currentOpacity - opacityPercentage)
+  // Ensure it doesn't go below 0
+  const newOpacityPercentage = Math.max(0, currentOpacity - opacityPercentage)
 
   // Convert to decimal alpha (0-255)
   const alphaDecimal = Math.round((newOpacityPercentage / 100) * 255)

@@ -103,11 +103,11 @@ describe('colorOpacityUtils', () => {
     it('should reduce the opacity of a hex color by a specified percentage', () => {
       expect(reduceHexOpacity('#FFFFFF', 50)).toBe('#FFFFFF80')
       expect(reduceHexOpacity('#00FF0080', 25)).toBe('#00FF0040')
-      expect(reduceHexOpacity('#0000FFFF', 100)).toBe('#0000FF03')
+      expect(reduceHexOpacity('#0000FFFF', 100)).toBe('#0000FF00')
     })
 
-    it('should return the 03 alpha hex code if the opacity is already 0', () => {
-      expect(reduceHexOpacity('#FF000000', 50)).toBe('#FF000003')
+    it('should return the 00 alpha hex code if the opacity is already 0', () => {
+      expect(reduceHexOpacity('#FF000000', 50)).toBe('#FF000000')
     })
   })
 })
