@@ -7,7 +7,7 @@
 1. Add "on stage" label to your PR.
 1. GitHub Bot will attempt to merge your PR branch into the stage branch.
    ![Attempting](./stage-branch-merge-bot-attempting.png)
-1. If a conflict exist between your PR branch and the stage branch you must resolve conflicts by manually. You will need to pull down the stage branch to your development container and merge the PR branch manually (alternatively you will need to reset the stage branch).
+1. If a conflict exist between your PR branch and the stage branch you must resolve conflicts manually. You will need to pull down the stage branch to your development container and merge the PR branch manually (alternatively you will need to reset the stage branch).
    ![Conflict](./stage-branch-merge-bot-conflict.png)
    1. Run `git checkout stage`
    1. Run `git merge my-pr-branch-name`
