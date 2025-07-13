@@ -28,11 +28,11 @@ For example `jacobusbrink/eng-3055-update-docs`.
 
 Periodically old branches not being worked on will be deleted.
 
-#### Feature branches
+#### Long-Running Feature Branches
 
-Use feature branches for long running and large scoped feature implementations.
+For **long-running and large-scoped feature implementations** that may involve multiple Linear tickets or require a dedicated integration point, we recommend creating a **single overarching feature branch** using the general naming convention. Subsequent work or smaller contributions related to this large feature can then branch off and PR into this dedicated feature branch.
 
-Features branches take on the format: `feature/YY-CY-FN-summary`.
+For this approach use the following format: `feature/YY-CY-FN-summary`.
 
 - `feature/` denotes it's a feature branch
 - `YY` is the short-form year
