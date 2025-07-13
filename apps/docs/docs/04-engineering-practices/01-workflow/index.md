@@ -18,7 +18,7 @@ When starting on a new feature, bug-fix, or refactor you must create a new branc
 
 #### Naming your branch
 
-Your branch should take the following format: `{fullname}/{project}-{linearId}-{title}`.
+Your branch should take the following format: `{fullname}/{linearProject}-{linearId}-{title}`.
 
 This can be generate from within a Linear ticket's "Properties" pane by clicking the `Copy git branch name` button.
 
