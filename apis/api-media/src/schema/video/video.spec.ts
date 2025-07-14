@@ -38,20 +38,6 @@ describe('video', () => {
     }
   })
 
-  // Add client with specific platform name for testing restrictions
-  const clientWithPlatform = getClient({
-    headers: {
-      'x-graphql-client-name': 'testPlatform'
-    }
-  })
-
-  // Add client with restricted platform name
-  const clientWithRestrictedPlatform = getClient({
-    headers: {
-      'x-graphql-client-name': 'restrictedPlatform'
-    }
-  })
-
   type VideoAndIncludes = Video & {
     bibleCitation: BibleCitation[]
     keywords: Keyword[]
@@ -309,6 +295,7 @@ describe('video', () => {
           masterWidth: 320,
           masterHeight: 180,
           assetId: null,
+          brightcoveId: null,
           version: 1
         },
         {
@@ -329,6 +316,7 @@ describe('video', () => {
           masterWidth: 320,
           masterHeight: 180,
           assetId: null,
+          brightcoveId: null,
           version: 1
         }
       ]
@@ -976,6 +964,49 @@ describe('video', () => {
             },
             orderBy: { aspectRatio: 'desc' }
           }
+        }
+      })
+      expect(data).toHaveProperty('data.videos', result)
+    })
+
+    it('should query videoVariants with different variable precedence', async () => {
+      prismaMock.video.findMany.mockResolvedValueOnce(videos)
+      // children
+      prismaMock.video.findMany.mockResolvedValueOnce(children)
+      // parents
+      prismaMock.video.findMany.mockResolvedValueOnce(parents)
+      // variantLanguages
+      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
+        { languageId: 'languageId' } as unknown as VideoVariant
+      ])
+      // variantLanguagesCount
+      prismaMock.videoVariant.count.mockResolvedValueOnce(1)
+      // childrenCount
+      prismaMock.video.count.mockResolvedValueOnce(1)
+      // variantLanguagesWithSlug
+      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
+        { languageId: 'languageId', slug: 'slug' } as unknown as VideoVariant
+      ])
+      // variant - test the precedence logic
+      prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
+        id: 'variantId'
+      } as unknown as VideoVariant)
+
+      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
+        {
+          id: 'variantId1',
+          languageId: 'languageId1'
+        } as unknown as VideoVariant,
+        {
+          id: 'variantId2',
+          languageId: 'languageId2'
+        } as unknown as VideoVariant
+      ])
+
+      const data = await client({
+        document: VIDEOS_QUERY,
+        variables: {
+          languageId: '987'
         }
       })
       expect(data).toHaveProperty('data.videos', result)
@@ -2223,6 +2254,178 @@ describe('video', () => {
           }
         })
         expect(result).toHaveProperty('data', null)
+      })
+    })
+
+    describe('videoDelete', () => {
+      const VIDEO_DELETE_MUTATION = graphql(`
+        mutation VideoDelete($id: ID!) {
+          videoDelete(id: $id) {
+            id
+          }
+        }
+      `)
+
+      it('should delete video that has never been published', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        prismaMock.video.findUnique.mockResolvedValue({
+          id: 'videoId',
+          published: false,
+          publishedAt: null,
+          variants: [
+            {
+              muxVideoId: 'muxVideoId1',
+              muxVideo: { assetId: 'assetId1' }
+            }
+          ],
+          cloudflareAssets: [{ key: 'asset1.mp4' }, { key: 'asset2.jpg' }],
+          bibleCitation: [{ id: 'citation1' }]
+        } as any)
+        prismaMock.video.delete.mockResolvedValue({
+          id: 'videoId'
+        } as any)
+
+        const result = await authClient({
+          document: VIDEO_DELETE_MUTATION,
+          variables: {
+            id: 'videoId'
+          }
+        })
+
+        expect(prismaMock.video.findUnique).toHaveBeenCalledWith(
+          expect.objectContaining({
+            where: { id: 'videoId' }
+          })
+        )
+        expect(prismaMock.video.delete).toHaveBeenCalledWith({
+          where: { id: 'videoId' }
+        })
+        expect(result).toHaveProperty('data.videoDelete', {
+          id: 'videoId'
+        })
+      })
+
+      it('should fail to delete video that has been published', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        prismaMock.video.findUnique.mockResolvedValue({
+          id: 'videoId',
+          published: true,
+          publishedAt: new Date('2023-01-01'),
+          variants: [],
+          cloudflareAssets: [],
+          bibleCitation: []
+        } as any)
+
+        const result = await authClient({
+          document: VIDEO_DELETE_MUTATION,
+          variables: {
+            id: 'videoId'
+          }
+        })
+
+        expect(result).toHaveProperty('data', null)
+        expect(result).toHaveProperty('errors')
+        expect(prismaMock.video.delete).not.toHaveBeenCalled()
+      })
+
+      it('should fail to delete unpublished video that was previously published', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        prismaMock.video.findUnique.mockResolvedValue({
+          id: 'videoId',
+          published: false,
+          publishedAt: new Date('2023-01-01'), // Has been published before
+          variants: [],
+          cloudflareAssets: [],
+          bibleCitation: []
+        } as any)
+
+        const result = await authClient({
+          document: VIDEO_DELETE_MUTATION,
+          variables: {
+            id: 'videoId'
+          }
+        })
+
+        expect(result).toHaveProperty('data', null)
+        expect(result).toHaveProperty('errors')
+        expect(prismaMock.video.delete).not.toHaveBeenCalled()
+      })
+
+      it('should fail to delete non-existent video', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        prismaMock.video.findUnique.mockResolvedValue(null)
+
+        const result = await authClient({
+          document: VIDEO_DELETE_MUTATION,
+          variables: {
+            id: 'nonExistentId'
+          }
+        })
+
+        expect(result).toHaveProperty('data', null)
+        expect(result).toHaveProperty('errors')
+        expect(prismaMock.video.delete).not.toHaveBeenCalled()
+      })
+
+      it('should fail if not publisher', async () => {
+        const result = await client({
+          document: VIDEO_DELETE_MUTATION,
+          variables: {
+            id: 'videoId'
+          }
+        })
+
+        expect(result).toHaveProperty('data', null)
+        expect(prismaMock.video.delete).not.toHaveBeenCalled()
+      })
+
+      it('should delete video with no related assets', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        prismaMock.video.findUnique.mockResolvedValue({
+          id: 'videoId',
+          published: false,
+          publishedAt: null,
+          variants: [],
+          cloudflareAssets: [],
+          bibleCitation: []
+        } as any)
+        prismaMock.video.delete.mockResolvedValue({
+          id: 'videoId'
+        } as any)
+
+        const result = await authClient({
+          document: VIDEO_DELETE_MUTATION,
+          variables: {
+            id: 'videoId'
+          }
+        })
+
+        expect(prismaMock.video.delete).toHaveBeenCalledWith({
+          where: { id: 'videoId' }
+        })
+        expect(result).toHaveProperty('data.videoDelete', {
+          id: 'videoId'
+        })
       })
     })
   })
