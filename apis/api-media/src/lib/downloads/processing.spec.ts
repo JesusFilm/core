@@ -7,6 +7,7 @@ import {
   downloadsReadyToStore,
   getHighestResolutionDownload,
   mapStaticResolutionTierToDownloadQuality,
+  mapStaticResolutionTierToDownloadQualityWithFallback,
   qualityEnumToOrder
 } from './processing'
 
@@ -159,6 +160,102 @@ describe('download processing utilities', () => {
       }
 
       expect(downloadsReadyToStore(muxVideo)).toBe(false)
+    })
+  })
+
+  describe('mapStaticResolutionTierToDownloadQualityWithFallback', () => {
+    it('should return exact match when available', () => {
+      const files = [
+        { resolution: '360p', status: 'ready' },
+        { resolution: '720p', status: 'ready' }
+      ]
+
+      const result = mapStaticResolutionTierToDownloadQualityWithFallback(
+        files,
+        '360p'
+      )
+      expect(result).toEqual({
+        resolution: '360p',
+        quality: VideoVariantDownloadQuality.sd
+      })
+    })
+
+    it('should fallback to lower resolution for sd when 360p not available', () => {
+      const files = [
+        { resolution: '270p', status: 'ready' },
+        { resolution: '480p', status: 'ready' },
+        { resolution: '720p', status: 'ready' }
+      ]
+
+      const result = mapStaticResolutionTierToDownloadQualityWithFallback(
+        files,
+        '360p'
+      )
+      expect(result).toEqual({
+        resolution: '270p',
+        quality: VideoVariantDownloadQuality.sd
+      })
+    })
+
+    it('should fallback to lower resolution for high when 720p not available', () => {
+      const files = [
+        { resolution: '270p', status: 'ready' },
+        { resolution: '360p', status: 'ready' },
+        { resolution: '480p', status: 'ready' },
+        { resolution: '1080p', status: 'ready' }
+      ]
+
+      const result = mapStaticResolutionTierToDownloadQualityWithFallback(
+        files,
+        '720p'
+      )
+      expect(result).toEqual({
+        resolution: '480p',
+        quality: VideoVariantDownloadQuality.high
+      })
+    })
+
+    it('should return null when no lower resolution available', () => {
+      const files = [
+        { resolution: '1080p', status: 'ready' },
+        { resolution: '1440p', status: 'ready' }
+      ]
+
+      const result = mapStaticResolutionTierToDownloadQualityWithFallback(
+        files,
+        '360p'
+      )
+      expect(result).toBe(null)
+    })
+
+    it('should skip errored and skipped files', () => {
+      const files = [
+        { resolution: '270p', status: 'errored' },
+        { resolution: '360p', status: 'skipped' },
+        { resolution: '480p', status: 'ready' }
+      ]
+
+      const result = mapStaticResolutionTierToDownloadQualityWithFallback(
+        files,
+        '720p'
+      )
+      expect(result).toEqual({
+        resolution: '480p',
+        quality: VideoVariantDownloadQuality.high
+      })
+    })
+
+    it('should return null for non-sd/high target resolutions', () => {
+      const files = [
+        { resolution: '270p', status: 'ready' },
+        { resolution: '480p', status: 'ready' }
+      ]
+
+      const result = mapStaticResolutionTierToDownloadQualityWithFallback(
+        files,
+        '1080p'
+      )
+      expect(result).toBe(null)
     })
   })
 
@@ -385,6 +482,116 @@ describe('download processing utilities', () => {
 
       expect(result).toBe(1) // Only 1 successful creation
       expect(prismaMock.videoVariantDownload.create).toHaveBeenCalledTimes(2)
+    })
+
+    it('should use fallback resolution for sd when 360p not available', async () => {
+      const muxVideoAsset = {
+        playback_ids: [{ id: 'test-playback-id' }],
+        static_renditions: {
+          files: [
+            {
+              resolution: '270p',
+              status: 'ready',
+              filesize: '26214400',
+              height: 270,
+              width: 480,
+              bitrate: 400000
+            },
+            {
+              resolution: '720p',
+              status: 'ready',
+              filesize: '157286400',
+              height: 720,
+              width: 1280,
+              bitrate: 2500000
+            }
+            // Note: 360p is missing, should fallback to 270p for sd
+          ]
+        }
+      }
+
+      prismaMock.videoVariantDownload.create.mockResolvedValue({} as any)
+
+      const result = await createDownloadsFromMuxAsset({
+        variantId: 'variant-1',
+        muxVideoAsset
+      })
+
+      expect(result).toBe(4) // 270p (low) + 720p (high) + 270p (fallback sd) + highest
+      expect(prismaMock.videoVariantDownload.create).toHaveBeenCalledTimes(4)
+
+      // Check fallback sd download (270p used as sd)
+      expect(prismaMock.videoVariantDownload.create).toHaveBeenCalledWith({
+        data: {
+          videoVariantId: 'variant-1',
+          quality: VideoVariantDownloadQuality.sd,
+          url: 'https://stream.mux.com/test-playback-id/270p.mp4',
+          version: 1,
+          size: 26214400,
+          height: 270,
+          width: 480,
+          bitrate: 400000
+        }
+      })
+    })
+
+    it('should use fallback resolution for high when 720p not available', async () => {
+      const muxVideoAsset = {
+        playback_ids: [{ id: 'test-playback-id' }],
+        static_renditions: {
+          files: [
+            {
+              resolution: '360p',
+              status: 'ready',
+              filesize: '52428800',
+              height: 360,
+              width: 640,
+              bitrate: 800000
+            },
+            {
+              resolution: '480p',
+              status: 'ready',
+              filesize: '78643200',
+              height: 480,
+              width: 854,
+              bitrate: 1200000
+            },
+            {
+              resolution: '1080p',
+              status: 'ready',
+              filesize: '314572800',
+              height: 1080,
+              width: 1920,
+              bitrate: 5000000
+            }
+            // Note: 720p is missing, should fallback to 480p for high
+          ]
+        }
+      }
+
+      prismaMock.videoVariantDownload.create.mockResolvedValue({} as any)
+
+      const result = await createDownloadsFromMuxAsset({
+        variantId: 'variant-1',
+        muxVideoAsset
+      })
+
+      expect(result).toBe(4) // 360p (sd) + 480p (fallback high) + 1080p (fhd) + highest
+      expect(prismaMock.videoVariantDownload.create).toHaveBeenCalledTimes(4)
+
+      // Check fallback high download (480p used as high)
+      expect(prismaMock.videoVariantDownload.create).toHaveBeenCalledWith({
+        data: {
+          videoVariantId: 'variant-1',
+          quality: VideoVariantDownloadQuality.high,
+          url: 'https://stream.mux.com/test-playback-id/480p.mp4',
+          version: 1,
+          size: 78643200,
+          height: 480,
+          width: 854,
+          bitrate: 1200000
+        }
+      })
     })
   })
 })

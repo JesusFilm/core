@@ -1,30 +1,15 @@
 import Mux from '@mux/mux-node'
-import { Logger } from 'pino'
 
 import {
   createDownloadsFromMuxAsset,
   downloadsReadyToStore
 } from '../lib/downloads'
 import { prisma } from '../lib/prisma'
+import { logger as baseLogger } from '../logger'
 import { getVideo } from '../schema/mux/video/service'
 
-// Create a simple console logger for the script
-const logger: Logger = {
-  info: (obj: any, msg?: string) => {
-    if (typeof obj === 'string') {
-      console.log(`[INFO] ${obj}`)
-    } else {
-      console.log(`[INFO] ${msg || 'Info'}`, obj)
-    }
-  },
-  error: (obj: any, msg?: string) => {
-    if (typeof obj === 'string') {
-      console.error(`[ERROR] ${obj}`)
-    } else {
-      console.error(`[ERROR] ${msg || 'Error'}`, obj)
-    }
-  }
-} as Logger
+// Create a child logger for the script
+const logger = baseLogger.child({ script: 'mux-videos' })
 
 function getMuxClient(): Mux {
   if (process.env.MUX_ACCESS_TOKEN_ID == null)
@@ -63,6 +48,7 @@ export async function createMuxAsset(
     static_renditions: [
       { resolution: '270p' },
       { resolution: '360p' },
+      { resolution: '480p' },
       { resolution: '720p' },
       { resolution: '1080p' },
       { resolution: '1440p' },
@@ -81,6 +67,12 @@ export async function importMuxVideos(mux: Mux): Promise<void> {
   while (hasMore) {
     const variants = await prisma.videoVariant.findMany({
       where: {
+        id: {
+          not: { contains: '-jf61' }
+        },
+        video: {
+          slug: { not: { startsWith: 'jesus/' } }
+        },
         muxVideoId: null,
         masterHeight: { not: null },
         masterUrl: { not: null },
@@ -139,7 +131,7 @@ export async function importMuxVideos(mux: Mux): Promise<void> {
         // remove mux video if error
         await prisma.muxVideo.delete({
           where: {
-            id: muxVideoId
+            assetId: muxVideoId
           }
         })
 
@@ -173,6 +165,10 @@ export async function updateHls(mux: Mux): Promise<void> {
   while (hasMore) {
     const variants = await prisma.videoVariant.findMany({
       where: {
+        id: { not: { contains: '-jf61' } },
+        video: {
+          slug: { not: { startsWith: 'jesus/' } }
+        },
         muxVideoId: { not: null },
         hls: { not: { startsWith: 'https://stream.mux.com' } },
         muxVideo: {
@@ -246,6 +242,10 @@ export async function processDownloads(mux: Mux): Promise<void> {
   while (hasMore) {
     const variants = await prisma.videoVariant.findMany({
       where: {
+        id: { not: { contains: '-jf61' } },
+        video: {
+          slug: { not: { startsWith: 'jesus/' } }
+        },
         muxVideoId: { not: null },
         muxVideo: {
           downloadable: true,
