@@ -2084,6 +2084,7 @@ describe('video', () => {
           published: false,
           variants: [{ languageId: 'en' }]
         } as any)
+        prismaMock.video.findMany.mockResolvedValue([{ id: 'id' }] as any)
         prismaMock.video.update.mockResolvedValue({
           id: 'id',
           label: VideoLabel.episode,
@@ -2119,11 +2120,62 @@ describe('video', () => {
             publishedAt: expect.any(Date),
             slug: 'slug',
             noIndex: true,
-            childIds: []
+            childIds: [],
+            children: {
+              set: []
+            }
           }
         })
         expect(result).toHaveProperty('data.videoUpdate', {
           id: 'id'
+        })
+      })
+
+      it('should update video with child relations when childIds are provided', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        prismaMock.video.findUnique.mockResolvedValue({
+          publishedAt: null,
+          published: false,
+          variants: []
+        } as any)
+        prismaMock.video.findMany.mockResolvedValue([
+          { id: 'child1' },
+          { id: 'child2' },
+          { id: 'parent-id' }
+        ] as any)
+        prismaMock.video.update.mockResolvedValue({
+          id: 'parent-id',
+          label: VideoLabel.series,
+          childIds: ['child1', 'child2'],
+          children: [{ id: 'child1' }, { id: 'child2' }]
+        } as unknown as Video)
+
+        const result = await authClient({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'parent-id',
+              childIds: ['child1', 'child2']
+            }
+          }
+        })
+
+        expect(prismaMock.video.update).toHaveBeenCalledWith({
+          where: { id: 'parent-id' },
+          include: { children: true },
+          data: {
+            childIds: ['child1', 'child2'],
+            children: {
+              set: [{ id: 'child1' }, { id: 'child2' }]
+            }
+          }
+        })
+        expect(result).toHaveProperty('data.videoUpdate', {
+          id: 'parent-id'
         })
       })
 

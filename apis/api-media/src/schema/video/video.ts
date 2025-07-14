@@ -258,7 +258,9 @@ const Video = builder.prismaObject('Video', {
     childrenCount: t.int({
       nullable: false,
       resolve: async ({ id }) =>
-        await prisma.video.count({ where: { parent: { some: { id } } } }),
+        await prisma.video.count({
+          where: { parent: { some: { id } }, published: true }
+        }),
       description: 'the number value of the amount of children on a video'
     }),
     parents: t.prismaField({
@@ -591,10 +593,33 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoCreateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
+      // Handle child relation synchronization if childIds is provided
+      let childRelationData = {}
+      if (input.childIds && input.childIds.length > 0) {
+        // Get all existing video IDs to validate child IDs
+        const videos = await prisma.video.findMany({
+          select: { id: true }
+        })
+        const existingVideoIds = new Set(videos.map((video) => video.id))
+
+        // Filter out any child IDs that don't exist
+        const validChildIds = (input.childIds || []).filter((id) =>
+          existingVideoIds.has(id)
+        )
+
+        // Update the children relation
+        childRelationData = {
+          children: {
+            connect: validChildIds.map((id) => ({ id }))
+          }
+        }
+      }
+
       const data = {
         ...input,
         // Set publishedAt to current timestamp if published is true
-        publishedAt: input.published ? new Date() : undefined
+        publishedAt: input.published ? new Date() : undefined,
+        ...childRelationData
       }
 
       const video = await prisma.video.create({
@@ -646,6 +671,28 @@ builder.mutationFields((t) => ({
         }
       }
 
+      // Handle child relation synchronization if childIds is being updated
+      let childRelationUpdate = {}
+      if (input.childIds !== undefined) {
+        // Get all existing video IDs to validate child IDs
+        const videos = await prisma.video.findMany({
+          select: { id: true }
+        })
+        const existingVideoIds = new Set(videos.map((video) => video.id))
+
+        // Filter out any child IDs that don't exist
+        const validChildIds = (input.childIds || []).filter((id) =>
+          existingVideoIds.has(id)
+        )
+
+        // Update the children relation
+        childRelationUpdate = {
+          children: {
+            set: validChildIds.map((id) => ({ id }))
+          }
+        }
+      }
+
       const video = await prisma.video.update({
         ...query,
         where: { id: input.id },
@@ -660,6 +707,7 @@ builder.mutationFields((t) => ({
           restrictDownloadPlatforms:
             input.restrictDownloadPlatforms ?? undefined,
           restrictViewPlatforms: input.restrictViewPlatforms ?? undefined,
+          ...childRelationUpdate,
           ...(input.keywordIds
             ? { keywords: { set: input.keywordIds.map((id) => ({ id })) } }
             : {})
