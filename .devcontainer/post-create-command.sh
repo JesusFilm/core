@@ -41,6 +41,8 @@ npm i
 
 # update plausible db (with error handling)
 echo "Setting up Plausible database..."
-psql -U postgres -h db -d plausible_db < .devcontainer/plausible.sql || echo "Plausible database update might have failed"
-
+if ! psql -h db -U postgres -d plausible_db < .devcontainer/plausible.sql; then
+  echo "❌ Plausible DB bootstrap failed" >&2
+  exit 1
+fi
 echo "Post-create setup completed!"
