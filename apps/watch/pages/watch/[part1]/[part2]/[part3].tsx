@@ -34,7 +34,10 @@ import { PlayerProvider } from '../../../../src/libs/playerContext/PlayerContext
 import { slugMap } from '../../../../src/libs/slugMap'
 import { VIDEO_CONTENT_FIELDS } from '../../../../src/libs/videoContentFields'
 import { VideoProvider } from '../../../../src/libs/videoContext'
-import { WatchProvider } from '../../../../src/libs/watchContext/WatchContext'
+import {
+  WatchInitialState,
+  WatchProvider
+} from '../../../../src/libs/watchContext/WatchContext'
 
 export const GET_VIDEO_CONTAINER_PART_2 = gql`
   ${VIDEO_CONTENT_FIELDS}
@@ -69,7 +72,7 @@ export default function Part3Page({
   const searchClient = useInstantSearchClient()
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
-  const initialWatchState = {
+  const initialWatchState: WatchInitialState = {
     siteLanguage: i18n?.language ?? 'en',
     audioLanguage: getCookie('AUDIO_LANGUAGE') ?? '529',
     subtitleLanguage: getCookie('SUBTITLE_LANGUAGE') ?? '529',

@@ -6,12 +6,18 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { SnackbarProvider } from 'notistack'
 import type { ReactElement } from 'react'
 
+import {
+  GetSubtitles,
+  GetSubtitlesVariables,
+  GetSubtitles_video_variant_subtitle as VideoVariantSubtitle
+} from '../../../__generated__/GetSubtitles'
 import type {
   GetVideoContent,
   GetVideoContentVariables
 } from '../../../__generated__/GetVideoContent'
 import type { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import i18nConfig from '../../../next-i18next.config'
+import { GET_SUBTITLES } from '../../../src/components/SubtitleDialog/SubtitleDialog'
 import { createApolloClient } from '../../../src/libs/apolloClient'
 import { getCookie } from '../../../src/libs/cookieHandler'
 import { getFlags } from '../../../src/libs/getFlags'
@@ -21,7 +27,10 @@ import { PlayerProvider } from '../../../src/libs/playerContext/PlayerContext'
 import { slugMap } from '../../../src/libs/slugMap'
 import { VIDEO_CONTENT_FIELDS } from '../../../src/libs/videoContentFields'
 import { VideoProvider } from '../../../src/libs/videoContext'
-import { WatchProvider } from '../../../src/libs/watchContext/WatchContext'
+import {
+  WatchInitialState,
+  WatchProvider
+} from '../../../src/libs/watchContext/WatchContext'
 
 export const GET_VIDEO_CONTENT = gql`
   ${VIDEO_CONTENT_FIELDS}
@@ -34,6 +43,7 @@ export const GET_VIDEO_CONTENT = gql`
 
 interface Part2PageProps {
   content: VideoContentFields
+  videoSubtitleLanguages: VideoVariantSubtitle[]
 }
 
 const DynamicVideoContainerPage = dynamic(
@@ -52,16 +62,20 @@ const DynamicNewContentPage = dynamic(
     ).then((mod) => mod.NewVideoContentPage)
 )
 
-export default function Part2Page({ content }: Part2PageProps): ReactElement {
+export default function Part2Page({
+  content,
+  videoSubtitleLanguages
+}: Part2PageProps): ReactElement {
   const { i18n } = useTranslation()
 
-  const initialWatchState = {
+  const initialWatchState: WatchInitialState = {
     siteLanguage: i18n?.language ?? 'en',
     audioLanguage: getCookie('AUDIO_LANGUAGE') ?? '529',
     subtitleLanguage: getCookie('SUBTITLE_LANGUAGE') ?? '529',
     subtitleOn: (getCookie('SUBTITLES_ON') ?? 'false') === 'true',
     videoId: content.id,
-    videoVariantSlug: content.variant?.slug
+    videoVariantSlug: content.variant?.slug,
+    videoSubtitleLanguages
   }
 
   return (
@@ -115,7 +129,7 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
 
   const client = createApolloClient()
   try {
-    const { data } = await client.query<
+    const { data: contentData } = await client.query<
       GetVideoContent,
       GetVideoContentVariables
     >({
@@ -125,17 +139,30 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
         languageId: getLanguageIdFromLocale(context.locale)
       }
     })
-    if (data.content == null) {
+    if (contentData.content == null) {
       return {
         revalidate: 1,
         notFound: true
       }
     }
+
+    // required for auto-subtitle
+    let subtitleData: GetSubtitles | undefined
+    if (contentData.content.variant?.slug != null) {
+      const { data } = await client.query<GetSubtitles, GetSubtitlesVariables>({
+        query: GET_SUBTITLES,
+        variables: {
+          id: contentData.content.variant.slug
+        }
+      })
+      subtitleData = data
+    }
     return {
       revalidate: 3600,
       props: {
         flags: await getFlags(),
-        content: data.content,
+        content: contentData.content,
+        videoSubtitleLanguages: subtitleData?.video?.variant?.subtitle ?? [],
         ...(await serverSideTranslations(
           context.locale ?? 'en',
           ['apps-watch'],

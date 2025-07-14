@@ -169,6 +169,7 @@ export type WatchInitialState = Pick<
   | 'subtitleOn'
   | 'videoId'
   | 'videoVariantSlug'
+  | 'videoSubtitleLanguages'
 >
 
 const WatchContext = createContext<{
