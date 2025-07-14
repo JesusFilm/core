@@ -42,6 +42,7 @@ Storybook documents multiple ways to write stories [here](https://storybook.js.o
 
 ```
 // imports
+import type { StoryObj } from '@storybook/react'
 
 const ComponentDemo = {
   ...projectSpecificConfig, // #1
