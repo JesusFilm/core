@@ -197,4 +197,70 @@ test.describe('media component languages', () => {
     expect(language.shareUrl).toBeDefined()
     expect(language.shareUrl).toMatch(/^https:\/\/arc\.gt\/[a-z0-9]+$/)
   })
+
+  test('apiKey parameter affects download URLs in language list', async ({
+    request
+  }) => {
+    const specialApiKey = '607f41540b2ca6.32427244'
+    const regularApiKey = 'regular_test_key'
+
+    // Get languages with regular API key
+    const regularResponse = await request.get(
+      `${await getBaseUrl()}/v2/media-components/${mediaComponentId}/languages?${createQueryParams(
+        {
+          apiKey: regularApiKey
+        }
+      )}`
+    )
+    expect(regularResponse.ok()).toBeTruthy()
+    const regularData = await regularResponse.json()
+
+    // Get languages with special API key
+    const specialResponse = await request.get(
+      `${await getBaseUrl()}/v2/media-components/${mediaComponentId}/languages?${createQueryParams(
+        {
+          apiKey: specialApiKey
+        }
+      )}`
+    )
+    expect(specialResponse.ok()).toBeTruthy()
+    const specialData = await specialResponse.json()
+
+    // Both should have the same structure and valid data
+    expect(regularData._embedded.mediaComponentLanguage).toBeDefined()
+    expect(specialData._embedded.mediaComponentLanguage).toBeDefined()
+    expect(
+      Array.isArray(regularData._embedded.mediaComponentLanguage)
+    ).toBeTruthy()
+    expect(
+      Array.isArray(specialData._embedded.mediaComponentLanguage)
+    ).toBeTruthy()
+    expect(regularData._embedded.mediaComponentLanguage.length).toBeGreaterThan(
+      0
+    )
+    expect(specialData._embedded.mediaComponentLanguage.length).toBeGreaterThan(
+      0
+    )
+
+    // Each language should have valid structure
+    regularData._embedded.mediaComponentLanguage.forEach((language: any) => {
+      expect(language).toMatchObject({
+        mediaComponentId: expect.any(String),
+        languageId: expect.any(Number),
+        refId: expect.any(String),
+        lengthInMilliseconds: expect.any(Number),
+        _links: expect.any(Object)
+      })
+    })
+
+    specialData._embedded.mediaComponentLanguage.forEach((language: any) => {
+      expect(language).toMatchObject({
+        mediaComponentId: expect.any(String),
+        languageId: expect.any(Number),
+        refId: expect.any(String),
+        lengthInMilliseconds: expect.any(Number),
+        _links: expect.any(Object)
+      })
+    })
+  })
 })
