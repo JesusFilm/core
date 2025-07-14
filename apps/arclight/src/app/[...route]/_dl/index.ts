@@ -91,9 +91,17 @@ dl.openapi(
           return c.json({ error: error.message }, 404)
         }
       }
+      if (error instanceof Error && error.message.includes('not found')) {
+        return c.json({ error: 'Video variant not found' }, 404)
+      }
       const errorMessage =
         error instanceof Error ? error.message : String(error)
       return c.json({ error: `Internal server error: ${errorMessage}` }, 500)
     }
   }
 )
+
+dl.options('*', (c) => {
+  setCorsHeaders(c)
+  return c.body(null, 204)
+})

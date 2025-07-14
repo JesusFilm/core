@@ -32,3 +32,8 @@ s.openapi(sRoute, async (c) => {
     302
   )
 })
+
+s.options('*', (c) => {
+  setCorsHeaders(c)
+  return c.body(null, 204)
+})
