@@ -295,6 +295,7 @@ describe('video', () => {
           masterWidth: 320,
           masterHeight: 180,
           assetId: null,
+          brightcoveId: null,
           version: 1
         },
         {
@@ -315,6 +316,7 @@ describe('video', () => {
           masterWidth: 320,
           masterHeight: 180,
           assetId: null,
+          brightcoveId: null,
           version: 1
         }
       ]

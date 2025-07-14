@@ -487,7 +487,8 @@ describe('videoVariant', () => {
           masterWidth: 320,
           masterHeight: 180,
           assetId: null,
-          version: 1
+          version: 1,
+          brightcoveId: null
         })
         prismaMock.video.findUnique.mockResolvedValue({
           id: 'videoId',
@@ -594,7 +595,8 @@ describe('videoVariant', () => {
           masterWidth: 320,
           masterHeight: 180,
           assetId: null,
-          version: 1
+          version: 1,
+          brightcoveId: null
         })
         prismaMock.video.findUnique.mockResolvedValue({
           id: 'videoId',
@@ -724,7 +726,8 @@ describe('videoVariant', () => {
           masterWidth: 320,
           masterHeight: 180,
           assetId: null,
-          version: 1
+          version: 1,
+          brightcoveId: null
         })
         const result = await authClient({
           document: VIDEO_VARIANT_UPDATE_MUTATION,
@@ -802,7 +805,8 @@ describe('videoVariant', () => {
           masterWidth: 320,
           masterHeight: 180,
           assetId: null,
-          version: 1
+          version: 1,
+          brightcoveId: null
         })
 
         const result = await authClient({
@@ -915,7 +919,8 @@ describe('videoVariant', () => {
           masterWidth: 320,
           masterHeight: 180,
           assetId: null,
-          version: 1
+          version: 1,
+          brightcoveId: null
         })
         const result = await authClient({
           document: VIDEO_VARIANT_DELETE_MUTATION,
@@ -990,7 +995,8 @@ describe('videoVariant', () => {
           masterWidth: 320,
           masterHeight: 180,
           assetId: null,
-          version: 1
+          version: 1,
+          brightcoveId: null
         })
 
         const result = await authClient({
@@ -1161,7 +1167,8 @@ describe('videoVariant', () => {
           masterWidth: 320,
           masterHeight: 180,
           assetId: 'mainAssetId',
-          version: 1
+          version: 1,
+          brightcoveId: null
         })
 
         const result = await authClient({
@@ -1330,7 +1337,8 @@ describe('videoVariant', () => {
           masterWidth: 320,
           masterHeight: 180,
           assetId: 'mainAssetId',
-          version: 1
+          version: 1,
+          brightcoveId: null
         })
 
         const result = await authClient({
@@ -1449,7 +1457,8 @@ describe('videoVariant', () => {
           masterWidth: 320,
           masterHeight: 180,
           assetId: null,
-          version: 1
+          version: 1,
+          brightcoveId: null
         })
 
         const result = await authClient({
