@@ -617,15 +617,24 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoUpdateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
+      // Get existing video to check publishedAt status
+      const existingVideo = await prisma.video.findUnique({
+        where: { id: input.id },
+        select: { publishedAt: true, slug: true }
+      })
+
+      // If trying to update slug and video is already published, throw error
+      if (
+        input.slug != null &&
+        input.slug !== existingVideo?.slug &&
+        existingVideo?.publishedAt != null
+      ) {
+        throw new Error('Cannot change slug after video has been published')
+      }
+
       // If published is being set to true, we need to check if publishedAt should be set
       let publishedAtUpdate = undefined
       if (input.published === true) {
-        // Check if the video already has a publishedAt value
-        const existingVideo = await prisma.video.findUnique({
-          where: { id: input.id },
-          select: { publishedAt: true }
-        })
-
         // Only set publishedAt if it's not already set
         if (existingVideo?.publishedAt == null) {
           publishedAtUpdate = new Date()
