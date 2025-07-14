@@ -5,8 +5,10 @@ interface CacheEntry {
 
 export type BrightcoveSourceCode = 'hls' | 'dash' | 'dh' | 'dl'
 
-const ACCOUNT_ID =
-  process.env.BC_ACCOUNT_ID ?? process.env.BRIGHTCOVE_ACCOUNT_ID
+const ACCOUNT_ID = process.env.BC_ACCOUNT_ID
+const POLICY_KEY = process.env.BC_POLICY_KEY
+const CACHE_TTL_MS = 300000
+const CACHE_MAX_ENTRIES = 5000
 
 if (!ACCOUNT_ID) {
   console.warn(
@@ -14,14 +16,6 @@ if (!ACCOUNT_ID) {
   )
 }
 
-const policyKey = process.env.BC_POLICY_KEY_JSON
-
-const CACHE_TTL_MS =
-  (process.env.BC_CACHE_TTL_SECONDS
-    ? Number(process.env.BC_CACHE_TTL_SECONDS)
-    : Number(process.env.BRIGHTCOVE_CACHE_TTL_SECONDS) || 300) * 1000
-
-const CACHE_MAX_ENTRIES = 5000
 const cache = new Map<string, CacheEntry>()
 
 function setCache(key: string, data: any) {
@@ -57,12 +51,12 @@ export async function getBrightcoveVideo(
     }
   }
 
-  if (!policyKey) {
+  if (!POLICY_KEY) {
     throw new Error('Brightcove POLICY_KEY not configured')
   }
 
   const apiHeaders: HeadersInit = {
-    Authorization: `BCOV-Policy ${policyKey}`,
+    Authorization: `BCOV-Policy ${POLICY_KEY}`,
     'X-Forwarded-For': ip ?? '' // This is required for the Brightcove Playback API
   }
   const response = await fetch(
@@ -83,7 +77,7 @@ export async function getBrightcoveVideo(
   }
 
   if (response.status === 401 || response.status === 403) {
-    console.warn('[Brightcove] unauthorized for key', policyKey)
+    console.warn('[Brightcove] unauthorized for key', POLICY_KEY)
   }
   if (response.status !== 401 && response.status !== 403) {
     throw new Error(`Brightcove Playback API responded with ${response.status}`)
@@ -100,12 +94,6 @@ export function selectBrightcoveSource(
   switch (code) {
     case 'hls': {
       const src = sources.find((s) => s.type === 'application/x-mpegURL')
-      return src?.src ?? null
-    }
-    case 'dash': {
-      const src = sources.find(
-        (s) => s.container === 'MPD' && s.type === 'application/dash+xml'
-      )
       return src?.src ?? null
     }
     case 'dh': {
