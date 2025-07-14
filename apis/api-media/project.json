@@ -169,7 +169,7 @@
     "queue-download-uploader": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm run ts-node apis/api-media/src/workers/cli.ts download-uploader"
+        "command": "npm run ts-node apis/api-media/src/scripts/download-migrate-r2.ts"
       }
     },
     "queue-blocklist": {
@@ -222,6 +222,12 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "npm run ts-node apis/api-media/src/scripts/data-import.ts"
+      }
+    },
+    "download-migrate-r2": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-media/src/scripts/download-migrate-r2.ts"
       }
     }
   }

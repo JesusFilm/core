@@ -3,9 +3,10 @@ import path from 'path'
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { Logger } from 'pino'
 
-import { prisma } from '../../../lib/prisma'
+import { prisma } from '../lib/prisma'
+import { logger } from '../logger'
 
-function getClient(): S3Client {
+function getR2Client(): S3Client {
   if (process.env.CLOUDFLARE_R2_ENDPOINT == null)
     throw new Error('Missing CLOUDFLARE_R2_ENDPOINT')
   if (process.env.CLOUDFLARE_R2_ACCESS_KEY_ID == null)
@@ -82,7 +83,7 @@ async function uploadToR2FromUrl(
 
   logger?.info(`Uploading file to R2: ${fileName} (${actualSize} bytes)`)
 
-  const client = getClient()
+  const client = getR2Client()
   await client.send(
     new PutObjectCommand({
       Bucket: process.env.CLOUDFLARE_R2_BUCKET,
@@ -98,12 +99,11 @@ async function uploadToR2FromUrl(
   return { publicUrl, actualSize }
 }
 
-export async function service(logger?: Logger): Promise<void> {
-  logger?.info('Starting downloadUploader service')
+async function migrateDownloadsToR2(logger?: Logger): Promise<void> {
+  logger?.info('Starting download migration to R2')
 
   const downloadsWithoutAssets = await prisma.videoVariantDownload.findMany({
     where: {
-      id: 'b465cf65-dba9-4400-8c87-7ad8c0b4c620',
       assetId: null,
       url: { not: '' }
     },
@@ -201,5 +201,24 @@ export async function service(logger?: Logger): Promise<void> {
     }
   }
 
-  logger?.info('Completed downloadUploader service')
+  logger?.info('Completed download migration to R2')
 }
+
+async function main(): Promise<void> {
+  const scriptLogger = logger.child({ script: 'download-migrate-r2' })
+
+  try {
+    scriptLogger.info('Starting download-migrate-r2 script')
+    await migrateDownloadsToR2(scriptLogger)
+    scriptLogger.info('Download-migrate-r2 script completed successfully')
+  } catch (error) {
+    scriptLogger.error({ error }, 'Download-migrate-r2 script failed')
+    process.exit(1)
+  }
+}
+
+if (require.main === module) {
+  void main()
+}
+
+export { main, migrateDownloadsToR2 }

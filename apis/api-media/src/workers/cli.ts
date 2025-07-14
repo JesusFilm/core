@@ -20,16 +20,6 @@ export async function cli(argv = process.argv): Promise<void> {
       queue = new Queue(queueName, { connection })
       break
     }
-    case 'download-uploader': {
-      const config = await import(
-        /* webpackChunkName: "download-uploader" */
-        './downloadUploader'
-      )
-      queueName = config.queueName
-      jobName = config.jobName
-      queue = new Queue(queueName, { connection })
-      break
-    }
     case 'video-children': {
       const config = await import(
         /* webpackChunkName: "video-children" */
@@ -94,6 +84,16 @@ export async function cli(argv = process.argv): Promise<void> {
       const config = await import(
         /* webpackChunkName: "mux-downloads" */
         './muxDownloads'
+      )
+      queueName = config.queueName
+      jobName = config.jobName
+      queue = new Queue(queueName, { connection })
+      break
+    }
+    case 'process-video-downloads': {
+      const config = await import(
+        /* webpackChunkName: "process-video-downloads" */
+        './processVideoDownloads'
       )
       queueName = config.queueName
       jobName = config.jobName

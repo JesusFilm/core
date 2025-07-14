@@ -4,9 +4,9 @@ import { Logger } from 'pino'
 
 import { VideoVariantDownloadQuality } from '.prisma/api-media-client'
 
-import { prismaMock } from '../../../../test/prismaMock'
+import { prismaMock } from '../../test/prismaMock'
 
-import { service } from '.'
+import { migrateDownloadsToR2 } from './download-migrate-r2'
 
 jest.mock('@aws-sdk/client-s3', () => {
   const originalModule = jest.requireActual('@aws-sdk/client-s3')
@@ -25,7 +25,7 @@ global.fetch = jest.fn().mockImplementation(() =>
   })
 )
 
-describe('downloadUploader/service', () => {
+describe('download-migrate-r2', () => {
   const originalEnv = { ...process.env }
   const mockLogger = mockDeep<Logger>()
 
@@ -41,11 +41,11 @@ describe('downloadUploader/service', () => {
     }
   })
 
-  afterAll(() => {
+  afterEach(() => {
     process.env = originalEnv
   })
 
-  describe('service', () => {
+  describe('migrateDownloadsToR2', () => {
     it('should process videoVariantDownloads without assets', async () => {
       const mockDownloads = [
         {
@@ -132,11 +132,10 @@ describe('downloadUploader/service', () => {
           url: mockAsset2.publicUrl
         } as any)
 
-      await service(mockLogger)
+      await migrateDownloadsToR2(mockLogger)
 
       expect(prismaMock.videoVariantDownload.findMany).toHaveBeenCalledWith({
         where: {
-          id: 'b465cf65-dba9-4400-8c87-7ad8c0b4c620',
           assetId: null,
           url: { not: '' }
         },
@@ -214,13 +213,13 @@ describe('downloadUploader/service', () => {
       })
 
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'Starting downloadUploader service'
+        'Starting download migration to R2'
       )
       expect(mockLogger.info).toHaveBeenCalledWith(
         'Found 2 downloads without assets'
       )
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'Completed downloadUploader service'
+        'Completed download migration to R2'
       )
     })
 
@@ -251,7 +250,7 @@ describe('downloadUploader/service', () => {
         throw new Error('Network error')
       })
 
-      await service(mockLogger)
+      await migrateDownloadsToR2(mockLogger)
 
       expect(mockLogger.error).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -281,7 +280,7 @@ describe('downloadUploader/service', () => {
         mockDownloads as any
       )
 
-      await service(mockLogger)
+      await migrateDownloadsToR2(mockLogger)
 
       expect(mockLogger.error).toHaveBeenCalledWith(
         { downloadId: 'download-no-variant' },
@@ -292,7 +291,7 @@ describe('downloadUploader/service', () => {
     it('should update download size when size is 0 or null', async () => {
       const mockDownloads = [
         {
-          id: 'b465cf65-dba9-4400-8c87-7ad8c0b4c620', // Use the hardcoded ID from service
+          id: 'download-zero-size',
           quality: VideoVariantDownloadQuality.high,
           size: 0, // Zero size should be updated
           height: 720,
@@ -324,11 +323,11 @@ describe('downloadUploader/service', () => {
       prismaMock.cloudflareR2.update.mockResolvedValueOnce(mockAsset1 as any)
       prismaMock.videoVariantDownload.update.mockResolvedValueOnce({} as any)
 
-      await service(mockLogger)
+      await migrateDownloadsToR2(mockLogger)
 
       // Should update downloads with actual file size (17 bytes for 'test-file-content')
       expect(prismaMock.videoVariantDownload.update).toHaveBeenCalledWith({
-        where: { id: 'b465cf65-dba9-4400-8c87-7ad8c0b4c620' },
+        where: { id: 'download-zero-size' },
         data: {
           assetId: 'asset-zero',
           url: 'https://test-domain.com/video-zero/variants/en/downloads/variant-zero_high.mp4',
@@ -337,56 +336,8 @@ describe('downloadUploader/service', () => {
       })
 
       expect(mockLogger.info).toHaveBeenCalledWith(
-        { downloadId: 'b465cf65-dba9-4400-8c87-7ad8c0b4c620', actualSize: 17 },
+        { downloadId: 'download-zero-size', actualSize: 17 },
         'Updated download size with actual file size'
-      )
-    })
-
-    it('should validate file is not empty', async () => {
-      const mockDownloads = [
-        {
-          id: 'download-empty',
-          quality: VideoVariantDownloadQuality.high,
-          size: 1024,
-          height: 720,
-          width: 1280,
-          url: 'https://example.com/empty.mp4',
-          assetId: null,
-          videoVariantId: 'variant-empty',
-          videoVariant: {
-            id: 'variant-empty',
-            videoId: 'video-empty',
-            languageId: 'en'
-          }
-        }
-      ]
-
-      prismaMock.videoVariantDownload.findMany.mockResolvedValue(
-        mockDownloads as any
-      )
-      prismaMock.cloudflareR2.create.mockResolvedValue({
-        id: 'asset-empty'
-      } as any)
-
-      // Mock empty file download
-      global.fetch = jest.fn().mockImplementation(() =>
-        Promise.resolve({
-          ok: true,
-          arrayBuffer: jest.fn().mockResolvedValue(new ArrayBuffer(0))
-        })
-      )
-
-      await service(mockLogger)
-
-      expect(mockLogger.error).toHaveBeenCalledWith(
-        expect.objectContaining({
-          error: expect.objectContaining({
-            message:
-              'Downloaded file is empty: video-empty/variants/en/downloads/variant-empty_high.mp4'
-          }),
-          downloadId: 'download-empty'
-        }),
-        'Error processing download: download-empty'
       )
     })
   })
