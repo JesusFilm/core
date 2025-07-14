@@ -288,6 +288,12 @@ input MutationShortLinkCreateInput {
 
   """the service that created this short link"""
   service: Service!
+
+  """brightcove video ID for video redirects"""
+  brightcoveId: String
+
+  """type of video redirect (hls, dl, dh, s)"""
+  redirectType: RedirectType
 }
 
 union MutationShortLinkCreateResult = ZodError | NotUniqueError | MutationShortLinkCreateSuccess
@@ -346,6 +352,12 @@ input MutationShortLinkUpdateInput {
   the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to
   """
   to: String!
+
+  """brightcove video ID for video redirects"""
+  brightcoveId: String
+
+  """type of video redirect (hls, dl, dh, s)"""
+  redirectType: RedirectType
 }
 
 union MutationShortLinkUpdateResult = ZodError | NotFoundError | MutationShortLinkUpdateSuccess
@@ -538,6 +550,13 @@ type QueryShortLinksConnectionEdge {
   cursor: String!
 }
 
+enum RedirectType {
+  hls
+  dl
+  dh
+  s
+}
+
 enum SegmindModel {
   sdxl1__0_txt2img
   kandinsky2__2_txt2img
@@ -571,6 +590,12 @@ type ShortLink
 
   """the service that created this short link"""
   service: Service!
+
+  """brightcove video ID for video redirects"""
+  brightcoveId: String
+
+  """type of video redirect (hls, dl, dh, s)"""
+  redirectType: RedirectType
 }
 
 """A domain that can be used for short links"""
@@ -879,6 +904,13 @@ type VideoOrigin {
   description: String
 }
 
+enum VideoRedirectType {
+  hls
+  dl
+  dh
+  s
+}
+
 type VideoSnippet {
   id: ID!
   value: String!
@@ -1017,6 +1049,7 @@ type VideoVariant {
   lengthInMilliseconds: Int!
   language: Language!
   muxVideo: MuxVideo
+  brightcoveId: String
   published: Boolean!
   videoEdition: VideoEdition!
   subtitle(languageId: ID, primary: Boolean): [VideoSubtitle!]!
@@ -1044,6 +1077,7 @@ input VideoVariantCreateInput {
   downloadable: Boolean!
   published: Boolean = true
   muxVideoId: String
+  brightcoveId: String
   version: Int
 }
 
@@ -1121,6 +1155,7 @@ input VideoVariantUpdateInput {
   downloadable: Boolean
   published: Boolean
   muxVideoId: String
+  brightcoveId: String
   version: Int
 }
 
