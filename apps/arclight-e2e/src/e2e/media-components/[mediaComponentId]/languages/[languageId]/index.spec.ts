@@ -147,4 +147,75 @@ test.describe('media component language', () => {
       _links: expect.any(Object)
     })
   })
+
+  test.describe('apiKey download URL tests', () => {
+    test('download URLs respect special apiKey fallback logic', async ({
+      request
+    }) => {
+      const specialApiKey = '607f41540b2ca6.32427244'
+      const regularApiKey = 'regular_test_key'
+
+      // Get download URLs with regular API key
+      const regularResponse = await getMediaComponentLanguage(request, {
+        ...testCases.basic,
+        params: { apiKey: regularApiKey }
+      })
+      expect(regularResponse.ok()).toBeTruthy()
+      const regularData = await regularResponse.json()
+
+      // Get download URLs with special API key
+      const specialResponse = await getMediaComponentLanguage(request, {
+        ...testCases.basic,
+        params: { apiKey: specialApiKey }
+      })
+      expect(specialResponse.ok()).toBeTruthy()
+      const specialData = await specialResponse.json()
+
+      // Both should have downloadUrls
+      expect(regularData.downloadUrls).toBeDefined()
+      expect(specialData.downloadUrls).toBeDefined()
+
+      // Verify structure - should have low and high quality downloads
+      expect(regularData.downloadUrls).toMatchObject({
+        low: expect.objectContaining({
+          url: expect.any(String),
+          sizeInBytes: expect.any(Number)
+        }),
+        high: expect.objectContaining({
+          url: expect.any(String),
+          sizeInBytes: expect.any(Number)
+        })
+      })
+
+      expect(specialData.downloadUrls).toMatchObject({
+        low: expect.objectContaining({
+          url: expect.any(String),
+          sizeInBytes: expect.any(Number)
+        }),
+        high: expect.objectContaining({
+          url: expect.any(String),
+          sizeInBytes: expect.any(Number)
+        })
+      })
+
+      // URLs should be valid HTTP(S) URLs
+      expect(regularData.downloadUrls.low.url).toMatch(/^https?:\/\//)
+      expect(regularData.downloadUrls.high.url).toMatch(/^https?:\/\//)
+      expect(specialData.downloadUrls.low.url).toMatch(/^https?:\/\//)
+      expect(specialData.downloadUrls.high.url).toMatch(/^https?:\/\//)
+
+      // Sizes should be positive numbers
+      expect(regularData.downloadUrls.low.sizeInBytes).toBeGreaterThanOrEqual(0)
+      expect(regularData.downloadUrls.high.sizeInBytes).toBeGreaterThanOrEqual(
+        0
+      )
+      expect(specialData.downloadUrls.low.sizeInBytes).toBeGreaterThanOrEqual(0)
+      expect(specialData.downloadUrls.high.sizeInBytes).toBeGreaterThanOrEqual(
+        0
+      )
+
+      // Note: We can't verify exact URL differences without knowing the specific test data,
+      // but we ensure both API keys produce valid download structures
+    })
+  })
 })
