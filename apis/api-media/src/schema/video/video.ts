@@ -12,6 +12,7 @@ import { builder } from '../builder'
 import { ImageAspectRatio } from '../cloudflare/image/enums'
 import { deleteR2File } from '../cloudflare/r2/asset'
 import { IdType, IdTypeShape } from '../enums/idType'
+import { NotUniqueError } from '../error/NotUniqueError'
 import { Language, LanguageWithSlug } from '../language'
 import { deleteVideo } from '../mux/video/service'
 import { VideoSource, VideoSourceShape } from '../videoSource/videoSource'
@@ -593,21 +594,47 @@ builder.mutationFields((t) => ({
         publishedAt: input.published ? new Date() : undefined
       }
 
-      const video = await prisma.video.create({
-        ...query,
-        data
-      })
       try {
-        await updateVideoInAlgolia(video.id)
-      } catch (error) {
-        console.error('Algolia update error:', error)
+        const video = await prisma.video.create({
+          ...query,
+          data
+        })
+        try {
+          await updateVideoInAlgolia(video.id)
+        } catch (error) {
+          console.error('Algolia update error:', error)
+        }
+
+        try {
+          await videoCacheReset(video.id)
+        } catch {}
+
+        return video
+      } catch (e) {
+        if (
+          e instanceof Prisma.PrismaClientKnownRequestError &&
+          e.code === 'P2002'
+        ) {
+          // Handle unique constraint violation
+          const target = e.meta?.target as string[] | undefined
+          if (target?.includes('slug')) {
+            throw new NotUniqueError('Video slug already exists', [
+              { path: ['input', 'slug'], value: input.slug }
+            ])
+          }
+          if (target?.includes('id')) {
+            throw new NotUniqueError('Video ID already exists', [
+              { path: ['input', 'id'], value: input.id }
+            ])
+          }
+          // If it's not a slug or id constraint, throw a generic unique error
+          throw new NotUniqueError(
+            'Video with this information already exists',
+            [{ path: ['input'], value: 'duplicate' }]
+          )
+        }
+        throw e
       }
-
-      try {
-        await videoCacheReset(video.id)
-      } catch {}
-
-      return video
     }
   }),
   videoUpdate: t.withAuth({ isPublisher: true }).prismaField({

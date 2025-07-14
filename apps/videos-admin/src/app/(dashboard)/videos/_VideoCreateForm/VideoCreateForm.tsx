@@ -252,14 +252,78 @@ export function VideoCreateForm({
             setIsSubmitting(false)
           }
         },
-        onError: () => {
-          // TODO: proper error handling for specific errors
-          enqueueSnackbar('Something went wrong.', { variant: 'error' })
+        onError: (error) => {
+          // Handle specific error messages
+          let errorMessage = 'Something went wrong.'
+
+          if (error.graphQLErrors && error.graphQLErrors.length > 0) {
+            const graphQLError = error.graphQLErrors[0]
+
+            // Check for NotUniqueError
+            if (graphQLError.extensions?.code === 'NotUniqueError') {
+              const location = graphQLError.extensions?.location
+              if (Array.isArray(location) && location.length > 0) {
+                const errorLocation = location[0]
+                if (errorLocation.path?.includes('slug')) {
+                  errorMessage =
+                    'This slug is already in use. Please choose a different slug.'
+                } else if (errorLocation.path?.includes('id')) {
+                  errorMessage =
+                    'This ID is already in use. Please choose a different ID.'
+                } else {
+                  errorMessage =
+                    'This video already exists with the same information.'
+                }
+              } else {
+                errorMessage =
+                  graphQLError.message || 'This information is already in use.'
+              }
+            } else {
+              // Use the GraphQL error message if available
+              errorMessage = graphQLError.message || errorMessage
+            }
+          }
+
+          enqueueSnackbar(errorMessage, { variant: 'error' })
           setIsSubmitting(false)
         }
       })
     } catch (error) {
-      enqueueSnackbar('Something went wrong.', { variant: 'error' })
+      // Handle specific error messages
+      let errorMessage = 'Something went wrong.'
+
+      if (error && typeof error === 'object' && 'graphQLErrors' in error) {
+        const apolloError = error
+        if (apolloError.graphQLErrors && apolloError.graphQLErrors.length > 0) {
+          const graphQLError = apolloError.graphQLErrors[0]
+
+          // Check for NotUniqueError
+          if (graphQLError.extensions?.code === 'NotUniqueError') {
+            const location = graphQLError.extensions?.location
+            if (Array.isArray(location) && location.length > 0) {
+              const errorLocation = location[0]
+              if (errorLocation.path?.includes('slug')) {
+                errorMessage =
+                  'This slug is already in use. Please choose a different slug.'
+              } else if (errorLocation.path?.includes('id')) {
+                errorMessage =
+                  'This ID is already in use. Please choose a different ID.'
+              } else {
+                errorMessage =
+                  'This video already exists with the same information.'
+              }
+            } else {
+              errorMessage =
+                graphQLError.message || 'This information is already in use.'
+            }
+          } else {
+            // Use the GraphQL error message if available
+            errorMessage = graphQLError.message || errorMessage
+          }
+        }
+      }
+
+      enqueueSnackbar(errorMessage, { variant: 'error' })
       setIsSubmitting(false)
     }
   }
