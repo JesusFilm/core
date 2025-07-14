@@ -43,6 +43,7 @@ export async function createVideoByDirectUpload(
         ? [
             { resolution: '270p' },
             { resolution: '360p' },
+            { resolution: '480p' },
             { resolution: '720p' },
             { resolution: '1080p' },
             { resolution: '1440p' },
@@ -83,6 +84,7 @@ export async function createVideoFromUrl(
       ? [
           { resolution: '270p' },
           { resolution: '360p' },
+          { resolution: '480p' },
           { resolution: '720p' },
           { resolution: '1080p' },
           { resolution: '1440p' },
