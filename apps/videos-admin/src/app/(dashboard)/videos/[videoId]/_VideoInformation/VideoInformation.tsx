@@ -45,6 +45,7 @@ export const GET_VIDEO_INFORMATION = graphql(`
       id
       label
       published
+      publishedAt
       slug
       primaryLanguageId
       keywords(languageId: $languageId) {
@@ -373,8 +374,12 @@ export function VideoInformation({
                 variant="outlined"
                 error={Boolean(errors.url)}
                 onChange={handleChange}
-                helperText={errors.url as string}
-                disabled
+                helperText={
+                  data.adminVideo.publishedAt != null
+                    ? 'URL cannot be changed after video is published'
+                    : (errors.url as string)
+                }
+                disabled={data.adminVideo.publishedAt != null}
                 slotProps={{
                   input: {
                     startAdornment: (

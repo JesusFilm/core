@@ -33,6 +33,7 @@ const mockVideoData = {
     id: mockVideoId,
     label: 'featureFilm',
     published: false,
+    publishedAt: null,
     slug: 'test-video',
     primaryLanguageId: '529',
     keywords: [],
@@ -202,6 +203,110 @@ describe('VideoInformation', () => {
       expect(
         screen.queryByText('Published Video Content')
       ).not.toBeInTheDocument()
+    })
+  })
+
+  describe('slug editing', () => {
+    it('should enable slug editing when publishedAt is null', async () => {
+      const mockDataWithNullPublishedAt = {
+        adminVideo: {
+          ...mockVideoData.adminVideo,
+          publishedAt: null
+        }
+      }
+
+      const mockedUseSuspenseQuery = useSuspenseQuery as jest.MockedFunction<
+        typeof useSuspenseQuery
+      >
+      mockedUseSuspenseQuery.mockReturnValue({
+        data: mockDataWithNullPublishedAt,
+        fetchMore: jest.fn(),
+        subscribeToMore: jest.fn(),
+        client: {} as any,
+        error: undefined,
+        networkStatus: NetworkStatus.ready,
+        refetch: jest.fn()
+      })
+
+      render(
+        <MockedProvider>
+          <VideoInformation videoId={mockVideoId} />
+        </MockedProvider>
+      )
+
+      await waitFor(() => {
+        const urlInput = screen.getByLabelText('Video URL')
+        expect(urlInput).toBeInTheDocument()
+        expect(urlInput).not.toBeDisabled()
+      })
+    })
+
+    it('should disable slug editing when publishedAt is not null', async () => {
+      const mockDataWithPublishedAt = {
+        adminVideo: {
+          ...mockVideoData.adminVideo,
+          publishedAt: '2023-01-01T00:00:00.000Z'
+        }
+      }
+
+      const mockedUseSuspenseQuery = useSuspenseQuery as jest.MockedFunction<
+        typeof useSuspenseQuery
+      >
+      mockedUseSuspenseQuery.mockReturnValue({
+        data: mockDataWithPublishedAt,
+        fetchMore: jest.fn(),
+        subscribeToMore: jest.fn(),
+        client: {} as any,
+        error: undefined,
+        networkStatus: NetworkStatus.ready,
+        refetch: jest.fn()
+      })
+
+      render(
+        <MockedProvider>
+          <VideoInformation videoId={mockVideoId} />
+        </MockedProvider>
+      )
+
+      await waitFor(() => {
+        const urlInput = screen.getByLabelText('Video URL')
+        expect(urlInput).toBeInTheDocument()
+        expect(urlInput).toBeDisabled()
+      })
+    })
+
+    it('should show appropriate helper text when slug editing is disabled', async () => {
+      const mockDataWithPublishedAt = {
+        adminVideo: {
+          ...mockVideoData.adminVideo,
+          publishedAt: '2023-01-01T00:00:00.000Z'
+        }
+      }
+
+      const mockedUseSuspenseQuery = useSuspenseQuery as jest.MockedFunction<
+        typeof useSuspenseQuery
+      >
+      mockedUseSuspenseQuery.mockReturnValue({
+        data: mockDataWithPublishedAt,
+        fetchMore: jest.fn(),
+        subscribeToMore: jest.fn(),
+        client: {} as any,
+        error: undefined,
+        networkStatus: NetworkStatus.ready,
+        refetch: jest.fn()
+      })
+
+      render(
+        <MockedProvider>
+          <VideoInformation videoId={mockVideoId} />
+        </MockedProvider>
+      )
+
+      await waitFor(() => {
+        expect(
+          screen.getByText('URL cannot be changed after video is published')
+        ).toBeInTheDocument()
+      })
     })
   })
 })

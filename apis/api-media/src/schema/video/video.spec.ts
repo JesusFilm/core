@@ -2082,7 +2082,8 @@ describe('video', () => {
           roles: ['publisher']
         })
         prismaMock.video.findUnique.mockResolvedValue({
-          publishedAt: null
+          publishedAt: null,
+          slug: 'old-slug'
         } as any)
         prismaMock.video.update.mockResolvedValue({
           id: 'id',
@@ -2134,7 +2135,8 @@ describe('video', () => {
           roles: ['publisher']
         })
         prismaMock.video.findUnique.mockResolvedValue({
-          publishedAt: null
+          publishedAt: null,
+          slug: 'existing-slug'
         } as any)
         prismaMock.video.update.mockResolvedValue({
           id: 'id',
@@ -2154,7 +2156,7 @@ describe('video', () => {
 
         expect(prismaMock.video.findUnique).toHaveBeenCalledWith({
           where: { id: 'id' },
-          select: { publishedAt: true }
+          select: { publishedAt: true, slug: true }
         })
         expect(prismaMock.video.update).toHaveBeenCalledWith({
           where: { id: 'id' },
@@ -2174,7 +2176,8 @@ describe('video', () => {
           roles: ['publisher']
         })
         prismaMock.video.findUnique.mockResolvedValue({
-          publishedAt: existingPublishedAt
+          publishedAt: existingPublishedAt,
+          slug: 'existing-slug'
         } as any)
         prismaMock.video.update.mockResolvedValue({
           id: 'id',
@@ -2254,6 +2257,119 @@ describe('video', () => {
           }
         })
         expect(result).toHaveProperty('data', null)
+      })
+
+      it('should allow slug update when publishedAt is null', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        prismaMock.video.findUnique.mockResolvedValue({
+          publishedAt: null,
+          slug: 'old-slug'
+        } as any)
+        prismaMock.video.update.mockResolvedValue({
+          id: 'id',
+          slug: 'new-slug'
+        } as unknown as Video)
+
+        const result = await authClient({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              slug: 'new-slug'
+            }
+          }
+        })
+
+        expect(prismaMock.video.findUnique).toHaveBeenCalledWith({
+          where: { id: 'id' },
+          select: { publishedAt: true, slug: true }
+        })
+        expect(prismaMock.video.update).toHaveBeenCalledWith({
+          where: { id: 'id' },
+          include: { children: true },
+          data: {
+            slug: 'new-slug',
+            publishedAt: undefined
+          }
+        })
+        expect(result).toHaveProperty('data.videoUpdate', {
+          id: 'id'
+        })
+      })
+
+      it('should prevent slug update when publishedAt is not null', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        prismaMock.video.findUnique.mockResolvedValue({
+          publishedAt: new Date('2023-01-01'),
+          slug: 'old-slug'
+        } as any)
+
+        const result = await authClient({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              slug: 'new-slug'
+            }
+          }
+        })
+
+        expect(prismaMock.video.findUnique).toHaveBeenCalledWith({
+          where: { id: 'id' },
+          select: { publishedAt: true, slug: true }
+        })
+        expect(prismaMock.video.update).not.toHaveBeenCalled()
+        expect(result).toHaveProperty('data', null)
+      })
+
+      it('should allow slug update with same value when publishedAt is not null', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        prismaMock.video.findUnique.mockResolvedValue({
+          publishedAt: new Date('2023-01-01'),
+          slug: 'same-slug'
+        } as any)
+        prismaMock.video.update.mockResolvedValue({
+          id: 'id',
+          slug: 'same-slug'
+        } as unknown as Video)
+
+        const result = await authClient({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              slug: 'same-slug'
+            }
+          }
+        })
+
+        expect(prismaMock.video.findUnique).toHaveBeenCalledWith({
+          where: { id: 'id' },
+          select: { publishedAt: true, slug: true }
+        })
+        expect(prismaMock.video.update).toHaveBeenCalledWith({
+          where: { id: 'id' },
+          include: { children: true },
+          data: {
+            slug: 'same-slug',
+            publishedAt: undefined
+          }
+        })
+        expect(result).toHaveProperty('data.videoUpdate', {
+          id: 'id'
+        })
       })
     })
 
