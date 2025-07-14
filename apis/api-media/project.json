@@ -166,12 +166,6 @@
         "command": "npm run ts-node apis/api-media/src/workers/cli.ts algolia"
       }
     },
-    "queue-download-uploader": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npm run ts-node apis/api-media/src/scripts/download-migrate-r2.ts"
-      }
-    },
     "queue-blocklist": {
       "executor": "nx:run-commands",
       "options": {
