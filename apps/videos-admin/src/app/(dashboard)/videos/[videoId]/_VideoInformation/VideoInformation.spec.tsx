@@ -134,19 +134,24 @@ describe('VideoInformation', () => {
       fireEvent.click(publishedOption)
     })
 
-    // Should show validation warnings
+    // Should show validation errors and revert status to draft
     await waitFor(() => {
-      expect(screen.getByText('Missing Required Fields')).toBeInTheDocument()
+      expect(
+        screen.getByText('Cannot Publish - Missing Required Fields')
+      ).toBeInTheDocument()
       expect(screen.getByText('Short Description')).toBeInTheDocument()
       expect(screen.getByText('Description')).toBeInTheDocument()
       expect(screen.getByText('Image Alt Text')).toBeInTheDocument()
       expect(screen.getByText('Banner Image')).toBeInTheDocument()
       expect(screen.getByText('Published Video Content')).toBeInTheDocument()
+
+      // Status should have reverted to Draft
+      expect(screen.getByDisplayValue('unpublished')).toBeInTheDocument()
     })
 
-    // Save button should be disabled
-    const saveButton = screen.getByRole('button', { name: /save/i })
-    expect(saveButton).toBeDisabled()
+    // Should show Try Again button
+    const tryAgainButton = screen.getByRole('button', { name: /try again/i })
+    expect(tryAgainButton).toBeInTheDocument()
   })
 
   it('should not require video content for collection videos', async () => {
@@ -195,13 +200,112 @@ describe('VideoInformation', () => {
       fireEvent.click(publishedOption)
     })
 
-    // Should show some validation warnings but NOT video content
+    // Should show some validation errors but NOT video content, and revert status to draft
     await waitFor(() => {
-      expect(screen.getByText('Missing Required Fields')).toBeInTheDocument()
+      expect(
+        screen.getByText('Cannot Publish - Missing Required Fields')
+      ).toBeInTheDocument()
       // Should not show "Published Video Content" requirement for collections
       expect(
         screen.queryByText('Published Video Content')
       ).not.toBeInTheDocument()
+
+      // Status should have reverted to Draft
+      expect(screen.getByDisplayValue('unpublished')).toBeInTheDocument()
+    })
+  })
+
+  it('should validate dynamically when title is entered and published state is selected', async () => {
+    // Mock video data with missing title but other fields present
+    const videoDataWithoutTitle = {
+      adminVideo: {
+        ...mockVideoData.adminVideo,
+        title: [], // Missing title
+        snippet: [{ value: 'Test snippet', primary: true }],
+        description: [{ value: 'Test description', primary: true }],
+        imageAlt: [{ value: 'Test alt text', primary: true }],
+        images: [{ aspectRatio: 'banner' as const }],
+        variant: {
+          hls: 'test.m3u8',
+          dash: null,
+          muxVideo: null,
+          language: { id: '529', slug: 'en' }
+        }
+      }
+    }
+
+    const mockedUseSuspenseQuery = useSuspenseQuery as jest.MockedFunction<
+      typeof useSuspenseQuery
+    >
+    mockedUseSuspenseQuery.mockReturnValue({
+      data: videoDataWithoutTitle,
+      fetchMore: jest.fn(),
+      subscribeToMore: jest.fn(),
+      client: {} as any,
+      error: undefined,
+      networkStatus: NetworkStatus.ready,
+      refetch: jest.fn()
+    })
+
+    render(
+      <MockedProvider>
+        <VideoInformation videoId={mockVideoId} />
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Status')).toBeInTheDocument()
+    })
+
+    // Change status to published to trigger validation
+    const statusSelect = screen.getByLabelText('Status')
+    fireEvent.mouseDown(statusSelect)
+
+    await waitFor(() => {
+      const publishedOption = screen.getByText('Published')
+      fireEvent.click(publishedOption)
+    })
+
+    // Should show validation error and revert status to draft
+    await waitFor(() => {
+      expect(
+        screen.getByText('Cannot Publish - Missing Required Fields')
+      ).toBeInTheDocument()
+      // Check for the specific Title warning in the validation list
+      const titleWarning = screen.getByText('Title', {
+        selector: '.MuiListItemText-primary'
+      })
+      expect(titleWarning).toBeInTheDocument()
+
+      // Status should have reverted to Draft
+      expect(screen.getByDisplayValue('unpublished')).toBeInTheDocument()
+    })
+
+    // Should show Try Again button
+    const tryAgainButton = screen.getByRole('button', { name: /try again/i })
+    expect(tryAgainButton).toBeInTheDocument()
+
+    // Enter a title in the form
+    const titleInput = screen.getByLabelText('Title')
+    fireEvent.change(titleInput, { target: { value: 'New Test Title' } })
+
+    // Click Try Again button
+    fireEvent.click(tryAgainButton)
+
+    // Validation should now pass and status should be published
+    await waitFor(() => {
+      expect(
+        screen.queryByText('Cannot Publish - Missing Required Fields')
+      ).not.toBeInTheDocument()
+
+      // Status should now be Published
+      expect(screen.getByDisplayValue('published')).toBeInTheDocument()
+    })
+
+    // Save button should be enabled (not disabled due to validation)
+    await waitFor(() => {
+      const saveButton = screen.getByRole('button', { name: /save/i })
+      expect(saveButton).not.toBeDisabled()
     })
   })
 })
