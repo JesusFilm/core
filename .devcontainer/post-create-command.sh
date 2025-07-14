@@ -9,10 +9,12 @@ cd /workspaces
 
 # Wait for database to be ready
 echo "Waiting for database to be ready..."
-until pg_isready -h db -p 5432 -U postgres; do
-  echo "Database is not ready yet. Waiting..."
+for i in {1..30}; do
+  pg_isready -h db -p 5432 -U postgres && break
+  echo "Database not ready (try $i/30)…"
   sleep 2
 done
+[ "$i" -eq 30 ] && { echo "Postgres failed to start"; exit 1; }
 echo "Database is ready!"
 
 # add default user to postgres (with error handling)
