@@ -140,10 +140,10 @@ export function Color(): ReactElement {
 
   const validationSchema = object({
     color: string()
-      .required(t('Invalid {{ HEX }} color code', { HEX: 'HEX' }))
+      .required(t('Invalid format. Use a 6-digit hex code starting with # (eg., #FFFFFF)'))
       .test(
         'valid-hex-color',
-        t('Invalid {{ HEX }} color code', { HEX: 'HEX' }),
+        t('Invalid format. Use a 6-digit hex code starting with # (eg., #FFFFFF)'),
         (value) => isValidHex(value)
       )
   })
