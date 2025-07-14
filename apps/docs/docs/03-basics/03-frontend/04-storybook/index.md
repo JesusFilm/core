@@ -54,7 +54,7 @@ const ComponentDemo = {
 // #4 add mocked data
 
 #5
-const Template: StoryObj<ComponentProps<typeof Component>> = = ({ ...args }) => (
+const Template: StoryObj<ComponentProps<typeof Component>> = ({ ...args }) => (
   <OptionalProviders>         // #6
     <Component {...args} />
   </OptionalProviders>
