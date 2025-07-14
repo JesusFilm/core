@@ -50,8 +50,28 @@ interface VideoImageAltProps {
 export function VideoImageAlt({ videoId }: VideoImageAltProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
 
-  const [createVideoImageAlt] = useMutation(CREATE_VIDEO_IMAGE_ALT)
-  const [updateVideoImageAlt] = useMutation(UPDATE_VIDEO_IMAGE_ALT)
+  const [createVideoImageAlt] = useMutation(CREATE_VIDEO_IMAGE_ALT, {
+    refetchQueries: [
+      {
+        query: GET_VIDEO_IMAGE_ALT,
+        variables: {
+          id: videoId,
+          languageId: DEFAULT_VIDEO_LANGUAGE_ID
+        }
+      }
+    ]
+  })
+  const [updateVideoImageAlt] = useMutation(UPDATE_VIDEO_IMAGE_ALT, {
+    refetchQueries: [
+      {
+        query: GET_VIDEO_IMAGE_ALT,
+        variables: {
+          id: videoId,
+          languageId: DEFAULT_VIDEO_LANGUAGE_ID
+        }
+      }
+    ]
+  })
 
   const validationSchema = object().shape({
     imageAlt: string().trim().required('Image Alt is required')

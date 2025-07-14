@@ -50,8 +50,22 @@ interface VideoSnippetProps {
 
 export function VideoSnippet({ videoId }: VideoSnippetProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
-  const [createVideoSnippet] = useMutation(CREATE_VIDEO_SNIPPET)
-  const [updateVideoSnippet] = useMutation(UPDATE_VIDEO_SNIPPET)
+  const [createVideoSnippet] = useMutation(CREATE_VIDEO_SNIPPET, {
+    refetchQueries: [
+      {
+        query: GET_VIDEO_SNIPPET,
+        variables: { videoId, languageId: DEFAULT_VIDEO_LANGUAGE_ID }
+      }
+    ]
+  })
+  const [updateVideoSnippet] = useMutation(UPDATE_VIDEO_SNIPPET, {
+    refetchQueries: [
+      {
+        query: GET_VIDEO_SNIPPET,
+        variables: { videoId, languageId: DEFAULT_VIDEO_LANGUAGE_ID }
+      }
+    ]
+  })
 
   const validationSchema = object().shape({
     snippet: string().required('Snippet is required')
