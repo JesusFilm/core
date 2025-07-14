@@ -420,7 +420,8 @@ const Video = builder.prismaObject('Video', {
       nullable: false,
       resolve: ({ restrictViewPlatforms }) => restrictViewPlatforms
     }),
-    publishedAt: t.expose('publishedAt', { type: 'Date', nullable: true })
+    publishedAt: t.expose('publishedAt', { type: 'Date', nullable: true }),
+    metadata: t.relation('metadata', { nullable: true })
   })
 })
 
@@ -587,15 +588,32 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoCreateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
+      const { metadata, ...videoData } = input
       const data = {
-        ...input,
+        ...videoData,
         // Set publishedAt to current timestamp if published is true
         publishedAt: input.published ? new Date() : undefined
       }
 
+      // Transform metadata if provided
+      const transformedMetadata = metadata
+        ? {
+            ...metadata,
+            socialMedia: metadata.socialMedia || undefined
+          }
+        : undefined
+
       const video = await prisma.video.create({
         ...query,
-        data
+        data: {
+          ...data,
+          // Create metadata if provided
+          ...(transformedMetadata && {
+            metadata: {
+              create: transformedMetadata
+            }
+          })
+        }
       })
       try {
         await updateVideoInAlgolia(video.id)
@@ -632,6 +650,14 @@ builder.mutationFields((t) => ({
         }
       }
 
+      // Transform metadata if provided
+      const transformedMetadata = input.metadata
+        ? {
+            ...input.metadata,
+            socialMedia: input.metadata.socialMedia || undefined
+          }
+        : undefined
+
       const video = await prisma.video.update({
         ...query,
         where: { id: input.id },
@@ -648,7 +674,16 @@ builder.mutationFields((t) => ({
           restrictViewPlatforms: input.restrictViewPlatforms ?? undefined,
           ...(input.keywordIds
             ? { keywords: { set: input.keywordIds.map((id) => ({ id })) } }
-            : {})
+            : {}),
+          // Handle metadata update/create
+          ...(transformedMetadata && {
+            metadata: {
+              upsert: {
+                create: transformedMetadata,
+                update: transformedMetadata
+              }
+            }
+          })
         },
         include: {
           ...query.include,

@@ -14,6 +14,7 @@ import WithInputPlugin from '@pothos/plugin-with-input'
 import ZodPlugin from '@pothos/plugin-zod'
 import { createOpenTelemetryWrapper } from '@pothos/tracing-opentelemetry'
 import { DateResolver } from 'graphql-scalars'
+import { GraphQLJSON } from 'graphql-type-json'
 
 import { MediaRole, Prisma } from '.prisma/api-media-client'
 import { User } from '@core/yoga/firebaseClient'
@@ -64,6 +65,7 @@ export const builder = new SchemaBuilder<{
   Scalars: {
     Date: { Input: Date; Output: Date }
     ID: { Input: string; Output: number | string }
+    JSON: { Input: any; Output: any }
   }
 }>({
   plugins: [
@@ -119,6 +121,7 @@ export const builder = new SchemaBuilder<{
 })
 
 builder.addScalarType('Date', DateResolver)
+builder.addScalarType('JSON', GraphQLJSON)
 
 builder.queryType({})
 

@@ -136,11 +136,45 @@ model Video {
   restrictDownloadPlatforms Platform[]           @default([])
   restrictViewPlatforms     Platform[]           @default([])
   publishedAt               DateTime?
+  metadata                  VideoMetadata?
 
   @@index(label)
   @@index(childIds)
   @@index(published(type: Hash))
   @@index(originId(type: Hash))
+}
+
+model VideoMetadata {
+  id                      String    @id @default(uuid())
+  videoId                 String    @unique
+  video                   Video     @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  altTitle                String?
+  resourceLocation        String?
+  createdByJFP            Boolean?
+  ownedByJFP              Boolean?
+  filmmaker               String?
+  licensedDate            DateTime?
+  filmmakerContact        String?
+  contractLink            String?
+  expires                 Boolean?
+  expirationDate          DateTime?
+  isMusicLicensed         Boolean?
+  musicName               String?
+  musicVendor             String?
+  hasAwards               Boolean?
+  awards                  String?
+  hasTvBroadcastRights    Boolean?
+  hasMusicBroadcastRights Boolean?
+  needsSubtitles          Boolean?
+  needsDubbing            Boolean?
+  canAiDub                Boolean?
+  canPartnersHost         Boolean?
+  canMinistriesHost       Boolean?
+  socialMedia             Json?     @default("{}")
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+
+  @@index(videoId)
 }
 
 model VideoTitle {

@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { Prisma, CloudflareImage, MuxVideo, CloudflareR2, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoEdition, VideoSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, TagName, Tag, Tagging, Taxonomy, TaxonomyName, UserMediaRole, ShortLinkDomain, ShortLink, ShortLinkBlocklistDomain, VideoOrigin, ArclightApiKey } from ".prisma/api-media-client/index.js";
+import type { Prisma, CloudflareImage, MuxVideo, CloudflareR2, Video, VideoMetadata, VideoTitle, VideoVariantDownload, VideoVariant, VideoEdition, VideoSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, TagName, Tag, Tagging, Taxonomy, TaxonomyName, UserMediaRole, ShortLinkDomain, ShortLink, ShortLinkBlocklistDomain, VideoOrigin, ArclightApiKey } from ".prisma/api-media-client/index.js";
 export default interface PrismaTypes {
     CloudflareImage: {
         Name: "CloudflareImage";
@@ -91,7 +91,7 @@ export default interface PrismaTypes {
         Where: Prisma.VideoWhereInput;
         Create: {};
         Update: {};
-        RelationName: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets" | "videoEditions" | "origin";
+        RelationName: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets" | "videoEditions" | "origin" | "metadata";
         ListRelations: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets" | "videoEditions";
         Relations: {
             title: {
@@ -168,6 +168,31 @@ export default interface PrismaTypes {
                 Shape: VideoOrigin | null;
                 Name: "VideoOrigin";
                 Nullable: true;
+            };
+            metadata: {
+                Shape: VideoMetadata | null;
+                Name: "VideoMetadata";
+                Nullable: true;
+            };
+        };
+    };
+    VideoMetadata: {
+        Name: "VideoMetadata";
+        Shape: VideoMetadata;
+        Include: Prisma.VideoMetadataInclude;
+        Select: Prisma.VideoMetadataSelect;
+        OrderBy: Prisma.VideoMetadataOrderByWithRelationInput;
+        WhereUnique: Prisma.VideoMetadataWhereUniqueInput;
+        Where: Prisma.VideoMetadataWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: "video";
+        ListRelations: never;
+        Relations: {
+            video: {
+                Shape: Video;
+                Name: "Video";
+                Nullable: false;
             };
         };
     };

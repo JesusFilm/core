@@ -136,6 +136,11 @@ input ImageInput {
   videoId: ID
 }
 
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
 type Keyword {
   id: ID!
   value: String!
@@ -644,6 +649,14 @@ type ShortLinkDomainVerfication {
   reason: String!
 }
 
+input SocialMedia {
+  youtube: String
+  tiktok: String
+  facebook: String
+  instagram: String
+  other: String
+}
+
 type Tag
   @key(fields: "id")
 {
@@ -835,6 +848,7 @@ type Video
   restrictDownloadPlatforms: [Platform!]!
   restrictViewPlatforms: [Platform!]!
   publishedAt: Date
+  metadata: VideoMetadata
 }
 
 enum VideoBlockSource {
@@ -853,6 +867,7 @@ input VideoCreateInput {
   noIndex: Boolean!
   childIds: [String!]!
   originId: String!
+  metadata: VideoMetadataInput
 }
 
 type VideoDescription {
@@ -896,6 +911,60 @@ enum VideoLabel {
   shortFilm
   trailer
   behindTheScenes
+}
+
+type VideoMetadata {
+  id: ID!
+  altTitle: String
+  resourceLocation: String
+  createdByJFP: Boolean
+  ownedByJFP: Boolean
+  filmmaker: String
+  licensedDate: Date
+  filmmakerContact: String
+  contractLink: String
+  expires: Boolean
+  expirationDate: Date
+  isMusicLicensed: Boolean
+  musicName: String
+  musicVendor: String
+  hasAwards: Boolean
+  awards: String
+  hasTvBroadcastRights: Boolean
+  hasMusicBroadcastRights: Boolean
+  needsSubtitles: Boolean
+  needsDubbing: Boolean
+  canAiDub: Boolean
+  canPartnersHost: Boolean
+  canMinistriesHost: Boolean
+  socialMedia: JSON
+  video: Video!
+}
+
+input VideoMetadataInput {
+  altTitle: String
+  resourceLocation: String
+  createdByJFP: Boolean
+  ownedByJFP: Boolean
+  filmmaker: String
+  licensedDate: Date
+  filmmakerContact: String
+  contractLink: String
+  expires: Boolean
+  expirationDate: Date
+  isMusicLicensed: Boolean
+  musicName: String
+  musicVendor: String
+  hasAwards: Boolean
+  awards: String
+  hasTvBroadcastRights: Boolean
+  hasMusicBroadcastRights: Boolean
+  needsSubtitles: Boolean
+  needsDubbing: Boolean
+  canAiDub: Boolean
+  canPartnersHost: Boolean
+  canMinistriesHost: Boolean
+  socialMedia: SocialMedia
 }
 
 type VideoOrigin {
@@ -1032,6 +1101,7 @@ input VideoUpdateInput {
   keywordIds: [String!]
   restrictDownloadPlatforms: [Platform!]
   restrictViewPlatforms: [Platform!]
+  metadata: VideoMetadataInput
 }
 
 type VideoVariant {
