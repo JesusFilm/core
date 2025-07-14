@@ -22,7 +22,7 @@ Your branch should take the following format: `{fullname}/{linearProject}-{linea
 
 This can be generate from within a Linear ticket's "Properties" pane by clicking the `Copy git branch name` button.
 
-![button - Copy git branch name](..//01-workflow/branch-name-gen.png)
+![button - Copy git branch name](../01-workflow/branch-name-gen.png)
 
 For example `jacobusbrink/eng-3055-update-docs`.
 
