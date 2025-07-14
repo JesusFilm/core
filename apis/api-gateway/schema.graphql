@@ -2023,6 +2023,14 @@ type ShortLink @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @jo
   the service that created this short link
   """
   service: Service! @join__field(graph: API_MEDIA) 
+  """
+  brightcove video ID for video redirects
+  """
+  brightcoveId: String @join__field(graph: API_MEDIA) 
+  """
+  type of video redirect (hls, dl, dh, s)
+  """
+  redirectType: RedirectType @join__field(graph: API_MEDIA) 
 }
 
 type QrCode @join__type(graph: API_JOURNEYS)  {
@@ -2816,6 +2824,7 @@ type VideoVariant @join__type(graph: API_MEDIA)  {
   lengthInMilliseconds: Int!
   language: Language!
   muxVideo: MuxVideo
+  brightcoveId: String
   published: Boolean!
   videoEdition: VideoEdition!
   subtitle(languageId: ID, primary: Boolean) : [VideoSubtitle!]!
@@ -3269,6 +3278,13 @@ enum Service @join__type(graph: API_MEDIA)  {
   apiVideos @join__enumValue(graph: API_MEDIA) 
 }
 
+enum RedirectType @join__type(graph: API_MEDIA)  {
+  hls @join__enumValue(graph: API_MEDIA) 
+  dl @join__enumValue(graph: API_MEDIA) 
+  dh @join__enumValue(graph: API_MEDIA) 
+  s @join__enumValue(graph: API_MEDIA) 
+}
+
 enum Platform @join__type(graph: API_MEDIA)  {
   arclight @join__enumValue(graph: API_MEDIA) 
   journeys @join__enumValue(graph: API_MEDIA) 
@@ -3315,6 +3331,13 @@ enum VideoLabel @join__type(graph: API_MEDIA)  {
   shortFilm @join__enumValue(graph: API_MEDIA) 
   trailer @join__enumValue(graph: API_MEDIA) 
   behindTheScenes @join__enumValue(graph: API_MEDIA) 
+}
+
+enum VideoRedirectType @join__type(graph: API_MEDIA)  {
+  hls @join__enumValue(graph: API_MEDIA) 
+  dl @join__enumValue(graph: API_MEDIA) 
+  dh @join__enumValue(graph: API_MEDIA) 
+  s @join__enumValue(graph: API_MEDIA) 
 }
 
 enum VideoVariantDownloadQuality @join__type(graph: API_MEDIA)  {
@@ -4553,6 +4576,14 @@ input MutationShortLinkCreateInput @join__type(graph: API_MEDIA)  {
   the service that created this short link
   """
   service: Service!
+  """
+  brightcove video ID for video redirects
+  """
+  brightcoveId: String
+  """
+  type of video redirect (hls, dl, dh, s)
+  """
+  redirectType: RedirectType
 }
 
 input MutationShortLinkDomainCreateInput @join__type(graph: API_MEDIA)  {
@@ -4580,6 +4611,14 @@ input MutationShortLinkUpdateInput @join__type(graph: API_MEDIA)  {
   the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to
   """
   to: String!
+  """
+  brightcove video ID for video redirects
+  """
+  brightcoveId: String
+  """
+  type of video redirect (hls, dl, dh, s)
+  """
+  redirectType: RedirectType
 }
 
 input MutationVideoOriginCreateInput @join__type(graph: API_MEDIA)  {
@@ -4717,6 +4756,7 @@ input VideoVariantCreateInput @join__type(graph: API_MEDIA)  {
   downloadable: Boolean!
   published: Boolean = true
   muxVideoId: String
+  brightcoveId: String
   version: Int
 }
 
@@ -4765,6 +4805,7 @@ input VideoVariantUpdateInput @join__type(graph: API_MEDIA)  {
   downloadable: Boolean
   published: Boolean
   muxVideoId: String
+  brightcoveId: String
   version: Int
 }
 
