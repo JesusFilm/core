@@ -246,7 +246,7 @@
   "Large": "Large",
   "Contained": "Contained",
   "Outlined": "Outlined",
-  "Invalid {{ HEX }} color code": "Invalid {{ HEX }} color code",
+  "Invalid format. Use a 6-digit hex code starting with # (eg., #FFFFFF)": "Invalid format. Use a 6-digit hex code starting with # (eg., #FFFFFF)",
   "Palette": "Palette",
   "Adjust the blur level of your background image.": "Adjust the blur level of your background image.",
   "Adjust View": "Adjust View",
