@@ -7,15 +7,13 @@ import { queue as processVideoDownloadsQueue } from '../../../workers/processVid
 import { builder } from '../../builder'
 import { VideoSource, VideoSourceShape } from '../../videoSource/videoSource'
 
-import {
-  MaxResolutionTier,
-  MaxResolutionTierEnum
-} from './enums/maxResolutionTier'
+import { MaxResolutionTier } from './enums'
 import {
   createVideoByDirectUpload,
   createVideoFromUrl,
   deleteVideo,
   enableDownload,
+  getMaxResolutionValue,
   getUpload,
   getVideo
 } from './service'
@@ -239,9 +237,7 @@ builder.mutationFields((t) => ({
         const isUserGenerated = !currentRoles.includes('publisher')
           ? true
           : (userGenerated ?? true)
-        const maxResolutionValue = maxResolution
-          ? (MaxResolutionTierEnum as any)[maxResolution]
-          : undefined
+        const maxResolutionValue = getMaxResolutionValue(maxResolution)
         const { id, uploadUrl } = await createVideoByDirectUpload(
           isUserGenerated,
           maxResolutionValue,
@@ -291,9 +287,7 @@ builder.mutationFields((t) => ({
       const isUserGenerated = !currentRoles.includes('publisher')
         ? true
         : (userGenerated ?? true)
-      const maxResolutionValue = maxResolution
-        ? (MaxResolutionTierEnum as any)[maxResolution]
-        : undefined
+      const maxResolutionValue = getMaxResolutionValue(maxResolution)
 
       const { id } = await createVideoFromUrl(
         url,
