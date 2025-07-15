@@ -497,6 +497,19 @@ export interface JourneyTemplateInput {
   template?: boolean | null;
 }
 
+export interface JourneyThemeCreateInput {
+  journeyId: string;
+  headerFont?: string | null;
+  bodyFont?: string | null;
+  labelFont?: string | null;
+}
+
+export interface JourneyThemeUpdateInput {
+  headerFont?: string | null;
+  bodyFont?: string | null;
+  labelFont?: string | null;
+}
+
 export interface JourneyUpdateInput {
   title?: string | null;
   languageId?: string | null;
