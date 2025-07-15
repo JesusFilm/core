@@ -18,7 +18,7 @@ if (!ACCOUNT_ID) {
 
 const cache = new Map<string, CacheEntry>()
 
-function setCache(key: string, data: any) {
+function setCache(key: string, data: BrightcoveVideo) {
   if (cache.size >= CACHE_MAX_ENTRIES) {
     const firstKey = cache.keys().next().value
     if (firstKey) cache.delete(firstKey)
@@ -26,7 +26,7 @@ function setCache(key: string, data: any) {
   cache.set(key, { data, expiresAt: Date.now() + CACHE_TTL_MS })
 }
 
-function getCache(key: string): any | undefined {
+function getCache(key: string): BrightcoveVideo | undefined {
   const entry = cache.get(key)
   if (!entry) return undefined
   if (Date.now() > entry.expiresAt) {
@@ -36,11 +36,21 @@ function getCache(key: string): any | undefined {
   return entry.data
 }
 
+export interface BrightcoveVideo {
+  sources?: Array<{
+    type?: string
+    container?: string
+    avg_bitrate?: number
+    src?: string
+  }>
+  // Add more fields as needed from the Brightcove API response
+}
+
 export async function getBrightcoveVideo(
   ovpReferenceId: string,
   forceRefresh = false,
   ip?: string
-): Promise<any> {
+): Promise<BrightcoveVideo | undefined> {
   if (!ACCOUNT_ID) {
     throw new Error('Brightcove ACCOUNT_ID not configured')
   }
