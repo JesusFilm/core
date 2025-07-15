@@ -242,7 +242,7 @@
   "Large": "Большой",
   "Contained": "Заполненная",
   "Outlined": "Обрисованный",
-  "Invalid {{ HEX }} color code": "Неверный код цвета {{ HEX }}",
+  "Use a valid 6-digit hex (e.g #FFFFFF)": "Используй правильный 6-значный шестнадцатеричный код (например, #FFFFFF).",
   "Palette": "Палитра",
   "Adjust the blur level of your background image.": "Настрой уровень размытия фонового изображения.",
   "Adjust View": "Отрегулируй вид",
