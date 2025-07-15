@@ -16,6 +16,10 @@ export interface TranslatedBlock_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
   content: string;
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
 }
 
 export interface TranslatedBlock_ButtonBlock {

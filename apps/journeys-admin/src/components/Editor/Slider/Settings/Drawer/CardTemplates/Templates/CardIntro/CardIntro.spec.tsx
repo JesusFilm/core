@@ -89,7 +89,10 @@ describe('CardIntro', () => {
           journeyId: 'journeyId',
           parentBlockId: 'cardId',
           content: 'Interactive Video',
-          variant: TypographyVariant.h6
+          variant: TypographyVariant.h6,
+          settings: {
+            color: null
+          }
         },
         titleInput: {
           id: 'titleId',
@@ -98,7 +101,10 @@ describe('CardIntro', () => {
           journeyId: 'journeyId',
           parentBlockId: 'cardId',
           content: "Jesus: History's Most Influential Figure?",
-          variant: TypographyVariant.h1
+          variant: TypographyVariant.h1,
+          settings: {
+            color: null
+          }
         },
         bodyInput: {
           id: 'bodyId',
@@ -108,7 +114,10 @@ describe('CardIntro', () => {
           parentBlockId: 'cardId',
           content:
             'Journey through time, from dusty roads to modern cities, to understand the lasting impact and relevance of Jesus.',
-          variant: TypographyVariant.body1
+          variant: TypographyVariant.body1,
+          settings: {
+            color: null
+          }
         },
         buttonInput: {
           id: 'buttonId',
@@ -156,6 +165,10 @@ describe('CardIntro', () => {
           color: null,
           content: 'Interactive Video',
           variant: TypographyVariant.h6,
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          },
           __typename: 'TypographyBlock'
         },
         title: {
@@ -166,6 +179,10 @@ describe('CardIntro', () => {
           color: null,
           content: "Jesus: History's Most Influential Figure?",
           variant: TypographyVariant.h1,
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          },
           __typename: 'TypographyBlock'
         },
         body: {
@@ -177,6 +194,10 @@ describe('CardIntro', () => {
           content:
             'Journey through time, from dusty roads to modern cities, to understand the lasting impact and relevance of Jesus.',
           variant: TypographyVariant.body1,
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          },
           __typename: 'TypographyBlock'
         },
         button: {
