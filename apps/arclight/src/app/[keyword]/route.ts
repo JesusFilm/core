@@ -79,7 +79,8 @@ app.openapi(keywordRoute, async (c) => {
   const { keyword } = c.req.param()
   const clientIp = getClientIp(c)
   try {
-    const hostname = process.env.SHORTLINK_DOMAIN || 'arc.gt'
+    const hostname =
+      process.env.SERVICE_ENV === 'stage' ? 'stg.arc.gt' : 'arc.gt'
 
     const { data, error, errors } = await getApolloClient().query<
       ResultOf<typeof GET_SHORT_LINK_QUERY>
