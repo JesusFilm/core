@@ -202,7 +202,11 @@ export function CardIntro(): ReactElement {
       color: null,
       content: t('Interactive Video'),
       variant: TypographyVariant.h6,
-      __typename: 'TypographyBlock'
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     } satisfies TypographyBlock
 
     const title = {
@@ -213,7 +217,11 @@ export function CardIntro(): ReactElement {
       color: null,
       content: t("Jesus: History's Most Influential Figure?"),
       variant: TypographyVariant.h1,
-      __typename: 'TypographyBlock'
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     } satisfies TypographyBlock
 
     const body = {
@@ -226,7 +234,11 @@ export function CardIntro(): ReactElement {
         'Journey through time, from dusty roads to modern cities, to understand the lasting impact and relevance of Jesus.'
       ),
       variant: TypographyVariant.body1,
-      __typename: 'TypographyBlock'
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     } satisfies TypographyBlock
 
     const buttonBlock = {
@@ -241,6 +253,7 @@ export function CardIntro(): ReactElement {
       endIconId: null,
       submitEnabled: null,
       action: null,
+      settings: null,
       __typename: 'ButtonBlock'
     } satisfies ButtonBlock
 
@@ -334,15 +347,33 @@ export function CardIntro(): ReactElement {
             journeyId: journey.id,
             buttonId: buttonBlock.id,
             subtitleInput: {
-              ...omit(subtitle, ['__typename', 'parentOrder']),
+              ...omit(
+                {
+                  ...subtitle,
+                  settings: { color: subtitle.settings?.color }
+                },
+                ['__typename', 'parentOrder']
+              ),
               journeyId: journey.id
             },
             titleInput: {
-              ...omit(title, ['__typename', 'parentOrder']),
+              ...omit(
+                {
+                  ...title,
+                  settings: { color: title.settings?.color }
+                },
+                ['__typename', 'parentOrder']
+              ),
               journeyId: journey.id
             },
             bodyInput: {
-              ...omit(body, ['__typename', 'parentOrder']),
+              ...omit(
+                {
+                  ...body,
+                  settings: { color: body.settings?.color }
+                },
+                ['__typename', 'parentOrder']
+              ),
               journeyId: journey.id
             },
             buttonInput: {

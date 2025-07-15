@@ -63,7 +63,8 @@ describe('BlockRenderer', () => {
       endIconId: null,
       submitEnabled: null,
       action: null,
-      children: []
+      children: [],
+      settings: null
     }
     const { getByText } = render(
       <MockedProvider>
@@ -89,7 +90,8 @@ describe('BlockRenderer', () => {
       endIconId: null,
       submitEnabled: null,
       action: null,
-      children: []
+      children: [],
+      settings: null
     }
     const { getByTestId, getByText } = render(
       <MockedProvider>
@@ -136,7 +138,11 @@ describe('BlockRenderer', () => {
           color: null,
           content: 'How did we get here?',
           variant: null,
-          children: []
+          children: [],
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          }
         }
       ]
     }
@@ -172,7 +178,11 @@ describe('BlockRenderer', () => {
           color: null,
           content: 'How did we get here?',
           variant: null,
-          children: []
+          children: [],
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          }
         }
       ]
     }
@@ -462,7 +472,8 @@ describe('BlockRenderer', () => {
           endIconId: null,
           submitEnabled: null,
           action: null,
-          children: []
+          children: [],
+          settings: null
         }
       ]
     }
@@ -501,7 +512,8 @@ describe('BlockRenderer', () => {
           endIconId: null,
           submitEnabled: null,
           action: null,
-          children: []
+          children: [],
+          settings: null
         }
       ]
     }
@@ -545,7 +557,11 @@ describe('BlockRenderer', () => {
       color: null,
       content: 'How did we get here?',
       variant: null,
-      children: []
+      children: [],
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     }
     const { getByText } = render(<BlockRenderer block={block} />)
     expect(getByText('How did we get here?')).toBeInTheDocument()
@@ -561,7 +577,11 @@ describe('BlockRenderer', () => {
       color: null,
       content: 'How did we get here?',
       variant: null,
-      children: []
+      children: [],
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     }
     const { getByTestId } = render(
       <BlockRenderer

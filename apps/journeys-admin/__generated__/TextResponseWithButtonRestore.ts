@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonVariant, ButtonColor, ButtonSize, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: TextResponseWithButtonRestore
@@ -39,6 +39,14 @@ export interface TextResponseWithButtonRestore_textResponse_ButtonBlock_action_E
 
 export type TextResponseWithButtonRestore_textResponse_ButtonBlock_action = TextResponseWithButtonRestore_textResponse_ButtonBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_textResponse_ButtonBlock_action_LinkAction | TextResponseWithButtonRestore_textResponse_ButtonBlock_action_EmailAction;
 
+export interface TextResponseWithButtonRestore_textResponse_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface TextResponseWithButtonRestore_textResponse_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -52,6 +60,7 @@ export interface TextResponseWithButtonRestore_textResponse_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: TextResponseWithButtonRestore_textResponse_ButtonBlock_action | null;
+  settings: TextResponseWithButtonRestore_textResponse_ButtonBlock_settings | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_CardBlock {
@@ -240,6 +249,14 @@ export interface TextResponseWithButtonRestore_textResponse_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface TextResponseWithButtonRestore_textResponse_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface TextResponseWithButtonRestore_textResponse_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -249,6 +266,7 @@ export interface TextResponseWithButtonRestore_textResponse_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: TextResponseWithButtonRestore_textResponse_TypographyBlock_settings | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_Video_title {
@@ -468,6 +486,14 @@ export interface TextResponseWithButtonRestore_button_ButtonBlock_action_EmailAc
 
 export type TextResponseWithButtonRestore_button_ButtonBlock_action = TextResponseWithButtonRestore_button_ButtonBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_button_ButtonBlock_action_LinkAction | TextResponseWithButtonRestore_button_ButtonBlock_action_EmailAction;
 
+export interface TextResponseWithButtonRestore_button_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface TextResponseWithButtonRestore_button_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -481,6 +507,7 @@ export interface TextResponseWithButtonRestore_button_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: TextResponseWithButtonRestore_button_ButtonBlock_action | null;
+  settings: TextResponseWithButtonRestore_button_ButtonBlock_settings | null;
 }
 
 export interface TextResponseWithButtonRestore_button_CardBlock {
@@ -669,6 +696,14 @@ export interface TextResponseWithButtonRestore_button_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface TextResponseWithButtonRestore_button_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface TextResponseWithButtonRestore_button_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -678,6 +713,7 @@ export interface TextResponseWithButtonRestore_button_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: TextResponseWithButtonRestore_button_TypographyBlock_settings | null;
 }
 
 export interface TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_Video_title {
@@ -897,6 +933,14 @@ export interface TextResponseWithButtonRestore_startIcon_ButtonBlock_action_Emai
 
 export type TextResponseWithButtonRestore_startIcon_ButtonBlock_action = TextResponseWithButtonRestore_startIcon_ButtonBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_startIcon_ButtonBlock_action_LinkAction | TextResponseWithButtonRestore_startIcon_ButtonBlock_action_EmailAction;
 
+export interface TextResponseWithButtonRestore_startIcon_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface TextResponseWithButtonRestore_startIcon_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -910,6 +954,7 @@ export interface TextResponseWithButtonRestore_startIcon_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: TextResponseWithButtonRestore_startIcon_ButtonBlock_action | null;
+  settings: TextResponseWithButtonRestore_startIcon_ButtonBlock_settings | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_CardBlock {
@@ -1098,6 +1143,14 @@ export interface TextResponseWithButtonRestore_startIcon_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface TextResponseWithButtonRestore_startIcon_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface TextResponseWithButtonRestore_startIcon_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -1107,6 +1160,7 @@ export interface TextResponseWithButtonRestore_startIcon_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: TextResponseWithButtonRestore_startIcon_TypographyBlock_settings | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_Video_title {
@@ -1326,6 +1380,14 @@ export interface TextResponseWithButtonRestore_endIcon_ButtonBlock_action_EmailA
 
 export type TextResponseWithButtonRestore_endIcon_ButtonBlock_action = TextResponseWithButtonRestore_endIcon_ButtonBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_endIcon_ButtonBlock_action_LinkAction | TextResponseWithButtonRestore_endIcon_ButtonBlock_action_EmailAction;
 
+export interface TextResponseWithButtonRestore_endIcon_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface TextResponseWithButtonRestore_endIcon_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -1339,6 +1401,7 @@ export interface TextResponseWithButtonRestore_endIcon_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: TextResponseWithButtonRestore_endIcon_ButtonBlock_action | null;
+  settings: TextResponseWithButtonRestore_endIcon_ButtonBlock_settings | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_CardBlock {
@@ -1527,6 +1590,14 @@ export interface TextResponseWithButtonRestore_endIcon_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface TextResponseWithButtonRestore_endIcon_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface TextResponseWithButtonRestore_endIcon_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -1536,6 +1607,7 @@ export interface TextResponseWithButtonRestore_endIcon_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: TextResponseWithButtonRestore_endIcon_TypographyBlock_settings | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_Video_title {

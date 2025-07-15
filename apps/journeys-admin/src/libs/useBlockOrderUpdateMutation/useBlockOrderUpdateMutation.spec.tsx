@@ -15,6 +15,10 @@ describe('getNewParentOrder', () => {
     __typename: 'TypographyBlock',
     parentBlockId: 'card1.id',
     parentOrder: 0,
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    },
     children: []
   } as unknown as TreeBlock<TypographyBlock>
   const imageBlock = {

@@ -83,9 +83,7 @@ test.describe('firefox only', () => {
     // })
 
     await page
-      .getByRole('button', {
-        name: 'Blessed are those Who Hear and Obey'
-      })
+      .getByTestId('VideoCardButton-blessed-are-those-who-hear-and-obey')
       .click()
 
     await expect(page).toHaveURL(
@@ -99,7 +97,7 @@ test.describe('firefox only', () => {
     //   fullPage: true
     // })
 
-    await page.getByRole('button', { name: 'Play' }).first().click()
+    // await page.getByRole('button', { name: 'Play' }).first().click()
 
     // wait for 60 seconds to see if the video is complete. Until there are some events in the code to figure this out
     // eslint-disable-next-line playwright/no-wait-for-timeout

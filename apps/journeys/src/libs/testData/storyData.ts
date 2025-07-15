@@ -41,7 +41,11 @@ export const basic: TreeBlock[] = [
             color: null,
             content: 'Step 1',
             variant: TypographyVariant.h3,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId2',
@@ -52,7 +56,11 @@ export const basic: TreeBlock[] = [
             color: null,
             content: 'Start',
             variant: TypographyVariant.body2,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'radioQuestion1.id',
@@ -153,7 +161,11 @@ export const basic: TreeBlock[] = [
             color: null,
             content: 'Step 2',
             variant: TypographyVariant.h3,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId2',
@@ -164,7 +176,11 @@ export const basic: TreeBlock[] = [
             color: null,
             content: 'Locked',
             variant: TypographyVariant.body2,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'radioQuestion1.id',
@@ -250,7 +266,11 @@ export const basic: TreeBlock[] = [
             color: null,
             content: 'Step 3',
             variant: TypographyVariant.h3,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId2',
@@ -261,7 +281,11 @@ export const basic: TreeBlock[] = [
             color: null,
             content: 'No nextBlockId',
             variant: TypographyVariant.body2,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'radioQuestion1.id',
@@ -347,7 +371,11 @@ export const basic: TreeBlock[] = [
             color: null,
             content: 'Step 4',
             variant: TypographyVariant.h3,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId2',
@@ -358,7 +386,11 @@ export const basic: TreeBlock[] = [
             color: null,
             content: 'End',
             variant: TypographyVariant.body2,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'radioQuestion1.id',
@@ -447,7 +479,11 @@ export const imageBlocks: TreeBlock[] = [
             color: null,
             content: "What's our purpose, and how did we get here?",
             variant: TypographyVariant.h3,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId2',
@@ -459,7 +495,11 @@ export const imageBlocks: TreeBlock[] = [
             content:
               'Follow the journey of a curious Irishman traveling around the world looking for answers and wrestling with the things that just don’t seem to make sense. ',
             variant: null,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             __typename: 'ButtonBlock',
@@ -485,7 +525,8 @@ export const imageBlocks: TreeBlock[] = [
                 iconSize: IconSize.md,
                 children: []
               }
-            ]
+            ],
+            settings: null
           },
           {
             id: 'image0.id',
@@ -536,7 +577,11 @@ export const imageBlocks: TreeBlock[] = [
             color: null,
             content: 'a quick question...',
             variant: TypographyVariant.h6,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId12',
@@ -547,7 +592,11 @@ export const imageBlocks: TreeBlock[] = [
             color: null,
             content: 'Can we trust the story of Jesus ?',
             variant: TypographyVariant.h3,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             __typename: 'ButtonBlock',
@@ -573,7 +622,8 @@ export const imageBlocks: TreeBlock[] = [
                 iconSize: IconSize.md,
                 children: []
               }
-            ]
+            ],
+            settings: null
           },
           {
             id: 'image0.id',
@@ -624,7 +674,11 @@ export const imageBlocks: TreeBlock[] = [
             color: null,
             content: 'if it’s true...',
             variant: TypographyVariant.h6,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId12',
@@ -635,7 +689,11 @@ export const imageBlocks: TreeBlock[] = [
             color: null,
             content: 'What is Christianity to you?',
             variant: TypographyVariant.h3,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'textResponse.id',
@@ -701,7 +759,11 @@ export const imageBlocks: TreeBlock[] = [
             color: null,
             content: 'What do you think?',
             variant: TypographyVariant.h6,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId12',
@@ -712,7 +774,11 @@ export const imageBlocks: TreeBlock[] = [
             color: null,
             content: 'Do you need to change to be good enough for God?',
             variant: TypographyVariant.h3,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'radioQuestion1.id',
@@ -804,7 +870,11 @@ export const imageBlocks: TreeBlock[] = [
             color: null,
             content: 'a quote',
             variant: TypographyVariant.overline,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId12',
@@ -816,7 +886,11 @@ export const imageBlocks: TreeBlock[] = [
             content:
               '“God sent his Son into the world not to judge the world, but to save the world through him.”',
             variant: TypographyVariant.subtitle1,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId13',
@@ -827,7 +901,11 @@ export const imageBlocks: TreeBlock[] = [
             color: null,
             content: '–  The Bible, John 3:17',
             variant: TypographyVariant.caption,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
 
           {
@@ -859,7 +937,8 @@ export const imageBlocks: TreeBlock[] = [
                 iconSize: IconSize.md,
                 children: []
               }
-            ]
+            ],
+            settings: null
           }
         ]
       }
@@ -979,7 +1058,11 @@ export const videoBlocks: TreeBlock[] = [
             color: null,
             content: 'Step 2',
             variant: TypographyVariant.h3,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId2',
@@ -990,7 +1073,11 @@ export const videoBlocks: TreeBlock[] = [
             color: null,
             content: 'Locked',
             variant: TypographyVariant.body2,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'radioQuestion1.id',
@@ -1249,7 +1336,11 @@ export const videoBlocksNoPoster: TreeBlock[] = [
             color: null,
             content: 'Step 2',
             variant: TypographyVariant.h3,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId2',
@@ -1260,7 +1351,11 @@ export const videoBlocksNoPoster: TreeBlock[] = [
             color: null,
             content: 'Locked',
             variant: TypographyVariant.body2,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'radioQuestion1.id',
@@ -1528,7 +1623,11 @@ export const videoBlocksNoVideo: TreeBlock[] = [
             color: null,
             content: 'Step 2',
             variant: TypographyVariant.h3,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId2',
@@ -1539,7 +1638,11 @@ export const videoBlocksNoVideo: TreeBlock[] = [
             color: null,
             content: 'Locked',
             variant: TypographyVariant.body2,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'radioQuestion1.id',
@@ -1732,7 +1835,11 @@ export const videoLoop: TreeBlock[] = [
             color: null,
             content: "What's our purpose, and how did we get here?",
             variant: TypographyVariant.h3,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId2',
@@ -1744,7 +1851,11 @@ export const videoLoop: TreeBlock[] = [
             content:
               'Follow the journey of a curious Irishman traveling around the world looking for answers and wrestling with the things that just don’t seem to make sense. ',
             variant: null,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             __typename: 'ButtonBlock',
@@ -1770,7 +1881,8 @@ export const videoLoop: TreeBlock[] = [
                 iconSize: IconSize.md,
                 children: []
               }
-            ]
+            ],
+            settings: null
           },
           {
             id: 'video1.id',

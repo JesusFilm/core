@@ -1,6 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import MuiButton from '@mui/material/Button'
+import Typography from '@mui/material/Typography'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { useFormikContext } from 'formik'
 import { useRouter } from 'next/router'
@@ -11,6 +12,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 import {
   ButtonAction,
+  ButtonAlignment,
   ButtonClickEventCreateInput,
   ButtonVariant,
   ChatOpenEventCreateInput
@@ -97,7 +99,8 @@ export function Button({
   action,
   children,
   editableLabel,
-  submitEnabled
+  submitEnabled,
+  settings
 }: ButtonProps): ReactElement {
   const [buttonClickEventCreate] = useMutation<
     ButtonClickEventCreate,
@@ -136,6 +139,15 @@ export function Button({
   )
 
   const fallbackLabel = submitEnabled ? t('Submit') : t('Button')
+
+  const justifyContent = {
+    [ButtonAlignment.left]: 'flex-start',
+    [ButtonAlignment.center]: 'center',
+    [ButtonAlignment.right]: 'flex-end',
+    [ButtonAlignment.justify]: 'space-evenly'
+  }
+
+  const alignment = settings?.alignment ?? ButtonAlignment.justify
 
   const buttonType = submitEnabled
     ? variant !== 'admin'
@@ -281,7 +293,9 @@ export function Button({
               ? 5
               : size === 'small'
                 ? 4
-                : 5
+                : 5,
+        display: 'flex',
+        justifyContent: justifyContent[alignment]
       }}
       data-testid={`JourneysButton-${blockId}`}
     >
@@ -293,9 +307,14 @@ export function Button({
         startIcon={startIcon != null ? <Icon {...startIcon} /> : undefined}
         endIcon={endIcon != null ? <Icon {...endIcon} /> : undefined}
         onClick={handleClick}
-        fullWidth
-        sx={
-          editableLabel != null
+        sx={{
+          outline: '2px solid',
+          outlineColor: editableLabel != null ? '#C52D3A' : 'transparent',
+          outlineOffset: '5px',
+          zIndex: editableLabel != null ? 1 : 0,
+          width: alignment === ButtonAlignment.justify ? '100%' : 'fit-content',
+          maxWidth: alignment === ButtonAlignment.justify ? '100%' : '75%',
+          ...(editableLabel != null
             ? {
                 '&:hover': {
                   backgroundColor: (() => {
@@ -311,16 +330,23 @@ export function Button({
                   })()
                 }
               }
-            : undefined
-        }
+            : undefined)
+        }}
       >
-        <span>
+        <Typography
+          variant="inherit"
+          sx={{
+            overflowWrap: 'break-word',
+            wordBreak: 'break-word',
+            width: 'inherit'
+          }}
+        >
           {editableLabel != null
             ? editableLabel
             : label !== ''
               ? label
               : fallbackLabel}
-        </span>
+        </Typography>
       </MuiButton>
     </Box>
   )

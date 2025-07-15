@@ -52,8 +52,22 @@ export function VideoDescription({
   videoId
 }: VideoDescriptionProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
-  const [createVideoDescription] = useMutation(CREATE_VIDEO_DESCRIPTION)
-  const [updateVideoDescription] = useMutation(UPDATE_VIDEO_DESCRIPTION)
+  const [createVideoDescription] = useMutation(CREATE_VIDEO_DESCRIPTION, {
+    refetchQueries: [
+      {
+        query: GET_VIDEO_DESCRIPTION,
+        variables: { videoId, languageId: DEFAULT_VIDEO_LANGUAGE_ID }
+      }
+    ]
+  })
+  const [updateVideoDescription] = useMutation(UPDATE_VIDEO_DESCRIPTION, {
+    refetchQueries: [
+      {
+        query: GET_VIDEO_DESCRIPTION,
+        variables: { videoId, languageId: DEFAULT_VIDEO_LANGUAGE_ID }
+      }
+    ]
+  })
 
   const validationSchema = object().shape({
     description: string().required('Description is required')
@@ -103,6 +117,7 @@ export function VideoDescription({
           enqueueSnackbar('Video description updated', {
             variant: 'success'
           })
+          resetForm({ values })
         },
         onError: () => {
           enqueueSnackbar('Failed to update video description', {
@@ -146,6 +161,7 @@ export function VideoDescription({
               minRows={6}
               maxRows={6}
               spellCheck={true}
+              placeholder="Please enter a description, up to 5000 characters."
             />
             <Divider sx={{ mx: -4 }} />
             <Stack direction="row" justifyContent="flex-end" gap={1}>
