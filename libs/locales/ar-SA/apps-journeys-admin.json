@@ -242,7 +242,7 @@
   "Large": "كبير",
   "Contained": "محتوى",
   "Outlined": "الخطوط العريضة",
-  "Invalid {{ HEX }} color code": "رمز اللون {{ HEX }} غير صالح",
+  "Use a valid 6-digit hex (e.g #FFFFFF)": "استخدم رقم سداسي سداسي سداسي سداسي صالح (على سبيل المثال #FFFFFFFFFF)",
   "Palette": "لوحة الألوان",
   "Adjust the blur level of your background image.": "اضبط مستوى ضبابية صورة الخلفية.",
   "Adjust View": "ضبط العرض",
