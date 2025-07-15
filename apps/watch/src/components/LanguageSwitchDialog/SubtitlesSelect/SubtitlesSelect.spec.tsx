@@ -443,9 +443,8 @@ describe('SubtitlesSelect', () => {
     const checkbox = screen.getByRole('checkbox')
     await waitFor(() => {
       expect(checkbox).toBeChecked()
-
-      // Test that the checkbox can be clicked (interaction works)
     })
+    // Test that the checkbox can be clicked (interaction works)
     await user.click(checkbox)
     // Since this is an integration test, the action is executed successfully
     // if no errors are thrown during the click event
