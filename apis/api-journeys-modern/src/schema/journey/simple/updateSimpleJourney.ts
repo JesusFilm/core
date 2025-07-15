@@ -143,6 +143,7 @@ export async function updateSimpleJourney(
             parentOrder: parentOrder++,
             videoId,
             source: 'youTube',
+            autoPlay: true,
             startAt: card.video.startAt ?? 0,
             endAt: card.video.endAt ?? videoDuration,
             action:
