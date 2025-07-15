@@ -185,6 +185,7 @@ export type WatchInitialState = Pick<
   | 'videoId'
   | 'videoVariantSlug'
   | 'videoSubtitleLanguages'
+  | 'videoAudioLanguages'
 >
 
 const WatchContext = createContext<{
@@ -376,11 +377,16 @@ export function WatchProvider({ children, initialState }: WatchProviderProps) {
   })
 
   useEffect(() => {
+    //video audio languages needs to be set first for the auto subtitle calculation
+    dispatch({
+      type: 'SetVideoAudioLanguages',
+      videoAudioLanguages: initialState?.videoAudioLanguages ?? []
+    })
     dispatch({
       type: 'SetVideoSubtitleLanguages',
-      videoSubtitleLanguages: initialState.videoSubtitleLanguages ?? []
+      videoSubtitleLanguages: initialState?.videoSubtitleLanguages ?? []
     })
-  }, [initialState.videoSubtitleLanguages])
+  }, [initialState.videoSubtitleLanguages, initialState.videoAudioLanguages])
 
   return (
     <WatchContext.Provider value={{ state, dispatch }}>

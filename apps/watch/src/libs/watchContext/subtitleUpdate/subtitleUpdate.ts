@@ -20,7 +20,7 @@ export function subtitleUpdate({
   const tracks = player.textTracks?.() ?? []
 
   // Use autoSubtitle if available (based on availability), otherwise fall back to user preference
-  const shouldShowSubtitles = autoSubtitle === true ? true : subtitleOn
+  const shouldShowSubtitles = autoSubtitle ?? subtitleOn
 
   if (!shouldShowSubtitles || subtitleLanguage == null) {
     // Disable all subtitle tracks when subtitles should be off

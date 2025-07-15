@@ -55,7 +55,7 @@ export const SubtitlesSelect = memo(function SubtitlesSelect(): ReactElement {
     }
   }, [videoId, videoSubtitleLanguages, getSubtitleLanguages])
 
-  const preferredSubtitleOn = autoSubtitle === true ? true : subtitleOn
+  const preferredSubtitleOn = autoSubtitle ?? subtitleOn
 
   // Compute current subtitle display object directly from context
   const currentSubtitle = useMemo(
@@ -135,7 +135,7 @@ export const SubtitlesSelect = memo(function SubtitlesSelect(): ReactElement {
           type="checkbox"
           checked={preferredSubtitleOn}
           onChange={() => {
-            if (autoSubtitle) {
+            if (autoSubtitle != null) {
               dispatch({
                 type: 'UpdateAutoSubtitlesOn',
                 autoSubtitle: !autoSubtitle

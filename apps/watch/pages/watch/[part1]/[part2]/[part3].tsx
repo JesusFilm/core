@@ -9,6 +9,11 @@ import { InstantSearch } from 'react-instantsearch'
 import { useInstantSearchClient } from '@core/journeys/ui/algolia/InstantSearchProvider'
 
 import {
+  GetLanguagesSlug,
+  GetLanguagesSlugVariables,
+  GetLanguagesSlug_video_variantLanguagesWithSlug as VideoAudioLanguage
+} from '../../../../__generated__/GetLanguagesSlug'
+import {
   GetSubtitles,
   GetSubtitlesVariables,
   GetSubtitles_video_variant_subtitle as VideoVariantSubtitle
@@ -23,6 +28,7 @@ import {
 } from '../../../../__generated__/GetVideoContentPart3'
 import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 import i18nConfig from '../../../../next-i18next.config'
+import { GET_LANGUAGES_SLUG } from '../../../../src/components/AudioLanguageDialog/AudioLanguageDialog'
 import { NewVideoContentPage } from '../../../../src/components/NewVideoContentPage'
 import { GET_SUBTITLES } from '../../../../src/components/SubtitleDialog/SubtitleDialog'
 import { createApolloClient } from '../../../../src/libs/apolloClient'
@@ -61,12 +67,14 @@ interface Part3PageProps {
   container: VideoContentFields
   content: VideoContentFields
   videoSubtitleLanguages: VideoVariantSubtitle[]
+  videoAudioLanguages: VideoAudioLanguage[]
 }
 
 export default function Part3Page({
   container,
   content,
-  videoSubtitleLanguages
+  videoSubtitleLanguages,
+  videoAudioLanguages
 }: Part3PageProps): ReactElement {
   const { i18n } = useTranslation()
   const searchClient = useInstantSearchClient()
@@ -79,7 +87,8 @@ export default function Part3Page({
     subtitleOn: (getCookie('SUBTITLES_ON') ?? 'false') === 'true',
     videoId: content.id,
     videoVariantSlug: content.variant?.slug,
-    videoSubtitleLanguages
+    videoSubtitleLanguages,
+    videoAudioLanguages
   }
 
   return (
@@ -161,6 +170,16 @@ export const getStaticProps: GetStaticProps<Part3PageProps> = async (
       }
     }
 
+    const { data: videoAudioLanguagesData } = await client.query<
+      GetLanguagesSlug,
+      GetLanguagesSlugVariables
+    >({
+      query: GET_LANGUAGES_SLUG,
+      variables: {
+        id: contentData.content.id
+      }
+    })
+
     // required for auto-subtitle
     let subtitleData: GetSubtitles | undefined
     if (contentData.content.variant?.slug != null) {
@@ -180,6 +199,8 @@ export const getStaticProps: GetStaticProps<Part3PageProps> = async (
         container: containerData.container,
         content: contentData.content,
         videoSubtitleLanguages: subtitleData?.video?.variant?.subtitle ?? [],
+        videoAudioLanguages:
+          videoAudioLanguagesData?.video?.variantLanguagesWithSlug ?? [],
         ...(await serverSideTranslations(
           context.locale ?? 'en',
           ['apps-watch'],

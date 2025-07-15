@@ -7,6 +7,11 @@ import { SnackbarProvider } from 'notistack'
 import type { ReactElement } from 'react'
 
 import {
+  GetLanguagesSlug,
+  GetLanguagesSlugVariables,
+  GetLanguagesSlug_video_variantLanguagesWithSlug as VideoAudioLanguage
+} from '../../../__generated__/GetLanguagesSlug'
+import {
   GetSubtitles,
   GetSubtitlesVariables,
   GetSubtitles_video_variant_subtitle as VideoVariantSubtitle
@@ -17,6 +22,7 @@ import type {
 } from '../../../__generated__/GetVideoContent'
 import type { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import i18nConfig from '../../../next-i18next.config'
+import { GET_LANGUAGES_SLUG } from '../../../src/components/AudioLanguageDialog/AudioLanguageDialog'
 import { GET_SUBTITLES } from '../../../src/components/SubtitleDialog/SubtitleDialog'
 import { createApolloClient } from '../../../src/libs/apolloClient'
 import { getCookie } from '../../../src/libs/cookieHandler'
@@ -44,6 +50,7 @@ export const GET_VIDEO_CONTENT = gql`
 interface Part2PageProps {
   content: VideoContentFields
   videoSubtitleLanguages: VideoVariantSubtitle[]
+  videoAudioLanguages: VideoAudioLanguage[]
 }
 
 const DynamicVideoContainerPage = dynamic(
@@ -64,7 +71,8 @@ const DynamicNewContentPage = dynamic(
 
 export default function Part2Page({
   content,
-  videoSubtitleLanguages
+  videoSubtitleLanguages,
+  videoAudioLanguages
 }: Part2PageProps): ReactElement {
   const { i18n } = useTranslation()
 
@@ -75,7 +83,8 @@ export default function Part2Page({
     subtitleOn: (getCookie('SUBTITLES_ON') ?? 'false') === 'true',
     videoId: content.id,
     videoVariantSlug: content.variant?.slug,
-    videoSubtitleLanguages
+    videoSubtitleLanguages,
+    videoAudioLanguages
   }
 
   return (
@@ -146,6 +155,16 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
       }
     }
 
+    const { data: videoAudioLanguagesData } = await client.query<
+      GetLanguagesSlug,
+      GetLanguagesSlugVariables
+    >({
+      query: GET_LANGUAGES_SLUG,
+      variables: {
+        id: contentData.content.id
+      }
+    })
+
     // required for auto-subtitle
     let subtitleData: GetSubtitles | undefined
     if (contentData.content.variant?.slug != null) {
@@ -163,6 +182,8 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
         flags: await getFlags(),
         content: contentData.content,
         videoSubtitleLanguages: subtitleData?.video?.variant?.subtitle ?? [],
+        videoAudioLanguages:
+          videoAudioLanguagesData?.video?.variantLanguagesWithSlug ?? [],
         ...(await serverSideTranslations(
           context.locale ?? 'en',
           ['apps-watch'],
