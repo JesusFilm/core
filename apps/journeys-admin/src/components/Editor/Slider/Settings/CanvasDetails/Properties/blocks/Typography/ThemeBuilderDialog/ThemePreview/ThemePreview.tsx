@@ -112,7 +112,8 @@ export function ThemePreview({
                       color: TypographyColor.primary,
                       variant: TypographyVariant.h1,
                       content: t('Display Text'),
-                      children: []
+                      children: [],
+                      settings: null
                     }}
                   />
                   <Typography
@@ -125,7 +126,8 @@ export function ThemePreview({
                       color: TypographyColor.primary,
                       variant: TypographyVariant.h2,
                       content: t('This is a Heading'),
-                      children: []
+                      children: [],
+                      settings: null
                     }}
                   />
                 </Stack>
@@ -142,7 +144,8 @@ export function ThemePreview({
                       content: t(
                         'This is a subheading that supports additional content'
                       ),
-                      children: []
+                      children: [],
+                      settings: null
                     }}
                   />
                   <Typography
@@ -157,7 +160,8 @@ export function ThemePreview({
                       content: t(
                         'This is body text, used for general content like paragraphs and instructions.'
                       ),
-                      children: []
+                      children: [],
+                      settings: null
                     }}
                   />
                 </Stack>
