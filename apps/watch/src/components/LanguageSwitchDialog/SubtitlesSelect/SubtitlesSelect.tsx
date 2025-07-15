@@ -135,6 +135,7 @@ export const SubtitlesSelect = memo(function SubtitlesSelect(): ReactElement {
           type="checkbox"
           checked={preferredSubtitleOn}
           onChange={() => {
+            // if autoSubtitle is not null, then do not update the user's preferences, instead update the autoSubtitle state
             if (autoSubtitle != null) {
               dispatch({
                 type: 'UpdateAutoSubtitlesOn',
