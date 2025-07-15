@@ -21,6 +21,10 @@ describe('useBlockDeleteMutation', () => {
     color: null,
     content: 'block',
     variant: null,
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    },
     children: []
   }
 

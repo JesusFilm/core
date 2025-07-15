@@ -100,6 +100,7 @@ describe('MuxVideoService', () => {
           static_renditions: [
             { resolution: '270p' },
             { resolution: '360p' },
+            { resolution: '480p' },
             { resolution: '720p' },
             { resolution: '1080p' },
             { resolution: '1440p' },
@@ -212,6 +213,7 @@ describe('MuxVideoService', () => {
         static_renditions: [
           { resolution: '270p' },
           { resolution: '360p' },
+          { resolution: '480p' },
           { resolution: '720p' },
           { resolution: '1080p' },
           { resolution: '1440p' },
