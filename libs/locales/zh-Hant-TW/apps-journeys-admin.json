@@ -242,7 +242,7 @@
   "Large": "大型",
   "Contained": "包含",
   "Outlined": "概述",
-  "Invalid {{ HEX }} color code": "無效的 {{ HEX }} 顏色代碼",
+  "Use a valid 6-digit hex (e.g #FFFFFF)": "使用有效的 6 位數十六進位 (例如 #FFFFFF)",
   "Palette": "調色盤",
   "Adjust the blur level of your background image.": "調整背景影像的模糊程度。",
   "Adjust View": "調整檢視",
