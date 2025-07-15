@@ -15,6 +15,7 @@ export function Typography({
   color,
   align,
   content,
+  settings,
   editableContent,
   placeholderText
 }: TypographyProps): ReactElement {
@@ -26,13 +27,22 @@ export function Typography({
     displayContent = placeholderText
   }
 
+  // Use settings.color if available, otherwise fall back to enum color
+  const getTextColor = () => {
+    if (content === '') return 'text.disabled'
+    if (settings?.color != null && settings.color !== '') return settings.color
+    return color ?? undefined
+  }
+
+  const textColor = getTextColor()
+
   return (
     <>
       {variant === 'overline' || variant === 'caption' ? (
         <MuiTypography
           variant={variant ?? undefined}
           align={align ?? undefined}
-          color={content === '' ? 'text.disabled' : (color ?? undefined)}
+          color={textColor}
           component="p"
           gutterBottom
           whiteSpace="pre-line"
@@ -44,7 +54,7 @@ export function Typography({
         <MuiTypography
           variant={variant ?? undefined}
           align={align ?? undefined}
-          color={content === '' ? 'text.disabled' : (color ?? undefined)}
+          color={textColor}
           gutterBottom
           whiteSpace="pre-line"
           data-testid="JourneysTypography"

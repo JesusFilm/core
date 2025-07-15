@@ -30,7 +30,11 @@ describe('TypographyEdit', () => {
     content: 'test content',
     align: null,
     color: null,
-    children: []
+    children: [],
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    }
   }
 
   const mockUpdateSuccess1 = {
@@ -47,7 +51,11 @@ describe('TypographyEdit', () => {
           {
             __typename: 'TypographyBlock',
             id: 'typography.id',
-            content: 'test'
+            content: 'test',
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           }
         ]
       }
@@ -68,7 +76,11 @@ describe('TypographyEdit', () => {
           {
             __typename: 'TypographyBlock',
             id: 'typography.id',
-            content: 'test content'
+            content: 'test content',
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           }
         ]
       }
