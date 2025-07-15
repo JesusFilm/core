@@ -242,7 +242,7 @@
   "Large": "Besar",
   "Contained": "Terkandung",
   "Outlined": "Diuraikan",
-  "Invalid {{ HEX }} color code": "Kode warna {{ HEX }} tidak valid",
+  "Use a valid 6-digit hex (e.g #FFFFFF)": "Gunakan heksa 6 digit yang valid (misalnya #FFFFFF)",
   "Palette": "Palet",
   "Adjust the blur level of your background image.": "Sesuaikan tingkat keburaman gambar latar belakang Anda.",
   "Adjust View": "Sesuaikan Tampilan",
