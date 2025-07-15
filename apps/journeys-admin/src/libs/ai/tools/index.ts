@@ -22,8 +22,8 @@ export function tools(
     ...agentTools,
     // ...clientTools,
     ...journeyTools,
-    youTubeTranscriptTool,
-    youtubeAnalyzerTool,
+    // youTubeTranscriptTool,
+    // youtubeAnalyzerTool,
     youtubeAnalyzerTool2
   }
 
