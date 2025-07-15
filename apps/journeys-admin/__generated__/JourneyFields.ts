@@ -267,6 +267,14 @@ export interface JourneyFields_blocks_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface JourneyFields_blocks_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface JourneyFields_blocks_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -276,6 +284,7 @@ export interface JourneyFields_blocks_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: JourneyFields_blocks_TypographyBlock_settings | null;
 }
 
 export interface JourneyFields_blocks_VideoBlock_mediaVideo_Video_title {

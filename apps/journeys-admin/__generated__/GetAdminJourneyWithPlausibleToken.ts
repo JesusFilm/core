@@ -267,6 +267,14 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_TextResponseBl
   integrationId: string | null;
 }
 
+export interface GetAdminJourneyWithPlausibleToken_journey_blocks_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -276,6 +284,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_TypographyBloc
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: GetAdminJourneyWithPlausibleToken_journey_blocks_TypographyBlock_settings | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_mediaVideo_Video_title {

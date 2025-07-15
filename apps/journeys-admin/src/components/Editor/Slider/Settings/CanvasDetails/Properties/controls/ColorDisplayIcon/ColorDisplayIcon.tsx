@@ -30,10 +30,10 @@ enum DisplayColor {
 export function ColorDisplayIcon({
   color
 }: ColorDisplayIconProps): ReactElement {
-  const { journey } = useJourney()
   const {
     state: { selectedStep }
   } = useEditor()
+  const { journey } = useJourney()
 
   const card = selectedStep?.children.find(
     (block) => block.__typename === 'CardBlock'
