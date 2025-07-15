@@ -17,7 +17,7 @@ export const config = {
 export function middleware(request: NextRequest) {
   const hostname = request.nextUrl.hostname
   const pathname = request.nextUrl.pathname
-  
+
   const baseUrl =
     hostname === 'arc.gt'
       ? 'https://api.arclight.org'
