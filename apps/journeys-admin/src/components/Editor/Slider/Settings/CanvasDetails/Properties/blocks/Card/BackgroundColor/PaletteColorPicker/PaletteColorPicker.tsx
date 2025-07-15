@@ -1,37 +1,76 @@
+import Box from '@mui/material/Box'
+import Grid from '@mui/material/Grid'
 import { ReactElement } from 'react'
 
-import { HorizontalSelect } from '../../../../../../../../../HorizontalSelect'
+import {
+  addAlphaToHex,
+  getOpacityFromHex,
+  stripAlphaFromHex
+} from '@core/journeys/ui/Card/utils/colorOpacityUtils'
+import CheckIcon from '@core/shared/ui/icons/Check'
+
 import { Swatch } from '../Swatch'
 
 interface PaletteColorPickerProps {
   selectedColor: string
-  colors: Array<{ dark: string; light: string }>
-  mode: 'dark' | 'light'
+  colors: string[]
   onChange: (color: string) => void
 }
 
 export function PaletteColorPicker({
   selectedColor,
   colors,
-  mode,
   onChange
 }: PaletteColorPickerProps): ReactElement {
+  const opacity = getOpacityFromHex(selectedColor) ?? 100
+
+  function isSameColor(color1: string, color2: string): boolean {
+    return stripAlphaFromHex(color1) === stripAlphaFromHex(color2)
+  }
+
   return (
-    <HorizontalSelect
-      onChange={onChange}
-      id={selectedColor}
-      testId="PaletteColorPicker"
-      sx={{ p: 4 }}
+    <Grid
+      container
+      spacing={{ xs: 4, sm: 3 }}
+      sx={{ p: 4, justifyContent: 'center' }}
     >
       {colors.map((color) => {
+        const selected = isSameColor(selectedColor, color)
         return (
-          <Swatch
-            id={color[mode]}
-            key={`palette-${color[mode]}`}
-            color={color[mode]}
-          />
+          <Box
+            key={`palette-${color}`}
+            sx={{
+              borderRadius: '50%',
+              position: 'relative',
+              cursor: 'pointer'
+            }}
+            onClick={() => {
+              onChange(addAlphaToHex(color, opacity))
+            }}
+          >
+            <Swatch id={color} color={color} variant="rounded" />
+            {selected && (
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                <CheckIcon
+                  data-testid="CheckIcon"
+                  sx={{ fontSize: 45, color: 'background.default' }}
+                />
+              </Box>
+            )}
+          </Box>
         )
       })}
-    </HorizontalSelect>
+    </Grid>
   )
 }
