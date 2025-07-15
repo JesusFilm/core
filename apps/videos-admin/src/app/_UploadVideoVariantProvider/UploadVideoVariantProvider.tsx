@@ -15,11 +15,13 @@ export const CREATE_MUX_VIDEO_UPLOAD_BY_URL = graphql(`
     $url: String!
     $userGenerated: Boolean
     $downloadable: Boolean
+    $maxResolution: MaxResolutionTier
   ) {
     createMuxVideoUploadByUrl(
       url: $url
       userGenerated: $userGenerated
       downloadable: $downloadable
+      maxResolution: $maxResolution
     ) {
       id
       assetId
@@ -87,6 +89,7 @@ interface UploadVideoVariantContextType {
     edition: string,
     published: boolean,
     videoSlug?: string,
+    maxResolution?: string,
     onComplete?: () => void
   ) => Promise<void>
   clearUploadState: () => void
@@ -292,7 +295,8 @@ export function UploadVideoVariantProvider({
     languageSlug: string,
     edition: string,
     published: boolean,
-    videoSlug: string,
+    videoSlug?: string,
+    maxResolution?: string,
     onComplete?: () => void
   ) => {
     try {
@@ -350,7 +354,8 @@ export function UploadVideoVariantProvider({
         variables: {
           url: r2Response.data.cloudflareR2Create.publicUrl,
           userGenerated: false,
-          downloadable: true
+          downloadable: true,
+          maxResolution: maxResolution || undefined
         }
       })
 

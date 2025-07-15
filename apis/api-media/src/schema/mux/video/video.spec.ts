@@ -452,10 +452,12 @@ describe('mux/video', () => {
         mutation CreateMuxVideoUploadByFile(
           $name: String!
           $userGenerated: Boolean
+          $maxResolution: MaxResolutionTier
         ) {
           createMuxVideoUploadByFile(
             name: $name
             userGenerated: $userGenerated
+            maxResolution: $maxResolution
           ) {
             id
             playbackId
@@ -490,7 +492,8 @@ describe('mux/video', () => {
           document: CREATE_MUX_VIDEO_UPLOAD_BY_FILE,
           variables: {
             name: 'videoName',
-            userGenerated: true
+            userGenerated: true,
+            maxResolution: 'fhd'
           }
         })
         expect(prismaMock.muxVideo.create).toHaveBeenCalledWith({
@@ -516,7 +519,8 @@ describe('mux/video', () => {
           document: CREATE_MUX_VIDEO_UPLOAD_BY_FILE,
           variables: {
             name: 'videoName',
-            userGenerated: true
+            userGenerated: true,
+            maxResolution: 'qhd'
           }
         })
         expect(result).toHaveProperty('data', null)
@@ -528,8 +532,13 @@ describe('mux/video', () => {
         mutation CreateMuxVideoUploadByUrl(
           $url: String!
           $userGenerated: Boolean
+          $maxResolution: MaxResolutionTier
         ) {
-          createMuxVideoUploadByUrl(url: $url, userGenerated: $userGenerated) {
+          createMuxVideoUploadByUrl(
+            url: $url
+            userGenerated: $userGenerated
+            maxResolution: $maxResolution
+          ) {
             id
             playbackId
             uploadUrl
@@ -563,7 +572,8 @@ describe('mux/video', () => {
           document: CREATE_MUX_VIDEO_UPLOAD_BY_URL,
           variables: {
             url: 'https://example.com/video.mp4',
-            userGenerated: true
+            userGenerated: true,
+            maxResolution: 'uhd'
           }
         })
         expect(prismaMock.muxVideo.create).toHaveBeenCalledWith({
@@ -587,7 +597,8 @@ describe('mux/video', () => {
           document: CREATE_MUX_VIDEO_UPLOAD_BY_URL,
           variables: {
             url: 'https://example.com/video.mp4',
-            userGenerated: true
+            userGenerated: true,
+            maxResolution: 'fhd'
           }
         })
         expect(result).toHaveProperty('data', null)
