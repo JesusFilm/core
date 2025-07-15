@@ -385,7 +385,6 @@ describe('SubtitlesSelect', () => {
 
   it('should call updateSubtitlesOn when checkbox is toggled', async () => {
     const user = userEvent.setup()
-
     // Set up so audioLanguage matches videoAudioLanguages, so autoSubtitle is undefined
     const stateWithSubtitlesOn = {
       ...defaultInitialState,
