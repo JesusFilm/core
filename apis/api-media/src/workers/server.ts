@@ -58,13 +58,6 @@ async function main(): Promise<void> {
     //     './algolia'
     //   )
     // )
-      run(
-    await import(
-      /* webpackChunkName: "asset-uploader" */
-      './assetUploader'
-    )
-  )
-
     run(
       await import(
         /* webpackChunkName: "crowdin" */
@@ -96,6 +89,7 @@ async function main(): Promise<void> {
         './muxDownloads'
       )
     )
+  }
 
   run(
     await import(
@@ -103,7 +97,6 @@ async function main(): Promise<void> {
       './published'
     )
   )
-}
 
   if (process.env.NODE_ENV !== 'production') {
     run(
