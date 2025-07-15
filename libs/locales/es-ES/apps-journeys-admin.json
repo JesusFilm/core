@@ -242,7 +242,7 @@
   "Large": "Grande",
   "Contained": "Contenido",
   "Outlined": "Esbozado",
-  "Invalid {{ HEX }} color code": "Código de color {{ HEX }} no válido",
+  "Use a valid 6-digit hex (e.g #FFFFFF)": "Utiliza un hexadecimal válido de 6 dígitos (por ejemplo #FFFFFF)",
   "Palette": "Paleta",
   "Adjust the blur level of your background image.": "Ajusta el nivel de desenfoque de tu imagen de fondo.",
   "Adjust View": "Ajustar vista",
