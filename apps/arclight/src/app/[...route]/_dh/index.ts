@@ -5,8 +5,8 @@ import { HTTPException } from 'hono/http-exception'
 
 import { getApolloClient } from '../../../lib/apolloClient'
 import { getBrightcoveRedirectUrl } from '../../../lib/brightcove'
-import { setCorsHeaders } from '../../../lib/redirectUtils'
 import { findDownloadWithFallback } from '../../../lib/downloadHelpers'
+import { setCorsHeaders } from '../../../lib/redirectUtils'
 
 const GET_VIDEO_VARIANT = graphql(`
   query GetVideoWithVariant($id: ID!, $languageId: ID!) {
@@ -110,7 +110,10 @@ dh.openapi(dhRoute, async (c: Context) => {
         const url = await getBrightcoveRedirectUrl(brightcoveId, 'dh')
         return c.redirect(url)
       } catch (err) {
-        console.warn('Brightcove redirect failed, falling back to variant downloads:', err)
+        console.warn(
+          'Brightcove redirect failed, falling back to variant downloads:',
+          err
+        )
         // Fallback to variant downloads below
       }
     }
