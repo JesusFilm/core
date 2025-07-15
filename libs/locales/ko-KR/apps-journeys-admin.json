@@ -242,7 +242,7 @@
   "Large": "대형",
   "Contained": "포함",
   "Outlined": "개요",
-  "Invalid {{ HEX }} color code": "잘못된 {{ HEX }} 색상 코드",
+  "Use a valid 6-digit hex (e.g #FFFFFF)": "유효한 6자리 16진수 사용(예: #FFFFFF)",
   "Palette": "팔레트",
   "Adjust the blur level of your background image.": "배경 이미지의 흐림 수준을 조정합니다.",
   "Adjust View": "보기 조정",
