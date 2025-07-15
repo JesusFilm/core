@@ -16,6 +16,10 @@ export interface JourneyAiTranslateCreate_journeyAiTranslateCreate_journey_block
   __typename: "TypographyBlock";
   id: string;
   content: string | null;
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
 }
 
 export interface JourneyAiTranslateCreate_journeyAiTranslateCreate_journey_blocks_ButtonBlock {

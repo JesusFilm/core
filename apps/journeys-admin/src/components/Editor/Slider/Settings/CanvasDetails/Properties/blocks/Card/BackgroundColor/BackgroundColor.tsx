@@ -300,10 +300,10 @@ export function BackgroundColor(): ReactElement {
 
   const validationSchema = object({
     color: string()
-      .required(t('Invalid {{ HEX }} color code', { HEX: 'HEX' }))
+      .required(t('Use a valid 6-digit hex (e.g #FFFFFF)'))
       .test(
         'valid-hex-color',
-        t('Invalid {{ HEX }} color code', { HEX: 'HEX' }),
+        t('Use a valid 6-digit hex (e.g #FFFFFF)'),
         (value) => {
           if (isValidHex(value)) {
             void handleColorChange(value)
