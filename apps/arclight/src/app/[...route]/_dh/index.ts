@@ -85,7 +85,9 @@ dh.openapi(dhRoute, async (c: Context) => {
       }
     }
     const downloads = data.video?.variant?.downloads
-    const high = downloads?.find((d: { quality?: string; url?: string }) => d.quality === 'high')
+    const high = downloads?.find(
+      (d: { quality?: string; url?: string }) => d.quality === 'high'
+    )
     if (high?.url) {
       return c.redirect(high.url, 302)
     }

@@ -85,7 +85,9 @@ dl.openapi(dlRoute, async (c: Context) => {
       }
     }
     const downloads = data.video?.variant?.downloads
-    const low = downloads?.find((d: { quality?: string; url?: string }) => d.quality === 'low')
+    const low = downloads?.find(
+      (d: { quality?: string; url?: string }) => d.quality === 'low'
+    )
     if (low?.url) {
       return c.redirect(low.url, 302)
     }

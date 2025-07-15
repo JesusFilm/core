@@ -11,12 +11,8 @@ import {
 } from '../../lib/brightcove'
 import { getClientIp, setCorsHeaders } from '../../lib/redirectUtils'
 
-function isBrightcoveSourceCode(
-  value: string
-): value is BrightcoveSourceCode {
-  return ['hls', 'dh', 'dl'].includes(
-    value as BrightcoveSourceCode
-  )
+function isBrightcoveSourceCode(value: string): value is BrightcoveSourceCode {
+  return ['hls', 'dh', 'dl'].includes(value as BrightcoveSourceCode)
 }
 
 export const GET_SHORT_LINK_QUERY = graphql(`
