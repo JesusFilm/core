@@ -56,7 +56,11 @@ export function NewVideoContentHeader({
               passHref
               legacyBehavior
             >
-              <button className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-white font-bold uppercase tracking-wider bg-stone-400/20 hover:bg-stone-400/40 backdrop-blur-md active:bg-stone-100 active:text-stone-900 transition-colors duration-200 text-sm cursor-pointer max-h-10 shadow-sm bevel-top">
+              <button 
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-white font-bold uppercase tracking-wider bg-stone-400/20 hover:bg-stone-400/40 backdrop-blur-md active:bg-stone-100 active:text-stone-900 transition-colors duration-200 text-sm cursor-pointer max-h-10 shadow-sm bevel-top"
+                aria-label={container?.title[0].value ?? t('All Videos')}
+                tabIndex={0}
+              >
                 <>
                   <ArrowBack className="w-4 h-4" />
                   {container?.title[0].value ?? t('All Videos')}
