@@ -55,7 +55,7 @@ function DialogContent({
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   showCloseButton?: boolean
 }) {
-  const { t } = useTranslation('apps-watch')
+  const { t } = useTranslation('apps-watch-modern')
 
   return (
     <DialogPortal data-slot="dialog-portal">
