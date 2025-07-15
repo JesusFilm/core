@@ -95,11 +95,11 @@ export async function getBrightcoveVideo(
 }
 
 export function selectBrightcoveSource(
-  video: any,
+  video: BrightcoveVideo,
   code: BrightcoveSourceCode
 ): string | null {
   if (!video?.sources || !Array.isArray(video.sources)) return null
-  const sources = video.sources as Array<any>
+  const sources = video.sources
 
   switch (code) {
     case 'hls': {
