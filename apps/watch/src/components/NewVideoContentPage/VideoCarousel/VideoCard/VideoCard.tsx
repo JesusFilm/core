@@ -40,7 +40,7 @@ export function VideoCard({
           className="rounded-lg w-full relative text-left border-none bg-transparent p-0 cursor-pointer disabled:cursor-default"
         >
           <div
-            className="relative max-w-[200px] h-60 flex flex-col justify-end w-full rounded-xl cursor-pointer bg-black"
+            className="relative max-w-[200px] h-60 flex flex-col justify-end w-full rounded-xl cursor-pointer bg-black beveled shadow-2xl shadow-stone-950/70"
             tabIndex={0}
             role="button"
             data-testid={`CarouselItem-${video.slug}`}

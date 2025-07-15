@@ -506,7 +506,10 @@ export function VideoControls({
       data-testid="VideoControls"
     >
       {!loading ? (
-        <Container maxWidth="xxl" sx={{ zIndex: 2 }}>
+        <div
+          data-testid="VideoTitle"
+          className="flex flex-col z-2 max-w-[1920px] w-full mx-auto padded"
+        >
           <VideoTitle
             videoTitle={videoTitle}
             variant="unmute"
@@ -522,7 +525,7 @@ export function VideoControls({
               })
             }}
           />
-        </Container>
+        </div>
       ) : (
         <>
           <Box
@@ -548,7 +551,10 @@ export function VideoControls({
               }}
             />
           )}
-          <Container maxWidth="xxl" sx={{ zIndex: 2 }}>
+          <div
+            data-testid="VideoTitle"
+            className="flex flex-col z-2 max-w-[1920px] w-full mx-auto padded"
+          >
             <VideoTitle
               showButton={!initialLoadComplete}
               videoTitle={videoTitle}
@@ -563,7 +569,7 @@ export function VideoControls({
                 })
               }}
             />
-          </Container>
+          </div>
           <Box
             sx={{
               zIndex: 0,
@@ -594,14 +600,9 @@ export function VideoControls({
             }}
             onClick={(event) => event.stopPropagation()}
           >
-            <Container
+            <div
               data-testid="vjs-jfp-custom-controls"
-              maxWidth="xxl"
-              sx={{
-                zIndex: 5,
-                pb: 4,
-                transitionDelay: visible ? undefined : '0.5s'
-              }}
+              className={`flex flex-col z-5 pb-4 max-w-[1920px] w-full mx-auto padded ${visible ? '' : 'transition-delay-500'}`}
             >
               <Slider
                 aria-label="mobile-progress-control"
@@ -785,7 +786,7 @@ export function VideoControls({
                   onClose={handleSubtitleDialogClose}
                 />
               )}
-            </Container>
+            </div>
           </Box>
         </Box>
       </Fade>
