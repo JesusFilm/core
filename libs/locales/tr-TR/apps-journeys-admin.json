@@ -242,7 +242,7 @@
   "Large": "Büyük",
   "Contained": "Kapalı",
   "Outlined": "Ana hatlarıyla",
-  "Invalid {{ HEX }} color code": "Geçersiz {{ HEX }} renk kodu",
+  "Use a valid 6-digit hex (e.g #FFFFFF)": "Geçerli bir 6 basamaklı hex kullanın (örneğin #FFFFFF)",
   "Palette": "Palet",
   "Adjust the blur level of your background image.": "Arka plan görüntünüzün bulanıklık düzeyini ayarlayın.",
   "Adjust View": "Görünümü Ayarla",
