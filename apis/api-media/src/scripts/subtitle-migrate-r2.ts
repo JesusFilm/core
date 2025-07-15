@@ -26,7 +26,7 @@ async function uploadToR2FromUrl(
   url: string,
   fileName: string,
   contentType: string
-): Promise<string> {
+): Promise<{ publicUrl: string; contentLength: number }> {
   if (process.env.CLOUDFLARE_R2_BUCKET == null)
     throw new Error('Missing CLOUDFLARE_R2_BUCKET')
   if (process.env.CLOUDFLARE_R2_CUSTOM_DOMAIN == null)
@@ -42,8 +42,9 @@ async function uploadToR2FromUrl(
   }
 
   const fileBuffer = await response.arrayBuffer()
+  const contentLength = fileBuffer.byteLength
 
-  console.log(`Uploading file to R2: ${fileName}`)
+  console.log(`Uploading file to R2: ${fileName} (${contentLength} bytes)`)
 
   const client = getClient()
   await client.send(
@@ -58,7 +59,7 @@ async function uploadToR2FromUrl(
   const publicUrl = `${process.env.CLOUDFLARE_R2_CUSTOM_DOMAIN}/${fileName}`
   console.log(`File uploaded to R2: ${publicUrl}`)
 
-  return publicUrl
+  return { publicUrl, contentLength }
 }
 
 async function main(): Promise<void> {
@@ -99,86 +100,82 @@ async function main(): Promise<void> {
       try {
         // Process SRT file if it exists
         if (subtitle.srtSrc && !subtitle.srtAssetId) {
-          const fileExtension =
-            path.extname(new URL(subtitle.srtSrc).pathname) || '.srt'
-          const fileName = `${videoId}/editions/${editionId}/subtitles/${videoId}_${editionId}_${subtitle.languageId}${fileExtension}`
-          const contentType = 'text/plain'
+          await prisma.$transaction(async (tx) => {
+            const fileExtension =
+              path.extname(new URL(subtitle.srtSrc!).pathname) || '.srt'
+            const fileName = `${videoId}/editions/${editionId}/subtitles/${videoId}_${editionId}_${subtitle.languageId}${fileExtension}`
+            const contentType = 'text/plain'
 
-          const asset = await prisma.cloudflareR2.create({
-            data: {
+            const { publicUrl, contentLength } = await uploadToR2FromUrl(
+              subtitle.srtSrc!,
               fileName,
-              userId: 'system',
-              contentType,
-              contentLength: 0, // Will be updated after upload
-              videoId
-            }
+              contentType
+            )
+
+            const asset = await tx.cloudflareR2.create({
+              data: {
+                fileName,
+                userId: 'system',
+                contentType,
+                contentLength,
+                videoId,
+                publicUrl
+              }
+            })
+
+            console.log(`Created CloudflareR2 asset for SRT: ${asset.id}`)
+
+            await tx.videoSubtitle.update({
+              where: { id: subtitle.id },
+              data: {
+                srtAssetId: asset.id,
+                srtSrc: publicUrl,
+                srtVersion: subtitle.srtVersion + 1
+              }
+            })
+
+            console.log(`Successfully processed SRT subtitle: ${subtitle.id}`)
           })
-
-          console.log(`Created CloudflareR2 asset for SRT: ${asset.id}`)
-
-          const publicUrl = await uploadToR2FromUrl(
-            subtitle.srtSrc,
-            fileName,
-            contentType
-          )
-
-          await prisma.cloudflareR2.update({
-            where: { id: asset.id },
-            data: { publicUrl }
-          })
-
-          await prisma.videoSubtitle.update({
-            where: { id: subtitle.id },
-            data: {
-              srtAssetId: asset.id,
-              srtSrc: publicUrl,
-              srtVersion: subtitle.srtVersion + 1
-            }
-          })
-
-          console.log(`Successfully processed SRT subtitle: ${subtitle.id}`)
         }
 
         // Process VTT file if it exists
         if (subtitle.vttSrc && !subtitle.vttAssetId) {
-          const fileExtension =
-            path.extname(new URL(subtitle.vttSrc).pathname) || '.vtt'
-          const fileName = `${videoId}/editions/${editionId}/subtitles/${videoId}_${editionId}_${subtitle.languageId}${fileExtension}`
-          const contentType = 'text/vtt'
+          await prisma.$transaction(async (tx) => {
+            const fileExtension =
+              path.extname(new URL(subtitle.vttSrc!).pathname) || '.vtt'
+            const fileName = `${videoId}/editions/${editionId}/subtitles/${videoId}_${editionId}_${subtitle.languageId}${fileExtension}`
+            const contentType = 'text/vtt'
 
-          const asset = await prisma.cloudflareR2.create({
-            data: {
+            const { publicUrl, contentLength } = await uploadToR2FromUrl(
+              subtitle.vttSrc!,
               fileName,
-              userId: 'system',
-              contentType,
-              contentLength: 0, // Will be updated after upload
-              videoId
-            }
+              contentType
+            )
+
+            const asset = await tx.cloudflareR2.create({
+              data: {
+                fileName,
+                userId: 'system',
+                contentType,
+                contentLength,
+                videoId,
+                publicUrl
+              }
+            })
+
+            console.log(`Created CloudflareR2 asset for VTT: ${asset.id}`)
+
+            await tx.videoSubtitle.update({
+              where: { id: subtitle.id },
+              data: {
+                vttAssetId: asset.id,
+                vttSrc: publicUrl,
+                vttVersion: subtitle.vttVersion + 1
+              }
+            })
+
+            console.log(`Successfully processed VTT subtitle: ${subtitle.id}`)
           })
-
-          console.log(`Created CloudflareR2 asset for VTT: ${asset.id}`)
-
-          const publicUrl = await uploadToR2FromUrl(
-            subtitle.vttSrc,
-            fileName,
-            contentType
-          )
-
-          await prisma.cloudflareR2.update({
-            where: { id: asset.id },
-            data: { publicUrl }
-          })
-
-          await prisma.videoSubtitle.update({
-            where: { id: subtitle.id },
-            data: {
-              vttAssetId: asset.id,
-              vttSrc: publicUrl,
-              vttVersion: subtitle.vttVersion + 1
-            }
-          })
-
-          console.log(`Successfully processed VTT subtitle: ${subtitle.id}`)
         }
       } catch (error) {
         console.error(`Error processing subtitle: ${subtitle.id}`, error)
