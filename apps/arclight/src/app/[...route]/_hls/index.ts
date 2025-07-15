@@ -1,21 +1,17 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { ResultOf, graphql } from 'gql.tada'
-import { HTTPException } from 'hono/http-exception'
+import type { Context } from 'hono'
 
 import { getApolloClient } from '../../../lib/apolloClient'
+import { getBrightcoveRedirectUrl } from '../../../lib/brightcove'
 import { setCorsHeaders } from '../../../lib/redirectUtils'
 
 const GET_VIDEO_VARIANT = graphql(`
   query GetVideoWithVariant($id: ID!, $languageId: ID!) {
     video(id: $id) {
       variant(languageId: $languageId) {
+        brightcoveId
         hls
-        dash
-        share
-        downloads {
-          quality
-          url
-        }
       }
     }
   }
@@ -63,7 +59,7 @@ const hlsRoute = createRoute({
 
 export const hls = new OpenAPIHono()
 
-hls.openapi(hlsRoute, async (c) => {
+hls.openapi(hlsRoute, async (c: Context) => {
   setCorsHeaders(c)
   const { mediaComponentId, languageId } = c.req.param()
   try {
@@ -76,29 +72,27 @@ hls.openapi(hlsRoute, async (c) => {
         languageId
       }
     })
-    if (!data.video?.variant) {
-      return c.json({ error: 'Video variant not found' }, 404)
-    }
-    const variant = data.video.variant
-    if (variant.hls) {
-      return c.redirect(variant.hls, 302)
-    }
-    return c.json({ error: 'HLS URL not available' }, 404)
-  } catch (error) {
-    if (error instanceof HTTPException) {
-      if (error.status === 404) {
-        return c.json({ error: error.message }, 404)
+    const brightcoveId = data.video?.variant?.brightcoveId
+    if (brightcoveId) {
+      try {
+        const url = await getBrightcoveRedirectUrl(brightcoveId, 'hls')
+        return c.redirect(url, 302)
+      } catch (err) {
+        // Fallback to variant.hls below
       }
     }
-    if (error instanceof Error && error.message.includes('not found')) {
-      return c.json({ error: 'Video variant not found' }, 404)
+    const hlsUrl = data.video?.variant?.hls
+    if (hlsUrl) {
+      return c.redirect(hlsUrl, 302)
     }
+    return c.json({ error: 'Video or HLS URL not found' }, 404)
+  } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error)
     return c.json({ error: `Internal server error: ${errorMessage}` }, 500)
   }
 })
 
-hls.options('*', (c) => {
+hls.options('*', (c: Context) => {
   setCorsHeaders(c)
   return c.body(null, 204)
 })

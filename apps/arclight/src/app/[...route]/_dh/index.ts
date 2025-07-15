@@ -1,17 +1,16 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { ResultOf, graphql } from 'gql.tada'
-import { HTTPException } from 'hono/http-exception'
+import type { Context } from 'hono'
 
 import { getApolloClient } from '../../../lib/apolloClient'
+import { getBrightcoveRedirectUrl } from '../../../lib/brightcove'
 import { setCorsHeaders } from '../../../lib/redirectUtils'
 
 const GET_VIDEO_VARIANT = graphql(`
   query GetVideoWithVariant($id: ID!, $languageId: ID!) {
     video(id: $id) {
       variant(languageId: $languageId) {
-        hls
-        dash
-        share
+        brightcoveId
         downloads {
           quality
           url
@@ -63,7 +62,7 @@ const dhRoute = createRoute({
 
 export const dh = new OpenAPIHono()
 
-dh.openapi(dhRoute, async (c) => {
+dh.openapi(dhRoute, async (c: Context) => {
   setCorsHeaders(c)
   const { mediaComponentId, languageId } = c.req.param()
   try {
@@ -76,31 +75,28 @@ dh.openapi(dhRoute, async (c) => {
         languageId
       }
     })
-    if (!data.video?.variant) {
-      return c.json({ error: 'Video variant not found' }, 404)
-    }
-    const variant = data.video.variant
-    const download = variant.downloads?.find((d) => d.quality === 'high')
-    if (!download?.url) {
-      return c.json({ error: 'High quality download URL not available' }, 404)
-    }
-    return c.redirect(download.url, 302)
-  } catch (error) {
-    if (error instanceof HTTPException) {
-      if (error.status === 404) {
-        return c.json({ error: error.message }, 404)
+    const brightcoveId = data.video?.variant?.brightcoveId
+    if (brightcoveId) {
+      try {
+        const url = await getBrightcoveRedirectUrl(brightcoveId, 'dh')
+        return c.redirect(url, 302)
+      } catch (err) {
+        // Fallback to variant.downloads below
       }
     }
-    if (error instanceof Error && error.message.includes('not found')) {
-      return c.json({ error: 'Video variant not found' }, 404)
+    const downloads = data.video?.variant?.downloads
+    const high = downloads?.find((d: { quality?: string; url?: string }) => d.quality === 'high')
+    if (high?.url) {
+      return c.redirect(high.url, 302)
     }
-    console.error('Failed to fetch Brightcove video:', error)
+    return c.json({ error: 'Video or high quality download not found' }, 404)
+  } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error)
     return c.json({ error: `Internal server error: ${errorMessage}` }, 500)
   }
 })
 
-dh.options('*', (c) => {
+dh.options('*', (c: Context) => {
   setCorsHeaders(c)
   return c.body(null, 204)
 })

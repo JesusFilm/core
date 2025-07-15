@@ -18,6 +18,26 @@ const sRoute = createRoute({
   responses: {
     302: {
       description: 'Redirects to the shareable watch page'
+    },
+    404: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: z.string()
+          })
+        }
+      },
+      description: 'Shareable watch page not found'
+    },
+    500: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: z.string()
+          })
+        }
+      },
+      description: 'Internal server error'
     }
   }
 } as const)

@@ -3,7 +3,7 @@ interface CacheEntry {
   expiresAt: number
 }
 
-export type BrightcoveSourceCode = 'hls' | 'dash' | 'dh' | 'dl'
+export type BrightcoveSourceCode = 'hls' | 'dh' | 'dl'
 
 const ACCOUNT_ID = process.env.BC_ACCOUNT_ID
 const POLICY_KEY = process.env.BC_POLICY_KEY
@@ -115,4 +115,27 @@ export function selectBrightcoveSource(
     default:
       return null
   }
+}
+
+/**
+ * Returns the correct Brightcove redirect URL for a given ID and type.
+ * @param brightcoveId The Brightcove video reference ID
+ * @param redirectType One of 'hls', 'dh', 'dl', or 's' (share)
+ * @param clientIp Optional client IP for Brightcove API
+ * @returns The redirect URL as a string
+ * @throws Error if the video or source is not found
+ */
+export async function getBrightcoveRedirectUrl(
+  brightcoveId: string,
+  redirectType: BrightcoveSourceCode,
+  clientIp?: string
+): Promise<string> {
+  const video = await getBrightcoveVideo(brightcoveId, false, clientIp)
+  if (!video) throw new Error('Brightcove video not found')
+
+  const src = selectBrightcoveSource(video, redirectType as BrightcoveSourceCode)
+  if (!src) {
+    throw new Error(`No source found for type: ${redirectType}`)
+  }
+  return src
 }

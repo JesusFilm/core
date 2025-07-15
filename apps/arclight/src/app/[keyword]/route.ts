@@ -11,6 +11,14 @@ import {
 } from '../../lib/brightcove'
 import { getClientIp, setCorsHeaders } from '../../lib/redirectUtils'
 
+function isBrightcoveSourceCode(
+  value: string
+): value is BrightcoveSourceCode {
+  return ['hls', 'dh', 'dl'].includes(
+    value as BrightcoveSourceCode
+  )
+}
+
 export const GET_SHORT_LINK_QUERY = graphql(`
   query GetShortLinkQuery($hostname: String!, $pathname: String!) {
     shortLink: shortLinkByPath(hostname: $hostname, pathname: $pathname) {
@@ -108,13 +116,6 @@ app.openapi(keywordRoute, async (c) => {
       ) {
         try {
           const video = await getBrightcoveVideo(brightcoveId, false, clientIp)
-          function isBrightcoveSourceCode(
-            value: string
-          ): value is BrightcoveSourceCode {
-            return ['hls', 'dash', 'dh', 'dl'].includes(
-              value as BrightcoveSourceCode
-            )
-          }
 
           if (isBrightcoveSourceCode(redirectType)) {
             const src = selectBrightcoveSource(video, redirectType)
