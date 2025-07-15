@@ -143,7 +143,7 @@ export async function getBrightcoveRedirectUrl(
   const video = await getBrightcoveVideo(brightcoveId, false, clientIp)
   if (!video) throw new Error('Brightcove video not found')
 
-  const src = selectBrightcoveSource(video, redirectType as BrightcoveSourceCode)
+  const src = selectBrightcoveSource(video, redirectType)
   if (!src) {
     throw new Error(`No source found for type: ${redirectType}`)
   }

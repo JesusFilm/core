@@ -114,6 +114,7 @@ dh.openapi(dhRoute, async (c: Context) => {
         // Fallback to variant downloads below
       }
     }
+
     const download = findDownloadWithFallback(variant.downloads, 'high', apiKey)
     if (!download?.url) {
       return c.json({ error: 'High quality download URL not available' }, 404)
