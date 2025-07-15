@@ -242,7 +242,7 @@
   "Large": "大型",
   "Contained": "含有",
   "Outlined": "概要",
-  "Invalid {{ HEX }} color code": "{{ HEX }} 無効なカラーコード",
+  "Use a valid 6-digit hex (e.g #FFFFFF)": "有効な6桁の16進数を使用する（例：#FFFFFF）",
   "Palette": "パレット",
   "Adjust the blur level of your background image.": "背景画像のぼかしレベルを調整します。",
   "Adjust View": "ビューを調整",
