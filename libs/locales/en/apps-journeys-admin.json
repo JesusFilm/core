@@ -246,6 +246,8 @@
   "Large": "Large",
   "Contained": "Contained",
   "Outlined": "Outlined",
+  "Use a valid 6-digit hex (e.g #FFFFFF)": "Use a valid 6-digit hex (e.g #FFFFFF)",
+  "Palette": "Palette",
   "Adjust the blur level of your background image.": "Adjust the blur level of your background image.",
   "Adjust View": "Adjust View",
   "None": "None",

@@ -1,14 +1,13 @@
 import Mux from '@mux/mux-node'
-import { AssetOptions } from '@mux/mux-node/resources/video/assets'
 import { Job } from 'bullmq'
 import { Logger } from 'pino'
 
-import {
-  MuxVideo,
-  Prisma,
-  VideoVariantDownloadQuality
-} from '.prisma/api-media-client'
+import { MuxVideo } from '.prisma/api-media-client'
 
+import {
+  createDownloadsFromMuxAsset,
+  downloadsReadyToStore
+} from '../../../lib/downloads'
 import { prisma } from '../../../lib/prisma'
 import { getVideo } from '../../../schema/mux/video/service'
 
@@ -70,65 +69,6 @@ export async function service(
     )
     throw error
   }
-}
-
-function mapStaticResolutionTierToDownloadQuality(
-  resolutionTier: AssetOptions.StaticRendition['resolution']
-): VideoVariantDownloadQuality | null {
-  switch (resolutionTier) {
-    case '270p':
-      return VideoVariantDownloadQuality.low
-    case '360p':
-      return VideoVariantDownloadQuality.sd
-    case '720p':
-      return VideoVariantDownloadQuality.high
-    case '1080p':
-      return VideoVariantDownloadQuality.fhd
-    case '1440p':
-      return VideoVariantDownloadQuality.qhd
-    case '2160p':
-      return VideoVariantDownloadQuality.uhd
-    default:
-      return null
-  }
-}
-
-const qualityEnumToOrder: Record<VideoVariantDownloadQuality, number> = {
-  [VideoVariantDownloadQuality.distroLow]: 0,
-  [VideoVariantDownloadQuality.distroSd]: 1,
-  [VideoVariantDownloadQuality.distroHigh]: 2,
-  [VideoVariantDownloadQuality.low]: 3,
-  [VideoVariantDownloadQuality.sd]: 4,
-  [VideoVariantDownloadQuality.high]: 5,
-  [VideoVariantDownloadQuality.fhd]: 6,
-  [VideoVariantDownloadQuality.qhd]: 7,
-  [VideoVariantDownloadQuality.uhd]: 8,
-  [VideoVariantDownloadQuality.highest]: 9 // only here for type safety
-}
-
-function getHighestResolutionDownload(
-  downloads: Prisma.VideoVariantDownloadCreateManyInput[]
-): Prisma.VideoVariantDownloadCreateManyInput {
-  let highest = downloads[0]
-  for (const download of downloads) {
-    if (
-      qualityEnumToOrder[download.quality] > qualityEnumToOrder[highest.quality]
-    ) {
-      highest = download
-    }
-  }
-  return { ...highest, quality: VideoVariantDownloadQuality.highest }
-}
-
-function downloadsReadyToStore(muxVideo: Mux.Video.Asset): boolean {
-  return (
-    muxVideo.static_renditions?.files?.every(
-      (file) =>
-        file.status === 'ready' ||
-        file.status === 'skipped' ||
-        file.status === 'errored'
-    ) ?? false
-  )
 }
 
 async function monitorStaticRenditionStatus(
@@ -247,75 +187,20 @@ async function processVideoDownloads(
       videoVariants.length > 0
     ) {
       for (const videoVariant of videoVariants) {
-        const validDownloads: Prisma.VideoVariantDownloadCreateManyInput[] =
-          muxVideoAsset.static_renditions.files
-            .filter(
-              (file) =>
-                file != null &&
-                file.resolution != null &&
-                file.status !== 'skipped' &&
-                file.status !== 'errored' &&
-                mapStaticResolutionTierToDownloadQuality(file.resolution) !=
-                  null
-            )
-            .map((file) => ({
-              videoVariantId: videoVariant.id,
-              quality: mapStaticResolutionTierToDownloadQuality(
-                file.resolution as AssetOptions.StaticRendition['resolution']
-              ) as VideoVariantDownloadQuality,
-              url: `https://stream.mux.com/${muxVideoAsset.playback_ids?.[0].id}/${file.resolution}.mp4`,
-              version: 1,
-              size: file.filesize ? parseInt(file.filesize) : 0,
-              height: file.height ?? 0,
-              width: file.width ?? 0,
-              bitrate: file.bitrate ?? 0
-            }))
+        const createdCount = await createDownloadsFromMuxAsset({
+          variantId: videoVariant.id,
+          muxVideoAsset,
+          logger
+        })
 
-        if (validDownloads.length > 0) {
-          // Find the highest quality by enum up to uhd since mux doesn't generate highest enum
-          const highest = getHighestResolutionDownload(validDownloads)
-          const data = [...validDownloads, highest]
-
-          // Create downloads individually to handle duplicates gracefully
-          let createdCount = 0
-          for (const download of data) {
-            try {
-              await prisma.videoVariantDownload.create({
-                data: download
-              })
-              createdCount++
-            } catch (error: any) {
-              // Skip if already exists (P2002 constraint violation)
-              if (error?.code === 'P2002') {
-                logger?.info(
-                  {
-                    videoVariantId: videoVariant.id,
-                    quality: download.quality
-                  },
-                  'Download already exists, skipping'
-                )
-              } else {
-                logger?.error(
-                  {
-                    error,
-                    videoVariantId: videoVariant.id,
-                    quality: download.quality
-                  },
-                  'Failed to create individual download'
-                )
-              }
-            }
-          }
-
-          logger?.info(
-            {
-              videoId: muxVideo.id,
-              videoVariantId: videoVariant.id,
-              downloadsCount: createdCount
-            },
-            'Successfully created video downloads'
-          )
-        }
+        logger?.info(
+          {
+            videoId: muxVideo.id,
+            videoVariantId: videoVariant.id,
+            downloadsCount: createdCount
+          },
+          'Successfully created video downloads'
+        )
       }
     }
   }
