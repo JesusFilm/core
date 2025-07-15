@@ -8,6 +8,10 @@ import { builder } from '../../builder'
 import { VideoSource, VideoSourceShape } from '../../videoSource/videoSource'
 
 import {
+  MaxResolutionTier,
+  MaxResolutionTierEnum
+} from './enums/maxResolutionTier'
+import {
   createVideoByDirectUpload,
   createVideoFromUrl,
   deleteVideo,
@@ -214,12 +218,17 @@ builder.mutationFields((t) => ({
           type: 'Boolean',
           required: false,
           defaultValue: false
+        }),
+        maxResolution: t.arg({
+          type: MaxResolutionTier,
+          required: false,
+          defaultValue: 'fhd'
         })
       },
       resolve: async (
         query,
         _root,
-        { name, userGenerated, downloadable },
+        { name, userGenerated, downloadable, maxResolution },
         { user, currentRoles }
       ) => {
         if (user == null)
@@ -230,9 +239,12 @@ builder.mutationFields((t) => ({
         const isUserGenerated = !currentRoles.includes('publisher')
           ? true
           : (userGenerated ?? true)
+        const maxResolutionValue = maxResolution
+          ? (MaxResolutionTierEnum as any)[maxResolution]
+          : undefined
         const { id, uploadUrl } = await createVideoByDirectUpload(
           isUserGenerated,
-          undefined,
+          maxResolutionValue,
           downloadable ?? false
         )
 
@@ -258,12 +270,17 @@ builder.mutationFields((t) => ({
         type: 'Boolean',
         required: false,
         defaultValue: false
+      }),
+      maxResolution: t.arg({
+        type: MaxResolutionTier,
+        required: false,
+        defaultValue: 'fhd'
       })
     },
     resolve: async (
       query,
       _root,
-      { url, userGenerated, downloadable },
+      { url, userGenerated, downloadable, maxResolution },
       { user, currentRoles }
     ) => {
       if (user == null)
@@ -274,11 +291,14 @@ builder.mutationFields((t) => ({
       const isUserGenerated = !currentRoles.includes('publisher')
         ? true
         : (userGenerated ?? true)
+      const maxResolutionValue = maxResolution
+        ? (MaxResolutionTierEnum as any)[maxResolution]
+        : undefined
 
       const { id } = await createVideoFromUrl(
         url,
         isUserGenerated,
-        undefined,
+        maxResolutionValue,
         downloadable ?? false
       )
 
