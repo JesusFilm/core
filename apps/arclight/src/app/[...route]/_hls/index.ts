@@ -62,6 +62,9 @@ export const hls = new OpenAPIHono()
 hls.openapi(hlsRoute, async (c: Context) => {
   setCorsHeaders(c)
   const { mediaComponentId, languageId } = c.req.param()
+  const clientIp =
+    c.req.header('x-forwarded-for') || c.req.header('x-real-ip') || ''
+
   try {
     const { data } = await getApolloClient().query<
       ResultOf<typeof GET_VIDEO_VARIANT>
@@ -75,10 +78,17 @@ hls.openapi(hlsRoute, async (c: Context) => {
     const brightcoveId = data.video?.variant?.brightcoveId
     if (brightcoveId) {
       try {
-        const url = await getBrightcoveRedirectUrl(brightcoveId, 'hls')
+        const url = await getBrightcoveRedirectUrl(
+          brightcoveId,
+          'hls',
+          clientIp
+        )
         return c.redirect(url, 302)
       } catch (err) {
-        // Fallback to variant.hls below
+        console.warn(
+          'Brightcove redirect failed, falling back to variant HLS:',
+          err
+        )
       }
     }
     const hlsUrl = data.video?.variant?.hls

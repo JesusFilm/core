@@ -102,19 +102,21 @@ dl.openapi(dlRoute, async (c: Context) => {
   setCorsHeaders(c)
   const { mediaComponentId, languageId } = c.req.param()
   const apiKey = c.req.query('apiKey')
+  const clientIp =
+    c.req.header('x-forwarded-for') || c.req.header('x-real-ip') || ''
+
   try {
     const variant = await getVideoVariant(mediaComponentId, languageId)
     const brightcoveId = variant.brightcoveId
     if (brightcoveId) {
       try {
-        const url = await getBrightcoveRedirectUrl(brightcoveId, 'dl')
+        const url = await getBrightcoveRedirectUrl(brightcoveId, 'dl', clientIp)
         return c.redirect(url)
       } catch (err) {
         console.warn(
           'Brightcove redirect failed, falling back to variant downloads:',
           err
         )
-        // Fallback to variant downloads below
       }
     }
     const download = findDownloadWithFallback(variant.downloads, 'low', apiKey)

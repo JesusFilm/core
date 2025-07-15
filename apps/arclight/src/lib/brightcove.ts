@@ -128,6 +128,18 @@ export function selectBrightcoveSource(
 }
 
 /**
+ * Ensures a URL uses HTTPS to prevent mixed content issues
+ * @param url The URL to convert
+ * @returns The URL with HTTPS protocol
+ */
+function ensureHttps(url: string): string {
+  if (url.startsWith('http://')) {
+    return url.replace('http://', 'https://')
+  }
+  return url
+}
+
+/**
  * Returns the correct Brightcove redirect URL for a given ID and type.
  * @param brightcoveId The Brightcove video reference ID
  * @param redirectType One of 'hls', 'dh', 'dl', or 's' (share)
@@ -147,5 +159,6 @@ export async function getBrightcoveRedirectUrl(
   if (!src) {
     throw new Error(`No source found for type: ${redirectType}`)
   }
-  return src
+
+  return ensureHttps(src)
 }
