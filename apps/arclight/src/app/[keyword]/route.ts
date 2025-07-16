@@ -1,7 +1,8 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
-import { ResultOf, graphql } from '@core/shared/gql'
 import { HTTPException } from 'hono/http-exception'
 import { handle } from 'hono/vercel'
+
+import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../lib/apolloClient'
 import {
