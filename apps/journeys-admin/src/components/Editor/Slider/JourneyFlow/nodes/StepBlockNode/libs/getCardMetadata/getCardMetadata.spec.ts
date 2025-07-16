@@ -24,7 +24,11 @@ const typography: TreeBlock<TypographyBlock> = {
   color: null,
   content: 'title content',
   variant: TypographyVariant.h1,
-  children: []
+  children: [],
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
 }
 
 const button1: TreeBlock<ButtonBlock> = {
