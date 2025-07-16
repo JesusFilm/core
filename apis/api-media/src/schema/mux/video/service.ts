@@ -1,5 +1,31 @@
 import Mux from '@mux/mux-node'
 
+import { MaxResolutionTierEnum } from './enums/maxResolutionTier'
+
+// Type guard to safely check if a value is a valid MaxResolutionTierEnum key
+export function isValidMaxResolutionTier(
+  value: string
+): value is keyof typeof MaxResolutionTierEnum {
+  return Object.prototype.hasOwnProperty.call(MaxResolutionTierEnum, value)
+}
+
+// Safely get MaxResolutionTierEnum value with fallback
+export function getMaxResolutionValue(
+  maxResolution: string | null | undefined
+): '1080p' | '1440p' | '2160p' | undefined {
+  if (!maxResolution) return undefined
+
+  if (isValidMaxResolutionTier(maxResolution)) {
+    return MaxResolutionTierEnum[maxResolution]
+  }
+
+  // Log warning for invalid values and fallback to default
+  console.warn(
+    `Invalid maxResolution value: ${maxResolution}. Falling back to 'fhd'.`
+  )
+  return MaxResolutionTierEnum.fhd
+}
+
 function getClient(userGenerated: boolean): Mux {
   if (userGenerated) {
     if (process.env.MUX_UGC_ACCESS_TOKEN_ID == null)

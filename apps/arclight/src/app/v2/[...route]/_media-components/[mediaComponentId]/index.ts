@@ -1,6 +1,7 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
-import { ResultOf, graphql } from 'gql.tada'
 import { HTTPException } from 'hono/http-exception'
+
+import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../../../../lib/apolloClient'
 import { getDownloadSize } from '../../../../../lib/downloadHelpers'

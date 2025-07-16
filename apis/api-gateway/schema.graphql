@@ -432,8 +432,18 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   bibleCitationUpdate(input: MutationBibleCitationUpdateInput!) : BibleCitation @join__field(graph: API_MEDIA) 
   bibleCitationDelete(id: ID!) : Boolean @join__field(graph: API_MEDIA) 
   createKeyword(value: String!, languageId: String!) : Keyword! @join__field(graph: API_MEDIA) 
-  createMuxVideoUploadByFile(name: String!, userGenerated: Boolean, downloadable: Boolean = false) : MuxVideo! @join__field(graph: API_MEDIA) 
-  createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean, downloadable: Boolean = false) : MuxVideo! @join__field(graph: API_MEDIA) 
+  createMuxVideoUploadByFile(
+    name: String!
+    userGenerated: Boolean
+    downloadable: Boolean = false
+    maxResolution: MaxResolutionTier = fhd
+  ): MuxVideo! @join__field(graph: API_MEDIA) 
+  createMuxVideoUploadByUrl(
+    url: String!
+    userGenerated: Boolean
+    downloadable: Boolean = false
+    maxResolution: MaxResolutionTier = fhd
+  ): MuxVideo! @join__field(graph: API_MEDIA) 
   enableMuxDownload(id: ID!, resolution: String) : MuxVideo @join__field(graph: API_MEDIA) 
   deleteMuxVideo(id: ID!, userGenerated: Boolean) : Boolean! @join__field(graph: API_MEDIA) 
   """
@@ -460,6 +470,9 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   delete an existing short link
   """
   shortLinkDelete(id: String!) : MutationShortLinkDeleteResult! @join__field(graph: API_MEDIA) 
+  videoVariantCreate(input: VideoVariantCreateInput!) : VideoVariant! @join__field(graph: API_MEDIA) 
+  videoVariantUpdate(input: VideoVariantUpdateInput!) : VideoVariant! @join__field(graph: API_MEDIA) 
+  videoVariantDelete(id: ID!) : VideoVariant! @join__field(graph: API_MEDIA) 
   videoCreate(input: VideoCreateInput!) : Video! @join__field(graph: API_MEDIA) 
   videoUpdate(input: VideoUpdateInput!) : Video! @join__field(graph: API_MEDIA) 
   videoDelete(id: ID!) : Video! @join__field(graph: API_MEDIA) 
@@ -487,9 +500,6 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   videoEditionCreate(input: VideoEditionCreateInput!) : VideoEdition! @join__field(graph: API_MEDIA) 
   videoEditionUpdate(input: VideoEditionUpdateInput!) : VideoEdition! @join__field(graph: API_MEDIA) 
   videoEditionDelete(id: ID!) : VideoEdition! @join__field(graph: API_MEDIA) 
-  videoVariantCreate(input: VideoVariantCreateInput!) : VideoVariant! @join__field(graph: API_MEDIA) 
-  videoVariantUpdate(input: VideoVariantUpdateInput!) : VideoVariant! @join__field(graph: API_MEDIA) 
-  videoVariantDelete(id: ID!) : VideoVariant! @join__field(graph: API_MEDIA) 
   videoVariantDownloadCreate(input: VideoVariantDownloadCreateInput!) : VideoVariantDownload! @join__field(graph: API_MEDIA) 
   videoVariantDownloadUpdate(input: VideoVariantDownloadUpdateInput!) : VideoVariantDownload! @join__field(graph: API_MEDIA) 
   videoVariantDownloadDelete(id: ID!) : VideoVariantDownload! @join__field(graph: API_MEDIA) 
@@ -805,6 +815,8 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
     first: Int
     last: Int
   ): QueryShortLinksConnection! @join__field(graph: API_MEDIA) 
+  videoVariant(id: ID!) : VideoVariant! @join__field(graph: API_MEDIA) 
+  videoVariants(input: VideoVariantFilter) : [VideoVariant!]! @join__field(graph: API_MEDIA) 
   adminVideo(id: ID!, idType: IdType = databaseId) : Video! @join__field(graph: API_MEDIA) 
   adminVideos(where: VideosFilter, offset: Int, limit: Int) : [Video!]! @join__field(graph: API_MEDIA) 
   adminVideosCount(where: VideosFilter) : Int! @join__field(graph: API_MEDIA) 
@@ -814,8 +826,6 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   videoOrigins: [VideoOrigin!]! @join__field(graph: API_MEDIA) 
   videoEditions: [VideoEdition!]! @join__field(graph: API_MEDIA) 
   videoEdition(id: ID!) : VideoEdition @join__field(graph: API_MEDIA) 
-  videoVariant(id: ID!) : VideoVariant! @join__field(graph: API_MEDIA) 
-  videoVariants(input: VideoVariantFilter) : [VideoVariant!]! @join__field(graph: API_MEDIA) 
   tags: [Tag!]! @join__field(graph: API_MEDIA) 
   taxonomies(category: String, languageCodes: [String!]) : [Taxonomy!]! @join__field(graph: API_MEDIA) 
   arclightApiKeys: [ArclightApiKey!]! @join__field(graph: API_MEDIA) 
@@ -3256,6 +3266,12 @@ enum DefaultPlatform @join__type(graph: API_MEDIA)  {
 enum ImageAspectRatio @join__type(graph: API_MEDIA)  {
   hd @join__enumValue(graph: API_MEDIA) 
   banner @join__enumValue(graph: API_MEDIA) 
+}
+
+enum MaxResolutionTier @join__type(graph: API_MEDIA)  {
+  fhd @join__enumValue(graph: API_MEDIA) 
+  qhd @join__enumValue(graph: API_MEDIA) 
+  uhd @join__enumValue(graph: API_MEDIA) 
 }
 
 enum MediaRole @join__type(graph: API_MEDIA)  {
