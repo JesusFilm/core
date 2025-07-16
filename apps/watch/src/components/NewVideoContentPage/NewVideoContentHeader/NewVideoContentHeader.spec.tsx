@@ -148,4 +148,49 @@ describe('NewVideoContentHeader', () => {
       expect(screen.getByTestId('ShareDialog')).toBeInTheDocument()
     )
   })
+
+  it('renders download button with translated text', () => {
+    render(
+      <VideoProvider value={{ content: videos[0], container: undefined }}>
+        <NewVideoContentHeader />
+      </VideoProvider>
+    )
+
+    const downloadButton = screen.getByRole('button', { name: /Download/i })
+    expect(downloadButton).toBeInTheDocument()
+    expect(downloadButton).toHaveTextContent('Download')
+  })
+
+  it('opens download dialog when download button is clicked', async () => {
+    const user = userEvent.setup()
+    render(
+      <VideoProvider value={{ content: videos[0], container: undefined }}>
+        <NewVideoContentHeader />
+      </VideoProvider>
+    )
+
+    const downloadButton = screen.getByRole('button', { name: /Download/i })
+    await user.click(downloadButton)
+
+    expect(screen.getByTestId('DownloadDialog')).toBeInTheDocument()
+  })
+
+  it('closes download dialog when onClose is called', async () => {
+    const user = userEvent.setup()
+    render(
+      <VideoProvider value={{ content: videos[0], container: undefined }}>
+        <NewVideoContentHeader />
+      </VideoProvider>
+    )
+
+    const downloadButton = screen.getByRole('button', { name: /Download/i })
+    await user.click(downloadButton)
+
+    const closeButton = screen.getByTestId('dialog-close-button')
+    await user.click(closeButton)
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('DownloadDialog')).not.toBeInTheDocument()
+    })
+  })
 })

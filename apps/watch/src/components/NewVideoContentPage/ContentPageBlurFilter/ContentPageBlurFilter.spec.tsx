@@ -61,7 +61,7 @@ describe('ContentPageBlurFilter', () => {
 
     const contentPage = screen.getByTestId('ContentPage')
     expect(contentPage).toHaveClass(
-      'bg-[#131111]',
+      'bg-stone-900',
       'text-white',
       'relative',
       'font-sans'
@@ -87,7 +87,7 @@ describe('ContentPageBlurFilter', () => {
       'bg-black/10'
     )
     const style = blurFilter.style
-    expect(style['backdropFilter']).toBe('brightness(.6) blur(40px)')
+    expect(style['backdropFilter']).toBe('brightness(.6) blur(35px)')
   })
 
   it('should apply correct styling to content container', () => {
