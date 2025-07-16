@@ -18,12 +18,8 @@ jest.mock('@aws-sdk/client-s3', () => {
   }
 })
 
-global.fetch = jest.fn().mockImplementation(() =>
-  Promise.resolve({
-    ok: true,
-    arrayBuffer: jest.fn().mockResolvedValue(Buffer.from('test-file-content'))
-  })
-)
+// Store original fetch to restore it
+const originalFetch = global.fetch
 
 describe('download-migrate-r2', () => {
   const originalEnv = { ...process.env }
@@ -39,10 +35,22 @@ describe('download-migrate-r2', () => {
       CLOUDFLARE_R2_BUCKET: 'test-bucket',
       CLOUDFLARE_R2_CUSTOM_DOMAIN: 'https://test-domain.com'
     }
+
+    // Set up default fetch mock for each test
+    global.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        arrayBuffer: jest
+          .fn()
+          .mockResolvedValue(Buffer.from('test-file-content'))
+      })
+    )
   })
 
   afterEach(() => {
     process.env = originalEnv
+    // Restore original fetch after each test
+    global.fetch = originalFetch
   })
 
   describe('migrateDownloadsToR2', () => {
@@ -246,6 +254,7 @@ describe('download-migrate-r2', () => {
         mockDownloads as any
       )
 
+      // Override fetch mock for this specific test
       global.fetch = jest.fn().mockImplementation(() => {
         throw new Error('Network error')
       })
