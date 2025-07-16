@@ -2,8 +2,9 @@
  * @jest-environment node
  */
 import { createMockClient } from '@apollo/client/testing'
-import { ResultOf, VariablesOf } from '@core/shared/gql'
 import { notFound, redirect } from 'next/navigation'
+
+import { ResultOf, VariablesOf } from '@core/shared/gql'
 
 import { getApolloClient } from '../../../lib/apolloClient'
 
