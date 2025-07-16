@@ -53,7 +53,7 @@ export function OnboardingLandingDrawer({
             layout="responsive"
             priority
           />
-          </Box>
+        </Box>
 
         {newAccountQuery === true && (
           <Box
