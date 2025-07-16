@@ -1,4 +1,4 @@
-import { ResultOf, graphql } from '@core/shared/gqlared/gql'
+import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from './apolloClient'
 import { generateCacheKey, getWithStaleCache } from './cache'
