@@ -1,8 +1,10 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
-import { ResultOf, graphql } from 'gql.tada'
 import { timeout } from 'hono/timeout'
 
+import { ResultOf, graphql } from '@core/shared/gql'
+
 import { getApolloClient } from '../../../../../../lib/apolloClient'
+import { findDownloadWithFallback } from '../../../../../../lib/downloadHelpers'
 import { getDefaultPlatformForApiKey } from '../../../../../../lib/getPlatformFromApiKey'
 import {
   getWebEmbedPlayer,
@@ -135,11 +137,15 @@ mediaComponentLanguages.openapi(route, async (c) => {
               : true
           )
           .map((variant) => {
-            const downloadLow = variant.downloads?.find(
-              (download) => download.quality === 'low'
+            const downloadLow = findDownloadWithFallback(
+              variant.downloads,
+              'low',
+              apiKey
             )
-            const downloadHigh = variant.downloads?.find(
-              (download) => download.quality === 'high'
+            const downloadHigh = findDownloadWithFallback(
+              variant.downloads,
+              'high',
+              apiKey
             )
 
             let downloadUrls = {}
@@ -150,14 +156,14 @@ mediaComponentLanguages.openapi(route, async (c) => {
                     ? undefined
                     : {
                         url: downloadLow.url,
-                        sizeInBytes: downloadLow.size
+                        sizeInBytes: downloadLow.size || 0
                       },
                 high:
                   downloadHigh == null
                     ? undefined
                     : {
                         url: downloadHigh.url,
-                        sizeInBytes: downloadHigh.size
+                        sizeInBytes: downloadHigh.size || 0
                       }
               }
             }

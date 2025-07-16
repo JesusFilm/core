@@ -5,11 +5,11 @@ import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
 import { Form, Formik } from 'formik'
-import { VariablesOf, graphql } from 'gql.tada'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 
+import { VariablesOf, graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { FormLanguageSelect } from '../../../../../../../../components/FormLanguageSelect'

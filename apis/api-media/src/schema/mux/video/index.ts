@@ -1,1 +1,2 @@
+import './enums'
 import './video'

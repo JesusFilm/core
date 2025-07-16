@@ -23,7 +23,11 @@ describe('Typography align selector', () => {
       color: null,
       content: '',
       variant: null,
-      children: []
+      children: [],
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     }
     const { getByRole } = render(
       <MockedProvider>
@@ -47,7 +51,11 @@ describe('Typography align selector', () => {
       color: null,
       content: '',
       variant: null,
-      children: []
+      children: [],
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     }
     const result = jest.fn(() => ({
       data: {
@@ -95,7 +103,11 @@ describe('Typography align selector', () => {
       color: null,
       content: '',
       variant: null,
-      children: []
+      children: [],
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     }
     const result1 = jest.fn(() => ({
       data: {
