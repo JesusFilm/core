@@ -3,10 +3,11 @@
 import { useQuery } from '@apollo/client'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
-import { graphql } from 'gql.tada'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { ReactElement, useEffect } from 'react'
+
+import { graphql } from '@core/shared/gql'
 
 import { getVideoChildrenLabel } from '../../../../../libs/getVideoChildrenLabel'
 
