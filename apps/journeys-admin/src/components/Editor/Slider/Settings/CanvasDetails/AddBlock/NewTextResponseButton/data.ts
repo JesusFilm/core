@@ -23,7 +23,8 @@ export const submitButton: TreeBlock<ButtonBlock> = {
   endIconId: null,
   action: null,
   submitEnabled: true,
-  children: []
+  children: [],
+  settings: null
 }
 
 export const stepWithSubmitButton: TreeBlock<StepBlock> = {

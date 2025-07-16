@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { BlockUpdateActionInput, ButtonVariant, ButtonColor, ButtonSize, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { BlockUpdateActionInput, ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: StepBlockRestoreFromAction
@@ -39,6 +39,14 @@ export interface StepBlockRestoreFromAction_blockRestore_ButtonBlock_action_Emai
 
 export type StepBlockRestoreFromAction_blockRestore_ButtonBlock_action = StepBlockRestoreFromAction_blockRestore_ButtonBlock_action_NavigateToBlockAction | StepBlockRestoreFromAction_blockRestore_ButtonBlock_action_LinkAction | StepBlockRestoreFromAction_blockRestore_ButtonBlock_action_EmailAction;
 
+export interface StepBlockRestoreFromAction_blockRestore_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface StepBlockRestoreFromAction_blockRestore_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -52,6 +60,7 @@ export interface StepBlockRestoreFromAction_blockRestore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: StepBlockRestoreFromAction_blockRestore_ButtonBlock_action | null;
+  settings: StepBlockRestoreFromAction_blockRestore_ButtonBlock_settings | null;
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_CardBlock {
@@ -250,6 +259,14 @@ export interface StepBlockRestoreFromAction_blockRestore_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface StepBlockRestoreFromAction_blockRestore_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface StepBlockRestoreFromAction_blockRestore_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -259,6 +276,7 @@ export interface StepBlockRestoreFromAction_blockRestore_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: StepBlockRestoreFromAction_blockRestore_TypographyBlock_settings | null;
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Video_title {

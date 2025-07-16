@@ -55,8 +55,8 @@ describe('MuxVideoService', () => {
         new_asset_settings: {
           encoding_tier: 'smart',
           playback_policy: ['public'],
-          max_resolution_tier: '1080p',
-          mp4_support: 'none'
+          max_resolution_tier: undefined,
+          static_renditions: []
         }
       })
       expect(result).toEqual({
@@ -97,7 +97,15 @@ describe('MuxVideoService', () => {
           encoding_tier: 'smart',
           playback_policy: ['public'],
           max_resolution_tier: '1440p',
-          mp4_support: 'capped-1080p'
+          static_renditions: [
+            { resolution: '270p' },
+            { resolution: '360p' },
+            { resolution: '480p' },
+            { resolution: '720p' },
+            { resolution: '1080p' },
+            { resolution: '1440p' },
+            { resolution: '2160p' }
+          ]
         }
       })
     })
@@ -176,8 +184,8 @@ describe('MuxVideoService', () => {
         inputs: [{ url: 'https://example.com/video.mp4' }],
         encoding_tier: 'smart',
         playback_policy: ['public'],
-        max_resolution_tier: '1080p',
-        mp4_support: 'none'
+        max_resolution_tier: undefined,
+        static_renditions: []
       })
       expect(result).toBe(mockAsset)
     })
@@ -201,8 +209,16 @@ describe('MuxVideoService', () => {
         inputs: [{ url: 'https://example.com/video.mp4' }],
         encoding_tier: 'smart',
         playback_policy: ['public'],
-        max_resolution_tier: '2160p',
-        mp4_support: 'capped-1080p'
+        max_resolution_tier: '1080p',
+        static_renditions: [
+          { resolution: '270p' },
+          { resolution: '360p' },
+          { resolution: '480p' },
+          { resolution: '720p' },
+          { resolution: '1080p' },
+          { resolution: '1440p' },
+          { resolution: '2160p' }
+        ]
       })
     })
   })

@@ -54,6 +54,7 @@ export const videos: VideoContentFields[] = [
         value: 'How do you respond to the life of Jesus?'
       }
     ],
+    bibleCitations: [],
     title: [{ __typename: 'VideoTitle', value: 'JESUS' }],
     variant: {
       __typename: 'VideoVariant',
@@ -64,27 +65,33 @@ export const videos: VideoContentFields[] = [
       downloads: [
         {
           __typename: 'VideoVariantDownload',
-          quality: VideoVariantDownloadQuality.low,
-          size: 207296233,
-          url: 'https://arc.gt/y1s23'
+          quality: VideoVariantDownloadQuality.high,
+          size: 2358523707,
+          url: 'https://arc.gt/7geui'
         },
         {
           __typename: 'VideoVariantDownload',
-          quality: VideoVariantDownloadQuality.high,
-          size: 2361587773,
-          url: 'https://arc.gt/7geui'
+          quality: VideoVariantDownloadQuality.low,
+          size: 207141494,
+          url: 'https://arc.gt/fct70'
+        },
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.sd,
+          size: 1561752518,
+          url: 'https://arc.gt/2r4bc'
         }
       ],
       language: {
         __typename: 'Language',
         id: '529',
-        bcp47: 'en',
-        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }],
+        bcp47: 'en'
       },
       slug: 'jesus/english',
-      subtitleCount: 32
+      subtitleCount: 38
     },
-    variantLanguagesCount: 2039,
+    variantLanguagesCount: 2206,
     slug: 'jesus',
     childrenCount: 61
   },
@@ -117,6 +124,41 @@ export const videos: VideoContentFields[] = [
       }
     ],
     studyQuestions: [],
+    bibleCitations: [
+      {
+        __typename: 'BibleCitation',
+        bibleBook: {
+          __typename: 'BibleBook',
+          name: [{ __typename: 'BibleBookName', value: 'John' }]
+        },
+        chapterStart: 20,
+        chapterEnd: null,
+        verseStart: 30,
+        verseEnd: 31
+      },
+      {
+        __typename: 'BibleCitation',
+        bibleBook: {
+          __typename: 'BibleBook',
+          name: [{ __typename: 'BibleBookName', value: 'John' }]
+        },
+        chapterStart: 10,
+        chapterEnd: null,
+        verseStart: 10,
+        verseEnd: null
+      },
+      {
+        __typename: 'BibleCitation',
+        bibleBook: {
+          __typename: 'BibleBook',
+          name: [{ __typename: 'BibleBookName', value: 'John' }]
+        },
+        chapterStart: 17,
+        chapterEnd: null,
+        verseStart: 3,
+        verseEnd: null
+      }
+    ],
     title: [
       { __typename: 'VideoTitle', value: 'Life of Jesus (Gospel of John)' }
     ],
@@ -129,27 +171,33 @@ export const videos: VideoContentFields[] = [
       downloads: [
         {
           __typename: 'VideoVariantDownload',
-          quality: VideoVariantDownloadQuality.low,
-          size: 297742490,
-          url: 'https://arc.gt/fz9kn'
-        },
-        {
-          __typename: 'VideoVariantDownload',
           quality: VideoVariantDownloadQuality.high,
           size: 3384067193,
           url: 'https://arc.gt/on94p'
+        },
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.low,
+          size: 297742490,
+          url: 'https://arc.gt/evdp0'
+        },
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.sd,
+          size: 2240777708,
+          url: 'https://arc.gt/9ftv4'
         }
       ],
       language: {
         __typename: 'Language',
         id: '529',
-        bcp47: 'en',
-        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }],
+        bcp47: 'en'
       },
       slug: 'life-of-jesus-gospel-of-john/english',
       subtitleCount: 0
     },
-    variantLanguagesCount: 23,
+    variantLanguagesCount: 24,
     slug: 'life-of-jesus-gospel-of-john',
     childrenCount: 49
   },
@@ -193,6 +241,19 @@ export const videos: VideoContentFields[] = [
         value: 'How would you respond to the storm and to Jesus?'
       }
     ],
+    bibleCitations: [
+      {
+        __typename: 'BibleCitation',
+        bibleBook: {
+          __typename: 'BibleBook',
+          name: [{ __typename: 'BibleBookName', value: 'Luke' }]
+        },
+        chapterStart: 8,
+        chapterEnd: null,
+        verseStart: 22,
+        verseEnd: 25
+      }
+    ],
     title: [{ __typename: 'VideoTitle', value: 'Jesus Calms the Storm' }],
     variant: {
       __typename: 'VideoVariant',
@@ -203,27 +264,33 @@ export const videos: VideoContentFields[] = [
       downloads: [
         {
           __typename: 'VideoVariantDownload',
-          quality: VideoVariantDownloadQuality.low,
-          size: 3154895,
-          url: 'https://arc.gt/hdbpx'
+          quality: VideoVariantDownloadQuality.high,
+          size: 36145996,
+          url: 'https://arc.gt/i9ugt'
         },
         {
           __typename: 'VideoVariantDownload',
-          quality: VideoVariantDownloadQuality.high,
-          size: 36145996,
-          url: 'https://arc.gt/pj47t'
+          quality: VideoVariantDownloadQuality.low,
+          size: 3154895,
+          url: 'https://arc.gt/b44vt'
+        },
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.sd,
+          size: 23985620,
+          url: 'https://arc.gt/1lmgn'
         }
       ],
       language: {
         __typename: 'Language',
         id: '529',
-        bcp47: 'en',
-        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }],
+        bcp47: 'en'
       },
       slug: 'jesus-calms-the-storm/english',
-      subtitleCount: 32
+      subtitleCount: 38
     },
-    variantLanguagesCount: 2012,
+    variantLanguagesCount: 2179,
     slug: 'jesus-calms-the-storm',
     childrenCount: 0
   },
@@ -275,6 +342,41 @@ export const videos: VideoContentFields[] = [
           'Of all the things Jesus said to the woman, what meant the most to you?'
       }
     ],
+    bibleCitations: [
+      {
+        __typename: 'BibleCitation',
+        bibleBook: {
+          __typename: 'BibleBook',
+          name: [{ __typename: 'BibleBookName', value: 'Matthew' }]
+        },
+        chapterStart: 9,
+        chapterEnd: null,
+        verseStart: 18,
+        verseEnd: 22
+      },
+      {
+        __typename: 'BibleCitation',
+        bibleBook: {
+          __typename: 'BibleBook',
+          name: [{ __typename: 'BibleBookName', value: 'Mark' }]
+        },
+        chapterStart: 5,
+        chapterEnd: null,
+        verseStart: 21,
+        verseEnd: 34
+      },
+      {
+        __typename: 'BibleCitation',
+        bibleBook: {
+          __typename: 'BibleBook',
+          name: [{ __typename: 'BibleBookName', value: 'Luke' }]
+        },
+        chapterStart: 8,
+        chapterEnd: null,
+        verseStart: 40,
+        verseEnd: 48
+      }
+    ],
     title: [
       { __typename: 'VideoTitle', value: 'The Woman with the Issue of Blood' }
     ],
@@ -289,25 +391,31 @@ export const videos: VideoContentFields[] = [
           __typename: 'VideoVariantDownload',
           quality: VideoVariantDownloadQuality.low,
           size: 5081515,
-          url: 'https://arc.gt/j72ed'
+          url: 'https://arc.gt/7jh6t'
         },
         {
           __typename: 'VideoVariantDownload',
           quality: VideoVariantDownloadQuality.high,
           size: 58536996,
-          url: 'https://arc.gt/lsol6'
+          url: 'https://arc.gt/6iia6'
+        },
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.sd,
+          size: 38652823,
+          url: 'https://arc.gt/hcody'
         }
       ],
       language: {
         __typename: 'Language',
         id: '529',
-        bcp47: 'en',
-        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }],
+        bcp47: 'en'
       },
       slug: 'the-woman-with-the-issue-of-blood/english',
       subtitleCount: 31
     },
-    variantLanguagesCount: 216,
+    variantLanguagesCount: 232,
     slug: 'the-woman-with-the-issue-of-blood',
     childrenCount: 0
   },
@@ -319,7 +427,7 @@ export const videos: VideoContentFields[] = [
       {
         __typename: 'CloudflareImage',
         mobileCinematicHigh:
-          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/high_mag_collection_640x300br.jpg/f=jpg,w=1280,h=600,q=95'
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/MAG1.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
       }
     ],
     imageAlt: [{ __typename: 'VideoImageAlt', value: 'Magdalena' }],
@@ -338,37 +446,44 @@ export const videos: VideoContentFields[] = [
       }
     ],
     studyQuestions: [],
+    bibleCitations: [],
     title: [{ __typename: 'VideoTitle', value: 'Magdalena' }],
     variant: {
       __typename: 'VideoVariant',
-      id: '1_529-wl60-0-0',
-      duration: 3665,
+      id: '529-MAG1',
+      duration: 3658,
       hls: 'https://arc.gt/d8p35',
       downloadable: true,
       downloads: [
         {
           __typename: 'VideoVariantDownload',
           quality: VideoVariantDownloadQuality.low,
-          size: 98929472,
-          url: 'https://arc.gt/v50a9'
+          size: 98861290,
+          url: 'https://arc.gt/22mpi'
         },
         {
           __typename: 'VideoVariantDownload',
           quality: VideoVariantDownloadQuality.high,
-          size: 1127091509,
+          size: 1099718055,
           url: 'https://arc.gt/29xoy'
+        },
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.sd,
+          size: 744467103,
+          url: 'https://arc.gt/5zqjs'
         }
       ],
       language: {
         __typename: 'Language',
         id: '529',
-        bcp47: 'en',
-        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }],
+        bcp47: 'en'
       },
       slug: 'magdalena/english',
-      subtitleCount: 31
+      subtitleCount: 0
     },
-    variantLanguagesCount: 217,
+    variantLanguagesCount: 233,
     slug: 'magdalena',
     childrenCount: 46
   },
@@ -399,6 +514,7 @@ export const videos: VideoContentFields[] = [
       }
     ],
     studyQuestions: [],
+    bibleCitations: [],
     title: [{ __typename: 'VideoTitle', value: 'Reflections of Hope' }],
     variant: {
       __typename: 'VideoVariant',
@@ -410,13 +526,13 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        bcp47: 'en',
-        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }],
+        bcp47: 'en'
       },
       slug: 'reflections-of-hope/english',
       subtitleCount: 0
     },
-    variantLanguagesCount: 216,
+    variantLanguagesCount: 232,
     slug: 'reflections-of-hope',
     childrenCount: 7
   },
@@ -458,6 +574,30 @@ export const videos: VideoContentFields[] = [
         value: "How do Jesus' words to the thief on the cross give me hope?"
       }
     ],
+    bibleCitations: [
+      {
+        __typename: 'BibleCitation',
+        bibleBook: {
+          __typename: 'BibleBook',
+          name: [{ __typename: 'BibleBookName', value: 'Luke' }]
+        },
+        chapterStart: 23,
+        chapterEnd: 24,
+        verseStart: 56,
+        verseEnd: 50
+      },
+      {
+        __typename: 'BibleCitation',
+        bibleBook: {
+          __typename: 'BibleBook',
+          name: [{ __typename: 'BibleBookName', value: 'Matthew' }]
+        },
+        chapterStart: 28,
+        chapterEnd: null,
+        verseStart: 18,
+        verseEnd: 20
+      }
+    ],
     title: [{ __typename: 'VideoTitle', value: 'Day 6: Jesus Died for Me' }],
     variant: {
       __typename: 'VideoVariant',
@@ -468,22 +608,28 @@ export const videos: VideoContentFields[] = [
       downloads: [
         {
           __typename: 'VideoVariantDownload',
-          quality: VideoVariantDownloadQuality.low,
-          size: 13079055,
-          url: 'https://arc.gt/yx9gl'
+          quality: VideoVariantDownloadQuality.high,
+          size: 149873025,
+          url: 'https://arc.gt/edne0'
         },
         {
           __typename: 'VideoVariantDownload',
-          quality: VideoVariantDownloadQuality.high,
-          size: 149873025,
-          url: 'https://arc.gt/qr1ht'
+          quality: VideoVariantDownloadQuality.low,
+          size: 13079055,
+          url: 'https://arc.gt/tts5q'
+        },
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.sd,
+          size: 99320243,
+          url: 'https://arc.gt/9ctj6'
         }
       ],
       language: {
         __typename: 'Language',
         id: '529',
-        bcp47: 'en',
-        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }],
+        bcp47: 'en'
       },
       slug: 'day-6-jesus-died-for-me/english',
       subtitleCount: 0
@@ -525,6 +671,19 @@ export const videos: VideoContentFields[] = [
       },
       { __typename: 'VideoStudyQuestion', value: 'Why?' }
     ],
+    bibleCitations: [
+      {
+        __typename: 'BibleCitation',
+        bibleBook: {
+          __typename: 'BibleBook',
+          name: [{ __typename: 'BibleBookName', value: 'Acts' }]
+        },
+        chapterStart: 2,
+        chapterEnd: null,
+        verseStart: 42,
+        verseEnd: null
+      }
+    ],
     title: [{ __typename: 'VideoTitle', value: 'Book of Acts' }],
     variant: {
       __typename: 'VideoVariant',
@@ -544,13 +703,19 @@ export const videos: VideoContentFields[] = [
           quality: VideoVariantDownloadQuality.high,
           size: 3548570033,
           url: 'https://arc.gt/8fsak'
+        },
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.sd,
+          size: 2349598163,
+          url: 'https://arc.gt/2kmly'
         }
       ],
       language: {
         __typename: 'Language',
         id: '529',
-        bcp47: 'en',
-        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }],
+        bcp47: 'en'
       },
       slug: 'book-of-acts/english',
       subtitleCount: 0
@@ -595,6 +760,19 @@ export const videos: VideoContentFields[] = [
         value: 'What does this first miracle tell you about Jesus?'
       }
     ],
+    bibleCitations: [
+      {
+        __typename: 'BibleCitation',
+        bibleBook: {
+          __typename: 'BibleBook',
+          name: [{ __typename: 'BibleBookName', value: 'John' }]
+        },
+        chapterStart: 2,
+        chapterEnd: null,
+        verseStart: 11,
+        verseEnd: null
+      }
+    ],
     title: [{ __typename: 'VideoTitle', value: 'Wedding in Cana' }],
     variant: {
       __typename: 'VideoVariant',
@@ -605,27 +783,33 @@ export const videos: VideoContentFields[] = [
       downloads: [
         {
           __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.high,
+          size: 65652285,
+          url: 'https://arc.gt/fcuyv'
+        },
+        {
+          __typename: 'VideoVariantDownload',
           quality: VideoVariantDownloadQuality.low,
           size: 5741430,
           url: 'https://arc.gt/5h7zk'
         },
         {
           __typename: 'VideoVariantDownload',
-          quality: VideoVariantDownloadQuality.high,
-          size: 65652285,
-          url: 'https://arc.gt/fcuyv'
+          quality: VideoVariantDownloadQuality.sd,
+          size: 43303851,
+          url: 'https://arc.gt/2f78w'
         }
       ],
       language: {
         __typename: 'Language',
         id: '529',
-        bcp47: 'en',
-        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }],
+        bcp47: 'en'
       },
       slug: 'wedding-in-cana/english',
       subtitleCount: 0
     },
-    variantLanguagesCount: 23,
+    variantLanguagesCount: 24,
     slug: 'wedding-in-cana',
     childrenCount: 0
   },
@@ -646,6 +830,7 @@ export const videos: VideoContentFields[] = [
       { __typename: 'VideoDescription', value: 'LUMO content collection' }
     ],
     studyQuestions: [],
+    bibleCitations: [],
     title: [{ __typename: 'VideoTitle', value: 'LUMO' }],
     variant: {
       __typename: 'VideoVariant',
@@ -657,15 +842,15 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        bcp47: 'en',
-        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }],
+        bcp47: 'en'
       },
       slug: 'lumo/english',
       subtitleCount: 0
     },
-    variantLanguagesCount: 29,
+    variantLanguagesCount: 57,
     slug: 'lumo',
-    childrenCount: 4
+    childrenCount: 5
   },
   {
     __typename: 'Video',
@@ -716,6 +901,19 @@ export const videos: VideoContentFields[] = [
         value: 'How do you think the non-believers explained Peter’s escape?'
       }
     ],
+    bibleCitations: [
+      {
+        __typename: 'BibleCitation',
+        bibleBook: {
+          __typename: 'BibleBook',
+          name: [{ __typename: 'BibleBookName', value: 'Acts' }]
+        },
+        chapterStart: 12,
+        chapterEnd: null,
+        verseStart: 11,
+        verseEnd: null
+      }
+    ],
     title: [
       {
         __typename: 'VideoTitle',
@@ -740,13 +938,19 @@ export const videos: VideoContentFields[] = [
           quality: VideoVariantDownloadQuality.high,
           size: 91521131,
           url: 'https://arc.gt/2hh1p'
+        },
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.sd,
+          size: 60603092,
+          url: 'https://arc.gt/2on53'
         }
       ],
       language: {
         __typename: 'Language',
         id: '529',
-        bcp47: 'en',
-        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }],
+        bcp47: 'en'
       },
       slug: 'peter-miraculous-escape-from-prison/english',
       subtitleCount: 0
@@ -784,6 +988,7 @@ export const videos: VideoContentFields[] = [
       }
     ],
     studyQuestions: [],
+    bibleCitations: [],
     title: [
       { __typename: 'VideoTitle', value: '8 Days with Jesus: Who is Jesus?' }
     ],
@@ -797,8 +1002,8 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        bcp47: 'en',
-        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }],
+        bcp47: 'en'
       },
       slug: '8-days-with-jesus-who-is-jesus/english',
       subtitleCount: 0
@@ -854,37 +1059,67 @@ export const videos: VideoContentFields[] = [
           'How do you respond to the life of Jesus? What emotions come to mind, and why?'
       }
     ],
+    bibleCitations: [
+      {
+        __typename: 'BibleCitation',
+        bibleBook: {
+          __typename: 'BibleBook',
+          name: [{ __typename: 'BibleBookName', value: 'John' }]
+        },
+        chapterStart: 20,
+        chapterEnd: null,
+        verseStart: 17,
+        verseEnd: null
+      },
+      {
+        __typename: 'BibleCitation',
+        bibleBook: {
+          __typename: 'BibleBook',
+          name: [{ __typename: 'BibleBookName', value: 'John' }]
+        },
+        chapterStart: 20,
+        chapterEnd: null,
+        verseStart: 18,
+        verseEnd: null
+      }
+    ],
     title: [{ __typename: 'VideoTitle', value: 'Chosen Witness' }],
     variant: {
       __typename: 'VideoVariant',
       id: '2_529-ChosenWitness',
-      duration: 566,
+      duration: 565,
       hls: 'https://arc.gt/3mcdc',
       downloadable: true,
       downloads: [
         {
           __typename: 'VideoVariantDownload',
           quality: VideoVariantDownloadQuality.low,
-          size: 15193611,
-          url: 'https://arc.gt/gkvqh'
+          size: 15189642,
+          url: 'https://arc.gt/41226'
         },
         {
           __typename: 'VideoVariantDownload',
           quality: VideoVariantDownloadQuality.high,
-          size: 172701431,
+          size: 173112311,
           url: 'https://arc.gt/6vvi2'
+        },
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.sd,
+          size: 114394441,
+          url: 'https://arc.gt/799o4'
         }
       ],
       language: {
         __typename: 'Language',
         id: '529',
-        bcp47: 'en',
-        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }],
+        bcp47: 'en'
       },
       slug: 'chosen-witness/english',
-      subtitleCount: 1
+      subtitleCount: 0
     },
-    variantLanguagesCount: 42,
+    variantLanguagesCount: 49,
     slug: 'chosen-witness',
     childrenCount: 0
   },
@@ -917,6 +1152,7 @@ export const videos: VideoContentFields[] = [
       }
     ],
     studyQuestions: [],
+    bibleCitations: [],
     title: [{ __typename: 'VideoTitle', value: 'LUMO - The Gospel of Luke' }],
     variant: {
       __typename: 'VideoVariant',
@@ -928,13 +1164,13 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        bcp47: 'en',
-        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }],
+        bcp47: 'en'
       },
       slug: 'lumo-the-gospel-of-luke/english',
       subtitleCount: 0
     },
-    variantLanguagesCount: 29,
+    variantLanguagesCount: 55,
     slug: 'lumo-the-gospel-of-luke',
     childrenCount: 26
   },
@@ -996,6 +1232,19 @@ export const videos: VideoContentFields[] = [
           'From what you learned today, what do you feel God is asking you to do?'
       }
     ],
+    bibleCitations: [
+      {
+        __typename: 'BibleCitation',
+        bibleBook: {
+          __typename: 'BibleBook',
+          name: [{ __typename: 'BibleBookName', value: 'Luke' }]
+        },
+        chapterStart: 19,
+        chapterEnd: null,
+        verseStart: 1,
+        verseEnd: 10
+      }
+    ],
     title: [
       { __typename: 'VideoTitle', value: 'StoryClubs: Jesus and Zacchaeus' }
     ],
@@ -1010,25 +1259,31 @@ export const videos: VideoContentFields[] = [
           __typename: 'VideoVariantDownload',
           quality: VideoVariantDownloadQuality.low,
           size: 3306004,
-          url: 'https://arc.gt/v21pv'
+          url: 'https://arc.gt/8at9o'
         },
         {
           __typename: 'VideoVariantDownload',
           quality: VideoVariantDownloadQuality.high,
           size: 38139266,
-          url: 'https://arc.gt/fd0p5'
+          url: 'https://arc.gt/7h3r9'
+        },
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.sd,
+          size: 25192308,
+          url: 'https://arc.gt/e8yd9'
         }
       ],
       language: {
         __typename: 'Language',
         id: '529',
-        bcp47: 'en',
-        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }],
+        bcp47: 'en'
       },
       slug: 'storyclubs-jesus-and-zacchaeus/english',
       subtitleCount: 0
     },
-    variantLanguagesCount: 184,
+    variantLanguagesCount: 191,
     slug: 'storyclubs-jesus-and-zacchaeus',
     childrenCount: 0
   },
@@ -1072,6 +1327,19 @@ export const videos: VideoContentFields[] = [
         value: 'Who are the first to know and tell of the birth of Jesus? Why?'
       }
     ],
+    bibleCitations: [
+      {
+        __typename: 'BibleCitation',
+        bibleBook: {
+          __typename: 'BibleBook',
+          name: [{ __typename: 'BibleBookName', value: 'Luke' }]
+        },
+        chapterStart: 1,
+        chapterEnd: 2,
+        verseStart: 1,
+        verseEnd: 20
+      }
+    ],
     title: [{ __typename: 'VideoTitle', value: 'Birth of Jesus' }],
     variant: {
       __typename: 'VideoVariant',
@@ -1084,25 +1352,31 @@ export const videos: VideoContentFields[] = [
           __typename: 'VideoVariantDownload',
           quality: VideoVariantDownloadQuality.low,
           size: 5928704,
-          url: 'https://arc.gt/hgxom'
+          url: 'https://arc.gt/0armc'
         },
         {
           __typename: 'VideoVariantDownload',
           quality: VideoVariantDownloadQuality.high,
           size: 68130346,
           url: 'https://arc.gt/9lrr6'
+        },
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.sd,
+          size: 44964383,
+          url: 'https://arc.gt/mh31f'
         }
       ],
       language: {
         __typename: 'Language',
         id: '529',
-        bcp47: 'en',
-        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }],
+        bcp47: 'en'
       },
       slug: 'birth-of-jesus/english',
-      subtitleCount: 32
+      subtitleCount: 38
     },
-    variantLanguagesCount: 2011,
+    variantLanguagesCount: 2178,
     slug: 'birth-of-jesus',
     childrenCount: 0
   },
@@ -1153,6 +1427,7 @@ export const videos: VideoContentFields[] = [
         value: 'Would you like to hear how you can know God personally?'
       }
     ],
+    bibleCitations: [],
     title: [{ __typename: 'VideoTitle', value: '#FallingPlates' }],
     variant: {
       __typename: 'VideoVariant',
@@ -1160,17 +1435,36 @@ export const videos: VideoContentFields[] = [
       duration: 247,
       hls: 'https://arc.gt/zbrvj',
       downloadable: true,
-      downloads: [],
+      downloads: [
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.high,
+          size: 75259326,
+          url: 'https://arc.gt/g7kxc'
+        },
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.low,
+          size: 6627874,
+          url: 'https://arc.gt/du6y7'
+        },
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.sd,
+          size: 50230433,
+          url: 'https://arc.gt/3b3bu'
+        }
+      ],
       language: {
         __typename: 'Language',
         id: '529',
-        bcp47: 'en',
-        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }],
+        bcp47: 'en'
       },
       slug: 'fallingplates/english',
-      subtitleCount: 7
+      subtitleCount: 76
     },
-    variantLanguagesCount: 39,
+    variantLanguagesCount: 59,
     slug: 'fallingplates',
     childrenCount: 0
   },
@@ -1217,6 +1511,19 @@ export const videos: VideoContentFields[] = [
           'How did God resolve the problem? Do you think this is what Paul prayed for in verse 25?'
       }
     ],
+    bibleCitations: [
+      {
+        __typename: 'BibleCitation',
+        bibleBook: {
+          __typename: 'BibleBook',
+          name: [{ __typename: 'BibleBookName', value: 'Acts' }]
+        },
+        chapterStart: 16,
+        chapterEnd: null,
+        verseStart: 30,
+        verseEnd: null
+      }
+    ],
     title: [{ __typename: 'VideoTitle', value: 'Paul and Silas in Prison' }],
     variant: {
       __typename: 'VideoVariant',
@@ -1229,20 +1536,26 @@ export const videos: VideoContentFields[] = [
           __typename: 'VideoVariantDownload',
           quality: VideoVariantDownloadQuality.low,
           size: 9982369,
-          url: 'https://arc.gt/9uhpf'
+          url: 'https://arc.gt/1jd3x'
         },
         {
           __typename: 'VideoVariantDownload',
           quality: VideoVariantDownloadQuality.high,
           size: 113616766,
           url: 'https://arc.gt/6n6h0'
+        },
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.sd,
+          size: 75268456,
+          url: 'https://arc.gt/q17hx'
         }
       ],
       language: {
         __typename: 'Language',
         id: '529',
-        bcp47: 'en',
-        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }],
+        bcp47: 'en'
       },
       slug: 'paul-and-silas-in-prison/english',
       subtitleCount: 0
@@ -1292,6 +1605,7 @@ export const videos: VideoContentFields[] = [
           'What do you think about the idea of being with Jesus in paradise?'
       }
     ],
+    bibleCitations: [],
     title: [{ __typename: 'VideoTitle', value: 'My Last Day' }],
     variant: {
       __typename: 'VideoVariant',
@@ -1303,26 +1617,32 @@ export const videos: VideoContentFields[] = [
         {
           __typename: 'VideoVariantDownload',
           quality: VideoVariantDownloadQuality.low,
-          size: 14955855,
-          url: 'https://arc.gt/zquza'
+          size: 14835823,
+          url: 'https://arc.gt/1buse'
         },
         {
           __typename: 'VideoVariantDownload',
           quality: VideoVariantDownloadQuality.high,
-          size: 170469865,
-          url: 'https://arc.gt/xcf7k'
+          size: 169098910,
+          url: 'https://arc.gt/s40no'
+        },
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.sd,
+          size: 111737248,
+          url: 'https://arc.gt/48h6c'
         }
       ],
       language: {
         __typename: 'Language',
         id: '529',
-        bcp47: 'en',
-        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }],
+        bcp47: 'en'
       },
       slug: 'my-last-day/english',
       subtitleCount: 7
     },
-    variantLanguagesCount: 275,
+    variantLanguagesCount: 286,
     slug: 'my-last-day',
     childrenCount: 1
   },
@@ -1353,6 +1673,63 @@ export const videos: VideoContentFields[] = [
       }
     ],
     studyQuestions: [],
+    bibleCitations: [
+      {
+        __typename: 'BibleCitation',
+        bibleBook: {
+          __typename: 'BibleBook',
+          name: [{ __typename: 'BibleBookName', value: 'Genesis' }]
+        },
+        chapterStart: 1,
+        chapterEnd: null,
+        verseStart: 26,
+        verseEnd: 27
+      },
+      {
+        __typename: 'BibleCitation',
+        bibleBook: {
+          __typename: 'BibleBook',
+          name: [{ __typename: 'BibleBookName', value: 'Genesis' }]
+        },
+        chapterStart: 3,
+        chapterEnd: null,
+        verseStart: 7,
+        verseEnd: null
+      },
+      {
+        __typename: 'BibleCitation',
+        bibleBook: {
+          __typename: 'BibleBook',
+          name: [{ __typename: 'BibleBookName', value: 'Genesis' }]
+        },
+        chapterStart: 3,
+        chapterEnd: null,
+        verseStart: 22,
+        verseEnd: 24
+      },
+      {
+        __typename: 'BibleCitation',
+        bibleBook: {
+          __typename: 'BibleBook',
+          name: [{ __typename: 'BibleBookName', value: 'Genesis' }]
+        },
+        chapterStart: 22,
+        chapterEnd: null,
+        verseStart: 1,
+        verseEnd: 18
+      },
+      {
+        __typename: 'BibleCitation',
+        bibleBook: {
+          __typename: 'BibleBook',
+          name: [{ __typename: 'BibleBookName', value: 'Psalms' }]
+        },
+        chapterStart: 19,
+        chapterEnd: null,
+        verseStart: 1,
+        verseEnd: 2
+      }
+    ],
     title: [{ __typename: 'VideoTitle', value: 'The Beginning' }],
     variant: {
       __typename: 'VideoVariant',
@@ -1365,25 +1742,31 @@ export const videos: VideoContentFields[] = [
           __typename: 'VideoVariantDownload',
           quality: VideoVariantDownloadQuality.low,
           size: 13138402,
-          url: 'https://arc.gt/ist3s'
+          url: 'https://arc.gt/ijlyf'
         },
         {
           __typename: 'VideoVariantDownload',
           quality: VideoVariantDownloadQuality.high,
           size: 149736452,
-          url: 'https://arc.gt/zxqki'
+          url: 'https://arc.gt/ami4r'
+        },
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.sd,
+          size: 99114557,
+          url: 'https://arc.gt/j1cph'
         }
       ],
       language: {
         __typename: 'Language',
         id: '529',
-        bcp47: 'en',
-        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }],
+        bcp47: 'en'
       },
       slug: 'the-beginning/english',
-      subtitleCount: 32
+      subtitleCount: 38
     },
-    variantLanguagesCount: 2006,
+    variantLanguagesCount: 2173,
     slug: 'the-beginning',
     childrenCount: 0
   }

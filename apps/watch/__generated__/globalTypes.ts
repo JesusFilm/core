@@ -13,6 +13,13 @@ export enum ButtonAction {
   NavigateToBlockAction = "NavigateToBlockAction",
 }
 
+export enum ButtonAlignment {
+  center = "center",
+  justify = "justify",
+  left = "left",
+  right = "right",
+}
+
 export enum ButtonColor {
   error = "error",
   inherit = "inherit",
@@ -230,10 +237,13 @@ export enum VideoVariantDownloadQuality {
   distroHigh = "distroHigh",
   distroLow = "distroLow",
   distroSd = "distroSd",
+  fhd = "fhd",
   high = "high",
   highest = "highest",
   low = "low",
+  qhd = "qhd",
   sd = "sd",
+  uhd = "uhd",
 }
 
 export interface ButtonClickEventCreateInput {

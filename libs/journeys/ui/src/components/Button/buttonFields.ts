@@ -19,5 +19,8 @@ export const BUTTON_FIELDS = gql`
       ...ActionFields
     }
     submitEnabled
+    settings {
+      alignment
+    }
   }
 `
