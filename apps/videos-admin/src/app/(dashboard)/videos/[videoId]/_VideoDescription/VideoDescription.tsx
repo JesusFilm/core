@@ -1,13 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { useMutation, useSuspenseQuery } from '@apollo/client'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { Form, Formik, FormikProps, FormikValues } from 'formik'
 import _unescape from 'lodash/unescape'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect , useState } from 'react'
 import { object, string } from 'yup'
 
 import { graphql } from '@core/shared/gql'
@@ -99,7 +98,7 @@ export function VideoDescription({
     variables: { videoId, languageId: DEFAULT_VIDEO_LANGUAGE_ID }
   })
   const videoDescriptions = data?.adminVideo.description
-  
+
   // If the query data is in sync, clear the local createdDescriptionId
   useEffect(() => {
     if (createdDescriptionId && videoDescriptions.length > 0) {
