@@ -1,6 +1,7 @@
-import { graphql } from 'gql.tada'
 import { NextRequest, NextResponse } from 'next/server'
 import { authMiddleware } from 'next-firebase-auth-edge'
+
+import { graphql } from '@core/shared/gql'
 
 import { makeClient } from './libs/apollo/makeClient'
 import { authConfig } from './libs/auth'
