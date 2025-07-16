@@ -223,7 +223,7 @@ describe('MessageList', () => {
               type: 'tool-invocation' as const,
               toolInvocation: {
                 toolCallId: 'test-id',
-                toolName: 'journeyUpdate',
+                toolName: 'journeySimpleUpdate',
                 args: { journeyId: 'journey-123' },
                 state: 'result' as const,
                 result: { success: true }

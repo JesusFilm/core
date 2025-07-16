@@ -71,21 +71,21 @@ describe('ToolInvocationPart', () => {
       }
     } as ToolInvocationUIPart
 
-    const journeyGetPart = {
+    const journeySimpleGetPart = {
       type: 'tool-invocation' as const,
       toolInvocation: {
         toolCallId: 'test-id',
-        toolName: 'journeyGet',
+        toolName: 'journeySimpleGet',
         args: {},
         state: 'call' as const
       }
     } as ToolInvocationUIPart
 
-    const journeyUpdatePart = {
+    const journeySimpleUpdatePart = {
       type: 'tool-invocation' as const,
       toolInvocation: {
         toolCallId: 'test-id',
-        toolName: 'journeyUpdate',
+        toolName: 'journeySimpleUpdate',
         args: {},
         state: 'call' as const
       }
@@ -102,10 +102,10 @@ describe('ToolInvocationPart', () => {
       expect(screen.getByText('Searching the web...')).toBeInTheDocument()
     })
 
-    it('should render BasicTool for journeyGet with shimmer text', () => {
+    it('should render BasicTool for journeySimpleGet with shimmer text', () => {
       render(
         <ToolInvocationPart
-          part={journeyGetPart}
+          part={journeySimpleGetPart}
           addToolResult={mockAddToolResult}
         />
       )
@@ -113,10 +113,10 @@ describe('ToolInvocationPart', () => {
       expect(screen.getByText('Getting journey...')).toBeInTheDocument()
     })
 
-    it('should render BasicTool for journeyUpdate with shimmer text', () => {
+    it('should render BasicTool for journeySimpleUpdate with shimmer text', () => {
       render(
         <ToolInvocationPart
-          part={journeyUpdatePart}
+          part={journeySimpleUpdatePart}
           addToolResult={mockAddToolResult}
         />
       )
@@ -124,18 +124,18 @@ describe('ToolInvocationPart', () => {
       expect(screen.getByText('Updating journey...')).toBeInTheDocument()
     })
 
-    it('should render BasicTool result state for journeyGet', () => {
-      const journeyGetResultPart = {
-        ...journeyGetPart,
+    it('should render BasicTool result state for journeySimpleGet', () => {
+      const journeySimpleGetResultPart = {
+        ...journeySimpleGetPart,
         toolInvocation: {
-          ...journeyGetPart.toolInvocation,
+          ...journeySimpleGetPart.toolInvocation,
           state: 'result' as const
         }
       } as ToolInvocationUIPart
 
       render(
         <ToolInvocationPart
-          part={journeyGetResultPart}
+          part={journeySimpleGetResultPart}
           addToolResult={mockAddToolResult}
         />
       )

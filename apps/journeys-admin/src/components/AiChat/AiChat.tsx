@@ -81,9 +81,7 @@ export function AiChat({ variant = 'popup' }: AiChatProps): ReactElement {
       const shouldRefetch = result.parts?.some(
         (part) =>
           part.type === 'tool-invocation' &&
-          (part.toolInvocation.toolName.endsWith('Update') ||
-            part.toolInvocation.toolName.endsWith('Create') ||
-            part.toolInvocation.toolName.endsWith('Delete'))
+          part.toolInvocation.toolName.endsWith('Update')
       )
       if (shouldRefetch) {
         void client.refetchQueries({

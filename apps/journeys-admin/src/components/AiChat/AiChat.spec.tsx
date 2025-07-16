@@ -450,7 +450,7 @@ describe('AiChat', () => {
   })
 
   describe('Tool Call Handling', () => {
-    it('should handle journeyUpdate tool call and trigger refetch', async () => {
+    it('should handle journeySimpleUpdate tool call and trigger refetch', async () => {
       let capturedRequestBody: any = null
 
       mswServer.use(
@@ -459,18 +459,19 @@ describe('AiChat', () => {
 
           await delay(200)
           const stream = createMockStreamResponse([
-            'f:{"messageId":"msg-test123"}\n',
-            '9:{"toolCallId":"tool-call-123","toolName":"journeyUpdate","args":{"id":"' +
+            // // journeySimpleUpdate tool call
+            'f:{"messageId":"msg-2"}\n',
+            '9:{"toolCallId":"tool-call-2","toolName":"journeySimpleUpdate","args":{"journeyId":"' +
               defaultJourney.id +
-              '","input":{"title":"my test journey"}}}\n',
-            'a:{"toolCallId":"tool-call-123","result":{"id":"' +
-              defaultJourney.id +
-              '","__typename":"Journey"}}\n',
-            'e:{"finishReason":"tool-calls","usage":{"promptTokens":5602,"completionTokens":42},"isContinued":false}\n',
-            'f:{"messageId":"msg-test456"}\n',
-            '0:"I\'ve changed the title of the journey to \\"my test journey\\"."\n',
-            'e:{"finishReason":"stop","usage":{"promptTokens":5688,"completionTokens":16},"isContinued":false}\n',
-            'd:{"finishReason":"stop","usage":{"promptTokens":11290,"completionTokens":58}}\n'
+              '","journey":{"title":"my test journey","description":"Journey Description","cards":[{"id":"card-1","text":"First Card"}]}}}\n',
+            'a:{"toolCallId":"tool-call-2","result":{"success":true,"data":{"title":"my test journey","description":"Journey Description","cards":[{"id":"card-1","text":"First Card"}]}}}\n',
+            'e:{"finishReason":"tool-calls","usage":{"promptTokens":5255,"completionTokens":51},"isContinued":false}\n',
+            // Final AI response (split into two chunks)
+            'f:{"messageId":"msg-3"}\n',
+            '0:"I\'"\n',
+            '0:"ve updated the title of your journey to \\"my test journey\\".\\n"\n',
+            'e:{"finishReason":"stop","usage":{"promptTokens":5332,"completionTokens":16},"isContinued":false}\n',
+            'd:{"finishReason":"stop","usage":{"promptTokens":15786,"completionTokens":102}}\n'
           ])
 
           return new Response(stream, {
@@ -486,10 +487,9 @@ describe('AiChat', () => {
 
       await userEvent.type(
         screen.getByRole('textbox'),
-        'Change my journey title to "my test journey"'
+        'update the title of my journey to be "my test journey"'
       )
       await userEvent.click(screen.getByTestId('FormSubmitButton'))
-
       // Wait for the tool call loading state to appear
       await waitFor(() =>
         expect(screen.getByText('Updating journey...')).toBeInTheDocument()
@@ -500,11 +500,11 @@ describe('AiChat', () => {
         expect(screen.getByText('Journey updated')).toBeInTheDocument()
       )
 
-      // Wait for the final AI response
+      // Wait for the final AI response (combined string)
       await waitFor(() =>
         expect(
           screen.getByText(
-            'I\'ve changed the title of the journey to "my test journey".'
+            'I\'ve updated the title of your journey to "my test journey".'
           )
         ).toBeInTheDocument()
       )
@@ -514,7 +514,7 @@ describe('AiChat', () => {
       })
 
       validateChatRequestPayload(capturedRequestBody, {
-        content: 'Change my journey title to "my test journey"',
+        content: 'update the title of my journey to be "my test journey"',
         role: 'user'
       })
     })
@@ -572,57 +572,6 @@ describe('AiChat', () => {
 
       validateChatRequestPayload(capturedRequestBody, {
         content: 'Who won the 2025 NBA finals?',
-        role: 'user'
-      })
-    })
-
-    it('should handle blockStepCreate tool call and trigger refetch', async () => {
-      let capturedRequestBody: any = null
-
-      mswServer.use(
-        http.post('/api/chat', async (req) => {
-          capturedRequestBody = await req.request.json()
-
-          await delay(200)
-          const stream = createMockStreamResponse([
-            'f:{"messageId":"msg-test-step-123"}\n',
-            '9:{"toolCallId":"step-create-123","toolName":"blockStepCreate","args":{"input":{"id":"49a95947-354a-499a-899a-999999999999","journeyId":"' +
-              defaultJourney.id +
-              '","x":800,"y":200},"cardInput":{"id":"50a95947-354a-499a-899a-999999999999","journeyId":"' +
-              defaultJourney.id +
-              '","parentBlockId":"49a95947-354a-499a-899a-999999999999","backgroundColor":"#30313D","fullscreen":false,"themeMode":"dark","themeName":"base"}}}\n',
-            'a:{"toolCallId":"step-create-123","result":{"id":"49a95947-354a-499a-899a-999999999999","__typename":"StepBlock"}}\n',
-            'e:{"finishReason":"tool-calls","usage":{"promptTokens":7207,"completionTokens":213},"isContinued":false}\n',
-            'f:{"messageId":"msg-test-step-456"}\n',
-            '0:"I\'ve created a new step."\n',
-            'e:{"finishReason":"stop","usage":{"promptTokens":7469,"completionTokens":9},"isContinued":false}\n',
-            'd:{"finishReason":"stop","usage":{"promptTokens":14676,"completionTokens":222}}\n'
-          ])
-
-          return new Response(stream, {
-            headers: {
-              'Content-Type': 'text/plain; charset=utf-8',
-              'x-vercel-ai-data-stream': 'v1'
-            }
-          })
-        })
-      )
-
-      renderAiChat()
-
-      await userEvent.type(screen.getByRole('textbox'), 'Create a new step')
-      await userEvent.click(screen.getByTestId('FormSubmitButton'))
-
-      await waitFor(() =>
-        expect(screen.getByText("I've created a new step.")).toBeInTheDocument()
-      )
-
-      expect(mockRefetchQueries).toHaveBeenCalledWith({
-        include: ['GetAdminJourney', 'GetStepBlocksWithPosition']
-      })
-
-      validateChatRequestPayload(capturedRequestBody, {
-        content: 'Create a new step',
         role: 'user'
       })
     })
