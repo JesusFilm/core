@@ -9,10 +9,6 @@ import { VideoSource, VideoSourceShape } from '../../videoSource/videoSource'
 
 import { MaxResolutionTier } from './enums'
 import {
-  MaxResolutionTier,
-  MaxResolutionTierEnum
-} from './enums/maxResolutionTier'
-import {
   createVideoByDirectUpload,
   createVideoFromUrl,
   deleteVideo,
