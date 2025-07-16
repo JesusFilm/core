@@ -29,6 +29,8 @@ Historically branch names followed the following format: `YY-CY-FN-type-summary`
 - `type` is the type of issue being addressed (build, chore, ci, docs, feat, fix, perf, refactor, revert, style, test)
 - `summary` is a two to four word dash-separated summary of the issue being addressed
 
+For example `22-01-TN-fix-wrong-user-names`.
+
 *Clean Linear Generated Approach*
 
 This is the format: `{fullname}/{linearProject}-{linearId}-{title}`
