@@ -16,9 +16,14 @@ jest.mock('next-i18next', () => ({
 const initialState = playerInitialState
 
 describe('VideoTitle', () => {
-  it('should render the video title', () => {
+  it('should render the video title in preview mode', () => {
+    const state = {
+      ...initialState,
+      play: true,
+      mute: true
+    }
     render(
-      <PlayerProvider initialState={initialState}>
+      <PlayerProvider initialState={state}>
         <VideoTitle videoTitle="Test Video" showButton />
       </PlayerProvider>
     )
@@ -27,24 +32,22 @@ describe('VideoTitle', () => {
     ).toBeInTheDocument()
   })
 
-  it('should be visible when not playing', () => {
+  it('should not render the video title when not in preview mode', () => {
     render(
       <PlayerProvider initialState={initialState}>
         <VideoTitle videoTitle="Test Video" showButton />
       </PlayerProvider>
     )
-    const container = screen.getByRole('heading', {
-      name: 'Test Video'
-    }).parentElement
-    expect(container).toHaveClass('opacity-100')
-    expect(container).not.toHaveClass('opacity-0')
+    expect(
+      screen.queryByRole('heading', { name: 'Test Video' })
+    ).not.toBeInTheDocument()
   })
 
-  it('should be visible when player is active', () => {
+  it('should be visible when in preview mode (play && mute)', () => {
     const state = {
       ...initialState,
-      play: false,
-      active: true
+      play: true,
+      mute: true
     }
     render(
       <PlayerProvider initialState={state}>
@@ -59,8 +62,13 @@ describe('VideoTitle', () => {
   })
 
   it('should render play button', () => {
+    const state = {
+      ...initialState,
+      play: true,
+      mute: true
+    }
     render(
-      <PlayerProvider initialState={initialState}>
+      <PlayerProvider initialState={state}>
         <VideoTitle videoTitle="Test Video" showButton />
       </PlayerProvider>
     )
@@ -68,8 +76,13 @@ describe('VideoTitle', () => {
   })
 
   it('should not render play button when showButton is false', () => {
+    const state = {
+      ...initialState,
+      play: true,
+      mute: true
+    }
     const { container } = render(
-      <PlayerProvider initialState={initialState}>
+      <PlayerProvider initialState={state}>
         <VideoTitle videoTitle="Test Video" showButton={false} />
       </PlayerProvider>
     )
@@ -79,8 +92,13 @@ describe('VideoTitle', () => {
 
   it('should call onClick when play button is clicked', () => {
     const onClick = jest.fn()
+    const state = {
+      ...initialState,
+      play: true,
+      mute: true
+    }
     render(
-      <PlayerProvider initialState={initialState}>
+      <PlayerProvider initialState={state}>
         <VideoTitle videoTitle="Test Video" showButton onClick={onClick} />
       </PlayerProvider>
     )
@@ -91,6 +109,7 @@ describe('VideoTitle', () => {
   it('should show unmute button when muted', () => {
     const state = {
       ...initialState,
+      play: true,
       mute: true
     }
     render(
@@ -107,6 +126,7 @@ describe('VideoTitle', () => {
     const onClick = jest.fn()
     const state = {
       ...initialState,
+      play: true,
       mute: true
     }
     render(
@@ -121,5 +141,43 @@ describe('VideoTitle', () => {
     )
     fireEvent.click(screen.getByRole('button', { name: 'Play with sound' }))
     expect(onClick).toHaveBeenCalled()
+  })
+
+  it('should be hidden when video is playing with sound (not muted)', () => {
+    const state = {
+      ...initialState,
+      play: true,
+      mute: false,
+      active: false,
+      loading: false
+    }
+    render(
+      <PlayerProvider initialState={state}>
+        <VideoTitle videoTitle="Test Video" showButton />
+      </PlayerProvider>
+    )
+    expect(
+      screen.queryByRole('heading', { name: 'Test Video' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should be visible when video is playing muted (preview mode)', () => {
+    const state = {
+      ...initialState,
+      play: true,
+      mute: true,
+      active: false,
+      loading: false
+    }
+    render(
+      <PlayerProvider initialState={state}>
+        <VideoTitle videoTitle="Test Video" showButton />
+      </PlayerProvider>
+    )
+    const container = screen.getByRole('heading', {
+      name: 'Test Video'
+    }).parentElement
+    expect(container).toHaveClass('opacity-100')
+    expect(container).not.toHaveClass('opacity-0')
   })
 })
