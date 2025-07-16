@@ -4,10 +4,11 @@ import { useMutation, useQuery } from '@apollo/client'
 import { DragEndEvent } from '@dnd-kit/core'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
-import { graphql } from 'gql.tada'
 import { usePathname, useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
+
+import { graphql } from '@core/shared/gql'
 
 import { OrderedList } from '../../../../../components/OrderedList'
 import { OrderedItem } from '../../../../../components/OrderedList/OrderedItem'

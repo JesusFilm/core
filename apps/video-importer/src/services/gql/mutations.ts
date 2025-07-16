@@ -1,4 +1,4 @@
-import { graphql } from 'gql.tada'
+import { graphql } from '@core/shared/gql'
 
 export const CREATE_CLOUDFLARE_R2_ASSET = graphql(`
   mutation CreateCloudflareR2Asset($input: CloudflareR2CreateInput!) {

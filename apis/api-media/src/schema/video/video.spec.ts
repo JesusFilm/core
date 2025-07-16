@@ -1,4 +1,3 @@
-import { ResultOf } from 'gql.tada'
 import { GraphQLError } from 'graphql'
 
 import {
@@ -19,10 +18,10 @@ import {
   VideoTitle,
   VideoVariant
 } from '.prisma/api-media-client'
+import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
-import { graphql } from '../../lib/graphql/subgraphGraphql'
 
 import { getLanguageIdFromInfo } from './video'
 

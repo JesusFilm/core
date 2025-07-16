@@ -3,24 +3,7 @@
   "compilerOptions": {
     "incremental": true,
     "strict": true,
-    "tsBuildInfoFile": "../../.cache/api-media/tsc/.tsbuildinfo",
-    "plugins": [
-      {
-        "name": "gql.tada/ts-plugin",
-        "schemas": [
-          {
-            "name": "subgraph",
-            "schema": "./schema.graphql",
-            "tadaOutputLocation": "./src/__generated__/graphql-subgraph-env.d.ts"
-          },
-          {
-            "name": "gateway",
-            "schema": "../api-gateway/schema.graphql",
-            "tadaOutputLocation": "./src/__generated__/graphql-gateway-env.d.ts"
-          }
-        ]
-      }
-    ]
+    "tsBuildInfoFile": "../../.cache/api-media/tsc/.tsbuildinfo"
   },
   "files": [],
   "include": [],

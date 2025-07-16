@@ -1,4 +1,4 @@
-import { graphql } from 'gql.tada'
+import { graphql } from '@core/shared/gql'
 import { ExecutionResult } from 'graphql'
 
 import { getClient } from '../../../../test/client'

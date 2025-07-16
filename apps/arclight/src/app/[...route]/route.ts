@@ -1,6 +1,6 @@
 import { swaggerUI } from '@hono/swagger-ui'
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
-import { ResultOf, graphql } from 'gql.tada'
+import { ResultOf, graphql } from '@core/shared/gqlared/gql'
 import { etag } from 'hono/etag'
 import { HTTPException } from 'hono/http-exception'
 import { handle } from 'hono/vercel'

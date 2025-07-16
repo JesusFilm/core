@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 import { createMockClient } from '@apollo/client/testing'
-import { ResultOf, VariablesOf } from 'gql.tada'
+import { ResultOf, VariablesOf } from '@core/shared/gql'
 import { notFound, redirect } from 'next/navigation'
 
 import { getApolloClient } from '../../../lib/apolloClient'

@@ -11,18 +11,13 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "incremental": true,
+    "tsBuildInfoFile": "../../.cache/videos-admin/tsc/.tsbuildinfo",
+    "strictNullChecks": true,
     "plugins": [
       {
         "name": "next"
-      },
-      {
-        "name": "gql.tada/ts-plugin",
-        "schema": "../../apis/api-gateway/schema.graphql",
-        "tadaOutputLocation": "./apps/videos-admin/src/__generated__/graphql-env.d.ts"
       }
-    ],
-    "tsBuildInfoFile": "../../.cache/videos-admin/tsc/.tsbuildinfo",
-    "strictNullChecks": true
+    ]
   },
   "include": [
     "**/*.ts",

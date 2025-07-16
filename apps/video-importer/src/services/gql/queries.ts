@@ -1,4 +1,4 @@
-import { graphql } from 'gql.tada'
+import { graphql } from '@core/shared/gql'
 
 export const GET_MUX_VIDEO = graphql(`
   query GetMyMuxVideo($id: ID!, $userGenerated: Boolean) {
