@@ -215,6 +215,9 @@ type Mutation {
 
   """delete an existing short link"""
   shortLinkDelete(id: String!): MutationShortLinkDeleteResult!
+  videoVariantCreate(input: VideoVariantCreateInput!): VideoVariant!
+  videoVariantUpdate(input: VideoVariantUpdateInput!): VideoVariant!
+  videoVariantDelete(id: ID!): VideoVariant!
   videoCreate(input: VideoCreateInput!): Video!
   videoUpdate(input: VideoUpdateInput!): Video!
   videoDelete(id: ID!): Video!
@@ -242,9 +245,6 @@ type Mutation {
   videoEditionCreate(input: VideoEditionCreateInput!): VideoEdition!
   videoEditionUpdate(input: VideoEditionUpdateInput!): VideoEdition!
   videoEditionDelete(id: ID!): VideoEdition!
-  videoVariantCreate(input: VideoVariantCreateInput!): VideoVariant!
-  videoVariantUpdate(input: VideoVariantUpdateInput!): VideoVariant!
-  videoVariantDelete(id: ID!): VideoVariant!
   videoVariantDownloadCreate(input: VideoVariantDownloadCreateInput!): VideoVariantDownload!
   videoVariantDownloadUpdate(input: VideoVariantDownloadUpdateInput!): VideoVariantDownload!
   videoVariantDownloadDelete(id: ID!): VideoVariantDownload!
@@ -499,6 +499,8 @@ type Query {
     first: Int
     last: Int
   ): QueryShortLinksConnection!
+  videoVariant(id: ID!): VideoVariant!
+  videoVariants(input: VideoVariantFilter): [VideoVariant!]!
   adminVideo(id: ID!, idType: IdType = databaseId): Video!
   adminVideos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   adminVideosCount(where: VideosFilter): Int!
@@ -508,8 +510,6 @@ type Query {
   videoOrigins: [VideoOrigin!]!
   videoEditions: [VideoEdition!]!
   videoEdition(id: ID!): VideoEdition
-  videoVariant(id: ID!): VideoVariant!
-  videoVariants(input: VideoVariantFilter): [VideoVariant!]!
   tags: [Tag!]!
   taxonomies(category: String, languageCodes: [String!]): [Taxonomy!]!
   arclightApiKeys: [ArclightApiKey!]!

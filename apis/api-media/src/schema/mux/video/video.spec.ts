@@ -29,6 +29,18 @@ jest.mock('./service', () => ({
   enableDownload: jest.fn().mockResolvedValue(undefined),
   getUpload: jest.fn().mockResolvedValue({
     asset_id: 'assetId'
+  }),
+  getMaxResolutionValue: jest
+    .fn()
+    .mockImplementation((maxResolution: string | null | undefined) => {
+      if (!maxResolution) return undefined
+      if (maxResolution === 'fhd') return '1080p'
+      if (maxResolution === 'qhd') return '1440p'
+      if (maxResolution === 'uhd') return '2160p'
+      return '1080p' // fallback
+    }),
+  isValidMaxResolutionTier: jest.fn().mockImplementation((value: string) => {
+    return ['fhd', 'qhd', 'uhd'].includes(value)
   })
 }))
 
