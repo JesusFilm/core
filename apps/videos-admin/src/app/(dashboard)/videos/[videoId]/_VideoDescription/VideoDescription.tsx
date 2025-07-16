@@ -6,7 +6,7 @@ import Stack from '@mui/material/Stack'
 import { Form, Formik, FormikProps, FormikValues } from 'formik'
 import _unescape from 'lodash/unescape'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useEffect , useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { object, string } from 'yup'
 
 import { graphql } from '@core/shared/gql'
