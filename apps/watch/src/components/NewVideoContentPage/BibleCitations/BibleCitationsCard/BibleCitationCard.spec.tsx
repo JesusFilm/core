@@ -44,6 +44,18 @@ const mockCitationWithEndVerse = {
   verseEnd: 12
 }
 
+const mockCitationWithSpaceInName = {
+  __typename: 'BibleCitation' as const,
+  bibleBook: {
+    __typename: 'BibleBook' as const,
+    name: [{ __typename: 'BibleBookName' as const, value: '1 John' }]
+  },
+  chapterStart: 1,
+  chapterEnd: null,
+  verseStart: 1,
+  verseEnd: null
+}
+
 const mockScriptureResponse = {
   text: 'For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.',
   reference: 'John 3:16'
@@ -281,6 +293,32 @@ describe('BibleCitationCard', () => {
     )
 
     expect(screen.getByText('John 3:16')).toBeInTheDocument()
+  })
+
+  it('should handle space in book name', async () => {
+    mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
+
+    render(
+      <WatchProvider
+        initialState={{
+          siteLanguage: 'en',
+          audioLanguage: 'en',
+          subtitleLanguage: 'en',
+          subtitleOn: false
+        }}
+      >
+        <BibleCitationCard
+          citation={mockCitationWithSpaceInName}
+          imageUrl="https://example.com/image.jpg"
+        />
+      </WatchProvider>
+    )
+
+    await waitFor(() => {
+      expect(mockAxiosGet).toHaveBeenCalledWith(
+        'https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/en-asv/books/1john/chapters/1/verses/1.json'
+      )
+    })
   })
 
   describe('Lanugages', () => {
