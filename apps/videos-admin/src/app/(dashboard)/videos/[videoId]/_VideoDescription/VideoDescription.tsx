@@ -4,11 +4,12 @@ import { useMutation, useSuspenseQuery } from '@apollo/client'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { Form, Formik, FormikProps, FormikValues } from 'formik'
-import { graphql } from 'gql.tada'
 import _unescape from 'lodash/unescape'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
+
+import { graphql } from '@core/shared/gql'
 
 import { CancelButton } from '../../../../../components/CancelButton'
 import { ResizableTextField } from '../../../../../components/ResizableTextField'
@@ -52,8 +53,22 @@ export function VideoDescription({
   videoId
 }: VideoDescriptionProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
-  const [createVideoDescription] = useMutation(CREATE_VIDEO_DESCRIPTION)
-  const [updateVideoDescription] = useMutation(UPDATE_VIDEO_DESCRIPTION)
+  const [createVideoDescription] = useMutation(CREATE_VIDEO_DESCRIPTION, {
+    refetchQueries: [
+      {
+        query: GET_VIDEO_DESCRIPTION,
+        variables: { videoId, languageId: DEFAULT_VIDEO_LANGUAGE_ID }
+      }
+    ]
+  })
+  const [updateVideoDescription] = useMutation(UPDATE_VIDEO_DESCRIPTION, {
+    refetchQueries: [
+      {
+        query: GET_VIDEO_DESCRIPTION,
+        variables: { videoId, languageId: DEFAULT_VIDEO_LANGUAGE_ID }
+      }
+    ]
+  })
 
   const validationSchema = object().shape({
     description: string().required('Description is required')
@@ -103,6 +118,7 @@ export function VideoDescription({
           enqueueSnackbar('Video description updated', {
             variant: 'success'
           })
+          resetForm({ values })
         },
         onError: () => {
           enqueueSnackbar('Failed to update video description', {

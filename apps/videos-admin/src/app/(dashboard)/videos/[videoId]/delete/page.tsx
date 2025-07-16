@@ -1,11 +1,11 @@
 'use client'
 
 import { useMutation, useSuspenseQuery } from '@apollo/client'
-import { graphql } from 'gql.tada'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
+import { graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'

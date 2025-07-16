@@ -1,9 +1,10 @@
 'use client'
 
 import { useSuspenseQuery } from '@apollo/client'
-import { graphql } from 'gql.tada'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
+
+import { graphql } from '@core/shared/gql'
 
 import { ImageAspectRatio } from '../../../constants'
 import { ImageDisplay } from '../_ImageDisplay/ImageDisplay'
