@@ -1,4 +1,5 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
 import {
   VideoContentFields,
@@ -48,7 +49,7 @@ describe('NewVideoContentHeader', () => {
     ...(videos.find(({ id }) => id === '1_jf6119-0-0') as VideoContentFields)
   }
 
-  it('should display link and button to feature film page', () => {
+  it('should display link and progress for feature film page', () => {
     render(
       <VideoProvider value={{ content: videoWithContainer, container }}>
         <NewVideoContentHeader videos={videos} />
@@ -59,16 +60,13 @@ describe('NewVideoContentHeader', () => {
       'href',
       '/watch/jesus'
     )
-    expect(
-      screen.getByRole('button', { name: 'Watch Full Film' })
-    ).toBeInTheDocument()
-    expect(screen.getByText('Clip 20 of 61')).toBeInTheDocument()
+    expect(screen.getByText('Chapter 20 of 61')).toBeInTheDocument()
     expect(screen.getByTestId('container-progress-short')).toHaveTextContent(
       '20/61'
     )
   })
 
-  it('should display link and button to container page', () => {
+  it('should display link and progress for container page', () => {
     render(
       <VideoProvider value={{ content: lumoVideo, container: lumoContainer }}>
         <NewVideoContentHeader videos={videos} />
@@ -79,8 +77,7 @@ describe('NewVideoContentHeader', () => {
       'href',
       '/watch/lumo'
     )
-    expect(screen.getByRole('button', { name: 'See All' })).toBeInTheDocument()
-    expect(screen.getByText('Clip 3 of 4')).toBeInTheDocument()
+    expect(screen.getByText('Item 3 of 4')).toBeInTheDocument()
     expect(screen.getByTestId('container-progress-short')).toHaveTextContent(
       '3/4'
     )
@@ -96,12 +93,59 @@ describe('NewVideoContentHeader', () => {
     expect(baseElement.getElementsByClassName('animate-pulse')).toHaveLength(2)
   })
 
-  it('should render nothing if not in a collection', () => {
+  it('should always render download, share, and back buttons even when not in a collection', () => {
     render(
       <VideoProvider value={{ content: videos[0], container: undefined }}>
         <NewVideoContentHeader />
       </VideoProvider>
     )
-    expect(screen.queryByTestId('NewVideoContentHeader')?.firstChild).toBeNull()
+
+    // Check that the header container is rendered
+    expect(screen.getByTestId('NewVideoContentHeader')).toBeInTheDocument()
+
+    // Check that download button is always rendered
+    expect(screen.getByRole('button', { name: 'Download' })).toBeInTheDocument()
+
+    // Check that share button is always rendered
+    expect(screen.getByRole('button', { name: 'Share' })).toBeInTheDocument()
+
+    // Check that back link is always rendered (should show "All Videos" when no container)
+    expect(screen.getByRole('link', { name: 'All Videos' })).toBeInTheDocument()
+
+    // Verify the back link links to the watch page when no container
+    expect(screen.getByRole('link', { name: 'All Videos' })).toHaveAttribute(
+      'href',
+      '/watch'
+    )
+  })
+
+  it('should render DownloadDialog when button is clicked', async () => {
+    render(
+      <VideoProvider value={{ content: videos[0], container: undefined }}>
+        <NewVideoContentHeader />
+      </VideoProvider>
+    )
+    const user = userEvent.setup()
+
+    await user.click(screen.getByRole('button', { name: 'Download' }))
+
+    await waitFor(() =>
+      expect(screen.getByTestId('DownloadDialog')).toBeInTheDocument()
+    )
+  })
+
+  it('should render ShareDialog when button is clicked', async () => {
+    render(
+      <VideoProvider value={{ content: videos[0], container: undefined }}>
+        <NewVideoContentHeader />
+      </VideoProvider>
+    )
+    const user = userEvent.setup()
+
+    await user.click(screen.getByRole('button', { name: 'Share' }))
+
+    await waitFor(() =>
+      expect(screen.getByTestId('ShareDialog')).toBeInTheDocument()
+    )
   })
 })
