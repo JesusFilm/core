@@ -23,7 +23,8 @@ export function VideoTitle({
   const {
     state: { play, active, loading, mute, volume }
   } = usePlayer()
-  const visible = !play || active || loading
+  // Only show title in preview mode (play && mute)
+  const visible = play && mute
 
   const show =
     (mute || volume === 0) && variant === 'unmute'
@@ -44,14 +45,16 @@ export function VideoTitle({
       `}
       style={{ transitionTimingFunction: 'ease-out' }}
     >
-      <h2
-        className="
-          font-bold text-white opacity-90 mix-blend-screen 
-          flex-grow mb-1 text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-sans
-        "
-      >
-        {videoTitle}
-      </h2>
+      {visible && (
+        <h2
+          className="
+            font-bold text-white opacity-90 mix-blend-screen 
+            flex-grow mb-1 text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-sans
+          "
+        >
+          {videoTitle}
+        </h2>
+      )}
       <div
         className={`overflow-hidden transition-all duration-500 ease-in-out ${
           show ? 'max-h-30' : 'max-h-0'

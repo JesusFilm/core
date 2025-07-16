@@ -114,7 +114,7 @@ describe('VideoControls', () => {
             subtitleOn: false
           }}
         >
-          <PlayerProvider initialState={{ play: true }}>
+          <PlayerProvider initialState={{ play: true, mute: false }}>
             <VideoProvider value={{ content: videos[0] }}>
               <VideoControls player={player} />
               <TestPlayerState />
@@ -125,6 +125,32 @@ describe('VideoControls', () => {
     )
     fireEvent.click(screen.getByTestId('PauseRoundedIcon'))
     expect(screen.getByText('player.play: false')).toBeInTheDocument()
+  })
+
+  it('hides controls when in preview mode (play && mute)', () => {
+    render(
+      <MockedProvider>
+        <WatchProvider
+          initialState={{
+            siteLanguage: 'en',
+            audioLanguage: 'en',
+            subtitleLanguage: 'en',
+            subtitleOn: false
+          }}
+        >
+          <PlayerProvider initialState={{ play: true, mute: true }}>
+            <VideoProvider value={{ content: videos[0] }}>
+              <VideoControls player={player} />
+            </VideoProvider>
+          </PlayerProvider>
+        </WatchProvider>
+      </MockedProvider>
+    )
+
+    // Controls should not be visible in preview mode
+    expect(
+      screen.queryByTestId('vjs-jfp-custom-controls')
+    ).not.toBeInTheDocument()
   })
 
   it('unmutes the video on mute icon click', async () => {
