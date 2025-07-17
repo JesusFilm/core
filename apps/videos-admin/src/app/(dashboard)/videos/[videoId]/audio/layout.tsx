@@ -26,7 +26,6 @@ import { useCallback, useEffect, useState } from 'react'
 import { graphql } from '@core/shared/gql'
 
 import { PublishedChip } from '../../../../../components/PublishedChip'
-import { Section } from '../../../../../components/Section'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
 
 const GET_ADMIN_VIDEO_VARIANTS = graphql(`
@@ -177,7 +176,7 @@ export default function ClientLayout({
         variant: 'success'
       })
       void refetch()
-    } catch (error) {
+    } catch {
       enqueueSnackbar('Failed to publish audio languages', {
         variant: 'error'
       })
@@ -283,6 +282,7 @@ export default function ClientLayout({
                   <IconButton
                     size="small"
                     disabled={!canPreview}
+                    aria-label="preview variant"
                     onClick={(event) =>
                       canPreview &&
                       data?.adminVideo?.slug &&
@@ -298,6 +298,7 @@ export default function ClientLayout({
                   </IconButton>
                   <IconButton
                     size="small"
+                    aria-label="delete variant"
                     onClick={(event) => handleDeleteClick(event, variant.id)}
                   >
                     <DeleteIcon />
