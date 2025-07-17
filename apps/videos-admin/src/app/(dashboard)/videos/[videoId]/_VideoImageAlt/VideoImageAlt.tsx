@@ -4,10 +4,11 @@ import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikProps, FormikValues } from 'formik'
-import { graphql } from 'gql.tada'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
+
+import { graphql } from '@core/shared/gql'
 
 import { CancelButton } from '../../../../../components/CancelButton'
 import { SaveButton } from '../../../../../components/SaveButton'
@@ -50,8 +51,28 @@ interface VideoImageAltProps {
 export function VideoImageAlt({ videoId }: VideoImageAltProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
 
-  const [createVideoImageAlt] = useMutation(CREATE_VIDEO_IMAGE_ALT)
-  const [updateVideoImageAlt] = useMutation(UPDATE_VIDEO_IMAGE_ALT)
+  const [createVideoImageAlt] = useMutation(CREATE_VIDEO_IMAGE_ALT, {
+    refetchQueries: [
+      {
+        query: GET_VIDEO_IMAGE_ALT,
+        variables: {
+          id: videoId,
+          languageId: DEFAULT_VIDEO_LANGUAGE_ID
+        }
+      }
+    ]
+  })
+  const [updateVideoImageAlt] = useMutation(UPDATE_VIDEO_IMAGE_ALT, {
+    refetchQueries: [
+      {
+        query: GET_VIDEO_IMAGE_ALT,
+        variables: {
+          id: videoId,
+          languageId: DEFAULT_VIDEO_LANGUAGE_ID
+        }
+      }
+    ]
+  })
 
   const validationSchema = object().shape({
     imageAlt: string().trim().required('Image Alt is required')
@@ -102,6 +123,7 @@ export function VideoImageAlt({ videoId }: VideoImageAltProps): ReactElement {
           enqueueSnackbar('Video image alt updated', {
             variant: 'success'
           })
+          resetForm({ values })
         },
         onError: () => {
           enqueueSnackbar('Failed to update video image alt', {

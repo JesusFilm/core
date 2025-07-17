@@ -1,7 +1,6 @@
 'use client'
 
 import { useMutation, useSuspenseQuery } from '@apollo/client'
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import WarningIcon from '@mui/icons-material/Warning'
 import Alert from '@mui/material/Alert'
@@ -22,11 +21,12 @@ import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikProps, FormikValues } from 'formik'
-import { graphql } from 'gql.tada'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 import { object, string } from 'yup'
+
+import { graphql } from '@core/shared/gql'
 
 import { CancelButton } from '../../../../../components/CancelButton'
 import { SaveButton } from '../../../../../components/SaveButton'

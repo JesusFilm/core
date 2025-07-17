@@ -24,6 +24,10 @@ describe('Typography properties', () => {
     color: null,
     content: 'Typography',
     variant: null,
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    },
     children: []
   }
 
@@ -36,13 +40,13 @@ describe('Typography properties', () => {
       </MockedProvider>
     )
     expect(getByRole('button', { name: 'Text Variant' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Color Primary' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Color #FEFEFE' })).toBeInTheDocument()
     expect(
       getByRole('button', { name: 'Text Alignment Left' })
     ).toBeInTheDocument()
   })
 
-  it('shows filled attributes', () => {
+  it('shows filled attributes with enum colors', () => {
     const block: TreeBlock<TypographyBlock> = {
       id: 'typography1.id',
       __typename: 'TypographyBlock',
@@ -52,6 +56,10 @@ describe('Typography properties', () => {
       color: TypographyColor.secondary,
       content: 'Typography',
       variant: TypographyVariant.h2,
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      },
       children: []
     }
     const { getByRole } = render(
@@ -66,6 +74,62 @@ describe('Typography properties', () => {
     ).toBeInTheDocument()
   })
 
+  it('shows filled attributes with hex color from settings', () => {
+    const block: TreeBlock<TypographyBlock> = {
+      id: 'typography1.id',
+      __typename: 'TypographyBlock',
+      parentBlockId: null,
+      parentOrder: 0,
+      align: TypographyAlign.center,
+      color: null,
+      content: 'Typography',
+      variant: TypographyVariant.h2,
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: '#C52D3A'
+      },
+      children: []
+    }
+    const { getByRole } = render(
+      <MockedProvider>
+        <Typography {...block} />
+      </MockedProvider>
+    )
+    expect(getByRole('button', { name: 'Text Variant' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Color #C52D3A' })).toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'Text Alignment Center' })
+    ).toBeInTheDocument()
+  })
+
+  it('shows disabled color for empty content', () => {
+    const block: TreeBlock<TypographyBlock> = {
+      id: 'typography1.id',
+      __typename: 'TypographyBlock',
+      parentBlockId: null,
+      parentOrder: 0,
+      align: null,
+      color: null,
+      content: '',
+      variant: null,
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: '#C52D3A'
+      },
+      children: []
+    }
+    const { getByRole } = render(
+      <MockedProvider>
+        <Typography {...block} />
+      </MockedProvider>
+    )
+    expect(getByRole('button', { name: 'Text Variant' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Color #C52D3A' })).toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'Text Alignment Left' })
+    ).toBeInTheDocument()
+  })
+
   it('variant accordion should be open', () => {
     const { getByText } = render(
       <MockedProvider>
@@ -77,6 +141,34 @@ describe('Typography properties', () => {
     )
     expect(
       getByText('selectedAttributeId: typography1.id-typography-variant')
+    ).toBeInTheDocument()
+  })
+
+  it('shows settings color overriding block color', () => {
+    const block: TreeBlock<TypographyBlock> = {
+      id: 'typography1.id',
+      __typename: 'TypographyBlock',
+      parentBlockId: null,
+      parentOrder: 0,
+      align: null,
+      color: TypographyColor.primary,
+      content: 'Typography',
+      variant: null,
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: '#444451'
+      },
+      children: []
+    }
+    const { getByRole } = render(
+      <MockedProvider>
+        <Typography {...block} />
+      </MockedProvider>
+    )
+    expect(getByRole('button', { name: 'Text Variant' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Color #444451' })).toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'Text Alignment Left' })
     ).toBeInTheDocument()
   })
 })
