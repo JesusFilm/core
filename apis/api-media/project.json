@@ -200,12 +200,6 @@
         "parallel": false
       }
     },
-    "codegen": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "gql.tada generate output --tsconfig apis/api-media/tsconfig.json"
-      }
-    },
     "data-export": {
       "executor": "nx:run-commands",
       "options": {

@@ -7,9 +7,10 @@ import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { graphql } from 'gql.tada'
 import { useRouter, useSelectedLayoutSegment } from 'next/navigation'
 import { ReactNode } from 'react'
+
+import { graphql } from '@core/shared/gql'
 
 import { PublishedChip } from '../../../../components/PublishedChip'
 import { Section } from '../../../../components/Section'
