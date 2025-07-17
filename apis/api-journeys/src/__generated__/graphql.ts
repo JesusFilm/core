@@ -1372,6 +1372,12 @@ export type LinkActionInput = {
   url: Scalars['String']['input'];
 };
 
+export enum MaxResolutionTier {
+  Fhd = 'fhd',
+  Qhd = 'qhd',
+  Uhd = 'uhd'
+}
+
 export type MeInput = {
   redirect?: InputMaybe<Scalars['String']['input']>;
 };
@@ -1818,6 +1824,7 @@ export type MutationCreateKeywordArgs = {
 
 export type MutationCreateMuxVideoUploadByFileArgs = {
   downloadable?: InputMaybe<Scalars['Boolean']['input']>;
+  maxResolution?: InputMaybe<MaxResolutionTier>;
   name: Scalars['String']['input'];
   userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
 };
@@ -1825,6 +1832,7 @@ export type MutationCreateMuxVideoUploadByFileArgs = {
 
 export type MutationCreateMuxVideoUploadByUrlArgs = {
   downloadable?: InputMaybe<Scalars['Boolean']['input']>;
+  maxResolution?: InputMaybe<MaxResolutionTier>;
   url: Scalars['String']['input'];
   userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
 };
