@@ -3,21 +3,21 @@
 import { Inter } from 'next/font/google'
 import Head from 'next/head'
 import Link from 'next/link'
+import { useTranslation } from 'react-i18next'
 
 const inter = Inter({ subsets: ['latin'] })
-
-const SITE_TITLE = 'Watch Modern'
-const COPYRIGHT_TEXT = 'All rights reserved.'
 
 export default function RootLayout({
   children
 }: {
   children: React.ReactNode
 }) {
+  const { t } = useTranslation('apps-watch-modern')
+
   return (
     <html lang="en">
       <Head>
-        <title>{SITE_TITLE}</title>
+        <title>{t('Watch Modern')}</title>
         <meta name="description" content="Your modern streaming platform" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
@@ -27,16 +27,16 @@ export default function RootLayout({
           <header className="border-b">
             <div className="container mx-auto p-4">
               <nav className="flex items-center justify-between">
-                <h1 className="text-xl font-bold">{SITE_TITLE}</h1>
+                <h1 className="text-xl font-bold">{t('Watch Modern')}</h1>
                 <div className="space-x-4">
                   <Link href="/" className="text-gray-600 hover:text-gray-900">
-                    Home
+                    {t('Home')}
                   </Link>
                   <Link
                     href="/new-page"
                     className="text-gray-600 hover:text-gray-900"
                   >
-                    New Page
+                    {t('New Page')}
                   </Link>
                 </div>
               </nav>
@@ -45,7 +45,8 @@ export default function RootLayout({
           {children}
           <footer className="border-t mt-auto">
             <div className="container mx-auto p-4 text-center text-sm text-gray-600">
-              © {new Date().getFullYear()} {SITE_TITLE}. {COPYRIGHT_TEXT}
+              © {new Date().getFullYear()} {t('Watch Modern')}.{' '}
+              {t('All rights reserved.')}
             </div>
           </footer>
         </div>
