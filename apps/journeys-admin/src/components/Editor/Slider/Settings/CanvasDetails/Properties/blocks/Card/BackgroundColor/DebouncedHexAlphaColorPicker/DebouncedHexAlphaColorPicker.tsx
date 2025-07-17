@@ -6,13 +6,16 @@ import {
   useMemo,
   useState
 } from 'react'
-import { HexAlphaColorPicker } from 'react-colorful'
+import { HexAlphaColorPicker, HexColorPicker } from 'react-colorful'
 
-export function DebouncedHexColorPicker({
+export function DebouncedHexAlphaColorPicker({
   color,
   onChange,
+  enableAlpha = true,
   ...props
-}: ComponentProps<typeof HexAlphaColorPicker>): ReactElement {
+}: ComponentProps<typeof HexAlphaColorPicker> & {
+  enableAlpha?: boolean
+}): ReactElement {
   const [value, setValue] = useState(color)
 
   const debouncedChange = useMemo(
@@ -39,8 +42,15 @@ export function DebouncedHexColorPicker({
     setValue(value.toUpperCase())
   }
 
-  return (
+  return enableAlpha ? (
     <HexAlphaColorPicker
+      data-testid="HexAlphaColorPicker"
+      color={value}
+      onChange={handleChange}
+      {...props}
+    />
+  ) : (
+    <HexColorPicker
       data-testid="HexColorPicker"
       color={value}
       onChange={handleChange}

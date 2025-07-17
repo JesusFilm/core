@@ -23,7 +23,7 @@ import { CardFields } from '../../../../../../../../../../__generated__/CardFiel
 import { PropertiesSlider } from '../BackgroundMedia/Image/controls/PropertiesSlider'
 
 import { ColorOpacityField } from './ColorOpacityField'
-import { DebouncedHexColorPicker } from './DebouncedHexColorPicker'
+import { DebouncedHexAlphaColorPicker } from './DebouncedHexAlphaColorPicker'
 import { PaletteColorPicker } from './PaletteColorPicker'
 import { Swatch } from './Swatch'
 
@@ -309,7 +309,7 @@ export function BackgroundColor(): ReactElement {
   // TODO: Test onChange in E2E
   const hexColorPicker = (
     <Stack sx={{ p: 4 }} spacing={4}>
-      <DebouncedHexColorPicker
+      <DebouncedHexAlphaColorPicker
         data-testid="bgColorPicker"
         color={selectedColor}
         onChange={handleColorChange}
