@@ -2,10 +2,11 @@
 
 import { useLazyQuery, useMutation } from '@apollo/client'
 import axios from 'axios'
-import { graphql } from 'gql.tada'
 import { useSnackbar } from 'notistack'
 import { ReactNode, createContext, useContext, useReducer } from 'react'
 import { v4 as uuidv4 } from 'uuid'
+
+import { graphql } from '@core/shared/gql'
 
 import { getExtension } from '../(dashboard)/videos/[videoId]/audio/add/_utils/getExtension'
 import { useCreateR2AssetMutation } from '../../libs/useCreateR2Asset/useCreateR2Asset'

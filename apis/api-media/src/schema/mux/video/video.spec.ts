@@ -1,6 +1,5 @@
-import { graphql } from 'gql.tada'
-
 import { MuxVideo } from '.prisma/api-media-client'
+import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
@@ -29,6 +28,18 @@ jest.mock('./service', () => ({
   enableDownload: jest.fn().mockResolvedValue(undefined),
   getUpload: jest.fn().mockResolvedValue({
     asset_id: 'assetId'
+  }),
+  getMaxResolutionValue: jest
+    .fn()
+    .mockImplementation((maxResolution: string | null | undefined) => {
+      if (!maxResolution) return undefined
+      if (maxResolution === 'fhd') return '1080p'
+      if (maxResolution === 'qhd') return '1440p'
+      if (maxResolution === 'uhd') return '2160p'
+      return '1080p' // fallback
+    }),
+  isValidMaxResolutionTier: jest.fn().mockImplementation((value: string) => {
+    return ['fhd', 'qhd', 'uhd'].includes(value)
   })
 }))
 
@@ -452,10 +463,12 @@ describe('mux/video', () => {
         mutation CreateMuxVideoUploadByFile(
           $name: String!
           $userGenerated: Boolean
+          $maxResolution: MaxResolutionTier
         ) {
           createMuxVideoUploadByFile(
             name: $name
             userGenerated: $userGenerated
+            maxResolution: $maxResolution
           ) {
             id
             playbackId
@@ -490,7 +503,8 @@ describe('mux/video', () => {
           document: CREATE_MUX_VIDEO_UPLOAD_BY_FILE,
           variables: {
             name: 'videoName',
-            userGenerated: true
+            userGenerated: true,
+            maxResolution: 'fhd'
           }
         })
         expect(prismaMock.muxVideo.create).toHaveBeenCalledWith({
@@ -516,7 +530,8 @@ describe('mux/video', () => {
           document: CREATE_MUX_VIDEO_UPLOAD_BY_FILE,
           variables: {
             name: 'videoName',
-            userGenerated: true
+            userGenerated: true,
+            maxResolution: 'qhd'
           }
         })
         expect(result).toHaveProperty('data', null)
@@ -528,8 +543,13 @@ describe('mux/video', () => {
         mutation CreateMuxVideoUploadByUrl(
           $url: String!
           $userGenerated: Boolean
+          $maxResolution: MaxResolutionTier
         ) {
-          createMuxVideoUploadByUrl(url: $url, userGenerated: $userGenerated) {
+          createMuxVideoUploadByUrl(
+            url: $url
+            userGenerated: $userGenerated
+            maxResolution: $maxResolution
+          ) {
             id
             playbackId
             uploadUrl
@@ -563,7 +583,8 @@ describe('mux/video', () => {
           document: CREATE_MUX_VIDEO_UPLOAD_BY_URL,
           variables: {
             url: 'https://example.com/video.mp4',
-            userGenerated: true
+            userGenerated: true,
+            maxResolution: 'uhd'
           }
         })
         expect(prismaMock.muxVideo.create).toHaveBeenCalledWith({
@@ -587,7 +608,8 @@ describe('mux/video', () => {
           document: CREATE_MUX_VIDEO_UPLOAD_BY_URL,
           variables: {
             url: 'https://example.com/video.mp4',
-            userGenerated: true
+            userGenerated: true,
+            maxResolution: 'fhd'
           }
         })
         expect(result).toHaveProperty('data', null)

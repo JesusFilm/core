@@ -11,12 +11,12 @@ import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { Form, Formik, FormikValues } from 'formik'
-import { graphql } from 'gql.tada'
 import { useRouter } from 'next/navigation'
 import { enqueueSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
 import { object, string } from 'yup'
 
+import { graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { FileUpload } from '../../../../../../../../../components/FileUpload'

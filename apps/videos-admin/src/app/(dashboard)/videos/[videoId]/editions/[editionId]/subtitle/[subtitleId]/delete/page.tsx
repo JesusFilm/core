@@ -1,10 +1,10 @@
 'use client'
 
 import { useMutation } from '@apollo/client'
-import { graphql } from 'gql.tada'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 
+import { graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 const DELETE_VIDEO_SUBTITLE = graphql(`
