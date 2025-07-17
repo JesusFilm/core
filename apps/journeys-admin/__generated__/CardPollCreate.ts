@@ -28,6 +28,14 @@ export interface CardPollCreate_image {
   focalLeft: number | null;
 }
 
+export interface CardPollCreate_subtitle_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardPollCreate_subtitle {
   __typename: "TypographyBlock";
   id: string;
@@ -37,6 +45,15 @@ export interface CardPollCreate_subtitle {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardPollCreate_subtitle_settings | null;
+}
+
+export interface CardPollCreate_title_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
 }
 
 export interface CardPollCreate_title {
@@ -48,6 +65,7 @@ export interface CardPollCreate_title {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardPollCreate_title_settings | null;
 }
 
 export interface CardPollCreate_radioQuestion {
@@ -185,6 +203,14 @@ export interface CardPollCreate_radioOption4 {
   action: CardPollCreate_radioOption4_action | null;
 }
 
+export interface CardPollCreate_body_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardPollCreate_body {
   __typename: "TypographyBlock";
   id: string;
@@ -194,6 +220,7 @@ export interface CardPollCreate_body {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardPollCreate_body_settings | null;
 }
 
 export interface CardPollCreate_cardBlockUpdate {

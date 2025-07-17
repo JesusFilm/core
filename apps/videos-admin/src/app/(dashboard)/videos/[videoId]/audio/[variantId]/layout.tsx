@@ -19,12 +19,12 @@ import TableRow from '@mui/material/TableRow'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Form, Formik, FormikProps, FormikValues } from 'formik'
-import { graphql } from 'gql.tada'
 import { usePathname, useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement, ReactNode, useEffect, useState } from 'react'
 import { object, string } from 'yup'
 
+import { graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { CancelButton } from '../../../../../../components/CancelButton'

@@ -66,7 +66,7 @@ export function ActionCard({
                 }}
               >
                 {recipientText == null
-                  ? `Hi ${recipient?.firstName ?? ''},`
+                  ? `Hi ${recipient?.firstName || 'there'},`
                   : recipientText}
               </Text>
               {headerText != null && (

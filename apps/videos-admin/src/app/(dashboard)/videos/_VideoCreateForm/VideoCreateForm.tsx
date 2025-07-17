@@ -5,11 +5,12 @@ import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { Form, Formik } from 'formik'
-import { ResultOf, VariablesOf, graphql } from 'gql.tada'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useMemo, useState } from 'react'
 import { InferType, mixed, object, string } from 'yup'
+
+import { ResultOf, VariablesOf, graphql } from '@core/shared/gql'
 
 import { FormSelectField } from '../../../../components/FormSelectField'
 import { FormTextField } from '../../../../components/FormTextField'

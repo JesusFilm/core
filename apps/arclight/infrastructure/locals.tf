@@ -9,7 +9,9 @@ locals {
     "NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY",
     "NEXT_PUBLIC_MUX_DEFAULT_REPORTING_KEY",
     "REDIS_URL",
-    "REDIS_PORT"
+    "REDIS_PORT",
+    "BC_ACCOUNT_ID",
+    "BC_POLICY_KEY"
   ]
   service_config = {
     name           = "arclight"

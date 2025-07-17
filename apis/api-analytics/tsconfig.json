@@ -7,14 +7,7 @@
     "noEmit": true,
     "strict": true,
     "incremental": true,
-    "tsBuildInfoFile": "../../.cache/api-analytics/tsc/.tsbuildinfo",
-    "plugins": [
-      {
-        "name": "gql.tada/ts-plugin",
-        "schema": "../api-gateway/schema.graphql",
-        "tadaOutputLocation": "./apis/api-analytics/src/__generated__/graphql-env.d.ts"
-      }
-    ]
+    "tsBuildInfoFile": "../../.cache/api-analytics/tsc/.tsbuildinfo"
   },
   "files": [],
   "include": [],

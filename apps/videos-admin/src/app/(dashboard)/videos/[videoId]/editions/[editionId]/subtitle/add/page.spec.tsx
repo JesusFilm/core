@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen } from '@testing-library/react'
-import { graphql } from 'gql.tada'
+
+import { graphql } from '@core/shared/gql'
 
 import SubtitleCreate from './page'
 

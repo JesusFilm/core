@@ -2,17 +2,16 @@
 
 import { useMutation, useSuspenseQuery } from '@apollo/client'
 import Checkbox from '@mui/material/Checkbox'
-import Divider from '@mui/material/Divider'
 import FormControl from '@mui/material/FormControl'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import FormGroup from '@mui/material/FormGroup'
-import FormLabel from '@mui/material/FormLabel'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { Form, Formik, FormikProps, FormikValues } from 'formik'
-import { graphql } from 'gql.tada'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
+
+import { graphql } from '@core/shared/gql'
 
 import { CancelButton } from '../../../../../components/CancelButton'
 import { SaveButton } from '../../../../../components/SaveButton'
