@@ -1,17 +1,26 @@
 'use client'
 
-import { useQuery } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import AddIcon from '@mui/icons-material/Add'
 import DeleteIcon from '@mui/icons-material/Delete'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
+import PublishIcon from '@mui/icons-material/Publish'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
+import DialogTitle from '@mui/material/DialogTitle'
 import IconButton from '@mui/material/IconButton'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
+import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { usePathname, useRouter } from 'next/navigation'
+import { useSnackbar } from 'notistack'
 import { useCallback, useEffect, useState } from 'react'
 
 import { graphql } from '@core/shared/gql'
@@ -41,6 +50,15 @@ const GET_ADMIN_VIDEO_VARIANTS = graphql(`
   }
 `)
 
+const UPDATE_VIDEO_VARIANT = graphql(`
+  mutation UpdateVideoVariant($input: VideoVariantUpdateInput!) {
+    videoVariantUpdate(input: $input) {
+      id
+      published
+    }
+  }
+`)
+
 export default function ClientLayout({
   children,
   params: { videoId }
@@ -50,11 +68,16 @@ export default function ClientLayout({
 }) {
   const router = useRouter()
   const pathname = usePathname()
+  const { enqueueSnackbar } = useSnackbar()
   const [reloadOnPathChange, setReloadOnPathChange] = useState(false)
 
   const { data, loading, refetch } = useQuery(GET_ADMIN_VIDEO_VARIANTS, {
     variables: { id: videoId, languageId: DEFAULT_VIDEO_LANGUAGE_ID }
   })
+
+  const [updateVariant, { loading: isPublishing }] =
+    useMutation(UPDATE_VIDEO_VARIANT)
+  const [showPublishDialog, setShowPublishDialog] = useState(false)
 
   useEffect(() => {
     if (reloadOnPathChange) void refetch()
@@ -106,6 +129,64 @@ export default function ClientLayout({
     },
     [router, videoId]
   )
+
+  const handlePublishAllClick = useCallback(() => {
+    if (!data?.adminVideo.variants) return
+
+    // Get all unpublished (draft) variants
+    const draftVariants = data.adminVideo.variants.filter(
+      (variant) => !variant.published
+    )
+
+    if (draftVariants.length === 0) {
+      enqueueSnackbar('No draft audio languages to publish', {
+        variant: 'info'
+      })
+      return
+    }
+
+    setShowPublishDialog(true)
+  }, [data?.adminVideo.variants, enqueueSnackbar])
+
+  const handlePublishAllConfirm = useCallback(async () => {
+    if (!data?.adminVideo.variants) return
+
+    // Get all unpublished (draft) variants
+    const draftVariants = data.adminVideo.variants.filter(
+      (variant) => !variant.published
+    )
+
+    setShowPublishDialog(false)
+
+    try {
+      // Update each variant individually
+      await Promise.all(
+        draftVariants.map((variant) =>
+          updateVariant({
+            variables: {
+              input: {
+                id: variant.id,
+                published: true
+              }
+            }
+          })
+        )
+      )
+
+      enqueueSnackbar('Successfully published all draft audio languages', {
+        variant: 'success'
+      })
+      void refetch()
+    } catch (error) {
+      enqueueSnackbar('Failed to publish audio languages', {
+        variant: 'error'
+      })
+    }
+  }, [data?.adminVideo.variants, updateVariant, enqueueSnackbar, refetch])
+
+  const handlePublishAllCancel = useCallback(() => {
+    setShowPublishDialog(false)
+  }, [])
 
   const renderContent = () => {
     if (loading) {
@@ -192,51 +273,34 @@ export default function ClientLayout({
                   />
                   <PublishedChip published={variant.published} />
                 </Box>
-                <Box sx={{ display: 'flex', gap: 1 }}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 0.5
+                  }}
+                >
                   <IconButton
                     size="small"
-                    onClick={
+                    disabled={!canPreview}
+                    onClick={(event) =>
                       canPreview &&
                       data?.adminVideo?.slug &&
-                      variant.language?.slug
-                        ? (event) =>
-                            handlePreviewClick(
-                              event,
-                              data.adminVideo.slug,
-                              variant.language.slug as string
-                            )
-                        : undefined
+                      variant.language?.slug &&
+                      handlePreviewClick(
+                        event,
+                        data.adminVideo.slug,
+                        variant.language.slug
+                      )
                     }
-                    aria-label="preview variant"
-                    disabled={!canPreview}
-                    sx={{
-                      color: canPreview ? 'primary.main' : 'action.disabled',
-                      '&:hover': canPreview
-                        ? {
-                            backgroundColor: 'primary.light',
-                            color: 'primary.contrastText'
-                          }
-                        : {},
-                      '&.Mui-disabled': {
-                        color: 'action.disabled'
-                      }
-                    }}
                   >
-                    <OpenInNewIcon fontSize="small" />
+                    <OpenInNewIcon />
                   </IconButton>
                   <IconButton
                     size="small"
                     onClick={(event) => handleDeleteClick(event, variant.id)}
-                    aria-label="delete variant"
-                    sx={{
-                      color: 'error.main',
-                      '&:hover': {
-                        backgroundColor: 'error.light',
-                        color: 'error.contrastText'
-                      }
-                    }}
                   >
-                    <DeleteIcon fontSize="small" />
+                    <DeleteIcon />
                   </IconButton>
                 </Box>
               </ListItem>
@@ -249,21 +313,85 @@ export default function ClientLayout({
 
   return (
     <>
-      <Section
-        boxProps={{
-          sx: { p: 2, height: 'calc(100vh - 400px)' }
-        }}
-        title="Audio Languages"
-        variant="outlined"
-        action={{
-          label: 'Add Audio Language',
-          startIcon: <AddIcon />,
-          onClick: handleAddAudioLanguage
+      <Stack
+        sx={{
+          border: '1px solid',
+          borderColor: 'divider',
+          overflow: 'hidden',
+          borderRadius: 1,
+          width: '100%',
+          p: 2,
+          height: 'calc(100vh - 400px)'
         }}
       >
-        {renderContent()}
-      </Section>
+        {/* Custom header with both buttons */}
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          sx={{ mb: 2 }}
+        >
+          <Typography variant="h6" component="h2">
+            Audio Languages
+          </Typography>
+          <Stack direction="row" spacing={1}>
+            <Button
+              variant="outlined"
+              startIcon={
+                isPublishing ? <CircularProgress size={16} /> : <PublishIcon />
+              }
+              onClick={handlePublishAllClick}
+              disabled={isPublishing || loading}
+              size="small"
+            >
+              {isPublishing ? 'Publishing audio languages...' : 'Publish All'}
+            </Button>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={handleAddAudioLanguage}
+              size="small"
+            >
+              Add Audio Language
+            </Button>
+          </Stack>
+        </Stack>
+
+        {/* Content */}
+        <Box sx={{ flex: 1, overflow: 'auto' }}>{renderContent()}</Box>
+      </Stack>
       {children}
+
+      {/* Publish All Confirmation Dialog */}
+      <Dialog
+        open={showPublishDialog}
+        onClose={handlePublishAllCancel}
+        aria-labelledby="publish-all-dialog-title"
+        aria-describedby="publish-all-dialog-description"
+      >
+        <DialogTitle id="publish-all-dialog-title">
+          Publish All Draft Audio Languages
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="publish-all-dialog-description">
+            Are you sure you want to publish all draft audio language variants?
+            This will make them publicly available and cannot be easily undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handlePublishAllCancel} color="primary">
+            Cancel
+          </Button>
+          <Button
+            onClick={handlePublishAllConfirm}
+            color="primary"
+            variant="contained"
+            autoFocus
+          >
+            Publish All
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   )
 }
