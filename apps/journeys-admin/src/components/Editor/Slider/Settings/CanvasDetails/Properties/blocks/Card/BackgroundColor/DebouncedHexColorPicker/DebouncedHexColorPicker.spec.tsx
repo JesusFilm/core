@@ -153,7 +153,11 @@ describe('DebouncedHexColorPicker', () => {
 
     it('handles alpha slider interactions for 8-digit colors', async () => {
       const { container } = render(
-        <DebouncedHexColorPicker color="#C62828FF" onChange={mockOnChange} />
+        <DebouncedHexColorPicker
+          color="#C62828FF"
+          onChange={mockOnChange}
+          enableAlpha={true}
+        />
       )
 
       const alpha = container.querySelector(
