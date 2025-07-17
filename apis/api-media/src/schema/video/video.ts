@@ -646,14 +646,15 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoUpdateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
-      // Get current video data to check if published status is changing
+      // Get current video data to check if published status is changing and to prevent slug change after publish
       const currentVideo =
-        input.published !== undefined
+        input.published !== undefined || input.slug !== undefined
           ? await prisma.video.findUnique({
               where: { id: input.id },
               select: {
                 published: true,
                 publishedAt: true,
+                slug: true,
                 variants: {
                   where: { published: true },
                   select: { languageId: true }
@@ -661,6 +662,15 @@ builder.mutationFields((t) => ({
               }
             })
           : null
+
+      // Prevent changing slug after video has been published
+      if (
+        input.slug != null &&
+        input.slug !== currentVideo?.slug &&
+        currentVideo?.publishedAt != null
+      ) {
+        throw new Error('Cannot change slug after video has been published')
+      }
 
       // If published is being set to true, we need to check if publishedAt should be set
       let publishedAtUpdate = undefined
