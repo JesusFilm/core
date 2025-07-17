@@ -3,11 +3,12 @@ import { useMutation, useSuspenseQuery } from '@apollo/client'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { Form, Formik, FormikProps, FormikValues } from 'formik'
-import { graphql } from 'gql.tada'
 import _unescape from 'lodash/unescape'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
+
+import { graphql } from '@core/shared/gql'
 
 import { CancelButton } from '../../../../../components/CancelButton'
 import { ResizableTextField } from '../../../../../components/ResizableTextField'
@@ -50,8 +51,22 @@ interface VideoSnippetProps {
 
 export function VideoSnippet({ videoId }: VideoSnippetProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
-  const [createVideoSnippet] = useMutation(CREATE_VIDEO_SNIPPET)
-  const [updateVideoSnippet] = useMutation(UPDATE_VIDEO_SNIPPET)
+  const [createVideoSnippet] = useMutation(CREATE_VIDEO_SNIPPET, {
+    refetchQueries: [
+      {
+        query: GET_VIDEO_SNIPPET,
+        variables: { videoId, languageId: DEFAULT_VIDEO_LANGUAGE_ID }
+      }
+    ]
+  })
+  const [updateVideoSnippet] = useMutation(UPDATE_VIDEO_SNIPPET, {
+    refetchQueries: [
+      {
+        query: GET_VIDEO_SNIPPET,
+        variables: { videoId, languageId: DEFAULT_VIDEO_LANGUAGE_ID }
+      }
+    ]
+  })
 
   const validationSchema = object().shape({
     snippet: string().required('Snippet is required')
@@ -79,6 +94,7 @@ export function VideoSnippet({ videoId }: VideoSnippetProps): ReactElement {
           enqueueSnackbar('Video short description created', {
             variant: 'success'
           })
+          resetForm({ values })
         },
         onError: () => {
           enqueueSnackbar('Failed to create video short description', {

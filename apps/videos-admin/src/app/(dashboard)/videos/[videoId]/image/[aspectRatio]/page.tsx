@@ -3,12 +3,12 @@
 import { useMutation, useSuspenseQuery } from '@apollo/client'
 import Typography from '@mui/material/Typography'
 import type FormDataType from 'form-data'
-import { graphql } from 'gql.tada'
 import { useRouter } from 'next/navigation'
 import fetch from 'node-fetch'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
+import { graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { FileUpload } from '../../../../../../components/FileUpload'

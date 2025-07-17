@@ -1,7 +1,7 @@
 import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
 import { Logger } from 'pino'
 
-import { graphql } from '../../../../lib/graphql/gatewayGraphql'
+import { graphql } from '@core/shared/gql'
 
 export const GET_LANGUAGES = graphql(`
   query getLanguages {

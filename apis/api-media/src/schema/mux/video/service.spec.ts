@@ -7,9 +7,11 @@ import {
   createVideoFromUrl,
   deleteVideo,
   enableDownload,
+  getMaxResolutionValue,
   getStaticRenditions,
   getUpload,
-  getVideo
+  getVideo,
+  isValidMaxResolutionTier
 } from './service'
 
 const mockMux = mockDeep<Mux>()
@@ -459,6 +461,82 @@ describe('MuxVideoService', () => {
       const result = await getStaticRenditions('asset-id', false)
 
       expect(result).toBeUndefined()
+    })
+  })
+
+  describe('isValidMaxResolutionTier', () => {
+    it('should return true for valid enum keys', () => {
+      expect(isValidMaxResolutionTier('fhd')).toBe(true)
+      expect(isValidMaxResolutionTier('qhd')).toBe(true)
+      expect(isValidMaxResolutionTier('uhd')).toBe(true)
+    })
+
+    it('should return false for invalid enum keys', () => {
+      expect(isValidMaxResolutionTier('invalid')).toBe(false)
+      expect(isValidMaxResolutionTier('1080p')).toBe(false)
+      expect(isValidMaxResolutionTier('')).toBe(false)
+      expect(isValidMaxResolutionTier('HD')).toBe(false)
+    })
+  })
+
+  describe('getMaxResolutionValue', () => {
+    // Mock console.warn to test warning messages
+    const originalWarn = console.warn
+    let mockWarn: jest.SpyInstance
+
+    beforeEach(() => {
+      mockWarn = jest.spyOn(console, 'warn').mockImplementation(() => undefined)
+    })
+
+    afterEach(() => {
+      mockWarn.mockRestore()
+    })
+
+    afterAll(() => {
+      console.warn = originalWarn
+    })
+
+    it('should return undefined for null or undefined input', () => {
+      expect(getMaxResolutionValue(null)).toBeUndefined()
+      expect(getMaxResolutionValue(undefined)).toBeUndefined()
+    })
+
+    it('should return correct enum values for valid keys', () => {
+      expect(getMaxResolutionValue('fhd')).toBe('1080p')
+      expect(getMaxResolutionValue('qhd')).toBe('1440p')
+      expect(getMaxResolutionValue('uhd')).toBe('2160p')
+    })
+
+    it('should return fallback value and log warning for invalid keys', () => {
+      const result = getMaxResolutionValue('invalid')
+
+      expect(result).toBe('1080p') // fallback to fhd
+      expect(mockWarn).toHaveBeenCalledWith(
+        "Invalid maxResolution value: invalid. Falling back to 'fhd'."
+      )
+    })
+
+    it('should handle empty string input', () => {
+      const result = getMaxResolutionValue('')
+
+      expect(result).toBeUndefined() // empty string is falsy, returns undefined
+      expect(mockWarn).not.toHaveBeenCalled() // no warning for falsy values
+    })
+
+    it('should handle non-falsy invalid values', () => {
+      const result = getMaxResolutionValue('1080p') // Mux value instead of enum key
+
+      expect(result).toBe('1080p') // fallback to fhd
+      expect(mockWarn).toHaveBeenCalledWith(
+        "Invalid maxResolution value: 1080p. Falling back to 'fhd'."
+      )
+    })
+
+    it('should return correct type signature', () => {
+      const result = getMaxResolutionValue('fhd')
+      // TypeScript type check - result should be "1080p" | "1440p" | "2160p" | undefined
+      expect(typeof result).toBe('string')
+      expect(['1080p', '1440p', '2160p'].includes(result!)).toBe(true)
     })
   })
 })
