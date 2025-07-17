@@ -314,6 +314,7 @@ export function BackgroundColor(): ReactElement {
         color={selectedColor}
         onChange={handleColorChange}
         style={{ width: '100%', height: 125 }}
+        enableAlpha={true}
       />
     </Stack>
   )
