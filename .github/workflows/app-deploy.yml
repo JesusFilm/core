@@ -132,19 +132,19 @@ jobs:
           NEXT_PUBLIC_VERCEL_ENV: ${{ github.event_name == 'push' && github.ref == 'refs/heads/stage' && 'stage' || 'preview' }}
           NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
         # use run-namy to avoid case where deploy command doesn't exist for a project
-        run: npx nx run-many --target=deploy --projects=${{ matrix.app }}
+        run: npx nx run-many --target=deploy --projects=${{ matrix.app }} --runner=ci
       - name: upload sourcemaps to datadog
         env:
           GIT_COMMIT_SHA: ${{ github.sha }}
           DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
-        run: npx nx run-many --target=upload-sourcemaps --projects=${{ matrix.app }}
+        run: npx nx run-many --target=upload-sourcemaps --projects=${{ matrix.app }} --runner=ci
       - name: vercel set alias
         if: ${{ github.event_name == 'pull_request' }}
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           PR_NUMBER: ${{ github.event.number }}
         # use run-namy to avoid case where deploy command doesn't exist for a project
-        run: npx nx run-many --target=vercel-alias --projects=${{ matrix.app }}
+        run: npx nx run-many --target=vercel-alias --projects=${{ matrix.app }} --runner=ci
       - name: Generate GitHub deployment comment
         id: deployment-url
         env:
@@ -178,7 +178,7 @@ jobs:
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
       - run: npx playwright install --with-deps
       - name: Run Playwright tests
-        run: npx nx run ${{ matrix.app }}-e2e:e2e
+        run: npx nx run ${{ matrix.app }}-e2e:e2e --runner=ci
         env:
           DEPLOYMENT_URL: ${{ steps.deployment-url.outputs.deployment-url }}
           PLAYWRIGHT_USER: ${{ secrets.PLAYWRIGHT_USER }}
@@ -289,12 +289,12 @@ jobs:
           NEXT_PUBLIC_VERCEL_ENV: prod
           NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
         # use run-namy to avoid case where deploy command doesn't exist for a project
-        run: npx nx run-many --target=deploy --projects=${{ matrix.app }} --prod
+        run: npx nx run-many --target=deploy --projects=${{ matrix.app }} --prod --runner=ci
       - name: upload sourcemaps to datadog
         env:
           GIT_COMMIT_SHA: ${{ github.sha }}
           DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
-        run: npx nx run-many --target=upload-sourcemaps --projects=${{ matrix.app }}
+        run: npx nx run-many --target=upload-sourcemaps --projects=${{ matrix.app }} --runner=ci
       - name: Generate GitHub comment
         id: deployment-url
         env:
