@@ -240,7 +240,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
               height={50}
               justifyContent="center"
               alignItems="center"
-              sx={{ display: { xs: 'none', sm: 'flex' } }}
+              sx={{ display: { xs: 'none', sm: 'flex' }, overflow: 'hidden' }}
             >
               {journey?.primaryImageBlock?.src == null ? (
                 <GridEmptyIcon color="secondary" />
