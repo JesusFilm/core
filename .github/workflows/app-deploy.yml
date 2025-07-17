@@ -107,11 +107,6 @@ jobs:
         with:
           key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
           path: ./node_modules
-      - name: Mount Next.js Cache for ${{ matrix.app }}
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ matrix.app }}-nextjs-cache
-          path: apps/${{ matrix.app }}/.next
       - name: Mount playwright cache
         uses: useblacksmith/stickydisk@v1
         with:
@@ -122,6 +117,9 @@ jobs:
       - uses: nrwl/nx-set-shas@v4
       - name: vercel deployment
         env:
+          # Nx Cloud - Environment-specific cache using branch prefix
+          NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+          NX_BRANCH: staging
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           ARCLIGHT_VERCEL_PROJECT_ID: ${{ secrets.ARCLIGHT_VERCEL_PROJECT_ID }}
@@ -271,16 +269,14 @@ jobs:
         with:
           key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
           path: ./node_modules
-      - name: Mount Next.js Cache for ${{ matrix.app }}
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ matrix.app }}-nextjs-cache
-          path: apps/${{ matrix.app }}/.next
       - name: NPM Install
         run: npm install --silent
       - uses: nrwl/nx-set-shas@v4
       - name: vercel deployment
         env:
+          # Nx Cloud - Environment-specific cache using branch prefix
+          NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+          NX_BRANCH: production
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           ARCLIGHT_VERCEL_PROJECT_ID: ${{ secrets.ARCLIGHT_VERCEL_PROJECT_ID }}

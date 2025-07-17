@@ -1,9 +1,11 @@
 {
   "tasksRunnerOptions": {
     "default": {
+      "runner": "@nx/nx-cloud",
       "options": {
         "canTrackAnalytics": false,
-        "showUsageWarnings": true
+        "showUsageWarnings": true,
+        "cacheableOperations": ["build", "test", "lint", "e2e"]
       }
     }
   },
@@ -114,5 +116,6 @@
         "targetName": "eslint:lint"
       }
     }
-  ]
+  ],
+  "nxCloudId": "67f5cc993cd3c537c150a59e"
 }
