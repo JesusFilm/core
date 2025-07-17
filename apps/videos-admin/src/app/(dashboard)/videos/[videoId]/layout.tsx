@@ -1,143 +1,171 @@
 'use client'
 
+import { useSuspenseQuery } from '@apollo/client'
+import DeleteIcon from '@mui/icons-material/Delete'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
-import Tab from '@mui/material/Tab'
-import Tabs from '@mui/material/Tabs'
 import Typography from '@mui/material/Typography'
-import Link from 'next/link'
-import { useParams, usePathname } from 'next/navigation'
+import { useRouter, useSelectedLayoutSegment } from 'next/navigation'
 import { ReactNode } from 'react'
 
-import { PublishedChip } from '../../../../components/PublishedChip'
-import { useAdminVideo } from '../../../../libs/useAdminVideo'
-import { VideoProvider } from '../../../../libs/VideoProvider'
+import { graphql } from '@core/shared/gql'
 
-import { LockedVideoView } from './_VideoView/LockedVideoView'
-import { TabLabel } from './_VideoView/Tabs/TabLabel'
-import { getVideoChildrenLabel } from './_VideoView/VideoChildren/getVideoChildrenLabel'
-import { VideoViewFallback } from './_VideoView/VideoViewFallback'
-import { VideoViewLoading } from './_VideoView/VideoViewLoading'
+import { PublishedChip } from '../../../../components/PublishedChip'
+import { Section } from '../../../../components/Section'
+import { DEFAULT_VIDEO_LANGUAGE_ID } from '../constants'
+
+import { LockedVideoView } from './_LockedVideo'
+import { RestrictedDownloads } from './_RestrictedDownloads'
+import { RestrictedViews } from './_RestrictedViews'
+import { VideoBibleCitation } from './_VideoBibleCitation'
+import { VideoDescription } from './_VideoDescription'
+import { VideoViewFallback } from './_VideoFallback'
+import { VideoImageAlt } from './_VideoImageAlt'
+import { VideoImages } from './_VideoImages'
+import { VideoInformation } from './_VideoInformation'
+import { VideoSnippet } from './_VideoSnippet'
+import { VideoTabView } from './_VideoTabs'
+
+const GET_TAB_DATA = graphql(`
+  query GetTabData($id: ID!, $languageId: ID!) {
+    adminVideo(id: $id) {
+      id
+      locked
+      published
+      publishedAt
+      title(languageId: $languageId) {
+        id
+        value
+      }
+    }
+  }
+`)
+
+interface VideoViewLayoutProps {
+  children: ReactNode
+  studyQuestions: ReactNode
+  params: {
+    videoId: string
+  }
+}
 
 export default function VideoViewLayout({
-  children
-}: {
-  children: ReactNode
-}): ReactNode {
-  const params = useParams<{ videoId: string }>()
-  const pathname = usePathname()
+  children,
+  studyQuestions,
+  params: { videoId }
+}: VideoViewLayoutProps): ReactNode {
+  const router = useRouter()
+  // keep metadata visible when modal is open
+  const availableTabs = ['metadata', 'audio', 'children', 'editions']
+  const segment = useSelectedLayoutSegment() ?? 'metadata'
+  const currentTab = availableTabs.includes(segment ?? '')
+    ? segment
+    : 'metadata'
 
-  // Extract the current tab from pathname
-  const tabPath = pathname?.split('/').pop() || ''
-
-  const { data, loading } = useAdminVideo({
-    variables: { videoId: params?.videoId as string }
+  const { data } = useSuspenseQuery(GET_TAB_DATA, {
+    variables: {
+      id: videoId,
+      languageId: DEFAULT_VIDEO_LANGUAGE_ID
+    }
   })
 
-  if (loading) {
-    return <VideoViewLoading />
-  }
-
-  if (data?.adminVideo == null) {
+  if (data.adminVideo == null) {
     return <VideoViewFallback />
   }
 
-  if (data.adminVideo.locked) {
+  const video = data.adminVideo
+
+  if (video.locked) {
     return <LockedVideoView />
   }
-
-  const video = data.adminVideo
   const videoTitle = video?.title?.[0]?.value ?? ''
 
-  const showVideoChildren: boolean =
-    video.label === 'collection' ||
-    video.label === 'featureFilm' ||
-    video.label === 'series'
-
-  const videoLabel = getVideoChildrenLabel(video.label)
-
-  // Map tab paths to indices for MUI Tabs component
-  const tabPathToIndex: Record<string, number> = {
-    '': 0,
-    metadata: 0,
-    children: 1,
-    audio: 2,
-    editions: 3
-  }
-
-  const currentTabIndex = tabPathToIndex[tabPath] ?? 0
+  // Show delete button only for videos that have never been published
+  const canDelete = video.publishedAt == null
 
   return (
-    <VideoProvider video={video}>
+    <Stack
+      gap={2}
+      sx={{ width: '100%', maxWidth: 1700 }}
+      data-testid="VideoView"
+    >
       <Stack
         gap={2}
-        sx={{ width: '100%', maxWidth: 1700 }}
-        data-testid="VideoView"
+        sx={{
+          mb: 2,
+          alignItems: { xs: 'start', sm: 'center' },
+          flexDirection: { xs: 'column', sm: 'row' },
+          justifyContent: 'space-between'
+        }}
       >
-        {data != null && (
-          <Stack
-            gap={2}
+        <Stack
+          gap={2}
+          sx={{
+            alignItems: { xs: 'start', sm: 'center' },
+            flexDirection: { xs: 'column', sm: 'row' }
+          }}
+        >
+          <Typography variant="h4">{videoTitle}</Typography>
+          <PublishedChip published={video.published} />
+        </Stack>
+        {canDelete && (
+          <Button
+            variant="outlined"
+            color="error"
+            startIcon={<DeleteIcon />}
+            onClick={() => {
+              router.push(`/videos/${videoId}/delete`, {
+                scroll: false
+              })
+            }}
             sx={{
-              mb: 2,
-              alignItems: { xs: 'start', sm: 'center' },
-              flexDirection: { xs: 'col', sm: 'row' }
+              alignSelf: { xs: 'stretch', sm: 'center' },
+              whiteSpace: 'nowrap'
             }}
           >
-            <Typography variant="h4">{videoTitle}</Typography>
-            <PublishedChip published={video.published} />
-          </Stack>
+            Delete Video
+          </Button>
         )}
-        <Stack gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
-          <Box width="100%">
-            <Tabs value={currentTabIndex} aria-label="video-edit-tabs">
-              <Tab
-                value={0}
-                label={<TabLabel label="Metadata" />}
-                component={Link}
-                href={`/videos/${params?.videoId}`}
-              />
-              {showVideoChildren && videoLabel != null && (
-                <Tab
-                  value={1}
-                  label={
-                    <TabLabel
-                      label={videoLabel}
-                      count={video.children?.length}
-                    />
-                  }
-                  component={Link}
-                  href={`/videos/${params?.videoId}/children`}
-                />
-              )}
-              <Tab
-                value={2}
-                label={
-                  <TabLabel
-                    label="Audio Languages"
-                    count={video.variants?.length}
-                  />
-                }
-                component={Link}
-                href={`/videos/${params?.videoId}/audio`}
-              />
-              <Tab
-                value={3}
-                label={
-                  <TabLabel
-                    label="Editions"
-                    count={video.videoEditions?.length}
-                  />
-                }
-                component={Link}
-                href={`/videos/${params?.videoId}/editions`}
-              />
-            </Tabs>
-            <Divider sx={{ mb: 4 }} />
-            {children}
-          </Box>
-        </Stack>
       </Stack>
-    </VideoProvider>
+
+      <Stack gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
+        <Box width="100%">
+          <VideoTabView currentTab={currentTab} videoId={videoId} />
+          {currentTab == 'metadata' && (
+            <>
+              <Divider sx={{ mb: 4 }} />
+              <Stack gap={2} data-testid="VideoMetadata">
+                <Section title="Information" variant="outlined">
+                  <VideoInformation videoId={videoId} />
+                </Section>
+                <Section title="Images" variant="outlined">
+                  <Stack gap={4}>
+                    <VideoImages videoId={videoId} />
+                    <VideoImageAlt videoId={videoId} />
+                  </Stack>
+                </Section>
+                <Section title="Short Description" variant="outlined">
+                  <VideoSnippet videoId={videoId} />
+                </Section>
+                <Section title="Description" variant="outlined">
+                  <VideoDescription videoId={videoId} />
+                </Section>
+                <VideoBibleCitation videoId={videoId} />
+                {studyQuestions}
+                <Section title="Restricted Downloads" variant="outlined">
+                  <RestrictedDownloads videoId={videoId} />
+                </Section>
+                <Section title="Restricted Views" variant="outlined">
+                  <RestrictedViews videoId={videoId} />
+                </Section>
+              </Stack>
+            </>
+          )}
+          {children}
+        </Box>
+      </Stack>
+    </Stack>
   )
 }

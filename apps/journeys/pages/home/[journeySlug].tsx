@@ -31,6 +31,30 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
   if (isIframe) {
     void router.push('/embed/[journeySlug]', `/embed/${journey.slug}`)
   }
+
+  // Get journey-specific fonts if they exist
+  const defaultFonts = ['Montserrat', 'Open Sans', 'El Messiri']
+  const journeyFonts = getSortedValidFonts([
+    ...defaultFonts,
+    journey?.journeyTheme?.headerFont ?? '',
+    journey?.journeyTheme?.bodyFont ?? '',
+    journey?.journeyTheme?.labelFont ?? ''
+  ])
+
+  function getSortedValidFonts(fonts: string[]): string[] {
+    return [...new Set(fonts.filter((font) => font !== ''))].sort()
+  }
+
+  function formatFontName(font: string): string {
+    return font.trim().replace(/ /g, '+')
+  }
+
+  const fontsParam = journeyFonts
+    .map((font) => `family=${formatFontName(font)}:wght@400;500;600;700;800`)
+    .join('&')
+
+  const googleFontsUrl = `https://fonts.googleapis.com/css2?${fontsParam}&display=swap`
+
   return (
     <>
       <Head>
@@ -44,6 +68,7 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
           }%2F${journey.slug}&format=json`}
           title={journey.seoTitle ?? undefined}
         />
+        <link rel="stylesheet" href={googleFontsUrl} />
       </Head>
       <NextSeo
         nofollow
@@ -105,7 +130,7 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
     return {
       props: {
         ...(await serverSideTranslations(
-          context.locale ?? 'en',
+          locale ?? 'en',
           ['apps-journeys', 'libs-journeys-ui'],
           i18nConfig
         )),

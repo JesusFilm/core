@@ -47,6 +47,7 @@ interface VideoSectionProps {
   quizButtonText: string
   shareButtonText: string
   shareDataTitle: string
+  startAt?: number
 }
 
 export const CollectionsVideoContent = ({
@@ -67,7 +68,8 @@ export const CollectionsVideoContent = ({
   onOpenDialog,
   quizButtonText,
   shareButtonText,
-  shareDataTitle
+  shareDataTitle,
+  startAt
 }: VideoSectionProps): ReactElement => {
   return (
     <div id={contentId} className="py-16 relative scroll-snap-start-always">
@@ -77,6 +79,7 @@ export const CollectionsVideoContent = ({
         title={videoTitle}
         mutePage={mutePage}
         setMutePage={setMutePage}
+        startAt={startAt}
       />
       <div className="xl:flex w-full z-1 relative">
         <CollectionVideoContentDescription
@@ -84,19 +87,19 @@ export const CollectionsVideoContent = ({
           title={title}
           description={description}
         />
-
         {questions.length > 0 && (
           <Questions
+            contentId={contentId}
             questions={questions}
             questionsTitle={questionsTitle}
             askButtonText={askButtonText}
-            onOpenDialog={onOpenDialog}
           />
         )}
       </div>
       {(bibleQuotes.length > 0 || freeResource) && (
         <>
           <BibleQuotesCarousel
+            contentId={contentId}
             bibleQuotes={bibleQuotes}
             bibleQuotesTitle={bibleQuotesTitle}
             freeResource={freeResource}
@@ -104,7 +107,7 @@ export const CollectionsVideoContent = ({
             shareButtonText={shareButtonText}
             shareDataTitle={shareDataTitle}
           />
-          <QuizButton buttonText={quizButtonText} />
+          <QuizButton buttonText={quizButtonText} contentId={contentId} />
         </>
       )}
     </div>

@@ -11,13 +11,22 @@ jest.mock('react-i18next', () => ({
   }
 }))
 
+jest.mock('@next/third-parties/google', () => ({
+  sendGTMEvent: jest.fn()
+}))
+
 describe('QuizButton', () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })
 
   it('renders the quiz button correctly', () => {
-    render(<QuizButton buttonText="What's your next step of faith?" />)
+    render(
+      <QuizButton
+        buttonText="What's your next step of faith?"
+        contentId="123"
+      />
+    )
 
     expect(screen.getByText('Quiz')).toBeInTheDocument()
     expect(
@@ -29,7 +38,12 @@ describe('QuizButton', () => {
   })
 
   it('opens the quiz modal when clicked', async () => {
-    render(<QuizButton buttonText="What's your next step of faith?" />)
+    render(
+      <QuizButton
+        buttonText="What's your next step of faith?"
+        contentId="123"
+      />
+    )
 
     const button = screen.getByRole('button', { name: 'Open faith quiz' })
     fireEvent.click(button)
@@ -40,7 +54,12 @@ describe('QuizButton', () => {
   })
 
   it('closes the quiz modal when the close button is clicked', async () => {
-    render(<QuizButton buttonText="What's your next step of faith?" />)
+    render(
+      <QuizButton
+        buttonText="What's your next step of faith?"
+        contentId="123"
+      />
+    )
 
     const button = screen.getByRole('button', { name: 'Open faith quiz' })
     fireEvent.click(button)
@@ -49,7 +68,7 @@ describe('QuizButton', () => {
       expect(screen.getByTestId('QuizModal')).toBeInTheDocument()
     })
 
-    const closeButton = screen.getByRole('button', { name: 'close quiz' })
+    const closeButton = screen.getByRole('button', { name: 'close' })
     fireEvent.click(closeButton)
 
     await waitFor(() => {

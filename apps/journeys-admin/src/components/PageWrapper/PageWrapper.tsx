@@ -121,11 +121,9 @@ export function PageWrapper({
               sx={{
                 width: {
                   xs: 'inherit',
-                  md:
-                    sidePanelChildren != null || customSidePanel != null
-                      ? `calc(100vw - ${navbar.width} - ${sidePanel.width})`
-                      : 'inherit'
-                }
+                  md: `calc(100vw - ${navbar.width})`
+                },
+                height: '100%'
               }}
             >
               {showMainHeader && (
@@ -137,12 +135,27 @@ export function PageWrapper({
                   {mainHeaderChildren}
                 </MainPanelHeader>
               )}
-              <MainPanelBody
-                mainBodyPadding={mainBodyPadding}
-                bottomPanelChildren={bottomPanelChildren}
+              <Stack
+                sx={{
+                  width: {
+                    xs: 'inherit',
+                    md:
+                      sidePanelChildren != null || customSidePanel != null
+                        ? `calc(100vw - ${navbar.width} - ${sidePanel.width})`
+                        : `calc(100vw - ${navbar.width})`
+                  },
+                  height: showMainHeader
+                    ? `calc(100% - ${toolbar.height})`
+                    : '100%'
+                }}
               >
-                {children}
-              </MainPanelBody>
+                <MainPanelBody
+                  mainBodyPadding={mainBodyPadding}
+                  bottomPanelChildren={bottomPanelChildren}
+                >
+                  {children}
+                </MainPanelBody>
+              </Stack>
             </Stack>
             {sidePanelChildren != null && (
               <SidePanel title={sidePanelTitle}>{sidePanelChildren}</SidePanel>

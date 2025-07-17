@@ -1,6 +1,7 @@
-import { graphql } from 'gql.tada'
 import { NextRequest, NextResponse } from 'next/server'
 import { authMiddleware } from 'next-firebase-auth-edge'
+
+import { graphql } from '@core/shared/gql'
 
 import { makeClient } from './libs/apollo/makeClient'
 import { authConfig } from './libs/auth'
@@ -63,7 +64,7 @@ export default async function middleware(
 
       return NextResponse.next({ request: { headers } })
     },
-    handleInvalidToken: async (reason) => {
+    handleInvalidToken: async (_reason) => {
       if (!testPathnameRegex(publicPaths, req.nextUrl.pathname)) {
         req.nextUrl.pathname = authPage
         return NextResponse.redirect(req.nextUrl)

@@ -1,8 +1,11 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
-import { ResultOf, graphql } from 'gql.tada'
 import { timeout } from 'hono/timeout'
 
+import { ResultOf, graphql } from '@core/shared/gql'
+
 import { getApolloClient } from '../../../../../../lib/apolloClient'
+import { findDownloadWithFallback } from '../../../../../../lib/downloadHelpers'
+import { getDefaultPlatformForApiKey } from '../../../../../../lib/getPlatformFromApiKey'
 import {
   getWebEmbedPlayer,
   getWebEmbedSharePlayer
@@ -101,10 +104,18 @@ const route = createRoute({
 mediaComponentLanguages.openapi(route, async (c) => {
   const mediaComponentId = c.req.param('mediaComponentId')
 
-  const apiKey = c.req.query('apiKey') ?? '616db012e9a951.51499299'
-  const platform = c.req.query('platform') ?? 'ios'
+  const apiKey = c.req.query('apiKey')
+
+  let platform = c.req.query('platform')
+  if (!platform && apiKey) {
+    platform = await getDefaultPlatformForApiKey(apiKey)
+  }
+  if (!platform) {
+    platform = 'ios' // Default platform for this route
+  }
+
   const languageIds = c.req.query('languageIds')?.split(',') ?? []
-  const apiSessionId = '6622f10d2260a8.05128925'
+  const apiSessionId = c.req.query('apiSessionId') ?? '6622f10d2260a8.05128925'
 
   const { data } = await getApolloClient().query<
     ResultOf<typeof GET_VIDEO_LANGUAGES>
@@ -126,11 +137,15 @@ mediaComponentLanguages.openapi(route, async (c) => {
               : true
           )
           .map((variant) => {
-            const downloadLow = variant.downloads?.find(
-              (download) => download.quality === 'low'
+            const downloadLow = findDownloadWithFallback(
+              variant.downloads,
+              'low',
+              apiKey
             )
-            const downloadHigh = variant.downloads?.find(
-              (download) => download.quality === 'high'
+            const downloadHigh = findDownloadWithFallback(
+              variant.downloads,
+              'high',
+              apiKey
             )
 
             let downloadUrls = {}
@@ -141,14 +156,14 @@ mediaComponentLanguages.openapi(route, async (c) => {
                     ? undefined
                     : {
                         url: downloadLow.url,
-                        sizeInBytes: downloadLow.size
+                        sizeInBytes: downloadLow.size || 0
                       },
                 high:
                   downloadHigh == null
                     ? undefined
                     : {
                         url: downloadHigh.url,
-                        sizeInBytes: downloadHigh.size
+                        sizeInBytes: downloadHigh.size || 0
                       }
               }
             }

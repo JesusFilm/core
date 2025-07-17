@@ -31,8 +31,10 @@ type JourneyEvent implements Event {
   """
   Related fields queried from relevant ids in the events table
   """
-  journey: Journey
-  visitor: Visitor
+  journeySlug: String
+  visitorName: String
+  visitorEmail: String
+  visitorPhone: String
 }
 
 type JourneyEventEdge {

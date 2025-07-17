@@ -125,6 +125,7 @@ export class BlockService {
   @FromPostgresql()
   async duplicateBlock(
     block: BlockWithAction,
+    isStepBlock: boolean,
     parentOrder?: number,
     idMap?: BlockDuplicateIdMap[],
     x?: number,
@@ -135,6 +136,7 @@ export class BlockService {
       block.id,
       block.journeyId,
       block.parentBlockId ?? null,
+      isStepBlock,
       duplicateBlockId,
       idMap
     )
@@ -148,6 +150,7 @@ export class BlockService {
           'action',
           'slug'
         ]),
+        settings: block.settings ?? {},
         journey: {
           connect: { id: block.journeyId }
         }
@@ -218,6 +221,7 @@ export class BlockService {
     children: BlockWithAction[],
     journeyId: string,
     parentBlockId: string | null,
+    isStepBlock: boolean,
     // Use to custom set children blockIds
     duplicateIds: Map<string, string>,
     idMap?: BlockDuplicateIdMap[],
@@ -231,6 +235,7 @@ export class BlockService {
           block.id,
           journeyId,
           parentBlockId,
+          isStepBlock,
           duplicateIds.get(block.id),
           idMap,
           duplicateJourneyId,
@@ -248,6 +253,7 @@ export class BlockService {
     id: string,
     journeyId: string,
     parentBlockId: string | null,
+    isStepBlock: boolean,
     duplicateId?: string,
     idMap?: BlockDuplicateIdMap[],
     // Below 2 only used when duplicating journeys
@@ -299,6 +305,14 @@ export class BlockService {
               }
             : action
       }
+      if (
+        key === 'submitEnabled' &&
+        block[key] === true &&
+        duplicateJourneyId == null &&
+        !isStepBlock
+      ) {
+        updatedBlockProps[key] = false
+      }
     })
     const defaultDuplicateBlock = {
       id: duplicateBlockId,
@@ -315,6 +329,7 @@ export class BlockService {
       children,
       journeyId,
       duplicateBlockId,
+      isStepBlock,
       childIds,
       idMap,
       duplicateJourneyId,

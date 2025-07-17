@@ -21,7 +21,9 @@ describe('useBlockActionEmailUpdateMutation', () => {
     size: null,
     startIconId: null,
     endIconId: null,
-    action: null
+    submitEnabled: null,
+    action: null,
+    settings: null
   }
 
   it('should update block action', async () => {

@@ -1,7 +1,9 @@
+import { sendGTMEvent } from '@next/third-parties/google'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
+import { v4 as uuidv4 } from 'uuid'
 
 import { Icon } from '@core/shared/ui/icons/Icon'
 
@@ -25,6 +27,7 @@ interface FreeResourceData {
 }
 
 interface BibleQuotesCarouselProps {
+  contentId: string
   bibleQuotes: BibleQuoteData[]
   bibleQuotesTitle: string
   freeResource?: FreeResourceData
@@ -34,6 +37,7 @@ interface BibleQuotesCarouselProps {
 }
 
 export function BibleQuotesCarousel({
+  contentId,
   bibleQuotes,
   bibleQuotesTitle,
   freeResource,
@@ -43,12 +47,22 @@ export function BibleQuotesCarousel({
 }: BibleQuotesCarouselProps): ReactElement {
   const { t } = useTranslation('apps-watch')
 
+  function handleShareClick() {
+    sendGTMEvent({
+      event: 'join_study_button_click',
+      eventId: uuidv4(),
+      date: new Date().toISOString(),
+      contentId
+    })
+  }
+
   return (
     <div
       className="bible-quotes-block pt-14"
       data-testid="bible-quotes-carousel"
     >
       <BibleQuotesCarouselHeader
+        contentId={contentId}
         bibleQuotesTitle={bibleQuotesTitle}
         shareButtonText={shareButtonText}
         shareDataTitle={shareDataTitle}
@@ -111,6 +125,7 @@ export function BibleQuotesCarousel({
                   aria-label="Join Bible study"
                   tabIndex={0}
                   className="inline-flex items-center gap-2 px-4 py-2 text-sm text-black font-bold uppercase tracking-wider rounded-full bg-white hover:bg-white/80 transition-colors duration-200 cursor-pointer"
+                  onClick={handleShareClick}
                 >
                   <Icon
                     name="Bible"

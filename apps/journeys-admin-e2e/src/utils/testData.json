@@ -22,8 +22,6 @@
     "hostName": "Automation Tester",
     "location": "USA",
     "whatsApp": "http://example.com",
-    "descriptionText": "Lorem Ipsum is simply dummy text of the printing",
-    "imgUploadPath": "apps/journeys-admin-e2e/src/utils/testResource/Flower.jpg",
-    "videoUploadPath": "apps/journeys-admin-e2e/src/utils/testResource/SampleVideo.mp4"
+    "descriptionText": "Lorem Ipsum is simply dummy text of the printing"
   }
 }

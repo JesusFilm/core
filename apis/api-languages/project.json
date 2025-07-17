@@ -133,22 +133,10 @@
         "command": "codecov -f coverage/apis/api-languages/cobertura-coverage.xml -F apps.api-languages"
       }
     },
-    "ingest": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npm run ts-node apis/api-languages/src/workers/cli.ts big-query"
-      }
-    },
     "queue-algolia": {
       "executor": "nx:run-commands",
       "options": {
         "command": "npm run ts-node apis/api-languages/src/workers/cli.ts algolia"
-      }
-    },
-    "codegen": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "gql.tada generate output --tsconfig apis/api-languages/tsconfig.json"
       }
     },
     "data-export": {

@@ -32,13 +32,15 @@ describe('EmailAction', () => {
     size: ButtonSize.large,
     startIconId: null,
     endIconId: null,
+    submitEnabled: null,
     action: {
       parentBlockId: 'button2.id',
       __typename: 'EmailAction',
       gtmEventName: 'gtmEventName',
       email: 'imissedmondshen@gmail.com'
     },
-    children: []
+    children: [],
+    settings: null
   }
 
   it('displays the action email', async () => {

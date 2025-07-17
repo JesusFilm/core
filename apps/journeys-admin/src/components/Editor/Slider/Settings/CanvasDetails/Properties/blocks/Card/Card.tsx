@@ -1,16 +1,20 @@
 import Box from '@mui/material/Box'
-import Paper from '@mui/material/Paper'
 import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import {
+  getOpacityFromHex,
+  stripAlphaFromHex
+} from '@core/journeys/ui/Card/utils/colorOpacityUtils'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import FlexAlignBottom1Icon from '@core/shared/ui/icons/FlexAlignBottom1'
 import Image3Icon from '@core/shared/ui/icons/Image3'
 import PaletteIcon from '@core/shared/ui/icons/Palette'
+import SunIcon2 from '@core/shared/ui/icons/Sun2'
 import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
 import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
 
@@ -99,28 +103,31 @@ export function Card({
       break
   }
 
+  const filterValue = `${stripAlphaFromHex(selectedCardColor).toUpperCase()} (${getOpacityFromHex(selectedCardColor)}%)`
+
   return (
     <Box data-testid="CardProperties">
       <Accordion
-        id={`${id}-background-color`}
-        icon={
-          <Paper sx={{ borderRadius: 1000, flexShrink: 0 }}>
-            <Box
-              data-testid="backgroundColorIcon"
-              sx={{
-                width: 25,
-                height: 25,
-                m: 1,
-                borderRadius: 1000,
-                backgroundColor: selectedCardColor
-              }}
-            />
-          </Paper>
-        }
-        name={t('Color')}
-        value={selectedCardColor.toUpperCase()}
+        icon={<FlexAlignBottom1Icon />}
+        id={`${id}-layout`}
+        name={t('Layout')}
+        value={fullscreen ? t('Expanded') : t('Contained')}
       >
-        <BackgroundColor key={selectedStep?.id} />
+        <CardLayout />
+      </Accordion>
+      <Accordion
+        icon={<SunIcon2 />}
+        id={`${id}-theme-mode`}
+        name={t('Style')}
+        value={
+          themeMode == null
+            ? t('Default')
+            : themeMode === ThemeMode.light
+              ? t('Light')
+              : t('Dark')
+        }
+      >
+        <CardStyling />
       </Accordion>
       <Accordion
         id={`${id}-cover-block`}
@@ -138,26 +145,12 @@ export function Card({
         <BackgroundMedia />
       </Accordion>
       <Accordion
+        id={`${id}-background-color`}
         icon={<PaletteIcon />}
-        id={`${id}-theme-mode`}
-        name={t('Style')}
-        value={
-          themeMode == null
-            ? t('Default')
-            : themeMode === ThemeMode.light
-              ? t('Light')
-              : t('Dark')
-        }
+        name={t('Filter')}
+        value={filterValue}
       >
-        <CardStyling />
-      </Accordion>
-      <Accordion
-        icon={<FlexAlignBottom1Icon />}
-        id={`${id}-layout`}
-        name={t('Layout')}
-        value={fullscreen ? 'Expanded' : 'Contained'}
-      >
-        <CardLayout />
+        <BackgroundColor key={selectedStep?.id} />
       </Accordion>
     </Box>
   )

@@ -33,6 +33,7 @@ export const journey: Journey = {
   description: 'my cool journey',
   status: JourneyStatus.draft,
   createdAt: '2021-11-19T12:34:56.647Z',
+  updatedAt: '2021-11-19T12:34:56.647Z',
   publishedAt: null,
   blocks: [
     // step 1
@@ -59,7 +60,8 @@ export const journey: Journey = {
       coverBlockId: 'image1.id',
       themeMode: null,
       themeName: null,
-      fullscreen: false
+      fullscreen: false,
+      backdropBlur: null
     },
     {
       __typename: 'ButtonBlock',
@@ -72,12 +74,14 @@ export const journey: Journey = {
       size: ButtonSize.medium,
       startIconId: null,
       endIconId: null,
+      submitEnabled: null,
       action: {
         __typename: 'LinkAction',
         parentBlockId: 'button1.id',
         gtmEventName: null,
         url: 'https://www.google.com/'
-      }
+      },
+      settings: null
     },
     {
       __typename: 'StepBlock',
@@ -112,7 +116,8 @@ export const journey: Journey = {
       coverBlockId: 'image2.id',
       themeMode: null,
       themeName: null,
-      fullscreen: false
+      fullscreen: false,
+      backdropBlur: null
     },
     {
       id: 'signup.id',
@@ -156,5 +161,6 @@ export const journey: Journey = {
   displayTitle: null,
   logoImageBlock: null,
   menuButtonIcon: null,
-  menuStepBlock: null
+  menuStepBlock: null,
+  journeyTheme: null
 }

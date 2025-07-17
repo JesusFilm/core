@@ -90,6 +90,12 @@ enum IdType {
   slug
 }
 
+enum Platform {
+  arclight
+  journeys
+  watch
+}
+
 enum VideoLabel {
   collection
   episode
@@ -102,33 +108,39 @@ enum VideoLabel {
 }
 
 model Video {
-  id                 String               @id @default(uuid())
-  label              VideoLabel
-  primaryLanguageId  String
-  published          Boolean              @default(true)
-  title              VideoTitle[]
-  snippet            VideoSnippet[]
-  description        VideoDescription[]
-  studyQuestions     VideoStudyQuestion[]
-  imageAlt           VideoImageAlt[]
-  slug               String?              @unique
-  noIndex            Boolean?
-  childIds           String[] // needed for child sort order
-  locked             Boolean              @default(false)
-  subtitles          VideoSubtitle[]
-  children           Video[]              @relation("ParentChild")
-  parent             Video[]              @relation("ParentChild")
-  variants           VideoVariant[]
-  bibleCitation      BibleCitation[]
-  keywords           Keyword[]            @relation("VideoToKeyword")
-  images             CloudflareImage[]
-  cloudflareAssets   CloudflareR2[]
-  videoEditions      VideoEdition[]
-  availableLanguages String[]
+  id                        String               @id @default(uuid())
+  label                     VideoLabel
+  primaryLanguageId         String
+  published                 Boolean              @default(true)
+  title                     VideoTitle[]
+  snippet                   VideoSnippet[]
+  description               VideoDescription[]
+  studyQuestions            VideoStudyQuestion[]
+  imageAlt                  VideoImageAlt[]
+  slug                      String?              @unique
+  noIndex                   Boolean?
+  childIds                  String[] // needed for child sort order
+  locked                    Boolean              @default(false)
+  subtitles                 VideoSubtitle[]
+  children                  Video[]              @relation("ParentChild")
+  parent                    Video[]              @relation("ParentChild")
+  variants                  VideoVariant[]
+  bibleCitation             BibleCitation[]
+  keywords                  Keyword[]            @relation("VideoToKeyword")
+  images                    CloudflareImage[]
+  cloudflareAssets          CloudflareR2[]
+  videoEditions             VideoEdition[]
+  availableLanguages        String[]
+  origin                    VideoOrigin?         @relation(fields: [originId], references: [id])
+  originId                  String?
+  restrictDownloadPlatforms Platform[]           @default([])
+  restrictViewPlatforms     Platform[]           @default([])
+  publishedAt               DateTime?
 
   @@index(label)
   @@index(childIds)
   @@index(published(type: Hash))
+  @@index(originId(type: Hash))
 }
 
 model VideoTitle {
@@ -146,8 +158,16 @@ model VideoTitle {
 }
 
 enum VideoVariantDownloadQuality {
-  low
-  high
+  distroLow // transcoded 2x0p for distribution centers
+  distroSd // transcoded 360p for distribution centers
+  distroHigh // transcoded 720p for distribution centers
+  low // mux 2x0p
+  sd // mux 360p
+  high // mux 720p  
+  fhd // mux 1080p
+  qhd // mux 1440p
+  uhd // mux 2160p
+  highest // higest available quality,
 }
 
 model VideoVariantDownload {
@@ -156,6 +176,7 @@ model VideoVariantDownload {
   size           Float?
   height         Int?
   width          Int?
+  bitrate        Int?
   version        Int                         @default(1)
   url            String
   assetId        String?                     @unique
@@ -191,6 +212,7 @@ model VideoVariant {
   asset                CloudflareR2?          @relation(fields: [assetId], references: [id])
   muxVideoId           String?
   muxVideo             MuxVideo?              @relation(fields: [muxVideoId], references: [id])
+  brightcoveId         String?
 
   @@unique([languageId, videoId])
   @@index(languageId(type: Hash))
@@ -358,6 +380,13 @@ enum Service {
   apiVideos
 }
 
+enum VideoRedirectType {
+  hls
+  dl
+  dh
+  s
+}
+
 model TagName {
   id         String   @id @default(uuid())
   createdAt  DateTime @default(now())
@@ -446,19 +475,23 @@ model ShortLinkDomain {
 }
 
 model ShortLink {
-  id        String          @id @default(uuid())
+  id           String             @id @default(uuid())
   /// should not include the leading slash
-  pathname  String
+  pathname     String
   /// the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to
-  to        String
-  domainId  String
+  to           String
+  domainId     String
   /// the user created this short link (if empty, it was created by a subgraph)
-  userId    String?
+  userId       String?
   /// the service that created this short link
-  service   Service
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
-  domain    ShortLinkDomain @relation(fields: [domainId], references: [id], onDelete: Restrict)
+  service      Service
+  /// brightcove video ID for video redirects
+  brightcoveId String?
+  /// type of video redirect (hls, dl, dh, s)
+  redirectType VideoRedirectType?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  domain       ShortLinkDomain    @relation(fields: [domainId], references: [id], onDelete: Restrict)
 
   @@unique([pathname, domainId])
 }
@@ -466,4 +499,23 @@ model ShortLink {
 model ShortLinkBlocklistDomain {
   /// the hostname including subdomain, domain, and TLD, but excluding port
   hostname String @id
+}
+
+model VideoOrigin {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  videos      Video[]
+}
+
+enum DefaultPlatform {
+  ios
+  android
+  web
+}
+
+model ArclightApiKey {
+  key             String          @unique
+  desc            String?
+  defaultPlatform DefaultPlatform
 }

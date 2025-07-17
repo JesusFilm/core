@@ -25,6 +25,7 @@ describe('Type', () => {
     integrationId: null,
     routeId: null,
     type: TextResponseType.freeForm,
+    required: null,
     children: []
   }
 

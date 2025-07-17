@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonBlockCreateInput, IconBlockCreateInput, ButtonBlockUpdateInput, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor } from "./globalTypes";
+import { ButtonBlockCreateInput, IconBlockCreateInput, ButtonBlockUpdateInput, ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, IconName, IconSize, IconColor } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: ButtonBlockCreate
@@ -32,6 +32,14 @@ export interface ButtonBlockCreate_buttonBlockCreate_action_EmailAction {
 
 export type ButtonBlockCreate_buttonBlockCreate_action = ButtonBlockCreate_buttonBlockCreate_action_NavigateToBlockAction | ButtonBlockCreate_buttonBlockCreate_action_LinkAction | ButtonBlockCreate_buttonBlockCreate_action_EmailAction;
 
+export interface ButtonBlockCreate_buttonBlockCreate_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface ButtonBlockCreate_buttonBlockCreate {
   __typename: "ButtonBlock";
   id: string;
@@ -43,7 +51,9 @@ export interface ButtonBlockCreate_buttonBlockCreate {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: ButtonBlockCreate_buttonBlockCreate_action | null;
+  settings: ButtonBlockCreate_buttonBlockCreate_settings | null;
 }
 
 export interface ButtonBlockCreate_startIcon {
@@ -89,6 +99,14 @@ export interface ButtonBlockCreate_buttonBlockUpdate_action_EmailAction {
 
 export type ButtonBlockCreate_buttonBlockUpdate_action = ButtonBlockCreate_buttonBlockUpdate_action_NavigateToBlockAction | ButtonBlockCreate_buttonBlockUpdate_action_LinkAction | ButtonBlockCreate_buttonBlockUpdate_action_EmailAction;
 
+export interface ButtonBlockCreate_buttonBlockUpdate_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface ButtonBlockCreate_buttonBlockUpdate {
   __typename: "ButtonBlock";
   id: string;
@@ -100,7 +118,9 @@ export interface ButtonBlockCreate_buttonBlockUpdate {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: ButtonBlockCreate_buttonBlockUpdate_action | null;
+  settings: ButtonBlockCreate_buttonBlockUpdate_settings | null;
 }
 
 export interface ButtonBlockCreate {

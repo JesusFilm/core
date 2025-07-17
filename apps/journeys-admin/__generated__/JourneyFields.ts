@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform, JourneyMenuButtonIcon } from "./globalTypes";
+import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform, JourneyMenuButtonIcon } from "./globalTypes";
 
 // ====================================================
 // GraphQL fragment: JourneyFields
@@ -53,6 +53,14 @@ export interface JourneyFields_blocks_ButtonBlock_action_EmailAction {
 
 export type JourneyFields_blocks_ButtonBlock_action = JourneyFields_blocks_ButtonBlock_action_NavigateToBlockAction | JourneyFields_blocks_ButtonBlock_action_LinkAction | JourneyFields_blocks_ButtonBlock_action_EmailAction;
 
+export interface JourneyFields_blocks_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface JourneyFields_blocks_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -64,7 +72,9 @@ export interface JourneyFields_blocks_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: JourneyFields_blocks_ButtonBlock_action | null;
+  settings: JourneyFields_blocks_ButtonBlock_settings | null;
 }
 
 export interface JourneyFields_blocks_CardBlock {
@@ -76,6 +86,10 @@ export interface JourneyFields_blocks_CardBlock {
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
   backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
@@ -239,6 +253,7 @@ export interface JourneyFields_blocks_TextResponseBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
   placeholder: string | null;
   hint: string | null;
@@ -246,6 +261,14 @@ export interface JourneyFields_blocks_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+}
+
+export interface JourneyFields_blocks_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
 }
 
 export interface JourneyFields_blocks_TypographyBlock {
@@ -257,6 +280,7 @@ export interface JourneyFields_blocks_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: JourneyFields_blocks_TypographyBlock_settings | null;
 }
 
 export interface JourneyFields_blocks_VideoBlock_mediaVideo_Video_title {
@@ -590,6 +614,14 @@ export interface JourneyFields_menuStepBlock {
   slug: string | null;
 }
 
+export interface JourneyFields_journeyTheme {
+  __typename: "JourneyTheme";
+  id: string;
+  headerFont: string | null;
+  bodyFont: string | null;
+  labelFont: string | null;
+}
+
 export interface JourneyFields {
   __typename: "Journey";
   id: string;
@@ -602,6 +634,7 @@ export interface JourneyFields {
   status: JourneyStatus;
   language: JourneyFields_language;
   createdAt: any;
+  updatedAt: any;
   featuredAt: any | null;
   publishedAt: any | null;
   themeName: ThemeName;
@@ -633,4 +666,5 @@ export interface JourneyFields {
   logoImageBlock: JourneyFields_logoImageBlock | null;
   menuButtonIcon: JourneyMenuButtonIcon | null;
   menuStepBlock: JourneyFields_menuStepBlock | null;
+  journeyTheme: JourneyFields_journeyTheme | null;
 }

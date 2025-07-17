@@ -165,7 +165,7 @@ test.describe('media components', () => {
     expect(data._embedded.mediaComponents.length).toBeLessThanOrEqual(2)
   })
 
-  test('media components returns 400 for invalid language with no fallback content', async ({
+  test('media components returns 200 and defaults to english for invalid language with no fallback content', async ({
     request
   }) => {
     const response = await request.get(
@@ -175,11 +175,81 @@ test.describe('media components', () => {
       })}`
     )
 
-    expect(response.status()).toBe(400)
+    expect(response.ok()).toBeTruthy()
+    expect(response.status()).toBe(200)
     const data = await response.json()
-    expect(data).toMatchObject({
-      message: expect.any(String),
-      logref: 400
-    })
+    expect(data._embedded.mediaComponents.length).toBeGreaterThan(0)
+    expect(data._embedded.mediaComponents[0]).toHaveProperty(
+      'metadataLanguageTag'
+    )
+    expect(data._embedded.mediaComponents[0].metadataLanguageTag).toBe('en')
+  })
+
+  test('download sizes respect apiKey fallback logic', async ({ request }) => {
+    const specialApiKey = '607f41540b2ca6.32427244'
+    const regularApiKey = 'regular_test_key'
+
+    // Get download sizes with regular API key
+    const regularResponse = await request.get(
+      `${await getBaseUrl()}/v2/media-components?${createQueryParams({
+        ids: mediaComponentIds[0],
+        apiKey: regularApiKey
+      })}`
+    )
+    expect(regularResponse.ok()).toBeTruthy()
+    const regularData = await regularResponse.json()
+    const regularComponent = regularData._embedded.mediaComponents[0]
+
+    // Get download sizes with special API key
+    const specialResponse = await request.get(
+      `${await getBaseUrl()}/v2/media-components?${createQueryParams({
+        ids: mediaComponentIds[0],
+        apiKey: specialApiKey
+      })}`
+    )
+    expect(specialResponse.ok()).toBeTruthy()
+    const specialData = await specialResponse.json()
+    const specialComponent = specialData._embedded.mediaComponents[0]
+
+    // Both should have downloadSizes
+    expect(regularComponent.downloadSizes).toBeDefined()
+    expect(specialComponent.downloadSizes).toBeDefined()
+    expect(
+      regularComponent.downloadSizes.approximateSmallDownloadSizeInBytes
+    ).toBeGreaterThanOrEqual(0)
+    expect(
+      regularComponent.downloadSizes.approximateLargeDownloadSizeInBytes
+    ).toBeGreaterThanOrEqual(0)
+    expect(
+      specialComponent.downloadSizes.approximateSmallDownloadSizeInBytes
+    ).toBeGreaterThanOrEqual(0)
+    expect(
+      specialComponent.downloadSizes.approximateLargeDownloadSizeInBytes
+    ).toBeGreaterThanOrEqual(0)
+
+    // Note: We can't directly verify the sizes are different without knowing the exact data,
+    // but we verify the structure and that both API keys work
+  })
+
+  test('without apiKey still returns valid download sizes', async ({
+    request
+  }) => {
+    const response = await request.get(
+      `${await getBaseUrl()}/v2/media-components?${createQueryParams({
+        ids: mediaComponentIds[0]
+      })}`
+    )
+
+    expect(response.ok()).toBeTruthy()
+    const data = await response.json()
+    const component = data._embedded.mediaComponents[0]
+
+    expect(component.downloadSizes).toBeDefined()
+    expect(
+      component.downloadSizes.approximateSmallDownloadSizeInBytes
+    ).toBeGreaterThanOrEqual(0)
+    expect(
+      component.downloadSizes.approximateLargeDownloadSizeInBytes
+    ).toBeGreaterThanOrEqual(0)
   })
 })

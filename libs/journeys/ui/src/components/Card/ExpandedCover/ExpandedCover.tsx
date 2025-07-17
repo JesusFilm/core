@@ -13,6 +13,7 @@ interface ExpandedCoverProps {
   imageBlock?: TreeBlock<ImageFields>
   backgroundColor?: string
   backgroundBlur?: string
+  backdropBlur?: number
   hasFullscreenVideo?: boolean
 }
 
@@ -21,9 +22,10 @@ export function ExpandedCover({
   imageBlock,
   backgroundColor,
   backgroundBlur,
+  backdropBlur,
   hasFullscreenVideo = false
 }: ExpandedCoverProps): ReactElement {
-  const { variant } = useJourney()
+  const { journey, variant } = useJourney()
   const enableVerticalScroll = {
     overflowY: 'scroll',
     // Hide on Firefox https://caniuse.com/?search=scrollbar-width
@@ -37,7 +39,7 @@ export function ExpandedCover({
   const background =
     backgroundColor != null
       ? imageBlock?.src != null
-        ? `${backgroundColor}4d`
+        ? `${backgroundColor}`
         : backgroundColor
       : 'unset'
 
@@ -55,14 +57,18 @@ export function ExpandedCover({
           layout="fill"
           objectFit="cover"
           objectPosition={`${imageBlock.focalLeft}% ${imageBlock.focalTop}%`}
+          sx={{
+            transform: `scale(${(imageBlock.scale ?? 100) / 100})`,
+            transformOrigin: `${imageBlock.focalLeft}% ${imageBlock.focalTop}%`
+          }}
         />
       )}
       <Stack
         data-testid="CardExpandedCover"
         sx={{
           height: '100%',
-          WebkitBackdropFilter: 'blur(20px)',
-          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: `blur(${backdropBlur ?? 20}px)`,
+          backdropFilter: `blur(${backdropBlur ?? 20}px)`,
           background,
           borderRadius: 'inherit',
           overflow: 'hidden',
@@ -74,7 +80,7 @@ export function ExpandedCover({
           justifyContent="center"
           sx={{
             flexGrow: 1,
-            pt: { xs: 10, sm: 8 },
+            pt: journey?.website === true ? 0 : { xs: 10, sm: 8 },
             ...enableVerticalScroll
           }}
         >

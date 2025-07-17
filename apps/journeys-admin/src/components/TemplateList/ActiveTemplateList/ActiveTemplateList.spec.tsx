@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, getByRole, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
@@ -65,12 +65,12 @@ describe('ActiveTemplateList', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getAllByLabelText('template-card')[0].textContent).toContain(
-        '1 year ago'
+      expect(getAllByLabelText('journey-card')[0].textContent).toContain(
+        '11 months ago'
       )
     )
-    expect(getAllByLabelText('template-card')[1].textContent).toContain(
-      '20 years ago'
+    expect(getAllByLabelText('journey-card')[1].textContent).toContain(
+      '1 year ago'
     )
   })
 
@@ -107,12 +107,12 @@ describe('ActiveTemplateList', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getAllByLabelText('template-card')[0].textContent).toContain(
-        'a lower case title20 years agoEnglish'
+      expect(getAllByLabelText('journey-card')[0].textContent).toContain(
+        'a lower case title'
       )
     )
-    expect(getAllByLabelText('template-card')[1].textContent).toContain(
-      'An Old Template Heading1 year ago - Template created before the current year should also show the year in the dateEnglish'
+    expect(getAllByLabelText('journey-card')[1].textContent).toContain(
+      'An Old Template'
     )
   })
 
@@ -180,7 +180,7 @@ describe('ActiveTemplateList', () => {
     })
 
     it('should archive all journeys', async () => {
-      const { getByText } = render(
+      const { getByText, getByRole } = render(
         <MockedProvider mocks={[ActiveTemplateListMock, archiveJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
@@ -192,12 +192,12 @@ describe('ActiveTemplateList', () => {
       await waitFor(() =>
         expect(getByText('Default Template Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Archive'))
+      fireEvent.click(getByRole('button', { name: 'Archive' }))
       await waitFor(() => expect(result).toHaveBeenCalled())
     })
 
     it('should show error', async () => {
-      const { getByText } = render(
+      const { getByText, getByRole } = render(
         <MockedProvider
           mocks={[
             ActiveTemplateListMock,
@@ -216,7 +216,7 @@ describe('ActiveTemplateList', () => {
       await waitFor(() =>
         expect(getByText('Default Template Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Archive'))
+      fireEvent.click(getByRole('button', { name: 'Archive' }))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
     })
   })
@@ -252,7 +252,7 @@ describe('ActiveTemplateList', () => {
     })
 
     it('should trash all journeys', async () => {
-      const { getByText } = render(
+      const { getByText, getByRole } = render(
         <MockedProvider
           mocks={[ActiveTemplateListMock, trashTemplatesMock, noTemplatesMock]}
         >
@@ -266,12 +266,12 @@ describe('ActiveTemplateList', () => {
       await waitFor(() =>
         expect(getByText('Default Template Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Trash'))
+      fireEvent.click(getByRole('button', { name: 'Trash' }))
       await waitFor(() => expect(result).toHaveBeenCalled())
     })
 
     it('should show error', async () => {
-      const { getByText } = render(
+      const { getByText, getByRole } = render(
         <MockedProvider
           mocks={[
             ActiveTemplateListMock,
@@ -290,7 +290,7 @@ describe('ActiveTemplateList', () => {
       await waitFor(() =>
         expect(getByText('Default Template Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Trash'))
+      fireEvent.click(getByRole('button', { name: 'Trash' }))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
     })
   })

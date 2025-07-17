@@ -1,6 +1,8 @@
+import { sendGTMEvent } from '@next/third-parties/google'
 import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 
 const QuizModal = dynamic(
   async () =>
@@ -15,18 +17,32 @@ const QuizModal = dynamic(
 
 interface QuizButtonProps {
   buttonText: string
+  contentId: string
 }
 
-export const QuizButton = ({ buttonText }: QuizButtonProps): ReactElement => {
+export const QuizButton = ({
+  buttonText,
+  contentId
+}: QuizButtonProps): ReactElement => {
   const { t } = useTranslation('apps-watch')
 
   const [quizModalOpen, setQuizModalOpen] = useState<boolean | null>(null)
+
+  function handleClick() {
+    setQuizModalOpen(true)
+    sendGTMEvent({
+      event: 'quiz_button_click',
+      eventId: uuidv4(),
+      date: new Date().toISOString(),
+      contentId
+    })
+  }
 
   return (
     <>
       <div className="px-6 lg:px-8 pt-12 mx-auto w-full sm:w-auto lg:w-1/2 xl:w-1/2 2xl:w-2xl">
         <button
-          onClick={() => setQuizModalOpen(true)}
+          onClick={handleClick}
           className="relative w-full overflow-hidden bg-gradient-to-tr from-yellow-500 via-amber-500 to-red-700 bg-blend-multiply animate-mesh-gradient hover:animate-mesh-gradient-fast rounded-lg shadow-lg group hover:bg-orange-500"
           aria-label="Open faith quiz"
           tabIndex={0}

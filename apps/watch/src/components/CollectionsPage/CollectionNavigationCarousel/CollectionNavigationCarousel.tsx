@@ -1,6 +1,7 @@
 /* eslint-disable i18next/no-literal-string */
 import Image from 'next/image'
 import { ReactElement } from 'react'
+import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 // Define a type for our content items
@@ -29,6 +30,11 @@ export function CollectionNavigationCarousel({
   return (
     <div className="py-7" data-testid="NavigationCarousel">
       <Swiper
+        modules={[Mousewheel, FreeMode, A11y]}
+        mousewheel={{
+          forceToAxis: true
+        }}
+        observeParents
         slidesPerView={'auto'}
         pagination={{ clickable: true }}
         spaceBetween={20}

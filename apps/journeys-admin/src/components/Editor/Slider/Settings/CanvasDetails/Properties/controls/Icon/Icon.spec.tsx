@@ -42,8 +42,10 @@ describe('Icon', () => {
     size: null,
     startIconId: null,
     endIconId: null,
+    submitEnabled: null,
     action: null,
-    children: [icon]
+    children: [icon],
+    settings: null
   }
 
   it('shows toggle options if there is a icon', () => {

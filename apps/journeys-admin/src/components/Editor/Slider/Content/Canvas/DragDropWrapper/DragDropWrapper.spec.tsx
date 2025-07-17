@@ -18,8 +18,10 @@ describe('DragDropWrapper', () => {
     size: null,
     startIconId: null,
     endIconId: null,
+    submitEnabled: null,
     action: null,
-    children: []
+    children: [],
+    settings: null
   }
 
   it('should render children', async () => {

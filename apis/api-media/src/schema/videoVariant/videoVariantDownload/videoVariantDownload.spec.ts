@@ -1,6 +1,5 @@
-import { graphql } from 'gql.tada'
-
 import { VideoVariantDownloadQuality } from '.prisma/api-media-client'
+import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
@@ -42,6 +41,7 @@ describe('videoVariantDownload', () => {
           size: 1024,
           height: 1024,
           width: 1024,
+          bitrate: 1024,
           url: 'url',
           assetId: null,
           version: 1
@@ -119,6 +119,7 @@ describe('videoVariantDownload', () => {
           size: 1024,
           height: 1024,
           width: 1024,
+          bitrate: 1024,
           url: 'url',
           assetId: null,
           version: 1
@@ -194,6 +195,7 @@ describe('videoVariantDownload', () => {
           size: 1024,
           height: 1024,
           width: 1024,
+          bitrate: 1024,
           url: 'url',
           assetId: null,
           version: 1

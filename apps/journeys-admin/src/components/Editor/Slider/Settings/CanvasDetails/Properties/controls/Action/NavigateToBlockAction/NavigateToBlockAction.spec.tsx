@@ -28,13 +28,15 @@ describe('NavigateToBlockAction', () => {
     size: ButtonSize.large,
     startIconId: null,
     endIconId: null,
+    submitEnabled: null,
     action: {
       parentBlockId: 'button2.id',
       __typename: 'NavigateToBlockAction',
       gtmEventName: 'gtmEventName',
       blockId: 'block0.id'
     },
-    children: []
+    children: [],
+    settings: null
   }
 
   it("should show 'back to map' button", () => {

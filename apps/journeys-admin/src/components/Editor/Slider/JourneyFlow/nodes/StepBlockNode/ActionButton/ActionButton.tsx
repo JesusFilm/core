@@ -52,8 +52,10 @@ export function ActionButton({
 
   function getTitleAndConnection(): BlockUIProperties {
     switch (block.__typename) {
-      case 'ButtonBlock':
-        return extractTitleAndConnection(block, t('Button'))
+      case 'ButtonBlock': {
+        const defaultTitle = block.submitEnabled ? t('Submit') : t('Button')
+        return extractTitleAndConnection(block, defaultTitle)
+      }
       case 'RadioOptionBlock':
         return extractTitleAndConnection(block, t('Option'))
       case 'SignUpBlock':

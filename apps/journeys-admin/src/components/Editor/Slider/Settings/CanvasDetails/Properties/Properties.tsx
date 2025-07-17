@@ -135,11 +135,14 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
       component = <Image {...selectedBlock} alt={selectedBlock.alt} />
       break
     case 'TypographyBlock':
-      title = t('Typography Properties')
+      title = t('Text Properties')
       component = <Typography {...selectedBlock} />
       break
     case 'ButtonBlock':
-      title = t('Button Properties')
+      title =
+        selectedBlock.submitEnabled === true
+          ? t('Submit Button Properties')
+          : t('Button Properties')
       component = <Button {...selectedBlock} />
       break
     case 'RadioQuestionBlock':

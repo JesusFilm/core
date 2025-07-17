@@ -33,6 +33,7 @@ export function Custom500(): ReactElement {
     {
       __typename: 'CardBlock',
       backgroundColor: '#30313D',
+      backdropBlur: null,
       coverBlockId: '500-imageBlock-id',
       fullscreen: false,
       id: '500-cardBlock-id',
@@ -63,7 +64,11 @@ export function Custom500(): ReactElement {
       id: '500-typog-id',
       parentBlockId: '500-cardBlock-id',
       parentOrder: 0,
-      variant: TypographyVariant.h2
+      variant: TypographyVariant.h2,
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     },
     {
       __typename: 'TypographyBlock',
@@ -73,7 +78,11 @@ export function Custom500(): ReactElement {
       id: 'typog2-id',
       parentBlockId: '500-cardBlock-id',
       parentOrder: 1,
-      variant: TypographyVariant.h5
+      variant: TypographyVariant.h5,
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     },
     {
       __typename: 'ButtonBlock',
@@ -86,12 +95,14 @@ export function Custom500(): ReactElement {
       parentOrder: 2,
       size: ButtonSize.large,
       startIconId: '500-icon-id',
+      submitEnabled: null,
       action: {
         gtmEventName: null,
         parentBlockId: '500-button-id',
         url: '/',
         __typename: 'LinkAction'
-      }
+      },
+      settings: null
     },
     {
       __typename: 'IconBlock',

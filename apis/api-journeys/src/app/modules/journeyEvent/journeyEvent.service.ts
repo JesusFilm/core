@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import isNil from 'lodash/isNil'
+import omit from 'lodash/omit'
 import omitBy from 'lodash/omitBy'
 
 import { Prisma } from '.prisma/api-journeys-client'
@@ -59,6 +60,37 @@ export class JourneyEventService {
 
     const result = await this.prismaService.event.findMany({
       where,
+      select: {
+        id: true,
+        journeyId: true,
+        createdAt: true,
+        label: true,
+        value: true,
+        typename: true,
+        visitorId: true,
+        action: true,
+        actionValue: true,
+        messagePlatform: true,
+        email: true,
+        blockId: true,
+        position: true,
+        source: true,
+        progress: true,
+        journey: {
+          select: {
+            id: true,
+            slug: true
+          }
+        },
+        visitor: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true
+          }
+        }
+      },
       orderBy: { createdAt: 'desc' },
       cursor: after != null ? { id: after } : undefined,
       skip: after == null ? 0 : 1,
@@ -69,21 +101,17 @@ export class JourneyEventService {
     return {
       edges: sendResult.map((event) => ({
         node: {
-          id: event.id,
-          journeyId: event.journeyId ?? '',
+          ...omit(event, ['journey', 'visitor']),
+          journeyId: event.journey?.id ?? journeyId,
+          visitorId: event.visitor?.id ?? null,
           createdAt: event.createdAt.toISOString(),
-          label: event.label,
-          value: event.value,
-          typename: event.typename,
-          visitorId: event.visitorId,
           action: event.action as ButtonAction,
-          actionValue: event.actionValue,
           messagePlatform: event.messagePlatform as MessagePlatform,
-          email: event.email,
-          blockId: event.blockId,
-          position: event.position,
           source: event.source as VideoBlockSource,
-          progress: event.progress
+          journeySlug: event.journey?.slug,
+          visitorName: event.visitor?.name,
+          visitorEmail: event.visitor?.email,
+          visitorPhone: event.visitor?.phone
         },
         cursor: event.id
       })),

@@ -4,7 +4,11 @@ import { screen, userEvent } from '@storybook/test'
 import { SnackbarProvider } from 'notistack'
 import { ComponentProps, ReactElement } from 'react'
 
-import { IconName, TypographyVariant } from '../../../__generated__/globalTypes'
+import {
+  IconName,
+  TextResponseType,
+  TypographyVariant
+} from '../../../__generated__/globalTypes'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
@@ -38,7 +42,11 @@ const typographyProps: ComponentProps<typeof Typography> = {
   color: null,
   variant: TypographyVariant.h3,
   content: 'Some block above',
-  children: []
+  children: [],
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
 }
 
 const textResponseProps: ComponentProps<typeof TextResponse> = {
@@ -51,6 +59,7 @@ const textResponseProps: ComponentProps<typeof TextResponse> = {
   hint: null,
   minRows: null,
   integrationId: null,
+  required: null,
   type: null,
   routeId: null,
   children: []
@@ -83,7 +92,7 @@ const Template: StoryObj<typeof TextResponse> = {
         <SnackbarProvider>
           <StoryCard>
             <Typography {...typographyProps} />
-            <TextResponse {...args} uuid={() => 'uuid'} />
+            <TextResponse {...args} />
             <Typography
               {...typographyProps}
               content="Some block below"
@@ -123,6 +132,97 @@ export const Complete = {
   }
 }
 
+export const Required = {
+  ...Template,
+  args: {
+    ...Default.args,
+    hint: 'Optional Hint text',
+    minRows: 4,
+    label: 'Custom label',
+    placeholder: 'Placeholder text',
+    submitIconId: 'icon',
+    submitLabel: 'Custom label',
+    required: true,
+    children: [
+      {
+        id: 'icon',
+        __typename: 'IconBlock',
+        parentBlockId: 'parent',
+        parentOrder: 0,
+        iconName: IconName.SendRounded,
+        iconSize: null,
+        iconColor: null,
+        children: []
+      }
+    ]
+  }
+}
+
+export const RequiredValidation = {
+  ...Template,
+  args: {
+    ...Default.args,
+    hint: 'Optional Hint text',
+    minRows: 4,
+    label: 'Custom label',
+    placeholder: 'Placeholder text',
+    submitIconId: 'icon',
+    submitLabel: 'Custom label',
+    required: true,
+    children: [
+      {
+        id: 'icon',
+        __typename: 'IconBlock',
+        parentBlockId: 'parent',
+        parentOrder: 0,
+        iconName: IconName.SendRounded,
+        iconSize: null,
+        iconColor: null,
+        children: []
+      }
+    ]
+  },
+  play: async () => {
+    await userEvent.click(screen.getAllByRole('textbox')[0])
+    await userEvent.click(screen.getAllByText('Some block below')[0])
+    await userEvent.click(screen.getAllByRole('textbox')[1])
+    await userEvent.click(screen.getAllByText('Some block below')[1])
+  }
+}
+
+export const EmailValidation = {
+  ...Template,
+  args: {
+    ...Default.args,
+    hint: 'Optional Hint text',
+    minRows: 4,
+    label: 'Custom label',
+    placeholder: 'Placeholder text',
+    submitIconId: 'icon',
+    submitLabel: 'Custom label',
+    required: true,
+    type: TextResponseType.email,
+    children: [
+      {
+        id: 'icon',
+        __typename: 'IconBlock',
+        parentBlockId: 'parent',
+        parentOrder: 0,
+        iconName: IconName.SendRounded,
+        iconSize: null,
+        iconColor: null,
+        children: []
+      }
+    ]
+  },
+  play: async () => {
+    await userEvent.type(screen.getAllByRole('textbox')[0], 'Answer')
+    await userEvent.click(screen.getAllByText('Some block below')[0])
+    await userEvent.type(screen.getAllByRole('textbox')[1], 'Answer')
+    await userEvent.click(screen.getAllByText('Some block below')[1])
+  }
+}
+
 export const SubmitError = {
   ...Template,
   args: {
@@ -141,7 +241,7 @@ const LoadingTemplate: StoryObj<typeof TextResponse> = {
       <JourneyProvider>
         <SnackbarProvider>
           <StoryCard>
-            <TextResponse {...args} uuid={() => 'uuid'} />
+            <TextResponse {...args} />
           </StoryCard>
         </SnackbarProvider>
       </JourneyProvider>

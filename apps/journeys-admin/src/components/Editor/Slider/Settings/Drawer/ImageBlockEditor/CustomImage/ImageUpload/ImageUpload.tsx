@@ -70,7 +70,7 @@ export function ImageUpload({
         const src = `https://imagedelivery.net/${
           process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY ?? ''
         }/${response.result.id as string}/public`
-        onChange({ src })
+        onChange({ src, scale: 100, focalLeft: 50, focalTop: 50 })
         setTimeout(() => setSuccess(undefined), 4000)
         setUploading?.(undefined)
       } catch {

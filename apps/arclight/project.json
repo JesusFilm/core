@@ -3,7 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/arclight",
   "projectType": "application",
-  "tags": [],
+  "tags": ["doppler_config:stg_dev"],
   "targets": {
     "build": {
       "executor": "nx:run-commands",
@@ -131,12 +131,6 @@
             "command": "DOPPLER_TOKEN=$DOPPLER_ARCLIGHT_TOKEN doppler secrets download --no-file --format=env-no-quotes --project arclight > apps/arclight/.env"
           }
         ]
-      }
-    },
-    "codegen": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "gql.tada generate output --tsconfig apps/arclight/tsconfig.json"
       }
     },
     "extract-translations": {

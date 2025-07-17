@@ -13,7 +13,7 @@ import Image3 from '@core/shared/ui/icons/Image3'
 import Trash2 from '@core/shared/ui/icons/Trash2'
 import VideoOn from '@core/shared/ui/icons/VideoOn'
 
-import { bytesToSize } from '../../app/(dashboard)/videos/[videoId]/_VideoView/Variants/VariantDialog/Downloads/utils/bytesToSize'
+import { bytesToSize } from '../../app/(dashboard)/videos/[videoId]/audio/[variantId]/download/_bytesToSize/bytesToSize'
 
 import { TextPreview } from './TextPreview'
 

@@ -1,12 +1,13 @@
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter'
 import { ReactNode } from 'react'
 
+import { EnvironmentBanner } from '../components/EnvironmentBanner'
 import { AuthProvider } from '../libs/auth/AuthProvider'
 import { getUser } from '../libs/auth/getUser'
 import { SnackbarProvider } from '../libs/SnackbarProvider'
-import { UploadVideoVariantProvider } from '../libs/UploadVideoVariantProvider'
 
 import { ApolloProvider } from './_ApolloProvider'
+import { UploadVideoVariantProvider } from './_UploadVideoVariantProvider'
 
 export default async function RootLayout({
   children
@@ -18,6 +19,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body>
+        <EnvironmentBanner />
         <AuthProvider user={user}>
           <ApolloProvider user={user}>
             <SnackbarProvider

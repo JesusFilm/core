@@ -28,34 +28,23 @@ title: 1. Development Environment
   />
 </div>
 
-We use [Visual Studio Code](https://code.visualstudio.com/) with the [Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension. This lets you use a [Docker container](https://docker.com/) as a full-featured development environment. A devcontainer.json file in Core tells VS Code how to access (or create) a development container with a well-defined tool and runtime stack.
+We use [Cursor](https://cursor.sh/) with the [Anysphere Containers](https://marketplace.visualstudio.com/items?itemName=anysphere.containers) extension. This lets you use a [Docker container](https://docker.com/) as a full-featured development environment. A devcontainer.json file in Core tells Cursor how to access (or create) a development container with a well-defined tool and runtime stack.
 
 To get started try the following:
 
-1. Install [Visual Studio Code](https://code.visualstudio.com/)
+1. Install [Cursor](https://cursor.sh/)
 1. Install [Docker Desktop](https://www.docker.com/get-started)
 1. Start Docker Desktop
    - **PC users**: Windows limits resources to WSL 2 (Memory/CPU), this limit can be configured in your [.wslconfig file](https://docs.microsoft.com/en-us/windows/wsl/wsl-config#configure-global-options-with-wslconfig).
-1. Start VS Code and add [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) Extension
-1. Run `Dev-Containers: Clone Repository in Container Volume...` from the Command Palette (F1).
-1. Pick GitHub (You'll need to authenticate with GitHub), then enter `JesusFilm/core`, finally choose the `main` branch to clone.
-1. The VS Code window (instance) will reload, clone the source code, and start building the dev container. A progress notification provides status updates.
-1. After the build completes, VS Code will automatically connect to the container. You can now work with the repository source code in this independent environment as you would if you had cloned the code locally.
+1. Start Cursor and add [Anysphere Containers](https://marketplace.visualstudio.com/items?itemName=anysphere.containers) Extension
+1. Run `Git: Clone` from the Command Palette (Cmd/Ctrl + Shift + P)
+1. Choose GitHub (You'll need to authenticate with GitHub), then enter `JesusFilm/core`
+1. Select an appropriate local directory to clone the repository to.
+1. If prompted by Cursor, press "Open" or "Open Repository"
+1. Cursor will start building the dev container. A progress notification provides status updates.
+1. After the build completes, Cursor will automatically connect to the container. You can now work with the repository source code in this independent environment as you would if you had cloned the code locally.
 
 ## Common Issues
-
-### VS Code fails to build container on Mac
-
-```
-docker-compose version --short
-fork/exec /usr/local/bin/docker-compose-v1: bad CPU type in executable
-```
-
-1. Open Docker Desktop
-1. Go to Settings -> General, and scroll down to the bottom
-1. Tick 'Use Docker Compose V2'
-1. Click 'Apply & Restart'
-1. Go to VS code and run 'Rebuild Container'. The container should now build successfully
 
 ### Container is running slowly or crashing on Mac
 
@@ -64,7 +53,7 @@ fork/exec /usr/local/bin/docker-compose-v1: bad CPU type in executable
 1. Set CPUs: 7, Memory: 12.00GB, Swap: 4GB
 1. Click 'Apply & Restart'
 
-### "Docker not found" or "Docker daemon not started" when starting VSCode after updating docker
+### "Docker not found" or "Docker daemon not started" when starting Cursor after updating docker
 
 1. Open Docker Desktop
 2. Go to Settings -> Advanced and ensure the following settings are selected:
@@ -73,3 +62,7 @@ fork/exec /usr/local/bin/docker-compose-v1: bad CPU type in executable
 - Allow the default Docker socket to be used (requires password)
 - Allow privileged port mapping (requires password)
 - Automatically check configuration
+
+### `Git: Clone` does not appear in the command palette
+
+- Simply restart Cursor and try again

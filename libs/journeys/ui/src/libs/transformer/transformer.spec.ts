@@ -26,6 +26,7 @@ describe('transformer', () => {
           backgroundColor: '#30313D',
           coverBlockId: '404-imageBlock-id',
           fullscreen: false,
+          backdropBlur: null,
           id: 'invalidRoot',
           parentBlockId: null,
           parentOrder: 0,

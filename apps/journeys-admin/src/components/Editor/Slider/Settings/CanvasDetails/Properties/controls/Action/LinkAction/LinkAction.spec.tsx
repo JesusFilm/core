@@ -33,13 +33,15 @@ describe('LinkAction', () => {
     size: ButtonSize.large,
     startIconId: null,
     endIconId: null,
+    submitEnabled: null,
     action: {
       parentBlockId: 'button2.id',
       __typename: 'LinkAction',
       gtmEventName: 'gtmEventName',
       url: 'https://www.google.com'
     },
-    children: []
+    children: [],
+    settings: null
   }
 
   it('displays the action url', async () => {

@@ -4,16 +4,17 @@ import FormControl from '@mui/material/FormControl'
 import FormLabel from '@mui/material/FormLabel'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { graphql } from 'gql.tada'
 import Image from 'next/image'
 import { ReactNode } from 'react'
+
+import { graphql } from '@core/shared/gql'
 
 import minimalLogo from '../../../assets/minimal-logo.png'
 import { CenterPage } from '../../../components/CenterPage'
 import { makeClient } from '../../../libs/apollo/makeClient'
 import { getUser } from '../../../libs/auth/getUser'
 
-import { Logout } from './_Logout'
+import { Logout } from './_logout'
 
 const GET_AUTH = graphql(`
   query me {

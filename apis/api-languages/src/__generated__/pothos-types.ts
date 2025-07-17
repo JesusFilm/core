@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { Prisma, Language, LanguageName, Country, CountryLanguage, CountryName, Continent, ContinentName, AudioPreview, ImportTimes } from ".prisma/api-languages-client";
+import type { Prisma, Language, LanguageName, Country, CountryLanguage, CountryName, Continent, ContinentName, AudioPreview, ImportTimes, UserLanguageRole } from ".prisma/api-languages-client/index.js";
 export default interface PrismaTypes {
     Language: {
         Name: "Language";
@@ -239,6 +239,20 @@ export default interface PrismaTypes {
         OrderBy: Prisma.ImportTimesOrderByWithRelationInput;
         WhereUnique: Prisma.ImportTimesWhereUniqueInput;
         Where: Prisma.ImportTimesWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: never;
+        ListRelations: never;
+        Relations: {};
+    };
+    UserLanguageRole: {
+        Name: "UserLanguageRole";
+        Shape: UserLanguageRole;
+        Include: never;
+        Select: Prisma.UserLanguageRoleSelect;
+        OrderBy: Prisma.UserLanguageRoleOrderByWithRelationInput;
+        WhereUnique: Prisma.UserLanguageRoleWhereUniqueInput;
+        Where: Prisma.UserLanguageRoleWhereInput;
         Create: {};
         Update: {};
         RelationName: never;

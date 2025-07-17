@@ -51,6 +51,7 @@ describe('NewTypographyButton', () => {
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: []
       }
     ]
@@ -66,6 +67,7 @@ describe('NewTypographyButton', () => {
     themeMode: null,
     themeName: null,
     fullscreen: false,
+    backdropBlur: null,
     children: []
   }
 
@@ -78,7 +80,11 @@ describe('NewTypographyButton', () => {
     content: '',
     variant: TypographyVariant.h1,
     __typename: 'TypographyBlock',
-    children: []
+    children: [],
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    }
   }
 
   it('should check if the mutation gets called', async () => {
@@ -362,7 +368,11 @@ describe('NewTypographyButton', () => {
           color: null,
           content: '',
           variant: null,
-          __typename: 'TypographyBlock'
+          __typename: 'TypographyBlock',
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          }
         }
       }
     }))

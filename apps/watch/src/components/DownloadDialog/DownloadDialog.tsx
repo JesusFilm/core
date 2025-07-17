@@ -1,8 +1,8 @@
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import LanguageIcon from '@mui/icons-material/Language'
 import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded'
-import LoadingButton from '@mui/lab/LoadingButton'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
 import CircularProgress from '@mui/material/CircularProgress'
 import FormControlLabel from '@mui/material/FormControlLabel'
@@ -18,10 +18,12 @@ import Image from 'next/image'
 import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement, useEffect, useState } from 'react'
 import useDownloader from 'react-use-downloader'
+import { object, string } from 'yup'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
+import { VideoVariantDownloadQuality } from '../../../__generated__/globalTypes'
 import { useVideo } from '../../libs/videoContext'
 
 import { TermsOfUseDialog } from './TermsOfUseDialog'
@@ -67,9 +69,21 @@ export function DownloadDialog({
   }, [percentage, onClose])
 
   const initialValues = {
-    file: downloads[0].url,
+    file: downloads[0]?.url ?? '',
     terms: false
   }
+
+  const validationSchema = object().shape({
+    file: string().test('no-downloads', t('No Downloads Available'), (file) => {
+      if (file == null || file === '') {
+        // fail validation
+        return false
+      } else {
+        // pass validation
+        return true
+      }
+    })
+  })
 
   return (
     <Dialog
@@ -147,6 +161,8 @@ export function DownloadDialog({
           onSubmit={(values) => {
             void download(values.file, `${title[0].value}.mp4`)
           }}
+          validationSchema={validationSchema}
+          validateOnMount
         >
           {({ values, errors, handleChange, handleBlur, setFieldValue }) => (
             <Form>
@@ -159,14 +175,22 @@ export function DownloadDialog({
                 onBlur={handleBlur}
                 helperText={errors.file}
                 error={errors.file != null}
+                disabled={values.file === ''}
                 select
               >
-                {downloads.map((download) => (
-                  <MenuItem key={download.quality} value={download.url}>
-                    {download.quality.charAt(0).toUpperCase()}
-                    {download.quality.slice(1)} ({formatBytes(download.size)})
-                  </MenuItem>
-                ))}
+                {downloads
+                  .filter(({ quality }) =>
+                    [
+                      VideoVariantDownloadQuality.high,
+                      VideoVariantDownloadQuality.low
+                    ].includes(quality)
+                  )
+                  .map((download) => (
+                    <MenuItem key={download.quality} value={download.url}>
+                      {download.quality.charAt(0).toUpperCase()}
+                      {download.quality.slice(1)} ({formatBytes(download.size)})
+                    </MenuItem>
+                  ))}
               </TextField>
               <Stack
                 direction={{ xs: 'column', sm: 'row' }}
@@ -195,7 +219,7 @@ export function DownloadDialog({
                     {t('Terms of Use')}
                   </Link>
                 </FormGroup>
-                <LoadingButton
+                <Button
                   type="submit"
                   variant="contained"
                   size="small"
@@ -214,7 +238,7 @@ export function DownloadDialog({
                   }
                 >
                   {t('Download')}
-                </LoadingButton>
+                </Button>
               </Stack>
               <TermsOfUseDialog
                 open={openTerms}

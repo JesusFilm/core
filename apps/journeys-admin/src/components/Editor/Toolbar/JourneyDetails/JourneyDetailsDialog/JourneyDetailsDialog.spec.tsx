@@ -7,7 +7,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 import { getLanguagesMock } from '@core/journeys/ui/useLanguagesQuery/useLanguagesQuery.mock'
 
-import { getJourneySettingsUpdateMock } from '../../../../../libs/useJourneyUpdateMutation/useJourneyUpdateMutation.mock'
+import { getTitleDescLanguageUpdateMock } from '../../../../../libs/useTitleDescLanguageUpdateMutation/useTitleDescLanguageUpdateMutation.mock'
 import { journey } from '../../../../JourneyList/ActiveJourneyList/ActivePriorityList/ActiveJourneyListData'
 
 import { JourneyDetailsDialog } from '.'
@@ -18,7 +18,7 @@ jest.mock('@mui/material/useMediaQuery')
 
 describe('JourneyDetailsDialog', () => {
   it('should not set journey title on close', async () => {
-    const mock = getJourneySettingsUpdateMock({
+    const mock = getTitleDescLanguageUpdateMock({
       title: 'New Journey',
       description: 'Description',
       languageId: '529'
@@ -47,9 +47,8 @@ describe('JourneyDetailsDialog', () => {
     const result = jest.fn(() => ({
       data: {
         journeyUpdate: {
-          ...defaultJourney,
-          id: defaultJourney.id,
           __typename: 'Journey',
+          id: defaultJourney.id,
           title: 'Changed Title',
           description: 'Changed Description',
           language: {
@@ -74,7 +73,7 @@ describe('JourneyDetailsDialog', () => {
       }
     }))
 
-    const mock = getJourneySettingsUpdateMock({
+    const mock = getTitleDescLanguageUpdateMock({
       title: 'Changed Title',
       description: 'Changed Description',
       languageId: '496'
@@ -115,7 +114,7 @@ describe('JourneyDetailsDialog', () => {
   })
 
   it('shows notistack error alert when title fails to update', async () => {
-    const mock = getJourneySettingsUpdateMock({
+    const mock = getTitleDescLanguageUpdateMock({
       title: 'Changed Title',
       description: 'Changed Description',
       languageId: '496'
@@ -152,12 +151,32 @@ describe('JourneyDetailsDialog', () => {
     const result = jest.fn(() => ({
       data: {
         journeyUpdate: {
+          __typename: 'Journey',
           id: defaultJourney.id,
-          __typename: 'Journey'
+          title: 'Changed Title',
+          description: 'Changed Description',
+          language: {
+            __typename: 'Language',
+            id: '496',
+            bcp47: null,
+            iso3: null,
+            name: [
+              {
+                __typename: 'LanguageName',
+                value: 'Français',
+                primary: true
+              },
+              {
+                value: 'French',
+                primary: false,
+                __typename: 'LanguageName'
+              }
+            ]
+          }
         }
       }
     }))
-    const mock = getJourneySettingsUpdateMock({
+    const mock = getTitleDescLanguageUpdateMock({
       title: 'Changed Title',
       description: 'Changed Description',
       languageId: '496'

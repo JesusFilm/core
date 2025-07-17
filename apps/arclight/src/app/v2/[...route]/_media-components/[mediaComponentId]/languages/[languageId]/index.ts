@@ -1,7 +1,10 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
-import { ResultOf, graphql } from 'gql.tada'
+
+import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../../../../../../lib/apolloClient'
+import { findDownloadWithFallback } from '../../../../../../../lib/downloadHelpers'
+import { getDefaultPlatformForApiKey } from '../../../../../../../lib/getPlatformFromApiKey'
 import {
   getWebEmbedPlayer,
   getWebEmbedSharePlayer
@@ -33,6 +36,7 @@ const GET_VIDEO_VARIANT = graphql(`
           width
           quality
           size
+          bitrate
           url
         }
       }
@@ -42,6 +46,7 @@ const GET_VIDEO_VARIANT = graphql(`
         primaryLanguageId
         variant {
           hls
+          share
           lengthInMilliseconds
           downloadable
           downloads {
@@ -49,6 +54,8 @@ const GET_VIDEO_VARIANT = graphql(`
             width
             quality
             size
+            bitrate
+            url
           }
           subtitle {
             language {
@@ -196,6 +203,15 @@ mediaComponentLanguage.openapi(route, async (c) => {
   const mediaComponentId = c.req.param('mediaComponentId')
   const languageId = c.req.param('languageId')
   const expand = c.req.query('expand') ?? ''
+  const apiKey = c.req.query('apiKey')
+
+  let platform = c.req.query('platform')
+  if (!platform && apiKey) {
+    platform = await getDefaultPlatformForApiKey(apiKey)
+  }
+  if (!platform) {
+    platform = 'ios' // Default platform for this route
+  }
 
   const { data } = await getApolloClient().query<
     ResultOf<typeof GET_VIDEO_VARIANT>
@@ -207,20 +223,24 @@ mediaComponentLanguage.openapi(route, async (c) => {
     }
   })
 
-  const apiKey = c.req.query('apiKey') ?? '616db012e9a951.51499299'
-  const platform = c.req.query('platform') ?? 'ios'
-  // TODO: implement
-  const apiSessionId = '6622f10d2260a8.05128925'
+  const apiSessionId = c.req.query('apiSessionId') ?? '6622f10d2260a8.05128925'
 
   const video = data.video
 
   if (video == null || video.variant == null) return c.notFound()
 
-  const downloadLow = video.variant?.downloads?.find(
-    (download) => download.quality === 'low'
+  const downloadLow = findDownloadWithFallback(
+    video.variant?.downloads,
+    'low',
+    apiKey
   )
-  const downloadHigh = video.variant?.downloads?.find(
-    (download) => download.quality === 'high'
+  const downloadHigh = findDownloadWithFallback(
+    video.variant?.downloads,
+    'high',
+    apiKey
+  )
+  const downloadSd = video.variant?.downloads?.find(
+    (download) => download.quality === 'sd'
   )
 
   const downloadUrls = {
@@ -229,18 +249,18 @@ mediaComponentLanguage.openapi(route, async (c) => {
         ? undefined
         : {
             url: downloadLow.url,
-            height: downloadLow.height,
-            width: downloadLow.width,
-            sizeInBytes: downloadLow.size
+            height: downloadLow.height || 240,
+            width: downloadLow.width || 426,
+            sizeInBytes: downloadLow.size || 0
           },
     high:
       downloadHigh == null
         ? undefined
         : {
             url: downloadHigh.url,
-            height: downloadHigh.height,
-            width: downloadHigh.width,
-            sizeInBytes: downloadHigh.size
+            height: downloadHigh.height || 720,
+            width: downloadHigh.width || 1280,
+            sizeInBytes: downloadHigh.size || 0
           }
   }
 
@@ -292,7 +312,38 @@ mediaComponentLanguage.openapi(route, async (c) => {
         streamingUrls = {
           dash: [{ videoBitrate: 0, url: video.variant?.dash }],
           hls: [{ videoBitrate: 0, url: video.variant?.hls }],
-          http: []
+          http: [
+            {
+              videoBitrate: downloadLow?.bitrate ?? 0,
+              videoContainer: 'MP4',
+              url: downloadLow?.url
+            },
+            {
+              videoBitrate: downloadSd?.bitrate ?? 0,
+              videoContainer: 'MP4',
+              url: downloadSd?.url
+            },
+            {
+              videoBitrate: downloadSd?.bitrate ?? 0,
+              videoContainer: 'MP4',
+              url: downloadSd?.url
+            },
+            {
+              videoBitrate: downloadSd?.bitrate ?? 0,
+              videoContainer: 'MP4',
+              url: downloadSd?.url
+            },
+            {
+              videoBitrate: downloadSd?.bitrate ?? 0,
+              videoContainer: 'MP4',
+              url: downloadSd?.url
+            },
+            {
+              videoBitrate: downloadHigh?.bitrate ?? 0,
+              videoContainer: 'MP4',
+              url: downloadHigh?.url
+            }
+          ]
         }
         break
       case 'ios':
@@ -357,34 +408,36 @@ mediaComponentLanguage.openapi(route, async (c) => {
                 })) ?? []
             },
             downloadUrls: {
-              low: child.variant?.downloads?.find(
-                (d) => d.quality === 'low'
-              ) && {
-                url: `https://arc.gt/${Math.random().toString(36).substring(2, 7)}?apiSessionId=${apiSessionId}`,
-                height:
-                  child.variant.downloads.find((d) => d.quality === 'low')
-                    ?.height ?? 240,
-                width:
-                  child.variant.downloads.find((d) => d.quality === 'low')
-                    ?.width ?? 426,
-                sizeInBytes:
-                  child.variant.downloads.find((d) => d.quality === 'low')
-                    ?.size ?? 0
-              },
-              high: child.variant?.downloads?.find(
-                (d) => d.quality === 'high'
-              ) && {
-                url: `https://arc.gt/${Math.random().toString(36).substring(2, 7)}?apiSessionId=${apiSessionId}`,
-                height:
-                  child.variant.downloads.find((d) => d.quality === 'high')
-                    ?.height ?? 720,
-                width:
-                  child.variant.downloads.find((d) => d.quality === 'high')
-                    ?.width ?? 1280,
-                sizeInBytes:
-                  child.variant.downloads.find((d) => d.quality === 'high')
-                    ?.size ?? 0
-              }
+              low: (() => {
+                const lowDownload = findDownloadWithFallback(
+                  child.variant?.downloads,
+                  'low',
+                  apiKey
+                )
+                return (
+                  lowDownload && {
+                    url: lowDownload.url,
+                    height: lowDownload.height || 240,
+                    width: lowDownload.width || 426,
+                    sizeInBytes: lowDownload.size || 0
+                  }
+                )
+              })(),
+              high: (() => {
+                const highDownload = findDownloadWithFallback(
+                  child.variant?.downloads,
+                  'high',
+                  apiKey
+                )
+                return (
+                  highDownload && {
+                    url: highDownload.url,
+                    height: highDownload.height || 720,
+                    width: highDownload.width || 1280,
+                    sizeInBytes: highDownload.size || 0
+                  }
+                )
+              })()
             },
             streamingUrls: {
               m3u8: [
@@ -396,7 +449,7 @@ mediaComponentLanguage.openapi(route, async (c) => {
               ],
               http: []
             },
-            shareUrl: `https://arc.gt/${Math.random().toString(36).substring(2, 7)}?apiSessionId=${apiSessionId}`,
+            shareUrl: child.variant?.share ?? '',
             socialMediaUrls: {},
             _links: {
               self: {

@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import { ReactFlowProvider } from 'reactflow'
 
 import { EditorState } from '@core/journeys/ui/EditorProvider'
@@ -70,6 +71,7 @@ describe('SocialPreviewNode', () => {
     description: 'my cool journey',
     status: JourneyStatus.draft,
     createdAt: '2021-11-19T12:34:56.647Z',
+    updatedAt: '2021-11-19T12:34:56.647Z',
     publishedAt: null,
     blocks: [],
     primaryImageBlock: image,
@@ -90,7 +92,8 @@ describe('SocialPreviewNode', () => {
     displayTitle: null,
     logoImageBlock: null,
     menuButtonIcon: null,
-    menuStepBlock: null
+    menuStepBlock: null,
+    journeyTheme: null
   }
 
   const blankSeoJourney: Journey = {
@@ -188,5 +191,24 @@ describe('SocialPreviewNode', () => {
 
     fireEvent.click(screen.getByTestId('SocialPreviewNode'))
     expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
+  })
+
+  it('should render tooltip', async () => {
+    render(
+      <ReactFlowProvider>
+        <MockedProvider>
+          <JourneyProvider value={{ journey: defaultJourney }}>
+            <SocialPreviewNode />
+          </JourneyProvider>
+        </MockedProvider>
+      </ReactFlowProvider>
+    )
+
+    const node = screen.getByTestId('SocialPreviewNode')
+
+    await userEvent.hover(node)
+
+    const tip = await screen.findByRole('tooltip')
+    expect(within(tip).getByText('Social Media Preview')).toBeVisible()
   })
 })

@@ -47,8 +47,18 @@ export async function importVideoTitles(
     throw new Error('Video import failed: Unable to load video data')
   }
 
+  // Process media metadata titles
   await processFile(
     CROWDIN_CONFIG.files.media_metadata_tile,
+    async (data: ProcessedTranslation) => {
+      await upsertVideoTitleTranslation(data, logger)
+    },
+    logger
+  )
+
+  // Process collection titles
+  await processFile(
+    CROWDIN_CONFIG.files.collection_title,
     async (data: ProcessedTranslation) => {
       await upsertVideoTitleTranslation(data, logger)
     },

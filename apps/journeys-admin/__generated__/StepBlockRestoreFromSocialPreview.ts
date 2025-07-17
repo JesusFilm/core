@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonVariant, ButtonColor, ButtonSize, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: StepBlockRestoreFromSocialPreview
@@ -39,6 +39,14 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock_acti
 
 export type StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock_action = StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock_action_NavigateToBlockAction | StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock_action_LinkAction | StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock_action_EmailAction;
 
+export interface StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -50,7 +58,9 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock_action | null;
+  settings: StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock_settings | null;
 }
 
 export interface StepBlockRestoreFromSocialPreview_blockRestore_CardBlock {
@@ -62,6 +72,10 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_CardBlock {
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
   backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
@@ -235,6 +249,7 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_TextResponseBloc
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
   placeholder: string | null;
   hint: string | null;
@@ -242,6 +257,14 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_TextResponseBloc
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+}
+
+export interface StepBlockRestoreFromSocialPreview_blockRestore_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
 }
 
 export interface StepBlockRestoreFromSocialPreview_blockRestore_TypographyBlock {
@@ -253,6 +276,7 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_TypographyBlock 
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: StepBlockRestoreFromSocialPreview_blockRestore_TypographyBlock_settings | null;
 }
 
 export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_mediaVideo_Video_title {

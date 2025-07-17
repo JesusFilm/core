@@ -57,8 +57,7 @@ export function ApolloProvider({
   function makeClient(): ApolloClient<NormalizedCacheObject> {
     return new ApolloClient({
       cache: new InMemoryCache(cache),
-      link:
-        typeof window === 'undefined' ? httpLink : authLink.concat(httpLink),
+      link: authLink.concat(httpLink),
       connectToDevTools: true
     })
   }

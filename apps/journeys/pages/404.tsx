@@ -32,6 +32,7 @@ export function Custom404(): ReactElement {
     {
       __typename: 'CardBlock',
       backgroundColor: '#30313D',
+      backdropBlur: null,
       coverBlockId: '404-imageBlock-id',
       fullscreen: false,
       id: '404-cardBlock-id',
@@ -62,7 +63,11 @@ export function Custom404(): ReactElement {
       id: '404-typog-id',
       parentBlockId: '404-cardBlock-id',
       parentOrder: 0,
-      variant: TypographyVariant.h2
+      variant: TypographyVariant.h2,
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     },
     {
       __typename: 'TypographyBlock',
@@ -72,7 +77,11 @@ export function Custom404(): ReactElement {
       id: 'typog2-id',
       parentBlockId: '404-cardBlock-id',
       parentOrder: 1,
-      variant: TypographyVariant.h5
+      variant: TypographyVariant.h5,
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     },
     {
       __typename: 'ButtonBlock',
@@ -85,12 +94,14 @@ export function Custom404(): ReactElement {
       parentOrder: 2,
       size: ButtonSize.large,
       startIconId: '404-icon-id',
+      submitEnabled: null,
       action: {
         gtmEventName: null,
         parentBlockId: '404-button-id',
         url: '/',
         __typename: 'LinkAction'
-      }
+      },
+      settings: null
     },
     {
       __typename: 'IconBlock',

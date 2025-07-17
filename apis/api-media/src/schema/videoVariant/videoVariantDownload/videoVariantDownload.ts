@@ -19,6 +19,7 @@ builder.prismaObject('VideoVariantDownload', {
     size: t.float({ nullable: false, resolve: ({ size }) => size ?? 0 }),
     height: t.int({ nullable: false, resolve: ({ height }) => height ?? 0 }),
     width: t.int({ nullable: false, resolve: ({ width }) => width ?? 0 }),
+    bitrate: t.int({ nullable: false, resolve: ({ bitrate }) => bitrate ?? 0 }),
     url: t.exposeString('url', { nullable: false }),
     version: t.withAuth({ isPublisher: true }).exposeInt('version', {
       nullable: false,
@@ -60,6 +61,7 @@ builder.mutationFields((t) => ({
           size: input.size ?? undefined,
           height: input.height ?? undefined,
           width: input.width ?? undefined,
+          bitrate: input.bitrate ?? undefined,
           url: input.url ?? undefined,
           assetId: input.assetId ?? undefined,
           version: input.version ?? undefined

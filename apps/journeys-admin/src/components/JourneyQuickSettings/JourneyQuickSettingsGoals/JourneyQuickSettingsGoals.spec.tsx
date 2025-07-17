@@ -48,12 +48,14 @@ const blocks: Blocks[] = [
     size: ButtonSize.medium,
     startIconId: 'dd6404d6-421d-4c4c-a059-7ac4aafa805b',
     endIconId: '4756cf5a-2457-4ed3-8a08-729a5b43d0ee',
+    submitEnabled: null,
     action: {
       __typename: 'LinkAction',
       parentBlockId: '84d742c8-9905-4b77-8987-99c08c04cde3',
       gtmEventName: null,
       url: 'https://www.google.com/'
-    }
+    },
+    settings: null
   },
   {
     __typename: 'ButtonBlock',
@@ -66,12 +68,14 @@ const blocks: Blocks[] = [
     size: ButtonSize.medium,
     startIconId: null,
     endIconId: null,
+    submitEnabled: null,
     action: {
       __typename: 'LinkAction',
       parentBlockId: 'button2.id',
       gtmEventName: null,
       url: 'https://m.me/some_user'
-    }
+    },
+    settings: null
   },
   {
     __typename: 'ButtonBlock',
@@ -84,12 +88,14 @@ const blocks: Blocks[] = [
     size: ButtonSize.medium,
     startIconId: null,
     endIconId: null,
+    submitEnabled: null,
     action: {
       __typename: 'LinkAction',
       parentBlockId: '84d742c8-9905-4b77-8987-99c08c04cde3',
       gtmEventName: null,
       url: 'https://www.bible.com/'
-    }
+    },
+    settings: null
   },
   {
     __typename: 'StepBlock',
@@ -109,7 +115,8 @@ const blocks: Blocks[] = [
     coverBlockId: '9caf671e-713e-492d-ac8a-b33e71fc5e18',
     themeMode: null,
     themeName: null,
-    fullscreen: false
+    fullscreen: false,
+    backdropBlur: null
   }
 ]
 

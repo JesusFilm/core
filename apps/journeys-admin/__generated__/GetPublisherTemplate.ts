@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform, JourneyMenuButtonIcon } from "./globalTypes";
+import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform, JourneyMenuButtonIcon } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetPublisherTemplate
@@ -53,6 +53,14 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_actio
 
 export type GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action = GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_EmailAction;
 
+export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -64,7 +72,9 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action | null;
+  settings: GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_settings | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_CardBlock {
@@ -76,6 +86,10 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_CardBlock {
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
   backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
@@ -239,6 +253,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
   placeholder: string | null;
   hint: string | null;
@@ -246,6 +261,14 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+}
+
+export interface GetPublisherTemplate_publisherTemplate_blocks_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_TypographyBlock {
@@ -257,6 +280,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: GetPublisherTemplate_publisherTemplate_blocks_TypographyBlock_settings | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_Video_title {
@@ -590,6 +614,14 @@ export interface GetPublisherTemplate_publisherTemplate_menuStepBlock {
   slug: string | null;
 }
 
+export interface GetPublisherTemplate_publisherTemplate_journeyTheme {
+  __typename: "JourneyTheme";
+  id: string;
+  headerFont: string | null;
+  bodyFont: string | null;
+  labelFont: string | null;
+}
+
 export interface GetPublisherTemplate_publisherTemplate {
   __typename: "Journey";
   id: string;
@@ -602,6 +634,7 @@ export interface GetPublisherTemplate_publisherTemplate {
   status: JourneyStatus;
   language: GetPublisherTemplate_publisherTemplate_language;
   createdAt: any;
+  updatedAt: any;
   featuredAt: any | null;
   publishedAt: any | null;
   themeName: ThemeName;
@@ -633,6 +666,7 @@ export interface GetPublisherTemplate_publisherTemplate {
   logoImageBlock: GetPublisherTemplate_publisherTemplate_logoImageBlock | null;
   menuButtonIcon: JourneyMenuButtonIcon | null;
   menuStepBlock: GetPublisherTemplate_publisherTemplate_menuStepBlock | null;
+  journeyTheme: GetPublisherTemplate_publisherTemplate_journeyTheme | null;
 }
 
 export interface GetPublisherTemplate {

@@ -13,8 +13,6 @@ export default function EasterPage(): ReactElement {
   return (
     <>
       <NextSeo
-        noindex
-        nofollow
         titleTemplate="%s | Jesus Film Project"
         defaultTitle="Easter 2025 videos & resources about Lent, Holy Week, Resurrection | Jesus Film Project"
         description="Explore the other side of Easter — one filled with betrayal, hope, and a claim that changed the world."

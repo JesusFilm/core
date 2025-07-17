@@ -209,7 +209,8 @@ describe('BlockService', () => {
               'action'
             ),
             typename: 'CardBlock',
-            journey: { connect: { id: journey.id } }
+            journey: { connect: { id: journey.id } },
+            settings: {}
           }
         })
       ).toEqual(blockResponse)
@@ -362,7 +363,11 @@ describe('BlockService', () => {
     const blockChild = {
       id: 'child',
       __typename: 'TypographyBlock',
-      parentBlockId: duplicatedBlock.id
+      parentBlockId: duplicatedBlock.id,
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     } as unknown as Block
 
     beforeEach(() => {
@@ -394,7 +399,7 @@ describe('BlockService', () => {
 
       service.reorderSiblings = jest.fn().mockReturnValue(blockAndSiblings)
 
-      expect(await service.duplicateBlock(block)).toEqual([
+      expect(await service.duplicateBlock(block, false)).toEqual([
         blockResponse,
         { ...blockResponse, id: block2.id },
         {
@@ -421,7 +426,7 @@ describe('BlockService', () => {
         .mockResolvedValueOnce(blockChild)
 
       expect(
-        await service.duplicateBlock(block, undefined, [
+        await service.duplicateBlock(block, false, undefined, [
           { oldId: block.id, newId: 'newBlockId' }
         ])
       ).toEqual([
@@ -452,7 +457,7 @@ describe('BlockService', () => {
         .mockResolvedValueOnce(blockChild)
         .mockResolvedValueOnce(block2)
 
-      await service.duplicateBlock(newStepBlock, 1, undefined, 2, 3)
+      await service.duplicateBlock(newStepBlock, false, 1, undefined, 2, 3)
       expect(prismaService.block.update).toHaveBeenCalledWith({
         where: { id: newStepBlock.id },
         include: { action: true },
@@ -474,7 +479,7 @@ describe('BlockService', () => {
         .mockResolvedValueOnce(blockChild)
         .mockResolvedValueOnce(block2)
 
-      await service.duplicateBlock(block)
+      await service.duplicateBlock(block, false)
 
       expect(service.reorderSiblings).toHaveBeenCalledWith([
         block,
@@ -489,7 +494,7 @@ describe('BlockService', () => {
         .mockResolvedValueOnce(blockChild)
         .mockResolvedValueOnce(block2)
 
-      await service.duplicateBlock(block, 1)
+      await service.duplicateBlock(block, false, 1)
 
       expect(service.reorderSiblings).toHaveBeenCalledWith([
         block,
@@ -504,7 +509,7 @@ describe('BlockService', () => {
         .mockResolvedValueOnce(blockChild)
         .mockResolvedValueOnce(block2)
 
-      await service.duplicateBlock(block, 5)
+      await service.duplicateBlock(block, false, 5)
 
       expect(service.reorderSiblings).toHaveBeenCalledWith([
         block,
@@ -519,7 +524,7 @@ describe('BlockService', () => {
         .mockResolvedValueOnce(blockChild)
         .mockResolvedValueOnce(block2)
 
-      await service.duplicateBlock(block, -1)
+      await service.duplicateBlock(block, false, -1)
 
       expect(service.reorderSiblings).toHaveBeenCalledWith([
         block,
@@ -544,7 +549,8 @@ describe('BlockService', () => {
         await service.getDuplicateBlockAndChildren(
           typographyBlock.id,
           '1',
-          cardBlock.id
+          cardBlock.id,
+          false
         )
       ).toEqual([
         {
@@ -580,6 +586,7 @@ describe('BlockService', () => {
           stepBlock.id,
           journey.id,
           null,
+          true,
           'specificStepId',
           [
             { oldId: stepBlock.id, newId: 'specificStepId' },
@@ -643,6 +650,7 @@ describe('BlockService', () => {
           buttonBlock.id,
           journey.id,
           cardBlock.id,
+          false,
           undefined,
           undefined,
           'journey2',
@@ -659,6 +667,20 @@ describe('BlockService', () => {
       ])
 
       expect(prismaService.block.findMany).toHaveBeenCalledTimes(1)
+    })
+
+    it('should disable submit buttons when duplicating blocks within same journey', async () => {
+      prismaService.block.findUnique.mockResolvedValue(buttonBlock)
+      mockUuidv4.mockReturnValueOnce(`${buttonBlock.id}Copy`)
+
+      const result = await service.getDuplicateBlockAndChildren(
+        buttonBlock.id,
+        journey.id,
+        cardBlock.id,
+        false
+      )
+
+      expect(result[0].submitEnabled).toBe(false)
     })
   })
 
@@ -680,6 +702,7 @@ describe('BlockService', () => {
           [stepBlock as BlockWithAction],
           '1',
           null,
+          true,
           duplicateStepIds,
           undefined,
           'journey2',
@@ -695,6 +718,7 @@ describe('BlockService', () => {
         stepBlock.id,
         '1',
         null,
+        true,
         'step1',
         undefined,
         'journey2',
