@@ -27,7 +27,7 @@ import {
   TypographyBlockUpdateColorVariables
 } from '../../../../../../../../../../__generated__/TypographyBlockUpdateColor'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
-import { DebouncedHexAlphaColorPicker } from '../../Card/BackgroundColor/DebouncedHexAlphaColorPicker'
+import { DebouncedHexColorPicker } from '../../Card/BackgroundColor/DebouncedHexColorPicker'
 import { Swatch } from '../../Card/BackgroundColor/Swatch'
 
 export const TYPOGRAPHY_BLOCK_UPDATE_COLOR = gql`
@@ -151,12 +151,11 @@ export function Color(): ReactElement {
   return (
     <>
       <Box sx={{ px: 4, pb: 4 }}>
-        <DebouncedHexAlphaColorPicker
+        <DebouncedHexColorPicker
           data-testid="typographyColorPicker"
           color={selectedColor}
           onChange={handleChange}
           style={{ width: '100%', height: 125 }}
-          enableAlpha={false}
         />
       </Box>
       <Stack

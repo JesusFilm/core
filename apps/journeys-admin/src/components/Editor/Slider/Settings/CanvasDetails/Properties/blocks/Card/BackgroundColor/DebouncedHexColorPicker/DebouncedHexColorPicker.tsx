@@ -8,10 +8,10 @@ import {
 } from 'react'
 import { HexAlphaColorPicker, HexColorPicker } from 'react-colorful'
 
-export function DebouncedHexAlphaColorPicker({
+export function DebouncedHexColorPicker({
   color,
   onChange,
-  enableAlpha = true,
+  enableAlpha = false,
   ...props
 }: ComponentProps<typeof HexAlphaColorPicker> & {
   enableAlpha?: boolean

@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 
-import { DebouncedHexAlphaColorPicker } from './DebouncedHexAlphaColorPicker'
+import { DebouncedHexColorPicker } from './DebouncedHexColorPicker'
 
 // Mock lodash debounce to control timing in tests
 jest.mock('lodash/debounce', () => {
@@ -30,16 +30,16 @@ describe('DebouncedHexColorPicker', () => {
   describe('Initial Rendering', () => {
     it('renders with initial color value', () => {
       render(
-        <DebouncedHexAlphaColorPicker color="#FF0000" onChange={mockOnChange} />
+        <DebouncedHexColorPicker color="#FF0000" onChange={mockOnChange} />
       )
 
       const colorPicker = screen.getByTestId('HexColorPicker')
       expect(colorPicker).toBeInTheDocument()
     })
 
-    it('renders with enableAlpha false', () => {
+    it('renders with normal color picker when enableAlpha is false', () => {
       render(
-        <DebouncedHexAlphaColorPicker
+        <DebouncedHexColorPicker
           color="#FF0000"
           onChange={mockOnChange}
           enableAlpha={false}
@@ -52,10 +52,7 @@ describe('DebouncedHexColorPicker', () => {
 
     it('displays the correct initial color', () => {
       const { container } = render(
-        <DebouncedHexAlphaColorPicker
-          color="#00FF00FF"
-          onChange={mockOnChange}
-        />
+        <DebouncedHexColorPicker color="#00FF00FF" onChange={mockOnChange} />
       )
 
       // The HexAlphaColorPicker should be present
@@ -65,7 +62,7 @@ describe('DebouncedHexColorPicker', () => {
 
     it('has correct test id', () => {
       render(
-        <DebouncedHexAlphaColorPicker color="#0000FF" onChange={mockOnChange} />
+        <DebouncedHexColorPicker color="#0000FF" onChange={mockOnChange} />
       )
 
       expect(screen.getByTestId('HexColorPicker')).toBeInTheDocument()
@@ -75,12 +72,12 @@ describe('DebouncedHexColorPicker', () => {
   describe('Color Prop Updates', () => {
     it('updates internal state when color prop changes', () => {
       const { rerender } = render(
-        <DebouncedHexAlphaColorPicker color="#FF0000" onChange={mockOnChange} />
+        <DebouncedHexColorPicker color="#FF0000" onChange={mockOnChange} />
       )
 
       // Change the color prop
       rerender(
-        <DebouncedHexAlphaColorPicker color="#00FF00" onChange={mockOnChange} />
+        <DebouncedHexColorPicker color="#00FF00" onChange={mockOnChange} />
       )
 
       // The component should update its internal state
@@ -90,10 +87,7 @@ describe('DebouncedHexColorPicker', () => {
 
     it('handles 8-digit hex colors with alpha', () => {
       render(
-        <DebouncedHexAlphaColorPicker
-          color="#FF0000AA"
-          onChange={mockOnChange}
-        />
+        <DebouncedHexColorPicker color="#FF0000AA" onChange={mockOnChange} />
       )
 
       const colorPicker = screen.getByTestId('HexColorPicker')
@@ -102,7 +96,7 @@ describe('DebouncedHexColorPicker', () => {
 
     it('handles 6-digit hex colors', () => {
       render(
-        <DebouncedHexAlphaColorPicker color="#FF0000" onChange={mockOnChange} />
+        <DebouncedHexColorPicker color="#FF0000" onChange={mockOnChange} />
       )
 
       const colorPicker = screen.getByTestId('HexColorPicker')
@@ -113,7 +107,7 @@ describe('DebouncedHexColorPicker', () => {
   describe('User Interactions', () => {
     it('handles hue slider interactions', async () => {
       const { container } = render(
-        <DebouncedHexAlphaColorPicker color="#C62828" onChange={mockOnChange} />
+        <DebouncedHexColorPicker color="#C62828" onChange={mockOnChange} />
       )
 
       const hue = container.querySelector(
@@ -136,7 +130,7 @@ describe('DebouncedHexColorPicker', () => {
 
     it('handles saturation area interactions', async () => {
       const { container } = render(
-        <DebouncedHexAlphaColorPicker color="#C62828" onChange={mockOnChange} />
+        <DebouncedHexColorPicker color="#C62828" onChange={mockOnChange} />
       )
 
       const saturation = container.querySelector(
@@ -159,10 +153,7 @@ describe('DebouncedHexColorPicker', () => {
 
     it('handles alpha slider interactions for 8-digit colors', async () => {
       const { container } = render(
-        <DebouncedHexAlphaColorPicker
-          color="#C62828FF"
-          onChange={mockOnChange}
-        />
+        <DebouncedHexColorPicker color="#C62828FF" onChange={mockOnChange} />
       )
 
       const alpha = container.querySelector(
@@ -188,7 +179,7 @@ describe('DebouncedHexColorPicker', () => {
 
     it('handles mouse interactions', async () => {
       const { container } = render(
-        <DebouncedHexAlphaColorPicker color="#C62828" onChange={mockOnChange} />
+        <DebouncedHexColorPicker color="#C62828" onChange={mockOnChange} />
       )
 
       const saturation = container.querySelector(
@@ -214,7 +205,7 @@ describe('DebouncedHexColorPicker', () => {
   describe('Debouncing Behavior', () => {
     it('debounces onChange calls with 100ms delay', async () => {
       const { container } = render(
-        <DebouncedHexAlphaColorPicker color="#FF0000" onChange={mockOnChange} />
+        <DebouncedHexColorPicker color="#FF0000" onChange={mockOnChange} />
       )
 
       const saturation = container.querySelector(
@@ -253,7 +244,7 @@ describe('DebouncedHexColorPicker', () => {
 
     it('cancels previous debounced calls when new changes occur', async () => {
       const { container } = render(
-        <DebouncedHexAlphaColorPicker color="#FF0000" onChange={mockOnChange} />
+        <DebouncedHexColorPicker color="#FF0000" onChange={mockOnChange} />
       )
 
       const saturation = container.querySelector(
@@ -289,7 +280,7 @@ describe('DebouncedHexColorPicker', () => {
   describe('Color Value Handling', () => {
     it('converts color values to uppercase', async () => {
       const { container } = render(
-        <DebouncedHexAlphaColorPicker color="#ff0000" onChange={mockOnChange} />
+        <DebouncedHexColorPicker color="#ff0000" onChange={mockOnChange} />
       )
 
       const saturation = container.querySelector(
@@ -315,12 +306,12 @@ describe('DebouncedHexColorPicker', () => {
 
     it('maintains internal state correctly during interactions', () => {
       const { rerender } = render(
-        <DebouncedHexAlphaColorPicker color="#FF0000" onChange={mockOnChange} />
+        <DebouncedHexColorPicker color="#FF0000" onChange={mockOnChange} />
       )
 
       // Update prop
       rerender(
-        <DebouncedHexAlphaColorPicker color="#00FF00" onChange={mockOnChange} />
+        <DebouncedHexColorPicker color="#00FF00" onChange={mockOnChange} />
       )
 
       // The component should update without triggering onChange
@@ -331,7 +322,7 @@ describe('DebouncedHexColorPicker', () => {
   describe('Component Cleanup', () => {
     it('cancels debounced function on unmount', () => {
       const { container, unmount } = render(
-        <DebouncedHexAlphaColorPicker color="#FF0000" onChange={mockOnChange} />
+        <DebouncedHexColorPicker color="#FF0000" onChange={mockOnChange} />
       )
 
       const saturation = container.querySelector(
@@ -359,7 +350,7 @@ describe('DebouncedHexColorPicker', () => {
   describe('Props Forwarding', () => {
     it('forwards additional props to HexAlphaColorPicker', () => {
       const { container } = render(
-        <DebouncedHexAlphaColorPicker
+        <DebouncedHexColorPicker
           color="#FF0000"
           onChange={mockOnChange}
           className="custom-class"
@@ -374,7 +365,7 @@ describe('DebouncedHexColorPicker', () => {
 
     it('handles undefined onChange prop gracefully', async () => {
       const { container } = render(
-        <DebouncedHexAlphaColorPicker color="#FF0000" onChange={undefined} />
+        <DebouncedHexColorPicker color="#FF0000" onChange={undefined} />
       )
 
       const saturation = container.querySelector(
@@ -397,18 +388,18 @@ describe('DebouncedHexColorPicker', () => {
   describe('Edge Cases', () => {
     it('handles rapid prop changes', () => {
       const { rerender } = render(
-        <DebouncedHexAlphaColorPicker color="#FF0000" onChange={mockOnChange} />
+        <DebouncedHexColorPicker color="#FF0000" onChange={mockOnChange} />
       )
 
       // Rapidly change props
       rerender(
-        <DebouncedHexAlphaColorPicker color="#00FF00" onChange={mockOnChange} />
+        <DebouncedHexColorPicker color="#00FF00" onChange={mockOnChange} />
       )
       rerender(
-        <DebouncedHexAlphaColorPicker color="#0000FF" onChange={mockOnChange} />
+        <DebouncedHexColorPicker color="#0000FF" onChange={mockOnChange} />
       )
       rerender(
-        <DebouncedHexAlphaColorPicker color="#FFFF00" onChange={mockOnChange} />
+        <DebouncedHexColorPicker color="#FFFF00" onChange={mockOnChange} />
       )
 
       // Should not trigger onChange from prop changes
@@ -417,24 +408,19 @@ describe('DebouncedHexColorPicker', () => {
 
     it('handles empty or invalid color gracefully', () => {
       expect(() => {
-        render(
-          <DebouncedHexAlphaColorPicker color="" onChange={mockOnChange} />
-        )
+        render(<DebouncedHexColorPicker color="" onChange={mockOnChange} />)
       }).not.toThrow()
 
       expect(() => {
         render(
-          <DebouncedHexAlphaColorPicker
-            color="invalid"
-            onChange={mockOnChange}
-          />
+          <DebouncedHexColorPicker color="invalid" onChange={mockOnChange} />
         )
       }).not.toThrow()
     })
 
     it('maintains state consistency during multiple interactions', async () => {
       const { container } = render(
-        <DebouncedHexAlphaColorPicker color="#FF0000" onChange={mockOnChange} />
+        <DebouncedHexColorPicker color="#FF0000" onChange={mockOnChange} />
       )
 
       const saturation = container.querySelector(
