@@ -83,6 +83,12 @@ export interface CardFormCreate_textResponse {
   integrationId: string | null;
 }
 
+export interface CardFormCreate_button_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface CardFormCreate_button_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -104,7 +110,7 @@ export interface CardFormCreate_button_action_EmailAction {
   email: string;
 }
 
-export type CardFormCreate_button_action = CardFormCreate_button_action_NavigateToBlockAction | CardFormCreate_button_action_LinkAction | CardFormCreate_button_action_EmailAction;
+export type CardFormCreate_button_action = CardFormCreate_button_action_PhoneAction | CardFormCreate_button_action_NavigateToBlockAction | CardFormCreate_button_action_LinkAction | CardFormCreate_button_action_EmailAction;
 
 export interface CardFormCreate_button_settings {
   __typename: "ButtonBlockSettings";
@@ -150,6 +156,12 @@ export interface CardFormCreate_endIcon {
   iconColor: IconColor | null;
 }
 
+export interface CardFormCreate_buttonUpdate_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface CardFormCreate_buttonUpdate_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -171,7 +183,7 @@ export interface CardFormCreate_buttonUpdate_action_EmailAction {
   email: string;
 }
 
-export type CardFormCreate_buttonUpdate_action = CardFormCreate_buttonUpdate_action_NavigateToBlockAction | CardFormCreate_buttonUpdate_action_LinkAction | CardFormCreate_buttonUpdate_action_EmailAction;
+export type CardFormCreate_buttonUpdate_action = CardFormCreate_buttonUpdate_action_PhoneAction | CardFormCreate_buttonUpdate_action_NavigateToBlockAction | CardFormCreate_buttonUpdate_action_LinkAction | CardFormCreate_buttonUpdate_action_EmailAction;
 
 export interface CardFormCreate_buttonUpdate_settings {
   __typename: "ButtonBlockSettings";
