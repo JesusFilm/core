@@ -84,11 +84,6 @@ jobs:
         with:
           key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
           path: ./node_modules
-      - name: Mount next cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ inputs.name }}-nextjs-cache
-          path: ./apps/${{ inputs.name }}/.next
       - name: NPM Install
         run: npm install --silent
 
@@ -112,6 +107,9 @@ jobs:
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
         uses: mansagroup/nrwl-nx-action@v3
         env:
+          # Nx Cloud - Environment-specific cache using branch prefix
+          NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+          NX_BRANCH: production
           DOPPLER_API_ANALYTICS_TOKEN: ${{ secrets.DOPPLER_API_ANALYTICS_TOKEN }}
           DOPPLER_API_GATEWAY_TOKEN: ${{ secrets.DOPPLER_API_GATEWAY_TOKEN }}
           DOPPLER_API_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_API_JOURNEYS_TOKEN }}
@@ -134,6 +132,9 @@ jobs:
       - name: upload sourcemaps to datadog
         uses: mansagroup/nrwl-nx-action@v3
         env:
+          # Nx Cloud - Environment-specific cache using branch prefix
+          NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+          NX_BRANCH: production
           GIT_COMMIT_SHA: ${{ github.sha }}
           DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
         with:
