@@ -73,7 +73,6 @@ jobs:
         with:
           targets: codegen
           all: true
-        env:
       - name: Run Prettier
         run: npm run prettier:fix --check '!./.cache'
       - name: Run ESLint
