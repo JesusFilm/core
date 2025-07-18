@@ -83,3 +83,7 @@ export function reduceHexOpacity(
 
   return `${baseHex}${alphaHex}`
 }
+
+export function applyDefaultAlpha(hex: string): string {
+  return hex.length === 7 ? `${hex}4D` : hex
+}
