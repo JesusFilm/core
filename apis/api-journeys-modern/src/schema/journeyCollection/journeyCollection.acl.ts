@@ -1,7 +1,7 @@
 import { UserTeamRole } from '.prisma/api-journeys-modern-client'
+import { User as BaseUser } from '@core/yoga/firebaseClient'
 
 import { Action } from '../../lib/auth/ability'
-import { User as BaseUser } from '@core/yoga/firebaseClient'
 
 // User type that includes roles
 type User = BaseUser & { roles?: string[] }

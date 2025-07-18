@@ -17,8 +17,8 @@ import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
 import {
-  VisitorService,
-  JourneyVisitorSort as ServiceJourneyVisitorSort
+  JourneyVisitorSort as ServiceJourneyVisitorSort,
+  VisitorService
 } from './visitor.service'
 
 // Create service instance
