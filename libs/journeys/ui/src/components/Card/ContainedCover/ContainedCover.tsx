@@ -287,7 +287,7 @@ export function ContainedCover({
                   xs: overlayGradient('bottom'),
                   sm: overlayGradient('right')
                 },
-                backgroundColor: `${baseBackgroundColor}FF`
+                backgroundColor: `${backgroundColor}`
               }}
             />
             <OverlayContent
