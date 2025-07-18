@@ -39,18 +39,18 @@ export function VideoCarousel({
         draggable
         watchOverflow
         spaceBetween={20}
-        slidesOffsetBefore={28}
-        slidesOffsetAfter={28}
+        slidesOffsetBefore={0}
+        slidesOffsetAfter={0}
         navigation={{
           nextEl: nextRef.current,
           prevEl: prevRef.current
         }}
       >
         {!loading
-          ? videos.map((video) => (
+          ? videos.map((video, index) => (
               <SwiperSlide
                 key={video.id}
-                className="max-w-[200px]"
+                className={`max-w-[200px] ${index === 0 ? 'padded-l' : ''} ${index === videos.length - 1 ? 'padded-r' : ''}`}
                 data-testid={`CarouselSlide-${video.id}`}
               >
                 <VideoCard

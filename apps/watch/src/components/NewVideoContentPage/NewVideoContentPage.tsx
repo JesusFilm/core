@@ -5,7 +5,6 @@ import { ReactElement, useMemo, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import Bible from '@core/shared/ui/icons/Bible'
-import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 import { ThemeMode } from '@core/shared/ui/themes'
 
 import { VideoContentFields_studyQuestions } from '../../../__generated__/VideoContentFields'
@@ -13,7 +12,6 @@ import { useVideoChildren } from '../../libs/useVideoChildren'
 import { getWatchUrl } from '../../libs/utils/getWatchUrl'
 import { useVideo } from '../../libs/videoContext'
 import { PageWrapper } from '../PageWrapper'
-import { ShareDialog } from '../ShareDialog'
 
 import { BibleCitations } from './BibleCitations'
 import { ContentMetadata } from './ContentMetadata'
@@ -41,7 +39,6 @@ export function NewVideoContentPage(): ReactElement {
     childrenCount
   } = useVideo()
 
-  const [showShare, setShowShare] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
 
   const variantSlug = container?.variant?.slug ?? variant?.slug
@@ -139,48 +136,32 @@ export function NewVideoContentPage(): ReactElement {
             )}
           <div
             data-testid="ContentPageContent"
-            className="flex flex-col gap-20 py-20 z-10 px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 max-w-[1920px] w-full mx-auto"
+            className="flex flex-col z-10 max-w-[1920px] w-full mx-auto"
           >
-            <div className="grid grid-cols-1 xl:grid-cols-[3fr_2fr] z-10 gap-20">
+            <div className="grid grid-cols-1 xl:grid-cols-[3fr_2fr] gap-12 xl:gap-16 z-10 padded">
               <ContentMetadata
                 title={title[0].value}
                 description={description[0].value}
                 label={label}
               />
               <DiscussionQuestions questions={questions} />
-            </div>
-            <div className="z-10 flex flex-row gap-2 justify-between">
-              <h3 className="text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-red-100/70">
-                {t('Bible Quotes')}
-              </h3>
-              <div className="flex flex-row gap-2">
-                <button
-                  onClick={() => setShowShare(true)}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-gray-900 font-bold uppercase tracking-wider bg-white hover:bg-[#cb333b] hover:text-white transition-colors duration-200 text-sm cursor-pointer"
-                >
-                  <LinkExternal className="w-4 h-4" />
-                  {t('Share')}
-                </button>
+              <div className="col-span-1 xl:col-span-2">
+                <BibleCitations
+                  bibleCitations={bibleCitations}
+                  freeResource={{
+                    heading: t('Free Resources'),
+                    text: t(
+                      'Want to grow deep in your understanding of the Bible?'
+                    ),
+                    cta: {
+                      icon: Bible,
+                      label: t('Join Our Bible Study'),
+                      onClick: handleFreeResourceClick
+                    }
+                  }}
+                />
               </div>
-              <ShareDialog
-                open={showShare}
-                onClose={() => setShowShare(false)}
-              />
             </div>
-            <BibleCitations
-              bibleCitations={bibleCitations}
-              freeResource={{
-                heading: t('Free Resources'),
-                text: t(
-                  'Want to grow deep in your understanding of the Bible?'
-                ),
-                cta: {
-                  icon: Bible,
-                  label: t('Join Our Bible Study'),
-                  onClick: handleFreeResourceClick
-                }
-              }}
-            />
           </div>
         </ContentPageBlurFilter>
       </PageWrapper>

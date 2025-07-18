@@ -1,3 +1,4 @@
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -26,35 +27,43 @@ export function BibleCitations({
   bibleCitations,
   freeResource
 }: BibleCitationsProps): ReactElement {
+  const { t } = useTranslation('apps-watch')
+
   return (
-    <div className="flex flex-row gap-2 z-10" data-testid="BibleCitations">
-      <Swiper
-        modules={[Mousewheel, FreeMode, A11y]}
-        grabCursor
-        observeParents
-        mousewheel={{
-          forceToAxis: true
-        }}
-        watchOverflow
-        slidesPerView={'auto'}
-        pagination={{ clickable: true }}
-        spaceBetween={48}
-        className="w-full"
-      >
-        {bibleCitations.map((citation, i) => (
-          <SwiperSlide key={i} className="max-w-[400px]">
-            <BibleCitationCard
-              citation={citation}
-              imageUrl={bibleImages?.[i] ?? bibleImages[0]}
-            />
-          </SwiperSlide>
-        ))}
-        {freeResource != null && (
-          <SwiperSlide key="free-resource" className="max-w-[400px]">
-            <FreeResourceCard {...freeResource} />
-          </SwiperSlide>
-        )}
-      </Swiper>
-    </div>
+    <>
+      <h3 className="text-sm xl:text-base 2xl:text-lg mb-6 font-semibold tracking-wider uppercase text-red-100/70">
+        {t('Bible Quotes')}
+      </h3>
+
+      <div className="flex flex-row gap-2 z-10" data-testid="BibleCitations">
+        <Swiper
+          modules={[Mousewheel, FreeMode, A11y]}
+          grabCursor
+          observeParents
+          mousewheel={{
+            forceToAxis: true
+          }}
+          watchOverflow
+          slidesPerView={'auto'}
+          pagination={{ clickable: true }}
+          spaceBetween={48}
+          className="w-full"
+        >
+          {bibleCitations.map((citation, i) => (
+            <SwiperSlide key={i} className="max-w-[400px]">
+              <BibleCitationCard
+                citation={citation}
+                imageUrl={bibleImages?.[i] ?? bibleImages[0]}
+              />
+            </SwiperSlide>
+          ))}
+          {freeResource != null && (
+            <SwiperSlide key="free-resource" className="max-w-[400px]">
+              <FreeResourceCard {...freeResource} />
+            </SwiperSlide>
+          )}
+        </Swiper>
+      </div>
+    </>
   )
 }

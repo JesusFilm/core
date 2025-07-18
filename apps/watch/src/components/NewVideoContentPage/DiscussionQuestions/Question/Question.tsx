@@ -25,7 +25,7 @@ export function Question({ questions }: QuestionProps): ReactElement {
     <Accordion type="single" collapsible className="w-full">
       {questions.map((q, i) => (
         <AccordionItem key={i} value={i.toString()} className="border-0">
-          <AccordionTrigger className="hover:no-underline [&>svg]:text-white hover:bg-white/10 rounded-lg px-7">
+          <AccordionTrigger className="hover:no-underline [&>svg]:text-white hover:bg-white/10 rounded-lg px-7 hover:cursor-pointer">
             <div className="flex items-start text-left">
               <HelpSquareContained
                 sx={{ opacity: 0.2, mr: 6, mt: 1, color: 'common.white' }}

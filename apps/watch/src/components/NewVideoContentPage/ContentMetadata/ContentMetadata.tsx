@@ -1,11 +1,7 @@
-import { useTranslation } from 'next-i18next'
-import { ReactElement, useState } from 'react'
-
-import Download2 from '@core/shared/ui/icons/Download2'
+import { ReactElement } from 'react'
 
 import { VideoLabel } from '../../../../__generated__/globalTypes'
 import { getLabelDetails } from '../../../libs/utils/getLabelDetails/getLabelDetails'
-import { DownloadDialog } from '../../DownloadDialog/DownloadDialog'
 
 interface ContentMetadataProps {
   title: string
@@ -19,8 +15,6 @@ export function ContentMetadata({
   label
 }: ContentMetadataProps): ReactElement {
   const { label: labelText } = getLabelDetails(label)
-  const { t } = useTranslation('apps-watch')
-  const [showDownload, setShowDownload] = useState(false)
 
   return (
     <>
@@ -31,17 +25,10 @@ export function ContentMetadata({
               <h4 className="text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-red-100/70">
                 {labelText}
               </h4>
-              <h1 className="text-2xl xl:text-3xl 2xl:text-4xl font-bold mb-0">
+              <h1 className="text-3xl xl:text-4xl 2xl:text-5xl font-bold mb-0">
                 {title}
               </h1>
             </div>
-            <button
-              onClick={() => setShowDownload(true)}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-gray-900 font-bold uppercase tracking-wider bg-white hover:bg-[#cb333b] hover:text-white transition-colors duration-200 text-sm cursor-pointer max-h-10"
-            >
-              <Download2 className="w-4 h-4" />
-              {t('Download')}
-            </button>
           </div>
           <p className="text-lg xl:text-xl mt-2 leading-relaxed text-stone-200/80">
             <span className="font-bold text-white">
@@ -53,10 +40,6 @@ export function ContentMetadata({
           </p>
         </div>
       </div>
-      <DownloadDialog
-        open={showDownload}
-        onClose={() => setShowDownload(false)}
-      />
     </>
   )
 }
