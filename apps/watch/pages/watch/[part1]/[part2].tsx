@@ -155,15 +155,19 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
       }
     }
 
-    const { data: videoAudioLanguagesData } = await client.query<
-      GetLanguagesSlug,
-      GetLanguagesSlugVariables
-    >({
-      query: GET_LANGUAGES_SLUG,
-      variables: {
-        id: contentData.content.id
-      }
-    })
+    let videoAudioLanguagesData: GetLanguagesSlug | undefined
+    if (contentData.content.variant?.slug != null) {
+      const { data } = await client.query<
+        GetLanguagesSlug,
+        GetLanguagesSlugVariables
+      >({
+        query: GET_LANGUAGES_SLUG,
+        variables: {
+          id: contentData.content.id
+        }
+      })
+      videoAudioLanguagesData = data
+    }
 
     // required for auto-subtitle
     let subtitleData: GetSubtitles | undefined
