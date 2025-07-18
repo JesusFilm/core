@@ -13,6 +13,7 @@ import {
   ButtonBlockCreateVariables
 } from '../../../../../../../../__generated__/ButtonBlockCreate'
 import {
+  ButtonAlignment,
   ButtonColor,
   ButtonSize,
   ButtonVariant,
@@ -50,6 +51,10 @@ export const submitButtonBlock: TreeBlock<ButtonBlock> = {
   endIconId: null,
   action: null,
   submitEnabled: true,
+  settings: {
+    __typename: 'ButtonBlockSettings',
+    alignment: ButtonAlignment.justify
+  },
   children: []
 }
 
@@ -65,6 +70,7 @@ export const createCardBlock = (
   themeMode: null,
   themeName: null,
   fullscreen: false,
+  backdropBlur: null,
   children
 })
 
@@ -96,7 +102,10 @@ export const buttonBlockCreateMock: MockedResponse<
         variant: ButtonVariant.contained,
         color: ButtonColor.primary,
         size: ButtonSize.medium,
-        submitEnabled: false
+        submitEnabled: false,
+        settings: {
+          alignment: ButtonAlignment.justify
+        }
       },
       iconBlockCreateInput1: {
         id: 'startIconId',
@@ -154,7 +163,10 @@ export const buttonBlockCreateMock: MockedResponse<
         startIconId: 'startIconId',
         endIconId: 'endIconId',
         action: null,
-        submitEnabled: false
+        submitEnabled: false,
+        settings: {
+          alignment: ButtonAlignment.justify
+        }
       }
     } as ButtonBlockCreate
   }))
@@ -175,7 +187,10 @@ export const submitButtonCreateMock: MockedResponse<
         variant: ButtonVariant.contained,
         color: ButtonColor.primary,
         size: ButtonSize.medium,
-        submitEnabled: true
+        submitEnabled: true,
+        settings: {
+          alignment: ButtonAlignment.justify
+        }
       },
       iconBlockCreateInput1: {
         id: 'submitStartIconId',
@@ -233,7 +248,10 @@ export const submitButtonCreateMock: MockedResponse<
         startIconId: 'submitStartIconId',
         endIconId: 'submitEndIconId',
         action: null,
-        submitEnabled: true
+        submitEnabled: true,
+        settings: {
+          alignment: ButtonAlignment.justify
+        }
       }
     } as ButtonBlockCreate
   }))

@@ -71,7 +71,8 @@ const journey: Journey = {
   displayTitle: null,
   logoImageBlock: null,
   menuButtonIcon: null,
-  menuStepBlock: null
+  menuStepBlock: null,
+  journeyTheme: null
 }
 
 describe('CardLayout', () => {
@@ -86,6 +87,7 @@ describe('CardLayout', () => {
       themeMode: null,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: []
     }
     render(
@@ -114,6 +116,7 @@ describe('CardLayout', () => {
       themeMode: ThemeMode.dark,
       themeName: null,
       fullscreen: true,
+      backdropBlur: null,
       children: []
     }
     render(
@@ -142,6 +145,7 @@ describe('CardLayout', () => {
       themeMode: null,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: []
     }
     const step: TreeBlock<StepBlock> = {
@@ -193,6 +197,7 @@ describe('CardLayout', () => {
       themeMode: null,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: []
     }
     render(
@@ -251,6 +256,7 @@ describe('CardLayout', () => {
       themeMode: null,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: []
     }
     render(

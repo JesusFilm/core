@@ -3,8 +3,7 @@ import { algoliasearch } from 'algoliasearch'
 import { Logger } from 'pino'
 
 import { prisma } from '@core/prisma-media/client'
-
-import { graphql } from '../../../lib/graphql/gatewayGraphql'
+import { graphql } from '@core/shared/gql'
 
 import { LANGUAGES_TO_INCLUDE } from './languages'
 

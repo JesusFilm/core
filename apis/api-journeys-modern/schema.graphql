@@ -10,6 +10,13 @@ interface Block
   parentOrder: Int
 }
 
+enum ButtonAlignment {
+  left
+  center
+  right
+  justify
+}
+
 type ButtonBlock implements Block
   @key(fields: "id")
 {
@@ -24,12 +31,15 @@ type ButtonBlock implements Block
   startIconId: ID @shareable
   endIconId: ID @shareable
   submitEnabled: Boolean @shareable
-  classNames: ButtonBlockClassNames @shareable
+  settings: ButtonBlockSettings @shareable
 }
 
-type ButtonBlockClassNames {
-  """Tailwind class names for the button block"""
-  self: String! @shareable
+type ButtonBlockSettings {
+  """Alignment of the button"""
+  alignment: ButtonAlignment @shareable
+
+  """Color of the button"""
+  color: String @shareable
 }
 
 enum ButtonColor {
@@ -48,6 +58,7 @@ enum ButtonSize {
 enum ButtonVariant {
   text
   contained
+  outlined
 }
 
 type CardBlock implements Block
@@ -60,6 +71,11 @@ type CardBlock implements Block
 
   """backgroundColor should be a HEX color value e.g #FFFFFF for white."""
   backgroundColor: String @shareable
+
+  """
+  backdropBlur should be a number representing blur amount in pixels e.g 20.
+  """
+  backdropBlur: Int @shareable
 
   """
   coverBlockId is present if a child block should be used as a cover.
@@ -86,12 +102,6 @@ type CardBlock implements Block
   themeName from journey
   """
   themeName: ThemeName @shareable
-  classNames: CardBlockClassNames! @shareable
-}
-
-type CardBlockClassNames {
-  """Tailwind class names for the card block"""
-  self: String! @shareable
 }
 
 """
@@ -183,12 +193,6 @@ type IconBlock implements Block
   name: IconName @shareable
   color: IconColor @shareable
   size: IconSize @shareable
-  classNames: IconBlockClassNames! @shareable
-}
-
-type IconBlockClassNames {
-  """Tailwind class names for the icon block"""
-  self: String! @shareable
 }
 
 enum IconColor {
@@ -251,12 +255,6 @@ type ImageBlock implements Block
   focalTop: Int @shareable
   focalLeft: Int @shareable
   scale: Int @shareable
-  classNames: ImageBlockClassNames! @shareable
-}
-
-type ImageBlockClassNames {
-  """Tailwind class names for the image block"""
-  self: String! @shareable
 }
 
 type Journey
@@ -320,6 +318,11 @@ enum JourneyStatus {
   trashed
 }
 
+"""
+The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar Json
+
 type Language
   @key(fields: "id")
   @extends
@@ -330,6 +333,7 @@ type Language
 union MediaVideo = MuxVideo | Video | YouTube
 
 type Mutation {
+  journeySimpleUpdate(id: ID!, journey: Json!): Json
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!): Boolean!
@@ -352,6 +356,10 @@ type MuxVideo
   source: VideoBlockSource! @shareable
 }
 
+type Query {
+  journeySimpleGet(id: ID!): Json
+}
+
 type RadioOptionBlock implements Block
   @key(fields: "id")
 {
@@ -360,12 +368,6 @@ type RadioOptionBlock implements Block
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
   label: String! @shareable
-  classNames: RadioOptionBlockClassNames! @shareable
-}
-
-type RadioOptionBlockClassNames {
-  """Tailwind class names for the radio option block"""
-  self: String! @shareable
 }
 
 type RadioQuestionBlock implements Block
@@ -386,12 +388,6 @@ type SignUpBlock implements Block
   parentOrder: Int @shareable
   submitIconId: ID @shareable
   submitLabel: String @shareable
-  classNames: SignUpBlockClassNames! @shareable
-}
-
-type SignUpBlockClassNames {
-  """Tailwind class names for the sign up block"""
-  self: String! @shareable
 }
 
 type SpacerBlock implements Block
@@ -402,12 +398,6 @@ type SpacerBlock implements Block
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
   spacing: Int @shareable
-  classNames: SpacerBlockClassNames! @shareable
-}
-
-type SpacerBlockClassNames {
-  """Tailwind class names for the spacer block"""
-  self: String! @shareable
 }
 
 type StepBlock implements Block
@@ -471,12 +461,6 @@ type TextResponseBlock implements Block
   type: TextResponseType @shareable
   routeId: String @shareable
   integrationId: String @shareable
-  classNames: TextResponseBlockClassNames! @shareable
-}
-
-type TextResponseBlockClassNames {
-  """Tailwind class names for the text response block"""
-  self: String! @shareable
 }
 
 enum TextResponseType {
@@ -512,12 +496,12 @@ type TypographyBlock implements Block
   variant: TypographyVariant @shareable
   color: TypographyColor @shareable
   align: TypographyAlign @shareable
-  classNames: TypographyBlockClassNames! @shareable
+  settings: TypographyBlockSettings @shareable
 }
 
-type TypographyBlockClassNames {
-  """Tailwind class names for the typography block"""
-  self: String! @shareable
+type TypographyBlockSettings {
+  """Color of the typography"""
+  color: String @shareable
 }
 
 enum TypographyColor {
@@ -611,12 +595,6 @@ type VideoBlock implements Block
   """
   description: String @shareable
   mediaVideo: MediaVideo
-  classNames: VideoBlockClassNames! @shareable
-}
-
-type VideoBlockClassNames {
-  """Tailwind class names for the video block"""
-  self: String! @shareable
 }
 
 enum VideoBlockObjectFit {

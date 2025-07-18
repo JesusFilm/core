@@ -83,7 +83,20 @@ async function main(): Promise<void> {
         './videoChildren'
       )
     )
+    run(
+      await import(
+        /* webpackChunkName: "mux-downloads" */
+        './muxDownloads'
+      )
+    )
   }
+
+  run(
+    await import(
+      /* webpackChunkName: "published" */
+      './published'
+    )
+  )
 
   if (process.env.NODE_ENV !== 'production') {
     run(

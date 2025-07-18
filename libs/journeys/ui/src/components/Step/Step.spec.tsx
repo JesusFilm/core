@@ -106,7 +106,8 @@ const journey: Journey = {
   displayTitle: null,
   logoImageBlock: null,
   menuButtonIcon: null,
-  menuStepBlock: null
+  menuStepBlock: null,
+  journeyTheme: null
 }
 
 const block: TreeBlock<StepFields> = {
@@ -131,7 +132,8 @@ const block: TreeBlock<StepFields> = {
       endIconId: null,
       submitEnabled: null,
       action: null,
-      children: []
+      children: [],
+      settings: null
     },
     {
       __typename: 'ButtonBlock',
@@ -146,7 +148,8 @@ const block: TreeBlock<StepFields> = {
       endIconId: null,
       submitEnabled: null,
       action: null,
-      children: []
+      children: [],
+      settings: null
     }
   ]
 }

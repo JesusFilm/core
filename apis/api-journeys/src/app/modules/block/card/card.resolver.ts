@@ -5,7 +5,7 @@ import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
 
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
-import { Block, Prisma } from '@core/prisma-journeys/client'
+import { Block } from '@core/prisma-journeys/client'
 
 import {
   CardBlockCreateInput,
@@ -14,7 +14,6 @@ import {
 import { Action, AppAbility } from '../../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../../lib/casl/caslGuard'
 import { PrismaService } from '../../../lib/prisma.service'
-import { sanitizeClassNames } from '../../../lib/tailwind/sanitizeClassNames'
 import { INCLUDE_JOURNEY_ACL } from '../../journey/journey.acl'
 import { BlockService } from '../block.service'
 
@@ -42,14 +41,7 @@ export class CardBlockResolver {
           typename: 'CardBlock',
           parentBlock: { connect: { id: input.parentBlockId } },
           journey: { connect: { id: input.journeyId } },
-          parentOrder,
-          classNames:
-            input.classNames != null
-              ? sanitizeClassNames(
-                  input.classNames as unknown as Prisma.JsonObject,
-                  { self: '' }
-                )
-              : undefined
+          parentOrder
         },
         include: {
           action: true,
@@ -93,14 +85,7 @@ export class CardBlockResolver {
         extensions: { code: 'FORBIDDEN' }
       })
     return await this.blockService.update(id, {
-      ...input,
-      classNames:
-        input.classNames != null
-          ? sanitizeClassNames(
-              input.classNames as unknown as Prisma.JsonObject,
-              block.classNames as Prisma.JsonObject
-            )
-          : undefined
+      ...input
     })
   }
 

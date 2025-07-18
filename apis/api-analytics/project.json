@@ -85,10 +85,10 @@
         "command": "codecov -f coverage/apis/api-analytics/cobertura-coverage.xml -F apps.api-analytics"
       }
     },
-    "codegen": {
+    "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "gql.tada generate output --tsconfig apis/api-analytics/tsconfig.json"
+        "command": "npx tsc -b apis/api-analytics/tsconfig.json"
       }
     },
     "prisma-generate-ci": {

@@ -14,6 +14,7 @@ import {
   DateTimeISOResolver,
   DateTimeResolver
 } from 'graphql-scalars'
+import { GraphQLJSONObject } from 'graphql-type-json'
 
 import type PrismaTypes from '@core/prisma-journeys/__generated__/pothos-types'
 import { Prisma, Role, prisma } from '@core/prisma-journeys/client'
@@ -65,6 +66,7 @@ export const builder = new SchemaBuilder<{
     DateTime: { Input: Date; Output: Date }
     ID: { Input: string; Output: number | string }
     JourneyStatus: { Input: string; Output: string }
+    Json: { Input: unknown; Output: unknown }
   }
 }>({
   plugins: [
@@ -116,3 +118,4 @@ builder.subscriptionType({})
 builder.addScalarType('Date', DateResolver)
 builder.addScalarType('DateTimeISO', DateTimeISOResolver)
 builder.addScalarType('DateTime', DateTimeResolver)
+builder.addScalarType('Json', GraphQLJSONObject)

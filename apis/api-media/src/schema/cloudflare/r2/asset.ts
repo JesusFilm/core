@@ -1,4 +1,8 @@
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import {
+  DeleteObjectCommand,
+  PutObjectCommand,
+  S3Client
+} from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 
 import { prisma } from '@core/prisma-media/client'
@@ -38,6 +42,19 @@ export async function getPresignedUrl(
       Bucket: process.env.CLOUDFLARE_R2_BUCKET,
       Key: fileName,
       ContentType: contentType
+    })
+  )
+}
+
+export async function deleteR2File(fileName: string): Promise<void> {
+  if (process.env.CLOUDFLARE_R2_BUCKET == null)
+    throw new Error('Missing CLOUDFLARE_R2_BUCKET')
+
+  const client = getClient()
+  await client.send(
+    new DeleteObjectCommand({
+      Bucket: process.env.CLOUDFLARE_R2_BUCKET,
+      Key: fileName
     })
   )
 }

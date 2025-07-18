@@ -111,6 +111,7 @@ describe('ButtonBlock', () => {
           label: 'label',
           parentBlock: { connect: { id: 'parentBlockId' } },
           parentOrder: 2,
+          settings: {},
           size: 'medium',
           typename: 'ButtonBlock',
           variant: 'contained'

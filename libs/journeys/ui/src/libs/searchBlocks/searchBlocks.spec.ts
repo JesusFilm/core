@@ -15,6 +15,7 @@ describe('searchBlocks', () => {
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             __typename: 'TypographyBlock',
@@ -25,7 +26,11 @@ describe('searchBlocks', () => {
             variant: null,
             color: null,
             align: null,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             __typename: 'RadioQuestionBlock',
@@ -81,6 +86,7 @@ describe('searchBlocks', () => {
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             __typename: 'TypographyBlock',
@@ -91,7 +97,11 @@ describe('searchBlocks', () => {
             variant: null,
             color: null,
             align: null,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             __typename: 'RadioQuestionBlock',

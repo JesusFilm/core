@@ -24,7 +24,11 @@ const typography: TreeBlock<TypographyBlock> = {
   color: null,
   content: 'title content',
   variant: TypographyVariant.h1,
-  children: []
+  children: [],
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
 }
 
 const button1: TreeBlock<ButtonBlock> = {
@@ -40,7 +44,8 @@ const button1: TreeBlock<ButtonBlock> = {
   endIconId: null,
   submitEnabled: null,
   action: null,
-  children: []
+  children: [],
+  settings: null
 }
 
 const image: TreeBlock<ImageBlock> = {
@@ -154,6 +159,7 @@ const card: TreeBlock<CardBlock> = {
   themeMode: null,
   themeName: null,
   fullscreen: false,
+  backdropBlur: null,
   children: [image, typography, button1, radioQuestionBlock]
 }
 

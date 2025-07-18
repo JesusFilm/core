@@ -3,23 +3,29 @@ import {
   ComponentProps,
   ReactElement,
   useEffect,
-  useRef,
+  useMemo,
   useState
 } from 'react'
-import { HexColorPicker } from 'react-colorful'
+import { HexAlphaColorPicker, HexColorPicker } from 'react-colorful'
 
 export function DebouncedHexColorPicker({
   color,
   onChange,
+  enableAlpha = false,
   ...props
-}: ComponentProps<typeof HexColorPicker>): ReactElement {
+}: ComponentProps<typeof HexAlphaColorPicker> & {
+  enableAlpha?: boolean
+}): ReactElement {
   const [value, setValue] = useState(color)
 
-  const debouncedChange = useRef(
-    debounce((value: string) => {
-      onChange?.(value)
-    }, 100)
-  ).current
+  const debouncedChange = useMemo(
+    () =>
+      debounce((value: string) => {
+        onChange?.(value)
+      }, 100),
+
+    [onChange]
+  )
 
   useEffect(() => {
     return () => {
@@ -27,14 +33,25 @@ export function DebouncedHexColorPicker({
     }
   }, [debouncedChange])
 
+  useEffect(() => {
+    setValue(color)
+  }, [color])
+
   async function handleChange(value: string): Promise<void> {
     void debouncedChange(value.toUpperCase())
     setValue(value.toUpperCase())
   }
 
-  return (
+  return enableAlpha ? (
+    <HexAlphaColorPicker
+      data-testid="HexAlphaColorPicker"
+      color={value}
+      onChange={handleChange}
+      {...props}
+    />
+  ) : (
     <HexColorPicker
-      data-testId="HexColorPicker"
+      data-testid="HexColorPicker"
       color={value}
       onChange={handleChange}
       {...props}

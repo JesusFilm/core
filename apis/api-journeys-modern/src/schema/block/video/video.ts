@@ -7,28 +7,6 @@ import { Block } from '../block'
 import { VideoBlockObjectFit } from './enums/videoObjectFit'
 import { VideoBlockSource } from './enums/videoSource'
 
-interface VideoBlockClassNamesType {
-  self: string
-}
-
-const VideoBlockClassNamesRef = builder.objectRef<VideoBlockClassNamesType>(
-  'VideoBlockClassNames'
-)
-
-export const VideoBlockClassNames = builder.objectType(
-  VideoBlockClassNamesRef,
-  {
-    fields: (t) => ({
-      self: t.string({
-        nullable: false,
-        directives: { shareable: true },
-        description: 'Tailwind class names for the video block',
-        resolve: (classNames: VideoBlockClassNamesType) => classNames.self
-      })
-    })
-  }
-)
-
 // Type guard for allowed media video sources
 function isMediaVideoSource(
   source: string
@@ -140,13 +118,6 @@ For other sources this is automatically populated.`
         }
         return null
       }
-    }),
-    classNames: t.field({
-      type: VideoBlockClassNamesRef,
-      nullable: false,
-      directives: { shareable: true },
-      resolve: ({ classNames }) =>
-        classNames as unknown as VideoBlockClassNamesType
     })
   })
 })

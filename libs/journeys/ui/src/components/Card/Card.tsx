@@ -77,6 +77,7 @@ export function Card({
   id,
   children,
   backgroundColor,
+  backdropBlur,
   coverBlockId,
   fullscreen,
   wrappers
@@ -100,7 +101,7 @@ export function Card({
     backgroundColor != null
       ? backgroundColor
       : // Card theme is determined in Conductor
-        theme.palette.background.paper
+        `${theme.palette.background.paper}4D`
 
   useEffect(() => {
     document
@@ -264,6 +265,7 @@ export function Card({
               <ExpandedCover
                 backgroundColor={cardColor}
                 backgroundBlur={blurUrl}
+                backdropBlur={backdropBlur ?? 20}
                 imageBlock={imageBlock}
                 hasFullscreenVideo={hasFullscreenVideo}
               >

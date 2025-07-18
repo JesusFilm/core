@@ -34,6 +34,7 @@ describe('LinkNode', () => {
           themeMode: null,
           themeName: null,
           fullscreen: false,
+          backdropBlur: null,
           children: [
             {
               __typename: 'ButtonBlock',
@@ -53,7 +54,8 @@ describe('LinkNode', () => {
                 gtmEventName: null,
                 url: 'https://www.google.com'
               },
-              children: []
+              children: [],
+              settings: null
             },
             {
               __typename: 'ButtonBlock',
@@ -73,7 +75,8 @@ describe('LinkNode', () => {
                 gtmEventName: null,
                 email: 'email@example.com'
               },
-              children: []
+              children: [],
+              settings: null
             }
           ]
         }

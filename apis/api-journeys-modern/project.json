@@ -85,12 +85,6 @@
         "command": "codecov -f coverage/apis/api-journeys-modern/cobertura-coverage.xml -F apps.api-journeys-modern"
       }
     },
-    "codegen": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "gql.tada generate output --tsconfig apis/api-journeys-modern/tsconfig.json"
-      }
-    },
     "email": {
       "executor": "nx:run-commands",
       "options": {

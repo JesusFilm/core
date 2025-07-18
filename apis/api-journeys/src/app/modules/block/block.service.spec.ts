@@ -210,7 +210,7 @@ describe('BlockService', () => {
             ),
             typename: 'CardBlock',
             journey: { connect: { id: journey.id } },
-            classNames: { self: '' }
+            settings: {}
           }
         })
       ).toEqual(blockResponse)
@@ -363,7 +363,11 @@ describe('BlockService', () => {
     const blockChild = {
       id: 'child',
       __typename: 'TypographyBlock',
-      parentBlockId: duplicatedBlock.id
+      parentBlockId: duplicatedBlock.id,
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     } as unknown as Block
 
     beforeEach(() => {

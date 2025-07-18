@@ -36,7 +36,11 @@ describe('TypographyBlockResolver', () => {
     variant: TypographyVariant.h2,
     color: TypographyColor.primary,
     align: TypographyAlign.left,
-    updatedAt: '2024-10-21T04:32:25.858Z'
+    updatedAt: '2024-10-21T04:32:25.858Z',
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    }
   } as unknown as Block
   const blockWithUserTeam = {
     ...block,
@@ -110,7 +114,8 @@ describe('TypographyBlockResolver', () => {
           parentBlock: { connect: { id: 'parentBlockId' } },
           parentOrder: 2,
           typename: 'TypographyBlock',
-          variant: 'h2'
+          variant: 'h2',
+          settings: {}
         },
         include: {
           action: true,

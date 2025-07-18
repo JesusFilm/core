@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CardBlockUpdateInput, ButtonVariant, ButtonColor, ButtonSize, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { CardBlockUpdateInput, ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardCtaRestore
@@ -39,6 +39,14 @@ export interface CardCtaRestore_imageRestore_ButtonBlock_action_EmailAction {
 
 export type CardCtaRestore_imageRestore_ButtonBlock_action = CardCtaRestore_imageRestore_ButtonBlock_action_NavigateToBlockAction | CardCtaRestore_imageRestore_ButtonBlock_action_LinkAction | CardCtaRestore_imageRestore_ButtonBlock_action_EmailAction;
 
+export interface CardCtaRestore_imageRestore_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardCtaRestore_imageRestore_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -52,6 +60,7 @@ export interface CardCtaRestore_imageRestore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardCtaRestore_imageRestore_ButtonBlock_action | null;
+  settings: CardCtaRestore_imageRestore_ButtonBlock_settings | null;
 }
 
 export interface CardCtaRestore_imageRestore_CardBlock {
@@ -63,6 +72,10 @@ export interface CardCtaRestore_imageRestore_CardBlock {
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
   backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
@@ -236,6 +249,14 @@ export interface CardCtaRestore_imageRestore_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardCtaRestore_imageRestore_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardCtaRestore_imageRestore_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -245,6 +266,7 @@ export interface CardCtaRestore_imageRestore_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardCtaRestore_imageRestore_TypographyBlock_settings | null;
 }
 
 export interface CardCtaRestore_imageRestore_VideoBlock_mediaVideo_Video_title {
@@ -464,6 +486,14 @@ export interface CardCtaRestore_subtitleRestore_ButtonBlock_action_EmailAction {
 
 export type CardCtaRestore_subtitleRestore_ButtonBlock_action = CardCtaRestore_subtitleRestore_ButtonBlock_action_NavigateToBlockAction | CardCtaRestore_subtitleRestore_ButtonBlock_action_LinkAction | CardCtaRestore_subtitleRestore_ButtonBlock_action_EmailAction;
 
+export interface CardCtaRestore_subtitleRestore_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardCtaRestore_subtitleRestore_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -477,6 +507,7 @@ export interface CardCtaRestore_subtitleRestore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardCtaRestore_subtitleRestore_ButtonBlock_action | null;
+  settings: CardCtaRestore_subtitleRestore_ButtonBlock_settings | null;
 }
 
 export interface CardCtaRestore_subtitleRestore_CardBlock {
@@ -488,6 +519,10 @@ export interface CardCtaRestore_subtitleRestore_CardBlock {
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
   backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
@@ -661,6 +696,14 @@ export interface CardCtaRestore_subtitleRestore_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardCtaRestore_subtitleRestore_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardCtaRestore_subtitleRestore_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -670,6 +713,7 @@ export interface CardCtaRestore_subtitleRestore_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardCtaRestore_subtitleRestore_TypographyBlock_settings | null;
 }
 
 export interface CardCtaRestore_subtitleRestore_VideoBlock_mediaVideo_Video_title {
@@ -889,6 +933,14 @@ export interface CardCtaRestore_titleRestore_ButtonBlock_action_EmailAction {
 
 export type CardCtaRestore_titleRestore_ButtonBlock_action = CardCtaRestore_titleRestore_ButtonBlock_action_NavigateToBlockAction | CardCtaRestore_titleRestore_ButtonBlock_action_LinkAction | CardCtaRestore_titleRestore_ButtonBlock_action_EmailAction;
 
+export interface CardCtaRestore_titleRestore_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardCtaRestore_titleRestore_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -902,6 +954,7 @@ export interface CardCtaRestore_titleRestore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardCtaRestore_titleRestore_ButtonBlock_action | null;
+  settings: CardCtaRestore_titleRestore_ButtonBlock_settings | null;
 }
 
 export interface CardCtaRestore_titleRestore_CardBlock {
@@ -913,6 +966,10 @@ export interface CardCtaRestore_titleRestore_CardBlock {
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
   backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
@@ -1086,6 +1143,14 @@ export interface CardCtaRestore_titleRestore_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardCtaRestore_titleRestore_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardCtaRestore_titleRestore_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -1095,6 +1160,7 @@ export interface CardCtaRestore_titleRestore_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardCtaRestore_titleRestore_TypographyBlock_settings | null;
 }
 
 export interface CardCtaRestore_titleRestore_VideoBlock_mediaVideo_Video_title {
@@ -1314,6 +1380,14 @@ export interface CardCtaRestore_button1Restore_ButtonBlock_action_EmailAction {
 
 export type CardCtaRestore_button1Restore_ButtonBlock_action = CardCtaRestore_button1Restore_ButtonBlock_action_NavigateToBlockAction | CardCtaRestore_button1Restore_ButtonBlock_action_LinkAction | CardCtaRestore_button1Restore_ButtonBlock_action_EmailAction;
 
+export interface CardCtaRestore_button1Restore_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardCtaRestore_button1Restore_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -1327,6 +1401,7 @@ export interface CardCtaRestore_button1Restore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardCtaRestore_button1Restore_ButtonBlock_action | null;
+  settings: CardCtaRestore_button1Restore_ButtonBlock_settings | null;
 }
 
 export interface CardCtaRestore_button1Restore_CardBlock {
@@ -1338,6 +1413,10 @@ export interface CardCtaRestore_button1Restore_CardBlock {
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
   backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
@@ -1511,6 +1590,14 @@ export interface CardCtaRestore_button1Restore_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardCtaRestore_button1Restore_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardCtaRestore_button1Restore_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -1520,6 +1607,7 @@ export interface CardCtaRestore_button1Restore_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardCtaRestore_button1Restore_TypographyBlock_settings | null;
 }
 
 export interface CardCtaRestore_button1Restore_VideoBlock_mediaVideo_Video_title {
@@ -1739,6 +1827,14 @@ export interface CardCtaRestore_startIcon1Restore_ButtonBlock_action_EmailAction
 
 export type CardCtaRestore_startIcon1Restore_ButtonBlock_action = CardCtaRestore_startIcon1Restore_ButtonBlock_action_NavigateToBlockAction | CardCtaRestore_startIcon1Restore_ButtonBlock_action_LinkAction | CardCtaRestore_startIcon1Restore_ButtonBlock_action_EmailAction;
 
+export interface CardCtaRestore_startIcon1Restore_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardCtaRestore_startIcon1Restore_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -1752,6 +1848,7 @@ export interface CardCtaRestore_startIcon1Restore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardCtaRestore_startIcon1Restore_ButtonBlock_action | null;
+  settings: CardCtaRestore_startIcon1Restore_ButtonBlock_settings | null;
 }
 
 export interface CardCtaRestore_startIcon1Restore_CardBlock {
@@ -1763,6 +1860,10 @@ export interface CardCtaRestore_startIcon1Restore_CardBlock {
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
   backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
@@ -1936,6 +2037,14 @@ export interface CardCtaRestore_startIcon1Restore_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardCtaRestore_startIcon1Restore_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardCtaRestore_startIcon1Restore_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -1945,6 +2054,7 @@ export interface CardCtaRestore_startIcon1Restore_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardCtaRestore_startIcon1Restore_TypographyBlock_settings | null;
 }
 
 export interface CardCtaRestore_startIcon1Restore_VideoBlock_mediaVideo_Video_title {
@@ -2164,6 +2274,14 @@ export interface CardCtaRestore_endIcon1Restore_ButtonBlock_action_EmailAction {
 
 export type CardCtaRestore_endIcon1Restore_ButtonBlock_action = CardCtaRestore_endIcon1Restore_ButtonBlock_action_NavigateToBlockAction | CardCtaRestore_endIcon1Restore_ButtonBlock_action_LinkAction | CardCtaRestore_endIcon1Restore_ButtonBlock_action_EmailAction;
 
+export interface CardCtaRestore_endIcon1Restore_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardCtaRestore_endIcon1Restore_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -2177,6 +2295,7 @@ export interface CardCtaRestore_endIcon1Restore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardCtaRestore_endIcon1Restore_ButtonBlock_action | null;
+  settings: CardCtaRestore_endIcon1Restore_ButtonBlock_settings | null;
 }
 
 export interface CardCtaRestore_endIcon1Restore_CardBlock {
@@ -2188,6 +2307,10 @@ export interface CardCtaRestore_endIcon1Restore_CardBlock {
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
   backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
@@ -2361,6 +2484,14 @@ export interface CardCtaRestore_endIcon1Restore_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardCtaRestore_endIcon1Restore_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardCtaRestore_endIcon1Restore_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -2370,6 +2501,7 @@ export interface CardCtaRestore_endIcon1Restore_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardCtaRestore_endIcon1Restore_TypographyBlock_settings | null;
 }
 
 export interface CardCtaRestore_endIcon1Restore_VideoBlock_mediaVideo_Video_title {
@@ -2589,6 +2721,14 @@ export interface CardCtaRestore_button2Restore_ButtonBlock_action_EmailAction {
 
 export type CardCtaRestore_button2Restore_ButtonBlock_action = CardCtaRestore_button2Restore_ButtonBlock_action_NavigateToBlockAction | CardCtaRestore_button2Restore_ButtonBlock_action_LinkAction | CardCtaRestore_button2Restore_ButtonBlock_action_EmailAction;
 
+export interface CardCtaRestore_button2Restore_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardCtaRestore_button2Restore_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -2602,6 +2742,7 @@ export interface CardCtaRestore_button2Restore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardCtaRestore_button2Restore_ButtonBlock_action | null;
+  settings: CardCtaRestore_button2Restore_ButtonBlock_settings | null;
 }
 
 export interface CardCtaRestore_button2Restore_CardBlock {
@@ -2613,6 +2754,10 @@ export interface CardCtaRestore_button2Restore_CardBlock {
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
   backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
@@ -2786,6 +2931,14 @@ export interface CardCtaRestore_button2Restore_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardCtaRestore_button2Restore_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardCtaRestore_button2Restore_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -2795,6 +2948,7 @@ export interface CardCtaRestore_button2Restore_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardCtaRestore_button2Restore_TypographyBlock_settings | null;
 }
 
 export interface CardCtaRestore_button2Restore_VideoBlock_mediaVideo_Video_title {
@@ -3014,6 +3168,14 @@ export interface CardCtaRestore_startIcon2Restore_ButtonBlock_action_EmailAction
 
 export type CardCtaRestore_startIcon2Restore_ButtonBlock_action = CardCtaRestore_startIcon2Restore_ButtonBlock_action_NavigateToBlockAction | CardCtaRestore_startIcon2Restore_ButtonBlock_action_LinkAction | CardCtaRestore_startIcon2Restore_ButtonBlock_action_EmailAction;
 
+export interface CardCtaRestore_startIcon2Restore_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardCtaRestore_startIcon2Restore_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -3027,6 +3189,7 @@ export interface CardCtaRestore_startIcon2Restore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardCtaRestore_startIcon2Restore_ButtonBlock_action | null;
+  settings: CardCtaRestore_startIcon2Restore_ButtonBlock_settings | null;
 }
 
 export interface CardCtaRestore_startIcon2Restore_CardBlock {
@@ -3038,6 +3201,10 @@ export interface CardCtaRestore_startIcon2Restore_CardBlock {
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
   backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
@@ -3211,6 +3378,14 @@ export interface CardCtaRestore_startIcon2Restore_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardCtaRestore_startIcon2Restore_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardCtaRestore_startIcon2Restore_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -3220,6 +3395,7 @@ export interface CardCtaRestore_startIcon2Restore_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardCtaRestore_startIcon2Restore_TypographyBlock_settings | null;
 }
 
 export interface CardCtaRestore_startIcon2Restore_VideoBlock_mediaVideo_Video_title {
@@ -3439,6 +3615,14 @@ export interface CardCtaRestore_endIcon2Restore_ButtonBlock_action_EmailAction {
 
 export type CardCtaRestore_endIcon2Restore_ButtonBlock_action = CardCtaRestore_endIcon2Restore_ButtonBlock_action_NavigateToBlockAction | CardCtaRestore_endIcon2Restore_ButtonBlock_action_LinkAction | CardCtaRestore_endIcon2Restore_ButtonBlock_action_EmailAction;
 
+export interface CardCtaRestore_endIcon2Restore_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardCtaRestore_endIcon2Restore_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -3452,6 +3636,7 @@ export interface CardCtaRestore_endIcon2Restore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardCtaRestore_endIcon2Restore_ButtonBlock_action | null;
+  settings: CardCtaRestore_endIcon2Restore_ButtonBlock_settings | null;
 }
 
 export interface CardCtaRestore_endIcon2Restore_CardBlock {
@@ -3463,6 +3648,10 @@ export interface CardCtaRestore_endIcon2Restore_CardBlock {
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
   backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
@@ -3636,6 +3825,14 @@ export interface CardCtaRestore_endIcon2Restore_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardCtaRestore_endIcon2Restore_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardCtaRestore_endIcon2Restore_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -3645,6 +3842,7 @@ export interface CardCtaRestore_endIcon2Restore_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardCtaRestore_endIcon2Restore_TypographyBlock_settings | null;
 }
 
 export interface CardCtaRestore_endIcon2Restore_VideoBlock_mediaVideo_Video_title {
@@ -3864,6 +4062,14 @@ export interface CardCtaRestore_button3Restore_ButtonBlock_action_EmailAction {
 
 export type CardCtaRestore_button3Restore_ButtonBlock_action = CardCtaRestore_button3Restore_ButtonBlock_action_NavigateToBlockAction | CardCtaRestore_button3Restore_ButtonBlock_action_LinkAction | CardCtaRestore_button3Restore_ButtonBlock_action_EmailAction;
 
+export interface CardCtaRestore_button3Restore_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardCtaRestore_button3Restore_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -3877,6 +4083,7 @@ export interface CardCtaRestore_button3Restore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardCtaRestore_button3Restore_ButtonBlock_action | null;
+  settings: CardCtaRestore_button3Restore_ButtonBlock_settings | null;
 }
 
 export interface CardCtaRestore_button3Restore_CardBlock {
@@ -3888,6 +4095,10 @@ export interface CardCtaRestore_button3Restore_CardBlock {
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
   backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
@@ -4061,6 +4272,14 @@ export interface CardCtaRestore_button3Restore_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardCtaRestore_button3Restore_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardCtaRestore_button3Restore_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -4070,6 +4289,7 @@ export interface CardCtaRestore_button3Restore_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardCtaRestore_button3Restore_TypographyBlock_settings | null;
 }
 
 export interface CardCtaRestore_button3Restore_VideoBlock_mediaVideo_Video_title {
@@ -4289,6 +4509,14 @@ export interface CardCtaRestore_startIcon3Restore_ButtonBlock_action_EmailAction
 
 export type CardCtaRestore_startIcon3Restore_ButtonBlock_action = CardCtaRestore_startIcon3Restore_ButtonBlock_action_NavigateToBlockAction | CardCtaRestore_startIcon3Restore_ButtonBlock_action_LinkAction | CardCtaRestore_startIcon3Restore_ButtonBlock_action_EmailAction;
 
+export interface CardCtaRestore_startIcon3Restore_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardCtaRestore_startIcon3Restore_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -4302,6 +4530,7 @@ export interface CardCtaRestore_startIcon3Restore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardCtaRestore_startIcon3Restore_ButtonBlock_action | null;
+  settings: CardCtaRestore_startIcon3Restore_ButtonBlock_settings | null;
 }
 
 export interface CardCtaRestore_startIcon3Restore_CardBlock {
@@ -4313,6 +4542,10 @@ export interface CardCtaRestore_startIcon3Restore_CardBlock {
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
   backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
@@ -4486,6 +4719,14 @@ export interface CardCtaRestore_startIcon3Restore_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardCtaRestore_startIcon3Restore_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardCtaRestore_startIcon3Restore_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -4495,6 +4736,7 @@ export interface CardCtaRestore_startIcon3Restore_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardCtaRestore_startIcon3Restore_TypographyBlock_settings | null;
 }
 
 export interface CardCtaRestore_startIcon3Restore_VideoBlock_mediaVideo_Video_title {
@@ -4714,6 +4956,14 @@ export interface CardCtaRestore_endIcon3Restore_ButtonBlock_action_EmailAction {
 
 export type CardCtaRestore_endIcon3Restore_ButtonBlock_action = CardCtaRestore_endIcon3Restore_ButtonBlock_action_NavigateToBlockAction | CardCtaRestore_endIcon3Restore_ButtonBlock_action_LinkAction | CardCtaRestore_endIcon3Restore_ButtonBlock_action_EmailAction;
 
+export interface CardCtaRestore_endIcon3Restore_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardCtaRestore_endIcon3Restore_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -4727,6 +4977,7 @@ export interface CardCtaRestore_endIcon3Restore_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardCtaRestore_endIcon3Restore_ButtonBlock_action | null;
+  settings: CardCtaRestore_endIcon3Restore_ButtonBlock_settings | null;
 }
 
 export interface CardCtaRestore_endIcon3Restore_CardBlock {
@@ -4738,6 +4989,10 @@ export interface CardCtaRestore_endIcon3Restore_CardBlock {
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
   backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
@@ -4911,6 +5166,14 @@ export interface CardCtaRestore_endIcon3Restore_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardCtaRestore_endIcon3Restore_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardCtaRestore_endIcon3Restore_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -4920,6 +5183,7 @@ export interface CardCtaRestore_endIcon3Restore_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardCtaRestore_endIcon3Restore_TypographyBlock_settings | null;
 }
 
 export interface CardCtaRestore_endIcon3Restore_VideoBlock_mediaVideo_Video_title {
@@ -5118,6 +5382,10 @@ export interface CardCtaRestore_cardBlockUpdate {
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
   backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used

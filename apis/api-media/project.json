@@ -109,10 +109,22 @@
         "command": "npm run ts-node apis/api-media/src/workers/cli.ts blocklist"
       }
     },
+    "queue-publish": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-media/src/workers/cli.ts publish"
+      }
+    },
     "queue-seed": {
       "executor": "nx:run-commands",
       "options": {
         "command": "npm run ts-node apis/api-media/src/workers/cli.ts seed"
+      }
+    },
+    "queue-mux-downloads": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-media/src/workers/cli.ts mux-downloads"
       }
     },
     "export-language-slugs": {
@@ -123,12 +135,6 @@
           "npx prettier apis/api-languages/src/__generated__/languageSlugs.ts --write"
         ],
         "parallel": false
-      }
-    },
-    "codegen": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "gql.tada generate output --tsconfig apis/api-media/tsconfig.json"
       }
     },
     "data-export": {
@@ -143,10 +149,10 @@
         "command": "npm run ts-node apis/api-media/src/scripts/data-import.ts"
       }
     },
-    "prisma-generate-ci": {
+    "copy-distro-downloads": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "nx prisma-generate prisma-media"
+        "command": "npm run ts-node apis/api-media/src/scripts/copy-distro-downloads.ts"
       }
     }
   }

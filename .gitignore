@@ -91,3 +91,6 @@ terraform.tfstate.backup
 
 # prisma
 .prisma/
+
+# node sea
+sea-prep.blob

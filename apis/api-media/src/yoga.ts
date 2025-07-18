@@ -32,6 +32,7 @@ export const yoga = createYoga<
   context: async ({ request, params }) => {
     const payload = get(params, 'extensions.jwt.payload')
     const user = getUserFromPayload(payload, logger)
+    const clientName = request.headers.get('x-graphql-client-name') ?? undefined
 
     if (user != null)
       return {
@@ -43,7 +44,8 @@ export const yoga = createYoga<
             await prisma.userMediaRole.findUnique({
               where: { userId: user.id }
             })
-          )?.roles ?? []
+          )?.roles ?? [],
+        clientName
       }
 
     const interopToken = request.headers.get('interop-token')
@@ -53,12 +55,14 @@ export const yoga = createYoga<
       return {
         ...initContextCache(),
         type: 'interop',
-        ...interopContext
+        ...interopContext,
+        clientName
       }
 
     return {
       ...initContextCache(),
-      type: 'public'
+      type: 'public',
+      clientName
     }
   },
   plugins: [

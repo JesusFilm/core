@@ -94,12 +94,6 @@
         ]
       }
     },
-    "codegen": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "gql.tada generate output --tsconfig apis/api-users/tsconfig.json"
-      }
-    },
     "demo": {
       "executor": "@nx/storybook:storybook",
       "options": {

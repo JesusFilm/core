@@ -91,12 +91,6 @@
         "command": "npm run ts-node apis/api-languages/src/workers/cli.ts algolia"
       }
     },
-    "codegen": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "gql.tada generate output --tsconfig apis/api-languages/tsconfig.json"
-      }
-    },
     "data-export": {
       "executor": "nx:run-commands",
       "options": {

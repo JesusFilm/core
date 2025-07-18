@@ -72,6 +72,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             id: 'image0.id',
@@ -97,7 +98,11 @@ const steps: Array<TreeBlock<StepBlock>> = [
             color: null,
             content: 'Question',
             variant: TypographyVariant.h3,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId2',
@@ -108,7 +113,11 @@ const steps: Array<TreeBlock<StepBlock>> = [
             color: null,
             content: 'Description',
             variant: TypographyVariant.body2,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           block
         ]

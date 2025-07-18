@@ -144,6 +144,7 @@ describe('transformSteps', () => {
             themeName: null,
             themeMode: null,
             fullscreen: false,
+            backdropBlur: null,
             children: [
               {
                 __typename: 'ButtonBlock',
@@ -163,7 +164,8 @@ describe('transformSteps', () => {
                   gtmEventName: null,
                   blockId: 'step2.id'
                 },
-                children: []
+                children: [],
+                settings: null
               }
             ]
           }
@@ -243,6 +245,7 @@ describe('transformSteps', () => {
             themeName: null,
             themeMode: null,
             fullscreen: false,
+            backdropBlur: null,
             children: [
               {
                 __typename: 'ButtonBlock',
@@ -262,7 +265,8 @@ describe('transformSteps', () => {
                   gtmEventName: null,
                   blockId: 'step1.id'
                 },
-                children: []
+                children: [],
+                settings: null
               }
             ]
           }
@@ -318,6 +322,7 @@ describe('transformSteps', () => {
             themeName: null,
             themeMode: null,
             fullscreen: false,
+            backdropBlur: null,
             children: [
               {
                 __typename: 'ButtonBlock',
@@ -337,7 +342,8 @@ describe('transformSteps', () => {
                   gtmEventName: null,
                   url: 'https://example.com'
                 },
-                children: []
+                children: [],
+                settings: null
               },
               {
                 __typename: 'ButtonBlock',
@@ -357,7 +363,8 @@ describe('transformSteps', () => {
                   gtmEventName: null,
                   email: 'example@email.com'
                 },
-                children: []
+                children: [],
+                settings: null
               }
             ]
           }

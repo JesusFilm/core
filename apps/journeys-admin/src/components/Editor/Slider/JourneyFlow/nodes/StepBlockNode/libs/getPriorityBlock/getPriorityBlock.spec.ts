@@ -25,6 +25,7 @@ const card: TreeBlock<CardBlock> = {
   themeMode: null,
   themeName: null,
   fullscreen: false,
+  backdropBlur: null,
   children: []
 }
 
@@ -41,7 +42,8 @@ const button: TreeBlock<ButtonBlock> = {
   endIconId: null,
   submitEnabled: null,
   action: null,
-  children: []
+  children: [],
+  settings: null
 }
 
 const image: TreeBlock<ImageBlock> = {
@@ -104,7 +106,11 @@ const typography: TreeBlock<TypographyBlock> = {
   variant: null,
   color: null,
   align: null,
-  children: []
+  children: [],
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
 }
 
 const video: TreeBlock<VideoBlock> = {

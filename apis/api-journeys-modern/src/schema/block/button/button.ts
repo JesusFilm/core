@@ -1,31 +1,40 @@
 import { builder } from '../../builder'
 import { Block } from '../block'
 
+import {
+  ButtonAlignment,
+  type ButtonAlignmentType
+} from './enums/buttonAlignment'
 import { ButtonColor, type ButtonColorType } from './enums/buttonColor'
 import { ButtonSize, type ButtonSizeType } from './enums/buttonSize'
 import { ButtonVariant, type ButtonVariantType } from './enums/buttonVariant'
 
-interface ButtonBlockClassNamesType {
-  self: string
+interface ButtonBlockSettingsType {
+  alignment: ButtonAlignmentType
+  color: string
 }
 
-const ButtonBlockClassNamesRef = builder.objectRef<ButtonBlockClassNamesType>(
-  'ButtonBlockClassNames'
+const ButtonBlockSettingsRef = builder.objectRef<ButtonBlockSettingsType>(
+  'ButtonBlockSettings'
 )
 
-export const ButtonBlockClassNames = builder.objectType(
-  ButtonBlockClassNamesRef,
-  {
-    fields: (t) => ({
-      self: t.string({
-        nullable: false,
-        directives: { shareable: true },
-        description: 'Tailwind class names for the button block',
-        resolve: (classNames: ButtonBlockClassNamesType) => classNames.self
-      })
+export const ButtonBlockSettings = builder.objectType(ButtonBlockSettingsRef, {
+  fields: (t) => ({
+    alignment: t.field({
+      type: ButtonAlignment,
+      nullable: true,
+      directives: { shareable: true },
+      description: 'Alignment of the button',
+      resolve: (settings: ButtonBlockSettingsType) => settings.alignment
+    }),
+    color: t.string({
+      nullable: true,
+      directives: { shareable: true },
+      description: 'Color of the button',
+      resolve: (settings: ButtonBlockSettingsType) => settings.color
     })
-  }
-)
+  })
+})
 
 export const ButtonBlock = builder.prismaObject('Block', {
   variant: 'ButtonBlock',
@@ -81,12 +90,11 @@ export const ButtonBlock = builder.prismaObject('Block', {
       nullable: true,
       directives: { shareable: true }
     }),
-    classNames: t.field({
-      type: ButtonBlockClassNames,
+    settings: t.field({
+      type: ButtonBlockSettings,
       nullable: true,
       directives: { shareable: true },
-      resolve: ({ classNames }) =>
-        classNames as unknown as ButtonBlockClassNamesType
+      resolve: ({ settings }) => settings as unknown as ButtonBlockSettingsType
     })
   })
 })

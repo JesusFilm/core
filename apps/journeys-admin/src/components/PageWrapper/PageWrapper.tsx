@@ -63,7 +63,7 @@ export function PageWrapper({
   const [open, setOpen] = useState<boolean>(false)
   const theme = useTheme()
   const viewportHeight = use100vh()
-  const { navbar, toolbar, bottomPanel } = usePageWrapperStyles()
+  const { navbar, toolbar, bottomPanel, sidePanel } = usePageWrapperStyles()
   const router = useRouter()
 
   return (
@@ -122,7 +122,8 @@ export function PageWrapper({
                 width: {
                   xs: 'inherit',
                   md: `calc(100vw - ${navbar.width})`
-                }
+                },
+                height: '100%'
               }}
             >
               {showMainHeader && (
@@ -134,12 +135,27 @@ export function PageWrapper({
                   {mainHeaderChildren}
                 </MainPanelHeader>
               )}
-              <MainPanelBody
-                mainBodyPadding={mainBodyPadding}
-                bottomPanelChildren={bottomPanelChildren}
+              <Stack
+                sx={{
+                  width: {
+                    xs: 'inherit',
+                    md:
+                      sidePanelChildren != null || customSidePanel != null
+                        ? `calc(100vw - ${navbar.width} - ${sidePanel.width})`
+                        : `calc(100vw - ${navbar.width})`
+                  },
+                  height: showMainHeader
+                    ? `calc(100% - ${toolbar.height})`
+                    : '100%'
+                }}
               >
-                {children}
-              </MainPanelBody>
+                <MainPanelBody
+                  mainBodyPadding={mainBodyPadding}
+                  bottomPanelChildren={bottomPanelChildren}
+                >
+                  {children}
+                </MainPanelBody>
+              </Stack>
             </Stack>
             {sidePanelChildren != null && (
               <SidePanel title={sidePanelTitle}>{sidePanelChildren}</SidePanel>

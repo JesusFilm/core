@@ -1,13 +1,13 @@
 import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
 import { render } from '@react-email/render'
 import { Job } from 'bullmq'
-import { graphql } from 'gql.tada'
 
 import {
   UserJourneyRole,
   UserTeamRole,
   prisma
 } from '@core/prisma-journeys/client'
+import { graphql } from '@core/shared/gql'
 import { sendEmail } from '@core/yoga/email'
 
 import { JourneyAccessRequestEmail } from '../../../emails/templates/JourneyAccessRequest'

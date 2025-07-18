@@ -31,7 +31,8 @@ const button: TreeBlock<ButtonBlock> = {
   endIconId: null,
   submitEnabled: null,
   action: buttonAction,
-  children: []
+  children: [],
+  settings: null
 }
 
 const RadioOption1: TreeBlock<RadioOptionFields> = {
@@ -88,6 +89,7 @@ const card: TreeBlock<CardBlock> = {
   themeMode: null,
   themeName: null,
   fullscreen: false,
+  backdropBlur: null,
   children: [image, button, radioQuestionBlock]
 }
 

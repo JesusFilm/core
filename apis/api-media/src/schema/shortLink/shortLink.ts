@@ -8,6 +8,8 @@ import { builder } from '../builder'
 import { Service } from '../enums/service'
 import { NotFoundError, NotUniqueError } from '../error'
 
+import { RedirectType } from './enums/redirectType'
+
 const ShortLink = builder.prismaObject('ShortLink', {
   description: 'A short link that redirects to a full URL',
   fields: (t) => ({
@@ -26,6 +28,15 @@ const ShortLink = builder.prismaObject('ShortLink', {
       type: Service,
       nullable: false,
       description: 'the service that created this short link'
+    }),
+    brightcoveId: t.exposeString('brightcoveId', {
+      nullable: true,
+      description: 'brightcove video ID for video redirects'
+    }),
+    redirectType: t.expose('redirectType', {
+      type: RedirectType,
+      nullable: true,
+      description: 'type of video redirect (hls, dl, dh, s)'
     })
   })
 })
@@ -190,6 +201,15 @@ builder.mutationFields((t) => ({
           type: Service,
           required: true,
           description: 'the service that created this short link'
+        }),
+        brightcoveId: t.input.string({
+          required: false,
+          description: 'brightcove video ID for video redirects'
+        }),
+        redirectType: t.input.field({
+          type: RedirectType,
+          required: false,
+          description: 'type of video redirect (hls, dl, dh, s)'
         })
       },
       validate: [
@@ -216,7 +236,15 @@ builder.mutationFields((t) => ({
         query,
         _,
         {
-          input: { id: inputId, pathname: inputPathname, to, hostname, service }
+          input: {
+            id: inputId,
+            pathname: inputPathname,
+            to,
+            hostname,
+            service,
+            brightcoveId,
+            redirectType
+          }
         },
         context
       ) => {
@@ -232,7 +260,9 @@ builder.mutationFields((t) => ({
               domain: { connect: { hostname } },
               service,
               userId:
-                context.type === 'authenticated' ? context.user.id : undefined
+                context.type === 'authenticated' ? context.user.id : undefined,
+              brightcoveId,
+              redirectType
             }
           })
         } catch (e) {
@@ -285,14 +315,27 @@ builder.mutationFields((t) => ({
               }
             ]
           }
+        }),
+        brightcoveId: t.input.string({
+          required: false,
+          description: 'brightcove video ID for video redirects'
+        }),
+        redirectType: t.input.field({
+          type: RedirectType,
+          required: false,
+          description: 'type of video redirect (hls, dl, dh, s)'
         })
       },
-      resolve: async (query, _, { input: { id, to } }) => {
+      resolve: async (
+        query,
+        _,
+        { input: { id, to, brightcoveId, redirectType } }
+      ) => {
         try {
           return await prisma.shortLink.update({
             ...query,
             where: { id },
-            data: { to }
+            data: { to, brightcoveId, redirectType }
           })
         } catch (e) {
           if (

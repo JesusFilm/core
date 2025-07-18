@@ -10,6 +10,19 @@ builder.prismaObject('VideoOrigin', {
   })
 })
 
+builder.queryFields((t) => ({
+  videoOrigins: t.withAuth({ isPublisher: true }).prismaField({
+    type: ['VideoOrigin'],
+    nullable: false,
+    resolve: async (query) => {
+      return await prisma.videoOrigin.findMany({
+        ...query,
+        orderBy: { name: 'asc' }
+      })
+    }
+  })
+}))
+
 builder.mutationFields((t) => ({
   videoOriginCreate: t.withAuth({ isPublisher: true }).prismaFieldWithInput({
     type: 'VideoOrigin',
