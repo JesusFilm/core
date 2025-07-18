@@ -44,7 +44,11 @@ const content: TreeBlock[] = [
     color: null,
     content: "What's our purpose, and how did we get here?",
     variant: TypographyVariant.h3,
-    children: []
+    children: [],
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    }
   },
   {
     id: 'typographyBlockId2',
@@ -56,7 +60,11 @@ const content: TreeBlock[] = [
     content:
       'Follow the journey of a curious Irishman traveling around the world looking for answers and wrestling with the things that just don’t seem to make sense. ',
     variant: null,
-    children: []
+    children: [],
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    }
   },
   {
     __typename: 'ButtonBlock',
@@ -82,7 +90,8 @@ const content: TreeBlock[] = [
         iconSize: IconSize.md,
         children: []
       }
-    ]
+    ],
+    settings: null
   }
 ]
 

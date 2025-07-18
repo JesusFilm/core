@@ -4,10 +4,10 @@ import { useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { graphql } from 'gql.tada'
 import { usePathname, useRouter } from 'next/navigation'
 import { ReactNode, useEffect, useState } from 'react'
 
+import { graphql } from '@core/shared/gql'
 import Plus2 from '@core/shared/ui/icons/Plus2'
 
 import { ActionButton } from '../../../../../components/ActionButton'

@@ -11,9 +11,10 @@ import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
 import Typography from '@mui/material/Typography'
-import { graphql } from 'gql.tada'
 import { usePathname, useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
+
+import { graphql } from '@core/shared/gql'
 
 import { PublishedChip } from '../../../../../components/PublishedChip'
 import { Section } from '../../../../../components/Section'
@@ -58,7 +59,10 @@ export default function ClientLayout({
   useEffect(() => {
     if (reloadOnPathChange) void refetch()
     setReloadOnPathChange(
-      (pathname?.includes('add') || pathname?.includes('delete')) ?? false
+      (pathname?.includes('add') ||
+        pathname?.includes('delete') ||
+        /\/audio\/[^/]+$/.test(pathname || '')) ??
+        false
     )
   }, [pathname])
 

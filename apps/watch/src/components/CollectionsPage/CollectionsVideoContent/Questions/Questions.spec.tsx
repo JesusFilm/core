@@ -30,8 +30,6 @@ describe('Questions Component', () => {
     { id: 2, question: 'Question 2?', answer: 'Answer 2' }
   ]
 
-  const mockOnOpenDialog = jest.fn()
-
   it('renders questions correctly', () => {
     render(
       <Questions
@@ -39,7 +37,6 @@ describe('Questions Component', () => {
         contentId="123"
         questionsTitle="Test Questions"
         askButtonText="Ask Question"
-        onOpenDialog={mockOnOpenDialog}
       />
     )
 
@@ -63,7 +60,6 @@ describe('Questions Component', () => {
         contentId="123"
         questionsTitle="Test Questions"
         askButtonText="Ask Question"
-        onOpenDialog={mockOnOpenDialog}
       />
     )
 
@@ -81,7 +77,6 @@ describe('Questions Component', () => {
         contentId="123"
         questionsTitle="Test Questions"
         askButtonText="Ask Question"
-        onOpenDialog={mockOnOpenDialog}
       />
     )
 

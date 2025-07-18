@@ -5,11 +5,12 @@ import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { Form, Formik } from 'formik'
-import { ResultOf, VariablesOf, graphql } from 'gql.tada'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useMemo, useState } from 'react'
 import { InferType, mixed, object, string } from 'yup'
+
+import { ResultOf, VariablesOf, graphql } from '@core/shared/gql'
 
 import { FormSelectField } from '../../../../components/FormSelectField'
 import { FormTextField } from '../../../../components/FormTextField'
@@ -64,6 +65,18 @@ export const CREATE_EDITION = graphql(`
   }
 `)
 
+export const CREATE_VIDEO_VARIANT = graphql(`
+  mutation CreateVideoVariant($input: VideoVariantCreateInput!) {
+    videoVariantCreate(input: $input) {
+      id
+      language {
+        id
+      }
+      slug
+    }
+  }
+`)
+
 export type CreateVideoVariables = VariablesOf<typeof CREATE_VIDEO>
 export type CreateVideo = ResultOf<typeof CREATE_VIDEO>
 
@@ -100,6 +113,7 @@ export function VideoCreateForm({
 
   const [createVideo] = useMutation(CREATE_VIDEO)
   const [createEdition] = useMutation(CREATE_EDITION)
+  const [createVideoVariant] = useMutation(CREATE_VIDEO_VARIANT)
 
   // Determine valid child labels and suggested label based on parent label
   const { validChildLabels, suggestedLabel } = useMemo(() => {
@@ -194,6 +208,34 @@ export function VideoCreateForm({
               }
             })
 
+            // Create null video variant for series and collections with language 529 (English)
+            // Currently required for the video to be visible in the frontend
+            if (values.label === 'series' || values.label === 'collection') {
+              try {
+                const variantId = `529_${videoId}`
+                const slug = `${values.slug}/english`
+
+                await createVideoVariant({
+                  variables: {
+                    input: {
+                      id: variantId,
+                      videoId,
+                      edition: 'base',
+                      languageId: '529',
+                      slug,
+                      downloadable: false,
+                      published: false
+                    }
+                  }
+                })
+              } catch (variantError) {
+                console.warn(
+                  'Failed to create null video varian for collection or series:',
+                  variantError
+                )
+              }
+            }
+
             enqueueSnackbar('Successfully created video.', {
               variant: 'success'
             })
@@ -246,8 +288,18 @@ export function VideoCreateForm({
             fullWidth
             disabled={originsLoading}
           />
-          <FormTextField name="id" label="ID" fullWidth />
-          <FormTextField name="slug" label="Slug" fullWidth />
+          <FormTextField
+            name="id"
+            label="ID"
+            placeholder="eg. 1_jf_0_0"
+            fullWidth
+          />
+          <FormTextField
+            name="slug"
+            label="Slug"
+            placeholder="eg. jesus-walks-on-water"
+            fullWidth
+          />
           <FormSelectField
             name="label"
             label="Label"

@@ -1,13 +1,16 @@
 'use client'
 
 import { useSuspenseQuery } from '@apollo/client'
+import DeleteIcon from '@mui/icons-material/Delete'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { graphql } from 'gql.tada'
-import { useSelectedLayoutSegment } from 'next/navigation'
+import { useRouter, useSelectedLayoutSegment } from 'next/navigation'
 import { ReactNode } from 'react'
+
+import { graphql } from '@core/shared/gql'
 
 import { PublishedChip } from '../../../../components/PublishedChip'
 import { Section } from '../../../../components/Section'
@@ -31,6 +34,7 @@ const GET_TAB_DATA = graphql(`
       id
       locked
       published
+      publishedAt
       title(languageId: $languageId) {
         id
         value
@@ -52,6 +56,7 @@ export default function VideoViewLayout({
   studyQuestions,
   params: { videoId }
 }: VideoViewLayoutProps): ReactNode {
+  const router = useRouter()
   // keep metadata visible when modal is open
   const availableTabs = ['metadata', 'audio', 'children', 'editions']
   const segment = useSelectedLayoutSegment() ?? 'metadata'
@@ -77,6 +82,9 @@ export default function VideoViewLayout({
   }
   const videoTitle = video?.title?.[0]?.value ?? ''
 
+  // Show delete button only for videos that have never been published
+  const canDelete = video.publishedAt == null
+
   return (
     <Stack
       gap={2}
@@ -88,11 +96,38 @@ export default function VideoViewLayout({
         sx={{
           mb: 2,
           alignItems: { xs: 'start', sm: 'center' },
-          flexDirection: { xs: 'col', sm: 'row' }
+          flexDirection: { xs: 'column', sm: 'row' },
+          justifyContent: 'space-between'
         }}
       >
-        <Typography variant="h4">{videoTitle}</Typography>
-        <PublishedChip published={video.published} />
+        <Stack
+          gap={2}
+          sx={{
+            alignItems: { xs: 'start', sm: 'center' },
+            flexDirection: { xs: 'column', sm: 'row' }
+          }}
+        >
+          <Typography variant="h4">{videoTitle}</Typography>
+          <PublishedChip published={video.published} />
+        </Stack>
+        {canDelete && (
+          <Button
+            variant="outlined"
+            color="error"
+            startIcon={<DeleteIcon />}
+            onClick={() => {
+              router.push(`/videos/${videoId}/delete`, {
+                scroll: false
+              })
+            }}
+            sx={{
+              alignSelf: { xs: 'stretch', sm: 'center' },
+              whiteSpace: 'nowrap'
+            }}
+          >
+            Delete Video
+          </Button>
+        )}
       </Stack>
 
       <Stack gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>

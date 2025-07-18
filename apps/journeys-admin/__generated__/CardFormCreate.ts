@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ImageBlockCreateInput, TypographyBlockCreateInput, TextResponseBlockCreateInput, ButtonBlockCreateInput, ButtonBlockUpdateInput, IconBlockCreateInput, CardBlockUpdateInput, TypographyAlign, TypographyColor, TypographyVariant, TextResponseType, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, ThemeMode, ThemeName } from "./globalTypes";
+import { ImageBlockCreateInput, TypographyBlockCreateInput, TextResponseBlockCreateInput, ButtonBlockCreateInput, ButtonBlockUpdateInput, IconBlockCreateInput, CardBlockUpdateInput, TypographyAlign, TypographyColor, TypographyVariant, TextResponseType, ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, IconName, IconSize, IconColor, ThemeMode, ThemeName } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardFormCreate
@@ -28,6 +28,14 @@ export interface CardFormCreate_image {
   focalLeft: number | null;
 }
 
+export interface CardFormCreate_subtitle_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardFormCreate_subtitle {
   __typename: "TypographyBlock";
   id: string;
@@ -37,6 +45,15 @@ export interface CardFormCreate_subtitle {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardFormCreate_subtitle_settings | null;
+}
+
+export interface CardFormCreate_title_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
 }
 
 export interface CardFormCreate_title {
@@ -48,6 +65,7 @@ export interface CardFormCreate_title {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardFormCreate_title_settings | null;
 }
 
 export interface CardFormCreate_textResponse {
@@ -88,6 +106,14 @@ export interface CardFormCreate_button_action_EmailAction {
 
 export type CardFormCreate_button_action = CardFormCreate_button_action_NavigateToBlockAction | CardFormCreate_button_action_LinkAction | CardFormCreate_button_action_EmailAction;
 
+export interface CardFormCreate_button_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardFormCreate_button {
   __typename: "ButtonBlock";
   id: string;
@@ -101,6 +127,7 @@ export interface CardFormCreate_button {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardFormCreate_button_action | null;
+  settings: CardFormCreate_button_settings | null;
 }
 
 export interface CardFormCreate_startIcon {
@@ -146,6 +173,14 @@ export interface CardFormCreate_buttonUpdate_action_EmailAction {
 
 export type CardFormCreate_buttonUpdate_action = CardFormCreate_buttonUpdate_action_NavigateToBlockAction | CardFormCreate_buttonUpdate_action_LinkAction | CardFormCreate_buttonUpdate_action_EmailAction;
 
+export interface CardFormCreate_buttonUpdate_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardFormCreate_buttonUpdate {
   __typename: "ButtonBlock";
   id: string;
@@ -159,6 +194,15 @@ export interface CardFormCreate_buttonUpdate {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardFormCreate_buttonUpdate_action | null;
+  settings: CardFormCreate_buttonUpdate_settings | null;
+}
+
+export interface CardFormCreate_body_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
 }
 
 export interface CardFormCreate_body {
@@ -170,6 +214,7 @@ export interface CardFormCreate_body {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardFormCreate_body_settings | null;
 }
 
 export interface CardFormCreate_cardBlockUpdate {

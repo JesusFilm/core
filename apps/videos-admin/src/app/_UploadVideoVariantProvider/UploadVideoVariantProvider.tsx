@@ -2,17 +2,26 @@
 
 import { useLazyQuery, useMutation } from '@apollo/client'
 import axios from 'axios'
-import { graphql } from 'gql.tada'
 import { useSnackbar } from 'notistack'
 import { ReactNode, createContext, useContext, useReducer } from 'react'
 import { v4 as uuidv4 } from 'uuid'
+
+import { graphql } from '@core/shared/gql'
 
 import { getExtension } from '../(dashboard)/videos/[videoId]/audio/add/_utils/getExtension'
 import { useCreateR2AssetMutation } from '../../libs/useCreateR2Asset/useCreateR2Asset'
 
 export const CREATE_MUX_VIDEO_UPLOAD_BY_URL = graphql(`
-  mutation CreateMuxVideoUploadByUrl($url: String!, $userGenerated: Boolean) {
-    createMuxVideoUploadByUrl(url: $url, userGenerated: $userGenerated) {
+  mutation CreateMuxVideoUploadByUrl(
+    $url: String!
+    $userGenerated: Boolean
+    $downloadable: Boolean
+  ) {
+    createMuxVideoUploadByUrl(
+      url: $url
+      userGenerated: $userGenerated
+      downloadable: $downloadable
+    ) {
       id
       assetId
       playbackId
@@ -222,7 +231,7 @@ export function UploadVideoVariantProvider({
             languageId: state.languageId,
             slug: `${state.videoSlug}/${state.languageSlug}`,
             downloadable: true,
-            published: true,
+            published: state.published ?? false,
             muxVideoId: muxId,
             hls: `https://stream.mux.com/${playbackId}.m3u8`,
             duration: durationInSeconds,
@@ -341,7 +350,8 @@ export function UploadVideoVariantProvider({
       const muxResponse = await createMuxVideo({
         variables: {
           url: r2Response.data.cloudflareR2Create.publicUrl,
-          userGenerated: false
+          userGenerated: false,
+          downloadable: true
         }
       })
 

@@ -306,6 +306,7 @@ export class BlockDuplicateIdMap {
 
 export class ButtonBlockSettingsInput {
     alignment?: Nullable<ButtonAlignment>;
+    color?: Nullable<string>;
 }
 
 export class ButtonBlockCreateInput {
@@ -480,6 +481,10 @@ export class TextResponseBlockUpdateInput {
     integrationId?: Nullable<string>;
 }
 
+export class TypographyBlockSettingsInput {
+    color?: Nullable<string>;
+}
+
 export class TypographyBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
@@ -488,6 +493,7 @@ export class TypographyBlockCreateInput {
     variant?: Nullable<TypographyVariant>;
     color?: Nullable<TypographyColor>;
     align?: Nullable<TypographyAlign>;
+    settings?: Nullable<TypographyBlockSettingsInput>;
 }
 
 export class TypographyBlockUpdateInput {
@@ -496,6 +502,7 @@ export class TypographyBlockUpdateInput {
     variant?: Nullable<TypographyVariant>;
     color?: Nullable<TypographyColor>;
     align?: Nullable<TypographyAlign>;
+    settings?: Nullable<TypographyBlockSettingsInput>;
 }
 
 export class VideoBlockCreateInput {
@@ -1307,6 +1314,7 @@ export abstract class IQuery {
 export class ButtonBlockSettings {
     __typename?: 'ButtonBlockSettings';
     alignment?: Nullable<ButtonAlignment>;
+    color?: Nullable<string>;
 }
 
 export class ButtonBlock implements Block {
@@ -1457,6 +1465,11 @@ export class TextResponseBlock implements Block {
     integrationId?: Nullable<string>;
 }
 
+export class TypographyBlockSettings {
+    __typename?: 'TypographyBlockSettings';
+    color?: Nullable<string>;
+}
+
 export class TypographyBlock implements Block {
     __typename?: 'TypographyBlock';
     id: string;
@@ -1467,6 +1480,7 @@ export class TypographyBlock implements Block {
     variant?: Nullable<TypographyVariant>;
     color?: Nullable<TypographyColor>;
     align?: Nullable<TypographyAlign>;
+    settings: TypographyBlockSettings;
 }
 
 export class VideoBlock implements Block {

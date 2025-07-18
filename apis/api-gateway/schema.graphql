@@ -88,7 +88,10 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTime @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN) 
 
-scalar Json @join__type(graph: API_JOURNEYS) 
+"""
+The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar Json @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN) 
 
 """
 A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
@@ -402,6 +405,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   Allow current user to update specific allowable fields of their visitor record
   """
   visitorUpdateForCurrentUser(input: VisitorUpdateInput!) : Visitor! @join__field(graph: API_JOURNEYS) 
+  journeySimpleUpdate(id: ID!, journey: Json!) : Json @join__field(graph: API_JOURNEYS_MODERN) 
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!) : JourneyEventsExportLog! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!) : Boolean! @join__field(graph: API_JOURNEYS_MODERN) 
@@ -428,8 +432,18 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   bibleCitationUpdate(input: MutationBibleCitationUpdateInput!) : BibleCitation @join__field(graph: API_MEDIA) 
   bibleCitationDelete(id: ID!) : Boolean @join__field(graph: API_MEDIA) 
   createKeyword(value: String!, languageId: String!) : Keyword! @join__field(graph: API_MEDIA) 
-  createMuxVideoUploadByFile(name: String!, userGenerated: Boolean) : MuxVideo! @join__field(graph: API_MEDIA) 
-  createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean) : MuxVideo! @join__field(graph: API_MEDIA) 
+  createMuxVideoUploadByFile(
+    name: String!
+    userGenerated: Boolean
+    downloadable: Boolean = false
+    maxResolution: MaxResolutionTier = fhd
+  ): MuxVideo! @join__field(graph: API_MEDIA) 
+  createMuxVideoUploadByUrl(
+    url: String!
+    userGenerated: Boolean
+    downloadable: Boolean = false
+    maxResolution: MaxResolutionTier = fhd
+  ): MuxVideo! @join__field(graph: API_MEDIA) 
   enableMuxDownload(id: ID!, resolution: String) : MuxVideo @join__field(graph: API_MEDIA) 
   deleteMuxVideo(id: ID!, userGenerated: Boolean) : Boolean! @join__field(graph: API_MEDIA) 
   """
@@ -456,8 +470,12 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   delete an existing short link
   """
   shortLinkDelete(id: String!) : MutationShortLinkDeleteResult! @join__field(graph: API_MEDIA) 
+  videoVariantCreate(input: VideoVariantCreateInput!) : VideoVariant! @join__field(graph: API_MEDIA) 
+  videoVariantUpdate(input: VideoVariantUpdateInput!) : VideoVariant! @join__field(graph: API_MEDIA) 
+  videoVariantDelete(id: ID!) : VideoVariant! @join__field(graph: API_MEDIA) 
   videoCreate(input: VideoCreateInput!) : Video! @join__field(graph: API_MEDIA) 
   videoUpdate(input: VideoUpdateInput!) : Video! @join__field(graph: API_MEDIA) 
+  videoDelete(id: ID!) : Video! @join__field(graph: API_MEDIA) 
   videoDescriptionCreate(input: VideoTranslationCreateInput!) : VideoDescription! @join__field(graph: API_MEDIA) 
   videoDescriptionUpdate(input: VideoTranslationUpdateInput!) : VideoDescription! @join__field(graph: API_MEDIA) 
   videoDescriptionDelete(id: ID!) : VideoDescription! @join__field(graph: API_MEDIA) 
@@ -482,13 +500,9 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   videoEditionCreate(input: VideoEditionCreateInput!) : VideoEdition! @join__field(graph: API_MEDIA) 
   videoEditionUpdate(input: VideoEditionUpdateInput!) : VideoEdition! @join__field(graph: API_MEDIA) 
   videoEditionDelete(id: ID!) : VideoEdition! @join__field(graph: API_MEDIA) 
-  videoVariantCreate(input: VideoVariantCreateInput!) : VideoVariant! @join__field(graph: API_MEDIA) 
-  videoVariantUpdate(input: VideoVariantUpdateInput!) : VideoVariant! @join__field(graph: API_MEDIA) 
-  videoVariantDelete(id: ID!) : VideoVariant! @join__field(graph: API_MEDIA) 
   videoVariantDownloadCreate(input: VideoVariantDownloadCreateInput!) : VideoVariantDownload! @join__field(graph: API_MEDIA) 
   videoVariantDownloadUpdate(input: VideoVariantDownloadUpdateInput!) : VideoVariantDownload! @join__field(graph: API_MEDIA) 
   videoVariantDownloadDelete(id: ID!) : VideoVariantDownload! @join__field(graph: API_MEDIA) 
-  updateVideoVariantDownloadSizesFromMux(videoVariantId: ID!) : Boolean! @join__field(graph: API_MEDIA) 
   userImpersonate(email: String!) : String @join__field(graph: API_USERS) 
   createVerificationRequest(input: CreateVerificationRequestInput) : Boolean @join__field(graph: API_USERS) 
   validateEmail(email: String!, token: String!) : User @join__field(graph: API_USERS) 
@@ -722,6 +736,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   Get a single visitor
   """
   visitor(id: ID!) : Visitor! @join__field(graph: API_JOURNEYS) 
+  journeySimpleGet(id: ID!) : Json @join__field(graph: API_JOURNEYS_MODERN) 
   language(id: ID!, idType: LanguageIdType = databaseId) : Language @join__field(graph: API_LANGUAGES) 
   languages(offset: Int, limit: Int, where: LanguagesFilter, term: String) : [Language!]! @join__field(graph: API_LANGUAGES) 
   languagesCount(where: LanguagesFilter, term: String) : Int! @join__field(graph: API_LANGUAGES) 
@@ -800,6 +815,8 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
     first: Int
     last: Int
   ): QueryShortLinksConnection! @join__field(graph: API_MEDIA) 
+  videoVariant(id: ID!) : VideoVariant! @join__field(graph: API_MEDIA) 
+  videoVariants(input: VideoVariantFilter) : [VideoVariant!]! @join__field(graph: API_MEDIA) 
   adminVideo(id: ID!, idType: IdType = databaseId) : Video! @join__field(graph: API_MEDIA) 
   adminVideos(where: VideosFilter, offset: Int, limit: Int) : [Video!]! @join__field(graph: API_MEDIA) 
   adminVideosCount(where: VideosFilter) : Int! @join__field(graph: API_MEDIA) 
@@ -809,8 +826,6 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   videoOrigins: [VideoOrigin!]! @join__field(graph: API_MEDIA) 
   videoEditions: [VideoEdition!]! @join__field(graph: API_MEDIA) 
   videoEdition(id: ID!) : VideoEdition @join__field(graph: API_MEDIA) 
-  videoVariant(id: ID!) : VideoVariant! @join__field(graph: API_MEDIA) 
-  videoVariants(input: VideoVariantFilter) : [VideoVariant!]! @join__field(graph: API_MEDIA) 
   tags: [Tag!]! @join__field(graph: API_MEDIA) 
   taxonomies(category: String, languageCodes: [String!]) : [Taxonomy!]! @join__field(graph: API_MEDIA) 
   arclightApiKeys: [ArclightApiKey!]! @join__field(graph: API_MEDIA) 
@@ -825,6 +840,10 @@ type ButtonBlockSettings @join__type(graph: API_JOURNEYS)  @join__type(graph: AP
   Alignment of the button
   """
   alignment: ButtonAlignment
+  """
+  Color of the button
+  """
+  color: String
 }
 
 type ButtonBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -1014,6 +1033,13 @@ type TextResponseBlock implements Block @join__type(graph: API_JOURNEYS, key: "i
   integrationId: String
 }
 
+type TypographyBlockSettings @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  Color of the typography
+  """
+  color: String
+}
+
 type TypographyBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
   id: ID!
   journeyId: ID!
@@ -1023,6 +1049,7 @@ type TypographyBlock implements Block @join__type(graph: API_JOURNEYS, key: "id"
   variant: TypographyVariant
   color: TypographyColor
   align: TypographyAlign
+  settings: TypographyBlockSettings @join__field(graph: API_JOURNEYS, type: "TypographyBlockSettings!")  @join__field(graph: API_JOURNEYS_MODERN, type: "TypographyBlockSettings") 
 }
 
 type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId", extension: true)  @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", extension: true)  @join__type(graph: API_MEDIA, key: "id primaryLanguageId")  {
@@ -2006,6 +2033,14 @@ type ShortLink @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @jo
   the service that created this short link
   """
   service: Service! @join__field(graph: API_MEDIA) 
+  """
+  brightcove video ID for video redirects
+  """
+  brightcoveId: String @join__field(graph: API_MEDIA) 
+  """
+  type of video redirect (hls, dl, dh, s)
+  """
+  redirectType: RedirectType @join__field(graph: API_MEDIA) 
 }
 
 type QrCode @join__type(graph: API_JOURNEYS)  {
@@ -2799,6 +2834,7 @@ type VideoVariant @join__type(graph: API_MEDIA)  {
   lengthInMilliseconds: Int!
   language: Language!
   muxVideo: MuxVideo
+  brightcoveId: String
   published: Boolean!
   videoEdition: VideoEdition!
   subtitle(languageId: ID, primary: Boolean) : [VideoSubtitle!]!
@@ -3232,6 +3268,12 @@ enum ImageAspectRatio @join__type(graph: API_MEDIA)  {
   banner @join__enumValue(graph: API_MEDIA) 
 }
 
+enum MaxResolutionTier @join__type(graph: API_MEDIA)  {
+  fhd @join__enumValue(graph: API_MEDIA) 
+  qhd @join__enumValue(graph: API_MEDIA) 
+  uhd @join__enumValue(graph: API_MEDIA) 
+}
+
 enum MediaRole @join__type(graph: API_MEDIA)  {
   publisher @join__enumValue(graph: API_MEDIA) 
 }
@@ -3250,6 +3292,13 @@ enum Service @join__type(graph: API_MEDIA)  {
   apiTags @join__enumValue(graph: API_MEDIA) 
   apiUsers @join__enumValue(graph: API_MEDIA) 
   apiVideos @join__enumValue(graph: API_MEDIA) 
+}
+
+enum RedirectType @join__type(graph: API_MEDIA)  {
+  hls @join__enumValue(graph: API_MEDIA) 
+  dl @join__enumValue(graph: API_MEDIA) 
+  dh @join__enumValue(graph: API_MEDIA) 
+  s @join__enumValue(graph: API_MEDIA) 
 }
 
 enum Platform @join__type(graph: API_MEDIA)  {
@@ -3300,10 +3349,24 @@ enum VideoLabel @join__type(graph: API_MEDIA)  {
   behindTheScenes @join__enumValue(graph: API_MEDIA) 
 }
 
+enum VideoRedirectType @join__type(graph: API_MEDIA)  {
+  hls @join__enumValue(graph: API_MEDIA) 
+  dl @join__enumValue(graph: API_MEDIA) 
+  dh @join__enumValue(graph: API_MEDIA) 
+  s @join__enumValue(graph: API_MEDIA) 
+}
+
 enum VideoVariantDownloadQuality @join__type(graph: API_MEDIA)  {
+  distroLow @join__enumValue(graph: API_MEDIA) 
+  distroSd @join__enumValue(graph: API_MEDIA) 
+  distroHigh @join__enumValue(graph: API_MEDIA) 
   low @join__enumValue(graph: API_MEDIA) 
   sd @join__enumValue(graph: API_MEDIA) 
   high @join__enumValue(graph: API_MEDIA) 
+  fhd @join__enumValue(graph: API_MEDIA) 
+  qhd @join__enumValue(graph: API_MEDIA) 
+  uhd @join__enumValue(graph: API_MEDIA) 
+  highest @join__enumValue(graph: API_MEDIA) 
 }
 
 input SiteCreateInput @join__type(graph: API_ANALYTICS)  {
@@ -3347,6 +3410,7 @@ input BlockDuplicateIdMap @join__type(graph: API_JOURNEYS)  {
 
 input ButtonBlockSettingsInput @join__type(graph: API_JOURNEYS)  {
   alignment: ButtonAlignment
+  color: String
 }
 
 input ButtonBlockCreateInput @join__type(graph: API_JOURNEYS)  {
@@ -3559,6 +3623,10 @@ input TextResponseBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
   integrationId: String
 }
 
+input TypographyBlockSettingsInput @join__type(graph: API_JOURNEYS)  {
+  color: String
+}
+
 input TypographyBlockCreateInput @join__type(graph: API_JOURNEYS)  {
   id: ID
   journeyId: ID!
@@ -3567,6 +3635,7 @@ input TypographyBlockCreateInput @join__type(graph: API_JOURNEYS)  {
   variant: TypographyVariant
   color: TypographyColor
   align: TypographyAlign
+  settings: TypographyBlockSettingsInput
 }
 
 input TypographyBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
@@ -3575,6 +3644,7 @@ input TypographyBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
   variant: TypographyVariant
   color: TypographyColor
   align: TypographyAlign
+  settings: TypographyBlockSettingsInput
 }
 
 input VideoBlockCreateInput @join__type(graph: API_JOURNEYS)  {
@@ -4522,6 +4592,14 @@ input MutationShortLinkCreateInput @join__type(graph: API_MEDIA)  {
   the service that created this short link
   """
   service: Service!
+  """
+  brightcove video ID for video redirects
+  """
+  brightcoveId: String
+  """
+  type of video redirect (hls, dl, dh, s)
+  """
+  redirectType: RedirectType
 }
 
 input MutationShortLinkDomainCreateInput @join__type(graph: API_MEDIA)  {
@@ -4549,6 +4627,14 @@ input MutationShortLinkUpdateInput @join__type(graph: API_MEDIA)  {
   the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to
   """
   to: String!
+  """
+  brightcove video ID for video redirects
+  """
+  brightcoveId: String
+  """
+  type of video redirect (hls, dl, dh, s)
+  """
+  redirectType: RedirectType
 }
 
 input MutationVideoOriginCreateInput @join__type(graph: API_MEDIA)  {
@@ -4686,6 +4772,7 @@ input VideoVariantCreateInput @join__type(graph: API_MEDIA)  {
   downloadable: Boolean!
   published: Boolean = true
   muxVideoId: String
+  brightcoveId: String
   version: Int
 }
 
@@ -4734,6 +4821,7 @@ input VideoVariantUpdateInput @join__type(graph: API_MEDIA)  {
   downloadable: Boolean
   published: Boolean
   muxVideoId: String
+  brightcoveId: String
   version: Int
 }
 

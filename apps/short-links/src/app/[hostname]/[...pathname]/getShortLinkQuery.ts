@@ -1,4 +1,4 @@
-import { graphql } from 'gql.tada'
+import { graphql } from '@core/shared/gql'
 
 export const GET_SHORT_LINK_QUERY = graphql(`
   query GetShortLinkQuery($hostname: String!, $pathname: String!) {

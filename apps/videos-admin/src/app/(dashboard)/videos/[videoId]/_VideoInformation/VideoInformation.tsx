@@ -1,7 +1,6 @@
 'use client'
 
 import { useMutation, useSuspenseQuery } from '@apollo/client'
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import WarningIcon from '@mui/icons-material/Warning'
 import Alert from '@mui/material/Alert'
@@ -22,11 +21,12 @@ import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikProps, FormikValues } from 'formik'
-import { graphql } from 'gql.tada'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { object, string } from 'yup'
+
+import { graphql } from '@core/shared/gql'
 
 import { CancelButton } from '../../../../../components/CancelButton'
 import { SaveButton } from '../../../../../components/SaveButton'
@@ -124,6 +124,7 @@ export function VideoInformation({
   const theme = useTheme()
   const jesusFilmUrl = 'jesusfilm.org/watch/'
   const { enqueueSnackbar } = useSnackbar()
+  const [createdTitleId, setCreatedTitleId] = useState<string | null>(null)
 
   const validationSchema = object().shape({
     title: string().trim().required('Title is required'),
@@ -138,6 +139,13 @@ export function VideoInformation({
       languageId: DEFAULT_VIDEO_LANGUAGE_ID
     }
   })
+
+  // If the query data is in sync, clear the local createdTitleId
+  useEffect(() => {
+    if (createdTitleId && data.adminVideo.title?.[0]?.id) {
+      setCreatedTitleId(null)
+    }
+  }, [createdTitleId, data.adminVideo.title])
 
   // Function to validate if video has all required data for publishing
   const validateVideoForPublishing = (currentLabel?: string): string[] => {
@@ -259,7 +267,7 @@ export function VideoInformation({
       }
     }
 
-    let titleId = data.adminVideo.title[0]?.id ?? null
+    let titleId = data.adminVideo.title[0]?.id ?? createdTitleId
     const params = new URLSearchParams('')
     params.append('update', 'information')
     router.push(`?${params.toString()}`, { scroll: false })
@@ -289,6 +297,12 @@ export function VideoInformation({
       }
 
       titleId = res.data.videoTitleCreate.id
+      setCreatedTitleId(titleId)
+    }
+
+    if (!titleId) {
+      enqueueSnackbar('No title ID available for update', { variant: 'error' })
+      return
     }
 
     await updateVideoInformation({
@@ -362,6 +376,7 @@ export function VideoInformation({
                 helperText={errors.title as string}
                 sx={{ flexGrow: 1 }}
                 spellCheck={true}
+                placeholder="Please enter a title, up to 60 characters."
               />
               <TextField
                 id="url"
@@ -469,7 +484,9 @@ export function VideoInformation({
               primaryLanguageId={data.adminVideo.primaryLanguageId}
               initialKeywords={values.keywords}
               onChange={(keywords) =>
-                handleChange({ target: { name: 'keywords', value: keywords } })
+                handleChange({
+                  target: { name: 'keywords', value: keywords }
+                })
               }
             />
             <ValidationStatus values={values} />
@@ -484,6 +501,7 @@ export function VideoInformation({
                   (values.published === 'published' &&
                     validateVideoForPublishing(values.label).length > 0)
                 }
+                loading={isSubmitting}
               />
             </Stack>
           </Stack>

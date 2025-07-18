@@ -10,10 +10,16 @@ import { videoCacheReset } from '../../lib/videoCacheReset'
 import { updateVideoInAlgolia } from '../../workers/algolia/service'
 import { builder } from '../builder'
 import { ImageAspectRatio } from '../cloudflare/image/enums'
+import { deleteR2File } from '../cloudflare/r2/asset'
 import { IdType, IdTypeShape } from '../enums/idType'
 import { Language, LanguageWithSlug } from '../language'
+import { deleteVideo } from '../mux/video/service'
 import { VideoSource, VideoSourceShape } from '../videoSource/videoSource'
 import { VideoVariantFilter } from '../videoVariant/inputs/videoVariantFilter'
+import {
+  handleParentVariantCleanup,
+  handleParentVariantCreation
+} from '../videoVariant/videoVariant'
 
 import { Platform } from './enums/platform'
 import { VideoLabel } from './enums/videoLabel'
@@ -252,7 +258,9 @@ const Video = builder.prismaObject('Video', {
     childrenCount: t.int({
       nullable: false,
       resolve: async ({ id }) =>
-        await prisma.video.count({ where: { parent: { some: { id } } } }),
+        await prisma.video.count({
+          where: { parent: { some: { id } }, published: true }
+        }),
       description: 'the number value of the amount of children on a video'
     }),
     parents: t.prismaField({
@@ -353,6 +361,8 @@ const Video = builder.prismaObject('Video', {
           (info.variableValues.id as string | undefined) ??
           (info.variableValues.contentId as string | undefined) ??
           (info.variableValues._1_contentId as string | undefined) ??
+          (info.variableValues.containerId as string | undefined) ??
+          (info.variableValues._1_containerId as string | undefined) ??
           ''
         const requestedLanguage = variableValueId.includes('/')
           ? variableValueId.substring(variableValueId.lastIndexOf('/') + 1)
@@ -583,10 +593,33 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoCreateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
+      // Handle child relation synchronization if childIds is provided
+      let childRelationData = {}
+      if (input.childIds && input.childIds.length > 0) {
+        // Get all existing video IDs to validate child IDs
+        const videos = await prisma.video.findMany({
+          select: { id: true }
+        })
+        const existingVideoIds = new Set(videos.map((video) => video.id))
+
+        // Filter out any child IDs that don't exist
+        const validChildIds = (input.childIds || []).filter((id) =>
+          existingVideoIds.has(id)
+        )
+
+        // Update the children relation
+        childRelationData = {
+          children: {
+            connect: validChildIds.map((id) => ({ id }))
+          }
+        }
+      }
+
       const data = {
         ...input,
         // Set publishedAt to current timestamp if published is true
-        publishedAt: input.published ? new Date() : undefined
+        publishedAt: input.published ? new Date() : undefined,
+        ...childRelationData
       }
 
       const video = await prisma.video.create({
@@ -613,18 +646,60 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoUpdateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
+      // Get current video data to check if published status is changing and to prevent slug change after publish
+      const currentVideo =
+        input.published !== undefined || input.slug !== undefined
+          ? await prisma.video.findUnique({
+              where: { id: input.id },
+              select: {
+                published: true,
+                publishedAt: true,
+                slug: true,
+                variants: {
+                  where: { published: true },
+                  select: { languageId: true }
+                }
+              }
+            })
+          : null
+
+      // Prevent changing slug after video has been published
+      if (
+        input.slug != null &&
+        input.slug !== currentVideo?.slug &&
+        currentVideo?.publishedAt != null
+      ) {
+        throw new Error('Cannot change slug after video has been published')
+      }
+
       // If published is being set to true, we need to check if publishedAt should be set
       let publishedAtUpdate = undefined
       if (input.published === true) {
-        // Check if the video already has a publishedAt value
-        const existingVideo = await prisma.video.findUnique({
-          where: { id: input.id },
-          select: { publishedAt: true }
-        })
-
         // Only set publishedAt if it's not already set
-        if (existingVideo?.publishedAt == null) {
+        if (currentVideo?.publishedAt == null) {
           publishedAtUpdate = new Date()
+        }
+      }
+
+      // Handle child relation synchronization if childIds is being updated
+      let childRelationUpdate = {}
+      if (input.childIds !== undefined) {
+        // Get all existing video IDs to validate child IDs
+        const videos = await prisma.video.findMany({
+          select: { id: true }
+        })
+        const existingVideoIds = new Set(videos.map((video) => video.id))
+
+        // Filter out any child IDs that don't exist
+        const validChildIds = (input.childIds || []).filter((id) =>
+          existingVideoIds.has(id)
+        )
+
+        // Update the children relation
+        childRelationUpdate = {
+          children: {
+            set: validChildIds.map((id) => ({ id }))
+          }
         }
       }
 
@@ -642,6 +717,7 @@ builder.mutationFields((t) => ({
           restrictDownloadPlatforms:
             input.restrictDownloadPlatforms ?? undefined,
           restrictViewPlatforms: input.restrictViewPlatforms ?? undefined,
+          ...childRelationUpdate,
           ...(input.keywordIds
             ? { keywords: { set: input.keywordIds.map((id) => ({ id })) } }
             : {})
@@ -651,6 +727,32 @@ builder.mutationFields((t) => ({
           children: true
         }
       })
+
+      // Handle parent variant changes if video published status changed
+      if (currentVideo && input.published !== undefined) {
+        const wasPublished = currentVideo.published
+        const isNowPublished = input.published
+
+        if (
+          wasPublished !== isNowPublished &&
+          currentVideo.variants.length > 0
+        ) {
+          try {
+            for (const variant of currentVideo.variants) {
+              if (isNowPublished) {
+                // Video was unpublished and is now published - create parent variants for all published variants
+                await handleParentVariantCreation(input.id, variant.languageId)
+              } else {
+                // Video was published and is now unpublished - cleanup parent variants for all variants
+                await handleParentVariantCleanup(input.id, variant.languageId)
+              }
+            }
+          } catch (error) {
+            console.error('Parent variant video update error:', error)
+          }
+        }
+      }
+
       try {
         await updateVideoInAlgolia(video.id)
       } catch (error) {
@@ -662,6 +764,118 @@ builder.mutationFields((t) => ({
       } catch {}
 
       return video
+    }
+  }),
+  videoDelete: t.withAuth({ isPublisher: true }).prismaField({
+    type: 'Video',
+    nullable: false,
+    args: {
+      id: t.arg.id({ required: true })
+    },
+    resolve: async (query, _parent, { id }) => {
+      // First, get the video to check if it has ever been published
+      const video = await prisma.video.findUnique({
+        where: { id },
+        select: {
+          id: true,
+          published: true,
+          publishedAt: true,
+          // Get data for cleanup that won't cascade automatically
+          variants: {
+            select: {
+              muxVideoId: true,
+              muxVideo: {
+                select: {
+                  assetId: true
+                }
+              }
+            }
+          },
+          cloudflareAssets: {
+            select: {
+              id: true,
+              fileName: true
+            }
+          }
+        }
+      })
+
+      if (video == null) {
+        throw new GraphQLError(`Video with id ${id} not found`)
+      }
+
+      // Only allow deletion of videos that have never been published (publishedAt is null)
+      if (video.publishedAt != null) {
+        throw new GraphQLError(
+          'Cannot delete videos that have been published. Only draft videos that have never been published can be deleted.'
+        )
+      }
+
+      // Clean up assets that won't cascade automatically
+
+      // 1. Delete CloudflareR2 assets (these don't cascade)
+      for (const asset of video.cloudflareAssets) {
+        try {
+          // Delete the actual file from Cloudflare R2 storage
+          if (asset.fileName != null) {
+            await deleteR2File(asset.fileName)
+          }
+
+          // Delete the database record
+          await prisma.cloudflareR2.delete({
+            where: { id: asset.id }
+          })
+        } catch (error) {
+          // Log error but continue with other deletions
+          console.error(`Failed to delete R2 asset ${asset.id}:`, error)
+        }
+      }
+
+      // 2. Clean up Mux assets (these don't cascade and need external API calls)
+      for (const variant of video.variants) {
+        if (variant.muxVideoId != null && variant.muxVideo?.assetId != null) {
+          try {
+            // Delete from Mux service first
+            await deleteVideo(variant.muxVideo.assetId, false)
+
+            // Delete from our database
+            await prisma.muxVideo.delete({
+              where: { id: variant.muxVideoId }
+            })
+          } catch (error) {
+            // Log error but continue with deletion
+            console.error(
+              `Failed to delete Mux video ${variant.muxVideoId}:`,
+              error
+            )
+          }
+        }
+      }
+
+      // 3. Delete BibleCitations manually (these don't cascade)
+      await prisma.bibleCitation.deleteMany({
+        where: { videoId: id }
+      })
+
+      // 4. Delete the video (this will cascade delete most related records automatically)
+      const deletedVideo = await prisma.video.delete({
+        ...query,
+        where: { id }
+      })
+
+      try {
+        await updateVideoInAlgolia(id)
+      } catch (error) {
+        console.error('Algolia update error:', error)
+      }
+
+      try {
+        await videoCacheReset(id)
+      } catch (error) {
+        console.error('Cache reset error:', error)
+      }
+
+      return deletedVideo
     }
   })
 }))

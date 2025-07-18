@@ -76,7 +76,11 @@ const defaultNode = {
                 color: null,
                 content: 'The Journey Is On',
                 variant: 'h3',
-                children: []
+                children: [],
+                settings: {
+                  __typename: 'TypographyBlockSettings',
+                  color: null
+                }
               },
               {
                 __typename: 'TypographyBlock',
@@ -87,7 +91,11 @@ const defaultNode = {
                 color: null,
                 content: '"Go, and lead the people on their way..."',
                 variant: 'body1',
-                children: []
+                children: [],
+                settings: {
+                  __typename: 'TypographyBlockSettings',
+                  color: null
+                }
               },
               {
                 __typename: 'TypographyBlock',
@@ -98,7 +106,11 @@ const defaultNode = {
                 color: null,
                 content: 'Deutoronomy 10:11',
                 variant: 'caption',
-                children: []
+                children: [],
+                settings: {
+                  __typename: 'TypographyBlockSettings',
+                  color: null
+                }
               },
               {
                 __typename: 'ImageBlock',
@@ -310,7 +322,11 @@ const typographyNode = {
             color: null,
             content: 'The Journey Is On',
             variant: 'h3',
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             __typename: 'TypographyBlock',
@@ -321,7 +337,11 @@ const typographyNode = {
             color: null,
             content: '"Go, and lead the people on their way..."',
             variant: 'body1',
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             __typename: 'TypographyBlock',
@@ -332,7 +352,11 @@ const typographyNode = {
             color: null,
             content: 'Deutoronomy 10:11',
             variant: 'caption',
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             __typename: 'ImageBlock',
@@ -379,7 +403,11 @@ const typographyNode = {
                 color: null,
                 content: 'The Journey Is On',
                 variant: 'h3',
-                children: []
+                children: [],
+                settings: {
+                  __typename: 'TypographyBlockSettings',
+                  color: null
+                }
               },
               {
                 __typename: 'TypographyBlock',
@@ -390,7 +418,11 @@ const typographyNode = {
                 color: null,
                 content: '"Go, and lead the people on their way..."',
                 variant: 'body1',
-                children: []
+                children: [],
+                settings: {
+                  __typename: 'TypographyBlockSettings',
+                  color: null
+                }
               },
               {
                 __typename: 'TypographyBlock',
@@ -401,7 +433,11 @@ const typographyNode = {
                 color: null,
                 content: 'Deutoronomy 10:11',
                 variant: 'caption',
-                children: []
+                children: [],
+                settings: {
+                  __typename: 'TypographyBlockSettings',
+                  color: null
+                }
               },
               {
                 __typename: 'ImageBlock',
