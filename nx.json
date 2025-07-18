@@ -1,20 +1,4 @@
 {
-  "tasksRunnerOptions": {
-    "default": {
-      "runner": "nx/tasks-runners/default",
-      "options": {
-        "cacheableOperations": ["build", "test", "lint", "e2e"]
-      }
-    },
-    "ci": {
-      "runner": "@nx/nx-cloud",
-      "options": {
-        "canTrackAnalytics": false,
-        "showUsageWarnings": true,
-        "cacheableOperations": ["build", "test", "lint", "e2e"]
-      }
-    }
-  },
   "generators": {
     "@nx/react": {
       "application": {

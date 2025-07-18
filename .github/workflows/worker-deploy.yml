@@ -89,7 +89,7 @@ jobs:
           NX_BRANCH: staging
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           GIT_COMMIT_SHA: ${{ github.sha }}
-        run: npx nx run-many --target=deploy --projects=${{ matrix.app }} --runner=ci
+        run: npx nx run-many --target=deploy --projects=${{ matrix.app }}
 
   deploy-production:
     name: Deploy Production
@@ -135,4 +135,4 @@ jobs:
           NX_BRANCH: production
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           GIT_COMMIT_SHA: ${{ github.sha }}
-        run: npx nx run-many --target=deploy --projects=${{ matrix.app }} --prod --runner=ci
+        run: npx nx run-many --target=deploy --projects=${{ matrix.app }} --prod

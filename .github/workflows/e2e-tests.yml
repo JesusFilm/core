@@ -56,7 +56,7 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - name: Run Playwright tests
-        run: npx nx run ${{ inputs.TargetTests }}:${{ inputs.TargetAction }} --runner=ci
+        run: npx nx run ${{ inputs.TargetTests }}:${{ inputs.TargetAction }}
         env:
           DEPLOYMENT_URL: ${{ inputs.TargetAppUrl }}
           PLAYWRIGHT_EMAIL: ${{ secrets.PLAYWRIGHT_EMAIL }}

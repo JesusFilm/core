@@ -110,7 +110,6 @@ jobs:
           # Nx Cloud - Environment-specific cache using branch prefix
           NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
           NX_BRANCH: production
-          NX_RUNNER: ci
           DOPPLER_API_ANALYTICS_TOKEN: ${{ secrets.DOPPLER_API_ANALYTICS_TOKEN }}
           DOPPLER_API_GATEWAY_TOKEN: ${{ secrets.DOPPLER_API_GATEWAY_TOKEN }}
           DOPPLER_API_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_API_JOURNEYS_TOKEN }}
@@ -136,7 +135,6 @@ jobs:
           # Nx Cloud - Environment-specific cache using branch prefix
           NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
           NX_BRANCH: production
-          NX_RUNNER: ci
           GIT_COMMIT_SHA: ${{ github.sha }}
           DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
         with:

@@ -45,7 +45,7 @@ jobs:
         run: npm install -g nx --silent
       - name: Build Stories
         id: build-storybook
-        run: nx affected --target=build-storybook shared-storybook --webpack-stats-json --runner=ci
+        run: nx affected --target=build-storybook --webpack-stats-json
       # ADD CHROMATIC BACK DURING A COOLDOWN
       # - name: Check for frontend changes
       #   id: check_files
