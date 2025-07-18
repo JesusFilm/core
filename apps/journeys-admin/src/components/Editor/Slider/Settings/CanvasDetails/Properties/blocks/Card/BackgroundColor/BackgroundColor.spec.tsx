@@ -138,8 +138,8 @@ describe('BackgroundColor', () => {
         </MockedProvider>
       )
 
-      expect(screen.getByTestId('Swatch-bg-color-#FEFEFE')).toHaveStyle({
-        backgroundColor: '#FEFEFE'
+      expect(screen.getByTestId('Swatch-bg-color-#FEFEFE4D')).toHaveStyle({
+        backgroundColor: '#FEFEFE4D'
       })
 
       // Verify the hex color picker is present
@@ -223,7 +223,7 @@ describe('BackgroundColor', () => {
           query: CARD_BLOCK_BACKGROUND_COLOR_UPDATE,
           variables: {
             id: 'card1.id',
-            input: { backgroundColor: '#FEFEFE' }
+            input: { backgroundColor: '#FEFEFE4D' }
           }
         },
         result: {
@@ -231,7 +231,7 @@ describe('BackgroundColor', () => {
             cardBlockUpdate: {
               __typename: 'CardBlock',
               id: 'card1.id',
-              backgroundColor: '#FEFEFE'
+              backgroundColor: '#FEFEFE4D'
             }
           }
         }

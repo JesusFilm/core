@@ -117,9 +117,8 @@ export function BackgroundColor(): ReactElement {
     locale
   })
   const [selectedColor, setSelectedColor] = useState(
-    cardBlock?.backgroundColor ?? cardTheme.palette.background.paper
+    cardBlock?.backgroundColor ?? `${cardTheme.palette.background.paper}4D`
   )
-
   useEffect(() => {
     if (cardBlock?.backgroundColor != null) {
       setSelectedColor(cardBlock.backgroundColor)
