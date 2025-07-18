@@ -7,6 +7,7 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { applyDefaultAlpha } from '@core/journeys/ui/Card/utils/colorOpacityUtils'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import {
   ActiveContent,
@@ -121,7 +122,7 @@ export function BackgroundColor(): ReactElement {
   )
   useEffect(() => {
     if (cardBlock?.backgroundColor != null) {
-      setSelectedColor(cardBlock.backgroundColor)
+      setSelectedColor(applyDefaultAlpha(cardBlock.backgroundColor))
     }
   }, [cardBlock?.backgroundColor])
 
