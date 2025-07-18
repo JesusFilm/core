@@ -1,4 +1,5 @@
-import { prisma } from '../../lib/prisma'
+import { prisma } from '@core/prisma-languages/client'
+
 import { builder } from '../builder'
 
 import { LanguageRole } from './enums/languageRole'

@@ -1,9 +1,11 @@
 import { AssetOptions } from '@mux/mux-node/resources/video/assets'
 import { Logger } from 'pino'
 
-import { Prisma, VideoVariantDownloadQuality } from '.prisma/api-media-client'
-
-import { prisma } from '../prisma'
+import {
+  Prisma,
+  VideoVariantDownloadQuality,
+  prisma
+} from '@core/prisma-media/client'
 
 export const qualityEnumToOrder: Record<VideoVariantDownloadQuality, number> = {
   [VideoVariantDownloadQuality.distroLow]: 0,

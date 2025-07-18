@@ -1,4 +1,4 @@
-import { LanguageRole as PrismaLanguageRole } from '.prisma/api-languages-client'
+import { LanguageRole as PrismaLanguageRole } from '@core/prisma-languages/client'
 
 import { builder } from '../../builder'
 

@@ -1,6 +1,7 @@
 import { Logger } from 'pino'
 
-import { prisma } from '../../../lib/prisma'
+import { prisma } from '@core/prisma-media/client'
+
 import { getStaticRenditions } from '../../../schema/mux/video/service'
 
 async function getVideoVariantsWithMuxDownloads(): Promise<

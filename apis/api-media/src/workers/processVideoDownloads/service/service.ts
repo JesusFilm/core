@@ -2,13 +2,12 @@ import Mux from '@mux/mux-node'
 import { Job } from 'bullmq'
 import { Logger } from 'pino'
 
-import { MuxVideo } from '.prisma/api-media-client'
+import { MuxVideo, prisma } from '@core/prisma-media/client'
 
 import {
   createDownloadsFromMuxAsset,
   downloadsReadyToStore
 } from '../../../lib/downloads'
-import { prisma } from '../../../lib/prisma'
 import { getVideo } from '../../../schema/mux/video/service'
 
 interface ProcessVideoDownloadsJobData {

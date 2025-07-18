@@ -1,4 +1,4 @@
-import { VideoRedirectType as PrismaRedirectType } from '.prisma/api-media-client'
+import { VideoRedirectType as PrismaRedirectType } from '@core/prisma-media/client'
 
 import { builder } from '../../builder'
 
