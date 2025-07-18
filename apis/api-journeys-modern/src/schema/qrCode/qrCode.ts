@@ -47,10 +47,13 @@ const QrCodeUpdateInput = builder.inputType('QrCodeUpdateInput', {
 })
 
 // Define ShortLink interface for federation
-const ShortLink = builder.externalRef(
-  'ShortLink',
-  builder.selection<{ id: string }>('id')
-)
+const ShortLink = builder
+  .externalRef('ShortLink', builder.selection<{ id: string }>('id'))
+  .implement({
+    fields: (t) => ({
+      id: t.exposeID('id')
+    })
+  })
 
 // Define QrCode object type
 const QrCodeRef = builder.prismaObject('QrCode', {

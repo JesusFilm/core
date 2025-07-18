@@ -1,10 +1,10 @@
 // Developers must add an import for every resolver
 // and object type in the schema
 
-import './action' // Import action module
-import './block' // Import blocks module
+import './action'
+import './block'
+import './chatButton'
 import './journey'
-import './journey/adminReports'
 import './journeyAiTranslate'
 import './journeyCollection'
 import './journeyEventsExportLog'
@@ -16,11 +16,11 @@ import './journeysEmailPreference'
 import './journeyNotification'
 import './journeyLanguageAiDetect'
 import './language'
-import './customDomain/customDomain'
-import './host/host'
-import './integration/integration'
+import './customDomain'
+import './host'
+import './integration'
 import './mediaVideo'
-// import './qrCode' // Temporarily disabled due to ShortLink federation issue
+import './qrCode'
 import './team'
 import './userJourney'
 import './userTeam'

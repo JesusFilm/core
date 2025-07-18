@@ -207,7 +207,8 @@ export const JourneyRef = builder.prismaObject('Journey', {
     blocks: t.relation('blocks', {
       shareable: true,
       nullable: true
-    })
+    }),
+    chatButtons: t.relation('chatButtons')
     // Add more fields as needed for federation compatibility
   })
 })

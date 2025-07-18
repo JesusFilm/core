@@ -301,6 +301,9 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     """
     journeyId: ID
   ): TypographyBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput!) : ChatButton @join__field(graph: API_JOURNEYS_MODERN) 
+  chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!) : ChatButton @join__field(graph: API_JOURNEYS_MODERN) 
+  chatButtonRemove(id: ID!) : ChatButton @join__field(graph: API_JOURNEYS_MODERN) 
   journeyCreate(input: JourneyCreateInput!, teamId: ID!) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyUpdate(id: ID!, input: JourneyUpdateInput!) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyDuplicate(id: ID!, teamId: ID!) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
@@ -335,6 +338,9 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput!) : Integration @join__field(graph: API_JOURNEYS_MODERN) 
   integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpacesUpdateInput!) : Integration @join__field(graph: API_JOURNEYS_MODERN) 
   integrationDelete(id: ID!) : Integration @join__field(graph: API_JOURNEYS_MODERN) 
+  qrCodeCreate(input: QrCodeCreateInput!) : QrCode! @join__field(graph: API_JOURNEYS_MODERN) 
+  qrCodeUpdate(id: ID!, input: QrCodeUpdateInput!) : QrCode! @join__field(graph: API_JOURNEYS_MODERN) 
+  qrCodeDelete(id: ID!) : QrCode! @join__field(graph: API_JOURNEYS_MODERN) 
   teamCreate(input: TeamCreateInput!) : Team @join__field(graph: API_JOURNEYS_MODERN) 
   teamUpdate(id: ID!, input: TeamUpdateInput!) : Team @join__field(graph: API_JOURNEYS_MODERN) 
   userJourneyRequest(journeyId: ID!) : UserJourney @join__field(graph: API_JOURNEYS_MODERN) 
@@ -536,6 +542,12 @@ type CardBlock implements Block @join__type(graph: API_JOURNEYS_MODERN, key: "id
   themeName: ThemeName
 }
 
+type ChatButton @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  link: String
+  platform: MessagePlatform
+}
+
 type CustomDomain @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID
   name: String
@@ -654,6 +666,7 @@ type Journey @join__type(graph: API_JOURNEYS_MODERN, key: "id")  {
   languageId: String!
   language: Language!
   blocks: [Block!]
+  chatButtons: [ChatButton!]
 }
 
 type JourneyAiTranslateProgress @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -813,6 +826,20 @@ type PageInfo @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_ME
   endCursor: String
 }
 
+type QrCode @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  teamId: ID
+  journeyId: ID
+  toJourneyId: String
+  toBlockId: String
+  shortLinkId: String
+  color: String
+  backgroundColor: String
+  team: Team
+  journey: Journey
+  shortLink: ShortLink
+}
+
 type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_LANGUAGES)  @join__type(graph: API_MEDIA)  @join__type(graph: API_USERS)  {
   blocks(where: BlocksFilter) : [Block!]! @join__field(graph: API_JOURNEYS_MODERN) 
   block(id: ID!) : Block @join__field(graph: API_JOURNEYS_MODERN) 
@@ -845,6 +872,8 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
   customDomains(teamId: ID!) : [CustomDomain!] @join__field(graph: API_JOURNEYS_MODERN) 
   hosts(teamId: ID!) : [Host!] @join__field(graph: API_JOURNEYS_MODERN) 
   integrations(teamId: ID!) : [Integration!] @join__field(graph: API_JOURNEYS_MODERN) 
+  qrCode(id: ID!) : QrCode! @join__field(graph: API_JOURNEYS_MODERN) 
+  qrCodes(where: QrCodesFilter!) : [QrCode!]! @join__field(graph: API_JOURNEYS_MODERN) 
   teams: [Team!] @join__field(graph: API_JOURNEYS_MODERN) 
   team(id: ID!) : Team @join__field(graph: API_JOURNEYS_MODERN) 
   userTeams(teamId: ID!, where: UserTeamFilterInput) : [UserTeam!] @join__field(graph: API_JOURNEYS_MODERN) 
@@ -1003,6 +1032,34 @@ type RadioQuestionBlock implements Block @join__type(graph: API_JOURNEYS_MODERN,
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
+}
+
+"""
+A short link that redirects to a full URL
+"""
+type ShortLink @join__type(graph: API_JOURNEYS_MODERN, key: "id", extension: true)  @join__type(graph: API_MEDIA, key: "id")  {
+  id: ID @join__field(graph: API_JOURNEYS_MODERN, type: "ID")  @join__field(graph: API_MEDIA, type: "ID!") 
+  """
+  short link path not including the leading slash
+  """
+  pathname: String! @join__field(graph: API_MEDIA) 
+  """
+  the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to
+  """
+  to: String! @join__field(graph: API_MEDIA) 
+  domain: ShortLinkDomain! @join__field(graph: API_MEDIA) 
+  """
+  the service that created this short link
+  """
+  service: Service! @join__field(graph: API_MEDIA) 
+  """
+  brightcove video ID for video redirects
+  """
+  brightcoveId: String @join__field(graph: API_MEDIA) 
+  """
+  type of video redirect (hls, dl, dh, s)
+  """
+  redirectType: RedirectType @join__field(graph: API_MEDIA) 
 }
 
 type SignUpBlock implements Block @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -1560,34 +1617,6 @@ type QueryShortLinksConnectionEdge @join__type(graph: API_MEDIA)  {
 }
 
 """
-A short link that redirects to a full URL
-"""
-type ShortLink @join__type(graph: API_MEDIA, key: "id")  {
-  id: ID!
-  """
-  short link path not including the leading slash
-  """
-  pathname: String!
-  """
-  the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to
-  """
-  to: String!
-  domain: ShortLinkDomain!
-  """
-  the service that created this short link
-  """
-  service: Service!
-  """
-  brightcove video ID for video redirects
-  """
-  brightcoveId: String
-  """
-  type of video redirect (hls, dl, dh, s)
-  """
-  redirectType: RedirectType
-}
-
-"""
 A domain that can be used for short links
 """
 type ShortLinkDomain @join__type(graph: API_MEDIA)  {
@@ -1955,6 +1984,43 @@ enum ThemeMode @join__type(graph: API_JOURNEYS_MODERN)  {
 
 enum ThemeName @join__type(graph: API_JOURNEYS_MODERN)  {
   base @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
+enum MessagePlatform @join__type(graph: API_JOURNEYS_MODERN)  {
+  facebook @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  telegram @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  whatsApp @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  instagram @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  kakaoTalk @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  viber @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  vk @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  snapchat @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  skype @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  line @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  tikTok @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  custom @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  globe2 @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  globe3 @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  messageText1 @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  messageText2 @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  send1 @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  send2 @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  messageChat2 @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  messageCircle @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  messageNotifyCircle @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  messageNotifySquare @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  messageSquare @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  mail1 @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  linkExternal @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  home3 @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  home4 @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  helpCircleContained @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  helpSquareContained @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  shieldCheck @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  menu1 @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  checkBroken @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  checkContained @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  settings @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
 enum EventType @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -2338,6 +2404,16 @@ input CardBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   themeName: ThemeName
 }
 
+input ChatButtonCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  link: String!
+  platform: MessagePlatform!
+}
+
+input ChatButtonUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  link: String!
+  platform: MessagePlatform!
+}
+
 input CustomDomainCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID
   teamId: String!
@@ -2643,6 +2719,25 @@ input MutationJourneyLanguageAiDetectInput @join__type(graph: API_JOURNEYS_MODER
 input NavigateToBlockActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
   gtmEventName: String
   blockId: String!
+}
+
+input QrCodeCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  teamId: ID!
+  journeyId: ID!
+}
+
+input QrCodeUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  journey url where the QR code redirects to, will be parsed and stored as ids
+  """
+  to: String
+  color: String
+  backgroundColor: String
+}
+
+input QrCodesFilter @join__type(graph: API_JOURNEYS_MODERN)  {
+  journeyId: ID
+  teamId: ID
 }
 
 input RadioOptionBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {

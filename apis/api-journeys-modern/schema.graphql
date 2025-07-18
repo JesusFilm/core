@@ -180,6 +180,22 @@ input CardBlockUpdateInput {
   themeName: ThemeName
 }
 
+type ChatButton {
+  id: ID
+  link: String
+  platform: MessagePlatform
+}
+
+input ChatButtonCreateInput {
+  link: String!
+  platform: MessagePlatform!
+}
+
+input ChatButtonUpdateInput {
+  link: String!
+  platform: MessagePlatform!
+}
+
 type CustomDomain {
   id: ID
   name: String
@@ -551,6 +567,7 @@ type Journey
   languageId: String! @shareable
   language: Language! @shareable
   blocks: [Block!] @shareable
+  chatButtons: [ChatButton!]
 }
 
 input JourneyAiTranslateInput {
@@ -869,6 +886,43 @@ input LinkActionInput {
 
 union MediaVideo = MuxVideo | Video | YouTube
 
+enum MessagePlatform {
+  facebook
+  telegram
+  whatsApp
+  instagram
+  kakaoTalk
+  viber
+  vk
+  snapchat
+  skype
+  line
+  tikTok
+  custom
+  globe2
+  globe3
+  messageText1
+  messageText2
+  send1
+  send2
+  messageChat2
+  messageCircle
+  messageNotifyCircle
+  messageNotifySquare
+  messageSquare
+  mail1
+  linkExternal
+  home3
+  home4
+  helpCircleContained
+  helpSquareContained
+  shieldCheck
+  menu1
+  checkBroken
+  checkContained
+  settings
+}
+
 type Mutation {
   """blockDelete returns the updated sibling blocks on successful delete"""
   blockDelete(
@@ -1046,6 +1100,9 @@ type Mutation {
     """drop this parameter after merging teams"""
     journeyId: ID
   ): TypographyBlock!
+  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput!): ChatButton
+  chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton
+  chatButtonRemove(id: ID!): ChatButton
   journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
   journeyDuplicate(id: ID!, teamId: ID!): Journey!
@@ -1080,6 +1137,9 @@ type Mutation {
   integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput!): Integration
   integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpacesUpdateInput!): Integration
   integrationDelete(id: ID!): Integration
+  qrCodeCreate(input: QrCodeCreateInput!): QrCode!
+  qrCodeUpdate(id: ID!, input: QrCodeUpdateInput!): QrCode!
+  qrCodeDelete(id: ID!): QrCode!
   teamCreate(input: TeamCreateInput!): Team
   teamUpdate(id: ID!, input: TeamUpdateInput!): Team
   userJourneyRequest(journeyId: ID!): UserJourney
@@ -1137,6 +1197,39 @@ type PageInfo
   endCursor: String
 }
 
+type QrCode {
+  id: ID
+  teamId: ID
+  journeyId: ID
+  toJourneyId: String
+  toBlockId: String
+  shortLinkId: String
+  color: String
+  backgroundColor: String
+  team: Team
+  journey: Journey
+  shortLink: ShortLink
+}
+
+input QrCodeCreateInput {
+  teamId: ID!
+  journeyId: ID!
+}
+
+input QrCodeUpdateInput {
+  """
+  journey url where the QR code redirects to, will be parsed and stored as ids
+  """
+  to: String
+  color: String
+  backgroundColor: String
+}
+
+input QrCodesFilter {
+  journeyId: ID
+  teamId: ID
+}
+
 type Query {
   blocks(where: BlocksFilter): [Block!]!
   block(id: ID!): Block
@@ -1157,6 +1250,8 @@ type Query {
   customDomains(teamId: ID!): [CustomDomain!]
   hosts(teamId: ID!): [Host!]
   integrations(teamId: ID!): [Integration!]
+  qrCode(id: ID!): QrCode!
+  qrCodes(where: QrCodesFilter!): [QrCode!]!
   teams: [Team!]
   team(id: ID!): Team
   userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!]
@@ -1242,6 +1337,13 @@ input RadioQuestionBlockUpdateInput {
 
 enum Role {
   publisher
+}
+
+type ShortLink
+  @key(fields: "id")
+  @extends
+{
+  id: ID
 }
 
 type SignUpBlock implements Block
