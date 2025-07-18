@@ -479,6 +479,26 @@ type JourneyAiTranslateProgress {
   journey: Journey
 }
 
+"""A collection of journeys associated with a team"""
+type JourneyCollection {
+  id: ID
+  title: String
+  team: Team
+  journeys: [Journey!]
+}
+
+input JourneyCollectionCreateInput {
+  id: ID
+  teamId: ID!
+  title: String
+  journeyIds: [ID!]
+}
+
+input JourneyCollectionUpdateInput {
+  title: String
+  journeyIds: [ID!]
+}
+
 input JourneyCreateInput {
   """
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
@@ -494,6 +514,38 @@ input JourneyCreateInput {
   Slug should be unique amongst all journeys (server will throw BAD_USER_INPUT error if not). If not required will use title formatted with kebab-case. If the generated slug is not unique the uuid will be placed at the end of the slug guaranteeing uniqueness
   """
   slug: String
+}
+
+type JourneyEvent {
+  id: ID
+  journeyId: ID
+  createdAt: DateTime
+  label: String
+  value: String
+  action: String
+  actionValue: String
+  messagePlatform: String
+  email: String
+  blockId: String
+  position: Float
+  source: String
+  progress: Int
+  typename: String
+  visitorId: String
+  journeySlug: String
+  visitorName: String
+  visitorEmail: String
+  visitorPhone: String
+}
+
+type JourneyEventEdge {
+  cursor: String
+  node: JourneyEvent
+}
+
+type JourneyEventsConnection {
+  edges: [JourneyEventEdge!]
+  pageInfo: PageInfo
 }
 
 type JourneyEventsExportLog {
@@ -513,6 +565,12 @@ input JourneyEventsExportLogInput {
   dateRangeEnd: DateTimeISO
 }
 
+input JourneyEventsFilter {
+  typenames: [String!]
+  periodRangeStart: DateTime
+  periodRangeEnd: DateTime
+}
+
 enum JourneyMenuButtonIcon {
   menu1
   equals
@@ -522,6 +580,23 @@ enum JourneyMenuButtonIcon {
   ellipsis
   grid1
   chevronDown
+}
+
+type JourneyNotification {
+  id: ID
+  userId: ID
+  journeyId: ID
+  userTeamId: ID
+  userJourneyId: ID
+  visitorInteractionEmail: Boolean
+  journey: Journey
+  userTeam: UserTeam
+  userJourney: UserJourney
+}
+
+input JourneyNotificationUpdateInput {
+  journeyId: ID!
+  visitorInteractionEmail: Boolean!
 }
 
 type JourneyProfile
@@ -555,6 +630,31 @@ input JourneyTemplateInput {
   template: Boolean
 }
 
+type JourneyTheme {
+  id: ID
+  journeyId: ID
+  userId: ID
+  headerFont: String
+  bodyFont: String
+  labelFont: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  journey: Journey
+}
+
+input JourneyThemeCreateInput {
+  journeyId: ID!
+  headerFont: String
+  bodyFont: String
+  labelFont: String
+}
+
+input JourneyThemeUpdateInput {
+  headerFont: String
+  bodyFont: String
+  labelFont: String
+}
+
 input JourneyUpdateInput {
   title: String
   languageId: String
@@ -586,6 +686,18 @@ input JourneyUpdateInput {
   logoImageBlockId: ID
   socialNodeX: Int
   socialNodeY: Int
+}
+
+type JourneysEmailPreference {
+  email: String
+  unsubscribeAll: Boolean
+  accountNotifications: Boolean
+}
+
+input JourneysEmailPreferenceUpdateInput {
+  email: String!
+  preference: String!
+  value: Boolean!
 }
 
 input JourneysFilter {
@@ -828,9 +940,17 @@ type Mutation {
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey!
   journeySimpleUpdate(id: ID!, journey: Json!): Json
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
+  journeyCollectionCreate(input: JourneyCollectionCreateInput!): JourneyCollection!
+  journeyCollectionUpdate(id: ID!, input: JourneyCollectionUpdateInput!): JourneyCollection!
+  journeyCollectionDelete(id: ID!): JourneyCollection!
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
   journeyProfileCreate: JourneyProfile!
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile!
+  journeyThemeCreate(input: JourneyThemeCreateInput!): JourneyTheme!
+  journeyThemeUpdate(id: ID!, input: JourneyThemeUpdateInput!): JourneyTheme!
+  journeyThemeDelete(id: ID!): JourneyTheme!
+  updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput!): JourneysEmailPreference
+  journeyNotificationUpdate(input: JourneyNotificationUpdateInput!): JourneyNotification!
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!): Boolean!
   teamCreate(input: TeamCreateInput!): Team
   teamUpdate(id: ID!, input: TeamUpdateInput!): Team
@@ -878,6 +998,13 @@ input NavigateToBlockActionInput {
   blockId: String!
 }
 
+type PageInfo {
+  hasNextPage: Boolean
+  hasPreviousPage: Boolean
+  startCursor: String
+  endCursor: String
+}
+
 type Query {
   blocks(where: BlocksFilter): [Block!]!
   block(id: ID!): Block
@@ -886,7 +1013,13 @@ type Query {
   adminJourney(id: ID!, idType: IdType): Journey!
   adminJourneys(status: [JourneyStatus!], template: Boolean, teamId: ID, useLastActiveTeamId: Boolean): [Journey!]!
   journeySimpleGet(id: ID!): Json
+  journeyCollection(id: ID!): JourneyCollection!
+  journeyCollections(teamId: ID!): [JourneyCollection!]!
   getJourneyProfile: JourneyProfile
+  journeyTheme(journeyId: ID!): JourneyTheme
+  journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, first: Int, after: String): JourneyEventsConnection!
+  journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter): Int!
+  journeysEmailPreference(email: String!): JourneysEmailPreference
   teams: [Team!]
   team(id: ID!): Team
   userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!]

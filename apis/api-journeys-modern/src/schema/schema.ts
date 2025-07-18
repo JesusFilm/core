@@ -5,8 +5,13 @@ import './action' // Import action module
 import './block' // Import blocks module
 import './journey'
 import './journeyAiTranslate'
+import './journeyCollection'
 import './journeyEventsExportLog'
 import './journeyProfile'
+import './journeyTheme'
+import './journeyEvent'
+import './journeysEmailPreference'
+import './journeyNotification'
 import './journeyLanguageAiDetect'
 import './language'
 import './mediaVideo'
