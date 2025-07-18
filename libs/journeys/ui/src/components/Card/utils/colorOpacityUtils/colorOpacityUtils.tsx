@@ -7,7 +7,7 @@ export function getOpacityFromHex(hex: string): number | undefined {
   if (!isValidHex(hex)) return
 
   if (hex.length === 7) {
-    return 100
+    return 30
   }
 
   const alphaHex = hex.slice(-2)
@@ -82,4 +82,8 @@ export function reduceHexOpacity(
   const alphaHex = alphaDecimal.toString(16).padStart(2, '0').toUpperCase()
 
   return `${baseHex}${alphaHex}`
+}
+
+export function applyDefaultAlpha(hex: string): string {
+  return hex.length === 7 ? `${hex}4D` : hex
 }
