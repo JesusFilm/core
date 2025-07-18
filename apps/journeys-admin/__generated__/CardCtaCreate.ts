@@ -97,6 +97,10 @@ export interface CardCtaCreate_button1_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardCtaCreate_button1 {
@@ -164,6 +168,10 @@ export interface CardCtaCreate_button1Update_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardCtaCreate_button1Update {
@@ -211,6 +219,10 @@ export interface CardCtaCreate_button2_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardCtaCreate_button2 {
@@ -278,6 +290,10 @@ export interface CardCtaCreate_button2Update_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardCtaCreate_button2Update {
@@ -325,6 +341,10 @@ export interface CardCtaCreate_button3_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardCtaCreate_button3 {
@@ -392,6 +412,10 @@ export interface CardCtaCreate_button3Update_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardCtaCreate_button3Update {

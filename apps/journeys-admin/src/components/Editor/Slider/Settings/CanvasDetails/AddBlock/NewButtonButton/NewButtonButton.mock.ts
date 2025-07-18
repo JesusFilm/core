@@ -53,7 +53,8 @@ export const submitButtonBlock: TreeBlock<ButtonBlock> = {
   submitEnabled: true,
   settings: {
     __typename: 'ButtonBlockSettings',
-    alignment: ButtonAlignment.justify
+    alignment: ButtonAlignment.justify,
+    color: null
   },
   children: []
 }
@@ -104,7 +105,8 @@ export const buttonBlockCreateMock: MockedResponse<
         size: ButtonSize.medium,
         submitEnabled: false,
         settings: {
-          alignment: ButtonAlignment.justify
+          alignment: ButtonAlignment.justify,
+          color: null
         }
       },
       iconBlockCreateInput1: {
@@ -165,7 +167,8 @@ export const buttonBlockCreateMock: MockedResponse<
         action: null,
         submitEnabled: false,
         settings: {
-          alignment: ButtonAlignment.justify
+          alignment: ButtonAlignment.justify,
+          color: null
         }
       }
     } as ButtonBlockCreate
@@ -189,7 +192,8 @@ export const submitButtonCreateMock: MockedResponse<
         size: ButtonSize.medium,
         submitEnabled: true,
         settings: {
-          alignment: ButtonAlignment.justify
+          alignment: ButtonAlignment.justify,
+          color: null
         }
       },
       iconBlockCreateInput1: {
@@ -250,7 +254,8 @@ export const submitButtonCreateMock: MockedResponse<
         action: null,
         submitEnabled: true,
         settings: {
-          alignment: ButtonAlignment.justify
+          alignment: ButtonAlignment.justify,
+          color: null
         }
       }
     } as ButtonBlockCreate
