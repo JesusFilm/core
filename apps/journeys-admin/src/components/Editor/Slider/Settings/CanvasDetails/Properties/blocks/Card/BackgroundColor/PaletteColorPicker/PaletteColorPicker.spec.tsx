@@ -128,7 +128,7 @@ describe('PaletteColorPicker', () => {
       const redSwatch = screen.getByTestId('Swatch-#DC2626')
       fireEvent.click(redSwatch)
 
-      expect(mockOnChange).toHaveBeenCalledWith('#DC26264D') // Full opacity
+      expect(mockOnChange).toHaveBeenCalledWith('#DC26264D') // 30% opacity
     })
 
     it('calls onChange when clicking the check icon', () => {
@@ -143,7 +143,7 @@ describe('PaletteColorPicker', () => {
       const checkIcon = screen.getByTestId('CheckIcon')
       fireEvent.click(checkIcon)
 
-      expect(mockOnChange).toHaveBeenCalledWith('#DC26264D')
+      expect(mockOnChange).toHaveBeenCalledWith('#DC26264D') // 30% opacity
     })
 
     it('preserves opacity when selecting a color', () => {
@@ -205,7 +205,7 @@ describe('PaletteColorPicker', () => {
       const greenSwatch = screen.getByTestId('Swatch-#10B981')
       fireEvent.click(greenSwatch)
 
-      expect(mockOnChange).toHaveBeenCalledWith('#10B9814D') // Full opacity
+      expect(mockOnChange).toHaveBeenCalledWith('#10B9814D') // 30% opacity
     })
 
     it('handles various opacity levels correctly', () => {
