@@ -7,7 +7,7 @@ export function getOpacityFromHex(hex: string): number | undefined {
   if (!isValidHex(hex)) return
 
   if (hex.length === 7) {
-    return 100
+    return 30
   }
 
   const alphaHex = hex.slice(-2)
