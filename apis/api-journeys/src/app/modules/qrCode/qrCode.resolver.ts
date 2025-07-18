@@ -12,8 +12,8 @@ import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
 import { v4 as uuidv4 } from 'uuid'
 
-import { Prisma, QrCode } from '.prisma/api-journeys-client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
+import { Prisma, QrCode } from '@core/prisma/journeys/client'
 
 import { Service } from '../../../__generated__/graphql'
 import {

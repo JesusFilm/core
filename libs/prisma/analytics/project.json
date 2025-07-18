@@ -1,0 +1,74 @@
+{
+  "name": "prisma-analytics",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/prisma/analytics/src",
+  "projectType": "library",
+  "tags": ["type:prisma", "scope:analytics"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/prisma-analytics/eslint",
+        "cacheStrategy": "content"
+      }
+    },
+    "prisma-generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "parallel": false,
+        "commands": [
+          "npx prisma generate --schema libs/prisma/analytics/db/schema.prisma"
+        ]
+      }
+    },
+    "prisma-introspect": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx prisma introspect --schema apis/api-analytics/db/schema.prisma"
+        ]
+      }
+    },
+    "prisma-studio": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx prisma studio --schema libs/prisma/analytics/db/schema.prisma"
+        ]
+      }
+    },
+    "prisma-validate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx prisma validate --schema libs/prisma/analytics/db/schema.prisma"
+        ]
+      }
+    },
+    "prisma-migrate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_ANALYTICS=postgresql://postgres:postgres@db:5432/analytics?schema=public \"bash -c 'npx prisma migrate dev --schema libs/prisma/analytics/db/schema.prisma --name `date +\\\"%Y%m%d%H%M%S\\\"`'\""
+        ]
+      },
+      "configurations": {
+        "production": {
+          "commands": [
+            "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_ANALYTICS=postgresql://postgres:postgres@db:5432/analytics?schema=public \"npx prisma migrate deploy --schema libs/prisma/analytics/db/schema.prisma\""
+          ]
+        }
+      }
+    },
+    "prisma-reset": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_ANALYTICS=postgresql://postgres:postgres@db:5432/analytics?schema=public \"npx prisma migrate reset --schema libs/prisma/analytics/db/schema.prisma --force\""
+        ]
+      }
+    }
+  }
+}

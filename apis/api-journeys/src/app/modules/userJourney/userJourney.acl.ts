@@ -1,4 +1,4 @@
-import { UserJourneyRole, UserTeamRole } from '.prisma/api-journeys-client'
+import { UserJourneyRole, UserTeamRole } from '@core/prisma/journeys/client'
 
 import { Action, AppAclFn, AppAclParameters } from '../../lib/casl/caslFactory'
 
