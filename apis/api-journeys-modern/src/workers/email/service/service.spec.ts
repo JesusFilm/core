@@ -6,7 +6,7 @@ import {
   UserJourney,
   UserJourneyRole,
   UserTeamRole
-} from '@core/prisma-journeys/client'
+} from '@core/prisma/journeys/client'
 import { sendEmail } from '@core/yoga/email'
 
 import { prismaMock } from '../../../../test/prismaMock'

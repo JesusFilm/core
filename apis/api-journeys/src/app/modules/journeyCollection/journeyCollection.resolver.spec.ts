@@ -8,7 +8,7 @@ import {
   JourneyCollection,
   Prisma,
   UserTeamRole
-} from '@core/prisma-journeys/client'
+} from '@core/prisma/journeys/client'
 
 import {
   JourneyCollectionCreateInput,

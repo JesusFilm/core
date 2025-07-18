@@ -17,7 +17,7 @@ import {
   VideoSubtitle,
   VideoTitle,
   VideoVariant
-} from '@core/prisma-media/client'
+} from '@core/prisma/media/client'
 import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../test/client'

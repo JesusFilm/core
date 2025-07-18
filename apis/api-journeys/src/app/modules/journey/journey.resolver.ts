@@ -36,7 +36,7 @@ import {
   Team,
   UserJourney,
   UserJourneyRole
-} from '@core/prisma-journeys/client'
+} from '@core/prisma/journeys/client'
 
 import {
   IdType,

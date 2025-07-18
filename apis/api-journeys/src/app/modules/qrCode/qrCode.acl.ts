@@ -2,7 +2,7 @@ import {
   Prisma,
   UserJourneyRole,
   UserTeamRole
-} from '@core/prisma-journeys/client'
+} from '@core/prisma/journeys/client'
 import { DefaultArgs } from '@prisma/client/runtime/library'
 
 import { Action, AppAclFn, AppAclParameters } from '../../lib/casl/caslFactory'

@@ -5,7 +5,7 @@ import {
   Prisma,
   VideoVariantDownloadQuality,
   prisma
-} from '@core/prisma-media/client'
+} from '@core/prisma/media/client'
 
 export const qualityEnumToOrder: Record<VideoVariantDownloadQuality, number> = {
   [VideoVariantDownloadQuality.distroLow]: 0,

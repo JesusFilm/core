@@ -1,6 +1,6 @@
 import { getAuth } from 'firebase-admin/auth'
 
-import { prisma } from '@core/prisma-users/client'
+import { prisma } from '@core/prisma/users/client'
 import { firebaseClient } from '@core/yoga/firebaseClient'
 
 import { queue } from '../../workers/email/queue'

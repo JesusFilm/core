@@ -1,4 +1,4 @@
-import type { Prisma } from '@core/prisma-journeys/client'
+import type { Prisma } from '@core/prisma/journeys/client'
 import {
   JourneySimple,
   JourneySimpleCard

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { GraphQLError } from 'graphql'
 import fetch from 'node-fetch'
 
-import { CustomDomain } from '@core/prisma-journeys/client'
+import { CustomDomain } from '@core/prisma/journeys/client'
 
 import { CustomDomainCheck } from '../../__generated__/graphql'
 

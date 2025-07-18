@@ -2,7 +2,7 @@ import { Reflector } from '@nestjs/core'
 import { Test, TestingModule } from '@nestjs/testing'
 
 import { CaslFactory } from '@core/nest/common/CaslAuthModule'
-import { Prisma } from '@core/prisma-journeys/client'
+import { Prisma } from '@core/prisma/journeys/client'
 
 import {
   JourneyEventsConnection,

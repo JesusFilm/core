@@ -2,7 +2,7 @@ import Mux from '@mux/mux-node'
 import { Job } from 'bullmq'
 import { Logger } from 'pino'
 
-import { MuxVideo, prisma } from '@core/prisma-media/client'
+import { MuxVideo, prisma } from '@core/prisma/media/client'
 
 import {
   createDownloadsFromMuxAsset,

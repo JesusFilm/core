@@ -1,4 +1,4 @@
-import { prisma } from '@core/prisma-journeys/client'
+import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
 import { MediaVideo } from '../../mediaVideo/mediaVideo'

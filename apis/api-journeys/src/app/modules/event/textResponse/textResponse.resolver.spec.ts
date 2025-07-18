@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { Block, JourneyVisitor, Visitor } from '@core/prisma-journeys/client'
+import { Block, JourneyVisitor, Visitor } from '@core/prisma/journeys/client'
 
 import {
   TextResponseSubmissionEventCreateInput,

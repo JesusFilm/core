@@ -1,6 +1,6 @@
 import { Logger } from 'pino'
 
-import { prisma } from '@core/prisma-media/client'
+import { prisma } from '@core/prisma/media/client'
 
 async function getPublishedVideosWithoutPublishedAt(): Promise<
   Array<{ id: string }>

@@ -1,7 +1,7 @@
 import { algoliasearch } from 'algoliasearch'
 import clone from 'lodash/clone'
 
-import { VideoVariant } from '@core/prisma-media/client'
+import { VideoVariant } from '@core/prisma/media/client'
 
 import { prismaMock } from '../../../../test/prismaMock'
 

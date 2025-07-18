@@ -9,8 +9,8 @@ import ScopeAuthPlugin from '@pothos/plugin-scope-auth'
 import TracingPlugin, { isRootField } from '@pothos/plugin-tracing'
 import { createOpenTelemetryWrapper } from '@pothos/tracing-opentelemetry'
 
-import type PrismaTypes from '@core/prisma-users/__generated__/pothos-types'
-import { Prisma, prisma } from '@core/prisma-users/client'
+import type PrismaTypes from '@core/prisma/users/__generated__/pothos-types'
+import { Prisma, prisma } from '@core/prisma/users/client'
 import { User } from '@core/yoga/firebaseClient'
 import { InteropContext } from '@core/yoga/interop'
 

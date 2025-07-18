@@ -1,7 +1,7 @@
 import { algoliasearch } from 'algoliasearch'
 import { Logger } from 'pino'
 
-import { prisma } from '@core/prisma-languages/client'
+import { prisma } from '@core/prisma/languages/client'
 
 async function configureIndexSettings(
   client: ReturnType<typeof algoliasearch>,

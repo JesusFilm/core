@@ -1,4 +1,4 @@
-import { Event, PrismaClient, Visitor } from '@core/prisma-journeys/client'
+import { Event, PrismaClient, Visitor } from '@core/prisma/journeys/client'
 
 import { JourneyWithTeamAndUserJourney } from './prisma.types'
 

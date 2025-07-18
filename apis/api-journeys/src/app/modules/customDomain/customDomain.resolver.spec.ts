@@ -10,7 +10,7 @@ import {
   Prisma,
   Team,
   UserTeamRole
-} from '@core/prisma-journeys/client'
+} from '@core/prisma/journeys/client'
 
 import {
   CustomDomainCreateInput,

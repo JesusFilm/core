@@ -1,4 +1,4 @@
-import { Block } from '@core/prisma-journeys/client'
+import { Block } from '@core/prisma/journeys/client'
 
 export function getButtonBlockContent({ block }: { block: Block }): string {
   return `

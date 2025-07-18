@@ -1,6 +1,6 @@
 import { GraphQLError } from 'graphql'
 
-import { Prisma, prisma } from '@core/prisma-media/client'
+import { Prisma, prisma } from '@core/prisma/media/client'
 
 import { queue as processVideoDownloadsQueue } from '../../../workers/processVideoDownloads/queue'
 import { builder } from '../../builder'

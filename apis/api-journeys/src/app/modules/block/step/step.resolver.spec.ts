@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-import { Block, Journey, UserTeamRole } from '@core/prisma-journeys/client'
+import { Block, Journey, UserTeamRole } from '@core/prisma/journeys/client'
 
 import {
   StepBlockCreateInput,

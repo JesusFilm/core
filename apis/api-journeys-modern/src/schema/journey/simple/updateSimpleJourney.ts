@@ -1,4 +1,4 @@
-import { prisma } from '@core/prisma-journeys/client'
+import { prisma } from '@core/prisma/journeys/client'
 import { JourneySimpleUpdate } from '@core/shared/ai/journeySimpleTypes'
 
 export async function updateSimpleJourney(

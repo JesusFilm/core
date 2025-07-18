@@ -1,6 +1,6 @@
 import fetch from 'node-fetch'
 
-import { prisma } from '@core/prisma-media/client'
+import { prisma } from '@core/prisma/media/client'
 
 import { cache } from '../yoga'
 

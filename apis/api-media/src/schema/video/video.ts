@@ -7,7 +7,7 @@ import {
   Prisma,
   Platform as PrismaPlatform,
   prisma
-} from '@core/prisma-media/client'
+} from '@core/prisma/media/client'
 
 import { videoCacheReset } from '../../lib/videoCacheReset'
 import { updateVideoInAlgolia } from '../../workers/algolia/service'

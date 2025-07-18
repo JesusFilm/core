@@ -114,12 +114,6 @@
       "options": {
         "command": "codecov -f coverage/apis/api-journeys/cobertura-coverage.xml -F apps.api-journeys"
       }
-    },
-    "prisma-generate-ci": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "nx prisma-generate prisma-journeys"
-      }
     }
   }
 }

@@ -4,7 +4,7 @@ import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
-import { Action } from '@core/prisma-journeys/client'
+import { Action } from '@core/prisma/journeys/client'
 
 import { LinkActionInput } from '../../../__generated__/graphql'
 import { AppAbility, Action as CaslAction } from '../../../lib/casl/caslFactory'

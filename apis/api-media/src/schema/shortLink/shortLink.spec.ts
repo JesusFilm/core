@@ -1,7 +1,7 @@
 import { nanoid } from 'nanoid'
 import { v4 as uuidv4 } from 'uuid'
 
-import { Prisma, ShortLink, ShortLinkDomain } from '@core/prisma-media/client'
+import { Prisma, ShortLink, ShortLinkDomain } from '@core/prisma/media/client'
 import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../test/client'

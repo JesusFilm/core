@@ -18,7 +18,7 @@ import {
   JourneyCollection,
   Prisma,
   Team
-} from '@core/prisma-journeys/client'
+} from '@core/prisma/journeys/client'
 
 import {
   CustomDomainCheck,

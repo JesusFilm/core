@@ -1,4 +1,4 @@
-import { VideoVariantDownloadQuality, prisma } from '@core/prisma-media/client'
+import { VideoVariantDownloadQuality, prisma } from '@core/prisma/media/client'
 
 // Quality mapping from regular to distro/highest
 const QUALITY_MAPPING: Record<

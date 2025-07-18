@@ -1,10 +1,10 @@
 import { DeepMockProxy, mockDeep, mockReset } from 'jest-mock-extended'
 
-import { PrismaClient, prisma } from '@core/prisma-journeys/client'
+import { PrismaClient, prisma } from '@core/prisma/journeys/client'
 
-jest.mock('@core/prisma-journeys/client', () => ({
+jest.mock('@core/prisma/journeys/client', () => ({
   __esModule: true,
-  ...jest.requireActual('@core/prisma-journeys/client'),
+  ...jest.requireActual('@core/prisma/journeys/client'),
   prisma: mockDeep<PrismaClient>()
 }))
 

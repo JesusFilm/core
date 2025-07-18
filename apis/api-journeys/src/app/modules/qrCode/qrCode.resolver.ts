@@ -13,7 +13,7 @@ import omit from 'lodash/omit'
 import { v4 as uuidv4 } from 'uuid'
 
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
-import { Prisma, QrCode } from '@core/prisma-journeys/client'
+import { Prisma, QrCode } from '@core/prisma/journeys/client'
 
 import { Service } from '../../../__generated__/graphql'
 import {

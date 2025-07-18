@@ -1,6 +1,6 @@
 import clone from 'lodash/clone'
 
-import { Country, Language } from '@core/prisma-languages/client'
+import { Country, Language } from '@core/prisma/languages/client'
 
 import { prismaMock } from '../../../../test/prismaMock'
 

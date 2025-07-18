@@ -5,7 +5,7 @@ import {
 } from '@aws-sdk/client-ecs'
 import { Job, Queue, QueueEvents } from 'bullmq'
 
-import { prisma } from '@core/prisma-media/client'
+import { prisma } from '@core/prisma/media/client'
 
 import { connection } from '../../../workers/lib/connection'
 import { builder } from '../../builder'

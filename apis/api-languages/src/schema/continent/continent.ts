@@ -1,4 +1,4 @@
-import { Prisma, prisma } from '@core/prisma-languages/client'
+import { Prisma, prisma } from '@core/prisma/languages/client'
 
 import { builder } from '../builder'
 

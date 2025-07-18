@@ -1,4 +1,4 @@
-import { VideoBlockObjectFit as PrismaVideoBlockObjectFit } from '@core/prisma-journeys/client'
+import { VideoBlockObjectFit as PrismaVideoBlockObjectFit } from '@core/prisma/journeys/client'
 
 import { builder } from '../../../builder'
 

@@ -1,4 +1,4 @@
-import { prisma } from '@core/prisma-journeys/client'
+import { prisma } from '@core/prisma/journeys/client'
 import { journeySimpleSchema } from '@core/shared/ai/journeySimpleTypes'
 
 import { builder } from '../builder'

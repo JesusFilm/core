@@ -22,7 +22,7 @@ import {
   UserJourney,
   UserJourneyRole,
   UserTeamRole
-} from '@core/prisma-journeys/client'
+} from '@core/prisma/journeys/client'
 
 import {
   IdType,

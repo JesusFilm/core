@@ -5,7 +5,7 @@ import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
 
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
-import { Block } from '@core/prisma-journeys/client'
+import { Block } from '@core/prisma/journeys/client'
 
 import {
   RadioOptionBlockCreateInput,

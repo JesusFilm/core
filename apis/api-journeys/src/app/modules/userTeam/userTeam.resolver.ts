@@ -11,7 +11,7 @@ import {
 import { GraphQLError } from 'graphql'
 
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
-import { Prisma, UserTeam } from '@core/prisma-journeys/client'
+import { Prisma, UserTeam } from '@core/prisma/journeys/client'
 
 import {
   JourneyNotification,

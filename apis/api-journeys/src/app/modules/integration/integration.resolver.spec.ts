@@ -3,7 +3,7 @@ import { Test } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-import { Integration, Prisma } from '@core/prisma-journeys/client'
+import { Integration, Prisma } from '@core/prisma/journeys/client'
 
 import { IntegrationType, UserTeamRole } from '../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'

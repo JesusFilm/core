@@ -13,7 +13,7 @@ import fetch from 'node-fetch'
 import { object, string } from 'yup'
 
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
-import { Block, VideoBlockSource } from '@core/prisma-journeys/client'
+import { Block, VideoBlockSource } from '@core/prisma/journeys/client'
 
 import {
   GetMuxVideoQuery,

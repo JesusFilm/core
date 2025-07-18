@@ -8,7 +8,7 @@ import {
   UserTeamRole,
   Visitor,
   prisma
-} from '@core/prisma-journeys/client'
+} from '@core/prisma/journeys/client'
 
 import { prismaMock } from '../../../../test/prismaMock'
 

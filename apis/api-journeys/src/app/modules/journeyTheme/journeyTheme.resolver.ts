@@ -5,7 +5,7 @@ import { GraphQLError } from 'graphql'
 
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
-import { JourneyTheme } from '@core/prisma-journeys/client'
+import { JourneyTheme } from '@core/prisma/journeys/client'
 
 import {
   JourneyThemeCreateInput,

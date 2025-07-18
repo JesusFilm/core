@@ -6,7 +6,7 @@ import {
   UserJourneyRole,
   UserTeamRole,
   prisma
-} from '@core/prisma-journeys/client'
+} from '@core/prisma/journeys/client'
 import { graphql } from '@core/shared/gql'
 import { sendEmail } from '@core/yoga/email'
 

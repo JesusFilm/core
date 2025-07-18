@@ -3,7 +3,7 @@ import { Query, Resolver } from '@nestjs/graphql'
 
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
-import { UserRole } from '@core/prisma-journeys/client'
+import { UserRole } from '@core/prisma/journeys/client'
 
 import { UserRoleService } from './userRole.service'
 

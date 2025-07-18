@@ -6,7 +6,7 @@ import pull from 'lodash/pull'
 import snakeCase from 'lodash/snakeCase'
 
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
-import { Journey, Prisma } from '@core/prisma-journeys/client'
+import { Journey, Prisma } from '@core/prisma/journeys/client'
 
 import {
   IdType,

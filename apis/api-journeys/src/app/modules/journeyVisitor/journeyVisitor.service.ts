@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import isNil from 'lodash/isNil'
 import omitBy from 'lodash/omitBy'
 
-import { JourneyVisitor, Prisma } from '@core/prisma-journeys/client'
+import { JourneyVisitor, Prisma } from '@core/prisma/journeys/client'
 
 import {
   JourneyVisitorFilter,

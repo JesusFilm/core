@@ -1,4 +1,4 @@
-import { MediaRole as PrismaMediaRole } from '@core/prisma-media/client'
+import { MediaRole as PrismaMediaRole } from '@core/prisma/media/client'
 
 import { builder } from '../../builder'
 

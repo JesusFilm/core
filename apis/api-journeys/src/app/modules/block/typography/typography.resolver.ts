@@ -5,7 +5,7 @@ import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
 
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
-import { Block, Prisma } from '@core/prisma-journeys/client'
+import { Block, Prisma } from '@core/prisma/journeys/client'
 
 import {
   TypographyBlockCreateInput,

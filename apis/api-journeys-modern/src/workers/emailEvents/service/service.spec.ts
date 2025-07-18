@@ -10,7 +10,7 @@ import {
   UserJourneyRole,
   UserTeamRole,
   Visitor
-} from '@core/prisma-journeys/client'
+} from '@core/prisma/journeys/client'
 import { sendEmail } from '@core/yoga/email'
 import { EventsNotificationJob } from '@core/yoga/emailEvents/types'
 

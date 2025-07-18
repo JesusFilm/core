@@ -1,7 +1,7 @@
 import {
   Service as PrismaService,
   VideoRedirectType as PrismaVideoRedirectType
-} from '@core/prisma-media/client'
+} from '@core/prisma/media/client'
 
 import { builder } from '../builder'
 

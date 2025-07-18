@@ -59,7 +59,7 @@ jest.mock('child_process', () => ({
 }))
 
 // Mock prisma client
-jest.mock('@core/prisma-languages/client', () => ({
+jest.mock('@core/prisma/languages/client', () => ({
   prisma: {
     importTimes: {
       upsert: jest.fn().mockResolvedValue({ id: 1 })

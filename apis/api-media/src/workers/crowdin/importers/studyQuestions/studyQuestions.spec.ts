@@ -1,6 +1,6 @@
 import type { Logger } from 'pino'
 
-import { VideoStudyQuestion } from '@core/prisma-media/client'
+import { VideoStudyQuestion } from '@core/prisma/media/client'
 
 import { prismaMock } from '../../../../../test/prismaMock'
 import { processFile } from '../../importer'

@@ -24,7 +24,7 @@ import {
   Prisma,
   Team,
   UserTeam
-} from '@core/prisma-journeys/client'
+} from '@core/prisma/journeys/client'
 
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'

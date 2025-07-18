@@ -3,7 +3,7 @@ import {
   VideoEdition,
   VideoVariant,
   VideoVariantDownload
-} from '@core/prisma-media/client'
+} from '@core/prisma/media/client'
 import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../test/client'

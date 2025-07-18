@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto'
 
-import { users as User, prisma } from '@core/prisma-analytics/client'
+import { users as User, prisma } from '@core/prisma/analytics/client'
 
 export async function getUserFromApiKey(
   apiKey?: string

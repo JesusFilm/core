@@ -4,7 +4,7 @@ import {
   ThemeName,
   UserJourneyRole,
   UserTeamRole
-} from '@core/prisma-journeys/client'
+} from '@core/prisma/journeys/client'
 
 import { JourneyWithTeamAndUserJourney } from './prisma.types'
 import { processUserIds } from './processUserIds'

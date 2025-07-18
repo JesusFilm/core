@@ -9,7 +9,7 @@ import {
   ThemeMode,
   ThemeName,
   UserTeamRole
-} from '@core/prisma-journeys/client'
+} from '@core/prisma/journeys/client'
 
 import {
   IdType,

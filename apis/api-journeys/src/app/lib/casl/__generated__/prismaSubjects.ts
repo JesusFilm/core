@@ -28,7 +28,7 @@ import {
   UserTeam, 
   UserTeamInvite, 
   Visitor
-} from '@core/prisma-journeys/client'
+} from '@core/prisma/journeys/client'
 
 export type PrismaSubjects = Subjects<{
   Action: Action, 

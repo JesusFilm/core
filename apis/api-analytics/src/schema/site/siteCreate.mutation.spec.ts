@@ -1,4 +1,4 @@
-import { Prisma, sites } from '@core/prisma-analytics/client'
+import { Prisma, sites } from '@core/prisma/analytics/client'
 import { graphql } from '@core/shared/gql'
 
 import { getAuthenticatedClient } from '../../../test/client'

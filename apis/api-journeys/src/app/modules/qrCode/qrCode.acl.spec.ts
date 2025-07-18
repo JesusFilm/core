@@ -5,7 +5,7 @@ import {
   QrCode,
   UserJourneyRole,
   UserTeamRole
-} from '@core/prisma-journeys/client'
+} from '@core/prisma/journeys/client'
 
 import { Action, AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 

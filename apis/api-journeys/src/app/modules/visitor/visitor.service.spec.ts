@@ -6,7 +6,7 @@ import {
   JourneyVisitor,
   Prisma,
   Visitor
-} from '@core/prisma-journeys/client'
+} from '@core/prisma/journeys/client'
 
 import { PrismaService } from '../../lib/prisma.service'
 import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'

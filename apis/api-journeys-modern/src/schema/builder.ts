@@ -16,8 +16,8 @@ import {
 } from 'graphql-scalars'
 import { GraphQLJSONObject } from 'graphql-type-json'
 
-import type PrismaTypes from '@core/prisma-journeys/__generated__/pothos-types'
-import { Prisma, Role, prisma } from '@core/prisma-journeys/client'
+import type PrismaTypes from '@core/prisma/journeys/__generated__/pothos-types'
+import { Prisma, Role, prisma } from '@core/prisma/journeys/client'
 import { User } from '@core/yoga/firebaseClient'
 import { InteropContext } from '@core/yoga/interop'
 

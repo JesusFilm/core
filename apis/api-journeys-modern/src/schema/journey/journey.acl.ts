@@ -3,7 +3,7 @@ import {
   Prisma,
   UserJourneyRole,
   UserTeamRole
-} from '@core/prisma-journeys/client'
+} from '@core/prisma/journeys/client'
 import { User as BaseUser } from '@core/yoga/firebaseClient'
 import { DefaultArgs } from '@prisma/client/runtime/library'
 
