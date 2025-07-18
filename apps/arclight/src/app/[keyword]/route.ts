@@ -16,7 +16,7 @@ function isBrightcoveSourceCode(value: string): value is BrightcoveSourceCode {
   return ['hls', 'dh', 'dl'].includes(value as BrightcoveSourceCode)
 }
 
-export const GET_SHORT_LINK_QUERY = graphql(`
+const GET_SHORT_LINK_QUERY = graphql(`
   query GetShortLinkQuery($hostname: String!, $pathname: String!) {
     shortLink: shortLinkByPath(hostname: $hostname, pathname: $pathname) {
       __typename
