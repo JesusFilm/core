@@ -21,21 +21,6 @@ export enum JourneyVisitorSort {
   activity = 'activity'
 }
 
-interface PageInfo {
-  hasNextPage: boolean
-  hasPreviousPage: boolean
-  startCursor?: string | null
-  endCursor?: string | null
-}
-
-interface JourneyVisitorsConnection {
-  edges: Array<{
-    node: any
-    cursor: string
-  }>
-  pageInfo: PageInfo
-}
-
 export class VisitorService {
   generateJourneyVisitorWhere(
     filter: JourneyVisitorFilter
@@ -78,7 +63,7 @@ export class VisitorService {
     first?: number
     filter: Prisma.JourneyVisitorWhereInput
     sort?: JourneyVisitorSort
-  }): Promise<JourneyVisitorsConnection> {
+  }): Promise<any> {
     const result = await prisma.journeyVisitor.findMany({
       where: filter,
       cursor: after != null ? { id: after } : undefined,

@@ -206,6 +206,26 @@ input EmailActionInput {
   email: String!
 }
 
+type Event {
+  id: ID
+  journeyId: String
+  createdAt: DateTime
+  label: String
+  value: String
+  action: String
+  actionValue: String
+  messagePlatform: String
+  email: String
+  blockId: String
+  position: Float
+  source: String
+  progress: Int
+  typename: String
+  visitorId: String
+  journey: Journey
+  visitor: Visitor
+}
+
 enum EventType {
   ButtonClickEvent
   ChatOpenEvent
@@ -538,16 +558,6 @@ type JourneyEvent {
   visitorPhone: String
 }
 
-type JourneyEventEdge {
-  cursor: String
-  node: JourneyEvent
-}
-
-type JourneyEventsConnection {
-  edges: [JourneyEventEdge!]
-  pageInfo: PageInfo
-}
-
 type JourneyEventsExportLog {
   id: ID!
   createdAt: DateTimeISO!
@@ -686,6 +696,33 @@ input JourneyUpdateInput {
   logoImageBlockId: ID
   socialNodeX: Int
   socialNodeY: Int
+}
+
+type JourneyVisitor {
+  id: ID
+  journeyId: String
+  visitorId: String
+  createdAt: DateTime
+  duration: Int
+  activityCount: Int
+  updatedAt: DateTime
+  journey: Journey
+  visitor: Visitor
+}
+
+input JourneyVisitorFilter {
+  countryCode: String
+  hasIcon: Boolean
+  hasChatStarted: Boolean
+  hasTextResponse: Boolean
+  hideInactive: Boolean
+  journeyId: ID!
+}
+
+enum JourneyVisitorSort {
+  date
+  duration
+  activity
 }
 
 type JourneysEmailPreference {
@@ -998,9 +1035,11 @@ input NavigateToBlockActionInput {
   blockId: String!
 }
 
-type PageInfo {
-  hasNextPage: Boolean
-  hasPreviousPage: Boolean
+type PageInfo
+  @shareable
+{
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
   startCursor: String
   endCursor: String
 }
@@ -1017,7 +1056,7 @@ type Query {
   journeyCollections(teamId: ID!): [JourneyCollection!]!
   getJourneyProfile: JourneyProfile
   journeyTheme(journeyId: ID!): JourneyTheme
-  journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, first: Int, after: String): JourneyEventsConnection!
+  journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, before: String, after: String, first: Int, last: Int): QueryJourneyEventsConnection
   journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter): Int!
   journeysEmailPreference(email: String!): JourneysEmailPreference
   teams: [Team!]
@@ -1027,6 +1066,28 @@ type Query {
   userTeamInvites(teamId: ID!): [UserTeamInvite!]
   userInvites(journeyId: ID!): [UserInvite!]
   getUserRole: UserRole
+  journeyVisitorsConnection(filter: JourneyVisitorFilter!, sort: JourneyVisitorSort, before: String, after: String, first: Int, last: Int): QueryJourneyVisitorsConnection
+  journeyVisitorCount(filter: JourneyVisitorFilter!): Int
+}
+
+type QueryJourneyEventsConnection {
+  pageInfo: PageInfo!
+  edges: [QueryJourneyEventsConnectionEdge]
+}
+
+type QueryJourneyEventsConnectionEdge {
+  node: Event
+  cursor: String!
+}
+
+type QueryJourneyVisitorsConnection {
+  pageInfo: PageInfo!
+  edges: [QueryJourneyVisitorsConnectionEdge]
+}
+
+type QueryJourneyVisitorsConnectionEdge {
+  node: JourneyVisitor
+  cursor: String!
 }
 
 type RadioOptionBlock implements Block
@@ -1587,6 +1648,21 @@ input VideoTriggerBlockCreateInput {
 
 input VideoTriggerBlockUpdateInput {
   triggerStart: Int
+}
+
+type Visitor {
+  id: ID
+  createdAt: DateTime
+  countryCode: String
+  duration: Int
+  email: String
+  name: String
+  phone: String
+  teamId: String
+  userId: String
+  updatedAt: DateTime
+  team: Team
+  journeyVisitors: [JourneyVisitor!]
 }
 
 type YouTube
