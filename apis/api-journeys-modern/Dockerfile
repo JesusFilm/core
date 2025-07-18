@@ -18,4 +18,4 @@ WORKDIR /prisma
 COPY ./libs/prisma/journeys/db .
 
 WORKDIR /app
-CMD npx prisma@6 migrate deploy --schema /prisma/schema.prisma --skip-generate; node ./main.js
+CMD npx prisma@6 migrate deploy --schema /prisma/schema.prisma; node ./main.js

@@ -19,4 +19,4 @@ COPY ./libs/prisma/journeys/db .
 
 WORKDIR /app
 RUN npm install tslib@^2.6.2 @nestjs/mapped-types pino-pretty@^10.2.0
-CMD npx prisma@6 migrate deploy --schema /prisma/schema.prisma --skip-generate; node ./main.js
+CMD npx prisma@6 migrate deploy --schema /prisma/schema.prisma; node ./main.js
