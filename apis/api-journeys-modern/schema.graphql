@@ -180,6 +180,28 @@ input CardBlockUpdateInput {
   themeName: ThemeName
 }
 
+type CustomDomain {
+  id: ID
+  name: String
+  apexName: String
+  routeAllTeamJourneys: Boolean
+  team: Team
+  journeyCollection: JourneyCollection
+}
+
+input CustomDomainCreateInput {
+  id: ID
+  teamId: String!
+  name: String!
+  journeyCollectionId: ID
+  routeAllTeamJourneys: Boolean
+}
+
+input CustomDomainUpdateInput {
+  journeyCollectionId: ID
+  routeAllTeamJourneys: Boolean
+}
+
 """
 A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
@@ -324,6 +346,34 @@ enum GridJustifyContent {
   center
 }
 
+type Host {
+  id: ID
+  teamId: String
+  title: String
+  location: String
+  src1: String
+  src2: String
+  team: Team
+  journeys: [Journey!]
+}
+
+input HostCreateInput {
+  title: String!
+  location: String
+  src1: String
+  src2: String
+}
+
+input HostUpdateInput {
+  """
+  title can be undefined as to not update title, but it cannot be null as to clear the value of title
+  """
+  title: String
+  location: String
+  src1: String
+  src2: String
+}
+
 type IconBlock implements Block
   @key(fields: "id")
 {
@@ -461,6 +511,29 @@ input ImageBlockUpdateInput {
   scale: Int
   focalTop: Int
   focalLeft: Int
+}
+
+type Integration {
+  id: ID
+  type: IntegrationType
+  accessId: String
+  accessSecretPart: String
+  team: Team
+}
+
+input IntegrationGrowthSpacesCreateInput {
+  accessId: String!
+  accessSecret: String!
+  teamId: String!
+}
+
+input IntegrationGrowthSpacesUpdateInput {
+  accessId: String!
+  accessSecret: String!
+}
+
+enum IntegrationType {
+  growthSpaces
 }
 
 type Journey
@@ -762,6 +835,13 @@ input JourneysQueryOptions {
   journeyCollection: Boolean
 }
 
+enum JourneysReportType {
+  multipleFull
+  multipleSummary
+  singleFull
+  singleSummary
+}
+
 """
 The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
@@ -968,6 +1048,7 @@ type Mutation {
   ): TypographyBlock!
   journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
+  journeyDuplicate(id: ID!, teamId: ID!): Journey!
   journeyPublish(id: ID!): Journey!
   journeyFeature(id: ID!, feature: Boolean!): Journey!
   journeysArchive(ids: [ID!]!): [Journey!]!
@@ -989,6 +1070,16 @@ type Mutation {
   updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput!): JourneysEmailPreference
   journeyNotificationUpdate(input: JourneyNotificationUpdateInput!): JourneyNotification!
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!): Boolean!
+  customDomainCreate(input: CustomDomainCreateInput!): CustomDomain
+  customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!): CustomDomain
+  customDomainDelete(id: ID!): CustomDomain
+  customDomainCheck(id: ID!): Json
+  hostCreate(teamId: ID!, input: HostCreateInput!): Host
+  hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host
+  hostDelete(id: ID!, teamId: ID!): Host
+  integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput!): Integration
+  integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpacesUpdateInput!): Integration
+  integrationDelete(id: ID!): Integration
   teamCreate(input: TeamCreateInput!): Team
   teamUpdate(id: ID!, input: TeamUpdateInput!): Team
   userJourneyRequest(journeyId: ID!): UserJourney
@@ -1005,6 +1096,8 @@ type Mutation {
   userInviteCreate(journeyId: ID!, input: UserInviteCreateInput!): UserInvite
   userInviteRemove(id: ID!, journeyId: ID!): UserInvite
   userInviteAcceptAll: [UserInvite!]
+  visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor
+  visitorUpdateForCurrentUser(input: VisitorUpdateForCurrentUserInput!): Visitor
 }
 
 input MutationJourneyLanguageAiDetectInput {
@@ -1052,6 +1145,7 @@ type Query {
   adminJourney(id: ID!, idType: IdType): Journey!
   adminJourneys(status: [JourneyStatus!], template: Boolean, teamId: ID, useLastActiveTeamId: Boolean): [Journey!]!
   journeySimpleGet(id: ID!): Json
+  adminJourneysReport(reportType: JourneysReportType!): Json
   journeyCollection(id: ID!): JourneyCollection!
   journeyCollections(teamId: ID!): [JourneyCollection!]!
   getJourneyProfile: JourneyProfile
@@ -1059,6 +1153,10 @@ type Query {
   journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, before: String, after: String, first: Int, last: Int): QueryJourneyEventsConnection
   journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter): Int!
   journeysEmailPreference(email: String!): JourneysEmailPreference
+  customDomain(id: ID!): CustomDomain
+  customDomains(teamId: ID!): [CustomDomain!]
+  hosts(teamId: ID!): [Host!]
+  integrations(teamId: ID!): [Integration!]
   teams: [Team!]
   team(id: ID!): Team
   userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!]
@@ -1068,6 +1166,7 @@ type Query {
   getUserRole: UserRole
   journeyVisitorsConnection(filter: JourneyVisitorFilter!, sort: JourneyVisitorSort, before: String, after: String, first: Int, last: Int): QueryJourneyVisitorsConnection
   journeyVisitorCount(filter: JourneyVisitorFilter!): Int
+  visitorsConnection(teamId: ID!, before: String, after: String, first: Int, last: Int): QueryVisitorsConnection
 }
 
 type QueryJourneyEventsConnection {
@@ -1087,6 +1186,16 @@ type QueryJourneyVisitorsConnection {
 
 type QueryJourneyVisitorsConnectionEdge {
   node: JourneyVisitor
+  cursor: String!
+}
+
+type QueryVisitorsConnection {
+  pageInfo: PageInfo!
+  edges: [QueryVisitorsConnectionEdge]
+}
+
+type QueryVisitorsConnectionEdge {
+  node: Visitor
   cursor: String!
 }
 
@@ -1663,6 +1772,22 @@ type Visitor {
   updatedAt: DateTime
   team: Team
   journeyVisitors: [JourneyVisitor!]
+}
+
+input VisitorUpdateForCurrentUserInput {
+  countryCode: String
+  email: String
+  name: String
+  referrer: String
+}
+
+input VisitorUpdateInput {
+  countryCode: String
+  email: String
+  name: String
+  notes: String
+  phone: String
+  referrer: String
 }
 
 type YouTube

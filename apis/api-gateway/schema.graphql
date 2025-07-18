@@ -303,6 +303,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   ): TypographyBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyCreate(input: JourneyCreateInput!, teamId: ID!) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyUpdate(id: ID!, input: JourneyUpdateInput!) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
+  journeyDuplicate(id: ID!, teamId: ID!) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyPublish(id: ID!) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyFeature(id: ID!, feature: Boolean!) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
   journeysArchive(ids: [ID!]!) : [Journey!]! @join__field(graph: API_JOURNEYS_MODERN) 
@@ -324,6 +325,16 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput!) : JourneysEmailPreference @join__field(graph: API_JOURNEYS_MODERN) 
   journeyNotificationUpdate(input: JourneyNotificationUpdateInput!) : JourneyNotification! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!) : Boolean! @join__field(graph: API_JOURNEYS_MODERN) 
+  customDomainCreate(input: CustomDomainCreateInput!) : CustomDomain @join__field(graph: API_JOURNEYS_MODERN) 
+  customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!) : CustomDomain @join__field(graph: API_JOURNEYS_MODERN) 
+  customDomainDelete(id: ID!) : CustomDomain @join__field(graph: API_JOURNEYS_MODERN) 
+  customDomainCheck(id: ID!) : Json @join__field(graph: API_JOURNEYS_MODERN) 
+  hostCreate(teamId: ID!, input: HostCreateInput!) : Host @join__field(graph: API_JOURNEYS_MODERN) 
+  hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput) : Host @join__field(graph: API_JOURNEYS_MODERN) 
+  hostDelete(id: ID!, teamId: ID!) : Host @join__field(graph: API_JOURNEYS_MODERN) 
+  integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput!) : Integration @join__field(graph: API_JOURNEYS_MODERN) 
+  integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpacesUpdateInput!) : Integration @join__field(graph: API_JOURNEYS_MODERN) 
+  integrationDelete(id: ID!) : Integration @join__field(graph: API_JOURNEYS_MODERN) 
   teamCreate(input: TeamCreateInput!) : Team @join__field(graph: API_JOURNEYS_MODERN) 
   teamUpdate(id: ID!, input: TeamUpdateInput!) : Team @join__field(graph: API_JOURNEYS_MODERN) 
   userJourneyRequest(journeyId: ID!) : UserJourney @join__field(graph: API_JOURNEYS_MODERN) 
@@ -340,6 +351,8 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   userInviteCreate(journeyId: ID!, input: UserInviteCreateInput!) : UserInvite @join__field(graph: API_JOURNEYS_MODERN) 
   userInviteRemove(id: ID!, journeyId: ID!) : UserInvite @join__field(graph: API_JOURNEYS_MODERN) 
   userInviteAcceptAll: [UserInvite!] @join__field(graph: API_JOURNEYS_MODERN) 
+  visitorUpdate(id: ID!, input: VisitorUpdateInput!) : Visitor @join__field(graph: API_JOURNEYS_MODERN) 
+  visitorUpdateForCurrentUser(input: VisitorUpdateForCurrentUserInput!) : Visitor @join__field(graph: API_JOURNEYS_MODERN) 
   audioPreviewCreate(input: MutationAudioPreviewCreateInput!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
   audioPreviewUpdate(input: MutationAudioPreviewUpdateInput!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
   audioPreviewDelete(languageId: ID!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
@@ -523,6 +536,15 @@ type CardBlock implements Block @join__type(graph: API_JOURNEYS_MODERN, key: "id
   themeName: ThemeName
 }
 
+type CustomDomain @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  name: String
+  apexName: String
+  routeAllTeamJourneys: Boolean
+  team: Team
+  journeyCollection: JourneyCollection
+}
+
 type EmailAction implements Action @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Action")  {
   parentBlockId: ID
   gtmEventName: String
@@ -570,6 +592,17 @@ type GridItemBlock implements Block @join__type(graph: API_JOURNEYS_MODERN, key:
   sm: Int!
 }
 
+type Host @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  teamId: String
+  title: String
+  location: String
+  src1: String
+  src2: String
+  team: Team
+  journeys: [Journey!]
+}
+
 type IconBlock implements Block @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
   id: ID!
   journeyId: ID!
@@ -597,6 +630,14 @@ type ImageBlock implements Block @join__type(graph: API_JOURNEYS_MODERN, key: "i
   focalTop: Int
   focalLeft: Int
   scale: Int
+}
+
+type Integration @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  type: IntegrationType
+  accessId: String
+  accessSecretPart: String
+  team: Team
 }
 
 type Journey @join__type(graph: API_JOURNEYS_MODERN, key: "id")  {
@@ -785,6 +826,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
     useLastActiveTeamId: Boolean
   ): [Journey!]! @join__field(graph: API_JOURNEYS_MODERN) 
   journeySimpleGet(id: ID!) : Json @join__field(graph: API_JOURNEYS_MODERN) 
+  adminJourneysReport(reportType: JourneysReportType!) : Json @join__field(graph: API_JOURNEYS_MODERN) 
   journeyCollection(id: ID!) : JourneyCollection! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyCollections(teamId: ID!) : [JourneyCollection!]! @join__field(graph: API_JOURNEYS_MODERN) 
   getJourneyProfile: JourneyProfile @join__field(graph: API_JOURNEYS_MODERN) 
@@ -799,6 +841,10 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
   ): QueryJourneyEventsConnection @join__field(graph: API_JOURNEYS_MODERN) 
   journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter) : Int! @join__field(graph: API_JOURNEYS_MODERN) 
   journeysEmailPreference(email: String!) : JourneysEmailPreference @join__field(graph: API_JOURNEYS_MODERN) 
+  customDomain(id: ID!) : CustomDomain @join__field(graph: API_JOURNEYS_MODERN) 
+  customDomains(teamId: ID!) : [CustomDomain!] @join__field(graph: API_JOURNEYS_MODERN) 
+  hosts(teamId: ID!) : [Host!] @join__field(graph: API_JOURNEYS_MODERN) 
+  integrations(teamId: ID!) : [Integration!] @join__field(graph: API_JOURNEYS_MODERN) 
   teams: [Team!] @join__field(graph: API_JOURNEYS_MODERN) 
   team(id: ID!) : Team @join__field(graph: API_JOURNEYS_MODERN) 
   userTeams(teamId: ID!, where: UserTeamFilterInput) : [UserTeam!] @join__field(graph: API_JOURNEYS_MODERN) 
@@ -815,6 +861,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
     last: Int
   ): QueryJourneyVisitorsConnection @join__field(graph: API_JOURNEYS_MODERN) 
   journeyVisitorCount(filter: JourneyVisitorFilter!) : Int @join__field(graph: API_JOURNEYS_MODERN) 
+  visitorsConnection(teamId: ID!, before: String, after: String, first: Int, last: Int) : QueryVisitorsConnection @join__field(graph: API_JOURNEYS_MODERN) 
   language(id: ID!, idType: LanguageIdType = databaseId) : Language @join__field(graph: API_LANGUAGES) 
   languages(offset: Int, limit: Int, where: LanguagesFilter, term: String) : [Language!]! @join__field(graph: API_LANGUAGES) 
   languagesCount(where: LanguagesFilter, term: String) : Int! @join__field(graph: API_LANGUAGES) 
@@ -930,6 +977,16 @@ type QueryJourneyVisitorsConnection @join__type(graph: API_JOURNEYS_MODERN)  {
 
 type QueryJourneyVisitorsConnectionEdge @join__type(graph: API_JOURNEYS_MODERN)  {
   node: JourneyVisitor
+  cursor: String!
+}
+
+type QueryVisitorsConnection @join__type(graph: API_JOURNEYS_MODERN)  {
+  pageInfo: PageInfo!
+  edges: [QueryVisitorsConnectionEdge]
+}
+
+type QueryVisitorsConnectionEdge @join__type(graph: API_JOURNEYS_MODERN)  {
+  node: Visitor
   cursor: String!
 }
 
@@ -1983,6 +2040,10 @@ enum IdType @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_MEDI
   slug @join__enumValue(graph: API_JOURNEYS_MODERN)  @join__enumValue(graph: API_MEDIA) 
 }
 
+enum IntegrationType @join__type(graph: API_JOURNEYS_MODERN)  {
+  growthSpaces @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
 enum JourneyStatus @join__type(graph: API_JOURNEYS_MODERN)  {
   archived @join__enumValue(graph: API_JOURNEYS_MODERN) 
   deleted @join__enumValue(graph: API_JOURNEYS_MODERN) 
@@ -2006,6 +2067,13 @@ enum JourneyVisitorSort @join__type(graph: API_JOURNEYS_MODERN)  {
   date @join__enumValue(graph: API_JOURNEYS_MODERN) 
   duration @join__enumValue(graph: API_JOURNEYS_MODERN) 
   activity @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
+enum JourneysReportType @join__type(graph: API_JOURNEYS_MODERN)  {
+  multipleFull @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  multipleSummary @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  singleFull @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  singleSummary @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
 enum VideoBlockSource @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_MEDIA)  {
@@ -2270,6 +2338,19 @@ input CardBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   themeName: ThemeName
 }
 
+input CustomDomainCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  teamId: String!
+  name: String!
+  journeyCollectionId: ID
+  routeAllTeamJourneys: Boolean
+}
+
+input CustomDomainUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  journeyCollectionId: ID
+  routeAllTeamJourneys: Boolean
+}
+
 input EmailActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
   gtmEventName: String
   email: String!
@@ -2307,6 +2388,23 @@ input GridItemBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   xl: Int
   lg: Int
   sm: Int
+}
+
+input HostCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  title: String!
+  location: String
+  src1: String
+  src2: String
+}
+
+input HostUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  title can be undefined as to not update title, but it cannot be null as to clear the value of title
+  """
+  title: String
+  location: String
+  src1: String
+  src2: String
 }
 
 input IconBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -2364,6 +2462,17 @@ input ImageBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   scale: Int
   focalTop: Int
   focalLeft: Int
+}
+
+input IntegrationGrowthSpacesCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  accessId: String!
+  accessSecret: String!
+  teamId: String!
+}
+
+input IntegrationGrowthSpacesUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  accessId: String!
+  accessSecret: String!
 }
 
 input JourneyAiTranslateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -2738,6 +2847,22 @@ input VideoTriggerBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
 
 input VideoTriggerBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   triggerStart: Int
+}
+
+input VisitorUpdateForCurrentUserInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  countryCode: String
+  email: String
+  name: String
+  referrer: String
+}
+
+input VisitorUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  countryCode: String
+  email: String
+  name: String
+  notes: String
+  phone: String
+  referrer: String
 }
 
 input LanguagesFilter @join__type(graph: API_LANGUAGES)  {

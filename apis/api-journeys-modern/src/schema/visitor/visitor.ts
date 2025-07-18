@@ -214,3 +214,141 @@ builder.queryField('journeyVisitorCount', (t) =>
     }
   })
 )
+
+// Visitor Mutations
+builder.mutationField('visitorUpdate', (t) =>
+  t.withAuth({ isAuthenticated: true }).field({
+    type: VisitorRef,
+    args: {
+      id: t.arg.id({ required: true }),
+      input: t.arg({
+        type: builder.inputType('VisitorUpdateInput', {
+          fields: (t) => ({
+            countryCode: t.string({ required: false }),
+            email: t.string({ required: false }),
+            name: t.string({ required: false }),
+            notes: t.string({ required: false }),
+            phone: t.string({ required: false }),
+            referrer: t.string({ required: false })
+          })
+        }),
+        required: true
+      })
+    },
+    resolve: async (_parent, args, context) => {
+      const { id, input } = args
+      const user = context.user
+
+      // Get visitor with team relation
+      const visitor = await prisma.visitor.findUnique({
+        where: { id },
+        include: { team: { include: { userTeams: true } } }
+      })
+
+      if (!visitor) {
+        throw new GraphQLError('visitor not found', {
+          extensions: { code: 'NOT_FOUND' }
+        })
+      }
+
+      // Check authorization - user must be team member
+      const isTeamMember = visitor.team.userTeams.some(
+        (ut) => ut.userId === user.id
+      )
+      if (!isTeamMember) {
+        throw new GraphQLError('user is not allowed to update visitor', {
+          extensions: { code: 'FORBIDDEN' }
+        })
+      }
+
+      // Update visitor
+      return await prisma.visitor.update({
+        where: { id },
+        data: omitBy(input, isNil)
+      })
+    }
+  })
+)
+
+builder.mutationField('visitorUpdateForCurrentUser', (t) =>
+  t.withAuth({ isAuthenticated: true }).field({
+    type: VisitorRef,
+    args: {
+      input: t.arg({
+        type: builder.inputType('VisitorUpdateForCurrentUserInput', {
+          fields: (t) => ({
+            countryCode: t.string({ required: false }),
+            email: t.string({ required: false }),
+            name: t.string({ required: false }),
+            referrer: t.string({ required: false })
+          })
+        }),
+        required: true
+      })
+    },
+    resolve: async (_parent, args, context) => {
+      const { input } = args
+      const user = context.user
+
+      // Find visitor for current user
+      const visitor = await prisma.visitor.findFirst({
+        where: { userId: user.id },
+        include: { team: { include: { userTeams: true } } }
+      })
+
+      if (!visitor) {
+        throw new GraphQLError('visitor not found for current user', {
+          extensions: { code: 'NOT_FOUND' }
+        })
+      }
+
+      // Update visitor with limited fields for current user
+      return await prisma.visitor.update({
+        where: { id: visitor.id },
+        data: omitBy(input, isNil)
+      })
+    }
+  })
+)
+
+// Team-level visitor queries
+builder.queryField('visitorsConnection', (t) =>
+  t.withAuth({ isAuthenticated: true }).prismaConnection({
+    type: VisitorRef,
+    cursor: 'id',
+    args: {
+      teamId: t.arg.id({ required: true })
+    },
+    resolve: async (query, _parent, args, context) => {
+      const { teamId } = args
+      const user = context.user
+
+      // Get team with user teams for authorization
+      const team = await prisma.team.findUnique({
+        where: { id: teamId },
+        include: { userTeams: true }
+      })
+
+      if (!team) {
+        throw new GraphQLError('team not found', {
+          extensions: { code: 'NOT_FOUND' }
+        })
+      }
+
+      // Check authorization - user must be team member
+      const isTeamMember = team.userTeams.some((ut) => ut.userId === user.id)
+      if (!isTeamMember) {
+        throw new GraphQLError('user is not allowed to read team visitors', {
+          extensions: { code: 'FORBIDDEN' }
+        })
+      }
+
+      // Query visitors for the team
+      return await prisma.visitor.findMany({
+        ...query,
+        where: { teamId },
+        orderBy: { createdAt: 'desc' }
+      })
+    }
+  })
+)

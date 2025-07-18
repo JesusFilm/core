@@ -4,16 +4,21 @@
 import './action' // Import action module
 import './block' // Import blocks module
 import './journey'
+import './journey/adminReports'
 import './journeyAiTranslate'
 import './journeyCollection'
 import './journeyEventsExportLog'
 import './journeyProfile'
 import './journeyTheme'
 import './journeyEvent'
+// import './event/event' // Temporarily disabled - type issues
 import './journeysEmailPreference'
 import './journeyNotification'
 import './journeyLanguageAiDetect'
 import './language'
+import './customDomain/customDomain'
+import './host/host'
+import './integration/integration'
 import './mediaVideo'
 // import './qrCode' // Temporarily disabled due to ShortLink federation issue
 import './team'
