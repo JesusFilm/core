@@ -7,6 +7,7 @@ import type { TreeBlock } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { OverlayContent } from '../OverlayContent'
+import { applyDefaultAlpha } from '../utils/colorOpacityUtils'
 
 interface ExpandedCoverProps {
   children: ReactNode
@@ -39,7 +40,7 @@ export function ExpandedCover({
   const background =
     backgroundColor != null
       ? imageBlock?.src != null
-        ? backgroundColor
+        ? applyDefaultAlpha(backgroundColor)
         : backgroundColor
       : 'unset'
 
