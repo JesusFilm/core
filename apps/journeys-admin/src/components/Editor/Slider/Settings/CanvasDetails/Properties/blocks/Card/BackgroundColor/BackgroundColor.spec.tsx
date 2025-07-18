@@ -111,14 +111,14 @@ describe('BackgroundColor', () => {
   > = {
     request: {
       query: CARD_BLOCK_BACKGROUND_COLOR_UPDATE,
-      variables: { id: 'card1.id', input: { backgroundColor: '#B0BEC5FF' } }
+      variables: { id: 'card1.id', input: { backgroundColor: '#B0BEC54D' } }
     },
     result: {
       data: {
         cardBlockUpdate: {
           __typename: 'CardBlock',
           id: 'card1.id',
-          backgroundColor: '#B0BEC5FF'
+          backgroundColor: '#B0BEC54D'
         }
       }
     }
@@ -160,7 +160,7 @@ describe('BackgroundColor', () => {
       })
       const result = jest.fn(() => ({
         data: {
-          cardBlockUpdate: { id: 'card1.id', backgroundColor: '#B0BEC5FF' }
+          cardBlockUpdate: { id: 'card1.id', backgroundColor: '#B0BEC54D' }
         }
       }))
 
@@ -173,7 +173,7 @@ describe('BackgroundColor', () => {
                 query: CARD_BLOCK_BACKGROUND_COLOR_UPDATE,
                 variables: {
                   id: 'card1.id',
-                  input: { backgroundColor: '#B0BEC5FF' }
+                  input: { backgroundColor: '#B0BEC54D' }
                 }
               },
               result
@@ -221,7 +221,10 @@ describe('BackgroundColor', () => {
       > = {
         request: {
           query: CARD_BLOCK_BACKGROUND_COLOR_UPDATE,
-          variables: { id: 'card1.id', input: { backgroundColor: '#FEFEFE' } }
+          variables: {
+            id: 'card1.id',
+            input: { backgroundColor: '#FEFEFE' }
+          }
         },
         result: {
           data: {
