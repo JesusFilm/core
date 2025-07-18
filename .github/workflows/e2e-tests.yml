@@ -58,6 +58,9 @@ jobs:
       - name: Run Playwright tests
         run: npx nx run ${{ inputs.TargetTests }}:${{ inputs.TargetAction }}
         env:
+          # Nx Cloud - Use separate cache for manual E2E tests
+          NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+          NX_BRANCH: manual-e2e
           DEPLOYMENT_URL: ${{ inputs.TargetAppUrl }}
           PLAYWRIGHT_EMAIL: ${{ secrets.PLAYWRIGHT_EMAIL }}
           PLAYWRIGHT_PASSWORD: ${{ secrets.PLAYWRIGHT_PASSWORD }}
