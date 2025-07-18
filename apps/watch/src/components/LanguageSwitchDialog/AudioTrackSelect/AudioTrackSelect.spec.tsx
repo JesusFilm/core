@@ -278,35 +278,37 @@ describe('AudioTrackSelect', () => {
     expect(screen.getByText('Audio Track')).toBeInTheDocument()
   })
 
-  it('should prioritize currentAudioLanguage over path slug', () => {
+  it('should prioritize currentAudioLanguage over path slug', async () => {
     // Mock router with a path that matches a different language
     const mockRouterWithDifferentPath = {
       ...mockRouter,
-      asPath: '/watch/video-slug/english.html'
+      asPath: '/watch/video-slug/english.html' // the slug is english but the audio language is spanish
     }
     useRouterMock.mockReturnValue(mockRouterWithDifferentPath)
 
     const initialLanguageState = {
       siteLanguage: 'en',
-      audioLanguage: 'nonexistent-id', // This won't match any language
+      audioLanguage: '496', // This value is gained from cookies and not slug path, this is required to calculate the currentAudioLanguage
       subtitleLanguage: '529',
       subtitleOn: false,
-      currentAudioLanguage: {
-        __typename: 'LanguageWithSlug' as const,
-        slug: 'spanish',
-        language: {
-          __typename: 'Language' as const,
-          id: '496',
+      videoAudioLanguages: [
+        {
+          __typename: 'LanguageWithSlug' as const,
           slug: 'spanish',
-          name: [
-            {
-              __typename: 'LanguageName' as const,
-              value: 'Spanish',
-              primary: true
-            }
-          ]
+          language: {
+            __typename: 'Language' as const,
+            id: '496',
+            slug: 'spanish',
+            name: [
+              {
+                __typename: 'LanguageName' as const,
+                value: 'Spanish',
+                primary: true
+              }
+            ]
+          }
         }
-      },
+      ],
       allLanguages: [
         {
           __typename: 'Language' as const,
@@ -356,9 +358,11 @@ describe('AudioTrackSelect', () => {
     )
 
     // Should display Spanish native name from currentAudioLanguage, not English from path
-    expect(screen.getByText('Español')).toBeInTheDocument()
-    expect(screen.queryByText('English Native')).not.toBeInTheDocument()
-    expect(screen.getByText('Audio Track')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText('Español')).toBeInTheDocument()
+      expect(screen.queryByText('English Native')).not.toBeInTheDocument()
+      expect(screen.getByText('Audio Track')).toBeInTheDocument()
+    })
   })
 
   it('should handle when allLanguages is null/undefined', () => {

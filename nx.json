@@ -114,5 +114,6 @@
         "targetName": "eslint:lint"
       }
     }
-  ]
+  ],
+  "nxCloudId": "67f5cc993cd3c537c150a59e"
 }

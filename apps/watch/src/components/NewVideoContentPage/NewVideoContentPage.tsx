@@ -16,6 +16,7 @@ import { VideoContentFields_studyQuestions as StudyQuestions } from '../../../__
 import { useVideoChildren } from '../../libs/useVideoChildren'
 import { getWatchUrl } from '../../libs/utils/getWatchUrl'
 import { useVideo } from '../../libs/videoContext'
+import { useWatch } from '../../libs/watchContext'
 import { audioLanguageRedirect } from '../../libs/watchContext/audioLanguageRedirect'
 import { GET_LANGUAGES_SLUG } from '../AudioLanguageDialog/AudioLanguageDialog'
 import { PageWrapper } from '../PageWrapper'
@@ -50,6 +51,7 @@ export function NewVideoContentPage(): ReactElement {
 
   const [showShare, setShowShare] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const { dispatch } = useWatch()
 
   const variantSlug = container?.variant?.slug ?? variant?.slug
   const watchUrl = getWatchUrl(container?.slug, label, variant?.slug)
@@ -63,6 +65,14 @@ export function NewVideoContentPage(): ReactElement {
     useQuery<GetLanguagesSlug>(GET_LANGUAGES_SLUG, {
       variables: {
         id
+      },
+      onCompleted: (data) => {
+        if (data?.video?.variantLanguagesWithSlug) {
+          dispatch({
+            type: 'SetVideoAudioLanguages',
+            videoAudioLanguages: data.video.variantLanguagesWithSlug
+          })
+        }
       }
     })
 
