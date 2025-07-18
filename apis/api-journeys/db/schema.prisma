@@ -81,6 +81,7 @@ enum ButtonAction {
   NavigateToBlockAction
   LinkAction
   EmailAction
+  PhoneAction
 }
 
 enum VideoBlockSource {
@@ -572,6 +573,7 @@ model Action {
   url           String?
   target        String?
   email         String?
+  phone         String?
   updatedAt     DateTime @default(now()) @updatedAt
   parentBlock   Block    @relation(fields: [parentBlockId], references: [id], onDelete: Cascade)
   journey       Journey? @relation(fields: [journeyId], references: [id])
