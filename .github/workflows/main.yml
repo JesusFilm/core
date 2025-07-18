@@ -153,7 +153,6 @@ jobs:
           targets: test
           args: --ci --silent --max-workers ${{ steps.cpu-cores.outputs.count }} --shard=${{ matrix.shard }}
           parallel: 1
-        env:
       - name: download codecov
         run: |
           curl -o /usr/local/bin/codecov https://uploader.codecov.io/latest/linux/codecov
