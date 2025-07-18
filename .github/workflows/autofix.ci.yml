@@ -59,8 +59,6 @@ jobs:
         uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: prisma-generate
-          all: true
-          parallel: 1
         env:
           DISABLE_ERD: true
       - name: NPM apollo and graphql for codegen

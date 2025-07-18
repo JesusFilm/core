@@ -77,12 +77,10 @@ jobs:
           cat $GITHUB_OUTPUT
         id: affected-apps
 
-      - name: Prisma Migrate
+      - name: Prisma Generate
         uses: mansagroup/nrwl-nx-action@v3
         with:
-          targets: prisma-generate-ci
-          projects: ${{ inputs.name }}
-          parallel: 1
+          targets: prisma-generate
         env:
           DISABLE_ERD: true
       - name: Build ${{ inputs.name }}

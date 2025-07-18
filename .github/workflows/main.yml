@@ -86,8 +86,6 @@ jobs:
         uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: prisma-generate
-          all: true
-          parallel: 1
         env:
           DISABLE_ERD: true
       - name: Install Doppler
@@ -197,8 +195,6 @@ jobs:
         uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: prisma-generate
-          all: true
-          parallel: 1
         env:
           DISABLE_ERD: true
       - name: Get number of CPU cores
