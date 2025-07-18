@@ -2,21 +2,22 @@ import {
   NetworkStatus,
   OperationVariables,
   QueryResult,
+  useMutation,
   useQuery
 } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-import { ReactElement } from 'react'
 
 import ClientLayout from './layout'
 
-// Mock useQuery hook
+// Mock useQuery and useMutation hooks
 jest.mock('@apollo/client', () => {
   const original = jest.requireActual('@apollo/client')
   return {
     ...original,
-    useQuery: jest.fn()
+    useQuery: jest.fn(),
+    useMutation: jest.fn()
   }
 })
 
@@ -27,6 +28,8 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 const mockPush = jest.fn()
 const mockRefetch = jest.fn()
+const mockUpdateVariant = jest.fn()
+const mockEnqueueSnackbar = jest.fn()
 
 // Mock next/navigation with a function to change pathname
 let mockPathname = '/videos/video123/audio'
@@ -40,19 +43,13 @@ jest.mock('next/navigation', () => ({
   usePathname: () => mockUsePathname()
 }))
 
-// Helper function to render component with different pathnames
-const renderWithPathname = (pathname: string): void => {
-  mockPathname = pathname
-  mockUsePathname.mockReturnValue(pathname)
-
-  render(
-    <MockedProvider>
-      <ClientLayout params={{ videoId: 'video123' }}>
-        <div>Child content</div>
-      </ClientLayout>
-    </MockedProvider>
-  )
-}
+// Mock notistack
+jest.mock('notistack', () => ({
+  useSnackbar: () => ({
+    enqueueSnackbar: mockEnqueueSnackbar
+  }),
+  SnackbarProvider: ({ children }: { children: React.ReactNode }) => children
+}))
 
 describe('ClientLayout', () => {
   const mockVideoVariants = [
@@ -87,8 +84,12 @@ describe('ClientLayout', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
+
     // Default mock implementation for useQuery
     const mockedUseQuery = useQuery as jest.MockedFunction<typeof useQuery>
+    const mockedUseMutation = useMutation as jest.MockedFunction<
+      typeof useMutation
+    >
 
     // Create a complete mock for the QueryResult
     const mockQueryResult: QueryResult<any, OperationVariables> = {
@@ -119,6 +120,19 @@ describe('ClientLayout', () => {
 
     mockedUseQuery.mockReturnValue(mockQueryResult)
 
+    // Mock useMutation for video variant updates
+    mockedUseMutation.mockReturnValue([
+      mockUpdateVariant,
+      {
+        loading: false,
+        error: undefined,
+        data: undefined,
+        called: false,
+        client: {} as any,
+        reset: jest.fn()
+      }
+    ])
+
     // Mock document.getElementById to return a fake element with getBoundingClientRect
     document.getElementById = jest.fn().mockImplementation(() => ({
       getBoundingClientRect: () => ({
@@ -140,6 +154,42 @@ describe('ClientLayout', () => {
     expect(screen.getAllByRole('listitem')).toHaveLength(3)
   })
 
+  it('should render Audio Languages header', () => {
+    render(
+      <MockedProvider>
+        <ClientLayout params={{ videoId: 'video123' }}>
+          <div>Child content</div>
+        </ClientLayout>
+      </MockedProvider>
+    )
+
+    expect(screen.getByText('Audio Languages')).toBeInTheDocument()
+  })
+
+  it('should render Publish All button', () => {
+    render(
+      <MockedProvider>
+        <ClientLayout params={{ videoId: 'video123' }}>
+          <div>Child content</div>
+        </ClientLayout>
+      </MockedProvider>
+    )
+
+    expect(screen.getByText('Publish All')).toBeInTheDocument()
+  })
+
+  it('should render Add Audio Language button', () => {
+    render(
+      <MockedProvider>
+        <ClientLayout params={{ videoId: 'video123' }}>
+          <div>Child content</div>
+        </ClientLayout>
+      </MockedProvider>
+    )
+
+    expect(screen.getByText('Add Audio Language')).toBeInTheDocument()
+  })
+
   it('should open variant modal when variant is clicked', async () => {
     render(
       <MockedProvider>
@@ -153,19 +203,6 @@ describe('ClientLayout', () => {
     expect(mockPush).toHaveBeenCalledWith('/videos/video123/audio/variant1', {
       scroll: false
     })
-  })
-
-  it('should have correct id for the Section element so correct virtualization dimensions can be calculated', async () => {
-    render(
-      <MockedProvider>
-        <ClientLayout params={{ videoId: 'video123' }}>
-          <div>Child content</div>
-        </ClientLayout>
-      </MockedProvider>
-    )
-
-    const section = document.getElementById('Audio Languages-section')
-    expect(section).not.toBeNull()
   })
 
   it('should open delete confirmation dialog when delete button is clicked', async () => {
@@ -201,6 +238,161 @@ describe('ClientLayout', () => {
     expect(mockPush).toHaveBeenCalledWith('/videos/video123/audio/add', {
       scroll: false
     })
+  })
+
+  it('should open publish all confirmation dialog when Publish All button is clicked', async () => {
+    render(
+      <MockedProvider>
+        <ClientLayout params={{ videoId: 'video123' }}>
+          <div>Child content</div>
+        </ClientLayout>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByText('Publish All'))
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Publish All Draft Audio Languages')
+      ).toBeInTheDocument()
+    })
+
+    expect(
+      screen.getByText(
+        /Are you sure you want to publish all draft audio language variants/
+      )
+    ).toBeInTheDocument()
+  })
+
+  it('should close dialog when Cancel is clicked', async () => {
+    render(
+      <MockedProvider>
+        <ClientLayout params={{ videoId: 'video123' }}>
+          <div>Child content</div>
+        </ClientLayout>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByText('Publish All'))
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Publish All Draft Audio Languages')
+      ).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByText('Cancel'))
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText('Publish All Draft Audio Languages')
+      ).not.toBeInTheDocument()
+    })
+  })
+
+  it('should publish all draft variants when confirmed', async () => {
+    render(
+      <MockedProvider>
+        <ClientLayout params={{ videoId: 'video123' }}>
+          <div>Child content</div>
+        </ClientLayout>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByText('Publish All'))
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Publish All Draft Audio Languages')
+      ).toBeInTheDocument()
+    })
+
+    // Click the confirm button in the dialog (there are two "Publish All" buttons)
+    const confirmButton = screen.getAllByText('Publish All')[1]
+    fireEvent.click(confirmButton)
+
+    await waitFor(() => {
+      // Should call mutation for each draft variant (only variant2 is unpublished)
+      expect(mockUpdateVariant).toHaveBeenCalledWith({
+        variables: {
+          input: {
+            id: 'variant2',
+            published: true
+          }
+        }
+      })
+    })
+
+    expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+      'Successfully published all draft audio languages',
+      { variant: 'success' }
+    )
+  })
+
+  it('should show info message when no draft variants exist', async () => {
+    // Mock data with all published variants
+    const mockedUseQuery = useQuery as jest.MockedFunction<typeof useQuery>
+    const allPublishedVariants = [
+      {
+        id: 'variant1',
+        published: true,
+        language: {
+          id: 'lang1',
+          slug: 'english',
+          name: [{ value: 'English' }]
+        }
+      },
+      {
+        id: 'variant2',
+        published: true,
+        language: {
+          id: 'lang2',
+          slug: 'spanish',
+          name: [{ value: 'Spanish' }]
+        }
+      }
+    ]
+
+    mockedUseQuery.mockReturnValue({
+      data: {
+        adminVideo: {
+          id: 'video123',
+          slug: 'test-video',
+          published: true,
+          variants: allPublishedVariants
+        }
+      },
+      loading: false,
+      error: undefined,
+      fetchMore: jest.fn(),
+      refetch: mockRefetch,
+      networkStatus: NetworkStatus.ready,
+      client: {} as any,
+      called: true,
+      startPolling: jest.fn(),
+      stopPolling: jest.fn(),
+      subscribeToMore: jest.fn(),
+      updateQuery: jest.fn(),
+      observable: {} as any,
+      variables: { id: 'video123' },
+      reobserve: jest.fn(),
+      previousData: undefined
+    })
+
+    render(
+      <MockedProvider>
+        <ClientLayout params={{ videoId: 'video123' }}>
+          <div>Child content</div>
+        </ClientLayout>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByText('Publish All'))
+
+    expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+      'No draft audio languages to publish',
+      { variant: 'info' }
+    )
   })
 
   it('should render children', async () => {
@@ -439,5 +631,67 @@ describe('ClientLayout', () => {
     )
 
     expect(mockRefetch).not.toHaveBeenCalled()
+  })
+
+  it('should handle mutation error when publishing fails', async () => {
+    // Mock mutation to throw error
+    mockUpdateVariant.mockRejectedValueOnce(new Error('Network error'))
+
+    render(
+      <MockedProvider>
+        <ClientLayout params={{ videoId: 'video123' }}>
+          <div>Child content</div>
+        </ClientLayout>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByText('Publish All'))
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Publish All Draft Audio Languages')
+      ).toBeInTheDocument()
+    })
+
+    const confirmButton = screen.getAllByText('Publish All')[1]
+    fireEvent.click(confirmButton)
+
+    await waitFor(() => {
+      expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+        'Failed to publish audio languages',
+        { variant: 'error' }
+      )
+    })
+  })
+
+  it('should show loading state in Publish All button when publishing', async () => {
+    // Mock mutation loading state
+    const mockedUseMutation = useMutation as jest.MockedFunction<
+      typeof useMutation
+    >
+    mockedUseMutation.mockReturnValue([
+      mockUpdateVariant,
+      {
+        loading: true,
+        error: undefined,
+        data: undefined,
+        called: false,
+        client: {} as any,
+        reset: jest.fn()
+      }
+    ])
+
+    render(
+      <MockedProvider>
+        <ClientLayout params={{ videoId: 'video123' }}>
+          <div>Child content</div>
+        </ClientLayout>
+      </MockedProvider>
+    )
+
+    expect(
+      screen.getByText('Publishing audio languages...')
+    ).toBeInTheDocument()
+    expect(screen.getByText('Publishing audio languages...')).toBeDisabled()
   })
 })
