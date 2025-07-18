@@ -22,7 +22,7 @@ import './userTeam'
 import './userTeamInvite'
 import './userInvite'
 import './userRole'
-// import './visitor' // Temporarily disabled due to compilation issues
+import './visitor'
 
 import { builder } from './builder'
 

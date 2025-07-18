@@ -70,12 +70,12 @@ export class VisitorService {
 
   async getJourneyVisitorList({
     after,
-    first,
+    first = 50,
     filter,
     sort
   }: {
     after?: string | null
-    first: number
+    first?: number
     filter: Prisma.JourneyVisitorWhereInput
     sort?: JourneyVisitorSort
   }): Promise<JourneyVisitorsConnection> {

@@ -16,7 +16,13 @@ import {
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
+import {
+  VisitorService,
+  JourneyVisitorSort as ServiceJourneyVisitorSort
+} from './visitor.service'
 
+// Create service instance
+const visitorService = new VisitorService()
 
 // Enums
 builder.enumType(DeviceType, {
@@ -31,33 +37,65 @@ builder.enumType(VisitorStatus, {
   name: 'VisitorStatus'
 })
 
+// JourneyVisitorSort enum
+const JourneyVisitorSort = builder.enumType('JourneyVisitorSort', {
+  values: {
+    date: {},
+    duration: {},
+    activity: {}
+  }
+})
+
 // Complex types for UserAgent
-const BrowserType = builder.objectType('Browser', {
+const BrowserType = builder.objectRef<{
+  name?: string | null
+  version?: string | null
+}>('Browser')
+
+builder.objectType(BrowserType, {
   fields: (t) => ({
-    name: t.string({ nullable: true }),
-    version: t.string({ nullable: true })
+    name: t.exposeString('name', { nullable: true }),
+    version: t.exposeString('version', { nullable: true })
   })
 })
 
-const DeviceObjectType = builder.objectType('Device', {
+const DeviceObjectType = builder.objectRef<{
+  model?: string | null
+  type?: string | null
+  vendor?: string | null
+}>('Device')
+
+builder.objectType(DeviceObjectType, {
   fields: (t) => ({
-    model: t.string({ nullable: true }),
-    type: t.field({
-      type: DeviceType,
-      nullable: true
-    }),
-    vendor: t.string({ nullable: true })
+    model: t.exposeString('model', { nullable: true }),
+    type: t.exposeString('type', { nullable: true }),
+    vendor: t.exposeString('vendor', { nullable: true })
   })
 })
 
-const OperatingSystemType = builder.objectType('OperatingSystem', {
+const OperatingSystemType = builder.objectRef<{
+  name?: string | null
+  version?: string | null
+}>('OperatingSystem')
+
+builder.objectType(OperatingSystemType, {
   fields: (t) => ({
-    name: t.string({ nullable: true }),
-    version: t.string({ nullable: true })
+    name: t.exposeString('name', { nullable: true }),
+    version: t.exposeString('version', { nullable: true })
   })
 })
 
-const UserAgentType = builder.objectType('UserAgent', {
+const UserAgentType = builder.objectRef<{
+  browser: { name?: string | null; version?: string | null }
+  device: {
+    model?: string | null
+    type?: string | null
+    vendor?: string | null
+  }
+  os: { name?: string | null; version?: string | null }
+}>('UserAgent')
+
+builder.objectType(UserAgentType, {
   fields: (t) => ({
     browser: t.field({
       type: BrowserType,
@@ -96,7 +134,12 @@ builder.prismaObject('Visitor', {
           visitor.userAgent != null &&
           typeof visitor.userAgent === 'string'
         ) {
-          return new UAParser(visitor.userAgent).getResult()
+          const result = new UAParser(visitor.userAgent).getResult()
+          return {
+            browser: result.browser || {},
+            device: result.device || {},
+            os: result.os || {}
+          }
         }
         return null
       }
@@ -131,7 +174,7 @@ builder.prismaObject('Visitor', {
 })
 
 // JourneyVisitor Object Type
-builder.prismaObject('JourneyVisitor', {
+const JourneyVisitorRef = builder.prismaObject('JourneyVisitor', {
   fields: (t) => ({
     id: t.exposeID('id'),
     visitorId: t.exposeID('visitorId'),
@@ -160,11 +203,6 @@ builder.prismaObject('JourneyVisitor', {
     visitor: t.relation('visitor'),
     events: t.relation('events')
   })
-})
-
-// Enums for JourneyVisitor
-builder.enumType(JourneyVisitorSort, {
-  name: 'JourneyVisitorSort'
 })
 
 // Input types
@@ -201,17 +239,29 @@ const JourneyVisitorFilter = builder.inputType('JourneyVisitorFilter', {
 })
 
 // Connection types
-const JourneyVisitorEdge = builder.objectType('JourneyVisitorEdge', {
+const JourneyVisitorEdge = builder.objectRef<{
+  cursor: string
+  node: any
+}>('JourneyVisitorEdge')
+
+builder.objectType(JourneyVisitorEdge, {
   fields: (t) => ({
     cursor: t.exposeString('cursor'),
     node: t.field({
-      type: 'JourneyVisitor',
+      type: JourneyVisitorRef,
       resolve: (edge) => edge.node
     })
   })
 })
 
-const PageInfo = builder.objectType('PageInfo', {
+const PageInfo = builder.objectRef<{
+  hasNextPage: boolean
+  hasPreviousPage: boolean
+  startCursor?: string | null
+  endCursor?: string | null
+}>('PageInfo')
+
+builder.objectType(PageInfo, {
   fields: (t) => ({
     hasNextPage: t.exposeBoolean('hasNextPage'),
     hasPreviousPage: t.exposeBoolean('hasPreviousPage'),
@@ -220,30 +270,39 @@ const PageInfo = builder.objectType('PageInfo', {
   })
 })
 
-const JourneyVisitorsConnection = builder.objectType(
-  'JourneyVisitorsConnection',
-  {
-    fields: (t) => ({
-      edges: t.field({
-        type: [JourneyVisitorEdge],
-        resolve: (connection) => connection.edges
-      }),
-      pageInfo: t.field({
-        type: PageInfo,
-        resolve: (connection) => connection.pageInfo
-      })
-    })
+const JourneyVisitorsConnection = builder.objectRef<{
+  edges: Array<{
+    cursor: string
+    node: any
+  }>
+  pageInfo: {
+    hasNextPage: boolean
+    hasPreviousPage: boolean
+    startCursor?: string | null
+    endCursor?: string | null
   }
-)
+}>('JourneyVisitorsConnection')
+
+builder.objectType(JourneyVisitorsConnection, {
+  fields: (t) => ({
+    edges: t.field({
+      type: [JourneyVisitorEdge],
+      resolve: (connection) => connection.edges
+    }),
+    pageInfo: t.field({
+      type: PageInfo,
+      resolve: (connection) => connection.pageInfo
+    })
+  })
+})
 
 // Visitor Queries
-builder.queryFields((t) => ({
-  visitor: t.prismaField({
+builder.queryField('visitor', (t) =>
+  t.withAuth({ isAuthenticated: true }).prismaField({
     type: 'Visitor',
     args: {
       id: t.arg.id({ required: true })
     },
-    authScopes: { authenticated: true },
     resolve: async (query, _parent, args, context) => {
       const visitor = await prisma.visitor.findUnique({
         ...query,
@@ -264,10 +323,12 @@ builder.queryFields((t) => ({
         })
       }
 
-      // Check authorization using ACL
-      if (
-        !ability(Action.Read, abilitySubject('Visitor', visitor), context.user)
-      ) {
+      // TODO: Add proper ACL check when Visitor is added to ability subjects
+      // For now, allow access to team members only
+      const userTeam = visitor.team?.userTeams?.find(
+        (userTeam) => userTeam.userId === context.user.id
+      )
+      if (!userTeam) {
         throw new GraphQLError('user is not allowed to view visitor', {
           extensions: { code: 'FORBIDDEN' }
         })
@@ -276,11 +337,11 @@ builder.queryFields((t) => ({
       return visitor
     }
   })
-}))
+)
 
 // Visitor Mutations
-builder.mutationFields((t) => ({
-  visitorUpdate: t.prismaField({
+builder.mutationField('visitorUpdate', (t) =>
+  t.withAuth({ isAuthenticated: true }).prismaField({
     type: 'Visitor',
     args: {
       id: t.arg.id({ required: true }),
@@ -289,7 +350,6 @@ builder.mutationFields((t) => ({
         required: true
       })
     },
-    authScopes: { authenticated: true },
     resolve: async (query, _parent, args, context) => {
       const visitor = await prisma.visitor.findUnique({
         where: { id: args.id },
@@ -309,14 +369,12 @@ builder.mutationFields((t) => ({
         })
       }
 
-      // Check authorization using ACL
-      if (
-        !ability(
-          Action.Update,
-          abilitySubject('Visitor', visitor),
-          context.user
-        )
-      ) {
+      // TODO: Add proper ACL check when Visitor is added to ability subjects
+      // For now, allow access to team members only
+      const userTeam = visitor.team?.userTeams?.find(
+        (userTeam) => userTeam.userId === context.user.id
+      )
+      if (!userTeam) {
         throw new GraphQLError('user is not allowed to update visitor', {
           extensions: { code: 'FORBIDDEN' }
         })
@@ -328,9 +386,11 @@ builder.mutationFields((t) => ({
         data: args.input
       })
     }
-  }),
+  })
+)
 
-  visitorUpdateForCurrentUser: t.prismaField({
+builder.mutationField('visitorUpdateForCurrentUser', (t) =>
+  t.withAuth({ isAuthenticated: true }).prismaField({
     type: 'Visitor',
     args: {
       input: t.arg({
@@ -338,7 +398,6 @@ builder.mutationFields((t) => ({
         required: true
       })
     },
-    authScopes: { authenticated: true },
     resolve: async (query, _parent, args, context) => {
       const visitor = await prisma.visitor.findFirst({
         where: { userId: context.user.id }
@@ -353,19 +412,6 @@ builder.mutationFields((t) => ({
         )
       }
 
-      // Check authorization using ACL
-      if (
-        !ability(
-          Action.Update,
-          abilitySubject('Visitor', visitor),
-          context.user
-        )
-      ) {
-        throw new GraphQLError('user is not allowed to update visitor', {
-          extensions: { code: 'FORBIDDEN' }
-        })
-      }
-
       // Only allow updating certain fields for current user
       const allowedFields = pick(args.input, ['countryCode', 'referrer'])
 
@@ -376,13 +422,11 @@ builder.mutationFields((t) => ({
       })
     }
   })
-})
+)
 
 // JourneyVisitor Query Operations
-const visitorService = new VisitorService()
-
-builder.queryFields((t) => ({
-  journeyVisitorsConnection: t.field({
+builder.queryField('journeyVisitorsConnection', (t) =>
+  t.withAuth({ isAuthenticated: true }).field({
     type: JourneyVisitorsConnection,
     args: {
       filter: t.arg({
@@ -396,7 +440,6 @@ builder.queryFields((t) => ({
         required: false
       })
     },
-    authScopes: { authenticated: true },
     resolve: async (_parent, args, context) => {
       const { filter, first = 50, after, sort } = args
 
@@ -425,14 +468,19 @@ builder.queryFields((t) => ({
         }
       })
 
-      // Filter based on ACL permissions
+      // Filter based on team membership for now (TODO: proper ACL)
       const accessibleJourneyVisitors = journeyVisitors.filter(
-        (journeyVisitor) =>
-          ability(
-            Action.Read,
-            abilitySubject('JourneyVisitor', journeyVisitor),
-            context.user
+        (journeyVisitor) => {
+          // Check if user is team member
+          const userTeam = journeyVisitor.visitor?.team?.userTeams?.find(
+            (userTeam) => userTeam.userId === context.user.id
           )
+          // Check if user is journey owner/editor
+          const userJourney = journeyVisitor.journey?.userJourneys?.find(
+            (userJourney) => userJourney.userId === context.user.id
+          )
+          return userTeam || userJourney
+        }
       )
 
       // Extract IDs for the final query
@@ -452,14 +500,16 @@ builder.queryFields((t) => ({
 
       return await visitorService.getJourneyVisitorList({
         filter: finalFilter,
-        first,
+        first: first ?? undefined,
         after,
-        sort
+        sort: sort ? ServiceJourneyVisitorSort[sort] : undefined
       })
     }
-  }),
+  })
+)
 
-  journeyVisitorCount: t.field({
+builder.queryField('journeyVisitorCount', (t) =>
+  t.withAuth({ isAuthenticated: true }).field({
     type: 'Int',
     args: {
       filter: t.arg({
@@ -467,7 +517,6 @@ builder.queryFields((t) => ({
         required: true
       })
     },
-    authScopes: { authenticated: true },
     resolve: async (_parent, args, context) => {
       const { filter } = args
 
@@ -496,18 +545,23 @@ builder.queryFields((t) => ({
         }
       })
 
-      // Filter based on ACL permissions
+      // Filter based on team membership for now (TODO: proper ACL)
       const accessibleJourneyVisitors = journeyVisitors.filter(
-        (journeyVisitor) =>
-          ability(
-            Action.Read,
-            abilitySubject('JourneyVisitor', journeyVisitor),
-            context.user
+        (journeyVisitor) => {
+          // Check if user is team member
+          const userTeam = journeyVisitor.visitor?.team?.userTeams?.find(
+            (userTeam) => userTeam.userId === context.user.id
           )
+          // Check if user is journey owner/editor
+          const userJourney = journeyVisitor.journey?.userJourneys?.find(
+            (userJourney) => userJourney.userId === context.user.id
+          )
+          return userTeam || userJourney
+        }
       )
 
       // Return count of accessible journey visitors
       return accessibleJourneyVisitors.length
     }
   })
-})))
+)
