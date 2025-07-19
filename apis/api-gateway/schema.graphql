@@ -667,6 +667,53 @@ type Journey @join__type(graph: API_JOURNEYS_MODERN, key: "id")  {
   language: Language!
   blocks: [Block!]
   chatButtons: [ChatButton!]
+  archivedAt: DateTime
+  deletedAt: DateTime
+  publishedAt: DateTime
+  trashedAt: DateTime
+  featuredAt: DateTime
+  themeMode: ThemeMode!
+  themeName: ThemeName!
+  """
+  title for seo and sharing
+  """
+  seoTitle: String
+  seoDescription: String
+  template: Boolean
+  primaryImageBlock: Block
+  creatorImageBlock: Block
+  logoImageBlock: Block
+  menuStepBlock: Block
+  creatorDescription: String
+  website: Boolean
+  showShareButton: Boolean
+  showLikeButton: Boolean
+  showDislikeButton: Boolean
+  """
+  public title for viewers
+  """
+  displayTitle: String
+  showHosts: Boolean
+  showChatButtons: Boolean
+  showReactionButtons: Boolean
+  showLogo: Boolean
+  showMenu: Boolean
+  showDisplayTitle: Boolean
+  menuButtonIcon: JourneyMenuButtonIcon
+  socialNodeX: Int
+  socialNodeY: Int
+  host: Host
+  team: Team
+  tags: [Tag!]!
+  userJourneys: [UserJourney!]
+  strategySlug: String
+  """
+  used in a plausible share link to embed report
+  """
+  plausibleToken: String
+  fromTemplateId: String
+  journeyTheme: JourneyTheme
+  journeyCollections: [JourneyCollection!]!
 }
 
 type JourneyAiTranslateProgress @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -1116,6 +1163,13 @@ type StepBlock implements Block @join__type(graph: API_JOURNEYS_MODERN, key: "id
 
 type Subscription @join__type(graph: API_JOURNEYS_MODERN)  {
   journeyAiTranslateCreateSubscription(input: JourneyAiTranslateInput!) : JourneyAiTranslateProgress!
+}
+
+type Tag @join__type(graph: API_JOURNEYS_MODERN, key: "id", extension: true)  @join__type(graph: API_MEDIA, key: "id")  {
+  id: ID!
+  parentId: ID @join__field(graph: API_MEDIA) 
+  name(languageId: ID, primary: Boolean) : [TagName!]! @join__field(graph: API_MEDIA) 
+  service: Service @join__field(graph: API_MEDIA) 
 }
 
 type Team @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -1667,13 +1721,6 @@ type ShortLinkDomainVerfication @join__type(graph: API_MEDIA)  {
   Reason for the verification
   """
   reason: String!
-}
-
-type Tag @join__type(graph: API_MEDIA, key: "id")  {
-  id: ID!
-  parentId: ID
-  name(languageId: ID, primary: Boolean) : [TagName!]!
-  service: Service
 }
 
 type TagName @join__type(graph: API_MEDIA)  {

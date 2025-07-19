@@ -23,7 +23,7 @@ async function fetchJourneyCollectionWithAclIncludes(where: { id: string }) {
 }
 
 // JourneyCollection Type
-const JourneyCollectionRef = builder.prismaObject('JourneyCollection', {
+export const JourneyCollectionRef = builder.prismaObject('JourneyCollection', {
   description: 'A collection of journeys associated with a team',
   fields: (t) => ({
     id: t.exposeID('id'),
@@ -348,6 +348,26 @@ builder.mutationField('journeyCollectionDelete', (t) =>
       return await prisma.journeyCollection.delete({
         where: { id }
       })
+    }
+  })
+)
+
+// Extend Journey type to add journeyCollections field (avoids circular dependency)
+builder.prismaObjectField('Journey', 'journeyCollections', (t) =>
+  t.field({
+    type: [JourneyCollectionRef],
+    nullable: false,
+    select: (_args, _ctx, nestedSelection) => ({
+      journeyCollectionJourneys: {
+        include: {
+          journeyCollection: nestedSelection(true)
+        }
+      }
+    }),
+    resolve: (journey) => {
+      return journey.journeyCollectionJourneys.map(
+        (jcj) => jcj.journeyCollection
+      )
     }
   })
 )

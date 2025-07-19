@@ -568,6 +568,50 @@ type Journey
   language: Language! @shareable
   blocks: [Block!] @shareable
   chatButtons: [ChatButton!]
+  archivedAt: DateTime
+  deletedAt: DateTime
+  publishedAt: DateTime
+  trashedAt: DateTime
+  featuredAt: DateTime
+  themeMode: ThemeMode!
+  themeName: ThemeName!
+
+  """title for seo and sharing"""
+  seoTitle: String
+  seoDescription: String
+  template: Boolean
+  primaryImageBlock: Block
+  creatorImageBlock: Block
+  logoImageBlock: Block
+  menuStepBlock: Block
+  creatorDescription: String
+  website: Boolean
+  showShareButton: Boolean
+  showLikeButton: Boolean
+  showDislikeButton: Boolean
+
+  """public title for viewers"""
+  displayTitle: String
+  showHosts: Boolean
+  showChatButtons: Boolean
+  showReactionButtons: Boolean
+  showLogo: Boolean
+  showMenu: Boolean
+  showDisplayTitle: Boolean
+  menuButtonIcon: JourneyMenuButtonIcon
+  socialNodeX: Int
+  socialNodeY: Int
+  host: Host
+  team: Team
+  tags: [Tag!]!
+  userJourneys: [UserJourney!]
+  strategySlug: String
+
+  """used in a plausible share link to embed report"""
+  plausibleToken: String
+  fromTemplateId: String
+  journeyTheme: JourneyTheme
+  journeyCollections: [JourneyCollection!]!
 }
 
 input JourneyAiTranslateInput {
@@ -1478,6 +1522,13 @@ input StepBlockUpdateInput {
 
 type Subscription {
   journeyAiTranslateCreateSubscription(input: JourneyAiTranslateInput!): JourneyAiTranslateProgress!
+}
+
+type Tag
+  @key(fields: "id")
+  @extends
+{
+  id: ID! @external
 }
 
 type Team {
