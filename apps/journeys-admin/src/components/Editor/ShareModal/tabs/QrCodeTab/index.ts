@@ -1,0 +1,1 @@
+export { QrCodeTab } from './QrCodeTab'
