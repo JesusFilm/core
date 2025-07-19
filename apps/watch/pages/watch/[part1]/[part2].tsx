@@ -15,6 +15,7 @@ import i18nConfig from '../../../next-i18next.config'
 import { createApolloClient } from '../../../src/libs/apolloClient'
 import { getCookie } from '../../../src/libs/cookieHandler'
 import { getFlags } from '../../../src/libs/getFlags'
+import { getLanguageIdFromLocale } from '../../../src/libs/getLanguageIdFromLocale'
 import { LanguageProvider } from '../../../src/libs/languageContext/LanguageContext'
 import { PlayerProvider } from '../../../src/libs/playerContext/PlayerContext'
 import { slugMap } from '../../../src/libs/slugMap'
@@ -120,7 +121,8 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
     >({
       query: GET_VIDEO_CONTENT,
       variables: {
-        id: `${contentId}/${languageId}`
+        id: `${contentId}/${languageId}`,
+        languageId: getLanguageIdFromLocale(context.locale)
       }
     })
     if (data.content == null) {
