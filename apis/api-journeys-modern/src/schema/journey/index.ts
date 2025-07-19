@@ -1,1 +1,2 @@
 import './journey'
+import './adminReports'
