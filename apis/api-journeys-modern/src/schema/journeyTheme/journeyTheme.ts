@@ -6,25 +6,11 @@ import { Action } from '../../lib/auth/ability'
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
+import { JourneyThemeCreateInput, JourneyThemeUpdateInput } from './inputs'
 import { canAccessJourneyTheme } from './journeyTheme.acl'
 
 // Define input types
-const JourneyThemeCreateInput = builder.inputType('JourneyThemeCreateInput', {
-  fields: (t) => ({
-    journeyId: t.id({ required: true }),
-    headerFont: t.string({ required: false }),
-    bodyFont: t.string({ required: false }),
-    labelFont: t.string({ required: false })
-  })
-})
-
-const JourneyThemeUpdateInput = builder.inputType('JourneyThemeUpdateInput', {
-  fields: (t) => ({
-    headerFont: t.string({ required: false }),
-    bodyFont: t.string({ required: false }),
-    labelFont: t.string({ required: false })
-  })
-})
+// Input types are now imported from ./inputs/
 
 // Define JourneyTheme object type
 const JourneyThemeRef = builder.prismaObject('JourneyTheme', {

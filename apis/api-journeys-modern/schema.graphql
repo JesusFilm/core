@@ -788,14 +788,14 @@ type JourneyTheme {
 
 input JourneyThemeCreateInput {
   journeyId: ID!
-  headerFont: String
   bodyFont: String
+  headerFont: String
   labelFont: String
 }
 
 input JourneyThemeUpdateInput {
-  headerFont: String
   bodyFont: String
+  headerFont: String
   labelFont: String
 }
 

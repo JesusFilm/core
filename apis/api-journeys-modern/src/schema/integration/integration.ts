@@ -5,10 +5,9 @@ import { IntegrationType } from '.prisma/api-journeys-modern-client'
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
-// Integration Type Enum
-export const IntegrationTypeEnum = builder.enumType('IntegrationType', {
-  values: ['growthSpaces'] as const
-})
+import { IntegrationType as IntegrationTypeEnum } from './enums'
+
+// Integration Type Enum moved to ./enums/integrationType.ts
 
 // Integration Type using Prisma model - single definition
 const IntegrationRef = builder.prismaObject('Integration', {

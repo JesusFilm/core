@@ -1,6 +1,8 @@
 import { GraphQLError } from 'graphql'
 import { v4 as uuidv4 } from 'uuid'
 
+import { TextResponseType as PrismaTextResponseType } from '.prisma/api-journeys-modern-client'
+
 import {
   Action,
   ability,
@@ -10,10 +12,7 @@ import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 import { Block } from '../block'
 
-import {
-  TextResponseType,
-  type TextResponseTypeType
-} from './enums/textResponseType'
+import { TextResponseType } from './enums/textResponseType'
 
 // Input types for TextResponseBlock operations
 const TextResponseBlockCreateInput = builder.inputType(
@@ -89,7 +88,7 @@ export const TextResponseBlock = builder.prismaObject('Block', {
       type: TextResponseType,
       nullable: true,
       directives: { shareable: true },
-      resolve: (block) => block.type as TextResponseTypeType
+      resolve: (block) => block.type
     }),
     routeId: t.exposeString('routeId', {
       nullable: true,

@@ -4,6 +4,8 @@ import omit from 'lodash/omit'
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
+import { CustomDomainCreateInput, CustomDomainUpdateInput } from './inputs'
+
 // CustomDomain Type using Prisma model
 const CustomDomainRef = builder.prismaObject('CustomDomain', {
   fields: (t) => ({
@@ -17,23 +19,7 @@ const CustomDomainRef = builder.prismaObject('CustomDomain', {
   })
 })
 
-// Input Types
-const CustomDomainCreateInput = builder.inputType('CustomDomainCreateInput', {
-  fields: (t) => ({
-    id: t.id({ required: false }),
-    teamId: t.string({ required: true }),
-    name: t.string({ required: true }),
-    journeyCollectionId: t.id({ required: false }),
-    routeAllTeamJourneys: t.boolean({ required: false })
-  })
-})
-
-const CustomDomainUpdateInput = builder.inputType('CustomDomainUpdateInput', {
-  fields: (t) => ({
-    journeyCollectionId: t.id({ required: false }),
-    routeAllTeamJourneys: t.boolean({ required: false })
-  })
-})
+// Input types are now imported from ./inputs/
 
 // Helper function to validate domain format
 function isDomainValid(domain: string): boolean {

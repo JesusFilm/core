@@ -2,15 +2,9 @@ import { GraphQLError } from 'graphql'
 
 import { builder } from '../builder'
 
-// JourneysReportType enum
-export const JourneysReportTypeEnum = builder.enumType('JourneysReportType', {
-  values: [
-    'multipleFull',
-    'multipleSummary',
-    'singleFull',
-    'singleSummary'
-  ] as const
-})
+import { JourneysReportTypeEnum as JourneysReportType } from './enums'
+
+// JourneysReportType enum moved to ./enums/journeysReportType.ts
 
 // Simplified PowerBI service (without actual PowerBI SDK for now)
 async function getPowerBiEmbed(reportType: string) {
@@ -35,7 +29,7 @@ builder.queryField('adminJourneysReport', (t) =>
     type: 'Json',
     nullable: true,
     args: {
-      reportType: t.arg({ type: JourneysReportTypeEnum, required: true })
+      reportType: t.arg({ type: JourneysReportType, required: true })
     },
     resolve: async (_parent, args, context) => {
       const { reportType } = args

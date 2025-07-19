@@ -2,6 +2,11 @@ import { GraphQLError } from 'graphql'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
+  ThemeMode as PrismaThemeMode,
+  ThemeName as PrismaThemeName
+} from '.prisma/api-journeys-modern-client'
+
+import {
   Action,
   ability,
   subject as abilitySubject
@@ -10,8 +15,8 @@ import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 import { Block } from '../block'
 
-import { ThemeMode, type ThemeModeType } from './enums/themeMode'
-import { ThemeName, type ThemeNameType } from './enums/themeName'
+import { ThemeMode } from './enums/themeMode'
+import { ThemeName } from './enums/themeName'
 
 // Input types for CardBlock operations
 const CardBlockCreateInput = builder.inputType('CardBlockCreateInput', {
@@ -96,7 +101,7 @@ background.`,
       directives: { shareable: true },
       description: `themeMode can override journey themeMode. If nothing is set then use
 themeMode from journey`,
-      resolve: (block) => block.themeMode as ThemeModeType
+      resolve: (block) => block.themeMode as PrismaThemeMode | null
     }),
     themeName: t.field({
       type: ThemeName,
@@ -104,7 +109,7 @@ themeMode from journey`,
       directives: { shareable: true },
       description: `themeName can override journey themeName. If nothing is set then use
 themeName from journey`,
-      resolve: (block) => block.themeName as ThemeNameType
+      resolve: (block) => block.themeName as PrismaThemeName | null
     })
   }),
   directives: { key: { fields: 'id' } }

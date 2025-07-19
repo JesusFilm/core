@@ -8,16 +8,19 @@ import { Action } from '../../lib/auth/ability'
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
+import { JourneyVisitorSort } from './enums'
+import {
+  JourneyVisitorFilter,
+  VisitorUpdateForCurrentUserInput,
+  VisitorUpdateInput
+} from './inputs'
 // import { canAccessJourneyVisitors } from './visitor.acl'
 import { VisitorService } from './visitor.service'
 
 // Create service instance
 const visitorService = new VisitorService()
 
-// Simple enum definitions
-const JourneyVisitorSort = builder.enumType('JourneyVisitorSort', {
-  values: ['date', 'duration', 'activity'] as const
-})
+// Enums are now imported from ./inputs/
 
 // Define Visitor type using Prisma model
 const VisitorRef = builder.prismaObject('Visitor', {
@@ -38,17 +41,7 @@ const VisitorRef = builder.prismaObject('Visitor', {
   })
 })
 
-// Define input filters
-const JourneyVisitorFilter = builder.inputType('JourneyVisitorFilter', {
-  fields: (t) => ({
-    countryCode: t.string({ required: false }),
-    hasIcon: t.boolean({ required: false }),
-    hasChatStarted: t.boolean({ required: false }),
-    hasTextResponse: t.boolean({ required: false }),
-    hideInactive: t.boolean({ required: false }),
-    journeyId: t.id({ required: true })
-  })
-})
+// Input filters are now imported from ./inputs/
 
 // Define JourneyVisitor type using Prisma model
 const JourneyVisitorRef = builder.prismaObject('JourneyVisitor', {
@@ -222,16 +215,7 @@ builder.mutationField('visitorUpdate', (t) =>
     args: {
       id: t.arg.id({ required: true }),
       input: t.arg({
-        type: builder.inputType('VisitorUpdateInput', {
-          fields: (t) => ({
-            countryCode: t.string({ required: false }),
-            email: t.string({ required: false }),
-            name: t.string({ required: false }),
-            notes: t.string({ required: false }),
-            phone: t.string({ required: false }),
-            referrer: t.string({ required: false })
-          })
-        }),
+        type: VisitorUpdateInput,
         required: true
       })
     },
@@ -275,14 +259,7 @@ builder.mutationField('visitorUpdateForCurrentUser', (t) =>
     type: VisitorRef,
     args: {
       input: t.arg({
-        type: builder.inputType('VisitorUpdateForCurrentUserInput', {
-          fields: (t) => ({
-            countryCode: t.string({ required: false }),
-            email: t.string({ required: false }),
-            name: t.string({ required: false }),
-            referrer: t.string({ required: false })
-          })
-        }),
+        type: VisitorUpdateForCurrentUserInput,
         required: true
       })
     },

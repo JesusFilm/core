@@ -6,8 +6,8 @@ import slugify from 'slugify'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
-  JourneyStatus,
   Prisma,
+  JourneyStatus as PrismaJourneyStatus,
   UserJourneyRole
 } from '.prisma/api-journeys-modern-client'
 import {
@@ -26,6 +26,14 @@ import { ThemeName } from '../block/card/enums/themeName'
 import { builder } from '../builder'
 import { Language } from '../language'
 
+import { IdType, JourneyMenuButtonIcon, JourneyStatus } from './enums'
+import {
+  JourneyCreateInput,
+  JourneyTemplateInput,
+  JourneyUpdateInput,
+  JourneysFilter,
+  JourneysQueryOptions
+} from './inputs'
 import { journeyAcl } from './journey.acl'
 import { getSimpleJourney, updateSimpleJourney } from './simple'
 
@@ -58,125 +66,9 @@ Tag.implement({
 // Import JourneyCollection from the existing schema
 // Note: JourneyCollection is defined as a Prisma object in the schema
 
-// Define JourneyStatus enum to match api-journeys
-builder.enumType('JourneyStatus', {
-  values: ['archived', 'deleted', 'draft', 'published', 'trashed'] as const
-})
+// JourneyStatus enum moved to ./enums/journeyStatus.ts
 
-// Define IdType enum for legacy compatibility
-const IdType = builder.enumType('IdType', {
-  values: ['databaseId', 'slug'] as const
-})
-
-// Define JourneyMenuButtonIcon enum
-const JourneyMenuButtonIcon = builder.enumType('JourneyMenuButtonIcon', {
-  values: [
-    'menu1',
-    'equals',
-    'home3',
-    'home4',
-    'more',
-    'ellipsis',
-    'grid1',
-    'chevronDown'
-  ] as const
-})
-
-// Define input types
-const JourneysFilter = builder.inputType('JourneysFilter', {
-  fields: (t) => ({
-    featured: t.boolean({ required: false }),
-    template: t.boolean({ required: false }),
-    ids: t.idList({ required: false }),
-    tagIds: t.idList({ required: false }),
-    languageIds: t.idList({ required: false }),
-    limit: t.int({ required: false }),
-    orderByRecent: t.boolean({ required: false })
-  })
-})
-
-const JourneysQueryOptions = builder.inputType('JourneysQueryOptions', {
-  fields: (t) => ({
-    hostname: t.string({
-      required: false,
-      description:
-        'hostname filters journeys to those that belong to a team with a custom domain matching the hostname.'
-    }),
-    embedded: t.boolean({
-      required: false,
-      description: 'is this being requested from an embed url'
-    }),
-    journeyCollection: t.boolean({
-      required: false,
-      description:
-        'limit results to journeys in a journey collection (currently only available when using hostname option)'
-    })
-  })
-})
-
-const JourneyCreateInput = builder.inputType('JourneyCreateInput', {
-  fields: (t) => ({
-    id: t.id({
-      required: false,
-      description:
-        'ID should be unique Response UUID (Provided for optimistic mutation result matching)'
-    }),
-    title: t.string({ required: true }),
-    languageId: t.string({ required: true }),
-    themeMode: t.field({ type: ThemeMode, required: false }),
-    themeName: t.field({ type: ThemeName, required: false }),
-    description: t.string({ required: false }),
-    slug: t.string({
-      required: false,
-      description:
-        'Slug should be unique amongst all journeys (server will throw BAD_USER_INPUT error if not). If not required will use title formatted with kebab-case. If the generated slug is not unique the uuid will be placed at the end of the slug guaranteeing uniqueness'
-    })
-  })
-})
-
-const JourneyUpdateInput = builder.inputType('JourneyUpdateInput', {
-  fields: (t) => ({
-    title: t.string({ required: false }),
-    languageId: t.string({ required: false }),
-    themeMode: t.field({ type: ThemeMode, required: false }),
-    themeName: t.field({ type: ThemeName, required: false }),
-    description: t.string({ required: false }),
-    creatorDescription: t.string({ required: false }),
-    creatorImageBlockId: t.id({ required: false }),
-    primaryImageBlockId: t.id({ required: false }),
-    slug: t.string({ required: false }),
-    seoTitle: t.string({ required: false }),
-    seoDescription: t.string({ required: false }),
-    hostId: t.string({ required: false }),
-    strategySlug: t.string({ required: false }),
-    tagIds: t.idList({ required: false }),
-    website: t.boolean({ required: false }),
-    showShareButton: t.boolean({ required: false }),
-    showLikeButton: t.boolean({ required: false }),
-    showDislikeButton: t.boolean({ required: false }),
-    displayTitle: t.string({ required: false }),
-    showHosts: t.boolean({ required: false }),
-    showChatButtons: t.boolean({ required: false }),
-    showReactionButtons: t.boolean({ required: false }),
-    showLogo: t.boolean({ required: false }),
-    showMenu: t.boolean({ required: false }),
-    showDisplayTitle: t.boolean({ required: false }),
-    menuButtonIcon: t.field({
-      type: JourneyMenuButtonIcon,
-      required: false
-    }),
-    menuStepBlockId: t.id({ required: false }),
-    logoImageBlockId: t.id({ required: false }),
-    socialNodeX: t.int({ required: false }),
-    socialNodeY: t.int({ required: false })
-  })
-})
-
-const JourneyTemplateInput = builder.inputType('JourneyTemplateInput', {
-  fields: (t) => ({
-    template: t.boolean({ required: false })
-  })
-})
+// Input types and enums are now imported from ./inputs/
 
 export const JourneyRef = builder.prismaObject('Journey', {
   fields: (t) => ({
@@ -562,7 +454,7 @@ builder.queryField('journeys', (t) =>
       if (embedded === true && hostname != null) return []
 
       const filter: Prisma.JourneyWhereInput = {
-        status: JourneyStatus.published
+        status: PrismaJourneyStatus.published
       }
 
       if (where?.template != null) filter.template = where.template
@@ -718,7 +610,7 @@ builder.queryField('adminJourneys', (t) =>
 
       if (template != null) filter.template = template
       if (status != null) {
-        filter.status = { in: status as JourneyStatus[] }
+        filter.status = { in: status as PrismaJourneyStatus[] }
       }
 
       // Get all journeys that match the filter, then apply ACL checking
@@ -815,7 +707,7 @@ builder.mutationField('journeyCreate', (t) =>
                 languageId: input.languageId,
                 id,
                 slug,
-                status: JourneyStatus.published,
+                status: PrismaJourneyStatus.published,
                 publishedAt: new Date(),
                 team: { connect: { id: teamId } },
                 userJourneys: {
@@ -1164,7 +1056,7 @@ builder.mutationField('journeyDuplicate', (t) =>
                 id: duplicateJourneyId,
                 slug,
                 title: duplicateTitle,
-                status: JourneyStatus.published,
+                status: PrismaJourneyStatus.published,
                 publishedAt: new Date(),
                 featuredAt: null,
                 template: false,
@@ -1336,7 +1228,7 @@ builder.mutationField('journeyPublish', (t) =>
       return await prisma.journey.update({
         where: { id },
         data: {
-          status: JourneyStatus.published,
+          status: PrismaJourneyStatus.published,
           publishedAt: new Date()
         }
       })
@@ -1424,7 +1316,7 @@ builder.mutationField('journeysArchive', (t) =>
 
       await prisma.journey.updateMany({
         where: { id: { in: ids } },
-        data: { status: JourneyStatus.archived, archivedAt: new Date() }
+        data: { status: PrismaJourneyStatus.archived, archivedAt: new Date() }
       })
 
       return journeys
@@ -1471,7 +1363,7 @@ builder.mutationField('journeysDelete', (t) =>
 
       await prisma.journey.updateMany({
         where: { id: { in: ids } },
-        data: { status: JourneyStatus.deleted, deletedAt: new Date() }
+        data: { status: PrismaJourneyStatus.deleted, deletedAt: new Date() }
       })
 
       return journeys
@@ -1518,7 +1410,7 @@ builder.mutationField('journeysTrash', (t) =>
 
       await prisma.journey.updateMany({
         where: { id: { in: ids } },
-        data: { status: JourneyStatus.trashed, trashedAt: new Date() }
+        data: { status: PrismaJourneyStatus.trashed, trashedAt: new Date() }
       })
 
       return journeys
@@ -1569,7 +1461,7 @@ builder.mutationField('journeysRestore', (t) =>
             await prisma.journey.update({
               where: { id: journey.id },
               data: {
-                status: JourneyStatus.published,
+                status: PrismaJourneyStatus.published,
                 publishedAt: new Date()
               }
             })

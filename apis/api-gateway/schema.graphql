@@ -2665,14 +2665,14 @@ input JourneyTemplateInput @join__type(graph: API_JOURNEYS_MODERN)  {
 
 input JourneyThemeCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   journeyId: ID!
-  headerFont: String
   bodyFont: String
+  headerFont: String
   labelFont: String
 }
 
 input JourneyThemeUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
-  headerFont: String
   bodyFont: String
+  headerFont: String
   labelFont: String
 }
 

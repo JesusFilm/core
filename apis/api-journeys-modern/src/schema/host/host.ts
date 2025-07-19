@@ -3,6 +3,8 @@ import { GraphQLError } from 'graphql'
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
+import { HostCreateInput, HostUpdateInput } from './inputs'
+
 // Host Type
 const HostRef = builder.prismaObject('Host', {
   fields: (t) => ({
@@ -18,28 +20,7 @@ const HostRef = builder.prismaObject('Host', {
   })
 })
 
-// Host Input Types
-const HostCreateInput = builder.inputType('HostCreateInput', {
-  fields: (t) => ({
-    title: t.string({ required: true }),
-    location: t.string({ required: false }),
-    src1: t.string({ required: false }),
-    src2: t.string({ required: false })
-  })
-})
-
-const HostUpdateInput = builder.inputType('HostUpdateInput', {
-  fields: (t) => ({
-    title: t.string({
-      required: false,
-      description:
-        'title can be undefined as to not update title, but it cannot be null as to clear the value of title'
-    }),
-    location: t.string({ required: false }),
-    src1: t.string({ required: false }),
-    src2: t.string({ required: false })
-  })
-})
+// Input types are now imported from ./inputs/
 
 // Host Query
 builder.queryField('hosts', (t) =>

@@ -12,6 +12,13 @@ import { prisma } from '../../lib/prisma'
 import { Block } from '../block/block'
 import { builder } from '../builder'
 
+import {
+  BlockUpdateActionInput,
+  EmailActionInput,
+  LinkActionInput,
+  NavigateToBlockActionInput
+} from './inputs'
+
 // Define the Action interface
 export const ActionInterface = builder.prismaInterface('Action', {
   name: 'Action',
@@ -63,41 +70,7 @@ export const EmailAction = builder.prismaObject('Action', {
   })
 })
 
-// Input types
-const NavigateToBlockActionInput = builder.inputType(
-  'NavigateToBlockActionInput',
-  {
-    fields: (t) => ({
-      gtmEventName: t.string({ required: false }),
-      blockId: t.string({ required: true })
-    })
-  }
-)
-
-const LinkActionInput = builder.inputType('LinkActionInput', {
-  fields: (t) => ({
-    gtmEventName: t.string({ required: false }),
-    url: t.string({ required: true }),
-    target: t.string({ required: false })
-  })
-})
-
-const EmailActionInput = builder.inputType('EmailActionInput', {
-  fields: (t) => ({
-    gtmEventName: t.string({ required: false }),
-    email: t.string({ required: true })
-  })
-})
-
-const BlockUpdateActionInput = builder.inputType('BlockUpdateActionInput', {
-  fields: (t) => ({
-    gtmEventName: t.string({ required: false }),
-    email: t.string({ required: false }),
-    url: t.string({ required: false }),
-    target: t.string({ required: false }),
-    blockId: t.string({ required: false })
-  })
-})
+// Input types are now imported from ./inputs/
 
 // Utility function to check if block can have actions
 export function canBlockHaveAction(block: { typename: string }): boolean {
