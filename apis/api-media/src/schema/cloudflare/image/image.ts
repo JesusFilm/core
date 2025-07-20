@@ -126,7 +126,7 @@ builder.mutationFields((t) => ({
       }
     }),
   createCloudflareUploadByUrl: t
-    .withAuth({ isAuthenticated: true })
+    .withAuth({ $any: { isAuthenticated: true, isValidInterop: true } })
     .prismaField({
       type: 'CloudflareImage',
       nullable: false,
@@ -134,14 +134,14 @@ builder.mutationFields((t) => ({
         url: t.arg.string({ required: true }),
         input: t.arg({ type: ImageInput, required: false })
       },
-      resolve: async (query, _root, { url, input }, { user }) => {
+      resolve: async (query, _root, { url, input }, { user }: any) => {
         const { id } = await createImageFromUrl(url)
 
         return await prisma.cloudflareImage.create({
           ...query,
           data: {
             id,
-            userId: user.id,
+            userId: user?.id ?? '', // TODO: change this to '?? null' when https://github.com/JesusFilm/core/pull/7217 merges to main
             uploaded: true,
             aspectRatio: input?.aspectRatio ?? undefined,
             videoId: input?.videoId ?? undefined

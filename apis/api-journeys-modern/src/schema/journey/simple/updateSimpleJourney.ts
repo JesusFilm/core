@@ -1,6 +1,65 @@
+import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
+import { graphql } from 'gql.tada'
+
 import { JourneySimpleUpdate } from '@core/shared/ai/journeySimpleTypes'
 
 import { prisma } from '../../../lib/prisma'
+import { generateBlurhashAndMetadataFromUrl } from '../../../utils/generateBlurhashAndMetadataFromUrl'
+
+const ALLOWED_IMAGE_HOSTNAMES = [
+  // matches jourenys-admin next.config.js
+  'localhost',
+  'unsplash.com',
+  'images.unsplash.com',
+  'imagizer.imageshack.com',
+  'i.ytimg.com',
+  'd1wl257kev7hsz.cloudfront.net',
+  'imagedelivery.net',
+  'image.mux.com'
+]
+
+/**
+ * Checks if a given image URL is allowed by your remotePatterns.
+ * Accepts both http and https, and matches subdomains.
+ */
+const isValidImageUrl = (url: string): boolean => {
+  try {
+    const parsed = new URL(url)
+    const hostname = parsed.hostname.toLowerCase()
+    // Check protocol
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:')
+      return false
+    // Check hostname (allow subdomains)
+    return ALLOWED_IMAGE_HOSTNAMES.some(
+      (allowed) => hostname === allowed || hostname.endsWith(`.${allowed}`)
+    )
+  } catch {
+    // Not a valid URL
+    return false
+  }
+}
+
+const httpLink = createHttpLink({
+  uri: process.env.GATEWAY_URL,
+  headers: {
+    'interop-token': process.env.INTEROP_TOKEN ?? '',
+    'x-graphql-client-name': 'api-journeys-modern',
+    'x-graphql-client-version': process.env.SERVICE_VERSION ?? ''
+  }
+})
+
+const apollo = new ApolloClient({
+  link: httpLink,
+  cache: new InMemoryCache()
+})
+
+const CREATE_CLOUDFLARE_IMAGE = graphql(`
+  mutation CreateCloudflareUploadByUrl($url: String!) {
+    createCloudflareUploadByUrl(url: $url) {
+      id
+    }
+  }
+`)
 
 export async function updateSimpleJourney(
   journeyId: string,
@@ -104,17 +163,45 @@ export async function updateSimpleJourney(
       }
 
       if (card.image != null) {
+        let src = card.image.src
+        let blurhash = card.image.blurhash ?? ''
+        let width = card.image.width ?? 1
+        let height = card.image.height ?? 1
+
+        // Only upload if src is not already valid
+        if (!isValidImageUrl(src)) {
+          const { data } = await apollo.mutate({
+            mutation: CREATE_CLOUDFLARE_IMAGE,
+            variables: { url: src }
+          })
+
+          const imageId = data?.createCloudflareUploadByUrl.id
+
+          if (imageId != null) {
+            src = `https://imagedelivery.net/${
+              process.env.CLOUDFLARE_UPLOAD_KEY ?? ''
+            }/${imageId}/public`
+
+            // Generate blurhash for the uploaded image
+            const blurhashData = await generateBlurhashAndMetadataFromUrl(src)
+            blurhash = blurhashData.blurhash
+            width = blurhashData.width
+            height = blurhashData.height
+          }
+        }
+
+        // use that source url in the block creation
         await tx.block.create({
           data: {
             journeyId,
             typename: 'ImageBlock',
             parentBlockId: cardBlockId,
             parentOrder: parentOrder++,
-            src: card.image.src,
+            src,
             alt: card.image.alt,
-            width: card.image.width ?? 1,
-            height: card.image.height ?? 1,
-            blurhash: card.image.blurhash ?? ''
+            width,
+            height,
+            blurhash
           }
         })
       }
@@ -182,16 +269,41 @@ export async function updateSimpleJourney(
       }
 
       if (card.backgroundImage != null) {
+        let bgSrc = card.backgroundImage.src
+        let bgBlurhash = card.backgroundImage.blurhash ?? ''
+        let bgWidth = card.backgroundImage.width ?? 1
+        let bgHeight = card.backgroundImage.height ?? 1
+
+        // Only upload if bgSrc is not already valid
+        if (!isValidImageUrl(bgSrc)) {
+          const { data } = await apollo.mutate({
+            mutation: CREATE_CLOUDFLARE_IMAGE,
+            variables: { url: bgSrc }
+          })
+
+          const imageId = data?.createCloudflareUploadByUrl?.id
+          if (imageId != null) {
+            bgSrc = `https://imagedelivery.net/${
+              process.env.CLOUDFLARE_UPLOAD_KEY ?? ''
+            }/${imageId}/public`
+
+            // Generate blurhash for the uploaded background image
+            const blurhashData = await generateBlurhashAndMetadataFromUrl(bgSrc)
+            bgBlurhash = blurhashData.blurhash
+            bgWidth = blurhashData.width
+            bgHeight = blurhashData.height
+          }
+        }
         const bgImage = await tx.block.create({
           data: {
             journeyId,
             typename: 'ImageBlock',
-            src: card.backgroundImage.src,
+            src: bgSrc,
             alt: card.backgroundImage.alt,
             parentBlockId: cardBlockId,
-            width: card.backgroundImage.width ?? 1,
-            height: card.backgroundImage.height ?? 1,
-            blurhash: card.backgroundImage.blurhash ?? ''
+            width: bgWidth,
+            height: bgHeight,
+            blurhash: bgBlurhash
           }
         })
         await tx.block.update({
