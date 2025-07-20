@@ -128,7 +128,7 @@ describe('PaletteColorPicker', () => {
       const redSwatch = screen.getByTestId('Swatch-#DC2626')
       fireEvent.click(redSwatch)
 
-      expect(mockOnChange).toHaveBeenCalledWith('#DC2626FF') // Full opacity
+      expect(mockOnChange).toHaveBeenCalledWith('#DC26264D') // 30% opacity
     })
 
     it('calls onChange when clicking the check icon', () => {
@@ -143,7 +143,7 @@ describe('PaletteColorPicker', () => {
       const checkIcon = screen.getByTestId('CheckIcon')
       fireEvent.click(checkIcon)
 
-      expect(mockOnChange).toHaveBeenCalledWith('#DC2626FF')
+      expect(mockOnChange).toHaveBeenCalledWith('#DC26264D') // 30% opacity
     })
 
     it('preserves opacity when selecting a color', () => {
@@ -161,7 +161,7 @@ describe('PaletteColorPicker', () => {
       expect(mockOnChange).toHaveBeenCalledWith('#DC262680') // Same opacity
     })
 
-    it('uses 100% opacity when current color has no alpha', () => {
+    it('uses 30% opacity when current color has no alpha', () => {
       render(
         <PaletteColorPicker
           selectedColor="#FFFFFF" // No alpha channel
@@ -173,7 +173,7 @@ describe('PaletteColorPicker', () => {
       const redSwatch = screen.getByTestId('Swatch-#DC2626')
       fireEvent.click(redSwatch)
 
-      expect(mockOnChange).toHaveBeenCalledWith('#DC2626FF') // Full opacity
+      expect(mockOnChange).toHaveBeenCalledWith('#DC26264D')
     })
   })
 
@@ -193,7 +193,7 @@ describe('PaletteColorPicker', () => {
       expect(mockOnChange).toHaveBeenCalledWith('#10B98180') // 50% opacity preserved
     })
 
-    it('handles 6-digit hex color as 100% opacity', () => {
+    it('handles 6-digit hex color as 30% opacity', () => {
       render(
         <PaletteColorPicker
           selectedColor="#FFFFFF" // No alpha
@@ -205,7 +205,7 @@ describe('PaletteColorPicker', () => {
       const greenSwatch = screen.getByTestId('Swatch-#10B981')
       fireEvent.click(greenSwatch)
 
-      expect(mockOnChange).toHaveBeenCalledWith('#10B981FF') // Full opacity
+      expect(mockOnChange).toHaveBeenCalledWith('#10B9814D') // 30% opacity
     })
 
     it('handles various opacity levels correctly', () => {
