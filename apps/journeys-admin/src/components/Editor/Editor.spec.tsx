@@ -258,7 +258,11 @@ describe('Editor', () => {
           content: 'Test selected step',
           variant: null,
           color: null,
-          align: null
+          align: null,
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          }
         }
       ]
     }

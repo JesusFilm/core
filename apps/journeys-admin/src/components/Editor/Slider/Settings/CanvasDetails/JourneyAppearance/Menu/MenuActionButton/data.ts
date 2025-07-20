@@ -62,7 +62,11 @@ export const mockMenuHeading = {
   align: TypographyAlign.center,
   color: null,
   content: 'Menu',
-  variant: TypographyVariant.h1
+  variant: TypographyVariant.h1,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
 } satisfies Typography
 
 export const mockMenuSubHeading = {
@@ -73,7 +77,11 @@ export const mockMenuSubHeading = {
   align: TypographyAlign.center,
   color: null,
   content: 'Helping people discover Jesus.',
-  variant: TypographyVariant.subtitle2
+  variant: TypographyVariant.subtitle2,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
 } satisfies Typography
 
 export const mockMenuButton1 = {
