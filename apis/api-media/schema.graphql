@@ -44,7 +44,7 @@ type BibleCitation {
 type CloudflareImage {
   id: ID!
   uploadUrl: String
-  userId: ID!
+  userId: ID
   createdAt: Date!
   aspectRatio: ImageAspectRatio
   url: String

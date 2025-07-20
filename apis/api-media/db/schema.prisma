@@ -33,7 +33,7 @@ enum ImageAspectRatio {
 model CloudflareImage {
   id          String            @id @default(uuid())
   uploadUrl   String?
-  userId      String
+  userId      String?
   createdAt   DateTime          @default(now())
   uploaded    Boolean           @default(false)
   updatedAt   DateTime          @default(now()) @updatedAt

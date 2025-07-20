@@ -357,7 +357,7 @@ export type CloudflareImage = {
   thumbnail?: Maybe<Scalars['String']['output']>;
   uploadUrl?: Maybe<Scalars['String']['output']>;
   url?: Maybe<Scalars['String']['output']>;
-  userId: Scalars['ID']['output'];
+  userId?: Maybe<Scalars['ID']['output']>;
   videoStill?: Maybe<Scalars['String']['output']>;
 };
 

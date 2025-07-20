@@ -2437,7 +2437,7 @@ type BibleCitation @join__type(graph: API_MEDIA)  {
 type CloudflareImage @join__type(graph: API_MEDIA)  {
   id: ID!
   uploadUrl: String
-  userId: ID!
+  userId: ID
   createdAt: Date!
   aspectRatio: ImageAspectRatio
   url: String

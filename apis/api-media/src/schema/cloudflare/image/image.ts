@@ -23,7 +23,7 @@ builder.prismaObject('CloudflareImage', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
     uploadUrl: t.exposeString('uploadUrl'),
-    userId: t.exposeID('userId', { nullable: false }),
+    userId: t.exposeID('userId'),
     createdAt: t.expose('createdAt', {
       type: 'Date',
       nullable: false
