@@ -7,6 +7,7 @@ import { LoginPage } from '../../pages/login-page'
 
 // Already created user should be able to login successfully
 test.fixme(
+  // TO Run Tests Everyday
   'Existing user can login and logout successfully',
   async ({ page }) => {
     const landingPage = new LandingPage(page)
