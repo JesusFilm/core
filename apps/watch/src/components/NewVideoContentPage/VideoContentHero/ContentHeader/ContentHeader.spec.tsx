@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { userEvent } from '@storybook/test'
 import { render, screen, waitFor } from '@testing-library/react'
+import { userEvent } from 'storybook/test'
 
 import {
   PlayerProvider,
