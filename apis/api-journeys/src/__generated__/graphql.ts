@@ -1372,6 +1372,12 @@ export type LinkActionInput = {
   url: Scalars['String']['input'];
 };
 
+export enum MaxResolutionTier {
+  Fhd = 'fhd',
+  Qhd = 'qhd',
+  Uhd = 'uhd'
+}
+
 export type MeInput = {
   redirect?: InputMaybe<Scalars['String']['input']>;
 };
@@ -1818,6 +1824,7 @@ export type MutationCreateKeywordArgs = {
 
 export type MutationCreateMuxVideoUploadByFileArgs = {
   downloadable?: InputMaybe<Scalars['Boolean']['input']>;
+  maxResolution?: InputMaybe<MaxResolutionTier>;
   name: Scalars['String']['input'];
   userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
 };
@@ -1825,6 +1832,7 @@ export type MutationCreateMuxVideoUploadByFileArgs = {
 
 export type MutationCreateMuxVideoUploadByUrlArgs = {
   downloadable?: InputMaybe<Scalars['Boolean']['input']>;
+  maxResolution?: InputMaybe<MaxResolutionTier>;
   url: Scalars['String']['input'];
   userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
 };
@@ -2593,12 +2601,16 @@ export type MutationJourneyLanguageAiDetectInput = {
 };
 
 export type MutationShortLinkCreateInput = {
+  /** brightcove video ID for video redirects */
+  brightcoveId?: InputMaybe<Scalars['String']['input']>;
   /** the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to */
   hostname: Scalars['String']['input'];
   /** the unique identifier for the short link (will generate if not given) */
   id?: InputMaybe<Scalars['String']['input']>;
   /** short link path not including the leading slash (defaults to a random 11 character string that is URL friendly) */
   pathname?: InputMaybe<Scalars['String']['input']>;
+  /** type of video redirect (hls, dl, dh, s) */
+  redirectType?: InputMaybe<RedirectType>;
   /** the service that created this short link */
   service: Service;
   /** the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to */
@@ -2654,7 +2666,11 @@ export type MutationShortLinkDomainUpdateSuccess = {
 };
 
 export type MutationShortLinkUpdateInput = {
+  /** brightcove video ID for video redirects */
+  brightcoveId?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['String']['input'];
+  /** type of video redirect (hls, dl, dh, s) */
+  redirectType?: InputMaybe<RedirectType>;
   /** the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to */
   to: Scalars['String']['input'];
 };
@@ -3610,6 +3626,13 @@ export type RadioQuestionSubmissionEventCreateInput = {
   value?: InputMaybe<Scalars['String']['input']>;
 };
 
+export enum RedirectType {
+  Dh = 'dh',
+  Dl = 'dl',
+  Hls = 'hls',
+  S = 's'
+}
+
 export enum Role {
   /**
    * User can create templates and
@@ -3637,10 +3660,14 @@ export enum Service {
 /** A short link that redirects to a full URL */
 export type ShortLink = {
   __typename?: 'ShortLink';
+  /** brightcove video ID for video redirects */
+  brightcoveId?: Maybe<Scalars['String']['output']>;
   domain: ShortLinkDomain;
   id: Scalars['ID']['output'];
   /** short link path not including the leading slash */
   pathname: Scalars['String']['output'];
+  /** type of video redirect (hls, dl, dh, s) */
+  redirectType?: Maybe<RedirectType>;
   /** the service that created this short link */
   service: Service;
   /** the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to */
@@ -4938,6 +4965,13 @@ export type VideoProgressEventCreateInput = {
   value?: InputMaybe<VideoBlockSource>;
 };
 
+export enum VideoRedirectType {
+  Dh = 'dh',
+  Dl = 'dl',
+  Hls = 'hls',
+  S = 's'
+}
+
 export type VideoSnippet = {
   __typename?: 'VideoSnippet';
   id: Scalars['ID']['output'];
@@ -5112,6 +5146,7 @@ export type VideoVariant = {
   __typename?: 'VideoVariant';
   /** master video file */
   asset?: Maybe<CloudflareR2>;
+  brightcoveId?: Maybe<Scalars['String']['output']>;
   dash?: Maybe<Scalars['String']['output']>;
   downloadable: Scalars['Boolean']['output'];
   downloads: Array<VideoVariantDownload>;
@@ -5141,6 +5176,7 @@ export type VideoVariantSubtitleArgs = {
 
 export type VideoVariantCreateInput = {
   assetId?: InputMaybe<Scalars['String']['input']>;
+  brightcoveId?: InputMaybe<Scalars['String']['input']>;
   dash?: InputMaybe<Scalars['String']['input']>;
   downloadable: Scalars['Boolean']['input'];
   duration?: InputMaybe<Scalars['Int']['input']>;
@@ -5217,6 +5253,7 @@ export type VideoVariantFilter = {
 
 export type VideoVariantUpdateInput = {
   assetId?: InputMaybe<Scalars['String']['input']>;
+  brightcoveId?: InputMaybe<Scalars['String']['input']>;
   dash?: InputMaybe<Scalars['String']['input']>;
   downloadable?: InputMaybe<Scalars['Boolean']['input']>;
   duration?: InputMaybe<Scalars['Int']['input']>;

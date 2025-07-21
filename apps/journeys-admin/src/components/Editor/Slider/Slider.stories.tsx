@@ -56,7 +56,11 @@ const step1: TreeBlock<StepBlock> = {
           color: null,
           content: 'Step 1',
           variant: null,
-          children: []
+          children: [],
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          }
         },
         {
           __typename: 'ButtonBlock',
@@ -114,7 +118,11 @@ const step2: TreeBlock<StepBlock> = {
           color: null,
           content: 'Step 2',
           variant: null,
-          children: []
+          children: [],
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          }
         }
       ]
     }

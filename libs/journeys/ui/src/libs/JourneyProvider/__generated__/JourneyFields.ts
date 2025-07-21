@@ -263,6 +263,14 @@ export interface JourneyFields_blocks_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface JourneyFields_blocks_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface JourneyFields_blocks_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -272,6 +280,7 @@ export interface JourneyFields_blocks_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: JourneyFields_blocks_TypographyBlock_settings | null;
 }
 
 export interface JourneyFields_blocks_VideoBlock_mediaVideo_Video_title {
@@ -605,6 +614,14 @@ export interface JourneyFields_menuStepBlock {
   slug: string | null;
 }
 
+export interface JourneyFields_journeyTheme {
+  __typename: "JourneyTheme";
+  id: string;
+  headerFont: string | null;
+  bodyFont: string | null;
+  labelFont: string | null;
+}
+
 export interface JourneyFields {
   __typename: "Journey";
   id: string;
@@ -649,4 +666,5 @@ export interface JourneyFields {
   logoImageBlock: JourneyFields_logoImageBlock | null;
   menuButtonIcon: JourneyMenuButtonIcon | null;
   menuStepBlock: JourneyFields_menuStepBlock | null;
+  journeyTheme: JourneyFields_journeyTheme | null;
 }

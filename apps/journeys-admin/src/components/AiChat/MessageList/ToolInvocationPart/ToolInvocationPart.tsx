@@ -29,7 +29,7 @@ export function ToolInvocationPart({
   switch (part.toolInvocation.toolName) {
     case 'agentWebSearch':
       return <BasicTool part={part} callText={t('Searching the web...')} />
-    case 'journeyGet':
+    case 'journeySimpleGet':
       return (
         <BasicTool
           part={part}
@@ -37,7 +37,7 @@ export function ToolInvocationPart({
           resultText={t('Journey retrieved')}
         />
       )
-    case 'journeyUpdate':
+    case 'journeySimpleUpdate':
       return (
         <BasicTool
           part={part}

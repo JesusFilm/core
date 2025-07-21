@@ -4,9 +4,10 @@ import FormControl from '@mui/material/FormControl'
 import FormLabel from '@mui/material/FormLabel'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { graphql } from 'gql.tada'
 import Image from 'next/image'
 import { ReactNode } from 'react'
+
+import { graphql } from '@core/shared/gql'
 
 import minimalLogo from '../../../assets/minimal-logo.png'
 import { CenterPage } from '../../../components/CenterPage'

@@ -1,6 +1,6 @@
-import { graphql } from 'gql.tada'
 import omit from 'lodash/omit'
 
+import { graphql } from '@core/shared/gql'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import { getClient } from '../../../test/client'
