@@ -1,6 +1,6 @@
 import { MockedResponse } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/react'
-import { screen, userEvent } from '@storybook/test'
+import { Meta, StoryObj } from '@storybook/nextjs'
+import { screen, userEvent } from 'storybook/test'
 import { ComponentPropsWithoutRef } from 'react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'

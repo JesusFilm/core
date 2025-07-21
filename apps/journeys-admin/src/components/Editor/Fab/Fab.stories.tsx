@@ -1,4 +1,4 @@
-import { StoryObj } from '@storybook/react'
+import { StoryObj } from '@storybook/nextjs'
 import { ComponentProps } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'

@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { useTheme } from '@mui/material/styles'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { SnackbarProvider } from 'notistack'
 import { ComponentProps } from 'react'
 

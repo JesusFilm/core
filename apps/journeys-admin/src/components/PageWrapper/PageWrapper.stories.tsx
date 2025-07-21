@@ -5,7 +5,7 @@ import ListItemButton from '@mui/material/ListItemButton'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import noop from 'lodash/noop'
 import { ReactElement } from 'react'
 

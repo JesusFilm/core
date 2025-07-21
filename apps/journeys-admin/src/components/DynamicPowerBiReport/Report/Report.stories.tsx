@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import fetch from 'node-fetch'
 import { ComponentProps } from 'react'
 

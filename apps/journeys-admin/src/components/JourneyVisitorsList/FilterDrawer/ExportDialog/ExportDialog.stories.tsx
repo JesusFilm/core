@@ -1,6 +1,6 @@
 import { MockedResponse } from '@apollo/client/testing'
 import { ThemeProvider } from '@mui/material/styles'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 
 import { simpleComponentConfig } from '@core/shared/ui/simpleComponentConfig'
 import { adminLight } from '@core/shared/ui/themes/journeysAdmin/theme'

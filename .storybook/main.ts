@@ -1,5 +1,9 @@
+import { createRequire } from "node:module";
+import { dirname, join } from "node:path";
 import { StorybookConfig } from '@storybook/nextjs'
 import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
+
+const require = createRequire(import.meta.url);
 
 const storiesForProject = {
   journeys: [
@@ -44,12 +48,10 @@ const config: StorybookConfig = {
   stories,
 
   addons: [
-    '@storybook/addon-essentials',
-    '@storybook/addon-interactions',
-    '@storybook/addon-a11y',
-    'storybook-addon-apollo-client',
-    '@storybook/addon-actions',
-    '@chromatic-com/storybook'
+    getAbsolutePath("@storybook/addon-a11y"),
+    getAbsolutePath("storybook-addon-apollo-client"),
+    getAbsolutePath("@chromatic-com/storybook"),
+    getAbsolutePath("@storybook/addon-docs")
   ],
 
   webpackFinal: async (config) => {
@@ -77,7 +79,7 @@ const config: StorybookConfig = {
   },
 
   framework: {
-    name: '@storybook/nextjs',
+    name: getAbsolutePath("@storybook/nextjs"),
     options: {}
   },
   docs: {},
@@ -90,3 +92,7 @@ const config: StorybookConfig = {
 }
 
 export default config
+
+function getAbsolutePath(value: string): any {
+  return dirname(require.resolve(join(value, "package.json")));
+}

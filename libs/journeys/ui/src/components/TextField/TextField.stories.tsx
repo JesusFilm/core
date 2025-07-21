@@ -1,5 +1,5 @@
 import Stack from '@mui/material/Stack'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { Form, Formik } from 'formik'
 import { object, string } from 'yup'
 

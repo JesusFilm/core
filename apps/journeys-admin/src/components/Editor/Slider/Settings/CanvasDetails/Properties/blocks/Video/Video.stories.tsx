@@ -1,5 +1,5 @@
-import { Meta, StoryObj } from '@storybook/react'
-import { fn } from '@storybook/test'
+import { Meta, StoryObj } from '@storybook/nextjs'
+import { fn } from 'storybook/test'
 import { ComponentPropsWithoutRef } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'

@@ -1,4 +1,4 @@
-import { create } from '@storybook/theming'
+import { create } from 'storybook/theming'
 import logo from './jfp-logo-red.svg'
 
 export default create({

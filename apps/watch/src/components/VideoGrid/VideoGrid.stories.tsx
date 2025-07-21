@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 import noop from 'lodash/noop'
 
 import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'

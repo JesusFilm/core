@@ -1,5 +1,5 @@
 import Typography from '@mui/material/Typography'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ReactNode, useState } from 'react'
 
 import AlignCenterIcon from '@core/shared/ui/icons/AlignCenter'

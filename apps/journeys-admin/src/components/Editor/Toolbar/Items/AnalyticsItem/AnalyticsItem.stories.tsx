@@ -1,7 +1,7 @@
 import { MockedResponse } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import { Meta, StoryObj } from '@storybook/react'
-import { fn } from '@storybook/test'
+import { Meta, StoryObj } from '@storybook/nextjs'
+import { fn } from 'storybook/test'
 import { formatISO } from 'date-fns'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'

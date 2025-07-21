@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 import type { ComponentPropsWithoutRef } from 'react'
 import { Background, ReactFlow } from 'reactflow'
 

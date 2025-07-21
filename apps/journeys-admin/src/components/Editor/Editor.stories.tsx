@@ -1,6 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/react'
-import { screen, userEvent, waitFor } from '@storybook/test'
+import { Meta, StoryObj } from '@storybook/nextjs'
+import { screen, userEvent, waitFor } from 'storybook/test'
 
 import {
   blocks,

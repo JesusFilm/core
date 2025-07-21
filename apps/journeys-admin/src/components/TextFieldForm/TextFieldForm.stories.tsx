@@ -1,7 +1,7 @@
 import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
-import { Meta, StoryObj } from '@storybook/react'
-import { screen, userEvent } from '@storybook/test'
+import { Meta, StoryObj } from '@storybook/nextjs'
+import { screen, userEvent } from 'storybook/test'
 import noop from 'lodash/noop'
 import { object, string } from 'yup'
 

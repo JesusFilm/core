@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/react'
-import { userEvent, waitFor, within } from '@storybook/test'
+import { Meta, StoryObj } from '@storybook/nextjs'
+import { userEvent, waitFor, within } from 'storybook/test'
 
 import { TeamProvider } from '@core/journeys/ui/TeamProvider'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'

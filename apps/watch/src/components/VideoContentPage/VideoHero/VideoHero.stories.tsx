@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/react'
-import { screen, userEvent } from '@storybook/test'
+import { Meta, StoryObj } from '@storybook/nextjs'
+import { screen, userEvent } from 'storybook/test'
 import { ReactElement, useState } from 'react'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'

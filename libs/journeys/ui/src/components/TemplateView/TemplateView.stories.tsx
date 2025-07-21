@@ -1,6 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { User } from 'next-firebase-auth'
 import { ComponentProps } from 'react'
 

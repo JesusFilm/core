@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { SnackbarProvider } from 'notistack'
 
 import { simpleComponentConfig } from '@core/shared/ui/simpleComponentConfig'

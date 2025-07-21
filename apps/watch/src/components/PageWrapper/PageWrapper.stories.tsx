@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 
 import { watchConfig } from '../../libs/storybook'
 

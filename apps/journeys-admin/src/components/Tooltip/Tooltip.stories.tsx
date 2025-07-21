@@ -1,5 +1,5 @@
 import Button from '@mui/material/Button'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentPropsWithoutRef } from 'react'
 
 import { simpleComponentConfig } from '@core/shared/ui/storybook'

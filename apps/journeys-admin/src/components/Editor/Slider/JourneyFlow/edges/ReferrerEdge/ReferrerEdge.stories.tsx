@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentPropsWithoutRef } from 'react'
 // eslint-disable-next-line import/no-named-as-default
 import ReactFlow, { Background, Position } from 'reactflow'

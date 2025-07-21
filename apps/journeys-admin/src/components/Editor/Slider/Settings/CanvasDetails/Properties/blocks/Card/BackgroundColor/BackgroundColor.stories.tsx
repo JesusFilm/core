@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/react'
-import { screen, userEvent } from '@storybook/test'
+import { Meta, StoryObj } from '@storybook/nextjs'
+import { screen, userEvent } from 'storybook/test'
 import { ComponentProps } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'

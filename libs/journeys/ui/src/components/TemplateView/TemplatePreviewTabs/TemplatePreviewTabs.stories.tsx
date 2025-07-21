@@ -1,5 +1,5 @@
-import { Meta, StoryObj } from '@storybook/react'
-import { fireEvent, within } from '@storybook/test'
+import { Meta, StoryObj } from '@storybook/nextjs'
+import { fireEvent, within } from 'storybook/test'
 import { ComponentProps } from 'react'
 
 import { simpleComponentConfig } from '@core/shared/ui/storybook'

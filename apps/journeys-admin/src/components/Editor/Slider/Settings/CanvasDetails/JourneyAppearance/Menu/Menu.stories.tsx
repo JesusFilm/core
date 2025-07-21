@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react/*'
-import { screen, userEvent } from '@storybook/test'
+import { screen, userEvent } from 'storybook/test'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
