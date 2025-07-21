@@ -23,7 +23,7 @@ import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikProps, FormikValues } from 'formik'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { object, string } from 'yup'
 
 import { graphql } from '@core/shared/gql'
@@ -124,6 +124,7 @@ export function VideoInformation({
   const theme = useTheme()
   const jesusFilmUrl = 'jesusfilm.org/watch/'
   const { enqueueSnackbar } = useSnackbar()
+  const [createdTitleId, setCreatedTitleId] = useState<string | null>(null)
 
   // State to track validation attempts and errors
   const [validationAttempt, setValidationAttempt] = useState<{
@@ -149,6 +150,13 @@ export function VideoInformation({
       languageId: DEFAULT_VIDEO_LANGUAGE_ID
     }
   })
+
+  // If the query data is in sync, clear the local createdTitleId
+  useEffect(() => {
+    if (createdTitleId && data.adminVideo.title?.[0]?.id) {
+      setCreatedTitleId(null)
+    }
+  }, [createdTitleId, data.adminVideo.title])
 
   // Function to validate if video has all required data for publishing
   const validateVideoForPublishing = (
@@ -315,7 +323,22 @@ export function VideoInformation({
     values: FormikValues,
     { resetForm }: FormikProps<FormikValues>
   ): Promise<void> {
-    let titleId = data.adminVideo.title[0]?.id ?? null
+    // If trying to publish, validate required fields first
+    if (values.published === 'published') {
+      const missingFields = validateVideoForPublishing(values.label)
+      if (missingFields.length > 0) {
+        enqueueSnackbar(
+          `Cannot publish video. Missing required fields: ${missingFields.join(', ')}. Please complete all required content before publishing.`,
+          {
+            variant: 'error',
+            autoHideDuration: 8000
+          }
+        )
+        return // Stop the submission
+      }
+    }
+
+    let titleId = data.adminVideo.title[0]?.id ?? createdTitleId
     const params = new URLSearchParams('')
     params.append('update', 'information')
     router.push(`?${params.toString()}`, { scroll: false })
@@ -345,6 +368,12 @@ export function VideoInformation({
       }
 
       titleId = res.data.videoTitleCreate.id
+      setCreatedTitleId(titleId)
+    }
+
+    if (!titleId) {
+      enqueueSnackbar('No title ID available for update', { variant: 'error' })
+      return
     }
 
     await updateVideoInformation({
@@ -540,14 +569,25 @@ export function VideoInformation({
               primaryLanguageId={data.adminVideo.primaryLanguageId}
               initialKeywords={values.keywords}
               onChange={(keywords) =>
-                handleChange({ target: { name: 'keywords', value: keywords } })
+                handleChange({
+                  target: { name: 'keywords', value: keywords }
+                })
               }
             />
             <ValidationStatus values={values} setFieldValue={setFieldValue} />
             <Divider sx={{ mx: -4 }} />
             <Stack direction="row" justifyContent="flex-end" gap={1}>
               <CancelButton show={dirty} handleCancel={() => resetForm()} />
-              <SaveButton disabled={!isValid || isSubmitting || !dirty} />
+              <SaveButton
+                disabled={
+                  !isValid ||
+                  isSubmitting ||
+                  !dirty ||
+                  (values.published === 'published' &&
+                    validateVideoForPublishing(values.label).length > 0)
+                }
+                loading={isSubmitting}
+              />
             </Stack>
           </Stack>
         </Form>
