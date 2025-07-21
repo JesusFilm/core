@@ -278,7 +278,7 @@ export const reducer = (state: WatchState, action: WatchAction): WatchState => {
       return {
         ...state,
         videoSubtitleLanguages,
-        autoSubtitle: subtitleAvailable
+        autoSubtitle: subtitleAvailable === false ? undefined : true
       }
     }
     case 'SetCurrentVideo':

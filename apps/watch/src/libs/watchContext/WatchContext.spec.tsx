@@ -195,7 +195,7 @@ describe('WatchContext', () => {
 
         const result = reducer(stateWithDifferentLanguage, action)
 
-        expect(result.autoSubtitle).toBe(false)
+        expect(result.autoSubtitle).toBe(undefined)
       })
 
       it('should not set autoSubtitle when language preference is met (langPrefMet is true)', () => {
@@ -263,7 +263,7 @@ describe('WatchContext', () => {
         expect(result.autoSubtitle).toBe(true)
       })
 
-      it('should set autoSubtitle to false when language preference is not met and subtitle language is not available', () => {
+      it('should set autoSubtitle to undefined when language preference is not met and subtitle language is not available', () => {
         const stateWithNonMatchingAudioLanguage = {
           ...defaultState,
           audioLanguage: '496',
@@ -293,7 +293,7 @@ describe('WatchContext', () => {
         expect(result.videoSubtitleLanguages).toEqual(
           mockVideoSubtitleLanguages
         )
-        expect(result.autoSubtitle).toBe(false)
+        expect(result.autoSubtitle).toBe(undefined)
       })
 
       it('should handle case when currentAudioLanguage is undefined', () => {
