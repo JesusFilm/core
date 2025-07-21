@@ -5,16 +5,8 @@ import { handle } from 'hono/vercel'
 import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../lib/apolloClient'
-import {
-  BrightcoveSourceCode,
-  getBrightcoveVideo,
-  selectBrightcoveSource
-} from '../../lib/brightcove'
+import { getBrightcoveUrl } from '../../lib/brightcove'
 import { getClientIp, setCorsHeaders } from '../../lib/redirectUtils'
-
-function isBrightcoveSourceCode(value: string): value is BrightcoveSourceCode {
-  return ['hls', 'dh', 'dl'].includes(value as BrightcoveSourceCode)
-}
 
 export const GET_SHORT_LINK_QUERY = graphql(`
   query GetShortLinkQuery($hostname: String!, $pathname: String!) {
@@ -25,6 +17,7 @@ export const GET_SHORT_LINK_QUERY = graphql(`
           to
           redirectType
           brightcoveId
+          bitrate
         }
       }
     }
@@ -104,7 +97,8 @@ app.openapi(keywordRoute, async (c) => {
     }
 
     if (data?.shortLink?.__typename === 'QueryShortLinkByPathSuccess') {
-      const { to, brightcoveId, redirectType } = data.shortLink.data
+      const { to, brightcoveId, redirectType, bitrate } = data.shortLink.data
+
       if (
         redirectType &&
         brightcoveId &&
@@ -112,14 +106,13 @@ app.openapi(keywordRoute, async (c) => {
         typeof brightcoveId === 'string'
       ) {
         try {
-          const video = await getBrightcoveVideo(brightcoveId, false, clientIp)
-
-          if (isBrightcoveSourceCode(redirectType) && video) {
-            const src = selectBrightcoveSource(video, redirectType)
-            if (src) {
-              return c.redirect(src, 302)
-            }
-          }
+          const url = await getBrightcoveUrl(
+            brightcoveId,
+            redirectType as 'hls' | 'dl' | 'dh' | 'dsd',
+            bitrate,
+            clientIp
+          )
+          return c.redirect(url, 302)
         } catch (err) {
           console.error(
             '[Redirect] Brightcove error for keyword:',
