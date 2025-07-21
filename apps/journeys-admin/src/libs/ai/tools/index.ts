@@ -5,9 +5,8 @@ import { tools as agentTools } from './agent'
 // import { tools as clientTools } from './client'
 import { tools as journeyTools } from './journey'
 import {
-  youTubeTranscriptTool,
-  youtubeAnalyzerTool,
-  youtubeAnalyzerTool2
+  // youTubeTranscriptTool,
+  youtubeAnalyzerTool
 } from './youtube'
 
 export interface ToolOptions {
@@ -23,8 +22,7 @@ export function tools(
     // ...clientTools,
     ...journeyTools,
     // youTubeTranscriptTool,
-    // youtubeAnalyzerTool,
-    youtubeAnalyzerTool2
+    youtubeAnalyzerTool
   }
 
   return {

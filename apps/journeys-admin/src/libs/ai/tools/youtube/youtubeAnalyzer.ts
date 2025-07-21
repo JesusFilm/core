@@ -9,7 +9,13 @@ const googleClient = new GoogleGenAI({
   apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY
 })
 
-export function youtubeAnalyzerTool2(
+/**
+ * Analyzes a YouTube video using Gemini 2.0 Flash and returns the transcript.
+ * @param client - The Apollo client.
+ * @param _options - The tool options.
+ * @returns The tool.
+ */
+export function youtubeAnalyzerTool(
   client: ApolloClient<NormalizedCacheObject>,
   _options: ToolOptions
 ): Tool {
