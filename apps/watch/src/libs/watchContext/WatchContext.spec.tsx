@@ -198,7 +198,7 @@ describe('WatchContext', () => {
         expect(result.autoSubtitle).toBe(undefined)
       })
 
-      it('should not set autoSubtitle when language preference is met (langPrefMet is true)', () => {
+      it('should not set autoSubtitle when language preference is met - langPrefMet is true', () => {
         const stateWithMatchingAudioLanguage = {
           ...defaultState,
           audioLanguage: '529',
