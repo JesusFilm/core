@@ -1,8 +1,9 @@
 import { NetworkStatus, useSuspenseQuery } from '@apollo/client'
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { VideoInformation } from './VideoInformation'
+import { GET_KEYWORDS } from './VideoKeywords'
 
 // Mock useSuspenseQuery hook
 jest.mock('@apollo/client', () => {
@@ -27,6 +28,23 @@ jest.mock('next/navigation', () => ({
 }))
 
 const mockVideoId = 'test-video-id'
+
+const mockKeywordsData = {
+  keywords: [
+    { id: 'keyword-1', value: 'faith' },
+    { id: 'keyword-2', value: 'hope' },
+    { id: 'keyword-3', value: 'love' }
+  ]
+}
+
+const keywordsMock: MockedResponse = {
+  request: {
+    query: GET_KEYWORDS
+  },
+  result: {
+    data: mockKeywordsData
+  }
+}
 
 const mockVideoData = {
   adminVideo: {
@@ -66,13 +84,13 @@ describe('VideoInformation', () => {
       client: {} as any,
       error: undefined,
       networkStatus: NetworkStatus.ready,
-      refetch: jest.fn()
+      refetch: jest.fn().mockResolvedValue({ data: mockVideoData })
     })
   })
 
   it('should render video information form', async () => {
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[keywordsMock]}>
         <VideoInformation videoId={mockVideoId} />
       </MockedProvider>
     )
@@ -112,11 +130,11 @@ describe('VideoInformation', () => {
       client: {} as any,
       error: undefined,
       networkStatus: NetworkStatus.ready,
-      refetch: jest.fn()
+      refetch: jest.fn().mockResolvedValue({ data: incompleteVideoData })
     })
 
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[keywordsMock]}>
         <VideoInformation videoId={mockVideoId} />
       </MockedProvider>
     )
@@ -178,11 +196,11 @@ describe('VideoInformation', () => {
       client: {} as any,
       error: undefined,
       networkStatus: NetworkStatus.ready,
-      refetch: jest.fn()
+      refetch: jest.fn().mockResolvedValue({ data: collectionVideoData })
     })
 
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[keywordsMock]}>
         <VideoInformation videoId={mockVideoId} />
       </MockedProvider>
     )
@@ -237,6 +255,13 @@ describe('VideoInformation', () => {
     const mockedUseSuspenseQuery = useSuspenseQuery as jest.MockedFunction<
       typeof useSuspenseQuery
     >
+
+    // Create a mock refetch function that will initially return data without title
+    // but later can return updated data with title for the "Try Again" functionality
+    const mockRefetch = jest
+      .fn()
+      .mockResolvedValue({ data: videoDataWithoutTitle })
+
     mockedUseSuspenseQuery.mockReturnValue({
       data: videoDataWithoutTitle,
       fetchMore: jest.fn(),
@@ -244,11 +269,11 @@ describe('VideoInformation', () => {
       client: {} as any,
       error: undefined,
       networkStatus: NetworkStatus.ready,
-      refetch: jest.fn()
+      refetch: mockRefetch
     })
 
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[keywordsMock]}>
         <VideoInformation videoId={mockVideoId} />
       </MockedProvider>
     )
@@ -288,6 +313,27 @@ describe('VideoInformation', () => {
     // Enter a title in the form
     const titleInput = screen.getByLabelText('Title')
     fireEvent.change(titleInput, { target: { value: 'New Test Title' } })
+
+    // Update the mock refetch to return complete data when called again
+    const completeVideoData = {
+      adminVideo: {
+        ...videoDataWithoutTitle.adminVideo,
+        title: [{ id: 'new-title-id', value: 'New Test Title' }],
+        snippet: [{ id: 'snippet-id', value: 'Test snippet' }],
+        description: [{ id: 'desc-id', value: 'Test description' }],
+        imageAlt: [{ id: 'alt-id', value: 'Test alt text' }],
+        images: [{ id: 'banner-id', aspectRatio: 'banner' as const }],
+        variant: {
+          id: 'variant-id',
+          slug: 'test-video',
+          hls: 'test.m3u8',
+          dash: null,
+          muxVideo: null,
+          language: { id: '529', slug: 'en' }
+        }
+      }
+    }
+    mockRefetch.mockResolvedValueOnce({ data: completeVideoData })
 
     // Click Try Again button
     fireEvent.click(tryAgainButton)

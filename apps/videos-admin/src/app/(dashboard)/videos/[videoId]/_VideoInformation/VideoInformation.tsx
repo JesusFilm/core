@@ -18,7 +18,6 @@ import ListItemText from '@mui/material/ListItemText'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
-import { useTheme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikProps, FormikValues } from 'formik'
 import { useRouter } from 'next/navigation'
@@ -121,7 +120,6 @@ export function VideoInformation({
   const router = useRouter()
   const [updateVideoInformation] = useMutation(UPDATE_VIDEO_INFORMATION)
   const [createVideoTitle] = useMutation(CREATE_VIDEO_TITLE)
-  const theme = useTheme()
   const jesusFilmUrl = 'jesusfilm.org/watch/'
   const { enqueueSnackbar } = useSnackbar()
   const [createdTitleId, setCreatedTitleId] = useState<string | null>(null)
@@ -137,6 +135,9 @@ export function VideoInformation({
     values: null
   })
 
+  // State to track if current form values would pass validation for publishing
+  const [hasValidationErrors, setHasValidationErrors] = useState(false)
+
   const validationSchema = object().shape({
     title: string().trim().required('Title is required'),
     url: string().trim().required('Url is required'),
@@ -144,7 +145,7 @@ export function VideoInformation({
     label: string().required('Label is required')
   })
 
-  const { data } = useSuspenseQuery(GET_VIDEO_INFORMATION, {
+  const { data, refetch } = useSuspenseQuery(GET_VIDEO_INFORMATION, {
     variables: {
       id: videoId,
       languageId: DEFAULT_VIDEO_LANGUAGE_ID
@@ -159,12 +160,14 @@ export function VideoInformation({
   }, [createdTitleId, data.adminVideo.title])
 
   // Function to validate if video has all required data for publishing
-  const validateVideoForPublishing = (
+  const validateVideoForPublishing = async (
     currentLabel?: string,
     currentTitle?: string
-  ): string[] => {
+  ): Promise<string[]> => {
+    // Re-query to get the most up-to-date data
+    const { data: freshData } = await refetch()
     const missingFields: string[] = []
-    const video = data.adminVideo
+    const video = freshData.adminVideo
 
     // Check if video has a title - use current form value if provided, otherwise use saved value
     const titleToCheck = currentTitle?.trim() || video.title?.[0]?.value?.trim()
@@ -219,7 +222,10 @@ export function VideoInformation({
     values: FormikValues,
     setFieldValue: (field: string, value: any) => void
   ) => {
-    const missingFields = validateVideoForPublishing(values.label, values.title)
+    const missingFields = await validateVideoForPublishing(
+      values.label,
+      values.title
+    )
 
     if (missingFields.length > 0) {
       // Revert to draft and show validation errors
@@ -229,6 +235,7 @@ export function VideoInformation({
         errors: missingFields,
         values
       })
+      setHasValidationErrors(true)
       return false
     }
 
@@ -238,6 +245,7 @@ export function VideoInformation({
       errors: [],
       values: null
     })
+    setHasValidationErrors(false)
     return true
   }
 
@@ -254,7 +262,6 @@ export function VideoInformation({
       return null
     }
 
-    const video = data.adminVideo
     const isContainerVideo =
       values.label === 'collection' || values.label === 'series'
 
@@ -325,7 +332,7 @@ export function VideoInformation({
   ): Promise<void> {
     // If trying to publish, validate required fields first
     if (values.published === 'published') {
-      const missingFields = validateVideoForPublishing(values.label)
+      const missingFields = await validateVideoForPublishing(values.label)
       if (missingFields.length > 0) {
         enqueueSnackbar(
           `Cannot publish video. Missing required fields: ${missingFields.join(', ')}. Please complete all required content before publishing.`,
@@ -427,6 +434,7 @@ export function VideoInformation({
         errors: [],
         values: null
       })
+      setHasValidationErrors(false)
     }
 
     setFieldValue('published', newStatus)
@@ -583,8 +591,7 @@ export function VideoInformation({
                   !isValid ||
                   isSubmitting ||
                   !dirty ||
-                  (values.published === 'published' &&
-                    validateVideoForPublishing(values.label).length > 0)
+                  (values.published === 'published' && hasValidationErrors)
                 }
                 loading={isSubmitting}
               />
