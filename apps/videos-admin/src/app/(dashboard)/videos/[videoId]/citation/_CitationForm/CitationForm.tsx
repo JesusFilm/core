@@ -9,11 +9,12 @@ import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikValues } from 'formik'
-import { graphql } from 'gql.tada'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import { number, object, string } from 'yup'
+
+import { graphql } from '@core/shared/gql'
 
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../../constants'
 
