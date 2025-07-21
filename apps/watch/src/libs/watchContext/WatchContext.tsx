@@ -12,6 +12,8 @@ import { GetLanguagesSlug_video_variantLanguagesWithSlug as AudioLanguage } from
 import { GetSubtitles_video_variant_subtitle as SubtitleLanguage } from '../../../__generated__/GetSubtitles'
 import { LANGUAGE_MAPPINGS } from '../localeMapping'
 
+import { initializeVideoLanguages } from './initializeVideoLanguages'
+
 /**
  * State interface for watch context containing language preferences and video-specific data
  */
@@ -377,15 +379,12 @@ export function WatchProvider({ children, initialState }: WatchProviderProps) {
   })
 
   useEffect(() => {
-    //video audio languages needs to be set first for the auto subtitle calculation
-    dispatch({
-      type: 'SetVideoAudioLanguages',
-      videoAudioLanguages: initialState?.videoAudioLanguages ?? []
-    })
-    dispatch({
-      type: 'SetVideoSubtitleLanguages',
-      videoSubtitleLanguages: initialState?.videoSubtitleLanguages ?? []
-    })
+    // Initialize video language preferences based on available languages
+    initializeVideoLanguages(
+      dispatch,
+      initialState?.videoAudioLanguages ?? [],
+      initialState?.videoSubtitleLanguages ?? []
+    )
   }, [initialState.videoSubtitleLanguages, initialState.videoAudioLanguages])
 
   return (
