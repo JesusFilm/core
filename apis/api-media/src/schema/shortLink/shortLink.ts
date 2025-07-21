@@ -38,6 +38,10 @@ const ShortLink = builder.prismaObject('ShortLink', {
       type: RedirectType,
       nullable: true,
       description: 'type of video redirect (hls, dl, dh, s)'
+    }),
+    bitrate: t.exposeInt('bitrate', {
+      nullable: true,
+      description: 'bitrate of the video variant download'
     })
   })
 })
@@ -211,6 +215,10 @@ builder.mutationFields((t) => ({
           type: RedirectType,
           required: false,
           description: 'type of video redirect (hls, dl, dh, s)'
+        }),
+        bitrate: t.input.int({
+          required: false,
+          description: 'bitrate of the video variant download'
         })
       },
       validate: [
@@ -244,7 +252,8 @@ builder.mutationFields((t) => ({
             hostname,
             service,
             brightcoveId,
-            redirectType
+            redirectType,
+            bitrate
           }
         },
         context
@@ -263,7 +272,8 @@ builder.mutationFields((t) => ({
               userId:
                 context.type === 'authenticated' ? context.user.id : undefined,
               brightcoveId,
-              redirectType
+              redirectType,
+              bitrate
             }
           })
         } catch (e) {
@@ -325,18 +335,27 @@ builder.mutationFields((t) => ({
           type: RedirectType,
           required: false,
           description: 'type of video redirect (hls, dl, dh, s)'
+        }),
+        bitrate: t.input.int({
+          required: false,
+          description: 'bitrate of the video variant download'
         })
       },
       resolve: async (
         query,
         _,
-        { input: { id, to, brightcoveId, redirectType } }
+        { input: { id, to, brightcoveId, redirectType, bitrate } }
       ) => {
         try {
           return await prisma.shortLink.update({
             ...query,
             where: { id },
-            data: { to, brightcoveId, redirectType }
+            data: {
+              to,
+              brightcoveId,
+              redirectType,
+              bitrate
+            }
           })
         } catch (e) {
           if (
