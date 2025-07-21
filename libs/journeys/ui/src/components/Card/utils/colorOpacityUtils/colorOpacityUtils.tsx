@@ -83,3 +83,54 @@ export function reduceHexOpacity(
 
   return `${baseHex}${alphaHex}`
 }
+
+function hexToRgb(hex: string): { r: number; g: number; b: number } {
+  const cleanHex = hex.replace('#', '')
+
+  const r = parseInt(cleanHex.slice(0, 2), 16)
+  const g = parseInt(cleanHex.slice(2, 4), 16)
+  const b = parseInt(cleanHex.slice(4, 6), 16)
+
+  return { r, g, b }
+}
+
+function getLuminance({
+  r,
+  g,
+  b
+}: {
+  r: number
+  g: number
+  b: number
+}): number {
+  const srgbToLinear = (c: number) => {
+    c /= 255
+    return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)
+  }
+  const R = srgbToLinear(r)
+  const G = srgbToLinear(g)
+  const B = srgbToLinear(b)
+
+  return 0.2126 * R + 0.7152 * G + 0.0722 * B
+}
+
+function contrastRatio(lum1: number, lum2: number): number {
+  const L1 = Math.max(lum1, lum2)
+  const L2 = Math.min(lum1, lum2)
+  return (L1 + 0.05) / (L2 + 0.05)
+}
+
+export function bestContrastTextColor(
+  backgroundHex: string
+): '#000000' | '#ffffff' | null {
+  const bgRgb = hexToRgb(backgroundHex)
+  const bgLum = getLuminance(bgRgb)
+
+  const whiteLum = 1.0 // luminance of #ffffff
+  const blackLum = 0.0 // luminance of #000000
+
+  const contrastWithWhite = contrastRatio(bgLum, whiteLum)
+  const contrastWithBlack = contrastRatio(bgLum, blackLum)
+
+  return contrastWithWhite > contrastWithBlack ? '#ffffff' : '#000000'
+}

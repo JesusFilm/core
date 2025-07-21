@@ -25,6 +25,7 @@ import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
 import { JourneyPlausibleEvents } from '../../libs/plausibleHelpers'
 import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
+import { bestContrastTextColor } from '../Card/utils/colorOpacityUtils'
 import { Icon } from '../Icon'
 import { IconFields } from '../Icon/__generated__/IconFields'
 
@@ -283,6 +284,14 @@ export function Button({
 
   const effectiveColor = settings?.color ?? buttonColor
 
+  const hasSettingsColor = settings?.color != null
+
+  const textColor = useMemo(
+    () =>
+      hasSettingsColor ? bestContrastTextColor(settings?.color ?? '') : null,
+    [hasSettingsColor, settings?.color]
+  )
+
   return (
     // Margin added via Box so it's ignored by admin selection border outline
     <Box
@@ -340,7 +349,8 @@ export function Button({
           sx={{
             overflowWrap: 'break-word',
             wordBreak: 'break-word',
-            width: 'inherit'
+            width: 'inherit',
+            color: textColor
           }}
         >
           {editableLabel != null
