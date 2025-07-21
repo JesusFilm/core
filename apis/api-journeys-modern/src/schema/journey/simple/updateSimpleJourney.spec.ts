@@ -6,6 +6,14 @@ import { prismaMock } from '../../../../test/prismaMock'
 
 import { updateSimpleJourney } from './updateSimpleJourney'
 
+jest.mock('../../../utils/generateBlurhashAndMetadataFromUrl', () => ({
+  generateBlurhashAndMetadataFromUrl: jest.fn().mockResolvedValue({
+    blurhash: 'mocked-blurhash',
+    width: 100,
+    height: 100
+  })
+}))
+
 // Mock environment variables
 const originalEnv = process.env
 
