@@ -6,7 +6,11 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../__generated__/BlockFields'
+import {
+  BlockFields_CardBlock as CardBlock,
+  BlockFields_ImageBlock as ImageBlock,
+  BlockFields_VideoBlock as VideoBlock
+} from '../../../../../../../../../__generated__/BlockFields'
 import {
   ThemeMode,
   ThemeName,
@@ -115,6 +119,38 @@ describe('Card', () => {
       expect(
         screen.getByRole('button', { name: 'Layout Contained' })
       ).toBeInTheDocument()
+    })
+
+    it('should show color value for contained cards with image background', () => {
+      const card = createCard({
+        coverBlockId: 'image1.id',
+        fullscreen: false,
+        children: [
+          {
+            __typename: 'ImageBlock',
+            id: 'image1.id'
+          } as unknown as TreeBlock<ImageBlock>
+        ]
+      })
+      renderWithProviders(<Card {...card} />)
+
+      screen.getByRole('button', { name: 'Filter #30313D)' })
+    })
+
+    it('should show color value for contained cards with video background', () => {
+      const card = createCard({
+        coverBlockId: 'video1.id',
+        fullscreen: false,
+        children: [
+          {
+            __typename: 'VideoBlock',
+            id: 'video1.id'
+          } as unknown as TreeBlock<VideoBlock>
+        ]
+      })
+      renderWithProviders(<Card {...card} />)
+
+      screen.getByRole('button', { name: 'Filter #30313D)' })
     })
 
     it('shows correct icons for each section', () => {

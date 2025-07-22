@@ -149,6 +149,22 @@ describe('BackgroundColor', () => {
       expect(screen.getByTestId('bgColorTextField')).toBeInTheDocument()
     })
 
+    it('hides opacity/alpha card color when card is contained', () => {
+      render(
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <EditorProvider initialState={{ selectedBlock: card }}>
+                <BackgroundColor isContained />
+              </EditorProvider>
+            </JourneyProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.queryByTestId('bgOpacityTextField')).not.toBeInTheDocument()
+    })
+
     it('changes color via color input field', async () => {
       const cache = new InMemoryCache()
       cache.restore({

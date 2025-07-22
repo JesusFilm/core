@@ -86,7 +86,13 @@ const UPDATE_BACKDROP_BLUR_FRAGMENT = gql`
   }
 `
 
-export function BackgroundColor(): ReactElement {
+interface BackgroundColorProps {
+  isContained?: boolean
+}
+
+export function BackgroundColor({
+  isContained = false
+}: BackgroundColorProps): ReactElement {
   const {
     state: { selectedBlock, selectedStep },
     dispatch
@@ -316,7 +322,7 @@ export function BackgroundColor(): ReactElement {
         color={selectedColor}
         onChange={handleColorChange}
         style={{ width: '100%', height: 125 }}
-        enableAlpha={true}
+        enableAlpha={!isContained}
       />
     </Stack>
   )
@@ -332,6 +338,7 @@ export function BackgroundColor(): ReactElement {
       >
         <Swatch id={`bg-color-${selectedColor}`} color={selectedColor} />
         <ColorOpacityField
+          isContained={isContained}
           color={selectedColor}
           onColorChange={handleColorChange}
         />

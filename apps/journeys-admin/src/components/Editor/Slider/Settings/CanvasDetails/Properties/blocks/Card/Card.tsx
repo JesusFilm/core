@@ -81,9 +81,11 @@ export function Card({
     backgroundColor ?? cardTheme.palette.background.paper
 
   let backgroundValue = t('None')
+  let isContained = false
 
   switch (coverBlock?.__typename) {
     case 'ImageBlock':
+      isContained = !fullscreen
       if (coverBlock.src != null) {
         if (coverBlock.src.startsWith('https://images.unsplash.com/')) {
           backgroundValue = coverBlock.alt
@@ -96,6 +98,7 @@ export function Card({
       }
       break
     case 'VideoBlock':
+      isContained = true
       backgroundValue =
         coverBlock.mediaVideo?.__typename === 'Video'
           ? coverBlock.mediaVideo?.title?.[0]?.value
@@ -103,7 +106,9 @@ export function Card({
       break
   }
 
-  const filterValue = `${stripAlphaFromHex(selectedCardColor).toUpperCase()} (${getOpacityFromHex(selectedCardColor)}%)`
+  const filterValue = isContained
+    ? `${stripAlphaFromHex(selectedCardColor).toUpperCase()})`
+    : `${stripAlphaFromHex(selectedCardColor).toUpperCase()} (${getOpacityFromHex(selectedCardColor)}%)`
 
   return (
     <Box data-testid="CardProperties">
@@ -150,7 +155,7 @@ export function Card({
         name={t('Filter')}
         value={filterValue}
       >
-        <BackgroundColor key={selectedStep?.id} />
+        <BackgroundColor key={selectedStep?.id} isContained={isContained} />
       </Accordion>
     </Box>
   )
