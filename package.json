@@ -252,6 +252,7 @@
     "@nx/workspace": "20.8.2",
     "@playwright/test": "^1.51.1",
     "@storybook/addon-a11y": "^9.0.17",
+    "@storybook/addon-docs": "9.0.17",
     "@storybook/nextjs": "^9.0.17",
     "@svgr/webpack": "^8.1.0",
     "@swc-node/register": "~1.9.1",
@@ -340,6 +341,7 @@
     "prisma-erd-generator": "^2.0.0",
     "react-refresh": "^0.17.0",
     "source-map-loader": "^5.0.0",
+    "storybook": "^9.0.18",
     "storybook-addon-apollo-client": "^9.0.0",
     "tailwindcss": "^4.0.15",
     "terser-webpack-plugin": "^5.1.1",
@@ -358,8 +360,7 @@
     "webpack-merge": "^6.0.0",
     "webpack-node-externals": "^3.0.0",
     "webpack-sources": "^3.0.2",
-    "wrangler": "^3.62.0",
-    "@storybook/addon-docs": "9.0.17"
+    "wrangler": "^3.62.0"
   },
   "msw": {
     "workerDirectory": "./.storybook/static"
