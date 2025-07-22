@@ -107,11 +107,6 @@ jobs:
         with:
           key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
           path: ./node_modules
-      - name: Mount Next.js Cache for ${{ matrix.app }}
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ matrix.app }}-nextjs-cache
-          path: apps/${{ matrix.app }}/.next
       - name: Mount playwright cache
         uses: useblacksmith/stickydisk@v1
         with:
@@ -271,11 +266,6 @@ jobs:
         with:
           key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
           path: ./node_modules
-      - name: Mount Next.js Cache for ${{ matrix.app }}
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ matrix.app }}-nextjs-cache
-          path: apps/${{ matrix.app }}/.next
       - name: NPM Install
         run: npm install --silent
       - uses: nrwl/nx-set-shas@v4
