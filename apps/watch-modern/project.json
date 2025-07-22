@@ -14,7 +14,11 @@
       },
       "configurations": {
         "production": {
-          "commands": ["CI=true nx _build watch-modern --prod"]
+          "commands": [
+            "rm -rf apps/watch-modern/i18n/locales",
+            "cp -r libs/locales apps/watch-modern/i18n/locales",
+            "CI=true nx _build watch-modern --prod"
+          ]
         }
       }
     },
@@ -105,12 +109,6 @@
         "parallel": true
       }
     },
-    "generate-test-data": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "NEXT_PUBLIC_GATEWAY_URL=http://127.0.0.1:4000 npx ts-node apps/watch-modern/src/components/Videos/testData.generator.ts"
-      }
-    },
     "export": {
       "executor": "@nx/next:export",
       "options": {
@@ -159,22 +157,6 @@
             "command": "DOPPLER_TOKEN=$DOPPLER_WATCH_TOKEN doppler secrets download --no-file --format=env-no-quotes --project watch > apps/watch-modern/.env"
           }
         ]
-      }
-    },
-    "extract-translations": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          {
-            "command": "npx i18next --config apps/watch-modern/i18next-parser.config.js"
-          }
-        ]
-      }
-    },
-    "codecov": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "codecov -f coverage/apps/watch-modern/cobertura-coverage.xml -F apps.watch-modern"
       }
     }
   }
