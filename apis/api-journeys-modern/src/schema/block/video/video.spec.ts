@@ -1,7 +1,11 @@
+import { mockDeep } from 'jest-mock-extended'
+
+import { Prisma, PrismaClient } from '.prisma/api-journeys-modern-client'
+
 import { prismaMock } from '../../../../test/prismaMock'
+import { VideoBlockSource } from '../../enums'
 
 import { VideoBlockObjectFit } from './enums/videoObjectFit'
-import { VideoBlockSource } from './enums/videoSource'
 
 // Mock external dependencies
 jest.mock('../../../lib/auth/ability')

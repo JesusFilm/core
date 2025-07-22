@@ -1,7 +1,6 @@
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
-
-import { MessagePlatform } from './enums'
+import { MessagePlatform } from '../enums'
 
 const ChatButtonCreateInput = builder.inputType('ChatButtonCreateInput', {
   fields: (t) => ({

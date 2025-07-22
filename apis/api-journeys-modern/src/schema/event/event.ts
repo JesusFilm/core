@@ -1,17 +1,17 @@
 import { GraphQLError } from 'graphql'
 import { v4 as uuidv4 } from 'uuid'
 
-import {
-  ButtonAction,
-  MessagePlatform,
-  VideoBlockSource
-} from '.prisma/api-journeys-modern-client'
+import { ButtonAction } from '.prisma/api-journeys-modern-client'
 
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
+import {
+  MessagePlatform as MessagePlatformEnum,
+  VideoBlockSource as VideoBlockSourceEnum
+} from '../enums'
 
 // Define Event interface
-const EventInterface = builder.prismaInterface('Event', {
+export const EventInterface = builder.prismaInterface('Event', {
   fields: (t) => ({
     id: t.exposeID('id'),
     journeyId: t.exposeString('journeyId', { nullable: true }),
@@ -24,14 +24,6 @@ const EventInterface = builder.prismaInterface('Event', {
 // Define enums
 const ButtonActionEnum = builder.enumType('ButtonAction', {
   values: Object.values(ButtonAction)
-})
-
-const MessagePlatformEnum = builder.enumType('MessagePlatform', {
-  values: Object.values(MessagePlatform)
-})
-
-const VideoBlockSourceEnum = builder.enumType('VideoBlockSource', {
-  values: Object.values(VideoBlockSource)
 })
 
 // Define Event with Pothos built-in union discrimination
@@ -86,11 +78,6 @@ const ButtonClickEventRef = builder.prismaObject('Event', {
   variant: 'ButtonClickEvent',
   isTypeOf: (obj: any) => obj.typename === 'ButtonClickEvent',
   fields: (t) => ({
-    id: t.exposeID('id'),
-    journeyId: t.exposeString('journeyId', { nullable: true }),
-    createdAt: t.expose('createdAt', { type: 'DateTime' }),
-    label: t.exposeString('label', { nullable: true }),
-    value: t.exposeString('value', { nullable: true }),
     action: t.expose('action', { type: ButtonActionEnum, nullable: true }),
     actionValue: t.exposeString('actionValue', { nullable: true })
   })
@@ -101,11 +88,6 @@ const ChatOpenEventRef = builder.prismaObject('Event', {
   variant: 'ChatOpenEvent',
   isTypeOf: (obj: any) => obj.typename === 'ChatOpenEvent',
   fields: (t) => ({
-    id: t.exposeID('id'),
-    journeyId: t.exposeString('journeyId', { nullable: true }),
-    createdAt: t.expose('createdAt', { type: 'DateTime' }),
-    label: t.exposeString('label', { nullable: true }),
-    value: t.exposeString('value', { nullable: true }),
     messagePlatform: t.expose('messagePlatform', {
       type: MessagePlatformEnum,
       nullable: true
@@ -117,11 +99,6 @@ const JourneyViewEventRef = builder.prismaObject('Event', {
   interfaces: [EventInterface],
   variant: 'JourneyViewEvent',
   fields: (t) => ({
-    id: t.exposeID('id'),
-    journeyId: t.exposeString('journeyId', { nullable: true }),
-    createdAt: t.expose('createdAt', { type: 'DateTime' }),
-    label: t.exposeString('label', { nullable: true }),
-    value: t.exposeString('value', { nullable: true }),
     language: t.field({
       type: 'Json',
       nullable: true,
@@ -137,11 +114,7 @@ const RadioQuestionSubmissionEventRef = builder.prismaObject('Event', {
   interfaces: [EventInterface],
   variant: 'RadioQuestionSubmissionEvent',
   fields: (t) => ({
-    id: t.exposeID('id'),
-    journeyId: t.exposeString('journeyId', { nullable: true }),
-    createdAt: t.expose('createdAt', { type: 'DateTime' }),
-    label: t.exposeString('label', { nullable: true }),
-    value: t.exposeString('value', { nullable: true })
+    // No unique fields for this event type
   })
 })
 
@@ -149,11 +122,6 @@ const SignUpSubmissionEventRef = builder.prismaObject('Event', {
   interfaces: [EventInterface],
   variant: 'SignUpSubmissionEvent',
   fields: (t) => ({
-    id: t.exposeID('id'),
-    journeyId: t.exposeString('journeyId', { nullable: true }),
-    createdAt: t.expose('createdAt', { type: 'DateTime' }),
-    label: t.exposeString('label', { nullable: true }),
-    value: t.exposeString('value', { nullable: true }),
     email: t.exposeString('email', { nullable: true })
   })
 })
@@ -162,11 +130,7 @@ const StepViewEventRef = builder.prismaObject('Event', {
   interfaces: [EventInterface],
   variant: 'StepViewEvent',
   fields: (t) => ({
-    id: t.exposeID('id'),
-    journeyId: t.exposeString('journeyId', { nullable: true }),
-    createdAt: t.expose('createdAt', { type: 'DateTime' }),
-    label: t.exposeString('label', { nullable: true }),
-    value: t.exposeString('value', { nullable: true })
+    // No unique fields for this event type
   })
 })
 
@@ -174,11 +138,7 @@ const StepNextEventRef = builder.prismaObject('Event', {
   interfaces: [EventInterface],
   variant: 'StepNextEvent',
   fields: (t) => ({
-    id: t.exposeID('id'),
-    journeyId: t.exposeString('journeyId', { nullable: true }),
-    createdAt: t.expose('createdAt', { type: 'DateTime' }),
-    label: t.exposeString('label', { nullable: true }),
-    value: t.exposeString('value', { nullable: true })
+    // No unique fields for this event type
   })
 })
 
@@ -187,11 +147,7 @@ const StepPreviousEventRef = builder.prismaObject('Event', {
   variant: 'StepPreviousEvent',
   isTypeOf: (obj: any) => obj.typename === 'StepPreviousEvent',
   fields: (t) => ({
-    id: t.exposeID('id'),
-    journeyId: t.exposeString('journeyId', { nullable: true }),
-    createdAt: t.expose('createdAt', { type: 'DateTime' }),
-    label: t.exposeString('label', { nullable: true }),
-    value: t.exposeString('value', { nullable: true })
+    // No unique fields for this event type
   })
 })
 
@@ -199,11 +155,6 @@ const TextResponseSubmissionEventRef = builder.prismaObject('Event', {
   interfaces: [EventInterface],
   variant: 'TextResponseSubmissionEvent',
   fields: (t) => ({
-    id: t.exposeID('id'),
-    journeyId: t.exposeString('journeyId', { nullable: true }),
-    createdAt: t.expose('createdAt', { type: 'DateTime' }),
-    label: t.exposeString('label', { nullable: true }),
-    value: t.exposeString('value', { nullable: true }),
     blockId: t.exposeString('blockId', { nullable: true })
   })
 })
@@ -213,11 +164,6 @@ const VideoStartEventRef = builder.prismaObject('Event', {
   interfaces: [EventInterface],
   variant: 'VideoStartEvent',
   fields: (t) => ({
-    id: t.exposeID('id'),
-    journeyId: t.exposeString('journeyId', { nullable: true }),
-    createdAt: t.expose('createdAt', { type: 'DateTime' }),
-    label: t.exposeString('label', { nullable: true }),
-    value: t.exposeString('value', { nullable: true }),
     position: t.exposeFloat('position', { nullable: true }),
     source: t.expose('source', { type: VideoBlockSourceEnum, nullable: true })
   })
@@ -227,11 +173,6 @@ const VideoPlayEventRef = builder.prismaObject('Event', {
   interfaces: [EventInterface],
   variant: 'VideoPlayEvent',
   fields: (t) => ({
-    id: t.exposeID('id'),
-    journeyId: t.exposeString('journeyId', { nullable: true }),
-    createdAt: t.expose('createdAt', { type: 'DateTime' }),
-    label: t.exposeString('label', { nullable: true }),
-    value: t.exposeString('value', { nullable: true }),
     position: t.exposeFloat('position', { nullable: true }),
     source: t.expose('source', { type: VideoBlockSourceEnum, nullable: true })
   })
@@ -241,11 +182,6 @@ const VideoPauseEventRef = builder.prismaObject('Event', {
   interfaces: [EventInterface],
   variant: 'VideoPauseEvent',
   fields: (t) => ({
-    id: t.exposeID('id'),
-    journeyId: t.exposeString('journeyId', { nullable: true }),
-    createdAt: t.expose('createdAt', { type: 'DateTime' }),
-    label: t.exposeString('label', { nullable: true }),
-    value: t.exposeString('value', { nullable: true }),
     position: t.exposeFloat('position', { nullable: true }),
     source: t.expose('source', { type: VideoBlockSourceEnum, nullable: true })
   })
@@ -255,11 +191,6 @@ const VideoCompleteEventRef = builder.prismaObject('Event', {
   interfaces: [EventInterface],
   variant: 'VideoCompleteEvent',
   fields: (t) => ({
-    id: t.exposeID('id'),
-    journeyId: t.exposeString('journeyId', { nullable: true }),
-    createdAt: t.expose('createdAt', { type: 'DateTime' }),
-    label: t.exposeString('label', { nullable: true }),
-    value: t.exposeString('value', { nullable: true }),
     position: t.exposeFloat('position', { nullable: true }),
     source: t.expose('source', { type: VideoBlockSourceEnum, nullable: true })
   })
@@ -269,11 +200,6 @@ const VideoExpandEventRef = builder.prismaObject('Event', {
   interfaces: [EventInterface],
   variant: 'VideoExpandEvent',
   fields: (t) => ({
-    id: t.exposeID('id'),
-    journeyId: t.exposeString('journeyId', { nullable: true }),
-    createdAt: t.expose('createdAt', { type: 'DateTime' }),
-    label: t.exposeString('label', { nullable: true }),
-    value: t.exposeString('value', { nullable: true }),
     position: t.exposeFloat('position', { nullable: true }),
     source: t.expose('source', { type: VideoBlockSourceEnum, nullable: true })
   })
@@ -283,11 +209,6 @@ const VideoCollapseEventRef = builder.prismaObject('Event', {
   interfaces: [EventInterface],
   variant: 'VideoCollapseEvent',
   fields: (t) => ({
-    id: t.exposeID('id'),
-    journeyId: t.exposeString('journeyId', { nullable: true }),
-    createdAt: t.expose('createdAt', { type: 'DateTime' }),
-    label: t.exposeString('label', { nullable: true }),
-    value: t.exposeString('value', { nullable: true }),
     position: t.exposeFloat('position', { nullable: true }),
     source: t.expose('source', { type: VideoBlockSourceEnum, nullable: true })
   })
@@ -297,11 +218,6 @@ const VideoProgressEventRef = builder.prismaObject('Event', {
   interfaces: [EventInterface],
   variant: 'VideoProgressEvent',
   fields: (t) => ({
-    id: t.exposeID('id'),
-    journeyId: t.exposeString('journeyId', { nullable: true }),
-    createdAt: t.expose('createdAt', { type: 'DateTime' }),
-    label: t.exposeString('label', { nullable: true }),
-    value: t.exposeString('value', { nullable: true }),
     position: t.exposeFloat('position', { nullable: true }),
     source: t.expose('source', { type: VideoBlockSourceEnum, nullable: true }),
     progress: t.exposeInt('progress', { nullable: true })

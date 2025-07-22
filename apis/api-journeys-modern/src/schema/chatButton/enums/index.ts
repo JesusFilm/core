@@ -1,1 +1,0 @@
-export { MessagePlatform } from './MessagePlatform'

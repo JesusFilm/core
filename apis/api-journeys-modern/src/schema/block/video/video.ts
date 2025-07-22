@@ -8,11 +8,11 @@ import {
 } from '../../../lib/auth/ability'
 import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
+import { VideoBlockSource } from '../../enums'
 import { MediaVideo } from '../../mediaVideo/mediaVideo'
 import { Block } from '../block'
 
 import { VideoBlockObjectFit } from './enums/videoObjectFit'
-import { VideoBlockSource } from './enums/videoSource'
 
 // Input types for VideoBlock operations
 const VideoBlockCreateInput = builder.inputType('VideoBlockCreateInput', {

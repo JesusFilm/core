@@ -33,6 +33,12 @@ input BlocksFilter {
   typenames: [String!]
 }
 
+enum ButtonAction {
+  NavigateToBlockAction
+  LinkAction
+  EmailAction
+}
+
 enum ButtonAlignment {
   left
   center
@@ -89,6 +95,26 @@ input ButtonBlockUpdateInput {
   endIconId: ID
   submitEnabled: Boolean
   settings: ButtonBlockSettingsInput
+}
+
+type ButtonClickEvent implements Event {
+  id: ID
+  journeyId: String
+  createdAt: DateTime
+  label: String
+  value: String
+  action: ButtonAction
+  actionValue: String
+}
+
+input ButtonClickEventCreateInput {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  label: String
+  value: String
+  action: ButtonAction
+  actionValue: String
 }
 
 enum ButtonColor {
@@ -196,6 +222,22 @@ input ChatButtonUpdateInput {
   platform: MessagePlatform!
 }
 
+type ChatOpenEvent implements Event {
+  id: ID
+  journeyId: String
+  createdAt: DateTime
+  label: String
+  value: String
+  messagePlatform: MessagePlatform
+}
+
+input ChatOpenEventCreateInput {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  value: MessagePlatform
+}
+
 type CustomDomain {
   id: ID
   name: String
@@ -244,24 +286,12 @@ input EmailActionInput {
   email: String!
 }
 
-type Event {
+interface Event {
   id: ID
   journeyId: String
   createdAt: DateTime
   label: String
   value: String
-  action: String
-  actionValue: String
-  messagePlatform: String
-  email: String
-  blockId: String
-  position: Float
-  source: String
-  progress: Int
-  typename: String
-  visitorId: String
-  journey: Journey
-  visitor: Visitor
 }
 
 enum EventType {
@@ -670,28 +700,6 @@ input JourneyCreateInput {
   slug: String
 }
 
-type JourneyEvent {
-  id: ID
-  journeyId: ID
-  createdAt: DateTime
-  label: String
-  value: String
-  action: String
-  actionValue: String
-  messagePlatform: String
-  email: String
-  blockId: String
-  position: Float
-  source: String
-  progress: Int
-  typename: String
-  visitorId: String
-  journeySlug: String
-  visitorName: String
-  visitorEmail: String
-  visitorPhone: String
-}
-
 type JourneyEventsExportLog {
   id: ID!
   createdAt: DateTimeISO!
@@ -830,6 +838,22 @@ input JourneyUpdateInput {
   logoImageBlockId: ID
   socialNodeX: Int
   socialNodeY: Int
+}
+
+type JourneyViewEvent implements Event {
+  id: ID
+  journeyId: String
+  createdAt: DateTime
+  label: String
+  value: String
+  language: Json
+}
+
+input JourneyViewEventCreateInput {
+  id: ID
+  journeyId: ID!
+  label: String
+  value: ID
 }
 
 type JourneyVisitor {
@@ -1168,6 +1192,22 @@ type Mutation {
   journeyThemeCreate(input: JourneyThemeCreateInput!): JourneyTheme!
   journeyThemeUpdate(id: ID!, input: JourneyThemeUpdateInput!): JourneyTheme!
   journeyThemeDelete(id: ID!): JourneyTheme!
+  buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent
+  chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent
+  journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent
+  radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent
+  signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent
+  stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent
+  stepNextEventCreate(input: StepNextEventCreateInput!): StepNextEvent
+  stepPreviousEventCreate(input: StepPreviousEventCreateInput!): StepPreviousEvent
+  textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!): TextResponseSubmissionEvent
+  videoStartEventCreate(input: VideoStartEventCreateInput!): VideoStartEvent
+  videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent
+  videoPauseEventCreate(input: VideoPauseEventCreateInput!): VideoPauseEvent
+  videoCompleteEventCreate(input: VideoCompleteEventCreateInput!): VideoCompleteEvent
+  videoExpandEventCreate(input: VideoExpandEventCreateInput!): VideoExpandEvent
+  videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent
+  videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent
   updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput!): JourneysEmailPreference
   journeyNotificationUpdate(input: JourneyNotificationUpdateInput!): JourneyNotification!
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!): Boolean!
@@ -1181,27 +1221,24 @@ type Mutation {
   integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput!): Integration
   integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpacesUpdateInput!): Integration
   integrationDelete(id: ID!): Integration
+  visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor
+  visitorUpdateForCurrentUser(input: VisitorUpdateForCurrentUserInput!): Visitor
   qrCodeCreate(input: QrCodeCreateInput!): QrCode!
   qrCodeUpdate(id: ID!, input: QrCodeUpdateInput!): QrCode!
   qrCodeDelete(id: ID!): QrCode!
   teamCreate(input: TeamCreateInput!): Team
   teamUpdate(id: ID!, input: TeamUpdateInput!): Team
+  userTeamUpdate(id: ID!, input: UserTeamUpdateInput!): UserTeam
+  userTeamDelete(id: ID!): UserTeam
+  userTeamInviteCreate(teamId: ID!, input: UserTeamInviteCreateInput!): UserTeamInvite
+  userTeamInviteRemove(id: ID!): UserTeamInvite
+  userTeamInviteAcceptAll: [UserTeamInvite!]
   userJourneyRequest(journeyId: ID!): UserJourney
   userJourneyApprove(id: ID!): UserJourney
   userJourneyPromote(id: ID!): UserJourney
   userJourneyRemove(id: ID!): UserJourney
   userJourneyRemoveAll(id: ID!): [UserJourney!]
   userJourneyOpen(id: ID!): UserJourney
-  userTeamUpdate(id: ID!, input: UserTeamUpdateInput!): UserTeam
-  userTeamDelete(id: ID!): UserTeam
-  userTeamInviteCreate(teamId: ID!, input: UserTeamInviteCreateInput!): UserTeamInvite
-  userTeamInviteRemove(id: ID!): UserTeamInvite
-  userTeamInviteAcceptAll: [UserTeamInvite!]
-  userInviteCreate(journeyId: ID!, input: UserInviteCreateInput!): UserInvite
-  userInviteRemove(id: ID!, journeyId: ID!): UserInvite
-  userInviteAcceptAll: [UserInvite!]
-  visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor
-  visitorUpdateForCurrentUser(input: VisitorUpdateForCurrentUserInput!): Visitor
 }
 
 input MutationJourneyLanguageAiDetectInput {
@@ -1294,6 +1331,9 @@ type Query {
   customDomains(teamId: ID!): [CustomDomain!]
   hosts(teamId: ID!): [Host!]
   integrations(teamId: ID!): [Integration!]
+  journeyVisitorsConnection(filter: JourneyVisitorFilter!, sort: JourneyVisitorSort, before: String, after: String, first: Int, last: Int): QueryJourneyVisitorsConnection
+  journeyVisitorCount(filter: JourneyVisitorFilter!): Int
+  visitorsConnection(teamId: ID!, before: String, after: String, first: Int, last: Int): QueryVisitorsConnection
   qrCode(id: ID!): QrCode!
   qrCodes(where: QrCodesFilter!): [QrCode!]!
   teams: [Team!]
@@ -1301,11 +1341,6 @@ type Query {
   userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!]
   userTeam(id: ID!): UserTeam
   userTeamInvites(teamId: ID!): [UserTeamInvite!]
-  userInvites(journeyId: ID!): [UserInvite!]
-  getUserRole: UserRole
-  journeyVisitorsConnection(filter: JourneyVisitorFilter!, sort: JourneyVisitorSort, before: String, after: String, first: Int, last: Int): QueryJourneyVisitorsConnection
-  journeyVisitorCount(filter: JourneyVisitorFilter!): Int
-  visitorsConnection(teamId: ID!, before: String, after: String, first: Int, last: Int): QueryVisitorsConnection
 }
 
 type QueryJourneyEventsConnection {
@@ -1379,8 +1414,21 @@ input RadioQuestionBlockUpdateInput {
   parentBlockId: ID
 }
 
-enum Role {
-  publisher
+type RadioQuestionSubmissionEvent implements Event {
+  id: ID
+  journeyId: String
+  createdAt: DateTime
+  label: String
+  value: String
+}
+
+input RadioQuestionSubmissionEventCreateInput {
+  id: ID
+  blockId: ID!
+  radioOptionBlockId: ID!
+  stepId: ID
+  label: String
+  value: String
 }
 
 type ShortLink
@@ -1412,6 +1460,23 @@ input SignUpBlockUpdateInput {
   parentBlockId: ID
   submitIconId: ID
   submitLabel: String
+}
+
+type SignUpSubmissionEvent implements Event {
+  id: ID
+  journeyId: String
+  createdAt: DateTime
+  label: String
+  value: String
+  email: String
+}
+
+input SignUpSubmissionEventCreateInput {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  name: String!
+  email: String!
 }
 
 type SpacerBlock implements Block
@@ -1520,6 +1585,52 @@ input StepBlockUpdateInput {
   slug: String
 }
 
+type StepNextEvent implements Event {
+  id: ID
+  journeyId: String
+  createdAt: DateTime
+  label: String
+  value: String
+}
+
+input StepNextEventCreateInput {
+  id: ID
+  blockId: ID!
+  nextStepId: ID!
+  label: String
+  value: String
+}
+
+type StepPreviousEvent implements Event {
+  id: ID
+  journeyId: String
+  createdAt: DateTime
+  label: String
+  value: String
+}
+
+input StepPreviousEventCreateInput {
+  id: ID
+  blockId: ID!
+  previousStepId: ID!
+  label: String
+  value: String
+}
+
+type StepViewEvent implements Event {
+  id: ID
+  journeyId: String
+  createdAt: DateTime
+  label: String
+  value: String
+}
+
+input StepViewEventCreateInput {
+  id: ID
+  blockId: ID!
+  value: String
+}
+
 type Subscription {
   journeyAiTranslateCreateSubscription(input: JourneyAiTranslateInput!): JourneyAiTranslateProgress!
 }
@@ -1584,6 +1695,23 @@ input TextResponseBlockUpdateInput {
   routeId: String
   type: TextResponseType
   integrationId: String
+}
+
+type TextResponseSubmissionEvent implements Event {
+  id: ID
+  journeyId: String
+  createdAt: DateTime
+  label: String
+  value: String
+  blockId: String
+}
+
+input TextResponseSubmissionEventCreateInput {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  label: String
+  value: String!
 }
 
 enum TextResponseType {
@@ -1672,21 +1800,6 @@ enum TypographyVariant {
   overline
 }
 
-type UserInvite {
-  id: ID
-  journeyId: ID
-  senderId: ID
-  email: String
-  acceptedAt: DateTime
-  removedAt: DateTime
-  updatedAt: DateTime
-  journey: Journey
-}
-
-input UserInviteCreateInput {
-  email: String!
-}
-
 type UserJourney {
   id: ID
   userId: ID
@@ -1700,12 +1813,6 @@ enum UserJourneyRole {
   inviteRequested
   editor
   owner
-}
-
-type UserRole {
-  id: ID
-  userId: ID
-  roles: [Role!]
 }
 
 type UserTeam {
@@ -1880,6 +1987,141 @@ input VideoBlockUpdateInput {
   muted: Boolean
   autoplay: Boolean
   fullsize: Boolean
+}
+
+type VideoCollapseEvent implements Event {
+  id: ID
+  journeyId: String
+  createdAt: DateTime
+  label: String
+  value: String
+  position: Float
+  source: VideoBlockSource
+}
+
+input VideoCollapseEventCreateInput {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  position: Float
+  label: String
+  value: VideoBlockSource
+}
+
+type VideoCompleteEvent implements Event {
+  id: ID
+  journeyId: String
+  createdAt: DateTime
+  label: String
+  value: String
+  position: Float
+  source: VideoBlockSource
+}
+
+input VideoCompleteEventCreateInput {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  position: Float
+  label: String
+  value: VideoBlockSource
+}
+
+type VideoExpandEvent implements Event {
+  id: ID
+  journeyId: String
+  createdAt: DateTime
+  label: String
+  value: String
+  position: Float
+  source: VideoBlockSource
+}
+
+input VideoExpandEventCreateInput {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  position: Float
+  label: String
+  value: VideoBlockSource
+}
+
+type VideoPauseEvent implements Event {
+  id: ID
+  journeyId: String
+  createdAt: DateTime
+  label: String
+  value: String
+  position: Float
+  source: VideoBlockSource
+}
+
+input VideoPauseEventCreateInput {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  position: Float
+  label: String
+  value: VideoBlockSource
+}
+
+type VideoPlayEvent implements Event {
+  id: ID
+  journeyId: String
+  createdAt: DateTime
+  label: String
+  value: String
+  position: Float
+  source: VideoBlockSource
+}
+
+input VideoPlayEventCreateInput {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  position: Float
+  label: String
+  value: VideoBlockSource
+}
+
+type VideoProgressEvent implements Event {
+  id: ID
+  journeyId: String
+  createdAt: DateTime
+  label: String
+  value: String
+  position: Float
+  source: VideoBlockSource
+  progress: Int
+}
+
+input VideoProgressEventCreateInput {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  position: Float
+  progress: Int!
+  label: String
+  value: VideoBlockSource
+}
+
+type VideoStartEvent implements Event {
+  id: ID
+  journeyId: String
+  createdAt: DateTime
+  label: String
+  value: String
+  position: Float
+  source: VideoBlockSource
+}
+
+input VideoStartEventCreateInput {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  position: Float
+  label: String
+  value: VideoBlockSource
 }
 
 type VideoTriggerBlock implements Block
