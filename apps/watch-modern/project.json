@@ -9,15 +9,12 @@
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["cp -r libs/locales apps/watch/public", "nx _build watch"],
+        "commands": ["nx _build watch-modern"],
         "parallel": false
       },
       "configurations": {
         "production": {
-          "commands": [
-            "cp -r libs/locales apps/watch/public",
-            "CI=true nx _build watch --prod"
-          ]
+          "commands": ["CI=true nx _build watch-modern --prod"]
         }
       }
     },
@@ -25,7 +22,7 @@
       "executor": "@nx/next:build",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/apps/watch"
+        "outputPath": "dist/apps/watch-modern"
       },
       "configurations": {
         "production": {}
@@ -152,22 +149,6 @@
         "ci": {
           "quiet": true
         }
-      }
-    },
-    "codegen": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          {
-            "command": "rm -rf node_modules/apollo-language-server/node_modules/graphql"
-          },
-          {
-            "command": "rm -rf apps/watch-modern/__generated__"
-          },
-          {
-            "command": "npx apollo client:codegen --config apps/watch-modern/apollo.config.js --target typescript --outputFlat apps/watch-modern/__generated__"
-          }
-        ]
       }
     },
     "fetch-secrets": {
