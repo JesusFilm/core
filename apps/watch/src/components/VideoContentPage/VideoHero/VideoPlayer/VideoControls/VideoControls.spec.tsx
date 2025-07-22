@@ -127,7 +127,7 @@ describe('VideoControls', () => {
     expect(screen.getByText('player.play: false')).toBeInTheDocument()
   })
 
-  it('hides controls when in preview mode (play && mute)', () => {
+  it('hides controls when play and mute is true', () => {
     render(
       <MockedProvider>
         <WatchProvider
