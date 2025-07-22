@@ -5,6 +5,8 @@
     "module": "es2022",
     "types": [
       "node",
+      "jest",
+      "@jest/globals",
       "@cloudflare/workers-types/experimental",
       "@cloudflare/vitest-pool-workers"
     ],
@@ -12,6 +14,8 @@
     "target": "es2021",
     "lib": ["es2021"],
     "moduleResolution": "node",
+      "jest",
+      "@jest/globals",
     "resolveJsonModule": true,
     "allowJs": true,
     "checkJs": false,
