@@ -5,5 +5,13 @@
   "All rights reserved.": "All rights reserved.",
   "Welcome to Watch Modern": "Welcome to Watch Modern",
   "Your modern streaming platform": "Your modern streaming platform",
-  "close": "close"
+  "close": "close",
+  "Language": "Language",
+  "Server Component Example": "Server Component Example",
+  "This component is rendered on the server and uses getTranslations for internationalization.": "This component is rendered on the server and uses getTranslations for internationalization.",
+  "Benefits of server components:": "Benefits of server components:",
+  "Faster initial page loads": "Faster initial page loads",
+  "Better SEO": "Better SEO",
+  "Reduced bundle size": "Reduced bundle size",
+  "Better caching": "Better caching"
 }

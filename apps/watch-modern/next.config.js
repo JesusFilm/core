@@ -1,9 +1,12 @@
 //@ts-check
 
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
+import withBundleAnalyzer from '@next/bundle-analyzer'
+import { composePlugins, withNx } from '@nx/next'
+import createNextIntlPlugin from 'next-intl/plugin'
+
+const withBundleAnalyzerPlugin = withBundleAnalyzer({
   enabled: process.env.ANALYZE === 'true'
 })
-const { composePlugins, withNx } = require('@nx/next')
 
 /**
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
@@ -75,4 +78,10 @@ const nextConfig = {
   }
 }
 
-module.exports = composePlugins(withBundleAnalyzer, withNx)(nextConfig)
+const withNextIntl = createNextIntlPlugin()
+
+export default composePlugins(
+  withBundleAnalyzerPlugin,
+  withNx,
+  withNextIntl
+)(nextConfig)

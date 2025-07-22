@@ -1,15 +1,12 @@
-'use client'
-
+import { getTranslations } from 'next-intl/server'
 import { ReactElement } from 'react'
-// eslint-disable-next-line no-restricted-imports
-import { useTranslation } from 'react-i18next'
 
 /**
  * New page component
  * @returns {ReactElement} The rendered new page
  */
-export default function NewPage(): ReactElement {
-  const { t } = useTranslation('apps-watch-modern')
+export default async function NewPage(): Promise<ReactElement> {
+  const t = await getTranslations('apps-watch-modern')
   return (
     <main className="flex-1 py-8">
       <div className="rounded-lg border bg-card p-6 shadow-sm">
