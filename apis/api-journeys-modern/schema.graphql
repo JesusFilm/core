@@ -108,9 +108,9 @@ type ButtonClickEvent implements Event {
 }
 
 input ButtonClickEventCreateInput {
-  id: ID
-  blockId: ID!
-  stepId: ID
+  id: String
+  blockId: String!
+  stepId: String
   label: String
   value: String
   action: ButtonAction
@@ -232,10 +232,12 @@ type ChatOpenEvent implements Event {
 }
 
 input ChatOpenEventCreateInput {
-  id: ID
-  blockId: ID!
-  stepId: ID
-  value: MessagePlatform
+  id: String
+  blockId: String!
+  stepId: String
+  label: String
+  value: String
+  messagePlatform: MessagePlatform
 }
 
 type CustomDomain {
@@ -850,10 +852,10 @@ type JourneyViewEvent implements Event {
 }
 
 input JourneyViewEventCreateInput {
-  id: ID
-  journeyId: ID!
+  id: String
+  journeyId: String!
   label: String
-  value: ID
+  value: String
 }
 
 type JourneyVisitor {
@@ -1195,11 +1197,11 @@ type Mutation {
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent
-  radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent
-  signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent
   stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent
   stepNextEventCreate(input: StepNextEventCreateInput!): StepNextEvent
   stepPreviousEventCreate(input: StepPreviousEventCreateInput!): StepPreviousEvent
+  radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent
+  signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent
   textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!): TextResponseSubmissionEvent
   videoStartEventCreate(input: VideoStartEventCreateInput!): VideoStartEvent
   videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent
@@ -1423,10 +1425,10 @@ type RadioQuestionSubmissionEvent implements Event {
 }
 
 input RadioQuestionSubmissionEventCreateInput {
-  id: ID
-  blockId: ID!
-  radioOptionBlockId: ID!
-  stepId: ID
+  id: String
+  blockId: String!
+  radioOptionBlockId: String!
+  stepId: String
   label: String
   value: String
 }
@@ -1472,9 +1474,9 @@ type SignUpSubmissionEvent implements Event {
 }
 
 input SignUpSubmissionEventCreateInput {
-  id: ID
-  blockId: ID!
-  stepId: ID
+  id: String
+  blockId: String!
+  stepId: String
   name: String!
   email: String!
 }
@@ -1594,9 +1596,9 @@ type StepNextEvent implements Event {
 }
 
 input StepNextEventCreateInput {
-  id: ID
-  blockId: ID!
-  nextStepId: ID!
+  id: String
+  blockId: String!
+  nextStepId: String!
   label: String
   value: String
 }
@@ -1610,9 +1612,9 @@ type StepPreviousEvent implements Event {
 }
 
 input StepPreviousEventCreateInput {
-  id: ID
-  blockId: ID!
-  previousStepId: ID!
+  id: String
+  blockId: String!
+  previousStepId: String!
   label: String
   value: String
 }
@@ -1626,8 +1628,8 @@ type StepViewEvent implements Event {
 }
 
 input StepViewEventCreateInput {
-  id: ID
-  blockId: ID!
+  id: String
+  blockId: String!
   value: String
 }
 
@@ -1707,9 +1709,9 @@ type TextResponseSubmissionEvent implements Event {
 }
 
 input TextResponseSubmissionEventCreateInput {
-  id: ID
-  blockId: ID!
-  stepId: ID
+  id: String
+  blockId: String!
+  stepId: String
   label: String
   value: String!
 }
@@ -2000,9 +2002,9 @@ type VideoCollapseEvent implements Event {
 }
 
 input VideoCollapseEventCreateInput {
-  id: ID
-  blockId: ID!
-  stepId: ID
+  id: String
+  blockId: String!
+  stepId: String
   position: Float
   label: String
   value: VideoBlockSource
@@ -2019,9 +2021,9 @@ type VideoCompleteEvent implements Event {
 }
 
 input VideoCompleteEventCreateInput {
-  id: ID
-  blockId: ID!
-  stepId: ID
+  id: String
+  blockId: String!
+  stepId: String
   position: Float
   label: String
   value: VideoBlockSource
@@ -2038,9 +2040,9 @@ type VideoExpandEvent implements Event {
 }
 
 input VideoExpandEventCreateInput {
-  id: ID
-  blockId: ID!
-  stepId: ID
+  id: String
+  blockId: String!
+  stepId: String
   position: Float
   label: String
   value: VideoBlockSource
@@ -2057,9 +2059,9 @@ type VideoPauseEvent implements Event {
 }
 
 input VideoPauseEventCreateInput {
-  id: ID
-  blockId: ID!
-  stepId: ID
+  id: String
+  blockId: String!
+  stepId: String
   position: Float
   label: String
   value: VideoBlockSource
@@ -2076,9 +2078,9 @@ type VideoPlayEvent implements Event {
 }
 
 input VideoPlayEventCreateInput {
-  id: ID
-  blockId: ID!
-  stepId: ID
+  id: String
+  blockId: String!
+  stepId: String
   position: Float
   label: String
   value: VideoBlockSource
@@ -2096,13 +2098,13 @@ type VideoProgressEvent implements Event {
 }
 
 input VideoProgressEventCreateInput {
-  id: ID
-  blockId: ID!
-  stepId: ID
+  id: String
+  blockId: String!
+  stepId: String
   position: Float
-  progress: Int!
   label: String
   value: VideoBlockSource
+  progress: Int
 }
 
 type VideoStartEvent implements Event {
@@ -2116,9 +2118,9 @@ type VideoStartEvent implements Event {
 }
 
 input VideoStartEventCreateInput {
-  id: ID
-  blockId: ID!
-  stepId: ID
+  id: String
+  blockId: String!
+  stepId: String
   position: Float
   label: String
   value: VideoBlockSource

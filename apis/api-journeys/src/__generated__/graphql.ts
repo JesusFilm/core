@@ -193,10 +193,10 @@ export type ButtonClickEvent = Event & {
 export type ButtonClickEventCreateInput = {
   action?: InputMaybe<ButtonAction>;
   actionValue?: InputMaybe<Scalars['String']['input']>;
-  blockId: Scalars['ID']['input'];
-  id?: InputMaybe<Scalars['ID']['input']>;
+  blockId: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
   label?: InputMaybe<Scalars['String']['input']>;
-  stepId?: InputMaybe<Scalars['ID']['input']>;
+  stepId?: InputMaybe<Scalars['String']['input']>;
   value?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -304,10 +304,12 @@ export type ChatOpenEvent = Event & {
 };
 
 export type ChatOpenEventCreateInput = {
-  blockId: Scalars['ID']['input'];
-  id?: InputMaybe<Scalars['ID']['input']>;
-  stepId?: InputMaybe<Scalars['ID']['input']>;
-  value?: InputMaybe<MessagePlatform>;
+  blockId: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
+  label?: InputMaybe<Scalars['String']['input']>;
+  messagePlatform?: InputMaybe<MessagePlatform>;
+  stepId?: InputMaybe<Scalars['String']['input']>;
+  value?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CloudflareImage = {
@@ -1027,10 +1029,10 @@ export type JourneyViewEvent = Event & {
 };
 
 export type JourneyViewEventCreateInput = {
-  id?: InputMaybe<Scalars['ID']['input']>;
-  journeyId: Scalars['ID']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
+  journeyId: Scalars['String']['input'];
   label?: InputMaybe<Scalars['String']['input']>;
-  value?: InputMaybe<Scalars['ID']['input']>;
+  value?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type JourneyVisitor = {
@@ -3194,11 +3196,11 @@ export type RadioQuestionSubmissionEvent = Event & {
 };
 
 export type RadioQuestionSubmissionEventCreateInput = {
-  blockId: Scalars['ID']['input'];
-  id?: InputMaybe<Scalars['ID']['input']>;
+  blockId: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
   label?: InputMaybe<Scalars['String']['input']>;
-  radioOptionBlockId: Scalars['ID']['input'];
-  stepId?: InputMaybe<Scalars['ID']['input']>;
+  radioOptionBlockId: Scalars['String']['input'];
+  stepId?: InputMaybe<Scalars['String']['input']>;
   value?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -3312,11 +3314,11 @@ export type SignUpSubmissionEvent = Event & {
 };
 
 export type SignUpSubmissionEventCreateInput = {
-  blockId: Scalars['ID']['input'];
+  blockId: Scalars['String']['input'];
   email: Scalars['String']['input'];
-  id?: InputMaybe<Scalars['ID']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
-  stepId?: InputMaybe<Scalars['ID']['input']>;
+  stepId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Site = {
@@ -3445,10 +3447,10 @@ export type StepNextEvent = Event & {
 };
 
 export type StepNextEventCreateInput = {
-  blockId: Scalars['ID']['input'];
-  id?: InputMaybe<Scalars['ID']['input']>;
+  blockId: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
   label?: InputMaybe<Scalars['String']['input']>;
-  nextStepId: Scalars['ID']['input'];
+  nextStepId: Scalars['String']['input'];
   value?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -3462,10 +3464,10 @@ export type StepPreviousEvent = Event & {
 };
 
 export type StepPreviousEventCreateInput = {
-  blockId: Scalars['ID']['input'];
-  id?: InputMaybe<Scalars['ID']['input']>;
+  blockId: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
   label?: InputMaybe<Scalars['String']['input']>;
-  previousStepId: Scalars['ID']['input'];
+  previousStepId: Scalars['String']['input'];
   value?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -3479,8 +3481,8 @@ export type StepViewEvent = Event & {
 };
 
 export type StepViewEventCreateInput = {
-  blockId: Scalars['ID']['input'];
-  id?: InputMaybe<Scalars['ID']['input']>;
+  blockId: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
   value?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -3605,10 +3607,10 @@ export type TextResponseSubmissionEvent = Event & {
 };
 
 export type TextResponseSubmissionEventCreateInput = {
-  blockId: Scalars['ID']['input'];
-  id?: InputMaybe<Scalars['ID']['input']>;
+  blockId: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
   label?: InputMaybe<Scalars['String']['input']>;
-  stepId?: InputMaybe<Scalars['ID']['input']>;
+  stepId?: InputMaybe<Scalars['String']['input']>;
   value: Scalars['String']['input'];
 };
 
@@ -4119,11 +4121,11 @@ export type VideoCollapseEvent = Event & {
 };
 
 export type VideoCollapseEventCreateInput = {
-  blockId: Scalars['ID']['input'];
-  id?: InputMaybe<Scalars['ID']['input']>;
+  blockId: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
   label?: InputMaybe<Scalars['String']['input']>;
   position?: InputMaybe<Scalars['Float']['input']>;
-  stepId?: InputMaybe<Scalars['ID']['input']>;
+  stepId?: InputMaybe<Scalars['String']['input']>;
   value?: InputMaybe<VideoBlockSource>;
 };
 
@@ -4139,11 +4141,11 @@ export type VideoCompleteEvent = Event & {
 };
 
 export type VideoCompleteEventCreateInput = {
-  blockId: Scalars['ID']['input'];
-  id?: InputMaybe<Scalars['ID']['input']>;
+  blockId: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
   label?: InputMaybe<Scalars['String']['input']>;
   position?: InputMaybe<Scalars['Float']['input']>;
-  stepId?: InputMaybe<Scalars['ID']['input']>;
+  stepId?: InputMaybe<Scalars['String']['input']>;
   value?: InputMaybe<VideoBlockSource>;
 };
 
@@ -4197,11 +4199,11 @@ export type VideoExpandEvent = Event & {
 };
 
 export type VideoExpandEventCreateInput = {
-  blockId: Scalars['ID']['input'];
-  id?: InputMaybe<Scalars['ID']['input']>;
+  blockId: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
   label?: InputMaybe<Scalars['String']['input']>;
   position?: InputMaybe<Scalars['Float']['input']>;
-  stepId?: InputMaybe<Scalars['ID']['input']>;
+  stepId?: InputMaybe<Scalars['String']['input']>;
   value?: InputMaybe<VideoBlockSource>;
 };
 
@@ -4243,11 +4245,11 @@ export type VideoPauseEvent = Event & {
 };
 
 export type VideoPauseEventCreateInput = {
-  blockId: Scalars['ID']['input'];
-  id?: InputMaybe<Scalars['ID']['input']>;
+  blockId: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
   label?: InputMaybe<Scalars['String']['input']>;
   position?: InputMaybe<Scalars['Float']['input']>;
-  stepId?: InputMaybe<Scalars['ID']['input']>;
+  stepId?: InputMaybe<Scalars['String']['input']>;
   value?: InputMaybe<VideoBlockSource>;
 };
 
@@ -4263,11 +4265,11 @@ export type VideoPlayEvent = Event & {
 };
 
 export type VideoPlayEventCreateInput = {
-  blockId: Scalars['ID']['input'];
-  id?: InputMaybe<Scalars['ID']['input']>;
+  blockId: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
   label?: InputMaybe<Scalars['String']['input']>;
   position?: InputMaybe<Scalars['Float']['input']>;
-  stepId?: InputMaybe<Scalars['ID']['input']>;
+  stepId?: InputMaybe<Scalars['String']['input']>;
   value?: InputMaybe<VideoBlockSource>;
 };
 
@@ -4284,12 +4286,12 @@ export type VideoProgressEvent = Event & {
 };
 
 export type VideoProgressEventCreateInput = {
-  blockId: Scalars['ID']['input'];
-  id?: InputMaybe<Scalars['ID']['input']>;
+  blockId: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
   label?: InputMaybe<Scalars['String']['input']>;
   position?: InputMaybe<Scalars['Float']['input']>;
-  progress: Scalars['Int']['input'];
-  stepId?: InputMaybe<Scalars['ID']['input']>;
+  progress?: InputMaybe<Scalars['Int']['input']>;
+  stepId?: InputMaybe<Scalars['String']['input']>;
   value?: InputMaybe<VideoBlockSource>;
 };
 
@@ -4320,11 +4322,11 @@ export type VideoStartEvent = Event & {
 };
 
 export type VideoStartEventCreateInput = {
-  blockId: Scalars['ID']['input'];
-  id?: InputMaybe<Scalars['ID']['input']>;
+  blockId: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
   label?: InputMaybe<Scalars['String']['input']>;
   position?: InputMaybe<Scalars['Float']['input']>;
-  stepId?: InputMaybe<Scalars['ID']['input']>;
+  stepId?: InputMaybe<Scalars['String']['input']>;
   value?: InputMaybe<VideoBlockSource>;
 };
 

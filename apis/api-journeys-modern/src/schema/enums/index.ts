@@ -1,2 +1,2 @@
-export { MessagePlatform } from './MessagePlatform'
-export { VideoBlockSource } from './VideoBlockSource'
+export { MessagePlatform } from './messagePlatform'
+export { VideoBlockSource } from './videoBlockSource'

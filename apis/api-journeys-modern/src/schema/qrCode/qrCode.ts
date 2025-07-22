@@ -163,6 +163,12 @@ builder.mutationField('qrCodeCreate', (t) =>
           service: 'apiJourneys'
         })
 
+        if (!shortLinkCreate.data?.id) {
+          throw new GraphQLError('Failed to create short link', {
+            extensions: { code: 'INTERNAL_SERVER_ERROR' }
+          })
+        }
+
         const qrCode = (await tx.qrCode.create({
           data: {
             teamId: input.teamId,

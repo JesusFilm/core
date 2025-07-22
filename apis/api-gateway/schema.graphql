@@ -328,11 +328,11 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   buttonClickEventCreate(input: ButtonClickEventCreateInput!) : ButtonClickEvent @join__field(graph: API_JOURNEYS_MODERN) 
   chatOpenEventCreate(input: ChatOpenEventCreateInput!) : ChatOpenEvent @join__field(graph: API_JOURNEYS_MODERN) 
   journeyViewEventCreate(input: JourneyViewEventCreateInput!) : JourneyViewEvent @join__field(graph: API_JOURNEYS_MODERN) 
-  radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!) : RadioQuestionSubmissionEvent @join__field(graph: API_JOURNEYS_MODERN) 
-  signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!) : SignUpSubmissionEvent @join__field(graph: API_JOURNEYS_MODERN) 
   stepViewEventCreate(input: StepViewEventCreateInput!) : StepViewEvent @join__field(graph: API_JOURNEYS_MODERN) 
   stepNextEventCreate(input: StepNextEventCreateInput!) : StepNextEvent @join__field(graph: API_JOURNEYS_MODERN) 
   stepPreviousEventCreate(input: StepPreviousEventCreateInput!) : StepPreviousEvent @join__field(graph: API_JOURNEYS_MODERN) 
+  radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!) : RadioQuestionSubmissionEvent @join__field(graph: API_JOURNEYS_MODERN) 
+  signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!) : SignUpSubmissionEvent @join__field(graph: API_JOURNEYS_MODERN) 
   textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!) : TextResponseSubmissionEvent @join__field(graph: API_JOURNEYS_MODERN) 
   videoStartEventCreate(input: VideoStartEventCreateInput!) : VideoStartEvent @join__field(graph: API_JOURNEYS_MODERN) 
   videoPlayEventCreate(input: VideoPlayEventCreateInput!) : VideoPlayEvent @join__field(graph: API_JOURNEYS_MODERN) 
@@ -2536,9 +2536,9 @@ input ButtonBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
 }
 
 input ButtonClickEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  blockId: ID!
-  stepId: ID
+  id: String
+  blockId: String!
+  stepId: String
   label: String
   value: String
   action: ButtonAction
@@ -2583,10 +2583,12 @@ input ChatButtonUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
 }
 
 input ChatOpenEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  blockId: ID!
-  stepId: ID
-  value: MessagePlatform
+  id: String
+  blockId: String!
+  stepId: String
+  label: String
+  value: String
+  messagePlatform: MessagePlatform
 }
 
 input CustomDomainCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -2838,10 +2840,10 @@ input JourneyUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
 }
 
 input JourneyViewEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  journeyId: ID!
+  id: String
+  journeyId: String!
   label: String
-  value: ID
+  value: String
 }
 
 input JourneyVisitorFilter @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -2945,10 +2947,10 @@ input RadioQuestionBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
 }
 
 input RadioQuestionSubmissionEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  blockId: ID!
-  radioOptionBlockId: ID!
-  stepId: ID
+  id: String
+  blockId: String!
+  radioOptionBlockId: String!
+  stepId: String
   label: String
   value: String
 }
@@ -2967,9 +2969,9 @@ input SignUpBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
 }
 
 input SignUpSubmissionEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  blockId: ID!
-  stepId: ID
+  id: String
+  blockId: String!
+  stepId: String
   name: String!
   email: String!
 }
@@ -3024,24 +3026,24 @@ input StepBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
 }
 
 input StepNextEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  blockId: ID!
-  nextStepId: ID!
+  id: String
+  blockId: String!
+  nextStepId: String!
   label: String
   value: String
 }
 
 input StepPreviousEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  blockId: ID!
-  previousStepId: ID!
+  id: String
+  blockId: String!
+  previousStepId: String!
   label: String
   value: String
 }
 
 input StepViewEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  blockId: ID!
+  id: String
+  blockId: String!
   value: String
 }
 
@@ -3075,9 +3077,9 @@ input TextResponseBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
 }
 
 input TextResponseSubmissionEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  blockId: ID!
-  stepId: ID
+  id: String
+  blockId: String!
+  stepId: String
   label: String
   value: String!
 }
@@ -3156,64 +3158,64 @@ input VideoBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
 }
 
 input VideoCollapseEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  blockId: ID!
-  stepId: ID
+  id: String
+  blockId: String!
+  stepId: String
   position: Float
   label: String
   value: VideoBlockSource
 }
 
 input VideoCompleteEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  blockId: ID!
-  stepId: ID
+  id: String
+  blockId: String!
+  stepId: String
   position: Float
   label: String
   value: VideoBlockSource
 }
 
 input VideoExpandEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  blockId: ID!
-  stepId: ID
+  id: String
+  blockId: String!
+  stepId: String
   position: Float
   label: String
   value: VideoBlockSource
 }
 
 input VideoPauseEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  blockId: ID!
-  stepId: ID
+  id: String
+  blockId: String!
+  stepId: String
   position: Float
   label: String
   value: VideoBlockSource
 }
 
 input VideoPlayEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  blockId: ID!
-  stepId: ID
+  id: String
+  blockId: String!
+  stepId: String
   position: Float
   label: String
   value: VideoBlockSource
 }
 
 input VideoProgressEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  blockId: ID!
-  stepId: ID
+  id: String
+  blockId: String!
+  stepId: String
   position: Float
-  progress: Int!
   label: String
   value: VideoBlockSource
+  progress: Int
 }
 
 input VideoStartEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  blockId: ID!
-  stepId: ID
+  id: String
+  blockId: String!
+  stepId: String
   position: Float
   label: String
   value: VideoBlockSource
