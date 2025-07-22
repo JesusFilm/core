@@ -285,6 +285,7 @@
     "@types/react-beautiful-dnd": "^13.1.7",
     "@types/react-dom": "18.3.6",
     "@types/react-window": "^1.8.8",
+    "@types/rtl-detect": "^1.0.3",
     "@types/stylis": "^4.2.0",
     "@types/ua-parser-js": "^0.7.37",
     "@types/uuid": "^10.0.0",

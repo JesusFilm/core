@@ -1,5 +1,5 @@
 import { getTranslations } from 'next-intl/server'
-import { ReactElement } from 'react'
+import type { ReactElement } from 'react'
 
 export default async function RootIndexPage(): Promise<ReactElement> {
   const t = await getTranslations('RootIndexPage')
