@@ -22,22 +22,40 @@ export function HeroVideo({ isFullscreen }: HeroVideoProps): ReactElement {
     state: { mute }
   } = usePlayer()
   const [playerReady, setPlayerReady] = useState(false)
+  // Track if video was playing before scroll pause
+  const [wasPlayingBeforeScrollPause, setWasPlayingBeforeScrollPause] =
+    useState(false)
+  // Ref: was pause triggered by scroll
+  const pauseTriggeredByScrollRef = useRef(false)
 
   const title = video.title?.[0]?.value ?? ''
 
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<Player | null>(null)
 
+  /**
+   * Pause/resume video on scroll:
+   * - Pause if scrolled > 100px and video was playing.
+   * - Resume if scrolled to top and video was playing before scroll.
+   */
   const pauseVideoOnScrollAway = useCallback((): void => {
     const scrollY = window.scrollY
     if (playerRef.current) {
-      if (scrollY > 100) {
-        playerRef.current.pause()
-      } else if (scrollY === 0) {
-        void playerRef.current.play()
+      if (scrollY > 600) {
+        // Pause only if playing
+        if (!playerRef.current.paused()) {
+          pauseTriggeredByScrollRef.current = true
+          setWasPlayingBeforeScrollPause(true)
+          playerRef.current.pause()
+        }
+      } else if (scrollY < 60) {
+        // Resume if was playing before scroll
+        if (wasPlayingBeforeScrollPause) {
+          void playerRef.current.play()
+        }
       }
     }
-  }, [])
+  }, [wasPlayingBeforeScrollPause])
 
   useEffect(() => {
     window.addEventListener('scroll', pauseVideoOnScrollAway)
@@ -88,12 +106,32 @@ export function HeroVideo({ isFullscreen }: HeroVideoProps): ReactElement {
       type: 'application/x-mpegURL'
     })
 
+    /**
+     * Sync with manual play/pause:
+     * - Play: set true
+     * - Pause: set false unless triggered by scroll
+     */
+    const handlePlay = () => {
+      setWasPlayingBeforeScrollPause(true)
+    }
+    const handlePause = () => {
+      if (pauseTriggeredByScrollRef.current) {
+        pauseTriggeredByScrollRef.current = false
+      } else {
+        setWasPlayingBeforeScrollPause(false)
+      }
+    }
+    player.on('play', handlePlay)
+    player.on('pause', handlePause)
+
     player.ready(() => {
       setPlayerReady(true)
     })
 
     return () => {
       if (playerRef.current) {
+        playerRef.current.off('play', handlePlay)
+        playerRef.current.off('pause', handlePause)
         playerRef.current.dispose()
         playerRef.current = null
       }

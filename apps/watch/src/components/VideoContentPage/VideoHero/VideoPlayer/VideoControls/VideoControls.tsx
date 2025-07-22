@@ -102,8 +102,10 @@ export function VideoControls({
   } = usePlayer()
 
   const { id, title, variant, images, imageAlt } = useVideo()
-  // Modified visibility logic: keep visible when playing muted (preview mode)
-  const visible = !play || active || loading || (play && mute)
+  // Updated visibility logic: show when NOT loading AND NOT mute AND NOT playing, OR when loaded AND playing AND active AND NOT mute
+  const visible = mute
+    ? false
+    : (!loading && !play) || (!loading && play && active)
 
   // Hide controls when in preview mode (play && mute)
   const showControls = !(play && mute)
@@ -497,7 +499,6 @@ export function VideoControls({
         right: 0,
         bottom: 0,
         left: 0,
-        cursor: visible ? undefined : 'none',
         zIndex: 1,
         display: 'flex',
         flexDirection: 'column',
@@ -583,12 +584,13 @@ export function VideoControls({
         </>
       )}
       <Fade
+        appear={true}
         in={visible}
         style={{
           transitionDelay: visible ? undefined : '2s',
           transitionDuration: '225ms'
         }}
-        timeout={{ exit: 2225 }}
+        timeout={{ enter: 2225, exit: 2225 }}
       >
         <Box>
           <Box

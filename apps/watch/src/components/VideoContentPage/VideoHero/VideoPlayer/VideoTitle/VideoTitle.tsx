@@ -23,8 +23,6 @@ export function VideoTitle({
   const {
     state: { play, active, loading, mute, volume }
   } = usePlayer()
-  // Only show title in preview mode (play && mute)
-  const visible = play && mute
 
   const show =
     (mute || volume === 0) && variant === 'unmute'
@@ -35,40 +33,36 @@ export function VideoTitle({
 
   return (
     <div
+      data-testid="video-title"
       className={`
-        pb-4 
+        absolute
+        bottom-30
         gap-4 
         w-full z-[2] flex flex-col 
-        transition-opacity duration-[225ms]
-        ${visible ? 'opacity-100' : 'opacity-0'}
-        ${visible ? 'delay-0' : 'delay-[2000ms]'}
+        transition-opacity duration-[200ms] 
+        ${show ? 'opacity-100' : 'opacity-0'}
       `}
       style={{ transitionTimingFunction: 'ease-out' }}
     >
-      {visible && (
-        <h2
-          className="
-            font-bold text-white opacity-90 mix-blend-screen 
-            flex-grow mb-1 text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-sans
-          "
-        >
-          {videoTitle}
-        </h2>
-      )}
-      <div
-        className={`overflow-hidden transition-all duration-500 ease-in-out ${
-          show ? 'max-h-30' : 'max-h-0'
-        }`}
+      <h2
+        className={`
+          font-bold text-white opacity-90 mix-blend-screen 
+          flex-grow mb-1 text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-sans
+        `}
       >
+        {videoTitle}
+      </h2>
+      <div className={`overflow-hidden `}>
         <button
           id="play-button-lg"
           onClick={(e) => onClick?.(e)}
-          className="z-2 flex min-w-[220px] items-center justify-center gap-2  
-        bg-[#CB333B] p-4 text-2xl font-medium leading-loose 
-        tracking-wide text-white shadow-md transition-colors
-        hover:bg-[#A4343A] font-sans  rounded-[8px] cursor-pointer
-        "
-          style={{ display: showButton ? 'flex' : 'none' }}
+          className={`
+            z-2 min-w-[220px] items-center justify-center gap-2  
+            bg-[#CB333B] p-4 text-2xl font-medium leading-loose 
+            tracking-wide text-white shadow-md transition-colors
+            hover:bg-[#A4343A] font-sans rounded-[8px] cursor-pointer
+            ${showButton ? 'opacity-100' : 'opacity-0'}
+          `}
         >
           {variant === 'play' && <PlayArrowRounded fontSize="large" />}
           {variant === 'unmute' && <VolumeOff fontSize="large" />}

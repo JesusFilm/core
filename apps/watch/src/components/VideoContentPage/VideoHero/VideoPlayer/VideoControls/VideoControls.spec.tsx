@@ -522,7 +522,7 @@ describe('VideoControls', () => {
             subtitleOn: false
           }}
         >
-          <PlayerProvider>
+          <PlayerProvider initialState={{ mute: false, play: true }}>
             <VideoProvider value={{ content: videos[0] }}>
               <VideoControls player={player} />
               <TestPlayerState />
