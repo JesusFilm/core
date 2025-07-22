@@ -8,7 +8,7 @@ import {
 import { VideoProvider } from '../../../libs/videoContext'
 import { videos } from '../../Videos/__generated__/testData'
 
-import { NewVideoContentHeader } from './NewVideoContentHeader'
+import { NewVideoContentHeader } from './VideoContentHeader'
 
 jest.mock('next-i18next', () => ({
   useTranslation: jest.fn(() => ({

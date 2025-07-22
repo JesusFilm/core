@@ -68,9 +68,6 @@
 
 /* 3. Utilities layer - highest specificity */
 @layer utilities {
-  body#watch-root {
-    background-color: #0a0a0a;
-  }
   .animate-mesh-gradient {
     animation: mesh-gradient 6s ease-in-out infinite;
   }
