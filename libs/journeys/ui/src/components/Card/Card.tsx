@@ -101,7 +101,7 @@ export function Card({
     backgroundColor != null
       ? backgroundColor
       : // Card theme is determined in Conductor
-        theme.palette.background.paper
+        `${theme.palette.background.paper}4D`
 
   useEffect(() => {
     document
