@@ -4,6 +4,7 @@ extend schema
 interface Action {
   parentBlockId: ID
   gtmEventName: String
+  parentBlock: Block
 }
 
 interface Block
@@ -31,6 +32,11 @@ input BlockUpdateActionInput {
 input BlocksFilter {
   journeyIds: [ID!]
   typenames: [String!]
+}
+
+type Browser {
+  name: String
+  version: String
 }
 
 enum ButtonAction {
@@ -61,6 +67,7 @@ type ButtonBlock implements Block
   endIconId: ID @shareable
   submitEnabled: Boolean @shareable
   settings: ButtonBlockSettings @shareable
+  action: Action @shareable
 }
 
 input ButtonBlockCreateInput {
@@ -277,10 +284,26 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTimeISO
 
+type Device {
+  model: String
+  type: DeviceType
+  vendor: String
+}
+
+enum DeviceType {
+  console
+  mobile
+  tablet
+  smarttv
+  wearable
+  embedded
+}
+
 type EmailAction implements Action {
   parentBlockId: ID
   gtmEventName: String
-  email: String
+  parentBlock: Block
+  email: String!
 }
 
 input EmailActionInput {
@@ -864,19 +887,31 @@ type JourneyVisitor {
   visitorId: String
   createdAt: DateTime
   duration: Int
+  lastChatStartedAt: DateTime
+  lastChatPlatform: MessagePlatform
+  lastStepViewedAt: DateTime
+  lastLinkAction: String
+  lastTextResponse: String
+  lastRadioQuestion: String
+  lastRadioOptionSubmission: String
   activityCount: Int
   updatedAt: DateTime
+  countryCode: String
+  messagePlatform: MessagePlatform
+  notes: String
   journey: Journey
   visitor: Visitor
+  events: [Event!]
 }
 
 input JourneyVisitorFilter {
-  countryCode: String
-  hasIcon: Boolean
-  hasChatStarted: Boolean
-  hasTextResponse: Boolean
-  hideInactive: Boolean
   journeyId: ID!
+  hasChatStarted: Boolean
+  hasPollAnswers: Boolean
+  hasTextResponse: Boolean
+  hasIcon: Boolean
+  hideInactive: Boolean
+  countryCode: String
 }
 
 enum JourneyVisitorSort {
@@ -944,7 +979,8 @@ type Language
 type LinkAction implements Action {
   parentBlockId: ID
   gtmEventName: String
-  url: String
+  parentBlock: Block
+  url: String!
   target: String
 }
 
@@ -1044,11 +1080,11 @@ type Mutation {
 
   """blockRestore is used for redo/undo"""
   blockRestore(id: ID!): [Block!]!
-  blockDeleteAction(id: ID!, journeyId: ID): Block!
-  blockUpdateAction(id: ID!, input: BlockUpdateActionInput!): Action!
-  blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID): NavigateToBlockAction!
-  blockUpdateLinkAction(id: ID!, input: LinkActionInput!, journeyId: ID): LinkAction!
-  blockUpdateEmailAction(id: ID!, input: EmailActionInput!, journeyId: ID): EmailAction!
+  blockDeleteAction(id: ID!, journeyId: ID): Block
+  blockUpdateAction(id: ID!, input: BlockUpdateActionInput!): Action
+  blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID): NavigateToBlockAction
+  blockUpdateLinkAction(id: ID!, input: LinkActionInput!, journeyId: ID): LinkAction
+  blockUpdateEmailAction(id: ID!, input: EmailActionInput!, journeyId: ID): EmailAction
   buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock!
   buttonBlockUpdate(
     id: ID!
@@ -1263,12 +1299,18 @@ type MuxVideo
 type NavigateToBlockAction implements Action {
   parentBlockId: ID
   gtmEventName: String
-  blockId: String
+  parentBlock: Block
+  blockId: String!
 }
 
 input NavigateToBlockActionInput {
   gtmEventName: String
   blockId: String!
+}
+
+type OperatingSystem {
+  name: String
+  version: String
 }
 
 type PageInfo
@@ -1335,6 +1377,7 @@ type Query {
   integrations(teamId: ID!): [Integration!]
   journeyVisitorsConnection(filter: JourneyVisitorFilter!, sort: JourneyVisitorSort, before: String, after: String, first: Int, last: Int): QueryJourneyVisitorsConnection
   journeyVisitorCount(filter: JourneyVisitorFilter!): Int
+  visitor(id: ID!): Visitor
   visitorsConnection(teamId: ID!, before: String, after: String, first: Int, last: Int): QueryVisitorsConnection
   qrCode(id: ID!): QrCode!
   qrCodes(where: QrCodesFilter!): [QrCode!]!
@@ -1383,6 +1426,7 @@ type RadioOptionBlock implements Block
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
   label: String! @shareable
+  action: Action @shareable
 }
 
 input RadioOptionBlockCreateInput {
@@ -1449,6 +1493,7 @@ type SignUpBlock implements Block
   parentOrder: Int @shareable
   submitIconId: ID @shareable
   submitLabel: String @shareable
+  action: Action @shareable
 }
 
 input SignUpBlockCreateInput {
@@ -1802,6 +1847,12 @@ enum TypographyVariant {
   overline
 }
 
+type UserAgent {
+  browser: Browser
+  device: Device
+  os: OperatingSystem
+}
+
 type UserJourney {
   id: ID
   userId: ID
@@ -1868,76 +1919,27 @@ type Video
 
 type VideoBlock implements Block
   @key(fields: "id")
+  @key(fields: "id")
 {
   id: ID! @shareable
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
-
-  """startAt dictates at which point of time the video should start playing"""
+  autoplay: Boolean! @shareable
   startAt: Int @shareable
-
-  """endAt dictates at which point of time the video should end"""
   endAt: Int @shareable
-  muted: Boolean @shareable
-  autoplay: Boolean @shareable
-
-  """
-  posterBlockId is present if a child block should be used as a poster.
-  This child block should not be rendered normally, instead it should be used
-  as the video poster. PosterBlock should be of type ImageBlock.
-  """
-  posterBlockId: ID @shareable
-  fullsize: Boolean @shareable
-
-  """
-  internal source videos: videoId and videoVariantLanguageId both need to be set
-  to select a video.
-  For other sources only videoId needs to be set.
-  """
-  videoId: ID @shareable
-
-  """
-  internal source videos: videoId and videoVariantLanguageId both need to be set
-  to select a video.
-  For other sources only videoId needs to be set.
-  """
-  videoVariantLanguageId: ID @shareable
-
-  """
-  internal source: videoId, videoVariantLanguageId, and video present
-  youTube source: videoId, title, description, and duration present
-  """
-  source: VideoBlockSource! @shareable
-
-  """
-  internal source videos: this field is not populated and instead only present
-  in the video field.
-  For other sources this is automatically populated.
-  """
-  title: String @shareable
-
-  """
-  internal source videos: this field is not populated and instead only present
-  in the video field
-  For other sources this is automatically populated.
-  """
-  description: String @shareable
-
-  """
-  internal source videos: this field is not populated and instead only present
-  in the video field
-  For other sources this is automatically populated.
-  """
+  muted: Boolean! @shareable
+  videoId: String @shareable
+  videoVariantLanguageId: String @shareable
+  source: VideoBlockSource @shareable
+  title: String! @shareable
+  description: String! @shareable
   image: String @shareable
-
-  """
-  internal source videos: this field is not populated and instead only present
-  in the video field
-  For other sources this is automatically populated.
-  """
   duration: Int @shareable
   objectFit: VideoBlockObjectFit @shareable
+  posterBlockId: ID @shareable
+  fullsize: Boolean! @shareable
+  action: Action @shareable
   mediaVideo: MediaVideo @shareable
 }
 
@@ -2139,6 +2141,7 @@ type VideoTriggerBlock implements Block
   this is the number of seconds since the start of the video
   """
   triggerStart: Int! @shareable
+  action: Action @shareable
 }
 
 input VideoTriggerBlockCreateInput {
@@ -2159,32 +2162,63 @@ input VideoTriggerBlockUpdateInput {
 type Visitor {
   id: ID
   createdAt: DateTime
-  countryCode: String
   duration: Int
-  email: String
+  lastChatStartedAt: DateTime
+  lastChatPlatform: MessagePlatform
+  userAgent: UserAgent
+  countryCode: String
   name: String
+  email: String
+  status: VisitorStatus
+  messagePlatform: MessagePlatform
+  messagePlatformId: String
+  notes: String
+  lastStepViewedAt: DateTime
+  lastLinkAction: String
+  lastTextResponse: String
+  lastRadioQuestion: String
+  lastRadioOptionSubmission: String
+  referrer: String
   phone: String
   teamId: String
   userId: String
   updatedAt: DateTime
   team: Team
   journeyVisitors: [JourneyVisitor!]
+  events: [Event!]
+}
+
+enum VisitorStatus {
+  star
+  prohibited
+  checkMarkSymbol
+  thumbsUp
+  thumbsDown
+  partyPopper
+  warning
+  robotFace
+  redExclamationMark
+  redQuestionMark
 }
 
 input VisitorUpdateForCurrentUserInput {
-  countryCode: String
   email: String
   name: String
-  referrer: String
+  messagePlatform: MessagePlatform
+  messagePlatformId: String
+  phone: String
 }
 
 input VisitorUpdateInput {
-  countryCode: String
   email: String
   name: String
+  messagePlatform: MessagePlatform
+  messagePlatformId: String
   notes: String
-  phone: String
+  status: VisitorStatus
+  countryCode: String
   referrer: String
+  phone: String
 }
 
 type YouTube

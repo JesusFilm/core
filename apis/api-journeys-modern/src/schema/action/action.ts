@@ -1,200 +1,238 @@
 import { GraphQLError } from 'graphql'
-import { z } from 'zod'
+import { v4 as uuidv4 } from 'uuid'
 
 import { Action as PrismaAction } from '.prisma/api-journeys-modern-client'
 
-import {
-  Action,
-  ability,
-  subject as abilitySubject
-} from '../../lib/auth/ability'
+import { Action, ability, subject } from '../../lib/auth/ability'
 import { prisma } from '../../lib/prisma'
 import { Block } from '../block/block'
 import { builder } from '../builder'
 
-import {
-  BlockUpdateActionInput,
-  EmailActionInput,
-  LinkActionInput,
-  NavigateToBlockActionInput
-} from './inputs'
+// Create the Action interface reference
+const ActionInterface = builder.interfaceRef<PrismaAction>('Action')
+
+// Create concrete action references
+const NavigateToBlockActionRef = builder.objectRef<PrismaAction>(
+  'NavigateToBlockAction'
+)
+const LinkActionRef = builder.objectRef<PrismaAction>('LinkAction')
+const EmailActionRef = builder.objectRef<PrismaAction>('EmailAction')
 
 // Define the Action interface
-export const ActionInterface = builder.prismaInterface('Action', {
-  name: 'Action',
+ActionInterface.implement({
   fields: (t) => ({
     parentBlockId: t.exposeID('parentBlockId'),
-    gtmEventName: t.exposeString('gtmEventName', { nullable: true })
+    gtmEventName: t.exposeString('gtmEventName', { nullable: true }),
+    parentBlock: t.field({
+      type: Block,
+      resolve: async (action) => {
+        const block = await prisma.block.findUnique({
+          where: { id: action.parentBlockId }
+        })
+        if (!block) {
+          throw new GraphQLError('Parent block not found', {
+            extensions: { code: 'NOT_FOUND' }
+          })
+        }
+        return block
+      }
+    })
   }),
-  resolveType: (obj) => {
-    if (obj.blockId != null) return 'NavigateToBlockAction'
-    if (obj.email != null) return 'EmailAction'
+  resolveType: (action) => {
+    if (action.blockId != null) return 'NavigateToBlockAction'
+    if (action.email != null) return 'EmailAction'
     return 'LinkAction'
   }
 })
 
-// NavigateToBlockAction type
-export const NavigateToBlockAction = builder.prismaObject('Action', {
+// NavigateToBlockAction implementation
+NavigateToBlockActionRef.implement({
   interfaces: [ActionInterface],
-  variant: 'NavigateToBlockAction',
-  isTypeOf: (obj: any) => obj.blockId != null,
+  isTypeOf: (action: any) => action.blockId != null,
   fields: (t) => ({
     parentBlockId: t.exposeID('parentBlockId'),
     gtmEventName: t.exposeString('gtmEventName', { nullable: true }),
-    blockId: t.exposeString('blockId')
+    blockId: t.string({
+      nullable: false,
+      resolve: (action) => action.blockId || ''
+    }),
+    parentBlock: t.field({
+      type: Block,
+      resolve: async (action) => {
+        const block = await prisma.block.findUnique({
+          where: { id: action.parentBlockId }
+        })
+        if (!block) {
+          throw new GraphQLError('Parent block not found', {
+            extensions: { code: 'NOT_FOUND' }
+          })
+        }
+        return block
+      }
+    })
   })
 })
 
-// LinkAction type
-export const LinkAction = builder.prismaObject('Action', {
+// LinkAction implementation
+LinkActionRef.implement({
   interfaces: [ActionInterface],
-  variant: 'LinkAction',
-  isTypeOf: (obj: any) => obj.url != null && obj.blockId == null,
+  isTypeOf: (action: any) => action.url != null && action.email == null,
   fields: (t) => ({
     parentBlockId: t.exposeID('parentBlockId'),
     gtmEventName: t.exposeString('gtmEventName', { nullable: true }),
-    url: t.exposeString('url'),
-    target: t.exposeString('target', { nullable: true })
+    url: t.string({
+      nullable: false,
+      resolve: (action) => action.url || ''
+    }),
+    target: t.exposeString('target', { nullable: true }),
+    parentBlock: t.field({
+      type: Block,
+      resolve: async (action) => {
+        const block = await prisma.block.findUnique({
+          where: { id: action.parentBlockId }
+        })
+        if (!block) {
+          throw new GraphQLError('Parent block not found', {
+            extensions: { code: 'NOT_FOUND' }
+          })
+        }
+        return block
+      }
+    })
   })
 })
 
-// EmailAction type
-export const EmailAction = builder.prismaObject('Action', {
+// EmailAction implementation
+EmailActionRef.implement({
   interfaces: [ActionInterface],
-  variant: 'EmailAction',
-  isTypeOf: (obj: any) => obj.email != null,
+  isTypeOf: (action: any) => action.email != null,
   fields: (t) => ({
     parentBlockId: t.exposeID('parentBlockId'),
     gtmEventName: t.exposeString('gtmEventName', { nullable: true }),
-    email: t.exposeString('email')
+    email: t.string({
+      nullable: false,
+      resolve: (action) => action.email || ''
+    }),
+    parentBlock: t.field({
+      type: Block,
+      resolve: async (action) => {
+        const block = await prisma.block.findUnique({
+          where: { id: action.parentBlockId }
+        })
+        if (!block) {
+          throw new GraphQLError('Parent block not found', {
+            extensions: { code: 'NOT_FOUND' }
+          })
+        }
+        return block
+      }
+    })
   })
 })
 
-// Input types are now imported from ./inputs/
+// Input types for actions
+const NavigateToBlockActionInput = builder.inputType(
+  'NavigateToBlockActionInput',
+  {
+    fields: (t) => ({
+      gtmEventName: t.string({ required: false }),
+      blockId: t.string({ required: true })
+    })
+  }
+)
 
-// Utility function to check if block can have actions
-export function canBlockHaveAction(block: { typename: string }): boolean {
-  const supportedTypes = [
+const LinkActionInput = builder.inputType('LinkActionInput', {
+  fields: (t) => ({
+    gtmEventName: t.string({ required: false }),
+    url: t.string({ required: true }),
+    target: t.string({ required: false })
+  })
+})
+
+const EmailActionInput = builder.inputType('EmailActionInput', {
+  fields: (t) => ({
+    gtmEventName: t.string({ required: false }),
+    email: t.string({ required: true })
+  })
+})
+
+const BlockUpdateActionInput = builder.inputType('BlockUpdateActionInput', {
+  fields: (t) => ({
+    gtmEventName: t.string({ required: false }),
+    email: t.string({ required: false }),
+    url: t.string({ required: false }),
+    target: t.string({ required: false }),
+    blockId: t.string({ required: false })
+  })
+})
+
+// Helper function to check if a block can have actions
+function canBlockHaveAction(block: any): boolean {
+  return [
     'SignUpBlock',
     'RadioOptionBlock',
     'ButtonBlock',
     'VideoBlock',
     'VideoTriggerBlock'
-  ]
-  return supportedTypes.includes(block.typename)
+  ].includes(block.typename)
 }
 
-// Validation schemas
-export const linkActionInputSchema = z.object({
-  gtmEventName: z.string().nullable(),
-  url: z.string(),
-  target: z.string().nullable()
-})
+// Helper function to validate and determine action type
+function validateActionInput(input: any): {
+  isValid: boolean
+  actionType: string
+  error?: string
+} {
+  const hasBlockId = !!input.blockId
+  const hasUrl = !!input.url
+  const hasEmail = !!input.email
 
-export const emailActionInputSchema = z.object({
-  gtmEventName: z.string().nullable(),
-  email: z.string().email()
-})
+  const count = [hasBlockId, hasUrl, hasEmail].filter(Boolean).length
 
-export const navigateToBlockActionInputSchema = z.object({
-  gtmEventName: z.string().nullable(),
-  blockId: z.string()
-})
-
-// Helper function to reset action fields when updating
-const ACTION_UPDATE_RESET = {
-  url: null,
-  target: null,
-  email: null,
-  blockId: null
-}
-
-// Action service functions
-export async function emailActionUpdate(
-  id: string,
-  input: { gtmEventName?: string | null; email: string }
-): Promise<PrismaAction> {
-  // Validate email
-  try {
-    emailActionInputSchema.parse(input)
-  } catch {
-    throw new GraphQLError('must be a valid email', {
-      extensions: { code: 'BAD_USER_INPUT' }
-    })
+  if (count === 0) {
+    return {
+      isValid: false,
+      actionType: '',
+      error: 'No valid action inputs provided'
+    }
   }
 
-  return await prisma.action.upsert({
-    where: { parentBlockId: id },
-    create: {
-      ...input,
-      parentBlockId: id
-    },
-    update: {
-      ...ACTION_UPDATE_RESET,
-      ...input
+  if (count > 1) {
+    return {
+      isValid: false,
+      actionType: '',
+      error: 'Invalid combination of action inputs provided'
     }
-  })
+  }
+
+  if (hasBlockId) return { isValid: true, actionType: 'NavigateToBlock' }
+  if (hasEmail) return { isValid: true, actionType: 'Email' }
+  if (hasUrl) return { isValid: true, actionType: 'Link' }
+
+  return { isValid: false, actionType: '', error: 'Invalid action input' }
 }
 
-export async function linkActionUpdate(
-  id: string,
-  input: { gtmEventName?: string | null; url: string; target?: string | null }
-): Promise<PrismaAction> {
-  return await prisma.action.upsert({
-    where: { parentBlockId: id },
-    create: {
-      ...input,
-      parentBlockId: id
-    },
-    update: {
-      ...ACTION_UPDATE_RESET,
-      ...input
-    }
-  })
-}
-
-export async function navigateToBlockActionUpdate(
-  id: string,
-  input: { gtmEventName?: string | null; blockId: string }
-): Promise<PrismaAction> {
-  return await prisma.action.upsert({
-    where: { parentBlockId: id },
-    create: {
-      ...input,
-      parentBlockId: id
-    },
-    update: {
-      ...ACTION_UPDATE_RESET,
-      ...input
-    }
-  })
-}
-
-// Mutation resolvers
+// Delete action mutation
 builder.mutationField('blockDeleteAction', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
     type: Block,
-    nullable: false,
     args: {
-      id: t.arg({ type: 'ID', required: true }),
-      journeyId: t.arg({ type: 'ID', required: false }) // Optional for team merging
+      id: t.arg.id({ required: true }),
+      journeyId: t.arg.id({ required: false })
     },
     resolve: async (_parent, args, context) => {
       const { id } = args
+      const user = context.user
 
-      // Fetch block with ACL info
+      // Get the block with its journey for authorization
       const block = await prisma.block.findUnique({
         where: { id },
         include: {
           action: true,
           journey: {
             include: {
-              team: {
-                include: {
-                  userTeams: true
-                }
-              },
-              userJourneys: true
+              userJourneys: true,
+              team: { include: { userTeams: true } }
             }
           }
         }
@@ -206,81 +244,58 @@ builder.mutationField('blockDeleteAction', (t) =>
         })
       }
 
-      // Check ACL
-      if (
-        !ability(
-          Action.Update,
-          abilitySubject('Journey', block.journey),
-          context.user
-        )
-      ) {
+      // Check authorization
+      if (!ability(Action.Update, subject('Journey', block.journey), user)) {
         throw new GraphQLError('user is not allowed to update block', {
           extensions: { code: 'FORBIDDEN' }
         })
       }
 
-      // Check if block supports actions
       if (!canBlockHaveAction(block)) {
         throw new GraphQLError('This block does not support actions', {
           extensions: { code: 'BAD_USER_INPUT' }
         })
       }
 
-      // Delete the action
-      await prisma.action.delete({ where: { parentBlockId: id } })
+      // Delete the action if it exists
+      if (block.action) {
+        await prisma.action.delete({ where: { parentBlockId: id } })
+      }
 
       return block
     }
   })
 )
 
+// Update action mutation
 builder.mutationField('blockUpdateAction', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
     type: ActionInterface,
-    nullable: false,
     args: {
-      id: t.arg({ type: 'ID', required: true }),
+      id: t.arg.id({ required: true }),
       input: t.arg({ type: BlockUpdateActionInput, required: true })
     },
     resolve: async (_parent, args, context) => {
       const { id, input } = args
+      const user = context.user
 
-      // Validate input combinations
-      const { success: isLink, data: linkInput } =
-        linkActionInputSchema.safeParse(input)
-      const { success: isEmail, data: emailInput } =
-        emailActionInputSchema.safeParse(input)
-      const { success: isNavigateToBlock, data: navigateToBlockInput } =
-        navigateToBlockActionInputSchema.safeParse(input)
-
-      const numberOfValidInputs = [isLink, isEmail, isNavigateToBlock].filter(
-        Boolean
-      ).length
-
-      if (numberOfValidInputs > 1) {
-        throw new GraphQLError('invalid combination of inputs provided', {
-          extensions: { code: 'BAD_USER_INPUT' }
-        })
-      }
-      if (numberOfValidInputs === 0) {
-        throw new GraphQLError('no valid inputs provided', {
+      // Validate input
+      const validation = validateActionInput(input)
+      if (!validation.isValid) {
+        throw new GraphQLError(validation.error!, {
           extensions: { code: 'BAD_USER_INPUT' }
         })
       }
 
-      // Fetch block with ACL info
+      // Get the block with its journey for authorization
       const block = await prisma.block.findUnique({
         where: { id },
         include: {
           action: true,
           journey: {
             include: {
-              team: {
-                include: {
-                  userTeams: true
-                }
-              },
-              userJourneys: true
+              userJourneys: true,
+              team: { include: { userTeams: true } }
             }
           }
         }
@@ -292,71 +307,77 @@ builder.mutationField('blockUpdateAction', (t) =>
         })
       }
 
-      // Check ACL
-      if (
-        !ability(
-          Action.Update,
-          abilitySubject('Journey', block.journey),
-          context.user
-        )
-      ) {
+      // Check authorization
+      if (!ability(Action.Update, subject('Journey', block.journey), user)) {
         throw new GraphQLError('user is not allowed to update block', {
           extensions: { code: 'FORBIDDEN' }
         })
       }
 
-      // Check if block supports actions
       if (!canBlockHaveAction(block)) {
         throw new GraphQLError('This block does not support actions', {
           extensions: { code: 'BAD_USER_INPUT' }
         })
       }
 
-      // Perform the appropriate update
-      if (isEmail) {
-        return await emailActionUpdate(id, emailInput)
+      // Prepare the action data based on type
+      const actionData: any = {
+        gtmEventName: input.gtmEventName || null,
+        // Reset all polymorphic fields first
+        url: null,
+        target: null,
+        email: null,
+        blockId: null,
+        journeyId: null
       }
 
-      if (isNavigateToBlock) {
-        return await navigateToBlockActionUpdate(id, navigateToBlockInput)
+      if (validation.actionType === 'Link') {
+        actionData.url = input.url
+        actionData.target = input.target || null
+      } else if (validation.actionType === 'Email') {
+        actionData.email = input.email
+      } else if (validation.actionType === 'NavigateToBlock') {
+        actionData.blockId = input.blockId
+        actionData.journeyId = block.journeyId
       }
 
-      if (isLink) {
-        return await linkActionUpdate(id, linkInput)
-      }
-
-      throw new GraphQLError('no valid inputs provided', {
-        extensions: { code: 'BAD_USER_INPUT' }
+      // Upsert the action
+      const action = await prisma.action.upsert({
+        where: { parentBlockId: id },
+        create: {
+          parentBlockId: id,
+          ...actionData
+        },
+        update: actionData
       })
+
+      return action
     }
   })
 )
 
+// Specific action update mutations
 builder.mutationField('blockUpdateNavigateToBlockAction', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
-    type: NavigateToBlockAction,
-    nullable: false,
+    type: NavigateToBlockActionRef,
     args: {
-      id: t.arg({ type: 'ID', required: true }),
+      id: t.arg.id({ required: true }),
       input: t.arg({ type: NavigateToBlockActionInput, required: true }),
-      journeyId: t.arg({ type: 'ID', required: false }) // Optional for team merging
+      journeyId: t.arg.id({ required: false })
     },
     resolve: async (_parent, args, context) => {
       const { id, input } = args
+      const user = context.user
 
-      // Fetch block with ACL info
+      // Get the block with its journey for authorization
       const block = await prisma.block.findUnique({
         where: { id },
         include: {
           action: true,
           journey: {
             include: {
-              team: {
-                include: {
-                  userTeams: true
-                }
-              },
-              userJourneys: true
+              userJourneys: true,
+              team: { include: { userTeams: true } }
             }
           }
         }
@@ -368,57 +389,72 @@ builder.mutationField('blockUpdateNavigateToBlockAction', (t) =>
         })
       }
 
-      // Check ACL
-      if (
-        !ability(
-          Action.Update,
-          abilitySubject('Journey', block.journey),
-          context.user
-        )
-      ) {
+      // Check authorization
+      if (!ability(Action.Update, subject('Journey', block.journey), user)) {
         throw new GraphQLError('user is not allowed to update block', {
           extensions: { code: 'FORBIDDEN' }
         })
       }
 
-      // Check if block supports actions
       if (!canBlockHaveAction(block)) {
         throw new GraphQLError(
           'This block does not support navigate to block actions',
-          { extensions: { code: 'BAD_USER_INPUT' } }
+          {
+            extensions: { code: 'BAD_USER_INPUT' }
+          }
         )
       }
 
-      return await navigateToBlockActionUpdate(id, input)
+      // Create or update the action
+      const action = await prisma.action.upsert({
+        where: { parentBlockId: id },
+        create: {
+          parentBlockId: id,
+          gtmEventName: input.gtmEventName || null,
+          blockId: input.blockId,
+          journeyId: block.journeyId,
+          // Reset other polymorphic fields
+          url: null,
+          target: null,
+          email: null
+        },
+        update: {
+          gtmEventName: input.gtmEventName || null,
+          blockId: input.blockId,
+          journeyId: block.journeyId,
+          // Reset other polymorphic fields
+          url: null,
+          target: null,
+          email: null
+        }
+      })
+
+      return action
     }
   })
 )
 
 builder.mutationField('blockUpdateLinkAction', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
-    type: LinkAction,
-    nullable: false,
+    type: LinkActionRef,
     args: {
-      id: t.arg({ type: 'ID', required: true }),
+      id: t.arg.id({ required: true }),
       input: t.arg({ type: LinkActionInput, required: true }),
-      journeyId: t.arg({ type: 'ID', required: false }) // Optional for team merging
+      journeyId: t.arg.id({ required: false })
     },
     resolve: async (_parent, args, context) => {
       const { id, input } = args
+      const user = context.user
 
-      // Fetch block with ACL info
+      // Get the block with its journey for authorization
       const block = await prisma.block.findUnique({
         where: { id },
         include: {
           action: true,
           journey: {
             include: {
-              team: {
-                include: {
-                  userTeams: true
-                }
-              },
-              userJourneys: true
+              userJourneys: true,
+              team: { include: { userTeams: true } }
             }
           }
         }
@@ -430,56 +466,69 @@ builder.mutationField('blockUpdateLinkAction', (t) =>
         })
       }
 
-      // Check ACL
-      if (
-        !ability(
-          Action.Update,
-          abilitySubject('Journey', block.journey),
-          context.user
-        )
-      ) {
+      // Check authorization
+      if (!ability(Action.Update, subject('Journey', block.journey), user)) {
         throw new GraphQLError('user is not allowed to update block', {
           extensions: { code: 'FORBIDDEN' }
         })
       }
 
-      // Check if block supports actions
       if (!canBlockHaveAction(block)) {
         throw new GraphQLError('This block does not support link actions', {
           extensions: { code: 'BAD_USER_INPUT' }
         })
       }
 
-      return await linkActionUpdate(id, input)
+      // Create or update the action
+      const action = await prisma.action.upsert({
+        where: { parentBlockId: id },
+        create: {
+          parentBlockId: id,
+          gtmEventName: input.gtmEventName || null,
+          url: input.url,
+          target: input.target || null,
+          // Reset other polymorphic fields
+          blockId: null,
+          journeyId: null,
+          email: null
+        },
+        update: {
+          gtmEventName: input.gtmEventName || null,
+          url: input.url,
+          target: input.target || null,
+          // Reset other polymorphic fields
+          blockId: null,
+          journeyId: null,
+          email: null
+        }
+      })
+
+      return action
     }
   })
 )
 
 builder.mutationField('blockUpdateEmailAction', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
-    type: EmailAction,
-    nullable: false,
+    type: EmailActionRef,
     args: {
-      id: t.arg({ type: 'ID', required: true }),
+      id: t.arg.id({ required: true }),
       input: t.arg({ type: EmailActionInput, required: true }),
-      journeyId: t.arg({ type: 'ID', required: false }) // Optional for team merging
+      journeyId: t.arg.id({ required: false })
     },
     resolve: async (_parent, args, context) => {
       const { id, input } = args
+      const user = context.user
 
-      // Fetch block with ACL info
+      // Get the block with its journey for authorization
       const block = await prisma.block.findUnique({
         where: { id },
         include: {
           action: true,
           journey: {
             include: {
-              team: {
-                include: {
-                  userTeams: true
-                }
-              },
-              userJourneys: true
+              userJourneys: true,
+              team: { include: { userTeams: true } }
             }
           }
         }
@@ -491,27 +540,52 @@ builder.mutationField('blockUpdateEmailAction', (t) =>
         })
       }
 
-      // Check ACL
-      if (
-        !ability(
-          Action.Update,
-          abilitySubject('Journey', block.journey),
-          context.user
-        )
-      ) {
+      // Check authorization
+      if (!ability(Action.Update, subject('Journey', block.journey), user)) {
         throw new GraphQLError('user is not allowed to update block', {
           extensions: { code: 'FORBIDDEN' }
         })
       }
 
-      // Check if block supports actions
       if (!canBlockHaveAction(block)) {
         throw new GraphQLError('This block does not support email actions', {
           extensions: { code: 'BAD_USER_INPUT' }
         })
       }
 
-      return await emailActionUpdate(id, input)
+      // Create or update the action
+      const action = await prisma.action.upsert({
+        where: { parentBlockId: id },
+        create: {
+          parentBlockId: id,
+          gtmEventName: input.gtmEventName || null,
+          email: input.email,
+          // Reset other polymorphic fields
+          blockId: null,
+          journeyId: null,
+          url: null,
+          target: null
+        },
+        update: {
+          gtmEventName: input.gtmEventName || null,
+          email: input.email,
+          // Reset other polymorphic fields
+          blockId: null,
+          journeyId: null,
+          url: null,
+          target: null
+        }
+      })
+
+      return action
     }
   })
 )
+
+// Export the action types for use in other files
+export {
+  ActionInterface,
+  NavigateToBlockActionRef,
+  LinkActionRef,
+  EmailActionRef
+}

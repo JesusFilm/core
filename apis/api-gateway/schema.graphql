@@ -160,11 +160,11 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   blockRestore is used for redo/undo
   """
   blockRestore(id: ID!) : [Block!]! @join__field(graph: API_JOURNEYS_MODERN) 
-  blockDeleteAction(id: ID!, journeyId: ID) : Block! @join__field(graph: API_JOURNEYS_MODERN) 
-  blockUpdateAction(id: ID!, input: BlockUpdateActionInput!) : Action! @join__field(graph: API_JOURNEYS_MODERN) 
-  blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID) : NavigateToBlockAction! @join__field(graph: API_JOURNEYS_MODERN) 
-  blockUpdateLinkAction(id: ID!, input: LinkActionInput!, journeyId: ID) : LinkAction! @join__field(graph: API_JOURNEYS_MODERN) 
-  blockUpdateEmailAction(id: ID!, input: EmailActionInput!, journeyId: ID) : EmailAction! @join__field(graph: API_JOURNEYS_MODERN) 
+  blockDeleteAction(id: ID!, journeyId: ID) : Block @join__field(graph: API_JOURNEYS_MODERN) 
+  blockUpdateAction(id: ID!, input: BlockUpdateActionInput!) : Action @join__field(graph: API_JOURNEYS_MODERN) 
+  blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID) : NavigateToBlockAction @join__field(graph: API_JOURNEYS_MODERN) 
+  blockUpdateLinkAction(id: ID!, input: LinkActionInput!, journeyId: ID) : LinkAction @join__field(graph: API_JOURNEYS_MODERN) 
+  blockUpdateEmailAction(id: ID!, input: EmailActionInput!, journeyId: ID) : EmailAction @join__field(graph: API_JOURNEYS_MODERN) 
   buttonBlockCreate(input: ButtonBlockCreateInput!) : ButtonBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   buttonBlockUpdate(
     id: ID!
@@ -498,6 +498,11 @@ type SiteSharedLink @join__type(graph: API_ANALYTICS)  {
   slug: String!
 }
 
+type Browser @join__type(graph: API_JOURNEYS_MODERN)  {
+  name: String
+  version: String
+}
+
 type ButtonBlock implements Block @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
   id: ID!
   journeyId: ID!
@@ -511,6 +516,7 @@ type ButtonBlock implements Block @join__type(graph: API_JOURNEYS_MODERN, key: "
   endIconId: ID
   submitEnabled: Boolean
   settings: ButtonBlockSettings
+  action: Action
 }
 
 type ButtonBlockSettings @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -589,10 +595,17 @@ type CustomDomain @join__type(graph: API_JOURNEYS_MODERN)  {
   journeyCollection: JourneyCollection
 }
 
+type Device @join__type(graph: API_JOURNEYS_MODERN)  {
+  model: String
+  type: DeviceType
+  vendor: String
+}
+
 type EmailAction implements Action @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Action")  {
   parentBlockId: ID
   gtmEventName: String
-  email: String
+  parentBlock: Block
+  email: String!
 }
 
 type GridContainerBlock implements Block @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -812,10 +825,21 @@ type JourneyVisitor @join__type(graph: API_JOURNEYS_MODERN)  {
   visitorId: String
   createdAt: DateTime
   duration: Int
+  lastChatStartedAt: DateTime
+  lastChatPlatform: MessagePlatform
+  lastStepViewedAt: DateTime
+  lastLinkAction: String
+  lastTextResponse: String
+  lastRadioQuestion: String
+  lastRadioOptionSubmission: String
   activityCount: Int
   updatedAt: DateTime
+  countryCode: String
+  messagePlatform: MessagePlatform
+  notes: String
   journey: Journey
   visitor: Visitor
+  events: [Event!]
 }
 
 type JourneysEmailPreference @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -838,7 +862,8 @@ type Language @join__type(graph: API_JOURNEYS_MODERN, key: "id", extension: true
 type LinkAction implements Action @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Action")  {
   parentBlockId: ID
   gtmEventName: String
-  url: String
+  parentBlock: Block
+  url: String!
   target: String
 }
 
@@ -862,7 +887,13 @@ type MuxVideo @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId
 type NavigateToBlockAction implements Action @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Action")  {
   parentBlockId: ID
   gtmEventName: String
-  blockId: String
+  parentBlock: Block
+  blockId: String!
+}
+
+type OperatingSystem @join__type(graph: API_JOURNEYS_MODERN)  {
+  name: String
+  version: String
 }
 
 type PageInfo @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_MEDIA)  {
@@ -927,6 +958,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
     last: Int
   ): QueryJourneyVisitorsConnection @join__field(graph: API_JOURNEYS_MODERN) 
   journeyVisitorCount(filter: JourneyVisitorFilter!) : Int @join__field(graph: API_JOURNEYS_MODERN) 
+  visitor(id: ID!) : Visitor @join__field(graph: API_JOURNEYS_MODERN) 
   visitorsConnection(teamId: ID!, before: String, after: String, first: Int, last: Int) : QueryVisitorsConnection @join__field(graph: API_JOURNEYS_MODERN) 
   qrCode(id: ID!) : QrCode! @join__field(graph: API_JOURNEYS_MODERN) 
   qrCodes(where: QrCodesFilter!) : [QrCode!]! @join__field(graph: API_JOURNEYS_MODERN) 
@@ -1069,6 +1101,7 @@ type RadioOptionBlock implements Block @join__type(graph: API_JOURNEYS_MODERN, k
   parentBlockId: ID
   parentOrder: Int
   label: String!
+  action: Action
 }
 
 type RadioQuestionBlock implements Block @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -1121,6 +1154,7 @@ type SignUpBlock implements Block @join__type(graph: API_JOURNEYS_MODERN, key: "
   parentOrder: Int
   submitIconId: ID
   submitLabel: String
+  action: Action
 }
 
 type SignUpSubmissionEvent implements Event @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
@@ -1262,6 +1296,12 @@ type TypographyBlockSettings @join__type(graph: API_JOURNEYS_MODERN)  {
   color: String
 }
 
+type UserAgent @join__type(graph: API_JOURNEYS_MODERN)  {
+  browser: Browser
+  device: Device
+  os: OperatingSystem
+}
+
 type UserJourney @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID
   userId: ID
@@ -1335,70 +1375,26 @@ type Video @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", 
   publishedAt: Date @join__field(graph: API_MEDIA) 
 }
 
-type VideoBlock implements Block @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
+type VideoBlock implements Block @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  """
-  startAt dictates at which point of time the video should start playing
-  """
+  autoplay: Boolean!
   startAt: Int
-  """
-  endAt dictates at which point of time the video should end
-  """
   endAt: Int
-  muted: Boolean
-  autoplay: Boolean
-  """
-  posterBlockId is present if a child block should be used as a poster.
-  This child block should not be rendered normally, instead it should be used
-  as the video poster. PosterBlock should be of type ImageBlock.
-  """
-  posterBlockId: ID
-  fullsize: Boolean
-  """
-  internal source videos: videoId and videoVariantLanguageId both need to be set
-  to select a video.
-  For other sources only videoId needs to be set.
-  """
-  videoId: ID
-  """
-  internal source videos: videoId and videoVariantLanguageId both need to be set
-  to select a video.
-  For other sources only videoId needs to be set.
-  """
-  videoVariantLanguageId: ID
-  """
-  internal source: videoId, videoVariantLanguageId, and video present
-  youTube source: videoId, title, description, and duration present
-  """
-  source: VideoBlockSource!
-  """
-  internal source videos: this field is not populated and instead only present
-  in the video field.
-  For other sources this is automatically populated.
-  """
-  title: String
-  """
-  internal source videos: this field is not populated and instead only present
-  in the video field
-  For other sources this is automatically populated.
-  """
-  description: String
-  """
-  internal source videos: this field is not populated and instead only present
-  in the video field
-  For other sources this is automatically populated.
-  """
+  muted: Boolean!
+  videoId: String
+  videoVariantLanguageId: String
+  source: VideoBlockSource
+  title: String!
+  description: String!
   image: String
-  """
-  internal source videos: this field is not populated and instead only present
-  in the video field
-  For other sources this is automatically populated.
-  """
   duration: Int
   objectFit: VideoBlockObjectFit
+  posterBlockId: ID
+  fullsize: Boolean!
+  action: Action
   mediaVideo: MediaVideo
 }
 
@@ -1483,21 +1479,36 @@ type VideoTriggerBlock implements Block @join__type(graph: API_JOURNEYS_MODERN, 
   this is the number of seconds since the start of the video
   """
   triggerStart: Int!
+  action: Action
 }
 
 type Visitor @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID
   createdAt: DateTime
-  countryCode: String
   duration: Int
-  email: String
+  lastChatStartedAt: DateTime
+  lastChatPlatform: MessagePlatform
+  userAgent: UserAgent
+  countryCode: String
   name: String
+  email: String
+  status: VisitorStatus
+  messagePlatform: MessagePlatform
+  messagePlatformId: String
+  notes: String
+  lastStepViewedAt: DateTime
+  lastLinkAction: String
+  lastTextResponse: String
+  lastRadioQuestion: String
+  lastRadioOptionSubmission: String
+  referrer: String
   phone: String
   teamId: String
   userId: String
   updatedAt: DateTime
   team: Team
   journeyVisitors: [JourneyVisitor!]
+  events: [Event!]
 }
 
 type YouTube @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", extension: true)  {
@@ -2068,6 +2079,7 @@ interface BaseError @join__type(graph: API_ANALYTICS)  @join__type(graph: API_ME
 interface Action @join__type(graph: API_JOURNEYS_MODERN)  {
   parentBlockId: ID
   gtmEventName: String
+  parentBlock: Block
 }
 
 interface Block @join__type(graph: API_JOURNEYS_MODERN, key: "id")  {
@@ -2183,6 +2195,15 @@ enum MessagePlatform @join__type(graph: API_JOURNEYS_MODERN)  {
   checkBroken @join__enumValue(graph: API_JOURNEYS_MODERN) 
   checkContained @join__enumValue(graph: API_JOURNEYS_MODERN) 
   settings @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
+enum DeviceType @join__type(graph: API_JOURNEYS_MODERN)  {
+  console @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  mobile @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  tablet @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  smarttv @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  wearable @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  embedded @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
 enum EventType @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -2360,6 +2381,19 @@ enum VideoBlockObjectFit @join__type(graph: API_JOURNEYS_MODERN)  {
   fill @join__enumValue(graph: API_JOURNEYS_MODERN) 
   fit @join__enumValue(graph: API_JOURNEYS_MODERN) 
   zoomed @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
+enum VisitorStatus @join__type(graph: API_JOURNEYS_MODERN)  {
+  star @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  prohibited @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  checkMarkSymbol @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  thumbsUp @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  thumbsDown @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  partyPopper @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  warning @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  robotFace @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  redExclamationMark @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  redQuestionMark @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
 enum LanguageIdType @join__type(graph: API_LANGUAGES)  {
@@ -2847,12 +2881,13 @@ input JourneyViewEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
 }
 
 input JourneyVisitorFilter @join__type(graph: API_JOURNEYS_MODERN)  {
-  countryCode: String
-  hasIcon: Boolean
-  hasChatStarted: Boolean
-  hasTextResponse: Boolean
-  hideInactive: Boolean
   journeyId: ID!
+  hasChatStarted: Boolean
+  hasPollAnswers: Boolean
+  hasTextResponse: Boolean
+  hasIcon: Boolean
+  hideInactive: Boolean
+  countryCode: String
 }
 
 input JourneysEmailPreferenceUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -3236,19 +3271,23 @@ input VideoTriggerBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
 }
 
 input VisitorUpdateForCurrentUserInput @join__type(graph: API_JOURNEYS_MODERN)  {
-  countryCode: String
   email: String
   name: String
-  referrer: String
+  messagePlatform: MessagePlatform
+  messagePlatformId: String
+  phone: String
 }
 
 input VisitorUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
-  countryCode: String
   email: String
   name: String
+  messagePlatform: MessagePlatform
+  messagePlatformId: String
   notes: String
-  phone: String
+  status: VisitorStatus
+  countryCode: String
   referrer: String
+  phone: String
 }
 
 input LanguagesFilter @join__type(graph: API_LANGUAGES)  {

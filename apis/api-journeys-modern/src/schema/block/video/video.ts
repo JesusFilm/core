@@ -7,6 +7,7 @@ import {
   subject as abilitySubject
 } from '../../../lib/auth/ability'
 import { prisma } from '../../../lib/prisma'
+import { ActionInterface } from '../../action/action'
 import { builder } from '../../builder'
 import { VideoBlockSource } from '../../enums'
 import { MediaVideo } from '../../mediaVideo/mediaVideo'
@@ -67,6 +68,7 @@ export const VideoBlock = builder.prismaObject('Block', {
   interfaces: [Block],
   variant: 'VideoBlock',
   isTypeOf: (obj: any) => obj.typename === 'VideoBlock',
+  directives: { key: { fields: 'id' } },
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false, directives: { shareable: true } }),
     journeyId: t.exposeID('journeyId', {
@@ -81,90 +83,81 @@ export const VideoBlock = builder.prismaObject('Block', {
       nullable: true,
       directives: { shareable: true }
     }),
+    autoplay: t.boolean({
+      nullable: false,
+      directives: { shareable: true },
+      resolve: (block) => block.autoplay ?? false
+    }),
     startAt: t.exposeInt('startAt', {
       nullable: true,
-      directives: { shareable: true },
-      description: `startAt dictates at which point of time the video should start playing`
+      directives: { shareable: true }
     }),
     endAt: t.exposeInt('endAt', {
       nullable: true,
-      directives: { shareable: true },
-      description: `endAt dictates at which point of time the video should end`
+      directives: { shareable: true }
     }),
-    muted: t.exposeBoolean('muted', {
+    muted: t.boolean({
+      nullable: false,
+      directives: { shareable: true },
+      resolve: (block) => block.muted ?? false
+    }),
+    videoId: t.exposeString('videoId', {
       nullable: true,
       directives: { shareable: true }
     }),
-    autoplay: t.exposeBoolean('autoplay', {
+    videoVariantLanguageId: t.exposeString('videoVariantLanguageId', {
       nullable: true,
       directives: { shareable: true }
-    }),
-    posterBlockId: t.exposeID('posterBlockId', {
-      nullable: true,
-      directives: { shareable: true },
-      description: `posterBlockId is present if a child block should be used as a poster.
-This child block should not be rendered normally, instead it should be used
-as the video poster. PosterBlock should be of type ImageBlock.`
-    }),
-    fullsize: t.exposeBoolean('fullsize', {
-      nullable: true,
-      directives: { shareable: true }
-    }),
-    videoId: t.exposeID('videoId', {
-      nullable: true,
-      directives: { shareable: true },
-      description: `internal source videos: videoId and videoVariantLanguageId both need to be set
-to select a video.
-For other sources only videoId needs to be set.`
-    }),
-    videoVariantLanguageId: t.exposeID('videoVariantLanguageId', {
-      nullable: true,
-      directives: { shareable: true },
-      description: `internal source videos: videoId and videoVariantLanguageId both need to be set
-to select a video.
-For other sources only videoId needs to be set.`
     }),
     source: t.field({
       type: VideoBlockSource,
-      nullable: false,
+      nullable: true,
       directives: { shareable: true },
-      description: `internal source: videoId, videoVariantLanguageId, and video present
-youTube source: videoId, title, description, and duration present`,
       resolve: (block) => block.source as any
     }),
-    title: t.exposeString('title', {
-      nullable: true,
+    title: t.string({
+      nullable: false,
       directives: { shareable: true },
-      description: `internal source videos: this field is not populated and instead only present
-in the video field.
-For other sources this is automatically populated.`
+      resolve: (block) => block.title ?? ''
     }),
-    description: t.exposeString('description', {
-      nullable: true,
+    description: t.string({
+      nullable: false,
       directives: { shareable: true },
-      description: `internal source videos: this field is not populated and instead only present
-in the video field
-For other sources this is automatically populated.`
+      resolve: (block) => block.description ?? ''
     }),
     image: t.exposeString('image', {
       nullable: true,
-      directives: { shareable: true },
-      description: `internal source videos: this field is not populated and instead only present
-in the video field
-For other sources this is automatically populated.`
+      directives: { shareable: true }
     }),
     duration: t.exposeInt('duration', {
       nullable: true,
-      directives: { shareable: true },
-      description: `internal source videos: this field is not populated and instead only present
-in the video field
-For other sources this is automatically populated.`
+      directives: { shareable: true }
     }),
     objectFit: t.field({
       type: VideoBlockObjectFit,
       nullable: true,
       directives: { shareable: true },
       resolve: (block) => block.objectFit as any
+    }),
+    posterBlockId: t.exposeID('posterBlockId', {
+      nullable: true,
+      directives: { shareable: true }
+    }),
+    fullsize: t.boolean({
+      nullable: false,
+      directives: { shareable: true },
+      resolve: (block) => block.fullsize ?? false
+    }),
+    action: t.field({
+      type: ActionInterface,
+      nullable: true,
+      directives: { shareable: true },
+      resolve: async (block) => {
+        const action = await prisma.action.findUnique({
+          where: { parentBlockId: block.id }
+        })
+        return action
+      }
     }),
     mediaVideo: t.field({
       type: MediaVideo,

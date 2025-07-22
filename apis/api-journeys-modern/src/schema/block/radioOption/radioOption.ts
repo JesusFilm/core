@@ -7,6 +7,7 @@ import {
   subject as abilitySubject
 } from '../../../lib/auth/ability'
 import { prisma } from '../../../lib/prisma'
+import { ActionInterface } from '../../action/action'
 import { builder } from '../../builder'
 import { Block } from '../block'
 
@@ -56,6 +57,17 @@ export const RadioOptionBlock = builder.prismaObject('Block', {
       nullable: false,
       directives: { shareable: true },
       resolve: (block) => block.label ?? ''
+    }),
+    action: t.field({
+      type: ActionInterface,
+      nullable: true,
+      directives: { shareable: true },
+      resolve: async (block) => {
+        const action = await prisma.action.findUnique({
+          where: { parentBlockId: block.id }
+        })
+        return action
+      }
     })
   })
 })

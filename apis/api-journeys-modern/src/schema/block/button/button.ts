@@ -7,6 +7,7 @@ import {
   subject as abilitySubject
 } from '../../../lib/auth/ability'
 import { prisma } from '../../../lib/prisma'
+import { ActionInterface } from '../../action/action'
 import { builder } from '../../builder'
 import { Block } from '../block'
 
@@ -137,6 +138,17 @@ export const ButtonBlock = builder.prismaObject('Block', {
       nullable: true,
       directives: { shareable: true },
       resolve: ({ settings }) => settings as unknown as ButtonBlockSettingsType
+    }),
+    action: t.field({
+      type: ActionInterface,
+      nullable: true,
+      directives: { shareable: true },
+      resolve: async (block) => {
+        const action = await prisma.action.findUnique({
+          where: { parentBlockId: block.id }
+        })
+        return action
+      }
     })
   })
 })
