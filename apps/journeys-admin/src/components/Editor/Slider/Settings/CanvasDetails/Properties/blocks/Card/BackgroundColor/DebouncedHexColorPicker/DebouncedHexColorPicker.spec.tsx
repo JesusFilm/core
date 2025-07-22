@@ -37,6 +37,19 @@ describe('DebouncedHexColorPicker', () => {
       expect(colorPicker).toBeInTheDocument()
     })
 
+    it('renders with normal color picker when enableAlpha is false', () => {
+      render(
+        <DebouncedHexColorPicker
+          color="#FF0000"
+          onChange={mockOnChange}
+          enableAlpha={false}
+        />
+      )
+
+      const colorPicker = screen.getByTestId('HexColorPicker')
+      expect(colorPicker).toBeInTheDocument()
+    })
+
     it('displays the correct initial color', () => {
       const { container } = render(
         <DebouncedHexColorPicker color="#00FF00FF" onChange={mockOnChange} />
@@ -140,7 +153,11 @@ describe('DebouncedHexColorPicker', () => {
 
     it('handles alpha slider interactions for 8-digit colors', async () => {
       const { container } = render(
-        <DebouncedHexColorPicker color="#C62828FF" onChange={mockOnChange} />
+        <DebouncedHexColorPicker
+          color="#C62828FF"
+          onChange={mockOnChange}
+          enableAlpha={true}
+        />
       )
 
       const alpha = container.querySelector(

@@ -38,8 +38,9 @@ To get started try the following:
    - **PC users**: Windows limits resources to WSL 2 (Memory/CPU), this limit can be configured in your [.wslconfig file](https://docs.microsoft.com/en-us/windows/wsl/wsl-config#configure-global-options-with-wslconfig).
 1. Start Cursor and add [Anysphere Containers](https://marketplace.visualstudio.com/items?itemName=anysphere.containers) Extension
 1. Run `Git: Clone` from the Command Palette (Cmd/Ctrl + Shift + P)
-1. Choose GitHub (You'll need to authenticate with GitHub), then enter `JesusFilm/core`, finally choose the `main` branch to clone
-1. Run `Dev Containers: Reopen in Container` from the Command Palette (Cmd/Ctrl + Shift + P).
+1. Choose GitHub (You'll need to authenticate with GitHub), then enter `JesusFilm/core`
+1. Select an appropriate local directory to clone the repository to.
+1. If prompted by Cursor, press "Open" or "Open Repository"
 1. Cursor will start building the dev container. A progress notification provides status updates.
 1. After the build completes, Cursor will automatically connect to the container. You can now work with the repository source code in this independent environment as you would if you had cloned the code locally.
 
@@ -61,3 +62,7 @@ To get started try the following:
 - Allow the default Docker socket to be used (requires password)
 - Allow privileged port mapping (requires password)
 - Automatically check configuration
+
+### `Git: Clone` does not appear in the command palette
+
+- Simply restart Cursor and try again
