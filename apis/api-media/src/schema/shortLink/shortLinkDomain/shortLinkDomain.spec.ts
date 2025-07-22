@@ -36,7 +36,7 @@ describe('shortLinkDomain', () => {
 
   beforeEach(() => {
     prismaMock.$transaction.mockImplementation(
-      async (cb) => await cb(prismaMock)
+      async (cb: any) => await cb(prismaMock)
     )
     prismaMock.userMediaRole.findUnique.mockResolvedValue({
       id: 'userId',

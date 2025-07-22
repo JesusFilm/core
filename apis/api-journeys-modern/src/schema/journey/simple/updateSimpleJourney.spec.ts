@@ -59,7 +59,7 @@ describe('updateSimpleJourney', () => {
     txMock.block.create.mockResolvedValue({} as any)
     txMock.block.update.mockResolvedValue({} as any)
     prismaMock.$transaction.mockImplementation(
-      async (callback) => await callback(txMock as any)
+      async (callback: any) => await callback(txMock as any)
     )
   })
 
