@@ -17,8 +17,8 @@ import { BibleCitations } from './BibleCitations'
 import { ContentMetadata } from './ContentMetadata'
 import { ContentPageBlurFilter } from './ContentPageBlurFilter'
 import { DiscussionQuestions } from './DiscussionQuestions'
-import { VideoContentHeader } from './VideoContentHeader'
 import { VideoCarousel } from './VideoCarousel'
+import { VideoContentHeader } from './VideoContentHeader'
 import { VideoContentHero } from './VideoContentHero'
 
 export function NewVideoContentPage(): ReactElement {
