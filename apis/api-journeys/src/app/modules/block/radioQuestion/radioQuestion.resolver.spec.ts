@@ -115,27 +115,33 @@ describe('RadioQuestionBlockResolver', () => {
   describe('radioQuestionBlockUpdate', () => {
     it('updates a TypographyBlock', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
-      await resolver.radioQuestionBlockUpdate(
-        ability,
-        'blockId',
-        'parentBlockId'
-      )
+      await resolver.radioQuestionBlockUpdate(ability, 'blockId', {
+        parentBlockId: 'parentBlockId',
+        gridView: false
+      })
       expect(service.update).toHaveBeenCalledWith('blockId', {
-        parentBlockId: 'parentBlockId'
+        parentBlockId: 'parentBlockId',
+        gridView: false
       })
     })
 
     it('throws error if not found', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(null)
       await expect(
-        resolver.radioQuestionBlockUpdate(ability, 'blockId', 'parentBlockId')
+        resolver.radioQuestionBlockUpdate(ability, 'blockId', {
+          parentBlockId: 'parentBlockId',
+          gridView: false
+        })
       ).rejects.toThrow('block not found')
     })
 
     it('throws error if not authorized', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(block)
       await expect(
-        resolver.radioQuestionBlockUpdate(ability, 'blockId', 'parentBlockId')
+        resolver.radioQuestionBlockUpdate(ability, 'blockId', {
+          parentBlockId: 'parentBlockId',
+          gridView: false
+        })
       ).rejects.toThrow('user is not allowed to update block')
     })
   })
