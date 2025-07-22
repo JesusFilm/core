@@ -19,7 +19,7 @@ interface VideoContentHeaderProps {
   videos?: VideoChildFields[]
 }
 
-export function NewVideoContentHeader({
+export function VideoContentHeader({
   loading,
   videos = []
 }: VideoContentHeaderProps): ReactElement {
@@ -41,7 +41,7 @@ export function NewVideoContentHeader({
   return (
     <div
       className="flex pt-7 z-2 max-w-[1920px] w-full mx-auto relative padded"
-      data-testid="NewVideoContentHeader"
+      data-testid="VideoContentHeader"
     >
       <div className="w-full">
         <div

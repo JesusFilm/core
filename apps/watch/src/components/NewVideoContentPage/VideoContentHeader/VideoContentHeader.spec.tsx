@@ -8,7 +8,7 @@ import {
 import { VideoProvider } from '../../../libs/videoContext'
 import { videos } from '../../Videos/__generated__/testData'
 
-import { NewVideoContentHeader } from './VideoContentHeader'
+import { VideoContentHeader } from './VideoContentHeader'
 
 jest.mock('next-i18next', () => ({
   useTranslation: jest.fn(() => ({
@@ -16,7 +16,7 @@ jest.mock('next-i18next', () => ({
   }))
 }))
 
-describe('NewVideoContentHeader', () => {
+describe('VideoContentHeader', () => {
   const videoWithContainer: VideoContentFields = {
     ...videos[0],
     id: '1_jf6101-0-0',
@@ -52,7 +52,7 @@ describe('NewVideoContentHeader', () => {
   it('should display link and progress for feature film page', () => {
     render(
       <VideoProvider value={{ content: videoWithContainer, container }}>
-        <NewVideoContentHeader videos={videos} />
+        <VideoContentHeader videos={videos} />
       </VideoProvider>
     )
 
@@ -69,7 +69,7 @@ describe('NewVideoContentHeader', () => {
   it('should display link and progress for container page', () => {
     render(
       <VideoProvider value={{ content: lumoVideo, container: lumoContainer }}>
-        <NewVideoContentHeader videos={videos} />
+        <VideoContentHeader videos={videos} />
       </VideoProvider>
     )
 
@@ -86,7 +86,7 @@ describe('NewVideoContentHeader', () => {
   it('should show skeleton when loading', () => {
     const { baseElement } = render(
       <VideoProvider value={{ content: videoWithContainer, container }}>
-        <NewVideoContentHeader videos={videos} loading />
+        <VideoContentHeader videos={videos} loading />
       </VideoProvider>
     )
 
@@ -96,12 +96,12 @@ describe('NewVideoContentHeader', () => {
   it('should always render download, share, and back buttons even when not in a collection', () => {
     render(
       <VideoProvider value={{ content: videos[0], container: undefined }}>
-        <NewVideoContentHeader />
+        <VideoContentHeader />
       </VideoProvider>
     )
 
     // Check that the header container is rendered
-    expect(screen.getByTestId('NewVideoContentHeader')).toBeInTheDocument()
+    expect(screen.getByTestId('VideoContentHeader')).toBeInTheDocument()
 
     // Check that download button is always rendered
     expect(screen.getByRole('button', { name: 'Download' })).toBeInTheDocument()
@@ -122,7 +122,7 @@ describe('NewVideoContentHeader', () => {
   it('should render DownloadDialog when button is clicked', async () => {
     render(
       <VideoProvider value={{ content: videos[0], container: undefined }}>
-        <NewVideoContentHeader />
+        <VideoContentHeader />
       </VideoProvider>
     )
     const user = userEvent.setup()
@@ -137,7 +137,7 @@ describe('NewVideoContentHeader', () => {
   it('should render ShareDialog when button is clicked', async () => {
     render(
       <VideoProvider value={{ content: videos[0], container: undefined }}>
-        <NewVideoContentHeader />
+        <VideoContentHeader />
       </VideoProvider>
     )
     const user = userEvent.setup()
@@ -152,7 +152,7 @@ describe('NewVideoContentHeader', () => {
   it('renders download button with translated text', () => {
     render(
       <VideoProvider value={{ content: videos[0], container: undefined }}>
-        <NewVideoContentHeader />
+        <VideoContentHeader />
       </VideoProvider>
     )
 
@@ -165,7 +165,7 @@ describe('NewVideoContentHeader', () => {
     const user = userEvent.setup()
     render(
       <VideoProvider value={{ content: videos[0], container: undefined }}>
-        <NewVideoContentHeader />
+        <VideoContentHeader />
       </VideoProvider>
     )
 
@@ -179,7 +179,7 @@ describe('NewVideoContentHeader', () => {
     const user = userEvent.setup()
     render(
       <VideoProvider value={{ content: videos[0], container: undefined }}>
-        <NewVideoContentHeader />
+        <VideoContentHeader />
       </VideoProvider>
     )
 
