@@ -1,8 +1,8 @@
 import { MockedResponse } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/nextjs'
-import { screen, userEvent } from 'storybook/test'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement, useState } from 'react'
+import { screen, userEvent } from 'storybook/test'
 
 import { TeamProvider } from '@core/journeys/ui/TeamProvider'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'

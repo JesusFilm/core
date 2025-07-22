@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs'
-import { fn } from 'storybook/test'
 import { ComponentProps } from 'react'
+import { fn } from 'storybook/test'
 
 import Edit2 from '@core/shared/ui/icons/Edit2'
 import EyeOpen from '@core/shared/ui/icons/EyeOpen'

@@ -1,8 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/nextjs'
-import { fn } from 'storybook/test'
 import { ComponentProps } from 'react'
+import { fn } from 'storybook/test'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'

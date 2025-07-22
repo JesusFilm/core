@@ -2,8 +2,8 @@ import { MockedProvider } from '@apollo/client/testing'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { Meta, StoryObj } from '@storybook/nextjs'
-import { screen, userEvent } from 'storybook/test'
 import { ComponentProps } from 'react'
+import { screen, userEvent } from 'storybook/test'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 

@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/nextjs'
-import { screen, userEvent, waitFor } from 'storybook/test'
 import { ComponentProps } from 'react'
+import { screen, userEvent, waitFor } from 'storybook/test'
 
 import PaletteIcon from '@core/shared/ui/icons/Palette'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'

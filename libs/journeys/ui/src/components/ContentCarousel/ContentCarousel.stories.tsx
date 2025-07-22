@@ -1,8 +1,8 @@
 import Stack from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { Meta, StoryObj } from '@storybook/nextjs'
-import { screen, userEvent, waitFor } from 'storybook/test'
 import { ComponentProps } from 'react'
+import { screen, userEvent, waitFor } from 'storybook/test'
 
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
 

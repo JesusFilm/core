@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/nextjs'
-import { userEvent, within } from 'storybook/test'
 import { ComponentProps } from 'react'
+import { userEvent, within } from 'storybook/test'
 
 import { GoalType } from '@core/journeys/ui/Button/utils/getLinkActionGoal/getLinkActionGoal'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'

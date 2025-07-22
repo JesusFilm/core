@@ -1,8 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/nextjs'
-import { expect, screen, userEvent, waitFor } from 'storybook/test'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
+import { expect, screen, userEvent, waitFor } from 'storybook/test'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'

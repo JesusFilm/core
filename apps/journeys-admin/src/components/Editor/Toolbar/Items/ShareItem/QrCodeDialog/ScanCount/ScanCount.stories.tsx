@@ -1,7 +1,7 @@
 import { MockedResponse } from '@apollo/client/testing'
 import type { Meta, StoryObj } from '@storybook/nextjs'
-import { expect, screen, waitFor } from 'storybook/test'
 import { ComponentProps } from 'react'
+import { expect, screen, waitFor } from 'storybook/test'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'

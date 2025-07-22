@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/nextjs'
-import { screen, userEvent } from 'storybook/test'
 import { ReactElement, useState } from 'react'
+import { screen, userEvent } from 'storybook/test'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'

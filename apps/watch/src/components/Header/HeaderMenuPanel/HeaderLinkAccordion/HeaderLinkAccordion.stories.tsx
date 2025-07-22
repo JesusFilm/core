@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/nextjs'
-import { screen, userEvent } from 'storybook/test'
 import noop from 'lodash/noop'
+import { screen, userEvent } from 'storybook/test'
 
 import { watchConfig } from '../../../../libs/storybook'
 

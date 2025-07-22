@@ -1,8 +1,8 @@
 import { MockedResponse } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/nextjs'
-import { expect, screen, userEvent, waitFor } from 'storybook/test'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement, useState } from 'react'
+import { expect, screen, userEvent, waitFor } from 'storybook/test'
 
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,

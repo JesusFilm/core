@@ -1,8 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/nextjs'
-import { userEvent } from 'storybook/test'
 import { ComponentProps } from 'react'
+import { userEvent } from 'storybook/test'
 
 import { VideoBlockSource } from '../../../__generated__/globalTypes'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
