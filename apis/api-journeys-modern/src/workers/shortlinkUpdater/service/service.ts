@@ -1,7 +1,8 @@
 import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
 import { Job } from 'bullmq'
-import { graphql } from 'gql.tada'
 import { Logger } from 'pino'
+
+import { graphql } from '@core/shared/gql'
 
 import { prisma } from '../../../lib/prisma'
 
