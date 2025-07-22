@@ -40,14 +40,14 @@ function findQualityRenditions(sources: BrightcoveSource[]): {
  * Gets a Brightcove video URL.
  *
  * @param brightcoveId - The video reference ID
- * @param type - 'hls', 'dl' (download low), 'dh' (download high), or 'dsd' (download specific bitrate)
+ * @param type - 'hls', 'dl' (download low), 'dh' (download high)
  * @param bitrate - Target bitrate to match (optional for dl/dh types)
  * @param ip - Optional client IP
  * @returns The video URL
  */
 export async function getBrightcoveUrl(
   brightcoveId: string,
-  type: 'hls' | 'dl' | 'dh' | 'dsd',
+  type: 'hls' | 'dl' | 'dh' | string,
   bitrate: number | null,
   ip?: string
 ): Promise<string> {
@@ -62,7 +62,6 @@ export async function getBrightcoveUrl(
   if (ip) {
     headers['X-Forwarded-For'] = ip
   }
-  console.log('brightcoveId', brightcoveId)
   const response = await fetch(
     `https://edge.api.brightcove.com/playback/v1/accounts/${ACCOUNT_ID}/videos/ref:${encodeURIComponent(brightcoveId)}`,
     {
@@ -70,7 +69,7 @@ export async function getBrightcoveUrl(
       next: { revalidate: 3600 }
     }
   )
-  console.log('response', response)
+
   if (!response.ok) {
     throw new Error(`Brightcove API error: ${response.status}`)
   }
@@ -82,17 +81,6 @@ export async function getBrightcoveUrl(
     .filter((s) => s.src)
     .map((s) => ({ ...s, src: s.src.replace(/^http:/, 'https:') }))
 
-  // Log all available MP4 bitrates
-  const mp4SourcesWithBitrate = sources.filter(
-    (s) => s.container === 'MP4' && s.avg_bitrate && s.avg_bitrate > 0
-  )
-  const availableBitrates = mp4SourcesWithBitrate.map((s) => s.avg_bitrate)
-  console.log(
-    `Available MP4 bitrates for id ${brightcoveId}:`,
-    availableBitrates
-  )
-
-  // Handle HLS streams
   if (type === 'hls') {
     const hlsSource = sources.find((s) => s.type === 'application/x-mpegURL')
     if (!hlsSource) {
@@ -102,11 +90,7 @@ export async function getBrightcoveUrl(
   }
 
   // Handle downloads with specific bitrate
-  if (
-    (type === 'dsd' || type === 'dl' || type === 'dh') &&
-    bitrate != null &&
-    bitrate > 0
-  ) {
+  if ((type === 'dl' || type === 'dh') && bitrate != null && bitrate > 0) {
     const mp4Sources = sources
       .filter((s) => s.container === 'MP4' && s.avg_bitrate)
       .sort((a, b) => (a.avg_bitrate || 0) - (b.avg_bitrate || 0))
@@ -119,11 +103,7 @@ export async function getBrightcoveUrl(
     const match =
       mp4Sources.find((s) => (s.avg_bitrate || 0) >= bitrate) ||
       mp4Sources[mp4Sources.length - 1]
-    console.log(
-      `Chosen MP4 bitrate for type ${type} (target: ${bitrate}) for id ${brightcoveId}:`,
-      match.avg_bitrate,
-      match.src
-    )
+
     return match.src
   }
 
@@ -132,20 +112,10 @@ export async function getBrightcoveUrl(
     const { low, high } = findQualityRenditions(sources)
 
     if (type === 'dl' && low) {
-      console.log(
-        `Chosen low quality MP4 bitrate for id ${brightcoveId}:`,
-        low.avg_bitrate,
-        low.src
-      )
       return low.src
     }
 
     if (type === 'dh' && high) {
-      console.log(
-        `Chosen high quality MP4 bitrate for id ${brightcoveId}:`,
-        high.avg_bitrate,
-        high.src
-      )
       return high.src
     }
 
