@@ -108,7 +108,7 @@ app.openapi(keywordRoute, async (c) => {
         try {
           const url = await getBrightcoveUrl(
             brightcoveId,
-            redirectType as 'hls' | 'dl' | 'dh' | 'dsd',
+            redirectType,
             bitrate,
             clientIp
           )
