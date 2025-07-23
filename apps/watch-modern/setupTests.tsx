@@ -6,8 +6,10 @@ configure({ asyncUtilTimeout: 2500 })
 
 jest.mock('next/image', () => ({
   __esModule: true,
-  // eslint-disable-next-line @next/next/no-img-element
-  default: ({ src, alt }) => <img src={src} alt={alt} />
+  default: ({ src, alt }: { src: string; alt: string }) => (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={src} alt={alt} />
+  )
 }))
 
 Object.defineProperty(
@@ -25,5 +27,5 @@ Object.defineProperty(
 
 jest.mock('next/router', () => require('next-router-mock'))
 
-if (process.env.CI === 'true')
+if (process.env['CI'] === 'true')
   jest.retryTimes(3, { logErrorsBeforeRetry: true })

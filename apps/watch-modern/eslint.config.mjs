@@ -35,12 +35,6 @@ export default [
   ...compat.extends('plugin:@nx/react-typescript'),
   { languageOptions: { globals: { ...globals.jest } } },
   {
-    files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
-    rules: {
-      '@next/next/no-html-link-for-pages': ['error', 'apps/watch-modern/pages/']
-    }
-  },
-  {
     files: ['**/*.ts', '**/*.tsx'],
     rules: {
       'no-void': ['error', { allowAsStatement: true }],

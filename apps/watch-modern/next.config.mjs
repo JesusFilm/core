@@ -5,7 +5,7 @@ import { composePlugins, withNx } from '@nx/next'
 import createNextIntlPlugin from 'next-intl/plugin'
 
 const withBundleAnalyzerPlugin = withBundleAnalyzer({
-  enabled: process.env.ANALYZE === 'true'
+  enabled: process.env['ANALYZE'] === 'true'
 })
 
 /**
@@ -32,7 +32,7 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: `customer-${
-          process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
+          process.env['NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE'] ?? ''
         }.cloudflarestream.com`
       }
     ],
@@ -51,11 +51,11 @@ const nextConfig = {
   productionBrowserSourceMaps: true,
   typescript: {
     // handled by github actions
-    ignoreBuildErrors: process.env.CI === 'true'
+    ignoreBuildErrors: process.env['CI'] === 'true'
   },
   eslint: {
     // handled by github actions
-    ignoreDuringBuilds: process.env.CI === 'true'
+    ignoreDuringBuilds: process.env['CI'] === 'true'
   },
   async redirects() {
     return [
