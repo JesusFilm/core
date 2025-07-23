@@ -4,7 +4,7 @@ import type { Context } from 'hono'
 import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../../lib/apolloClient'
-import { getBrightcoveRedirectUrl } from '../../../lib/brightcove'
+import { getBrightcoveUrl } from '../../../lib/brightcove'
 import { setCorsHeaders } from '../../../lib/redirectUtils'
 
 const GET_VIDEO_VARIANT = graphql(`
@@ -79,11 +79,7 @@ hls.openapi(hlsRoute, async (c: Context) => {
     const brightcoveId = data.video?.variant?.brightcoveId
     if (brightcoveId) {
       try {
-        const url = await getBrightcoveRedirectUrl(
-          brightcoveId,
-          'hls',
-          clientIp
-        )
+        const url = await getBrightcoveUrl(brightcoveId, 'hls', null, clientIp)
         return c.redirect(url, 302)
       } catch (err) {
         console.warn(

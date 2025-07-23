@@ -26,7 +26,12 @@ export function middleware(request: NextRequest) {
   // Redirect all requests for arc.gt and stg.arc.gt
   if (hostname === 'arc.gt' || hostname === 'stg.arc.gt') {
     const redirectUrl = `${baseUrl}${pathname}${request.nextUrl.search}`
-    return NextResponse.redirect(redirectUrl, 307)
+    const response = NextResponse.redirect(redirectUrl, 302)
+    response.headers.set('Access-Control-Allow-Origin', '*')
+    response.headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS')
+    response.headers.set('Access-Control-Allow-Headers', '*')
+    response.headers.set('Access-Control-Expose-Headers', '*')
+    return response
   }
 
   const url = new URL(`/${hostname}${pathname}`, request.url)
