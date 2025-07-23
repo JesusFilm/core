@@ -149,7 +149,7 @@ describe('BackgroundColor', () => {
       expect(screen.getByTestId('bgColorTextField')).toBeInTheDocument()
     })
 
-    it('hides opacity/alpha card color when card is contained', () => {
+    it('hides card opacity/alpha color when card is contained', () => {
       render(
         <MockedProvider>
           <ThemeProvider>
