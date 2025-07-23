@@ -1,0 +1,17 @@
+{
+  "Metadata": {
+    "pageTitle": "{title} | Projet de film sur Jésus"
+  },
+  "RootIndexPage": {
+    "pageTitle": "Regarde",
+    "title": "Bibliothèque de vidéos évangéliques gratuites <underline>en streaming</underline>.",
+    "description": "Regarde, apprends et partage l'évangile dans plus de 2000 langues."
+  },
+  "DatadogErrorBoundary": {
+    "somethingWentWrong": "Quelque chose a mal tourné",
+    "anErrorOccurred": "Une erreur s'est produite lors du chargement de cette page. Essaie de la rafraîchir.",
+    "errorDetails": "Détails de l'erreur",
+    "tryAgain": "Essaie à nouveau",
+    "unknownError": "Erreur inconnue"
+  }
+}
