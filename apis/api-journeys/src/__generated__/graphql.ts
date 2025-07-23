@@ -2508,6 +2508,8 @@ export type MutationJourneyLanguageAiDetectInput = {
 };
 
 export type MutationShortLinkCreateInput = {
+  /** bitrate of the video variant download */
+  bitrate?: InputMaybe<Scalars['Int']['input']>;
   /** brightcove video ID for video redirects */
   brightcoveId?: InputMaybe<Scalars['String']['input']>;
   /** the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to */
@@ -2573,6 +2575,8 @@ export type MutationShortLinkDomainUpdateSuccess = {
 };
 
 export type MutationShortLinkUpdateInput = {
+  /** bitrate of the video variant download */
+  bitrate?: InputMaybe<Scalars['Int']['input']>;
   /** brightcove video ID for video redirects */
   brightcoveId?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['String']['input'];
@@ -3449,6 +3453,8 @@ export enum Service {
 /** A short link that redirects to a full URL */
 export type ShortLink = {
   __typename?: 'ShortLink';
+  /** bitrate of the video variant download */
+  bitrate?: Maybe<Scalars['Int']['output']>;
   /** brightcove video ID for video redirects */
   brightcoveId?: Maybe<Scalars['String']['output']>;
   domain: ShortLinkDomain;
