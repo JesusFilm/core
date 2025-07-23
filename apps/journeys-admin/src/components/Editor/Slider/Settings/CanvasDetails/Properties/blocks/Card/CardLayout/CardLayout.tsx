@@ -95,9 +95,6 @@ export function CardLayout({
     ? 'false'
     : cardBlock?.fullscreen.toString()
 
-  console.log('testid', cardBlock?.fullscreen === true ? 'selected' : 'true')
-  console.log('disableExpanded', disableExpanded)
-
   return (
     <>
       <Box>

@@ -302,12 +302,12 @@ describe('CardLayout', () => {
       id: 'video1.id',
       __typename: 'VideoBlock'
     } as unknown as TreeBlock<VideoBlock>
-    const card: TreeBlock<CardBlock> = {
+    const card = {
       id: 'card1.id',
       __typename: 'CardBlock',
       fullscreen: false,
       children: [videoBlock]
-    }
+    } as unknown as TreeBlock<CardBlock>
 
     const result = jest.fn(() => ({
       data: {

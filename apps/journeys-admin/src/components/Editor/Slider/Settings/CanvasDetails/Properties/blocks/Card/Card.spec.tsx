@@ -185,7 +185,12 @@ describe('Card', () => {
 
     it('always shows Contained when card contains a video block', () => {
       const card = createCard({
-        children: [{ __typename: 'VideoBlock', id: 'video1.id' }]
+        children: [
+          {
+            __typename: 'VideoBlock',
+            id: 'video1.id'
+          } as unknown as TreeBlock<VideoBlock>
+        ]
       })
       renderWithProviders(<Card {...card} />)
 
