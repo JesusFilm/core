@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 import { EventInterface } from '../event'
-import { getEventContext, getOrCreateVisitor } from '../utils'
+import { validateBlockEvent } from '../utils'
 
 // StepViewEvent type
 export const StepViewEventRef = builder.prismaObject('Event', {
@@ -69,15 +69,24 @@ const StepPreviousEventCreateInput = builder.inputType(
 
 // Mutations
 builder.mutationField('stepViewEventCreate', (t) =>
-  t.field({
+  t.withAuth({ isAuthenticated: true }).field({
     type: StepViewEventRef,
     args: {
       input: t.arg({ type: StepViewEventCreateInput, required: true })
     },
     resolve: async (_parent, args, context) => {
       const { input } = args
-      const { journeyId } = await getEventContext(input.blockId)
-      const visitorId = await getOrCreateVisitor(context)
+      const userId = context.user?.id
+
+      if (!userId) {
+        throw new Error('User not authenticated')
+      }
+
+      const { visitor, journeyId } = await validateBlockEvent(
+        userId,
+        input.blockId,
+        input.blockId // Using blockId as stepId for step view events
+      )
 
       return await prisma.event.create({
         data: {
@@ -85,8 +94,9 @@ builder.mutationField('stepViewEventCreate', (t) =>
           typename: 'StepViewEvent',
           journeyId,
           blockId: input.blockId,
+          stepId: input.blockId,
           value: input.value,
-          visitorId
+          visitorId: visitor.id
         }
       })
     }
@@ -94,15 +104,24 @@ builder.mutationField('stepViewEventCreate', (t) =>
 )
 
 builder.mutationField('stepNextEventCreate', (t) =>
-  t.field({
+  t.withAuth({ isAuthenticated: true }).field({
     type: StepNextEventRef,
     args: {
       input: t.arg({ type: StepNextEventCreateInput, required: true })
     },
     resolve: async (_parent, args, context) => {
       const { input } = args
-      const { journeyId } = await getEventContext(input.blockId)
-      const visitorId = await getOrCreateVisitor(context)
+      const userId = context.user?.id
+
+      if (!userId) {
+        throw new Error('User not authenticated')
+      }
+
+      const { visitor, journeyId } = await validateBlockEvent(
+        userId,
+        input.blockId,
+        input.blockId // Using blockId as stepId for step events
+      )
 
       return await prisma.event.create({
         data: {
@@ -110,10 +129,11 @@ builder.mutationField('stepNextEventCreate', (t) =>
           typename: 'StepNextEvent',
           journeyId,
           blockId: input.blockId,
+          stepId: input.blockId,
           nextStepId: input.nextStepId,
           label: input.label,
           value: input.value,
-          visitorId
+          visitorId: visitor.id
         }
       })
     }
@@ -121,15 +141,24 @@ builder.mutationField('stepNextEventCreate', (t) =>
 )
 
 builder.mutationField('stepPreviousEventCreate', (t) =>
-  t.field({
+  t.withAuth({ isAuthenticated: true }).field({
     type: StepPreviousEventRef,
     args: {
       input: t.arg({ type: StepPreviousEventCreateInput, required: true })
     },
     resolve: async (_parent, args, context) => {
       const { input } = args
-      const { journeyId } = await getEventContext(input.blockId)
-      const visitorId = await getOrCreateVisitor(context)
+      const userId = context.user?.id
+
+      if (!userId) {
+        throw new Error('User not authenticated')
+      }
+
+      const { visitor, journeyId } = await validateBlockEvent(
+        userId,
+        input.blockId,
+        input.blockId // Using blockId as stepId for step events
+      )
 
       return await prisma.event.create({
         data: {
@@ -137,10 +166,11 @@ builder.mutationField('stepPreviousEventCreate', (t) =>
           typename: 'StepPreviousEvent',
           journeyId,
           blockId: input.blockId,
+          stepId: input.blockId,
           previousStepId: input.previousStepId,
           label: input.label,
           value: input.value,
-          visitorId
+          visitorId: visitor.id
         }
       })
     }

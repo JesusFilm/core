@@ -5,7 +5,7 @@ import { ButtonAction } from '.prisma/api-journeys-modern-client'
 import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 import { EventInterface } from '../event'
-import { getEventContext, getOrCreateVisitor } from '../utils'
+import { validateBlockEvent } from '../utils'
 
 // Define ButtonAction enum
 export const ButtonActionEnum = builder.enumType('ButtonAction', {
@@ -43,15 +43,24 @@ const ButtonClickEventCreateInput = builder.inputType(
 
 // Mutation: Button Click Event
 builder.mutationField('buttonClickEventCreate', (t) =>
-  t.field({
+  t.withAuth({ isAuthenticated: true }).field({
     type: ButtonClickEventRef,
     args: {
       input: t.arg({ type: ButtonClickEventCreateInput, required: true })
     },
     resolve: async (_parent, args, context) => {
       const { input } = args
-      const { journeyId } = await getEventContext(input.blockId)
-      const visitorId = await getOrCreateVisitor(context)
+      const userId = context.user?.id
+
+      if (!userId) {
+        throw new Error('User not authenticated')
+      }
+
+      const { visitor, journeyId } = await validateBlockEvent(
+        userId,
+        input.blockId,
+        input.stepId
+      )
 
       return await prisma.event.create({
         data: {
@@ -64,7 +73,7 @@ builder.mutationField('buttonClickEventCreate', (t) =>
           value: input.value,
           action: input.action,
           actionValue: input.actionValue,
-          visitorId
+          visitorId: visitor.id
         }
       })
     }

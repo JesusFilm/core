@@ -2,6 +2,13 @@ import { GraphQLError } from 'graphql'
 
 import { prisma } from '../../lib/prisma'
 
+// Re-export event service functions for convenient access
+export {
+  validateBlockEvent,
+  validateBlock,
+  getByUserIdAndJourneyId
+} from './event.service'
+
 // Helper function to get visitor and journey IDs
 export async function getEventContext(blockId: string, journeyId?: string) {
   const context = await prisma.block.findUnique({

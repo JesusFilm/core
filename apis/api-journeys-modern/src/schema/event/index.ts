@@ -8,5 +8,10 @@ import './signUp'
 import './textResponse'
 import './video'
 
-// Export the main event interface
+// Export the main event interface and service functions
 export { EventInterface } from './event'
+export {
+  validateBlockEvent,
+  validateBlock,
+  getByUserIdAndJourneyId
+} from './event.service'

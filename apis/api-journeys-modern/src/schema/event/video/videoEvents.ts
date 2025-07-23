@@ -4,7 +4,7 @@ import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 import { VideoBlockSource as VideoBlockSourceEnum } from '../../enums'
 import { EventInterface } from '../event'
-import { getEventContext, getOrCreateVisitor } from '../utils'
+import { eventService } from '../utils'
 
 // Video Event Types
 export const VideoStartEventRef = builder.prismaObject('Event', {
