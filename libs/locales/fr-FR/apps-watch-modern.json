@@ -11,6 +11,7 @@
     "somethingWentWrong": "Quelque chose s'est mal passé",
     "anErrorOccurred": "Une erreur est survenue lors du chargement de cette page. Veuillez réessayer.",
     "errorDetails": "Détails de l'erreur",
-    "tryAgain": "Réessayer"
+    "tryAgain": "Réessayer",
+    "unknownError": "Erreur inconnue"
   }
 }

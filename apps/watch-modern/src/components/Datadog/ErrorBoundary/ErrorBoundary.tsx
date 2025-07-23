@@ -25,7 +25,7 @@ export default function DatadogErrorBoundary({
 
   return (
     <ErrorBoundary
-      fallback={({ error, resetError }) => (
+      fallback={({ error, resetError: handleResetError }) => (
         <div className="flex min-h-screen items-center justify-center bg-gray-50">
           <div className="rounded-lg bg-white p-8 shadow-lg">
             <h2 className="mb-4 text-xl font-semibold text-gray-900">
@@ -37,11 +37,13 @@ export default function DatadogErrorBoundary({
                 {t('errorDetails')}
               </summary>
               <pre className="mt-2 rounded bg-gray-100 p-2 text-xs text-gray-700">
-                {error?.message || 'Unknown error'}
+                {error?.message || t('unknownError')}
               </pre>
             </details>
             <button
-              onClick={resetError}
+              onClick={handleResetError}
+              aria-label={t('tryAgain')}
+              tabIndex={0}
               className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
               {t('tryAgain')}

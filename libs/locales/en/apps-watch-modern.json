@@ -11,6 +11,7 @@
     "somethingWentWrong": "Something went wrong",
     "anErrorOccurred": "An error occurred while loading this page. Please try refreshing.",
     "errorDetails": "Error details",
-    "tryAgain": "Try again"
+    "tryAgain": "Try again",
+    "unknownError": "Unknown error"
   }
 }
